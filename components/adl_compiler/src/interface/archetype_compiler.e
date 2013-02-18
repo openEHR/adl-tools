@@ -2,17 +2,13 @@ note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype compiler interface. This object knows how to compile a system of archetypes
-				 found in the ARCHETYPE_DIRECTORY.
+				 found in the ARCHETYPE_CATALOG.
 				 ]"
 	keywords:    "compiler, archetype, ADL"
-	author:      "Thomas Beale"
-	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/archetype_parser.e $"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: 2007-10-02 16:49:19 +0100 (Tue, 02 Oct 2007) $"
 
 class ARCHETYPE_COMPILER
 
@@ -58,13 +54,13 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	full_compile_visual_update_action: PROCEDURE [ANY, TUPLE]
+	full_compile_visual_update_action: detachable PROCEDURE [ANY, TUPLE]
 			-- Called after complete build
 
-	global_visual_update_action: PROCEDURE [ANY, TUPLE[STRING]]
+	global_visual_update_action: detachable PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
 
-	archetype_visual_update_action: PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]]
+	archetype_visual_update_action: detachable PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]]
 			-- Called after processing each archetype (to perform GUI updates during processing).
 
 feature -- Status
@@ -91,7 +87,7 @@ feature -- Status Setting
 
 feature -- Modification
 
-	set_full_compile_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE])
+	set_full_compile_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE])
 			-- Set `full_compile_visual_update_action'.
 		do
 			full_compile_visual_update_action := a_routine
@@ -99,7 +95,7 @@ feature -- Modification
 			full_compile_visual_update_action_set: full_compile_visual_update_action = a_routine
 		end
 
-	set_global_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE[STRING]])
+	set_global_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE[STRING]])
 			-- Set `global_visual_update_action'.
 		do
 			global_visual_update_action := a_routine
@@ -107,7 +103,7 @@ feature -- Modification
 			global_visual_update_action_set: global_visual_update_action = a_routine
 		end
 
-	set_archetype_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]])
+	set_archetype_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]])
 			-- Set `archetype_visual_update_action'.
 		do
 			archetype_visual_update_action := a_routine
@@ -257,11 +253,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_archetype (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	build_archetype (ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		local
 			exception_encountered: BOOLEAN
-			build_status: STRING
+			build_status, exc_trace_str: STRING
 		do
 			if not is_interrupt_requested then
 				if not exception_encountered then
@@ -304,13 +300,20 @@ feature {NONE} -- Implementation
 				end
 			end
 		rescue
-			post_error(Current, "build_archetype", "compile_exception", <<ara.qualified_name, exception.out, exception_trace>>)
+			if attached exception_trace as et then
+				exc_trace_str := et
+			else
+				create exc_trace_str.make_from_string ("(Exception trace not available)")
+			end
+			post_error (generator, "build_archetype", "compile_exception", <<ara.qualified_name, exception.out, exc_trace_str>>)
 			exception_encountered := True
 			retry
 		end
 
 	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_CAT_ARCHETYPE)
 			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
+		require
+			has_serialiser_format (a_syntax)
 		local
 			filename: STRING
 		do
@@ -320,7 +323,9 @@ feature {NONE} -- Implementation
 				end
 
 				if ara.is_valid then
-					filename := file_system.pathname (an_export_dir, ara.id.as_string) + archetype_file_extensions.item (a_syntax)
+					check attached file_system.pathname (an_export_dir, ara.id.as_string) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
+						filename := pn + ext
+					end
 					ara.save_flat_as (filename, a_syntax)
 					call_archetype_visual_update_action (ara.status, ara, 0)
 				end
@@ -330,24 +335,24 @@ feature {NONE} -- Implementation
 	call_full_compile_visual_update_action
 			-- Call `full_compile_visual_update_action', if it is attached.
 		do
-			if attached full_compile_visual_update_action then
-				full_compile_visual_update_action.call ([])
+			if attached full_compile_visual_update_action as ua then
+				ua.call ([])
 			end
 		end
 
 	call_global_visual_update_action (a_msg: STRING)
 			-- Call `global_visual_update_action', if it is attached.
 		do
-			if attached global_visual_update_action then
-				global_visual_update_action.call ([a_msg])
+			if attached global_visual_update_action as ua then
+				ua.call ([a_msg])
 			end
 		end
 
 	call_archetype_visual_update_action (a_msg: STRING; ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Call `archetype_visual_update_action', if it is attached.
 		do
-			if attached archetype_visual_update_action then
-				archetype_visual_update_action.call ([a_msg, ara, dependency_depth])
+			if attached archetype_visual_update_action as ua then
+				ua.call ([a_msg, ara, dependency_depth])
 			end
 		end
 

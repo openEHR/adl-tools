@@ -1,6 +1,5 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "[
 				 Abstract class defining the concept of ordered values, which includes 
 				 ordinals as well as true quantities. It defines the functions less_than 
@@ -9,17 +8,11 @@ note
 				 limits in the DV_INTERVAL<T> class.
 				 ]"
 	keywords:    "Items which are ordered"
-
 	design:      "openEHR Data Types Reference Model 1.7.9"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DV_ORDERED
 
@@ -33,20 +26,20 @@ inherit
 
 feature -- Access
 
-	other_reference_ranges: LINKED_LIST [REFERENCE_RANGE[like Current]]
+	other_reference_ranges: detachable LINKED_LIST [REFERENCE_RANGE[like Current]]
 			-- optional tagged ranges for this value in its particular measurement context
 
-	normal_range: DV_INTERVAL[like Current]
+	normal_range: detachable DV_INTERVAL[like Current]
 			-- Optional normal range
 
-	normal_status: CODE_PHRASE
+	normal_status: detachable CODE_PHRASE
 			-- Optional normal status indicator of value with respect to normal range for this value.
 			-- Often included by lab, even if the normal range itself is not included.
 			-- Coded by ordinals in series HHH, HH, H, (nothing), L, LL, LLL
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: attached like Current): BOOLEAN
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 		deferred
 		end
 
@@ -68,22 +61,23 @@ feature -- Status Report
 		require
 			has_normal_range
 		do
-			Result := normal_range.has(Current)
-		ensure
-			Result = normal_range.has(Current)
+			Result := attached normal_range as nr and then nr.has(Current)
 		end
 
 feature -- Modification
 
 	add_other_reference_range (a_rr: REFERENCE_RANGE [like Current])
 			-- add a new reference range
-		require
-			Range_exists: a_rr /= Void
+		local
+			ref_rngs: attached like other_reference_ranges
 		do
-			if other_reference_ranges = Void then
-				create other_reference_ranges.make
+			if attached other_reference_ranges as orr then
+				ref_rngs := orr
+			else
+				create ref_rngs.make
+				other_reference_ranges := ref_rngs
 			end
-			other_reference_ranges.extend(a_rr)
+			ref_rngs.extend (a_rr)
 		end
 
 invariant

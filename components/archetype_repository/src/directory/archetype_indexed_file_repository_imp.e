@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "File-system repository of archetypes - implementation of ARCHETYPE_INDEXED_REPOSITORY_I."
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: $"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
-
 
 class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
 
@@ -18,6 +13,8 @@ inherit
 	ARCHETYPE_INDEXED_REPOSITORY_I
 
 	ARCHETYPE_FILE_REPOSITORY_IMP
+
+	SHARED_REFERENCE_MODEL_ACCESS
 
 create
 	make
@@ -62,17 +59,19 @@ feature {NONE} -- Implementation
 						elseif adl_legacy_flat_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
 							amp.parse (l_full_path)
-							if amp.last_parse_valid then
-								if amp.last_archetype.archetype_id_is_old_style then
-									post_error (Current, "build_directory", "parse_archetype_e7", <<fn, amp.last_archetype.archetype_id.as_string>>)
-								elseif amp.last_archetype.is_specialised and amp.last_archetype.parent_archetype_id_is_old_style then
-									post_error (Current, "build_directory", "parse_archetype_e11", <<fn, amp.last_archetype.parent_archetype_id.as_string>>)
+							if amp.last_parse_valid and then attached amp.last_archetype as arch then
+								if arch.archetype_id_is_old_style then
+									post_error (generator, "build_directory", "parse_archetype_e7", <<fn, arch.archetype_id.as_string>>)
+								elseif arch.is_specialised and arch.parent_archetype_id_is_old_style then
+									post_error (generator, "build_directory", "parse_archetype_e11", <<fn, arch.parent_archetype_id.as_string>>)
+								elseif not has_rm_schema_for_id (arch.archetype_id) then
+									post_error (generator, "build_directory", "parse_archetype_e4", <<fn, arch.archetype_id.as_string>>)
 								else -- create the descriptor and put it into a local Hash for this node
-									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, amp.last_archetype)
+									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, arch)
 									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else
-								post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
+								post_error (generator, "build_directory", "general", <<amp.last_parse_fail_reason>>)
 							end
 						end
 					end
@@ -85,22 +84,25 @@ feature {NONE} -- Implementation
 						if adl_differential_filename_pattern_regex.matches (fn) then
 							l_full_path := file_system.pathname (a_path, fn)
 							amp.parse (l_full_path)
-							if amp.last_parse_valid then
-								if not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
-									ara := aof.create_arch_cat_archetype_make (l_full_path, Current, amp.last_archetype)
+							if amp.last_parse_valid and then attached amp.last_archetype as arch then
+								if not has_rm_schema_for_id (arch.archetype_id) then
+									post_error (generator, "build_directory", "parse_archetype_e4", <<fn, arch.archetype_id.as_string>>)
+								elseif not archetype_id_index.has (arch.archetype_id.as_string) then
+									ara := aof.create_arch_cat_archetype_make (l_full_path, Current, arch)
 									archetype_id_index.force (ara, ara.id.as_string)
+								else
+									-- ignore, because there is already a legacy archetype for this id
 								end
 							else
-								post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
+								post_error (generator, "build_directory", "general", <<amp.last_parse_fail_reason>>)
 							end
 						end
 					end
 				end
-			end
-
-			-- for all directories below this one, call this routine recursively
-			across dir_name_index as dir_names_csr loop
-				get_archetypes_in_folder (file_system.pathname (a_path, dir_names_csr.item))
+				-- for all directories below this one, call this routine recursively
+				across dir_name_index as dir_names_csr loop
+					get_archetypes_in_folder (file_system.pathname (a_path, dir_names_csr.item))
+				end
 			end
 
    			debug("arch_dir")

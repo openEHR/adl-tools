@@ -4,14 +4,10 @@ note
 				 Any complex OBJECT node in object parse tree
 			 ]"
 	keywords:    "object graph, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class OG_OBJECT_NODE
 
@@ -33,28 +29,28 @@ create
 
 feature -- Access
 
-	parent: OG_ATTRIBUTE_NODE
+	parent: detachable OG_ATTRIBUTE_NODE
 
-	all_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+	all_paths: HASH_TABLE [detachable OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node
 		do
-			Result := generate_all_paths(False)
+			Result := generate_all_paths (False)
 			if is_root then
-				Result.put(Current, path)
+				Result.put (Current, path)
 			end
 		end
 
-	all_unique_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+	all_unique_paths: HASH_TABLE [detachable OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node, including with auto-generate
 			-- uniqueness predicates, e.g. like [1] or [unknown_1] etc
 		do
-			Result := generate_all_paths(True)
+			Result := generate_all_paths (True)
 		end
 
-	object_node_at_path (a_path: attached OG_PATH): attached OG_OBJECT
+	object_node_at_path (a_path: OG_PATH): detachable OG_OBJECT
 			-- find the object node at the relative path `a_path'
 		require
-			Path_valid: has_path(a_path)
+			Path_valid: has_path (a_path)
 		local
 			s_path: OG_PATH
 		do
@@ -64,11 +60,11 @@ feature -- Access
 				-- check for compressed paths & convert path if necessary
 				s_path := compress_path(a_path)
 				s_path.start
-				Result := internal_object_node_at_path(s_path)
+				Result := internal_object_node_at_path (s_path)
 			end
 		end
 
-	attribute_node_at_path (a_path: attached OG_PATH): attached OG_ATTRIBUTE_NODE
+	attribute_node_at_path (a_path: OG_PATH): detachable OG_ATTRIBUTE_NODE
 			-- find the attribute node corresponding the the terminal segment of `a_path'
 		require
 			Path_valid: has_path(a_path)
@@ -78,7 +74,7 @@ feature -- Access
 			-- check for compressed paths & convert path if necessary
 			s_path := compress_path(a_path)
 			s_path.start
-			Result := internal_attribute_node_at_path(s_path)
+			Result := internal_attribute_node_at_path (s_path)
 		end
 
 feature -- Status Report
@@ -117,7 +113,7 @@ feature -- Status Report
 			end
 		end
 
-	has_attribute_path (a_path: attached OG_PATH): BOOLEAN
+	has_attribute_path (a_path: OG_PATH): BOOLEAN
 			-- `a_path' refers to an attribute node in structure
 		require
 			Path_valid: a_path.is_absolute implies is_root
@@ -128,15 +124,15 @@ feature -- Status Report
 				Result := True
 			else
 				-- check for compressed paths & convert path if necessary
-				s_path := compress_path(a_path)
+				s_path := compress_path (a_path)
 				s_path.start
-				Result := internal_attribute_node_at_path(s_path) /= Void
+				Result := attached internal_attribute_node_at_path (s_path)
 			end
 		end
 
 feature -- Modification
 
-	replace_attribute_name (old_name, new_name: attached STRING)
+	replace_attribute_name (old_name, new_name: STRING)
 			-- change the name of an attribute
 		require
 			Old_name_valid: has_child_with_id (old_name)
@@ -150,15 +146,15 @@ feature {OG_OBJECT_NODE} -- Implementation
 
 	child_type: OG_ATTRIBUTE_NODE
 			-- relationship target type
+		once
+			create Result.make_single (Anonymous_node_id)
+		end
 
 	internal_has_path (a_path: OG_PATH): BOOLEAN
 			-- find the child at the path `a_path'
-		local
-			child_obj: OG_OBJECT
 		do
 			-- find child node relating to first relation path item
-			if has_object_at_path_segment(a_path.item) then
-				child_obj := object_at_path_segment (a_path.item)
+			if has_object_at_path_segment(a_path.item) and then attached object_at_path_segment (a_path.item) as child_obj then
 				a_path.forth
 				if not a_path.off then
 					if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
@@ -173,17 +169,14 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_object_node_at_path (a_path: OG_PATH): OG_OBJECT
+	internal_object_node_at_path (a_path: OG_PATH): detachable OG_OBJECT
 			-- find the child at the path `a_path'
-		local
-			child_obj: OG_OBJECT
 		do
-			if has_object_at_path_segment(a_path.item) then
-				child_obj := object_at_path_segment(a_path.item)  -- if no predicate in segment, only gets first item
+			if has_object_at_path_segment (a_path.item) and then attached object_at_path_segment (a_path.item) as child_obj then
 				a_path.forth
 				if not a_path.off then
 					if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
-						Result := child_obj_node.internal_object_node_at_path(a_path)
+						Result := child_obj_node.internal_object_node_at_path (a_path)
 					end
 				else
 					Result := child_obj
@@ -191,54 +184,48 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE
+	internal_attribute_node_at_path(a_path: OG_PATH): detachable OG_ATTRIBUTE_NODE
 			-- find the child at the path `a_path'
-		local
-			child_obj: OG_OBJECT
 		do
-			if has_object_at_path_segment(a_path.item) then
-				child_obj := object_at_path_segment(a_path.item)
+			if has_object_at_path_segment (a_path.item) and then attached object_at_path_segment (a_path.item) as child_obj then
 				a_path.forth
 				if not a_path.off then
 					if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
-						Result := child_obj_node.internal_attribute_node_at_path(a_path)   -- if no predicate in segment, only gets first item
+						Result := child_obj_node.internal_attribute_node_at_path (a_path)   -- if no predicate in segment, only gets first item
 					end
 				else
 					Result := child_with_id (a_path.last.attr_name)
 				end
 			elseif a_path.is_last then
-				Result := child_with_id(a_path.last.attr_name)
+				Result := child_with_id (a_path.last.attr_name)
 			end
 		end
 
-	has_object_at_path_segment(a_path_segment: OG_PATH_ITEM): BOOLEAN
+	has_object_at_path_segment (a_path_segment: OG_PATH_ITEM): BOOLEAN
 			-- True if this object node has an attribute node and an object node below that
 			-- that match the path_segment
-		local
-			an_attr_node: OG_ATTRIBUTE_NODE
 		do
-			if children.has(a_path_segment.attr_name) then
-				an_attr_node := children.item(a_path_segment.attr_name)
-				if an_attr_node.has_children then
-					Result := an_attr_node.has_child_with_id (a_path_segment.object_id)
-				end
+			if children.has (a_path_segment.attr_name) and then attached children.item (a_path_segment.attr_name) as an_attr_node then
+				Result := an_attr_node.has_children and then an_attr_node.has_child_with_id (a_path_segment.object_id)
 			end
 		end
 
-	object_at_path_segment(a_path_segment: OG_PATH_ITEM): OG_OBJECT
+	object_at_path_segment (a_path_segment: OG_PATH_ITEM): detachable OG_OBJECT
 			-- object node at path_segment - strict match on object part
 		require
-			has_object_at_path_segment(a_path_segment)
+			has_object_at_path_segment (a_path_segment)
 		do
-			Result := children.item(a_path_segment.attr_name).child_with_id (a_path_segment.object_id)
+			if attached children.item (a_path_segment.attr_name) as an_attr_node then
+				Result := an_attr_node.child_with_id (a_path_segment.object_id)
+			end
 		end
 
-	generate_all_paths (is_unique: BOOLEAN): HASH_TABLE [OG_OBJECT, OG_PATH]
+	generate_all_paths (is_unique: BOOLEAN): HASH_TABLE [detachable OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node; if unique_flag is True,
 			-- then include the "unknown" ids on non-identified object nodes to give
 			-- completely unique paths
 		local
-			child_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+			child_paths: like all_paths
 			attr_node: like child_type
 			a_path: OG_PATH
 			child_objs: HASH_TABLE [OG_OBJECT, STRING]
@@ -309,7 +296,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	compress_path (a_path: attached OG_PATH): attached OG_PATH
+	compress_path (a_path: OG_PATH): OG_PATH
 			-- if there is an attribute under this object node with a differential path matching `a_path',
 			-- generate a new path whose first attribute contains the differential section in it;
 			-- else return the original `a_path'

@@ -7,20 +7,16 @@ note
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 deferred class EVX_DATA_CONTROL
 
 inherit
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	EVX_UTILITIES
@@ -40,7 +36,7 @@ feature -- Access
 		deferred
 		end
 
-	data_source_agent: FUNCTION [ANY, TUPLE, ANY]
+	data_source_agent: FUNCTION [ANY, TUPLE, detachable ANY]
 			-- specialise in descendants
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [ANY]]

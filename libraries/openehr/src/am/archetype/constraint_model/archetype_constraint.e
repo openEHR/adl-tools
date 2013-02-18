@@ -4,12 +4,8 @@ note
 	keywords:    "archetype, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2004-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class ARCHETYPE_CONSTRAINT
 
@@ -94,7 +90,7 @@ feature -- Source Control
 		deferred
 		end
 
-	inferred_rolled_up_specialisation_status: SPECIALISATION_STATUS
+	inferred_rolled_up_specialisation_status: detachable SPECIALISATION_STATUS
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
@@ -159,7 +155,7 @@ feature -- Modification
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
-	set_parent (a_node: attached like parent)
+	set_parent (a_node: like parent)
 			-- set parent
 		do
 			parent := a_node
@@ -179,19 +175,15 @@ feature -- Visitor
 
 feature -- Representation
 
-	representation: OG_ITEM
-		note
-			option: transient
-		attribute
-		end
-
-feature {OG_ITEM} -- Implementation
-
-	set_representation (a_rep: like representation)
+	representation: attached like representation_cache
 		do
-			representation := a_rep
-		ensure
-			Representation_set: representation = a_rep
+			if attached representation_cache as rc then
+				Result := rc
+			else
+				Result := create_default_representation
+				Result.set_content (Current)
+				representation_cache := Result
+			end
 		end
 
 feature -- Duplication
@@ -214,6 +206,19 @@ feature -- Duplication
 			representation.set_parent (og_p)
 		ensure
 			Result.parent = Void
+		end
+
+feature {NONE} -- Implementation
+
+	representation_cache: detachable OG_ITEM
+		note
+			option: transient
+		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		deferred
 		end
 
 invariant

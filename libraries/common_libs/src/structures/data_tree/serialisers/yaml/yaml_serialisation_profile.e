@@ -3,12 +3,8 @@ note component:   "openEHR Archetype Project"
 	keywords:    "YAML, serialisation"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class YAML_SERIALISATION_PROFILE
 
@@ -39,7 +35,7 @@ feature {ANY_SERIALISER} -- Access
 			create Result.make(0)
 		end
 
-	quote_patterns: HASH_TABLE[STRING, STRING]
+	quote_patterns: HASH_TABLE [STRING, STRING]
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -47,9 +43,10 @@ feature {ANY_SERIALISER} -- Access
 
 feature {ANY_SERIALISER} -- Factory
 
-	apply_style (elem:STRING; a_style:INTEGER): STRING
+	apply_style (elem: STRING; a_style: INTEGER): STRING
 			-- apply `a_style' to `elem'
 		do
+			Result := elem
 		end
 
 end

@@ -6,20 +6,16 @@ note
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class EVX_FRAME_CONTROL
 
 inherit
 	EVX_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 create

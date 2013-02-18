@@ -37,7 +37,7 @@ feature -- Factory
 
 	create_c_dv_ordinal: C_DV_ORDINAL
 		do
-			create Result.make
+			create Result.default_create
 			if attached items as i then
 				Result.set_items (i)
 			end

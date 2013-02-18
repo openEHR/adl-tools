@@ -79,7 +79,7 @@ feature -- Modify
 			billboard.wipe_out
 		end
 
-	post_error (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
+	post_error (poster_object_classname: STRING; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard an error message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -87,10 +87,10 @@ feature -- Modify
 			Poster_valid: not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object.generator, poster_routine, id, args, Error_type_error))
+				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object_classname, poster_routine, id, args, Error_type_error))
 		end
 
-	post_warning (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
+	post_warning (poster_object_classname: STRING; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -98,10 +98,10 @@ feature -- Modify
 			Poster_valid: not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object.generator, poster_routine, id, args, Error_type_warning))
+				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object_classname, poster_routine, id, args, Error_type_warning))
 		end
 
-	post_info (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
+	post_info (poster_object_classname: STRING; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard an info message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -109,7 +109,7 @@ feature -- Modify
 			Poster_valid: not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object.generator, poster_routine, id, args, Error_type_info))
+				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object_classname, poster_routine, id, args, Error_type_info))
 		end
 
 feature {NONE} -- Implementation

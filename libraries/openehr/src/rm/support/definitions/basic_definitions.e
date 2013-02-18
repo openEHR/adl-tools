@@ -3,19 +3,16 @@ note
 
 	description: "Definitions of some basic constant values for the openEHR models"
 	keywords:    "definitions"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BASIC_DEFINITIONS
 
 feature -- Definitions
+
+	Any_type: STRING = "Any"
 
 	Regex_any_pattern: STRING = ".*"
 
@@ -24,6 +21,22 @@ feature -- Definitions
 	LF: CHARACTER = '%/012/'
 
 	Default_language: STRING = "en"
+
+	Default_language_code_set: STRING = "ISO_639-1"
+
+	Default_language_code: CODE_PHRASE
+		once
+			create Result.make (Default_language_code_set, Default_language)
+		end
+
+	Default_encoding: STRING = "UTF-8"
+
+	Default_encoding_code_set: STRING = "IANA_RFC2978"
+
+	Default_encoding_code: CODE_PHRASE
+		once
+			create Result.make (Default_encoding_code_set, Default_encoding)
+		end
 
 	UTF8_bom_char_1: CHARACTER = '%/239/'
 	UTF8_bom_char_2: CHARACTER = '%/187/'

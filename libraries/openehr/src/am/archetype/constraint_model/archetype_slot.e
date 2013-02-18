@@ -10,21 +10,17 @@ note
 			     allowed.
 			 ]"
 	keywords:    "archetype, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_SLOT
 
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, default_create, out, enter_subtree, exit_subtree
+			out, enter_subtree, exit_subtree
 		end
 
 create
@@ -32,23 +28,15 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			precursor
-			create includes.make(0)
-			create excludes.make(0)
-		end
-
 	make_identified (a_rm_type_name, an_object_id: attached STRING)
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 			Object_id_valid: not an_object_id.is_empty
 		do
-			default_create
-			create representation.make (an_object_id, Current)
 			rm_type_name := a_rm_type_name
+			create representation_cache.make (an_object_id)
+			representation_cache.set_content (Current)
 		end
 
 	make_anonymous (a_rm_type_name: attached STRING)
@@ -56,20 +44,26 @@ feature -- Initialisation
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 		do
-			default_create
-			create representation.make_anonymous (Current)
 			rm_type_name := a_rm_type_name
+			create representation_cache.make_anonymous
+			representation_cache.set_content (Current)
 		end
 
 feature -- Access
 
-	includes: attached ARRAYED_LIST [ASSERTION]
+	includes: ARRAYED_LIST [ASSERTION]
 			-- list of assertions on archetypes of type 'type_name' defining
 			-- allowed archetypes
+		attribute
+			create Result.make (0)
+		end
 
-	excludes: attached ARRAYED_LIST [ASSERTION]
+	excludes: ARRAYED_LIST [ASSERTION]
 			-- list of assertions on archetypes of type 'type_name' defining
 			-- excluded archetypes
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Status Report
 
@@ -143,7 +137,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_include (assn: attached ASSERTION)
+	add_include (assn: ASSERTION)
 			-- add includes constraint
 		do
 			includes.extend (assn)
@@ -151,7 +145,7 @@ feature -- Modification
 			includes.has(assn)
 		end
 
-	add_exclude (assn: attached ASSERTION)
+	add_exclude (assn: ASSERTION)
 			-- add excludes constraint
 		do
 			excludes.extend (assn)
@@ -159,13 +153,13 @@ feature -- Modification
 			excludes.has(assn)
 		end
 
-	set_includes (assn_list: attached ARRAYED_LIST[ASSERTION])
+	set_includes (assn_list: ARRAYED_LIST[ASSERTION])
 			-- set includes constraints
 		do
 			includes := assn_list
 		end
 
-	set_excludes (assn_list: attached ARRAYED_LIST[ASSERTION])
+	set_excludes (assn_list: ARRAYED_LIST[ASSERTION])
 			-- set excludes constraints
 		do
 			excludes := assn_list
@@ -188,10 +182,6 @@ feature -- Output
 				Result.append (occurrences.as_string)
 			end
 		end
-
-feature -- Representation
-
-	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 

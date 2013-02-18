@@ -67,9 +67,9 @@ feature -- Access
 		local
 			og_path: OG_PATH
 		do
-			if attached slot_node_id then
+			if attached slot_node_id as snid then
 				og_path := representation.path
-				og_path.last.set_object_id (slot_node_id)
+				og_path.last.set_object_id (snid)
 				Result := og_path.as_string
 			else
 				Result := path
@@ -83,29 +83,29 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append (rm_type_name + "[")
-			if attached slot_node_id then
-				Result.append (slot_node_id + ", ")
+			if attached slot_node_id as snid then
+				Result.append (snid + ", ")
 			end
 			if is_addressable then
 				Result.append (archetype_id + ", ")
 			end
-			if attached occurrences then
-				Result.append (occurrences.as_string)
+			if attached occurrences as occ then
+				Result.append (occ.as_string)
 			end
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			visitor.start_c_archetype_root(Current, depth)
+			visitor.start_c_archetype_root (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			visitor.end_c_archetype_root(Current, depth)
+			visitor.end_c_archetype_root (Current, depth)
 		end
 
 invariant

@@ -19,30 +19,39 @@ note
 				 >
 				 ]"
 	keywords:    "test, dADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
 
 class REPOSITORY_PROFILE_CONFIG
 
 inherit
 	DT_CONVERTIBLE
+		redefine
+			default_create
+		end
 
 	TABLE_ITERABLE [REPOSITORY_PROFILE, STRING]
+		undefine
+			default_create
+		end
 
 create
 	make, default_create
 
 feature -- Initialisation
 
+	default_create
+			-- Basic make routine to guarantee validity on creation.
+		do
+			create profiles.make (0)
+		end
+
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- Basic make routine to guarantee validity on creation.
 		do
+			default_create
 		end
 
 	make (a_profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING])
@@ -59,13 +68,20 @@ feature -- Access
 			-- name of profile that is currently in use
 
 	current_profile: detachable REPOSITORY_PROFILE
+			-- return current profile object, if `current_profile_name' set and corresponds to
+			-- a profile, else return first profile available, if any exist.
+		local
+			curr_prof_name: STRING
 		do
 			if not is_empty then
-				if not has_profile (current_profile_name) then
+				if attached current_profile_name as cpn and then has_profile (cpn) then
+					Result := profile (cpn)
+				else
 					profiles.start
-					current_profile_name := profiles.key_for_iteration
+					curr_prof_name := profiles.key_for_iteration
+					current_profile_name := curr_prof_name
+					Result := profile (curr_prof_name)
 				end
-				Result := profile (current_profile_name)
 			end
 		end
 
@@ -73,14 +89,16 @@ feature -- Access
 		require
 			has_profile (a_profile_name)
 		do
-			Result := profiles.item (a_profile_name)
+			check attached profiles.item (a_profile_name) as prof then
+				Result := prof
+			end
 		end
 
 	current_reference_repository_path: STRING
 			-- path of root of ADL file tree
 		do
-			if has_current_profile then
-				Result := current_profile.reference_repository
+			if attached current_profile as cp then
+				Result := cp.reference_repository
 			else
 				create Result.make_empty
 			end
@@ -89,8 +107,8 @@ feature -- Access
 	current_work_repository_path: STRING
 			-- path of root of ADL file tree
 		do
-			if has_current_profile and then current_profile.has_work_repository then
-				Result := current_profile.work_repository
+			if attached current_profile as cp and then attached cp.work_repository as wp then
+				Result := wp
 			else
 				create Result.make_empty
 			end
@@ -166,7 +184,7 @@ feature -- Modification
 			has_profile (a_profile_name)
 		do
 			profiles.remove (a_profile_name)
-			if is_empty or (has_current_profile and then a_profile_name.same_string (current_profile_name)) then
+			if is_empty or (attached current_profile_name as cpn and then a_profile_name.same_string (cpn)) then
 				clear_current_profile
 			end
 		end
@@ -211,20 +229,16 @@ feature -- Modification
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING]
+	persistent_attributes: detachable ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
-			create Result.make (0)
 		end
 
 feature {NONE} -- Implementation
 
 	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
 			-- Hash table of profiles, keyed by their names.
-		attribute
-			create Result.make (0)
-		end
 
 invariant
 -- FIXME: This is commented because we cannot satisfy the invariant immediately after creation via DT_OBJECT_CONVERTER:

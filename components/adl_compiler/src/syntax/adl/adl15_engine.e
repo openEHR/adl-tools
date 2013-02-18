@@ -44,23 +44,19 @@ feature {NONE} -- Initialisation
 			create invariant_context.make
 			create ontology_context.make
 			create annotations_context.make
-
-			create phase_1_validator
-			create phase_2_validator
-			create phase_3_validator
-
-			create post_parse_processor
-			create post_compile_processor
 		end
 
 feature -- Access
 
 	errors: ERROR_ACCUMULATOR
 			-- errors of last parse
+		attribute
+			create Result.make
+		end
 
 feature -- Parsing
 
-	parse_differential (a_text: STRING; an_rm_schema: BMM_SCHEMA): DIFFERENTIAL_ARCHETYPE
+	parse_differential (a_text: STRING; an_rm_schema: BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
@@ -69,7 +65,7 @@ feature -- Parsing
 			end
 		end
 
-	parse_legacy_flat (a_text: STRING; an_rm_schema: BMM_SCHEMA): FLAT_ARCHETYPE
+	parse_legacy_flat (a_text: STRING; an_rm_schema: BMM_SCHEMA): detachable FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
@@ -80,43 +76,83 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	post_parse_process (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		local
+			proc: AOM_POST_PARSE_PROCESSOR
 		do
-			post_parse_processor.initialise (ara, an_rm_schema)
-			post_parse_processor.execute
+			if attached post_parse_processor as pcp then
+				proc := pcp
+				proc.initialise (aca, an_rm_schema)
+			else
+				create proc.initialise (aca, an_rm_schema)
+				post_parse_processor := proc
+			end
+			proc.execute
 		end
 
-	phase_1_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	phase_1_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		local
+			proc: ARCHETYPE_PHASE_1_VALIDATOR
 		do
 			validation_passed := False
-			phase_1_validator.initialise (ara, an_rm_schema)
-			phase_1_validator.validate
-			validation_passed := phase_1_validator.passed
-			errors := phase_1_validator.errors
+			if attached phase_1_validator as pv then
+				proc := pv
+				proc.initialise (aca, an_rm_schema)
+			else
+				create proc.initialise (aca, an_rm_schema)
+				phase_1_validator := proc
+			end
+			proc.validate
+			validation_passed := proc.passed
+			errors := proc.errors
 		end
 
-	phase_2_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	phase_2_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		local
+			proc: ARCHETYPE_PHASE_2_VALIDATOR
 		do
 			validation_passed := False
-			phase_2_validator.initialise (ara, an_rm_schema)
-			phase_2_validator.validate
-			validation_passed := phase_2_validator.passed
-			errors := phase_2_validator.errors
+			if attached phase_2_validator as pv then
+				proc := pv
+				proc.initialise (aca, an_rm_schema)
+			else
+				create proc.initialise (aca, an_rm_schema)
+				phase_2_validator := proc
+			end
+			proc.validate
+			validation_passed := proc.passed
+			errors := proc.errors
 		end
 
-	phase_3_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	phase_3_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		local
+			proc: ARCHETYPE_PHASE_3_VALIDATOR
 		do
 			validation_passed := False
-			phase_3_validator.initialise (ara, an_rm_schema)
-			phase_3_validator.validate
-			validation_passed := phase_3_validator.passed
-			errors := phase_3_validator.errors
+			if attached phase_3_validator as pv then
+				proc := pv
+				proc.initialise (aca, an_rm_schema)
+			else
+				create proc.initialise (aca, an_rm_schema)
+				phase_3_validator := proc
+			end
+			proc.validate
+			validation_passed := proc.passed
+			errors := proc.errors
 		end
 
-	post_compile_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	post_compile_process (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		local
+			proc: AOM_POST_COMPILE_PROCESSOR
 		do
-			post_compile_processor.initialise (ara, an_rm_schema)
-			post_compile_processor.execute
+			if attached post_compile_processor as pcp then
+				proc := pcp
+				proc.initialise (aca, an_rm_schema)
+			else
+				create proc.initialise (aca, an_rm_schema)
+				post_compile_processor := proc
+			end
+			proc.execute
 		end
 
 	validation_passed: BOOLEAN
@@ -130,9 +166,8 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
-			ont_serialised, comp_onts_serialised: STRING
+			comp_onts_serialised: detachable STRING
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
-			dt_ont: DT_COMPLEX_OBJECT_NODE
 			generate_adl14_ontology: BOOLEAN
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
@@ -160,7 +195,7 @@ feature -- Serialisation
 			end
 
 			-- ontology section
-			dt_ont := an_archetype.ontology.dt_representation
+			check attached an_archetype.ontology.dt_representation as dt_ont then
 
 	-- this is a hack which causes ontology section to be output as dADL with the 'items' attributes
 	-- rather than the native nested structure
@@ -168,15 +203,14 @@ feature -- Serialisation
 		convert_ontology_to_unnested (dt_ont)
 	end
 
-			ontology_context.set_tree (dt_ont)
-			ontology_context.serialise (a_format, False, False)
+				ontology_context.set_tree (dt_ont)
+				ontology_context.serialise (a_format, False, False)
 
 	-- and this puts the in-memory structure back to native form so things work correctly from here
 	if generate_adl14_ontology then
 		convert_ontology_to_nested (dt_ont)
 	end
-
-			ont_serialised := ontology_context.serialised
+			end
 
 			-- OPT only: component_ontologies section
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
@@ -194,27 +228,28 @@ feature -- Serialisation
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
-			serialiser := archetype_native_serialiser_for_format (a_format)
+			check attached archetype_native_serialiser_for_format (a_format) as ser then
+				serialiser := ser
+			end
 			serialiser.reset
-			serialiser.serialise_from_parts (an_archetype,
-				language_context.serialised, description_context.serialised, definition_context.serialised,
-				invariant_context.serialised, ont_serialised, annotations_context.serialised, comp_onts_serialised)
+			serialiser.serialise_from_parts (an_archetype, language_context.serialised, description_context.serialised, definition_context.serialised,
+				invariant_context.serialised, ontology_context.serialised, annotations_context.serialised, comp_onts_serialised)
 
 			Result := serialiser.last_result
 		end
 
 feature {NONE} -- Implementation
 
-	parse (a_text: STRING; is_legacy_flat: BOOLEAN): ARCHETYPE
+	parse (a_text: STRING; is_legacy_flat: BOOLEAN): detachable ARCHETYPE
 			-- parse text as either a differential source archetype or template, or else a legacy flat. If successful, `archetype' contains the parse
 			-- structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
-			orig_lang_trans: LANGUAGE_TRANSLATIONS
+			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
 		do
 			create adl_parser.make
-			adl_parser.execute(a_text)
+			adl_parser.execute (a_text)
 
 			create errors.make
 
@@ -224,34 +259,36 @@ feature {NONE} -- Implementation
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				language_context.set_source (adl_parser.language_text, adl_parser.language_text_start_line)
+				check attached adl_parser.language_text as lt then
+					language_context.set_source (lt, adl_parser.language_text_start_line)
+				end
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
-				elseif not attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
-					or object_converter.errors.has_errors
+				elseif not object_converter.errors.has_errors and
+					attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
 				then
+					orig_lang_trans := lt
+				else
 					errors.add_error ("deserialise_e1", <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
 					errors.append (object_converter.errors)
-				else
-					orig_lang_trans := lt
 				end
 
 				------------------- description section (optional) ---------------
 				-- parse AUTHORED_RESOURCE.description
 				if not errors.has_errors then
-					if attached adl_parser.description_text and then not adl_parser.description_text.is_empty then
-						description_context.set_source (adl_parser.description_text, adl_parser.description_text_start_line)
+					if attached adl_parser.description_text as dt and then not dt.is_empty then
+						description_context.set_source (dt, adl_parser.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
-						elseif not attached {RESOURCE_DESCRIPTION} description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
-							or object_converter.errors.has_errors
+						elseif not object_converter.errors.has_errors and
+							attached {RESOURCE_DESCRIPTION} description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
 						then
+							res_desc := rd
+						else
 							errors.add_error ("deserialise_e1", <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
 							errors.append (object_converter.errors)
-						else
-							res_desc := rd
 						end
 					else
 						description_context.reset
@@ -261,7 +298,9 @@ feature {NONE} -- Implementation
 				------------------- definition section (mandatory) ---------------
 				-- parse ARCHETYPE.definition
 				if not errors.has_errors then
-					definition_context.set_source (adl_parser.definition_text, adl_parser.definition_text_start_line, not is_legacy_flat, rm_schema)
+					check attached adl_parser.definition_text as def_text then
+						definition_context.set_source (def_text, adl_parser.definition_text_start_line, not is_legacy_flat, rm_schema)
+					end
 					definition_context.parse
 					if not definition_context.parse_succeeded then
 						errors.append (definition_context.errors)
@@ -271,8 +310,8 @@ feature {NONE} -- Implementation
 				------------------- invariant section (optional) ---------------
 				-- parse ARCHETYPE.invariants
 				if not errors.has_errors then
-					if attached adl_parser.invariant_text and then not adl_parser.invariant_text.is_empty then
-						invariant_context.set_source (adl_parser.invariant_text, adl_parser.invariant_text_start_line, not is_legacy_flat, rm_schema)
+					if attached adl_parser.invariant_text as inv_text and then not inv_text.is_empty then
+						invariant_context.set_source (inv_text, adl_parser.invariant_text_start_line, not is_legacy_flat, rm_schema)
 						invariant_context.parse
 						if not invariant_context.parse_succeeded then
 							errors.append (invariant_context.errors)
@@ -285,7 +324,9 @@ feature {NONE} -- Implementation
 				------------------- ontology section (mandatory) ---------------
 				-- parse ARCHETYPE.ontology
 				if not errors.has_errors then
-					ontology_context.set_source (adl_parser.ontology_text, adl_parser.ontology_text_start_line)
+					check attached adl_parser.ontology_text as ont_text then
+						ontology_context.set_source (ont_text, adl_parser.ontology_text_start_line)
+					end
 					ontology_context.parse
 					if not ontology_context.parse_succeeded then
 						errors.append (ontology_context.errors)
@@ -295,18 +336,18 @@ feature {NONE} -- Implementation
 				------------------- annotations section (optional) ---------------
 				-- parse AUTHORED_RESOURCE.annotations
 				if not errors.has_errors then
-					if attached adl_parser.annotations_text and then not adl_parser.annotations_text.is_empty then
-						annotations_context.set_source (adl_parser.annotations_text, adl_parser.annotations_text_start_line)
+					if attached adl_parser.annotations_text as annot_text and then not annot_text.is_empty then
+						annotations_context.set_source (annot_text, adl_parser.annotations_text_start_line)
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
-						elseif not attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann
-							or object_converter.errors.has_errors
+						elseif not object_converter.errors.has_errors and
+							attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann
 						then
+							annots := res_ann
+						else
 							errors.add_error ("deserialise_e1", <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
 							errors.append (object_converter.errors)
-						else
-							annots := res_ann
 						end
 					else
 						annotations_context.reset
@@ -315,19 +356,23 @@ feature {NONE} -- Implementation
 
 				------------------- build the archetype --------------					
 				if not errors.has_errors then
-					if attached {C_COMPLEX_OBJECT} definition_context.tree as definition and attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
+					if attached definition_context.tree as definition and
+						attached adl_parser.archetype_id as id and
+						attached adl_parser.artefact_type as art_type and
+						attached ontology_context.tree as ont_tree
+					then
 						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
-						convert_ontology_to_nested (ontology_context.tree)  -- perform any version upgrade conversions
+						convert_ontology_to_nested (ont_tree)  -- perform any version upgrade conversions
 
 						if is_legacy_flat then
-							if attached orig_lang_trans and then attached {FLAT_ARCHETYPE_ONTOLOGY}
-								ontology_context.tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>) as flat_ont
+							if attached orig_lang_trans as olt and then attached {FLAT_ARCHETYPE_ONTOLOGY}
+								ont_tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_ont
 								and not object_converter.errors.has_errors
 							then
 								create {FLAT_ARCHETYPE} Result.make (
-									adl_parser.artefact_type,
+									art_type,
 									id,
-									orig_lang_trans.original_language,
+									olt.original_language,
 									res_desc,	-- may be Void
 									definition,
 									flat_ont
@@ -337,14 +382,14 @@ feature {NONE} -- Implementation
 								errors.append (object_converter.errors)
 							end
 						else
-							if attached orig_lang_trans and then attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY}
-								ontology_context.tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>) as diff_ont
+							if attached orig_lang_trans as olt and then attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY}
+								ont_tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_ont
 								and not object_converter.errors.has_errors
 							then
 								create {DIFFERENTIAL_ARCHETYPE} Result.make (
-									adl_parser.artefact_type,
+									art_type,
 									id,
-									orig_lang_trans.original_language,
+									olt.original_language,
 									res_desc,	-- may be Void
 									definition,
 									diff_ont
@@ -355,39 +400,39 @@ feature {NONE} -- Implementation
 							end
 						end
 
-						if attached Result then
+						if attached Result as new_arch then
 							-- add optional parts
 							if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
-								Result.set_parent_archetype_id (parent_id)
+								new_arch.set_parent_archetype_id (parent_id)
 							end
 
-							if attached adl_parser.adl_version then
-								Result.set_adl_version (adl_parser.adl_version)
+							if attached adl_parser.adl_version as adl_av then
+								new_arch.set_adl_version (adl_av)
 							else
-								Result.set_adl_version (latest_adl_version)
+								new_arch.set_adl_version (latest_adl_version)
 							end
 
 							if adl_parser.is_controlled then
-								Result.set_is_controlled
+								new_arch.set_is_controlled
 							end
 
 							if adl_parser.is_generated then
-								Result.set_is_generated
+								new_arch.set_is_generated
 							end
 
-							if orig_lang_trans.translations /= Void then
-								Result.set_translations (orig_lang_trans.translations)
+							if attached orig_lang_trans.translations as olt_trans then
+								new_arch.set_translations (olt_trans)
 							end
 
-							if invariant_context.tree /= Void then
-								Result.set_invariants (invariant_context.tree)
+							if attached invariant_context.tree as inv_tree then
+								new_arch.set_invariants (inv_tree)
 							end
 
-							if attached annots then
-								Result.set_annotations (annots)
+							if attached annots as a then
+								new_arch.set_annotations (a)
 							end
 
-							Result.rebuild
+							new_arch.rebuild
 						end
 					end
 				end
@@ -395,6 +440,9 @@ feature {NONE} -- Implementation
 		end
 
 	adl_parser: ADL_VALIDATOR
+		attribute
+			create Result.make
+		end
 
 	language_context: DADL_ENGINE
 
@@ -408,17 +456,40 @@ feature {NONE} -- Implementation
 
 	annotations_context: DADL_ENGINE
 
-	post_parse_processor: AOM_POST_PARSE_PROCESSOR
+	post_parse_processor: detachable AOM_POST_PARSE_PROCESSOR
+		note
+			option: stable
+		attribute
+		end
 
-	phase_1_validator: ARCHETYPE_PHASE_1_VALIDATOR
+	phase_1_validator: detachable ARCHETYPE_PHASE_1_VALIDATOR
+		note
+			option: stable
+		attribute
+		end
 
-	phase_2_validator: ARCHETYPE_PHASE_2_VALIDATOR
+	phase_2_validator: detachable ARCHETYPE_PHASE_2_VALIDATOR
+		note
+			option: stable
+		attribute
+		end
 
-	phase_3_validator: ARCHETYPE_PHASE_3_VALIDATOR
+	phase_3_validator: detachable ARCHETYPE_PHASE_3_VALIDATOR
+		note
+			option: stable
+		attribute
+		end
 
-	post_compile_processor: AOM_POST_COMPILE_PROCESSOR
+	post_compile_processor: detachable AOM_POST_COMPILE_PROCESSOR
+		note
+			option: stable
+		attribute
+		end
 
-	rm_schema: detachable BMM_SCHEMA
+	rm_schema: BMM_SCHEMA
+		attribute
+			create Result.make (unknown_value, unknown_value, unknown_value)
+		end
 
 	original_language_and_translations_from_ontology (ontology: ARCHETYPE_ONTOLOGY): LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `ontology'.

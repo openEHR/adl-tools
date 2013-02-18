@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared access to service interface to object model"
 	keywords:    "ADL, archetype, reference model"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class SHARED_REFERENCE_MODEL_ACCESS
 
@@ -19,6 +14,20 @@ feature -- Access
 	rm_schemas_access: REFERENCE_MODEL_ACCESS
 		once
 			create Result.make
+		end
+
+	rm_schema_for_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
+		require
+			has_rm_schema_for_id (an_id)
+		do
+			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
+		end
+
+feature -- Validation
+
+	has_rm_schema_for_id (an_id: ARCHETYPE_ID): BOOLEAN
+		do
+			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
 		end
 
 end

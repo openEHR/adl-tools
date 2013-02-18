@@ -2,21 +2,17 @@ note
 	component:   "openEHR Archetype Project"
 	description: "leaf OBJECT item in a dADL parse tree"
 	keywords:    "data tree, serialisation, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DT_OBJECT_LEAF
 
 inherit
 	DT_OBJECT_ITEM
 		redefine
-			representation, default_create
+			representation
 		end
 
 feature -- Initialisation
@@ -25,26 +21,20 @@ feature -- Initialisation
 		require
 			Node_id_valid: not a_node_id.is_empty
 		do
-			default_create
-			create representation.make (a_node_id, Current)
+			create representation.make (a_node_id)
 			set_value (a_value)
+			representation.set_content (Current)
 		ensure
 			is_addressable
 		end
 
 	make_anonymous (a_value: like value)
 		do
-			default_create
-			create representation.make_anonymous (Current)
+			create representation.make_anonymous
 			set_value (a_value)
+			representation.set_content (Current)
 		ensure
 			not is_addressable
-		end
-
-	default_create
-			-- create with unknown type
-		do
-			im_type_name := Unknown_type_name.twin
 		end
 
 feature -- Access
@@ -72,8 +62,6 @@ feature -- Modification
 
 	set_value (a_value: like value)
 		deferred
-		ensure
-			Value_set: value = a_value
 		end
 
 feature -- Output

@@ -83,7 +83,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 
 feature -- Access
 
-	ontology: attached FLAT_ARCHETYPE_ONTOLOGY
+	ontology: FLAT_ARCHETYPE_ONTOLOGY
 
 feature -- Factory
 
@@ -95,40 +95,40 @@ feature -- Factory
 		local
 			def_it: C_ITERATOR
 		do
-			if not is_specialised then
+--			if not is_specialised then
 				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
 					is_controlled, original_language, translations, description, definition, invariants,
 					ontology.to_differential, annotations)
-			else
-				-- ======= deal with main archetype =======
+--			else
+--				-- ======= deal with main archetype =======
 
-				-- ======= description =======
+--				-- ======= description =======
 
-				-- ======= definition =========
-				create diff_added_obj_nodes.make (0)
-				create diff_added_attr_nodes.make (0)
-				create diff_redefined_obj_nodes.make (0)
-				create diff_redefined_attr_nodes.make (0)
-				create diff_redefined_id_nodes.make (0)
-				create def_it.make (definition)
+--				-- ======= definition =========
+--				create diff_added_obj_nodes.make (0)
+--				create diff_added_attr_nodes.make (0)
+--				create diff_redefined_obj_nodes.make (0)
+--				create diff_redefined_attr_nodes.make (0)
+--				create diff_redefined_id_nodes.make (0)
+--				create def_it.make (definition)
 
-				-- extract the added nodes first
-				def_it.do_at_surface (agent node_diff_extract_additions,
-					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status = ss_added end
-				)
+--				-- extract the added nodes first
+--				def_it.do_at_surface (agent node_diff_extract_additions,
+--					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status = ss_added end
+--				)
 
-				-- now find redefined nodes
-				def_it.do_until_surface (agent node_diff_extract_redefinitions,
-					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status /= ss_added end
-				)
+--				-- now find redefined nodes
+--				def_it.do_until_surface (agent node_diff_extract_redefinitions,
+--					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status /= ss_added end
+--				)
 
-				-- ======= rules section =======
+--				-- ======= rules section =======
 
-				-- ======= ontology =======
+--				-- ======= ontology =======
 
-				-- ======= annotations =======
+--				-- ======= annotations =======
 
-			end
+--			end
 		end
 
 	node_diff_extract_additions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -173,26 +173,26 @@ feature -- Factory
 			end
 		end
 
-	diff_added_obj_nodes: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+	diff_added_obj_nodes: detachable HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
 
-	diff_added_attr_nodes: HASH_TABLE [ARRAYED_LIST [C_ATTRIBUTE], STRING]
+	diff_added_attr_nodes: detachable HASH_TABLE [ARRAYED_LIST [C_ATTRIBUTE], STRING]
 
-	diff_redefined_obj_nodes: HASH_TABLE [C_OBJECT, STRING]
+	diff_redefined_obj_nodes: detachable HASH_TABLE [C_OBJECT, STRING]
 
-	diff_redefined_attr_nodes: HASH_TABLE [C_ATTRIBUTE, STRING]
+	diff_redefined_attr_nodes: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
 
-	diff_redefined_id_nodes: HASH_TABLE [STRING, STRING]
+	diff_redefined_id_nodes: detachable HASH_TABLE [STRING, STRING]
 			-- table of redefined node_id keyed by path; these correspond to C_OBJECT nodes whose
 			-- only redefinition was in the id, and which appeared in the orginal differential in
 			-- compressed paths
 
-	diff_nodes: HASH_TABLE [C_ATTRIBUTE, STRING]
+	diff_nodes: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
 			-- table of C_ATTRIBUTEs keyed by path, each is one of:
 			--	* redefined - changed cardinality is only possible change
 			-- 	* added new, with child C_OBJECTs
 			--	* compressed path C_ATTRIBUTEs, containing added/redefined C_OBJECTs
 
-	debug_node_diff_enter (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	debug_node_diff_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			s: STRING
 			ss: INTEGER
@@ -210,14 +210,16 @@ feature -- Factory
 				s.append (ca.rm_attribute_name)
 			end
 
-			s.append_character (' ')
-			s.append (specialisation_status_symbols.item (ss))
+			if attached specialisation_status_symbols.item (ss) as spec_sym then
+				s.append_character (' ')
+				s.append (spec_sym)
+			end
 
 			s.append_character ('%N')
 			io.put_string (s)
 		end
 
-	node_diff_exit (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	node_diff_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		do
 		end
 

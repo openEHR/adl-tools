@@ -7,14 +7,15 @@ note
 	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class AUTHORED_RESOURCE
 
 inherit
 	SHARED_TERMINOLOGY_SERVICE
+		export
+			{NONE} all
+		end
+
+	BASIC_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -48,17 +49,17 @@ feature -- Access
 			-- is no language primacy of resources overall, the language of original
 			-- authoring is required to ensure natural language translations can preserve
 			-- quality. Language is relevant in both the description and ontology sections.
+		attribute
+			Result := Default_language_code
+		end
 
 	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			-- List of details for each natural translation made of this resource, keyed by
 			-- language tag. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
 
-	description: RESOURCE_DESCRIPTION
+	description: detachable RESOURCE_DESCRIPTION
 			-- Description and lifecycle information of the resource.
-		attribute
-			create Result.default_create
-		end
 
 	revision_history: detachable REVISION_HISTORY
 			-- The revision history of the resource. Only required if is_controlled = True
@@ -220,7 +221,9 @@ feature -- Modification
 			Lang_tag_not_already_present: not has_language(a_lang_tag)
 		do
 			add_default_translation (a_lang_tag)
-			description.add_language (a_lang_tag)
+			if attached description as desc then
+				desc.add_language (a_lang_tag)
+			end
 			languages_available_cache.wipe_out
 		ensure
 			has_language(a_lang_tag)
@@ -288,7 +291,9 @@ feature {ADL15_ENGINE} -- Implementation
 				orig_lang_translations.set_translations (tr)
 			end
 			orig_lang_translations.synchronise_to_tree
-			description.synchronise_to_tree
+			if attached description as desc then
+				desc.synchronise_to_tree
+			end
 			if attached annotations as ann then
 				ann.synchronise_to_tree
 			end

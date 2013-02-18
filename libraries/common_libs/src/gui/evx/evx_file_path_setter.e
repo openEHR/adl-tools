@@ -21,11 +21,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_FILE_PATH_SETTER
 
 inherit
@@ -73,12 +68,16 @@ feature -- Initialisation
 
 feature -- Access
 
-	ev_browse_button: EV_BUTTON
+	ev_browse_button: detachable EV_BUTTON
+		note
+			option: stable
+		attribute
+		end
 
-	file_path: STRING
+	file_path: detachable STRING
 			-- file path only, with any options removed
 
-	options: STRING
+	options: detachable STRING
 			-- any options from original data_source string
 
 feature -- Events
@@ -107,10 +106,14 @@ feature -- Events
 			end
 
 			-- do the browse
-			ev_data_control.set_text (get_file (file_path, proximate_ev_window (ev_root_container)))
+			check attached proximate_ev_window (ev_root_container) as pw then
+				ev_data_control.set_text (get_file (file_path, pw))
+			end
 
 			-- add back in options
-			ev_data_control.set_text (ev_data_control.text + options)
+			if attached options as o then
+				ev_data_control.set_text (ev_data_control.text + o)
+			end
 		end
 
 feature {NONE} -- Implmentation
@@ -122,6 +125,7 @@ feature {NONE} -- Implmentation
 			a_file: RAW_FILE
 			error_dialog: EV_INFORMATION_DIALOG
 			init_dirname, default_result: STRING
+			user_file: detachable STRING
 		do
 			create dialog
 
@@ -135,15 +139,15 @@ feature {NONE} -- Implmentation
 				create default_result.make_empty
 			end
 
-			from until attached Result loop
+			from until attached user_file loop
 				dialog.show_modal_to_window (a_parent_window)
-				if dialog.selected_button = Void or else dialog.selected_button.is_equal (get_text ("cancel_button_text")) then
-					Result := default_result
+				if not attached dialog.selected_button or else dialog.selected_button_name.is_equal (dialog_names.ev_cancel) then
+					user_file := default_result
 				else
 					if not dialog.file_name.is_empty then
 						create a_file.make (dialog.file_name.to_string_8)
 						if a_file.exists then
-							Result := a_file.name
+							user_file := a_file.name
 						else
 							create error_dialog.make_with_text (get_msg ("file_does_not_exist",  <<dialog.file_name>>))
 							error_dialog.show_modal_to_window (a_parent_window)
@@ -154,6 +158,7 @@ feature {NONE} -- Implmentation
 					end
 				end
 			end
+			Result := user_file
 		end
 
 	initialise_browse_button

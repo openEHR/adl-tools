@@ -1,24 +1,16 @@
 note
 	component:   "openEHR re-usable library"
 	description: "Abstraction of a package as a tree structure whose nodes can contain "
-	keywords:    "model, UML"
-
+	keywords:    "basic meta-model"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class P_BMM_PACKAGE_DEFINITION
 
 inherit
 	P_BMM_PACKAGE_CONTAINER
-		rename
-			make as make_package_container
-		end
 
 	BMM_DEFINITIONS
 		export
@@ -38,19 +30,16 @@ feature -- Initialisation
 	make (a_name: STRING)
 			-- make in a safe way for DT building purposes
 		do
-			make_package_container
 			name := a_name
-			create classes.make (0)
-			classes.compare_objects
 		end
 
 	make_dt (make_args: ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		do
-			make ("")
+			make (unknown_package_name)
 		end
 
-	make_from_other (other_pkg: attached P_BMM_PACKAGE_DEFINITION)
+	make_from_other (other_pkg: P_BMM_PACKAGE_DEFINITION)
 			-- make this package with `packages' and `classes' references to those parts of `other_pkg'
 			-- but keeping its own name.
 		do
@@ -60,18 +49,25 @@ feature -- Initialisation
 
 feature -- Access (attributes from schema)
 
-	name: attached STRING
+	name: STRING
 			-- name of the package FROM SCHEMA; this name may be qualified if it is a top-level
 			-- package within the schema, or unqualified.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (unknown_package_name)
+		end
 
 	classes: ARRAYED_SET [STRING]
 			-- list of classes in this package
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
 feature -- Access
 
-	bmm_package_definition: BMM_PACKAGE_DEFINITION
+	bmm_package_definition: detachable BMM_PACKAGE_DEFINITION
 		note
 			option: transient
 		attribute
@@ -109,11 +105,16 @@ feature -- Factory
 
 	create_bmm_package_definition
 			-- generate a BMM_PACKAGE_DEFINITION object
+		local
+			new_bmm_package_definition: BMM_PACKAGE_DEFINITION
 		do
-			create bmm_package_definition.make (name)
+			create new_bmm_package_definition.make (name)
+			bmm_package_definition := new_bmm_package_definition
 			across packages as pkgs_csr loop
 				pkgs_csr.item.create_bmm_package_definition
-				bmm_package_definition.add_package (pkgs_csr.item.bmm_package_definition)
+				if attached pkgs_csr.item.bmm_package_definition as pkg_bmm_pkg_def then
+					new_bmm_package_definition.add_package (pkg_bmm_pkg_def)
+				end
 			end
 		end
 
@@ -125,7 +126,7 @@ feature {DT_OBJECT_CONVERTER} -- Finalisation
 		local
 			classes_copy: ARRAYED_SET [STRING]
 		do
-			if attached classes then
+			if not classes.object_comparison then
 				create classes_copy.make (0)
 				classes_copy.compare_objects
 				across classes as classes_csr loop
@@ -139,7 +140,7 @@ feature {DT_OBJECT_CONVERTER} -- Finalisation
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST [STRING]
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do

@@ -2,56 +2,52 @@ note
 	component:   "openEHR re-usable library"
 	description: "Abstraction of a package as a tree structure whose nodes can contain "
 	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_PACKAGE_DEFINITION
 
 inherit
 	BMM_PACKAGE_CONTAINER
-		rename
-			make as make_package_container
-		end
 
 create
 	make
 
 feature -- Initialisation
 
-	make (a_name: attached STRING)
+	make (a_name: STRING)
 		do
 			name := a_name
-			make_package_container
-			create classes.make(0)
 		end
 
 feature -- Access
 
-	bmm_schema: BMM_SCHEMA
+	bmm_schema: detachable BMM_SCHEMA
 			-- reverse reference to parent schema
 
-	name: attached STRING
+	name: STRING
 			-- name of the package FROM SCHEMA; this name may be qualified if it is a top-level
 			-- package within the schema, or unqualified.
 
 	classes: ARRAYED_SET [BMM_CLASS_DEFINITION]
+		attribute
+			create Result.make (0)
+		end
 
-	globally_qualified_path: attached STRING
+	globally_qualified_path: STRING
 			-- fully qualified package name prepended with schema name, of form: 'schema_name::package.package.CLASS'
 			-- to enable identification in situation when a given package has been imported into more than
 			-- one schema.
 		do
-			Result := bmm_schema.schema_id + schema_name_delimiter + path
+			create Result.make_empty
+			if attached bmm_schema as sch then
+				Result.append (sch.schema_id + schema_name_delimiter + path)
+			end
 		end
 
-	path: attached STRING
+	path: STRING
 			-- full path of this package from root
 		local
 			csr: detachable BMM_PACKAGE_DEFINITION
@@ -66,7 +62,7 @@ feature -- Access
 			end
 		end
 
-	parent: BMM_PACKAGE_DEFINITION
+	parent: detachable BMM_PACKAGE_DEFINITION
 			-- parent package
 
 	root_classes: ARRAYED_SET [BMM_CLASS_DEFINITION]
@@ -109,7 +105,7 @@ feature {BMM_PACKAGE_CONTAINER} -- Modification
 			Parent_set: a_class.package = Current
 		end
 
-	set_parent (a_pkg: attached BMM_PACKAGE_DEFINITION)
+	set_parent (a_pkg: BMM_PACKAGE_DEFINITION)
 		do
 			parent := a_pkg
 		ensure
@@ -129,9 +125,8 @@ feature -- Iteration
 			if test.item ([Current]) then
 				action.call ([Current])
 			else
-				from packages.start until packages.off loop
-					packages.item_for_iteration.do_until_surface_recursive_packages (test, action)
-					packages.forth
+				across packages as packages_csr loop
+					packages_csr.item.do_until_surface_recursive_packages (test, action)
 				end
 			end
 		end

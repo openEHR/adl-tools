@@ -2,10 +2,9 @@ note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared access to application-wide configuration settings for any Eiffel app, stored in a config file."
 	keywords:    "config, resources"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2012 openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2003- openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 class SHARED_RESOURCES
@@ -42,8 +41,11 @@ feature -- Definitions
 			-- own .cfg file, with essentially the same information (configured directories etc).
 			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
 		do
-			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
-			Result := file_system.pathname (Result, Default_application_name)
+			if attached execution_environment.home_directory_name as hd then
+				Result := file_system.pathname (file_system.pathname (hd, application_developer_name), Default_application_name)
+			else
+				Result := file_system.current_working_directory
+			end
 		end
 
 	Default_user_config_file_path: STRING
@@ -116,15 +118,16 @@ feature -- Environment
 			-- UNIX only
 		once
 			create Result.make(0)
-			Result.append(execution_environment.root_directory_name + "etc")
+			Result.append (execution_environment.root_directory_name + "etc")
 		end
 
 	user_config_file_directory: STRING
 			-- OS-specific place for user config file(s) for this application.
 			-- Follows the model home_path/app_vendor/app_name.
 		do
-			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
-			Result := file_system.pathname (Result, extension_removed (application_name))
+			check attached execution_environment.home_directory_name as hd then
+				Result := file_system.pathname (file_system.pathname (hd, application_developer_name), extension_removed (application_name))
+			end
 		end
 
 	user_config_file_path: STRING
@@ -137,15 +140,17 @@ feature -- Environment
 			-- Standard place for temporary files.
 			-- By default /tmp on unix-like systems and C:\Temp on windows-like systems.
 			-- Windows would normally be "C:\Documents and Settings\(user)\Local Settings\Temp".
+		local
+			tmp_dir: detachable STRING
 		once
-			Result := execution_environment.get ("TMP")
+			tmp_dir := execution_environment.get ("TMP")
 
-			if not attached Result or else Result.is_empty then
-				Result := execution_environment.get ("TEMP")
+			if not attached tmp_dir or else tmp_dir.is_empty then
+				tmp_dir := execution_environment.get ("TEMP")
 			end
 
-			if attached Result and then not Result.is_empty then
-				Result := (create {WINDOWS_SHORT_PATH}.make (Result)).as_long_path
+			if attached tmp_dir as t and then not t.is_empty then
+				Result := (create {WINDOWS_SHORT_PATH}.make (t)).as_long_path
 			else
 				if is_windows then
 					Result := default_windows_temp_dir.twin
@@ -161,7 +166,7 @@ feature -- Environment
 			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
 
-	application_full_path: attached STRING
+	application_full_path: STRING
 			-- The full path to the application; else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, a path within the Eiffel project directory. This must be called before
 			-- any change_dir calls are made since there is no easy way to get the startup directory.
@@ -186,7 +191,7 @@ feature -- Environment
 			not_empty: not Result.is_empty
 	    end
 
-	application_startup_directory: attached STRING
+	application_startup_directory: STRING
 			-- The directory in which the application is installed; else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, the Eiffel project directory. This must be called before any change_dir calls are made
 			-- since there is no easy way to get the startup directory.
@@ -196,7 +201,7 @@ feature -- Environment
 			not_empty: not Result.is_empty
 		end
 
-	application_name: attached STRING
+	application_name: STRING
 			-- The name of the application executable, with any leading directory components removed.
 	    once
 			Result := file_system.basename (application_full_path)
@@ -230,7 +235,7 @@ feature  {NONE} -- Conversion
 			-- in the string s
 		local
 			i, p,q: INTEGER
-			var_name, var_val: STRING
+			var_name: STRING
 			c: CHARACTER
 		do
 			Result := s.twin
@@ -258,8 +263,7 @@ feature  {NONE} -- Conversion
 				end
 
 				var_name := s.substring(p+1, q)
-				var_val := execution_environment.get(var_name)
-				if var_val /= Void then
+				if attached execution_environment.get(var_name) as var_val then
 					Result.replace_substring_all("$" + var_name, var_val)
 				end
 				p := s.index_of('$', q)
@@ -302,7 +306,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extension_replaced (path, new_extension: STRING): attached STRING
+	extension_replaced (path, new_extension: STRING): STRING
 			-- Copy of `path', with its extension replaced by `new_extension'.
 		require
 			path_attached: path /= Void
@@ -319,10 +323,8 @@ feature {NONE} -- Implementation
 			ends_with_new_extension: Result.ends_with (new_extension)
 		end
 
-	extension_removed (path: STRING): attached STRING
+	extension_removed (path: STRING): STRING
 			-- Copy of `path', with its extension (final segment preceded by '.'), if any, removed
-		require
-			path_attached: path /= Void
 		do
 			Result := path.substring (1, path.count - file_system.extension (path).count)
 		ensure

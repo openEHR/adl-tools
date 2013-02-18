@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class COMPILATION_STATES
 
 feature -- Definitions
@@ -20,6 +15,7 @@ feature -- Definitions
 	Cs_lineage_known: INTEGER = 10
 	Cs_ready_to_parse: INTEGER = 20
 	cs_ready_to_parse_legacy: INTEGER = 21
+	Cs_parsed: INTEGER = 22
 	Cs_suppliers_known: INTEGER = 30
 	Cs_ready_to_validate: INTEGER = 40
 	Cs_validated_phase_1: INTEGER = 51

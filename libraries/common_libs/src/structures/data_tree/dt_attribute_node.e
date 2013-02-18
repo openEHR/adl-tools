@@ -35,7 +35,8 @@ feature -- Initialisation
 		require
 			a_name_valid: not a_name.is_empty
 		do
-			create representation.make_single (a_name, Current)
+			create representation.make_single (a_name)
+			representation.set_content (Current)
 		ensure
 			not is_container_type
 			not is_nested
@@ -46,7 +47,8 @@ feature -- Initialisation
 		require
 			a_name_valid: not a_name.is_empty
 		do
-			create representation.make_multiple (a_name, Current)
+			create representation.make_multiple (a_name)
+			representation.set_content (Current)
 		ensure
 			is_container_type
 			not is_nested
@@ -56,8 +58,9 @@ feature -- Initialisation
 			-- make as a container type attribute representing the implied attirbute of a container object, typically
 			-- called something like 'items', 'values', 'elements' etc
 		do
-			make_container (Container_attr_name)
+			create representation.make_multiple (Container_attr_name)
 			is_nested := True
+			representation.set_content (Current)
 		ensure
 			is_container_type
 			is_nested
@@ -79,7 +82,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	child_with_id (a_node_id: STRING): DT_OBJECT_ITEM
+	child_with_id (a_node_id: STRING): detachable DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
 		require
 			has_child_with_id (a_node_id)

@@ -1,0 +1,117 @@
+--
+--	component:   openEHR Archetype Project
+--	description: Error database for Basic Meta-model (BMM)
+--				 
+--	keywords:    BMM, error
+--	author:      Thomas Beale
+--	support:     Ocean Informatics <support@OceanInformatics.com>
+--	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd"
+--	license:     See notice at bottom of class
+--
+--	file:        $URL$
+--	revision:    $LastChangedRevision$
+--	last_change: $LastChangedDate$
+--
+
+templates = <
+	["en"] = <
+		-- SCHEMA_ACCESS (RM model checker)
+		["model_access_e0"] = <"Reference model schema(s) $1 specified in options not valid or not found in directory $2">
+		["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
+		["model_access_e2"] = <"Reference Model schema $1 load failure; reason: $2">
+		["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
+		["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
+		["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
+		["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/schema_file$2)">
+		["model_access_e7"] = <"No Reference Model schema found for package '$1'">
+		["model_access_e8"] = <"Reference Model schema $1 failed to load; errors:%N$2">
+		["model_access_e9"] = <"Reference Model schema $1 failed post-merge validation; errors:%N$2">
+		["model_access_e10"] = <"Reference Model included schema $1 not found or failed to load">
+		["model_access_e11"] = <"Reference Model schema $1 includes a schema that failed to load">
+		["model_access_e12"] = <"Reference Model schema $1 failed basic validation; errors:%N$2">
+		["model_access_e13"] = <"No valid schemas found at path $1">
+		["model_access_e14"] = <"Unknown exception processing RM schemas">
+		["model_access_e14a"] = <"Assertion violation processing RM schemas; original recipient: $1">
+		["model_access_e15"] = <"Reference Model schema $1 includes validation failed: %N$2">
+		["model_access_e16"] = <"Reference Model schemas at $1 incompatible with current release of the tool; obtain up to date schemas">
+		["load_conv_fail_err"] = <"Reference Model schema $1 load data conversion failure; reason: $2">
+
+		["model_access_i1"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
+		["model_access_i2"] = <"Merged schema $1 into schema $2">
+
+		["model_access_w1"] = <"Reference Model checking is OFF">
+		["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2, ignoring latter">
+		["model_access_w3"] = <"Duplicate instance of Reference Model model $1 found; original schema $2; ignoring instance from schema $3">
+		["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
+		["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
+		["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
+		["model_access_w7"] = <"'rm_schemas_load_list' config setting mentions non-existent schema $1">
+		["model_access_w8"] = <"Reference Model schema $1 passed basic validation with warnings:%N$2">
+
+		["BMM_INC"] = <"Reference Model schema $1 includes schema $2 that does not exist">
+		["BMM_VER"] = <"Schema $1 BMM version $2 incompatible with software version $3">
+		["BMM_VERASS"] = <"Schema $1 BMM version $2 (assumed) incompatible with software version $3">
+		["BMM_PTV"] = <"Schema $1 class definition $2 property $3 type not defined in schema">
+		["BMM_ANC"] = <"Schema $1 class definition $2 ancestor $3 does not exist in schema">
+		["BMM_GPCT"] = <"Schema $1 class definition $2 generic parameter $3 constraint type $4 does not exist in schema">
+		["BMM_CPT"] = <"Schema $1 class definition $2 container property $3 target type not defined">
+		["BMM_CPTV"] = <"Schema $1 class definition $2 container property $3 target type $4 not found in schema">
+		["BMM_CPTNC"] = <"Schema $1 class definition $2 container property $3 cardinality not defined (assuming {0..*})">
+		["BMM_CPCT"] = <"Schema $1 class definition $2 container property $3 container type $4 not found in schema">
+		["BMM_GPT"] = <"Schema $1 class definition $2 generic property $3 not defined">
+		["BMM_GPRT"] = <"Schema $1 class definition $2 generic property $3 root type $4 not found in schema">
+		["BMM_GPGPT"] = <"Schema $1 class definition $2 generic property $3 generic parameter $4 not found in schema or in containing class declarations (if open)">
+		["BMM_GPGPM"] = <"Schema $1 class definition $2 marked 'is_generic' but has no generic parameter declarations">
+		["BMM_GPGPU"] = <"Schema $1 class definition $2 generic property $3 type $4 parameter $5 not found in class definitions or $4 formal declaration">
+		["BMM_SPT"] = <"Schema $1 class definition $2 single-valued property $3 type $4 not found in schema">
+		["BMM_SPOT"] = <"Schema $1 class definition $2 single-valued property $3 open generic parameter $4 not found in containing class declarations">
+		["BMM_PKGCL"] = <"Schema $1 class $2 mentioned in package $3 but not in schema, or relevant child schema">
+		["BMM_PKGID"] = <"Schema $1 class definition $2 not declared in any package">
+		["BMM_PKGTL"] = <"Schema $1 top-level sibling package definitions cannot include a package which is the child of another">
+		["BMM_PKGQN"] = <"Schema $1 packages with qualified name found in package $2 (qualified names not allowed except at top-level)">
+		["BMM_CLDUP"] = <"Schema $1 has duplicate class name $2 in package $3 and also package $4">
+		["BMM_MDLPK"] = <"Schema $1 archetype_closure_package $2 does not exist">
+		["BMM_PRDUP"] = <"Schema $1 class $2 duplicate property within class $3">
+		["BMM_PRNCF"] = <"Schema $1 class $2 property $3 does not conform to same property in ancestor $4 (duplicate?)">
+		["BMM_INCERR"] = <"Schema $1 included schema $2 validity failure">
+		["BMM_INCWARN"] = <"Schema $1 included schema $2 validity warning">
+		["BMM_ARPAR"] = <"Schema $1 archetype parent class $2 not defined in schema">
+	>
+>
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is bmm_error_db.txt
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2010
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|

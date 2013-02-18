@@ -12,15 +12,10 @@ note
 				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date time"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ISO8601_TIME
 
@@ -30,16 +25,16 @@ inherit
 			{NONE} all;
 			{ANY} valid_iso8601_time, valid_hour, valid_minute, valid_second, valid_fractional_second
 		undefine
-			is_equal, out
+			is_equal, out, default_create
 		end
 
 	COMPARABLE
 		redefine
-			out
+			out, default_create
 		end
 
 create
-	make_from_string, make_h, make_hm, make_hms, make_hmsf, make_time
+	make_from_string, make_h, make_hm, make_hms, make_hmsf, make_time, default_create
 
 convert
 	make_time ({TIME}),
@@ -47,23 +42,28 @@ convert
 
 feature -- Initialisation
 
-	make_from_string(str: attached STRING)
+	default_create
+		do
+			make_time (create {TIME}.make_now)
+		end
+
+	make_from_string (str: STRING)
 			-- make from a time of form:
 			-- hhmmss[,sss][Z|+/-hhmm] or
 			-- hh:mm:ss[,sss][,sss][Z|+/-hhmm]
 		require
-			String_valid: valid_iso8601_time(str)
+			String_valid: valid_iso8601_time (str)
 		do
-			if valid_iso8601_time(str) then
-				deep_copy(iso8601_parser.cached_iso8601_time)
+			make_time (create {TIME}.make_now)
+			if valid_iso8601_time (str) and then attached iso8601_parser.cached_iso8601_time as tm then
+				deep_copy (tm)
 			end
-			value := as_string
 		end
 
-	make_h(h: INTEGER; is_extended_flag: BOOLEAN)
+	make_h (h: INTEGER; is_extended_flag: BOOLEAN)
 			-- make partial time from hour only
 		require
-			Hours_valid: valid_hour(h, 0, 0)
+			Hours_valid: valid_hour (h, 0, 0)
 		do
 			hour := h
 			is_extended := is_extended_flag
@@ -72,11 +72,11 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_hm(h, m: INTEGER; is_extended_flag: BOOLEAN)
+	make_hm (h, m: INTEGER; is_extended_flag: BOOLEAN)
 			-- make partial time from hour and minute
 		require
-			Hours_valid: valid_hour(h, m, 0)
-			Minutes_valid: valid_minute(m)
+			Hours_valid: valid_hour (h, m, 0)
+			Minutes_valid: valid_minute (m)
 		do
 			hour := h
 			minute := m
@@ -85,7 +85,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_hms(h, m, s: INTEGER; is_extended_flag: BOOLEAN)
+	make_hms (h, m, s: INTEGER; is_extended_flag: BOOLEAN)
 			-- make complete time
 		require
 			Hours_valid: valid_hour(h, m, s)
@@ -99,7 +99,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_hmsf(h, m, s: INTEGER; sf: DOUBLE; is_extended_flag: BOOLEAN)
+	make_hmsf (h, m, s: INTEGER; sf: DOUBLE; is_extended_flag: BOOLEAN)
 			-- make complete time from hour, minute, second and fine second
 		require
 			Hours_valid: valid_hour(h, m, s)
@@ -116,7 +116,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_time (a_time: attached TIME)
+	make_time (a_time: TIME)
 			-- make from a TIME object
 		do
 			make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fractional_second, True)
@@ -124,7 +124,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: attached STRING
+	value: STRING
 			-- ISO8601 string for time; always equal to result of as_string
 
 	hour: INTEGER
@@ -139,7 +139,7 @@ feature -- Access
 	fractional_second: DOUBLE
 			-- extracted fractional second
 
-	timezone: ISO8601_TIMEZONE
+	timezone: detachable ISO8601_TIMEZONE
 			-- extracted timezone
 
 feature -- Status Report
@@ -164,7 +164,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_timezone(a_tz: attached ISO8601_TIMEZONE)
+	set_timezone (a_tz: ISO8601_TIMEZONE)
 			-- set timezone
 		do
 			timezone := a_tz
@@ -214,13 +214,13 @@ feature -- Conversion
 			if has_fractional_second then
 				fs := fractional_second
 			end
-			if timezone /= Void then
-				tz := timezone.to_seconds
+			if attached timezone as att_tz then
+				tz := att_tz.to_seconds
 			end
 			Result := hour * seconds_in_hour + m * seconds_in_minute + s + fs + tz
 		end
 
-	to_time: attached TIME
+	to_time: TIME
 			-- convert to a TIME object
 		local
 			h, m, s: INTEGER
@@ -245,7 +245,7 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- express as ISO8601 format string "hh:mm:ss[,ssss]"
 		local
 			s: STRING
@@ -286,11 +286,11 @@ feature -- Output
 				end
 			end
 
-			if timezone /= Void then
-				Result.append(timezone.as_string)
+			if attached timezone as att_tz then
+				Result.append (att_tz.as_string)
 			end
 		ensure
-			Result_valid: valid_iso8601_time(Result)
+			Result_valid: valid_iso8601_time (Result)
 		end
 
 	out: STRING

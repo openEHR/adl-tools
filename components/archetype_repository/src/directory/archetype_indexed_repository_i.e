@@ -38,14 +38,17 @@ feature {ARCHETYPE_CATALOGUE} -- Access
 
 	fast_archetype_list: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 			-- linear index list for efficient processing
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Commands
 
 	populate
 			-- Make based on `root_path'.
 		do
-			create archetype_id_index.make (0)
-			create fast_archetype_list.make (0)
+			archetype_id_index.wipe_out
+			fast_archetype_list.wipe_out
 			get_archetypes_in_folder (full_path)
 			across archetype_id_index as arch_ids_csr loop
 				fast_archetype_list.extend (arch_ids_csr.item)
@@ -54,7 +57,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	get_archetypes_in_folder (a_path: attached STRING)
+	get_archetypes_in_folder (a_path: STRING)
 			-- Build a literal representation of the archetype and folder structure
 			-- in the repository path, as a tree; each node carries some meta-data.
 		require

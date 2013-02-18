@@ -2,22 +2,15 @@ note
 	component:   "openEHR re-usable library"
 	description: "Basic Meta-model model abstraction"
 	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_SCHEMA
 
 inherit
 	BMM_PACKAGE_CONTAINER
-		rename
-			make as make_package_container
 		redefine
 			add_package
 		end
@@ -37,16 +30,14 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
+	make (a_rm_publisher, a_schema_name, a_rm_release: STRING)
 		do
 			precursor (a_rm_publisher, a_schema_name, a_rm_release)
-			make_package_container
-			create class_definitions.make (0)
 		end
 
 feature -- Definitions
 
-	substitutions: attached HASH_TABLE [STRING, STRING]
+	substitutions: HASH_TABLE [STRING, STRING]
 			-- allowed type substitutions due to archetyping as a table of
 			-- allowable substitution keyed by expected type
 		once
@@ -62,8 +53,11 @@ feature -- Access
 
 	class_definitions: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- all classes in this schema
+		attribute
+			create Result.make (0)
+		end
 
-	primitive_types: attached ARRAYED_SET [STRING]
+	primitive_types: ARRAYED_SET [STRING]
 			-- list of keys in `class_definitions' of items marked as primitive types, as defined in input schema
 		do
 			create Result.make (0)
@@ -78,61 +72,65 @@ feature -- Access
 			Result.object_comparison
 		end
 
-	any_class_definition: attached BMM_CLASS_DEFINITION
+	any_class_definition: BMM_CLASS_DEFINITION
 			-- retrieve the class definition corresponding to the top `Any' class
 		do
-			Result := class_definition (any_type)
+			if attached class_definition (any_type) as class_def then
+				Result := class_def
+			else
+				create Result.make (any_type, True)
+			end
 		end
 
-	class_definition (a_type_name: attached STRING): attached BMM_CLASS_DEFINITION
+	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION
 			-- retrieve the class definition corresponding to `a_type_name' (which may contain a generic part)
 		require
 			Type_name_valid: has_class_definition (a_type_name)
-		local
-			a_class_name: STRING
 		do
-			a_class_name := type_to_class (a_type_name)
-			Result := class_definitions.item (a_class_name)
+			check attached class_definitions.item (type_to_class (a_type_name)) as class_def then
+				Result := class_def
+			end
 		end
 
-	property_definition (a_type_name, a_prop_name: attached STRING): attached BMM_PROPERTY_DEFINITION
+	property_definition (a_type_name, a_prop_name: STRING): BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_name' in flattened class corresponding to `a_type_name'
 		require
 			Type_name_valid: has_class_definition (a_type_name)
 			Property_valid: has_property (a_type_name, a_prop_name)
 		do
-			Result := class_definition (type_to_class (a_type_name)).flat_properties.item (a_prop_name)
+			check attached class_definition (type_to_class (a_type_name)).flat_properties.item (a_prop_name) as prop_def then
+				Result := prop_def
+			end
 		end
 
-	property_type (a_type_name, a_prop_name: attached STRING): attached STRING
+	property_type (a_type_name, a_prop_name: STRING): STRING
 			-- retrieve the property type for `a_prop_name' in flattened class corresponding to `a_type_name'
 			-- same as property_definition.type, except if a_type_name is generic
 		require
 			Type_name_valid: has_class_definition (a_type_name)
 			Property_valid: has_property(a_type_name, a_prop_name)
-		local
-			class_def: BMM_CLASS_DEFINITION
 		do
-			class_def := class_definition (type_to_class (a_type_name))
-			Result := class_def.property_type(a_type_name, a_prop_name)
+			if attached class_definition (type_to_class (a_type_name)) as class_def then
+				Result := class_def.property_type (a_type_name, a_prop_name)
+			else
+				Result := unknown_type_name
+			end
 		end
 
-	property_definition_at_path (a_type_name, a_property_path: attached STRING): attached BMM_PROPERTY_DEFINITION
+	property_definition_at_path (a_type_name, a_property_path: STRING): detachable BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
 		require
 			Type_name_valid: has_class_definition (a_type_name)
 			Property_path_valid: has_property_path (a_type_name, a_property_path)
 		local
 			an_og_path: OG_PATH
-			class_def: BMM_CLASS_DEFINITION
 		do
-			class_def := class_definition (type_to_class (a_type_name))
 			create an_og_path.make_pure_from_string (a_property_path)
 			an_og_path.start
-			Result := class_def.property_definition_at_path (an_og_path)
+			Result := class_definition (type_to_class (a_type_name)).property_definition_at_path (an_og_path)
 		end
 
-	all_ancestor_classes_of (a_class_name: attached STRING): attached ARRAYED_LIST [STRING]
+	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
@@ -143,7 +141,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_class_definition (a_type_name: attached STRING): BOOLEAN
+	has_class_definition (a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' has a class definition or is a primitive type in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
@@ -152,7 +150,7 @@ feature -- Status Report
 			Result := class_definitions.has (type_to_class (a_type_name))
 		end
 
-	has_property (a_type_name, a_prop_name: attached STRING): BOOLEAN
+	has_property (a_type_name, a_prop_name: STRING): BOOLEAN
 			-- True if `a_type_name'  (which contain a generic part) has an property named `a_prop_name'
 		require
 			Type_name_valid: has_class_definition (a_type_name)
@@ -168,7 +166,7 @@ feature -- Status Report
 			Result := class_definition (a_type_name).is_primitive_type
 		end
 
-	is_descendant_of (a_class, a_parent_class: attached STRING): BOOLEAN
+	is_descendant_of (a_class, a_parent_class: STRING): BOOLEAN
 			-- True if `a_class' is a descendant in the model of `a_parent_class'
 			-- Use `type_conforms_to' for full type names
 		require
@@ -178,7 +176,7 @@ feature -- Status Report
 			Result := class_definition (a_class).all_ancestors.has (a_parent_class)
 		end
 
-	has_property_path (an_obj_type, a_property_path: attached STRING): BOOLEAN
+	has_property_path (an_obj_type, a_property_path: STRING): BOOLEAN
 			-- is `a_property_path' possible based on this reference model? Path format must be standard forward-slash
 			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
 		local
@@ -191,7 +189,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_type_for_class (a_class_name, a_type_name: attached STRING): BOOLEAN
+	valid_type_for_class (a_class_name, a_type_name: STRING): BOOLEAN
 			-- True if `a_type_name' is a valid type for the class definition of `a_class_name'. Will always be true for
 			-- non-generic types, but needs to be checked for generic / container types
 		require
@@ -200,34 +198,34 @@ feature -- Status Report
 		local
 			is_gen_type: BOOLEAN
 			type_strs: ARRAYED_LIST [STRING]
-			a_class_def: BMM_CLASS_DEFINITION
 		do
 			is_gen_type := is_well_formed_generic_type_name (a_type_name)
-			a_class_def := class_definition (a_class_name)
-			if a_class_def.is_generic then
-				type_strs := type_name_as_flat_list (a_type_name)
-				type_strs.compare_objects
-				type_strs.start
-				if type_strs.item.is_case_insensitive_equal (a_class_def.name) or class_definitions.item (type_strs.item).has_ancestor (a_class_def.name)  then
-					from
-						type_strs.forth
-						a_class_def.generic_parameters.start
-					until
-						type_strs.off or not has_class_definition (type_strs.item) or
-							(a_class_def.generic_parameters.item_for_iteration.is_constrained and then not
-							class_definitions.item (type_strs.item).has_ancestor (a_class_def.generic_parameters.item_for_iteration.conforms_to_type.name))
-					loop
-						type_strs.forth
-						a_class_def.generic_parameters.forth
+			if attached class_definition (a_class_name) as class_def then
+				if class_def.is_generic then
+					type_strs := type_name_as_flat_list (a_type_name)
+					type_strs.compare_objects
+					type_strs.start
+					if type_strs.item.is_case_insensitive_equal (class_def.name) or class_definitions.item (type_strs.item).has_ancestor (class_def.name)  then
+						from
+							type_strs.forth
+							class_def.generic_parameters.start
+						until
+							type_strs.off or not has_class_definition (type_strs.item) or
+								(class_def.generic_parameters.item_for_iteration.is_constrained and then not
+								class_definitions.item (type_strs.item).has_ancestor (class_def.generic_parameters.item_for_iteration.conforms_to_type.name))
+						loop
+							type_strs.forth
+							class_def.generic_parameters.forth
+						end
+						Result := type_strs.off
 					end
-					Result := type_strs.off
+				elseif not class_def.is_generic and not is_gen_type then
+					Result := a_type_name.is_case_insensitive_equal (class_def.name)
 				end
-			elseif not a_class_def.is_generic and not is_gen_type then
-				Result := a_type_name.is_case_insensitive_equal (a_class_def.name)
 			end
 		end
 
-	valid_property_type (a_type_name, a_property_name, a_property_type_name: attached STRING): BOOLEAN
+	valid_property_type (a_type_name, a_property_name, a_property_type_name: STRING): BOOLEAN
 			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
 		require
 			Type_name_valid: has_class_definition (a_type_name)
@@ -239,7 +237,7 @@ feature -- Status Report
 			end
 		end
 
-	type_conforms_to (type_1, type_2: attached STRING): BOOLEAN
+	type_conforms_to (type_1, type_2: STRING): BOOLEAN
 			-- check conformance of type 1 to type 2; the types may be generic
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
@@ -265,14 +263,14 @@ feature -- Status Report
 			-- True if `has_archetype_data_value_parent_class' and then root type of `a_type'
 			-- conforms to `archetype_data_value_parent_class'
 		do
-			if has_archetype_data_value_parent_class then
-				Result := type_conforms_to (a_type, archetype_data_value_parent_class)
+			if attached archetype_data_value_parent_class as advp_class  then
+				Result := type_conforms_to (a_type, advp_class)
 			end
 		end
 
 feature -- Modification
 
-	add_class_definition (a_class_def: attached BMM_CLASS_DEFINITION; a_package_def: attached BMM_PACKAGE_DEFINITION)
+	add_class_definition (a_class_def: BMM_CLASS_DEFINITION; a_package_def: BMM_PACKAGE_DEFINITION)
 			-- add `a_class_def' to this schema, in package `a_package_def', which must exist in the schema
 		require
 			Valid_class: not has_class_definition (a_class_def.name)
@@ -286,7 +284,7 @@ feature -- Modification
 			Schema_set_in_class: a_class_def.bmm_schema = Current
 		end
 
-	add_package (a_pkg: attached BMM_PACKAGE_DEFINITION)
+	add_package (a_pkg: BMM_PACKAGE_DEFINITION)
 		do
 			precursor (a_pkg)
 			a_pkg.set_bmm_schema (Current)
@@ -295,21 +293,21 @@ feature -- Modification
 			Schema_set_in_package: a_pkg.bmm_schema = Current
 		end
 
-	set_archetype_parent_class (a_class_name: attached STRING)
+	set_archetype_parent_class (a_class_name: STRING)
 		require
 			has_class_definition (a_class_name)
 		do
 			archetype_parent_class := a_class_name
 		end
 
-	set_archetype_data_value_parent_class (a_class_name: attached STRING)
+	set_archetype_data_value_parent_class (a_class_name: STRING)
 		require
 			has_class_definition (a_class_name)
 		do
 			archetype_data_value_parent_class := a_class_name
 		end
 
-	set_archetype_visualise_descendants_of (a_class_name: attached STRING)
+	set_archetype_visualise_descendants_of (a_class_name: STRING)
 		require
 			has_class_definition (a_class_name)
 		do
@@ -320,9 +318,10 @@ feature -- Statistics
 
 	generate_statistics
 		local
-			arch_parent_key, data_value_parent_key, class_count_key, primitive_key, abstract_key, generic_key, package_key: STRING
+			arch_parent_key, data_value_parent_key: detachable STRING
+			class_count_key, primitive_key, abstract_key, generic_key, package_key: STRING
 		do
-			create statistics_table.make (0)
+			statistics_table.wipe_out
 			package_key := "Package count"
 			package_count := 0
 			do_recursive_packages (
@@ -345,40 +344,42 @@ feature -- Statistics
 			generic_key := "Generic classes"
 			statistics_table.put (0, generic_key)
 
-			if attached archetype_parent_class then
-				arch_parent_key := archetype_parent_class + " classes"
+			if attached archetype_parent_class as ap_class then
+				arch_parent_key := ap_class + " classes"
 				statistics_table.put (0, arch_parent_key)
 			end
-			if attached archetype_data_value_parent_class then
-				data_value_parent_key := archetype_data_value_parent_class + " classes"
+			if attached archetype_data_value_parent_class as adv_class then
+				data_value_parent_key := adv_class + " classes"
 				statistics_table.put (0, data_value_parent_key)
 			end
-			from class_definitions.start until class_definitions.off loop
+			across class_definitions as class_defs_csr loop
 				statistics_table.force (statistics_table.item (class_count_key) + 1, class_count_key)
-				if class_definitions.item_for_iteration.is_primitive_type then
+				if class_defs_csr.item.is_primitive_type then
 					statistics_table.force (statistics_table.item (primitive_key) + 1, primitive_key)
 				end
-				if class_definitions.item_for_iteration.is_abstract then
+				if class_defs_csr.item.is_abstract then
 					statistics_table.force (statistics_table.item (abstract_key) + 1, abstract_key)
 				end
-				if class_definitions.item_for_iteration.is_generic then
+				if class_defs_csr.item.is_generic then
 					statistics_table.force (statistics_table.item (generic_key) + 1, generic_key)
 				end
-				if attached archetype_parent_class then
-					if class_definitions.item_for_iteration.has_ancestor (archetype_parent_class) then
-						statistics_table.force (statistics_table.item (arch_parent_key) + 1, arch_parent_key)
+				if attached archetype_parent_class as ap_class and attached arch_parent_key as ap_key then
+					if class_defs_csr.item.has_ancestor (ap_class) then
+						statistics_table.force (statistics_table.item (ap_key) + 1, ap_key)
 					end
 				end
-				if attached archetype_data_value_parent_class then
-					if class_definitions.item_for_iteration.has_ancestor (archetype_data_value_parent_class) then
-						statistics_table.force (statistics_table.item (data_value_parent_key) + 1, data_value_parent_key)
+				if attached archetype_data_value_parent_class as adv_class and attached data_value_parent_key as dvp_key then
+					if class_defs_csr.item.has_ancestor (adv_class) then
+						statistics_table.force (statistics_table.item (dvp_key) + 1, dvp_key)
 					end
 				end
-				class_definitions.forth
 			end
 		end
 
 	statistics_table: HASH_TABLE [INTEGER, STRING]
+		attribute
+			create Result.make (0)
+		end
 
 feature {NONE} -- Implementation
 

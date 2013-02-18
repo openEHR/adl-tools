@@ -2,17 +2,13 @@ note
 	component:   "openEHR Common Information Model"
 	description: "Validator for AUTHOR_RESOURCE objects"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-class AUTHORED_RESOURCE_VALIDATOR
+deferred class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
 	ANY_VALIDATOR

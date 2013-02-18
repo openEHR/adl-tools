@@ -40,12 +40,17 @@ feature -- Access
 feature -- Factory
 
 	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION)
+		local
+			new_bmm_property_definition: BMM_CONTAINER_PROPERTY
 		do
 			if attached type_def as td then
 				td.create_bmm_container_type_reference (a_bmm_schema)
-				create bmm_property_definition.make (name, td.bmm_container_type_reference, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
-				if attached cardinality then
-					bmm_property_definition.set_cardinality (cardinality)
+				if attached td.bmm_container_type_reference as bmm_cont_type_ref then
+					create new_bmm_property_definition.make (name, bmm_cont_type_ref, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
+					bmm_property_definition := new_bmm_property_definition
+					if attached cardinality then
+						new_bmm_property_definition.set_cardinality (cardinality)
+					end
 				end
 			end
 		end

@@ -3,8 +3,8 @@ note
 	description: "Options  definitions and processor for msgdb command line tool."
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 class
@@ -16,7 +16,12 @@ inherit
 			make as make_parser
 		end
 
-	SHARED_RESOURCES
+	ARGUMENTS
+		export
+			{NONE} all
+		end
+
+	KL_SHARED_FILE_SYSTEM
 		export
 			{NONE} all
 		end
@@ -52,13 +57,17 @@ feature {NONE} -- Definitions
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_default_locale_lang: STRING)
 			-- Initialize argument parser
 		do
+			default_locale_lang := a_default_locale_lang
 			make_parser (False)
 		end
 
 feature -- Access
+
+	default_locale_lang: STRING
+			-- default locale
 
 	msg_source_dir: STRING
 			-- message source directory; default to ".", i.e. current working directory of app
@@ -68,19 +77,19 @@ feature -- Access
 			if has_option (msg_source_dir_switch) and then attached option_of_name (msg_source_dir_switch) as opt and then opt.has_value then
 				Result := opt.value
 			else
-				Result := "."
+				Result := file_system.current_working_directory
 			end
 		end
 
 	output_file_dir: STRING
-			-- message source directory; default to ".", i.e. current working directory of app
+			-- message compiled class output directory; default to ".", i.e. current working directory of app
 		require
 			is_successful: is_successful
 		once
 			if has_option (output_file_dir_switch) and then attached option_of_name (output_file_dir_switch) as opt and then opt.has_value then
 				Result := opt.value
 			else
-				Result := "../generated/"
+				Result := file_system.current_working_directory
 			end
 		end
 
@@ -92,24 +101,22 @@ feature -- Access
 			if has_option (locale_lang_switch) and then attached option_of_name (locale_lang_switch) as opt and then opt.has_value then
 				Result := opt.value
 			else
-				Result := locale_language_short
+				Result := default_locale_lang
 			end
 		end
 
-feature -- Status Report
-
 feature {NONE} -- Usage
 
-	copyright: STRING = "Copyright (c) 2012 openEHR Foundation"
+	copyright: STRING = "Copyright (c) 2012- openEHR Foundation"
 			--  <Precursor>
 
 	name: STRING
 			--  <Precursor>
 		once
-			Result := application_name
+			Result := command_name
 		end
 
-	version: attached STRING
+	version: STRING
 			--  <Precursor>
 		once
 			Result := (create {OPENEHR_VERSION}).out

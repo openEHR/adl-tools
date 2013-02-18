@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class OPERATIONAL_TEMPLATE
 
 inherit
@@ -24,18 +20,20 @@ create
 
 feature -- Initialisation
 
-	make_specialised (a_diff: attached DIFFERENTIAL_ARCHETYPE; a_flat_parent: attached FLAT_ARCHETYPE)
+	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 		do
 			precursor (a_diff, a_flat_parent)
 			create artefact_type.make_operational_template
-			create component_ontologies.make(0)
 		end
 
 feature -- Access
 
-	component_ontologies: attached HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Modification
 

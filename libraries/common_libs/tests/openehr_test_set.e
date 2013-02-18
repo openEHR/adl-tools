@@ -57,7 +57,7 @@ feature {NONE} -- Access
 	file_context: attached FILE_CONTEXT
 			-- Access to the file system.
 		once
-			create Result.make
+			create Result
 		end
 
 	test_directory: attached STRING

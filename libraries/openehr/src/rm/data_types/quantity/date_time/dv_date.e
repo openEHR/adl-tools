@@ -30,7 +30,7 @@ inherit
 		end
 
 create
-	default_create, make_from_string, make_y, make_ym, make_ymd
+	default_create, make_from_string, make_y, make_ym, make_ymd, make_date
 
 feature -- Definitions
 
@@ -80,16 +80,19 @@ feature -- Basic Operations
 	add (a_diff: like diff): like Current
 			-- Addition of a differential amount to this quantity.
 		do
+			create Result.make_date (create {DATE}.make_by_days (to_days + a_diff.to_seconds // seconds_in_day))
 		end
 
 	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
 		do
+			create Result.make_date (create {DATE}.make_by_days (to_days - a_diff.to_seconds // seconds_in_day))
 		end
 
 	diff (other: like Current): DV_DURATION
 			-- Difference of two quantities.
 		do
+			create Result.make_from_seconds ((to_days - other.to_days) * seconds_in_day)
 		end
 
 feature -- Output

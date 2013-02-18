@@ -1,0 +1,276 @@
+Terminals which are not used:
+
+	V_STRING
+	ERR_STRING
+
+
+State 9 contains 1 shift/reduce conflict.
+State 15 contains 1 shift/reduce conflict.
+
+Grammar
+
+rule 1 input -> movable_path
+rule 2 input -> absolute_path
+rule 3 input -> relative_path
+rule 4 input -> error
+rule 5 movable_path -> SYM_MOVABLE_LEADER relative_path
+rule 6 absolute_path -> '/'
+rule 7 absolute_path -> '/' relative_path
+rule 8 absolute_path -> absolute_path '/' relative_path
+rule 9 relative_path -> path_segment
+rule 10 relative_path -> relative_path '/' path_segment
+rule 11 path_segment -> V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
+rule 12 path_segment -> V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE
+rule 13 path_segment -> V_ATTRIBUTE_IDENTIFIER
+
+Terminals, with rules where they appear
+
+$ (token 0)
+error (token 256) 4
+$undefined. (token 257)
+V_ATTRIBUTE_IDENTIFIER (token 258) 11 12 13
+V_STRING (token 259)
+V_LOCAL_TERM_CODE_REF (token 260) 11
+V_ANY_PREDICATE (token 261) 12
+ERR_STRING (token 262)
+SYM_MOVABLE_LEADER (token 263) 5
+'/' (token 47) 6 7 8 10
+
+Nonterminals, with rules where they appear
+
+path_segment (0) on left: 11 12 13, on right: 9 10
+absolute_path (1) on left: 6 7 8, on right: 2 8
+movable_path (2) on left: 5, on right: 1
+relative_path (3) on left: 9 10, on right: 3 5 7 8 10
+input (4) on left: 1 2 3 4
+
+
+state 0
+
+	input  ->  . movable_path   (rule 1)
+	input  ->  . absolute_path   (rule 2)
+	input  ->  . relative_path   (rule 3)
+	input  ->  . error   (rule 4)
+	movable_path  ->  . SYM_MOVABLE_LEADER relative_path   (rule 5)
+	absolute_path  ->  . '/'   (rule 6)
+	absolute_path  ->  . '/' relative_path   (rule 7)
+	absolute_path  ->  . absolute_path '/' relative_path   (rule 8)
+	relative_path  ->  . path_segment   (rule 9)
+	relative_path  ->  . relative_path '/' path_segment   (rule 10)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF   (rule 11)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE   (rule 12)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER   (rule 13)
+
+	'/'	shift, and go to state 1
+	SYM_MOVABLE_LEADER	shift, and go to state 2
+	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 3
+	error	shift, and go to state 4
+
+	path_segment	go to state 5
+	absolute_path	go to state 6
+	movable_path	go to state 7
+	relative_path	go to state 8
+	input	go to state 17
+
+
+
+state 1
+
+	absolute_path  ->  '/' .   (rule 6)
+	absolute_path  ->  '/' . relative_path   (rule 7)
+	relative_path  ->  . path_segment   (rule 9)
+	relative_path  ->  . relative_path '/' path_segment   (rule 10)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF   (rule 11)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE   (rule 12)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER   (rule 13)
+
+	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 3
+
+	$default	reduce using rule 6 (absolute_path)
+
+	path_segment	go to state 5
+	relative_path	go to state 9
+
+
+
+state 2
+
+	movable_path  ->  SYM_MOVABLE_LEADER . relative_path   (rule 5)
+	relative_path  ->  . path_segment   (rule 9)
+	relative_path  ->  . relative_path '/' path_segment   (rule 10)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF   (rule 11)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE   (rule 12)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER   (rule 13)
+
+	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 3
+
+	path_segment	go to state 5
+	relative_path	go to state 10
+
+
+
+state 3
+
+	path_segment  ->  V_ATTRIBUTE_IDENTIFIER . V_LOCAL_TERM_CODE_REF   (rule 11)
+	path_segment  ->  V_ATTRIBUTE_IDENTIFIER . V_ANY_PREDICATE   (rule 12)
+	path_segment  ->  V_ATTRIBUTE_IDENTIFIER .   (rule 13)
+
+	V_ANY_PREDICATE	shift, and go to state 11
+	V_LOCAL_TERM_CODE_REF	shift, and go to state 12
+
+	$default	reduce using rule 13 (path_segment)
+
+
+
+state 4
+
+	input  ->  error .   (rule 4)
+
+	$default	reduce using rule 4 (input)
+
+
+
+state 5
+
+	relative_path  ->  path_segment .   (rule 9)
+
+	$default	reduce using rule 9 (relative_path)
+
+
+
+state 6
+
+	input  ->  absolute_path .   (rule 2)
+	absolute_path  ->  absolute_path . '/' relative_path   (rule 8)
+
+	'/'	shift, and go to state 13
+
+	$default	reduce using rule 2 (input)
+
+
+
+state 7
+
+	input  ->  movable_path .   (rule 1)
+
+	$default	reduce using rule 1 (input)
+
+
+
+state 8
+
+	input  ->  relative_path .   (rule 3)
+	relative_path  ->  relative_path . '/' path_segment   (rule 10)
+
+	'/'	shift, and go to state 14
+
+	$default	reduce using rule 3 (input)
+
+
+
+state 9
+
+	absolute_path  ->  '/' relative_path .   (rule 7)
+	relative_path  ->  relative_path . '/' path_segment   (rule 10)
+
+	'/'	shift, and go to state 14
+
+	'/'	[reduce using rule 7 (absolute_path)]
+	$default	reduce using rule 7 (absolute_path)
+
+
+
+state 10
+
+	movable_path  ->  SYM_MOVABLE_LEADER relative_path .   (rule 5)
+	relative_path  ->  relative_path . '/' path_segment   (rule 10)
+
+	'/'	shift, and go to state 14
+
+	$default	reduce using rule 5 (movable_path)
+
+
+
+state 11
+
+	path_segment  ->  V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE .   (rule 12)
+
+	$default	reduce using rule 12 (path_segment)
+
+
+
+state 12
+
+	path_segment  ->  V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF .   (rule 11)
+
+	$default	reduce using rule 11 (path_segment)
+
+
+
+state 13
+
+	absolute_path  ->  absolute_path '/' . relative_path   (rule 8)
+	relative_path  ->  . path_segment   (rule 9)
+	relative_path  ->  . relative_path '/' path_segment   (rule 10)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF   (rule 11)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE   (rule 12)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER   (rule 13)
+
+	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 3
+
+	path_segment	go to state 5
+	relative_path	go to state 15
+
+
+
+state 14
+
+	relative_path  ->  relative_path '/' . path_segment   (rule 10)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF   (rule 11)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE   (rule 12)
+	path_segment  ->  . V_ATTRIBUTE_IDENTIFIER   (rule 13)
+
+	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 3
+
+	path_segment	go to state 16
+
+
+
+state 15
+
+	absolute_path  ->  absolute_path '/' relative_path .   (rule 8)
+	relative_path  ->  relative_path . '/' path_segment   (rule 10)
+
+	'/'	shift, and go to state 14
+
+	'/'	[reduce using rule 8 (absolute_path)]
+	$default	reduce using rule 8 (absolute_path)
+
+
+
+state 16
+
+	relative_path  ->  relative_path '/' path_segment .   (rule 10)
+
+	$default	reduce using rule 10 (relative_path)
+
+
+
+state 17
+
+
+	$	go to state 18
+
+
+
+state 18
+
+
+	$	go to state 19
+
+
+
+state 19
+
+
+	$default	accept

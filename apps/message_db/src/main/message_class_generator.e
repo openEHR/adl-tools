@@ -38,11 +38,17 @@ feature -- Initialization
 feature -- Access
 
 	source_structure: HASH_TABLE [STRING, STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	class_name: STRING = "COMPILED_MESSAGE_DB"
 
 	output: STRING
 			-- class text
+		attribute
+			create Result.make (20000)
+		end
 
 feature -- Commands
 

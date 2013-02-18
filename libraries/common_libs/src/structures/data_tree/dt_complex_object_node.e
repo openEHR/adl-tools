@@ -49,14 +49,16 @@ feature -- Initialisation
 		require
 			Id_valid: not an_id.is_empty
 		do
-			create representation.make (an_id, Current)
+			create representation.make (an_id)
+			representation.set_content (Current)
 		ensure
 			not is_typed
 		end
 
 	make_anonymous
 		do
-			create representation.make_anonymous (Current)
+			create representation.make_anonymous
+			representation.set_content (Current)
 		ensure
 			not is_typed
 		end
@@ -89,7 +91,7 @@ feature -- Access
 			Result := attributes.last
 		end
 
-	attribute_node (an_attr_name: STRING): DT_ATTRIBUTE_NODE
+	attribute_node (an_attr_name: STRING): detachable DT_ATTRIBUTE_NODE
 			-- return attribute node at an_attr_name
 		require
 			An_attr_name_valid: has_attribute (an_attr_name)
@@ -99,7 +101,7 @@ feature -- Access
 			end
 		end
 
-	node_at_path (a_path: STRING): DT_OBJECT_ITEM
+	node_at_path (a_path: STRING): detachable DT_OBJECT_ITEM
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: has_path(a_path)
@@ -109,33 +111,32 @@ feature -- Access
 			end
 		end
 
-	attribute_node_at_path (a_path: STRING): DT_ATTRIBUTE_NODE
+	attribute_node_at_path (a_path: STRING): detachable DT_ATTRIBUTE_NODE
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
-			Path_valid: has_path(a_path)
+			Path_valid: has_path (a_path)
 		do
-			if attached {DT_ATTRIBUTE_NODE} representation.attribute_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item as dt_attr then
+			if attached {DT_ATTRIBUTE_NODE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as dt_attr then
 				Result := dt_attr
 			end
 		end
 
-	all_paths: ARRAYED_LIST[STRING]
+	all_paths: ARRAYED_LIST [STRING]
 			-- all paths below this point, including this node
 		local
-			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+			og_paths: HASH_TABLE [detachable OG_OBJECT, OG_PATH]
 		do
 			og_paths := representation.all_paths
 			create Result.make(0)
 			Result.compare_objects
-			from og_paths.start until og_paths.off loop
-				Result.extend(og_paths.key_for_iteration.as_string)
-				og_paths.forth
+			across og_paths as paths_csr loop
+				Result.extend (paths_csr.key.as_string)
 			end
 		ensure
 			Result_exists: Result.object_comparison
 		end
 
-	value_at_path (a_path: STRING): ANY
+	value_at_path (a_path: STRING): detachable ANY
 			-- retrieve leaf value object, including list or interval object at `a_path'
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
@@ -155,7 +156,7 @@ feature -- Access
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
 		do
-			if attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node then
+			if attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path (a_path) as a_primitive_list_node then
 				Result := a_primitive_list_node.value
 			end
 		end
@@ -268,12 +269,12 @@ feature -- Modification
 			-- the current object node
 		require
 			a_path_new: not a_path.is_empty and then not has_path (a_path)
-			a_path_can_be_created: (create {OG_PATH}.make_root).valid_path_string(a_path)
+			a_path_can_be_created: (create {OG_PATH}.make_root).valid_path_string (a_path)
 		local
 			an_og_path: OG_PATH
-			dt_attr: DT_ATTRIBUTE_NODE
+			dt_attr: detachable DT_ATTRIBUTE_NODE
 			parent_dt_obj: DT_COMPLEX_OBJECT_NODE
-			dt_obj: DT_OBJECT_ITEM
+			dt_obj: detachable DT_OBJECT_ITEM
 		do
 			parent_dt_obj := Current
 			create an_og_path.make_from_string (a_path)
@@ -285,7 +286,7 @@ feature -- Modification
 					else
 						create dt_attr.make_single (an_og_path.item.attr_name)
 					end
-					parent_dt_obj.put_attribute(dt_attr)
+					parent_dt_obj.put_attribute (dt_attr)
 				else
 					dt_attr := parent_dt_obj.attribute_node (an_og_path.item.attr_name)
 				end
@@ -332,12 +333,13 @@ feature -- Modification
 			-- remove attribute node at `attr_name'
 		require
 			Attr_name_valid: has_attribute (attr_name)
-		local
-			attr_node: DT_ATTRIBUTE_NODE
 		do
-			attr_node := attribute_node (attr_name)
-			representation.remove_child (attr_node.representation)
-			attributes.prune (attr_node)
+			if attached attribute_node (attr_name) as attr_node then
+				representation.remove_child (attr_node.representation)
+				attributes.prune (attr_node)
+			end
+		ensure
+			not has_attribute (attr_name)
 		end
 
 feature -- Conversion
@@ -349,7 +351,7 @@ feature -- Conversion
 			Result.append (im_type_name + "[" + id + "] ")
 		end
 
-	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
+	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): detachable ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
@@ -357,7 +359,7 @@ feature -- Conversion
 			as_object_ref := Result
 		end
 
-	as_object_from_string (a_type_name: STRING; make_args: detachable ARRAY[ANY]): ANY
+	as_object_from_string (a_type_name: STRING; make_args: detachable ARRAY[ANY]): detachable ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do

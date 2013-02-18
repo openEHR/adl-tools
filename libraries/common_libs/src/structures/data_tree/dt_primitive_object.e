@@ -5,15 +5,11 @@ note
 				 types include: STRING, INTEGER, REAL, CHARACTER,
 				 BOOLEAN. Occurrences set to the default of {1..1}
 			 ]"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	keywords:    "serialisation, ADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_PRIMITIVE_OBJECT
 
@@ -49,14 +45,14 @@ feature -- Conversion
 			Result := primitive_value_to_dadl_string (value)
 		end
 
-	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_serialised_string (string_converter: FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: detachable FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		local
 			v: ANY
 		do
 			-- if cleaning string, do it first before converting
-			if attached {STRING} value as s and attached cleaner then
-				v := cleaner.item ([s])
+			if attached {STRING} value as s and attached cleaner as c then
+				v := c.item ([s])
 			else
 				v := value
 			end

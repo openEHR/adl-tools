@@ -11,22 +11,10 @@ deferred class OG_NODE
 
 inherit
 	OG_ITEM
-		redefine
-			default_create
-		end
 
 	ITERABLE [OG_ITEM]
 		undefine
-			is_equal, default_create
-		end
-
-feature -- Initialisation
-
-	default_create
-			--
-		do
-			create children.make(0)
-			create children_ordered.make(0)
+			is_equal
 		end
 
 feature -- Access
@@ -41,7 +29,9 @@ feature -- Access
 			if a_node_key.is_empty then
 				Result := first_child
 			else
-				Result := children.item (a_node_key)
+				check attached children.item (a_node_key) as c then
+					Result := c
+				end
 			end
 		end
 
@@ -200,11 +190,19 @@ feature {OG_NODE} -- Implementation
 
 	children: HASH_TABLE [like child_type, STRING]
 			-- next nodes, keyed by node id or attribute name
+		attribute
+			create Result.make (0)
+		end
 
 	children_ordered: ARRAYED_LIST [like child_type]
 			-- reference list of child, in order of insertion (i.e. order of original parsing)
+		attribute
+			create Result.make (0)
+		end
 
 	child_type: OG_ITEM
+		deferred
+		end
 
 invariant
 	Child_lists_valid: children.count = children_ordered.count

@@ -41,7 +41,7 @@ feature -- Factory
 
 	create_c_dv_quantity: C_DV_QUANTITY
 		do
-			create Result.make
+			create Result.default_create
 			if attached property as p then
 				Result.set_property (create {CODE_PHRASE}.make_from_string (p))
 			end

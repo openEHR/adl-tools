@@ -7,12 +7,8 @@ note
 	keywords:    "constraint model"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_PHASE_2_VALIDATOR
 
@@ -36,6 +32,9 @@ inherit
 		export
 			{NONE} all
 		end
+
+create
+	initialise
 
 feature -- Status Report
 
@@ -218,7 +217,9 @@ feature {NONE} -- Implementation
 				if target.definition.has_path (use_refs_csr.key) then
 					convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, target)
 				elseif target.is_specialised and flat_parent.definition.has_path (use_refs_csr.key) then
-					convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, flat_parent)
+					check attached flat_parent as fp then
+						convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, fp)
+					end
 				else
 					add_error ("VUNP", <<use_refs_csr.key>>)
 				end
@@ -230,8 +231,7 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			create invalid_types.make(0)
-			invalid_types.compare_objects
+			invalid_types.wipe_out
 			create def_it.make (target.definition)
 			def_it.do_until_surface (agent structure_validate_node,
 				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := True end)
@@ -253,11 +253,11 @@ feature {NONE} -- Implementation
 			-- update ASSERTION EXPR_ITEM_LEAF object reference nodes with proper type names
 			-- obtained from the AOM objects pointed to
 		local
-			arch_rm_type_name, ref_rm_type_name, arch_path, tail_path: STRING
+			arch_rm_type_name, ref_rm_type_name, arch_path: detachable STRING
+			tail_path: STRING
 			bmm_class: BMM_CLASS_DEFINITION
-			bmm_prop: BMM_PROPERTY_DEFINITION
 			og_tail_path: OG_PATH
-			object_at_matching_path: C_OBJECT
+			object_at_matching_path: detachable C_OBJECT
 		do
 			if target.has_invariants then
 				across target.invariants_index as ref_path_csr loop
@@ -271,17 +271,18 @@ feature {NONE} -- Implementation
 						arch_path := p
 						object_at_matching_path := flat_parent.c_object_at_path (arch_path)
 					end
-					if attached object_at_matching_path then
-						arch_rm_type_name := object_at_matching_path.rm_type_name
+					if attached object_at_matching_path as omp and attached arch_path as ap then
+						arch_rm_type_name := omp.rm_type_name
 						-- if it was a partial match, we have to obtain the real RM type by going into the RM
-						if arch_path.count < ref_path_csr.key.count then
-							tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)
+						if ap.count < ref_path_csr.key.count then
+							tail_path := ref_path_csr.key.substring (ap.count+1, ref_path_csr.key.count)
 							bmm_class := rm_schema.class_definition (arch_rm_type_name)
 							create og_tail_path.make_from_string (tail_path)
 							og_tail_path.start
 							if bmm_class.has_property_path (og_tail_path) then
-								bmm_prop := bmm_class.property_definition_at_path (og_tail_path)
-								ref_rm_type_name := bmm_prop.type.root_class
+								check attached bmm_class.property_definition_at_path (og_tail_path) as bmm_prop then
+									ref_rm_type_name := bmm_prop.type.root_class
+								end
 							else
 								add_error ("VRRLPRM", <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
 							end
@@ -291,9 +292,9 @@ feature {NONE} -- Implementation
 					else
 						add_error ("VRRLPAR", <<ref_path_csr.key>>)
 					end
-					if attached ref_rm_type_name then
+					if attached ref_rm_type_name as rtn then
 						across ref_path_csr.item as expr_leaf_csr loop
-							expr_leaf_csr.item.update_type (ref_rm_type_name)
+							expr_leaf_csr.item.update_type (rtn)
 						end
 					end
 				end
@@ -351,12 +352,15 @@ feature {NONE} -- Implementation
 		end
 
 	parent_slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype
 			-- SIDE-EFFECT: sets is_path_compressible markers on child archetype nodes
 		local
-			co_parent_flat: attached C_OBJECT
+			co_parent_flat: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_flat: STRING
 			ca_parent_flat: C_ATTRIBUTE
@@ -365,48 +369,34 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (a_c_node.path)
 				ca_path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
 				if flat_parent.definition.has_attribute_path (ca_path_in_flat) then
-					ca_parent_flat := flat_parent.definition.c_attribute_at_path (ca_path_in_flat)
+					check attached flat_parent.definition.c_attribute_at_path (ca_path_in_flat) as ca then
+						ca_parent_flat := ca
+					end
 				else -- must be due to an internal ref; look in full attr_path_map
-					ca_parent_flat := flat_parent.c_attr_at_path (ca_path_in_flat)
+					check attached flat_parent.c_attr_at_path (ca_path_in_flat) as ca then
+						ca_parent_flat := ca
+					end
 				end
-				if attached ca_parent_flat then
-					if not ca_child_diff.node_conforms_to (ca_parent_flat, rm_schema) then
-						if ca_child_diff.is_single and not ca_parent_flat.is_single then
-							add_error ("VSAM1", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 
-						elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
-							add_error ("VSAM2", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+				if not ca_child_diff.node_conforms_to (ca_parent_flat, rm_schema) then
+					if ca_child_diff.is_single and not ca_parent_flat.is_single then
+						add_error ("VSAM1", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 
-						else
-							if not ca_child_diff.existence_conforms_to (ca_parent_flat) then
-								if validation_strict or else not ca_child_diff.existence.equal_interval (ca_parent_flat.existence) then
+					elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
+						add_error ("VSAM2", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+
+					else
+						if not ca_child_diff.existence_conforms_to (ca_parent_flat) then
+							check attached ca_child_diff.existence as ccd_ex and then attached ca_parent_flat.existence as cpf_ex then
+								if validation_strict or else not ca_child_diff.existence_matches (ca_parent_flat) then
 									add_error ("VSANCE", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ca_child_diff.existence.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
-										ca_parent_flat.existence.as_string>>)
+										ccd_ex.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
+										cpf_ex.as_string>>)
 								else
 									add_warning ("VSANCE", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ca_child_diff.existence.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
-										ca_parent_flat.existence.as_string>>)
+										ccd_ex.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
+										cpf_ex.as_string>>)
 									ca_child_diff.remove_existence
-									if ca_child_diff.parent.is_path_compressible then
-debug ("validate")
-	io.put_string (" (setting is_path_compressible) %N")
-end
-										ca_child_diff.set_is_path_compressible
-									end
-								end
-							end
-
-							if not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
-								if validation_strict or else not ca_child_diff.cardinality.equal_interval (ca_parent_flat.cardinality) then
-									add_error ("VSANCC", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ca_child_diff.cardinality.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
-										ca_parent_flat.cardinality.as_string>>)
-								else
-									add_warning ("VSANCC", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ca_child_diff.cardinality.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
-										ca_parent_flat.cardinality.as_string>>)
-									ca_child_diff.remove_cardinality
 									if ca_child_diff.parent.is_path_compressible then
 debug ("validate")
 	io.put_string (" (setting is_path_compressible) %N")
@@ -417,24 +407,41 @@ end
 							end
 						end
 
-					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
+						if not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
+							check attached ca_child_diff.cardinality as ccd_card and then attached ca_parent_flat.cardinality as cpf_card then
+								if validation_strict or else not ca_child_diff.cardinality_matches (ca_parent_flat) then
+									add_error ("VSANCC", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+										ccd_card.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
+										cpf_card.as_string>>)
+								else
+									add_warning ("VSANCC", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+										ccd_card.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
+										cpf_card.as_string>>)
+									ca_child_diff.remove_cardinality
+									if ca_child_diff.parent.is_path_compressible then
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
+										ca_child_diff.set_is_path_compressible
+									end
+								end
+							end
+						end
+					end
+
+				elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
 debug ("validate")
 	io.put_string (">>>>> validate: C_ATTRIBUTE in child at " +
 	ca_child_diff.path + " CONGRUENT to parent node " +
 	ca_parent_flat.path + " (setting is_path_compressible) %N")
 end
-						ca_child_diff.set_is_path_compressible
-					end
-				else
-					add_error ("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 2">>)
+					ca_child_diff.set_is_path_compressible
 				end
 
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (car.slot_path)
-				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-
-				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
+				if attached {ARCHETYPE_SLOT} flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as a_slot then
 					if parent_slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error ("VARXS", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
@@ -443,7 +450,7 @@ end
 							add_error ("VARXR", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
-							if attached car.occurrences and then car.occurrences.equal_interval (co_parent_flat.occurrences) then
+							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.equal_interval (par_flat_occ) then
 								if validation_strict then
 									add_error ("VSONCO", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
 										ontology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
@@ -467,14 +474,18 @@ end
 			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
-
-				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+				check attached flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as cpf then
+					co_parent_flat := cpf
+				end
 
 				-- The above won't work in the case where there are multiple alternative objects with no identifiers
 				-- in the flat parent - so we need to do a search based on RM type matching to find the matching C_OBJECT in the flat
+				-- NOTE: ADL wil be changed to disallow this case anyway, so now it needs to be detected and banned
 				if not co_parent_flat.is_root and not co_child_diff.is_addressable and then co_parent_flat.parent.has_non_identified_alternatives then
 					if co_parent_flat.parent.has_child_with_rm_type_name (co_child_diff.rm_type_name) then
-						co_parent_flat := co_parent_flat.parent.child_with_rm_type_name (co_child_diff.rm_type_name)
+						check attached co_parent_flat.parent.child_with_rm_type_name (co_child_diff.rm_type_name) as cpfc then
+							co_parent_flat := cpfc
+						end
 					else
 						-- TODO: (12930) find the closest ancestor node
 						io.put_string ("ARCHETYPE_PHASE_2_VALIDATOR.specialised_node_validate: %
@@ -503,7 +514,9 @@ end
 					-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 					-- we re-assign co_parent_flat to point to the target structure; unless they both are use_nodes, in which case leave them as is
 					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
-						co_parent_flat := flat_parent.c_object_at_path (air_p.path)
+						check attached flat_parent.c_object_at_path (air_p.path) as cpf then
+							co_parent_flat := cpf
+						end
 						if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 							add_error ("VSUNT", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_child_diff.generating_type, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
@@ -532,17 +545,17 @@ end
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							-- if the occurrences interval is just a copy of the one in the flat, treat it as an error only if
 							-- compiling strict, else remove the duplicate and just warn
-							if co_child_diff.occurrences /= Void and then co_child_diff.occurrences.equal_interval (co_parent_flat.occurrences) then
+							if attached co_child_diff.occurrences as child_occ and then attached co_parent_flat.occurrences as par_flat_occ and then child_occ.equal_interval (par_flat_occ) then
 								if validation_strict then
 									add_error ("VSONCO", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.occurrences_as_string,
 										ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
-										co_parent_flat.occurrences.as_string>>)
+										par_flat_occ.as_string>>)
 								else
 									add_warning ("VSONCO", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.occurrences_as_string,
 										ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
-										co_parent_flat.occurrences.as_string>>)
+										par_flat_occ.as_string>>)
 									co_child_diff.remove_occurrences
 									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
 debug ("validate")
@@ -649,7 +662,6 @@ end
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			ca_parent_flat: attached C_ATTRIBUTE
 			flat_parent_path: STRING
 		do
 			-- if it is a C_ARCHETYPE_ROOT, it is either a slot filler or an external reference. If the former, it is
@@ -683,11 +695,12 @@ end
 						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
 						-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
 						-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-						elseif a_c_obj.sibling_order /= Void then
-							create apa.make_from_string(a_c_node.parent.path)
-							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-							if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
-								add_error ("VSSM", <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), a_c_obj.sibling_order.sibling_node_id>>)
+						elseif attached a_c_obj.sibling_order as sib_ord then
+							create apa.make_from_string (a_c_node.parent.path)
+							check attached flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
+								if not ca_parent_flat.has_child_with_id (sib_ord.sibling_node_id) then
+									add_error ("VSSM", <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+								end
 							end
 						else
 debug ("validate")
@@ -713,8 +726,7 @@ end
 		local
 			def_it: C_ITERATOR
 		do
-			create invalid_types.make(0)
-			invalid_types.compare_objects
+			invalid_types.wipe_out
 			create def_it.make (target.definition)
 			def_it.do_until_surface (agent rm_node_validate, agent rm_node_validate_test)
 		end
@@ -723,16 +735,18 @@ end
 			-- perform validation of node against reference model.
 		local
 			arch_parent_attr_type, model_attr_class: STRING
-			co_parent_flat: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then -- now check if this object a valid type of its owning attribute
 					if target.is_specialised and then co.parent.has_differential_path then
-						create apa.make_from_string (co.parent.differential_path)
-						co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-						arch_parent_attr_type := co_parent_flat.rm_type_name
+						check attached co.parent.differential_path as diff_path then
+							create apa.make_from_string (diff_path)
+						end
+						check attached flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as co_parent_flat then
+							arch_parent_attr_type := co_parent_flat.rm_type_name
+						end
 					else
 						arch_parent_attr_type := co.parent.parent.rm_type_name
 					end
@@ -756,9 +770,12 @@ end
 				end
 			elseif attached {C_ATTRIBUTE} a_c_node as ca then
 				if target.is_specialised and then ca.has_differential_path then
-					create apa.make_from_string (ca.differential_path)
-					co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-					arch_parent_attr_type := co_parent_flat.rm_type_name
+					check attached ca.differential_path as diff_path then
+						create apa.make_from_string (diff_path)
+					end
+					check attached flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as co_parent_flat then
+						arch_parent_attr_type := co_parent_flat.rm_type_name
+					end
 				else
 					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
@@ -766,33 +783,33 @@ end
 					add_error ("VCARM", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True), arch_parent_attr_type>>)
 				else
 					rm_prop_def := rm_schema.property_definition (arch_parent_attr_type, ca.rm_attribute_name)
-					if attached ca.existence then
-						if not rm_prop_def.existence.contains (ca.existence) then
-							if not target.is_specialised and rm_prop_def.existence.equal_interval(ca.existence) then
+					if attached ca.existence as ca_ex then
+						if not rm_prop_def.existence.contains (ca_ex) then
+							if not target.is_specialised and rm_prop_def.existence.equal_interval (ca_ex) then
 								add_warning ("WCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-									ca.existence.as_string>>)
+									ca_ex.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
 							else
 								add_error ("VCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-									ca.existence.as_string, rm_prop_def.existence.as_string>>)
+									ca_ex.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
 					end
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
-							if attached ca.cardinality then
-								if not cont_prop.cardinality.contains (ca.cardinality.interval) then
-									if not target.is_specialised and cont_prop.cardinality.equal_interval (ca.cardinality.interval) then
+							if attached ca.cardinality as ca_card then
+								if not cont_prop.cardinality.contains (ca_card.interval) then
+									if not target.is_specialised and cont_prop.cardinality.equal_interval (ca_card.interval) then
 										add_warning ("WCACA", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-											ca.cardinality.interval.as_string>>)
+											ca_card.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
 									else
 										add_error ("VCACA", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-											ca.cardinality.interval.as_string, cont_prop.cardinality.as_string>>)
+											ca_card.interval.as_string, cont_prop.cardinality.as_string>>)
 									end
 								end
 							end
@@ -814,6 +831,10 @@ end
 		end
 
 	invalid_types: ARRAYED_LIST [STRING]
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
 	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- Return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE

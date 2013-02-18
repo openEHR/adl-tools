@@ -12,15 +12,10 @@ note
 				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date time"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ISO8601_DATE
 
@@ -30,16 +25,16 @@ inherit
 			{NONE} all;
 			{ANY} valid_iso8601_date, valid_year, valid_month, valid_day
 		undefine
-			is_equal, out
+			is_equal, out, default_create
 		end
 
 	COMPARABLE
 		redefine
-			out
+			out, default_create
 		end
 
 create
-	make_from_string, make_y, make_ym, make_ymd, make_date
+	make_from_string, make_y, make_ym, make_ymd, make_date, default_create
 
 convert
 	make_date ({DATE}),
@@ -47,18 +42,23 @@ convert
 
 feature -- Initialisation
 
-	make_from_string(str: attached STRING)
+	default_create
+		do
+			make_date (create {DATE}.make_now)
+		end
+
+	make_from_string (str: STRING)
 			-- make from any valid ISO date string
 		require
 			String_valid: valid_iso8601_date(str)
 		do
-			if valid_iso8601_date(str) then
-				deep_copy(iso8601_parser.cached_iso8601_date)
+			make_date (create {DATE}.make_now)
+			if valid_iso8601_date (str) and then attached iso8601_parser.cached_iso8601_date as dt then
+				deep_copy (dt)
 			end
-			value := as_string
 		end
 
-	make_y(y: INTEGER; is_extended_flag: BOOLEAN)
+	make_y (y: INTEGER; is_extended_flag: BOOLEAN)
 			-- make from year only
 		require
 			Year_valid: valid_year(y)
@@ -73,7 +73,7 @@ feature -- Initialisation
 			day_unknown
 		end
 
-	make_ym(y, m: INTEGER; is_extended_flag: BOOLEAN)
+	make_ym (y, m: INTEGER; is_extended_flag: BOOLEAN)
 			-- make from year, month
 		require
 			Year_valid: valid_year(y)
@@ -88,7 +88,7 @@ feature -- Initialisation
 			day_unknown
 		end
 
-	make_ymd(y, m, d: INTEGER; is_extended_flag: BOOLEAN)
+	make_ymd (y, m, d: INTEGER; is_extended_flag: BOOLEAN)
 			-- make from year, month day
 		require
 			Year_valid: valid_year(y)
@@ -102,7 +102,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_date (a_date: attached DATE)
+	make_date (a_date: DATE)
 			-- make into string of ISO8601 format "YYYY-MM-DD"
 		do
 			make_ymd (a_date.year, a_date.month, a_date.day, True)
@@ -110,7 +110,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: attached STRING
+	value: STRING
 			-- ISO8601 string for date; always equal to result of as_string
 
 	year: INTEGER
@@ -174,7 +174,7 @@ feature -- Conversion
 			Result := (create {DATE}.make(year, m, d)).days
 		end
 
-	to_date: attached DATE
+	to_date: DATE
 			-- convert to DATE type
 		local
 			y, m, d: INTEGER
@@ -197,13 +197,13 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- express as string of ISO8601 format
 		local
 			s: STRING
 		do
 			create Result.make(0)
-			Result.append(year.out)
+			Result.append (year.out)
 
 			if not month_unknown then
 				if is_extended then
@@ -236,13 +236,13 @@ feature -- Output
 		end
 
 invariant
-	Year_valid: valid_year(year)
-	Month_valid: not month_unknown implies valid_month(month)
-	Day_valid: not day_unknown implies valid_day(year, month, day)
+	Year_valid: valid_year (year)
+	Month_valid: not month_unknown implies valid_month (month)
+	Day_valid: not day_unknown implies valid_day (year, month, day)
 
 	Partial_validity: month_unknown implies day_unknown
 
-	Value_validity: value.is_equal(as_string)
+	Value_validity: value.is_equal (as_string)
 
 end
 

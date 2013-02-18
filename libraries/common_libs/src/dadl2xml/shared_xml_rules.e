@@ -4,7 +4,7 @@ note
 	keywords:    "serialisation, XML"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 class SHARED_XML_RULES
@@ -18,20 +18,23 @@ inherit
 
 feature -- Access
 
-	xml_rules: XML_RULES
+	xml_rules: detachable XML_RULES
 			-- set of rules to do with IM class, keyed by class name to which they apply
+		local
+			xr: XML_RULES
 		do
 			if xml_rules_out_of_date then
 				if attached {XML_RULES} xml_rules_cfg.object_value ("/", "XML_RULES") as x then
-					xml_rules_cache.put(x)
+					xr := x
 				else
-					xml_rules_cache.put (create {XML_RULES}.make)
+					create xr.make
 				end
+				xml_rules_cache.put (xr)
 			end
 			Result := xml_rules_cache.item
 		end
 
-	xml_rules_cache: CELL [XML_RULES]
+	xml_rules_cache: CELL [detachable XML_RULES]
 		once
 			create Result.put (Void)
 		end

@@ -3,16 +3,11 @@ note
 	description: "[
 				 Definition of a generic parameter in a class definition of a generic type.
 				 ]"
-	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	keywords:    "model, object"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_GENERIC_PARAMETER_DEFINITION
 
@@ -31,11 +26,12 @@ feature -- Initialisation
 			any_class_definition := any_type_def
 		end
 
-	make_constrained (a_name: STRING; a_conforms_to_type: BMM_CLASS_DEFINITION)
+	make_constrained (a_name: STRING; a_conforms_to_type, any_type_def: BMM_CLASS_DEFINITION)
 			-- any_type is a reference to the Any definition from this schema
 		do
 			name := a_name
 			conforms_to_type := a_conforms_to_type
+			any_class_definition := any_type_def
 		end
 
 feature -- Access (attributes from schema)
@@ -52,8 +48,8 @@ feature -- Access (attributes from schema)
 	semantic_class: BMM_CLASS_DEFINITION
 			-- the 'design' class of this type, ignoring containers, multiplicity etc.
 		do
-			if is_constrained then
-				Result := conforms_to_type
+			if attached flattened_conforms_to_type as fctt then
+				Result := fctt
 			else
 				Result := any_class_definition
 			end
@@ -77,17 +73,17 @@ feature -- Access
 		do
 			create Result.make(0)
 			Result.compare_objects
-			if not is_constrained then
-				Result.extend (Any_type)
-			else
+			if is_constrained then
 				Result.append (flattened_conforms_to_type.flattened_type_list)
+			else
+				Result.extend (Any_type)
 			end
 		end
 
 	type_category: STRING
 			-- generate a type category of main target type from Type_cat_xx values
 		do
-			if is_constrained then
+			if attached flattened_conforms_to_type then
 				Result := Type_cat_constrained_generic_parameter
 			else
 				Result := Type_cat_generic_parameter
@@ -96,8 +92,8 @@ feature -- Access
 
 	type_substitutions: ARRAYED_SET [STRING]
 		do
-			if is_constrained then
-				Result := conforms_to_type.type_substitutions
+			if attached flattened_conforms_to_type then
+				Result := flattened_conforms_to_type.type_substitutions
 			else
 				Result := any_class_definition.type_substitutions
 			end

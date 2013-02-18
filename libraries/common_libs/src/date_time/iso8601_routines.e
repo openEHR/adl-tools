@@ -2,15 +2,10 @@ note
 	component:   "openEHR re-usable library"
 	description: "ISO 8601 Date/time routines"
 	keywords:    "date time"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ISO8601_ROUTINES
 
@@ -31,7 +26,7 @@ feature -- Definitions
 
 feature -- Conversion
 
-	date_to_iso8601_string (a_date: attached DATE): attached STRING
+	date_to_iso8601_string (a_date: DATE): STRING
 			-- make into string of ISO8601 format "YYYY-MM-DD"
 		do
 			Result := (create {ISO8601_DATE}.make_date (a_date)).as_string
@@ -39,7 +34,7 @@ feature -- Conversion
 			Result_valid: valid_iso8601_date(Result)
 		end
 
-	iso8601_string_to_date (str: attached STRING): attached DATE
+	iso8601_string_to_date (str: STRING): DATE
 			-- make from string using ISO8601 format "YYYY-MM-DD"
 		require
 			str_valid: valid_iso8601_date(str)
@@ -47,7 +42,7 @@ feature -- Conversion
 			Result := (create {ISO8601_DATE}.make_from_string(str)).to_date
 		end
 
-	time_to_iso8601_string (a_time: attached TIME): attached STRING
+	time_to_iso8601_string (a_time: TIME): STRING
 			-- make into string using ISO8601 format "Thh:mm:ss[.ssss]"
 		do
 			Result := (create {ISO8601_TIME}.make_time (a_time)).as_string
@@ -55,7 +50,7 @@ feature -- Conversion
 			Result_valid: valid_iso8601_time(Result)
 		end
 
-	iso8601_string_to_time (str: attached STRING): attached TIME
+	iso8601_string_to_time (str: STRING): TIME
 			-- make from string using ISO8601 format "Thh:mm:ss[.ssss]"
 		require
 			str_valid: valid_iso8601_time(str)
@@ -63,7 +58,7 @@ feature -- Conversion
 			Result := (create {ISO8601_TIME}.make_from_string(str)).to_time
 		end
 
-	date_time_to_iso8601_string (a_dt: attached DATE_TIME): attached STRING
+	date_time_to_iso8601_string (a_dt: DATE_TIME): STRING
 			-- make into string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
 		do
 			Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
@@ -71,7 +66,7 @@ feature -- Conversion
 			Result_valid: valid_iso8601_date_time(Result)
 		end
 
-	iso8601_string_to_date_time (str: attached STRING): attached DATE_TIME
+	iso8601_string_to_date_time (str: STRING): DATE_TIME
 			-- make from string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
 		require
 			str_valid: valid_iso8601_date_time (str)
@@ -79,7 +74,7 @@ feature -- Conversion
 			Result := (create {ISO8601_DATE_TIME}.make_from_string(str)).to_date_time
 		end
 
-	duration_to_iso8601_string (a_dur: attached DATE_TIME_DURATION): attached STRING
+	duration_to_iso8601_string (a_dur: DATE_TIME_DURATION): STRING
 			-- make into string using ISO8601 format "PNNDTNNhNNmNNs"
 		do
 			Result := (create {ISO8601_DURATION}.make_date_time_duration (a_dur)).as_string
@@ -87,7 +82,7 @@ feature -- Conversion
 			Result_valid: valid_iso8601_duration(Result)
 		end
 
-	iso8601_string_to_duration (str: attached STRING): attached DATE_TIME_DURATION
+	iso8601_string_to_duration (str: STRING): DATE_TIME_DURATION
 			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
 			str_valid: valid_iso8601_duration (str)
@@ -95,7 +90,7 @@ feature -- Conversion
 			Result := (create {ISO8601_DURATION}.make_from_string (str)).to_date_time_duration
 		end
 
-	iso8601_string_to_comparable_duration (str: attached STRING): attached DATE_TIME_DURATION
+	iso8601_string_to_comparable_duration (str: STRING): DATE_TIME_DURATION
 			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
 			str_valid: valid_iso8601_duration (str)
@@ -114,7 +109,7 @@ feature -- Validity
 --			Result := iso8601_parser.valid_iso8601_string(str)
 --		end
 
-	valid_iso8601_time(str: STRING): BOOLEAN
+	valid_iso8601_time (str: STRING): BOOLEAN
 			-- True if string in one of the forms:
 			--	hh
 			--	hhmm
@@ -127,34 +122,28 @@ feature -- Validity
 			--	Z
 			--	+hhmm
 			--	-hhmm
-		require
-			str /= Void
 		do
-			Result := iso8601_parser.valid_iso8601_time(str)
+			Result := iso8601_parser.valid_iso8601_time (str)
 		end
 
-	valid_iso8601_date(str: STRING): BOOLEAN
+	valid_iso8601_date (str: STRING): BOOLEAN
 			-- True if string in one of the forms
 			--	YYYY
 			--	YYYYMM
 			--	YYYY-MM
 			--	YYYYMMDD
 			--	YYYY-MM-DD
-		require
-			str /= Void
 		do
 			Result := iso8601_parser.valid_iso8601_date(str)
 		end
 
-	valid_iso8601_date_time(str: STRING): BOOLEAN
+	valid_iso8601_date_time (str: STRING): BOOLEAN
 			-- True if string in form "YYYY-MM-DDThh:mm:ss[,sss]"
-		require
-			str /= Void
 		do
-			Result := iso8601_parser.valid_iso8601_date_time(str)
+			Result := iso8601_parser.valid_iso8601_date_time (str)
 		end
 
-	valid_iso8601_duration(str: attached STRING): BOOLEAN
+	valid_iso8601_duration (str: STRING): BOOLEAN
 			-- True if string in form "PnDTnHnMnS"
 		do
 			Result := iso8601_parser.valid_iso8601_duration(str)
@@ -178,25 +167,25 @@ feature -- Validity
 			Result := d >= 1 and d <= days_in_month(m, y)
 		end
 
-	valid_hour(h, m, s: INTEGER): BOOLEAN
+	valid_hour (h, m, s: INTEGER): BOOLEAN
 			-- True if (h >= 0 and h < Hours_in_day) or (h = Hours_in_day and m = 0 and s = 0)
 		do
 			Result := (h >= 0 and h < Hours_in_day) or (h = Hours_in_day and m = 0 and s = 0)
 		end
 
-	valid_minute(m: INTEGER): BOOLEAN
+	valid_minute (m: INTEGER): BOOLEAN
 			-- True if m >= 0 and m < Minutes_in_hour
 		do
 			Result := m >= 0 and m < Minutes_in_hour
 		end
 
-	valid_second(s: INTEGER): BOOLEAN
+	valid_second (s: INTEGER): BOOLEAN
 			-- True if s >= 0 and s < Seconds_in_minute
 		do
 			Result := s >= 0 and s < Seconds_in_minute
 		end
 
-	valid_fractional_second(fs: DOUBLE): BOOLEAN
+	valid_fractional_second (fs: DOUBLE): BOOLEAN
 			-- True if fs >= 0.0 and fs < 1.0
 		do
 			Result := fs >= 0.0 and fs < 1.0

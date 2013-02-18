@@ -1,18 +1,16 @@
 note
 	component:   "openEHR re-usable library"
 	description: "Definition concepts for the basic meta-model"
-	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
+	keywords:    "basic meta-model"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class BMM_DEFINITIONS
+
+inherit
+	BASIC_DEFINITIONS
 
 feature -- Software-dependent definitions
 
@@ -22,6 +20,8 @@ feature -- Software-dependent definitions
 			-- found, the `Assumed_bmm_version' is used.
 
 feature -- Definitions
+
+	Ontological_path_separator: STRING = "/"
 
 	Section_separator: CHARACTER = '-'
 			-- separator between sections in an archetype identifier axis
@@ -39,9 +39,13 @@ feature -- Definitions
 	Generic_constraint_delimiter: CHARACTER = ':'
 			-- appears between 'T' and constraining type if there is one
 
-	Unknown_package_name: STRING = "unknown_package"
+	Unknown_package_name: STRING = "(uninitialised)"
 
-	Any_type: STRING = "Any"
+	Unknown_schema_id: STRING = "(uninitialised)"
+
+	Unknown_schema_name: STRING = "(uninitialised)"
+
+	Unknown_type_name: STRING = "UNKNOWN"
 
 	Type_cat_primitive_class: STRING = "class_primitive"
 	Type_cat_concrete_class: STRING = "class_concrete"
@@ -107,7 +111,16 @@ feature -- Definitions
 
 feature -- Comparison
 
-	is_well_formed_type_name (a_type_name: attached STRING): BOOLEAN
+	valid_meta_data (a_meta_data: HASH_TABLE [STRING, STRING]): BOOLEAN
+			-- True if `a_meta_data' is valid for creation of a SCHEMA_DESCRIPTOR
+		do
+			Result := attached a_meta_data.item (metadata_rm_publisher) and
+				attached a_meta_data.item (metadata_schema_name) and
+				attached a_meta_data.item (metadata_rm_release) and
+				attached a_meta_data.item (Metadata_schema_path)
+		end
+
+	is_well_formed_type_name (a_type_name: STRING): BOOLEAN
 			-- True if the type name has a valid form, either a single name or a well-formed generic
 		require
 			Valid_type_name: not a_type_name.is_empty
@@ -115,7 +128,7 @@ feature -- Comparison
 			Result := well_formed_type_name_regex.matches(a_type_name)
 		end
 
-	is_well_formed_class_name (a_class_name: attached STRING): BOOLEAN
+	is_well_formed_class_name (a_class_name: STRING): BOOLEAN
 			-- True if the class name has a valid form
 		require
 			Valid_class_name: not a_class_name.is_empty
@@ -123,7 +136,7 @@ feature -- Comparison
 			Result := well_formed_class_name_regex.matches(a_class_name)
 		end
 
-	is_well_formed_generic_type_name (a_type_name: attached STRING): BOOLEAN
+	is_well_formed_generic_type_name (a_type_name: STRING): BOOLEAN
 			-- True if the type name includes a generic parameters part; should be used after is_well_formed_type_name
 		require
 			Valid_type_name: is_well_formed_class_name(a_type_name)
@@ -143,7 +156,7 @@ feature -- Comparison
 
 feature -- Conversion
 
-	create_schema_id (a_model_publisher, a_schema_name, a_model_release: STRING): attached STRING
+	create_schema_id (a_model_publisher, a_schema_name, a_model_release: STRING): STRING
 			-- Derived name of schema in 3 part form model_publisher '_' a_schema_name '_' model_release.
 			-- Any or all arguments can be Void or empty; for each missing element,
 			-- result contains "unknown", e.g. "unknown_test_1.0"
@@ -173,7 +186,7 @@ feature -- Conversion
 			Result_not_empty: not Result.is_empty
 		end
 
-	package_base_name (a_package_name: attached STRING): attached STRING
+	package_base_name (a_package_name: STRING): STRING
 			-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
 		do
 			if a_package_name.has (package_name_delimiter) then
@@ -183,7 +196,7 @@ feature -- Conversion
 			end
 		end
 
-	publisher_qualified_rm_closure_key (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
+	publisher_qualified_rm_closure_key (a_rm_publisher, a_rm_closure_name: STRING): STRING
 			-- lower-case form of `publisher_qualified_rm_closure_name'
 		require
 			Model_publisher_valid: not a_rm_publisher.is_empty
@@ -194,7 +207,7 @@ feature -- Conversion
 			Is_lower: Result.same_string (Result.as_lower)
 		end
 
-	publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
+	publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name: STRING): STRING
 			-- mixed-case standard model-package name string, e.g. "openEHR-EHR" for UI display
 			-- uses `package_base_name' to obtain terminal form of package name
 		require
@@ -204,7 +217,7 @@ feature -- Conversion
 			Result := a_rm_publisher + section_separator.out + package_base_name (a_rm_closure_name).as_upper
 		end
 
-	rm_closure_qualified_class_name (a_rm_closure_name, a_class_name: attached STRING): attached STRING
+	rm_closure_qualified_class_name (a_rm_closure_name, a_class_name: STRING): STRING
 			-- generate a standard model-class name string, e.g. "ehr-observation" for use in finding RM schemas
 		require
 			Rm_closure_name_valid: not a_rm_closure_name.is_empty
@@ -213,7 +226,7 @@ feature -- Conversion
 			Result := a_rm_closure_name + section_separator.out + a_class_name
 		end
 
-	type_name_as_flat_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
+	type_name_as_flat_list (a_type_name: STRING): ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings
 		require
 			Valid_type_name: is_well_formed_type_name(a_type_name)
@@ -247,7 +260,7 @@ feature -- Conversion
 			Result.object_comparison
 		end
 
-	type_name_root_type (a_type_name: attached STRING): attached STRING
+	type_name_root_type (a_type_name: STRING): STRING
 			-- return the root type of `a_type_name', which is itself for non-generic types, or else
 			-- the first type for generic types
 		require
@@ -267,7 +280,7 @@ feature -- Conversion
 			end
 		end
 
-	type_to_class (a_type_name: attached STRING): STRING
+	type_to_class (a_type_name: STRING): STRING
 			-- convert a type name which might have a generic part to a simple class name
 		require
 			Type_valid: not a_type_name.is_empty
@@ -288,13 +301,13 @@ feature -- Conversion
 
 feature {NONE} -- Implementation
 
-	well_formed_type_name_regex: attached LX_DFA_REGULAR_EXPRESSION
+	well_formed_type_name_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for well-formed type names
 		once
 			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+(< *[a-z][a-z0-9_]+( *, *[a-z][a-z0-9_]+)*>)?")
 		end
 
-	well_formed_class_name_regex: attached LX_DFA_REGULAR_EXPRESSION
+	well_formed_class_name_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for well-formed class names
 		once
 			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+")

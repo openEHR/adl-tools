@@ -22,7 +22,6 @@ feature {NONE} -- Definitions
 			-- all primitive atomic types used in dADL / DT structures
 		once
 			create Result.make (0)
-			Result.compare_objects
 
 			Result.extend (({NATURAL}).type_id)
 			Result.extend (({NATURAL_8}).type_id)
@@ -70,7 +69,6 @@ feature {NONE} -- Definitions
 			-- e.g. types like LIST[INTEGER] are there, but not LINKED_LIST[INTEGER]
 		once
 			Create Result.make (0)
-			Result.compare_objects
 
 			Result.extend (({SEQUENCE [NATURAL]}).type_id)
 			Result.extend (({SEQUENCE [NATURAL_8]}).type_id)
@@ -117,7 +115,6 @@ feature {NONE} -- Definitions
 			-- the list of dynamic types of intervals of primitives
 		once
 			Create Result.make (0)
-			Result.compare_objects
 
 			Result.extend (({INTERVAL [NATURAL]}).type_id)
 			Result.extend (({INTERVAL [NATURAL_8]}).type_id)
@@ -208,19 +205,22 @@ feature -- Conversion
 			-- sorted list or whatever) conforms. Returns 0 if not found
 		require
 			Type_valid: a_type_id >= 0
+		local
+			att_type_id: INTEGER
 		do
-			if dt_primitive_sequence_conforming_types.has(a_type_id) then
-				Result := dt_primitive_sequence_conforming_types.item(a_type_id)
+			att_type_id := attached_type (a_type_id)
+			if dt_primitive_sequence_conforming_types.has (att_type_id) then
+				Result := dt_primitive_sequence_conforming_types.item (att_type_id)
 			else
-				if dt_primitive_sequence_types.has(a_type_id) then
-					Result := a_type_id
+				if dt_primitive_sequence_types.has (att_type_id) then
+					Result := att_type_id
 				else
 					from dt_primitive_sequence_types.start until dt_primitive_sequence_types.off or Result /= 0 loop
 debug ("DT-types")
-	io.put_string(generator + ".primitive_sequence_conforming_type: call to type_conforms_to(" +
-		type_name_of_type(a_type_id) + ", " + type_name_of_type(dt_primitive_sequence_types.item) + "):")
+	io.put_string (generator + ".primitive_sequence_conforming_type: call to field_conforms_to (" +
+		type_name_of_type (a_type_id) + " (attached form " + type_name_of_type (att_type_id) + "), " + type_name_of_type (dt_primitive_sequence_types.item) + "):")
 end
-						if type_conforms_to(a_type_id, dt_primitive_sequence_types.item) then
+						if field_conforms_to (att_type_id, dt_primitive_sequence_types.item) then
 							Result := dt_primitive_sequence_types.item
 debug ("DT-types")
 	io.put_string(" True%N")
@@ -234,12 +234,12 @@ end
 					end
 				end
 				if Result /= 0 then
-					dt_primitive_sequence_conforming_types.put(Result, a_type_id)
+					dt_primitive_sequence_conforming_types.put (Result, att_type_id)
 				end
 			end
 		end
 
-	dt_dynamic_type_from_string (a_type_str: attached STRING): INTEGER
+	dt_dynamic_type_from_string (a_type_str: STRING): INTEGER
 		do
 			if not dt_dynamic_types.has (a_type_str) then
 				dt_dynamic_types.put (dynamic_type_from_string (a_type_str), a_type_str)
@@ -249,81 +249,78 @@ end
 
 feature -- Status Report
 
-	is_dt_primitive_atomic_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_atomic_type (a_type_id: INTEGER): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := dt_primitive_atomic_types.has(a_type_id)
+			Result := dt_primitive_atomic_types.has (attached_type (a_type_id))
 		end
 
-	is_dt_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_sequence_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := dt_primitive_sequence_types.has(a_type_id)
+			Result := dt_primitive_sequence_types.has (attached_type (a_type_id))
 		end
 
-	is_dt_primitive_interval_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_interval_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := dt_primitive_interval_types.has(a_type_id)
+			Result := dt_primitive_interval_types.has (attached_type (a_type_id))
 		end
 
-	is_dt_primitive_sequence_conforming_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_sequence_conforming_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is either any of the primitive_sequence types, or else
 			-- a type which conforms to one of those types
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := dt_primitive_sequence_conforming_type(a_type_id) /= 0
+			Result := dt_primitive_sequence_conforming_type (attached_type (a_type_id)) /= 0
 		end
 
-	has_dt_primitive_atomic_type(an_obj: ANY): BOOLEAN
+	has_dt_primitive_atomic_type (an_obj: ANY): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
-		require
-			Object_valid: an_obj /= Void
 		do
-			Result := is_dt_primitive_atomic_type(dynamic_type(an_obj))
+			Result := is_dt_primitive_atomic_type (attached_type (dynamic_type (an_obj)))
 		end
 
 	has_dt_primitive_sequence_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
-		require
-			Object_valid: an_obj /= Void
 		do
-			Result := is_dt_primitive_sequence_type(dynamic_type(an_obj))
+			Result := is_dt_primitive_sequence_type (attached_type (dynamic_type(an_obj)))
 		end
 
 	has_dt_primitive_interval_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
-		require
-			Object_valid: an_obj /= Void
 		do
-			Result := is_dt_primitive_interval_type(dynamic_type(an_obj))
+			Result := is_dt_primitive_interval_type (attached_type (dynamic_type(an_obj)))
 		end
 
 	is_eiffel_container_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which is a SEQUENCE or HASH_TABLE, which are the only
 			-- Eiffel CONTAINERs mapped by DT structures
+		local
+			att_type_id: INTEGER
 		do
+			att_type_id := attached_type (a_type_id)
 debug ("DT-types")
-	io.put_string(generator +
-	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
-	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	io.put_string (generator +
+	".is_container_type: call to field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (sequence_any_type_id) + "), field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
-			Result := type_conforms_to (a_type_id, sequence_any_type_id) or
-				type_conforms_to (a_type_id, hash_table_any_hashable_type_id)
+			Result := field_conforms_to (att_type_id, sequence_any_type_id) or
+				field_conforms_to (att_type_id, hash_table_any_hashable_type_id)
 debug ("DT-types")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
@@ -331,40 +328,43 @@ end
 
 	is_eiffel_interval_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which conforms to INTERVAL[ANY]
+		local
+			att_type_id: INTEGER
 		do
+			att_type_id := attached_type (a_type_id)
 debug ("DT-types")
 	io.put_string(generator +
-	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
-	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	".is_container_type: call to field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (sequence_any_type_id) + "), field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
-			Result := type_conforms_to (a_type_id, interval_any_type_id)
+			Result := field_conforms_to (att_type_id, interval_any_type_id)
 debug ("DT-types")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
 		end
 
-	is_dadl_inferred_primitive_sequence_type (type_id: INTEGER): BOOLEAN
+	is_dadl_inferred_primitive_sequence_type (a_type_id: INTEGER): BOOLEAN
+		local
+			att_type_id: INTEGER
 		do
-			Result := dadl_inferred_primitive_sequence_types.has (type_id) or dadl_inferred_primitive_sequence_conforming_types.has (type_id)
+			att_type_id := attached_type (a_type_id)
+			Result := dadl_inferred_primitive_sequence_types.has (att_type_id) or dadl_inferred_primitive_sequence_conforming_types.has (att_type_id)
 			if not Result then
-				from dadl_inferred_primitive_sequence_types.start until dadl_inferred_primitive_sequence_types.off or type_conforms_to (type_id, dadl_inferred_primitive_sequence_types.item) loop
-					dadl_inferred_primitive_sequence_types.forth
-				end
-				Result := not dadl_inferred_primitive_sequence_types.off
+				Result := across dadl_inferred_primitive_sequence_types as seq_types_csr some field_conforms_to (att_type_id, seq_types_csr.item) end
 				if Result then
-					dadl_inferred_primitive_sequence_conforming_types.put (dadl_inferred_primitive_sequence_types.item, type_id)
+					dadl_inferred_primitive_sequence_conforming_types.put (dadl_inferred_primitive_sequence_types.item, att_type_id)
 				end
 			end
 		end
 
 feature -- Modification
 
-	add_custom_dt_dynamic_type_from_string (a_type_str: attached STRING; a_type_id: INTEGER)
+	add_custom_dt_dynamic_type_from_string (a_type_str: STRING; a_type_id: INTEGER)
 			-- add any custom correspondences that will fail due to INTERNAL.dynamic_type_from_string being
 			-- used on raw type strings read from the environment, e.g. files
 		do
-			dt_dynamic_types.force (a_type_id, a_type_str)
+			dt_dynamic_types.force (attached_type (a_type_id), a_type_str)
 		end
 
 feature {NONE} -- Implementation

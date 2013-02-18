@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class HTML_SERIALISATION_PROFILE
 
@@ -74,8 +70,16 @@ feature {ANY_SERIALISER} -- Factory
 			-- apply `a_style' to `elem', using XML 'class' attribute
 		do
 			create Result.make(0)
-			Result.append (format_items.item (FMT_START_SPAN) + elem + format_items.item (FMT_END_SPAN))
-			Result.replace_substring_all ("$attrs", "class=" + styles.item (a_style))
+			if attached format_items.item (FMT_START_SPAN) as fmt_ss then
+				Result.append (fmt_ss)
+			end
+			Result.append (elem)
+			if attached format_items.item (FMT_END_SPAN) as fmt_es then
+				Result.append (fmt_es)
+			end
+			if attached styles.item (a_style) as style then
+				Result.replace_substring_all ("$attrs", "class=" + style)
+			end
 		end
 
 feature {NONE} -- Implementation

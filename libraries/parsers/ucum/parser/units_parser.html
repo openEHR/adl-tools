@@ -1,0 +1,129 @@
+<html>
+<head>
+	<title>Grammar</title>
+	<style type="text/css">
+	<!--
+	body {
+		font-family: Verdana,Georgia,Geneva,sans serif;
+		font-size: 11pt;
+	}
+	a:link {
+		color: green;
+	}
+	a:visited {
+		color: green;
+	}
+	a:hover {
+		color: white;
+		background-color: blue;
+	}
+	a:active {
+		color: red;
+	}
+	.lhs {
+		font-weight: bold;
+	}
+	.rhs {
+		margin: 0% 0% 0% 3%;
+	}
+	.empty {
+		color: gray;
+	}
+	.literal_token {
+		font-family: Courier New,Courier; 
+		color: blue;
+	}
+	.token {
+		font-family: Courier New,Courier; 
+		font-style: italic;
+		color: black;
+	}
+	.rule {
+		margin: 2% 0% 0% 1%;
+	}
+	.lhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: navy;
+	}
+	.rhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: green;
+	}
+	-->
+	</style>
+</head>
+<body>
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="input">input</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#units">units</a> </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="units">units</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#units_expression">units_expression</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#units_expression">units_expression</a> </span><span class="rhs_variable"><a href="#annotation">annotation</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="units_expression">units_expression</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#units_item">units_item</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#units_expression">units_expression</a> </span><span class="literal_token">&#42; </span><span class="rhs_variable"><a href="#units_item">units_item</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#units_expression">units_expression</a> </span><span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#units_item">units_item</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="units_item">units_item</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#unit_ref">unit_ref</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#unit_ref">unit_ref</a> </span><span class="literal_token">&#94; </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="unit_ref">unit_ref</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_IDENTIFIER </span></div>
+<div class="rhs">
+| <span class="token">V_IDENTIFIER </span><span class="rhs_variable"><a href="#suffix">suffix</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="annotation">annotation</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_START_ANNOT </span><span class="token">V_IDENTIFIER </span><span class="token">SYM_END_ANNOT </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="suffix">suffix</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_START_SUFFIX </span><span class="token">V_IDENTIFIER </span><span class="token">SYM_END_SUFFIX </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="integer_value">integer_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_INTEGER </span></div>
+<div class="rhs">
+| <span class="literal_token">&#43; </span><span class="token">V_INTEGER </span></div>
+<div class="rhs">
+| <span class="literal_token">&#45; </span><span class="token">V_INTEGER </span></div>
+</div>
+
+</body>
+</html>

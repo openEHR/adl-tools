@@ -16,7 +16,7 @@ class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, out, enter_subtree, exit_subtree, node_conforms_to
+			out, enter_subtree, exit_subtree, node_conforms_to
 		end
 
 create
@@ -26,17 +26,17 @@ feature -- Initialisation
 
 	make (an_item: C_PRIMITIVE)
 		do
-			default_create
 			item := an_item
 			rm_type_name := an_item.rm_type_name
-			create representation.make_anonymous (Current)
+			create representation_cache.make_anonymous
+			representation_cache.set_content (Current)
 		end
 
 	make_any (an_rm_type_name: STRING)
 		do
-			default_create
 			rm_type_name := an_rm_type_name
-			create representation.make_anonymous (Current)
+			create representation_cache.make_anonymous
+			representation_cache.set_content (Current)
 		end
 
 feature -- Access
@@ -100,24 +100,20 @@ feature -- Output
 			Result := as_string
 		end
 
-feature -- Representation
-
-	representation: OG_OBJECT_LEAF
-
 feature -- Visitor
 
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.start_c_primitive_object(Current, depth)
+			precursor (visitor, depth)
+			visitor.start_c_primitive_object (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor (visitor, depth)
-			visitor.end_c_primitive_object(Current, depth)
+			visitor.end_c_primitive_object (Current, depth)
 		end
 
 invariant

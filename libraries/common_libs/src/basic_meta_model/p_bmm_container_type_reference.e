@@ -8,10 +8,6 @@ note
 	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class P_BMM_CONTAINER_TYPE_REFERENCE
 
 inherit
@@ -22,12 +18,18 @@ feature -- Access
 	type: STRING
 			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (unknown_type_name)
+		end
 
 	container_type: STRING
 			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (unknown_type_name)
+		end
 
-	bmm_container_type_reference: BMM_CONTAINER_TYPE_REFERENCE
+	bmm_container_type_reference: detachable BMM_CONTAINER_TYPE_REFERENCE
 		note
 			option: transient
 		attribute
@@ -37,7 +39,9 @@ feature -- Factory
 
 	create_bmm_container_type_reference (a_bmm_schema: BMM_SCHEMA)
 		do
-			create bmm_container_type_reference.make (a_bmm_schema.class_definition (type), a_bmm_schema.class_definition (container_type))
+			if attached a_bmm_schema.class_definition (type) as type_class_def and attached a_bmm_schema.class_definition (container_type) as cont_type_class_def then
+				create bmm_container_type_reference.make (type_class_def, cont_type_class_def)
+			end
 		end
 
 feature -- Output

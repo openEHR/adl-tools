@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on ordinal quantity"
 	keywords:    "ordinal, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_DV_ORDINAL
 
@@ -21,7 +16,7 @@ inherit
 		end
 
 create
-	make, make_dt
+	make_dt, default_create
 
 feature -- Access
 
@@ -37,18 +32,20 @@ feature -- Access
 			end
 		end
 
-	item_at_ordinal (i: INTEGER): ORDINAL
+	item_at_ordinal (i: INTEGER): detachable ORDINAL
 			-- get the item in the list which has the ordinal value i
 		require
 			Not_any_allowed: not any_allowed
 			Valid_index: has_item(i)
 		do
-			Result := index.item(i)
+			if attached index as idx then
+				Result := idx.item(i)
+			end
 		end
 
 feature -- Statistics
 
-	constrained_rm_attributes: attached ARRAYED_SET [STRING]
+	constrained_rm_attributes: ARRAYED_SET [STRING]
 			-- report which attributes of the equivalent DV_ORDINAL are being constrained here
 		do
 			create Result.make (0)
@@ -69,8 +66,8 @@ feature -- Source Control
 			-- from an outside terminology, there is no way to know definitively.
 		do
 			create Result.make (ss_propagated)
-			if attached items then
-				across items as items_csr loop
+			if attached items as att_items then
+				across att_items as items_csr loop
 					if items_csr.item.symbol.is_local then
 						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items_csr.item.symbol.code_string, spec_level))
 					end
@@ -97,18 +94,14 @@ feature -- Status Report
 	has_code_phrase (code_phrase: CODE_PHRASE): BOOLEAN
 			-- Is `code_phrase' in one of the ordinals in `index'?
 		do
-			if index /= Void then
-				from index.start until Result or index.off loop
-					Result := index.item_for_iteration.symbol.is_equal (code_phrase)
-					index.forth
-				end
-			end
+			Result := attached index as att_index and then
+				across att_index as idx_csr some idx_csr.item.symbol.is_equal (code_phrase) end
 		end
 
 	has_item (ordinal_value: INTEGER): BOOLEAN
 			-- Is `ordinal_value' one of the keys in `index'?
 		do
-			Result := index /= Void and then index.has (ordinal_value)
+			Result := attached index as att_index and then att_index.has (ordinal_value)
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN
@@ -127,9 +120,9 @@ feature -- Comparison
 			if precursor (other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
-				elseif not any_allowed then
-					if items.count <= other.items.count then
-						Result := not across items as items_csr some other.has_item (items_csr.item.value) end
+				elseif attached items as att_items and attached other.items as att_other_items then
+					if att_items.count <= att_other_items.count then
+						Result := not across att_items as items_csr some other.has_item (items_csr.item.value) end
 					end
 				end
 			end
@@ -137,28 +130,41 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_item (an_ordinal: attached ORDINAL)
+	add_item (an_ordinal: ORDINAL)
 			-- add an ordinal to the list
 		require
 			An_ordinal_valid: not any_allowed implies not has_item(an_ordinal.value)
+		local
+			att_index: attached like index
+			att_items: attached like items
 		do
-			if items = Void then
-				create items.make
-				create index.make(0)
+			if attached items as i and attached index as idx then
+				att_items := i
+				att_index := idx
+			else
+				create att_items.make
+				create att_index.make(0)
+				items := att_items
+				index := att_index
 			end
-			items.extend (an_ordinal)
-			index.put (an_ordinal, an_ordinal.value)
+			att_items.extend (an_ordinal)
+			att_index.put (an_ordinal, an_ordinal.value)
 		ensure
 			Item_added: items.has (an_ordinal)
 		end
 
-	set_items (an_items: attached ARRAYED_LIST [ORDINAL])
+	set_items (an_items: ARRAYED_LIST [ORDINAL])
+		local
+			att_index: attached like index
+			att_items: attached like items
 		do
-			create items.make
-			items.append (an_items)
-			create index.make (0)
-			across items as items_csr loop
-				index.put (items_csr.item, items_csr.item.value)
+			create att_items.make
+			items := att_items
+			att_items.append (an_items)
+			create att_index.make (0)
+			index := att_index
+			across att_items as items_csr loop
+				att_index.put (items_csr.item, items_csr.item.value)
 			end
 		end
 
@@ -193,13 +199,14 @@ feature -- Conversion
 				Result.append (items_csr.item.as_string)
 			end
 
-			if assumed_value /= Void then
-				Result.append("; " + assumed_value.value.out)
+			if attached assumed_value as av then
+				Result.append ("; " + av.value.out)
 			end
 		end
 
 	standard_equivalent: C_COMPLEX_OBJECT
 		do
+			create Result.make_anonymous (rm_type_name)
 		end
 
 feature -- Synchronisation
@@ -217,20 +224,20 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-            precursor(visitor, depth)
-			visitor.start_c_ordinal(Current, depth)
+            precursor (visitor, depth)
+			visitor.start_c_ordinal (Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-            precursor(visitor, depth)
-			visitor.end_c_ordinal(Current, depth)
+            precursor (visitor, depth)
+			visitor.end_c_ordinal (Current, depth)
 		end
 
 feature {NONE} -- Implementation
 
-	index: HASH_TABLE [ORDINAL, INTEGER]
+	index: detachable HASH_TABLE [ORDINAL, INTEGER]
 			-- index of items keyed by ordinal value
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

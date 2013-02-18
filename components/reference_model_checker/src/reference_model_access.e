@@ -38,7 +38,7 @@ feature -- Definitions
 
 	Max_inclusion_depth: INTEGER = 10
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make
 		do
@@ -51,6 +51,8 @@ feature -- Initialisation
 			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
 			schemas_load_list.compare_objects
 		end
+
+feature -- Initialisation
 
 	initialise_with_load_list (an_rm_dir: STRING; a_schemas_load_list: LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
@@ -74,8 +76,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	schema_directory: detachable STRING
+	schema_directory: STRING
 			-- directory where all the schemas loaded here are found
+		attribute
+			create Result.make_empty
+		end
 
 	all_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
 			-- all schemas found and loaded from `schema_directory'
@@ -97,7 +102,9 @@ feature -- Access
 		require
 			has_schema_for_rm_closure (a_qualified_rm_closure_name)
 		do
-			Result := schemas_by_rm_closure.item (a_qualified_rm_closure_name.as_lower)
+			check attached schemas_by_rm_closure.item (a_qualified_rm_closure_name.as_lower) as sch then
+				Result := sch
+			end
 		end
 
 	schemas_load_list: LIST [STRING]
@@ -131,7 +138,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_schema_load_list (a_schemas_load_list: attached LIST [STRING])
+	set_schema_load_list (a_schemas_load_list: LIST [STRING])
 		do
 			schemas_load_list.wipe_out
 			schemas_load_list.append (a_schemas_load_list)
@@ -145,7 +152,9 @@ feature -- Commands
 			has_schema_directory
 		do
 			load_schema_descriptors
-			load_schemas
+			if not billboard.has_errors then
+				load_schemas
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -172,22 +181,22 @@ feature {NONE} -- Implementation
 				all_schemas.wipe_out
 				create dir.make (schema_directory)
 				if not (dir.exists and dir.is_readable) then
-					post_error (Current, "load_schema_descriptors", "model_access_e5", <<schema_directory>>)
+					post_error (generator, "load_schema_descriptors", "model_access_e5", <<schema_directory>>)
 				elseif dir.is_empty then
-					post_error (Current, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
+					post_error (generator, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
 				else
 					create file_repo.make (schema_directory, Bmm_file_match_regex)
 					across file_repo.matching_paths as paths_csr loop
 						process_schema_file (paths_csr.item)
 					end
 					if all_schemas.is_empty then
-						post_error (Current, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
+						post_error (generator, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
 					end
 				end
 			end
 		rescue
 			exception_encountered := True
-			post_error (Current, "load_schemas", "model_access_e14", Void)
+			post_error (generator, "load_schemas", "model_access_e14", Void)
 			retry
 		end
 
@@ -205,14 +214,14 @@ feature {NONE} -- Implementation
 
 				-- check for two schema files purporting to be the exact same schema (including release)
 				if sd.errors.has_errors then
-					post_error (Current, "load_schema_descriptors", "model_access_e2", <<sd.schema_id, sd.errors.as_string>>)
+					post_error (generator, "load_schema_descriptors", "model_access_e2", <<sd.schema_id, sd.errors.as_string>>)
 				elseif all_schemas.has (sd.schema_id) then
-					post_warning (Current, "load_schema_descriptors", "model_access_w2", <<sd.schema_id, a_schema_file_path>>)
+					post_warning (generator, "load_schema_descriptors", "model_access_w2", <<sd.schema_id, a_schema_file_path>>)
 				else
 					all_schemas.put (sd, sd.schema_id)
 				end
 			else
-				post_warning (Current, "load_schema_descriptors", "model_access_w4", <<a_schema_file_path, dmp.last_parse_fail_reason>>)
+				post_warning (generator, "load_schema_descriptors", "model_access_w4", <<a_schema_file_path, dmp.last_parse_fail_reason>>)
 			end
 		end
 
@@ -223,7 +232,6 @@ feature {NONE} -- Implementation
 			model_publisher: STRING
 			qualified_rm_closure_name: STRING
 			rm_closures: ARRAYED_LIST [STRING]
-			included_schema: P_BMM_SCHEMA
 			i: INTEGER
 			finished, incompatible_schema_detected: BOOLEAN
 		do
@@ -243,7 +251,7 @@ feature {NONE} -- Implementation
 					if not schemas_load_list.is_empty then
 						from schemas_load_list.start until schemas_load_list.off loop
 							if not all_schemas.has (schemas_load_list.item) then
-								post_warning (Current, "load_schemas", "model_access_w7", <<schemas_load_list.item>>)
+								post_warning (generator, "load_schemas", "model_access_w7", <<schemas_load_list.item>>)
 								schemas_load_list.remove
 							else
 								schemas_load_list.forth
@@ -252,7 +260,7 @@ feature {NONE} -- Implementation
 					else
 						create {ARRAYED_LIST[STRING]} schemas_load_list.make_from_array (all_schemas.current_keys)
 						schemas_load_list.compare_objects
-						post_warning (Current, "load_schemas", "model_access_w6", Void)
+						post_warning (generator, "load_schemas", "model_access_w6", Void)
 					end
 
 					-- initial load of all schemas, which populates `schema_inclusion_map';
@@ -260,17 +268,17 @@ feature {NONE} -- Implementation
 						if all_schemas_csr.item.passed then
 							load_schema_include_closure (all_schemas_csr.key)
 							if all_schemas_csr.item.errors.has_warnings then
-								post_warning (Current, "load_schemas", "model_access_w8", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+								post_warning (generator, "load_schemas", "model_access_w8", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							end
 						else
-							post_error (Current, "load_schemas", "model_access_e12", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+							post_error (generator, "load_schemas", "model_access_e12", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							if not all_schemas_csr.item.is_bmm_compatible then
 								incompatible_schema_detected := True
 							end
 						end
 					end
 					if incompatible_schema_detected then
-						post_error (Current, "load_schemas", "model_access_e16", <<schema_directory>>)
+						post_error (generator, "load_schemas", "model_access_e16", <<schema_directory>>)
 					end
 
 					-- propagate errors found so far
@@ -297,23 +305,24 @@ feature {NONE} -- Implementation
 					from i := 1 until finished or i > Max_inclusion_depth loop
 						finished := True
 						across schema_inclusion_map as map_csr loop
-							if candidate_schemas.has (map_csr.key) then
-								included_schema := candidate_schemas.item (map_csr.key).p_schema
+							if candidate_schemas.has (map_csr.key) and then attached candidate_schemas.item (map_csr.key).p_schema as included_schema then
 								-- only process current schema if its lower level includes have already been copied into it,
 								-- or if it had no includes, since only then is it ready to be itself included in the next one up the chain
 								-- If this included schema is in this state, merge its contents into each schema that includes it
 								if included_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
 									-- iterate over the schemas that include `included_schema' and process the inclusion
 									across map_csr.item as schemas_csr loop
-										if candidate_schemas.item (schemas_csr.item).p_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
-											candidate_schemas.item (schemas_csr.item).p_schema.merge (included_schema)
-											post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
-											finished := False
+										check attached candidate_schemas.item (schemas_csr.item).p_schema as including_schema then
+											if including_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
+												including_schema.merge (included_schema)
+												post_info (generator, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
+												finished := False
+											end
 										end
 									end
 								end
 							else
-								post_error (Current, "load_schemas", "model_access_e10", <<schema_inclusion_map.key_for_iteration>>)
+								post_error (generator, "load_schemas", "model_access_e10", <<map_csr.key>>)
 							end
 						end
 						i := i + 1
@@ -330,12 +339,14 @@ feature {NONE} -- Implementation
 								merge_validation_errors (schemas_csr.item)
 								if schemas_csr.item.passed then
 									schemas_csr.item.create_schema
-									valid_top_level_schemas.extend (schemas_csr.item.schema, schemas_csr.item.schema_id)
+									check attached schemas_csr.item.schema as sch then
+										valid_top_level_schemas.extend (sch, schemas_csr.item.schema_id)
+									end
 									if schemas_csr.item.errors.has_warnings then
-										post_warning (Current, "load_schemas", "model_access_w8", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+										post_warning (generator, "load_schemas", "model_access_w8", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 									end
 								else
-									post_error (Current, "load_schemas", "model_access_e9", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+									post_error (generator, "load_schemas", "model_access_e9", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 								end
 							end
 						end
@@ -354,7 +365,7 @@ feature {NONE} -- Implementation
 						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
 							schemas_by_rm_closure.put (schemas_csr.item, qualified_rm_closure_name.as_lower)
 						else
-							post_info (Current, "load_schemas", "model_access_w3", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
+							post_info (generator, "load_schemas", "model_access_w3", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
 								schemas_csr.key>>)
 						end
 					end
@@ -364,10 +375,10 @@ feature {NONE} -- Implementation
 
 		rescue
 			exception_encountered := True
-			if assertion_violation then
-				post_error (Current, "load_schemas", "model_access_e14a", <<original_class_name + "." + original_recipient_name + "%N" + exception_trace>>)
+			if assertion_violation and attached original_class_name as ocn and attached original_recipient_name as orn and attached exception_trace as et then
+				post_error (generator, "load_schemas", "model_access_e14a", <<ocn + "." + orn + "%N" + et>>)
 			else
-				post_error (Current, "load_schemas", "model_access_e14", Void)
+				post_error (generator, "load_schemas", "model_access_e14", Void)
 			end
 			retry
 		end
@@ -382,7 +393,7 @@ feature {NONE} -- Implementation
 			if all_schemas.item (a_schema_id).passed then
 				all_schemas.item (a_schema_id).validate_includes (all_schemas.current_keys)
 				if all_schemas.item (a_schema_id).passed then
-					post_info (Current, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
+					post_info (generator, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
 						all_schemas.item (a_schema_id).p_schema.primitive_types.count.out, all_schemas.item (a_schema_id).p_schema.class_definitions.count.out>>)
 					includes := all_schemas.item (a_schema_id).p_schema.includes
 					if not includes.is_empty then
@@ -398,10 +409,10 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
-					post_error (Current, "load_schemas", "model_access_e15", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+					post_error (generator, "load_schemas", "model_access_e15", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 				end
 			else
-				post_error (Current, "load_schemas", "model_access_e8", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+				post_error (generator, "load_schemas", "model_access_e8", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 			end
 		end
 
@@ -441,10 +452,14 @@ feature {NONE} -- Implementation
 			from errors_to_propagate := True until not errors_to_propagate loop
 				errors_to_propagate := False
 				across schema_inclusion_map as schema_inclusion_map_csr loop
-					targ_sd := all_schemas.item (schema_inclusion_map_csr.key)
+					check attached all_schemas.item (schema_inclusion_map_csr.key) as sch then
+						targ_sd := sch
+					end
 					if not targ_sd.passed or else targ_sd.errors.has_warnings then
 						across schema_inclusion_map_csr.item as client_schemas_csr loop
-							client_sd := all_schemas.item (client_schemas_csr.item)
+							check attached all_schemas.item (client_schemas_csr.item) as sch then
+								client_sd := sch
+							end
 							if client_sd.passed and not client_sd.errors.has_warnings then
 								if not targ_sd.passed then
 									client_sd.add_error ("BMM_INCERR", <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)

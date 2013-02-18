@@ -10,52 +10,40 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class COMPONENT_ONTOLOGIES_HELPER
 
 inherit
 	DT_CONVERTIBLE
-		redefine
-			default_create
-		end
 
 create
 	make, make_dt
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-		end
-
 	make
 			-- default make
 		do
-			default_create
 		end
 
 	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			make
 		end
 
 feature -- Access
 
-	component_ontologies: attached HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Modification
 
 	set_component_ontologies (comp_onts: like component_ontologies)
 		do
 			component_ontologies := comp_onts
-
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

@@ -7,15 +7,10 @@ note
 				 archetype.
 		         ]"
 	keywords:    "constraint model"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class ARCHETYPE_VALIDATOR
 
@@ -42,7 +37,9 @@ feature {ADL15_ENGINE} -- Initialisation
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara
-			initialise_authored_resource (target_descriptor.differential_archetype)
+			check attached target_descriptor.differential_archetype as da then
+				initialise_authored_resource (da)
+			end
 		ensure
 			target_descriptor_set: target_descriptor = ara
 			target_set: attached target
@@ -68,8 +65,10 @@ feature {NONE} -- Implementation
 			Result := target.ontology
 		end
 
-
 	rm_schema: BMM_SCHEMA
+		attribute
+			create Result.make (unknown_value, unknown_value, unknown_value)
+		end
 
 	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)

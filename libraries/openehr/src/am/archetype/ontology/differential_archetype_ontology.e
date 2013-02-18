@@ -52,7 +52,7 @@ feature -- Initialisation
 			a_flat_copy.remove_inherited_codes
 
 			concept_code := a_flat_copy.concept_code
-			original_language := a_flat.original_language.twin
+			original_language := a_flat_copy.original_language
 
 			term_definitions := a_flat_copy.term_definitions
 			constraint_definitions := a_flat_copy.constraint_definitions
@@ -73,10 +73,10 @@ feature -- Modification
 		require
 			Language_valid: not a_language.is_empty
 		local
-			term_defs_one_lang, constraint_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
+			term_defs_one_lang, constraint_defs_one_lang: detachable HASH_TABLE[ARCHETYPE_TERM, STRING]
 		do
 			if not term_definitions.has (a_language) then
-				create term_defs_one_lang.make(0)
+				create term_defs_one_lang.make (0)
 				term_definitions.put (term_defs_one_lang, a_language)
 				if not constraint_definitions.is_empty then
 					create constraint_defs_one_lang.make(0)
@@ -84,18 +84,18 @@ feature -- Modification
 				end
 
 				-- if not the primary language, add set of translation place-holder terms in this language
-				if attached original_language and then not a_language.is_equal(original_language) then
-					-- term definitions
-					across term_definitions.item (original_language) as term_defs_csr loop
-						term_defs_one_lang.put (term_defs_csr.item.create_translated_term (original_language),
-							term_defs_csr.item.code)
+				if attached original_language and then not a_language.is_equal (original_language) then
+					if attached term_definitions.item (original_language) as defs_for_lang then
+						-- term definitions
+						across defs_for_lang as defs_csr loop
+							term_defs_one_lang.put (defs_csr.item.create_translated_term (original_language), defs_csr.item.code)
+						end
 					end
 
 					-- do constraint definitions as well
-					if not constraint_definitions.is_empty then
-						across constraint_definitions.item (original_language) as constraint_defs_csr loop
-							constraint_defs_one_lang.put (constraint_defs_csr.item.create_translated_term (original_language),
-								constraint_defs_csr.item.code)
+					if attached constraint_defs_one_lang and then attached constraint_definitions.item (original_language) as defs_for_lang then
+						across defs_for_lang as defs_csr loop
+							constraint_defs_one_lang.put (defs_csr.item.create_translated_term (original_language), defs_csr.item.code)
 						end
 					end
 				end
@@ -111,20 +111,15 @@ feature -- Modification
 			term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make (0), original_language)
 			term_definitions.item (original_language).put (a_term, a_term.code)
 		ensure
-			Term_definitions_populated: term_definitions.item (original_language).item(concept_code) = a_term
+			Term_definitions_populated: term_definitions.item (original_language).item (concept_code) = a_term
 		end
 
 feature -- Conversion
 
-	to_flat: detachable FLAT_ARCHETYPE_ONTOLOGY
+	to_flat: FLAT_ARCHETYPE_ONTOLOGY
 			-- Create a flat version from this differential ontology.
 		do
-			if dt_representation = Void then
-				synchronise_to_tree
-			end
-			if attached {FLAT_ARCHETYPE_ONTOLOGY} dt_representation.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<original_language.deep_twin, concept_code.deep_twin>>) as ont then
-				Result := ont
-			end
+			create Result.make_from_differential (Current)
 		end
 
 end

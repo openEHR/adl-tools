@@ -1,24 +1,17 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "[
 				 Abstract class defining the concept of relative quantified 'amounts'. For relative quantities, 
 				 the '+' and '-' operators are defined (unlike descendants of DV_ABSOLUTE_QUANTITY, such as the 
 				 date/time types).
 				 ]"
 	keywords:    "quantity, data"
-
 	requirements:"ISO 18308 TS V1.0 STR 3.2 - 3.4"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DV_AMOUNT
 

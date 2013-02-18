@@ -4,12 +4,8 @@ note
 	keywords:    "ADL, serialiser"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2004 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_ADL_SERIALISER
 
@@ -31,15 +27,17 @@ create
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE)
+	serialise (an_archetype: ARCHETYPE)
 		do
 		end
 
-	serialise_from_parts (an_archetype: attached ARCHETYPE;
-				lang_serialised, desc_serialised, def_serialised: attached STRING;
-				inv_serialised: STRING; ont_serialised: attached STRING;
-				ann_serialised, comp_onts_serialised: STRING)
+	serialise_from_parts (an_archetype: ARCHETYPE;
+				lang_serialised, desc_serialised, def_serialised: STRING;
+				inv_serialised: detachable STRING; ont_serialised: STRING;
+				ann_serialised, comp_onts_serialised: detachable STRING)
 		do
+			last_result.wipe_out
+
 			archetype := an_archetype
 
 			serialise_initialise

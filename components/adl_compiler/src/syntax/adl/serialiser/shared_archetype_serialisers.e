@@ -102,7 +102,7 @@ feature -- Access
 			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN do Result := archetype_file_extensions.has (format) end)
 		end
 
-	archetype_native_serialiser_for_format (a_format: STRING): ARCHETYPE_MULTIPART_SERIALISER
+	archetype_native_serialiser_for_format (a_format: STRING): detachable ARCHETYPE_MULTIPART_SERIALISER
 			-- The archetype serialiser for `a_format'.
 		require
 			format_valid: has_archetype_native_serialiser_format (a_format)

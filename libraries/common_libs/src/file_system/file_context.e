@@ -1,17 +1,11 @@
 note
 	component:   "ADL editor"
-
 	description: "file handling context for ADL back-end"
 	keywords:    "file"
-
-	author:      "Thomas Beale"
-	support:     "openEHR support <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2002,2003 Ocean Informatics"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2002- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	licence:     "The openEHR Open Source Licence"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class
 	FILE_CONTEXT
@@ -29,57 +23,58 @@ inherit
 			{NONE} all
 		end
 
-create
-	make
-
 feature -- Definitions
 
 	Default_current_directory: STRING = "."
 
-feature {NONE} -- Initialisation
-
-	make
-			-- basic initialisation
-		do
-			create current_directory.make_empty
-			create current_file_name.make_empty
-			create last_op_fail_reason.make_empty
-			create file_content.make_empty
-		end
-
 feature -- Access
 
-	current_full_path: attached STRING
+	current_full_path: STRING
 			-- derive from file name and path
 		do
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
 		end
 
-	current_directory: attached STRING
+	current_directory: STRING
 			-- directory name only
+		attribute
+			create Result.make_empty
+		end
 
-	current_file_name: attached STRING
+	current_file_name: STRING
 			-- name of fle only
+		attribute
+			create Result.make_empty
+		end
 
 	has_byte_order_marker: BOOLEAN
 			-- Does the current file have a BOM indicating it is a UTF-8 encoded unicode file?
 
 	last_op_failed: BOOLEAN
 
-	last_op_fail_reason: attached STRING
+	last_op_fail_reason: STRING
+		attribute
+			create Result.make_empty
+		end
 
-	file_content: attached STRING
+	file_content: STRING
 			-- Text from current file as a string.
+		attribute
+			create Result.make_empty
+		end
 
 	file_lines: ARRAYED_LIST [STRING]
 			-- file split into liines from `read_n_lines', `read_to_line'
+		attribute
+			create Result.make (0)
+		end
 
 	file_timestamp: INTEGER
 			-- Last marked change timestamp of file, for file changes to be compared to.
 
 feature -- Status Report
 
-	has_file (a_file_name: attached STRING): BOOLEAN
+	has_file (a_file_name: STRING): BOOLEAN
 			-- Does `a_file_name' exist in `current_directory'?
 		local
 			a_file: PLAIN_TEXT_FILE
@@ -88,7 +83,7 @@ feature -- Status Report
 			Result := a_file.exists
 		end
 
-	file_writable (a_file_name: attached STRING): BOOLEAN
+	file_writable (a_file_name: STRING): BOOLEAN
 			-- True if named file is writable, or else doesn't exist
 		require
 			File_name_valid: not a_file_name.is_empty
@@ -117,6 +112,7 @@ feature -- Commands
 
 	read_n_lines (n: INTEGER)
 			-- Read first n non-empty lines from current file as a string, removing leading and trailing whitespace, including %R%N.
+			-- Output in `file_lines'
 		require
 			n > 0
 		local
@@ -126,7 +122,7 @@ feature -- Commands
    		do
    			last_op_failed := False
 			create in_file.make(current_full_path)
-			create file_lines.make(0)
+			file_lines.wipe_out
 
 			if in_file.exists then
 				in_file.open_read
@@ -152,7 +148,7 @@ feature -- Commands
 			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty
 		end
 
-	read_matching_lines (start_patterns: attached ARRAY[STRING]; ignore_pattern: STRING; max_lines: INTEGER)
+	read_matching_lines (start_patterns: ARRAY[STRING]; ignore_pattern: STRING; max_lines: INTEGER)
 			-- Read lines starting with `start_patterns', ignoring lines starting with `ignore_pattern',
 			-- or only whitespace, up to a maximum of `max_lines' non-ignored lines. Output lines, if any,
 			-- in `file_lines'
@@ -229,8 +225,8 @@ feature -- Commands
 						create file_content.make_empty
 						last_op_failed := True
 						last_op_fail_reason := get_msg ("invalid_utf8_file", <<current_full_path>>)
-					else
-						file_content := utf8.to_utf8 (file_content)
+					elseif attached utf8.to_utf8 (file_content) as utf_content then
+						file_content := utf_content
 					end
 				end
 			else
@@ -241,7 +237,7 @@ feature -- Commands
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file (a_file_name, content: attached STRING)
+	save_file (a_file_name, content: STRING)
 			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
 			File_writable: file_writable (a_file_name)
@@ -270,7 +266,7 @@ feature -- Commands
 			end
 		end
 
-	set_target (a_file_path: attached STRING)
+	set_target (a_file_path: STRING)
 			-- set context to `a_file_path'
 		require
 			a_file_path_valid: not a_file_path.is_empty
@@ -288,14 +284,14 @@ feature -- Commands
 			end
 		end
 
-	set_current_file_name (a_file_name: attached STRING)
+	set_current_file_name (a_file_name: STRING)
 		require
 			a_file_name_valid: not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory (a_dir: attached STRING)
+	set_current_directory (a_dir: STRING)
 		require
 			a_dir_valid: not a_dir.is_empty
 		do

@@ -1,16 +1,11 @@
 note
-	component:   "openEHR re-usable library"
+	component:   "openEHR library"
 	description: "Abstract idea of specifying a type either by definition or by reference."
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class BMM_TYPE_SPECIFIER
 

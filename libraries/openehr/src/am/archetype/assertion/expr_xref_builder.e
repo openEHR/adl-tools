@@ -8,16 +8,10 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class EXPR_XREF_BUILDER
 
 inherit
 	EXPR_VISITOR
-		rename
-			initialise as initialise_visitor
 		redefine
 			start_expr_leaf
 		end

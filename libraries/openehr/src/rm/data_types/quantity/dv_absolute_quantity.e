@@ -10,15 +10,10 @@ note
 	keywords:    "quantity, data"
 
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DV_ABSOLUTE_QUANTITY
 
@@ -27,27 +22,27 @@ inherit
 
 feature -- Access
 
-	accuracy: like diff	
-			-- Accuracy of measurement, expressed as a half-range value of the diff type 
+	accuracy: detachable like diff
+			-- Accuracy of measurement, expressed as a half-range value of the diff type
 			-- for this quantity (i.e. an accuracy of x means +/-x).
-	
+
 feature -- Basic Operations
 
 	add (a_diff: like diff): like Current
 			-- Addition of a differential amount to this quantity.
 		deferred
 		end
-	
+
 	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
 		deferred
 		end
-	
+
 	diff (a_diff: like Current): ANY
 			-- Difference of two quantities.
 		deferred
 		end
-			
+
 end
 
 

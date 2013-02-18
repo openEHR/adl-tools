@@ -4,16 +4,10 @@ note
 				 Any tool that is enabled with a history facility, typically visualised as forward
 				 and backward arrows as available in most browsers.
 				 ]"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class SELECTION_HISTORY
 
@@ -29,7 +23,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	selected_item: IDENTIFIED_TOOL_ARTEFACT
+	selected_item: detachable IDENTIFIED_TOOL_ARTEFACT
 			-- currently selected item from some kind of repository of items
 		do
 			if not history.off then
@@ -39,7 +33,7 @@ feature -- Access
 			consistent_with_history: attached Result implies Result = history.item
 		end
 
-	recently_selected_items (n: INTEGER): attached ARRAYED_LIST [IDENTIFIED_TOOL_ARTEFACT]
+	recently_selected_items (n: INTEGER): ARRAYED_LIST [IDENTIFIED_TOOL_ARTEFACT]
 			-- The `n' most recently used items from `history', excluding duplicates.
 		require
 			positive: n > 0

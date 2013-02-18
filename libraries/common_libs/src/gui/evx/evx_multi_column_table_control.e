@@ -20,11 +20,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_MULTI_COLUMN_TABLE_CONTROL
 
 inherit
@@ -55,7 +50,7 @@ feature -- Initialisation
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			a_data_source_modify_agent: like data_source_modify_agent;
-			an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
+			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER;
 			a_header_strings_agent: like header_strings_agent;
 			a_data_row_agt: like data_row_agt)
@@ -118,7 +113,11 @@ feature {NONE} -- Implementation
 			key := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (1))
 			col_name := utf32_to_utf8 (ev_data_control.column_title (ev_data_control.widget_column))
 			new_val := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (ev_data_control.widget_column))
-			old_val := ev_data_control.saved_text
+			if attached ev_data_control.saved_text as txt then
+				old_val := txt
+			else
+				create old_val.make_empty
+			end
 
 			if not old_val.same_string (new_val) then
 				data_source_modify_agent.call ([col_name, key, new_val])

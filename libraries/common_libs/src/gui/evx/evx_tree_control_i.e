@@ -4,13 +4,8 @@ note
 	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 deferred class EVX_TREE_CONTROL_I
 
@@ -21,20 +16,20 @@ feature -- Access
 
 feature -- Commands
 
-	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [ANY]])
+	ev_tree_do_all (a_node_action: PROCEDURE [ANY, TUPLE [ANY]])
 			-- do enter_action and exit_action to all nodes in the structure
 		deferred
 		end
 
-	collapse_one_level (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
+	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
 		deferred
 		end
 
-	expand_one_level (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
+	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
 		deferred
 		end
 
-	expand_all (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
+	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
 		deferred
 		end
 
