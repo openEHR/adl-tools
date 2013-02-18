@@ -96,7 +96,7 @@ feature -- Modification
 			other.bmm_schema = bmm_schema
 		local
 			merged_class_stats: RM_CLASS_STATISTICS
-			rm_class_table, other_rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
+			rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 		do
 			-- archetype metrics table
 			across other.archetype_metrics as metrics_csr loop
