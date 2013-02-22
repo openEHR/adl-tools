@@ -112,7 +112,7 @@ feature -- Status report
 	is_overlay: BOOLEAN
 			-- True if any type other than `template_overlay'
 		do
-			Result := value /= template_overlay
+			Result := value = template_overlay
 		end
 
 feature -- Validation
