@@ -23,8 +23,6 @@ feature -- Initialisation
 
 	make_from_path (a_path: OG_PATH)
 			-- create from an OG_PATH
-		require
-			a_path_valid: a_path /= Void
 		do
 			target := a_path
 			calculate_level
@@ -32,8 +30,6 @@ feature -- Initialisation
 
 	make_from_string (a_path: STRING)
 			-- create from a STRING
-		require
-			a_path_valid: a_path /= Void
 		do
 			create target.make_from_string(a_path)
 			calculate_level
@@ -48,7 +44,7 @@ feature -- Access
 
 feature -- Conversion
 
-	path_at_level(a_level: INTEGER): STRING
+	path_at_level (a_level: INTEGER): STRING
 			-- generate a form of the path at the specialisation level `a_level';
 			-- only applicable if the path can actually exist at the level indicated, which
 			-- cannot be the case if there are any '0's in any path node id at the requested level
@@ -68,15 +64,13 @@ feature -- Conversion
 					target.off
 				loop
 					if is_valid_code (target.item.object_id) and then specialisation_depth_from_code (target.item.object_id) > a_level then
-						a_path.item.set_object_id (code_at_level(target.item.object_id, a_level))
+						a_path.item.set_object_id (code_at_level (target.item.object_id, a_level))
 					end
 					target.forth
 					a_path.forth
 				end
 				Result := a_path.as_string
 			end
-		ensure
-			Result_attached: Result /= Void
 		end
 
 feature -- Status Report
@@ -112,16 +106,12 @@ feature {NONE} -- Implementation
 			-- get the deepest level of this path, determined from the depth of the object codes
 			-- set `level'
 		do
-			from target.start until target.off loop
-				if is_valid_code (target.item.object_id) then
-					level := level.max(specialisation_depth_from_code (target.item.object_id))
+			across target as target_csr loop
+				if is_valid_code (target_csr.item.object_id) then
+					level := level.max (specialisation_depth_from_code (target_csr.item.object_id))
 				end
-				target.forth
 			end
 		end
-
-invariant
-	Target_attached: target /= Void
 
 end
 

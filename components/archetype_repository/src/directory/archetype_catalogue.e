@@ -420,22 +420,16 @@ feature -- Statistics
 		end
 
 	catalogue_metrics: HASH_TABLE [INTEGER, STRING]
-		attribute
-			create Result.make (0)
-		end
 
 	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
 			-- some archetypes have more than one binding, so could appear in more than one list
-		attribute
-			create Result.make (0)
-		end
 
 	reset_statistics
 			-- Reset counters to zero.
 		do
-			terminology_bindings_statistics.wipe_out
-			stats.wipe_out
+			create terminology_bindings_statistics.make (0)
+			create stats.make (0)
 			create catalogue_metrics.make (catalogue_metric_names.count)
 			Catalogue_metric_names.do_all (
 				agent (metric_name: STRING)
@@ -461,9 +455,6 @@ feature -- Statistics
 	stats: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
 			-- (a single logical archetpe repository can contain archetypes of multiple RMs)
-		attribute
-			create Result.make (0)
-		end
 
 feature {NONE} -- Implementation
 

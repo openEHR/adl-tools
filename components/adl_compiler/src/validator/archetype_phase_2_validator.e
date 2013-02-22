@@ -709,7 +709,7 @@ end
 						end
 
 					elseif attached {C_ATTRIBUTE} a_c_node as ca then
-						create apa.make_from_string(a_c_node.path)
+						create apa.make_from_string (a_c_node.path)
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 						Result := flat_parent.has_path (flat_parent_path)
 						if not Result and ca.has_differential_path then
