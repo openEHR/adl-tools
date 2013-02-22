@@ -57,10 +57,14 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- parent versions, so that the differential definition can be overlaid on
 			-- it by a merging process. The ontology is converted to a form ready for
 			-- overlaying as well.
+		local
+			desc: like description
 		do
+			if attached a_diff.description as orig_desc then
+				desc := orig_desc.safe_deep_twin
+			end
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.deep_twin,
-					a_diff.description.safe_deep_twin,
+					a_diff.original_language.deep_twin, desc,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
 

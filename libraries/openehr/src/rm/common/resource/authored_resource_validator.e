@@ -38,29 +38,31 @@ feature -- Access
 			end
 
 			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
-			if target.has_translations then
+			if attached target.translations as tgt_trans then
 				from
-					target.translations.start
+					tgt_trans.start
 				until
-					target.translations.off or not target.translations.key_for_iteration.is_equal (target.translations.item_for_iteration.language.code_string)
+					tgt_trans.off or not tgt_trans.key_for_iteration.is_equal (tgt_trans.item_for_iteration.language.code_string)
 				loop
-					target.translations.forth
+					tgt_trans.forth
 				end
-				if not target.translations.off then
-					add_error("VTRLA", <<target.translations.key_for_iteration, target.translations.item_for_iteration.language.code_string>>)
+				if not tgt_trans.off then
+					add_error("VTRLA", <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
 				end
 			end
 
 			-- check that RESOURCE_DESCRIPTION.details items match their Hash keys
-			from
-				target.description.details.start
-			until
-				target.description.details.off or not target.description.details.key_for_iteration.is_equal (target.description.details.item_for_iteration.language.code_string)
-			loop
-				target.description.details.forth
-			end
-			if not target.description.details.off then
-				add_error("VRDLA", <<target.description.details.key_for_iteration, target.description.details.item_for_iteration.language.code_string>>)
+			if attached target.description as tgt_desc then
+				from
+					tgt_desc.details.start
+				until
+					tgt_desc.details.off or not tgt_desc.details.key_for_iteration.is_equal (tgt_desc.details.item_for_iteration.language.code_string)
+				loop
+					tgt_desc.details.forth
+				end
+				if not tgt_desc.details.off then
+					add_error("VRDLA", <<tgt_desc.details.key_for_iteration, tgt_desc.details.item_for_iteration.language.code_string>>)
+				end
 			end
 		end
 
