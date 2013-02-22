@@ -77,6 +77,13 @@ feature {NONE} -- Implementation
 		do
 			if attached {ARRAYED_LIST [ASSERTION]} parser.output as al then
 				tree := al
+			elseif attached {ARRAYED_LIST [detachable ASSERTION]} parser.output as det_al then
+				create tree.make (0)
+				across det_al as det_al_csr loop
+					if attached det_al_csr.item as inv then
+						tree.extend (inv)
+					end
+				end
 			end
 		end
 
