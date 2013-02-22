@@ -206,7 +206,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -218,7 +218,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -230,7 +230,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -242,7 +242,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -254,7 +254,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -266,7 +266,7 @@ debug ("GEYACC")
 end
 
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -278,7 +278,7 @@ debug ("GEYACC")
 end
 
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -368,7 +368,7 @@ end
 			else
 				abort_with_error ("SASID", Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp2 := yyvsp2 -2
@@ -381,7 +381,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SARID", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -394,7 +394,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := text
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -424,7 +424,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := text
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -454,7 +454,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := text
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -490,7 +490,7 @@ end
 			else
 				abort_with_error ("SASID", Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp2 := yyvsp2 -2
@@ -503,7 +503,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SARID", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -516,7 +516,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := text
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -609,7 +609,7 @@ debug ("GEYACC")
 end
 
 			adl_version := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -623,7 +623,7 @@ debug ("GEYACC")
 end
 
 			is_controlled := True
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -635,7 +635,7 @@ debug ("GEYACC")
 end
 
 			is_generated := True
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -651,7 +651,7 @@ end
 			else
 				abort_with_error ("SASID", Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -664,7 +664,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SASID", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -680,7 +680,7 @@ end
 			debug("ADL_parse")
 				io.put_string("concept = " + concept + "%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -693,7 +693,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SACO", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -707,7 +707,7 @@ end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			language_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -720,7 +720,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SALA", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -734,7 +734,7 @@ end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
 			description_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -747,7 +747,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SADS", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -760,7 +760,7 @@ debug ("GEYACC")
 end
 
 			definition_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -773,7 +773,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SADF", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -827,7 +827,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SAIV", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -840,7 +840,7 @@ debug ("GEYACC")
 end
 
 			ontology_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -853,7 +853,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SAON", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -894,7 +894,7 @@ debug ("GEYACC")
 end
 
 			annotations_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -907,7 +907,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SAAS", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -920,7 +920,7 @@ debug ("GEYACC")
 end
 
 			component_ontologies_text := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -933,7 +933,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error ("SAAS", Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -1235,14 +1235,14 @@ feature -- Parse Output
 	definition_text: STRING
 
 	invariant_text: STRING
-	
+
 	ontology_text: STRING
 
 	annotations_text: STRING
 
 	component_ontologies_text: STRING
 
-feature {NONE} -- Implementation 
+feature {NONE} -- Implementation
 
 	str: STRING
 
