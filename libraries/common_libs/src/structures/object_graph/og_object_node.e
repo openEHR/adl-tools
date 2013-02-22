@@ -196,7 +196,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 				else
 					Result := child_with_id (a_path.last.attr_name)
 				end
-			elseif a_path.is_last then
+			elseif a_path.is_last and has_child_with_id (a_path.last.attr_name) then
 				Result := child_with_id (a_path.last.attr_name)
 			end
 		end
