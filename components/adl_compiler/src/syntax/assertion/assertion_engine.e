@@ -77,6 +77,8 @@ feature {NONE} -- Implementation
 		do
 			if attached {ARRAYED_LIST [ASSERTION]} parser.output as al then
 				tree := al
+			-- FIXME: the following is needed while the ADL parsers remain void-unsafe, since
+			-- the type ARRAYED [LIST] in the parser is actually detachable ARRAYED_LIST [detachable ASSERION]
 			elseif attached {ARRAYED_LIST [detachable ASSERTION]} parser.output as det_al then
 				create tree.make (0)
 				across det_al as det_al_csr loop
