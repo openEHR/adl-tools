@@ -29,8 +29,6 @@ feature -- Status Report
 feature -- Modification
 
 	set_gui_context (a_context: GUI_ARCH_CAT_EDITOR_STATE)
-		require
-			is_valid
 		do
 			gui_context := a_context
 		end
