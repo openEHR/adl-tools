@@ -107,7 +107,7 @@ feature -- Modification
 			-- rm class table
 			across other.rm_grouped_class_table as other_grouped_table_csr loop
 				if rm_grouped_class_table.has (other_grouped_table_csr.key) and then attached rm_grouped_class_table.item (other_grouped_table_csr.key) as rm_class_table then
-					across other.rm_grouped_class_table.item_for_iteration as other_table_csr loop
+					across other_grouped_table_csr.item as other_table_csr loop
 						if rm_class_table.has (other_table_csr.key) then
 							merged_class_stats := rm_class_table.item (other_table_csr.key).deep_twin
 							merged_class_stats.merge (other_table_csr.item)

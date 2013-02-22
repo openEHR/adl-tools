@@ -73,24 +73,22 @@ feature {NONE} -- Implementation
 			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)
 
 			-- do terminology bindings statistics
-			from source.terminology_bindings_statistics.start until source.terminology_bindings_statistics.off loop
+			across source.terminology_bindings_statistics as stats_csr loop
 				from ev_term_bindings_info_list.start until ev_term_bindings_info_list.off or
-					ev_term_bindings_info_list.item.first.is_equal (source.terminology_bindings_statistics.key_for_iteration)
+					ev_term_bindings_info_list.item.first.is_equal (stats_csr.key)
 				loop
 					ev_term_bindings_info_list.forth
 				end
 				if not ev_term_bindings_info_list.off then
 					ev_term_bindings_info_list.item.finish
 					ev_term_bindings_info_list.item.remove
-					ev_term_bindings_info_list.item.extend (utf8_to_utf32 (source.terminology_bindings_statistics.item_for_iteration.count.out))
+					ev_term_bindings_info_list.item.extend (utf8_to_utf32 (stats_csr.item.count.out))
 				else
 					create list_row
-					list_row.extend (utf8_to_utf32 (source.terminology_bindings_statistics.key_for_iteration))
-					list_row.extend (utf8_to_utf32 (source.terminology_bindings_statistics.item_for_iteration.count.out))
+					list_row.extend (utf8_to_utf32 (stats_csr.key))
+					list_row.extend (utf8_to_utf32 (stats_csr.item.count.out))
 					ev_term_bindings_info_list.extend (list_row)
 				end
-
-				source.terminology_bindings_statistics.forth
 			end
 			resize_ev_multi_list_to_headers (ev_term_bindings_info_list)
 		end
