@@ -60,9 +60,6 @@ feature {NONE} -- Initialisation
 
 			Precursor {EV_DIALOG}
 
-			set_title (get_text ("rm_schema_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
-
 			-- ============ root container ============
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
@@ -105,6 +102,15 @@ feature {NONE} -- Initialisation
 			create ok_cancel_buttons.make (agent on_ok, agent on_cancel)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+		end
+
+	initialize
+		do
+			precursor
+			extend (ev_root_container)
+			set_title (get_text ("rm_schema_dialog_title"))
+			set_icon_pixmap (adl_workbench_icon)
+
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
@@ -114,12 +120,6 @@ feature {NONE} -- Initialisation
 			enable_edit
 			do_populate
 			ev_root_container.refresh_now
-		end
-
-	initialize
-		do
-			extend (ev_root_container)
-			precursor
 		end
 
 feature -- Access
