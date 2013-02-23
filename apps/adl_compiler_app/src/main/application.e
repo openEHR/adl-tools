@@ -22,40 +22,56 @@ feature -- Initialization
 
 	make
 			-- Run application.
+		do
+			app_root.initialise_shell
+			if app_root.ready_to_initialise_app then
+				main
+			end
+		end
+
+	main
 		local
 			rep_profiles: REPOSITORY_PROFILE_CONFIG
 			new_prof: STRING
 		do
-			app_root.initialise
-			print (billboard.content)
-			if rm_schemas_access.found_valid_schemas then
-				billboard.clear
-				print (get_msg ("cfg_file_path_info", <<app_root.user_config_file_path>>) + "%N")
-				print (get_text ("rep_profiles_found_info")  + "%N")
-				rep_profiles := app_root.repository_profiles
-				if not rep_profiles.is_empty then
-					across rep_profiles as profs_csr loop
-						print (profs_csr.key + "%N")
-					end
-					if app_root.repository_profiles.is_empty then
-						new_prof := rep_profiles.first_profile
+			app_root.initialise_app
+			if not app_root.has_errors then
+				if rm_schemas_access.found_valid_schemas then
+					billboard.clear
+					print (get_msg ("cfg_file_path_info", <<app_root.user_config_file_path>>) + "%N")
+					print (get_text ("rep_profiles_found_info")  + "%N")
+					rep_profiles := app_root.repository_profiles
+					if not rep_profiles.is_empty then
+						across rep_profiles as profs_csr loop
+							print (profs_csr.key + "%N")
+						end
+						if app_root.repository_profiles.is_empty then
+							new_prof := rep_profiles.first_profile
+						else
+							new_prof := app_root.repository_profiles.current_profile_name
+						end
+						app_root.repository_profiles.set_current_profile_name (new_prof)
+
+						print (get_text ("rep_populate_progress_info"))
+						app_root.use_current_profile (False)
+
+						print (get_text ("rep_populate_progress_info") + "%N")
+						app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+						app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+						app_root.archetype_compiler.build_all
 					else
-						new_prof := app_root.repository_profiles.current_profile_name
+						print (get_text ("rep_profiles_not_found_info") + "%N")
 					end
-					app_root.repository_profiles.set_current_profile_name (new_prof)
-
-					print (get_text ("rep_populate_progress_info"))
-					app_root.use_current_profile (False)
-
-					print (get_text ("rep_populate_progress_info") + "%N")
-					app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
-					app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
-					app_root.archetype_compiler.build_all
 				else
-					print (get_text ("rep_profiles_not_found_info") + "%N")
+					print (get_text ("app_exit_with_errors") + "%N")
 				end
 			else
-				print (get_text ("app_exit_with_errors") + "%N")
+				io.put_string (app_root.errors.as_string)
+				print (billboard.content)
+				across rm_schemas_access.all_schemas as schemas_csr loop
+					io.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
+					io.put_string (schemas_csr.item.errors.as_string)
+				end
 			end
 		end
 
