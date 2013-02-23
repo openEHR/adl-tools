@@ -217,7 +217,7 @@ feature -- Commands
 
 feature -- Modification
 
-	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+	set_docking_pane (a_docking_pane: SD_CONTENT)
 		do
 			docking_pane := a_docking_pane
 		end
