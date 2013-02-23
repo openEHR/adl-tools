@@ -16,8 +16,6 @@ inherit
 
 	SHARED_ARCHETYPE_COMPILER
 
-	SHARED_APP_UI_RESOURCES
-
 feature -- Access
 
 	app_root: APP_ROOT
