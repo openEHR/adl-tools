@@ -167,14 +167,14 @@ feature -- Output
 		do
 			create Result.make(0)
 
-			if attached strings then
-				across strings as strings_csr loop
+			if attached strings as strs then
+				across strs as strings_csr loop
 					if strings_csr.target_index > 1 then
-						Result.append(", ")
+						Result.append (", ")
 					end
-					Result.append_character('%"')
-					Result.append(strings.item)
-					Result.append_character('%"')
+					Result.append_character ('%"')
+					Result.append (strings_csr.item)
+					Result.append_character ('%"')
 				end
 				if is_open then
 					Result.append(", ...")

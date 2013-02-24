@@ -2,15 +2,10 @@ note
 	component:   "openEHR Re-usable Components"
 	description: "Populate various Eiffel Vision2 standard controls from standard EiffelBase data structures"
 	keywords:    "EiffelVision, GUI"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class GUI_CONTROLLER_TOOLS
 
@@ -19,11 +14,9 @@ inherit
 
 feature {NONE} -- Implementation
 
-	populate_ev_multi_list_from_hash(ev_mlist: EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
+	populate_ev_multi_list_from_hash (ev_mlist: EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate rows of a multi-column list with name - value pairs in a HASH_TABLE
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
-		require
-			ev_mlist_valid: ev_mlist /= Void
 		local
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
 			i: INTEGER
@@ -51,8 +44,6 @@ feature {NONE} -- Implementation
 
 	populate_ev_list_from_list(ev_list: EV_LIST; a_list: ARRAYED_LIST [STRING])
 			-- populate rows of a list with items from a ARRAYED_LIST [STRING]
-		require
-			ev_list_valid: ev_list /= Void
 		local
 			ev_list_item: EV_LIST_ITEM
 		do
@@ -87,24 +78,24 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [INTEGER, STRING])
-			-- populate combo from hash table items
-		local
-			strs: ARRAYED_LIST[STRING]
-		do
-			create strs.make (0)
-			if ht /= Void then
-				from
-					ht.start
-				until
-					ht.off
-				loop
-					strs.extend (utf8 (ht.key_for_iteration))
-					ht.forth
-				end
-			end
-			ev_combo.set_strings (strs)
-		end
+--	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [INTEGER, STRING])
+--			-- populate combo from hash table items
+--		local
+--			strs: ARRAYED_LIST[STRING]
+--		do
+--			create strs.make (0)
+--			if ht /= Void then
+--				from
+--					ht.start
+--				until
+--					ht.off
+--				loop
+--					strs.extend (utf8 (ht.key_for_iteration))
+--					ht.forth
+--				end
+--			end
+--			ev_combo.set_strings (strs)
+--		end
 
 end
 

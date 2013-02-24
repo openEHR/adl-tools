@@ -150,8 +150,8 @@ feature {NONE} -- Implementation
 
 					data_source_setter_agent.call ([new_val])
 
-					if attached undo_redo_chain then
-						undo_redo_chain.add_link (undo_agt, agent populate, redo_agt, agent populate)
+					if attached undo_redo_chain as urc and attached undo_agt as ua and attached redo_agt as ra then
+						urc.add_link (ua, agent populate, ra, agent populate)
 					end
 				end
 			end

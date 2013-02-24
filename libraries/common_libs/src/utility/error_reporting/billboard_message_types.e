@@ -4,15 +4,10 @@ note
 			     Enumeration of message types
 				 ]"
 	keywords:    "error status reporting"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class BILLBOARD_MESSAGE_TYPES
 
@@ -25,7 +20,7 @@ feature -- Definitions
 
 feature -- Access
 
-	message_type_names: DS_HASH_TABLE [STRING, INTEGER]
+	message_type_names: HASH_TABLE [STRING, INTEGER]
 			-- names of message types
 		once
 			create Result.make(0)
@@ -35,7 +30,7 @@ feature -- Access
 			Result.force("DEBUG", Message_type_debug)
 		end
 
-	message_type_ids: DS_HASH_TABLE [INTEGER, STRING]
+	message_type_ids: HASH_TABLE [INTEGER, STRING]
 			-- ids of message types
 		once
 			create Result.make(0)

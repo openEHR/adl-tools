@@ -204,7 +204,7 @@ feature -- Commands
 			end
 		end
 
-	expand_tree (a_row: attached EV_GRID_ROW; test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	expand_tree (a_row: EV_GRID_ROW; test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 			-- Expand `row' and all of its sub-rows, recursively.
 		require
 			is_tree_enabled
@@ -224,7 +224,7 @@ feature -- Commands
 			row_expanded: a_row.is_expandable and (not attached test or else test.item ([a_row])) implies a_row.is_expanded
 		end
 
-	collapse_tree (a_row: attached EV_GRID_ROW)
+	collapse_tree (a_row: EV_GRID_ROW)
 			-- Collapse `row' and all of its sub-rows, recursively.
 		require
 			is_tree_enabled
@@ -258,7 +258,7 @@ feature -- Commands
 			end
 		end
 
-	tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+	tree_do_all (a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
 			-- do `a_node_action' to all nodes in the structure
 		require
 			is_tree_enabled
@@ -276,7 +276,7 @@ feature -- Commands
 			top_level_rows.do_all (agent tree_do_all_nodes (?, a_node_action))
 		end
 
-	tree_do_all_nodes (a_grid_row: attached EV_GRID_ROW; a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+	tree_do_all_nodes (a_grid_row: EV_GRID_ROW; a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
 		require
 			is_tree_enabled
 		local

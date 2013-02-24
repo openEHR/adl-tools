@@ -41,10 +41,14 @@ feature -- Access
 			replacement: STRING
 		do
 			if message_table.has (an_id) then
-				Result := message_table.item (an_id).twin
+				check attached message_table.item (an_id) as msg then
+					Result := msg.twin
+				end
 				args_list := args
 			elseif message_table.has ("message_code_error") then
-				Result := message_table.item ("message_code_error").twin
+				check attached message_table.item ("message_code_error") as msg then
+					Result := msg.twin
+				end
 				args_list := <<an_id>>
 			else -- catchall
 				Result := Catchall_error.twin

@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class XML_ADL_SERIALISATION_PROFILE
 
@@ -26,7 +22,7 @@ inherit
 
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER]
@@ -42,15 +38,15 @@ feature {NONE} -- Implementation
 			Result.put("definition",	SYM_DEFINITION)
 			Result.put("invariant",		SYM_INVARIANT)
 			Result.put("ontology",		SYM_ONTOLOGY)
-		end	
-		
+		end
+
 	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
 			Result.put("code",			TAG_CODE)
 			Result.put("text",			TAG_TEXT)
-		end	
+		end
 
 end
 

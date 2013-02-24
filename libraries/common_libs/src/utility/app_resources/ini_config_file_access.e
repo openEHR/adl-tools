@@ -9,15 +9,10 @@ note
 				 any whitespace can occur around the '='
 				 ]"
 	keywords:    "config, file"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class INI_CONFIG_FILE_ACCESS
 
@@ -38,7 +33,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_file_name: attached STRING)
+	make (a_file_name: STRING)
 		do
 			create resources.make(0)
 			create requested_resources.make(0)
@@ -47,11 +42,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING]
+	resources: HASH_TABLE [HASH_TABLE [STRING,STRING], STRING]
 
-	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]
+	requested_resources: HASH_TABLE [HASH_TABLE [STRING,STRING],STRING]
 
-	resource_value (category, resource_name: STRING): attached STRING
+	resource_value (category, resource_name: STRING): STRING
 			-- get the value for resource_name, in 'category'
 		require
             Valid_category: category /= Void and then not category.is_empty
@@ -84,15 +79,14 @@ feature -- Access
 			Result.compare_objects
 			Result.prune_all ("")
 		ensure
-			result_attached: attached Result
 			value_comparison: Result.object_comparison
 			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
-	resource_category_values (category: STRING): attached HASH_TABLE [STRING, STRING]
+	resource_category_values (category: STRING): HASH_TABLE [STRING, STRING]
 			-- get all name/value pairs in 'category'
 		require
-                Valid_category: category /= Void and then not category.is_empty
+                Valid_category: not category.is_empty
 		do
 			if resources.has(category) then
 				Result := resources.item(category)
@@ -101,7 +95,7 @@ feature -- Access
 			end
 		end
 
-	resource_category_lists (category: STRING): attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+	resource_category_lists (category: STRING): HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- get all name/value list pairs in 'category', in a hash, keyed by the resource names
 			--
 			-- [category]
@@ -111,7 +105,7 @@ feature -- Access
 			-- resource_n=ggg,hhh,iii
 			--
 		require
-            Valid_category: category /= Void and then not category.is_empty
+            Valid_category: not category.is_empty
         local
         	res_list: HASH_TABLE [STRING, STRING]
         	sub_item: STRING
@@ -132,7 +126,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_resource_value (category_name, resource_name, value: attached STRING)
+	set_resource_value (category_name, resource_name, value: STRING)
 		require
 			Valid_category: not category_name.is_empty
 			Valid_resource_name: not resource_name.is_empty
@@ -149,7 +143,7 @@ feature -- Modification
 			end
 		end
 
-	set_resource_value_list (category_name, resource_name: attached STRING; values: attached LIST [STRING])
+	set_resource_value_list (category_name, resource_name: STRING; values: LIST [STRING])
 		require
 			Valid_category: not category_name.is_empty
 			Valid_resource_name: not resource_name.is_empty
@@ -176,11 +170,11 @@ feature -- Modification
 			end
 		end
 
-	set_resource_category_lists (category: attached STRING; res_lists: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING])
+	set_resource_category_lists (category: STRING; res_lists: HASH_TABLE [ARRAYED_LIST [STRING], STRING])
 			-- set all name/value list pairs in 'category', in a hash, keyed by the resource names
 			-- completely replaces existing set of resources for this category
 		require
-			Valid_category: category /= Void and then not category.is_empty
+			Valid_category: not category.is_empty
 		local
 			res_hash: HASH_TABLE [STRING, STRING]
 			s: STRING
@@ -208,8 +202,8 @@ feature -- Element Removal
 	remove_resource (category_name, resource_name: STRING)
 			-- remove the resource resource_name
 		require
-			Valid_category: category_name /= Void and then not category_name.is_empty
-			Valid_resource_name: resource_name /= Void and then not resource_name.is_empty
+			Valid_category: not category_name.is_empty
+			Valid_resource_name: not resource_name.is_empty
         local
 			resource_list: HASH_TABLE[STRING,STRING]
 		do

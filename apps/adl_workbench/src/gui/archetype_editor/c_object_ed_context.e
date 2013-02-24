@@ -88,7 +88,7 @@ feature -- Display
 				elseif attached ed_context.rm_schema.archetype_visualise_descendants_of then
 					visualise_descendants_class := ed_context.rm_schema.archetype_visualise_descendants_of
 				end
-				if ed_context.rm_schema.is_descendant_of (arch_node.rm_type_name, visualise_descendants_class) then
+				if attached visualise_descendants_class as vdc and then ed_context.rm_schema.is_descendant_of (arch_node.rm_type_name, vdc) then
 					gui_grid_row.expand_actions.force_extend (agent (gui_grid.ev_grid).expand_tree (gui_grid_row,
 						agent (a_row: EV_GRID_ROW): BOOLEAN
 							do

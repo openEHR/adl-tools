@@ -8,15 +8,10 @@ note
 				 etc. This object is used in a traversal to populate the xref tables.
 		         ]"
 	keywords:    "visitor, constraint model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_XREF_BUILDER
 
@@ -130,16 +125,15 @@ feature -- Visitor
 		local
 			og_path: OG_PATH
 		do
-			if a_node.has_differential_path then
-				create og_path.make_from_string (a_node.differential_path)
-				from og_path.start until og_path.off loop
-					if og_path.item.is_addressable and is_valid_code (og_path.item.object_id) then
-						if not archetype.id_atcodes_index.has (og_path.item.object_id) then
-							archetype.id_atcodes_index.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
+			if attached a_node.differential_path as dp then
+				create og_path.make_from_string (dp)
+				across og_path as path_csr loop
+					if path_csr.item.is_addressable and is_valid_code (path_csr.item.object_id) then
+						if not archetype.id_atcodes_index.has (path_csr.item.object_id) then
+							archetype.id_atcodes_index.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
 						end
-						archetype.id_atcodes_index.item (og_path.item.object_id).extend (a_node)
+						archetype.id_atcodes_index.item (path_csr.item.object_id).extend (a_node)
 					end
-					og_path.forth
 				end
 
 			end
