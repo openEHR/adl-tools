@@ -32,16 +32,17 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,
+					a_diff.uid,
 					a_diff.description.safe_deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
-			if a_diff.has_translations then
-				translations := a_diff.translations.deep_twin
+			if attached a_diff.translations as a_diff_trans then
+				translations := a_diff_trans.deep_twin
 			end
-			if a_diff.has_invariants then
-				invariants := a_diff.invariants.deep_twin
+			if attached a_diff.invariants as a_diff_invs then
+				invariants := a_diff_invs.deep_twin
 			end
-			if a_diff.has_annotations then
-				annotations := a_diff.annotations.safe_deep_twin
+			if attached a_diff.annotations as a_diff_annots then
+				annotations := a_diff_annots.safe_deep_twin
 			end
 			rebuild
 			is_generated := True
@@ -60,24 +61,39 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 		local
 			desc: like description
 		do
+			-- basic identifying info, and language from from child
+			-- definition comes from parent, waiting for flattening of child on top
+			-- ontology comes from child, waiting for parent items to be merged on top
 			if attached a_diff.description as orig_desc then
 				desc := orig_desc.safe_deep_twin
 			end
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.deep_twin, desc,
+					a_diff.original_language.deep_twin, a_diff.uid, desc,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
-
 			definition.set_node_id (a_diff.definition.node_id.twin)
-			if a_diff.has_translations then
-				translations := a_diff.translations.deep_twin
+
+			-- other metadata is created from parent, with child meta-data
+			-- merged on top, overwriting any values of the same key
+			other_metadata := a_flat_parent.other_metadata
+
+			-- translations are what is available in the child archetype
+			if attached a_diff.translations as a_diff_trans then
+				translations := a_diff_trans.deep_twin
 			end
-			if a_flat_parent.has_invariants then
-				invariants := a_flat_parent.invariants.deep_twin
+
+			-- invariants starts with what is in the parent archetype and
+			-- child invariants are merged
+			if attached a_flat_parent.invariants as parent_invs then
+				invariants := parent_invs.deep_twin
 			end
-			if a_flat_parent.has_annotations then
-				annotations := a_flat_parent.annotations.safe_deep_twin
+
+			-- annotations starts with what is in the parent archetype and
+			-- child annotations are merged
+			if attached a_flat_parent.annotations as parent_annots then
+				annotations := parent_annots.safe_deep_twin
 			end
+
 			rebuild
 			is_generated := True
 		ensure
@@ -101,7 +117,7 @@ feature -- Factory
 		do
 --			if not is_specialised then
 				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
-					is_controlled, original_language, translations, description, definition, invariants,
+					is_controlled, uid, other_metadata, original_language, translations, description, definition, invariants,
 					ontology.to_differential, annotations)
 --			else
 --				-- ======= deal with main archetype =======

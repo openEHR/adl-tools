@@ -41,6 +41,10 @@ feature -- Initialisation
 
 			is_generated := an_archetype.is_generated
 
+			uid := an_archetype.uid
+
+			other_metadata := an_archetype.other_metadata
+
 			create definition.make (an_archetype.definition)
 
 			invariants := an_archetype.invariants
@@ -62,6 +66,8 @@ feature -- Access
 
 	archetype_id: detachable STRING
 
+	other_metadata: detachable HASH_TABLE [STRING, STRING]
+
 	adl_version: detachable STRING
 			-- ADL version of this archetype
 
@@ -70,6 +76,8 @@ feature -- Access
 
 	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
+
+	uid: detachable STRING
 
 	definition: detachable P_C_COMPLEX_OBJECT
 
@@ -119,6 +127,8 @@ feature -- Factory
 						o_archetype_id,
 						o_parent_archetype_id,
 						is_controlled,
+						uid,
+						other_metadata,
 						o_original_language,
 						translations,
 						o_description,
@@ -139,6 +149,8 @@ feature -- Factory
 						o_archetype_id,
 						o_parent_archetype_id,
 						is_controlled,
+						uid,
+						other_metadata,
 						o_original_language,
 						translations,
 						o_description,

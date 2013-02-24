@@ -49,7 +49,8 @@ create
 
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
-ALPHANUMSTR [a-zA-Z0-9_]+
+ALPHANUM_STR [a-zA-Z0-9_]+
+VALUE_STR [a-zA-Z0-9_\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
@@ -121,6 +122,10 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 
 [Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ee][Dd] 		{
 				last_token := SYM_IS_GENERATED
+			}
+
+[Uu][Ii][Dd] 		{
+				last_token := SYM_UID
 			}
 
 ^[Ss][Pp][Ee][Cc][Ii][Aa][Ll][Ii][SsZz][Ee][ \t\r]*\n 	{
@@ -220,9 +225,6 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 				last_string_value := str_
 				set_start_condition(INITIAL)
 			}
-	(.|\n) {
-		-- ignore unmatched chars
-	}
 }
 
 <IN_CADL_SECTION>{
@@ -275,14 +277,20 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-{NAMESTR}-{ALPHANUMSTR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUMSTR})*\.v[1-9][0-9]* {
+{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
 
-----------/* identifiers */ -------------------------------------------------
+----------/* identifiers (used in meta-data section after 'archetype' or other keyword) */ -------------------------------------------------
 {NAMESTR}	{
 					last_token := V_IDENTIFIER
+					last_string_value := text
+			}
+
+----------/* values (used in meta-data section after 'archetype' or other keyword) */ -------------------------------------------------
+{VALUE_STR}	{
+					last_token := V_VALUE
 					last_string_value := text
 			}
 

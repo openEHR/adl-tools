@@ -373,6 +373,7 @@ feature {NONE} -- Implementation
 									art_type,
 									id,
 									olt.original_language,
+									adl_parser.uid,
 									res_desc,	-- may be Void
 									definition,
 									flat_ont
@@ -390,6 +391,7 @@ feature {NONE} -- Implementation
 									art_type,
 									id,
 									olt.original_language,
+									adl_parser.uid,
 									res_desc,	-- may be Void
 									definition,
 									diff_ont
@@ -418,6 +420,15 @@ feature {NONE} -- Implementation
 
 							if adl_parser.is_generated then
 								new_arch.set_is_generated
+							end
+
+							-- other meta-data
+							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
+								across omd as omd_csr loop
+									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
+										new_arch.add_other_metadata_value (a_key, an_item)
+									end
+								end
 							end
 
 							if attached orig_lang_trans.translations as olt_trans then

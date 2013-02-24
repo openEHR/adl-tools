@@ -37,6 +37,7 @@ feature -- Initialisation
 	make (an_artefact_type: like artefact_type;
 			an_id: like archetype_id;
 			an_original_language: like original_language;
+			a_uid: like uid;
 			a_description: like description;
 			a_definition: like definition;
 			an_ontology: like ontology)
@@ -52,6 +53,7 @@ feature -- Initialisation
 			definition := a_definition
 			ontology := an_ontology
 			is_dirty := True
+			uid := a_uid
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
@@ -68,6 +70,8 @@ feature -- Initialisation
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
+			a_uid: like uid;
+			an_other_metadata: like other_metadata;
 			an_original_language: like original_language;
 			a_translations: like translations;
 			a_description: like description;
@@ -82,12 +86,14 @@ feature -- Initialisation
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
 			make (an_artefact_type, an_id,
-					an_original_language, a_description,
+					an_original_language, a_uid,
+					a_description,
 					a_definition, an_ontology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
 			adl_version := an_adl_version
 			is_controlled := is_controlled_flag
+			other_metadata := an_other_metadata
 			invariants := an_invariants
 			annotations := an_annotations
 		ensure
@@ -113,6 +119,7 @@ feature -- Initialisation
 			other_description: detachable RESOURCE_DESCRIPTION
 			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			other_invariants: detachable  ARRAYED_LIST [ASSERTION]
+			other_other_metadata: detachable HASH_TABLE [STRING, STRING]
 		do
 			if attached other.parent_archetype_id as other_pid then
 				other_parent_arch_id := other_pid.deep_twin
@@ -129,12 +136,16 @@ feature -- Initialisation
 			if other.has_invariants then
 				other_invariants := other.invariants.deep_twin
 			end
+			if attached other.other_metadata then
+				other_other_metadata := other.other_metadata.deep_twin
+			end
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
-					other_parent_arch_id, other.is_controlled,
+					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
 					other_description, other.definition.deep_twin, other_invariants,
 					other.ontology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
+
 			rebuild
 		ensure then
 			Is_generated_preserved: other.is_generated implies is_generated
@@ -142,11 +153,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	uid: detachable HIER_OBJECT_ID
+	uid: detachable STRING
 			-- optional UID identifier of this artefact
 			-- FIXME: should really be in AUTHORED_RESOURCE
 
 	archetype_id: ARCHETYPE_ID
+
+	other_metadata: detachable HASH_TABLE [STRING, STRING]
 
 	adl_version: STRING
 			-- ADL version of this archetype
@@ -573,11 +586,11 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDAT
 
 feature -- Modification
 
-	set_adl_version(a_ver: STRING)
+	set_adl_version (a_ver: STRING)
 			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
-			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
+			Valid_version: valid_adl_version(a_ver)
 		do
 			adl_version := a_ver
 		end
@@ -587,14 +600,60 @@ feature -- Modification
 			archetype_id := an_id
 		end
 
-	set_artefact_type_from_string (s: attached STRING)
+	set_uid (a_uid: STRING)
+		do
+			uid := a_uid
+		end
+
+	set_artefact_type_from_string (s: STRING)
 		require
 			(create {ARTEFACT_TYPE}).valid_type_name(s)
 		do
 			create artefact_type.make_from_type_name(s)
 		end
 
-	set_parent_archetype_id (an_id: attached ARCHETYPE_ID)
+	set_other_metadata (a_metadata: like other_metadata)
+		do
+			other_metadata := a_metadata
+		end
+
+	add_other_metadata_value (a_key, a_value: STRING)
+			-- add the pair `a_key' / `a_value' to `other_metadata', overwriting any value
+			-- with the same key if necessary.
+		local
+			o_metadata: HASH_TABLE [STRING, STRING]
+		do
+			if attached other_metadata as omd then
+				o_metadata := omd
+			else
+				create o_metadata.make (0)
+			end
+			o_metadata.force (a_value, a_key)
+			other_metadata := o_metadata
+		ensure
+			other_metadata.item (a_key) = a_value
+		end
+
+	add_other_metadata_flag (a_key: STRING)
+			-- add a meta-data item of the form of a flag, whose value is implied to be 'true',
+			-- overwriting any value with the same key if necessary.
+		local
+			o_metadata: HASH_TABLE [STRING, STRING]
+			any_flag: BOOLEAN
+		do
+			if attached other_metadata as omd then
+				o_metadata := omd
+			else
+				create o_metadata.make (0)
+			end
+			any_flag := True
+			o_metadata.force (any_flag.out, a_key)
+			other_metadata := o_metadata
+		ensure
+			other_metadata.item (a_key).is_equal ((True).out)
+		end
+
+	set_parent_archetype_id (an_id: ARCHETYPE_ID)
 		do
 			parent_archetype_id := an_id
 		end
@@ -604,7 +663,7 @@ feature -- Modification
 			definition := a_node
 		end
 
-	set_invariants (an_assertion_list: attached ARRAYED_LIST[ASSERTION])
+	set_invariants (an_assertion_list: ARRAYED_LIST[ASSERTION])
 			-- set invariants
 		do
 			invariants := an_assertion_list
@@ -615,7 +674,7 @@ feature -- Modification
 			ontology := a_node
 		end
 
-	add_invariant (an_inv: attached ASSERTION)
+	add_invariant (an_inv: ASSERTION)
 			-- add a new invariant
 		do
 			if invariants = Void then

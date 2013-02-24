@@ -2,11 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Visitor to build list of path references found in assertions"
 	keywords:    "visitor, assertion expressions"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	author:      "Peter Gummer <peter.gummer@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
 class EXPR_XREF_BUILDER
 
@@ -16,13 +15,12 @@ inherit
 			start_expr_leaf
 		end
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	initialise (an_archetype: ARCHETYPE; an_assertion: ASSERTION)
 			-- set assertion
 		do
 			archetype := an_archetype
-			initialise_visitor (an_assertion)
 		end
 
 feature -- Visitor
@@ -40,7 +38,11 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	archetype: ARCHETYPE
+	archetype: detachable ARCHETYPE
+		note
+			option: stable
+		attribute
+		end
 
 end
 

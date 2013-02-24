@@ -105,6 +105,7 @@ end
 					create arch_output_flat.make_specialised (arch_child_diff, arch_parent_flat)
 				end
 				expand_definition_use_nodes
+				flatten_other_metadata
 				flatten_definition
 				flatten_invariants
 				flatten_ontology
@@ -202,6 +203,17 @@ end
 debug ("flatten")
 	io.put_string ("<-- expand_definition_use_nodes%N")
 end
+			end
+		end
+
+	flatten_other_metadata
+			-- flatten other_metadata so that child archetype values overwrite any parent values with same key;
+			-- otherwise parent key/val pairs are preserved
+		do
+			if attached arch_child_diff.other_metadata as child_omd then
+				across child_omd as child_omd_csr loop
+					arch_output_flat.add_other_metadata_value (child_omd_csr.key, child_omd_csr.item)
+				end
 			end
 		end
 
@@ -763,7 +775,7 @@ end
 	flatten_ontology
 			-- build the flat archetype ontology as the sum of parent and source ontologies
 		do
-			arch_output_flat.ontology.merge(arch_parent_flat.ontology)
+			arch_output_flat.ontology.merge (arch_parent_flat.ontology)
 		end
 
 	flatten_annotations

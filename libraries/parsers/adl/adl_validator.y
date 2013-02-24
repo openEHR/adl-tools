@@ -47,15 +47,16 @@ create
 %token <STRING> V_LOCAL_TERM_CODE_REF
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_VERSION_STRING
+%token <STRING> V_VALUE
 
 %token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
 %token SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_ONTOLOGIES
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
+%token SYM_UID
 
 %type <STRING> source_artefact_type opt_artefact_type
-
 %%
 
 input: archetype
@@ -207,6 +208,10 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 		{
 			adl_version := $3
 		}
+	| SYM_UID '=' V_VALUE
+		{
+			uid := $3
+		}
 	| SYM_IS_CONTROLLED
 		{
 			is_controlled := True
@@ -214,6 +219,14 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 	| SYM_IS_GENERATED
 		{
 			is_generated := True
+		}
+	| V_IDENTIFIER '=' V_VALUE
+		{
+			other_metadata.put ($3, $1)
+		}
+	| V_VALUE
+		{
+			other_metadata.put ("true", $1)
 		}
 	;
 
@@ -328,6 +341,7 @@ feature -- Initialization
 		do
 			make_scanner
 			make_parser_skeleton
+			create other_metadata.make (0)
 		end
 
 	execute (in_text:STRING)
@@ -368,7 +382,11 @@ feature -- Parse Output
 
 	archetype_id: ARCHETYPE_ID
 
+	other_metadata: HASH_TABLE [STRING, STRING]
+
 	adl_version: STRING
+
+	uid: STRING
 
 	is_controlled: BOOLEAN
 
