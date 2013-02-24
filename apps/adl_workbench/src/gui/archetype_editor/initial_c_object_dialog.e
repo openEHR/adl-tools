@@ -66,7 +66,7 @@ feature {NONE} -- Initialization
 
 			-- window characteristics
 			set_title (get_text ("initial_c_object_config_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
+			set_icon_pixmap (adl_workbench_logo)
 
 			-- create widgets
 			create ev_root_container

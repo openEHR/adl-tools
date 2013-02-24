@@ -101,7 +101,7 @@ feature {NONE} -- Initialization
 			Precursor {EV_DIALOG}
 
 			set_title (get_text ("profile_edit_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
+			set_icon_pixmap (adl_workbench_logo)
 			set_minimum_width (600)
 			extend (ev_root_container)
 

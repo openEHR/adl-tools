@@ -166,7 +166,7 @@ feature -- Definitions
 
 feature -- Access
 
-	adl_workbench_icon: EV_PIXMAP
+	adl_workbench_logo: EV_PIXMAP
 		do
 			Result := get_icon_pixmap ("openehr_adl_workbench_logo")
 		end

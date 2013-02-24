@@ -212,7 +212,7 @@ feature {NONE} -- Initialization
 
 			set_minimum_width (400)
 			set_title (get_text ("option_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
+			set_icon_pixmap (adl_workbench_logo)
 
 			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)

@@ -78,7 +78,7 @@ feature {NONE} -- Initialization
 			set_maximum_height (2000)
 			set_title (get_msg ("main_window_title", <<latest_adl_version>>))
 			close_request_actions.extend (agent exit_app)
-			set_icon_pixmap (adl_workbench_icon)
+			set_icon_pixmap (adl_workbench_logo)
 
 
 
@@ -971,7 +971,7 @@ feature {NONE} -- Help events
 		do
 			create dialog.make_with_text (splash_text)
 			dialog.set_title (get_msg ("about_awb_dialog_title", Void))
-			dialog.set_pixmap (adl_workbench_icon)
+			dialog.set_pixmap (adl_workbench_logo)
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)

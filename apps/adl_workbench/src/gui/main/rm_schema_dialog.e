@@ -109,7 +109,7 @@ feature {NONE} -- Initialisation
 			precursor
 			extend (ev_root_container)
 			set_title (get_text ("rm_schema_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
+			set_icon_pixmap (adl_workbench_logo)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)

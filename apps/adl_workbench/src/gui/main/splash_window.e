@@ -12,7 +12,7 @@ class SPLASH_WINDOW
 inherit
 	EV_POPUP_WINDOW
 		redefine
-			initialize
+			create_interface_objects, initialize
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -41,35 +41,38 @@ feature {NONE} -- Initialization
 			timer.actions.extend (agent close)
 		end
 
-	initialize
-		local
-			hb, border: EV_HORIZONTAL_BOX
-			label: EV_LABEL
+	create_interface_objects
 		do
 			Precursor
-
 			create border
 			border.set_border_width (2)
-			extend (border)
-
 			create hb
 			hb.set_padding (10)
 			hb.set_border_width (15)
 			border.extend (hb)
+			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
 
-			hb.extend (adl_workbench_icon)
+			hb.extend (adl_workbench_logo)
 
 			create label
 			label.align_text_left
 			label.set_text (splash_text)
 			hb.extend (label)
+		end
 
+	initialize
+		do
+			Precursor
+			extend (border)
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			propagate_background_color
-			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
 		end
 
 feature {NONE} -- Implementation
+
+	hb, border: EV_HORIZONTAL_BOX
+
+	label: EV_LABEL
 
 	timer: EV_TIMEOUT
 			-- Timer to keep window visible for a limited number of seconds.

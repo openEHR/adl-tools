@@ -75,21 +75,6 @@ feature {NONE} -- Initialization
 			main_window.show
 		end
 
-	new_abort_dialog (text: STRING): EV_MESSAGE_DIALOG
-			-- A newly created dialog containing an "Abort" button and `text'.
-		do
-			create Result.make_with_text (text)
-			Result.set_title ("Cannot launch ADL Workbench")
-			Result.set_pixmap ((create {EV_STOCK_PIXMAPS}).error_pixmap)
-			Result.set_icon_pixmap (Result.pixmap)
-			Result.set_buttons (<<"Abort">>)
-			Result.set_default_push_button (Result.button ("Abort"))
-			Result.set_default_cancel_button (Result.button ("Abort"))
-		ensure
-			text_set: Result.text.same_string (text)
-			button_set: Result.has_button ("Abort")
-		end
-
 end
 
 

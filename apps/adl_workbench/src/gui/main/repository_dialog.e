@@ -137,7 +137,7 @@ feature {NONE} -- Initialization
 			set_maximum_width (800)
 			set_maximum_height (800)
 			set_title (get_text ("repository_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
+			set_icon_pixmap (adl_workbench_logo)
 			extend (ev_root_container)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
