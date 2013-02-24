@@ -10,8 +10,8 @@ Name "ADL Workbench"
 !define URL www.openehr.org
 
 # MUI defines
-!define MUI_ICON "..\..\..\app\icons\openEHR.ico"
-!define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
+!define MUI_ICON "..\..\..\..\resources\icons\source\openEHR.ico"
+!define MUI_UNICON "..\..\..\..\resources\icons\source\openEHR.ico"
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of the openEHR Foundation's $(^Name).\r\n\r\nClick Next to continue."
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
@@ -87,19 +87,15 @@ Section -Main SEC0000
     File ..\..\..\app\sample_xml_rules.cfg
     File ..\..\..\app\default_ui_config.cfg
 
-	# get rid of icons directory, due to major re-arrangement SVN rev 1700
-	# will make it more efficient on startup with new software version, which 
-	# now simply puts the whole icons directory into a hash keyed by relative 
-	# icon file paths
+	# get rid of icons directory, it's no longer used
     RMDir /r $INSTDIR\icons
-    SetOutPath $INSTDIR\icons
-    File /r /x .svn ..\..\..\app\icons\*
 
 	# Terminology
     SetOutPath $INSTDIR\terminology
     File /r /x .svn ..\..\..\..\..\terminology\*
 
-	# RM schemas
+	# RM schemas; this is relying on the Git clone of the Github repo openEHR/reference_models 
+	# to be in the directory 'rm_schemas'
     SetOutPath $INSTDIR\rm_schemas
     File ..\..\..\..\..\rm_schemas\*
 
@@ -156,7 +152,6 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
     Delete /REBOOTOK $INSTDIR\sample_xml_rules.cfg
     Delete /REBOOTOK $INSTDIR\default_ui_config.cfg
-    RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
     RMDir /r /REBOOTOK $INSTDIR\terminology
     RMDir /r /REBOOTOK $INSTDIR\vim

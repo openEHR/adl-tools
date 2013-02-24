@@ -113,12 +113,11 @@ if distrib and len(adl_workbench) > 0:
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
-	icons = 'apps/adl_workbench/app/icons'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
 	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]
 
-	for root in [icons, vim, install]:
+	for root in [vim, install]:
 		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			if '.git' in dirnames: dirnames.remove('.git')
@@ -148,7 +147,7 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [icons, terminology, rm_schemas, vim]:
+			for root in [terminology, rm_schemas, vim]:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
@@ -193,7 +192,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, rm_schemas]:
+				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				substitutions = 's|\&|\&amp;|;'
