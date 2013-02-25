@@ -52,7 +52,10 @@ feature {NONE} -- Initialization
 			border.extend (hb)
 			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
 
-			hb.extend (adl_workbench_logo)
+			create img_cell
+			img_cell.set_minimum_size (adl_workbench_logo.width, adl_workbench_logo.height)
+			img_cell.extend (adl_workbench_logo)
+			hb.extend (img_cell)
 
 			create label
 			label.align_text_left
@@ -71,6 +74,8 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	hb, border: EV_HORIZONTAL_BOX
+
+	img_cell: EV_CELL
 
 	label: EV_LABEL
 
