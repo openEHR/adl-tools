@@ -89,16 +89,20 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	adl_legacy_flat_filename_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	adl_legacy_flat_filename_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for filenames ending in ".adl".
 		once
-			create Result.compile_case_insensitive (".*\" + File_ext_archetype_adl14 + "$")
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile (".*\" + File_ext_archetype_adl14 + "$")
 		end
 
-	adl_differential_filename_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	adl_differential_filename_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for filenames ending in ".adls".
 		once
-			create Result.compile_case_insensitive (".*\" + File_ext_archetype_source + "$")
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile (".*\" + File_ext_archetype_source + "$")
 		end
 
 end

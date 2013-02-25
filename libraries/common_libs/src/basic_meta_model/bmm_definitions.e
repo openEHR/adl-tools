@@ -301,16 +301,20 @@ feature -- Conversion
 
 feature {NONE} -- Implementation
 
-	well_formed_type_name_regex: LX_DFA_REGULAR_EXPRESSION
+	well_formed_type_name_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for well-formed type names
 		once
-			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+(< *[a-z][a-z0-9_]+( *, *[a-z][a-z0-9_]+)*>)?")
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile ("[a-z][a-z0-9_]+(< *[a-z][a-z0-9_]+( *, *[a-z][a-z0-9_]+)*>)?")
 		end
 
-	well_formed_class_name_regex: LX_DFA_REGULAR_EXPRESSION
+	well_formed_class_name_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for well-formed class names
 		once
-			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+")
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile ("[a-z][a-z0-9_]+")
 		end
 
 end

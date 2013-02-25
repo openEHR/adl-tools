@@ -307,15 +307,16 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	id_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		deferred
 		end
 
-	domain_concept_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	domain_concept_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for concept part of archetype ids.
 		once
-			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*$")
+			create Result.make
+			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*$")
 		end
 
 end

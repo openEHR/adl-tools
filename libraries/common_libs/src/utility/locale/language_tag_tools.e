@@ -100,7 +100,7 @@ feature -- Definitions
 
 feature -- Validation
 
-	valid_language_tag (a_lang_tag: attached STRING): BOOLEAN
+	valid_language_tag (a_lang_tag: STRING): BOOLEAN
 			-- True if `a_lang_tag' conforms to the standard (as partially implemented here)
 		do
 			Result := Language_pattern_parser.matches (a_lang_tag) or else
@@ -108,13 +108,13 @@ feature -- Validation
 				Language_pattern_script_region_parser.matches (a_lang_tag)
 		end
 
-	valid_language_pattern_tag (a_lang_tag: attached STRING): BOOLEAN
+	valid_language_pattern_tag (a_lang_tag: STRING): BOOLEAN
 			-- True if `a_lang_tag' conforms to the language-only pattern, i.e. 2 or 3 alpha chars (from ISO639-1 or -2)
 		do
 			Result := Language_pattern_parser.matches (a_lang_tag)
 		end
 
-	language_tag_has_language (a_lang_tag, a_lang_subtag: attached STRING): BOOLEAN
+	language_tag_has_language (a_lang_tag, a_lang_subtag: STRING): BOOLEAN
 			-- True if `a_lang_subtag' is found in the appropriate place in `a_lang_tag'
 		require
 			Valid_lang_tag: valid_language_tag(a_lang_tag)
@@ -125,21 +125,27 @@ feature -- Validation
 
 feature {NONE} -- Implementation
 
-	Language_pattern_parser: attached LX_DFA_REGULAR_EXPRESSION
+	Language_pattern_parser: RX_PCRE_REGULAR_EXPRESSION
 		once
-			create Result.compile_case_insensitive (Language_pattern_regex)
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile (Language_pattern_regex)
 			check Result.is_compiled end
 		end
 
-	Language_pattern_region_parser: attached LX_DFA_REGULAR_EXPRESSION
+	Language_pattern_region_parser: RX_PCRE_REGULAR_EXPRESSION
 		once
-			create Result.compile_case_insensitive (Language_region_pattern_regex)
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile (Language_region_pattern_regex)
 			check Result.is_compiled end
 		end
 
-	Language_pattern_script_region_parser: attached LX_DFA_REGULAR_EXPRESSION
+	Language_pattern_script_region_parser: RX_PCRE_REGULAR_EXPRESSION
 		once
-			create Result.compile_case_insensitive (Language_script_region_pattern_regex)
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile (Language_script_region_pattern_regex)
 			check Result.is_compiled end
 		end
 

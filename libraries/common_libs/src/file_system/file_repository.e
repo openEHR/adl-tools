@@ -30,8 +30,13 @@ feature {NONE} -- Initialisation
 			Dir_name_exists: not a_dir_name.is_empty
 			Ext_valid: not a_match_pattern.is_empty
    		do
+   			create errors.make
+   			create matching_paths.make (0)
 			base_name_pattern := a_match_pattern
-			create base_name_pattern_regex.compile_case_insensitive (base_name_pattern)
+
+			create base_name_pattern_regex.make
+			base_name_pattern_regex.set_case_insensitive (True)
+			base_name_pattern_regex.compile (base_name_pattern)
 			if not base_name_pattern_regex.is_compiled then
 				errors.add_error ("regex_invalid", <<base_name_pattern>>, generator + ".make")
 			else
@@ -46,19 +51,13 @@ feature -- Access
 
 	errors: ERROR_ACCUMULATOR
 			-- set if make failed
-		attribute
-			create Result.make
-		end
 
 	matching_paths: ARRAYED_LIST [STRING]
 			-- file paths matching `base_name_pattern'
-		attribute
-			create Result.make (0)
-		end
 
 feature {NONE} -- Implementation
 
-	base_name_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	base_name_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 
 	find_matching_file_paths (a_dir_name: STRING)
 			-- add file paths found in `a_dir_name' that match `base_name_pattern'

@@ -284,10 +284,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	env_var_pattern_matcher: LX_DFA_REGULAR_EXPRESSION
+	env_var_pattern_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- pattern for detecting $NAME in config values
 		once
-			create Result.compile (env_var_pattern, True)
+			create Result.make
+			Result.compile (env_var_pattern)
 		end
 
 	env_var_pattern: STRING = "\$[a-zA-Z0-9_]+"

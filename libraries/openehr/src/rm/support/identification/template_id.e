@@ -17,10 +17,6 @@ note
 	copyright:   "Copyright (c) 2008 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class TEMPLATE_ID
 
 inherit
@@ -40,7 +36,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	id_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		once
 			-- currently same as Archetype id regex, but probably needs

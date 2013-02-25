@@ -32,7 +32,7 @@ feature -- Initialization
 			is_open := True
 		end
 
-	make_from_string (str: attached STRING)
+	make_from_string (str: STRING)
 			-- make from a single string
 		do
 			create strings.make(0)
@@ -51,7 +51,9 @@ feature -- Initialization
 		do
 			regexp := str.twin
 			regexp_default_delimiter := using_default_delimiter
-			create regexp_parser.compile_case_sensitive (regexp)
+			create regexp_parser.make
+			regexp_parser.set_case_insensitive (True)
+			regexp_parser.compile (regexp)
 			if not regexp_parser.is_compiled then
 				regexp := Regexp_compile_error.twin
 			end
@@ -78,9 +80,7 @@ feature -- Modification
 			is_open := True
 		end
 
-	add_string (str: attached STRING)
-		require
-			strings_attached: attached strings
+	add_string (str: STRING)
 		do
 			strings.extend(str)
 		ensure
@@ -218,7 +218,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	regexp_parser: detachable LX_DFA_REGULAR_EXPRESSION
+	regexp_parser: detachable RX_PCRE_REGULAR_EXPRESSION
 		note
 			option: transient
 		attribute

@@ -17,10 +17,6 @@ note
 	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class ARCHETYPE_ID
 
 inherit
@@ -38,10 +34,11 @@ feature -- Definitions
 
 feature {NONE} -- Implementation
 
-	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	id_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		once
-			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
+			create Result.make
+			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
 		end
 
 end

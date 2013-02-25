@@ -65,10 +65,12 @@ feature -- Access
 	matching_ids (a_regex: STRING): ARRAYED_SET[STRING]
 			-- generate list of schema elemtn ids (packages and classes)
 		local
-			regex_matcher: LX_DFA_REGULAR_EXPRESSION
+			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
 			create Result.make (0)
-			create regex_matcher.compile_case_insensitive (a_regex)
+			create regex_matcher.make
+			regex_matcher.set_case_insensitive (True)
+			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
 				Result.compare_objects
 				across ev_node_map as ev_node_map_csr loop

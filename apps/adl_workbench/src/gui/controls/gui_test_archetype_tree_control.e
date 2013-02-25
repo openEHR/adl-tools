@@ -218,7 +218,7 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_SPLIT_AREA
 
-	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING]
+	tests: HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING]
 			-- table of test routines
 		once
 			create Result.make (0)

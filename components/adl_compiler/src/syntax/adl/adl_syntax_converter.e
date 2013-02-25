@@ -196,10 +196,11 @@ feature -- ADL 1.5 conversions
 --			end
 --		end
 
-	old_archetype_id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	old_archetype_id_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids with the 'draft' still in the version
 		once
-			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
+			create Result.make
+			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
 	convert_ontology_to_nested (dt: DT_COMPLEX_OBJECT_NODE)

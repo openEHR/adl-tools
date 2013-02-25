@@ -126,14 +126,16 @@ feature -- Access
 			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
 			Rm_closure_valid: an_rm_closure /= Void implies not an_rm_closure.is_empty
 		local
-			regex_matcher: LX_DFA_REGULAR_EXPRESSION
+			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			arch_id: ARCHETYPE_ID
 			is_candidate: BOOLEAN
 			rm_type, rm_closure: detachable STRING
 		do
 			create Result.make (0)
 			Result.compare_objects
-			create regex_matcher.compile_case_insensitive (a_regex)
+			create regex_matcher.make
+			regex_matcher.set_case_insensitive (True)
+			regex_matcher.compile (a_regex)
 			if attached an_rm_type as rm_t then
 				rm_type := rm_t.as_lower
 			end

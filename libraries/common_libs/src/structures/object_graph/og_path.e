@@ -336,11 +336,7 @@ feature -- Validation
 		do
 			parser.execute (a_path)
 			if parser.syntax_error then
-				if attached parser.error_text as err_txt then
-					invalid_path_string_reason.append (err_txt)
-				else
-					invalid_path_string_reason.append (get_text ("path_parser_no_error_available"))
-				end
+				invalid_path_string_reason.append (parser.errors.as_string)
 			else
 				Result := True
 			end

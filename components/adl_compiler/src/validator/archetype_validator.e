@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 			Archetype_id_valid: not an_id.is_empty
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			regex_matcher: LX_DFA_REGULAR_EXPRESSION
+			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
 			-- process the includes
 			includes := a_slot.includes
@@ -84,7 +84,9 @@ feature {NONE} -- Implementation
 			if not includes.is_empty and not includes.first.matches_any and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
 					if attached {STRING} includes.item.extract_regex as a_regex then
-						create regex_matcher.compile_case_insensitive (a_regex)
+						create regex_matcher.make
+						regex_matcher.set_case_insensitive (True)
+						regex_matcher.compile (a_regex)
 						if regex_matcher.is_compiled then
 							Result := regex_matcher.matches (an_id)
 						end
@@ -94,7 +96,9 @@ feature {NONE} -- Implementation
 			elseif not excludes.is_empty and not excludes.first.matches_any and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
 					if attached {STRING} excludes.item.extract_regex as a_regex then
-						create regex_matcher.compile_case_insensitive (a_regex)
+						create regex_matcher.make
+						regex_matcher.set_case_insensitive (True)
+						regex_matcher.compile (a_regex)
 						if regex_matcher.is_compiled then
 							Result := not regex_matcher.matches (an_id)
 						end

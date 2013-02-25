@@ -80,10 +80,11 @@ feature -- Access
 			Result.mirror
 		end
 
-	xml_tag_pattern: LX_DFA_REGULAR_EXPRESSION
+	xml_tag_pattern: RX_PCRE_REGULAR_EXPRESSION
 			-- RE for "<..*>..*</..*>"
 		once
-			create Result.compile("<..*>..*<\/..*>", False)
+			create Result.make
+			Result.compile ("<..*>..*<\/..*>")
 		end
 
 	xml_tag_indent (xml_string: STRING): STRING
