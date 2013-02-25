@@ -452,10 +452,14 @@ feature -- Access (semantic)
 			-- generate a valid language to display this archetype in, either the current_language
 			-- or the primary language of this archetype, if it doesn't support the current language
 		do
-			if differential_archetype.has_language (archetype_view_language) then
-				Result := archetype_view_language
+			if is_valid then
+				if differential_archetype.has_language (archetype_view_language) then
+					Result := archetype_view_language
+				else
+					Result := differential_archetype.original_language.code_string
+				end
 			else
-				Result := differential_archetype.original_language.code_string
+				Result := Default_language
 			end
 		end
 

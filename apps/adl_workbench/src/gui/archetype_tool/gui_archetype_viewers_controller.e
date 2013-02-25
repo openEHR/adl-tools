@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class GUI_ARCHETYPE_VIEWERS_CONTROLLER
 
 inherit
@@ -64,7 +60,7 @@ feature -- Commands
 			if not has_tools then
 				create_new_tool
 			end
-			active_tool.gui_tool_populate (aca)
+			active_tool.populate (aca, True, aca.display_language)
 			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
 		end
 
