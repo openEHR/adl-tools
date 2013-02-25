@@ -77,19 +77,15 @@ feature {NONE} -- Implementation
 	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
-		local
-			l_yyvs1_default_item: ANY
-			l_yyvs2_default_item: INTEGER
-			l_yyvs3_default_item: STRING
 		do
-			if yyvs1 /= Void then
-				yyvs1.fill_with (l_yyvs1_default_item, 0, yyvs1.upper)
+			if yyvs1 /= Void and yyspecial_routines1 /= Void then
+				yyspecial_routines1.keep_head (yyvs1, 0, yyvsp1 + 1)
 			end
-			if yyvs2 /= Void then
-				yyvs2.fill_with (l_yyvs2_default_item, 0, yyvs2.upper)
+			if yyvs2 /= Void and yyspecial_routines2 /= Void then
+				yyspecial_routines2.keep_head (yyvs2, 0, yyvsp2 + 1)
 			end
-			if yyvs3 /= Void then
-				yyvs3.fill_with (l_yyvs3_default_item, 0, yyvs3.upper)
+			if yyvs3 /= Void and yyspecial_routines3 /= Void then
+				yyspecial_routines3.keep_head (yyvs3, 0, yyvsp3 + 1)
 			end
 		end
 
@@ -101,8 +97,8 @@ feature {NONE} -- Implementation
 			inspect yytypes2.item (yychar1)
 			when 1 then
 				yyvsp1 := yyvsp1 + 1
-				if yyvsp1 >= yyvsc1 then
-					if yyvs1 = Void then
+				if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+					if yyvs1 = Void or yyspecial_routines1 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs1")
 						end
@@ -117,11 +113,11 @@ feature {NONE} -- Implementation
 						yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 					end
 				end
-				yyspecial_routines1.force (yyvs1, last_any_value, yyvsp1)
+				yyspecial_routines1.force (yyvs1, last_detachable_any_value, yyvsp1)
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
-				if yyvsp2 >= yyvsc2 then
-					if yyvs2 = Void then
+				if yyvsp2 >= yyvsc2 or yyvs2 = Void or yyspecial_routines2 = Void then
+					if yyvs2 = Void or yyspecial_routines2 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs2")
 						end
@@ -139,8 +135,8 @@ feature {NONE} -- Implementation
 				yyspecial_routines2.force (yyvs2, last_integer_value, yyvsp2)
 			when 3 then
 				yyvsp3 := yyvsp3 + 1
-				if yyvsp3 >= yyvsc3 then
-					if yyvs3 = Void then
+				if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+					if yyvs3 = Void or yyspecial_routines3 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs3")
 						end
@@ -170,11 +166,11 @@ feature {NONE} -- Implementation
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
-			yyval1: ANY
+			yyval1: detachable ANY
 		do
 			yyvsp1 := yyvsp1 + 1
-			if yyvsp1 >= yyvsc1 then
-				if yyvs1 = Void then
+			if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+				if yyvs1 = Void or yyspecial_routines1 = Void then
 					debug ("GEYACC")
 						std.error.put_line ("Create yyvs1")
 					end
@@ -225,7 +221,7 @@ feature {NONE} -- Semantic actions
 	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
-			yyval1: ANY
+			yyval1: detachable ANY
 		do
 			inspect yy_act
 when 1 then
@@ -360,8 +356,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -436,8 +432,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -619,8 +615,8 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Semantic value stacks
 
-	yyvs1: SPECIAL [ANY]
-			-- Stack for semantic values of type ANY
+	yyvs1: SPECIAL [detachable ANY]
+			-- Stack for semantic values of type detachable ANY
 
 	yyvsc1: INTEGER
 			-- Capacity of semantic value stack `yyvs1'
@@ -628,8 +624,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp1: INTEGER
 			-- Top of semantic value stack `yyvs1'
 
-	yyspecial_routines1: KL_SPECIAL_ROUTINES [ANY]
-			-- Routines that ought to be in SPECIAL [ANY]
+	yyspecial_routines1: detachable KL_SPECIAL_ROUTINES [detachable ANY] note option: stable attribute end
+			-- Routines that ought to be in SPECIAL [detachable ANY]
 
 	yyvs2: SPECIAL [INTEGER]
 			-- Stack for semantic values of type INTEGER
@@ -640,7 +636,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp2: INTEGER
 			-- Top of semantic value stack `yyvs2'
 
-	yyspecial_routines2: KL_SPECIAL_ROUTINES [INTEGER]
+	yyspecial_routines2: detachable KL_SPECIAL_ROUTINES [INTEGER] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [INTEGER]
 
 	yyvs3: SPECIAL [STRING]
@@ -652,7 +648,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp3: INTEGER
 			-- Top of semantic value stack `yyvs3'
 
-	yyspecial_routines3: KL_SPECIAL_ROUTINES [STRING]
+	yyspecial_routines3: detachable KL_SPECIAL_ROUTINES [STRING] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [STRING]
 
 feature {NONE} -- Constants

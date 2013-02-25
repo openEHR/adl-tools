@@ -2,14 +2,9 @@
 #	component:   "Deep Thought Reusable Libraries"
 #	description: "ADL Parser builder script"
 #	keywords:    "ADL, parser"
-#
-#	author:      "Thomas Beale <thomas@deepthought.com.au>"
-#	copyright:   "Copyright (c) 2003-2005 Deep Thought Informatics Pty Ltd"
-#	licence:     "The Eiffel Forum License, version 1"
-#
-#	file:        "$URL$"
-#	revision:    "$LastChangedRevision$"
-#	last_change: "$LastChangedDate$"
+#	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+#	support:     "http://www.openehr.org/issues/browse/AWB"
+#	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 #
 
 geyacc --new_typing -v parser_errs.txt -t ADL_TOKENS -o adl_validator.e adl_validator.y

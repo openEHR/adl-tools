@@ -3,23 +3,20 @@ note
 	component:   "openEHR Archetype Project"
 	description: "parser for Object Graph paths"
 	keywords:    "OG_PATH"
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003, 2004 Deep Thought Informatics Pty Ltd"
-	license:     "The Eiffel Forum Open Source License version 1"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
 
 class OG_PATH_VALIDATOR
 
 inherit
-	YY_PARSER_SKELETON
+	PARSER_VALIDATOR
 		rename
+			reset as validator_reset,
 			make as make_parser_skeleton
 		redefine
-			report_error
+			output
 		end
 
 	OG_PATH_SCANNER
@@ -40,7 +37,7 @@ create
 %token ERR_STRING
 %token SYM_MOVABLE_LEADER
 
-%type <OG_PATH_ITEM> path_segment -- call_path_segment
+%type <OG_PATH_ITEM> path_segment
 %type <OG_PATH> absolute_path movable_path relative_path
 
 %%
@@ -114,21 +111,21 @@ relative_path: path_segment
 
 path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 		{
-			create $$.make_with_object_id($1, $2)
+			create $$.make_with_object_id ($1, $2)
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
 			end
 		}
 	| V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE
 		{
-			create $$.make_with_object_id($1, $2)
+			create $$.make_with_object_id ($1, $2)
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
 			end
 		}
 	| V_ATTRIBUTE_IDENTIFIER
 		{
-			create $$.make($1)
+			create $$.make ($1)
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + $1 + "%N")
 			end
@@ -137,7 +134,7 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 
 %%
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Create a new parser.
@@ -147,29 +144,32 @@ feature -- Initialization
 			create indent.make(0)
 		end
 
+feature -- Commands
+
 	execute (in_text: STRING)
 		do
 			reset
-			create error_text.make(0)
+			indent.wipe_out
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
 
-feature {YY_PARSER_ACTION} -- Basic Operations
-
-	report_error (a_message: STRING)
-			-- Print error message.
+	error_loc: attached STRING
 		do
-			error_text.append (a_message)
-			error_text.append (" [last token = " + token_name(last_token) + "]")
-			error_text.append_character ('%N')
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append (" [last token = " + token_name (last_token) + "]")
 		end
 
 feature -- Access
 
-	error_text: STRING
+	source_start_line: INTEGER
+			-- offset of source in other document, else 0
 
-	output: OG_PATH
+	output: detachable OG_PATH
 
 feature {NONE} -- Implementation
 

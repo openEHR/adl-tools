@@ -1435,7 +1435,7 @@ end
 
 %%
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Create a new parser.
@@ -1448,6 +1448,8 @@ feature -- Initialization
 			create attr_nodes.make(0)
 			create indent.make(0)
 		end
+
+feature -- Commands
 
 	reset
 		do

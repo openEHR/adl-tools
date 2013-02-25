@@ -2,23 +2,20 @@ note
 	component:   "openEHR Archetype Project"
 	description: "parser for Object Graph paths"
 	keywords:    "OG_PATH"
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003, 2004 Deep Thought Informatics Pty Ltd"
-	license:     "The Eiffel Forum Open Source License version 1"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
 
 class OG_PATH_VALIDATOR
 
 inherit
-	YY_PARSER_SKELETON
+	PARSER_VALIDATOR
 		rename
+			reset as validator_reset,
 			make as make_parser_skeleton
 		redefine
-			report_error
+			output
 		end
 
 	OG_PATH_SCANNER
@@ -67,23 +64,18 @@ feature {NONE} -- Implementation
 	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
-		local
-			l_yyvs1_default_item: ANY
-			l_yyvs2_default_item: STRING
-			l_yyvs3_default_item: OG_PATH_ITEM
-			l_yyvs4_default_item: OG_PATH
 		do
-			if yyvs1 /= Void then
-				yyvs1.fill_with (l_yyvs1_default_item, 0, yyvs1.upper)
+			if yyvs1 /= Void and yyspecial_routines1 /= Void then
+				yyspecial_routines1.keep_head (yyvs1, 0, yyvsp1 + 1)
 			end
-			if yyvs2 /= Void then
-				yyvs2.fill_with (l_yyvs2_default_item, 0, yyvs2.upper)
+			if yyvs2 /= Void and yyspecial_routines2 /= Void then
+				yyspecial_routines2.keep_head (yyvs2, 0, yyvsp2 + 1)
 			end
-			if yyvs3 /= Void then
-				yyvs3.fill_with (l_yyvs3_default_item, 0, yyvs3.upper)
+			if yyvs3 /= Void and yyspecial_routines3 /= Void then
+				yyspecial_routines3.keep_head (yyvs3, 0, yyvsp3 + 1)
 			end
-			if yyvs4 /= Void then
-				yyvs4.fill_with (l_yyvs4_default_item, 0, yyvs4.upper)
+			if yyvs4 /= Void and yyspecial_routines4 /= Void then
+				yyspecial_routines4.keep_head (yyvs4, 0, yyvsp4 + 1)
 			end
 		end
 
@@ -95,8 +87,8 @@ feature {NONE} -- Implementation
 			inspect yytypes2.item (yychar1)
 			when 1 then
 				yyvsp1 := yyvsp1 + 1
-				if yyvsp1 >= yyvsc1 then
-					if yyvs1 = Void then
+				if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+					if yyvs1 = Void or yyspecial_routines1 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs1")
 						end
@@ -111,11 +103,11 @@ feature {NONE} -- Implementation
 						yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 					end
 				end
-				yyspecial_routines1.force (yyvs1, last_any_value, yyvsp1)
+				yyspecial_routines1.force (yyvs1, last_detachable_any_value, yyvsp1)
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
-				if yyvsp2 >= yyvsc2 then
-					if yyvs2 = Void then
+				if yyvsp2 >= yyvsc2 or yyvs2 = Void or yyspecial_routines2 = Void then
+					if yyvs2 = Void or yyspecial_routines2 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs2")
 						end
@@ -145,11 +137,11 @@ feature {NONE} -- Implementation
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
-			yyval1: ANY
+			yyval1: detachable ANY
 		do
 			yyvsp1 := yyvsp1 + 1
-			if yyvsp1 >= yyvsc1 then
-				if yyvs1 = Void then
+			if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+				if yyvs1 = Void or yyspecial_routines1 = Void then
 					debug ("GEYACC")
 						std.error.put_line ("Create yyvs1")
 					end
@@ -202,15 +194,15 @@ feature {NONE} -- Semantic actions
 	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
-			yyval1: ANY
+			yyval1: detachable ANY
 			yyval4: OG_PATH
 			yyval3: OG_PATH_ITEM
 		do
 			inspect yy_act
 when 1 then
---|#line 48 "og_path_validator.y"
+--|#line 45 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 48")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 45")
 end
 
 			output := yyvs4.item (yyvsp4)
@@ -220,8 +212,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -239,9 +231,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
---|#line 53 "og_path_validator.y"
+--|#line 50 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 53")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 50")
 end
 
 			output := yyvs4.item (yyvsp4)
@@ -251,8 +243,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -270,9 +262,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
---|#line 58 "og_path_validator.y"
+--|#line 55 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 58")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 55")
 end
 
 			output := yyvs4.item (yyvsp4)
@@ -282,8 +274,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -301,9 +293,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
---|#line 63 "og_path_validator.y"
+--|#line 60 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 63")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 60")
 end
 
 			debug("OG_PATH_parse")
@@ -316,9 +308,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
---|#line 72 "og_path_validator.y"
+--|#line 69 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 72")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 69")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
@@ -330,9 +322,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 6 then
---|#line 79 "og_path_validator.y"
+--|#line 76 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 79")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 76")
 end
 
 			create yyval4.make_root
@@ -344,8 +336,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
 	yyvsp1 := yyvsp1 -1
-	if yyvsp4 >= yyvsc4 then
-		if yyvs4 = Void then
+	if yyvsp4 >= yyvsc4 or yyvs4 = Void or yyspecial_routines4 = Void then
+		if yyvs4 = Void or yyspecial_routines4 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs4")
 			end
@@ -363,9 +355,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 7 then
---|#line 86 "og_path_validator.y"
+--|#line 83 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 86")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 83")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
@@ -380,9 +372,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 8 then
---|#line 94 "og_path_validator.y"
+--|#line 91 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 94")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 91")
 end
 
 			yyval4 := yyvs4.item (yyvsp4 - 1)
@@ -398,9 +390,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 9 then
---|#line 104 "og_path_validator.y"
+--|#line 101 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 104")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 101")
 end
 
 			create yyval4.make_relative(yyvs3.item (yyvsp3))
@@ -409,8 +401,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp4 >= yyvsc4 then
-		if yyvs4 = Void then
+	if yyvsp4 >= yyvsc4 or yyvs4 = Void or yyspecial_routines4 = Void then
+		if yyvs4 = Void or yyspecial_routines4 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs4")
 			end
@@ -428,9 +420,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 10 then
---|#line 108 "og_path_validator.y"
+--|#line 105 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 108")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 105")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
@@ -443,12 +435,12 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 11 then
---|#line 115 "og_path_validator.y"
+--|#line 112 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 115")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 112")
 end
 
-			create yyval3.make_with_object_id(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+			create yyval3.make_with_object_id (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2 - 1) + "[" + yyvs2.item (yyvsp2) + "]%N")
 			end
@@ -457,8 +449,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp3 >= yyvsc3 then
-		if yyvs3 = Void then
+	if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+		if yyvs3 = Void or yyspecial_routines3 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs3")
 			end
@@ -476,12 +468,12 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 when 12 then
---|#line 122 "og_path_validator.y"
+--|#line 119 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 122")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 119")
 end
 
-			create yyval3.make_with_object_id(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+			create yyval3.make_with_object_id (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2 - 1) + "[" + yyvs2.item (yyvsp2) + "]%N")
 			end
@@ -490,8 +482,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp3 >= yyvsc3 then
-		if yyvs3 = Void then
+	if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+		if yyvs3 = Void or yyspecial_routines3 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs3")
 			end
@@ -509,12 +501,12 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 when 13 then
---|#line 129 "og_path_validator.y"
+--|#line 126 "og_path_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 129")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 126")
 end
 
-			create yyval3.make(yyvs2.item (yyvsp2))
+			create yyval3.make (yyvs2.item (yyvsp2))
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2) + "%N")
 			end
@@ -523,8 +515,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp3 >= yyvsc3 then
-		if yyvs3 = Void then
+	if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+		if yyvs3 = Void or yyspecial_routines3 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs3")
 			end
@@ -674,8 +666,8 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Semantic value stacks
 
-	yyvs1: SPECIAL [ANY]
-			-- Stack for semantic values of type ANY
+	yyvs1: SPECIAL [detachable ANY]
+			-- Stack for semantic values of type detachable ANY
 
 	yyvsc1: INTEGER
 			-- Capacity of semantic value stack `yyvs1'
@@ -683,8 +675,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp1: INTEGER
 			-- Top of semantic value stack `yyvs1'
 
-	yyspecial_routines1: KL_SPECIAL_ROUTINES [ANY]
-			-- Routines that ought to be in SPECIAL [ANY]
+	yyspecial_routines1: detachable KL_SPECIAL_ROUTINES [detachable ANY] note option: stable attribute end
+			-- Routines that ought to be in SPECIAL [detachable ANY]
 
 	yyvs2: SPECIAL [STRING]
 			-- Stack for semantic values of type STRING
@@ -695,7 +687,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp2: INTEGER
 			-- Top of semantic value stack `yyvs2'
 
-	yyspecial_routines2: KL_SPECIAL_ROUTINES [STRING]
+	yyspecial_routines2: detachable KL_SPECIAL_ROUTINES [STRING] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [STRING]
 
 	yyvs3: SPECIAL [OG_PATH_ITEM]
@@ -707,7 +699,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp3: INTEGER
 			-- Top of semantic value stack `yyvs3'
 
-	yyspecial_routines3: KL_SPECIAL_ROUTINES [OG_PATH_ITEM]
+	yyspecial_routines3: detachable KL_SPECIAL_ROUTINES [OG_PATH_ITEM] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [OG_PATH_ITEM]
 
 	yyvs4: SPECIAL [OG_PATH]
@@ -719,7 +711,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp4: INTEGER
 			-- Top of semantic value stack `yyvs4'
 
-	yyspecial_routines4: KL_SPECIAL_ROUTINES [OG_PATH]
+	yyspecial_routines4: detachable KL_SPECIAL_ROUTINES [OG_PATH] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [OG_PATH]
 
 feature {NONE} -- Constants
@@ -748,7 +740,7 @@ feature -- User-defined features
 
 
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Create a new parser.
@@ -758,29 +750,32 @@ feature -- Initialization
 			create indent.make(0)
 		end
 
+feature -- Commands
+
 	execute (in_text: STRING)
 		do
 			reset
-			create error_text.make(0)
+			indent.wipe_out
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
 
-feature {YY_PARSER_ACTION} -- Basic Operations
-
-	report_error (a_message: STRING)
-			-- Print error message.
+	error_loc: attached STRING
 		do
-			error_text.append (a_message)
-			error_text.append (" [last token = " + token_name(last_token) + "]")
-			error_text.append_character ('%N')
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append (" [last token = " + token_name (last_token) + "]")
 		end
 
 feature -- Access
 
-	error_text: STRING
+	source_start_line: INTEGER
+			-- offset of source in other document, else 0
 
-	output: OG_PATH
+	output: detachable OG_PATH
 
 feature {NONE} -- Implementation
 

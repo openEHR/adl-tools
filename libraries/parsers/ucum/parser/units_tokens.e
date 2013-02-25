@@ -11,7 +11,7 @@ inherit
 
 feature -- Last values
 
-	last_any_value: ANY
+	last_detachable_any_value: detachable ANY
 	last_integer_value: INTEGER
 	last_string_value: STRING
 
