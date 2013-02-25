@@ -32,7 +32,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,
-					a_diff.uid,
+					a_diff.uid.value,
 					a_diff.description.safe_deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
 			if attached a_diff.translations as a_diff_trans then
@@ -68,7 +68,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				desc := orig_desc.safe_deep_twin
 			end
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.deep_twin, a_diff.uid, desc,
+					a_diff.original_language.deep_twin, a_diff.uid.value, desc,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
 			definition.set_node_id (a_diff.definition.node_id.twin)
@@ -117,7 +117,7 @@ feature -- Factory
 		do
 --			if not is_specialised then
 				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
-					is_controlled, uid, other_metadata, original_language, translations, description, definition, invariants,
+					is_controlled, uid.value, other_metadata, original_language, translations, description, definition, invariants,
 					ontology.to_differential, annotations)
 --			else
 --				-- ======= deal with main archetype =======

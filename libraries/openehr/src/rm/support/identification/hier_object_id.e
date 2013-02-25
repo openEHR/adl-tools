@@ -6,17 +6,11 @@ note
 					 [ root '.' ] extension
 			 ]"
 	keywords:    "object identifiers"
-
 	design:      "openEHR Common Reference Model 1.4.1"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class HIER_OBJECT_ID
 
@@ -24,40 +18,33 @@ inherit
 	UID_BASED_ID
 
 create
-	make
+	make, make_from_string
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make(a_root: UID; an_extension: STRING)
-			-- build an external ID
+	make (a_root: UID; an_extension: STRING)
+			-- build from a UID and optional extension (no extension is indicated by an empty string)
+			-- if there is no extension then `value' will be just the UID.value;
+			-- if there is an extension, then `value' will have the form "root::extension"
 		require
-			Root_valid: a_root /= Void
-			Extension_exists: an_extension /= Void and then not an_extension.is_empty
+			Extension_exists: not an_extension.is_empty
 		do
-			create value.make(0)
-			if a_root /= Void then
-				value.append(a_root.value + Extension_separator)
+			create value.make (0)
+			value.append (a_root.value)
+			if not extension.is_empty then
+				value.append (Extension_separator + an_extension)
 			end
-			value.append(an_extension)
 		ensure
-			Root_set: a_root /= Void implies root.value.is_equal(a_root.value)
-			Extension_set: extension.is_equal(an_extension)
-		end
-
-	make_from_string(a_string:STRING)
-			-- make from a string of the same form as `id', i.e. "root::extension"
-		require
-			String_exists: a_string /= Void and then valid_id(a_string)
-		do
-
+			Root_set: root.value.is_equal (a_root.value)
+			Extension_set: extension.is_equal (an_extension)
 		end
 
 feature -- Status Report
 
-	valid_id(a_str:STRING): BOOLEAN
-			--
+	valid_id (a_str: STRING): BOOLEAN
+			-- TODO: implement
 		do
-			-- Result :=
+			Result := True
 		end
 
 end

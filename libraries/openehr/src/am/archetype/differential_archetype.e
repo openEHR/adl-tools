@@ -95,7 +95,7 @@ feature -- Initialisation
 			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 		do
 			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.archetype_id, a_flat.parent_archetype_id,
-					a_flat.is_controlled, a_flat.uid, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
+					a_flat.is_controlled, a_flat.uid.value, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
 					a_flat.description, a_flat.definition, a_flat.invariants,
 					a_flat.ontology.to_differential, a_flat.annotations)
 

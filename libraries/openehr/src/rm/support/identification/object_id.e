@@ -7,7 +7,6 @@ note
 			 with the identified object.
 			 ]"
 	keywords:    "object identifiers"
-
 	design:      "openEHR Common Reference Model 1.4.1"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -18,6 +17,19 @@ deferred class OBJECT_ID
 
 inherit
 	COMPARABLE
+		redefine
+			out
+		end
+
+feature {NONE} -- Initialization
+
+	make_from_string (a_string: STRING)
+			-- make from a string of the same form as `id', i.e. "root::extension"
+		require
+			String_exists: valid_id (a_string)
+		do
+			value := a_string
+		end
 
 feature -- Access
 
@@ -41,6 +53,13 @@ feature -- Comparison
 			-- Is current object less than `other'?
 		do
 			Result := value < other.value
+		end
+
+feature -- Output
+
+	out: STRING
+		do
+			Result := value
 		end
 
 invariant

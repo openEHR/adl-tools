@@ -45,6 +45,7 @@ feature {NONE} -- Implementation
 			Result.put("ontology",		SYM_ONTOLOGY)
 			Result.put("annotations",	SYM_ANNOTATIONS)
 			Result.put("component_ontologies",	SYM_COMPONENT_ONTOLOGIES)
+			Result.put("uid",	SYM_UID)
 		end
 
 end

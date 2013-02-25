@@ -6,7 +6,6 @@ note
 				 lexical form: root '::' extension
 			     ]"
 	keywords:    "object identifiers"
-
 	design:      "openEHR Common Reference Model 1.4.1"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"

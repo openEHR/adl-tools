@@ -17,10 +17,6 @@ note
 	copyright:   "Copyright (c) 2008 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class RM_CONCEPT_ID
 
 inherit
@@ -90,14 +86,6 @@ feature -- Initialisation
 
 			value.append_character(axis_separator)
 			value.append (Default_version_id)
-		end
-
-	make_from_string (an_id: STRING)
-			-- Create from "rm_entity.domain_concept.ver_id".
-		require
-			valid_id (an_id)
-		do
-			value := an_id
 		end
 
 	default_create

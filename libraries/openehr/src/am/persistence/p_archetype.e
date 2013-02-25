@@ -41,7 +41,7 @@ feature -- Initialisation
 
 			is_generated := an_archetype.is_generated
 
-			uid := an_archetype.uid
+			uid := an_archetype.uid.value
 
 			other_metadata := an_archetype.other_metadata
 

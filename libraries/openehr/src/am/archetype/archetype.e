@@ -37,7 +37,7 @@ feature -- Initialisation
 	make (an_artefact_type: like artefact_type;
 			an_id: like archetype_id;
 			an_original_language: like original_language;
-			a_uid: like uid;
+			a_uid: detachable STRING;
 			a_description: like description;
 			a_definition: like definition;
 			an_ontology: like ontology)
@@ -53,7 +53,9 @@ feature -- Initialisation
 			definition := a_definition
 			ontology := an_ontology
 			is_dirty := True
-			uid := a_uid
+			if attached a_uid as att_uid then
+				create uid.make_from_string (a_uid)
+			end
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
@@ -70,7 +72,7 @@ feature -- Initialisation
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
-			a_uid: like uid;
+			a_uid: detachable STRING;
 			an_other_metadata: like other_metadata;
 			an_original_language: like original_language;
 			a_translations: like translations;
@@ -140,7 +142,7 @@ feature -- Initialisation
 				other_other_metadata := other.other_metadata.deep_twin
 			end
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
-					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
+					other_parent_arch_id, other.is_controlled, other.uid.value, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
 					other_description, other.definition.deep_twin, other_invariants,
 					other.ontology.safe_deep_twin, other_annotations)
@@ -153,7 +155,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	uid: detachable STRING
+	uid: detachable HIER_OBJECT_ID
 			-- optional UID identifier of this artefact
 			-- FIXME: should really be in AUTHORED_RESOURCE
 
@@ -602,7 +604,7 @@ feature -- Modification
 
 	set_uid (a_uid: STRING)
 		do
-			uid := a_uid
+			create uid.make_from_string (a_uid)
 		end
 
 	set_artefact_type_from_string (s: STRING)
