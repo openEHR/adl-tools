@@ -201,7 +201,7 @@ arch_meta_data: -- empty ok
 	;
 
 arch_meta_data_items: arch_meta_data_item
-	| arch_meta_data_item ';' arch_meta_data_items
+	| arch_meta_data_items ';' arch_meta_data_item
 	;
 
 arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
@@ -220,9 +220,24 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 		{
 			is_generated := True
 		}
+	--
+	-- the following could be better done in the scanner by picking up the entire () section after
+	-- the archetype id and providing a build data structure to the parser. Currently we match on
+	-- V_IDENTIFIERs and V_VALUEs to pick up any sort of alphanum value string, due to how the 
+	-- regexes are defined in the scanner (see near top of .l file). However, it works fine, and
+	-- is the fastest approach for now.
+	--
+	| V_IDENTIFIER '=' V_IDENTIFIER
+		{
+			other_metadata.put ($3, $1)
+		}
 	| V_IDENTIFIER '=' V_VALUE
 		{
 			other_metadata.put ($3, $1)
+		}
+	| V_IDENTIFIER
+		{
+			other_metadata.put ("true", $1)
 		}
 	| V_VALUE
 		{

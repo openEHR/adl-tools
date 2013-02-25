@@ -42,7 +42,6 @@ create
 ALPHANUM [a-zA-Z0-9]
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
-NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))

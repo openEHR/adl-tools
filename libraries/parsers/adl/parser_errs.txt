@@ -24,60 +24,62 @@ rule 21 opt_artefact_type -> SYM_OPERATIONAL_TEMPLATE
 rule 22 arch_meta_data -> -- Empty
 rule 23 arch_meta_data -> '(' arch_meta_data_items ')'
 rule 24 arch_meta_data_items -> arch_meta_data_item
-rule 25 arch_meta_data_items -> arch_meta_data_item ';' arch_meta_data_items
+rule 25 arch_meta_data_items -> arch_meta_data_items ';' arch_meta_data_item
 rule 26 arch_meta_data_item -> SYM_ADL_VERSION '=' V_VERSION_STRING
 rule 27 arch_meta_data_item -> SYM_UID '=' V_VALUE
 rule 28 arch_meta_data_item -> SYM_IS_CONTROLLED
 rule 29 arch_meta_data_item -> SYM_IS_GENERATED
-rule 30 arch_meta_data_item -> V_IDENTIFIER '=' V_VALUE
-rule 31 arch_meta_data_item -> V_VALUE
-rule 32 arch_specialisation -> SYM_SPECIALIZE V_ARCHETYPE_ID
-rule 33 arch_specialisation -> SYM_SPECIALIZE error
-rule 34 arch_concept -> SYM_CONCEPT V_LOCAL_TERM_CODE_REF
-rule 35 arch_concept -> SYM_CONCEPT error
-rule 36 arch_language -> SYM_LANGUAGE V_DADL_TEXT
-rule 37 arch_language -> SYM_LANGUAGE error
-rule 38 arch_description -> SYM_DESCRIPTION V_DADL_TEXT
-rule 39 arch_description -> SYM_DESCRIPTION error
-rule 40 arch_definition -> SYM_DEFINITION V_CADL_TEXT
-rule 41 arch_definition -> SYM_DEFINITION error
-rule 42 arch_invariant -> -- Empty
-rule 43 arch_invariant -> SYM_INVARIANT V_ASSERTION_TEXT
-rule 44 arch_invariant -> SYM_INVARIANT error
-rule 45 arch_ontology -> SYM_ONTOLOGY V_DADL_TEXT
-rule 46 arch_ontology -> SYM_ONTOLOGY error
-rule 47 arch_annotations -> -- Empty
-rule 48 arch_annotations -> SYM_ANNOTATIONS V_DADL_TEXT
-rule 49 arch_annotations -> SYM_ANNOTATIONS error
-rule 50 arch_component_ontologies -> SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT
-rule 51 arch_component_ontologies -> SYM_COMPONENT_ONTOLOGIES error
+rule 30 arch_meta_data_item -> V_IDENTIFIER '=' V_IDENTIFIER
+rule 31 arch_meta_data_item -> V_IDENTIFIER '=' V_VALUE
+rule 32 arch_meta_data_item -> V_IDENTIFIER
+rule 33 arch_meta_data_item -> V_VALUE
+rule 34 arch_specialisation -> SYM_SPECIALIZE V_ARCHETYPE_ID
+rule 35 arch_specialisation -> SYM_SPECIALIZE error
+rule 36 arch_concept -> SYM_CONCEPT V_LOCAL_TERM_CODE_REF
+rule 37 arch_concept -> SYM_CONCEPT error
+rule 38 arch_language -> SYM_LANGUAGE V_DADL_TEXT
+rule 39 arch_language -> SYM_LANGUAGE error
+rule 40 arch_description -> SYM_DESCRIPTION V_DADL_TEXT
+rule 41 arch_description -> SYM_DESCRIPTION error
+rule 42 arch_definition -> SYM_DEFINITION V_CADL_TEXT
+rule 43 arch_definition -> SYM_DEFINITION error
+rule 44 arch_invariant -> -- Empty
+rule 45 arch_invariant -> SYM_INVARIANT V_ASSERTION_TEXT
+rule 46 arch_invariant -> SYM_INVARIANT error
+rule 47 arch_ontology -> SYM_ONTOLOGY V_DADL_TEXT
+rule 48 arch_ontology -> SYM_ONTOLOGY error
+rule 49 arch_annotations -> -- Empty
+rule 50 arch_annotations -> SYM_ANNOTATIONS V_DADL_TEXT
+rule 51 arch_annotations -> SYM_ANNOTATIONS error
+rule 52 arch_component_ontologies -> SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT
+rule 53 arch_component_ontologies -> SYM_COMPONENT_ONTOLOGIES error
 
 Terminals, with rules where they appear
 
 $ (token 0)
-error (token 256) 7 15 20 33 35 37 39 41 44 46 49 51
+error (token 256) 7 15 20 35 37 39 41 43 46 48 51 53
 $undefined. (token 257)
-V_IDENTIFIER (token 258) 30
-V_ARCHETYPE_ID (token 259) 14 19 32
-V_LOCAL_TERM_CODE_REF (token 260) 34
-V_DADL_TEXT (token 261) 36 38 45 48 50
-V_CADL_TEXT (token 262) 40
-V_ASSERTION_TEXT (token 263) 43
+V_IDENTIFIER (token 258) 30 31 32
+V_ARCHETYPE_ID (token 259) 14 19 34
+V_LOCAL_TERM_CODE_REF (token 260) 36
+V_DADL_TEXT (token 261) 38 40 47 50 52
+V_CADL_TEXT (token 262) 42
+V_ASSERTION_TEXT (token 263) 45
 V_VERSION_STRING (token 264) 26
-V_VALUE (token 265) 27 30 31
+V_VALUE (token 265) 27 31 33
 SYM_ARCHETYPE (token 266) 16
 SYM_TEMPLATE (token 267) 17
 SYM_TEMPLATE_OVERLAY (token 268) 18
 SYM_OPERATIONAL_TEMPLATE (token 269) 21
-SYM_CONCEPT (token 270) 34 35
-SYM_SPECIALIZE (token 271) 32 33
-SYM_DEFINITION (token 272) 40 41
-SYM_LANGUAGE (token 273) 36 37
-SYM_ANNOTATIONS (token 274) 48 49
-SYM_COMPONENT_ONTOLOGIES (token 275) 50 51
-SYM_DESCRIPTION (token 276) 38 39
-SYM_ONTOLOGY (token 277) 45 46
-SYM_INVARIANT (token 278) 43 44
+SYM_CONCEPT (token 270) 36 37
+SYM_SPECIALIZE (token 271) 34 35
+SYM_DEFINITION (token 272) 42 43
+SYM_LANGUAGE (token 273) 38 39
+SYM_ANNOTATIONS (token 274) 50 51
+SYM_COMPONENT_ONTOLOGIES (token 275) 52 53
+SYM_DESCRIPTION (token 276) 40 41
+SYM_ONTOLOGY (token 277) 47 48
+SYM_INVARIANT (token 278) 45 46
 SYM_ADL_VERSION (token 279) 26
 SYM_IS_CONTROLLED (token 280) 28
 SYM_IS_GENERATED (token 281) 29
@@ -85,7 +87,7 @@ SYM_UID (token 282) 27
 '(' (token 40) 23
 ')' (token 41) 23
 ';' (token 59) 25
-'=' (token 61) 26 27 30
+'=' (token 61) 26 27 30 31
 
 Nonterminals, with rules where they appear
 
@@ -99,19 +101,19 @@ operational_template (6) on left: 13, on right: 4
 adl_14_archetype (7) on left: 8, on right: 5
 specialised_adl_14_archetype (8) on left: 9, on right: 6
 source_identification (9) on left: 14 15, on right: 8 9 10 11 12
-arch_concept (10) on left: 34 35, on right: 8 9
-arch_language (11) on left: 36 37, on right: 8 9 10 11 12 13
-arch_description (12) on left: 38 39, on right: 8 9 10 11 13
-arch_definition (13) on left: 40 41, on right: 8 9 10 11 12 13
-arch_invariant (14) on left: 42 43 44, on right: 8 9 10 11 13
-arch_ontology (15) on left: 45 46, on right: 8 9 10 11 12 13
-arch_specialisation (16) on left: 32 33, on right: 9 11 12
-arch_annotations (17) on left: 47 48 49, on right: 10 11 13
+arch_concept (10) on left: 36 37, on right: 8 9
+arch_language (11) on left: 38 39, on right: 8 9 10 11 12 13
+arch_description (12) on left: 40 41, on right: 8 9 10 11 13
+arch_definition (13) on left: 42 43, on right: 8 9 10 11 12 13
+arch_invariant (14) on left: 44 45 46, on right: 8 9 10 11 13
+arch_ontology (15) on left: 47 48, on right: 8 9 10 11 12 13
+arch_specialisation (16) on left: 34 35, on right: 9 11 12
+arch_annotations (17) on left: 49 50 51, on right: 10 11 13
 opt_identification (18) on left: 19 20, on right: 13
-arch_component_ontologies (19) on left: 50 51, on right: 13
+arch_component_ontologies (19) on left: 52 53, on right: 13
 arch_meta_data (20) on left: 22 23, on right: 14 19
 arch_meta_data_items (21) on left: 24 25, on right: 23 25
-arch_meta_data_item (22) on left: 26 27 28 29 30 31, on right: 24 25
+arch_meta_data_item (22) on left: 26 27 28 29 30 31 32 33, on right: 24 25
 
 
 state 0
@@ -154,7 +156,7 @@ state 0
 	specialised_adl_14_archetype	go to state 13
 	source_identification	go to state 14
 	opt_identification	go to state 15
-	input	go to state 101
+	input	go to state 102
 
 
 
@@ -283,12 +285,12 @@ state 14
 	archetype  ->  source_identification . arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 10)
 	specialised_archetype_or_template  ->  source_identification . arch_specialisation arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 11)
 	template_overlay  ->  source_identification . arch_specialisation arch_language arch_definition arch_ontology   (rule 12)
-	arch_specialisation  ->  . SYM_SPECIALIZE V_ARCHETYPE_ID   (rule 32)
-	arch_specialisation  ->  . SYM_SPECIALIZE error   (rule 33)
-	arch_concept  ->  . SYM_CONCEPT V_LOCAL_TERM_CODE_REF   (rule 34)
-	arch_concept  ->  . SYM_CONCEPT error   (rule 35)
-	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 36)
-	arch_language  ->  . SYM_LANGUAGE error   (rule 37)
+	arch_specialisation  ->  . SYM_SPECIALIZE V_ARCHETYPE_ID   (rule 34)
+	arch_specialisation  ->  . SYM_SPECIALIZE error   (rule 35)
+	arch_concept  ->  . SYM_CONCEPT V_LOCAL_TERM_CODE_REF   (rule 36)
+	arch_concept  ->  . SYM_CONCEPT error   (rule 37)
+	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 38)
+	arch_language  ->  . SYM_LANGUAGE error   (rule 39)
 
 	SYM_LANGUAGE	shift, and go to state 21
 	SYM_SPECIALIZE	shift, and go to state 22
@@ -303,8 +305,8 @@ state 14
 state 15
 
 	operational_template  ->  opt_identification . arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations arch_component_ontologies   (rule 13)
-	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 36)
-	arch_language  ->  . SYM_LANGUAGE error   (rule 37)
+	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 38)
+	arch_language  ->  . SYM_LANGUAGE error   (rule 39)
 
 	SYM_LANGUAGE	shift, and go to state 21
 
@@ -316,13 +318,15 @@ state 16
 
 	arch_meta_data  ->  '(' . arch_meta_data_items ')'   (rule 23)
 	arch_meta_data_items  ->  . arch_meta_data_item   (rule 24)
-	arch_meta_data_items  ->  . arch_meta_data_item ';' arch_meta_data_items   (rule 25)
+	arch_meta_data_items  ->  . arch_meta_data_items ';' arch_meta_data_item   (rule 25)
 	arch_meta_data_item  ->  . SYM_ADL_VERSION '=' V_VERSION_STRING   (rule 26)
 	arch_meta_data_item  ->  . SYM_UID '=' V_VALUE   (rule 27)
 	arch_meta_data_item  ->  . SYM_IS_CONTROLLED   (rule 28)
 	arch_meta_data_item  ->  . SYM_IS_GENERATED   (rule 29)
-	arch_meta_data_item  ->  . V_IDENTIFIER '=' V_VALUE   (rule 30)
-	arch_meta_data_item  ->  . V_VALUE   (rule 31)
+	arch_meta_data_item  ->  . V_IDENTIFIER '=' V_IDENTIFIER   (rule 30)
+	arch_meta_data_item  ->  . V_IDENTIFIER '=' V_VALUE   (rule 31)
+	arch_meta_data_item  ->  . V_IDENTIFIER   (rule 32)
+	arch_meta_data_item  ->  . V_VALUE   (rule 33)
 
 	SYM_UID	shift, and go to state 28
 	SYM_IS_GENERATED	shift, and go to state 29
@@ -370,8 +374,8 @@ state 20
 
 state 21
 
-	arch_language  ->  SYM_LANGUAGE . V_DADL_TEXT   (rule 36)
-	arch_language  ->  SYM_LANGUAGE . error   (rule 37)
+	arch_language  ->  SYM_LANGUAGE . V_DADL_TEXT   (rule 38)
+	arch_language  ->  SYM_LANGUAGE . error   (rule 39)
 
 	V_DADL_TEXT	shift, and go to state 38
 	error	shift, and go to state 39
@@ -380,8 +384,8 @@ state 21
 
 state 22
 
-	arch_specialisation  ->  SYM_SPECIALIZE . V_ARCHETYPE_ID   (rule 32)
-	arch_specialisation  ->  SYM_SPECIALIZE . error   (rule 33)
+	arch_specialisation  ->  SYM_SPECIALIZE . V_ARCHETYPE_ID   (rule 34)
+	arch_specialisation  ->  SYM_SPECIALIZE . error   (rule 35)
 
 	V_ARCHETYPE_ID	shift, and go to state 40
 	error	shift, and go to state 41
@@ -390,8 +394,8 @@ state 22
 
 state 23
 
-	arch_concept  ->  SYM_CONCEPT . V_LOCAL_TERM_CODE_REF   (rule 34)
-	arch_concept  ->  SYM_CONCEPT . error   (rule 35)
+	arch_concept  ->  SYM_CONCEPT . V_LOCAL_TERM_CODE_REF   (rule 36)
+	arch_concept  ->  SYM_CONCEPT . error   (rule 37)
 
 	V_LOCAL_TERM_CODE_REF	shift, and go to state 42
 	error	shift, and go to state 43
@@ -401,8 +405,8 @@ state 23
 state 24
 
 	adl_14_archetype  ->  source_identification arch_concept . arch_language arch_description arch_definition arch_invariant arch_ontology   (rule 8)
-	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 36)
-	arch_language  ->  . SYM_LANGUAGE error   (rule 37)
+	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 38)
+	arch_language  ->  . SYM_LANGUAGE error   (rule 39)
 
 	SYM_LANGUAGE	shift, and go to state 21
 
@@ -413,8 +417,8 @@ state 24
 state 25
 
 	archetype  ->  source_identification arch_language . arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 10)
-	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 38)
-	arch_description  ->  . SYM_DESCRIPTION error   (rule 39)
+	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 40)
+	arch_description  ->  . SYM_DESCRIPTION error   (rule 41)
 
 	SYM_DESCRIPTION	shift, and go to state 45
 
@@ -427,10 +431,10 @@ state 26
 	specialised_adl_14_archetype  ->  source_identification arch_specialisation . arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology   (rule 9)
 	specialised_archetype_or_template  ->  source_identification arch_specialisation . arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 11)
 	template_overlay  ->  source_identification arch_specialisation . arch_language arch_definition arch_ontology   (rule 12)
-	arch_concept  ->  . SYM_CONCEPT V_LOCAL_TERM_CODE_REF   (rule 34)
-	arch_concept  ->  . SYM_CONCEPT error   (rule 35)
-	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 36)
-	arch_language  ->  . SYM_LANGUAGE error   (rule 37)
+	arch_concept  ->  . SYM_CONCEPT V_LOCAL_TERM_CODE_REF   (rule 36)
+	arch_concept  ->  . SYM_CONCEPT error   (rule 37)
+	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 38)
+	arch_language  ->  . SYM_LANGUAGE error   (rule 39)
 
 	SYM_LANGUAGE	shift, and go to state 21
 	SYM_CONCEPT	shift, and go to state 23
@@ -443,8 +447,8 @@ state 26
 state 27
 
 	operational_template  ->  opt_identification arch_language . arch_description arch_definition arch_invariant arch_ontology arch_annotations arch_component_ontologies   (rule 13)
-	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 38)
-	arch_description  ->  . SYM_DESCRIPTION error   (rule 39)
+	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 40)
+	arch_description  ->  . SYM_DESCRIPTION error   (rule 41)
 
 	SYM_DESCRIPTION	shift, and go to state 45
 
@@ -486,34 +490,37 @@ state 31
 
 state 32
 
-	arch_meta_data_item  ->  V_VALUE .   (rule 31)
+	arch_meta_data_item  ->  V_VALUE .   (rule 33)
 
-	$default	reduce using rule 31 (arch_meta_data_item)
+	$default	reduce using rule 33 (arch_meta_data_item)
 
 
 
 state 33
 
-	arch_meta_data_item  ->  V_IDENTIFIER . '=' V_VALUE   (rule 30)
+	arch_meta_data_item  ->  V_IDENTIFIER . '=' V_IDENTIFIER   (rule 30)
+	arch_meta_data_item  ->  V_IDENTIFIER . '=' V_VALUE   (rule 31)
+	arch_meta_data_item  ->  V_IDENTIFIER .   (rule 32)
 
 	'='	shift, and go to state 52
+
+	$default	reduce using rule 32 (arch_meta_data_item)
 
 
 
 state 34
 
 	arch_meta_data  ->  '(' arch_meta_data_items . ')'   (rule 23)
+	arch_meta_data_items  ->  arch_meta_data_items . ';' arch_meta_data_item   (rule 25)
 
-	')'	shift, and go to state 53
+	';'	shift, and go to state 53
+	')'	shift, and go to state 54
 
 
 
 state 35
 
 	arch_meta_data_items  ->  arch_meta_data_item .   (rule 24)
-	arch_meta_data_items  ->  arch_meta_data_item . ';' arch_meta_data_items   (rule 25)
-
-	';'	shift, and go to state 54
 
 	$default	reduce using rule 24 (arch_meta_data_items)
 
@@ -537,57 +544,57 @@ state 37
 
 state 38
 
-	arch_language  ->  SYM_LANGUAGE V_DADL_TEXT .   (rule 36)
+	arch_language  ->  SYM_LANGUAGE V_DADL_TEXT .   (rule 38)
 
-	$default	reduce using rule 36 (arch_language)
+	$default	reduce using rule 38 (arch_language)
 
 
 
 state 39
 
-	arch_language  ->  SYM_LANGUAGE error .   (rule 37)
+	arch_language  ->  SYM_LANGUAGE error .   (rule 39)
 
-	$default	reduce using rule 37 (arch_language)
+	$default	reduce using rule 39 (arch_language)
 
 
 
 state 40
 
-	arch_specialisation  ->  SYM_SPECIALIZE V_ARCHETYPE_ID .   (rule 32)
+	arch_specialisation  ->  SYM_SPECIALIZE V_ARCHETYPE_ID .   (rule 34)
 
-	$default	reduce using rule 32 (arch_specialisation)
+	$default	reduce using rule 34 (arch_specialisation)
 
 
 
 state 41
 
-	arch_specialisation  ->  SYM_SPECIALIZE error .   (rule 33)
+	arch_specialisation  ->  SYM_SPECIALIZE error .   (rule 35)
 
-	$default	reduce using rule 33 (arch_specialisation)
+	$default	reduce using rule 35 (arch_specialisation)
 
 
 
 state 42
 
-	arch_concept  ->  SYM_CONCEPT V_LOCAL_TERM_CODE_REF .   (rule 34)
+	arch_concept  ->  SYM_CONCEPT V_LOCAL_TERM_CODE_REF .   (rule 36)
 
-	$default	reduce using rule 34 (arch_concept)
+	$default	reduce using rule 36 (arch_concept)
 
 
 
 state 43
 
-	arch_concept  ->  SYM_CONCEPT error .   (rule 35)
+	arch_concept  ->  SYM_CONCEPT error .   (rule 37)
 
-	$default	reduce using rule 35 (arch_concept)
+	$default	reduce using rule 37 (arch_concept)
 
 
 
 state 44
 
 	adl_14_archetype  ->  source_identification arch_concept arch_language . arch_description arch_definition arch_invariant arch_ontology   (rule 8)
-	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 38)
-	arch_description  ->  . SYM_DESCRIPTION error   (rule 39)
+	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 40)
+	arch_description  ->  . SYM_DESCRIPTION error   (rule 41)
 
 	SYM_DESCRIPTION	shift, and go to state 45
 
@@ -597,8 +604,8 @@ state 44
 
 state 45
 
-	arch_description  ->  SYM_DESCRIPTION . V_DADL_TEXT   (rule 38)
-	arch_description  ->  SYM_DESCRIPTION . error   (rule 39)
+	arch_description  ->  SYM_DESCRIPTION . V_DADL_TEXT   (rule 40)
+	arch_description  ->  SYM_DESCRIPTION . error   (rule 41)
 
 	V_DADL_TEXT	shift, and go to state 56
 	error	shift, and go to state 57
@@ -608,8 +615,8 @@ state 45
 state 46
 
 	archetype  ->  source_identification arch_language arch_description . arch_definition arch_invariant arch_ontology arch_annotations   (rule 10)
-	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 40)
-	arch_definition  ->  . SYM_DEFINITION error   (rule 41)
+	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 42)
+	arch_definition  ->  . SYM_DEFINITION error   (rule 43)
 
 	SYM_DEFINITION	shift, and go to state 58
 
@@ -620,8 +627,8 @@ state 46
 state 47
 
 	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept . arch_language arch_description arch_definition arch_invariant arch_ontology   (rule 9)
-	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 36)
-	arch_language  ->  . SYM_LANGUAGE error   (rule 37)
+	arch_language  ->  . SYM_LANGUAGE V_DADL_TEXT   (rule 38)
+	arch_language  ->  . SYM_LANGUAGE error   (rule 39)
 
 	SYM_LANGUAGE	shift, and go to state 21
 
@@ -633,10 +640,10 @@ state 48
 
 	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language . arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 11)
 	template_overlay  ->  source_identification arch_specialisation arch_language . arch_definition arch_ontology   (rule 12)
-	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 38)
-	arch_description  ->  . SYM_DESCRIPTION error   (rule 39)
-	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 40)
-	arch_definition  ->  . SYM_DEFINITION error   (rule 41)
+	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 40)
+	arch_description  ->  . SYM_DESCRIPTION error   (rule 41)
+	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 42)
+	arch_definition  ->  . SYM_DEFINITION error   (rule 43)
 
 	SYM_DESCRIPTION	shift, and go to state 45
 	SYM_DEFINITION	shift, and go to state 58
@@ -649,8 +656,8 @@ state 48
 state 49
 
 	operational_template  ->  opt_identification arch_language arch_description . arch_definition arch_invariant arch_ontology arch_annotations arch_component_ontologies   (rule 13)
-	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 40)
-	arch_definition  ->  . SYM_DEFINITION error   (rule 41)
+	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 42)
+	arch_definition  ->  . SYM_DEFINITION error   (rule 43)
 
 	SYM_DEFINITION	shift, and go to state 58
 
@@ -676,31 +683,25 @@ state 51
 
 state 52
 
-	arch_meta_data_item  ->  V_IDENTIFIER '=' . V_VALUE   (rule 30)
+	arch_meta_data_item  ->  V_IDENTIFIER '=' . V_IDENTIFIER   (rule 30)
+	arch_meta_data_item  ->  V_IDENTIFIER '=' . V_VALUE   (rule 31)
 
 	V_VALUE	shift, and go to state 66
+	V_IDENTIFIER	shift, and go to state 67
 
 
 
 state 53
 
-	arch_meta_data  ->  '(' arch_meta_data_items ')' .   (rule 23)
-
-	$default	reduce using rule 23 (arch_meta_data)
-
-
-
-state 54
-
-	arch_meta_data_items  ->  . arch_meta_data_item   (rule 24)
-	arch_meta_data_items  ->  . arch_meta_data_item ';' arch_meta_data_items   (rule 25)
-	arch_meta_data_items  ->  arch_meta_data_item ';' . arch_meta_data_items   (rule 25)
+	arch_meta_data_items  ->  arch_meta_data_items ';' . arch_meta_data_item   (rule 25)
 	arch_meta_data_item  ->  . SYM_ADL_VERSION '=' V_VERSION_STRING   (rule 26)
 	arch_meta_data_item  ->  . SYM_UID '=' V_VALUE   (rule 27)
 	arch_meta_data_item  ->  . SYM_IS_CONTROLLED   (rule 28)
 	arch_meta_data_item  ->  . SYM_IS_GENERATED   (rule 29)
-	arch_meta_data_item  ->  . V_IDENTIFIER '=' V_VALUE   (rule 30)
-	arch_meta_data_item  ->  . V_VALUE   (rule 31)
+	arch_meta_data_item  ->  . V_IDENTIFIER '=' V_IDENTIFIER   (rule 30)
+	arch_meta_data_item  ->  . V_IDENTIFIER '=' V_VALUE   (rule 31)
+	arch_meta_data_item  ->  . V_IDENTIFIER   (rule 32)
+	arch_meta_data_item  ->  . V_VALUE   (rule 33)
 
 	SYM_UID	shift, and go to state 28
 	SYM_IS_GENERATED	shift, and go to state 29
@@ -709,112 +710,119 @@ state 54
 	V_VALUE	shift, and go to state 32
 	V_IDENTIFIER	shift, and go to state 33
 
-	arch_meta_data_items	go to state 67
-	arch_meta_data_item	go to state 35
+	arch_meta_data_item	go to state 68
+
+
+
+state 54
+
+	arch_meta_data  ->  '(' arch_meta_data_items ')' .   (rule 23)
+
+	$default	reduce using rule 23 (arch_meta_data)
 
 
 
 state 55
 
 	adl_14_archetype  ->  source_identification arch_concept arch_language arch_description . arch_definition arch_invariant arch_ontology   (rule 8)
-	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 40)
-	arch_definition  ->  . SYM_DEFINITION error   (rule 41)
+	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 42)
+	arch_definition  ->  . SYM_DEFINITION error   (rule 43)
 
 	SYM_DEFINITION	shift, and go to state 58
 
-	arch_definition	go to state 68
+	arch_definition	go to state 69
 
 
 
 state 56
 
-	arch_description  ->  SYM_DESCRIPTION V_DADL_TEXT .   (rule 38)
+	arch_description  ->  SYM_DESCRIPTION V_DADL_TEXT .   (rule 40)
 
-	$default	reduce using rule 38 (arch_description)
+	$default	reduce using rule 40 (arch_description)
 
 
 
 state 57
 
-	arch_description  ->  SYM_DESCRIPTION error .   (rule 39)
+	arch_description  ->  SYM_DESCRIPTION error .   (rule 41)
 
-	$default	reduce using rule 39 (arch_description)
+	$default	reduce using rule 41 (arch_description)
 
 
 
 state 58
 
-	arch_definition  ->  SYM_DEFINITION . V_CADL_TEXT   (rule 40)
-	arch_definition  ->  SYM_DEFINITION . error   (rule 41)
+	arch_definition  ->  SYM_DEFINITION . V_CADL_TEXT   (rule 42)
+	arch_definition  ->  SYM_DEFINITION . error   (rule 43)
 
-	V_CADL_TEXT	shift, and go to state 69
-	error	shift, and go to state 70
+	V_CADL_TEXT	shift, and go to state 70
+	error	shift, and go to state 71
 
 
 
 state 59
 
 	archetype  ->  source_identification arch_language arch_description arch_definition . arch_invariant arch_ontology arch_annotations   (rule 10)
-	arch_invariant  ->  .   (rule 42)
-	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 43)
-	arch_invariant  ->  . SYM_INVARIANT error   (rule 44)
+	arch_invariant  ->  .   (rule 44)
+	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 45)
+	arch_invariant  ->  . SYM_INVARIANT error   (rule 46)
 
-	SYM_INVARIANT	shift, and go to state 71
+	SYM_INVARIANT	shift, and go to state 72
 
-	$default	reduce using rule 42 (arch_invariant)
+	$default	reduce using rule 44 (arch_invariant)
 
-	arch_invariant	go to state 72
+	arch_invariant	go to state 73
 
 
 
 state 60
 
 	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language . arch_description arch_definition arch_invariant arch_ontology   (rule 9)
-	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 38)
-	arch_description  ->  . SYM_DESCRIPTION error   (rule 39)
+	arch_description  ->  . SYM_DESCRIPTION V_DADL_TEXT   (rule 40)
+	arch_description  ->  . SYM_DESCRIPTION error   (rule 41)
 
 	SYM_DESCRIPTION	shift, and go to state 45
 
-	arch_description	go to state 73
+	arch_description	go to state 74
 
 
 
 state 61
 
 	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description . arch_definition arch_invariant arch_ontology arch_annotations   (rule 11)
-	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 40)
-	arch_definition  ->  . SYM_DEFINITION error   (rule 41)
+	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 42)
+	arch_definition  ->  . SYM_DEFINITION error   (rule 43)
 
 	SYM_DEFINITION	shift, and go to state 58
 
-	arch_definition	go to state 74
+	arch_definition	go to state 75
 
 
 
 state 62
 
 	template_overlay  ->  source_identification arch_specialisation arch_language arch_definition . arch_ontology   (rule 12)
-	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 46)
+	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 48)
 
-	SYM_ONTOLOGY	shift, and go to state 75
+	SYM_ONTOLOGY	shift, and go to state 76
 
-	arch_ontology	go to state 76
+	arch_ontology	go to state 77
 
 
 
 state 63
 
 	operational_template  ->  opt_identification arch_language arch_description arch_definition . arch_invariant arch_ontology arch_annotations arch_component_ontologies   (rule 13)
-	arch_invariant  ->  .   (rule 42)
-	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 43)
-	arch_invariant  ->  . SYM_INVARIANT error   (rule 44)
+	arch_invariant  ->  .   (rule 44)
+	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 45)
+	arch_invariant  ->  . SYM_INVARIANT error   (rule 46)
 
-	SYM_INVARIANT	shift, and go to state 71
+	SYM_INVARIANT	shift, and go to state 72
 
-	$default	reduce using rule 42 (arch_invariant)
+	$default	reduce using rule 44 (arch_invariant)
 
-	arch_invariant	go to state 77
+	arch_invariant	go to state 78
 
 
 
@@ -836,111 +844,119 @@ state 65
 
 state 66
 
-	arch_meta_data_item  ->  V_IDENTIFIER '=' V_VALUE .   (rule 30)
+	arch_meta_data_item  ->  V_IDENTIFIER '=' V_VALUE .   (rule 31)
 
-	$default	reduce using rule 30 (arch_meta_data_item)
+	$default	reduce using rule 31 (arch_meta_data_item)
 
 
 
 state 67
 
-	arch_meta_data_items  ->  arch_meta_data_item ';' arch_meta_data_items .   (rule 25)
+	arch_meta_data_item  ->  V_IDENTIFIER '=' V_IDENTIFIER .   (rule 30)
 
-	$default	reduce using rule 25 (arch_meta_data_items)
+	$default	reduce using rule 30 (arch_meta_data_item)
 
 
 
 state 68
 
-	adl_14_archetype  ->  source_identification arch_concept arch_language arch_description arch_definition . arch_invariant arch_ontology   (rule 8)
-	arch_invariant  ->  .   (rule 42)
-	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 43)
-	arch_invariant  ->  . SYM_INVARIANT error   (rule 44)
+	arch_meta_data_items  ->  arch_meta_data_items ';' arch_meta_data_item .   (rule 25)
 
-	SYM_INVARIANT	shift, and go to state 71
-
-	$default	reduce using rule 42 (arch_invariant)
-
-	arch_invariant	go to state 78
+	$default	reduce using rule 25 (arch_meta_data_items)
 
 
 
 state 69
 
-	arch_definition  ->  SYM_DEFINITION V_CADL_TEXT .   (rule 40)
+	adl_14_archetype  ->  source_identification arch_concept arch_language arch_description arch_definition . arch_invariant arch_ontology   (rule 8)
+	arch_invariant  ->  .   (rule 44)
+	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 45)
+	arch_invariant  ->  . SYM_INVARIANT error   (rule 46)
 
-	$default	reduce using rule 40 (arch_definition)
+	SYM_INVARIANT	shift, and go to state 72
+
+	$default	reduce using rule 44 (arch_invariant)
+
+	arch_invariant	go to state 79
 
 
 
 state 70
 
-	arch_definition  ->  SYM_DEFINITION error .   (rule 41)
+	arch_definition  ->  SYM_DEFINITION V_CADL_TEXT .   (rule 42)
 
-	$default	reduce using rule 41 (arch_definition)
+	$default	reduce using rule 42 (arch_definition)
 
 
 
 state 71
 
-	arch_invariant  ->  SYM_INVARIANT . V_ASSERTION_TEXT   (rule 43)
-	arch_invariant  ->  SYM_INVARIANT . error   (rule 44)
+	arch_definition  ->  SYM_DEFINITION error .   (rule 43)
 
-	V_ASSERTION_TEXT	shift, and go to state 79
-	error	shift, and go to state 80
+	$default	reduce using rule 43 (arch_definition)
 
 
 
 state 72
 
-	archetype  ->  source_identification arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations   (rule 10)
-	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 46)
+	arch_invariant  ->  SYM_INVARIANT . V_ASSERTION_TEXT   (rule 45)
+	arch_invariant  ->  SYM_INVARIANT . error   (rule 46)
 
-	SYM_ONTOLOGY	shift, and go to state 75
-
-	arch_ontology	go to state 81
+	V_ASSERTION_TEXT	shift, and go to state 80
+	error	shift, and go to state 81
 
 
 
 state 73
 
-	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description . arch_definition arch_invariant arch_ontology   (rule 9)
-	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 40)
-	arch_definition  ->  . SYM_DEFINITION error   (rule 41)
+	archetype  ->  source_identification arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations   (rule 10)
+	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 48)
 
-	SYM_DEFINITION	shift, and go to state 58
+	SYM_ONTOLOGY	shift, and go to state 76
 
-	arch_definition	go to state 82
+	arch_ontology	go to state 82
 
 
 
 state 74
 
-	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition . arch_invariant arch_ontology arch_annotations   (rule 11)
-	arch_invariant  ->  .   (rule 42)
-	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 43)
-	arch_invariant  ->  . SYM_INVARIANT error   (rule 44)
+	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description . arch_definition arch_invariant arch_ontology   (rule 9)
+	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 42)
+	arch_definition  ->  . SYM_DEFINITION error   (rule 43)
 
-	SYM_INVARIANT	shift, and go to state 71
+	SYM_DEFINITION	shift, and go to state 58
 
-	$default	reduce using rule 42 (arch_invariant)
-
-	arch_invariant	go to state 83
+	arch_definition	go to state 83
 
 
 
 state 75
 
-	arch_ontology  ->  SYM_ONTOLOGY . V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  SYM_ONTOLOGY . error   (rule 46)
+	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition . arch_invariant arch_ontology arch_annotations   (rule 11)
+	arch_invariant  ->  .   (rule 44)
+	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 45)
+	arch_invariant  ->  . SYM_INVARIANT error   (rule 46)
 
-	V_DADL_TEXT	shift, and go to state 84
-	error	shift, and go to state 85
+	SYM_INVARIANT	shift, and go to state 72
+
+	$default	reduce using rule 44 (arch_invariant)
+
+	arch_invariant	go to state 84
 
 
 
 state 76
+
+	arch_ontology  ->  SYM_ONTOLOGY . V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  SYM_ONTOLOGY . error   (rule 48)
+
+	V_DADL_TEXT	shift, and go to state 85
+	error	shift, and go to state 86
+
+
+
+state 77
 
 	template_overlay  ->  source_identification arch_specialisation arch_language arch_definition arch_ontology .   (rule 12)
 
@@ -948,25 +964,13 @@ state 76
 
 
 
-state 77
-
-	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations arch_component_ontologies   (rule 13)
-	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 46)
-
-	SYM_ONTOLOGY	shift, and go to state 75
-
-	arch_ontology	go to state 86
-
-
-
 state 78
 
-	adl_14_archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant . arch_ontology   (rule 8)
-	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 46)
+	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations arch_component_ontologies   (rule 13)
+	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 48)
 
-	SYM_ONTOLOGY	shift, and go to state 75
+	SYM_ONTOLOGY	shift, and go to state 76
 
 	arch_ontology	go to state 87
 
@@ -974,94 +978,106 @@ state 78
 
 state 79
 
-	arch_invariant  ->  SYM_INVARIANT V_ASSERTION_TEXT .   (rule 43)
+	adl_14_archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant . arch_ontology   (rule 8)
+	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 48)
 
-	$default	reduce using rule 43 (arch_invariant)
+	SYM_ONTOLOGY	shift, and go to state 76
+
+	arch_ontology	go to state 88
 
 
 
 state 80
 
-	arch_invariant  ->  SYM_INVARIANT error .   (rule 44)
+	arch_invariant  ->  SYM_INVARIANT V_ASSERTION_TEXT .   (rule 45)
 
-	$default	reduce using rule 44 (arch_invariant)
+	$default	reduce using rule 45 (arch_invariant)
 
 
 
 state 81
 
-	archetype  ->  source_identification arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations   (rule 10)
-	arch_annotations  ->  .   (rule 47)
-	arch_annotations  ->  . SYM_ANNOTATIONS V_DADL_TEXT   (rule 48)
-	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 49)
+	arch_invariant  ->  SYM_INVARIANT error .   (rule 46)
 
-	SYM_ANNOTATIONS	shift, and go to state 88
-
-	$default	reduce using rule 47 (arch_annotations)
-
-	arch_annotations	go to state 89
+	$default	reduce using rule 46 (arch_invariant)
 
 
 
 state 82
 
-	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition . arch_invariant arch_ontology   (rule 9)
-	arch_invariant  ->  .   (rule 42)
-	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 43)
-	arch_invariant  ->  . SYM_INVARIANT error   (rule 44)
+	archetype  ->  source_identification arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations   (rule 10)
+	arch_annotations  ->  .   (rule 49)
+	arch_annotations  ->  . SYM_ANNOTATIONS V_DADL_TEXT   (rule 50)
+	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 51)
 
-	SYM_INVARIANT	shift, and go to state 71
+	SYM_ANNOTATIONS	shift, and go to state 89
 
-	$default	reduce using rule 42 (arch_invariant)
+	$default	reduce using rule 49 (arch_annotations)
 
-	arch_invariant	go to state 90
+	arch_annotations	go to state 90
 
 
 
 state 83
 
-	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations   (rule 11)
-	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 46)
+	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition . arch_invariant arch_ontology   (rule 9)
+	arch_invariant  ->  .   (rule 44)
+	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 45)
+	arch_invariant  ->  . SYM_INVARIANT error   (rule 46)
 
-	SYM_ONTOLOGY	shift, and go to state 75
+	SYM_INVARIANT	shift, and go to state 72
 
-	arch_ontology	go to state 91
+	$default	reduce using rule 44 (arch_invariant)
+
+	arch_invariant	go to state 91
 
 
 
 state 84
 
-	arch_ontology  ->  SYM_ONTOLOGY V_DADL_TEXT .   (rule 45)
+	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations   (rule 11)
+	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 48)
 
-	$default	reduce using rule 45 (arch_ontology)
+	SYM_ONTOLOGY	shift, and go to state 76
+
+	arch_ontology	go to state 92
 
 
 
 state 85
 
-	arch_ontology  ->  SYM_ONTOLOGY error .   (rule 46)
+	arch_ontology  ->  SYM_ONTOLOGY V_DADL_TEXT .   (rule 47)
 
-	$default	reduce using rule 46 (arch_ontology)
+	$default	reduce using rule 47 (arch_ontology)
 
 
 
 state 86
 
-	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations arch_component_ontologies   (rule 13)
-	arch_annotations  ->  .   (rule 47)
-	arch_annotations  ->  . SYM_ANNOTATIONS V_DADL_TEXT   (rule 48)
-	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 49)
+	arch_ontology  ->  SYM_ONTOLOGY error .   (rule 48)
 
-	SYM_ANNOTATIONS	shift, and go to state 88
-
-	$default	reduce using rule 47 (arch_annotations)
-
-	arch_annotations	go to state 92
+	$default	reduce using rule 48 (arch_ontology)
 
 
 
 state 87
+
+	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations arch_component_ontologies   (rule 13)
+	arch_annotations  ->  .   (rule 49)
+	arch_annotations  ->  . SYM_ANNOTATIONS V_DADL_TEXT   (rule 50)
+	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 51)
+
+	SYM_ANNOTATIONS	shift, and go to state 89
+
+	$default	reduce using rule 49 (arch_annotations)
+
+	arch_annotations	go to state 93
+
+
+
+state 88
 
 	adl_14_archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology .   (rule 8)
 
@@ -1069,17 +1085,17 @@ state 87
 
 
 
-state 88
-
-	arch_annotations  ->  SYM_ANNOTATIONS . V_DADL_TEXT   (rule 48)
-	arch_annotations  ->  SYM_ANNOTATIONS . error   (rule 49)
-
-	V_DADL_TEXT	shift, and go to state 93
-	error	shift, and go to state 94
-
-
-
 state 89
+
+	arch_annotations  ->  SYM_ANNOTATIONS . V_DADL_TEXT   (rule 50)
+	arch_annotations  ->  SYM_ANNOTATIONS . error   (rule 51)
+
+	V_DADL_TEXT	shift, and go to state 94
+	error	shift, and go to state 95
+
+
+
+state 90
 
 	archetype  ->  source_identification arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations .   (rule 10)
 
@@ -1087,62 +1103,62 @@ state 89
 
 
 
-state 90
-
-	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant . arch_ontology   (rule 9)
-	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 45)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 46)
-
-	SYM_ONTOLOGY	shift, and go to state 75
-
-	arch_ontology	go to state 95
-
-
-
 state 91
 
-	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations   (rule 11)
-	arch_annotations  ->  .   (rule 47)
-	arch_annotations  ->  . SYM_ANNOTATIONS V_DADL_TEXT   (rule 48)
-	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 49)
+	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant . arch_ontology   (rule 9)
+	arch_ontology  ->  . SYM_ONTOLOGY V_DADL_TEXT   (rule 47)
+	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 48)
 
-	SYM_ANNOTATIONS	shift, and go to state 88
+	SYM_ONTOLOGY	shift, and go to state 76
 
-	$default	reduce using rule 47 (arch_annotations)
-
-	arch_annotations	go to state 96
+	arch_ontology	go to state 96
 
 
 
 state 92
 
-	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations . arch_component_ontologies   (rule 13)
-	arch_component_ontologies  ->  . SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT   (rule 50)
-	arch_component_ontologies  ->  . SYM_COMPONENT_ONTOLOGIES error   (rule 51)
+	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations   (rule 11)
+	arch_annotations  ->  .   (rule 49)
+	arch_annotations  ->  . SYM_ANNOTATIONS V_DADL_TEXT   (rule 50)
+	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 51)
 
-	SYM_COMPONENT_ONTOLOGIES	shift, and go to state 97
+	SYM_ANNOTATIONS	shift, and go to state 89
 
-	arch_component_ontologies	go to state 98
+	$default	reduce using rule 49 (arch_annotations)
+
+	arch_annotations	go to state 97
 
 
 
 state 93
 
-	arch_annotations  ->  SYM_ANNOTATIONS V_DADL_TEXT .   (rule 48)
+	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations . arch_component_ontologies   (rule 13)
+	arch_component_ontologies  ->  . SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT   (rule 52)
+	arch_component_ontologies  ->  . SYM_COMPONENT_ONTOLOGIES error   (rule 53)
 
-	$default	reduce using rule 48 (arch_annotations)
+	SYM_COMPONENT_ONTOLOGIES	shift, and go to state 98
+
+	arch_component_ontologies	go to state 99
 
 
 
 state 94
 
-	arch_annotations  ->  SYM_ANNOTATIONS error .   (rule 49)
+	arch_annotations  ->  SYM_ANNOTATIONS V_DADL_TEXT .   (rule 50)
 
-	$default	reduce using rule 49 (arch_annotations)
+	$default	reduce using rule 50 (arch_annotations)
 
 
 
 state 95
+
+	arch_annotations  ->  SYM_ANNOTATIONS error .   (rule 51)
+
+	$default	reduce using rule 51 (arch_annotations)
+
+
+
+state 96
 
 	specialised_adl_14_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology .   (rule 9)
 
@@ -1150,7 +1166,7 @@ state 95
 
 
 
-state 96
+state 97
 
 	specialised_archetype_or_template  ->  source_identification arch_specialisation arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations .   (rule 11)
 
@@ -1158,17 +1174,17 @@ state 96
 
 
 
-state 97
-
-	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES . V_DADL_TEXT   (rule 50)
-	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES . error   (rule 51)
-
-	V_DADL_TEXT	shift, and go to state 99
-	error	shift, and go to state 100
-
-
-
 state 98
+
+	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES . V_DADL_TEXT   (rule 52)
+	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES . error   (rule 53)
+
+	V_DADL_TEXT	shift, and go to state 100
+	error	shift, and go to state 101
+
+
+
+state 99
 
 	operational_template  ->  opt_identification arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations arch_component_ontologies .   (rule 13)
 
@@ -1176,26 +1192,19 @@ state 98
 
 
 
-state 99
-
-	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT .   (rule 50)
-
-	$default	reduce using rule 50 (arch_component_ontologies)
-
-
-
 state 100
 
-	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES error .   (rule 51)
+	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT .   (rule 52)
 
-	$default	reduce using rule 51 (arch_component_ontologies)
+	$default	reduce using rule 52 (arch_component_ontologies)
 
 
 
 state 101
 
+	arch_component_ontologies  ->  SYM_COMPONENT_ONTOLOGIES error .   (rule 53)
 
-	$	go to state 102
+	$default	reduce using rule 53 (arch_component_ontologies)
 
 
 
@@ -1207,6 +1216,13 @@ state 102
 
 
 state 103
+
+
+	$	go to state 104
+
+
+
+state 104
 
 
 	$default	accept
