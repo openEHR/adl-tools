@@ -614,12 +614,12 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 27 then
---|#line 211 "adl_validator.y"
+--|#line 212 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 211")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 212")
 end
 
-			uid := yyvs2.item (yyvsp2)
+			create uid.make_from_string (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -628,9 +628,23 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 28 then
---|#line 215 "adl_validator.y"
+--|#line 217 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 215")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 217")
+end
+
+			create uid.make_from_string (yyvs2.item (yyvsp2))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp2 := yyvsp2 -1
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
+end
+when 29 then
+--|#line 221 "adl_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 221")
 end
 
 			is_controlled := True
@@ -639,10 +653,10 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 29 then
---|#line 219 "adl_validator.y"
+when 30 then
+--|#line 225 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 219")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 225")
 end
 
 			is_generated := True
@@ -651,23 +665,10 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 30 then
---|#line 230 "adl_validator.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 230")
-end
-
-			other_metadata.put (yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp2 := yyvsp2 -2
-	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
-end
 when 31 then
---|#line 234 "adl_validator.y"
+--|#line 236 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 234")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 236")
 end
 
 			other_metadata.put (yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
@@ -678,39 +679,22 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 32 then
---|#line 238 "adl_validator.y"
+--|#line 240 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 238")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 240")
 end
 
-			other_metadata.put ("true", yyvs2.item (yyvsp2))
+			other_metadata.put (yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp1 := yyvsp1 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
-		if yyvs1 = Void or yyspecial_routines1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
-		end
-	end
+	yyssp := yyssp - 3
+	yyvsp2 := yyvsp2 -2
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 33 then
---|#line 242 "adl_validator.y"
+--|#line 244 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 242")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 244")
 end
 
 			other_metadata.put ("true", yyvs2.item (yyvsp2))
@@ -743,6 +727,36 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 248")
 end
 
+			other_metadata.put ("true", yyvs2.item (yyvsp2))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp1 := yyvsp1 + 1
+	yyvsp2 := yyvsp2 -1
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs1")
+			end
+			create yyspecial_routines1
+			yyvsc1 := yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.make (yyvsc1)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs1")
+			end
+			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+		end
+	end
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
+end
+when 35 then
+--|#line 254 "adl_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 254")
+end
+
 			if arch_id.valid_id (yyvs2.item (yyvsp2)) then
 				create parent_archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
@@ -754,10 +768,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 35 then
---|#line 256 "adl_validator.y"
+when 36 then
+--|#line 262 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 256")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 262")
 end
 
 			abort_with_error ("SASID", Void)
@@ -767,10 +781,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 36 then
---|#line 262 "adl_validator.y"
+when 37 then
+--|#line 268 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 262")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 268")
 end
 
 			concept := yyvs2.item (yyvsp2)
@@ -783,10 +797,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 37 then
---|#line 269 "adl_validator.y"
+when 38 then
+--|#line 275 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 269")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 275")
 end
 
 			abort_with_error ("SACO", Void)
@@ -796,10 +810,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 38 then
---|#line 275 "adl_validator.y"
+when 39 then
+--|#line 281 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 275")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 281")
 end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
@@ -810,10 +824,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 39 then
---|#line 280 "adl_validator.y"
+when 40 then
+--|#line 286 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 280")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 286")
 end
 
 			abort_with_error ("SALA", Void)
@@ -823,10 +837,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 40 then
---|#line 286 "adl_validator.y"
+when 41 then
+--|#line 292 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 286")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 292")
 end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
@@ -837,10 +851,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 41 then
---|#line 291 "adl_validator.y"
+when 42 then
+--|#line 297 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 291")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 297")
 end
 
 			abort_with_error ("SADS", Void)
@@ -850,10 +864,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 42 then
---|#line 298 "adl_validator.y"
+when 43 then
+--|#line 304 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 298")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 304")
 end
 
 			definition_text := yyvs2.item (yyvsp2)
@@ -863,10 +877,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 43 then
---|#line 302 "adl_validator.y"
+when 44 then
+--|#line 308 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 302")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 308")
 end
 
 			abort_with_error ("SADF", Void)
@@ -876,10 +890,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 44 then
---|#line 308 "adl_validator.y"
+when 45 then
+--|#line 314 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 308")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 314")
 end
 
 
@@ -904,10 +918,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 45 then
---|#line 309 "adl_validator.y"
+when 46 then
+--|#line 315 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 309")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 315")
 end
 
 			invariant_text := yyvs2.item (yyvsp2)
@@ -917,10 +931,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 46 then
---|#line 313 "adl_validator.y"
+when 47 then
+--|#line 319 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 313")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 319")
 end
 
 			abort_with_error ("SAIV", Void)
@@ -930,10 +944,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 47 then
---|#line 319 "adl_validator.y"
+when 48 then
+--|#line 325 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 319")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 325")
 end
 
 			ontology_text := yyvs2.item (yyvsp2)
@@ -943,10 +957,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 48 then
---|#line 323 "adl_validator.y"
+when 49 then
+--|#line 329 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 323")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 329")
 end
 
 			abort_with_error ("SAON", Void)
@@ -956,10 +970,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 49 then
---|#line 329 "adl_validator.y"
+when 50 then
+--|#line 335 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 329")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 335")
 end
 
 
@@ -984,10 +998,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 50 then
---|#line 330 "adl_validator.y"
+when 51 then
+--|#line 336 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 330")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 336")
 end
 
 			annotations_text := yyvs2.item (yyvsp2)
@@ -997,10 +1011,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 51 then
---|#line 334 "adl_validator.y"
+when 52 then
+--|#line 340 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 334")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 340")
 end
 
 			abort_with_error ("SAAS", Void)
@@ -1010,10 +1024,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 52 then
---|#line 340 "adl_validator.y"
+when 53 then
+--|#line 346 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 340")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 346")
 end
 
 			component_ontologies_text := yyvs2.item (yyvsp2)
@@ -1023,10 +1037,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp2 := yyvsp2 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 53 then
---|#line 344 "adl_validator.y"
+when 54 then
+--|#line 350 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 344")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 350")
 end
 
 			abort_with_error ("SAAS", Void)
@@ -1050,7 +1064,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 102 then
+			when 103 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -1105,9 +1119,9 @@ feature {NONE} -- Table templates
 			    0,   34,   34,   34,   34,   34,   34,   34,   39,   40,
 			   35,   36,   37,   38,   41,   41,   32,   32,   32,   50,
 			   50,   33,   52,   52,   53,   53,   54,   54,   54,   54,
-			   54,   54,   54,   54,   48,   48,   42,   42,   43,   43,
-			   44,   44,   45,   45,   46,   46,   46,   47,   47,   49,
-			   49,   49,   51,   51, yyDummy>>)
+			   54,   54,   54,   54,   54,   48,   48,   42,   42,   43,
+			   43,   44,   44,   45,   45,   46,   46,   46,   47,   47,
+			   49,   49,   49,   51,   51, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER]
@@ -1120,12 +1134,12 @@ feature {NONE} -- Table templates
 			    1,    1,    2,    2,    1,    1,    2,    2,    2,    1,
 			    2,    1,    2,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    2,    1,    1,    1,
-			    1,    1,    1,    1,    2,    2,    2,    2,    1,    1,
-			    2,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    2,    1,    1,    1,    1,    2,    1,    1,    1,    1,
-			    1,    1,    1,    1,    2,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    2,    2,    2,    2,    2,    1,
+			    1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    2,    1,    1,    1,    1,    2,    1,    1,    1,
+			    1,    1,    1,    1,    1,    2,    1,    1,    1,    1,
 
-			    2,    1,    1,    1,    1, yyDummy>>)
+			    1,    2,    1,    1,    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER]
@@ -1144,24 +1158,24 @@ feature {NONE} -- Table templates
 			Result := yyfixed_array (<<
 			    0,   21,   18,   17,   16,    7,    0,    0,    1,    2,
 			    3,    4,    5,    6,    0,    0,    0,   15,    0,   20,
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,   29,
-			   28,    0,   33,   32,    0,   24,   14,   19,   38,   39,
-			   34,   35,   36,   37,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,   23,    0,   40,   41,    0,   44,
-			    0,    0,    0,   44,   27,   26,   31,   30,   25,   44,
-			   42,   43,    0,    0,    0,   44,    0,   12,    0,    0,
-			   45,   46,   49,   44,    0,   47,   48,   49,    8,    0,
-			   10,    0,   49,    0,   50,   51,    9,   11,    0,   13,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,   30,
+			   29,    0,   34,   33,    0,   24,   14,   19,   39,   40,
+			   35,   36,   37,   38,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,   23,    0,   41,   42,    0,   45,
+			    0,    0,    0,   45,   28,   27,   26,   32,   31,   25,
+			   45,   43,   44,    0,    0,    0,   45,    0,   12,    0,
+			    0,   46,   47,   50,   45,    0,   48,   49,   50,    8,
+			    0,   10,    0,   50,    0,   51,   52,    9,   11,    0,
 
-			   52,   53,    0,    0,    0, yyDummy>>)
+			   13,   53,   54,    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER]
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
-			    6,    7,  102,    8,    9,   10,   11,   12,   13,   14,
-			   24,   25,   46,   59,   73,   77,   26,   90,   15,   99,
+			    6,    7,  103,    8,    9,   10,   11,   12,   13,   14,
+			   24,   25,   46,   59,   74,   78,   26,   91,   15,  100,
 			   18,   34,   35, yyDummy>>)
 		end
 
@@ -1169,18 +1183,18 @@ feature {NONE} -- Table templates
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			   44, -32768, -32768, -32768, -32768, -32768,    2,    0, -32768, -32768,
-			 -32768, -32768, -32768, -32768,   35,   61,   15, -32768,   80, -32768,
-			   77,   59,   68,   65,   61,   55,   53,   55,   54, -32768,
-			 -32768,   52, -32768,   51,   45, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,   55,   58,   60,   61,    6,   60,
-			   70,   69,    5,   15, -32768,   60, -32768, -32768,   13,   50,
-			   55,   60,   41,   50, -32768, -32768, -32768, -32768, -32768,   50,
-			 -32768, -32768,    4,   41,   60,   50,   46, -32768,   41,   41,
-			 -32768, -32768,   25,   50,   41, -32768, -32768,   25, -32768,   30,
-			 -32768,   41,   25,   17, -32768, -32768, -32768, -32768,   18, -32768,
+			   34, -32768, -32768, -32768, -32768, -32768,    8,    4, -32768, -32768,
+			 -32768, -32768, -32768, -32768,   54,   63,   15, -32768,   79, -32768,
+			   78,   53,   67,   61,   63,   59,   46,   59,   60, -32768,
+			 -32768,   57, -32768,   56,   47, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768,   59,   52,   58,   63,   10,   58,
+			   64,   70,   16,   15, -32768,   58, -32768, -32768,   22,   55,
+			   59,   58,   45,   55, -32768, -32768, -32768, -32768, -32768, -32768,
+			   55, -32768, -32768,   14,   45,   58,   55,   51, -32768,   45,
+			   45, -32768, -32768,   44,   55,   45, -32768, -32768,   44, -32768,
+			   49, -32768,   45,   44,   31, -32768, -32768, -32768, -32768,    0,
 
-			 -32768, -32768,   29,    7, -32768, yyDummy>>)
+			 -32768, -32768, -32768,   37,   24, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER]
@@ -1188,38 +1202,40 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			   63,  -13,  -27,  -39,  -37,  -30, -32768,  -25, -32768, -32768,
-			   81, -32768,   33, yyDummy>>)
+			   66,  -13,  -27,  -45,  -56,  -36, -32768,  -28, -32768, -32768,
+			   77, -32768,   32, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			   49,   19,   27,   17,  -22,   81,  -22,  104,   67,   62,
-			   63,   44,   80,   48,   71,   66,   69,   55,   33,  101,
-			   70,   61,   75,   58,  100,   32,   78,   45,   16,  103,
-			   16,   95,   79,   74,   60,   83,   94,   98,   84,   31,
-			   30,   29,   28,   82,   89,    5,   91,   86,   87,   88,
-			   23,   22,   85,   21,   92,    4,    3,    2,    1,   57,
-			   39,   96,   93,   76,   56,   38,   43,   97,   23,   41,
-			   42,   21,   40,   72,   54,   53,   45,   58,   65,   21,
-			   64,   37,   52,   51,   36,   50,   68,    0,   20,   47, yyDummy>>)
+			   49,  102,   27,   62,   63,   19,  101,   79,  -22,   17,
+			   70,   44,  -22,   48,   80,   82,   76,   55,   33,   68,
+			   85,   61,   81,   72,  105,   32,   67,   58,   92,   71,
+			   84,   45,   16,   75,   60,    5,   16,  104,   83,   31,
+			   30,   29,   28,   88,   89,    4,    3,    2,    1,   93,
+			   96,   99,   87,   57,   39,   95,   97,   86,   56,   38,
+			   94,   23,   43,   90,   21,   98,   42,   77,   41,   23,
+			   22,   40,   21,   65,   64,   58,   54,   53,   73,   66,
+			   45,   21,   37,   36,   20,   69,    0,   52,   51,    0,
+			    0,   50,   47, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			   27,    1,   15,    1,    4,    1,    4,    0,    3,   48,
-			   49,   24,    8,   26,    1,   10,   55,   44,    3,    1,
-			    7,   48,   61,   17,    6,   10,   63,   21,   28,    0,
-			   28,    1,   69,   60,   47,   74,    6,   20,   75,   24,
-			   25,   26,   27,   73,   19,    1,   83,    1,   78,   79,
-			   15,   16,    6,   18,   84,   11,   12,   13,   14,    1,
-			    1,   91,   87,   22,    6,    6,    1,   92,   15,    1,
-			    5,   18,    4,   23,   29,   30,   21,   17,    9,   18,
-			   10,    4,   31,   31,    4,   31,   53,   -1,    7,   26, yyDummy>>)
+			   27,    1,   15,   48,   49,    1,    6,   63,    4,    1,
+			   55,   24,    4,   26,   70,    1,   61,   44,    3,    3,
+			   76,   48,    8,    1,    0,   10,   10,   17,   84,    7,
+			   75,   21,   28,   60,   47,    1,   28,    0,   74,   24,
+			   25,   26,   27,   79,   80,   11,   12,   13,   14,   85,
+			    1,   20,    1,    1,    1,    6,   92,    6,    6,    6,
+			   88,   15,    1,   19,   18,   93,    5,   22,    1,   15,
+			   16,    4,   18,    9,   10,   17,   29,   30,   23,    9,
+			   21,   18,    4,    4,    7,   53,   -1,   31,   31,   -1,
+			   -1,   31,   26, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -1250,7 +1266,7 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER = 104
+	yyFinal: INTEGER = 105
 			-- Termination state id
 
 	yyFlag: INTEGER = -32768
@@ -1259,7 +1275,7 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER = 32
 			-- Number of tokens
 
-	yyLast: INTEGER = 89
+	yyLast: INTEGER = 92
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER = 282
@@ -1326,7 +1342,7 @@ feature -- Parse Output
 
 	adl_version: STRING
 
-	uid: STRING
+	uid: HIER_OBJECT_ID
 
 	is_controlled: BOOLEAN
 

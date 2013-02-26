@@ -4,12 +4,8 @@ note
 	keywords:    "archetype"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class FLAT_ARCHETYPE
 
@@ -29,15 +25,10 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 
 	make_non_specialised (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
-		local
-			uid_str: detachable STRING
 		do
-			if attached a_diff.uid as att_uid then
-				uid_str := att_uid.value
-			end
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,
-					uid_str,
+					a_diff.uid,
 					a_diff.description.safe_deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
 			if attached a_diff.translations as a_diff_trans then
@@ -64,20 +55,16 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- it by a merging process. The ontology is converted to a form ready for
 			-- overlaying as well.
 		local
-			uid_str: detachable STRING
 			desc: like description
 		do
 			-- basic identifying info, and language from from child
 			-- definition comes from parent, waiting for flattening of child on top
 			-- ontology comes from child, waiting for parent items to be merged on top
-			if attached a_diff.uid as att_uid then
-				uid_str := att_uid.value
-			end
 			if attached a_diff.description as orig_desc then
 				desc := orig_desc.safe_deep_twin
 			end
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.deep_twin, uid_str, desc,
+					a_diff.original_language.deep_twin, a_diff.uid, desc,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
 			definition.set_node_id (a_diff.definition.node_id.twin)
@@ -123,14 +110,10 @@ feature -- Factory
 			is_generated
 		local
 			def_it: C_ITERATOR
-			uid_str: detachable STRING
 		do
 --			if not is_specialised then
-			if attached uid as att_uid then
-				uid_str := att_uid.value
-			end
 				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
-					is_controlled, uid_str, other_metadata, original_language, translations, description, definition, invariants,
+					is_controlled, uid, other_metadata, original_language, translations, description, definition, invariants,
 					ontology.to_differential, annotations)
 --			else
 --				-- ======= deal with main archetype =======

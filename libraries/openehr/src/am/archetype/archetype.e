@@ -37,7 +37,7 @@ feature -- Initialisation
 	make (an_artefact_type: like artefact_type;
 			an_id: like archetype_id;
 			an_original_language: like original_language;
-			a_uid: detachable STRING;
+			a_uid: like uid;
 			a_description: like description;
 			a_definition: like definition;
 			an_ontology: like ontology)
@@ -53,9 +53,7 @@ feature -- Initialisation
 			definition := a_definition
 			ontology := an_ontology
 			is_dirty := True
-			if attached a_uid as att_uid then
-				create uid.make_from_string (a_uid)
-			end
+			uid := a_uid
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
@@ -72,7 +70,7 @@ feature -- Initialisation
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
-			a_uid: detachable STRING;
+			a_uid: like uid;
 			an_other_metadata: like other_metadata;
 			an_original_language: like original_language;
 			a_translations: like translations;
@@ -124,9 +122,6 @@ feature -- Initialisation
 			other_other_metadata: detachable HASH_TABLE [STRING, STRING]
 			other_uid_str: detachable STRING
 		do
-			if attached other.uid as att_uid then
-				other_uid_str := att_uid.value
-			end
 			if attached other.parent_archetype_id as other_pid then
 				other_parent_arch_id := other_pid.deep_twin
 			end
@@ -146,7 +141,7 @@ feature -- Initialisation
 				other_other_metadata := other.other_metadata.deep_twin
 			end
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
-					other_parent_arch_id, other.is_controlled, other_uid_str, other_other_metadata,
+					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
 					other_description, other.definition.deep_twin, other_invariants,
 					other.ontology.safe_deep_twin, other_annotations)

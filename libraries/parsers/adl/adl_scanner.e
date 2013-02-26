@@ -623,7 +623,7 @@ debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 268")
 end
 
-					last_token := V_VERSION_STRING
+					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
 			
 else

@@ -36,8 +36,8 @@ feature -- Access
 				Result := "V_CADL_TEXT"
 			when V_ASSERTION_TEXT then
 				Result := "V_ASSERTION_TEXT"
-			when V_VERSION_STRING then
-				Result := "V_VERSION_STRING"
+			when V_DOTTED_NUMERIC then
+				Result := "V_DOTTED_NUMERIC"
 			when V_VALUE then
 				Result := "V_VALUE"
 			when SYM_ARCHETYPE then
@@ -87,7 +87,7 @@ feature -- Token codes
 	V_DADL_TEXT: INTEGER = 261
 	V_CADL_TEXT: INTEGER = 262
 	V_ASSERTION_TEXT: INTEGER = 263
-	V_VERSION_STRING: INTEGER = 264
+	V_DOTTED_NUMERIC: INTEGER = 264
 	V_VALUE: INTEGER = 265
 	SYM_ARCHETYPE: INTEGER = 266
 	SYM_TEMPLATE: INTEGER = 267

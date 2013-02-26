@@ -148,46 +148,56 @@ feature -- Access
 
 feature -- Access
 
-	term_definition (a_language, a_code: STRING): detachable ARCHETYPE_TERM
+	term_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		require
 			Term_definition_exists: has_term_definition (a_language, a_code)
 		do
-			Result := term_definitions.item (a_language).item (a_code)
+			check attached term_definitions.item (a_language) as tl and then attached tl.item (a_code) as term then
+				Result := term
+			end
 		end
 
-	constraint_definition (a_language, a_code: STRING): detachable ARCHETYPE_TERM
+	constraint_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		require
 			Term_definition_exists: has_constraint_definition (a_language, a_code)
 		do
-			Result := constraint_definitions.item (a_language).item (a_code)
+			check attached constraint_definitions.item (a_language) as tl and then attached tl.item (a_code) as term then
+				Result := term
+			end
 		end
 
-	term_binding (a_terminology, a_key: STRING): detachable CODE_PHRASE
+	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
 			-- retrieve the term binding from terminology `a_terminology' for code `a_key'
 		require
 			Term_code_valid: has_term_binding (a_terminology, a_key)
 		do
-			Result := term_bindings.item (a_terminology).item (a_key)
+			check attached term_bindings.item (a_terminology) as tbs and then attached tbs.item (a_key) as tb then
+				Result := tb
+			end
 		end
 
-	constraint_binding (a_terminology, a_code: STRING): detachable URI
+	constraint_binding (a_terminology, a_code: STRING): URI
 			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
 			-- in form of a string: "service::query"
 		require
 			Term_code_valid: has_constraint_binding (a_terminology, a_code)
 		do
-			Result := constraint_bindings.item (a_terminology).item (a_code)
+			check attached constraint_bindings.item (a_terminology) as cbs and then attached cbs.item (a_code) as cb then
+				Result := cb
+			end
 		end
 
-	terminology_extract_term (a_terminology, a_code: STRING): detachable ARCHETYPE_TERM
+	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
 			-- true if there is an extract from terminology `a_terminology'
 		require
 			Terminology_valid: has_terminology_extract (a_terminology)
 			Term_code_valid: has_terminology_extract_code (a_terminology, a_code)
 		do
-			Result := terminology_extracts.item (a_terminology).item (a_code)
+			check attached terminology_extracts.item (a_terminology) as textrs and then attached textrs.item (a_code) as term then
+				Result := term
+			end
 		end
 
 	term_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [CODE_PHRASE, STRING]
@@ -195,7 +205,9 @@ feature -- Access
 		require
 			Terminology_valid: term_bindings.has (a_terminology)
 		do
-			Result := term_bindings.item (a_terminology)
+			check attached term_bindings.item (a_terminology) as tbs then
+				Result := tbs
+			end
 		end
 
 	term_bindings_for_key (a_key: STRING): HASH_TABLE [CODE_PHRASE, STRING]
@@ -216,7 +228,9 @@ feature -- Access
 		require
 			Terminology_valid: constraint_bindings.has (a_terminology)
 		do
-			Result := constraint_bindings.item (a_terminology)
+			check attached constraint_bindings.item (a_terminology) as cbs then
+				Result := cbs
+			end
 		end
 
 	physical_to_logical_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
@@ -259,7 +273,8 @@ feature -- Access
 		end
 
 	definition_for_code (a_lang, a_code: STRING): detachable ARCHETYPE_TERM
-			-- extract the term or constraint definition for `a_code'
+			-- extract the term or constraint definition for `a_code'; Void if no
+			-- code for `a_lang' and 'a_code'
 		do
 			if is_valid_code (a_code) and has_language (a_lang) then
 				if is_term_code (a_code) and has_term_code (a_code) then

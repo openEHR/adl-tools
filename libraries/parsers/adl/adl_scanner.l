@@ -54,7 +54,7 @@ VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
-
+DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 --------------- Options --------------
 %x IN_DADL_SECTION IN_CADL_SECTION IN_ASSERTION_SECTION
@@ -264,9 +264,9 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 	}
 }
 
-----------/* V_VERSION_STRING */ -------------------------------------------------
-[0-9]+\.[0-9]+(\.[0-9]+)* {
-					last_token := V_VERSION_STRING
+----------/* V_DOTTED_NUMERIC any length of n.n.n... with at least 2 segments */ -------------------------------------------------
+{DOTTED_NUMERIC_STR} {
+					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
 			}
 
