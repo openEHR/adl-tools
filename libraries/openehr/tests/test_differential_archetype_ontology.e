@@ -44,7 +44,7 @@ feature {NONE} -- Initialisation
 
 feature {NONE} -- Targets
 
-	target, parent: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	target, parent: detachable DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 
 feature -- Test routines
 

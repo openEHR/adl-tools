@@ -104,6 +104,7 @@ feature -- Factory
 			o_diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			o_flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
 			o_artefact_type: ARTEFACT_TYPE
+			o_uid: detachable HIER_OBJECT_ID
 		do
 			if attached parent_archetype_id as pid then
 				create o_parent_archetype_id.make_from_string (pid)
@@ -115,6 +116,9 @@ feature -- Factory
 			then
 				create o_archetype_id.make_from_string (aid)
 				create o_artefact_type.make_from_type_name (at)
+				if attached uid as att_uid then
+					create o_uid.make_from_string (att_uid)
+				end
 
 				if artefact_object_type.same_string ("DIFFERENTIAL_ARCHETYPE") then
 					create o_diff_arch_ont.make (original_language.as_string, o_definition.node_id)
@@ -127,7 +131,7 @@ feature -- Factory
 						o_archetype_id,
 						o_parent_archetype_id,
 						is_controlled,
-						uid,
+						o_uid,
 						other_metadata,
 						o_original_language,
 						translations,
@@ -149,7 +153,7 @@ feature -- Factory
 						o_archetype_id,
 						o_parent_archetype_id,
 						is_controlled,
-						uid,
+						o_uid,
 						other_metadata,
 						o_original_language,
 						translations,

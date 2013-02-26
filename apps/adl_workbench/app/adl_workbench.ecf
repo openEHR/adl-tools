@@ -138,10 +138,10 @@
 		</tests>
 		<cluster name="gobo_pattern" location="$ISE_LIBRARY\contrib\library\gobo\library\pattern\" recursive="true"/>
 		<cluster name="gobo_regexp" location="$ISE_LIBRARY\contrib\library\gobo\library\regexp\" recursive="true"/>
-		<cluster name="gobo_utility_support" location="$ISE_LIBRARY\contrib\library\gobo\library\utility\support" recursive="true"/>
-		<cluster name="gobo_utility_formatter" location="$ISE_LIBRARY\contrib\library\gobo\library\utility\formatter" recursive="true"/>
-		<cluster name="gobo_string_support" location="$ISE_LIBRARY\contrib\library\gobo\library\string\support" recursive="true"/>
+		<cluster name="gobo_string_support" location="$ISE_LIBRARY\contrib\library\gobo\library\string\support\" recursive="true"/>
 		<cluster name="gobo_structure" location="$ISE_LIBRARY\contrib\library\gobo\library\structure\" recursive="true"/>
+		<cluster name="gobo_utility_formatter" location="$ISE_LIBRARY\contrib\library\gobo\library\utility\formatter\" recursive="true"/>
+		<cluster name="gobo_utility_support" location="$ISE_LIBRARY\contrib\library\gobo\library\utility\support\" recursive="true"/>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option void_safety="initialization">
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
@@ -151,7 +151,10 @@
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="CODE_PHRASE"/>
 		</cluster>
-		<tests name="openehr_tests" location="..\..\..\libraries\openehr\tests\"/>
+		<tests name="openehr_tests" location="..\..\..\libraries\openehr\tests\">
+			<option void_safety="initialization">
+			</option>
+		</tests>
 		<cluster name="parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true">
 			<option void_safety="initialization">

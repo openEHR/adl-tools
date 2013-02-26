@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Ancestor for openEHR test classes"
 	keywords:    "archetype, ontology, terminology"
-
-	author:      "Peter Gummer"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
+	author:      "Peter Gummer <peter.gummer@oceaninfomatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class
 	OPENEHR_TEST_SET
@@ -25,10 +20,10 @@ inherit
 		rename
 			file_system as test_file_system
 		end
-
+		
 feature {NONE} -- Assertions
 
-	assert_equal (expected, actual: ANY)
+	assert_equal (expected, actual: detachable ANY)
 			-- Assert that `actual' is equal to `expected'.
 		local
 			tag: STRING
@@ -54,13 +49,13 @@ feature {NONE} -- Assertions
 
 feature {NONE} -- Access
 
-	file_context: attached FILE_CONTEXT
+	file_context: FILE_CONTEXT
 			-- Access to the file system.
 		once
 			create Result
 		end
 
-	test_directory: attached STRING
+	test_directory: STRING
 			-- A directory for temporary test files.
 		once
 			Result := file_system.pathname (user_config_file_directory, "autotest")

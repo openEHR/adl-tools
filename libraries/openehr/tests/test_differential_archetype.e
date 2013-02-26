@@ -2,16 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Tests for ADL differential terminology class"
 	keywords:    "archetype, ontology, terminology"
-
-	author:      "Peter Gummer"
+	author:      "Peter Gummer <petre.gummer@OceanInformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-	testing:     "type/manual"
 
 class
 	TEST_DIFFERENTIAL_ARCHETYPE
@@ -26,7 +20,7 @@ inherit
 
 feature {NONE} -- Targets
 
-	target: DIFFERENTIAL_ARCHETYPE
+	target: detachable DIFFERENTIAL_ARCHETYPE
 
 feature -- Test routines
 
