@@ -50,7 +50,7 @@ create
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
 ALPHANUM_STR [a-zA-Z0-9_]+
-VALUE_STR [a-zA-Z0-9_\-]+
+VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
