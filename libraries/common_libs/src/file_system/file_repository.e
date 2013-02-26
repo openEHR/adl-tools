@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 						create a_file.make (fpath)
 						if a_file.is_directory then
 							find_matching_file_paths (fpath.twin)
-						elseif base_name_pattern_regex.matches (fnames_csr.item) then
+						elseif base_name_pattern_regex.recognizes (fnames_csr.item) then
 							matching_paths.extend (fpath)
 						end
 					end

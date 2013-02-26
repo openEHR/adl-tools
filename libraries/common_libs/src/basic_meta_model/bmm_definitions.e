@@ -125,7 +125,7 @@ feature -- Comparison
 		require
 			Valid_type_name: not a_type_name.is_empty
 		do
-			Result := well_formed_type_name_regex.matches(a_type_name)
+			Result := well_formed_type_name_regex.recognizes (a_type_name)
 		end
 
 	is_well_formed_class_name (a_class_name: STRING): BOOLEAN
@@ -133,13 +133,13 @@ feature -- Comparison
 		require
 			Valid_class_name: not a_class_name.is_empty
 		do
-			Result := well_formed_class_name_regex.matches(a_class_name)
+			Result := well_formed_class_name_regex.recognizes (a_class_name)
 		end
 
 	is_well_formed_generic_type_name (a_type_name: STRING): BOOLEAN
 			-- True if the type name includes a generic parameters part; should be used after is_well_formed_type_name
 		require
-			Valid_type_name: is_well_formed_class_name(a_type_name)
+			Valid_type_name: is_well_formed_class_name (a_type_name)
 		do
 			Result := a_type_name.has (generic_left_delim)
 		end

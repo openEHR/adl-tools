@@ -88,7 +88,7 @@ feature {NONE} -- Implementation
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)
 						if regex_matcher.is_compiled then
-							Result := regex_matcher.matches (an_id)
+							Result := regex_matcher.recognizes (an_id)
 						end
 					end
 					includes.forth
@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)
 						if regex_matcher.is_compiled then
-							Result := not regex_matcher.matches (an_id)
+							Result := not regex_matcher.recognizes (an_id)
 						end
 					end
 					excludes.forth

@@ -106,7 +106,7 @@ feature -- Commands
 				arch_artefact_type_name := lines[1]
 
 				-- get line 2 - should be archetype id
-				if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
+				if (create {ARCHETYPE_ID}).valid_id (lines[2]) then
 					 -- ok
 				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
 					arch_id_is_old_style := True
@@ -122,7 +122,7 @@ feature -- Commands
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
 						if (create {ARCHETYPE_ID}).valid_id(lines[4]) then
 							parent_id_str := lines[4]
-						elseif old_archetype_id_pattern_regex.matches(lines[4]) then
+						elseif old_archetype_id_pattern_regex.matches (lines[4]) then
 							parent_id_str := lines[4]
 							arch_parent_id_is_old_style := True
 						else

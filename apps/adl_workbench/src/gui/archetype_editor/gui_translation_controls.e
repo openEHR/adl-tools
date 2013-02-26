@@ -225,7 +225,7 @@ feature {NONE} -- Implementation
 				lbar_pos := translated_text.substring_index (Annotated_code_text_delimiter_string, at_code_pos)
 				rbar_pos := translated_text.substring_index (Annotated_code_text_delimiter_string, lbar_pos + 1)
 				if lbar_pos > 0 and rbar_pos > lbar_pos then
-					if term_code_regex_matcher.matches (translated_text.substring (at_code_pos, lbar_pos - 1)) then
+					if term_code_regex_matcher.recognizes (translated_text.substring (at_code_pos, lbar_pos - 1)) then
 						translated_terms.put (translated_text.substring (lbar_pos + 1, rbar_pos - 1), translated_text.substring (at_code_pos, lbar_pos - 1))
 						i := rbar_pos + 1
 					else

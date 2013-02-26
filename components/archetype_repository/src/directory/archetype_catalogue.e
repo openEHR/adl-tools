@@ -32,7 +32,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
 class ARCHETYPE_CATALOGUE
 
@@ -144,7 +143,7 @@ feature -- Access
 			end
 			if regex_matcher.is_compiled then
 				across archetype_index as archs_csr loop
-					if regex_matcher.matches (archs_csr.key) then
+					if regex_matcher.recognizes (archs_csr.key) then
 						if attached rm_type as rmt then
 							create arch_id.make_from_string (archs_csr.key)
 							is_candidate := rmt.is_equal (arch_id.rm_entity.as_lower)
@@ -160,7 +159,7 @@ feature -- Access
 					end
 				end
 			else
-				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
+				Result.extend (get_msg_line ("regex_e1", <<a_regex>>))
 			end
 		ensure
 			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end

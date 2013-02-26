@@ -103,22 +103,22 @@ feature -- Validation
 	valid_language_tag (a_lang_tag: STRING): BOOLEAN
 			-- True if `a_lang_tag' conforms to the standard (as partially implemented here)
 		do
-			Result := Language_pattern_parser.matches (a_lang_tag) or else
-				Language_pattern_region_parser.matches (a_lang_tag) or else
-				Language_pattern_script_region_parser.matches (a_lang_tag)
+			Result := Language_pattern_parser.recognizes (a_lang_tag) or else
+				Language_pattern_region_parser.recognizes (a_lang_tag) or else
+				Language_pattern_script_region_parser.recognizes (a_lang_tag)
 		end
 
 	valid_language_pattern_tag (a_lang_tag: STRING): BOOLEAN
 			-- True if `a_lang_tag' conforms to the language-only pattern, i.e. 2 or 3 alpha chars (from ISO639-1 or -2)
 		do
-			Result := Language_pattern_parser.matches (a_lang_tag)
+			Result := Language_pattern_parser.recognizes (a_lang_tag)
 		end
 
 	language_tag_has_language (a_lang_tag, a_lang_subtag: STRING): BOOLEAN
 			-- True if `a_lang_subtag' is found in the appropriate place in `a_lang_tag'
 		require
-			Valid_lang_tag: valid_language_tag(a_lang_tag)
-			Valid_lang_subtag: valid_language_pattern_tag(a_lang_subtag)
+			Valid_lang_tag: valid_language_tag (a_lang_tag)
+			Valid_lang_subtag: valid_language_pattern_tag (a_lang_subtag)
 		do
 			Result := a_lang_tag.starts_with (a_lang_subtag)
 		end

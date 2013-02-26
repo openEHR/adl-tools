@@ -79,7 +79,7 @@ feature -- Access
 					end
 				end
 			else
-				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
+				Result.extend (get_msg_line ("regex_e1", <<a_regex>>))
 			end
 		end
 
