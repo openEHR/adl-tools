@@ -26,8 +26,6 @@ feature {NONE} -- Initialization
 			-- build from a UID and optional extension (no extension is indicated by an empty string)
 			-- if there is no extension then `value' will be just the UID.value;
 			-- if there is an extension, then `value' will have the form "root::extension"
-		require
-			Extension_exists: not an_extension.is_empty
 		do
 			create value.make (0)
 			value.append (a_root.value)
