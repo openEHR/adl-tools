@@ -1,61 +1,57 @@
 note
-	component:   "openEHR Support Reference Model"
-
-	description: "[
-			 Hierarhical object identifiers. The syntax of the value attribute is as follows:
-					 [ root '.' ] extension
-			 ]"
-	keywords:    "object identifiers"
-	design:      "openEHR Common Reference Model 1.4.1"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
-	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	component:   "openEHR Archetype Project"
+	description: "Tests for ISO_OID"
+	keywords:    "identifiers"
+	author:      "Thomas Beale"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	testing:     "type/manual"
 
-class HIER_OBJECT_ID
+class
+	TEST_ISO_OID
 
 inherit
-	UID_BASED_ID
+	OPENEHR_TEST_SET
 
-create
-	make, make_from_string
+feature -- Test routines
 
-feature {NONE} -- Initialization
-
-	make (a_root: UID; an_extension: STRING)
-			-- build from a UID and optional extension (no extension is indicated by an empty string)
-			-- if there is no extension then `value' will be just the UID.value;
-			-- if there is an extension, then `value' will have the form "root::extension"
-		do
-			create value.make (0)
-			value.append (a_root.value)
-			if not extension.is_empty then
-				value.append (extension_separator + an_extension)
-			end
-		ensure
-			Root_set: root.value.is_equal (a_root.value)
-			Extension_set: extension.is_equal (an_extension)
-		end
-
-feature -- Status Report
-
-	valid_id (a_str: STRING): BOOLEAN
-			-- is `a_str' a valid id of the form UID or UID::extension?
+	test_make
+			-- True if code has a valid part at or above specialisation level
+		note
+			testing:  "covers/{ISO_OID}.make"
 		local
-			p: INTEGER
-			root_str: STRING
+			val_uid, uid: ISO_OID
 		do
-			p := extension_separator_position (a_str)
-			if p > 1 then
-				root_str := a_str.substring (1, p-1)
-			else
-				root_str := a_str
-			end
-			Result := attached string_to_uid (root_str)
+			create val_uid.default_create
+
+			-- proper OID
+			assert_equal (True, val_uid.valid_id ("1.3.55.2222.0"))
+			create uid.make ("1.3.55.2222.0")
+
+			-- broken OID - non numeric char
+			assert_equal (False, val_uid.valid_id ("1.3.55.2x22.0"))
+
+			-- broken OID - wrong kind of delimiter
+			assert_equal (False, val_uid.valid_id ("1.3-55.2222.0"))
+
+			-- broken OID - trailing delimiter
+			assert_equal (False, val_uid.valid_id ("1.3.55.2222.0."))
+
+			-- broken OID - leading delimiter
+			assert_equal (False, val_uid.valid_id (".1.3.55.2222.0"))
+
+			-- broken OID - adjacent delimiters
+			assert_equal (False, val_uid.valid_id ("1.3..55.2222.0"))
+
+			-- broken OID - GUID supplied by mistake
+			assert_equal (False, val_uid.valid_id ("229F3EC63-43BF-4723-9715-6814985BD2D"))
+
+			-- broken OID - junk
+			assert_equal (False, val_uid.valid_id ("324rrevc435t43frwefefg"))
 		end
 
 end
-
 
 
 --|
@@ -72,10 +68,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is hier_object_id.e.
+--| The Original Code is test_archetype_term_code_tools.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -27,11 +27,23 @@ feature -- Definitions
 	Default_value: STRING = "00000000-0000-0000-0000-000000000000"
 			-- default UUID
 
+	Segment_separator: CHARACTER = '-'
+
 feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
-			--
+			-- check if `an_id' is really a UUID (i.e. Guid) by checking that the string consists of
+			-- the 8-4-4-4-12 pattern of segments, each a hex integer string.
 		do
+			Result := id_matcher.recognizes (an_id)
+		end
+
+feature {NONE} -- Implementation
+
+	id_matcher: RX_PCRE_REGULAR_EXPRESSION
+		once
+			create Result.make
+			Result.compile ("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 		end
 
 end

@@ -1,6 +1,5 @@
 note
 	component:   "openEHR Support Information Model"
-
 	description: "[
 				 Abstract parent of classes representing unique identifiers which 
 				 identify information entities in a durable way. UIDs only ever 
@@ -53,7 +52,7 @@ feature -- Status Report
 		end
 
 invariant
-	value_exists: not value.is_empty
+	value_valid: not value.is_empty
 
 end
 

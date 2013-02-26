@@ -32,8 +32,18 @@ feature -- Definitions
 feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
-			--
+			-- check if `an_id' is really an ISO OID by checking that the string consists of
+			-- only numeric sequences with interspersed '.' separators
 		do
+			Result := id_matcher.recognizes (an_id)
+		end
+
+feature {NONE} -- Implementation
+
+	id_matcher: RX_PCRE_REGULAR_EXPRESSION
+		once
+			create Result.make
+			Result.compile ("[0-9]+(\.[0-9]+)*")
 		end
 
 end
