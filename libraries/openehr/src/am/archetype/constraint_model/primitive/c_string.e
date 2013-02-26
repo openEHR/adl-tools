@@ -60,16 +60,16 @@ feature -- Initialization
 		ensure
 			strings_void: strings = Void
 			not_open: not is_open
-			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
+			regexp.is_equal(str) xor regexp.is_equal (Regexp_compile_error)
 		end
 
 	make_from_string_list (lst: LIST[STRING])
 		do
-			create strings.make(0)
-			strings.fill(lst)
+			create strings.make (0)
+			strings.fill (lst)
 			strings.compare_objects
 		ensure
-			strings_attached: strings /= Void
+			strings_attached: attached strings
 			not_open: not is_open
 		end
 
@@ -82,7 +82,7 @@ feature -- Modification
 
 	add_string (str: STRING)
 		do
-			strings.extend(str)
+			strings.extend (str)
 		ensure
 			extended: strings.count = old strings.count + 1
 			str_valid: valid_value (str)
@@ -145,7 +145,7 @@ feature -- Status Report
 			elseif attached strings then
 				Result := strings.has (a_value)
 			elseif attached regexp_parser as rexpp then
-				Result := rexpp.matches (a_value)
+				Result := rexpp.recognizes (a_value)
 			end
 		end
 
