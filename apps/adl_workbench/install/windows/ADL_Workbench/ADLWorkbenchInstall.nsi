@@ -87,6 +87,9 @@ Section -Main SEC0000
     File ..\..\..\app\sample_xml_rules.cfg
     File ..\..\..\app\default_ui_config.cfg
 
+	# get rid of error_db directory, it's no longer used
+    RMDir /r $INSTDIR\error_db
+
 	# get rid of icons directory, it's no longer used
     RMDir /r $INSTDIR\icons
 
