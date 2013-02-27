@@ -135,7 +135,7 @@ feature -- Modification
 			across other.items as other_items_csr loop
 				-- iterate on paths
 				across other_items_csr.item.items as paths_csr loop
-					merge_annotation_items (other.items.key_for_iteration, paths_csr.key, paths_csr.item)
+					merge_annotation_items (other_items_csr.key, paths_csr.key, paths_csr.item)
 				end
 			end
 		end

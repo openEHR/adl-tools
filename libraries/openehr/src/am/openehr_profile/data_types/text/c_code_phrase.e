@@ -205,20 +205,20 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+	node_conforms_to (a_parent: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other'. Evaluated as True if
 			-- 	a) this node contains codes already in `other' (but with some removed) and/or
 			--	b) this node contains redefinitions of codes found in `other'
 		do
-			if precursor (other, an_rm_schema) then
-				if other.any_allowed then
+			if precursor (a_parent, an_rm_schema) then
+				if a_parent.any_allowed then
 					Result := True
-				elseif attached terminology_id as tid and attached other.terminology_id as other_tid then
-					if tid.is_equal (other_tid) then
-						if other.code_list = Void then
+				elseif attached terminology_id as tid and attached a_parent.terminology_id as parent_tid then
+					if tid.is_equal (parent_tid) then
+						if a_parent.code_list = Void then
 							Result := True
 						elseif attached code_list as clist then
-							Result := across clist as code_list_csr all other.has_code (code_list_csr.item) or else other.has_parent_code (code_list_csr.item) end
+							Result := across clist as code_list_csr all a_parent.has_code (code_list_csr.item) or else a_parent.has_parent_code (code_list_csr.item) end
 						end
 					end
 				end
@@ -371,6 +371,7 @@ feature {NONE} -- Implementation
 			end
 			if end_pos > sep_pos + separator.count then
 				create code_list.make(0)
+				code_list.compare_objects
 				code_list.append (str.substring (sep_pos + separator.count, end_pos).split (','))
 			end
 		ensure
