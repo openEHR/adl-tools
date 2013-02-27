@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/openehr/src/am/archetype/archetype.e $"
+	revision:    "$LastChangedRevision: 1874 $"
+	last_change: "$LastChangedDate: 2013-02-27 14:02:03 +1100 (Wed, 27 Feb 2013) $"
 
 class ARCHETYPE
 
@@ -66,6 +66,7 @@ feature  {ADL_ENGINE} -- Initialisation
 	make(an_id: ARCHETYPE_ID;
 			a_concept_code: STRING;
 			an_original_language: STRING;
+			a_uid: like uid;
 			a_description: RESOURCE_DESCRIPTION;
 			a_definition: C_COMPLEX_OBJECT;
 			an_ontology: ARCHETYPE_ONTOLOGY) is
@@ -89,6 +90,7 @@ feature  {ADL_ENGINE} -- Initialisation
 
 			definition := a_definition
 			ontology := an_ontology
+			uid := a_uid
 		ensure
 			Id_set: archetype_id = an_id
 			Concept_set: concept = a_concept_code
@@ -97,6 +99,10 @@ feature  {ADL_ENGINE} -- Initialisation
 		end
 
 feature -- Access
+
+	uid: HIER_OBJECT_ID
+			-- optional UID identifier of this artefact
+			-- FIXME: should really be in AUTHORED_RESOURCE
 
 	archetype_id: ARCHETYPE_ID
 
@@ -569,6 +575,11 @@ feature -- Modification
 			an_id_valid: an_id /= Void
 		do
 			archetype_id := an_id
+		end
+
+	set_uid (a_uid: STRING)
+		do
+			create uid.make_from_string (a_uid)
 		end
 
 	set_concept(str: STRING) is

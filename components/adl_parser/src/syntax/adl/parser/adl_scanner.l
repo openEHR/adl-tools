@@ -8,9 +8,9 @@ indexing
 	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
 	license:     "Mozilla tri-license"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/parser/adl_scanner.l $"
+	revision:    "$LastChangedRevision: 1874 $"
+	last_change: "$LastChangedDate: 2013-02-27 14:02:03 +1100 (Wed, 27 Feb 2013) $"
 
 class ADL_SCANNER
 
@@ -44,6 +44,16 @@ creation
 	make
 %}
 
+--------------- Definitions --------------
+ALPHANUM [a-zA-Z0-9]
+ALPHANUM_STR [a-zA-Z0-9_]+
+VALUE_STR [a-zA-Z0-9_\-]+
+IDCHAR [a-zA-Z0-9_]
+NAMECHAR [a-zA-Z0-9._\-]
+NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
+
+--------------- Options --------------
 %x IN_DADL_SECTION IN_CADL_SECTION IN_ASSERTION_SECTION
 %option outfile="adl_scanner.e"
 
@@ -93,6 +103,10 @@ creation
 
 [Cc][Oo][Nn][Nn][Tt][Rr][Oo][Ll][Ll][Ee][Dd] 		{
 				last_token := SYM_IS_CONTROLLED
+			}
+
+[Uu][Ii][Dd]			{
+				last_token := SYM_UID
 			}
 
 ^[Ss][Pp][Ee][Cc][Ii][Aa][Ll][Ii][SsZz][Ee][ \t\r]*\n 	{
@@ -176,9 +190,6 @@ creation
 				last_string_value := str_
 				set_start_condition(INITIAL)
 			}
-	(.|\n) {
-		-- ignore unmatched chars
-	}
 }
 
 <IN_CADL_SECTION>{
@@ -215,9 +226,9 @@ creation
 	}
 }
 
-----------/* V_VERSION_STRING */ -------------------------------------------------
-[0-9]+\.[0-9]+(\.[0-9]+)* {
-					last_token := V_VERSION_STRING
+----------/* V_DOTTED_NUMERIC any length of n.n.n... with at least 2 segments */ -------------------------------------------------
+{DOTTED_NUMERIC_STR} {
+					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
 			}
 
@@ -236,6 +247,12 @@ creation
 ----------/* identifiers */ -------------------------------------------------
 [a-zA-Z][a-zA-Z0-9_]*	{
 					last_token := V_IDENTIFIER
+					last_string_value := text
+			}
+
+----------/* values (used in meta-data section after 'archetype' or other keyword) */ -------------------------------------------------
+{VALUE_STR}	{
+					last_token := V_VALUE
 					last_string_value := text
 			}
 

@@ -1,15 +1,15 @@
 indexing
-	component:   "openEHR Archetype Project"
+	component:	"openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	keywords:	"test, ADL"
+	author:	  "Thomas Beale"
+	support:	 "Ocean Informatics <support@OceanInformatics.biz>"
+	copyright:	"Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	license:	 "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:		"$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/serialiser/html_adl_serialisation_profile.e $"
+	revision:	"$LastChangedRevision: 1873 $"
+	last_change: "$LastChangedDate: 2013-02-26 22:33:28 +1100 (Tue, 26 Feb 2013) $"
 
 class HTML_ADL_SERIALISATION_PROFILE
 
@@ -23,28 +23,34 @@ inherit
 		export
 			{NONE} all
 		end
-			
+
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER] is
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
-			Result.put("archetype",		SYM_ARCHETYPE)
-			Result.put("adl_version",	SYM_ADL_VERSION)
-			Result.put("controlled",	SYM_IS_CONTROLLED)
-			Result.put("concept",		SYM_CONCEPT)
-			Result.put("specialize",	SYM_SPECIALIZE)
-			Result.put("language",		SYM_LANGUAGE)
-			Result.put("description",	SYM_DESCRIPTION)
-			Result.put("definition",	SYM_DEFINITION)
-			Result.put("invariant",		SYM_INVARIANT)
-			Result.put("ontology",		SYM_ONTOLOGY)
-		end	
-		
+			Result.put("archetype",		 	SYM_ARCHETYPE)
+			Result.put("template",			SYM_TEMPLATE)
+			Result.put("template_overlay",			SYM_TEMPLATE_OVERLAY)
+			Result.put("adl_version",		SYM_ADL_VERSION)
+			Result.put("controlled",		SYM_IS_CONTROLLED)
+			Result.put("generated",		SYM_IS_GENERATED)
+			Result.put("concept",			SYM_CONCEPT)
+			Result.put("specialize",		SYM_SPECIALIZE)
+			Result.put("language",			SYM_LANGUAGE)
+			Result.put("description",		SYM_DESCRIPTION)
+			Result.put("definition",		SYM_DEFINITION)
+			Result.put("invariant",			SYM_INVARIANT)
+			Result.put("ontology",			SYM_ONTOLOGY)
+			Result.put("annotations",		SYM_ANNOTATIONS)
+			Result.put("component_ontologies",	  SYM_COMPONENT_ONTOLOGIES)
+			Result.put("uid",		SYM_UID)
+		end
+
 end
 
 

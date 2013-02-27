@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/adl_engine.e $"
+	revision:    "$LastChangedRevision: 1873 $"
+	last_change: "$LastChangedDate: 2013-02-26 22:33:28 +1100 (Tue, 26 Feb 2013) $"
 
 class ADL_ENGINE
 
@@ -262,6 +262,7 @@ feature -- Commands
 										adl_parser.archetype_id,
 										adl_parser.concept,
 										orig_lang,
+										adl_parser.uid,
 										res_desc,	-- may be Void
 										definition_context.tree,
 										arch_ont

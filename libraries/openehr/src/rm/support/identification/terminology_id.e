@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 			 Terminology identifier subtype of OBJECT_ID. The syntax of the value 
 			 attribute is as follows:
@@ -23,34 +23,34 @@ indexing
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/openehr/src/rm/support/identification/terminology_id.e $"
+	revision:    "$LastChangedRevision: 1873 $"
+	last_change: "$LastChangedDate: 2013-02-26 22:33:28 +1100 (Tue, 26 Feb 2013) $"
 
 class TERMINOLOGY_ID
 
 inherit
 	CANONICAL_FRAGMENT
 		undefine
-			default_create, is_equal
+			default_create, is_equal, out
 		end
-		
+
 	OBJECT_ID
 		redefine
 			default_create
 		end
-		
+
 create
 	make, default_create, make_from_canonical_string
 
 feature -- Definitions
 
 	default_value:STRING is "openEHR"
-	
+
 	Local_terminology_id: STRING is "local"
 			-- predefined id of terminology to indicate it is local to
 			-- the knowledge resource in which it occurs, e.g. an archetype
-			
+
 	Version_id_left_delimiter: STRING is "("
 
 	Version_id_right_delimiter: STRING is ")"
@@ -82,11 +82,11 @@ feature -- Initialization
 		do
 			value := xml_extract_from_tags(str, "name", 1)
 			if xml_has_tag(str, "version_id", 1) then
-				value.append(Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) + 
+				value.append(Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) +
 						Version_id_right_delimiter)
 			end
 		end
-		
+
 	valid_canonical_string(str:STRING):BOOLEAN is
 		do
 			Result := xml_has_tag(str, "name", 1)
@@ -119,7 +119,7 @@ feature -- Access
 			right_pos := value.substring_index(Version_id_right_delimiter, 1)
 			Result := value.substring(left_pos+1, right_pos-1)
 		end
-		
+
 	has_version_id: BOOLEAN is
 			-- True if there is a version_id part of the identifier
 		local
@@ -133,10 +133,10 @@ feature -- Access
 feature -- Status Report
 
 	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+			--
 		do
 		end
-		
+
 	is_local: BOOLEAN is
 			-- True if this terminology id = "local"
 		do

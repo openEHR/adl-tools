@@ -8,9 +8,9 @@ indexing
 	copyright:   "Copyright (c) 2003-2005 Deep Thought Informatics Pty Ltd"
 	license:     "The Eiffel Forum Open Source License version 1"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/parser/adl_validator.y $"
+	revision:    "$LastChangedRevision: 1874 $"
+	last_change: "$LastChangedDate: 2013-02-27 14:02:03 +1100 (Wed, 27 Feb 2013) $"
 
 class ADL_VALIDATOR
 
@@ -43,12 +43,15 @@ creation
 %token <STRING> V_ARCHETYPE_ID
 %token <STRING> V_LOCAL_TERM_CODE_REF
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
-%token <STRING> V_VERSION_STRING
+%token <STRING> V_DOTTED_NUMERIC
+%token <STRING> V_VALUE
 
-%token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
-%token SYM_DEFINITION SYM_LANGUAGE
+%token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
+%token SYM_CONCEPT SYM_SPECIALIZE
+%token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_ONTOLOGIES
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
-%token SYM_ADL_VERSION SYM_IS_CONTROLLED
+%token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
+%token SYM_UID
 
 %%
 
@@ -95,9 +98,19 @@ arch_meta_data_items: arch_meta_data_item
 	| arch_meta_data_items ';' arch_meta_data_item
 	;
 
-arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
+arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 		{
 			adl_version := $3
+		}
+	-- allow for Oids
+	| SYM_UID '=' V_DOTTED_NUMERIC
+		{
+			create uid.make_from_string ($3)
+		}
+	-- allow for Guids or other kinds of ids
+ 	| SYM_UID '=' V_VALUE
+ 		{
+			create uid.make_from_string ($3)
 		}
 	| SYM_IS_CONTROLLED
 		{
@@ -239,6 +252,8 @@ feature -- Parse Output
 	archetype_id: ARCHETYPE_ID
 
 	adl_version: STRING
+
+	uid: HIER_OBJECT_ID
 
 	is_controlled: BOOLEAN
 

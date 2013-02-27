@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/serialiser/archetype_serialiser.e $"
+	revision:    "$LastChangedRevision: 1873 $"
+	last_change: "$LastChangedDate: 2013-02-26 22:33:28 +1100 (Tue, 26 Feb 2013) $"
 
 deferred class ARCHETYPE_SERIALISER
 
@@ -23,7 +23,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 feature -- Initialisation
 
 	initialise(an_ontology: ARCHETYPE_ONTOLOGY) is
@@ -34,12 +34,12 @@ feature -- Initialisation
 			initialise_any_serialiser
 			ontology := an_ontology
 		end
-		
+
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise (an_archetype: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
 		require
-			a_target /= Void
+			an_archetype /= Void
 			lang_serialised /= Void
 			desc_serialised /= Void
 			def_serialised /= Void
@@ -69,7 +69,7 @@ feature -- Serialisation
 
 feature {NONE} -- Access
 
-	target: ARCHETYPE
+	archetype: ARCHETYPE
 
 	ontology: ARCHETYPE_ONTOLOGY
 

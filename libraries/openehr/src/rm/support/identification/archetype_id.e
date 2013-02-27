@@ -17,16 +17,16 @@ indexing
 	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/openehr/src/rm/support/identification/archetype_id.e $"
+	revision:    "$LastChangedRevision: 1873 $"
+	last_change: "$LastChangedDate: 2013-02-26 22:33:28 +1100 (Tue, 26 Feb 2013) $"
 
 class ARCHETYPE_ID
 
 inherit
 	OBJECT_ID
 		redefine
-			default_create, infix "<"
+			default_create, make_from_string, infix "<"
 		end
 
 create
@@ -72,7 +72,7 @@ feature -- Initialisation
 
 	make_from_string(an_id: STRING) is
 			-- make from "rm_entity.domain_concept.ver_id"
-		require
+		require else
 			an_id /= Void and then valid_id(an_id)
 		do
 			value := an_id

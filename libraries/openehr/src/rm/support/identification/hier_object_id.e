@@ -14,9 +14,9 @@ indexing
 	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/openehr/src/rm/support/identification/hier_object_id.e $"
+	revision:    "$LastChangedRevision: 1874 $"
+	last_change: "$LastChangedDate: 2013-02-27 14:02:03 +1100 (Wed, 27 Feb 2013) $"
 
 class HIER_OBJECT_ID
 
@@ -24,40 +24,43 @@ inherit
 	UID_BASED_ID
 
 create
-	make
+	make, make_from_string
 
 feature -- Initialization
 
-	make(a_root: UID; an_extension: STRING) is
-			-- build an external ID
+	make (a_root: UID; an_extension: STRING) is
+			-- build from a UID and optional extension (no extension is indicated by an empty string)
+			-- if there is no extension then `value' will be just the UID.value;
+			-- if there is an extension, then `value' will have the form "root::extension"
 		require
 			Root_valid: a_root /= Void
-			Extension_exists: an_extension /= Void and then not an_extension.is_empty
+			Extension_attached: an_extension /= Void
 		do
-			create value.make(0)
-			if a_root /= Void then
-				value.append(a_root.value + Extension_separator)
+			create value.make (0)
+			value.append (a_root.value)
+			if not extension.is_empty then
+				value.append (extension_separator + an_extension)
 			end
-			value.append(an_extension)
 		ensure
 			Root_set: a_root /= Void implies root.value.is_equal(a_root.value)
 			Extension_set: extension.is_equal(an_extension)
 		end
 
-	make_from_string(a_string:STRING) is
-			-- make from a string of the same form as `id', i.e. "root::extension"
-		require
-			String_exists: a_string /= Void and then valid_id(a_string)
-		do
-
-		end
-
 feature -- Status Report
 
 	valid_id(a_str:STRING): BOOLEAN is
-			--
-		do
-			-- Result :=
+			-- is `a_str' a valid id of the form UID or UID::extension?
+		local
+			p: INTEGER
+			root_str: STRING
+ 		do
+			p := extension_separator_position (a_str)
+			if p > 1 then
+				root_str := a_str.substring (1, p-1)
+			else
+				root_str := a_str
+			end
+			Result := string_to_uid (root_str) /= Void
 		end
 
 end
