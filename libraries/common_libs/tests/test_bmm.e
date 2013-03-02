@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 	testing:     "type/manual"
 
 class
@@ -98,15 +94,17 @@ feature -- Test routines
 			assert ("ITEM_STRUCTURE is subclass of LOCATABLE", rm_schema.is_descendant_of ("ITEM_STRUCTURE", "LOCATABLE"))
 		end
 
-	test_type_conforms_to
+	test_type_name_conforms_to
 			-- New test routine
 		note
-			testing:  "type_conforms_to", "bmm", "covers/{BMM_SCHEMA}.type_conforms_to"
+			testing:  "type_name_conforms_to", "bmm", "covers/{BMM_SCHEMA}.type_name_conforms_to"
 		do
-			assert ("COMPOSITION conforms to LOCATABLE", rm_schema.type_conforms_to ("COMPOSITION", "LOCATABLE"))
-			assert ("LOCATABLE conforms to COMPOSITION", not rm_schema.type_conforms_to ("LOCATABLE", "COMPOSITION"))
-			assert ("ITEM_STRUCTURE <T> conforms to LOCATABLE", rm_schema.type_conforms_to ("ITEM_STRUCTURE <T>", "LOCATABLE"))
-			assert ("EVENT <ITEM_STRUCTURE> conforms to LOCATABLE", rm_schema.type_conforms_to ("EVENT <ITEM_STRUCTURE>", "LOCATABLE"))
+			assert ("COMPOSITION conforms to LOCATABLE", rm_schema.type_name_conforms_to ("COMPOSITION", "LOCATABLE"))
+			assert ("LOCATABLE conforms to COMPOSITION", not rm_schema.type_name_conforms_to ("LOCATABLE", "COMPOSITION"))
+			assert ("ITEM_STRUCTURE <T> conforms to LOCATABLE", rm_schema.type_name_conforms_to ("ITEM_STRUCTURE <T>", "LOCATABLE"))
+			assert ("EVENT <ITEM_STRUCTURE> conforms to LOCATABLE", rm_schema.type_name_conforms_to ("EVENT <ITEM_STRUCTURE>", "LOCATABLE"))
+			assert ("List <ITEM_TREE> conforms to List <ITEM_STRUCTURE>", rm_schema.type_name_conforms_to ("List <ITEM_TREE>", "List <ITEM_STRUCTURE>"))
+			assert ("List <ITEM_STRUCTURE> conforms to List <ITEM_TREE>", not rm_schema.type_name_conforms_to ("List <ITEM_STRUCTURE>", "List <ITEM_TREE>"))
 		end
 
 	test_immediate_suppliers
