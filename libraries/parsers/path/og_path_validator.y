@@ -68,8 +68,8 @@ input: movable_path
 
 movable_path: SYM_MOVABLE_LEADER relative_path
 		{
+			$2.set_movable
 			$$ := $2
-			$$.set_movable
 		}
 	;
 
@@ -82,16 +82,16 @@ absolute_path: '/'
 		}
 	| '/' relative_path
 		{
+			$2.set_absolute
 			$$ := $2
-			$$.set_absolute
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
 		}
 	| absolute_path '/' relative_path
 		{
+			$1.append_path($3)
 			$$ := $1
-			$$.append_path($3)
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (appended relative path); %N")
 			end
@@ -100,12 +100,12 @@ absolute_path: '/'
 
 relative_path: path_segment
 		{
-			create $$.make_relative($1)
+			create $$.make_relative ($1)
 		}
 	| relative_path '/' path_segment
 		{
+			$1.append_segment ($3)
 			$$ := $1
-			$$.append_segment($3)
 		}
 	;
 

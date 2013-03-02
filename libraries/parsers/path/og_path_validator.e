@@ -313,8 +313,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 69")
 end
 
+			yyvs4.item (yyvsp4).set_movable
 			yyval4 := yyvs4.item (yyvsp4)
-			yyval4.set_movable
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -360,8 +360,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 83")
 end
 
+			yyvs4.item (yyvsp4).set_absolute
 			yyval4 := yyvs4.item (yyvsp4)
-			yyval4.set_absolute
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path; %N")
 			end
@@ -377,8 +377,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 91")
 end
 
+			yyvs4.item (yyvsp4 - 1).append_path(yyvs4.item (yyvsp4))
 			yyval4 := yyvs4.item (yyvsp4 - 1)
-			yyval4.append_path(yyvs4.item (yyvsp4))
 			debug("OG_PATH_parse")
 				io.put_string("....absolute_path (appended relative path); %N")
 			end
@@ -395,7 +395,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 101")
 end
 
-			create yyval4.make_relative(yyvs3.item (yyvsp3))
+			create yyval4.make_relative (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -425,8 +425,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 105")
 end
 
+			yyvs4.item (yyvsp4).append_segment (yyvs3.item (yyvsp3))
 			yyval4 := yyvs4.item (yyvsp4)
-			yyval4.append_segment(yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3

@@ -1062,7 +1062,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				if $3 = 0 then
 					create $$.make_point(0)
 				elseif $3 = 1 then
-					create $$.make_bounded(0, 1)
+					create $$.make_bounded (0, 1)
 				else
 					abort_with_error("SEXLU1", Void)
 				end
@@ -1590,7 +1590,7 @@ integer_list_value: integer_value ',' integer_value
 integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded($2, $4, True, True)
+				create $$.make_bounded ($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1598,7 +1598,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded($3, $5, False, True)
+				create $$.make_bounded ($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1606,7 +1606,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded($2, $5, True, False)
+				create $$.make_bounded ($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1614,26 +1614,26 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded($3, $6, False, False)
+				create $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, False)
+			create $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, True)
+			create $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, False)
+			create $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, True)
+			create $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_INTERVAL_DELIM
 		{
@@ -1676,7 +1676,7 @@ real_list_value: real_value ',' real_value
 real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded($2, $4, True, True)
+				create $$.make_bounded ($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1684,7 +1684,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded($3, $5, False, True)
+				create $$.make_bounded ($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1692,7 +1692,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded($2, $5, True, False)
+				create $$.make_bounded ($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1700,26 +1700,26 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded($3, $6, False, False)
+				create $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, False)
+			create $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, True)
+			create $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, False)
+			create $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, True)
+			create $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_INTERVAL_DELIM
 		{
@@ -1810,7 +1810,7 @@ date_list_value: date_value ',' date_value
 date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded($2, $4, True, True)
+				create $$.make_bounded ($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1818,7 +1818,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded($3, $5, False, True)
+				create $$.make_bounded ($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1826,7 +1826,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded($2, $5, True, False)
+				create $$.make_bounded ($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1834,26 +1834,26 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded($3, $6, False, False)
+				create $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, False)
+			create $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, True)
+			create $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, False)
+			create $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, True)
+			create $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_INTERVAL_DELIM
 		{
@@ -1892,7 +1892,7 @@ time_list_value: time_value ',' time_value
 time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded($2, $4, True, True)
+				create $$.make_bounded ($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1900,7 +1900,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded($3, $5, False, True)
+				create $$.make_bounded ($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1908,7 +1908,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded($2, $5, True, False)
+				create $$.make_bounded ($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1916,26 +1916,26 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded($3, $6, False, False)
+				create $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, False)
+			create $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, True)
+			create $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, False)
+			create $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, True)
+			create $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM
 		{
@@ -1974,7 +1974,7 @@ date_time_list_value: date_time_value ',' date_time_value
 date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value  SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded($2, $4, True, True)
+				create $$.make_bounded ($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1982,7 +1982,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded($3, $5, False, True)
+				create $$.make_bounded ($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1990,7 +1990,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded($2, $5, True, False)
+				create $$.make_bounded ($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1998,26 +1998,26 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded($3, $6, False, False)
+				create $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, False)
+			create $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, True)
+			create $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, False)
+			create $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, True)
+			create $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_INTERVAL_DELIM
 		{
@@ -2056,7 +2056,7 @@ duration_list_value: duration_value ',' duration_value
 duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded($2, $4, True, True)
+				create $$.make_bounded ($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -2064,7 +2064,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded($3, $5, False, True)
+				create $$.make_bounded ($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -2072,7 +2072,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded($2, $5, True, False)
+				create $$.make_bounded ($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -2080,26 +2080,26 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded($3, $6, False, False)
+				create $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, False)
+			create $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded($3, True)
+			create $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, False)
+			create $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded($3, True)
+			create $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_INTERVAL_DELIM
 		{
