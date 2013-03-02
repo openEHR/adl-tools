@@ -1,5 +1,5 @@
 note
-	component:   "openEHR re-usable library"
+	component:   "Basic meta-model"
 	description: "[
 				 Definition of a generic parameter in a class definition of a generic type.
 				 ]"
@@ -13,6 +13,9 @@ class BMM_GENERIC_PARAMETER_DEFINITION
 
 inherit
 	BMM_TYPE_SPECIFIER
+		redefine
+			as_display_type_string, as_conformance_type_string
+		end
 
 create
 	make, make_constrained
@@ -112,7 +115,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_inheritance_precursor (a_gen_parm_def: attached BMM_GENERIC_PARAMETER_DEFINITION)
+	set_inheritance_precursor (a_gen_parm_def: BMM_GENERIC_PARAMETER_DEFINITION)
 			-- set `inheritance_precursor'
 		do
 			inheritance_precursor := a_gen_parm_def
@@ -121,7 +124,7 @@ feature -- Modification
 feature -- Output
 
 	as_type_string: STRING
-			-- name of the type
+			-- name of the type; if constrained, in the form "T: CONSTRAINER_TYPE"
 		do
 			create Result.make_empty
 			Result.append (name)
@@ -132,9 +135,28 @@ feature -- Output
 			end
 		end
 
-	as_flattened_type_string: STRING
+	as_display_type_string: STRING
+			-- name of the type; if constrained, in the form "T: CONSTRAINER_TYPE"
 		do
-			Result := as_type_string
+			create Result.make_empty
+			Result.append (name)
+			if is_constrained then
+				Result.append_character (Generic_constraint_delimiter)
+				Result.append_character (' ')
+				Result.append (flattened_conforms_to_type.as_type_string)
+			end
+		end
+
+	as_conformance_type_string: STRING
+			-- name of the this type in form allowing other type to be conformance tested against it;
+			-- if constrained, then return the constrainer type, else just return Any
+		do
+			create Result.make_empty
+			if is_constrained then
+				Result.append (flattened_conforms_to_type.as_type_string)
+			else
+				Result.append (Any_type)
+			end
 		end
 
 feature {NONE} -- Implementation

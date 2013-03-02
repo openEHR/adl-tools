@@ -1,16 +1,11 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Concept of a constraint on a type"
+	component:   "Basic meta-model"
+	description: "Type reference based on a generic class, e.g. 'HashTable <List <Packet>, String>'"
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009-2012 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2009- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_GENERIC_TYPE_REFERENCE
 
@@ -30,10 +25,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	root_type: attached BMM_CLASS_DEFINITION
+	root_type: BMM_CLASS_DEFINITION
 			-- root type
 
-	generic_parameters: attached ARRAYED_LIST [BMM_TYPE_SPECIFIER]
+	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
 			-- generic parameters of the root_type in this type specifier
 			-- The order must match the order of the owning class's formal generic parameter declarations
 
@@ -43,9 +38,9 @@ feature -- Access
 			Result := root_type
 		end
 
-	flattened_type_list: attached ARRAYED_LIST [STRING]
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
-			-- Note: can include repeats, e.g. HASH_TABLE [STRING, STRING] => HASH_TABLE, STRING, STRING
+			-- Note: can include repeats, e.g. HASH_TABLE <STRING, STRING> => HASH_TABLE, STRING, STRING
 		do
 			create Result.make(0)
 			Result.compare_objects
@@ -126,11 +121,6 @@ feature -- Output
 				end
 			end
 			Result.append_character (Generic_right_delim)
-		end
-
-	as_flattened_type_string: STRING
-		do
-			Result := as_type_string
 		end
 
 end

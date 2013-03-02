@@ -350,12 +350,12 @@ feature {NONE} -- Implementation
 							type_spec := bmm_cont_type_ref.type
 
 						elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_bmm_prop.type as bmm_gen_type_ref then
-							type_str.append (bmm_gen_type_ref.as_type_string)
+							type_str.append (bmm_gen_type_ref.as_display_type_string)
 							has_type_subs := bmm_gen_type_ref.has_type_substitutions
 							type_spec := bmm_gen_type_ref.root_type
 
 						elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
-							type_str.append (bmm_gen_parm_def.as_type_string)
+							type_str.append (bmm_gen_parm_def.as_display_type_string)
 							has_type_subs := bmm_gen_parm_def.has_type_substitutions
 							type_spec := a_bmm_prop.type
 						end

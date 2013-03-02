@@ -1,8 +1,10 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Subtype of BMM_PROPERTY_DEFINITION that represents a typical container type."
+	component:   "Basic meta-model"
+	description: "[
+				 Subtype of BMM_PROPERTY_DEFINITION that represents a container type based on one of the 
+				 inbuilt types List <>, Set <>, Array <>.
+				 ]"
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"

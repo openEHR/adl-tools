@@ -1,5 +1,5 @@
 note
-	component:   "openEHR re-usable library"
+	component:   "Basic meta-model"
 	description: "Basic Meta-model model abstraction"
 	keywords:    "model, UML"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -229,15 +229,15 @@ feature -- Status Report
 			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
 		require
 			Type_name_valid: has_class_definition (a_type_name)
-			Property_valid: has_property(a_type_name, a_property_name)
+			Property_valid: has_property (a_type_name, a_property_name)
 			Property_type_name_valid: has_class_definition (a_property_type_name)
 		do
 			if valid_type_for_class (a_type_name, a_type_name) and valid_type_for_class (a_property_type_name, a_property_type_name) then
-				Result := type_conforms_to (a_property_type_name, property_definition (a_type_name, a_property_name).type.as_flattened_type_string)
+				Result := type_name_conforms_to (a_property_type_name, property_definition (a_type_name, a_property_name).type.as_conformance_type_string)
 			end
 		end
 
-	type_conforms_to (type_1, type_2: STRING): BOOLEAN
+	type_name_conforms_to (type_1, type_2: STRING): BOOLEAN
 			-- check conformance of type 1 to type 2; the types may be generic
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
@@ -264,7 +264,7 @@ feature -- Status Report
 			-- conforms to `archetype_data_value_parent_class'
 		do
 			if attached archetype_data_value_parent_class as advp_class  then
-				Result := type_conforms_to (a_type, advp_class)
+				Result := type_name_conforms_to (a_type, advp_class)
 			end
 		end
 

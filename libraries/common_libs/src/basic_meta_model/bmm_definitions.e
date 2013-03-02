@@ -1,5 +1,5 @@
 note
-	component:   "openEHR re-usable library"
+	component:   "Basic meta-model"
 	description: "Definition concepts for the basic meta-model"
 	keywords:    "basic meta-model"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -46,6 +46,16 @@ feature -- Definitions
 	Unknown_schema_name: STRING = "(uninitialised)"
 
 	Unknown_type_name: STRING = "UNKNOWN"
+
+	Bmm_container_types: ARRAYED_LIST [STRING]
+			-- built-in container types used to represent class-class 1:N relations
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend ("List")
+			Result.extend ("Set")
+			Result.extend ("Array")
+		end
 
 	Type_cat_primitive_class: STRING = "class_primitive"
 	Type_cat_concrete_class: STRING = "class_concrete"
@@ -137,11 +147,9 @@ feature -- Comparison
 		end
 
 	is_well_formed_generic_type_name (a_type_name: STRING): BOOLEAN
-			-- True if the type name includes a generic parameters part; should be used after is_well_formed_type_name
-		require
-			Valid_type_name: is_well_formed_class_name (a_type_name)
+			-- True if the type name is valid and includes a generic parameters part
 		do
-			Result := a_type_name.has (generic_left_delim)
+			Result := is_well_formed_type_name (a_type_name) and a_type_name.has (generic_left_delim)
 		end
 
 	bmm_version_compatible (schema_bmm_ver: STRING): BOOLEAN
@@ -229,7 +237,7 @@ feature -- Conversion
 	type_name_as_flat_list (a_type_name: STRING): ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings
 		require
-			Valid_type_name: is_well_formed_type_name(a_type_name)
+			Valid_type_name: is_well_formed_type_name (a_type_name)
 		local
 			is_gen_type: BOOLEAN
 			stype: STRING
@@ -302,11 +310,14 @@ feature -- Conversion
 feature {NONE} -- Implementation
 
 	well_formed_type_name_regex: RX_PCRE_REGULAR_EXPRESSION
-			-- Pattern matcher for well-formed type names
+			-- Pattern matcher for well-formed type names down to two-levels of generic nesting
 		once
 			create Result.make
 			Result.set_case_insensitive (True)
-			Result.compile ("[a-z][a-z0-9_]+(< *[a-z][a-z0-9_]+( *, *[a-z][a-z0-9_]+)*>)?")
+
+			--               |clname||<--------------------------------- optional generics ------------------------------------------------>|
+			--                             |clname||<------ optional generics ----->|       |clname||<------ optional generics ----->|
+			Result.compile ("[a-z]\w*( *< *[a-z]\w*( *< *[a-z]\w*( *, *[a-z]\w+)* *>)?( *, *[a-z]\w*( *< *[a-z]\w*( *, *[a-z]\w+)* *>)?)* *>)?")
 		end
 
 	well_formed_class_name_regex: RX_PCRE_REGULAR_EXPRESSION
@@ -314,7 +325,7 @@ feature {NONE} -- Implementation
 		once
 			create Result.make
 			Result.set_case_insensitive (True)
-			Result.compile ("[a-z][a-z0-9_]+")
+			Result.compile ("[a-z]\w+")
 		end
 
 end

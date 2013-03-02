@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 			-- if there were any, populate the class and then the properties
 			if not prop_list.is_empty then
 				-- populate class row
-				create gli.make_with_text (a_class_def.as_type_string)
+				create gli.make_with_text (a_class_def.as_display_type_string)
 				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 				gli.set_data (a_class_def)
 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
@@ -137,7 +137,7 @@ feature {NONE} -- Implementation
 						property_row := gli.row
 
 						-- property type
-						create gli.make_with_text (props_csr.item.type.as_type_string)
+						create gli.make_with_text (props_csr.item.type.as_display_type_string)
 						prop_class := source.bmm_schema.class_definition (props_csr.item.type.root_class)
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
 						gli.set_data (prop_class)

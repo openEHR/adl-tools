@@ -1,21 +1,19 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Subtype of BMM_GENERIC_TYPE_SPECIFIER that specifies containers with one generic parameter."
+	component:   "Basic meta-model"
+	description: "Type reference that specifies containers with one generic parameter."
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2009- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_CONTAINER_TYPE_REFERENCE
 
 inherit
 	BMM_TYPE_REFERENCE
+		redefine
+			as_conformance_type_string
+		end
 
 create
 	make
@@ -47,7 +45,7 @@ feature -- Access
 			-- note that for this type, we throw away the container_type because we are tring to match
 			-- the type of an object as being a valid member of the container, e.g. ELEMENT in List<ELEMENT>
 		do
-			create Result.make(0)
+			create Result.make (0)
 			Result.compare_objects
 			Result.append (type.flattened_type_list)
 		end
@@ -79,12 +77,10 @@ feature -- Access
 			end
 
 			create Result.make (0)
-			from cont_sub_type_list.start until cont_sub_type_list.off loop
-				from item_sub_type_list.start until item_sub_type_list.off loop
-					Result.extend (cont_sub_type_list.item + generic_left_delim.out + item_sub_type_list.item + generic_right_delim.out)
-					item_sub_type_list.forth
+			across cont_sub_type_list as cont_sub_types_csr loop
+				across item_sub_type_list as item_sub_types_csr loop
+					Result.extend (cont_sub_types_csr.item + generic_left_delim.out + item_sub_types_csr.item + generic_right_delim.out)
 				end
-				cont_sub_type_list.forth
 			end
 		end
 
@@ -100,15 +96,16 @@ feature -- Output
 	as_type_string: STRING
 			-- formal name of the type
 		do
-			create Result.make (0)
+			create Result.make_empty
 			Result.append (container_type.name + Generic_left_delim.out + type.name + Generic_right_delim.out)
 		end
 
-	as_flattened_type_string: STRING
-			-- name of the type
+	as_conformance_type_string: STRING
+			-- name of the this type in form allowing other type to be conformance tested against it;
+			-- Remove generic container type, i.e. 'List <ELEMENT>' becomes 'ELEMENT'
 		do
-			create Result.make (0)
-			Result.append (type.as_type_string)
+			create Result.make_empty
+			Result.append (type.name)
 		end
 
 end

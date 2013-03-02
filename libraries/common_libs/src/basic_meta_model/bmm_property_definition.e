@@ -1,8 +1,7 @@
 note
-	component:   "openEHR re-usable library"
+	component:   "Basic meta-model"
 	description: "Abstract idea of a property definition within a class definition"
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"

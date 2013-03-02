@@ -1,5 +1,5 @@
 note
-	component:   "openEHR re-usable library"
+	component:   "Basic meta-model"
 	description: "[
 				 Definition of a class in an object model. A class is type that may be open 
 				 or closed in terms of other types mentioned within.
@@ -255,7 +255,7 @@ feature -- Access
 
 	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
-			-- e.g. "HASH_TABLE [LINKED_LIST[STRING], STRING]" => <<"HASH_TABLE", "LINKED_LIST", "STRING", "STRING">>
+			-- e.g. "HASH_TABLE <LINKED_LIST <STRING>, STRING>" => <<"HASH_TABLE", "LINKED_LIST", "STRING", "STRING">>
 		do
 			create Result.make(0)
 			Result.compare_objects
@@ -478,12 +478,6 @@ feature -- Output
 				end
 				Result.append_character (generic_right_delim)
 			end
-		end
-
-	as_flattened_type_string: STRING
-			-- name of the type
-		do
-			Result := as_type_string
 		end
 
 	description: STRING

@@ -1,5 +1,5 @@
 note
-	component:   "openEHR library"
+	component:   "Basic meta-model"
 	description: "Abstract idea of specifying a type either by definition or by reference."
 	keywords:    "model, UML"
 	author:      "Thomas Beale"
@@ -47,14 +47,22 @@ feature -- Status Report
 
 feature -- Output
 
-	as_type_string: attached STRING
+	as_type_string: STRING
 			-- formal string form of the type
 		deferred
 		end
 
-	as_flattened_type_string: attached STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
-		deferred
+	as_display_type_string: STRING
+			-- name of the type; if constrained, in the form "T: CONSTRAINER_TYPE"
+		do
+			Result := as_type_string
+		end
+
+	as_conformance_type_string: STRING
+			-- name of the this type in form allowing other type to be conformance tested against it;
+			-- if constrained, then return the constrainer type, else just return Any
+		do
+			Result := as_type_string
 		end
 
 invariant
