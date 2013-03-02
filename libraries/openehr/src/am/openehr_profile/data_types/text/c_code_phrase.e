@@ -349,7 +349,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	initialise_from_pattern (a_pattern: attached STRING)
+	initialise_from_pattern (a_pattern: STRING)
 			-- parse pattern of form "terminology_id::code, code, ... [; code]"
 			-- Pattern "terminology_id::" is legal
 		require
@@ -370,7 +370,7 @@ feature {NONE} -- Implementation
 				set_assumed_value (create {CODE_PHRASE}.make_from_string (terminology_id.value + separator + str.substring (end_pos+2, str.count)))
 			end
 			if end_pos > sep_pos + separator.count then
-				create code_list.make(0)
+				create code_list.make (0)
 				code_list.compare_objects
 				code_list.append (str.substring (sep_pos + separator.count, end_pos).split (','))
 			end

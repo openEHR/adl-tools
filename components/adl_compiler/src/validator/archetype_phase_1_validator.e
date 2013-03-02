@@ -57,6 +57,11 @@ feature -- Validation
 			-- basic validation
 			validate_basics
 
+			-- rebuilding might not work earlier
+			if passed then
+				target.rebuild
+			end
+
 			-- languages and meta-data
 			if passed then
 				precursor
@@ -85,15 +90,17 @@ feature {NONE} -- Implementation
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
-				add_warning("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
+				add_warning ("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
+				add_error ("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
+			elseif not is_valid_concept_code (target.concept) then
+				add_error ("VARCN", <<target.concept>>)
 			elseif target_descriptor.is_specialised then
 				if target.specialisation_depth /= target_descriptor.specialisation_parent.flat_archetype.specialisation_depth + 1 then
-					add_error("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
+					add_error ("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
 				end
  			elseif specialisation_depth_from_code (target.concept) /= 0 then
- 				add_error("VACSDtop", <<specialisation_depth_from_code (target.concept).out>>)
+ 				add_error ("VACSDtop", <<specialisation_depth_from_code (target.concept).out>>)
 			end
 		end
 
@@ -162,7 +169,7 @@ feature {NONE} -- Implementation
 				across c_ar_list as arch_root_csr loop
 					create filler_id.make_from_string (arch_root_csr.item.archetype_id)
 					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_entity) or else
-						rm_schema.type_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_entity)) then
+						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_entity)) then
 						add_error("VARXTV", <<arch_root_csr.item.archetype_id, arch_root_csr.item.rm_type_name>>)
 					end
 				end

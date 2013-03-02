@@ -5,7 +5,7 @@ note
 				 of specialised archetypes.
 		         ]"
 	keywords:    "constraint model"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -682,7 +682,7 @@ end
 						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id (= "unknown") OR
 									(specialisation_depth_from_code (a_c_obj.node_id)
 											<= flat_parent.specialisation_depth or else 			-- node with node_id from previous level OR
-									is_refined_code(a_c_obj.node_id)) then							-- node id refined (i.e. not new)
+									is_refined_code (a_c_obj.node_id)) then							-- node id refined (i.e. not new)
 
 							create apa.make_from_string(a_c_node.path)
 							flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
@@ -838,6 +838,9 @@ end
 
 	rm_node_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- Return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
+		local
+			apa: ARCHETYPE_PATH_ANALYSER
+			flat_parent_path: STRING
 		do
 			Result := True
 			if attached {C_OBJECT} a_c_node as co and then not rm_schema.has_class_definition (co.rm_type_name) then
@@ -853,6 +856,22 @@ end
 						invalid_types.extend (co.rm_type_name)
 					end
 					Result := False
+				end
+			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+				if target.is_specialised then
+					create apa.make_from_string (a_c_node.path)
+					if not apa.is_phantom_path_at_level (flat_parent.specialisation_depth) then
+						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
+						Result := flat_parent.has_path (flat_parent_path)
+						if not Result and ca.has_differential_path then
+							add_error ("VDIFP1", <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+								ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
+						end
+					else
+						if not Result and ca.has_differential_path then
+							add_error ("VDIFP3", <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True)>>)
+						end
+					end
 				end
 			end
 		end

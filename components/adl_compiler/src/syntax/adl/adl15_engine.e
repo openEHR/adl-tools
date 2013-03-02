@@ -442,8 +442,6 @@ feature {NONE} -- Implementation
 							if attached annots as a then
 								new_arch.set_annotations (a)
 							end
-
-							new_arch.rebuild
 						end
 					end
 				end

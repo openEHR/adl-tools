@@ -179,8 +179,9 @@ feature -- Status report
 	is_point: BOOLEAN
 			-- Is current interval a point (width = 0)?
 		do
-			Result := attached lower as l and then attached upper as u and then
-						(lower_included and upper_included) and then l.is_equal (u)
+			Result := not lower_unbounded and not upper_unbounded and
+						(attached lower as l and then attached upper as u and then
+						(lower_included and upper_included) and then l.is_equal (u))
 --		ensure
 --			Result = attached lower as l and then attached upper as u and then
 --						(lower_included and upper_included) and then l.is_equal (u)
@@ -197,17 +198,8 @@ feature -- Comparison
 	has (v: G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
 		do
--- original
---			Result := (lower_unbounded or else ((lower_included and v >= lower) or v > lower)) and
---			(upper_unbounded or else ((upper_included and v <= upper or v < upper)))
-
-			Result := (attached lower as l implies ((lower_included and v >= l) or else v > l)) and
-				(attached upper as u implies ((upper_included and v <= u or v < u)))
-
-		-- FIXME: this post-condition fails
-		-- ensure
-		--	result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
-		--	(upper_unbounded or ((upper_included and v <= upper or v < upper)))
+			Result := ((not lower_unbounded and attached lower as l) implies (lower_included and v >= l or else v > l)) and
+				((not upper_unbounded and attached upper as u) implies ((upper_included and v <= u or else v < u)))
 		end
 
 	intersects (other: like Current): BOOLEAN

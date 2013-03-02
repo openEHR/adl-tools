@@ -31,7 +31,7 @@ feature -- Initialisation
 		require
 			a_list_valid: not a_list.is_empty
 		do
-			create list.make(0)
+			create list.make (0)
 			list.append (a_list)
 		end
 
@@ -43,10 +43,12 @@ feature -- Access
 
 	prototype_value: INTEGER_REF
 		do
-			if attached range then
-				Result := range.lower
+			if attached range as r then
+				Result := r.lower
 			else
-				Result := list.first
+				check attached list as l then
+					Result := l.first
+				end
 			end
 		end
 
@@ -54,10 +56,10 @@ feature -- Status Report
 
 	valid_value (a_value: INTEGER_REF): BOOLEAN
 		do
-			if attached range then
-				Result := range.has (a_value)
-			else
-				Result := list.has (a_value)
+			if attached range as r then
+				Result := r.has (a_value)
+			elseif attached list as l then
+				Result := l.has (a_value)
 			end
 		end
 

@@ -6,7 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
 deferred class ARCHETYPE_ONTOLOGY
 
@@ -1065,8 +1064,10 @@ feature -- Finalisation
 					term_defs_list_csr.item.set_code (code)
 					if term_defs_csr.cursor_index = 1 then
 						term_codes.extend (code)
-						update_highest_refined_codes (code)
-						update_highest_term_code (code)
+						if is_valid_code (code) and is_valid_code (concept_code) then
+							update_highest_refined_codes (code)
+							update_highest_term_code (code)
+						end
 					end
 				end
 			end
@@ -1078,8 +1079,10 @@ feature -- Finalisation
 					constraint_defs_list_csr.item.set_code (code)
 					if constraint_defs_csr.cursor_index = 1 then
 						constraint_codes.extend (code)
-						update_highest_refined_codes (code)
-						update_highest_constraint_code_index(code)
+						if is_valid_code (code) and is_valid_code (concept_code) then
+							update_highest_refined_codes (code)
+							update_highest_constraint_code_index(code)
+						end
 					end
 				end
 			end
