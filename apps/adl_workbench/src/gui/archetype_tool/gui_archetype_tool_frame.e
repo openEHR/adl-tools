@@ -118,7 +118,7 @@ feature -- Events
 				-- update content if out of date in any way
 				if tool_out_of_date (arch_tool) and	arch_tool.can_populate (source) then
 					arch_tool.populate (source, differential_view, selected_language)
-				elseif selected_language /= arch_tool.selected_language then
+				elseif selected_language /= arch_tool.selected_language and arch_tool.can_repopulate then
 					arch_tool.repopulate_with_language (selected_language)
 				elseif tool_refresh_required (arch_tool) then
 					arch_tool.repopulate
