@@ -67,12 +67,12 @@ feature {NONE}-- Initialization
 			-- diff/flat 'View' label + diff & flat controls
 			tool_bar.add_tool_bar_with_title (get_msg ("diff_flat_form_label", Void))
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"),
-				get_msg ("differential_view_button_tooltip", Void), agent on_differential_view)
+				get_text ("differential_view_button_tooltip"), agent on_differential_view)
 			check attached tool_bar.last_tool_bar_radio_button as tbrb then
 				ev_differential_view_button := tbrb
 			end
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"),
-				get_msg ("flat_view_button_tooltip", Void), agent on_flat_view)
+				get_text ("flat_view_button_tooltip"), agent on_flat_view)
 			check attached tool_bar.last_tool_bar_radio_button as tbrb then
 				ev_flat_view_button := tbrb
 			end
@@ -199,6 +199,10 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			attach_gui_context
+			if differential_view and not ev_differential_view_button.is_selected then
+				ev_differential_view_button.enable_select
+				set_view_tab_texts
+			end
 			ev_archetype_id.set_text (source.qualified_name)
 			populate_primary_source
 			if source.is_valid then

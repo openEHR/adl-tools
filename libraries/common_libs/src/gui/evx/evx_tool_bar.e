@@ -149,7 +149,7 @@ feature -- Modification
 			if attached last_combo_box as new_combo_box then
 				ev_root_container.disable_item_expand (new_combo_box)
 				new_combo_box.set_minimum_width (a_min_combo_width)
-		end
+			end
 		end
 
 	add_tool_bar
@@ -194,7 +194,7 @@ feature -- Modification
 			end
 			if attached last_tool_bar as last_tb then
 				last_tb.extend (new_tb_radio_button)
-		end
+			end
 		end
 
 	add_tool_bar_button (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
@@ -209,7 +209,7 @@ feature -- Modification
 			gui_button.ev_button.set_data (gui_button)
 			if attached last_tool_bar as last_tb then
 				last_tb.extend (gui_button.ev_button)
-		end
+			end
 		end
 
 	activate_tool_bar_button (a_tool_bar_button: EV_TOOL_BAR_BUTTON)
