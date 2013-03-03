@@ -311,7 +311,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 				across children as child_csr loop
 					-- if there is a differential path and it fits inside the search path, the search path could be off that attribute
 					if child_csr.item.has_differential_path and then a_path_str.substring_index (child_csr.key, 1) = 1 and
-						children.key_for_iteration.count > cand_path.count
+						child_csr.key.count > cand_path.count
 					then
 						cand_path := child_csr.key
 					end
