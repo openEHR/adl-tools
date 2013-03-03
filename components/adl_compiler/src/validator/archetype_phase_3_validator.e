@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Phase 3 validation: validating performed on flattened archetype."
 	keywords:    "constraint model"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_PHASE_3_VALIDATOR
 

@@ -447,9 +447,11 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDAT
 				Void)
 		end
 
-	data_atcodes_index: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+	data_codes_index: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
+			-- keys are either local codes, e.g. "at0044" or fully qualified non-local code strings
+			-- e.g. "openehr::233", "snomedct_20100601::20000349" etc
 		local
 			def_it: C_ITERATOR
 		do
@@ -457,24 +459,44 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDAT
 			create def_it.make (definition)
 			def_it.do_all (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING])
+					local
+						key: STRING
 					do
 						if attached {C_CODE_PHRASE} a_c_node as ccp then
-							if not ccp.any_allowed and then (ccp.is_local and ccp.code_count > 0) then
+							if not ccp.any_allowed and then ccp.code_count > 0 then
 								across ccp.code_list as codes_csr loop
-									if not idx.has (codes_csr.item) then
-										idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), codes_csr.item)
+									if ccp.is_local then
+										key := codes_csr.item
+									else
+										key := (create {CODE_PHRASE}.make (ccp.terminology_id.value, codes_csr.item)).as_string
 									end
-									idx.item (codes_csr.item).extend (ccp)
+									if not idx.has (key) then
+										idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), key)
+									end
+									idx.item (key).extend (ccp)
 								end
 							end
 						elseif attached {C_DV_ORDINAL} a_c_node as c_dvo then
-							if not c_dvo.any_allowed and then c_dvo.is_local then
+							if not c_dvo.any_allowed then
 								across c_dvo.items as items_csr loop
-									if not idx.has (items_csr.item.symbol.code_string) then
-										idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), items_csr.item.symbol.code_string)
+									if c_dvo.is_local then
+										key := items_csr.item.symbol.code_string
+									else
+										key := items_csr.item.symbol.as_string
 									end
-									idx.item (items_csr.item.symbol.code_string).extend (c_dvo)
+									if not idx.has (key) then
+										idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), key)
+									end
+									idx.item (key).extend (c_dvo)
 								end
+							end
+						elseif attached {C_DV_QUANTITY} a_c_node as c_dvq then
+							if not c_dvq.any_allowed then
+								key := c_dvq.property.as_string
+								if not idx.has (key) then
+									idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), key)
+								end
+								idx.item (key).extend (c_dvq)
 							end
 						end
 					end (?, ?, Result),

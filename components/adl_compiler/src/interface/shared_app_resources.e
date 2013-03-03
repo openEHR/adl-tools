@@ -35,6 +35,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_TERMINOLOGY_SERVICE
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"

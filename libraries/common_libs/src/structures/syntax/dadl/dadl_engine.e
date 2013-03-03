@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "interface class to ADL parser and parse tree"
+	description: "interface class to dADL parser and parse tree"
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class DADL_ENGINE

@@ -48,7 +48,7 @@ feature -- Initialization
 		do
 			sep_pos := a_key.substring_index (separator, 1)
 			create terminology_id.make (a_key.substring (1, sep_pos-1))
-			if a_key.count > sep_pos + 1 then
+			if a_key.count >= sep_pos + separator.count then
 				code_string := a_key.substring (sep_pos+separator.count, a_key.count)
 			else
 				code_string := default_code_string.twin

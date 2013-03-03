@@ -86,6 +86,8 @@ templates = <
 		["VACDF2"] = <"constraint code $1 not found in ontology of current archetype">
 		["VOTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
 		["VOCBK"] = <"constraint binding key $1 must be a valid constraint code">
+		["VETDF"] = <"External code $1 not found in terminology $2">
+		["WETDF"] = <"External term $1 not verified; terminology $2 unavailable">
 
 		-- annotations
 		["VRANP1"] = <"Annotation at language $1 has invalid archetype path $2">
@@ -129,9 +131,13 @@ templates = <
 		["VCATU"] = <"cADL object duplicate attribute $1">
 
 		-- C_DOMAIN_TYPE
-		["VDTV"] = <"$1 object node at path $2 does not conform to $3 node at parent path $4">
+		["VSDTV"] = <"$1 object node at path $2 does not conform to $3 node at parent path $4">
 
 		["VUNK"] = <"$1 object node at path $2 does not conform to $3 node at parent path $4 (unknown reason)">
+		["VDTCV"] = <"Conversion of C_DOMAIN_TYPE descendant $1 failed">
+		["VDTTU"] = <"C_DOMAIN_TYPE descendant type $1 unknown or not visible in type system">
+		["VDTNT"] = <"C_DOMAIN_TYPE descendant type does not include type">
+
 
 		-- ARCHETYPE_INTERNAL_REF
 		["VUNP"] = <"ARCHETYPE_INTERNAL_REF path $1 not found in archetype">

@@ -72,6 +72,21 @@ feature -- Access
  			end
 		end
 
+feature -- Status Report
+
+	any_allowed: BOOLEAN
+			-- True if any value allowed
+			-- i.e. no property or list
+		do
+			Result := list = Void and property = Void
+		end
+
+	valid_value (a_value: like prototype_value): BOOLEAN
+		do
+			-- FIXME: to be implemented
+			Result := any_allowed or else True
+		end
+
 feature -- Statistics
 
 	constrained_rm_attributes: ARRAYED_SET [STRING]
@@ -131,21 +146,6 @@ feature -- Modification
 			end
 
 			list.extend (create {C_QUANTITY_ITEM}.make (a_units, a_magnitude, a_precision))
-		end
-
-feature -- Status Report
-
-	any_allowed: BOOLEAN
-			-- True if any value allowed
-			-- i.e. no property or list
-		do
-			Result := list = Void and property = Void
-		end
-
-	valid_value (a_value: like prototype_value): BOOLEAN
-		do
-			-- FIXME: to be implemented
-			Result := any_allowed or else True
 		end
 
 feature -- Comparison

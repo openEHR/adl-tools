@@ -4,9 +4,9 @@ note
 				 Root application class for any ADL application; performs all application-wide initialisation.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class APP_ROOT

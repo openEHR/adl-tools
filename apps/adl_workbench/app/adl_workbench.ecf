@@ -152,7 +152,8 @@
 			<visible class="CODE_PHRASE"/>
 		</cluster>
 		<tests name="openehr_tests" location="..\..\..\libraries\openehr\tests\">
-			<option void_safety="initialization"> </option>
+			<option void_safety="initialization">
+			</option>
 		</tests>
 		<cluster name="parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true">

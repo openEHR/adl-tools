@@ -164,6 +164,7 @@ feature {NONE} -- Implementation
 			-- For specialised archetypes, requires flat parent to be available
 		local
 			depth, code_depth: INTEGER
+			cp: CODE_PHRASE
 		do
 			depth := ontology.specialisation_depth
 
@@ -181,16 +182,28 @@ feature {NONE} -- Implementation
 			end
 
 			-- see if every term code used in an ORDINAL or a CODE_PHRASE is in ontology
-			across target.data_atcodes_index as codes_csr loop
-				code_depth := specialisation_depth_from_code (codes_csr.key)
-				if code_depth > depth then
-					add_error ("VATCD", <<codes_csr.key>>)
-				elseif code_depth < depth then
-					if not flat_parent.ontology.has_term_code (codes_csr.key) then
-						add_error ("VATDC1", <<codes_csr.key>>)
+			across target.data_codes_index as codes_csr loop
+				-- validate local codes for depth & presence in ontology
+				if codes_csr.key.starts_with (Term_code_leader) then
+					code_depth := specialisation_depth_from_code (codes_csr.key)
+					if code_depth > depth then
+						add_error ("VATCD", <<codes_csr.key>>)
+					elseif code_depth < depth then
+						if not flat_parent.ontology.has_term_code (codes_csr.key) then
+							add_error ("VATDC1", <<codes_csr.key>>)
+						end
+					elseif not ontology.has_term_code (codes_csr.key) then
+						add_error ("VATDC2", <<codes_csr.key>>)
 					end
-				elseif not ontology.has_term_code (codes_csr.key) then
-					add_error ("VATDC2", <<codes_csr.key>>)
+				else
+					create cp.make_from_string (codes_csr.key)
+					if ts.has_terminology (cp.terminology_id.value) then
+						if not ts.terminology (cp.terminology_id.value).has_concept (cp.code_string) then
+							add_error ("VETDF", <<codes_csr.key, cp.terminology_id.value>>)
+						end
+					else
+						add_warning ("WETDF", <<cp.as_string, cp.terminology_id.value>>)
+					end
 				end
 			end
 
@@ -601,7 +614,7 @@ end
 								ontology.physical_to_logical_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						elseif attached {C_DOMAIN_TYPE} co_child_diff as cdt_child and attached {C_DOMAIN_TYPE} co_parent_flat as cdt_flat then
-							add_error("VDTV", <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
+							add_error("VSDTV", <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
 								cdt_flat.rm_type_name, ontology.physical_to_logical_path (cdt_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						else

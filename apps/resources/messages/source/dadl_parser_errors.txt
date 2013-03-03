@@ -1,15 +1,10 @@
 --	component:   openEHR dadl Project
 --	description: Error database for ADL compiler
---				 
 --	keywords:    DADL
 --	author:      Thomas Beale
 --	support:     Ocean Informatics <support@OceanInformatics.com>
 --	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd
 --	license:     See notice at bottom of class
---
---	file:        $URL$
---	revision:    $LastChangedRevision$
---	last_change: $LastChangedDate$
 
 templates = <
 	["en"] = <

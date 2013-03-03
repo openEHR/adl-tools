@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "FIXME: temporary type for ORDINAL until reconciled with DV_ORDINAL"
 	keywords:    "ordinal, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ORDINAL
 
@@ -30,7 +25,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make(a_value: INTEGER; a_symbol: CODE_PHRASE)
+	make (a_value: INTEGER; a_symbol: CODE_PHRASE)
 			-- set value & symbol
 		require
 			A_symbol_valid: a_symbol /= Void
@@ -46,7 +41,7 @@ feature -- Access
 
 	value: INTEGER
 
-	symbol: attached CODE_PHRASE
+	symbol: CODE_PHRASE
 
 feature -- Conversion
 

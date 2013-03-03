@@ -59,7 +59,7 @@ feature -- Access
 			-- id of terminology from which codes come. If code list empty, any code from
 			-- this terminology is allowed
 
-	code_list: detachable ARRAYED_LIST[STRING]
+	code_list: detachable ARRAYED_LIST [STRING]
 			-- list of codes in terminology designated by terminology_id
 
 	code_count: INTEGER
