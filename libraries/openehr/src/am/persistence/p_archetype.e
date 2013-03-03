@@ -41,7 +41,9 @@ feature -- Initialisation
 
 			is_generated := an_archetype.is_generated
 
-			uid := an_archetype.uid.value
+			if attached an_archetype.uid as uv then
+				uid := uv.value
+			end
 
 			other_metadata := an_archetype.other_metadata
 
