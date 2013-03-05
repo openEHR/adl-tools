@@ -462,7 +462,7 @@ feature {NONE} -- Implementation
 			Result.append ("Source license: Mozilla tri-license%N")
 			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")
-			Result.append ("Funded by: OceanInformatics.com%N")
+			Result.append ("Funded by: Thomas Beale; Ocean Informatics%N")
 			Result.append ("Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer%N")
 			Result.append ("Acknowledgements:%N")

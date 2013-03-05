@@ -37,15 +37,21 @@ feature {NONE} -- Initialization
 			-- Create and launch the application, showing a splash window followed by the main window.
 		do
 			default_create
+			if not is_destroyed then
+				post_launch_actions.extend_kamikaze (agent app_init)
+				launch
+			end
+		end
+
+	app_init
+		do
+			show_splash
+			process_graphical_events
 			app_root.initialise_shell
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 				if not app_root.has_errors then
-					show_splash_window
-					if not is_destroyed then
-						post_launch_actions.extend_kamikaze (agent show_main_window)
-						launch
-					end
+					show_main_window
 				else
 					io.put_string (app_root.errors.as_string)
 				end
@@ -54,13 +60,10 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	show_splash_window
-			-- Display the splash window, but abort the application if there is no icons directory.
-			-- This avoids a resource leak, by ensuring that there is no reference to the splash window after launch.
-		local
-			splash: SPLASH_WINDOW
+	show_splash
+			-- Build and display the splash window
 		do
-			create splash.make
+			create splash.make_with_shadow
 			splash.show
 		end
 
@@ -72,7 +75,10 @@ feature {NONE} -- Initialization
 			process_graphical_events
 			create main_window
 			main_window.show
+			splash.hide
 		end
+
+	splash: SPLASH_WINDOW
 
 end
 

@@ -23,34 +23,20 @@ inherit
 		end
 
 create
-	make
+	make_with_shadow
 
 feature {NONE} -- Initialization
-
-	make
-			-- Create to be visible for at least 5 seconds.
-		local
-			screen: EV_SCREEN
-		do
-			make_with_shadow
-
-			create screen
-			set_position (app_x_position + (screen.width - width) // 2, app_y_position + (screen.height - height) // 2)
-
-			create timer.make_with_interval (7000)
-			timer.actions.extend (agent close)
-		end
 
 	create_interface_objects
 		do
 			Precursor
 			create border
 			border.set_border_width (2)
+			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
+
 			create hb
 			hb.set_padding (10)
 			hb.set_border_width (15)
-			border.extend (hb)
-			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
 
 			create img_cell
 			img_cell.set_minimum_size (adl_workbench_logo.width, adl_workbench_logo.height)
@@ -61,14 +47,21 @@ feature {NONE} -- Initialization
 			label.align_text_left
 			label.set_text (splash_text)
 			hb.extend (label)
+
+			border.extend (hb)
 		end
 
 	initialize
+		local
+			screen: EV_SCREEN
 		do
 			Precursor
 			extend (border)
 			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			propagate_background_color
+
+			create screen
+			set_position (app_x_position + (screen.width - width) // 2, app_y_position + (screen.height - height) // 2)
 		end
 
 feature {NONE} -- Implementation

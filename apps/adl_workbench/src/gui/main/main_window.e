@@ -80,8 +80,6 @@ feature {NONE} -- Initialization
 			close_request_actions.extend (agent exit_app)
 			set_icon_pixmap (adl_workbench_logo)
 
-
-
 			create ev_main_vbox
 			extend (ev_main_vbox)
 
@@ -970,7 +968,7 @@ feature {NONE} -- Help events
 			dialog: EV_INFORMATION_DIALOG
 		do
 			create dialog.make_with_text (splash_text)
-			dialog.set_title (get_msg ("about_awb_dialog_title", Void))
+			dialog.set_title (get_text ("about_awb_dialog_title"))
 			dialog.set_pixmap (adl_workbench_logo)
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
