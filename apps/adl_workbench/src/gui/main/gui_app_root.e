@@ -34,24 +34,28 @@ create
 feature {NONE} -- Initialization
 
 	make_and_launch
-			-- Create and launch the application, showing a splash window followed by the main window.
+			-- Create and launch the application
 		do
 			default_create
 			if not is_destroyed then
-				post_launch_actions.extend_kamikaze (agent app_init)
+				post_launch_actions.extend_kamikaze (agent app_launch)
 				launch
 			end
 		end
 
-	app_init
+	app_launch
 		do
-			show_splash
-			process_graphical_events
+			create splash.make_with_shadow
+			splash.show
+			process_events
 			app_root.initialise_shell
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 				if not app_root.has_errors then
-					show_main_window
+					process_graphical_events
+					create main_window
+					main_window.show
+					splash.hide
 				else
 					io.put_string (app_root.errors.as_string)
 				end
@@ -60,23 +64,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	show_splash
-			-- Build and display the splash window
-		do
-			create splash.make_with_shadow
-			splash.show
-		end
-
-	show_main_window
-			-- Build and display the application's main window.
-		local
-			main_window: MAIN_WINDOW
-		do
-			process_graphical_events
-			create main_window
-			main_window.show
-			splash.hide
-		end
+	main_window: MAIN_WINDOW
 
 	splash: SPLASH_WINDOW
 
