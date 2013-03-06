@@ -1,9 +1,7 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "A mapping of a term to a text item."
 	keywords:    "term, text"
-
 	requirements:"ISO 18308 TS V1.0 STR 4.5"
 	design:      "openEHR Data Types Reference Model 1.7"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -77,7 +75,7 @@ feature -- Output
 invariant
 	Match_valid: is_valid_match_code(match)
 	Purpose_valid: purpose /= Void implies
-		terminology(terminology_id_openehr).has_code_for_value_set (Group_id_term_mapping_purpose, purpose.defining_code)
+		terminology (terminology_id_openehr).has_code_for_value_set (Group_id_term_mapping_purpose, purpose.defining_code)
 
 end
 

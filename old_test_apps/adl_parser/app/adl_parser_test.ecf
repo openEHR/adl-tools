@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-0-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-0-0 http://www.eiffel.com/developers/xml/configuration-1-0-0.xsd" name="adl_parser_test" uuid="763D9B8F-04FF-472C-8BAE-0DD04D2C5943">
+	<target name="adl_parser_test_no_precompile">
+		<root class="APPLICATION" feature="make"/>
+		<file_rule>
+			<exclude>/\.svn$</exclude>
+		</file_rule>
+		<option trace="false" profile="false" debug="false" warning="true">
+			<debug name="__unnamed_debug__" enabled="false"/>
+			<debug name="adl_invariant" enabled="false"/>
+			<debug name="adl_parse" enabled="false"/>
+			<debug name="adl_tree" enabled="false"/>
+			<debug name="dadl_parse" enabled="false"/>
+			<debug name="exclude list" enabled="false"/>
+			<debug name="gelex" enabled="false"/>
+			<debug name="geyacc" enabled="false"/>
+			<debug name="include list" enabled="false"/>
+			<debug name="og_path_parse" enabled="false"/>
+			<debug name="refactor_fixme" enabled="false"/>
+			<assertions precondition="true" postcondition="false" check="false" invariant="false" loop="false"/>
+			<warning name="export_class_missing" enabled="false"/>
+			<warning name="old_verbatim_strings" enabled="false"/>
+			<warning name="syntax" enabled="false"/>
+			<warning name="vjrv" enabled="false"/>
+		</option>
+		<setting name="address_expression" value="false"/>
+		<setting name="array_optimization" value="false"/>
+		<setting name="check_vape" value="false"/>
+		<setting name="console_application" value="true"/>
+		<setting name="dead_code_removal" value="false"/>
+		<setting name="dynamic_runtime" value="false"/>
+		<setting name="exception_trace" value="false"/>
+		<setting name="inlining" value="false"/>
+		<setting name="line_generation" value="false"/>
+		<setting name="multithreaded" value="false"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
+			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
+		</library>
+		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
+			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
+			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
+		</library>
+		<cluster name="adl_parser" location="..\..\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+			</option>
+		</cluster>
+		<cluster name="app" location="..\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+			</option>
+		</cluster>
+		<cluster name="archetype_repository" location="..\..\..\archetype_repository\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="false" loop="false"/>
+			</option>
+		</cluster>
+		<cluster name="common_libs" location="..\..\..\..\libraries\common_libs\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="false" invariant="true" loop="false"/>
+			</option>
+			<file_rule>
+				<exclude>/other$</exclude>
+				<include>/windows$</include>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<include>/other$</include>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+		</cluster>
+		<cluster name="openehr" location="..\..\..\..\libraries\openehr\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="false" invariant="false" loop="false"/>
+			</option>
+			<visible class="C_CODE_PHRASE"/>
+			<visible class="C_DV_ORDINAL"/>
+			<visible class="C_DV_QUANTITY"/>
+		</cluster>
+		<cluster name="version" location="..\..\..\..\libraries\version\" recursive="true"/>
+		<override name="vendor_fixes" location="..\..\..\..\libraries\vendor-fixes\" recursive="true">
+			<file_rule>
+				<exclude>/base_net$</exclude>
+			</file_rule>
+		</override>
+	</target>
+	<target name="adl_parser_test" extends="adl_parser_test_no_precompile">
+		<precompile name="precompile" location="$ISE_PRECOMP\base.ecf"/>
+	</target>
+</system>

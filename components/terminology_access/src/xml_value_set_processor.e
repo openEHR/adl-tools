@@ -1,6 +1,5 @@
 note
 	component:   "openEHR common definitions"
-
 	description: "Visitor to get attributes on any node."
 	keywords:    "terminology, vocabulary, XML"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"

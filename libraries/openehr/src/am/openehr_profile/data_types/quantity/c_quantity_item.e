@@ -2,7 +2,6 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Magnitude/unit constrainer item for C_QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"

@@ -62,7 +62,7 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	update_constraint_refs
-			-- populate CONSTRAINT_REF rm_type_name
+			-- populate CONSTRAINT_REF rm_type_name based on RM schema
 		local
 			bmm_prop_def: BMM_PROPERTY_DEFINITION
 			proximal_ca: C_ATTRIBUTE

@@ -47,8 +47,12 @@ feature {NONE} -- Events
 
 feature -- Access
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
+		note
+			option: stable
+		attribute
+		end
 
 feature -- Test routines
 

@@ -383,7 +383,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	load_schema_include_closure (a_schema_id: attached STRING)
+	load_schema_include_closure (a_schema_id: STRING)
 			-- process the include directives for a given schema & build the `schema_inclusion_map' reverse reference table
 		local
 			includes: HASH_TABLE [BMM_INCLUDE_SPEC, STRING]

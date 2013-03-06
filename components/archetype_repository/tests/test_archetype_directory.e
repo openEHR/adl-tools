@@ -8,11 +8,6 @@ note
 	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-	testing:     "type/manual"
-
 class
 	TEST_ARCHETYPE_DIRECTORY
 
@@ -60,8 +55,12 @@ feature {NONE} -- Events
 
 feature -- Access
 
-	test_repository: STRING
+	test_repository: detachable STRING
 			-- Repository of test archetypes. Its path must be defined in the cfg file, otherwise these unit tests fail.
+		note
+			option: stable
+		attribute
+		end
 
 feature -- Test routines
 

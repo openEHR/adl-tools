@@ -1,11 +1,11 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Abstract parent type of domain specific constraint types. This
-			 type guarantees that any descendant can be converted to a standard
-			 ADL object form, consisting of a network of C_COMPLEX_OBJECT and 
-			 C_ATTRIBUTE instances.
-			 ]"
+				 Abstract parent type of domain specific constraint types. This
+				 type guarantees that any descendant can be converted to a standard
+				 ADL object form, consisting of a network of C_COMPLEX_OBJECT and 
+				 C_ATTRIBUTE instances.
+				 ]"
 	keywords:    "test, ADL"
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"

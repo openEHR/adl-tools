@@ -1,62 +1,36 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "FIXME: temporary type for ORDINAL until reconciled with DV_ORDINAL"
-	keywords:    "ordinal, ADL"
+	description: "[
+				 Profile of RM-related settings relating to use of reference model(s) by a
+				 given arhetype developing organisation.
+				 ]"
+	keywords:    "ADL, archetype, aom, profile"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class ORDINAL
-
-inherit
-	ANY
-		redefine
-			out
-		end
+class AOM_RM_PROFILE
 
 create
 	make
 
-feature -- Definitions
-
-	Separator: CHARACTER = '|'
-			-- separates each value from its code-phrase
-
 feature -- Initialisation
 
-	make (a_value: INTEGER; a_symbol: CODE_PHRASE)
-			-- set value & symbol
+	make (an_rm_publisher: STRING)
 		do
-			value := a_value
-			symbol := a_symbol
-		ensure
-			Value_set: value = a_value
-			Symbol_set: symbol = a_symbol
+			rm_publisher := an_rm_publisher
 		end
+
+feature -- Identification
+
+	rm_publisher: STRING
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 feature -- Access
 
-	value: INTEGER
-
-	symbol: CODE_PHRASE
-
-feature -- Conversion
-
-	as_string: STRING
-			--
-		do
-			create Result.make(0)
-			Result.append (value.out + Separator.out + "[" + symbol.as_string + "]")
-		end
-
-	out: STRING
-			--
-		do
-			Result := as_string
-		end
-
 end
+
 
 
 --|
@@ -73,10 +47,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_object_ordinal.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

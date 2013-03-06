@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Tests for manipulating an archetype compiler"
 	keywords:    "archetype, compiler, build"
-
 	author:      "Peter Gummer"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 	testing:     "type/manual"
 
 class
@@ -27,10 +22,10 @@ feature -- Test routines
 			testing: "covers/{ARCHETYPE_COMPILER}.build_all"
 			testing: "covers/{ARCHETYPE_COMPILER}.rebuild_all"
 		do
+			create errors.make_empty
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
 			assert_equal (False, archetype_compiler.is_full_build_completed)
-			create errors.make_empty
 
 			archetype_compiler.set_archetype_visual_update_action (agent on_archetype_update)
 			archetype_compiler.build_all
@@ -50,10 +45,14 @@ feature -- Test routines
 
 feature {NONE} -- Implementation
 
-	errors: STRING
+	errors: detachable STRING
 		-- Error messages during compilation.
+		note
+			option: stable
+		attribute
+		end
 
-	on_archetype_update (a_msg: attached STRING; ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	on_archetype_update (a_msg: STRING; ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update with progress on build.
 		do
 			if ara.compilation_state = ara.cs_invalid then

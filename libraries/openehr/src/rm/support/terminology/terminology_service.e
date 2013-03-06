@@ -7,7 +7,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safe:   "yes"
 
 class TERMINOLOGY_SERVICE
 
@@ -20,7 +19,7 @@ inherit
 
 feature -- Access
 
-	terminology (name: STRING): detachable TERMINOLOGY_ACCESS
+	terminology (name: STRING): TERMINOLOGY_ACCESS
 			-- return a terminology access object for a terminology identified in openEHR by openehr_id
 			-- Allowable names are:
 			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
@@ -29,15 +28,15 @@ feature -- Access
 		require
 			id_valid: has_terminology (name)
 		do
-			Result := terminologies.item (name)
+			check attached terminologies.item (name) as t then Result := t end
 		end
 
-	code_set (code_set_id: STRING): detachable CODE_SET_ACCESS
+	code_set (code_set_id: STRING): CODE_SET_ACCESS
 			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require
 			id_valid: has_code_set (code_set_id)
 		do
-			Result := code_sets.item (code_set_id)
+			check attached code_sets.item (code_set_id) as c then Result := c end
 		end
 
 feature -- Status Report

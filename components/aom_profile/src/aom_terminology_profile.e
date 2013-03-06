@@ -1,68 +1,35 @@
 note
-	component:   "openEHR Common Reference Model"
-	description: "Generic details of an audit trail"
-	keywords:    "version control"
-	design:      "openEHR Common Reference Model 2.0"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	component:   "openEHR Archetype Project"
+	description: "[
+				 Profile of terminology-related settings by a given archetype developing organisation.
+				 ]"
+	keywords:    "ADL, archetype, aom, profile"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class AUDIT_DETAILS
-
-inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
-		export
-			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
-		end
+class AOM_TERMINOLOGY_PROFILE
 
 create
 	make
 
-feature -- Initialization
+feature -- Initialisation
 
-	make (a_system_id: STRING; a_committer: PARTY_PROXY;
-						a_time_committed: DV_DATE_TIME; a_change_type: DV_CODED_TEXT;
-						a_description: DV_TEXT)
-		require
-			a_system_id_valid: not a_system_id.is_empty
+	make
 		do
-			system_id := a_system_id
-			committer := a_committer
-			time_committed := a_time_committed
-			change_type := a_change_type
-			description := a_description
-		ensure
-			system_id = a_system_id
-			committer = a_committer
-			time_committed = a_time_committed
-			change_type = a_change_type
-			description = a_description
 		end
 
 feature -- Access
 
-	system_id: STRING
-			-- Identity of the node where the item was committed.
+	terminology_issuer: detachable STRING
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
-	committer: PARTY_PROXY
-			-- Identity of party who committed the item.
-
-	time_committed: DV_DATE_TIME
-			-- Time of committal of the item.
-
-	change_type: DV_CODED_TEXT
-			-- Type of change. Coded using the openEHR Terminology “audit change type” group.
-
-	description: DV_TEXT
-			-- description of this contribution overall
-
-invariant
-	System_id_valid: not system_id.is_empty
-	Change_type_valid: terminology (Terminology_id_openehr).has_code_for_value_set (Group_id_audit_change_type, change_type.defining_code)
+	code_sets_issuer: detachable STRING
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 end
+
 
 
 --|
@@ -79,10 +46,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is audit_details.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2005
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
