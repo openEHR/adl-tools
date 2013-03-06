@@ -30,8 +30,6 @@ geyacc = Action([['geyacc', '--new_typing', '-v', '${TARGET.filebase}.txt', '-t'
 
 geyacc_html = Action([['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
 
-eiffel_syntax_updater = [env.EiffelSpecPath('tools' , 'bin/syntax_updater'),  '${TARGET.dir}']
-
 for scanner, parser, tokens, dir in [
 	['adl_scanner', 'adl_validator', 'adl_tokens', 'libraries/parsers/adl/'],
 	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'libraries/parsers/cadl/'],
@@ -39,8 +37,8 @@ for scanner, parser, tokens, dir in [
 	['units_scanner', 'units_parser', 'units_tokens', 'libraries/parsers/ucum/parser/'],
 	['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/parsers/path/']
 ]:
-	gobo(scanner, [dir + scanner + '.e'], dir + scanner + '.l', [gelex, eiffel_syntax_updater])
-	gobo(parser, [dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y', [geyacc, eiffel_syntax_updater])
+	gobo(scanner, [dir + scanner + '.e'], dir + scanner + '.l', [gelex])
+	gobo(parser, [dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y', [geyacc])
 	gobo(parser, [dir + parser + '.html'], dir + parser + '.y', [geyacc_html])
 
 ###################################################################################################
