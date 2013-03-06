@@ -161,7 +161,7 @@ if distrib and len(adl_workbench) > 0:
 
 			tar.close()
 
-		env.Command(distrib + '/linux/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
+		env.Command(distrib + '/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
 
 	if platform == 'mac_osx':
 		packagemaker = '/Developer/usr/bin/packagemaker'
@@ -226,7 +226,7 @@ if distrib and len(adl_workbench) > 0:
 				'-d', pkg_tree + '/Description.plist'
 			]
 
-			installer = env.Command(distrib + '/mac_osx/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
+			installer = env.Command(distrib + '/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
 				Delete(pkg_tree),
 				env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 				command,
