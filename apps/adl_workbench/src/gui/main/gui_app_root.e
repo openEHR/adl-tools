@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			if not is_destroyed then
+				create splash.make_with_shadow
 				post_launch_actions.extend_kamikaze (agent app_launch)
 				launch
 			end
@@ -45,7 +46,6 @@ feature {NONE} -- Initialization
 
 	app_launch
 		do
-			create splash.make_with_shadow
 			splash.show
 			process_events
 			app_root.initialise_shell
