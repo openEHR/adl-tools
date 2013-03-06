@@ -33,11 +33,11 @@ geyacc_html = Action([['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE
 eiffel_syntax_updater = [env.EiffelSpecPath('tools' , 'bin/syntax_updater'),  '${TARGET.dir}']
 
 for scanner, parser, tokens, dir in [
-	['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_compiler/src/syntax/adl/parser/'],
-	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_compiler/src/syntax/cadl/parser/'],
-	['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/common_libs/src/structures/syntax/dadl/parser/'],
-	['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/'],
-	['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/common_libs/src/structures/object_graph/path/']
+	['adl_scanner', 'adl_validator', 'adl_tokens', 'libraries/parsers/adl/'],
+	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'libraries/parsers/cadl/'],
+	['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/parsers/dadl/'],
+	['units_scanner', 'units_parser', 'units_tokens', 'libraries/parsers/ucum/parser/'],
+	['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/parsers/path/']
 ]:
 	gobo(scanner, [dir + scanner + '.e'], dir + scanner + '.l', [gelex, eiffel_syntax_updater])
 	gobo(parser, [dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y', [geyacc, eiffel_syntax_updater])
@@ -163,7 +163,7 @@ if distrib and len(adl_workbench) > 0:
 
 			tar.close()
 
-		env.Command(distrib + '/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
+		env.Command(distrib + '/linux/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
 
 	if platform == 'mac_osx':
 		packagemaker = '/Developer/usr/bin/packagemaker'
@@ -228,7 +228,7 @@ if distrib and len(adl_workbench) > 0:
 				'-d', pkg_tree + '/Description.plist'
 			]
 
-			installer = env.Command(distrib + '/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
+			installer = env.Command(distrib + '/mac_osx/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
 				Delete(pkg_tree),
 				env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 				command,
