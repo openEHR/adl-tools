@@ -22,7 +22,8 @@ templates = <
 		["quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
 		["flat_switch_desc"] = <"use flat form of archetype[s] for actions, e.g. path extraction etc">
 		["show_config_switch_desc"] = <"show current configuration and defaults">
-		["list_archetypes_switch_desc"] = <"list archetypes in current profile repository">
+		["list_archetypes_switch_desc"] = <"generate list of archetypes in current profile repository (use for further processing)">
+		["display_archetypes_switch_desc"] = <"generate list of archetypes in current profile repository in user-friendly format">
 
 		-- command line options with arguments
 		["format_switch_desc"] = <"output format for generated files">
@@ -35,7 +36,7 @@ templates = <
 		["profile_switch_arg_desc"] = <"profile name">
 
 		["action_switch_desc"] = <"action to perform">
-		["action_switch_arg_desc"] = <"action: validate | flatten">
+		["action_switch_arg_desc"] = <"action: validate | serialise">
 
 		-- non-switched command-line options
 		["id_pattern_arg_name"] = <"id_pattern">
@@ -44,17 +45,18 @@ templates = <
 
 		-- other messages
 		["config_file_location"] = <"User .cfg file location: $1%N">
-		["profiles_info_text"] = <"Configured repository profiles%N">
+		["profiles_info_text"] = <"Configured repository profiles: %N">
 		["current_profile_info_text"] = <"Current profile: $1%N">
-		["rm_schemas_info_text"] = <"Loaded RM schemas (BMM files)%N">
+		["rm_schemas_info_text"] = <"Loaded RM schemas (BMM files): %N">
 
 		["no_matching_ids_err"] = <"No archetype ids matching pattern '$1' in repository $2 (use -s to see current config)%N">
 		["profile_does_not_exist_err"] = <"No profile with name '$1' (use -s to see all profiles)%N">
 		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2%N">
 		["invalid_action_err"] = <"Invalid action '$1'; valid actions: $2%N">
+		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)%N">
 
 		["archs_list_text"] = <"------------ Archetypes in profile '$1 --------------'%N">
-		["archs_list_text_end"] = <"-----------------------------------------------------'%N">
+		["archs_list_text_end"] = <"-----------------------------------------------------%N">
 	>
 >
 
