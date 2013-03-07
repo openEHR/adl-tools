@@ -60,12 +60,15 @@ feature -- Definitions
 
 	Serialise_action: STRING = "serialise"
 
+	Serialise_action_alt_sp: STRING = "serialize"
+
 	Actions: ARRAYED_LIST [STRING]
 		once
 			create Result.make (0)
 			Result.compare_objects
 			Result.extend (Validate_action)
 			Result.extend (Serialise_action)
+			Result.extend (Serialise_action_alt_sp)
 		end
 
 feature -- Initialization
@@ -194,7 +197,7 @@ feature -- Commands
 											if action.is_equal (Validate_action) then
 												io.put_string (aca.status)
 
-											elseif action.is_equal (Serialise_action) then
+											elseif action.is_equal (Serialise_action) or action.is_equal (Serialise_action_alt_sp) then
 												if aca.is_valid then
 													io.put_string (aca.serialise (use_flat_source, output_format) + "%N")
 												else

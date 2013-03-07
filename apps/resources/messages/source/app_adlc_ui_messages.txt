@@ -36,7 +36,7 @@ templates = <
 		["profile_switch_arg_desc"] = <"profile name">
 
 		["action_switch_desc"] = <"action to perform">
-		["action_switch_arg_desc"] = <"action: validate | serialise">
+		["action_switch_arg_desc"] = <"action: validate | serialise | serialize">
 
 		-- non-switched command-line options
 		["id_pattern_arg_name"] = <"id_pattern">

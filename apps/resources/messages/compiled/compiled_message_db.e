@@ -243,7 +243,7 @@ feature -- Initialisation
 			message_table.put ("profile to use", "profile_switch_desc")
 			message_table.put ("profile name", "profile_switch_arg_desc")
 			message_table.put ("action to perform", "action_switch_desc")
-			message_table.put ("action: validate | serialise", "action_switch_arg_desc")
+			message_table.put ("action: validate | serialise | serialize", "action_switch_arg_desc")
 			message_table.put ("id_pattern", "id_pattern_arg_name")
 			message_table.put ("archetype id regex", "id_pattern_arg_description")
 			message_table.put ("regex string", "id_patter_arg_type")
