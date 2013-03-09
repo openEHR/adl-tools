@@ -33,6 +33,35 @@ create
 
 feature -- Definitions
 
+	Validate_action: STRING = "validate"
+
+	Serialise_action: STRING = "serialise"
+
+	Serialise_action_alt_sp: STRING = "serialize"
+
+	List_action: STRING = "list"
+
+	Actions: ARRAYED_LIST [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (Validate_action)
+			Result.extend (Serialise_action)
+			Result.extend (Serialise_action_alt_sp)
+			Result.extend (List_action)
+		end
+
+	Actions_string: STRING
+		once
+			create Result.make (0)
+			across actions as actions_csr loop
+				if actions_csr.target_index > 1 then
+					Result.append (", ")
+				end
+				Result.append (actions_csr.item)
+			end
+		end
+
 	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			-- Retrieve a list of switch used for a specific application
 		once
@@ -46,10 +75,10 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text ("display_archetypes_switch_desc"), False, False))
 
 			-- switches with arguments
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (profile_switch, get_text ("profile_switch_desc"), False, False, profile_switch_arg, get_text ("profile_switch_arg_desc"), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text ("format_switch_desc"), True, False, format_switch_arg, get_msg ("format_switch_arg_desc", <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text ("cfg_switch_desc"), True, False, cfg_switch_arg_name, get_text ("cfg_switch_arg_desc"), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (profile_switch, get_text ("profile_switch_desc"), True, False, profile_switch_arg, get_text ("profile_switch_arg_desc"), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text ("action_switch_desc"), True, False, action_switch_arg, get_text ("action_switch_arg_desc"), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text ("action_switch_desc"), False, False, action_switch_arg, Actions_string, False))
 
 			-- valid command line configurations
 
@@ -59,12 +88,12 @@ feature -- Definitions
 			-- <Precursor>
 		once
 			create Result.make (2)
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (show_config_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (list_archetypes_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (display_archetypes_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (flat_switch),
-														switch_of_name (cfg_switch), switch_of_name (profile_switch),
-														switch_of_name (action_switch), switch_of_name (format_switch) >>, True))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (show_config_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (profile_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (profile_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (profile_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
+														switch_of_name (quiet_switch), switch_of_name (format_switch),
+														switch_of_name (action_switch)>>, True))
 		end
 
 	quiet_switch: STRING = "q|quiet"
