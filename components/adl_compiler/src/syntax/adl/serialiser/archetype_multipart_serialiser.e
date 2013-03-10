@@ -16,8 +16,8 @@ feature -- Serialisation
 
 	serialise_from_parts (an_archetype: ARCHETYPE;
 			lang_serialised, desc_serialised, def_serialised: STRING;
-			inv_serialised: detachable STRING; ont_serialised: STRING;
-			ann_serialised, comp_onts_serialised: detachable STRING)
+			inv_serialised: STRING; ont_serialised: STRING;
+			ann_serialised, comp_onts_serialised: STRING)
 		deferred
 		end
 

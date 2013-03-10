@@ -33,8 +33,8 @@ feature -- Serialisation
 
 	serialise_from_parts (an_archetype: ARCHETYPE;
 				lang_serialised, desc_serialised, def_serialised: STRING;
-				inv_serialised: detachable STRING; ont_serialised: STRING;
-				ann_serialised, comp_onts_serialised: detachable STRING)
+				inv_serialised: STRING; ont_serialised: STRING;
+				ann_serialised, comp_onts_serialised: STRING)
 		do
 			last_result.wipe_out
 
@@ -60,7 +60,7 @@ feature -- Serialisation
 				last_result.append (def_serialised)
 			end
 
-			if attached inv_serialised then
+			if not inv_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_INVARIANT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (inv_serialised)
 			end
@@ -70,12 +70,12 @@ feature -- Serialisation
 				last_result.append (ont_serialised)
 			end
 
-			if attached ann_serialised then
+			if not ann_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_ANNOTATIONS), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (ann_serialised)
 			end
 
-			if attached comp_onts_serialised then
+			if not comp_onts_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_COMPONENT_ONTOLOGIES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (comp_onts_serialised)
 			end

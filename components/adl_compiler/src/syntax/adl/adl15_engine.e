@@ -166,7 +166,7 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
-			comp_onts_serialised: detachable STRING
+			comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
 			generate_adl14_ontology: BOOLEAN
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
@@ -219,6 +219,8 @@ feature -- Serialisation
 				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
 				ontology_context.serialise (a_format, False, False)
 				comp_onts_serialised := ontology_context.serialised
+			else
+				create comp_onts_serialised.make_empty
 			end
 
 			-- annotations section
