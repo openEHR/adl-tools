@@ -616,7 +616,7 @@ feature -- Status Report - Semantic
 	has_slots: BOOLEAN
 			-- Does this archetype have any slots?
 		do
-			Result := compilation_state = Cs_validated_phase_1 and then not slot_id_index.is_empty
+			Result := compilation_state >= Cs_validated_phase_1 and then not slot_id_index.is_empty
 		end
 
 	is_supplier: BOOLEAN

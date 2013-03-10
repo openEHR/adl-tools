@@ -140,7 +140,7 @@ feature {NONE} -- Implementation
 			end
 
 			if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
-				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_msg_line ("slots_incomplete_w1", <<>>)))
+				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text ("slots_incomplete_w1")))
 			end
 
 			if source.is_supplier then
