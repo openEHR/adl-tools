@@ -98,15 +98,20 @@ feature {NONE} -- Implementation
 
 	delayed_select_archetype_agent: EV_TIMEOUT
 			-- Timer to delay a moment before calling `select_archetype_agent'.
-		once ("OBJECT")
-			create Result
-			Result.actions.extend (
-				agent
-					do
-						delayed_select_archetype_agent.set_interval (0)
-						do_select_archetype
-					end
-			)
+		do
+			if attached delayed_select_archetype_agent_cache as dsaa then
+				Result := dsaa
+			else
+				create Result
+				Result.actions.extend (
+					agent
+						do
+							delayed_select_archetype_agent.set_interval (0)
+							do_select_archetype
+						end
+				)
+				delayed_select_archetype_agent_cache := Result
+			end
 		end
 
 	do_select_archetype
@@ -194,6 +199,13 @@ feature {NONE} -- Implementation
 	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
 		do
 			gui_agents.edit_archetype_in_new_tool_agent.call ([aca])
+		end
+
+	delayed_select_archetype_agent_cache: detachable EV_TIMEOUT
+			-- Timer to delay a moment before calling `select_archetype_agent'.
+		note
+			option: stable
+		attribute
 		end
 
 invariant

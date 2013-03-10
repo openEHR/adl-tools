@@ -1039,7 +1039,7 @@ feature {ARCH_CAT_ARCHETYPE} -- Modification
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
 		do
-			if clients_index = Void then
+			if not attached clients_index then
 				create clients_index.make (0)
 				clients_index.compare_objects
 			end
@@ -1296,8 +1296,19 @@ feature {NONE} -- Implementation
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
 	arch_flattener: ARCHETYPE_FLATTENER
-		once ("OBJECT")
-			create Result.make (Current, rm_schema)
+		do
+			if attached arch_flattener_cache as af then
+				Result := af
+			else
+				create Result.make (Current, rm_schema)
+				arch_flattener_cache := Result
+			end
+		end
+
+	arch_flattener_cache: detachable ARCHETYPE_FLATTENER
+		note
+			option: stable
+		attribute
 		end
 
 	clear_cache
@@ -1333,7 +1344,7 @@ feature {NONE} -- Implementation
 		end
 
 	compute_slot_id_index
-			-- generate `slot_id_index_cache'
+			-- generate `slot_id_index_cache' and `clients_index' of client archetype descriptors
 		require
 			compilation_state >= Cs_validated_phase_1
 		local
@@ -1378,7 +1389,7 @@ feature {NONE} -- Implementation
 				-- now post the results in the reverse indexes
 				across slot_idx.item (slots_csr.item.path) as ids_csr loop
 					check attached current_arch_cat.archetype_index.item (ids_csr.item) as ara then
-						if not ara.is_supplier or else not ara.clients_index.has (id.as_string) then
+						if not attached ara.clients_index or else not ara.clients_index.has (id.as_string) then
 							ara.add_client (id.as_string)
 						end
 					end
