@@ -59,6 +59,9 @@ feature -- Initialization
 	make
 			-- Run application.
 		do
+			create output_format.make_from_string (Syntax_type_adl)
+			create matched_archetype_ids.make (0)
+
 			app_root.initialise_shell
 			if app_root.ready_to_initialise_app then
 				opts.execute (agent start)
@@ -68,9 +71,6 @@ feature -- Initialization
 feature -- Access
 
 	output_format: STRING
-		attribute
-			create Result.make_from_string (Syntax_type_adl)
-		end
 
 feature -- Status Report
 
@@ -224,9 +224,6 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	matched_archetype_ids: ARRAYED_LIST [STRING]
-		attribute
-			create Result.make (0)
-		end
 
 	opts: OPTIONS_PROCESSOR
 		once
@@ -245,7 +242,7 @@ feature {NONE} -- Implementation
 	compiler_archetype_gui_update (msg: STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
-			if verbose_output then
+			if verbose_output or ara.is_in_terminal_compilation_state and then not ara.is_valid then
 				print (msg)
 			end
 		end
