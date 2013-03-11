@@ -113,9 +113,10 @@ if distrib and len(adl_workbench) > 0:
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
+    test_scripts = 'apps/adlc/test'
 	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]
 
-	for root in [vim, install]:
+	for root in [vim, install, test_scripts]:
 		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			if '.git' in dirnames: dirnames.remove('.git')
@@ -145,7 +146,7 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [terminology, rm_schemas, vim]:
+			for root in [terminology, rm_schemas, vim, test_scripts]:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
@@ -189,6 +190,7 @@ if distrib and len(adl_workbench) > 0:
 			def copy_mac_osx_installer_sources(target, source, env):
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
+				copy_tree(test_scripts, pkg_contents)
 
 				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
