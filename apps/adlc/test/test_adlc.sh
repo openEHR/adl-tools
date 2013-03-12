@@ -56,7 +56,7 @@ select opt in "${options[@]}" "Quit"; do
     case "$REPLY" in
         [1-9] | 10 ) 
             cmd_idx=$((${REPLY}-1))
-            result="`$adlc_path/${commands[$cmd_idx]}`"
+            result="`\"$adlc_path\"/${commands[$cmd_idx]}`"
             if [ `echo "$result" | wc -l` -gt $screen_height ]; then
                 echo "$result" | less
             else
