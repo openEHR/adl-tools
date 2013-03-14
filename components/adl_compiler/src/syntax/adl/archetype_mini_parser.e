@@ -21,6 +21,11 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_path
 		end
 
+	BASIC_DEFINITIONS
+		export
+			{NONE} all;
+		end
+
 feature -- Definitions
 
 	Other_details_dadl_name: STRING = "other_details"
