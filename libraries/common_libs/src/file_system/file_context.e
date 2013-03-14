@@ -120,8 +120,8 @@ feature -- Commands
 			i: INTEGER
 			a_line: STRING
    		do
-   			last_op_failed := False
-			create in_file.make(current_full_path)
+    		last_op_failed := False
+			create in_file.make (current_full_path)
 			file_lines.wipe_out
 
 			if in_file.exists then
@@ -138,11 +138,11 @@ feature -- Commands
 				end
 				in_file.close
 				if file_lines.count >= 1 then
-					clean_utf(file_lines[1])
+					clean_utf (file_lines[1])
 				end
 			else
 				last_op_failed := True
-				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+				last_op_fail_reason := get_msg ("read_failed_file_does_not_exist", <<current_full_path>>)
 			end
 		ensure
 			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty

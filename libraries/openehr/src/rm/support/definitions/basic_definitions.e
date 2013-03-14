@@ -1,6 +1,5 @@
 note
 	component:   "openEHR common definitions"
-
 	description: "Definitions of some basic constant values for the openEHR models"
 	keywords:    "definitions"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"

@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Simple notion of a library of archetypes, implemented simply
-			 as a directory on the file system
-			 ]"
-	keywords:    "test, ADL"
+				 Simple notion of a library of archetypes, implemented simply
+				 as a directory on the file system
+				 ]"
+	keywords:    "file system"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
