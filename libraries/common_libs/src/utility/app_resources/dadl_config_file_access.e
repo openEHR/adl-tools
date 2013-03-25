@@ -205,10 +205,8 @@ feature -- Element Removal
 		require
             Valid_path: has_resource (a_path)
 		do
-			check attached dt_tree.node_at_path (a_path) as dt_obj then
-				if not dt_obj.is_root then
-					dt_obj.parent.remove_child (dt_obj)
-				end
+			check attached dt_tree.attribute_node_at_path (a_path) as dt_attr then
+				dt_attr.parent.remove_attribute (dt_attr.im_attr_name)
 			end
 		ensure
 			Path_removed: not has_resource (a_path)

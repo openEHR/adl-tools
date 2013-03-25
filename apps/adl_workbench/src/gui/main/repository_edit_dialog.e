@@ -11,7 +11,7 @@ note
 	license:     "See notice at bottom of class"
 
 class
-	PROFILE_EDIT_DIALOG
+	REPOSITORY_EDIT_DIALOG
 
 inherit
 	EV_DIALOG
@@ -29,31 +29,31 @@ create
 
 feature -- Definition
 
-	New_profile_name: STRING = "new_profile"
+	New_repository_name: STRING = "new_repository"
 
 feature {NONE} -- Initialization
 
-	make_edit (profiles: REPOSITORY_PROFILE_CONFIG; an_existing_profile: STRING)
-			-- Make with a reference to the table of profiles and the name of the profile being edited.
+	make_edit (a_repo_cfg_table: REPOSITORY_CONFIG_TABLE; an_existing_repo: STRING)
+			-- Make with a reference to the table of repositories and the name of the repository being edited.
 		require
-			profiles.has_profile (an_existing_profile)
+			a_repo_cfg_table.has_repository (an_existing_repo)
 		do
-			initial_profile_name := an_existing_profile
-			rep_profiles := profiles
+			initial_repository_name := an_existing_repo
+			repo_config_table := a_repo_cfg_table
 			default_create
 		ensure
-			rep_profiles_set: rep_profiles = profiles
-			Existing_profile: not is_new_profile
+			repositories_set: repo_config_table = a_repo_cfg_table
+			Existing_repository: not is_new_repository
 		end
 
-	make_new (profiles: REPOSITORY_PROFILE_CONFIG)
-			-- Make with a reference to the table of profiles being edited.
+	make_new (a_repo_cfg_table: REPOSITORY_CONFIG_TABLE)
+			-- Make with a reference to the table of repositories being edited.
 		do
-			rep_profiles := profiles
+			repo_config_table := a_repo_cfg_table
 			default_create
 		ensure
-			rep_profiles_set: rep_profiles = profiles
-			New_profile: is_new_profile
+			repositories_set: repo_config_table = a_repo_cfg_table
+			New_repository: is_new_repository
 		end
 
 	create_interface_objects
@@ -70,11 +70,11 @@ feature {NONE} -- Initialization
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
-			-- ============ profile name text control ============
-			create profile_name_ctl.make (get_text ("profile_name_text"), agent :STRING do Result := profile_name end, 0, 0, True)
-			ev_root_container.extend (profile_name_ctl.ev_root_container)
-			ev_root_container.disable_item_expand (profile_name_ctl.ev_root_container)
-			gui_controls.extend (profile_name_ctl)
+			-- ============ repository name text control ============
+			create repository_name_ctl.make (get_text ("repo_cfg_name_text"), agent :STRING do Result := repository_name end, 0, 0, True)
+			ev_root_container.extend (repository_name_ctl.ev_root_container)
+			ev_root_container.disable_item_expand (repository_name_ctl.ev_root_container)
+			gui_controls.extend (repository_name_ctl)
 
 			-- ============ Reference path ============
 			create ref_dir_setter.make (get_text ("ref_repo_dir_text"), agent :STRING do Result := ref_dir end, 0, 0)
@@ -100,7 +100,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_DIALOG}
 
-			set_title (get_text ("profile_edit_dialog_title"))
+			set_title (get_text ("repo_cfg_edit_dialog_title"))
 			set_icon_pixmap (adl_workbench_logo)
 			set_minimum_width (600)
 			extend (ev_root_container)
@@ -111,34 +111,34 @@ feature {NONE} -- Initialization
 			-- set up form for display
 			enable_edit
 			do_populate
---			show_actions.extend (agent (profile_name_ctl.ev_data_control).set_focus)
+--			show_actions.extend (agent (repository_name_ctl.ev_data_control).set_focus)
 		end
 
 feature -- Events
 
 	on_ok
 		local
-			a_prof: REPOSITORY_PROFILE
+			a_repo_cfg: REPOSITORY_CONFIG
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			is_valid := False
 
 			-- set working variables
-			profile_name := profile_name_ctl.data_control_text
-			if profile_name.has (' ') then
-				profile_name.replace_substring_all (" ", "_")
+			repository_name := repository_name_ctl.data_control_text
+			if repository_name.has (' ') then
+				repository_name.replace_substring_all (" ", "_")
 			end
 			ref_dir := ref_dir_setter.data_control_text
 			work_dir := work_dir_setter.data_control_text
 
-			-- now validate the name with respect to existing profiles			
+			-- now validate the name with respect to existing repositories			
 			-- first see if it is non-empty and unique
-			if profile_name.is_empty then
-				create error_dialog.make_with_text (get_text ("empty_profile"))
+			if repository_name.is_empty then
+				create error_dialog.make_with_text (get_text ("empty_repo_cfg"))
 				error_dialog.show_modal_to_window (Current)
 
-			elseif profile_name /~ initial_profile_name and rep_profiles.has_profile (profile_name) then
-				create error_dialog.make_with_text (get_msg ("duplicate_profile", <<profile_name>>))
+			elseif repository_name /~ initial_repository_name and repo_config_table.has_repository (repository_name) then
+				create error_dialog.make_with_text (get_msg ("duplicate_repo_cfg", <<repository_name>>))
 				error_dialog.show_modal_to_window (Current)
 
 			else
@@ -166,29 +166,25 @@ feature -- Events
 			end
 
 			if is_valid then
-				if is_new_profile then
-					create a_prof
-					a_prof.set_reference_repository (ref_dir)
-					if not work_dir.is_empty then
-						a_prof.set_work_repository (work_dir)
-					end
-					rep_profiles.put_profile (a_prof, profile_name)
-					has_changed_profile := True
+				if is_new_repository then
+					create a_repo_cfg.make (ref_dir, work_dir)
+					repo_config_table.put_repository (a_repo_cfg, repository_name)
+					has_changed_repository := True
 
 				else -- in edit existing situation, only do something if the paths have changed
-					-- if existing profile name was changed
-					if profile_name /~ initial_profile_name then
-						rep_profiles.rename_profile (initial_profile_name, profile_name)
-						has_changed_profile := True
+					-- if existing repository name was changed
+					if repository_name /~ initial_repository_name then
+						repo_config_table.rename_repository (initial_repository_name, repository_name)
+						has_changed_repository := True
 					end
-					a_prof := rep_profiles.profile (profile_name)
-					if a_prof.reference_repository /~ ref_dir then
-						a_prof.set_reference_repository (ref_dir)
-						has_changed_profile := True
+					a_repo_cfg := repo_config_table.repository (repository_name)
+					if a_repo_cfg.reference_path /~ ref_dir then
+						a_repo_cfg.set_reference_path (ref_dir)
+						has_changed_repository := True
 					end
-					if a_prof.work_repository /~ work_dir then
-						a_prof.set_work_repository (work_dir)
-						has_changed_profile := True
+					if a_repo_cfg.work_path /~ work_dir then
+						a_repo_cfg.set_work_path (work_dir)
+						has_changed_repository := True
 					end
 				end
 				hide
@@ -197,20 +193,20 @@ feature -- Events
 
 feature -- Access
 
-	rep_profiles: REPOSITORY_PROFILE_CONFIG
+	repo_config_table: REPOSITORY_CONFIG_TABLE
 			-- Profiles being edited, as a table of {{ref_path, working path}, prof_name}.
 
-	initial_profile_name: detachable STRING
-			-- copy of profile name if editing an existing one, used for checking if a rename has occurred in `on_ok'
+	initial_repository_name: detachable STRING
+			-- copy of repository name if editing an existing one, used for checking if a rename has occurred in `on_ok'
 
 	initial_ref_dir: STRING
-			-- initial value of reference directory, based on whether `initial_profile_name' was set
+			-- initial value of reference directory, based on whether `initial_repository_name' was set
 
 	initial_work_dir: detachable STRING
-			-- initial value of work directory, based on whether `initial_profile_name' was set
+			-- initial value of work directory, based on whether `initial_repository_name' was set
 
-	profile_name: STRING
-			-- current value of profile name based on choosing so far
+	repository_name: STRING
+			-- current value of repository name based on choosing so far
 
 	ref_dir: STRING
 			-- current value of reference directory setting based on choosing so far
@@ -220,17 +216,17 @@ feature -- Access
 
 feature -- Status Report
 
-	is_new_profile: BOOLEAN
-			-- True if the profile being specified in this dialog is to be treated as a new entry in `rep_profiles'.
+	is_new_repository: BOOLEAN
+			-- True if the repository being specified in this dialog is to be treated as a new entry in `repo_config_table'.
 		do
-			Result := not attached initial_profile_name
+			Result := not attached initial_repository_name
 		end
 
 	is_valid: BOOLEAN
 			-- result of validation in `on_ok'
 
-	has_changed_profile: BOOLEAN
-			-- True if this dialog has caused a change to `rep_profiles'.
+	has_changed_repository: BOOLEAN
+			-- True if this dialog has caused a change to `repo_config_table'.
 
 feature -- Commands
 
@@ -251,22 +247,22 @@ feature {NONE} -- Implementation
 	initialise_dirs
 		do
 			-- set initial values
-			if is_new_profile then
-				if rep_profiles.has_current_profile then
-					initial_ref_dir := rep_profiles.current_reference_repository_path
-					initial_work_dir := rep_profiles.current_work_repository_path
+			if is_new_repository then
+				if repo_config_table.has_current_repository then
+					initial_ref_dir := repo_config_table.current_reference_repository_path
+					initial_work_dir := repo_config_table.current_work_repository_path
 				else
 					initial_ref_dir := user_config_file_directory
 				end
-				profile_name := New_profile_name.twin
+				repository_name := New_repository_name.twin
 			else
-				check attached initial_profile_name as ipn and then attached rep_profiles.profile (ipn) as prof then
-					initial_ref_dir := prof.reference_repository
-					if prof.has_work_repository and then attached prof.work_repository as wr then
+				check attached initial_repository_name as ipn and then attached repo_config_table.repository (ipn) as repo then
+					initial_ref_dir := repo.reference_path
+					if repo.has_work_path and then attached repo.work_path as wr then
 						initial_work_dir := wr
 					end
 				end
-				profile_name := initial_profile_name.twin
+				repository_name := initial_repository_name.twin
 			end
 
 			-- set current values
@@ -280,7 +276,7 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	profile_name_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
+	repository_name_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	ref_dir_setter, work_dir_setter: EVX_DIRECTORY_SETTER
 

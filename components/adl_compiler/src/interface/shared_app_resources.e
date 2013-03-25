@@ -179,70 +179,79 @@ feature -- Application Switches
 			app_cfg.put_value("/rm_schemas/load_list", a_schema_list)
 		end
 
-	repository_profiles: REPOSITORY_PROFILE_CONFIG
-			-- hash of profiles each of which is a list of {ref_repo_path, working_repo_path} or maybe just
-			-- {ref_repo_path}, keyed by profile name. The data are stored in the following way:
+	old_repository_config_table_path: STRING
+			-- path of the old REPOSITORY_PROFILE_CONFIG within the parent object representing the whole .cfg file
+		once
+			Result := "/" + {REPOSITORY_PROFILE_CONFIG}.root_attribute_name
+		end
+
+	repository_config_table_path: STRING
+			-- path of the REPOSITORY_CONFIG_TABLE within the parent object representing the whole .cfg file
+		once
+			Result := "/" + {REPOSITORY_CONFIG_TABLE}.root_attribute_name
+		end
+
+	repository_config_table: REPOSITORY_CONFIG_TABLE
+			-- hash of repo configs each of which is a list of {ref_repo_path, working_repo_path} configs or maybe just
+			-- {ref_repo_path}, keyed by config name. The data are stored in the following way:
 			--
-			--	profile = <
-			--		current_repository_profile = <"CKM">
-			--		profiles = <
+			--	repository_config_table = <
+			--		current_repository = <"CKM">
+			--		repositories = <
 			--			["CKM"] = <
-			--				reference_repository = <"C:\\project\\openehr\\knowledge\\archetypes\\CKM">
+			--				reference_path = <"C:\\project\\openehr\\knowledge\\archetypes\\CKM">
 			--			>
 			--			["abc"] = <
-			--				reference_repository = <"C:\\some\\other\\ref\\dir">
-			--				work_repository = <"C:\\some\\other\\work\\dir">
+			--				reference_path = <"C:\\some\\other\\ref\\dir">
+			--				work_path = <"C:\\some\\other\\work\\dir">
 			--			>
 			--		>
 			--	>
 			--
 		do
-			if attached repository_profiles_cache.item as pci then
+			if attached repository_config_table_cache.item as pci then
 				Result := pci
 			else
-				if attached {REPOSITORY_PROFILE_CONFIG} app_cfg.object_value ("/profile", "REPOSITORY_PROFILE_CONFIG") as p then
+				if app_cfg.has_resource (old_repository_config_table_path) and then
+					attached {REPOSITORY_PROFILE_CONFIG} app_cfg.object_value (old_repository_config_table_path, ({REPOSITORY_PROFILE_CONFIG}).name) as op
+				then
+					create Result.make_from_old (op)
+					app_cfg.remove_resource (old_repository_config_table_path)
+				elseif attached {REPOSITORY_CONFIG_TABLE} app_cfg.object_value (repository_config_table_path, ({REPOSITORY_CONFIG_TABLE}).name) as p then
 					Result := p
 				else
 					create Result.default_create
 				end
-				repository_profiles_cache.put (Result)
+				repository_config_table_cache.put (Result)
 			end
 		end
 
-	set_repository_profiles (profiles: REPOSITORY_PROFILE_CONFIG)
-			-- hash of profiles each of which is a list of {ref_repo_path, working_repo_path} or maybe just
-			-- {ref_repo_path}, keyed by profile name. The data are stored for the moment in the old-style
-			-- resource .cfg file, in the following way:
-			--
-			-- [repository]
-			-- profile_1=a_ref_path,a_working_path
-			-- profile_2=a_ref_path,a_working_path
-			-- ..
-			-- profile_n=a_ref_path,a_working_path
-			--
+	set_repository_config_table (repo_config_table: REPOSITORY_CONFIG_TABLE)
+			-- hash of repo configs each of which is a list of {ref_repo_path, working_repo_path} or maybe just
+			-- {ref_repo_path}, keyed by config name.
 		do
-			repository_profiles_cache.put (profiles)
-			app_cfg.put_object ("/profile", profiles)
+			repository_config_table_cache.put (repo_config_table)
+			app_cfg.put_object (repository_config_table_path, repo_config_table)
 		end
 
-	set_current_profile (a_profile_name: STRING)
+	set_current_repository (a_repo_name: STRING)
 		require
-			profile_name_valid: not a_profile_name.is_empty
+			repo_name_valid: not a_repo_name.is_empty
 		do
-			repository_profiles.set_current_profile_name (a_profile_name)
-			app_cfg.put_object ("/profile", repository_profiles)
+			repository_config_table.set_current_repository_name (a_repo_name)
+			app_cfg.put_object (repository_config_table_path, repository_config_table)
 		ensure
-			profile_set: repository_profiles.current_profile_name.same_string (a_profile_name)
+			current_repo_set: repository_config_table.current_repository_name.same_string (a_repo_name)
 		end
 
-	init_gen_dirs_from_current_profile
-			-- create compiler source and flat generated file areas for current profile
+	init_gen_dirs_from_current_repository
+			-- create compiler source and flat generated file areas for current repository
 		require
-			repository_profiles.has_current_profile
+			repository_config_table.has_current_repository
 		local
 			curr_prof: STRING
 		do
-			check attached repository_profiles.current_profile_name as cpn then
+			check attached repository_config_table.current_repository_name as cpn then
 				curr_prof := cpn
 			end
 			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "source"))
@@ -256,10 +265,10 @@ feature -- Application Switches
 			end
 		end
 
-	clear_current_repository_profile
+	clear_current_repository
 		do
-			repository_profiles.clear_current_profile
-			app_cfg.put_object("/profile", repository_profiles)
+			repository_config_table.clear_current_repository
+			app_cfg.put_object(repository_config_table_path, repository_config_table)
 		end
 
 	adl_version_for_flat_output_numeric: INTEGER
@@ -465,7 +474,7 @@ feature -- Application Switches
 			app_cfg.put_value ("/authoring/author_org", a_value)
 		end
 
-	author_copyright: attached STRING
+	author_copyright: STRING
 			-- default copyright string to insert into newly created archetype description section
 		do
 			Result := app_cfg.string_value ("/authoring/author_copyright")
@@ -498,7 +507,7 @@ feature {NONE} -- Cached Settings
 			create Result.make_empty
 		end
 
-	repository_profiles_cache: CELL [detachable REPOSITORY_PROFILE_CONFIG]
+	repository_config_table_cache: CELL [detachable REPOSITORY_CONFIG_TABLE]
 		once
 			create Result.put (Void)
 		end
@@ -506,8 +515,8 @@ feature {NONE} -- Cached Settings
 	resources_refresh_from_file
 			-- actions to clear any cached content from config file, due to file being re-loaded
 		do
-			repository_profiles_cache.put (Void)
-			init_gen_dirs_from_current_profile
+			repository_config_table_cache.put (Void)
+			init_gen_dirs_from_current_repository
 		end
 
 end

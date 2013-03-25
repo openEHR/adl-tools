@@ -319,13 +319,13 @@ feature -- Commands
 		do
 			clear
 
- 			if has_current_profile then
+ 			if has_current_repository then
 	 			current_arch_cat.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
 
 			-- put names on columns
 			if ev_grid.column_count > 0 then
-				ev_grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
+				ev_grid.column (1).set_title ("Archetypes - " + repository_config_table.current_repository_name)
 
 				if ev_grid.column_count >= first_test_col then
 					from
@@ -587,16 +587,16 @@ feature {NONE} -- Tests
 				-- save source as read in (not serialised) for in-memory compare test
 				original_differential_text := target.differential_text
 
-				-- save source as serialised to $profile/source/new area
+				-- save source as serialised to $repository/source/new area
 				if diff_dirs_available then
-					-- save source as read in (not serialised) to $profile/source/orig area
+					-- save source as read in (not serialised) to $repository/source/orig area
 					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, target.qualified_name + File_ext_archetype_source))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
 					serialised_source_path := file_system.pathname (diff_dir_source_new, target.qualified_name + File_ext_archetype_source)
 					target.save_differential_as (serialised_source_path, Syntax_type_adl)
 
-					-- for top-level archetypes only, copy above serialised source to $profile/source_flat/orig area as well, using extension .adlx
+					-- for top-level archetypes only, copy above serialised source to $repository/source_flat/orig area as well, using extension .adlx
 					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
 				--	if not target.is_specialised then
 						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.qualified_name + File_ext_archetype_adl_diff))
@@ -680,7 +680,7 @@ feature {NONE} -- Tests
 					end
 					target.save_flat_as (flat_path, Syntax_type_adl)
 
-					-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
+					-- copy above flat file to $repository/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 					-- extensions or else it gets confused)
 					check attached file_system.pathname (diff_dir_source_flat_new, target.qualified_name + File_ext_archetype_adl_diff) as pn then
 						file_system.copy_file (flat_path, pn)
@@ -840,12 +840,12 @@ feature {NONE} -- Implementation
 
 	reset_output_directories
 			-- Set output directories, currently just the test diff output location.
-			-- Needs to be called if either different profile is selected, or if `test_diff_directory' is changed in user options.
+			-- Needs to be called if either different repository is selected, or if `test_diff_directory' is changed in user options.
 			-- Sets `diff_dirs_available' True if all directories can be found/created.
 			-- Resulting directory structure:
 			--
 			-- 		test_diff_directory
-			--			+---- $current_profile
+			--			+---- $current_repository
 			--					+---- source
 			--					|		+---- orig
 			--					|		+---- new
@@ -867,14 +867,14 @@ feature {NONE} -- Implementation
 			--							+---- new
 			--
 		require
-			has_current_profile
+			has_current_repository
 		local
 			curr_prof, diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, dadl_root: STRING
 		do
 			diff_dirs_available := False
 
 			-- source diff dirs
-			check attached repository_profiles.current_profile_name as cpn then
+			check attached repository_config_table.current_repository_name as cpn then
 				curr_prof := cpn
 			end
 			diff_dir_root := file_system.pathname (test_diff_directory, curr_prof)

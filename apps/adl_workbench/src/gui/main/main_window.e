@@ -4,7 +4,7 @@ note
 	keywords:    "AWB, archetypes, workbench"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class
@@ -95,13 +95,13 @@ feature {NONE} -- Initialization
 			action_bar.disable_item_expand (history_bar.tool_bar)
 
 			-- profile combo
-			create archetype_profile_combo
-			archetype_profile_combo.set_tooltip (get_msg ("profile_combo_tooltip", Void))
-			archetype_profile_combo.set_minimum_width (160)
-			archetype_profile_combo.disable_edit
-			archetype_profile_combo.select_actions.extend (agent select_profile)
-			action_bar.extend (archetype_profile_combo)
-			action_bar.disable_item_expand (archetype_profile_combo)
+			create arch_repositories_combo
+			arch_repositories_combo.set_tooltip (get_msg ("repo_cfg_combo_tooltip", Void))
+			arch_repositories_combo.set_minimum_width (160)
+			arch_repositories_combo.disable_edit
+			arch_repositories_combo.select_actions.extend (agent select_profile)
+			action_bar.extend (arch_repositories_combo)
+			action_bar.disable_item_expand (arch_repositories_combo)
 
 			-- compile tool bar
 			create arch_compile_tool_bar
@@ -333,7 +333,7 @@ feature {NONE} -- Initialization
 			create repository_menu_set_repository
 			repository_menu_set_repository.set_text (get_msg ("repository_menu_configure_text", Void))
 			repository_menu_set_repository.set_pixmap (get_icon_pixmap ("tool/tools"))
-			repository_menu_set_repository.select_actions.extend (agent configure_profiles)
+			repository_menu_set_repository.select_actions.extend (agent configure_repositories)
 			repository_menu.extend (repository_menu_set_repository)
 
 
@@ -560,7 +560,8 @@ feature -- Commands
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			append_billboard_to_console
+			console_tool.append_text (app_root.error_strings)
+			console_tool.append_text (rm_schemas_access.error_strings)
 
 			initialise_session_ui_basic
 			Precursor
@@ -586,15 +587,14 @@ feature -- Commands
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
 				rm_schema_explorer.populate (rm_schemas_access)
-				if repository_profiles.current_reference_repository_path.is_empty then
-					configure_profiles
+				if repository_config_table.current_reference_repository_path.is_empty then
+					configure_repositories
 				else
-					populate_archetype_profile_combo
-					refresh_profile_context (True)
+					populate_arch_repo_config_combo
+					refresh_archetype_catalogue (True)
 				end
+				console_tool.append_text (rm_schemas_access.error_strings)
 			end
-
-			append_billboard_to_console
 		end
 
 	exit_app
@@ -658,49 +658,49 @@ feature -- View Events
 
 feature {NONE} -- Repository events
 
-	configure_profiles
+	configure_repositories
 			-- Display the Repository Settings dialog. This dialog allows changing of
 			-- the repository profiles, adding new ones and removal. Removal of the current
 			-- repository or changing current repository paths will cause visual update;
 			-- adding a new profile won't - the current selection stays.
 		local
 			dialog: REPOSITORY_DIALOG
-			any_profile_changes_made: BOOLEAN
-			current_profile_removed: BOOLEAN
-			current_profile_changed: BOOLEAN
+			any_repository_changes_made: BOOLEAN
+			current_repositories_removed: BOOLEAN
+			current_repositories_changed: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			any_profile_changes_made := dialog.any_profile_changes_made
-			if any_profile_changes_made then
-				current_profile_removed := dialog.current_profile_removed
-				current_profile_changed := dialog.current_profile_changed
+			any_repository_changes_made := dialog.any_repository_changes_made
+			if any_repository_changes_made then
+				current_repositories_removed := dialog.current_repository_removed
+				current_repositories_changed := dialog.current_repository_changed
 				save_resources
 			end
 
 			dialog.destroy
 
 			-- if the list of profiles changed, repopulate the profile combo box selectors
-			if dialog.any_profile_changes_made then
-				populate_archetype_profile_combo
+			if dialog.any_repository_changes_made then
+				populate_arch_repo_config_combo
 			end
 
 			-- if the current profile changed or was removed, repopulate the explorers
-			if current_profile_removed or current_profile_changed then
+			if current_repositories_removed or current_repositories_changed then
 				console_tool.clear
-				refresh_profile_context (True)
+				refresh_archetype_catalogue (True)
 			end
 		end
 
 	select_profile
 			-- Called by `select_actions' of profile selector
 		do
-			if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+			if not arch_repositories_combo.text.same_string (repository_config_table.current_repository_name) then
 				console_tool.clear
-				set_current_profile (archetype_profile_combo.text)
+				set_current_repository (arch_repositories_combo.text)
 			end
-			refresh_profile_context (False)
+			refresh_archetype_catalogue (False)
 			clear_all_editors
 		end
 
@@ -843,7 +843,7 @@ feature {NONE} -- Repository events
 	refresh_directory
 			-- reload current directory
 		do
-			refresh_profile_context (True)
+			refresh_archetype_catalogue (True)
 		end
 
 feature {NONE} -- XML Menu events
@@ -872,7 +872,7 @@ feature {NONE} -- Tools menu events
 					update_all_tools_rm_icons_setting
 				end
 			end
-			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
+			if dialog.has_changed_navigator_options and repository_config_table.has_current_repository then
 				save_resources
 				catalogue_tool.populate (current_arch_cat)
 				test_tool.populate
@@ -889,9 +889,9 @@ feature {NONE} -- Tools menu events
 	clean_generated_files
 			-- Remove all generated files below the repository directory and repopulate from scratch
 		do
-			if has_current_profile then
+			if has_current_repository then
 				do_with_wait_cursor (Current, agent current_arch_cat.do_all_archetypes (agent delete_generated_files))
-				refresh_profile_context (True)
+				refresh_archetype_catalogue (True)
 			end
 		end
 
@@ -912,19 +912,19 @@ feature -- RM Schemas Events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			populate_archetype_profile_combo
+			populate_arch_repo_config_combo
 			if dialog.has_changed_schema_load_list then
 				console_tool.clear
 				rm_schemas_access.reload_schemas
 				if not rm_schemas_access.found_valid_schemas then
-					append_billboard_to_console
+					console_tool.append_text (rm_schemas_access.error_strings)
 				else
 					rm_schema_explorer.populate (rm_schemas_access)
-					refresh_profile_context (True)
+					refresh_archetype_catalogue (True)
 				end
 			elseif dialog.has_changed_schema_dir then
 				rm_schema_explorer.populate (rm_schemas_access)
-				refresh_profile_context (True)
+				refresh_archetype_catalogue (True)
 			end
 		end
 
@@ -932,7 +932,7 @@ feature -- RM Schemas Events
 			-- user-initiated reload
 		do
 			rm_schemas_access.reload_schemas
-			refresh_profile_context (True)
+			refresh_archetype_catalogue (True)
 			rm_schema_explorer.populate (rm_schemas_access)
 		end
 
@@ -1246,7 +1246,7 @@ feature -- Clipboard
 
 feature {NONE} -- Implementation
 
-	info_feedback (a_message: attached STRING)
+	info_feedback (a_message: STRING)
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
@@ -1262,13 +1262,6 @@ feature {NONE} -- Implementation
 			create Result.make (Current)
 		end
 
-	append_billboard_to_console
-			-- Append bilboard contents to console and clear billboard.
-		do
-			console_tool.append_text (billboard.content)
-			billboard.clear
-		end
-
 	save_resources
 			-- Save the application configuration file and update the status area.
 		do
@@ -1276,7 +1269,7 @@ feature {NONE} -- Implementation
 			post_info (generator, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
-	refresh_profile_context (refresh_from_repository: BOOLEAN)
+	refresh_archetype_catalogue (refresh_from_repository: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
 			do_with_wait_cursor (Current, agent do_refresh_profile_context (refresh_from_repository))
@@ -1285,15 +1278,14 @@ feature {NONE} -- Implementation
 	do_refresh_profile_context (refresh_from_repository: BOOLEAN)
 		do
 			console_tool.show
-			console_tool.append_text (get_msg_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
-			use_current_profile (refresh_from_repository)
+			console_tool.append_text (get_msg_line ("populating_directory_start", <<repository_config_table.current_repository_name>>))
+			use_current_repository (refresh_from_repository)
+			console_tool.append_text (current_arch_cat.error_strings)
 			console_tool.append_text (get_msg_line ("populating_directory_complete", Void))
 
 			clear_toolbar_controls
 			error_tool.clear
 			clear_all_editors
-
-			append_billboard_to_console
 
 			catalogue_tool.populate (current_arch_cat)
 			test_tool.populate
@@ -1311,21 +1303,21 @@ feature {NONE} -- Implementation
 		--	archetype_editors.clear_all_tools_content
 		end
 
-	populate_archetype_profile_combo
+	populate_arch_repo_config_combo
 			-- Initialise the dialog's widgets from shared settings.
 		do
-			archetype_profile_combo.select_actions.block
-			archetype_profile_combo.change_actions.block
-			if not repository_profiles.is_empty then
-				archetype_profile_combo.set_strings (repository_profiles.names)
-				if repository_profiles.has_current_profile then
-					archetype_profile_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
+			arch_repositories_combo.select_actions.block
+			arch_repositories_combo.change_actions.block
+			if not repository_config_table.is_empty then
+				arch_repositories_combo.set_strings (repository_config_table.names)
+				if repository_config_table.has_current_repository then
+					arch_repositories_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_config_table.current_repository_name) then li.enable_select end end)
 				end
 			else
-				archetype_profile_combo.wipe_out
+				arch_repositories_combo.wipe_out
 			end
-			archetype_profile_combo.select_actions.resume
-			archetype_profile_combo.change_actions.resume
+			arch_repositories_combo.select_actions.resume
+			arch_repositories_combo.change_actions.resume
 		end
 
 	populate_compile_button
@@ -1358,7 +1350,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Build commands
 
-	do_build_action (action: attached PROCEDURE [ANY, TUPLE])
+	do_build_action (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
 		local
 			menu_items: ARRAY [EV_MENU_ITEM]
@@ -1383,7 +1375,7 @@ feature {NONE} -- Build commands
 			retry
 		end
 
-	compiler_global_gui_update (a_msg: attached STRING)
+	compiler_global_gui_update (a_msg: STRING)
 			-- Update GUI with progress on build.
 		do
 			populate_compile_button
@@ -1391,7 +1383,7 @@ feature {NONE} -- Build commands
 		--	ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (a_msg: attached STRING; aca: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update GUI with progress on build.
 		do
 			if not a_msg.is_empty then
@@ -1430,7 +1422,7 @@ feature {NONE} -- Build commands
 feature {NONE} -- GUI Widgets
 
 	action_bar, arch_output_version_hbox: EV_HORIZONTAL_BOX
-	archetype_profile_combo, arch_output_version_combo: EV_COMBO_BOX
+	arch_repositories_combo, arch_output_version_combo: EV_COMBO_BOX
 	arch_compile_tool_bar: EV_TOOL_BAR
 	compile_button, open_button: EV_TOOL_BAR_BUTTON
 	tool_bar_sep_1: EV_TOOL_BAR_SEPARATOR

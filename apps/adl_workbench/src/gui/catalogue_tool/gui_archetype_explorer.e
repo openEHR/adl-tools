@@ -500,7 +500,7 @@ feature {NONE} -- Implementation
 				matching_ids.start
 				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).differential_path)
 			else
-				in_dir_path := repository_profiles.current_reference_repository_path
+				in_dir_path := repository_config_table.current_reference_repository_path
 			end
 
 			create dialog.make (in_dir_path, create {ARCHETYPE_ID}.make_new (accn.qualified_name), source)

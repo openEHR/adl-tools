@@ -18,7 +18,7 @@ inherit
 	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all;
-			{ANY} has_current_profile
+			{ANY} has_current_repository
 		end
 
 	STRING_UTILITIES

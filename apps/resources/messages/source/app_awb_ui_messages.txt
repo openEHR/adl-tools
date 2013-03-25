@@ -50,32 +50,32 @@ templates = <
 		["remove_mi"] = <"Remove row">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
-		["remove_profile"] = <"Removing invalid profile (error: $1)">
-		["profile_error"] = <"Profile error: $1">
-		["invalid_profile"] = <"Profile $1 not known in profiles">
-		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable">
-		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable">
-		["work_repo_not_valid"] = <"Work Repository $1 is the same as or a child of the reference repository $2">
-		["cant_remove_last_profile"] = <"Last profile cannot be removed; use 'Edit' to reconfigure">
-		["duplicate_profile"] = <"New profile name $1 already used">
-		["empty_profile"] = <"Profile name must not be empty">
-		["repository_dialog_title"] = <"ADL Workbench Repository Profile Configuration">
+		["remove_repo_cfg"] = <"Removing invalid configuration (error: $1)">
+		["repo_cfg_error"] = <"Repository error: $1">
+		["invalid_repo_cfg"] = <"Configuration $1 not known in repository configurations">
+		["ref_repo_not_found"] = <"Reference Path $1 does not exist or not readable">
+		["work_repo_not_found"] = <"Work Path $1 does not exist or not readable">
+		["work_repo_not_valid"] = <"Work Path $1 is the same as or a child of the reference repository $2">
+		["cant_remove_last_repo_cfg"] = <"Last configuration cannot be removed; use 'Edit' to reconfigure">
+		["duplicate_repo_cfg"] = <"New configuration name $1 already used">
+		["empty_repo_cfg"] = <"Repository configuration name must not be empty">
+		["repository_dialog_title"] = <"ADL Workbench Repository Configuration">
 
-		["profile_list_text"] = <"Profiles">
-		["add_new_profile_button_text"] = <"Add New">
-		["add_new_profile_button_tooltip"] = <"Add a new profile">
-		["remove_profile_button_text"] = <"Remove">
-		["remove_profile_button_tooltip"] = <"Remove selected profile">
-		["edit_profile_button_text"] = <"Edit">
-		["edit_profile_button_tooltip"] = <"Edit selected profile">
-		["ref_repo_text"] =  <"Reference Repository">
-		["work_repo_text"] = <"Work Repository">
+		["repo_cfg_list_text"] = <"Repositories">
+		["add_new_repo_cfg_button_text"] = <"Add New">
+		["add_new_repo_cfg_button_tooltip"] = <"Add a new repository configuration">
+		["remove_repo_cfg_button_text"] = <"Remove">
+		["remove_repo_cfg_button_tooltip"] = <"Remove selected repository configuration">
+		["edit_repo_cfg_button_text"] = <"Edit">
+		["edit_repo_cfg_button_tooltip"] = <"Edit selected repository configuration">
+		["ref_repo_text"] =  <"Reference Path">
+		["work_repo_text"] = <"Work Path">
 
 		-- PROFILE_EDIT_DIALOG
-		["profile_edit_dialog_title"] =  <"Edit Repository Profile">
-		["profile_name_text"] =  <"Profile Name:">
-		["ref_repo_dir_text"] =  <"Reference Repository Directory:">
-		["work_repo_dir_text"] = <"     Work Repository Directory:">
+		["repo_cfg_edit_dialog_title"] =  <"Edit Repository Configuration">
+		["repo_cfg_name_text"] =  <"Repository Name:">
+		["ref_repo_dir_text"] =  <"Reference Path:">
+		["work_repo_dir_text"] = <"     Work Path:">
 
 		-- OPTION_DIALOG
 		["option_dialog_title"] = <"ADL Workbench Options">
@@ -116,6 +116,17 @@ templates = <
 		["options_auth_name_label"] = <"Name: ">
 		["options_auth_org_label"] = <"Organisation: ">
 		["options_auth_copyright_label"] = <"Copyright: ">
+
+		-- AOM_PROFILE_DIAPLOG
+		["aom_profile_dialog_title"] = <"ADL Workbench AOM profile Configuration">
+		["aom_profile_dialog_header_label"] = <"Archetype Object Model (AOM) profiles loaded shown below.%NCheck or uncheck to load as required.">
+		["aom_profile_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
+		["aom_profile_dir_text"] = <"AOM profile directory:">
+
+		["aom_profile_grid_profile_col_title"] = <"Profile">
+		["aom_profile_grid_rm_col_title"] = <"Reference Models">
+		["aom_profile_grid_validated_col_title"] = <"Validation">
+		["aom_profile_grid_edit_col_title"] = <"Edit">
 
 		-- RM_SCHEMA_DIALOG
 		["rm_schema_dialog_title"] = <"ADL Workbench RM Schema Configuration">
@@ -184,7 +195,7 @@ templates = <
 		["repository_menu_export_yaml_text"] = <"Export as &YAML...">
 		["repository_menu_export_xml_text"] = <"Export as &XML...">
 		["repository_menu_export_report_text"] = <"&Export Repository Report...">
-		["repository_menu_configure_text"] = <"&Configure Repository Profiles...">
+		["repository_menu_configure_text"] = <"&Configure Repositories...">
 
 		["rm_schemas_menu_text"] = <"RM &Schemas">
 		["rm_schemas_reload_text"] = <"&Reload Schemas">
@@ -215,7 +226,7 @@ templates = <
 		["test_tool_title"] = <"Test tool">
 
 		-- MAIN_WINDOW - widget texts and tooltips
-		["profile_combo_tooltip"] = <"Select repository profile">
+		["repo_cfg_combo_tooltip"] = <"Select repository configuration">
 		["compile_button_text"] = <"Compile">
 		["compile_button_tooltip"] = <"Compile all archetypes (F7)">
 		["adl_version_label_text"] = <"ADL Version:">
@@ -236,7 +247,7 @@ templates = <
 		["compile_before_serialising"] = <"Must compile before serialising">
 		["no_diff_tool"] = <"No diff tool must be configured; see Options">
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on repository first">
-		["populating_directory_start"] = <"Populating from directories in $1 profile...">
+		["populating_directory_start"] = <"Populating from directories in $1 repository configuration...">
 		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Repository menu">
 		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">

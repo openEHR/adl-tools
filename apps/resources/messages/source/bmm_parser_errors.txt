@@ -8,45 +8,40 @@
 --	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd"
 --	license:     See notice at bottom of class
 --
---	file:        $URL$
---	revision:    $LastChangedRevision$
---	last_change: $LastChangedDate$
---
 
 templates = <
 	["en"] = <
 		-- SCHEMA_ACCESS (RM model checker)
 		["model_access_e0"] = <"Reference model schema(s) $1 specified in options not valid or not found in directory $2">
-		["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
-		["model_access_e2"] = <"Reference Model schema $1 load failure; reason: $2">
+		["bmm_schema_file_not_valid"] = <"Reference Model schema file $1 does not exist or not readable">
+		["bmm_schema_load_failure"] = <"Reference Model schema $1 load failure; reason: $2">
 		["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
-		["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
-		["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
-		["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/schema_file$2)">
+		["bmm_schema_load_failure_exception"] = <"Reference Model schema $1 load failure due to exception during processing">
+		["schema_dir_not_valid"] = <"Reference Model schema directory $1 does not exist or not readable">
+		["bmm_schema_dir_contains_no_schemas"] = <"Reference Model schema directory $1 does not contain any schemas">
+		["bmm_schema_dir_contains_no_valid_schemas"] = <"Reference Model schema directory $1 does not contain any valid schemas">
 		["model_access_e7"] = <"No Reference Model schema found for package '$1'">
-		["model_access_e8"] = <"Reference Model schema $1 failed to load; errors:%N$2">
-		["model_access_e9"] = <"Reference Model schema $1 failed post-merge validation; errors:%N$2">
-		["model_access_e10"] = <"Reference Model included schema $1 not found or failed to load">
-		["model_access_e11"] = <"Reference Model schema $1 includes a schema that failed to load">
-		["model_access_e12"] = <"Reference Model schema $1 failed basic validation; errors:%N$2">
-		["model_access_e13"] = <"No valid schemas found at path $1">
-		["model_access_e14"] = <"Unknown exception processing RM schemas">
-		["model_access_e14a"] = <"Assertion violation processing RM schemas; original recipient: $1">
-		["model_access_e15"] = <"Reference Model schema $1 includes validation failed: %N$2">
-		["model_access_e16"] = <"Reference Model schemas at $1 incompatible with current release of the tool; obtain up to date schemas">
+		["bmm_schema_post_merge_validate_fail"] = <"Reference Model schema $1 failed post-merge validation; errors:%N$2">
+		["bmm_schema_included_schema_not_found"] = <"Reference Model included schema $1 not found or failed to load">
+		["bmm_schema_include_failed_to_load"] = <"Reference Model schema $1 includes a schema that failed to load">
+		["bmm_schema_basic_validation_failed"] = <"Reference Model schema $1 failed basic validation; errors:%N$2">
+		["bmm_schema_unknown_exception"] = <"Unknown exception processing RM schemas">
+		["bmm_schema_assertion_violation"] = <"Assertion violation processing RM schemas; original recipient: $1">
+		["bmm_schema_includes_valiidation_failed"] = <"Reference Model schema $1 includes validation failed: %N$2">
+		["bmm_schema_version_incompatible_with_tool"] = <"Reference Model schemas at $1 incompatible with current release of the tool; obtain up to date schemas">
 		["load_conv_fail_err"] = <"Reference Model schema $1 load data conversion failure; reason: $2">
 
-		["model_access_i1"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
-		["model_access_i2"] = <"Merged schema $1 into schema $2">
+		["bmm_schema_info_loaded"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
+		["bmm_schema_merged_schema"] = <"Merged schema $1 into schema $2">
 
 		["model_access_w1"] = <"Reference Model checking is OFF">
-		["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2, ignoring latter">
-		["model_access_w3"] = <"Duplicate instance of Reference Model model $1 found; original schema $2; ignoring instance from schema $3">
-		["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
+		["bmm_schema_duplicate_schema_found"] = <"Duplicate Reference Model schema found for model '$1' in file $2, ignoring latter">
+		["bmm_schema_duplicate_found"] = <"Duplicate instance of Reference Model model $1 found; original schema $2; ignoring instance from schema $3">
+		["bmm_schema_rm_missing"] = <"Reference Model for $1 meta-data missing/invalid: $2">
 		["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
-		["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
-		["model_access_w7"] = <"'rm_schemas_load_list' config setting mentions non-existent schema $1">
-		["model_access_w8"] = <"Reference Model schema $1 passed basic validation with warnings:%N$2">
+		["bmm_schemas_no_load_list_found"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
+		["bmm_schema_invalid_load_list"] = <"'rm_schemas_load_list' config setting mentions non-existent schema $1">
+		["bmm_schema_passed_with_warnings"] = <"Reference Model schema $1 passed basic validation with warnings:%N$2">
 
 		["BMM_INC"] = <"Reference Model schema $1 includes schema $2 that does not exist">
 		["BMM_VER"] = <"Schema $1 BMM version $2 incompatible with software version $3">

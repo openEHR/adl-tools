@@ -12,6 +12,8 @@ note
 class APP_ROOT
 
 inherit
+	GLOBAL_ERROR_REPORTING_LEVEL
+
 	SHARED_ARCHETYPE_CATALOGUES
 
 	SHARED_ARCHETYPE_COMPILER
@@ -67,11 +69,11 @@ feature -- Initialisation
 		local
 			strx: STRING
 			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
-			dead_profiles: ARRAYED_LIST [STRING]
+			dead_repos: ARRAYED_LIST [STRING]
 		once
 			-- set error reporting level in billboard and all error accumulator objects
-			billboard.set_error_reporting_level(error_reporting_level)
-			errors.set_error_reporting_level (error_reporting_level)
+			billboard.set_error_reporting_level (error_reporting_level)
+			set_global_error_reporting_level (error_reporting_level)
 
 			-- initialise terminology
 			if terminology_directory.is_empty then
@@ -82,7 +84,9 @@ feature -- Initialisation
 				add_error ("terminology_init_failed", <<term_init.init_fail_reason>>)
 			end
 
+			--
 			-- check if found an XML rules file, and copy in sample one if none
+			--
 			if not file_system.file_exists (xml_rules_file_path) and not file_system.file_exists (Default_xml_rules_file_path) then
 				if file_system.file_exists (xml_rules_sample_file_path) then
 					file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
@@ -91,7 +95,9 @@ feature -- Initialisation
 				end
 			end
 
+			--
 			-- set up the RM schemas
+			--
 			if rm_schema_directory.is_empty then
 				set_rm_schema_directory (Default_rm_schema_directory)
 			end
@@ -102,39 +108,37 @@ feature -- Initialisation
 					rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))
 					strx.remove_tail (2) -- remove final ", "
 
-					if repository_profiles.is_empty then
+					if repository_config_table.is_empty then
 						add_warning ("model_access_e0", <<strx, rm_schema_directory>>)
 					else
 						add_error ("model_access_e0", <<strx, rm_schema_directory>>)
 					end
-				else
-					add_info ("general", <<billboard.content>>)
 				end
 			else
 				add_error ("model_access_e5", <<rm_schema_directory>>)
 			end
 
-			-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
+			-- adjust for repositories being out of sync with current repository setting (e.g. due to
 			-- manual editing of .cfg file)
-			-- first of all check for broken profiles and get rid of them
+			-- first of all check for broken repositories and get rid of them
 			if not has_errors then
-				create dead_profiles.make (0)
-				across repository_profiles as profs_csr loop
-					if not is_profile_valid (profs_csr.key) then
-						dead_profiles.extend (profs_csr.key)
+				create dead_repos.make (0)
+				across repository_config_table as repos_csr loop
+					if not is_repository_valid (repos_csr.key) then
+						dead_repos.extend (repos_csr.key)
 					end
 				end
-				across dead_profiles as profs_csr loop
-					add_warning ("remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
-					repository_profiles.remove_profile (profs_csr.item)
+				across dead_repos as repos_csr loop
+					add_warning ("remove_repo_cfg", <<invalid_repository_reason (repos_csr.item)>>)
+					repository_config_table.remove_repository (repos_csr.item)
 				end
 
-				-- now choose a profile to start with
-				if not repository_profiles.is_empty then
-					if not has_current_profile then
-						set_current_profile (repository_profiles.first_profile)
+				-- now choose a repository to start with
+				if not repository_config_table.is_empty then
+					if not has_current_repository then
+						set_current_repository (repository_config_table.first_repository)
 					end
-					use_current_profile (False)
+					use_current_repository (False)
 				end
 
 				-- tell the user a few useful things

@@ -271,7 +271,7 @@ feature {NONE} -- Implementation
 			-- Populate content from visual controls.
 		do
 			docking_pane.set_short_title (get_text ("catalogue_tool_title"))
-			docking_pane.set_long_title (get_text ("catalogue_tool_title") + " " + repository_profiles.current_profile_name)
+			docking_pane.set_long_title (get_text ("catalogue_tool_title") + " " + repository_config_table.current_repository_name)
 			if attached source then
 				archetype_explorer.populate (source)
 				template_explorer.populate (source)
