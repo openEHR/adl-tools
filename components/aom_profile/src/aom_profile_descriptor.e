@@ -1,38 +1,92 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Shared access to service interface to object model"
-	keywords:    "ADL, archetype, reference model"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	description: "Descriptor object for an AOM_PROFILE object."
+	keywords:    "ADL, archetype, aom, profile"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class SHARED_REFERENCE_MODEL_ACCESS
+class AOM_PROFILE_DESCRIPTOR
+
+inherit
+	ANY_VALIDATOR
+
+	SHARED_DT_OBJECT_CONVERTER
+		export
+			{NONE} all
+		end
+
+create
+	make
+
+feature -- Initialisation
+
+	make (a_path: STRING)
+		do
+			profile_path := a_path
+		end
+
+feature -- Identification
+
+	profile_path: STRING
 
 feature -- Access
 
-	rm_schemas_access: REFERENCE_MODEL_ACCESS
-		once
-			create Result.make
-		end
+	profile: detachable AOM_PROFILE
 
-	rm_schema_for_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
-		require
-			has_rm_schema_for_id (an_id)
-		do
-			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
-		end
+feature {AOM_PROFILES_ACCESS} -- Commands
 
-	rm_schema_ids: ARRAYED_LIST [STRING]
+	load
+			-- load profile into in-memory form
+		local
+			prf_file: PLAIN_TEXT_FILE
 		do
-			create Result.make_from_array (rm_schemas_access.all_schemas.current_keys)
+			reset
+			profile := Void
+			create prf_file.make (profile_path)
+			if not prf_file.exists or else not prf_file.is_readable then
+				add_error ("aom_profile_file_not_valid", <<profile_path>>)
+			else
+				prf_file.open_read
+				prf_file.read_stream (prf_file.count)
+				parser.execute (prf_file.last_string, 1)
+				if not parser.syntax_error and then attached parser.output as dt_tree then
+					if not attached {AOM_PROFILE} dt_tree.as_object_from_string ("AOM_PROFILE", Void) as aom_prf then
+						add_error ("aom_profile_load_failure_exception", <<profile_path>>)
+					elseif object_converter.errors.has_errors then
+						add_error ("aom_profile_conv_fail_err", <<profile_path, object_converter.errors.as_string>>)
+					else
+						aom_prf.set_file_path (profile_path)
+						profile := aom_prf
+						passed := True
+					end
+				else
+					add_error ("aom_profile_load_failure", <<profile_path, parser.errors.as_string>>)
+				end
+				prf_file.close
+			end
+		ensure
+			attached profile or else errors.has_errors
 		end
 
 feature -- Validation
 
-	has_rm_schema_for_id (an_id: ARCHETYPE_ID): BOOLEAN
+	validate
 		do
-			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
+			if attached profile as prf then
+				if prf.ready_to_validate then
+					prf.validate
+				end
+				merge_errors (prf.errors)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	parser: DADL_VALIDATOR
+		once
+			create Result.make
 		end
 
 end

@@ -1,33 +1,23 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Profile of RM-related settings relating to use of reference model(s) by a
-				 given arhetype developing organisation.
+				 Shared access to AOM profiles
 				 ]"
 	keywords:    "ADL, archetype, aom, profile"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class AOM_RM_PROFILE
-
-create
-	make
-
-feature -- Initialisation
-
-	make (an_rm_publisher: STRING)
-		do
-			rm_publisher := an_rm_publisher
-		end
-
-feature -- Identification
-
-	rm_publisher: STRING
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
+class SHARED_AOM_PROFILES_ACCESS
 
 feature -- Access
+
+	aom_profiles: AOM_PROFILES_ACCESS
+			-- loaded profiles
+		once
+			create Result.make
+		end
 
 end
 

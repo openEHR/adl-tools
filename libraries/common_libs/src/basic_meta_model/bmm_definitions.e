@@ -75,9 +75,12 @@ feature -- Definitions
 			Result.extend (Type_cat_constrained_generic_parameter)
 		end
 
-	Bmm_file_match_regex: STRING = ".*\.bmm$"
+	Bmm_schema_file_match_regex: STRING
+		once
+			Result :=  ".*\" + Bmm_schema_file_extension + "$"
+		end
 
-	Schema_file_extension: STRING = ".bmm"
+	Bmm_schema_file_extension: STRING = ".bmm"
 
 	Metadata_bmm_version: STRING = "bmm_version"
 			-- dADL attribute name of logical attribute 'bmm_version' in schema file;

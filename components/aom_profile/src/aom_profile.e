@@ -12,19 +12,35 @@ note
 
 class AOM_PROFILE
 
+inherit
+	ANY_VALIDATOR
+
+	DT_CONVERTIBLE
+		redefine
+			finalise_dt
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
+
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
-	make
+	make_dt
 
 feature -- Initialisation
 
-	make (a_profile_name: STRING; an_rm_publisher: STRING)
+	make_dt (make_args: ARRAY[ANY])
+			-- make in a safe way for DT building purposes
 		do
-			profile_name := a_profile_name
-
-			create reference_model.make (an_rm_publisher)
-
+			reset
+			create profile_name.make_from_string (Default_aom_profile_name)
+			create rm_schema_patterns.make (0)
+			create rm_schemas.make (0)
 			create archetype_rm_closure_packages.make (0)
-			archetype_rm_closure_packages.compare_objects
+			create file_path.make_empty
 		end
 
 feature -- Identification
@@ -32,9 +48,12 @@ feature -- Identification
 	profile_name: STRING
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
-feature -- Access
+feature -- Access (attributes from file)
 
-	rm_profile: AOM_RM_PROFILE
+	rm_schema_patterns: ARRAYED_LIST [STRING]
+			-- PERL regex based on id of publisher of Reference Models to which this profile applies.
+			-- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model
+			-- publisher, model name, model release found in .bmm files.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 	terminology_profile: detachable AOM_TERMINOLOGY_PROFILE
@@ -65,6 +84,69 @@ feature -- Access
 			--
 			-- The effect of this attribute in visualisation is to generate the most natural tree or
 			-- grid-based view of an archetype definition, from the semantic viewpoint.
+
+feature -- Access
+
+	file_path: STRING
+
+	rm_schemas: ARRAYED_LIST [STRING]
+			-- list of rm schemas matched by `rm_schema_patterns'
+
+feature -- Validation
+
+	validate
+		do
+			if profile_name.is_equal (Default_aom_profile_name) then
+				add_error ("ARP_no_profile_name", <<file_path>>)
+			end
+			if rm_schemas.is_empty then
+				add_error ("ARP_no_matching_schemas", <<file_path>>)
+			end
+		end
+
+feature -- Modification
+
+	set_file_path (a_path: STRING)
+		do
+			file_path := a_path
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Persistence
+
+	persistent_attributes: detachable ARRAYED_LIST[STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		do
+		end
+
+	finalise_dt
+			-- Finalisation work: evaluate rm schema regexes
+		local
+			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+		do
+			across rm_schema_patterns as sch_csr loop
+				get_regex_matches (sch_csr.item)
+			end
+		end
+
+	get_regex_matches (a_regex: STRING)
+			-- Finalisation work: evaluate rm schema regexes
+		local
+			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+		do
+			create regex_matcher.make
+			regex_matcher.set_case_insensitive (True)
+			regex_matcher.compile (a_regex)
+			if regex_matcher.is_compiled then
+				across rm_schema_ids as sch_ids_csr loop
+					if regex_matcher.recognizes (sch_ids_csr.item) then
+						rm_schemas.extend (sch_ids_csr.item)
+					end
+				end
+			else
+				add_error ("regex_e1", <<a_regex>>)
+			end
+		end
 
 end
 

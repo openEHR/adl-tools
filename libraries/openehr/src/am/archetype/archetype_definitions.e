@@ -74,6 +74,15 @@ feature -- Definitions
 	File_ext_yaml_default: STRING = ".yaml"
 			-- Default extension for YAML format archetype files that don't have some other extension
 
+	Aom_profile_file_match_regex: STRING
+		once
+			Result :=  ".*\" + Aom_profile_file_extension + "$"
+		end
+
+	Aom_profile_file_extension: STRING = ".arp"
+
+	Default_aom_profile_name: STRING = "unknown"
+
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once

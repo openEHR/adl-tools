@@ -1,0 +1,97 @@
+-- 
+-- 	component:   openEHR Archetype Project
+-- 	description: Archetype profile for openEHR RM schemas
+-- 	keywords:    reference model, meta-model, archetypes
+--	author:      Thomas Beale <thomas.beale@OceanInformatics.com>
+--	support:     http://www.openehr.org/issues/browse/AWB
+-- 	copyright:   Copyright (c) 2013- openEHR Foundation
+-- 	license:     See end of file
+-- 
+
+profile_name = <"openEHR">
+
+----------------------------------------------------------------------------------------
+-- id or PERL regex based on id Reference Models to which this profile applies. 
+-- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
+-- publisher, model name, model release as defined in .bmm files.
+--
+rm_schema_patterns = <"openehr_ehr_extract_.*", "openehr_rm_.*">
+
+----------------------------------------------------------------------------------------
+-- id of terminologies and code sets to use
+--
+terminology_profile = <
+	terminology_issuer = <"openehr">
+	code_sets_issuer = <"openehr">
+>
+
+----------------------------------------------------------------------------------------
+-- class that is parent of classes for which distinct archetypes are allowed (optional)
+--
+archetype_parent_class = <"LOCATABLE">
+
+----------------------------------------------------------------------------------------
+-- class that is parent of any class considered a logical data type (optional)
+--
+archetype_data_value_parent_class = <"DATA_VALUE">
+
+----------------------------------------------------------------------------------------
+-- which packages define the top-level closure scopes for finding slot-filler archetypes
+-- e.g. 'ehr' closure package corresponds to the "EHR" in "openEHR-EHR-OBSERVATION"
+-- and filler archetypes like "openEHR-EHR-CLUSTER"
+--
+archetype_rm_closure_packages = <"org.openehr.rm.ehr", "org.openehr.rm.common.directory", "org.openehr.rm.demographic">
+
+----------------------------------------------------------------------------------------
+-- If archetype_parent_class is not set, designate a class whose descendants should be
+-- made visible in tree and grid renderings of the archetype definition. For openEHR
+-- and CEN this class is normally the same as the archetype_parent_class, i.e. LOCATABLE
+-- and RECORD_COMPONENT respectively. It is typically set for CEN, because archetype_
+-- parent_class may not be stated, due to demographic types not inheriting from it.
+--
+-- The effect of this attribute in visualisation is to generate the most natural tree or
+-- grid-based view of an archetype definition, from the semantic viewpoint.
+--
+archetype_visualise_descendants_of = <"ELEMENT">
+
+----------------------------------------------------------------------------------------
+-- mappings from AOM built-in types used for special syntax, and RM types
+--
+aom_rm_type_mappings = <
+	["CODE_PHRASE"] = <
+		rm_name = <"CODE_PHRASE">
+		rm_properties = <
+			["terminology_id"] = <
+				rm_property_name = <"terminology_id">
+			>
+			["code_string"] = <
+				rm_property_name = <"code_string">
+			>
+		>
+	>
+	["ORDINAL"] = <
+		rm_name = <"DV_ORDINAL">
+		rm_properties = <
+			["symbol"] = <
+				rm_property_name = <"symbol">
+			>
+			["value"] = <
+				rm_property_name = <"value">
+			>
+		>
+	>
+	["QUANTITY"] = <
+		rm_name = <"DV_QUANTITY">
+		rm_properties = <
+			["units"] = <
+				rm_property_name = <"units">
+			>
+			["magnitude"] = <
+				rm_property_name = <"magnitude">
+			>
+			["precision"] = <
+				rm_property_name = <"precision">
+			>
+		>
+	>
+>
