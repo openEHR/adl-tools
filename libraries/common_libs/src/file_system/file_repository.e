@@ -68,10 +68,8 @@ feature {NONE} -- Implementation
 			a_file: RAW_FILE
 			rel_cur_dir, rel_parent_dir, fpath: STRING
    		do
-    		check attached file_system.relative_current_directory as cd and attached file_system.relative_parent_directory as pd then
-   				rel_cur_dir := cd
-   				rel_parent_dir := pd
-   			end
+   			rel_cur_dir := file_system.relative_current_directory
+   			rel_parent_dir := file_system.relative_parent_directory
 			create a_dir.make (a_dir_name)
 			if a_dir.exists and a_dir.is_readable then
 				a_dir.open_read

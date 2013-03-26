@@ -86,8 +86,8 @@ feature -- Events
 		do
 			if attached data_source_agent.item ([]) as ds_val and then not ds_val.is_empty then
 				initial_dir := ds_val
-			elseif attached default_directory_agent then
-				initial_dir := default_directory_agent.item ([])
+			elseif attached default_directory_agent as dda then
+				initial_dir := dda.item ([])
 			else
 				initial_dir := application_startup_directory
 			end
