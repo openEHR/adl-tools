@@ -39,17 +39,17 @@ feature {NONE} -- Events
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 
-				if repository_profiles.has_profile ("Test") then
-					set_current_profile ("Test")
-				elseif repository_profiles.has_profile ("test") then
-					set_current_profile ("test")
+				if repository_config_table.has_repository ("Test") then
+					set_current_repository ("Test")
+				elseif repository_config_table.has_repository ("test") then
+					set_current_repository ("test")
 				else
-					assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
+					assert ("Please define the %"Test%" repository in " + app_cfg.file_path, False)
 				end
 
 				set_error_reporting_level (Error_type_error)
-				use_current_profile (True)
-				test_repository := repository_profiles.current_profile.reference_repository
+				use_current_repository (True)
+				test_repository := repository_config_table.current_repository.reference_path
 			end
 		end
 
