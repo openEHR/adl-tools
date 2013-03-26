@@ -540,25 +540,25 @@ primitive_object: primitive_value
 				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified ($1, obj_key)
 				obj_key := Void
 			else
-				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous ($1)
 			end
 		}
 	| primitive_interval_value
 		{
 			if obj_key /= Void then
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_identified($1, obj_key)
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_identified ($1, obj_key)
 				obj_key := Void
 			else
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_anonymous ($1)
 			end
 		}
 	| term_code
 		{
 			if obj_key /= Void then
-				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_key)
+				create {DT_PRIMITIVE_OBJECT} $$.make_identified ($1, obj_key)
 				obj_key := Void
 			else
-				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous ($1)
 			end
 		}
 	| term_code_list_value
@@ -1281,7 +1281,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 
 term_code: V_QUALIFIED_TERM_CODE_REF
 		{
-			create $$.make_from_string($1)
+			create $$.make_from_string ($1)
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
@@ -1455,12 +1455,12 @@ feature -- Commands
 		do
 			precursor
 			validator_reset
+			accept -- ensure no syntax errors lying around from previous invocation
 		end
 
 	execute (in_text:STRING; a_source_start_line: INTEGER)
 		do
 			reset
-			accept -- ensure no syntax errors lying around from previous invocation
 
 			source_start_line := a_source_start_line
 
@@ -1475,7 +1475,7 @@ feature -- Commands
 			parse
 		end
 
-	error_loc: attached STRING
+	error_loc: STRING
 		do
 			create Result.make_empty
 			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
