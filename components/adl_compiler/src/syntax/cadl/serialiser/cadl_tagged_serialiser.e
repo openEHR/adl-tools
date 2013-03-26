@@ -61,19 +61,19 @@ feature -- Modification
 			-- lead tag + attributes
 			create attrs.make(0)
 
-			attrs.put ("complex object constraint", tag(TAG_NODE_TYPE))
+			attrs.put ("complex object constraint", tag (TAG_NODE_TYPE))
 			attrs.put (a_node.rm_type_name, tag(TAG_NODE_RM_CLASS))
 
 			if a_node.is_addressable then
 				attrs.put (a_node.node_id, tag(TAG_NODE_ID))
 			end
 
-			attrs.put (a_node.occurrences.as_occurrences_string, symbol(SYM_OCCURRENCES))
+			attrs.put (a_node.occurrences.as_occurrences_string, symbol (SYM_OCCURRENCES))
 
-			last_result.append(create_indent(depth) + xml_tag_start(tag(TAG_NODE), attrs) + format_item(FMT_NEWLINE))
+			last_result.append(create_indent(depth) + xml_tag_start (tag (TAG_NODE), attrs) + format_item(FMT_NEWLINE))
 
 			-- output level
-			last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_LEVEL),
+			last_result.append(create_indent(depth+1) + xml_tag_enclose (tag (TAG_NODE_LEVEL),
 					(depth//2).out, Void) + format_item(FMT_NEWLINE))
 
 			-- output parent node id
