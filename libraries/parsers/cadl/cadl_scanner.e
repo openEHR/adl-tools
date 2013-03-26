@@ -942,7 +942,7 @@ end
 				-- perform any upgrades to embedded dADL object syntax here by substitution
 				convert_c_dv_names(str_)
 
-				dadl_parser.execute(str_, source_start_line + in_lineno)
+				dadl_parser.execute (str_, source_start_line + in_lineno)
 				if not dadl_parser.syntax_error then
 					if dadl_parser.output.is_typed then
 						tid := dynamic_type_from_string(dadl_parser.output.im_type_name)
@@ -951,15 +951,15 @@ end
 								c_domain_type := cdt
 								last_token := V_C_DOMAIN_TYPE
 							else
-								dadl_parser_error := "Conversion of " + dadl_parser.output.im_type_name + " failed"
+								dadl_parser_error := get_msg ("VDTCV", <<dadl_parser.output.im_type_name>>)
 								last_token := ERR_C_DOMAIN_TYPE
 							end
 						else
-							dadl_parser_error := "Domain type " + dadl_parser.output.im_type_name + " unknown or not visible in type system"
+							dadl_parser_error :=  get_msg ("VDTTU", <<dadl_parser.output.im_type_name>>)
 							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
-						dadl_parser_error := "Domain type in dADL section not typed"
+						dadl_parser_error := get_text ("VDTNT")
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else

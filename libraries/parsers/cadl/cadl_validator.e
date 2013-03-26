@@ -3878,7 +3878,7 @@ end
 				if yyvs3.item (yyvsp3) = 0 then
 					create yyval12.make_point(0)
 				elseif yyvs3.item (yyvsp3) = 1 then
-					create yyval12.make_bounded(0, 1)
+					create yyval12.make_bounded (0, 1)
 				else
 					abort_with_error("SEXLU1", Void)
 				end
@@ -6034,7 +6034,7 @@ debug ("GEYACC")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, True)
+				create yyval37.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, True)
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
@@ -6069,7 +6069,7 @@ debug ("GEYACC")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, True)
+				create yyval37.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, True)
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
@@ -6104,7 +6104,7 @@ debug ("GEYACC")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, False)
+				create yyval37.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, False)
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
@@ -6139,7 +6139,7 @@ debug ("GEYACC")
 end
 
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, False)
+				create yyval37.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, False)
 			else
 				abort_with_error("VIVLO", <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
@@ -6173,7 +6173,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1622")
 end
 
-			create yyval37.make_lower_unbounded(yyvs3.item (yyvsp3), False)
+			create yyval37.make_lower_unbounded (yyvs3.item (yyvsp3), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6204,7 +6204,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1626")
 end
 
-			create yyval37.make_lower_unbounded(yyvs3.item (yyvsp3), True)
+			create yyval37.make_lower_unbounded (yyvs3.item (yyvsp3), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6235,7 +6235,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1630")
 end
 
-			create yyval37.make_upper_unbounded(yyvs3.item (yyvsp3), False)
+			create yyval37.make_upper_unbounded (yyvs3.item (yyvsp3), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6266,7 +6266,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1634")
 end
 
-			create yyval37.make_upper_unbounded(yyvs3.item (yyvsp3), True)
+			create yyval37.make_upper_unbounded (yyvs3.item (yyvsp3), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6447,7 +6447,7 @@ debug ("GEYACC")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create yyval38.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, True)
+				create yyval38.make_bounded (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, True)
 			else
 				abort_with_error("VIVLO", <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
@@ -6482,7 +6482,7 @@ debug ("GEYACC")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create yyval38.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, True)
+				create yyval38.make_bounded (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, True)
 			else
 				abort_with_error("VIVLO", <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
@@ -6517,7 +6517,7 @@ debug ("GEYACC")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create yyval38.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, False)
+				create yyval38.make_bounded (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, False)
 			else
 				abort_with_error("VIVLO", <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
@@ -6552,7 +6552,7 @@ debug ("GEYACC")
 end
 
 			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create yyval38.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, False)
+				create yyval38.make_bounded (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, False)
 			else
 				abort_with_error("VIVLO", <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
@@ -6586,7 +6586,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1708")
 end
 
-			create yyval38.make_lower_unbounded(yyvs4.item (yyvsp4), False)
+			create yyval38.make_lower_unbounded (yyvs4.item (yyvsp4), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6617,7 +6617,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1712")
 end
 
-			create yyval38.make_lower_unbounded(yyvs4.item (yyvsp4), True)
+			create yyval38.make_lower_unbounded (yyvs4.item (yyvsp4), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6648,7 +6648,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1716")
 end
 
-			create yyval38.make_upper_unbounded(yyvs4.item (yyvsp4), False)
+			create yyval38.make_upper_unbounded (yyvs4.item (yyvsp4), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6679,7 +6679,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1720")
 end
 
-			create yyval38.make_upper_unbounded(yyvs4.item (yyvsp4), True)
+			create yyval38.make_upper_unbounded (yyvs4.item (yyvsp4), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6836,7 +6836,7 @@ debug ("GEYACC")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
-				create yyval40.make_bounded(yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), True, True)
+				create yyval40.make_bounded (yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), True, True)
 			else
 				abort_with_error("VIVLO", <<yyvs21.item (yyvsp21 - 1).out, yyvs21.item (yyvsp21).out>>)
 			end
@@ -6871,7 +6871,7 @@ debug ("GEYACC")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
-				create yyval40.make_bounded(yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), False, True)
+				create yyval40.make_bounded (yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), False, True)
 			else
 				abort_with_error("VIVLO", <<yyvs21.item (yyvsp21 - 1).out, yyvs21.item (yyvsp21).out>>)
 			end
@@ -6906,7 +6906,7 @@ debug ("GEYACC")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
-				create yyval40.make_bounded(yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), True, False)
+				create yyval40.make_bounded (yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), True, False)
 			else
 				abort_with_error("VIVLO", <<yyvs21.item (yyvsp21 - 1).out, yyvs21.item (yyvsp21).out>>)
 			end
@@ -6941,7 +6941,7 @@ debug ("GEYACC")
 end
 
 			if yyvs21.item (yyvsp21 - 1) <= yyvs21.item (yyvsp21) then
-				create yyval40.make_bounded(yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), False, False)
+				create yyval40.make_bounded (yyvs21.item (yyvsp21 - 1), yyvs21.item (yyvsp21), False, False)
 			else
 				abort_with_error("VIVLO", <<yyvs21.item (yyvsp21 - 1).out, yyvs21.item (yyvsp21).out>>)
 			end
@@ -6975,7 +6975,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1842")
 end
 
-			create yyval40.make_lower_unbounded(yyvs21.item (yyvsp21), False)
+			create yyval40.make_lower_unbounded (yyvs21.item (yyvsp21), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7006,7 +7006,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1846")
 end
 
-			create yyval40.make_lower_unbounded(yyvs21.item (yyvsp21), True)
+			create yyval40.make_lower_unbounded (yyvs21.item (yyvsp21), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7037,7 +7037,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1850")
 end
 
-			create yyval40.make_upper_unbounded(yyvs21.item (yyvsp21), False)
+			create yyval40.make_upper_unbounded (yyvs21.item (yyvsp21), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7068,7 +7068,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1854")
 end
 
-			create yyval40.make_upper_unbounded(yyvs21.item (yyvsp21), True)
+			create yyval40.make_upper_unbounded (yyvs21.item (yyvsp21), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7165,7 +7165,7 @@ debug ("GEYACC")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create yyval39.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), True, True)
+				create yyval39.make_bounded (yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), True, True)
 			else
 				abort_with_error("VIVLO", <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
@@ -7200,7 +7200,7 @@ debug ("GEYACC")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create yyval39.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), False, True)
+				create yyval39.make_bounded (yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), False, True)
 			else
 				abort_with_error("VIVLO", <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
@@ -7235,7 +7235,7 @@ debug ("GEYACC")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create yyval39.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), True, False)
+				create yyval39.make_bounded (yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), True, False)
 			else
 				abort_with_error("VIVLO", <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
@@ -7270,7 +7270,7 @@ debug ("GEYACC")
 end
 
 			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create yyval39.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), False, False)
+				create yyval39.make_bounded (yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), False, False)
 			else
 				abort_with_error("VIVLO", <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
@@ -7304,7 +7304,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1924")
 end
 
-			create yyval39.make_lower_unbounded(yyvs23.item (yyvsp23), False)
+			create yyval39.make_lower_unbounded (yyvs23.item (yyvsp23), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7335,7 +7335,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1928")
 end
 
-			create yyval39.make_lower_unbounded(yyvs23.item (yyvsp23), True)
+			create yyval39.make_lower_unbounded (yyvs23.item (yyvsp23), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7366,7 +7366,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1932")
 end
 
-			create yyval39.make_upper_unbounded(yyvs23.item (yyvsp23), False)
+			create yyval39.make_upper_unbounded (yyvs23.item (yyvsp23), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7397,7 +7397,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1936")
 end
 
-			create yyval39.make_upper_unbounded(yyvs23.item (yyvsp23), True)
+			create yyval39.make_upper_unbounded (yyvs23.item (yyvsp23), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7494,7 +7494,7 @@ debug ("GEYACC")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
-				create yyval41.make_bounded(yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), True, True)
+				create yyval41.make_bounded (yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), True, True)
 			else
 				abort_with_error("VIVLO", <<yyvs22.item (yyvsp22 - 1).out, yyvs22.item (yyvsp22).out>>)
 			end
@@ -7529,7 +7529,7 @@ debug ("GEYACC")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
-				create yyval41.make_bounded(yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), False, True)
+				create yyval41.make_bounded (yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), False, True)
 			else
 				abort_with_error("VIVLO", <<yyvs22.item (yyvsp22 - 1).out, yyvs22.item (yyvsp22).out>>)
 			end
@@ -7564,7 +7564,7 @@ debug ("GEYACC")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
-				create yyval41.make_bounded(yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), True, False)
+				create yyval41.make_bounded (yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), True, False)
 			else
 				abort_with_error("VIVLO", <<yyvs22.item (yyvsp22 - 1).out, yyvs22.item (yyvsp22).out>>)
 			end
@@ -7599,7 +7599,7 @@ debug ("GEYACC")
 end
 
 			if yyvs22.item (yyvsp22 - 1) <= yyvs22.item (yyvsp22) then
-				create yyval41.make_bounded(yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), False, False)
+				create yyval41.make_bounded (yyvs22.item (yyvsp22 - 1), yyvs22.item (yyvsp22), False, False)
 			else
 				abort_with_error("VIVLO", <<yyvs22.item (yyvsp22 - 1).out, yyvs22.item (yyvsp22).out>>)
 			end
@@ -7633,7 +7633,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2006")
 end
 
-			create yyval41.make_lower_unbounded(yyvs22.item (yyvsp22), False)
+			create yyval41.make_lower_unbounded (yyvs22.item (yyvsp22), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7664,7 +7664,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2010")
 end
 
-			create yyval41.make_lower_unbounded(yyvs22.item (yyvsp22), True)
+			create yyval41.make_lower_unbounded (yyvs22.item (yyvsp22), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7695,7 +7695,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2014")
 end
 
-			create yyval41.make_upper_unbounded(yyvs22.item (yyvsp22), False)
+			create yyval41.make_upper_unbounded (yyvs22.item (yyvsp22), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7726,7 +7726,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2018")
 end
 
-			create yyval41.make_upper_unbounded(yyvs22.item (yyvsp22), True)
+			create yyval41.make_upper_unbounded (yyvs22.item (yyvsp22), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7823,7 +7823,7 @@ debug ("GEYACC")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create yyval42.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, True)
+				create yyval42.make_bounded (yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, True)
 			else
 				abort_with_error("VIVLO", <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -7858,7 +7858,7 @@ debug ("GEYACC")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create yyval42.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, True)
+				create yyval42.make_bounded (yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, True)
 			else
 				abort_with_error("VIVLO", <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -7893,7 +7893,7 @@ debug ("GEYACC")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create yyval42.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, False)
+				create yyval42.make_bounded (yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, False)
 			else
 				abort_with_error("VIVLO", <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -7928,7 +7928,7 @@ debug ("GEYACC")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create yyval42.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, False)
+				create yyval42.make_bounded (yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, False)
 			else
 				abort_with_error("VIVLO", <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -7962,7 +7962,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2088")
 end
 
-			create yyval42.make_lower_unbounded(yyvs24.item (yyvsp24), False)
+			create yyval42.make_lower_unbounded (yyvs24.item (yyvsp24), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -7993,7 +7993,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2092")
 end
 
-			create yyval42.make_lower_unbounded(yyvs24.item (yyvsp24), True)
+			create yyval42.make_lower_unbounded (yyvs24.item (yyvsp24), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -8024,7 +8024,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2096")
 end
 
-			create yyval42.make_upper_unbounded(yyvs24.item (yyvsp24), False)
+			create yyval42.make_upper_unbounded (yyvs24.item (yyvsp24), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -8055,7 +8055,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 2100")
 end
 
-			create yyval42.make_upper_unbounded(yyvs24.item (yyvsp24), True)
+			create yyval42.make_upper_unbounded (yyvs24.item (yyvsp24), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4

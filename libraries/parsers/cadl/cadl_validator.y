@@ -2167,6 +2167,7 @@ feature -- Initialization
 		do
 			precursor
 			validator_reset
+			accept
 		end
 
 	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
