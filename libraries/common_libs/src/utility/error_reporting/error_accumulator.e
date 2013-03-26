@@ -17,6 +17,11 @@ inherit
 			{NONE} all
 		end
 
+	GLOBAL_ERROR_REPORTING_LEVEL
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -60,12 +65,6 @@ feature -- Access
 			end
 		end
 
-	error_reporting_level: INTEGER
-			-- at this level and above, list entries are included in `as_string' and any other output function
-		do
-			Result := error_reporting_level_cell.item
-		end
-
 feature -- Status Report
 
 	is_empty: BOOLEAN
@@ -105,15 +104,6 @@ feature -- Status Report
 						Result := an_err.severity = error_type_warning and an_err.code.starts_with (a_match_code)
 					end (?, a_code)
 			)
-		end
-
-feature -- Status Setting
-
-	set_error_reporting_level (a_level: INTEGER)
-		require
-			valid_error_level: is_valid_error_type (a_level)
-		do
-			error_reporting_level_cell.put(a_level)
 		end
 
 feature -- Modification
@@ -169,7 +159,7 @@ feature -- Output
 		do
 			create Result.make(0)
 			from list.start until list.off loop
-				if list.item.severity >= error_reporting_level then
+				if list.item.severity >= global_error_reporting_level then
 					Result.append (list.item.as_string)
 					Result.append_character ('%N')
 				end
@@ -182,13 +172,7 @@ feature {ERROR_ACCUMULATOR} -- Implementation
 	list: ARRAYED_LIST [ERROR_DESCRIPTOR]
 			-- error output of validator - things that must be corrected
 
-	error_reporting_level_cell: CELL [INTEGER]
-		once
-			create Result.put (Error_type_warning)
-		end
-
 invariant
-	Valid_severity_reporting_level: is_valid_error_type (error_reporting_level)
 	Has_errors_consistency: has_errors implies list.there_exists (agent (e: ERROR_DESCRIPTOR): BOOLEAN do Result := e.severity = error_type_error end)
 	Has_warnings_consistency: has_warnings implies list.there_exists (agent (e: ERROR_DESCRIPTOR): BOOLEAN do Result := e.severity = error_type_warning end)
 

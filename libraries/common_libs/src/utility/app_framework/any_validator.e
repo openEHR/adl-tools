@@ -42,6 +42,11 @@ feature -- Access
 			end
 		end
 
+	error_strings: STRING
+		do
+			Result := errors.as_string
+		end
+
 feature -- Status Report
 
 	has_errors: BOOLEAN
@@ -55,6 +60,12 @@ feature -- Status Report
 		end
 
 feature -- Modification
+
+	merge_errors (other_errors: ERROR_ACCUMULATOR)
+		do
+			errors.append (other_errors)
+			passed := passed and not other_errors.has_errors
+		end
 
 	add_error (a_key: STRING; args: detachable ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
@@ -91,12 +102,6 @@ feature -- Modification
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
 			errors.extend (create {ERROR_DESCRIPTOR}.make_info (a_key, get_msg(a_key, args), a_location))
-		end
-
-	merge_errors (other_errors: ERROR_ACCUMULATOR)
-		do
-			errors.append (other_errors)
-			passed := passed and not other_errors.has_errors
 		end
 
 feature -- Status Report

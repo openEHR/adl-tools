@@ -158,7 +158,7 @@ feature -- Events
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_rm_schema_dir) then
-				post_error (generator, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
+				post_error (generator, "load_schemas", "schema_dir_not_valid", <<last_populated_rm_schema_dir>>)
 				create error_dialog.make_with_text (billboard.content)
 				billboard.clear
 				error_dialog.show_modal_to_window (Current)
@@ -192,7 +192,7 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_rm_schema_dir) then
-				post_error (generator, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
+				post_error (generator, "load_schemas", "schema_dir_not_valid", <<last_populated_rm_schema_dir>>)
 				create error_dialog.make_with_text (billboard.content)
 				billboard.clear
 				error_dialog.show_modal_to_window (Current)
@@ -213,7 +213,7 @@ feature -- Events
 				ok_cancel_buttons.disable_sensitive
 				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					post_error (generator, "load_schemas", "model_access_e13", <<new_rm_dir>>)
+					post_error (generator, "load_schemas", "bmm_schema_dir_contains_no_valid_schemas", <<new_rm_dir>>)
 					create error_dialog.make_with_text (billboard.content)
 					billboard.clear
 					error_dialog.show_modal_to_window (Current)

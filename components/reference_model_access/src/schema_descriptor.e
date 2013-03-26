@@ -13,11 +13,6 @@ note
 class SCHEMA_DESCRIPTOR
 
 inherit
-	SHARED_MESSAGE_DB
-		export
-			{NONE} all
-		end
-
 	ANY_VALIDATOR
 
 	BMM_DEFINITIONS
@@ -121,7 +116,7 @@ feature -- Modification
 	signal_load_include_error
 			-- set error status due to failure to load an included schema
 		do
-			add_error ("model_access_e11", <<schema_id>>)
+			add_error ("bmm_schema_include_failed_to_load", <<schema_id>>)
 		end
 
 feature {REFERENCE_MODEL_ACCESS} -- Commands
@@ -137,15 +132,15 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			p_schema := Void
 			create model_file.make (schema_path)
 			if not model_file.exists or else not model_file.is_readable then
-				add_error ("model_access_e1", <<schema_path>>)
+				add_error ("bmm_schema_file_not_valid", <<schema_path>>)
 			else
 				model_file.open_read
 				model_file.read_stream (model_file.count)
 				create parser.make
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error and then attached parser.output as dt_tree then
-					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string ("P_BMM_SCHEMA", Void) as p_sch then
-						add_error ("model_access_e4", <<schema_path>>)
+					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string (({P_BMM_SCHEMA}).name, Void) as p_sch then
+						add_error ("bmm_schema_load_failure_exception", <<schema_path>>)
 					elseif object_converter.errors.has_errors then
 						add_error ("load_conv_fail_err", <<schema_path, object_converter.errors.as_string>>)
 					else
@@ -158,7 +153,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 						end
 					end
 				else
-					add_error ("model_access_e2", <<schema_path, parser.errors.as_string>>)
+					add_error ("bmm_schema_load_failure", <<schema_path, parser.errors.as_string>>)
 				end
 				model_file.close
 			end

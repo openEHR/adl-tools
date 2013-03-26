@@ -10,6 +10,8 @@ note
 class REFERENCE_MODEL_ACCESS
 
 inherit
+	ANY_VALIDATOR
+
 	SHARED_RESOURCES
 		export
 			{NONE} all;
@@ -17,11 +19,6 @@ inherit
 		end
 
 	BMM_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	SHARED_MESSAGE_BILLBOARD
 		export
 			{NONE} all
 		end
@@ -37,11 +34,14 @@ create
 feature -- Definitions
 
 	Max_inclusion_depth: INTEGER = 10
+			-- maximum number of levelsof schema inclusion
 
 feature {NONE} -- Initialisation
 
 	make
 		do
+			reset
+			create schema_directory.make_empty
 			exception_encountered := False
 			create all_schemas.make(0)
 			create candidate_schemas.make(0)
@@ -54,33 +54,30 @@ feature {NONE} -- Initialisation
 
 feature -- Initialisation
 
-	initialise_with_load_list (an_rm_dir: STRING; a_schemas_load_list: LIST [STRING])
+	initialise_with_load_list (an_absolute_dir: STRING; a_schemas_load_list: LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
-			-- found in the directory `an_rm_dir'
+			-- found in the directory `an_absolute_dir'
 		require
-			Rm_dir_valid: directory_exists (an_rm_dir)
+			Rm_dir_valid: directory_exists (an_absolute_dir)
 		do
 			make
-			schema_directory := an_rm_dir
+			schema_directory := an_absolute_dir
 			schemas_load_list.append (a_schemas_load_list)
 			reload_schemas
 		ensure
-			Schemas_dir_set: schema_directory = an_rm_dir
+			Schemas_dir_set: schema_directory = an_absolute_dir
 		end
 
-	initialise_all (an_rm_dir: STRING)
-			-- initialise with all schemas found in the directory `a_rm_dir'
+	initialise_all (an_absolute_dir: STRING)
+			-- initialise with all schemas found in the directory `an_absolute_dir'
 		do
-			initialise_with_load_list (an_rm_dir, create {ARRAYED_LIST [STRING]}.make(0))
+			initialise_with_load_list (an_absolute_dir, create {ARRAYED_LIST [STRING]}.make(0))
 		end
 
 feature -- Access
 
 	schema_directory: STRING
 			-- directory where all the schemas loaded here are found
-		attribute
-			create Result.make_empty
-		end
 
 	all_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
 			-- all schemas found and loaded from `schema_directory'
@@ -120,8 +117,9 @@ feature -- Access
 feature -- Status Report
 
 	has_schema_directory: BOOLEAN
+			-- true if there is a valid schema directory set
 		do
-			Result := attached schema_directory
+			Result := not schema_directory.is_empty
 		end
 
 	has_schema_for_rm_closure (a_qualified_rm_closure_name: STRING): BOOLEAN
@@ -136,6 +134,12 @@ feature -- Status Report
 			Result := not exception_encountered and not valid_top_level_schemas.is_empty
 		end
 
+feature -- Validation
+
+	validate
+		do
+		end
+
 feature -- Commands
 
 	set_schema_load_list (a_schemas_load_list: LIST [STRING])
@@ -148,11 +152,10 @@ feature -- Commands
 
 	reload_schemas
 			-- reload schemas from current schema dir
-		require
-			has_schema_directory
 		do
+			reset
 			load_schema_descriptors
-			if not billboard.has_errors then
+			if not has_errors then
 				load_schemas
 			end
 		end
@@ -170,7 +173,8 @@ feature {NONE} -- Implementation
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
 	load_schema_descriptors
-			-- initialise `rm_schema_metadata_table'
+			-- initialise `rm_schema_metadata_table' by finding all the schema files in the directory tree of `schema_directory'
+			-- and for each one, doing a fast parse to obtain the descriptive meta-data found in the first few lines
 		require
 			has_schema_directory
 		local
@@ -181,22 +185,22 @@ feature {NONE} -- Implementation
 				all_schemas.wipe_out
 				create dir.make (schema_directory)
 				if not (dir.exists and dir.is_readable) then
-					post_error (generator, "load_schema_descriptors", "model_access_e5", <<schema_directory>>)
+					add_error ("schema_dir_not_valid", <<schema_directory>>)
 				elseif dir.is_empty then
-					post_error (generator, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
+					add_error ("bmm_schema_dir_contains_no_schemas", <<schema_directory>>)
 				else
-					create file_repo.make (schema_directory, Bmm_file_match_regex)
+					create file_repo.make (schema_directory, Bmm_schema_file_match_regex)
 					across file_repo.matching_paths as paths_csr loop
 						process_schema_file (paths_csr.item)
 					end
 					if all_schemas.is_empty then
-						post_error (generator, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
+						add_error ("bmm_schema_dir_contains_no_schemas", <<schema_directory>>)
 					end
 				end
 			end
 		rescue
 			exception_encountered := True
-			post_error (generator, "load_schemas", "model_access_e14", Void)
+			add_error ("bmm_schema_unknown_exception", Void)
 			retry
 		end
 
@@ -214,14 +218,14 @@ feature {NONE} -- Implementation
 
 				-- check for two schema files purporting to be the exact same schema (including release)
 				if sd.errors.has_errors then
-					post_error (generator, "load_schema_descriptors", "model_access_e2", <<sd.schema_id, sd.errors.as_string>>)
+					add_error ("bmm_schema_load_failure", <<sd.schema_id, sd.errors.as_string>>)
 				elseif all_schemas.has (sd.schema_id) then
-					post_warning (generator, "load_schema_descriptors", "model_access_w2", <<sd.schema_id, a_schema_file_path>>)
+					add_warning ("bmm_schema_duplicate_schema_found", <<sd.schema_id, a_schema_file_path>>)
 				else
 					all_schemas.put (sd, sd.schema_id)
 				end
 			else
-				post_warning (generator, "load_schema_descriptors", "model_access_w4", <<a_schema_file_path, dmp.last_parse_fail_reason>>)
+				add_warning ("bmm_schema_rm_missing", <<a_schema_file_path, dmp.last_parse_fail_reason>>)
 			end
 		end
 
@@ -251,7 +255,7 @@ feature {NONE} -- Implementation
 					if not schemas_load_list.is_empty then
 						from schemas_load_list.start until schemas_load_list.off loop
 							if not all_schemas.has (schemas_load_list.item) then
-								post_warning (generator, "load_schemas", "model_access_w7", <<schemas_load_list.item>>)
+								add_warning ("bmm_schema_invalid_load_list", <<schemas_load_list.item>>)
 								schemas_load_list.remove
 							else
 								schemas_load_list.forth
@@ -260,7 +264,7 @@ feature {NONE} -- Implementation
 					else
 						create {ARRAYED_LIST[STRING]} schemas_load_list.make_from_array (all_schemas.current_keys)
 						schemas_load_list.compare_objects
-						post_warning (generator, "load_schemas", "model_access_w6", Void)
+						add_warning ("bmm_schemas_no_load_list_found", Void)
 					end
 
 					-- initial load of all schemas, which populates `schema_inclusion_map';
@@ -268,17 +272,17 @@ feature {NONE} -- Implementation
 						if all_schemas_csr.item.passed then
 							load_schema_include_closure (all_schemas_csr.key)
 							if all_schemas_csr.item.errors.has_warnings then
-								post_warning (generator, "load_schemas", "model_access_w8", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+								add_warning ("bmm_schema_passed_with_warnings", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							end
 						else
-							post_error (generator, "load_schemas", "model_access_e12", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+							add_error ("bmm_schema_basic_validation_failed", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							if not all_schemas_csr.item.is_bmm_compatible then
 								incompatible_schema_detected := True
 							end
 						end
 					end
 					if incompatible_schema_detected then
-						post_error (generator, "load_schemas", "model_access_e16", <<schema_directory>>)
+						add_error ("bmm_schema_version_incompatible_with_tool", <<schema_directory>>)
 					end
 
 					-- propagate errors found so far
@@ -315,14 +319,14 @@ feature {NONE} -- Implementation
 										check attached candidate_schemas.item (schemas_csr.item).p_schema as including_schema then
 											if including_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
 												including_schema.merge (included_schema)
-												post_info (generator, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
+												add_info ("bmm_schema_merged_schema", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
 												finished := False
 											end
 										end
 									end
 								end
 							else
-								post_error (generator, "load_schemas", "model_access_e10", <<map_csr.key>>)
+								add_error ("bmm_schema_included_schema_not_found", <<map_csr.key>>)
 							end
 						end
 						i := i + 1
@@ -343,10 +347,10 @@ feature {NONE} -- Implementation
 										valid_top_level_schemas.extend (sch, schemas_csr.item.schema_id)
 									end
 									if schemas_csr.item.errors.has_warnings then
-										post_warning (generator, "load_schemas", "model_access_w8", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+										add_warning ("bmm_schema_passed_with_warnings", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 									end
 								else
-									post_error (generator, "load_schemas", "model_access_e9", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+									add_error ("bmm_schema_post_merge_validate_fail", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 								end
 							end
 						end
@@ -365,7 +369,7 @@ feature {NONE} -- Implementation
 						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
 							schemas_by_rm_closure.put (schemas_csr.item, qualified_rm_closure_name.as_lower)
 						else
-							post_info (generator, "load_schemas", "model_access_w3", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
+							add_info ("bmm_schema_duplicate_found", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
 								schemas_csr.key>>)
 						end
 					end
@@ -376,9 +380,9 @@ feature {NONE} -- Implementation
 		rescue
 			exception_encountered := True
 			if assertion_violation and attached original_class_name as ocn and attached original_recipient_name as orn and attached exception_trace as et then
-				post_error (generator, "load_schemas", "model_access_e14a", <<ocn + "." + orn + "%N" + et>>)
+				add_error ("bmm_schema_assertion_violation", <<ocn + "." + orn + "%N" + et>>)
 			else
-				post_error (generator, "load_schemas", "model_access_e14", Void)
+				add_error ("bmm_schema_unknown_exception", Void)
 			end
 			retry
 		end
@@ -393,8 +397,8 @@ feature {NONE} -- Implementation
 			if all_schemas.item (a_schema_id).passed then
 				all_schemas.item (a_schema_id).validate_includes (all_schemas.current_keys)
 				if all_schemas.item (a_schema_id).passed then
-					post_info (generator, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
-						all_schemas.item (a_schema_id).p_schema.primitive_types.count.out, all_schemas.item (a_schema_id).p_schema.class_definitions.count.out>>)
+					add_info ("bmm_schema_info_loaded", <<a_schema_id, all_schemas.item (a_schema_id).p_schema.primitive_types.count.out,
+						all_schemas.item (a_schema_id).p_schema.class_definitions.count.out>>)
 					includes := all_schemas.item (a_schema_id).p_schema.includes
 					if not includes.is_empty then
 						across includes as includes_csr loop
@@ -409,10 +413,10 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
-					post_error (generator, "load_schemas", "model_access_e15", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+					add_error ("bmm_schema_includes_valiidation_failed", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 				end
 			else
-				post_error (generator, "load_schemas", "model_access_e8", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+				add_error ("bmm_schema_load_failure", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 			end
 		end
 

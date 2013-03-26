@@ -42,9 +42,9 @@ inherit
 			{ANY} has_rm_schema_for_id
 		end
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
+	ANY_VALIDATOR
+		rename
+			validate as populate
 		end
 
 	BMM_DEFINITIONS
@@ -132,15 +132,17 @@ feature -- Access
 		do
 			create Result.make (0)
 			Result.compare_objects
-			create regex_matcher.make
-			regex_matcher.set_case_insensitive (True)
-			regex_matcher.compile (a_regex)
+
 			if attached an_rm_type as rm_t then
 				rm_type := rm_t.as_lower
 			end
 			if attached an_rm_closure as rm_cl then
 				rm_closure := rm_cl.as_lower
 			end
+
+			create regex_matcher.make
+			regex_matcher.set_case_insensitive (True)
+			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
 				across archetype_index as archs_csr loop
 					if regex_matcher.recognizes (archs_csr.key) then
@@ -204,6 +206,7 @@ feature -- Commands
 	clear
 			-- reduce to initial state
 		do
+			reset
 			archetype_index.wipe_out
 			semantic_item_index.wipe_out
 			filesys_item_index.wipe_out
@@ -284,15 +287,15 @@ feature -- Modification
 					put_archetype (aca, in_dir_path)
 				elseif not has_item_with_id (aca.ontological_parent_name.as_lower) then
 					if aca.is_specialised then
-						post_error (generator, "add_adhoc_archetype", "arch_cat_orphan_archetype", <<aca.ontological_parent_name, aca.qualified_key>>)
+						add_error ("arch_cat_orphan_archetype", <<aca.ontological_parent_name, aca.qualified_key>>)
 					else
-						post_error (generator, "add_adhoc_item", "arch_cat_orphan_archetype_e2", <<aca.ontological_parent_name, aca.qualified_key>>)
+						add_error ("arch_cat_orphan_archetype_e2", <<aca.ontological_parent_name, aca.qualified_key>>)
 					end
 				elseif has_item_with_id (aca.qualified_key) then
-					post_error (generator, "add_adhoc_archetype", "arch_cat_dup_archetype", <<in_dir_path>>)
+					add_error ("arch_cat_dup_archetype", <<in_dir_path>>)
 				end
 			else
-				post_error (generator, "add_adhoc_archetype", "invalid_filename_e1", <<in_dir_path>>)
+				add_error ("invalid_filename_e1", <<in_dir_path>>)
 			end
 		end
 
@@ -356,7 +359,7 @@ feature -- Traversal
 			-- On all archetype nodes from top to `aca', execute `action'
 		local
 			csr: detachable ARCH_CAT_ARCHETYPE
-			lineage: attached ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
+			lineage: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 		do
 			create lineage.make (1)
 			from csr := aca until csr = Void loop
@@ -504,7 +507,7 @@ feature {NONE} -- Implementation
 									added_during_pass := added_during_pass + 1
 									status_list [archs_csr.target_index] := Populate_status_succeeded
 								else
-									post_error (generator, "populate", "arch_cat_dup_archetype", <<archs_csr.item.full_path>>)
+									add_error ("arch_cat_dup_archetype", <<archs_csr.item.full_path>>)
 									status_list [archs_csr.target_index] := Populate_status_failed
 								end
 							else
@@ -519,9 +522,9 @@ feature {NONE} -- Implementation
 				across archs as archs_csr loop
 					if status_list [archs_csr.cursor_index] > 0 then
 						if archs_csr.item.is_specialised then
-							post_error (generator, "populate", "arch_cat_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							add_error ("arch_cat_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						else
-							post_error (generator, "populate", "arch_cat_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							add_error ("arch_cat_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						end
 					end
 				end
