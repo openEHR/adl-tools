@@ -5,9 +5,9 @@ note
 				   
 					USAGE:
 					   adlc.exe -s [-q]
-					   adlc.exe -p <profile name> -l [-q]
-					   adlc.exe -p <profile name> -d [-q]
-					   adlc.exe -p <profile name> [-flat] [-cfg <file path>] [-q] [-f <format>] -a <action> <id_pattern>
+					   adlc.exe -r <repository name> -l [-q]
+					   adlc.exe -r <repository name> -d [-q]
+					   adlc.exe -r <repository name> [-flat] [-cfg <file path>] [-q] [-f <format>] -a <action> <id_pattern>
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
@@ -15,10 +15,10 @@ note
 					   -q --quiet             : suppress verbose feedback, including configuration information on startup (Optional)
 					      --flat              : use flat form of archetype[s] for actions, e.g. path extraction etc (Optional)
 					   -s --show_config       : show current configuration and defaults
-					   -l --list_archetypes   : generate list of archetypes in current profile repository (use for further processing)
-					   -d --display_archetypes: generate list of archetypes in current profile repository in user-friendly format
-					   -p --profile           : profile to use
-					                            <profile name>: profile name
+					   -l --list_archetypes   : generate list of archetypes in current repository (use for further processing)
+					   -d --display_archetypes: generate list of archetypes in current repository in user-friendly format
+					   -r --repository        : repository to use
+					                            <repository name>: repository name
 					   -f --format            : output format for generated files (Optional)
 					                            <format>: file formats: json, adl, dadl, yaml, xml (default = adl)
 					      --cfg               : output default configuration file location (Optional)
@@ -85,21 +85,21 @@ feature -- Commands
 
 	start
 		local
-			curr_prof, action: STRING
+			curr_repo, action: STRING
 			aca: ARCH_CAT_ARCHETYPE
 			finished: BOOLEAN
 		do
 			app_root.initialise_app
 			if opts.is_verbose then
-				print (billboard.content)
+				print (app_root.error_strings)
 				verbose_output := True
 			end
 			if not app_root.has_errors then
 				app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 				app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
-				check attached repository_profiles.current_profile_name as cpn then
-					curr_prof := cpn
+				check attached repository_config_table.current_repository_name as cpn then
+					curr_repo := cpn
 				end
 
 				-- now process command line
@@ -114,21 +114,21 @@ feature -- Commands
 					end
 
 					-- repository info
-					io.put_string ("%N" + get_text ("profiles_info_text"))
-					across repository_profiles as profs_csr loop
-						io.put_string ("%T" + profs_csr.key + ": " +  profs_csr.item.reference_repository + "%N")
+					io.put_string ("%N" + get_text ("repos_info_text"))
+					across repository_config_table as repos_csr loop
+						io.put_string ("%T" + repos_csr.key + ": " +  repos_csr.item.reference_path + "%N")
 					end
 
 				else
-					-- process profile
-					if attached opts.profile as prof then
-						if repository_profiles.has_profile (prof) then
-							set_current_profile (prof)
-							check attached repository_profiles.current_profile_name as cp then
-								curr_prof := cp
+					-- process repository
+					if attached opts.repository as repo then
+						if repository_config_table.has_repository (repo) then
+							set_current_repository (repo)
+							check attached repository_config_table.current_repository_name as cp then
+								curr_repo := cp
 							end
 						else
-							io.put_string (get_msg ("profile_does_not_exist_err", <<prof>>))
+							io.put_string (get_msg ("repo_does_not_exist_err", <<repo>>))
 							finished := True
 						end
 					end
@@ -138,7 +138,7 @@ feature -- Commands
 
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
-						io.put_string (get_msg ("archs_list_text", <<curr_prof>>))
+						io.put_string (get_msg ("archs_list_text", <<curr_repo>>))
 						current_arch_cat.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 						io.put_string (get_text ("archs_list_text_end"))
 
@@ -156,7 +156,7 @@ feature -- Commands
 									matched_archetype_ids := current_arch_cat.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
 										if verbose_output then
-											io.put_string (get_msg ("no_matching_ids_err", <<opts.archetype_id_pattern, curr_prof>>))
+											io.put_string (get_msg ("no_matching_ids_err", <<opts.archetype_id_pattern, curr_repo>>))
 										end
 									else
 										if action.is_equal (opts.List_action) then
@@ -211,7 +211,7 @@ feature -- Commands
 				end
 			else
 				io.put_string (app_root.errors.as_string)
-				print (billboard.content)
+				print (app_root.error_strings)
 				across rm_schemas_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
 						io.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")

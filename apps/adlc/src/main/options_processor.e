@@ -75,7 +75,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text ("display_archetypes_switch_desc"), False, False))
 
 			-- switches with arguments
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (profile_switch, get_text ("profile_switch_desc"), False, False, profile_switch_arg, get_text ("profile_switch_arg_desc"), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (repository_switch, get_text ("repository_switch_desc"), False, False, repository_switch_arg, get_text ("repository_switch_arg_desc"), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text ("format_switch_desc"), True, False, format_switch_arg, get_msg ("format_switch_arg_desc", <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text ("cfg_switch_desc"), True, False, cfg_switch_arg_name, get_text ("cfg_switch_arg_desc"), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text ("action_switch_desc"), False, False, action_switch_arg, Actions_string, False))
@@ -89,9 +89,9 @@ feature -- Definitions
 		once
 			create Result.make (2)
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (show_config_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (profile_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (profile_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (profile_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (repository_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (repository_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (repository_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
 														switch_of_name (quiet_switch), switch_of_name (format_switch),
 														switch_of_name (action_switch)>>, True))
 		end
@@ -105,8 +105,8 @@ feature -- Definitions
 	action_switch: STRING = "a|action"
 	action_switch_arg: STRING = "action"
 
-	profile_switch: STRING = "p|profile"
-	profile_switch_arg: STRING = "profile name"
+	repository_switch: STRING = "r|repository"
+	repository_switch_arg: STRING = "repository name"
 
 	format_switch: STRING = "f|format"
 	format_switch_arg: STRING = "format"
@@ -177,12 +177,12 @@ feature -- Access
 			end
 		end
 
-	profile: detachable STRING
-			-- name of profile
+	repository: detachable STRING
+			-- name of repository
 		require
 			is_successful: is_successful
 		once
-			if has_option (profile_switch) and then attached option_of_name (profile_switch) as opt and then opt.has_value then
+			if has_option (repository_switch) and then attached option_of_name (repository_switch) as opt and then opt.has_value then
 				Result := opt.value
 			end
 		end
