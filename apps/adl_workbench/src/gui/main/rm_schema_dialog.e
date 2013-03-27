@@ -35,6 +35,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature -- Definitions
 
 	Grid_schema_col: INTEGER = 1

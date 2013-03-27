@@ -11,24 +11,20 @@ note
 class ADL_VALIDATOR
 
 inherit
-	YY_PARSER_SKELETON
+	PARSER_VALIDATOR
 		rename
+			reset as validator_reset,
 			make as make_parser_skeleton
-		redefine
-			report_error
 		end
 
 	ADL_SCANNER
 		rename
 			make as make_scanner
+		redefine
+			reset
 		end
 
 	ADL_SYNTAX_CONVERTER
-
-	SHARED_MESSAGE_DB
-		export
-			{NONE} all
-		end
 
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
@@ -278,6 +274,7 @@ arch_language: SYM_LANGUAGE V_DADL_TEXT
 		{
 			convert_dadl_language($2)
 			language_text := $2
+			merge_errors (converter_status)
 		}
 	| SYM_LANGUAGE error
 		{
@@ -289,6 +286,7 @@ arch_description: SYM_DESCRIPTION V_DADL_TEXT
 		{ 
 			convert_dadl_language($2)
 			description_text := $2
+			merge_errors (converter_status)
 		}
 	| SYM_DESCRIPTION error
 		{
@@ -361,6 +359,13 @@ feature -- Initialization
 			create other_metadata.make (0)
 		end
 
+	reset
+		do
+			precursor
+			validator_reset
+			accept
+		end
+
 	execute (in_text:STRING)
 		do
 			reset
@@ -369,18 +374,6 @@ feature -- Initialization
 		end
 
 feature {YY_PARSER_ACTION} -- Basic Operations
-
-	report_error (a_message: STRING)
-			-- Print error message.
-		do
-			add_error_with_location ("general_error", <<a_message>>, error_loc)
-		end
-
-	abort_with_error (err_code: STRING; args: ARRAY [STRING])
-		do
-			add_error_with_location (err_code, args, error_loc)
-			abort
-		end
 
 	error_loc: attached STRING
 		do
@@ -391,9 +384,6 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 			Result.append ("line " + (in_lineno + source_start_line).out)
 			Result.append(" [last ADL token = " + token_name(last_token) + "]")
 		end
-
-	source_start_line: INTEGER
-			-- offset of source in other document, else 0
 
 feature -- Parse Output
 

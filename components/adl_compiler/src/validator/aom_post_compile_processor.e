@@ -9,13 +9,6 @@ note
 
 class AOM_POST_COMPILE_PROCESSOR
 
-inherit
-	ADL_SYNTAX_CONVERTER
-		export
-			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
-		end
-
 create
 	initialise
 

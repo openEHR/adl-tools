@@ -25,6 +25,8 @@ inherit
 			{NONE} all
 		end
 
+	GLOBAL_ERROR_REPORTING_LEVEL
+
 create
 	make
 
@@ -33,7 +35,6 @@ feature -- Initialisation
 	make
 		do
 			create billboard.make (0)
-			error_reporting_level := Error_type_info
 		end
 
 feature -- Access
@@ -41,13 +42,13 @@ feature -- Access
 	content: STRING
 			-- text of the billboard in locale current language
 		do
-			Result := filtered_content(error_reporting_level)
+			Result := filtered_content (global_error_reporting_level)
 		end
 
 	most_recent: STRING
 			-- text of most recent addition
 		do
-			Result := item_formatted(billboard.first, error_reporting_level)
+			Result := item_formatted (billboard.first, global_error_reporting_level)
 		end
 
 feature -- Status Report
@@ -56,19 +57,7 @@ feature -- Status Report
 			-- True if billboard has any error messages (note: it may be non-empty
 			-- and still have no error messages, just info messages)
 		do
-			from billboard.start until Result or billboard.off loop
-				Result := billboard.item.error_type = Error_type_error
-				billboard.forth
-			end
-		end
-
-feature -- Status Setting
-
-	set_error_reporting_level (a_level: INTEGER)
-		require
-			valid_error_level: is_valid_error_type (a_level)
-		do
-			error_reporting_level := a_level
+			Result := across billboard as billboard_csr some billboard_csr.item.error_type = Error_type_error end
 		end
 
 feature -- Modify
@@ -114,8 +103,6 @@ feature -- Modify
 
 feature {NONE} -- Implementation
 
-	error_reporting_level: INTEGER
-
 	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM]
 
 	filtered_content (at_level: INTEGER): STRING
@@ -153,9 +140,6 @@ feature {NONE} -- Implementation
 			Result.append (trailer)
 			Result.append ("%N")
 		end
-
-invariant
-	Valid_severity_reporting_level: is_valid_error_type (error_reporting_level)
 
 end
 

@@ -1241,7 +1241,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 333")
 end
 
-			abort_with_error("SDINV", <<dadl_parser_error>>)
+			abort_with_error("SDINV", <<dadl_parser_error.as_string>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -9297,6 +9297,7 @@ feature -- Initialization
 		do
 			precursor
 			validator_reset
+			accept
 		end
 
 	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)

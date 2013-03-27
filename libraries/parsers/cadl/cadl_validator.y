@@ -332,7 +332,7 @@ c_object: c_complex_object
 		}
 	| ERR_C_DOMAIN_TYPE
 		{
-			abort_with_error("SDINV", <<dadl_parser_error>>)
+			abort_with_error("SDINV", <<dadl_parser_error.as_string>>)
 		}
 	| error		
 		{

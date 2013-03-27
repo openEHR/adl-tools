@@ -178,12 +178,12 @@ feature -- Commands
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_not_found", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
 						source.add_adhoc_archetype (fname)
-						if not billboard.has_errors then
+						if source.has_errors then
 							selection_history.set_selected_item (source.last_added_archetype)
 							show
 							repopulate
 						end
-						gui_agents.console_tool_append_agent.call ([billboard.content])
+						gui_agents.console_tool_append_agent.call ([source.error_strings])
 					end
 				else
 					(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_already_exists", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))

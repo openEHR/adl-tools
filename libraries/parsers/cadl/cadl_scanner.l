@@ -408,6 +408,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				-- perform any upgrades to embedded dADL object syntax here by substitution
 				convert_c_dv_names(str_)
 
+				dadl_parser_error.wipe_out
 				dadl_parser.execute (str_, source_start_line + in_lineno)
 				if not dadl_parser.syntax_error then
 					if dadl_parser.output.is_typed then
@@ -417,19 +418,19 @@ P[yY]?[mM]?[Ww]?[dD]? {
 								c_domain_type := cdt
 								last_token := V_C_DOMAIN_TYPE
 							else
-								dadl_parser_error := get_msg ("VDTCV", <<dadl_parser.output.im_type_name>>)
+								dadl_parser_error.add_error ("VDTCV", <<dadl_parser.output.im_type_name>>, "")
 								last_token := ERR_C_DOMAIN_TYPE
 							end
 						else
-							dadl_parser_error :=  get_msg ("VDTTU", <<dadl_parser.output.im_type_name>>)
+							dadl_parser_error.add_error ("VDTTU", <<dadl_parser.output.im_type_name>>, "")
 							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
-						dadl_parser_error := get_text ("VDTNT")
+						dadl_parser_error.add_error ("VDTNT", Void, "")
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else
-					dadl_parser_error := dadl_parser.errors.last_added.message
+					dadl_parser_error.append (dadl_parser.errors)
 					last_token := ERR_C_DOMAIN_TYPE
 				end
 
@@ -647,6 +648,7 @@ feature {NONE} -- Initialization
 			make_compressed_scanner_skeleton
 			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
+			create dadl_parser_error.make
 		end
 
 feature -- Commands
@@ -683,7 +685,7 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	dadl_parser_error: detachable STRING
+	dadl_parser_error: ERROR_ACCUMULATOR
 
 	term_code_count: INTEGER
 			-- Number of term codes found so far parsing a TERM_CONSTRAINT.

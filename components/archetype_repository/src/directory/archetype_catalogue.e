@@ -280,6 +280,7 @@ feature -- Modification
 				clone_semantic_item_tree_prototype
 			end
 
+			errors.wipe_out
 			profile_repo_access.adhoc_source_repository.add_item (in_dir_path)
 			if profile_repo_access.adhoc_source_repository.has_path (in_dir_path) then
 				aca := profile_repo_access.adhoc_source_repository.item (in_dir_path)

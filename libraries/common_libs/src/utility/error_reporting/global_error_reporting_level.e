@@ -26,7 +26,7 @@ feature -- Status Setting
 		require
 			valid_error_level: is_valid_error_type (a_level)
 		do
-			global_error_reporting_level_cell.put(a_level)
+			global_error_reporting_level_cell.put (a_level)
 		end
 
 feature {NONE} -- Implementation

@@ -145,7 +145,7 @@ feature -- Commands
 			end
 		end
 
-	build_subtree (aci: attached ARCH_CAT_ITEM)
+	build_subtree (aci: ARCH_CAT_ITEM)
 			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
 		do
 			is_building := True
@@ -156,7 +156,7 @@ feature -- Commands
 			call_global_visual_update_action (get_msg_line ("compiler_finished_building_subtree", Void))
 		end
 
-	rebuild_subtree (aci: attached ARCH_CAT_ITEM)
+	rebuild_subtree (aci: ARCH_CAT_ITEM)
 			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
 		do
 			is_building := True
@@ -167,7 +167,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	build_lineage (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	build_lineage (ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 			-- dependency depth indicates how many dependency relationships away from original artefact
@@ -178,7 +178,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	rebuild_lineage (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	rebuild_lineage (ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
@@ -188,7 +188,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	export_all (an_export_dir, a_syntax: attached STRING)
+	export_all (an_export_dir, a_syntax: STRING)
 			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
 		do
 			call_global_visual_update_action (get_msg_line ("compiler_export", <<a_syntax>>))
@@ -196,7 +196,7 @@ feature -- Commands
 			call_global_visual_update_action (get_msg_line ("compiler_finished_export", <<a_syntax, an_export_dir>>))
 		end
 
-	build_and_export_all (an_export_dir, a_syntax: attached STRING)
+	build_and_export_all (an_export_dir, a_syntax: STRING)
 			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from the whole system, building each archetype as necessary.
 		do
 			is_full_build_completed := False
@@ -210,21 +210,21 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	do_all (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+	do_all (action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
 			current_arch_cat.do_all_archetypes (action)
 		end
 
-	do_subtree (subtree: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+	do_subtree (subtree: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
 			current_arch_cat.do_archetypes (subtree, action)
 		end
 
-	do_lineage (ara: attached ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+	do_lineage (ara: ARCH_CAT_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 			current_arch_cat.do_archetype_lineage(ara, action)
 		end
 
-	check_file_system_currency (from_scratch: BOOLEAN; ara: attached ARCH_CAT_ARCHETYPE)
+	check_file_system_currency (from_scratch: BOOLEAN; ara: ARCH_CAT_ARCHETYPE)
 			-- check archetype for anything that would require recompilation:
 			-- * editing changes, including anything that might cause reparenting
 			-- * user request to start from scratch
@@ -284,19 +284,17 @@ feature {NONE} -- Implementation
 
 					elseif ara.is_valid then
 						if not ara.errors.is_empty then
-							build_status := get_msg_line ("compiler_already_attempted_validated_with_warnings", <<ara.artefact_type_name.as_upper, ara.id.value, ara.errors.as_string>>)
+							build_status := get_msg_line ("compiler_already_attempted_validated_with_warnings", <<ara.artefact_type_name.as_upper, ara.id.value, ara.error_strings>>)
 						else
 							build_status := get_msg_line ("compiler_already_attempted_validated", <<ara.artefact_type_name.as_upper, ara.id.value>>)
 						end
 					else
-						build_status := get_msg_line ("compiler_already_attempted_failed", <<ara.artefact_type_name.as_upper, ara.id.value, ara.errors.as_string>>)
+						build_status := get_msg_line ("compiler_already_attempted_failed", <<ara.artefact_type_name.as_upper, ara.id.value, ara.error_strings>>)
 					end
-					build_status.append (ara.status)
 					call_archetype_visual_update_action (build_status, ara, dependency_depth)
 				else
 					ara.signal_exception
-					call_archetype_visual_update_action (billboard.content, ara, dependency_depth)
-					billboard.clear
+					call_archetype_visual_update_action (ara.error_strings, ara, dependency_depth)
 				end
 			end
 		rescue
@@ -305,7 +303,7 @@ feature {NONE} -- Implementation
 			else
 				create exc_trace_str.make_from_string ("(Exception trace not available)")
 			end
-			post_error (generator, "build_archetype", "compile_exception", <<ara.qualified_name, exception.out, exc_trace_str>>)
+			call_global_visual_update_action (get_msg ("compile_exception", <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end

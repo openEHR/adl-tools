@@ -34,12 +34,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	last_added: attached ERROR_DESCRIPTOR
+	last_added: ERROR_DESCRIPTOR
 		do
 			Result := list.last
 		end
 
-	error_codes: attached ARRAYED_SET [STRING]
+	error_codes: ARRAYED_SET [STRING]
 			-- list of all codes from errors currently in list
 		do
 			create Result.make(0)
@@ -52,7 +52,7 @@ feature -- Access
 			end
 		end
 
-	warning_codes: attached ARRAYED_SET [STRING]
+	warning_codes: ARRAYED_SET [STRING]
 			-- list of all codes from warnings currently in list
 		do
 			create Result.make(0)
@@ -157,13 +157,34 @@ feature -- Output
 	as_string: STRING
 			-- generate stringified version of contents, with newlines inserted after each entry
 		do
-			create Result.make(0)
-			from list.start until list.off loop
-				if list.item.severity >= global_error_reporting_level then
-					Result.append (list.item.as_string)
+			create Result.make_empty
+			across list as list_csr loop
+				if list_csr.item.severity >= global_error_reporting_level then
+					Result.append (list_csr.item.as_string)
 					Result.append_character ('%N')
 				end
-				list.forth
+			end
+		end
+
+	as_string_filtered (include_errors, include_warnings, include_info: BOOLEAN): STRING
+			-- generate filtered stringified version of contents, with newlines inserted after each entry
+		do
+			create Result.make_empty
+			across list as list_csr loop
+				inspect list_csr.item.severity
+				when error_type_error then
+					if include_errors then
+						Result.append (list_csr.item.as_string + "%N")
+					end
+				when error_type_warning then
+					if include_warnings then
+						Result.append (list_csr.item.as_string + "%N")
+					end
+				else
+					if include_info then
+						Result.append (list_csr.item.as_string + "%N")
+					end
+				end
 			end
 		end
 

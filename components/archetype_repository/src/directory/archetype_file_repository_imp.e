@@ -26,6 +26,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	text: detachable STRING

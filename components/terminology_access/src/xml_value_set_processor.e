@@ -20,11 +20,6 @@ inherit
 			process_element
 		end
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 feature -- Access
 
 	current_terminology: detachable TERMINOLOGY_ACCESS

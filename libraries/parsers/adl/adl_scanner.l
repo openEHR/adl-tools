@@ -3,22 +3,18 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for ADL syntax items"
 	keywords:    "ADL"
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Mozilla tri-license"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ADL_SCANNER
 
 inherit
-	ANY_VALIDATOR
-		rename
-			reset as validator_reset
-		end
+	--ANY_VALIDATOR
+	--	rename
+	--		reset as validator_reset
+	--	end
 
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
@@ -326,11 +322,6 @@ feature -- Initialization
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
-			validator_reset
-		end
-
-	validate
-		do
 		end
 
 feature -- Access
@@ -340,6 +331,9 @@ feature -- Access
 
 	in_lineno: INTEGER
 			-- Current line number
+
+	source_start_line: INTEGER
+			-- offset of source in other document, else 0
 
 	is_operator: BOOLEAN
 			-- Parsing an operator declaration?

@@ -23,6 +23,20 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
+	GLOBAL_ERROR_REPORTING_LEVEL
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature {NONE} -- Initialization
 
 	create_interface_objects
@@ -260,8 +274,8 @@ feature -- Events
 				set_adl_version_for_flat_output (adl_save_version_combo_box.data_control_text)
 				set_validation_strict (validation_strict_check_ctl.is_selected)
 				set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
-				set_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
-				billboard.set_error_reporting_level (error_reporting_level)
+				set_global_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
+				set_error_reporting_level (global_error_reporting_level)
 
 				-- GUI options
 				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap

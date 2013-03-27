@@ -2,7 +2,6 @@ note
 	component:   "openEHR Libraries"
 	description: "Shared access to a configuration file access object."
 	keywords:    "config, file"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 openEHR Foundation <http://www.openEHR.org>"

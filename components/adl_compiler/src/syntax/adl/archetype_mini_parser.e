@@ -26,6 +26,8 @@ inherit
 			{NONE} all;
 		end
 
+	ANY_VALIDATOR
+
 feature -- Definitions
 
 	Other_details_dadl_name: STRING = "other_details"
@@ -49,16 +51,6 @@ feature -- Access
 	last_archetype: detachable ARCHETYPE_THUMBNAIL
 			-- thumbnail form of last parsed archetype
 
-	last_parse_fail_reason: STRING
-		attribute
-			create Result.make_empty
-		end
-
-feature -- Status Report
-
-	last_parse_valid: BOOLEAN
-			-- True if last parse was ok
-
 feature -- Commands
 
 	parse (a_full_path: STRING)
@@ -74,7 +66,7 @@ feature -- Commands
 			arch_artefact_type_name, archetype_id_str: STRING
 			parent_id_str: detachable STRING
 		do
-			last_parse_valid := False
+			reset
 			create artefact_types.default_create
 
 			-- determine from the path whether it is a differential (source form) archetype
@@ -117,7 +109,7 @@ feature -- Commands
 					arch_id_is_old_style := True
 				else -- something wrong with the id
 					id_bad := True
-					last_parse_fail_reason := get_msg ("parse_archetype_e8", <<a_full_path, lines[2]>>)
+					add_error ("parse_archetype_e8", <<a_full_path, lines[2]>>)
 				end
 
 				if not id_bad then
@@ -132,10 +124,9 @@ feature -- Commands
 							arch_parent_id_is_old_style := True
 						else
 							-- something wrong with the parent id
-							last_parse_fail_reason := get_msg ("parse_archetype_e10", <<a_full_path, lines[4]>>)
+							add_error ("parse_archetype_e10", <<a_full_path, lines[4]>>)
 						end
 					end
-					last_parse_valid := True
 
 					create last_archetype.make (archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, arch_is_generated)
 					if attached parent_id_str as pid_str then
@@ -143,7 +134,7 @@ feature -- Commands
 					end
 				end
 			else
-				last_parse_fail_reason := get_msg ("parse_archetype_e9", <<a_full_path, lines[2]>>)
+				add_error ("parse_archetype_e9", <<a_full_path, lines[2]>>)
 			end
 		end
 
@@ -189,6 +180,12 @@ feature -- Commands
 					end
 				end
 			end
+		end
+
+feature -- Validation
+
+	validate
+		do
 		end
 
 feature {NONE} -- Implementation

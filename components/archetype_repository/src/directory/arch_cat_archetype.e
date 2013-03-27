@@ -61,6 +61,15 @@ inherit
 			is_equal
 		end
 
+	ANY_VALIDATOR
+		rename
+			reset as validator_reset
+		undefine
+			is_equal
+		redefine
+			ready_to_validate
+		end
+
 create {APP_OBJECT_FACTORY}
 	make, make_legacy, make_new_archetype, make_new_specialised_archetype
 
@@ -201,7 +210,6 @@ feature {NONE} -- Initialisation
 	make_item
 		do
 			create status.make_empty
-			create errors.make
 			create last_modify_timestamp.make_from_epoch (0)
 		end
 
@@ -479,9 +487,6 @@ feature -- Access (compiler)
 	compilation_state: INTEGER
 			-- current compilation state, obeying the state machine described above
 
-	errors: ERROR_ACCUMULATOR
-			-- errors from last compile attempt; allows redisplay if this archetype is reselected
-
 	status: STRING
 			-- status of last operation
 
@@ -534,6 +539,11 @@ feature -- Access (compiler)
 		end
 
 feature -- Status Report - Compilation
+
+	ready_to_validate: BOOLEAN
+		do
+			Result := compilation_state = Cs_ready_to_validate
+		end
 
 	compile_attempted: BOOLEAN
 			-- has a compile been attempted in this session?
@@ -685,7 +695,7 @@ feature -- Compilation
 						compilation_state := Cs_ready_to_parse
 					else
 						compilation_state := cs_lineage_invalid
-						errors.add_error("compile_e1", <<parent_id.as_string>>, "")
+						add_error ("compile_e1", <<parent_id.as_string>>)
 					end
 				when cs_ready_to_parse_legacy then
 					compile_legacy
@@ -743,7 +753,7 @@ feature -- Compilation
 			-- now deal with changes from file
 			create amp
 			amp.parse (full_path)
-			if amp.last_parse_valid then
+			if amp.passed then
 				if not artefact_type.is_equal (amp.last_archetype.artefact_type) then
 					artefact_type := amp.last_archetype.artefact_type
 				end
@@ -767,7 +777,7 @@ feature -- Compilation
 				end
 				signal_from_scratch
 			else
-				post_error (generator, "signal_source_edited", "general", <<amp.last_parse_fail_reason>>)
+				add_error ("general", <<amp.error_strings>>)
 				compilation_state := Cs_invalid
 			end
 		ensure
@@ -785,7 +795,7 @@ feature -- Compilation
 				compilation_state := Cs_ready_to_validate
 			else
 				compilation_state := cs_suppliers_invalid
-				errors.add_error ("compile_e2", <<suppliers_index.item_for_iteration.id.as_string>>, "")
+				add_error ("compile_e2", <<suppliers_index.item_for_iteration.id.as_string>>)
 			end
 		ensure
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
@@ -841,11 +851,9 @@ feature {NONE} -- Compilation
 			-- reset after exception encountered
 		do
 			status.wipe_out
-			errors.wipe_out
-			billboard.clear
+			validator_reset
 		ensure
 			Status_cleared: status.is_empty
-			Errors_cleared: errors.is_empty
 		end
 
 	initialise
@@ -888,12 +896,12 @@ feature {NONE} -- Compilation
 			end
 			flat_archetype_cache := Void
 			if attached legacy_flat_archetype as lft then
-				post_info (generator, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
+				add_info ("compile_legacy_i1", <<id.as_string>>)
 				create differential_archetype.make_from_legacy_flat (lft)
 			 	compilation_state := Cs_parsed
 				if is_specialised and not specialisation_parent.is_valid then
 					compilation_state := cs_lineage_invalid
-					errors.add_error ("compile_e1", <<parent_id.as_string>>, "")
+					add_error ("compile_e1", <<parent_id.as_string>>)
 				else
 					-- perform post-parse object structure finalisation
 					adl15_engine.post_parse_process (Current, rm_schema)
@@ -912,12 +920,11 @@ feature {NONE} -- Compilation
 					end
 				end
 			else
-				errors.append (adl15_engine.errors)
+				merge_errors (adl15_engine.errors)
 			 	compilation_state := Cs_convert_legacy_failed
 			end
 
-			status.prepend (billboard.content)
-			billboard.clear
+			status.prepend (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed, Cs_convert_legacy_failed, cs_lineage_invalid>>).has (compilation_state)
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
@@ -932,15 +939,15 @@ feature {NONE} -- Compilation
 			Initial_state: compilation_state = Cs_ready_to_parse
 			Has_differential_file: has_differential_file
 		do
-			post_info (generator, "parse", "parse_i2", Void)
+			add_info ("parse_i2", Void)
 			flat_archetype_cache := Void
 			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
-					errors.add_warning ("parse_w1", <<id.as_string, pid.as_string, da_pid.as_string>>, "")
+					add_warning ("parse_w1", <<id.as_string, pid.as_string, da_pid.as_string>>)
 				else
-					post_info (generator, "parse", "parse_i1", <<id.as_string>>)
+					add_info ("parse_i1", <<id.as_string>>)
 				end
 
 				-- perform post-parse object structure finalisation
@@ -966,12 +973,11 @@ feature {NONE} -- Compilation
 					set_archetype_view_language (diff_arch.original_language.code_string)
 				end
 			else
-				errors.append (adl15_engine.errors)
+				merge_errors (adl15_engine.errors)
 				compilation_state := Cs_parse_failed
 			end
 
-			status.copy (billboard.content)
-			billboard.clear
+			status.copy (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
 			Archetype_state: compilation_state /= Cs_parse_failed implies attached differential_archetype
@@ -982,30 +988,28 @@ feature {NONE} -- Compilation
 			-- Compilation state change:
 			--	validated succeeded: Cs_ready_to_validate --> Cs_validated
 			--	validate failed: Cs_ready_to_validate --> Cs_validate_failed
-		require
-			Initial_state: compilation_state = Cs_ready_to_validate
 		do
 			flat_archetype_cache := Void
 
 			-- phase 1: validate archetype stand-alone
 			adl15_engine.phase_1_validate (Current, rm_schema)
-			errors.append (adl15_engine.errors)
+			merge_errors (adl15_engine.errors)
 
 			if adl15_engine.validation_passed then
 				compilation_state := Cs_validated_phase_1
 
 	 			-- phase 2: validate archetype against flat parent
 				adl15_engine.phase_2_validate (Current, rm_schema)
-				errors.append (adl15_engine.errors)
+				merge_errors (adl15_engine.errors)
 
 				if adl15_engine.validation_passed then
 					compilation_state := Cs_validated_phase_2
 
 					-- phase 3: validate flattened archetype
 					adl15_engine.phase_3_validate (Current, rm_schema)
-					errors.append (adl15_engine.errors)
+					merge_errors (adl15_engine.errors)
 					if adl15_engine.validation_passed then
-						post_info (generator, "validate", "parse_archetype_i2", <<id.as_string>>)
+						add_info ("parse_archetype_i2", <<id.as_string>>)
 						compilation_state := Cs_validated
 					-- not yet in use
 					--	adl15_engine.post_compile_process (Current, rm_schema)
@@ -1020,9 +1024,8 @@ feature {NONE} -- Compilation
 			end
 			differential_archetype.set_is_valid (adl15_engine.validation_passed)
 
-			status.copy (billboard.content)
-			billboard.clear
-		ensure
+			status.copy (errors.as_string_filtered (False, False, True))
+		ensure then
 			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)
 		end
 

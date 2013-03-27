@@ -40,19 +40,16 @@ feature -- ADL 1.4 conversions
 			pos, lpos, rpos: INTEGER
 			rep_str, lang: STRING
 		do
+			converter_status.wipe_out
 			-- get type name
-			from
-				pos := dadl_text.substring_index("language = <%"", 1)
-			until
-				pos = 0
-			loop
+			from pos := dadl_text.substring_index("language = <%"", 1) until pos = 0 loop
 				lpos := dadl_text.index_of('"', pos)
 				rpos := dadl_text.index_of('"', lpos+1)
 				lang := dadl_text.substring (lpos+1, rpos-1)
 				rep_str := "[" + Terminology_ISO_639_1 + "::" + lang + "]"
 				dadl_text.replace_substring (rep_str, lpos, rpos)
-				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1",
-					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>)
+				converter_status.add_info ("syntax_upgraded_i1",
+					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>, "")
 				pos := dadl_text.substring_index("language = <%"", rpos)
 			end
 		end
@@ -68,12 +65,12 @@ feature -- ADL 1.4 conversions
 			if pos > 0 then
 				dadl_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
 				convert_c_quantity_property(dadl_text)
-				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>)
+				converter_status.add_info ("syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>, "")
 			else
 				pos := dadl_text.substring_index("C_ORDINAL", 1)
 				if pos > 0 then
 					dadl_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
-					post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>)
+					converter_status.add_info ("syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>, "")
 				end
 			end
 		end
@@ -103,7 +100,7 @@ feature -- ADL 1.4 conversions
 				end
 
 				dadl_text.replace_substring (new_str, lpos, rpos)
-				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
+				converter_status.add_info ("syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>, "")
 			end
 		end
 
@@ -148,7 +145,7 @@ feature -- ADL 1.4 conversions
 				end
 				-- have to insert a 'T' to the right of the cursor
 				Result.insert_character ('T', i+1)
-				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
+				converter_status.add_info ("syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>, "")
 			end
 		end
 
@@ -281,6 +278,13 @@ feature -- Path conversions
 			across ref_node_list as ref_node_list_csr loop
 				ref_node_list_csr.item.set_target_path (xpath)
 			end
+		end
+
+feature -- Error Reporting
+
+	converter_status: ERROR_ACCUMULATOR
+		once
+			create Result.make
 		end
 
 end

@@ -16,6 +16,11 @@ class ARCHETYPE_ADHOC_FILE_REPOSITORY
 inherit
 	ARCHETYPE_FILE_REPOSITORY_IMP
 
+	SHARED_MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -67,7 +72,7 @@ feature -- Modification
 			create aof
 			create amp
 			amp.parse (full_path)
-			if amp.last_parse_valid and then attached amp.last_archetype as arch then
+			if amp.passed and then attached amp.last_archetype as arch then
 				if arch.archetype_id_is_old_style then
 					post_error (generator, "build_directory", "parse_archetype_e7", <<full_path>>)
 				elseif arch.is_specialised and then arch.parent_archetype_id_is_old_style then

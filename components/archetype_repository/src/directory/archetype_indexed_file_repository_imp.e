@@ -16,6 +16,11 @@ inherit
 
 	SHARED_REFERENCE_MODEL_ACCESS
 
+	SHARED_MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -59,7 +64,7 @@ feature {NONE} -- Implementation
 						elseif adl_legacy_flat_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
 							amp.parse (l_full_path)
-							if amp.last_parse_valid and then attached amp.last_archetype as arch then
+							if amp.passed and then attached amp.last_archetype as arch then
 								if arch.archetype_id_is_old_style then
 									post_error (generator, "build_directory", "parse_archetype_e7", <<fn, arch.archetype_id.as_string>>)
 								elseif arch.is_specialised and arch.parent_archetype_id_is_old_style then
@@ -71,7 +76,7 @@ feature {NONE} -- Implementation
 									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else
-								post_error (generator, "build_directory", "general", <<amp.last_parse_fail_reason>>)
+								post_error (generator, "build_directory", "general", <<amp.error_strings>>)
 							end
 						end
 					end
@@ -84,7 +89,7 @@ feature {NONE} -- Implementation
 						if adl_differential_filename_pattern_regex.matches (fn) then
 							l_full_path := file_system.pathname (a_path, fn)
 							amp.parse (l_full_path)
-							if amp.last_parse_valid and then attached amp.last_archetype as arch then
+							if amp.passed and then attached amp.last_archetype as arch then
 								if not has_rm_schema_for_id (arch.archetype_id) then
 									post_error (generator, "build_directory", "parse_archetype_e4", <<fn, arch.archetype_id.as_string>>)
 								elseif not archetype_id_index.has (arch.archetype_id.as_string) then
@@ -94,7 +99,7 @@ feature {NONE} -- Implementation
 									-- ignore, because there is already a legacy archetype for this id
 								end
 							else
-								post_error (generator, "build_directory", "general", <<amp.last_parse_fail_reason>>)
+								post_error (generator, "build_directory", "general", <<amp.error_strings>>)
 							end
 						end
 					end

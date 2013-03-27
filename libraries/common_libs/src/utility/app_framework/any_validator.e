@@ -1,8 +1,6 @@
 note
 	component:   "openEHR Project"
-	description: "[
-				 Abstract model of a validator object that reports errors, warnings.
-				 ]"
+	description: "Abstract model of a validator object that reports errors, warnings."
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -27,6 +25,7 @@ feature -- Initialisation
 			create error_cache.make
 		ensure
 			Passed: passed
+			Errors_cleared: errors.is_empty
 		end
 
 feature -- Access

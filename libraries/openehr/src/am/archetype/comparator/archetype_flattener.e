@@ -7,7 +7,7 @@ note
 	keywords:    "archetype, comparison, constraint model"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2008-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2008- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class ARCHETYPE_FLATTENER
@@ -22,11 +22,6 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export {NONE}
 			all
-		end
-
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
 		end
 
 	EXCEPTIONS

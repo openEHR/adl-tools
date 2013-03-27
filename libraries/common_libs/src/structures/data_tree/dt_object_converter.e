@@ -15,11 +15,6 @@ class DT_OBJECT_CONVERTER
 inherit
 	DT_FACTORY
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 	SHARED_DEBUG_HELPER
 		export
 			{NONE} all

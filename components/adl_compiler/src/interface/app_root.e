@@ -1,8 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Root application class for any ADL application; performs all application-wide initialisation.
-				 ]"
+	description: "Root application class for any ADL application; performs all application-wide initialisation."
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -54,8 +52,8 @@ feature -- Initialisation
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
-			add_custom_dt_dynamic_type_from_string ("C_STRING", ({C_STRING}).type_id)
-			add_custom_dt_dynamic_type_from_string ("C_DATE", ({C_DATE}).type_id)
+			add_custom_dt_dynamic_type_from_string (({C_STRING}).name, ({C_STRING}).type_id)
+			add_custom_dt_dynamic_type_from_string (({C_DATE}).name, ({C_DATE}).type_id)
 
 			initialise_serialisers
 			reset
@@ -72,7 +70,6 @@ feature -- Initialisation
 			dead_repos: ARRAYED_LIST [STRING]
 		once
 			-- set error reporting level in billboard and all error accumulator objects
-			billboard.set_error_reporting_level (error_reporting_level)
 			set_global_error_reporting_level (error_reporting_level)
 
 			-- initialise terminology
