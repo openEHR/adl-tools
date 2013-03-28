@@ -38,7 +38,7 @@ feature -- Initialization
 			if not app_root.has_errors then
 				if rm_schemas_access.found_valid_schemas then
 					print (get_msg ("cfg_file_path_info", <<app_root.user_config_file_path>>) + "%N")
-					print (get_text ("rep_profiles_found_info")  + "%N")
+					print (get_text ("repos_found_info")  + "%N")
 					repo_table := app_root.repository_config_table
 					if not repo_table.is_empty then
 						across repo_table as repos_csr loop
@@ -59,7 +59,7 @@ feature -- Initialization
 						app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 						app_root.archetype_compiler.build_all
 					else
-						print (get_text ("rep_profiles_not_found_info") + "%N")
+						print (get_text ("repos_not_found_info") + "%N")
 					end
 				else
 					print (get_text ("app_exit_with_errors") + "%N")
