@@ -315,7 +315,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			)
 
 			if passed then
-				add_info (ec_model_access_i1, << schema_id, primitive_types.count.out, class_definitions.count.out >>)
+				add_info (ec_bmm_schema_info_loaded, << schema_id, primitive_types.count.out, class_definitions.count.out >>)
 				state := State_validated_created
 			end
 		end

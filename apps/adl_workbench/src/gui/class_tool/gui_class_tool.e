@@ -73,8 +73,8 @@ feature -- Initialisation
 			ev_view_label.set_text ("View ")
 			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
 			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
-			ev_differential_view_button.set_tooltip (get_msg (ec_Set differential archetype view, Void))
-			ev_flat_view_button.set_tooltip (get_msg (ec_Set flat archetype view, Void))
+			ev_differential_view_button.set_tooltip (get_msg (ec_set_differential_archetype_view, Void))
+			ev_flat_view_button.set_tooltip (get_msg (ec_set_flat_archetype_view, Void))
 
 			-- visual characteristics: notebook
 			ev_notebook.set_item_text (properties_view.ev_root_container, get_msg (ec_properties_tab_text, Void))

@@ -456,6 +456,7 @@ templates = <
 		["refset_bindings_label_text"] = <"Refset bindings">
 
 		-- GUI_ARCHETYPE_INFORMATION_CONTROL
+		["arch_stats_list_title_diff"] = <"Archetype statistics (differential)">
 		["arch_metrics_list_title_diff"] = <"Archetype metrics (differential)">
 		["arch_metrics_list_title_flat"] = <"Archetype metrics (flat)">
 		["breakdown_nb_title_diff"] = <"RM breakdown (differential)">
@@ -477,6 +478,7 @@ templates = <
 		-- GUI_TRANSLATION_CONTROL
 		["translation_original_label_text"] = <"Original text">
 		["translation_translated_label_text"] = <"Translated text">
+		["translate_button_text"] = <"Add">
 
 		-- GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">

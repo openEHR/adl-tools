@@ -333,7 +333,7 @@ arch_annotations: -- no meta-data ok
 		}
 	| SYM_ANNOTATIONS error
 		{
-			abort_with_error (ec_SAAS, Void)
+			abort_with_error (ec_SAAN, Void)
 		}
 	;
 		
@@ -343,7 +343,7 @@ arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT
 		}
 	| SYM_COMPONENT_ONTOLOGIES error
 		{
-			abort_with_error (ec_SAAS, Void)
+			abort_with_error (ec_SAAN, Void)
 		}
 	;
 		

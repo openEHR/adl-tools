@@ -844,7 +844,7 @@ feature {NONE} -- Repository events
 
 					if file.exists then
 						create question_dialog.make_with_text (get_msg_line ("file_exists_replace_question", <<xml_name>>))
-						question_dialog.set_title (get_text (ec_export_dialog_title))
+						question_dialog.set_title (get_text (ec_export_report_dialog_title))
 						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text ("no_response")>>)
 						question_dialog.show_modal_to_window (Current)
 						ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))

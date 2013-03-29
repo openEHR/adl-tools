@@ -187,13 +187,13 @@ feature {NONE} -- Implementation
 				if codes_csr.key.starts_with (Term_code_leader) then
 					code_depth := specialisation_depth_from_code (codes_csr.key)
 					if code_depth > depth then
-						add_error (ec_VATCD, <<codes_csr.key>>)
+						add_error (ec_VATCD, <<codes_csr.key, depth.out>>)
 					elseif code_depth < depth then
 						if not flat_parent.ontology.has_term_code (codes_csr.key) then
-							add_error (ec_VATDC1, <<codes_csr.key>>)
+							add_error (ec_VATDF1, <<codes_csr.key>>)
 						end
 					elseif not ontology.has_term_code (codes_csr.key) then
-						add_error (ec_VATDC2, <<codes_csr.key>>)
+						add_error (ec_VATDF2, <<codes_csr.key>>)
 					end
 				else
 					create cp.make_from_string (codes_csr.key)
@@ -211,7 +211,7 @@ feature {NONE} -- Implementation
 			across target.accodes_index as codes_csr loop
 				code_depth := specialisation_depth_from_code (codes_csr.key)
 				if code_depth > depth then
-					add_error (ec_VATCD, <<codes_csr.key>>)
+					add_error (ec_VATCD, <<codes_csr.key, depth.out>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_constraint_code (codes_csr.key) then
 						add_error (ec_VACDF1, <<codes_csr.key>>)

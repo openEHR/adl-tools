@@ -19,7 +19,7 @@ templates = <
 		["aom_profile_dir_not_valid"] = <"AOM profile directory $1 does not exist or not readable">
 		["aom_profile_dir_contains_no_profiles"] = <"AOM profile directory $1 does not contain any profiles">
 		["aom_profile_dir_contains_no_valid_profiles"] = <"AOM profile directory $1 does not contain any valid profiles">
-		["aom_profiles_unknown_exception"] = <"Unknown exception processing AOM profiles">
+		["aom_profile_unknown_exception"] = <"Unknown exception processing AOM profiles">
 
 		-- AOM profile load & parse
 		["ARP_no_profile_name"] = <"AOM profile $1 has no 'profile_name' setting">
