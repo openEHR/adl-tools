@@ -1,9 +1,9 @@
 note
 	component:   "openEHR Archetype Project"
 	description : "[
-				   Generator for Eiffel class source text of form
+				   Generator for Eiffel class source text containing message id constants
 
-				    class COMPILED_MESSAGE_DB
+				    class COMPILED_MESSAGE_IDS
 				    feature -- Access
 				    	messages: [HASH_TABLE [STRING, STRING]]
 				    		once
@@ -23,7 +23,7 @@ note
 	license:     "See notice at bottom of class"
 
 class
-	MESSAGE_CLASS_GENERATOR
+	MESSAGE_IDS_CLASS_GENERATOR
 
 create
 	make
@@ -42,7 +42,7 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	class_name: STRING = "COMPILED_MESSAGE_DB"
+	class_name: STRING = "COMPILED_MESSAGE_IDS"
 
 	output: STRING
 			-- class text
@@ -58,11 +58,9 @@ feature -- Commands
 			output.wipe_out
 			output.append (class_header)
 			output.replace_substring_all ("$class_name", class_name)
-			output.append (feature_top)
 			across source_structure as ss_csr loop
-				output.append ("%T%T%Tmessage_table.put (%"" + ss_csr.item + "%", %"" + ss_csr.key + "%")%N")
+				output.append ("%T%Tec_" + ss_csr.key + ": STRING = " + "%"" + ss_csr.key + "%"%N")
 			end
-			output.append (feature_bottom)
 			output.append (class_footer)
 		end
 
@@ -75,34 +73,13 @@ note
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 class $class_name
 
-inherit
-	MESSAGE_DB
-		redefine
-			make
-		end
+feature -- Definitions
 
-create
-	make
-
-feature -- Initialisation
-
-	]"
-
-	feature_top: STRING = "[
-
-	make
-		do
-			precursor
-
-	]"
-
-	feature_bottom: STRING = "[
-		end
 	]"
 
 	class_footer: STRING = "[

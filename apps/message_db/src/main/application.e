@@ -98,13 +98,21 @@ feature -- Commands
 		do
 			populate (options_processor.msg_source_dir, options_processor.locale_lang)
 			if passed then
-				class_generator.generate (message_defs)
-				check attached file_system.pathname (options_processor.output_file_dir, class_generator.class_name.as_lower + ".e") as pn then
-					file_path := pn
-				end
+				-- write out COMPILED_MESSAGE_DB class
+				message_db_class_generator.generate (message_defs)
+				file_path := file_system.pathname (options_processor.output_file_dir, message_db_class_generator.class_name.as_lower + ".e")
 				create fd.make_create_read_write (file_path)
-				fd.put_string (class_generator.output)
+				fd.put_string (message_db_class_generator.output)
 				io.put_string ("Wrote class text to " + file_path + "%N")
+				fd.close
+
+				-- write out COMPILED_MESSAGE_IDS class
+				message_ids_class_generator.generate (message_defs)
+				file_path := file_system.pathname (options_processor.output_file_dir, message_ids_class_generator.class_name.as_lower + ".e")
+				create fd.make_create_read_write (file_path)
+				fd.put_string (message_ids_class_generator.output)
+				io.put_string ("Wrote class text to " + file_path + "%N")
+				fd.close
 			else
 				io.put_string (errors.as_string)
 			end
@@ -179,7 +187,7 @@ feature {NONE} -- Implementation
 			dadl_parser.reset
 			dadl_parser.execute (a_dadl_str, 1)
 			if not dadl_parser.syntax_error then
-				if attached {IN_MEMORY_MESSAGE_DB_INITIALISER} dadl_parser.output.as_object_from_string ("IN_MEMORY_MESSAGE_DB_INITIALISER", Void) as init_helper then
+				if attached {IN_MEMORY_MESSAGE_DB_INITIALISER} dadl_parser.output.as_object_from_string (({IN_MEMORY_MESSAGE_DB_INITIALISER}).name, Void) as init_helper then
 					if init_helper.templates.has (a_locale_lang) then
 						across init_helper.templates.item (a_locale_lang) as msg_def_csr loop
 							if not message_defs.has (msg_def_csr.key) then
@@ -214,7 +222,12 @@ feature {NONE} -- Implementation
 	message_defs: HASH_TABLE [STRING, STRING]
 			-- message definitions in the form of a table of templates keyed by id
 
-	class_generator: MESSAGE_CLASS_GENERATOR
+	message_db_class_generator: MESSAGE_DB_CLASS_GENERATOR
+		once
+			create Result.make
+		end
+
+	message_ids_class_generator: MESSAGE_IDS_CLASS_GENERATOR
 		once
 			create Result.make
 		end
