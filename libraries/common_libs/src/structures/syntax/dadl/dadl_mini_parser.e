@@ -95,10 +95,10 @@ feature -- Commands
 							key := line.substring (1, line.index_of (' ', 1)-1)
 							last_parse_content.put (val, key)
 						else
-							last_parse_fail_reason := get_msg ("parse_dadl_missing_right_delim", <<line>>)
+							last_parse_fail_reason := get_msg (ec_parse_dadl_missing_right_delim, <<line>>)
 						end
 					else
-						last_parse_fail_reason := get_msg ("parse_dadl_missing_left_delim", <<line>>)
+						last_parse_fail_reason := get_msg (ec_parse_dadl_missing_left_delim, <<line>>)
 					end
 				end
 			else
@@ -110,7 +110,7 @@ feature -- Commands
 					end
 					i := i + 1
 				end
-				last_parse_fail_reason := get_msg ("parse_dadl_missing_left_delim", <<str>>)
+				last_parse_fail_reason := get_msg (ec_parse_dadl_missing_left_delim, <<str>>)
 			end
 			last_parse_valid := not last_parse_content.is_empty
 		ensure

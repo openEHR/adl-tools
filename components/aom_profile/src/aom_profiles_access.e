@@ -103,7 +103,7 @@ feature -- Validation
 								profiles.put (prf, prf.profile_name)
 								profile_descriptors.put (prof_descs_csr.item, prf.profile_name)
 							else
-								add_error ("aom_profile_duplicate_found", <<prf.file_path, profiles.item (prf.profile_name).file_path>>)
+								add_error (ec_aom_profile_duplicate_found, <<prf.file_path, profiles.item (prf.profile_name).file_path>>)
 							end
 						end
 					else
@@ -129,9 +129,9 @@ feature -- Commands
 				profiles.wipe_out
 				create dir.make (profile_directory)
 				if not (dir.exists and dir.is_readable) then
-					add_error ("aom_profile_dir_not_valid", <<profile_directory>>)
+					add_error (ec_aom_profile_dir_not_valid, <<profile_directory>>)
 				elseif dir.is_empty then
-					add_error ("aom_profile_dir_contains_no_profiles", <<profile_directory>>)
+					add_error (ec_aom_profile_dir_contains_no_profiles, <<profile_directory>>)
 				else
 					create file_repo.make (profile_directory, Aom_profile_file_match_regex)
 					across file_repo.matching_paths as paths_csr loop
@@ -140,13 +140,13 @@ feature -- Commands
 						profile_descriptor_candidates.extend (aom_pd)
 					end
 					if profiles.is_empty then
-						add_error ("aom_profile_dir_contains_no_valid_profiles", <<profile_directory>>)
+						add_error (ec_aom_profile_dir_contains_no_valid_profiles, <<profile_directory>>)
 					end
 				end
 			end
 		rescue
 			exception_encountered := True
-			add_error ("aom_profile_unknown_exception", Void)
+			add_error (ec_aom_profile_unknown_exception, Void)
 			retry
 		end
 

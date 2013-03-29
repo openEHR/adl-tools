@@ -55,7 +55,7 @@ feature -- Initialisation
 			ev_root_container.set_minimum_width (115)
 
 			-- add title
-			ev_root_container.set_text (utf8_to_utf32 (get_text ("view_label_text")))
+			ev_root_container.set_text (utf8_to_utf32 (get_text (ec_view_label_text)))
 
 			create ev_hbox
 			ev_root_container.extend (ev_hbox)
@@ -63,28 +63,28 @@ feature -- Initialisation
 			-- collapse all button
 			create ev_collapse_button
 			ev_collapse_button.set_pixmap (get_icon_pixmap ("tool/tree_collapse_all"))
-			ev_collapse_button.set_tooltip (get_text ("collapse_complete_tooltip"))
+			ev_collapse_button.set_tooltip (get_text (ec_collapse_complete_tooltip))
 			ev_collapse_button.select_actions.extend (agent on_collapse_all)
 			ev_hbox.extend (ev_collapse_button)
 
 			-- collapse one level button
 			create ev_collapse_one_button
 			ev_collapse_one_button.set_pixmap (get_icon_pixmap ("tool/tree_collapse"))
-			ev_collapse_one_button.set_tooltip (get_text ("collapse_one_level_tooltip"))
+			ev_collapse_one_button.set_tooltip (get_text (ec_collapse_one_level_tooltip))
 			ev_collapse_one_button.select_actions.extend (agent on_collapse_one_level)
 			ev_hbox.extend (ev_collapse_one_button)
 
 			-- expand one level button
 			create ev_expand_one_button
 			ev_expand_one_button.set_pixmap (get_icon_pixmap ("tool/tree_expand"))
-			ev_expand_one_button.set_tooltip (get_text ("expand_one_level_tooltip"))
+			ev_expand_one_button.set_tooltip (get_text (ec_expand_one_level_tooltip))
 			ev_expand_one_button.select_actions.extend (agent on_expand_one_level)
 			ev_hbox.extend (ev_expand_one_button)
 
 			-- expand all button
 			create ev_expand_button
 			ev_expand_button.set_pixmap (get_icon_pixmap ("tool/tree_expand_all"))
-			ev_expand_button.set_tooltip (get_text ("expand_complete_tooltip"))
+			ev_expand_button.set_tooltip (get_text (ec_expand_complete_tooltip))
 			ev_expand_button.select_actions.extend (agent on_expand_all)
 			ev_hbox.extend (ev_expand_button)
 

@@ -35,13 +35,13 @@ feature {NONE}-- Initialization
 			-- path map control
 			create path_map_control.make (agent on_path_map_key_press)
 			ev_notebook.extend (path_map_control.ev_root_container)
-			ev_notebook.set_item_text (path_map_control.ev_root_container, get_text ("paths_tab_text"))
+			ev_notebook.set_item_text (path_map_control.ev_root_container, get_text (ec_paths_tab_text))
 			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
 
 			-- slot map control
 			create slot_map_control.make (agent update_slots_tab_label)
 			ev_notebook.extend (slot_map_control.ev_root_container)
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_text ("slots_tab_text"))
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_text (ec_slots_tab_text))
 			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
 			slot_map_control.ev_suppliers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
 			slot_map_control.ev_clients_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
@@ -51,24 +51,24 @@ feature {NONE}-- Initialization
 			-- source control
 			create source_control.make
 			ev_notebook.extend (source_control.ev_root_container)
-			ev_notebook.set_item_text (source_control.ev_root_container, get_text ("source_tab_text"))
+			ev_notebook.set_item_text (source_control.ev_root_container, get_text (ec_source_tab_text))
 			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
 
 			-- serialisation control
 			create serialisation_control.make
 			ev_notebook.extend (serialisation_control.ev_root_container)
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ("serialised_tab_text"))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text (ec_serialised_tab_text))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 
 			-- validity control
 			create validity_report_control.make
 			ev_notebook.extend (validity_report_control.ev_root_container)
-			ev_notebook.set_item_text (validity_report_control.ev_root_container, get_text ("validity_tab_text"))
+			ev_notebook.set_item_text (validity_report_control.ev_root_container, get_text (ec_validity_tab_text))
 
 			-- statistical info control
 			create statistical_information_control.make
 			ev_notebook.extend (statistical_information_control.ev_root_container)
-			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_text ("stat_info_tab_text"))
+			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_text (ec_stat_info_tab_text))
 
 			set_tab_appearance
 			set_view_tab_texts
@@ -81,7 +81,7 @@ feature -- UI Feedback
 	update_slots_tab_label (slots_count, used_by_count: INTEGER)
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg ("slots_tab_text", Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg (ec_slots_tab_text, Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
 	select_path_item_from_path (a_path: attached STRING)
@@ -205,13 +205,13 @@ feature {NONE} -- Implementation
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_diff_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg (ec_serialised_diff_tab_text, Void))
 		end
 
 	set_flat_tab_texts
 			-- set text on tabs for flat form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_flat_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg (ec_serialised_flat_tab_text, Void))
 		end
 
 	selected_path_filter: STRING

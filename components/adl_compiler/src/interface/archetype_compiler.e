@@ -303,7 +303,7 @@ feature {NONE} -- Implementation
 			else
 				create exc_trace_str.make_from_string ("(Exception trace not available)")
 			end
-			call_global_visual_update_action (get_msg ("compile_exception", <<ara.qualified_name, exception.out, exc_trace_str>>))
+			call_global_visual_update_action (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end

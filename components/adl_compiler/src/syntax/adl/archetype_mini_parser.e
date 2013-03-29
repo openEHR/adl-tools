@@ -109,7 +109,7 @@ feature -- Commands
 					arch_id_is_old_style := True
 				else -- something wrong with the id
 					id_bad := True
-					add_error ("parse_archetype_e8", <<a_full_path, lines[2]>>)
+					add_error (ec_parse_archetype_e8, <<a_full_path, lines[2]>>)
 				end
 
 				if not id_bad then
@@ -124,7 +124,7 @@ feature -- Commands
 							arch_parent_id_is_old_style := True
 						else
 							-- something wrong with the parent id
-							add_error ("parse_archetype_e10", <<a_full_path, lines[4]>>)
+							add_error (ec_parse_archetype_e10, <<a_full_path, lines[4]>>)
 						end
 					end
 
@@ -134,7 +134,7 @@ feature -- Commands
 					end
 				end
 			else
-				add_error ("parse_archetype_e9", <<a_full_path, lines[2]>>)
+				add_error (ec_parse_archetype_e9, <<a_full_path, lines[2]>>)
 			end
 		end
 

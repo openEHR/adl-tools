@@ -45,8 +45,8 @@ feature {NONE}-- Initialization
 			ev_source_controls_vbox.set_border_width (Default_border_width)
 			ev_source_controls_vbox.set_padding_width (Default_padding_width)
 
-			ev_line_numbers_cb.set_text (get_msg ("add_line_numbers_text", Void))
-			ev_line_numbers_cb.set_tooltip (get_msg ("add_line_numbers_tooltip", Void))
+			ev_line_numbers_cb.set_text (get_msg (ec_add_line_numbers_text, Void))
+			ev_line_numbers_cb.set_tooltip (get_msg (ec_add_line_numbers_tooltip, Void))
 
 			ev_souce_rich_text.set_tab_width ((ev_souce_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
 

@@ -46,7 +46,7 @@ feature {NONE}-- Initialization
 
 			-- serialise controls frame
 			create ev_serialise_controls_frame
-			ev_serialise_controls_frame.set_text (get_msg ("serialise_frame_text", Void))
+			ev_serialise_controls_frame.set_text (get_msg (ec_serialise_frame_text, Void))
 			ev_serialise_controls_frame.set_minimum_width (125)
 			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
 			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
@@ -80,16 +80,16 @@ feature {NONE}-- Initialization
 
 			-- flatten radio button
 			create ev_flatten_with_rm_cb
-			ev_flatten_with_rm_cb.set_text (get_msg ("flatten_with_rm_cb_text", Void))
+			ev_flatten_with_rm_cb.set_text (get_msg (ec_flatten_with_rm_cb_text, Void))
 			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
-			ev_flatten_with_rm_cb.set_tooltip (get_msg ("flatten_with_rm_cb_tooltip", Void))
+			ev_flatten_with_rm_cb.set_tooltip (get_msg (ec_flatten_with_rm_cb_tooltip, Void))
 			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
 			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
 
 			-- line numbers check button
 			create ev_line_numbers_cb
-			ev_line_numbers_cb.set_text (get_msg ("add_line_numbers_text", Void))
-			ev_line_numbers_cb.set_tooltip (get_msg ("add_line_numbers_tooltip", Void))
+			ev_line_numbers_cb.set_text (get_msg (ec_add_line_numbers_text, Void))
+			ev_line_numbers_cb.set_tooltip (get_msg (ec_add_line_numbers_tooltip, Void))
 			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
 			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
 			ev_serialise_controls_vbox.extend (ev_line_numbers_cb)
@@ -183,15 +183,15 @@ feature {NONE} -- Implementation
 	set_serialisation_control_texts
 		do
 			ev_serialise_adl_rb.set_text (syntax_type_adl.as_upper + " " + adl_version_for_flat_output)
-			ev_serialise_adl_rb.set_tooltip (get_msg ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_adl_rb.set_tooltip (get_msg (ec_show_adl_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_dadl_rb.set_text (syntax_type_dadl.as_upper + " " + adl_version_for_flat_output)
-			ev_serialise_dadl_rb.set_tooltip (get_msg ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_dadl_rb.set_tooltip (get_msg (ec_show_dadl_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_xml_rb.set_text (syntax_type_xml.as_upper + " " + adl_version_for_flat_output)
-			ev_serialise_xml_rb.set_tooltip (get_msg ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_xml_rb.set_tooltip (get_msg (ec_show_xml_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_json_rb.set_text (syntax_type_json.as_upper + " " + adl_version_for_flat_output)
-			ev_serialise_json_rb.set_tooltip (get_msg ("show_json_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_json_rb.set_tooltip (get_msg (ec_show_json_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_yaml_rb.set_text (syntax_type_yaml + " " + adl_version_for_flat_output)
-			ev_serialise_yaml_rb.set_tooltip (get_msg ("show_yaml_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_yaml_rb.set_tooltip (get_msg (ec_show_yaml_serialisation_tooltip, <<adl_version_for_flat_output>>))
 		end
 
 end

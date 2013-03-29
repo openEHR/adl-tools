@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 					-- tooltip
 					tooltip.append (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
-						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
+						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
 					-- pixmap
@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 	 			elseif attached {ARCH_CAT_CLOSURE_NODE} aci as accl then
 	 				text.append (accl.qualified_name)
 					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
-					tooltip.append (get_msg ("rm_closure_tree_node_tooltip", <<accl.qualified_name, accl.bmm_schema.schema_id>>))
+					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
 	 				text.append (" (" + accl.subtree_artefact_count (artefact_types).out + ")")
 
 				end
@@ -311,7 +311,7 @@ feature {NONE} -- Implementation
 					-- tooltip
 					tooltip.append (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
-						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
+						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
 					-- pixmap
@@ -409,22 +409,22 @@ feature {NONE} -- Implementation
 			create menu
 
 			-- show class in current tab
-			create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (accn))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_class_in_active_tool (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 	    	menu.extend (an_mi)
 
 			-- show class in new tab
-			create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (accn))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_in_new_tab, Void), agent display_context_selected_class_in_new_tool (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			menu.extend (an_mi)
 
 			-- show class in RM
-			create an_mi.make_with_text_and_action (get_msg ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (accn))
+			create an_mi.make_with_text_and_action (get_msg (ec_show_class_in_rm, Void), agent display_context_selected_class_in_rm_schema_tool (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
 			menu.extend (an_mi)
 
 			-- create a new non-specialised archetype
-			create an_mi.make_with_text_and_action (get_msg ("create_new_archetype", Void), agent create_new_non_specialised_archetype (accn))
+			create an_mi.make_with_text_and_action (get_msg (ec_create_new_archetype, Void), agent create_new_non_specialised_archetype (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
@@ -469,7 +469,7 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			if aca.is_valid then
-				create an_mi.make_with_text_and_action (get_text ("create_new_child_archetype"), agent create_new_specialised_archetype (aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				a_menu.extend (an_mi)
 			end

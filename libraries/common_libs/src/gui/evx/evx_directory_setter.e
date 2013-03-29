@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 	initialise_browse_button
 		do
 			create ev_browse_button
-			ev_browse_button.set_text (get_text ("browse_button_text"))
+			ev_browse_button.set_text (get_text (ec_browse_button_text))
 			ev_root_container.extend (ev_browse_button)
 			ev_root_container.disable_item_expand (ev_browse_button)
 			ev_browse_button.select_actions.extend (agent on_browse)
@@ -148,11 +148,11 @@ feature {NONE} -- Implementation
 						if a_dir.exists then
 							user_dir := a_dir.name
 						else
-							create error_dialog.make_with_text (get_msg ("directory_does_not_exist", <<dialog.directory>>))
+							create error_dialog.make_with_text (get_msg (ec_directory_does_not_exist, <<dialog.directory>>))
 							error_dialog.show_modal_to_window (a_parent_window)
 						end
 					else
-						create error_dialog.make_with_text (get_text ("empty_directory_does_not_exist"))
+						create error_dialog.make_with_text (get_text (ec_empty_directory_does_not_exist))
 						error_dialog.show_modal_to_window (a_parent_window)
 					end
 				end

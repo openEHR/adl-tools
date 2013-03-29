@@ -288,15 +288,15 @@ feature -- Modification
 					put_archetype (aca, in_dir_path)
 				elseif not has_item_with_id (aca.ontological_parent_name.as_lower) then
 					if aca.is_specialised then
-						add_error ("arch_cat_orphan_archetype", <<aca.ontological_parent_name, aca.qualified_key>>)
+						add_error (ec_arch_cat_orphan_archetype, <<aca.ontological_parent_name, aca.qualified_key>>)
 					else
-						add_error ("arch_cat_orphan_archetype_e2", <<aca.ontological_parent_name, aca.qualified_key>>)
+						add_error (ec_arch_cat_orphan_archetype_e2, <<aca.ontological_parent_name, aca.qualified_key>>)
 					end
 				elseif has_item_with_id (aca.qualified_key) then
-					add_error ("arch_cat_dup_archetype", <<in_dir_path>>)
+					add_error (ec_arch_cat_dup_archetype, <<in_dir_path>>)
 				end
 			else
-				add_error ("invalid_filename_e1", <<in_dir_path>>)
+				add_error (ec_invalid_filename_e1, <<in_dir_path>>)
 			end
 		end
 
@@ -508,7 +508,7 @@ feature {NONE} -- Implementation
 									added_during_pass := added_during_pass + 1
 									status_list [archs_csr.target_index] := Populate_status_succeeded
 								else
-									add_error ("arch_cat_dup_archetype", <<archs_csr.item.full_path>>)
+									add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.full_path>>)
 									status_list [archs_csr.target_index] := Populate_status_failed
 								end
 							else
@@ -523,9 +523,9 @@ feature {NONE} -- Implementation
 				across archs as archs_csr loop
 					if status_list [archs_csr.cursor_index] > 0 then
 						if archs_csr.item.is_specialised then
-							add_error ("arch_cat_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							add_error (ec_arch_cat_orphan_archetype, <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						else
-							add_error ("arch_cat_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							add_error (ec_arch_cat_orphan_archetype_e2, <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						end
 					end
 				end

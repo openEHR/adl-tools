@@ -85,7 +85,7 @@ feature {NONE} -- Implementation
 			end
 			-- assumed value
 			if arch_node.has_assumed_value then
-				Result.append ("%N" + arch_node.assumed_value.magnitude_as_string + " (" + get_text ("assumed_text") + ")")
+				Result.append ("%N" + arch_node.assumed_value.magnitude_as_string + " (" + get_text (ec_assumed_text) + ")")
 			end
 		end
 

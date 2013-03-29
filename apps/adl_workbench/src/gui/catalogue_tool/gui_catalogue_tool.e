@@ -58,20 +58,20 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (stats_viewer.ev_root_container)
 
 			-- visual characteristics
-			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text ("catalogue_archetype_tab_text"))
+			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text (ec_catalogue_archetype_tab_text))
 			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
 
-			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text ("catalogue_template_tab_text"))
+			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text (ec_catalogue_template_tab_text))
 
-			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text ("catalogue_metrics_tab_text"))
-			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text ("catalogue_stats_tab_text"))
+			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text (ec_catalogue_metrics_tab_text))
+			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text (ec_catalogue_stats_tab_text))
 			set_stats_metric_tab_appearance
 
 			-- docking pane mini-toolbar with rotate-view button
 			create gui_mini_tool_bar.make
 			gui_mini_tool_bar.add_tool_bar
 			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_rotate_active"), get_icon_pixmap ("tool/view_rotate_inactive"),
-				get_text ("catalogue_mini_toolbar_view_rotate"), agent on_rotate_view)
+				get_text (ec_catalogue_mini_toolbar_view_rotate), agent on_rotate_view)
 			rotate_view_button := gui_mini_tool_bar.last_tool_bar_button
 			gui_mini_tool_bar.activate_tool_bar_button (rotate_view_button)
 
@@ -166,8 +166,8 @@ feature -- Commands
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*" + File_ext_archetype_source, get_text ("adl_15_source_files")])
-			dialog.filters.extend (["*" + File_ext_archetype_adl14, get_text ("adl_14_files")])
+			dialog.filters.extend (["*" + File_ext_archetype_source, get_text (ec_adl_15_source_files)])
+			dialog.filters.extend (["*" + File_ext_archetype_adl14, get_text (ec_adl_14_files)])
 			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			fname := dialog.file_name.as_string_8
 
@@ -175,7 +175,7 @@ feature -- Commands
 				if not current_arch_cat.profile_repo_access.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
-						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_not_found", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
+						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
 						source.add_adhoc_archetype (fname)
 						if source.has_errors then
@@ -186,7 +186,7 @@ feature -- Commands
 						gui_agents.console_tool_append_agent.call ([source.error_strings])
 					end
 				else
-					(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_already_exists", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
+					(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_already_exists, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 				end
 			end
 		end
@@ -270,8 +270,8 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Populate content from visual controls.
 		do
-			docking_pane.set_short_title (get_text ("catalogue_tool_title"))
-			docking_pane.set_long_title (get_text ("catalogue_tool_title") + " " + repository_config_table.current_repository_name)
+			docking_pane.set_short_title (get_text (ec_catalogue_tool_title))
+			docking_pane.set_long_title (get_text (ec_catalogue_tool_title) + " " + repository_config_table.current_repository_name)
 			if attached source then
 				archetype_explorer.populate (source)
 				template_explorer.populate (source)
@@ -327,10 +327,10 @@ feature {NONE} -- Implementation
 			if aca.is_valid then
 				if native_format_flag then
 					format_list := archetype_native_serialiser_formats
-					dialog_title := get_text ("save_archetype_title")
+					dialog_title := get_text (ec_save_archetype_title)
 				else
 					format_list := archetype_all_serialiser_formats
-					dialog_title := get_text ("export_archetype_title")
+					dialog_title := get_text (ec_export_archetype_title)
 				end
 				name := extension_replaced (aca.full_path, "")
 
@@ -342,7 +342,7 @@ feature {NONE} -- Implementation
 				-- ask the user what format
 				across format_list as formats_csr loop
 					save_dialog.filters.extend (["*" + archetype_file_extensions [formats_csr.item],
-							get_msg ("save_archetype_as_type", <<formats_csr.item.as_upper>>)])
+							get_msg (ec_save_archetype_as_type, <<formats_csr.item.as_upper>>)])
 				end
 
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -365,11 +365,11 @@ feature {NONE} -- Implementation
 					-- if the file already exists, ask user about overwrite
 					ok_to_write := True
 					if file.exists then
-						create question_dialog.make_with_text (get_msg ("file_exists_replace_question", <<file_system.basename (name)>>))
-						question_dialog.set_title (get_msg ("save_archetype_as_type", <<format.as_upper>>))
-						question_dialog.set_buttons (<<get_text ("yes_response"), get_text ("no_response")>>)
+						create question_dialog.make_with_text (get_msg (ec_file_exists_replace_question, <<file_system.basename (name)>>))
+						question_dialog.set_title (get_msg (ec_save_archetype_as_type, <<format.as_upper>>))
+						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text ("no_response")>>)
 						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-						ok_to_write := question_dialog.selected_button.same_string (get_text ("yes_response"))
+						ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
 					end
 					if ok_to_write then
 						if diff_flag then
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 					end
 				end
 			else
-				create error_dialog.make_with_text (get_text ("compile_before_serialising"))
+				create error_dialog.make_with_text (get_text (ec_compile_before_serialising))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
@@ -402,8 +402,8 @@ feature {NONE} -- Implementation
 				if aca.has_differential_file then
 					create question_dialog.make_with_text (get_msg_line ("edit_which_file_question",
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
-					question_dialog.set_title (get_msg ("catalogue_edit_differential_button_text", <<aca.qualified_name>>))
-					question_dialog.set_buttons (<<get_text ("catalogue_edit_differential_button_text"), get_text ("catalogue_edit_adl14_button_text")>>)
+					question_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.qualified_name>>))
+					question_dialog.set_buttons (<<get_text (ec_catalogue_edit_differential_button_text), get_text ("catalogue_edit_adl14_button_text")>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					if question_dialog.selected_button.starts_with ("L") then
 						path := legacy_path
@@ -411,7 +411,7 @@ feature {NONE} -- Implementation
 				else
 					create info_dialog.make_with_text (get_msg_line ("edit_legacy_file_info",
 						<<file_system.basename (legacy_path)>>))
-					info_dialog.set_title (get_msg ("catalogue_edit_differential_button_text", <<aca.id.as_string>>))
+					info_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.id.as_string>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					path := legacy_path
 				end

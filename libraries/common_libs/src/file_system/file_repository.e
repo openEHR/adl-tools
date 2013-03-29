@@ -38,7 +38,7 @@ feature {NONE} -- Initialisation
 			base_name_pattern_regex.set_case_insensitive (True)
 			base_name_pattern_regex.compile (base_name_pattern)
 			if not base_name_pattern_regex.is_compiled then
-				errors.add_error ("regex_invalid", <<base_name_pattern>>, generator + ".make")
+				errors.add_error (ec_regex_invalid, <<base_name_pattern>>, generator + ".make")
 			else
 				find_matching_file_paths (a_dir_name)
 			end

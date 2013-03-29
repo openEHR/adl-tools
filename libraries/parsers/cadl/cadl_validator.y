@@ -213,7 +213,7 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 				$$ := object_nodes.item
 				object_nodes.remove
 			else
-				abort_with_error("VCOCDocc", <<complex_obj.rm_type_name, complex_obj.path>>)
+				abort_with_error (ec_VCOCDocc, <<complex_obj.rm_type_name, complex_obj.path>>)
 			end
 		}
 	;
@@ -241,7 +241,7 @@ c_complex_object_head: c_complex_object_id c_occurrences
 					safe_put_c_attribute_child (c_attrs.item, complex_obj)
 				end
 			else
-				abort_with_error("VCORM", <<complex_obj.rm_type_name, complex_obj.path>>)
+				abort_with_error (ec_VCORM, <<complex_obj.rm_type_name, complex_obj.path>>)
 			end
 		}
 	;
@@ -260,7 +260,7 @@ c_complex_object_id: type_identifier
 				create complex_obj.make_identified($2, $3)
 				complex_obj.set_sibling_order($1)
 			else
-				abort_with_error("SDSF", Void)
+				abort_with_error (ec_SDSF, Void)
 			end
 		}
 	;
@@ -287,7 +287,7 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 		}
 	| error
 		{
-			abort_with_error ("SCOAT", Void)
+			abort_with_error (ec_SCOAT, Void)
 		}
 	;
 
@@ -332,11 +332,11 @@ c_object: c_complex_object
 		}
 	| ERR_C_DOMAIN_TYPE
 		{
-			abort_with_error("SDINV", <<dadl_parser_error.as_string>>)
+			abort_with_error (ec_SDINV, <<dadl_parser_error.as_string>>)
 		}
 	| error		
 		{
-			abort_with_error("SCCOG", Void)
+			abort_with_error (ec_SCCOG, Void)
 		}
 	;
 
@@ -365,7 +365,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 		}
 	| SYM_USE_ARCHETYPE type_identifier error
 		{
-			abort_with_error("SUAID", Void)
+			abort_with_error (ec_SUAID, Void)
 		}
 	;
 
@@ -411,7 +411,7 @@ archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 		}
 	| SYM_USE_NODE type_identifier error 
 		{
-			abort_with_error("SUNPA", Void)
+			abort_with_error (ec_SUNPA, Void)
 		}
 	;
 
@@ -444,7 +444,7 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 	| c_archetype_slot_head -- if closed or occurrences = 0
 		{
 			if not ($1.is_closed or $1.is_prohibited) then
-				abort_with_error("VASMD", <<$1.rm_type_name, c_attrs.item.path>>)
+				abort_with_error (ec_VASMD, <<$1.rm_type_name, c_attrs.item.path>>)
 			end
 			$$ := $1
 		}
@@ -478,7 +478,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 				create $$.make_anonymous($3)
 				$$.set_sibling_order($1)
 			else
-				abort_with_error("SDSF", Void)
+				abort_with_error (ec_SDSF, Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
@@ -491,7 +491,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 				create $$.make_identified($3, $4)
 				$$.set_sibling_order($1)
 			else
-				abort_with_error("SDSF", Void)
+				abort_with_error (ec_SDSF, Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier SYM_CLOSED
@@ -506,7 +506,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
-			abort_with_error("SUAS", Void)
+			abort_with_error (ec_SUAS, Void)
 		}
 	;
 
@@ -602,12 +602,12 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 			if differential_syntax then
 				c_attrs.remove
 			else
-				abort_with_error("SCAS", Void)
+				abort_with_error (ec_SCAS, Void)
 			end
 		}
 	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
-			abort_with_error("SCAS", Void)
+			abort_with_error (ec_SCAS, Void)
 		}
 	;
 
@@ -642,13 +642,13 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						end
 						object_nodes.item.put_attribute(attr_node)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error("VSAM2", <<rm_attribute_name>>)
+						abort_with_error (ec_VSAM2, <<rm_attribute_name>>)
 					end
 				else
-					abort_with_error("VCARM", <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
+					abort_with_error (ec_VCARM, <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
 				end
 			else
-				abort_with_error("VCATU", <<rm_attribute_name>>)
+				abort_with_error (ec_VCATU, <<rm_attribute_name>>)
 			end
 		}
 	| V_ABS_PATH c_existence c_cardinality
@@ -686,13 +686,13 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						end
 						object_nodes.item.put_attribute(attr_node)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error("VSAM2", <<$1>>)
+						abort_with_error (ec_VSAM2, <<$1>>)
 					end
 				else
-					abort_with_error("VDIFP2", <<$1>>)
+					abort_with_error (ec_VDIFP2, <<$1>>)
 				end
 			else
-				abort_with_error("VCATU", <<$1>>)
+				abort_with_error (ec_VCATU, <<$1>>)
 			end
 		}
 	;
@@ -765,7 +765,7 @@ assertion: any_identifier ':' boolean_node
 		}
 	| any_identifier ':' error
 		{
-			abort_with_error ("SINVS", <<$1>>)
+			abort_with_error (ec_SINVS, <<$1>>)
 		}
 	;
 
@@ -865,7 +865,7 @@ boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 		}
 	| SYM_EXISTS error 
 		{
-			abort_with_error ("SEXPT", Void)
+			abort_with_error (ec_SEXPT, Void)
 		}
 	;
 
@@ -1053,7 +1053,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 			elseif $1 = 1 then
 				create $$.make_mandatory
 			else
-				abort_with_error("SEXLSG", Void)
+				abort_with_error (ec_SEXLSG, Void)
 			end
 		}
 	| V_INTEGER SYM_ELLIPSIS V_INTEGER -- can only be 0..0, 0..1, 1..1
@@ -1064,16 +1064,16 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				elseif $3 = 1 then
 					create $$.make_bounded (0, 1)
 				else
-					abort_with_error("SEXLU1", Void)
+					abort_with_error (ec_SEXLU1, Void)
 				end
 			elseif $1 = 1 then
 				if $3 = 1 then
 					create $$.make_point(1)
 				else
-					abort_with_error("SEXLU2", Void)
+					abort_with_error (ec_SEXLU2, Void)
 				end
 			else
-				abort_with_error("SEXLMG", Void)
+				abort_with_error (ec_SEXLMG, Void)
 			end
 		}
 	;
@@ -1134,7 +1134,7 @@ c_occurrences:  -- empty is ok
 		}
 	| SYM_OCCURRENCES error
 		{
-			abort_with_error ("SOCCF", Void)
+			abort_with_error (ec_SOCCF, Void)
 		}
 	;
 
@@ -1176,12 +1176,12 @@ c_integer: integer_value
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_integer ';' error
 		{
-			abort_with_error ("SCIAV", Void)
+			abort_with_error (ec_SCIAV, Void)
 		}
 	;
 
@@ -1203,12 +1203,12 @@ c_real: real_value
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_real ';' error
 		{
-			abort_with_error("SCRAV", Void)
+			abort_with_error (ec_SCRAV, Void)
 		}
 	;
 
@@ -1225,7 +1225,7 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 					str.append(valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
-				abort_with_error("SCDPT", <<str>>)
+				abort_with_error (ec_SCDPT, <<str>>)
 			end
 		}
 	| date_value
@@ -1242,12 +1242,12 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_date ';' error
 		{
-			abort_with_error ("SCDAV", Void)
+			abort_with_error (ec_SCDAV, Void)
 		}
 	;
 
@@ -1263,7 +1263,7 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error("SCTPT", <<str>>)
+				abort_with_error (ec_SCTPT, <<str>>)
 			end
 		}
 	| time_value
@@ -1280,12 +1280,12 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_time ';' error
 		{
-			abort_with_error ("SCTAV", Void)
+			abort_with_error (ec_SCTAV, Void)
 		}
 	;
 
@@ -1301,7 +1301,7 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error("SCDTPT", <<str>>)
+				abort_with_error (ec_SCDTPT, <<str>>)
 			end
 		}
 	| date_time_value
@@ -1318,12 +1318,12 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				$1.set_assumed_value($3)
 				$$ := $1
 			else
-				abort_with_error("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_date_time ';' error
 		{
-			abort_with_error("SCDTAV", Void)
+			abort_with_error (ec_SCDTAV, Void)
 		}
 	;
 
@@ -1332,7 +1332,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_from_pattern ($1)
 			else
-				abort_with_error("SCDUPT", Void)
+				abort_with_error (ec_SCDUPT, Void)
 			end
 		}
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval_value
@@ -1340,7 +1340,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_pattern_with_range ($1, $3)
 			else
-				abort_with_error("SCDUPT", Void)
+				abort_with_error (ec_SCDUPT, Void)
 			end
 		}
 	| duration_value
@@ -1357,12 +1357,12 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_duration ';' error
 		{
-			abort_with_error("SCDUAV", Void)
+			abort_with_error (ec_SCDUAV, Void)
 		}
 	;
 
@@ -1383,7 +1383,7 @@ c_string: V_STRING 	-- single value, generates closed list
 		{
 			create $$.make_from_regexp ($1.substring (2, $1.count - 1), $1.item(1) = '/')
 			if $$.regexp.is_equal ({C_STRING}.regexp_compile_error) then
-				abort_with_error ("SCSRE", <<$1>>)
+				abort_with_error (ec_SCSRE, <<$1>>)
 			end
 		}
 	| c_string ';' string_value
@@ -1392,12 +1392,12 @@ c_string: V_STRING 	-- single value, generates closed list
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_string ';' error
 		{
-			abort_with_error ("SCSAV", Void)
+			abort_with_error (ec_SCSAV, Void)
 		}
 	;
 
@@ -1422,13 +1422,13 @@ c_boolean: SYM_TRUE
 			if $1.valid_value ($3) then
 				$1.set_assumed_value ($3)
 			else
-				abort_with_error ("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 			$$ := $1
 		}
 	| c_boolean ';' error
 		{
-			abort_with_error ("SCBAV", Void)
+			abort_with_error (ec_SCBAV, Void)
 		}
 	;
 
@@ -1440,9 +1440,9 @@ c_ordinal: ordinal
 	| c_ordinal ',' ordinal
 		{
 			if $1.has_item ($3.value) then
-				abort_with_error ("VCOV", <<$3.value.out>>)
+				abort_with_error (ec_VCOV, <<$3.value.out>>)
 			elseif $1.has_code_phrase ($3.symbol) then
-				abort_with_error ("VCOC", <<$3.symbol.code_string>>)
+				abort_with_error (ec_VCOC, <<$3.symbol.code_string>>)
 			else
 				$1.add_item ($3)
 			end
@@ -1453,13 +1453,13 @@ c_ordinal: ordinal
 			if $1.has_item ($3) then
 				$1.set_assumed_value_from_integer ($3)
 			else
-				abort_with_error("VOBAV", <<$3.out>>)
+				abort_with_error (ec_VOBAV, <<$3.out>>)
 			end
 			$$ := $1
  		}
  	| c_ordinal ';' error
  		{
-			abort_with_error ("SCOAV", Void)
+			abort_with_error (ec_SCOAV, Void)
  		}
 	;
 
@@ -1476,7 +1476,7 @@ c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 			if $$.valid_pattern ($1) then
 				$$.make_from_pattern ($1)
 			else
-				abort_with_error("VOBAV", <<$$.fail_reason>>)
+				abort_with_error (ec_VOBAV, <<$$.fail_reason>>)
 			end
 		}
 	| V_QUALIFIED_TERM_CODE_REF
@@ -1592,7 +1592,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $2 <= $4 then
 				create $$.make_bounded ($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
@@ -1600,7 +1600,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $3 <= $5 then
 				create $$.make_bounded ($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1608,7 +1608,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $2 <= $5 then
 				create $$.make_bounded ($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1616,7 +1616,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $3 <= $6 then
 				create $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1678,7 +1678,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $2 <= $4 then
 				create $$.make_bounded ($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
@@ -1686,7 +1686,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $3 <= $5 then
 				create $$.make_bounded ($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1694,7 +1694,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $2 <= $5 then
 				create $$.make_bounded ($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1702,7 +1702,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $3 <= $6 then
 				create $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1784,7 +1784,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VIDV", <<$1>>)
+				abort_with_error (ec_VIDV, <<$1>>)
 			end
 		}
 	;
@@ -1812,7 +1812,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $2 <= $4 then
 				create $$.make_bounded ($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
@@ -1820,7 +1820,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $3 <= $5 then
 				create $$.make_bounded ($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1828,7 +1828,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $2 <= $5 then
 				create $$.make_bounded ($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1836,7 +1836,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $3 <= $6 then
 				create $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1866,7 +1866,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VITV", <<$1>>)
+				abort_with_error (ec_VITV, <<$1>>)
 			end
 		}
 	;
@@ -1894,7 +1894,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $2 <= $4 then
 				create $$.make_bounded ($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
@@ -1902,7 +1902,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $3 <= $5 then
 				create $$.make_bounded ($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1910,7 +1910,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $2 <= $5 then
 				create $$.make_bounded ($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1918,7 +1918,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $3 <= $6 then
 				create $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1948,7 +1948,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VIDTV", <<$1>>)
+				abort_with_error (ec_VIDTV, <<$1>>)
 			end
 		}
 	;
@@ -1976,7 +1976,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $2 <= $4 then
 				create $$.make_bounded ($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
@@ -1984,7 +1984,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $3 <= $5 then
 				create $$.make_bounded ($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1992,7 +1992,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $2 <= $5 then
 				create $$.make_bounded ($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2000,7 +2000,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $3 <= $6 then
 				create $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2030,7 +2030,7 @@ duration_value: V_ISO8601_DURATION
 			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VIDUV", <<$1>>)
+				abort_with_error (ec_VIDUV, <<$1>>)
 			end
 		}
 	;
@@ -2058,7 +2058,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $2 <= $4 then
 				create $$.make_bounded ($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
@@ -2066,7 +2066,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $3 <= $5 then
 				create $$.make_bounded ($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2074,7 +2074,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $2 <= $5 then
 				create $$.make_bounded ($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2082,7 +2082,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $3 <= $6 then
 				create $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2113,7 +2113,7 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
-			abort_with_error ("STCV", <<$1>>)
+			abort_with_error (ec_STCV, <<$1>>)
 		}
 	;
 
@@ -2225,7 +2225,7 @@ feature {NONE} -- Implementation
 					c_attrs.item.put_child(an_obj)
 				end
 			else
-				abort_with_error("VCORM", <<an_obj.rm_type_name, c_attrs.item.path>>)
+				abort_with_error (ec_VCORM, <<an_obj.rm_type_name, c_attrs.item.path>>)
 			end
 		end
 

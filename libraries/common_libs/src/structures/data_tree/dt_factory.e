@@ -14,7 +14,7 @@ inherit
 
 feature -- Access
 
-	create_complex_object_node (a_parent: attached DT_ATTRIBUTE_NODE; a_node_id: detachable STRING): attached DT_COMPLEX_OBJECT_NODE
+	create_complex_object_node (a_parent: DT_ATTRIBUTE_NODE; a_node_id: detachable STRING): DT_COMPLEX_OBJECT_NODE
 		require
 			a_node_id_valid: attached a_node_id implies not a_node_id.is_empty
 		do

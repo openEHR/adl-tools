@@ -186,7 +186,7 @@ feature -- Modification
 					dt_tree.put_object_at_path (obj_dt_tree, a_path)
 				end
 			else
-				io.put_string (get_msg ("put_object_conversion_failure", <<a_value.generating_type>>))
+				io.put_string (get_msg (ec_put_object_conversion_failure, <<a_value.generating_type>>))
 				raise ("put_object_conversion_failure")
 			end
 		end
@@ -270,7 +270,7 @@ feature {NONE} -- Implementation
 				if not parser.syntax_error then
 					dt_tree := parser.output
 				else
-					errors.add_error ("cfg_file_parse_error", <<file_path, parser.errors.as_string>>, generator)
+					errors.add_error (ec_cfg_file_parse_error, <<file_path, parser.errors.as_string>>, generator)
 				end
 				res_file.close
 			end

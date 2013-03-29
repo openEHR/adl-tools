@@ -43,8 +43,8 @@ feature {NONE} -- Definitions
 			create Result.make (2)
 
 			-- non-argument swtiches
-			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text ("quiet_switch_desc"), True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (force_switch, get_text ("force_switch_desc"), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_quiet_switch_desc), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (force_switch, get_text (ec_force_switch_desc), True, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (icon_source_dir_switch, icon_source_dir_switch_desc, True, False, icon_source_dir_switch_arg, icon_source_dir_switch_arg, False))

@@ -54,9 +54,9 @@ feature {NONE} -- Initialisation
 			-- set visual characteristics
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			supplier_frame.set_text (get_msg ("supplier_frame_text", Void))
+			supplier_frame.set_text (get_msg (ec_supplier_frame_text, Void))
 			supplier_vbox.set_border_width (Default_border_width)
-			client_frame.set_text (get_msg ("client_frame_text", Void))
+			client_frame.set_text (get_msg (ec_client_frame_text, Void))
 			client_vbox.set_border_width (Default_border_width)
 
 			visual_update_action := a_visual_update_action
@@ -140,7 +140,7 @@ feature {NONE} -- Implementation
 			end
 
 			if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
-				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text ("slots_incomplete_w1")))
+				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
 			end
 
 			if source.is_supplier then

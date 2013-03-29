@@ -20,37 +20,37 @@ feature -- Definitions
 
 	Object_node_count: STRING
 		once
-			Result := get_text ("arch_stats_object_nodes_text")
+			Result := get_text (ec_arch_stats_object_nodes_text)
 		end
 
 	Archetypable_node_count: STRING
 		once
-			Result := get_text ("arch_stats_archetypable_nodes_text")
+			Result := get_text (ec_arch_stats_archetypable_nodes_text)
 		end
 
 	Archetype_data_value_node_count: STRING
 		once
-			Result := get_text ("arch_stats_data_value_nodes_text")
+			Result := get_text (ec_arch_stats_data_value_nodes_text)
 		end
 
 	At_code_count: STRING
 		once
-			Result := get_text ("arch_stats_at_codes_text")
+			Result := get_text (ec_arch_stats_at_codes_text)
 		end
 
 	Ac_code_count: STRING
 		once
-			Result := get_text ("arch_stats_ac_codes_text")
+			Result := get_text (ec_arch_stats_ac_codes_text)
 		end
 
 	At_code_bindings_count: STRING
 		once
-			Result := get_text ("arch_stats_at_code_bindings_text")
+			Result := get_text (ec_arch_stats_at_code_bindings_text)
 		end
 
 	Ac_code_bindings_count: STRING
 		once
-			Result := get_text ("arch_stats_ac_code_bindings_text")
+			Result := get_text (ec_arch_stats_ac_code_bindings_text)
 		end
 
 	Archetype_metric_names: ARRAY [STRING]
@@ -67,31 +67,31 @@ feature -- Definitions
 
 	Total_archetype_count: STRING
 		once
-			Result := get_text ("arch_stats_total_archetypes_text")
+			Result := get_text (ec_arch_stats_total_archetypes_text)
 		end
 
 	Valid_archetype_count: STRING
 		once
-			Result := get_text ("arch_stats_valid_archetypes_text")
+			Result := get_text (ec_arch_stats_valid_archetypes_text)
 		end
 			-- count of valid archetypes
 
 	Specialised_archetype_count: STRING
 			-- Count of specialised archetype descriptors in directory.
 		once
-			Result := get_text ("arch_stats_specialised_archetypes_text")
+			Result := get_text (ec_arch_stats_specialised_archetypes_text)
 		end
 
 	Client_archetype_count: STRING
 			-- Count of slot-containing archetype descriptors in directory.
 		once
-			Result := get_text ("arch_stats_client_archetypes_text")
+			Result := get_text (ec_arch_stats_client_archetypes_text)
 		end
 
 	Supplier_archetype_count: STRING
 			-- Count of archetype descriptors for archetypes used in slots in directory.
 		once
-			Result := get_text ("arch_stats_supplier_archetypes_text")
+			Result := get_text (ec_arch_stats_supplier_archetypes_text)
 		end
 
 	Catalogue_metric_names: ARRAY [STRING]
@@ -102,13 +102,13 @@ feature -- Definitions
 	Rm_primitive_group_key: STRING
 			-- name of group of RM breakdown stats based on classs that are primtiive types
 		once
-			Result := get_text ("arch_stats_primitive_text")
+			Result := get_text (ec_arch_stats_primitive_text)
 		end
 
 	Rm_non_primitive_group_key: STRING
 			-- name of group of RM breakdown stats based on classs that are non-primtiive types
 		once
-			Result := get_text ("arch_stats_non_primitive_text")
+			Result := get_text (ec_arch_stats_non_primitive_text)
 		end
 
 end

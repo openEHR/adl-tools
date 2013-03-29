@@ -418,15 +418,15 @@ P[yY]?[mM]?[Ww]?[dD]? {
 								c_domain_type := cdt
 								last_token := V_C_DOMAIN_TYPE
 							else
-								dadl_parser_error.add_error ("VDTCV", <<dadl_parser.output.im_type_name>>, "")
+								dadl_parser_error.add_error (ec_VDTCV, <<dadl_parser.output.im_type_name>>, "")
 								last_token := ERR_C_DOMAIN_TYPE
 							end
 						else
-							dadl_parser_error.add_error ("VDTTU", <<dadl_parser.output.im_type_name>>, "")
+							dadl_parser_error.add_error (ec_VDTTU, <<dadl_parser.output.im_type_name>>, "")
 							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
-						dadl_parser_error.add_error ("VDTNT", Void, "")
+						dadl_parser_error.add_error (ec_VDTNT, Void, "")
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else

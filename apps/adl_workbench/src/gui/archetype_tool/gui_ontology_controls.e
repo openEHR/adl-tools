@@ -45,7 +45,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_vsplit)
 
 			-- create Fames
-			create term_defs_frame_ctl.make (get_msg ("term_defs_frame_text", Void), 0, 0, True)
+			create term_defs_frame_ctl.make (get_msg (ec_term_defs_frame_text, Void), 0, 0, True)
 			ev_vsplit.extend (term_defs_frame_ctl.ev_root_container)
 			ev_vsplit.enable_item_expand (term_defs_frame_ctl.ev_root_container)
 
@@ -63,7 +63,7 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (term_defs_mlist_ctl)
 
 			-- constraint defs + bindings
-			create constraint_defs_frame_ctl.make (get_msg ("constraint_defs_frame_text", Void), 0, 0, True)
+			create constraint_defs_frame_ctl.make (get_msg (ec_constraint_defs_frame_text, Void), 0, 0, True)
 			ev_vsplit.extend (constraint_defs_frame_ctl.ev_root_container)
 			ev_vsplit.disable_item_expand (constraint_defs_frame_ctl.ev_root_container)
 

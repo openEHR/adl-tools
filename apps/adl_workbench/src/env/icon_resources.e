@@ -47,7 +47,7 @@ feature -- Access
 					Result := pxm
 				end
 			else
-				errors.add_error ("no_pixmap_found", <<key>>, Void)
+				errors.add_error (ec_no_pixmap_found, <<key>>, Void)
 				create Result.default_create
 			end
 		end

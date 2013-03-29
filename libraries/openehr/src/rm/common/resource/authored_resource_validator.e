@@ -34,7 +34,7 @@ feature -- Access
 			-- True if all structures obey their invariants
 		do
 			if target.original_language = Void then
-				add_error("VDEOL", Void)
+				add_error (ec_VDEOL, Void)
 			end
 
 			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
@@ -47,7 +47,7 @@ feature -- Access
 					tgt_trans.forth
 				end
 				if not tgt_trans.off then
-					add_error("VTRLA", <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
+					add_error (ec_VTRLA, <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
 				end
 			end
 
@@ -61,7 +61,7 @@ feature -- Access
 					tgt_desc.details.forth
 				end
 				if not tgt_desc.details.off then
-					add_error("VRDLA", <<tgt_desc.details.key_for_iteration, tgt_desc.details.item_for_iteration.language.code_string>>)
+					add_error (ec_VRDLA, <<tgt_desc.details.key_for_iteration, tgt_desc.details.item_for_iteration.language.code_string>>)
 				end
 			end
 		end

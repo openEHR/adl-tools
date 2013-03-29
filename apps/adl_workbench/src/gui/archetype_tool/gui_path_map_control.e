@@ -69,7 +69,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_vbox)
 
 			create ev_row_frame
-			ev_row_frame.set_text (get_msg ("row_filter_frame_text", Void))
+			ev_row_frame.set_text (get_msg (ec_row_filter_frame_text, Void))
 			ev_vbox.extend (ev_row_frame)
 			ev_vbox.disable_item_expand (ev_row_frame)
 
@@ -78,7 +78,7 @@ feature {NONE} -- Initialisation
 			ev_row_frame.extend (ev_row_vbox)
 
 			create ev_row_filter_combo
-			ev_row_filter_combo.set_tooltip (get_msg ("row_filter_combo_tooltip", Void))
+			ev_row_filter_combo.set_tooltip (get_msg (ec_row_filter_combo_tooltip, Void))
 			ev_row_filter_combo.set_minimum_width (80)
 			ev_row_filter_combo.disable_edit
 			ev_row_filter_combo.set_strings (path_control_filter_names)
@@ -86,7 +86,7 @@ feature {NONE} -- Initialisation
 			ev_row_vbox.extend (ev_row_filter_combo)
 
 			create ev_col_frame
-			ev_col_frame.set_text (get_msg ("column_frame_text", Void))
+			ev_col_frame.set_text (get_msg (ec_column_frame_text, Void))
 			ev_col_frame.set_minimum_height (50)
 			ev_vbox.extend (ev_col_frame)
 			ev_vbox.disable_item_expand (ev_col_frame)
@@ -96,8 +96,8 @@ feature {NONE} -- Initialisation
 			ev_col_frame.extend (ev_col_vbox)
 
 			create ev_nat_lang_paths_cb
-			ev_nat_lang_paths_cb.set_text (get_msg ("nat_lang_checkbox_text", Void))
-			ev_nat_lang_paths_cb.set_tooltip (get_msg ("nat_lang_paths_tooltip", Void))
+			ev_nat_lang_paths_cb.set_text (get_msg (ec_nat_lang_checkbox_text, Void))
+			ev_nat_lang_paths_cb.set_tooltip (get_msg (ec_nat_lang_paths_tooltip, Void))
 			ev_nat_lang_paths_cb.set_minimum_width (100)
 			ev_nat_lang_paths_cb.set_minimum_height (30)
 			ev_col_vbox.extend (ev_nat_lang_paths_cb)

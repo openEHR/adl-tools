@@ -329,7 +329,7 @@ feature {NONE} -- Context menu
 
 			-- add sub-menu of types to add as children
 			if not is_rm and ed_context.editing_enabled then
-				create types_sub_menu.make_with_text (get_text ("attribute_context_menu_add_child"))
+				create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
 				create an_mi.make_with_text_and_action (rm_property.type.semantic_class.name, agent do_edit_add_child_node (rm_property.type.semantic_class))
 				if rm_property.type.semantic_class.is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))

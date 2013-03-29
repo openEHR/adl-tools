@@ -93,13 +93,13 @@ feature -- Status Report
 		do
 			create Result.make_empty
 			if not repository_config_table.has_repository (a_repository_name) then
-				Result := get_msg ("invalid_repo_cfg", <<a_repository_name>>)
+				Result := get_msg (ec_invalid_repo_cfg, <<a_repository_name>>)
 			elseif not directory_exists (repository_config_table.repository (a_repository_name).reference_path) then
-				Result := get_msg ("ref_repo_not_found", <<repository_config_table.repository (a_repository_name).reference_path>>)
+				Result := get_msg (ec_ref_repo_not_found, <<repository_config_table.repository (a_repository_name).reference_path>>)
 			elseif repository_config_table.repository (a_repository_name).has_work_path and then
 				attached repository_config_table.repository (a_repository_name).work_path as wr_dir and then not directory_exists (wr_dir)
 			then
-				Result := get_msg ("work_repo_not_found", <<wr_dir>>)
+				Result := get_msg (ec_work_repo_not_found, <<wr_dir>>)
 			end
 		end
 

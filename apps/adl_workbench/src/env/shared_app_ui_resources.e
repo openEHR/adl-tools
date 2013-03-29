@@ -65,12 +65,12 @@ feature -- Definitions
 	Definition_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text ("definition_grid_col_rm_name_text"), Definition_grid_col_rm_name)
-			Result.put (get_text ("definition_grid_col_meaning_text"), Definition_grid_col_meaning)
-			Result.put (get_text ("definition_grid_col_existence_text"), Definition_grid_col_existence)
-			Result.put (get_text ("definition_grid_col_card_occ_text"), Definition_grid_col_card_occ)
-			Result.put (get_text ("definition_grid_col_sibling_order_text"), Definition_grid_col_sibling_order)
-			Result.put (get_text ("definition_grid_col_constraint_text"), Definition_grid_col_constraint)
+			Result.put (get_text (ec_definition_grid_col_rm_name_text), Definition_grid_col_rm_name)
+			Result.put (get_text (ec_definition_grid_col_meaning_text), Definition_grid_col_meaning)
+			Result.put (get_text (ec_definition_grid_col_existence_text), Definition_grid_col_existence)
+			Result.put (get_text (ec_definition_grid_col_card_occ_text), Definition_grid_col_card_occ)
+			Result.put (get_text (ec_definition_grid_col_sibling_order_text), Definition_grid_col_sibling_order)
+			Result.put (get_text (ec_definition_grid_col_constraint_text), Definition_grid_col_constraint)
 		end
 
 	Rules_grid_col_expr_type: INTEGER = 1
@@ -79,8 +79,8 @@ feature -- Definitions
 	Rules_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text ("rules_grid_col_expr_type_text"), Rules_grid_col_expr_type)
-			Result.put (get_text ("rules_grid_col_expr_value_text"), Rules_grid_col_expr_value)
+			Result.put (get_text (ec_rules_grid_col_expr_type_text), Rules_grid_col_expr_type)
+			Result.put (get_text (ec_rules_grid_col_expr_value_text), Rules_grid_col_expr_value)
 		end
 
 	archetype_rm_type_inherited_color: EV_COLOR

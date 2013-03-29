@@ -36,7 +36,7 @@ feature -- Initialization
 			end
 		else
 			init_failed := True
-			init_fail_reason := get_msg ("file_does_not_exist", <<terminology_file_path>>)
+			init_fail_reason := get_msg (ec_file_does_not_exist, <<terminology_file_path>>)
 		end
 	end
 

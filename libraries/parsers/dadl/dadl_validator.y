@@ -198,7 +198,7 @@ end
 			if not complex_object_nodes.item.has_attribute(attr_node.im_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
-				abort_with_error("VDATU", <<attr_node.im_attr_name>>)
+				abort_with_error (ec_VDATU, <<attr_node.im_attr_name>>)
 			end
 
 debug("dADL_parse")
@@ -210,7 +210,7 @@ end
 		}
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
-			abort_with_error("SDAT", Void)
+			abort_with_error (ec_SDAT, Void)
 		}
 	;
 
@@ -336,7 +336,7 @@ debug("dADL_parse")
 end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					abort_with_error("VOKU", <<complex_object_node.id, attr_nodes.item.im_attr_name >>)
+					abort_with_error (ec_VOKU, <<complex_object_node.id, attr_nodes.item.im_attr_name >>)
 				end
 
 debug("dADL_parse")
@@ -400,7 +400,7 @@ end
 			if not attr_nodes.is_empty then
 				attr_nodes.item.set_container_type
 			else
-				abort_with_error("SGEE", <<attr_node.im_attr_name>>)
+				abort_with_error (ec_SGEE, <<attr_node.im_attr_name>>)
 			end
 		}
 	;
@@ -472,7 +472,7 @@ debug("dADL_parse")
 end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					abort_with_error("VOKU", <<complex_object_node.id, attr_nodes.item.im_attr_name >>)
+					abort_with_error (ec_VOKU, <<complex_object_node.id, attr_nodes.item.im_attr_name >>)
 				end
 			end
 
@@ -520,7 +520,7 @@ end
 				attr_nodes.item.put_child($2)
 				$$ := $2
 			else
-				abort_with_error("VOKU", <<$2.id, attr_nodes.item.im_attr_name >>)
+				abort_with_error (ec_VOKU, <<$2.id, attr_nodes.item.im_attr_name >>)
 			end
 		}
 	;
@@ -764,7 +764,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $2 <= $4 then
 				create $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
@@ -772,7 +772,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $3 <= $5 then
 				create $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -780,7 +780,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $2 <= $5 then
 				create $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -788,7 +788,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 			if $3 <= $6 then
 				create $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -850,7 +850,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $2 <= $4 then
 				create $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
@@ -858,7 +858,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $3 <= $5 then
 				create $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -866,7 +866,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $2 <= $5 then
 				create $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -874,7 +874,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 			if $3 <= $6 then
 				create $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
@@ -956,7 +956,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VIDV", <<$1>>)
+				abort_with_error (ec_VIDV, <<$1>>)
 			end
 		}
 	;
@@ -984,7 +984,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $2 <= $4 then
 				create $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
@@ -992,7 +992,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $3 <= $5 then
 				create $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1000,7 +1000,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $2 <= $5 then
 				create $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1008,7 +1008,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 			if $3 <= $6 then
 				create $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1038,7 +1038,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VITV", <<$1>>)
+				abort_with_error (ec_VITV, <<$1>>)
 			end
 		}
 	;
@@ -1066,7 +1066,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $2 <= $4 then
 				create $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
@@ -1074,7 +1074,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $3 <= $5 then
 				create $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1082,7 +1082,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $2 <= $5 then
 				create $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1090,7 +1090,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 			if $3 <= $6 then
 				create $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1120,7 +1120,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VIDTV", <<$1>>)
+				abort_with_error (ec_VIDTV, <<$1>>)
 			end
 		}
 	;
@@ -1148,7 +1148,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $2 <= $4 then
 				create $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
@@ -1156,7 +1156,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $3 <= $5 then
 				create $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1164,7 +1164,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $2 <= $5 then
 				create $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1172,7 +1172,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 			if $3 <= $6 then
 				create $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1202,7 +1202,7 @@ duration_value: V_ISO8601_DURATION
 			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error("VIDUV", <<$1>>)
+				abort_with_error (ec_VIDUV, <<$1>>)
 			end
 		}
 	;
@@ -1230,7 +1230,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $2 <= $4 then
 				create $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error("VIVLO", <<$2.out, $4.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
@@ -1238,7 +1238,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $3 <= $5 then
 				create $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error("VIVLO", <<$3.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1246,7 +1246,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $2 <= $5 then
 				create $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error("VIVLO", <<$2.out, $5.out>>)
+				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1254,7 +1254,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 			if $3 <= $6 then
 				create $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error("VIVLO", <<$3.out, $6.out>>)
+				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1285,7 +1285,7 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
-			abort_with_error ("STCV", <<$1>>)
+			abort_with_error (ec_STCV, <<$1>>)
 		}
 	;
 
@@ -1328,7 +1328,7 @@ end
 				attr_nodes.item.put_child($2)
 				$$ := $2
 			else
-				abort_with_error("VOKU", <<$2.id, attr_nodes.item.im_attr_name >>)
+				abort_with_error (ec_VOKU, <<$2.id, attr_nodes.item.im_attr_name >>)
 			end
 		}
 	;

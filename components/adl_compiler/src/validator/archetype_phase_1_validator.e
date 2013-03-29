@@ -90,17 +90,17 @@ feature {NONE} -- Implementation
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
-				add_warning ("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
+				add_warning (ec_validate_e3, <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				add_error ("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
+				add_error (ec_VARDT, <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
 			elseif not is_valid_concept_code (target.concept) then
-				add_error ("VARCN", <<target.concept>>)
+				add_error (ec_VARCN, <<target.concept>>)
 			elseif target_descriptor.is_specialised then
 				if target.specialisation_depth /= target_descriptor.specialisation_parent.flat_archetype.specialisation_depth + 1 then
-					add_error ("VACSD", <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
+					add_error (ec_VACSD, <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
 				end
  			elseif specialisation_depth_from_code (target.concept) /= 0 then
- 				add_error ("VACSDtop", <<specialisation_depth_from_code (target.concept).out>>)
+ 				add_error (ec_VACSDtop, <<specialisation_depth_from_code (target.concept).out>>)
 			end
 		end
 
@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 					end
 					langs.forth
 				end
-				add_error("VOTM", <<err_str>>)
+				add_error (ec_VOTM, <<err_str>>)
 			end
 		end
 
@@ -143,11 +143,11 @@ feature {NONE} -- Implementation
 
 				if not includes.is_empty and includes.first.matches_any then
 					if not (excludes.is_empty or not excludes.first.matches_any) then
-						add_error("VDSEV1", <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+						add_error (ec_VDSEV1, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
 					end
 				elseif not includes.is_empty and not includes.first.matches_any then
 					if not (excludes.is_empty or excludes.first.matches_any) then
-						add_error("VDSEV2", <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+						add_error (ec_VDSEV2, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
 					end
 				end
 			end
@@ -161,7 +161,7 @@ feature {NONE} -- Implementation
 		do
 			across target.suppliers_index as supp_csr loop
 				if not current_arch_cat.archetype_index.has (supp_csr.key) then
-					add_error("VARXR", <<supp_csr.item.first.parent.path, supp_csr.key>>)
+					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				end
 
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 					create filler_id.make_from_string (arch_root_csr.item.archetype_id)
 					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_entity) or else
 						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_entity)) then
-						add_error("VARXTV", <<arch_root_csr.item.archetype_id, arch_root_csr.item.rm_type_name>>)
+						add_error (ec_VARXTV, <<arch_root_csr.item.archetype_id, arch_root_csr.item.rm_type_name>>)
 					end
 				end
 			end
@@ -182,12 +182,12 @@ feature {NONE} -- Implementation
 		do
 			across ontology.term_codes as terms_csr loop
 				if specialisation_depth_from_code (terms_csr.item) /= ontology.specialisation_depth then
-					add_error ("VONSD", <<terms_csr.item>>)
+					add_error (ec_VONSD, <<terms_csr.item>>)
 				end
 			end
 			across ontology.constraint_codes as terms_csr loop
 				if specialisation_depth_from_code (terms_csr.item) /= ontology.specialisation_depth then
-					add_error ("VONSD", <<terms_csr.item>>)
+					add_error (ec_VONSD, <<terms_csr.item>>)
 				end
 			end
 		end
@@ -197,10 +197,10 @@ feature {NONE} -- Implementation
 			-- are not referenced anywhere in the archetype definition
 		do
 			across target.ontology_unused_term_codes as unused_codes_csr loop
-				add_warning ("WOUC", <<unused_codes_csr.item>>)
+				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
 			end
 			across target.ontology_unused_constraint_codes as unused_codes_csr loop
-				add_warning ("WOUC", <<unused_codes_csr.item>>)
+				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
 			end
 		end
 

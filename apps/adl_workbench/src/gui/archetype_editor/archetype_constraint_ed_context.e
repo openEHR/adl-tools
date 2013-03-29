@@ -84,12 +84,12 @@ feature {NONE} -- Implementation
 				p := arch_node.path
 				Result := ed_context.flat_ontology.physical_to_logical_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance then
-					Result.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (node_specialisation_status))
+					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  specialisation_status_names.item (node_specialisation_status))
 				end
 
 				-- node-based bindings
 				if attached {C_OBJECT} arch_node as co and then co.is_addressable and then ed_context.flat_ontology.has_any_term_binding (co.node_id) then
-					Result.append ("%N%N" + get_text ("node_term_bindings_tooltip_text") + "%N")
+					Result.append ("%N%N" + get_text (ec_node_term_bindings_tooltip_text) + "%N")
 					bindings := ed_context.flat_ontology.term_bindings_for_key (co.node_id)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
@@ -98,7 +98,7 @@ feature {NONE} -- Implementation
 
 				-- path-based bindings
 				if ed_context.flat_ontology.has_any_term_binding (p) then
-					Result.append ("%N%N" + get_text ("path_term_bindings_tooltip_text") + "%N")
+					Result.append ("%N%N" + get_text (ec_path_term_bindings_tooltip_text) + "%N")
 					bindings := ed_context.flat_ontology.term_bindings_for_key (p)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 				end
 
 				if ed_context.archetype.has_annotation_at_path (display_settings.language, arch_node.path) then
-					Result.append ("%N%N" + get_text ("annotations_text") + ":%N")
+					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
 					Result.append (ed_context.archetype.annotations.annotations_at_path (display_settings.language, arch_node.path).as_string)
 				end
 			else

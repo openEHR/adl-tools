@@ -52,7 +52,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_main_split_area)
 
 			-- original text in a tabbed tree format - multi-line text field
-			create original_text_ctl.make (get_text ("translation_original_label_text"),
+			create original_text_ctl.make (get_text (ec_translation_original_label_text),
 				agent :STRING do Result := extract_original_text (source_archetype) end,
 				0, 0, False)
 			gui_controls.extend (original_text_ctl)
@@ -61,7 +61,7 @@ feature {NONE} -- Initialisation
 
 			-- translated text in a tabbed tree format - multi-line text field
 			create translated_text.make (0)
-			create translated_text_ctl.make_linked (get_text ("translation_translated_label_text"),
+			create translated_text_ctl.make_linked (get_text (ec_translation_translated_label_text),
 				agent :STRING do Result := translated_text end,
 				agent (a_str: STRING) do translated_text := a_str end,
 				Void, undo_redo_chain,
@@ -76,7 +76,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (gui_control_panel.ev_root_container)
 
 			-- 'add translation' button
-			create gui_translate_button.make_with_text_and_action (get_text ("translate_button_text"), agent add_translation)
+			create gui_translate_button.make_with_text_and_action (get_text (ec_translate_button_text), agent add_translation)
 			-- gui_control_panel.xx
 
 			ev_main_split_area.set_proportion (0.5)

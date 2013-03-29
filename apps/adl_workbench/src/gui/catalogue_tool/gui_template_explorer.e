@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 			create tooltip.make_empty
 			tooltip.append (aca.full_path)
 			if aca.has_legacy_flat_file and aca.differential_generated then
-				tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
+				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 			end
 
 			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)

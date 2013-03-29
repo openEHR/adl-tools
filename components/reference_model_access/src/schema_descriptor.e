@@ -54,7 +54,7 @@ feature -- Initialisation
 				end
 				is_bmm_compatible := bmm_version_compatible (bmm_ver)
 				if not is_bmm_compatible then
-					add_error ("BMM_VER", <<schema_id, bmm_ver, Bmm_internal_version>>)
+					add_error (ec_BMM_VER, <<schema_id, bmm_ver, Bmm_internal_version>>)
 				end
 				schema_path := md_schema_path
 			end
@@ -116,7 +116,7 @@ feature -- Modification
 	signal_load_include_error
 			-- set error status due to failure to load an included schema
 		do
-			add_error ("bmm_schema_include_failed_to_load", <<schema_id>>)
+			add_error (ec_bmm_schema_include_failed_to_load, <<schema_id>>)
 		end
 
 feature {REFERENCE_MODEL_ACCESS} -- Commands
@@ -132,7 +132,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			p_schema := Void
 			create model_file.make (schema_path)
 			if not model_file.exists or else not model_file.is_readable then
-				add_error ("bmm_schema_file_not_valid", <<schema_path>>)
+				add_error (ec_bmm_schema_file_not_valid, <<schema_path>>)
 			else
 				model_file.open_read
 				model_file.read_stream (model_file.count)
@@ -140,9 +140,9 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error and then attached parser.output as dt_tree then
 					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string (({P_BMM_SCHEMA}).name, Void) as p_sch then
-						add_error ("bmm_schema_load_failure_exception", <<schema_path>>)
+						add_error (ec_bmm_schema_load_failure_exception, <<schema_path>>)
 					elseif object_converter.errors.has_errors then
-						add_error ("bmm_schema_conv_fail_err", <<schema_path, object_converter.errors.as_string>>)
+						add_error (ec_bmm_schema_conv_fail_err, <<schema_path, object_converter.errors.as_string>>)
 					else
 						p_schema := p_sch
 						passed := True
@@ -153,7 +153,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 						end
 					end
 				else
-					add_error ("bmm_schema_load_failure", <<schema_path, parser.errors.as_string>>)
+					add_error (ec_bmm_schema_load_failure, <<schema_path, parser.errors.as_string>>)
 				end
 				model_file.close
 			end
@@ -172,7 +172,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			if attached p_schema.includes then
 				across p_schema.includes as supplier_schemas_csr loop
 					if not all_schemas.has (supplier_schemas_csr.item.id) then
-						add_error("BMM_INC", <<schema_id, supplier_schemas_csr.item.id>>)
+						add_error (ec_BMM_INC, <<schema_id, supplier_schemas_csr.item.id>>)
 					else
 						includes.extend (supplier_schemas_csr.item.id)
 					end

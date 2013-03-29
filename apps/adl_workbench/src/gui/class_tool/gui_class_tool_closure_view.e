@@ -63,48 +63,48 @@ feature -- Initialisation
 			-- ========= RM view options =========
 
 			-- frame
-			create rm_property_visibility_frame_ctl.make (get_text ("rm_visibility_controls_text"), 85, 0, False)
+			create rm_property_visibility_frame_ctl.make (get_text (ec_rm_visibility_controls_text), 85, 0, False)
 			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
-			create rm_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_properties_button_text"),
-				get_text ("show_rm_properties_tooltip"),
+			create rm_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_properties_button_text),
+				get_text (ec_show_rm_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_data_properties end, agent update_include_rm_data_properties)
 			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM runtime properties option check button
-			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_runtime_properties_button_text"),
-				get_text ("show_rm_runtime_properties_tooltip"),
+			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_runtime_properties_button_text),
+				get_text (ec_show_rm_runtime_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_runtime_properties end, agent update_include_rm_runtime_properties)
 			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
-			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_if_properties_button_text"),
-				get_text ("show_rm_if_properties_tooltip"),
+			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_if_properties_button_text),
+				get_text (ec_show_rm_if_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_infrastructure_properties end, agent update_include_rm_infrastructure_properties)
 			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- frame
-			create rm_rendering_frame_ctl.make (get_text ("rm_rendering_controls_text"), 85, 0, False)
+			create rm_rendering_frame_ctl.make (get_text (ec_rm_rendering_controls_text), 85, 0, False)
 			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM icons check button
-			create view_rm_use_icons_checkbox_ctl.make_linked (get_text ("use_rm_icons_text"),
-				get_text ("use_rm_icons_tooltip"),
+			create view_rm_use_icons_checkbox_ctl.make_linked (get_text (ec_use_rm_icons_text),
+				get_text (ec_use_rm_icons_tooltip),
 				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
 			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
 			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
 
 			-- ========== recompute controls =========
-			create rm_recompute_frame_ctl.make (get_text ("rm_closure_depth_control_frame_text"), 0, 0, False)
+			create rm_recompute_frame_ctl.make (get_text (ec_rm_closure_depth_control_frame_text), 0, 0, False)
 			control_panel.add_frame_control (rm_recompute_frame_ctl, False)
 
 			-- closure depth control
 			create ev_closure_depth_spin_button
-			ev_closure_depth_spin_button.set_tooltip (get_msg ("closure_depth_spin_button_tooltip", Void))
+			ev_closure_depth_spin_button.set_tooltip (get_msg (ec_closure_depth_spin_button_tooltip, Void))
 			ev_closure_depth_spin_button.set_value (default_closure_depth)
 			rm_recompute_frame_ctl.extend (ev_closure_depth_spin_button, False)
 
@@ -470,7 +470,7 @@ feature {NONE} -- Implementation
 			chg_sub_menu: EV_MENU
 		do
 			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text (get_text ("context_menu_convert_node_to_subtype"))
+			create chg_sub_menu.make_with_text (get_text (ec_context_menu_convert_node_to_subtype))
 			from a_substitutions.start until a_substitutions.off loop
 				create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, True))
 				if rm_schema.class_definition (a_substitutions.item).is_abstract then
@@ -488,7 +488,7 @@ feature {NONE} -- Implementation
 --				attached {BMM_PROPERTY_DEFINITION} a_class_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
 --			then
 --				-- create sub menu listing subtypes to add to parent node
---				create chg_sub_menu.make_with_text (get_text ("context_menu_add_subtype_mode"))
+--				create chg_sub_menu.make_with_text (get_text (ec_context_menu_add_subtype_mode))
 --				from a_substitutions.start until a_substitutions.off loop
 --					create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, False))
 --					if rm_schema.class_definition (a_substitutions.item).is_abstract then

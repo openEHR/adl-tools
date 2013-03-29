@@ -70,7 +70,7 @@ feature {NONE} -- Initialisation
 			ev_cell_1.set_minimum_height (20)
 			ev_root_container.extend (ev_cell_1)
 			create ev_label_1
-			ev_label_1.set_text (get_text ("rm_schema_dialog_header_label"))
+			ev_label_1.set_text (get_text (ec_rm_schema_dialog_header_label))
 			ev_root_container.extend (ev_label_1)
 			create ev_cell_2
 			ev_cell_2.set_minimum_height (20)
@@ -92,7 +92,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ RM schema directory getter ============
-			create rm_dir_setter.make (get_text ("rm_schema_dir_text"), agent :STRING do Result := rm_schema_directory end, 0, 0)
+			create rm_dir_setter.make (get_text (ec_rm_schema_dir_text), agent :STRING do Result := rm_schema_directory end, 0, 0)
 			rm_dir_setter.set_post_select_agent (agent on_set_rm_schema_dir)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
@@ -108,7 +108,7 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_title (get_text ("rm_schema_dialog_title"))
+			set_title (get_text (ec_rm_schema_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -158,7 +158,7 @@ feature -- Events
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_rm_schema_dir) then
-				create error_dialog.make_with_text (get_msg ("bmm_schema_dir_not_valid", <<last_populated_rm_schema_dir>>))
+				create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_not_valid, <<last_populated_rm_schema_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -190,7 +190,7 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_rm_schema_dir) then
-				create error_dialog.make_with_text (get_msg ("bmm_schema_dir_not_valid", <<last_populated_rm_schema_dir>>))
+				create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_not_valid, <<last_populated_rm_schema_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -209,7 +209,7 @@ feature -- Events
 				ok_cancel_buttons.disable_sensitive
 				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					create error_dialog.make_with_text (get_msg ("bmm_schema_dir_contains_no_valid_schemas", <<new_rm_dir>>))
+					create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_contains_no_valid_schemas, <<new_rm_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 				populate_grid
@@ -250,9 +250,9 @@ feature {NONE} -- Implementation
 			-- make the columnn content visible
 			if grid.row_count > 0 then
 				-- set grid column titles
-				grid.column (Grid_schema_col).set_title (get_text ("rm_schema_grid_schema_col_title"))
-				grid.column (grid_lifecycle_state_col).set_title (get_text ("rm_schema_grid_lifecycle_state_col_title"))
-				grid.column (Grid_validated_col).set_title (get_text ("rm_schema_grid_validated_col_title"))
+				grid.column (Grid_schema_col).set_title (get_text (ec_rm_schema_grid_schema_col_title))
+				grid.column (grid_lifecycle_state_col).set_title (get_text (ec_rm_schema_grid_lifecycle_state_col_title))
+				grid.column (Grid_validated_col).set_title (get_text (ec_rm_schema_grid_validated_col_title))
 
 				grid.resize_columns_to_content (Grid_expansion_factor)
 				from i := 1 until i > grid.column_count loop

@@ -273,7 +273,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 						end (?, packages_csr.item.name)
 					)
 				then
-					add_error ("BMM_PKGTL", <<schema_id>>)
+					add_error (ec_BMM_PKGTL, <<schema_id>>)
 				end
 			end
 
@@ -287,7 +287,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 						prop_list.compare_objects
 						across a_class_def.properties as props_csr loop
 							if prop_list.has (props_csr.item.name) then
-								add_error ("BMM_PRDUP", <<schema_id, a_class_def.name, props_csr.item.name>>)
+								add_error (ec_BMM_PRDUP, <<schema_id, a_class_def.name, props_csr.item.name>>)
 							else
 								prop_list.extend (props_csr.item.name)
 							end
@@ -301,13 +301,13 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 					do
 						-- check for lower-down qualified names
 						if not packages.has_item (a_pkg) and a_pkg.name.has (package_name_delimiter) then
-							add_error("BMM_PKGQN", <<schema_id, a_pkg.name>>)
+							add_error (ec_BMM_PKGQN, <<schema_id, a_pkg.name>>)
 						end
 
 						-- check if all classes mentioned in each package exist in the local schema
 						from a_pkg.classes.start until a_pkg.classes.off loop
 							if not has_class_definition (a_pkg.classes.item) then
-								add_error ("BMM_PKGCL", <<schema_id, a_pkg.classes.item, a_pkg.name>>)
+								add_error (ec_BMM_PKGCL, <<schema_id, a_pkg.classes.item, a_pkg.name>>)
 							end
 							a_pkg.classes.forth
 						end
@@ -315,7 +315,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			)
 
 			if passed then
-				add_info ("model_access_i1", << schema_id, primitive_types.count.out, class_definitions.count.out >>)
+				add_info (ec_model_access_i1, << schema_id, primitive_types.count.out, class_definitions.count.out >>)
 				state := State_validated_created
 			end
 		end
@@ -482,13 +482,13 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 		do
 			-- check archetype parent class in list of class names
 			if attached archetype_parent_class as apc and then not has_class_definition (apc) then
-				add_error ("BMM_ARPAR", <<schema_id, apc>>)
+				add_error (ec_BMM_ARPAR, <<schema_id, apc>>)
 			end
 
 			-- check that all models refer to declared packages
 			across archetype_rm_closure_packages as pkgs_csr loop
 				if not has_canonical_package_path (pkgs_csr.item) then
-					add_error ("BMM_MDLPK", <<schema_id, pkgs_csr.item>>)
+					add_error (ec_BMM_MDLPK, <<schema_id, pkgs_csr.item>>)
 				end
 			end
 
@@ -499,7 +499,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 					agent (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING; class_list: HASH_TABLE [STRING, STRING])
 						do
 							if class_list.has (a_class_name.as_lower) and then attached class_list.item (a_class_name.as_lower) as cl_item then
-								add_error ("BMM_CLDUP", <<schema_id, a_class_name, a_pkg.name, cl_item>>)
+								add_error (ec_BMM_CLDUP, <<schema_id, a_class_name, a_pkg.name, cl_item>>)
 							else
 								class_list.put (a_pkg.name, a_class_name.as_lower)
 							end
@@ -801,7 +801,7 @@ feature {NONE} -- Implementation
 					schema_error_table.put (create {ERROR_ACCUMULATOR}.make, source_schema_id)
 				end
 				schema_error_table.item (source_schema_id).add_error (a_key, args, "")
-				add_error ("BMM_INCERR", <<schema_id, source_schema_id>>)
+				add_error (ec_BMM_INCERR, <<schema_id, source_schema_id>>)
 			end
 		end
 

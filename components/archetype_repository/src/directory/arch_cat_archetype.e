@@ -695,7 +695,7 @@ feature -- Compilation
 						compilation_state := Cs_ready_to_parse
 					else
 						compilation_state := cs_lineage_invalid
-						add_error ("compile_e1", <<parent_id.as_string>>)
+						add_error (ec_compile_e1, <<parent_id.as_string>>)
 					end
 				when cs_ready_to_parse_legacy then
 					compile_legacy
@@ -777,7 +777,7 @@ feature -- Compilation
 				end
 				signal_from_scratch
 			else
-				add_error ("general", <<amp.error_strings>>)
+				add_error (ec_general, <<amp.error_strings>>)
 				compilation_state := Cs_invalid
 			end
 		ensure
@@ -795,7 +795,7 @@ feature -- Compilation
 				compilation_state := Cs_ready_to_validate
 			else
 				compilation_state := cs_suppliers_invalid
-				add_error ("compile_e2", <<suppliers_index.item_for_iteration.id.as_string>>)
+				add_error (ec_compile_e2, <<suppliers_index.item_for_iteration.id.as_string>>)
 			end
 		ensure
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
@@ -896,12 +896,12 @@ feature {NONE} -- Compilation
 			end
 			flat_archetype_cache := Void
 			if attached legacy_flat_archetype as lft then
-				add_info ("compile_legacy_i1", <<id.as_string>>)
+				add_info (ec_compile_legacy_i1, <<id.as_string>>)
 				create differential_archetype.make_from_legacy_flat (lft)
 			 	compilation_state := Cs_parsed
 				if is_specialised and not specialisation_parent.is_valid then
 					compilation_state := cs_lineage_invalid
-					add_error ("compile_e1", <<parent_id.as_string>>)
+					add_error (ec_compile_e1, <<parent_id.as_string>>)
 				else
 					-- perform post-parse object structure finalisation
 					adl15_engine.post_parse_process (Current, rm_schema)
@@ -939,15 +939,15 @@ feature {NONE} -- Compilation
 			Initial_state: compilation_state = Cs_ready_to_parse
 			Has_differential_file: has_differential_file
 		do
-			add_info ("parse_i2", Void)
+			add_info (ec_parse_i2, Void)
 			flat_archetype_cache := Void
 			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
-					add_warning ("parse_w1", <<id.as_string, pid.as_string, da_pid.as_string>>)
+					add_warning (ec_parse_w1, <<id.as_string, pid.as_string, da_pid.as_string>>)
 				else
-					add_info ("parse_i1", <<id.as_string>>)
+					add_info (ec_parse_i1, <<id.as_string>>)
 				end
 
 				-- perform post-parse object structure finalisation
@@ -1009,7 +1009,7 @@ feature {NONE} -- Compilation
 					adl15_engine.phase_3_validate (Current, rm_schema)
 					merge_errors (adl15_engine.errors)
 					if adl15_engine.validation_passed then
-						add_info ("parse_archetype_i2", <<id.as_string>>)
+						add_info (ec_parse_archetype_i2, <<id.as_string>>)
 						compilation_state := Cs_validated
 					-- not yet in use
 					--	adl15_engine.post_compile_process (Current, rm_schema)

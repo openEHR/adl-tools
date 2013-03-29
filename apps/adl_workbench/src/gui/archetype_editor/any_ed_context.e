@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 			across a_ccp.code_list as codes_csr loop
 				Result.append_string (term_string (a_ccp.terminology_id.value, codes_csr.item))
 				if a_ccp.has_assumed_value and then a_ccp.assumed_value.code_string.is_equal (codes_csr.item) then
-					Result.append (" (" + get_text ("assumed_text") + ")")
+					Result.append (" (" + get_text (ec_assumed_text) + ")")
 				end
 				if codes_csr.cursor_index < a_ccp.code_list.count then
 					Result.append_string ("%N")

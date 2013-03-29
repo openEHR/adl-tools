@@ -187,7 +187,7 @@ feature -- Visitor
 				if not a_node.occurrences.is_prohibited then
 					s.append (a_node.occurrences_as_string)
 				else
-					s.append (get_text ("occurrences_removed_text"))
+					s.append (get_text (ec_occurrences_removed_text))
 				end
 			end
 			gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour (a_node), Void)
@@ -251,7 +251,7 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, includes_csr.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("include_text"), Void,
+							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void,
 								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
 
 							-- put assertions in constraint col
@@ -266,7 +266,7 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, excludes_csr.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("exclude_text"), Void,
+							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void,
 								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
 
 							-- put assertions in constraint col
@@ -510,7 +510,7 @@ feature -- Visitor
 				from a_node.code_list.start until a_node.code_list.off loop
 					constraint_str.append_string (term_string (a_node.terminology_id.value, a_node.code_list.item))
 					if a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item) then
-						constraint_str.append (" (" + get_text ("assumed_text") + ")")
+						constraint_str.append (" (" + get_text (ec_assumed_text) + ")")
 					end
 					if not a_node.code_list.islast then
 						constraint_str.append_string ("%N")
@@ -631,7 +631,7 @@ feature -- Visitor
 					end
 					-- assumed value
 					if a_node.has_assumed_value then
-						constraint_str.append ("%N" + a_node.assumed_value.magnitude_as_string + " (" + get_text ("assumed_text") + ")")
+						constraint_str.append ("%N" + a_node.assumed_value.magnitude_as_string + " (" + get_text (ec_assumed_text) + ")")
 					end
 
 					-- build the grid row
@@ -826,12 +826,12 @@ feature {NONE} -- Implementation
 			p := a_node.path
 			Result := ontology.physical_to_logical_path (p, language, True)
 			if show_rm_inheritance then
-				Result.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (a_node.specialisation_status))
+				Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  specialisation_status_names.item (a_node.specialisation_status))
 			end
 
 			-- node-based bindings
 			if attached {C_OBJECT} a_node as co and then co.is_addressable and then ontology.has_any_term_binding (co.node_id) then
-				Result.append ("%N%N" + get_text ("node_term_bindings_tooltip_text") + "%N")
+				Result.append ("%N%N" + get_text (ec_node_term_bindings_tooltip_text) + "%N")
 				bindings := ontology.term_bindings_for_key (co.node_id)
 				across bindings as bindings_csr loop
 					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
@@ -840,7 +840,7 @@ feature {NONE} -- Implementation
 
 			-- path-based bindings
 			if ontology.has_any_term_binding (p) then
-				Result.append ("%N%N" + get_text ("path_term_bindings_tooltip_text") + "%N")
+				Result.append ("%N%N" + get_text (ec_path_term_bindings_tooltip_text) + "%N")
 				bindings := ontology.term_bindings_for_key (p)
 				across bindings as bindings_csr loop
 					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
@@ -849,7 +849,7 @@ feature {NONE} -- Implementation
 
 			-- annotations
 			if archetype.has_annotation_at_path (language, a_node.path) then
-				Result.append ("%N%N" + get_text ("annotations_text") + ":%N")
+				Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
 				Result.append (archetype.annotations.annotations_at_path (language, a_node.path).as_string)
 			end
 		end
@@ -915,7 +915,7 @@ feature {NONE} -- Implementation
 			Result.append (" - ")
 			Result.append (term_string (an_ordinal.symbol.terminology_id.value, an_ordinal.symbol.code_string))
 			if assumed_flag then
-				Result.append (" (" + get_text ("assumed_text") + ")")
+				Result.append (" (" + get_text (ec_assumed_text) + ")")
 			end
 		end
 
@@ -995,7 +995,7 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				create menu
-				create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent (gui_archetype_tool_agents.code_select_action_agent).call ([a_code]))
+				create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code), agent (gui_archetype_tool_agents.code_select_action_agent).call ([a_code]))
 				menu.extend (an_mi)
 				menu.show
 			end
@@ -1161,13 +1161,13 @@ feature {NONE} -- Implementation
 
 				-- if this node is addressable, add menu item to show node_id in ontology
 				if co.is_addressable then
-					create an_mi.make_with_text_and_action (get_text ("view_node_id_in_ontology"), agent (gui_archetype_tool_agents.code_select_action_agent).call ([co.node_id]))
+					create an_mi.make_with_text_and_action (get_text (ec_view_node_id_in_ontology), agent (gui_archetype_tool_agents.code_select_action_agent).call ([co.node_id]))
 					menu.extend (an_mi)
 				end
 
 				-- add menu item for displaying path in path map
 				if attached gui_archetype_tool_agents.path_select_action_agent then
-					create an_mi.make_with_text_and_action (get_text ("menu_option_display_path"), agent (gui_archetype_tool_agents.path_select_action_agent).call ([co.path]))
+					create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_path), agent (gui_archetype_tool_agents.path_select_action_agent).call ([co.path]))
 					menu.extend (an_mi)
 				end
 
@@ -1195,9 +1195,9 @@ feature {NONE} -- Implementation
 					end
 				end
 				if a_slot.has_open_excludes then
-					create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_exact_text"))
+					create sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_exact_text))
 				else
-					create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_preferred_text"))
+					create sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_preferred_text))
 				end
 
 				-- ensure we have only a unique set
@@ -1250,7 +1250,7 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (a_bmm_class_def))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (a_bmm_class_def))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			menu.extend (an_mi)
 		end
@@ -1267,7 +1267,7 @@ feature {NONE} -- Implementation
 			chg_sub_menu: EV_MENU
 		do
 			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text (get_text ("context_menu_convert_node_to_subtype"))
+			create chg_sub_menu.make_with_text (get_text (ec_context_menu_convert_node_to_subtype))
 			across a_substitutions as subs_csr loop
 				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, True))
 				if rm_schema.class_definition (subs_csr.item).is_abstract then
@@ -1284,7 +1284,7 @@ feature {NONE} -- Implementation
 --				attached {BMM_PROPERTY_DEFINITION} a_class_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
 --			then
 --				-- create sub menu listing subtypes to add to parent node
---				create chg_sub_menu.make_with_text (get_text ("context_menu_add_subtype_mode"))
+--				create chg_sub_menu.make_with_text (get_text (ec_context_menu_add_subtype_mode))
 --				across a_substitutions as subs_csr loop
 --					create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, False))
 --					if rm_schema.class_definition (subs_csr.item).is_abstract then

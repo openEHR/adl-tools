@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
 			Precursor {EV_DIALOG}
 
 			-- window characteristics
-			set_title (get_text ("initial_c_object_config_dialog_title"))
+			set_title (get_text (ec_initial_c_object_config_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			-- create widgets
@@ -74,7 +74,7 @@ feature {NONE} -- Initialization
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- ============ constraint type combo-box control ============
-			create constraint_type_ctl.make_linked (get_text ("initial_c_object_config_constraint_type_text"),
+			create constraint_type_ctl.make_linked (get_text (ec_initial_c_object_config_constraint_type_text),
 				agent :STRING do Result := current_constraint_type end,
 				constraint_types, agent set_current_constraint_type, Void, Void,
 				0, 0)
@@ -83,7 +83,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (constraint_type_ctl)
 
 			-- ============ RM type combo-box control ============
-			create rm_type_ctl.make_linked (get_text ("initial_c_object_config_rm_type_text"),
+			create rm_type_ctl.make_linked (get_text (ec_initial_c_object_config_rm_type_text),
 				agent :STRING do Result := current_rm_type end,
 				rm_types, agent (a_str: STRING) do current_rm_type := a_str end, Void, Void,
 				0, 0)
@@ -92,7 +92,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (rm_type_ctl)
 
 			-- ============ Occurrences ============
-			create occurrences_choice_ctl.make_linked (get_text ("initial_c_object_config_occurrences_text"),
+			create occurrences_choice_ctl.make_linked (get_text (ec_initial_c_object_config_occurrences_text),
 				agent :STRING do Result := current_occurrences end,
 				occurrences_constrained_list, agent (a_str: STRING) do current_occurrences := a_str end, Void, Void,
 				0, 0)
@@ -101,7 +101,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (occurrences_choice_ctl)
 
 			-- ============ Archetype ext ref list ============			
-			create arch_id_list_ctl.make_linked (get_text ("initial_c_object_config_ext_ref_text"),
+			create arch_id_list_ctl.make_linked (get_text (ec_initial_c_object_config_ext_ref_text),
 				agent :STRING do Result := current_ext_ref end,
 				arch_ext_ref_list, agent (a_str: STRING) do current_ext_ref := a_str end, Void, Void,
 				0, 0)
@@ -115,7 +115,7 @@ feature {NONE} -- Initialization
 
 
 			-- ============ Archetype path list ============			
-			create arch_path_list_ctl.make_linked (get_text ("initial_c_object_config_path_ref_text"),
+			create arch_path_list_ctl.make_linked (get_text (ec_initial_c_object_config_path_ref_text),
 				agent :STRING do Result := current_path_ref end,
 				arch_path_list, agent (a_str: STRING) do current_path_ref := a_str end, Void, Void,
 				0, 0)

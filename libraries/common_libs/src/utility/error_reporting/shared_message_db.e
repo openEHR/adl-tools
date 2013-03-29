@@ -9,6 +9,9 @@ note
 
 class SHARED_MESSAGE_DB
 
+inherit
+	COMPILED_MESSAGE_IDS
+
 feature -- Access
 
 	get_msg_line (an_id: STRING; args: detachable ARRAY[STRING]): STRING

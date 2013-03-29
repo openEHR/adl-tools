@@ -506,6 +506,9 @@ templates = <
 		-- GUI_ONTOLOGY_CONTROLS
 		["term_defs_frame_text"] = <"Term definitions and bindings">
 		["constraint_defs_frame_text"] = <"Constraint definitions and bindings">
+
+		-- GUI_CLASS_TOOL_CLOSURE_VIEW
+		["context_menu_convert_node_to_subtype"] = <"Convert to subtype">
 	>
 >
 

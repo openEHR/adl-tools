@@ -49,7 +49,7 @@ feature {NONE} -- Initialization
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- dialog frame
-			create repository_frame_ctl.make (get_text ("repo_cfg_list_text"), 0, 0, False)
+			create repository_frame_ctl.make (get_text (ec_repo_cfg_list_text), 0, 0, False)
 			ev_root_container.extend (repository_frame_ctl.ev_root_container)
 
 			-- repository list + buttons HBOX
@@ -70,30 +70,30 @@ feature {NONE} -- Initialization
 
 			-- add button
 			create repository_add_button
-			repository_add_button.set_text (get_text ("add_new_repo_cfg_button_text"))
-			repository_add_button.set_tooltip (get_text ("add_new_repo_cfg_button_tooltip"))
+			repository_add_button.set_text (get_text (ec_add_new_repo_cfg_button_text))
+			repository_add_button.set_tooltip (get_text (ec_add_new_repo_cfg_button_tooltip))
 			repository_add_button.select_actions.extend (agent add_new_config)
 			ev_vbox_2.extend (repository_add_button)
 			ev_vbox_2.disable_item_expand (repository_add_button)
 
 			-- remove button
 			create repository_remove_button
-			repository_remove_button.set_text (get_text ("remove_repo_cfg_button_text"))
-			repository_remove_button.set_tooltip (get_text ("remove_repo_cfg_button_tooltip"))
+			repository_remove_button.set_text (get_text (ec_remove_repo_cfg_button_text))
+			repository_remove_button.set_tooltip (get_text (ec_remove_repo_cfg_button_tooltip))
 			repository_remove_button.select_actions.extend (agent remove_selected_config)
 			ev_vbox_2.extend (repository_remove_button)
 			ev_vbox_2.disable_item_expand (repository_remove_button)
 
 			-- edit button
 			create repository_edit_button
-			repository_edit_button.set_text (get_text ("edit_repo_cfg_button_text"))
-			repository_edit_button.set_tooltip (get_text ("edit_repo_cfg_button_tooltip"))
+			repository_edit_button.set_text (get_text (ec_edit_repo_cfg_button_text))
+			repository_edit_button.set_tooltip (get_text (ec_edit_repo_cfg_button_tooltip))
 			repository_edit_button.select_actions.extend (agent edit_selected_config)
 			ev_vbox_2.extend (repository_edit_button)
 			ev_vbox_2.disable_item_expand (repository_edit_button)
 
 			-- reference path display control
-			create ref_path_ctl.make_readonly (get_text ("ref_repo_text"),
+			create ref_path_ctl.make_readonly (get_text (ec_ref_repo_text),
 				agent :STRING
 					do
 						check attached selected_repository_key as spk then
@@ -106,7 +106,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (ref_path_ctl)
 
 			-- work path display control
-			create work_path_ctl.make_readonly (get_text ("work_repo_text"),
+			create work_path_ctl.make_readonly (get_text (ec_work_repo_text),
 				agent :STRING
 					do
 						create Result.make_empty
@@ -136,7 +136,7 @@ feature {NONE} -- Initialization
 			set_minimum_height (280)
 			set_maximum_width (800)
 			set_maximum_height (800)
-			set_title (get_text ("repository_dialog_title"))
+			set_title (get_text (ec_repository_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 			extend (ev_root_container)
 

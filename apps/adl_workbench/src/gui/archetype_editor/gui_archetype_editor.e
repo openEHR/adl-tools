@@ -35,7 +35,7 @@ feature {NONE}-- Initialization
 			precursor
 			-- translation control
 			ev_notebook.extend (translation_control.ev_root_container)
-			ev_notebook.set_item_text (translation_control.ev_root_container, get_text ("translation_tab_text"))
+			ev_notebook.set_item_text (translation_control.ev_root_container, get_text (ec_translation_tab_text))
 			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
 
 			select_flat_view
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 		do
 			source.commit
 			gui_agents.refresh_archetype_viewers_agent.call ([source.id.as_string])
-			gui_agents.console_tool_append_agent.call ([get_msg ("arch_editor_commit_notification", <<source.id.as_string, source.differential_path>>)])
+			gui_agents.console_tool_append_agent.call ([get_msg (ec_arch_editor_commit_notification, <<source.id.as_string, source.differential_path>>)])
 		end
 
 	populate_undo_redo_controls

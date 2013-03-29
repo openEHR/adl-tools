@@ -67,10 +67,10 @@ feature {NONE}-- Initialization
 			ev_notebook.set_minimum_width (500)
 			ev_notebook.set_minimum_height (notebook_min_height)
 
-			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg ("description_tab_text", Void))
+			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg (ec_description_tab_text, Void))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
-			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_msg ("stat_info_tab_text", Void))
+			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_msg (ec_stat_info_tab_text, Void))
 			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 
 			-- set events: select a notebook tab

@@ -42,8 +42,8 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 			ev_root_container.disable_item_expand (ev_stats_info_frame)
-			ev_stats_info_frame.set_text (get_msg ("stats_frame_text", Void))
-			ev_term_bindings_info_frame.set_text (get_msg ("term_bindings_frame_text", Void))
+			ev_stats_info_frame.set_text (get_msg (ec_stats_frame_text, Void))
+			ev_term_bindings_info_frame.set_text (get_msg (ec_term_bindings_frame_text, Void))
 			ev_term_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
 		end
 
@@ -66,8 +66,8 @@ feature {NONE} -- Implementation
 		do
 			-- archetype metrics list
 			ev_stats_mlist.set_column_titles (
-				<<get_msg ("summary_list_metric_col_title", Void),
-				get_msg ("summary_list_total_col_title", Void)>>
+				<<get_msg (ec_summary_list_metric_col_title, Void),
+				get_msg (ec_summary_list_total_col_title, Void)>>
 			)
 			populate_ev_multi_list_from_hash (ev_stats_mlist, source.catalogue_metrics)
 			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)

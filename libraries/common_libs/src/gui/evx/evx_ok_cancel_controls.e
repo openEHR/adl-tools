@@ -43,7 +43,7 @@ feature -- Initialisation
 
 			-- OK button
 			create ok_button
-			ok_button.set_text (get_text ("ok_button_text"))
+			ok_button.set_text (get_text (ec_ok_button_text))
 			ok_button.set_minimum_width (100)
 			ok_button.set_minimum_height (26)
 			ev_root_container.extend (ok_button)
@@ -52,7 +52,7 @@ feature -- Initialisation
 
 			-- Cancel button
 			create cancel_button
-			cancel_button.set_text (get_text ("cancel_button_text"))
+			cancel_button.set_text (get_text (ec_cancel_button_text))
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
 			ev_root_container.extend (cancel_button)

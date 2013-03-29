@@ -143,12 +143,12 @@ source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID
 			if arch_id.valid_id ($3) then
 				create archetype_id.make_from_string ($3)
 			else
-				abort_with_error ("SASID", Void)
+				abort_with_error (ec_SASID, Void)
 			end
 		}
 	| source_artefact_type error
 		{
-			abort_with_error ("SARID", Void)
+			abort_with_error (ec_SARID, Void)
 		}
 	;
 
@@ -173,12 +173,12 @@ opt_identification: opt_artefact_type arch_meta_data V_ARCHETYPE_ID
 			if arch_id.valid_id ($3) then
 				create archetype_id.make_from_string ($3)
 			else
-				abort_with_error ("SASID", Void)
+				abort_with_error (ec_SASID, Void)
 			end
 		}
 	| opt_artefact_type error
 		{
-			abort_with_error ("SARID", Void)
+			abort_with_error (ec_SARID, Void)
 		}
 	;
 
@@ -248,12 +248,12 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 			if arch_id.valid_id ($2) then
 				create parent_archetype_id.make_from_string ($2)
 			else
-				abort_with_error ("SASID", Void)
+				abort_with_error (ec_SASID, Void)
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
-			abort_with_error ("SASID", Void)
+			abort_with_error (ec_SASID, Void)
 		}
 	;
 
@@ -266,7 +266,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 		}
 	| SYM_CONCEPT error
 		{
-			abort_with_error ("SACO", Void)
+			abort_with_error (ec_SACO, Void)
 		}
 	;
 
@@ -278,7 +278,7 @@ arch_language: SYM_LANGUAGE V_DADL_TEXT
 		}
 	| SYM_LANGUAGE error
 		{
-			abort_with_error ("SALA", Void)
+			abort_with_error (ec_SALA, Void)
 		}
 	;
 
@@ -290,7 +290,7 @@ arch_description: SYM_DESCRIPTION V_DADL_TEXT
 		}
 	| SYM_DESCRIPTION error
 		{
-			abort_with_error ("SADS", Void)
+			abort_with_error (ec_SADS, Void)
 		}
 	;
 		
@@ -301,7 +301,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 		}
 	| SYM_DEFINITION error
 		{
-			abort_with_error ("SADF", Void)
+			abort_with_error (ec_SADF, Void)
 		}
 	;
 
@@ -312,7 +312,7 @@ arch_invariant: -- no invariant ok
 		}
 	| SYM_INVARIANT error
 		{
-			abort_with_error ("SAIV", Void)
+			abort_with_error (ec_SAIV, Void)
 		}
 	;
 
@@ -322,7 +322,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 		}
 	| SYM_ONTOLOGY error
 		{
-			abort_with_error ("SAON", Void)
+			abort_with_error (ec_SAON, Void)
 		}
 	;
 
@@ -333,7 +333,7 @@ arch_annotations: -- no meta-data ok
 		}
 	| SYM_ANNOTATIONS error
 		{
-			abort_with_error ("SAAS", Void)
+			abort_with_error (ec_SAAS, Void)
 		}
 	;
 		
@@ -343,7 +343,7 @@ arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT
 		}
 	| SYM_COMPONENT_ONTOLOGIES error
 		{
-			abort_with_error ("SAAS", Void)
+			abort_with_error (ec_SAAS, Void)
 		}
 	;
 		

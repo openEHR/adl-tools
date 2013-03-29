@@ -68,17 +68,17 @@ feature -- Definitions
 			create Result.make (4)
 
 			-- non-argument switches
-			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text ("quiet_switch_desc"), True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text ("flat_switch_desc"), True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text ("show_config_switch_desc"), False, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text ("list_archetypes_switch_desc"), False, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text ("display_archetypes_switch_desc"), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_quiet_switch_desc), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text (ec_flat_switch_desc), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text (ec_show_config_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text (ec_list_archetypes_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text (ec_display_archetypes_switch_desc), False, False))
 
 			-- switches with arguments
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (repository_switch, get_text ("repository_switch_desc"), False, False, repository_switch_arg, get_text ("repository_switch_arg_desc"), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text ("format_switch_desc"), True, False, format_switch_arg, get_msg ("format_switch_arg_desc", <<archetype_all_serialiser_formats_string>>), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text ("cfg_switch_desc"), True, False, cfg_switch_arg_name, get_text ("cfg_switch_arg_desc"), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text ("action_switch_desc"), False, False, action_switch_arg, Actions_string, False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (repository_switch, get_text (ec_repository_switch_desc), False, False, repository_switch_arg, get_text ("repository_switch_arg_desc"), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text ("cfg_switch_arg_desc"), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text (ec_action_switch_desc), False, False, action_switch_arg, Actions_string, False))
 
 			-- valid command line configurations
 
@@ -120,13 +120,13 @@ feature -- Definitions
 	non_switched_argument_description: STRING
 			--  <Precursor>
 		once
-			Result := get_text ("id_pattern_arg_description")
+			Result := get_text (ec_id_pattern_arg_description)
 		end
 
 	non_switched_argument_type: STRING
 			--  <Precursor>
 		once
-			Result := get_text ("id_patter_arg_type")
+			Result := get_text (ec_id_patter_arg_type)
 		end
 
 feature {NONE} -- Initialization

@@ -105,16 +105,16 @@ feature -- Commands
 				-- now process command line
 				if opts.show_config then
 					-- location of .cfg file
-					io.put_string (get_msg ("config_file_location", <<app_cfg.file_path>>))
+					io.put_string (get_msg (ec_config_file_location, <<app_cfg.file_path>>))
 
 					-- RM schemas info
-					io.put_string ("%N" + get_text ("rm_schemas_info_text"))
+					io.put_string ("%N" + get_text (ec_rm_schemas_info_text))
 					across rm_schemas_access.valid_top_level_schemas as loaded_schemas_csr loop
 						io.put_string ("%T" + loaded_schemas_csr.key + "%N")
 					end
 
 					-- repository info
-					io.put_string ("%N" + get_text ("repos_info_text"))
+					io.put_string ("%N" + get_text (ec_repos_info_text))
 					across repository_config_table as repos_csr loop
 						io.put_string ("%T" + repos_csr.key + ": " +  repos_csr.item.reference_path + "%N")
 					end
@@ -128,7 +128,7 @@ feature -- Commands
 								curr_repo := cp
 							end
 						else
-							io.put_string (get_msg ("repo_does_not_exist_err", <<repo>>))
+							io.put_string (get_msg (ec_repo_does_not_exist_err, <<repo>>))
 							finished := True
 						end
 					end
@@ -138,9 +138,9 @@ feature -- Commands
 
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
-						io.put_string (get_msg ("archs_list_text", <<curr_repo>>))
+						io.put_string (get_msg (ec_archs_list_text, <<curr_repo>>))
 						current_arch_cat.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
-						io.put_string (get_text ("archs_list_text_end"))
+						io.put_string (get_text (ec_archs_list_text_end))
 
 					else
 						-- check if valid action specified
@@ -148,7 +148,7 @@ feature -- Commands
 							action := a
 						end
 						if not opts.Actions.has (action) then
-							io.put_string (get_msg ("invalid_action_err", <<action, opts.Actions_string>>))
+							io.put_string (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
 						else
 							if not finished then
 								if valid_regex (opts.archetype_id_pattern) then
@@ -156,7 +156,7 @@ feature -- Commands
 									matched_archetype_ids := current_arch_cat.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
 										if verbose_output then
-											io.put_string (get_msg ("no_matching_ids_err", <<opts.archetype_id_pattern, curr_repo>>))
+											io.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, curr_repo>>))
 										end
 									else
 										if action.is_equal (opts.List_action) then
@@ -172,7 +172,7 @@ feature -- Commands
 												if has_serialiser_format (of) then
 													output_format := of
 												else
-													io.put_string (get_msg ("invalid_serialisation_format_err", <<of, archetype_all_serialiser_formats_string>>))
+													io.put_string (get_msg (ec_invalid_serialisation_format_err, <<of, archetype_all_serialiser_formats_string>>))
 													finished := True
 												end
 											end
@@ -193,10 +193,10 @@ feature -- Commands
 														if aca.is_valid then
 															io.put_string (aca.serialise (use_flat_source, output_format) + "%N")
 														else
-															io.put_string (get_msg ("archetype_not_valid", <<aca.id.as_string>>))
+															io.put_string (get_msg (ec_archetype_not_valid, <<aca.id.as_string>>))
 														end
 													else
-														io.put_string (get_msg ("invalid_action_err", <<action, opts.Actions_string>>))
+														io.put_string (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
 													end
 												end
 											end

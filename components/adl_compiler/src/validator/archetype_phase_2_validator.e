@@ -112,14 +112,14 @@ feature {NONE} -- Implementation
 					if not (ontology.has_term_definition (langs_csr.item, code_csr.item) or
 						target.is_specialised and then flat_parent.ontology.has_term_definition (langs_csr.item, code_csr.item))
 					then
-						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
+						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 				across ontology.constraint_codes as code_csr loop
 					if not (ontology.has_constraint_definition (langs_csr.item, code_csr.item) or
 						target.is_specialised and then flat_parent.ontology.has_constraint_definition (langs_csr.item, code_csr.item))
 					then
-						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
+						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 			end
@@ -143,7 +143,7 @@ feature {NONE} -- Implementation
 						(not target.is_specialised and then target.has_path (bindings_for_lang_csr.key)) or
 						(target.is_specialised and then (flat_parent.ontology.has_term_code (bindings_for_lang_csr.key) or target.has_path (bindings_for_lang_csr.key))))
 					then
-						add_error ("VOTBK", <<bindings_for_lang_csr.key>>)
+						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
 					end
 				end
 			end
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_constraint_code (bindings_for_lang_csr.key) or
 						target.is_specialised and flat_parent.ontology.has_constraint_code (bindings_for_lang_csr.key))
 					then
-						add_error ("VOCBK", <<bindings_for_lang_csr.key>>)
+						add_error (ec_VOCBK, <<bindings_for_lang_csr.key>>)
 					end
 				end
 			end
@@ -171,13 +171,13 @@ feature {NONE} -- Implementation
 			across target.id_atcodes_index as codes_csr loop
 				code_depth := specialisation_depth_from_code (codes_csr.key)
 				if code_depth > depth then
-					add_error ("VONSD", <<codes_csr.key>>)
+					add_error (ec_VONSD, <<codes_csr.key>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_term_code (codes_csr.key) then
-						add_error ("VATDF1", <<codes_csr.key>>)
+						add_error (ec_VATDF1, <<codes_csr.key>>)
 					end
 				elseif not ontology.has_term_code (codes_csr.key) then
-					add_error ("VATDF2", <<codes_csr.key>>)
+					add_error (ec_VATDF2, <<codes_csr.key>>)
 				end
 			end
 
@@ -187,22 +187,22 @@ feature {NONE} -- Implementation
 				if codes_csr.key.starts_with (Term_code_leader) then
 					code_depth := specialisation_depth_from_code (codes_csr.key)
 					if code_depth > depth then
-						add_error ("VATCD", <<codes_csr.key>>)
+						add_error (ec_VATCD, <<codes_csr.key>>)
 					elseif code_depth < depth then
 						if not flat_parent.ontology.has_term_code (codes_csr.key) then
-							add_error ("VATDC1", <<codes_csr.key>>)
+							add_error (ec_VATDC1, <<codes_csr.key>>)
 						end
 					elseif not ontology.has_term_code (codes_csr.key) then
-						add_error ("VATDC2", <<codes_csr.key>>)
+						add_error (ec_VATDC2, <<codes_csr.key>>)
 					end
 				else
 					create cp.make_from_string (codes_csr.key)
 					if ts.has_terminology (cp.terminology_id.value) then
 						if not ts.terminology (cp.terminology_id.value).has_concept (cp.code_string) then
-							add_error ("VETDF", <<codes_csr.key, cp.terminology_id.value>>)
+							add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id.value>>)
 						end
 					else
-						add_warning ("WETDF", <<cp.as_string, cp.terminology_id.value>>)
+						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id.value>>)
 					end
 				end
 			end
@@ -211,13 +211,13 @@ feature {NONE} -- Implementation
 			across target.accodes_index as codes_csr loop
 				code_depth := specialisation_depth_from_code (codes_csr.key)
 				if code_depth > depth then
-					add_error ("VATCD", <<codes_csr.key>>)
+					add_error (ec_VATCD, <<codes_csr.key>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_constraint_code (codes_csr.key) then
-						add_error ("VACDF1", <<codes_csr.key>>)
+						add_error (ec_VACDF1, <<codes_csr.key>>)
 					end
 				elseif not ontology.has_constraint_code (codes_csr.key) then
-					add_error ("VACDF2", <<codes_csr.key>>)
+					add_error (ec_VACDF2, <<codes_csr.key>>)
 				end
 			end
 		end
@@ -234,7 +234,7 @@ feature {NONE} -- Implementation
 						convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, fp)
 					end
 				else
-					add_error ("VUNP", <<use_refs_csr.key>>)
+					add_error (ec_VUNP, <<use_refs_csr.key>>)
 				end
 			end
 		end
@@ -255,7 +255,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if not target.is_specialised and then ca.has_differential_path then
-					add_error ("VDIFV", <<ca.path>>)
+					add_error (ec_VDIFV, <<ca.path>>)
 				end
 			end
 		end
@@ -297,13 +297,13 @@ feature {NONE} -- Implementation
 									ref_rm_type_name := bmm_prop.type.root_class
 								end
 							else
-								add_error ("VRRLPRM", <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
+								add_error (ec_VRRLPRM, <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
 							end
 						else
 							ref_rm_type_name := arch_rm_type_name
 						end
 					else
-						add_error ("VRRLPAR", <<ref_path_csr.key>>)
+						add_error (ec_VRRLPAR, <<ref_path_csr.key>>)
 					end
 					if attached ref_rm_type_name as rtn then
 						across ref_path_csr.item as expr_leaf_csr loop
@@ -330,10 +330,10 @@ feature {NONE} -- Implementation
 						-- firstly see if annotation path is valid
 						if apa.is_archetype_path then
 							if not (target.has_path (ann_path) or else (target.is_specialised and then flat_parent.has_path (ann_path))) then
-								add_error ("VRANP1", <<annots_csr.key, ann_path>>)
+								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
 							end
 						elseif not rm_schema.has_property_path (target.definition.rm_type_name, ann_path) then
-							add_error ("VRANP2", <<annots_csr.key, ann_path>>)
+							add_error (ec_VRANP2, <<annots_csr.key, ann_path>>)
 						end
 
 						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
@@ -348,7 +348,7 @@ feature {NONE} -- Implementation
 			Target_specialised: target.is_specialised
 		do
 			if not target.languages_available.is_subset (flat_parent.languages_available) then
-				add_error ("VALC", <<target.languages_available_out, flat_parent.languages_available_out>>)
+				add_error (ec_VALC, <<target.languages_available_out, flat_parent.languages_available_out>>)
 			end
 		end
 
@@ -393,20 +393,20 @@ feature {NONE} -- Implementation
 
 				if not ca_child_diff.node_conforms_to (ca_parent_flat, rm_schema) then
 					if ca_child_diff.is_single and not ca_parent_flat.is_single then
-						add_error ("VSAM1", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_VSAM1, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 
 					elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
-						add_error ("VSAM2", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_VSAM2, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 
 					else
 						if not ca_child_diff.existence_conforms_to (ca_parent_flat) then
 							check attached ca_child_diff.existence as ccd_ex and then attached ca_parent_flat.existence as cpf_ex then
 								if validation_strict or else not ca_child_diff.existence_matches (ca_parent_flat) then
-									add_error ("VSANCE", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VSANCE, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
 										ccd_ex.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
 										cpf_ex.as_string>>)
 								else
-									add_warning ("VSANCE", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_warning (ec_VSANCE, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
 										ccd_ex.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
 										cpf_ex.as_string>>)
 									ca_child_diff.remove_existence
@@ -423,11 +423,11 @@ end
 						if not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
 							check attached ca_child_diff.cardinality as ccd_card and then attached ca_parent_flat.cardinality as cpf_card then
 								if validation_strict or else not ca_child_diff.cardinality_matches (ca_parent_flat) then
-									add_error ("VSANCC", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VSANCC, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
 										ccd_card.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
 										cpf_card.as_string>>)
 								else
-									add_warning ("VSANCC", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_warning (ec_VSANCC, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
 										ccd_card.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
 										cpf_card.as_string>>)
 									ca_child_diff.remove_cardinality
@@ -457,31 +457,31 @@ end
 				if attached {ARCHETYPE_SLOT} flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as a_slot then
 					if parent_slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
-							add_error ("VARXS", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
+							add_error (ec_VARXS, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
 						elseif not parent_slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
-							add_error ("VARXR", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
+							add_error (ec_VARXR, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
 							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.equal_interval (par_flat_occ) then
 								if validation_strict then
-									add_error ("VSONCO", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+									add_error (ec_VSONCO, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
 										ontology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
 								else
-									add_warning ("VSONCO", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+									add_warning (ec_VSONCO, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
 										ontology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
 									car.remove_occurrences
 								end
 							else
-								add_error ("VSONCO", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+								add_error (ec_VSONCO, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
 									ontology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
 							end
 						end
 					else
-						add_error ("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
+						add_error (ec_compiler_unexpected_error, <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
 					end
 				else
-					add_error ("VARXV", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True)>>)
+					add_error (ec_VARXV, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True)>>)
 				end
 
 			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
@@ -517,9 +517,9 @@ end
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF. Its validity is not testable in any way (sole exception in AOM) - just warn
 				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
 					if attached {C_CODE_PHRASE} co_child_diff as ccp then
-						add_warning ("WCRC", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+						add_warning (ec_WCRC, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 					else
-						add_error ("VSCNR", <<co_parent_flat.generating_type, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
+						add_error (ec_VSCNR, <<co_parent_flat.generating_type, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 							co_child_diff.generating_type, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 					end
 
@@ -531,7 +531,7 @@ end
 							co_parent_flat := cpf
 						end
 						if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
-							add_error ("VSUNT", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSUNT, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_child_diff.generating_type, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 								co_parent_flat.generating_type>>)
 						end
@@ -539,7 +539,7 @@ end
 
 					-- by here the AOM meta-types must be the same; if not, it is an error
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
-						add_error ("VSONT", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+						add_error (ec_VSONT, <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 							co_child_diff.generating_type, co_parent_flat.rm_type_name,
 							ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 							co_parent_flat.generating_type>>)
@@ -549,7 +549,7 @@ end
 
 						-- RM type non-conformance was the reason
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
-							add_error ("VSONCT", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSONCT, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_child_diff.rm_type_name,
 								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 								co_parent_flat.rm_type_name>>)
@@ -560,12 +560,12 @@ end
 							-- compiling strict, else remove the duplicate and just warn
 							if attached co_child_diff.occurrences as child_occ and then attached co_parent_flat.occurrences as par_flat_occ and then child_occ.equal_interval (par_flat_occ) then
 								if validation_strict then
-									add_error ("VSONCO", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VSONCO, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.occurrences_as_string,
 										ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 										par_flat_occ.as_string>>)
 								else
-									add_warning ("VSONCO", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_warning (ec_VSONCO, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.occurrences_as_string,
 										ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 										par_flat_occ.as_string>>)
@@ -578,7 +578,7 @@ end
 									end
 								end
 							else
-								add_error ("VSONCO", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VSONCO, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 									co_child_diff.occurrences_as_string,
 									ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 									co_parent_flat.occurrences.as_string>>)
@@ -587,38 +587,38 @@ end
 						-- node id non-conformance value mismatch was the reason
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
-								add_error ("VSONCI", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VSONCI, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 									co_child_diff.node_id,
 									ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 									co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
 								if not co_child_diff.rm_type_name.is_equal (co_parent_flat.rm_type_name) then -- has to be that RM type was redefined but at-code wasn't
-									add_error ("VSONIRrm", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VSONIRrm, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 								else -- has to be the occurrences was redefined, but the at-code wasn't
-									add_error ("VSONIRocc", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VSONIRocc, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.occurrences_as_string, co_parent_flat.occurrences_as_string, co_child_diff.node_id>>)
 								end
 							end
 
 						-- node id non-conformance presence / absence was the reason
 						elseif co_parent_flat.is_addressable then
-							add_error ("VSONI", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSONI, <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_parent_flat.rm_type_name,
 								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						-- could be a leaf object value redefinition
 						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_parent_flat as cpo_flat then
-							add_error("VPOV", <<cpo_child.rm_type_name, ontology.physical_to_logical_path (cpo_child.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VPOV, <<cpo_child.rm_type_name, ontology.physical_to_logical_path (cpo_child.path, target_descriptor.archetype_view_language, True),
 								cpo_child.item.as_string, cpo_flat.item.as_string, cpo_flat.rm_type_name,
 								ontology.physical_to_logical_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						elseif attached {C_DOMAIN_TYPE} co_child_diff as cdt_child and attached {C_DOMAIN_TYPE} co_parent_flat as cdt_flat then
-							add_error("VSDTV", <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSDTV, <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
 								cdt_flat.rm_type_name, ontology.physical_to_logical_path (cdt_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						else
-							add_error("VUNK", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VUNK, <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_parent_flat.rm_type_name, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						end
@@ -650,7 +650,7 @@ debug ("validate")
 end
 								end
 							else
-								add_error ("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
+								add_error (ec_compiler_unexpected_error, <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
 							end
 						else
 debug ("validate")
@@ -661,7 +661,7 @@ end
 						end
 
 						if attached co_child_diff.sibling_order and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
-							add_error ("VSSM", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSSM, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_child_diff.sibling_order.sibling_node_id>>)
 						end
 					end
@@ -701,7 +701,7 @@ end
 							flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 							Result := flat_parent.has_path (flat_parent_path)
 							if not Result and a_c_obj.is_addressable then -- if it is an addressable node it should have a matching node in flat parent
-								add_error ("VSONIN", <<a_c_obj.node_id, a_c_obj.rm_type_name, ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name, ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
 									ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
 							end
 
@@ -712,7 +712,7 @@ end
 							create apa.make_from_string (a_c_node.parent.path)
 							check attached flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 								if not ca_parent_flat.has_child_with_id (sib_ord.sibling_node_id) then
-									add_error ("VSSM", <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+									add_error (ec_VSSM, <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
 								end
 							end
 						else
@@ -726,7 +726,7 @@ end
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 						Result := flat_parent.has_path (flat_parent_path)
 						if not Result and ca.has_differential_path then
-							add_error ("VDIFP1", <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VDIFP1, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 								ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
 						end
 					end
@@ -771,10 +771,10 @@ end
 
 							-- check for type substitutions such as ISO8601_DATE which appear in the archetype as a String
 							if rm_schema.substitutions.has (co.rm_type_name) and then rm_schema.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
-								add_info ("ICORMTS", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True), model_attr_class,
+								add_info (ec_ICORMTS, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True), model_attr_class,
 									arch_parent_attr_type, co.parent.rm_attribute_name>>)
 							else
-								add_error ("VCORMT", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VCORMT, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
 									model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
 								invalid_types.extend (co.rm_type_name)
 							end
@@ -793,19 +793,19 @@ end
 					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
 				if not rm_schema.has_property (arch_parent_attr_type, ca.rm_attribute_name) then
-					add_error ("VCARM", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True), arch_parent_attr_type>>)
+					add_error (ec_VCARM, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True), arch_parent_attr_type>>)
 				else
 					rm_prop_def := rm_schema.property_definition (arch_parent_attr_type, ca.rm_attribute_name)
 					if attached ca.existence as ca_ex then
 						if not rm_prop_def.existence.contains (ca_ex) then
 							if not target.is_specialised and rm_prop_def.existence.equal_interval (ca_ex) then
-								add_warning ("WCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+								add_warning (ec_WCAEX, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 									ca_ex.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
 							else
-								add_error ("VCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VCAEX, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 									ca_ex.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
@@ -815,28 +815,28 @@ end
 							if attached ca.cardinality as ca_card then
 								if not cont_prop.cardinality.contains (ca_card.interval) then
 									if not target.is_specialised and cont_prop.cardinality.equal_interval (ca_card.interval) then
-										add_warning ("WCACA", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+										add_warning (ec_WCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 											ca_card.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
 									else
-										add_error ("VCACA", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+										add_error (ec_VCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 											ca_card.interval.as_string, cont_prop.cardinality.as_string>>)
 									end
 								end
 							end
 						else -- archetype has multiple attribute but RM does not
-							add_error ("VCAM", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VCAM, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 								ca.cardinality.as_string, "(single-valued)">>)
 						end
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
-						add_error ("VCAM", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+						add_error (ec_VCAM, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 							"(single-valued)", cont_prop_2.cardinality.as_string>>)
 					end
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
-						add_warning ("WCARMC", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+						add_warning (ec_WCARMC, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 							arch_parent_attr_type>>)
 					end
 				end
@@ -861,11 +861,11 @@ end
 					-- normally just report an error, but C_DOMAIN_TYPEs like C_DV_QUANTITY are a special case - they may be used
 					-- in archetypes based on a non-openEHR RM, which means the type DV_QUANTITY might not be there, but nevertheless
 					-- C_DV_QUANTITY is used
-					add_error ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
+					add_error (ec_VCORM, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
 					Result := False
 				else
 					if not invalid_types.has (co.rm_type_name) then
-						add_error ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_VCORM, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
 						invalid_types.extend (co.rm_type_name)
 					end
 					Result := False
@@ -877,12 +877,12 @@ end
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 						Result := flat_parent.has_path (flat_parent_path)
 						if not Result and ca.has_differential_path then
-							add_error ("VDIFP1", <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VDIFP1, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 								ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
 						end
 					else
 						if not Result and ca.has_differential_path then
-							add_error ("VDIFP3", <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True)>>)
+							add_error (ec_VDIFP3, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True)>>)
 						end
 					end
 				end

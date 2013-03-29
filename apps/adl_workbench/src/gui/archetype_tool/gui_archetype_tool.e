@@ -39,22 +39,22 @@ feature {NONE}-- Initialization
 
 			-- description control
 			ev_notebook.extend (description_controls.ev_root_container)
-			ev_notebook.set_item_text (description_controls.ev_root_container, get_text ("description_tab_text"))
+			ev_notebook.set_item_text (description_controls.ev_root_container, get_text (ec_description_tab_text))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
 			-- definition control
 			ev_notebook.extend (definition_control.ev_root_container)
-			ev_notebook.set_item_text (definition_control.ev_root_container, get_text ("definition_tab_text"))
+			ev_notebook.set_item_text (definition_control.ev_root_container, get_text (ec_definition_tab_text))
 			ev_notebook.item_tab (definition_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
 
 			-- ontology control
 			ev_notebook.extend (ontology_controls.ev_root_container)
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_text ("terminology_tab_text"))
+			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_text (ec_terminology_tab_text))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
 			-- annotation control
 			ev_notebook.extend (annotations_control.ev_root_container)
-			ev_notebook.set_item_text (annotations_control.ev_root_container, get_text ("annotations_tab_text"))
+			ev_notebook.set_item_text (annotations_control.ev_root_container, get_text (ec_annotations_tab_text))
 			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/annotations"))
 		end
 

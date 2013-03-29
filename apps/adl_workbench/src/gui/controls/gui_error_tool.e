@@ -387,11 +387,11 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE_UI_STATE} ev_ti.data as aca then
 				create menu
-				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg (ec_display_in_new_tab, Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				menu.extend (an_mi)
 

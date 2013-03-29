@@ -82,7 +82,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ AOM profile directory setter ============
-			create dir_setter.make (get_text ("aom_profile_dir_text"), agent :STRING do Result := aom_profile_directory end, 0, 0)
+			create dir_setter.make (get_text (ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, 0, 0)
 			dir_setter.set_post_select_agent (agent on_set_aom_profile_dir)
 			ev_root_container.extend (dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (dir_setter.ev_root_container)
@@ -98,7 +98,7 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_title (get_text ("aom_profile_dialog_title"))
+			set_title (get_text (ec_aom_profile_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 			set_minimum_width (Frame_width + 40)
 
@@ -146,7 +146,7 @@ feature -- Events
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_aom_profile_dir) then
-				create error_dialog.make_with_text (get_msg ("aom_profile_dir_not_valid", <<last_populated_aom_profile_dir>>))
+				create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_not_valid, <<last_populated_aom_profile_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -163,7 +163,7 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_aom_profile_dir) then
-				create error_dialog.make_with_text (get_msg ("aom_profile_dir_not_valid", <<last_populated_aom_profile_dir>>))
+				create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_not_valid, <<last_populated_aom_profile_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -182,7 +182,7 @@ feature -- Events
 				ok_cancel_buttons.disable_sensitive
 				aom_profiles.initialise (new_dir)
 				if not aom_profiles.found_valid_profiles then
-					create error_dialog.make_with_text (get_msg ("aom_profile_dir_contains_no_valid_profiles", <<new_dir>>))
+					create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_contains_no_valid_profiles, <<new_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 				populate_grid
@@ -280,11 +280,11 @@ feature {NONE} -- Implementation
 			-- make the column content visible
 			if grid.row_count > 0 then
 				-- set grid column titles
-				grid.column (Grid_profile_col).set_title (get_text ("aom_profile_grid_profile_col_title"))
-				grid.column (Grid_rm_schemas_col).set_title (get_text ("aom_profile_grid_rm_col_title"))
-				grid.column (Grid_terminologies_col).set_title (get_text ("aom_profile_grid_term_col_title"))
-				grid.column (Grid_validated_col).set_title (get_text ("aom_profile_grid_validated_col_title"))
-				grid.column (Grid_edit_col).set_title (get_text ("aom_profile_grid_edit_col_title"))
+				grid.column (Grid_profile_col).set_title (get_text (ec_aom_profile_grid_profile_col_title))
+				grid.column (Grid_rm_schemas_col).set_title (get_text (ec_aom_profile_grid_rm_col_title))
+				grid.column (Grid_terminologies_col).set_title (get_text (ec_aom_profile_grid_term_col_title))
+				grid.column (Grid_validated_col).set_title (get_text (ec_aom_profile_grid_validated_col_title))
+				grid.column (Grid_edit_col).set_title (get_text (ec_aom_profile_grid_edit_col_title))
 
 				grid.resize_columns_to_content (Grid_expansion_factor)
 				from i := 1 until i > grid.column_count loop

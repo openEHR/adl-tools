@@ -78,7 +78,7 @@ feature -- Initialisation
 			end
 			create term_init.make
 			if term_init.init_failed then
-				add_error ("terminology_init_failed", <<term_init.init_fail_reason>>)
+				add_error (ec_terminology_init_failed, <<term_init.init_fail_reason>>)
 			end
 
 			--
@@ -88,7 +88,7 @@ feature -- Initialisation
 				if file_system.file_exists (xml_rules_sample_file_path) then
 					file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
 				else
-					add_warning ("xml_rules_sample_file_missing", <<xml_rules_sample_file_path>>)
+					add_warning (ec_xml_rules_sample_file_missing, <<xml_rules_sample_file_path>>)
 				end
 			end
 
@@ -106,13 +106,13 @@ feature -- Initialisation
 					strx.remove_tail (2) -- remove final ", "
 
 					if repository_config_table.is_empty then
-						add_warning ("bmm_schemas_config_not_valid", <<strx, rm_schema_directory>>)
+						add_warning (ec_bmm_schemas_config_not_valid, <<strx, rm_schema_directory>>)
 					else
-						add_error ("bmm_schemas_config_not_valid", <<strx, rm_schema_directory>>)
+						add_error (ec_bmm_schemas_config_not_valid, <<strx, rm_schema_directory>>)
 					end
 				end
 			else
-				add_error ("bmm_schema_dir_not_valid", <<rm_schema_directory>>)
+				add_error (ec_bmm_schema_dir_not_valid, <<rm_schema_directory>>)
 			end
 
 			--
@@ -127,7 +127,7 @@ feature -- Initialisation
 					merge_errors (aom_profiles.errors)
 				end
 			else
-				add_error ("aom_profile_dir_not_valid", <<aom_profile_directory>>)
+				add_error (ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
 			end
 
 			-- adjust for repositories being out of sync with current repository setting (e.g. due to
@@ -141,7 +141,7 @@ feature -- Initialisation
 					end
 				end
 				across dead_repos as repos_csr loop
-					add_warning ("remove_repo_cfg", <<invalid_repository_reason (repos_csr.item)>>)
+					add_warning (ec_remove_repo_cfg, <<invalid_repository_reason (repos_csr.item)>>)
 					repository_config_table.remove_repository (repos_csr.item)
 				end
 
@@ -154,11 +154,11 @@ feature -- Initialisation
 				end
 
 				-- tell the user a few useful things
-				add_warning ("adl_version_warning", <<adl_version_for_flat_output>>)
+				add_warning (ec_adl_version_warning, <<adl_version_for_flat_output>>)
 				if validation_strict then
-					add_info ("validation_strict", Void)
+					add_info (ec_validation_strict, Void)
 				else
-					add_info ("validation_non_strict", Void)
+					add_info (ec_validation_non_strict, Void)
 				end
 			end
 		end

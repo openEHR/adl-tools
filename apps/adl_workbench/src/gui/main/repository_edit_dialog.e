@@ -71,19 +71,19 @@ feature {NONE} -- Initialization
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- ============ repository name text control ============
-			create repository_name_ctl.make (get_text ("repo_cfg_name_text"), agent :STRING do Result := repository_name end, 0, 0, True)
+			create repository_name_ctl.make (get_text (ec_repo_cfg_name_text), agent :STRING do Result := repository_name end, 0, 0, True)
 			ev_root_container.extend (repository_name_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (repository_name_ctl.ev_root_container)
 			gui_controls.extend (repository_name_ctl)
 
 			-- ============ Reference path ============
-			create ref_dir_setter.make (get_text ("ref_repo_dir_text"), agent :STRING do Result := ref_dir end, 0, 0)
+			create ref_dir_setter.make (get_text (ec_ref_repo_dir_text), agent :STRING do Result := ref_dir end, 0, 0)
 			ev_root_container.extend (ref_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (ref_dir_setter.ev_root_container)
 			gui_controls.extend (ref_dir_setter)
 
 			-- ============ Work path ============
-			create work_dir_setter.make (get_text ("work_repo_dir_text"), agent :STRING do Result := work_dir end, 0, 0)
+			create work_dir_setter.make (get_text (ec_work_repo_dir_text), agent :STRING do Result := work_dir end, 0, 0)
 			work_dir_setter.set_default_directory_agent (agent :STRING do Result := ref_dir end)
 			ev_root_container.extend (work_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (work_dir_setter.ev_root_container)
@@ -100,7 +100,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_DIALOG}
 
-			set_title (get_text ("repo_cfg_edit_dialog_title"))
+			set_title (get_text (ec_repo_cfg_edit_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 			set_minimum_width (600)
 			extend (ev_root_container)
@@ -134,11 +134,11 @@ feature -- Events
 			-- now validate the name with respect to existing repositories			
 			-- first see if it is non-empty and unique
 			if repository_name.is_empty then
-				create error_dialog.make_with_text (get_text ("empty_repo_cfg"))
+				create error_dialog.make_with_text (get_text (ec_empty_repo_cfg))
 				error_dialog.show_modal_to_window (Current)
 
 			elseif repository_name /~ initial_repository_name and repo_config_table.has_repository (repository_name) then
-				create error_dialog.make_with_text (get_msg ("duplicate_repo_cfg", <<repository_name>>))
+				create error_dialog.make_with_text (get_msg (ec_duplicate_repo_cfg, <<repository_name>>))
 				error_dialog.show_modal_to_window (Current)
 
 			else

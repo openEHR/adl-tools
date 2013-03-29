@@ -272,7 +272,7 @@ feature {NONE} -- Implementation
 				then
 					orig_lang_trans := lt
 				else
-					errors.add_error ("deserialise_e1", <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
+					errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
 					errors.append (object_converter.errors)
 				end
 
@@ -289,7 +289,7 @@ feature {NONE} -- Implementation
 						then
 							res_desc := rd
 						else
-							errors.add_error ("deserialise_e1", <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
+							errors.add_error (ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
 							errors.append (object_converter.errors)
 						end
 					else
@@ -348,7 +348,7 @@ feature {NONE} -- Implementation
 						then
 							annots := res_ann
 						else
-							errors.add_error ("deserialise_e1", <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
+							errors.add_error (ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
 							errors.append (object_converter.errors)
 						end
 					else
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 									flat_ont
 								)
 							else
-								errors.add_error ("SAON", Void, generator + ".parse")
+								errors.add_error (ec_SAON, Void, generator + ".parse")
 								errors.append (object_converter.errors)
 							end
 						else
@@ -399,7 +399,7 @@ feature {NONE} -- Implementation
 									diff_ont
 								)
 							else
-								errors.add_error ("SAON", Void, generator + ".parse")
+								errors.add_error (ec_SAON, Void, generator + ".parse")
 								errors.append (object_converter.errors)
 							end
 						end

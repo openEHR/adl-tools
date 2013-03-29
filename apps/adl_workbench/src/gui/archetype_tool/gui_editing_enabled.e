@@ -25,21 +25,21 @@ feature {NONE}-- Initialization
 		do
 			-- undo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"),
-				get_msg ("undo_button_tooltip", Void), agent on_undo)
+				get_msg (ec_undo_button_tooltip, Void), agent on_undo)
 			check attached tool_bar.last_tool_bar_button as ltbb then
 				ev_undo_button := ltbb
 			end
 
 			-- redo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/redo_active"), get_icon_pixmap ("tool/redo_inactive"),
-				get_msg ("redo_button_tooltip", Void), agent on_redo)
+				get_msg (ec_redo_button_tooltip, Void), agent on_redo)
 			check attached tool_bar.last_tool_bar_button as ltbb then
 				ev_redo_button := ltbb
 			end
 
 			-- commit button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/synchronise_active"), get_icon_pixmap ("tool/synchronise_inactive"),
-				get_msg ("commit_button_tooltip", Void), agent on_commit)
+				get_msg (ec_commit_button_tooltip, Void), agent on_commit)
 			check attached tool_bar.last_tool_bar_button as ltbb then
 				ev_commit_button := ltbb
 			end

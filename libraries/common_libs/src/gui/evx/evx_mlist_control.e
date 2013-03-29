@@ -130,11 +130,11 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right then
 				create menu
 				if attached ev_mlist.selected_item then
-					create an_mi.make_with_text_and_action (get_msg ("remove_mi", Void), agent process_remove_existing)
+					create an_mi.make_with_text_and_action (get_msg (ec_remove_mi, Void), agent process_remove_existing)
 				--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 					menu.extend (an_mi)
 				end
-				create an_mi.make_with_text_and_action (get_msg ("add_mi", Void), agent process_add_new)
+				create an_mi.make_with_text_and_action (get_msg (ec_add_mi, Void), agent process_add_new)
 		--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 		    	menu.extend (an_mi)
 				menu.show

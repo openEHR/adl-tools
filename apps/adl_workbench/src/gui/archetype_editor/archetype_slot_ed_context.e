@@ -57,7 +57,7 @@ feature -- Display
 						gui_grid.add_sub_row (gui_grid_row, includes_csr.item)
 
 						-- put pixmap on RM col
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("include_text"), Void,
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void,
 							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_include"))
 
 						-- put blank text in constraint col
@@ -74,7 +74,7 @@ feature -- Display
 						gui_grid.add_sub_row (gui_grid_row, excludes_csr.item)
 
 						-- put pixmap on RM col
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("exclude_text"), Void,
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void,
 							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_exclude"))
 
 						-- put blank text in constraint col
@@ -133,9 +133,9 @@ feature {NONE} -- Implementation
 			Result.replace_substring_all (" ", "%N")
 			Result.replace_substring_all ("|", "|%N")
 			if is_required then
-				Result.append ("%N(" + get_text ("slot_match_required_text") + ")")
+				Result.append ("%N(" + get_text (ec_slot_match_required_text) + ")")
 			else
-				Result.append ("%N(" + get_text ("slot_match_recommended_text") + ")")
+				Result.append ("%N(" + get_text (ec_slot_match_recommended_text) + ")")
 			end
 		end
 
@@ -164,9 +164,9 @@ feature {NONE} -- Implementation
 					end
 				end
 				if arch_node.has_open_excludes then
-					create context_slot_sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_exact_text"))
+					create context_slot_sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_exact_text))
 				else
-					create context_slot_sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_preferred_text"))
+					create context_slot_sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_preferred_text))
 				end
 
 				-- ensure we have only a unique set

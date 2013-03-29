@@ -97,10 +97,10 @@ feature -- Validation
 	validate
 		do
 			if profile_name.is_equal (Default_aom_profile_name) then
-				add_error ("ARP_no_profile_name", <<file_path>>)
+				add_error (ec_ARP_no_profile_name, <<file_path>>)
 			end
 			if rm_schemas.is_empty then
-				add_error ("ARP_no_matching_schemas", <<file_path>>)
+				add_error (ec_ARP_no_matching_schemas, <<file_path>>)
 			end
 		end
 
@@ -129,7 +129,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 					get_regex_matches (sch_pat_csr.item)
 				end
 			else
-				add_error ("ARP_no_bmm_schemas_loaded", Void)
+				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
 			end
 		end
 
@@ -150,7 +150,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 					end
 				end
 			else
-				add_error ("regex_e1", <<a_regex>>)
+				add_error (ec_regex_e1, <<a_regex>>)
 			end
 		end
 

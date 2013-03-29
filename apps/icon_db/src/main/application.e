@@ -95,7 +95,7 @@ feature -- Commands
 
 				if file_system.file_exists (icon_class_file_path) and not options_processor.force_generation then
 					if options_processor.is_verbose then
-						io.put_string (get_msg ("skip_class_text", <<icon_class_name>>))
+						io.put_string (get_msg (ec_skip_class_text, <<icon_class_name>>))
 					end
 				else
 					icon_class_generator.setup (pixmaps_csr.item, pixmaps_csr.key)
@@ -106,7 +106,7 @@ feature -- Commands
 					fd.close
 
 					if options_processor.is_verbose then
-						io.put_string (get_msg ("generate_class_text", <<icon_class_name>>))
+						io.put_string (get_msg (ec_generate_class_text, <<icon_class_name>>))
 					end
 				end
 				icon_loader_class_generator.add_icon_class_name (icon_class_name, pixmaps_csr.key)
@@ -120,7 +120,7 @@ feature -- Commands
 
 			if options_processor.is_verbose then
 				io.put_string ("%N")
-				io.put_string (get_msg ("generate_class_text", <<icon_loader_class_generator.class_name>>))
+				io.put_string (get_msg (ec_generate_class_text, <<icon_loader_class_generator.class_name>>))
 			end
 		end
 

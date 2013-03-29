@@ -151,7 +151,7 @@ feature {NONE} -- Implementation
 						end
 						create msg_file.make (file_path)
 						if not msg_file.exists or else not msg_file.is_readable then
-							add_error ("msg_file_not_found", <<file_path>>)
+							add_error (ec_msg_file_not_found, <<file_path>>)
 						else
 							msg_file.open_read
 							msg_file.read_stream (msg_file.count)
@@ -161,10 +161,10 @@ feature {NONE} -- Implementation
 					end
 				end
 				if found_count = 0 then
-					add_error ("msg_files_dir_empty", <<a_msg_db_dir>>)
+					add_error (ec_msg_files_dir_empty, <<a_msg_db_dir>>)
 				end
 			else
-				add_error ("msg_files_dir_not_found", <<a_msg_db_dir>>)
+				add_error (ec_msg_files_dir_not_found, <<a_msg_db_dir>>)
 			end
 		end
 
@@ -195,16 +195,16 @@ feature {NONE} -- Implementation
 								key_file_xref.put (a_file_path, msg_def_csr.key)
 							else
 								check attached key_file_xref.item (msg_def_csr.key) as kfx then
-									add_error ("dup_key_in_other_file", <<msg_def_csr.key, a_file_path, kfx>>)
+									add_error (ec_dup_key_in_other_file, <<msg_def_csr.key, a_file_path, kfx>>)
 								end
 							end
 						end
 					else
-						add_error ("lang_not_found", <<a_locale_lang, a_file_path>>)
+						add_error (ec_lang_not_found, <<a_locale_lang, a_file_path>>)
 					end
 				end
 			else
-				add_error ("dadl_parse_failure", <<a_file_path, dadl_parser.errors.as_string>>)
+				add_error (ec_dadl_parse_failure, <<a_file_path, dadl_parser.errors.as_string>>)
 			end
 		end
 

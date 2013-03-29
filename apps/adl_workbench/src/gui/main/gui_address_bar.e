@@ -117,7 +117,7 @@ feature -- Commands
 						matching_ids := client_controls.item (current_client).matching_ids (regex_from_string(key))
 
 						if matching_ids.count = 0 then
-							ev_search_combo.set_text (get_msg ("no_match_found", Void))
+							ev_search_combo.set_text (get_msg (ec_no_match_found, Void))
 							ev_search_combo.set_focus
 							ev_search_combo.select_all
 						elseif matching_ids.count = 1 then
@@ -129,7 +129,7 @@ feature -- Commands
 						end
 
 					else -- key too short
-						ev_search_combo.set_text (get_msg ("key_too_short", Void))
+						ev_search_combo.set_text (get_msg (ec_key_too_short, Void))
 						ev_search_combo.set_focus
 						ev_search_combo.select_all
 					end
@@ -152,7 +152,7 @@ feature -- Commands
 			-- Called by `select_actions' of `search_button'.
 		do
 			ev_search_combo.wipe_out
-			ev_search_combo.set_text (get_msg ("enter_search_string", Void))
+			ev_search_combo.set_text (get_msg (ec_enter_search_string, Void))
 			ev_search_combo.set_focus
 			ev_search_combo.select_all
 		end

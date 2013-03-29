@@ -192,22 +192,22 @@ feature {NONE} -- Implementation
 				all_schemas.wipe_out
 				create dir.make (schema_directory)
 				if not (dir.exists and dir.is_readable) then
-					add_error ("bmm_schema_dir_not_valid", <<schema_directory>>)
+					add_error (ec_bmm_schema_dir_not_valid, <<schema_directory>>)
 				elseif dir.is_empty then
-					add_error ("bmm_schema_dir_contains_no_schemas", <<schema_directory>>)
+					add_error (ec_bmm_schema_dir_contains_no_schemas, <<schema_directory>>)
 				else
 					create file_repo.make (schema_directory, Bmm_schema_file_match_regex)
 					across file_repo.matching_paths as paths_csr loop
 						process_schema_file (paths_csr.item)
 					end
 					if all_schemas.is_empty then
-						add_error ("bmm_schema_dir_contains_no_schemas", <<schema_directory>>)
+						add_error (ec_bmm_schema_dir_contains_no_schemas, <<schema_directory>>)
 					end
 				end
 			end
 		rescue
 			exception_encountered := True
-			add_error ("bmm_schema_unknown_exception", Void)
+			add_error (ec_bmm_schema_unknown_exception, Void)
 			retry
 		end
 
@@ -225,14 +225,14 @@ feature {NONE} -- Implementation
 
 				-- check for two schema files purporting to be the exact same schema (including release)
 				if sd.errors.has_errors then
-					add_error ("bmm_schema_load_failure", <<sd.schema_id, sd.errors.as_string>>)
+					add_error (ec_bmm_schema_load_failure, <<sd.schema_id, sd.errors.as_string>>)
 				elseif all_schemas.has (sd.schema_id) then
-					add_warning ("bmm_schema_duplicate_schema_found", <<sd.schema_id, a_schema_file_path>>)
+					add_warning (ec_bmm_schema_duplicate_schema_found, <<sd.schema_id, a_schema_file_path>>)
 				else
 					all_schemas.put (sd, sd.schema_id)
 				end
 			else
-				add_warning ("bmm_schema_rm_missing", <<a_schema_file_path, dmp.last_parse_fail_reason>>)
+				add_warning (ec_bmm_schema_rm_missing, <<a_schema_file_path, dmp.last_parse_fail_reason>>)
 			end
 		end
 
@@ -262,7 +262,7 @@ feature {NONE} -- Implementation
 					if not schemas_load_list.is_empty then
 						from schemas_load_list.start until schemas_load_list.off loop
 							if not all_schemas.has (schemas_load_list.item) then
-								add_warning ("bmm_schema_invalid_load_list", <<schemas_load_list.item>>)
+								add_warning (ec_bmm_schema_invalid_load_list, <<schemas_load_list.item>>)
 								schemas_load_list.remove
 							else
 								schemas_load_list.forth
@@ -271,7 +271,7 @@ feature {NONE} -- Implementation
 					else
 						create {ARRAYED_LIST[STRING]} schemas_load_list.make_from_array (all_schemas.current_keys)
 						schemas_load_list.compare_objects
-						add_warning ("bmm_schemas_no_load_list_found", Void)
+						add_warning (ec_bmm_schemas_no_load_list_found, Void)
 					end
 
 					-- initial load of all schemas, which populates `schema_inclusion_map';
@@ -279,17 +279,17 @@ feature {NONE} -- Implementation
 						if all_schemas_csr.item.passed then
 							load_schema_include_closure (all_schemas_csr.key)
 							if all_schemas_csr.item.errors.has_warnings then
-								add_warning ("bmm_schema_passed_with_warnings", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+								add_warning (ec_bmm_schema_passed_with_warnings, <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							end
 						else
-							add_error ("bmm_schema_basic_validation_failed", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+							add_error (ec_bmm_schema_basic_validation_failed, <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							if not all_schemas_csr.item.is_bmm_compatible then
 								incompatible_schema_detected := True
 							end
 						end
 					end
 					if incompatible_schema_detected then
-						add_error ("bmm_schema_version_incompatible_with_tool", <<schema_directory>>)
+						add_error (ec_bmm_schema_version_incompatible_with_tool, <<schema_directory>>)
 					end
 
 					-- propagate errors found so far
@@ -326,14 +326,14 @@ feature {NONE} -- Implementation
 										check attached candidate_schemas.item (schemas_csr.item).p_schema as including_schema then
 											if including_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
 												including_schema.merge (included_schema)
-												add_info ("bmm_schema_merged_schema", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
+												add_info (ec_bmm_schema_merged_schema, <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
 												finished := False
 											end
 										end
 									end
 								end
 							else
-								add_error ("bmm_schema_included_schema_not_found", <<map_csr.key>>)
+								add_error (ec_bmm_schema_included_schema_not_found, <<map_csr.key>>)
 							end
 						end
 						i := i + 1
@@ -354,10 +354,10 @@ feature {NONE} -- Implementation
 										valid_top_level_schemas.extend (sch, schemas_csr.item.schema_id)
 									end
 									if schemas_csr.item.errors.has_warnings then
-										add_warning ("bmm_schema_passed_with_warnings", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+										add_warning (ec_bmm_schema_passed_with_warnings, <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 									end
 								else
-									add_error ("bmm_schema_post_merge_validate_fail", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+									add_error (ec_bmm_schema_post_merge_validate_fail, <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 								end
 							end
 						end
@@ -376,7 +376,7 @@ feature {NONE} -- Implementation
 						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
 							schemas_by_rm_closure.put (schemas_csr.item, qualified_rm_closure_name.as_lower)
 						else
-							add_info ("bmm_schema_duplicate_found", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
+							add_info (ec_bmm_schema_duplicate_found, <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
 								schemas_csr.key>>)
 						end
 					end
@@ -387,9 +387,9 @@ feature {NONE} -- Implementation
 		rescue
 			exception_encountered := True
 			if assertion_violation and attached original_class_name as ocn and attached original_recipient_name as orn and attached exception_trace as et then
-				add_error ("bmm_schema_assertion_violation", <<ocn + "." + orn + "%N" + et>>)
+				add_error (ec_bmm_schema_assertion_violation, <<ocn + "." + orn + "%N" + et>>)
 			else
-				add_error ("bmm_schema_unknown_exception", Void)
+				add_error (ec_bmm_schema_unknown_exception, Void)
 			end
 			retry
 		end
@@ -404,7 +404,7 @@ feature {NONE} -- Implementation
 			if all_schemas.item (a_schema_id).passed then
 				all_schemas.item (a_schema_id).validate_includes (all_schemas.current_keys)
 				if all_schemas.item (a_schema_id).passed then
-					add_info ("bmm_schema_info_loaded", <<a_schema_id, all_schemas.item (a_schema_id).p_schema.primitive_types.count.out,
+					add_info (ec_bmm_schema_info_loaded, <<a_schema_id, all_schemas.item (a_schema_id).p_schema.primitive_types.count.out,
 						all_schemas.item (a_schema_id).p_schema.class_definitions.count.out>>)
 					includes := all_schemas.item (a_schema_id).p_schema.includes
 					if not includes.is_empty then
@@ -420,10 +420,10 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
-					add_error ("bmm_schema_includes_valiidation_failed", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+					add_error (ec_bmm_schema_includes_valiidation_failed, <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 				end
 			else
-				add_error ("bmm_schema_load_failure", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+				add_error (ec_bmm_schema_load_failure, <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 			end
 		end
 
@@ -449,9 +449,9 @@ feature {NONE} -- Implementation
 							agent (a_client_schema, a_source_schema: STRING; err_accum: ERROR_ACCUMULATOR)
 								do
 									if err_accum.has_errors then
-										all_schemas.item (a_client_schema).add_error ("BMM_INCERR", <<a_client_schema, a_source_schema>>)
+										all_schemas.item (a_client_schema).add_error (ec_BMM_INCERR, <<a_client_schema, a_source_schema>>)
 									else
-										all_schemas.item (a_client_schema).add_warning ("BMM_INCWARN", <<a_client_schema, a_source_schema>>)
+										all_schemas.item (a_client_schema).add_warning (ec_BMM_INCWARN, <<a_client_schema, a_source_schema>>)
 									end
 								end (?, err_table_csr.key, err_table_csr.item)
 						)
@@ -473,9 +473,9 @@ feature {NONE} -- Implementation
 							end
 							if client_sd.passed and not client_sd.errors.has_warnings then
 								if not targ_sd.passed then
-									client_sd.add_error ("BMM_INCERR", <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)
+									client_sd.add_error (ec_BMM_INCERR, <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)
 								else
-									client_sd.add_warning ("BMM_INCWARN", <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)
+									client_sd.add_warning (ec_BMM_INCWARN, <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)
 								end
 								errors_to_propagate := True
 							end

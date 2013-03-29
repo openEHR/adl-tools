@@ -152,7 +152,7 @@ feature -- Display
 					if not arch_node.occurrences.is_prohibited then
 						s.append (arch_node.occurrences_as_string)
 					else
-						s.append (get_text ("occurrences_removed_text"))
+						s.append (get_text (ec_occurrences_removed_text))
 					end
 				end
 				gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour, Void)
@@ -256,14 +256,14 @@ feature {NONE} -- Context menu
 			an_mi: EV_MENU_ITEM
 		do
 			create context_menu
-			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (rm_type.semantic_class))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.semantic_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			context_menu.extend (an_mi)
 
 			if not is_rm then
 				-- if this node is addressable, add menu item to show node_id in ontology
 				if arch_node.is_addressable then
-					create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent do tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
+					create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code), agent do tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
 					context_menu.extend (an_mi)
 				end
 			end
@@ -271,19 +271,19 @@ feature {NONE} -- Context menu
 			if not ed_context.editing_enabled then
 				-- add menu item for displaying path in path map
 				if not is_rm and attached tool_agents.path_select_action_agent then
-					create an_mi.make_with_text_and_action (get_text ("object_context_menu_display_path"), agent do tool_agents.path_select_action_agent.call ([arch_node.path]) end)
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_display_path), agent do tool_agents.path_select_action_agent.call ([arch_node.path]) end)
 					context_menu.extend (an_mi)
 				end
 			else
 				if not is_rm then
 					if not arch_node.is_root then
 						-- add menu item for deleting this node
-						create an_mi.make_with_text_and_action (get_text ("object_context_menu_delete"), agent do_edit_remove_node)
+						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent do_edit_remove_node)
 						context_menu.extend (an_mi)
 					end
 				elseif not is_root and then not parent.parent.is_rm and parent.is_rm then
 					-- add menu item for 'convert to constraint'
-					create an_mi.make_with_text_and_action (get_text ("object_context_menu_convert"), agent do_edit_convert_to_constraint)
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent do_edit_convert_to_constraint)
 					context_menu.extend (an_mi)
 				end
 			end

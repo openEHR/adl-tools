@@ -52,7 +52,7 @@ feature {NONE}-- Initialization
 
 			-- archetype set-to-primary-source button (= not is_generated flag)
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/edit_active"), get_icon_pixmap ("tool/edit_inactive"),
-				get_text ("archetype_is_primary_source_button_text"), Void)
+				get_text (ec_archetype_is_primary_source_button_text), Void)
 			ev_primary_source_button := tool_bar.last_tool_bar_button
 
 			-- if editing, add undo and redo buttons
@@ -65,26 +65,26 @@ feature {NONE}-- Initialization
 			ev_archetype_id := tool_bar.last_text_field
 
 			-- diff/flat 'View' label + diff & flat controls
-			tool_bar.add_tool_bar_with_title (get_msg ("diff_flat_form_label", Void))
+			tool_bar.add_tool_bar_with_title (get_msg (ec_diff_flat_form_label, Void))
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"),
-				get_text ("differential_view_button_tooltip"), agent on_differential_view)
+				get_text (ec_differential_view_button_tooltip), agent on_differential_view)
 			check attached tool_bar.last_tool_bar_radio_button as tbrb then
 				ev_differential_view_button := tbrb
 			end
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"),
-				get_text ("flat_view_button_tooltip"), agent on_flat_view)
+				get_text (ec_flat_view_button_tooltip), agent on_flat_view)
 			check attached tool_bar.last_tool_bar_radio_button as tbrb then
 				ev_flat_view_button := tbrb
 			end
 
 			-- add language combo box
-			tool_bar.add_fixed_combo_box (get_msg ("language_label", Void),
-				get_msg ("language_combo_tooltip", Void), 60, agent on_select_language)
+			tool_bar.add_fixed_combo_box (get_msg (ec_language_label, Void),
+				get_msg (ec_language_combo_tooltip, Void), 60, agent on_select_language)
 			ev_language_combo := tool_bar.last_combo_box
 
 			-- add version text field
-			tool_bar.add_titled_label (get_msg ("adl_version_label_text", Void), "",
-				get_msg ("adl_version_label_tooltip", Void), 30)
+			tool_bar.add_titled_label (get_msg (ec_adl_version_label_text, Void), "",
+				get_msg (ec_adl_version_label_tooltip, Void), 30)
 			ev_adl_version_text := tool_bar.last_label
 
 			-- main content area
