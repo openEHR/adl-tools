@@ -17,6 +17,7 @@ feature -- Access
 		end
 
 	rm_schema_for_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
+			-- top-level schema for archetype id `an_id'
 		require
 			has_rm_schema_for_id (an_id)
 		do

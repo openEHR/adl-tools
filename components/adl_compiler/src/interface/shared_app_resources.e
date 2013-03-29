@@ -43,7 +43,13 @@ feature -- Definitions
 
 	Repository_report_filename: STRING = "ArchetypeRepositoryReport.xml"
 
-	Default_rm_schema_directory: attached STRING
+	Default_aom_profile_directory: STRING
+			-- default directory of AOM profile files (*.arp files, in dadl format)
+		once
+			Result := file_system.pathname (application_startup_directory, "aom_profiles")
+		end
+
+	Default_rm_schema_directory: STRING
 			-- default directory of Reference Model schema files; same as full path to app + "/rm_schemas";
 			-- contains schema files in .dadl format e.g.
 			-- .../rm_schemas/openehr_rm_102.bmm
@@ -325,6 +331,20 @@ feature -- Application Switches
 			-- Set flag for RM flattening
 		do
 			app_cfg.put_value ("/compiler/rm_flattening", flag)
+		end
+
+	aom_profile_directory: STRING
+			-- Path of directory where AOM profiles are found - note: this should be writable.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/file_system/aom_profile_directory")
+		end
+
+	set_aom_profile_directory (a_path: STRING)
+			-- Set the path of directory where AOM profiles are found
+		require
+			path_not_empty: not a_path.is_empty
+		do
+			app_cfg.put_value ("/file_system/aom_profile_directory", a_path)
 		end
 
 	rm_schema_directory: STRING

@@ -1,23 +1,22 @@
 --
 --	component:   openEHR Archetype Project
 --	description: Error database for Basic Meta-model (BMM)
---				 
 --	keywords:    BMM, error
 --	author:      Thomas Beale
 --	support:     Ocean Informatics <support@OceanInformatics.com>
---	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd"
+--	copyright:   Copyright (c) 2010- Ocean Informatics Pty Ltd"
 --	license:     See notice at bottom of class
 --
 
 templates = <
 	["en"] = <
 		-- SCHEMA_ACCESS (RM model checker)
-		["model_access_e0"] = <"Reference model schema(s) $1 specified in options not valid or not found in directory $2">
+		["bmm_schemas_config_not_valid"] = <"Reference model schema(s) $1 specified in options not valid or not found in directory $2">
 		["bmm_schema_file_not_valid"] = <"Reference Model schema file $1 does not exist or not readable">
 		["bmm_schema_load_failure"] = <"Reference Model schema $1 load failure; reason: $2">
 		["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
 		["bmm_schema_load_failure_exception"] = <"Reference Model schema $1 load failure due to exception during processing">
-		["schema_dir_not_valid"] = <"Reference Model schema directory $1 does not exist or not readable">
+		["bmm_schema_dir_not_valid"] = <"Reference Model schema directory $1 does not exist or not readable">
 		["bmm_schema_dir_contains_no_schemas"] = <"Reference Model schema directory $1 does not contain any schemas">
 		["bmm_schema_dir_contains_no_valid_schemas"] = <"Reference Model schema directory $1 does not contain any valid schemas">
 		["model_access_e7"] = <"No Reference Model schema found for package '$1'">
@@ -29,7 +28,7 @@ templates = <
 		["bmm_schema_assertion_violation"] = <"Assertion violation processing RM schemas; original recipient: $1">
 		["bmm_schema_includes_valiidation_failed"] = <"Reference Model schema $1 includes validation failed: %N$2">
 		["bmm_schema_version_incompatible_with_tool"] = <"Reference Model schemas at $1 incompatible with current release of the tool; obtain up to date schemas">
-		["load_conv_fail_err"] = <"Reference Model schema $1 load data conversion failure; reason: $2">
+		["bmm_schema_conv_fail_err"] = <"Reference Model schema $1 load data conversion failure; reason: $2">
 
 		["bmm_schema_info_loaded"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
 		["bmm_schema_merged_schema"] = <"Merged schema $1 into schema $2">

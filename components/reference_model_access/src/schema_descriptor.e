@@ -142,7 +142,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string (({P_BMM_SCHEMA}).name, Void) as p_sch then
 						add_error ("bmm_schema_load_failure_exception", <<schema_path>>)
 					elseif object_converter.errors.has_errors then
-						add_error ("load_conv_fail_err", <<schema_path, object_converter.errors.as_string>>)
+						add_error ("bmm_schema_conv_fail_err", <<schema_path, object_converter.errors.as_string>>)
 					else
 						p_schema := p_sch
 						passed := True

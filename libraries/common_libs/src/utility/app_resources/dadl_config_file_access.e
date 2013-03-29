@@ -5,10 +5,9 @@ note
 				 any specific item.
 				 ]"
 	keywords:    "config, file"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2010- openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 class DADL_CONFIG_FILE_ACCESS

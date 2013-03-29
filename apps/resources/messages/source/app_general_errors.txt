@@ -42,20 +42,6 @@ templates = <
 		["regex_invalid"] = <"Invalid regular expression $1">
 		["path_parser_no_error_available"] = <"No error available from path parser">
 
-		-- AOM profile load & parse
-		["aom_profile_file_not_valid"] = <"AOM profile file $1 does not exist or not readable">
-		["aom_profile_load_failure"] = <"AOM profile $1 load failure; reason: $2">
-		["aom_profile_load_failure_exception"] = <"Reference Model schema $1 load failure due to exception during processing">
-		["aom_profile_duplicate"] = <"AOM profile $1 has same profile_name as profile $2">
-		["aom_profile_dir_not_valid"] = <"AOM profile directory $1 does not exist or not readable">
-		["aom_profile_dir_contains_no_schemas"] = <"AOM profile directory $1 does not contain any AOM profiles">
-		["aom_profile_dir_contains_no_valid_schemas"] = <"AOM profile directory $1 does not contain any valid AOM profiles">
-		["aom_profile_unknown_exception"] = <"Unknown exception processing AOM profiles">
-		["aom_profile_conv_fail_err"] = <"AOM profile $1 load data conversion failure; reason: $2">
-
-		["ARP_no_profile_name"] = <"AOM profile $1 has no 'profile_name' setting">
-		["ARP_no_matching_schemas"] = <"No BMM schema ids matching regexes found in 'rm_schema_patterns' setting of AOM profile  $1">
-		
 	>
 >
 

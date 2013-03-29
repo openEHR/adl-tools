@@ -35,13 +35,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 feature -- Definitions
 
 	Grid_schema_col: INTEGER = 1
@@ -53,7 +46,7 @@ feature -- Definitions
 			Result := Grid_edit_col
 		end
 
-	frame_height: INTEGER = 100
+	frame_height: INTEGER = 150
 
 	Grid_expansion_factor: REAL = 1.2
 
@@ -90,7 +83,7 @@ feature {NONE} -- Initialisation
 			create grid.make
 			grid.enable_tree
 			ev_root_container.extend (grid)
-			grid.set_minimum_height (150)
+			grid.set_minimum_height (frame_height)
 
 			-- space cell
 			create ev_cell_3
@@ -165,9 +158,7 @@ feature -- Events
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_rm_schema_dir) then
-				post_error (generator, "load_schemas", "schema_dir_not_valid", <<last_populated_rm_schema_dir>>)
-				create error_dialog.make_with_text (billboard.content)
-				billboard.clear
+				create error_dialog.make_with_text (get_msg ("bmm_schema_dir_not_valid", <<last_populated_rm_schema_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -199,9 +190,7 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_rm_schema_dir) then
-				post_error (generator, "load_schemas", "schema_dir_not_valid", <<last_populated_rm_schema_dir>>)
-				create error_dialog.make_with_text (billboard.content)
-				billboard.clear
+				create error_dialog.make_with_text (get_msg ("bmm_schema_dir_not_valid", <<last_populated_rm_schema_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -220,9 +209,7 @@ feature -- Events
 				ok_cancel_buttons.disable_sensitive
 				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					post_error (generator, "load_schemas", "bmm_schema_dir_contains_no_valid_schemas", <<new_rm_dir>>)
-					create error_dialog.make_with_text (billboard.content)
-					billboard.clear
+					create error_dialog.make_with_text (get_msg ("bmm_schema_dir_contains_no_valid_schemas", <<new_rm_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 				populate_grid

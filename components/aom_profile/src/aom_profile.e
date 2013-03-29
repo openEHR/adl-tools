@@ -124,13 +124,19 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
-			across rm_schema_patterns as sch_csr loop
-				get_regex_matches (sch_csr.item)
+			if rm_schemas_access.load_attempted then
+				across rm_schema_patterns as sch_pat_csr loop
+					get_regex_matches (sch_pat_csr.item)
+				end
+			else
+				add_error ("ARP_no_bmm_schemas_loaded", Void)
 			end
 		end
 
 	get_regex_matches (a_regex: STRING)
 			-- Finalisation work: evaluate rm schema regexes
+		require
+			rm_schemas_access.load_attempted
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do

@@ -13,6 +13,9 @@ class AOM_PROFILES_ACCESS
 
 inherit
 	ANY_VALIDATOR
+		redefine
+			ready_to_validate
+		end
 
 	SHARED_RESOURCES
 		export
@@ -36,6 +39,7 @@ feature -- Initialisation
 			create profile_directory.make_empty
 			create profiles.make (0)
 			create profile_descriptors.make (0)
+			create profile_descriptor_candidates.make (0)
 		end
 
 	initialise (an_absolute_dir: STRING)
@@ -56,8 +60,11 @@ feature -- Access
 	profiles: HASH_TABLE [AOM_PROFILE, STRING]
 			-- loaded profiles
 
-	profile_descriptors: ARRAYED_LIST [AOM_PROFILE_DESCRIPTOR]
-			-- profile descriptor objects
+	profile_descriptors: HASH_TABLE [AOM_PROFILE_DESCRIPTOR, STRING]
+			-- validated profile descriptor objects
+
+	profile_descriptor_candidates: ARRAYED_LIST [AOM_PROFILE_DESCRIPTOR]
+			-- found profile descriptor objects
 
 feature -- Status Report
 
@@ -73,6 +80,11 @@ feature -- Status Report
 			Result := not profiles.is_empty
 		end
 
+	ready_to_validate: BOOLEAN
+		do
+			Result := not profile_descriptor_candidates.is_empty
+		end
+
 feature -- Status Report
 
 	exception_encountered: BOOLEAN
@@ -82,15 +94,16 @@ feature -- Validation
 
 	validate
 		do
-			across profile_descriptors as prof_descs_csr loop
+			across profile_descriptor_candidates as prof_descs_csr loop
 				if prof_descs_csr.item.ready_to_validate then
 					prof_descs_csr.item.validate
 					if prof_descs_csr.item.passed then
 						check attached prof_descs_csr.item.profile as prf then
 							if not profiles.has (prf.profile_name) then
 								profiles.put (prf, prf.profile_name)
+								profile_descriptors.put (prof_descs_csr.item, prf.profile_name)
 							else
-								add_error ("aom_profile_duplicate", <<prf.file_path, profiles.item (prf.profile_name).file_path>>)
+								add_error ("aom_profile_duplicate_found", <<prf.file_path, profiles.item (prf.profile_name).file_path>>)
 							end
 						end
 					else
@@ -118,16 +131,16 @@ feature -- Commands
 				if not (dir.exists and dir.is_readable) then
 					add_error ("aom_profile_dir_not_valid", <<profile_directory>>)
 				elseif dir.is_empty then
-					add_error ("aom_profile_dir_contains_no_schemas", <<profile_directory>>)
+					add_error ("aom_profile_dir_contains_no_profiles", <<profile_directory>>)
 				else
 					create file_repo.make (profile_directory, Aom_profile_file_match_regex)
 					across file_repo.matching_paths as paths_csr loop
 						create aom_pd.make (paths_csr.item)
 						aom_pd.load
-						profile_descriptors.extend (aom_pd)
+						profile_descriptor_candidates.extend (aom_pd)
 					end
 					if profiles.is_empty then
-						add_error ("aom_profile_dir_contains_no_valid_schemas", <<profile_directory>>)
+						add_error ("aom_profile_dir_contains_no_valid_profiles", <<profile_directory>>)
 					end
 				end
 			end

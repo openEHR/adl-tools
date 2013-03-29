@@ -124,7 +124,8 @@ templates = <
 		["aom_profile_dir_text"] = <"AOM profile directory:">
 
 		["aom_profile_grid_profile_col_title"] = <"Profile">
-		["aom_profile_grid_rm_col_title"] = <"Reference Models">
+		["aom_profile_grid_rm_col_title"] = <"Matched Reference Models">
+		["aom_profile_grid_term_col_title"] = <"Matched Terminologies">
 		["aom_profile_grid_validated_col_title"] = <"Validation">
 		["aom_profile_grid_edit_col_title"] = <"Edit">
 
@@ -183,6 +184,9 @@ templates = <
 		["view_menu_new_class_tab_text"] = <"New &Class Tab">
 		["view_menu_reset_layout_text"] = <"&Reset tool layout">
 
+		["aom_profiles_menu_text"] = <"&AOM Profiles">
+		["aom_profiles_menu_configure_text"] = <"&Configure">
+
 		["repository_menu_text"] = <"&Repository">
 		["repository_menu_build_all_text"] = <"&Build All">
 		["repository_menu_rebuild_all_text"] = <"Rebuild &All">
@@ -226,7 +230,7 @@ templates = <
 		["test_tool_title"] = <"Test tool">
 
 		-- MAIN_WINDOW - widget texts and tooltips
-		["repo_cfg_combo_tooltip"] = <"Select repository configuration">
+		["repo_cfg_combo_tooltip"] = <"Select archetype repository">
 		["compile_button_text"] = <"Compile">
 		["compile_button_tooltip"] = <"Compile all archetypes (F7)">
 		["adl_version_label_text"] = <"ADL Version:">

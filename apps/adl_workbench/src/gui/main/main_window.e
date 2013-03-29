@@ -94,12 +94,12 @@ feature {NONE} -- Initialization
 			action_bar.extend (history_bar.tool_bar)
 			action_bar.disable_item_expand (history_bar.tool_bar)
 
-			-- profile combo
+			-- repository combo
 			create arch_repositories_combo
 			arch_repositories_combo.set_tooltip (get_msg ("repo_cfg_combo_tooltip", Void))
 			arch_repositories_combo.set_minimum_width (160)
 			arch_repositories_combo.disable_edit
-			arch_repositories_combo.select_actions.extend (agent select_profile)
+			arch_repositories_combo.select_actions.extend (agent select_repository)
 			action_bar.extend (arch_repositories_combo)
 			action_bar.disable_item_expand (arch_repositories_combo)
 
@@ -256,6 +256,17 @@ feature {NONE} -- Initialization
 
 			menu.extend (history_bar.menu)
 
+
+			-- ================== AOM profile menu ==================
+			create aom_profiles_menu
+			aom_profiles_menu.set_text (get_msg ("aom_profiles_menu_text", Void))
+			menu.extend (aom_profiles_menu)
+
+			create aom_profiles_menu_configure
+			aom_profiles_menu_configure.set_text (get_msg ("aom_profiles_menu_configure_text", Void))
+			aom_profiles_menu_configure.set_pixmap (get_icon_pixmap ("tool/tools"))
+			aom_profiles_menu_configure.select_actions.extend (agent configure_aom_profiles)
+			aom_profiles_menu.extend (aom_profiles_menu_configure)
 
 			-- ================== Repository menu ==================
 			create repository_menu
@@ -560,9 +571,6 @@ feature -- Commands
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			console_tool.append_text (app_root.error_strings)
-			console_tool.append_text (rm_schemas_access.error_strings)
-
 			initialise_session_ui_basic
 			Precursor
 			initialise_docking_layout
@@ -593,8 +601,15 @@ feature -- Commands
 					populate_arch_repo_config_combo
 					refresh_archetype_catalogue (True)
 				end
-				console_tool.append_text (rm_schemas_access.error_strings)
 			end
+
+			-- if no AOM profiles yet available, ask user to configure
+			if not directory_exists (aom_profile_directory) or not aom_profiles.found_valid_profiles then
+				configure_aom_profiles
+			end
+
+			console_tool.append_text (app_root.error_strings)
+			console_tool.append_text (rm_schemas_access.error_strings)
 		end
 
 	exit_app
@@ -655,6 +670,17 @@ feature -- View Events
 			end
 		end
 
+feature {NONE} -- AOM profiles events
+
+	configure_aom_profiles
+		local
+			dialog: AOM_PROFILE_DIALOG
+		do
+			create dialog
+			dialog.show_modal_to_window (Current)
+
+			dialog.destroy
+		end
 
 feature {NONE} -- Repository events
 
@@ -693,7 +719,7 @@ feature {NONE} -- Repository events
 			end
 		end
 
-	select_profile
+	select_repository
 			-- Called by `select_actions' of profile selector
 		do
 			if not arch_repositories_combo.text.same_string (repository_config_table.current_repository_name) then
@@ -1311,7 +1337,12 @@ feature {NONE} -- Implementation
 			if not repository_config_table.is_empty then
 				arch_repositories_combo.set_strings (repository_config_table.names)
 				if repository_config_table.has_current_repository then
-					arch_repositories_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_config_table.current_repository_name) then li.enable_select end end)
+					arch_repositories_combo.do_all (
+						agent (li: EV_LIST_ITEM)
+							do
+								if li.text.same_string (repository_config_table.current_repository_name) then li.enable_select end
+							end
+					)
 				end
 			else
 				arch_repositories_combo.wipe_out
@@ -1431,10 +1462,11 @@ feature {NONE} -- GUI Widgets
 	viewer_main_cell: EV_CELL
 
 	menu: EV_MENU_BAR
-	file_menu, edit_menu, view_menu, repository_menu, rm_schemas_menu, xml_menu, tools_menu, help_menu: EV_MENU
+	file_menu, edit_menu, view_menu, aom_profiles_menu, repository_menu, rm_schemas_menu, xml_menu, tools_menu, help_menu: EV_MENU
 	file_menu_open, file_menu_save_as, file_menu_export_as, file_menu_export_flat_as, file_menu_exit, edit_menu_copy,
 	edit_menu_select_all, edit_menu_clipboard, view_menu_differential, view_menu_flat, view_menu_new_archetype_tool,
 	view_menu_new_class_tool, view_menu_reset_layout, repository_menu_build_all,
+	aom_profiles_menu_configure,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
 	repository_menu_export_html, repository_menu_export_json, repository_menu_export_yaml, repository_menu_export_xml,
 	repository_menu_export_repository_report, repository_menu_interrupt_build,

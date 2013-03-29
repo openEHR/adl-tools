@@ -52,7 +52,7 @@ feature {AOM_PROFILES_ACCESS} -- Commands
 				prf_file.read_stream (prf_file.count)
 				parser.execute (prf_file.last_string, 1)
 				if not parser.syntax_error and then attached parser.output as dt_tree then
-					if not attached {AOM_PROFILE} dt_tree.as_object_from_string ("AOM_PROFILE", Void) as aom_prf then
+					if not attached {AOM_PROFILE} dt_tree.as_object_from_string (({AOM_PROFILE}).name, Void) as aom_prf then
 						add_error ("aom_profile_load_failure_exception", <<profile_path>>)
 					elseif object_converter.errors.has_errors then
 						add_error ("aom_profile_conv_fail_err", <<profile_path, object_converter.errors.as_string>>)
@@ -67,7 +67,7 @@ feature {AOM_PROFILES_ACCESS} -- Commands
 				prf_file.close
 			end
 		ensure
-			attached profile or else errors.has_errors
+			attached profile or else has_errors
 		end
 
 feature -- Validation

@@ -58,6 +58,11 @@ feature -- Status Report
 			Result := errors.has_error (a_code)
 		end
 
+	has_warnings: BOOLEAN
+		do
+			Result := errors.has_warnings
+		end
+
 feature -- Modification
 
 	merge_errors (other_errors: ERROR_ACCUMULATOR)

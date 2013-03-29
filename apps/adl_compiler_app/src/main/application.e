@@ -1,11 +1,15 @@
 note
-	description : "[
+	component:   "openEHR Archetype Project"
+	description: "[
 				   This application simulates what a real application written in C, Java or another langauge might do, 
 				   across the language interface. To see a C-language equivalent, go to the directory deployment/C/
 				   c_tester_for_adl_compiler.
 				   ]"
-	date        : "$Date$"
-	revision    : "$Revision$"
+	keywords:    "compiler, archetype, ADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
+	license:     "See notice at bottom of class"
 
 class
 	APPLICATION
@@ -71,13 +75,13 @@ feature -- Initialization
 			end
 		end
 
-	compiler_global_gui_update (msg: attached STRING)
+	compiler_global_gui_update (msg: STRING)
 			-- Update UI with progress on build.
 		do
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			print (msg)

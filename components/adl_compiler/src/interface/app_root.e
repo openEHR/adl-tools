@@ -59,7 +59,7 @@ feature -- Initialisation
 			reset
 
 			if app_cfg.errors.has_errors then
-				errors.append (app_cfg.errors)
+				merge_errors (app_cfg.errors)
 			end
 		end
 
@@ -106,13 +106,28 @@ feature -- Initialisation
 					strx.remove_tail (2) -- remove final ", "
 
 					if repository_config_table.is_empty then
-						add_warning ("model_access_e0", <<strx, rm_schema_directory>>)
+						add_warning ("bmm_schemas_config_not_valid", <<strx, rm_schema_directory>>)
 					else
-						add_error ("model_access_e0", <<strx, rm_schema_directory>>)
+						add_error ("bmm_schemas_config_not_valid", <<strx, rm_schema_directory>>)
 					end
 				end
 			else
-				add_error ("model_access_e5", <<rm_schema_directory>>)
+				add_error ("bmm_schema_dir_not_valid", <<rm_schema_directory>>)
+			end
+
+			--
+			-- set up the AOM profiles
+			--
+			if aom_profile_directory.is_empty then
+				set_aom_profile_directory (Default_aom_profile_directory)
+			end
+			if directory_exists (aom_profile_directory) then
+				aom_profiles.initialise (aom_profile_directory)
+				if not aom_profiles.found_valid_profiles then
+					merge_errors (aom_profiles.errors)
+				end
+			else
+				add_error ("aom_profile_dir_not_valid", <<aom_profile_directory>>)
 			end
 
 			-- adjust for repositories being out of sync with current repository setting (e.g. due to
@@ -152,7 +167,7 @@ feature -- Status Report
 
 	ready_to_initialise_app: BOOLEAN
 		do
-			Result := message_db.database_loaded and not app_cfg.errors.has_errors
+			Result := not app_cfg.errors.has_errors
 		end
 
 end

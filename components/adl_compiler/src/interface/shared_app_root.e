@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Shared access to application root object"
-	keywords:    "test, ADL"
+	keywords:    "application, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -10,6 +10,8 @@ note
 class SHARED_APP_ROOT
 
 inherit
+	SHARED_AOM_PROFILES_ACCESS
+
 	SHARED_REFERENCE_MODEL_ACCESS
 
 	SHARED_ARCHETYPE_CATALOGUES

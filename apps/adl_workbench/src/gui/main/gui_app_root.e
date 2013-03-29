@@ -51,14 +51,14 @@ feature {NONE} -- Initialization
 			app_root.initialise_shell
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
-				if not app_root.has_errors then
+		--		if not app_root.has_errors then
 					process_graphical_events
 					create main_window
 					main_window.show
 					splash.hide
-				else
-					io.put_string (app_root.errors.as_string)
-				end
+		--		else
+		--			io.put_string (app_root.errors.as_string)
+		--		end
 			else
 				io.put_string (app_root.errors.as_string)
 			end

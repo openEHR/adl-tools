@@ -134,6 +134,13 @@ feature -- Status Report
 			Result := not exception_encountered and not valid_top_level_schemas.is_empty
 		end
 
+	load_attempted: BOOLEAN
+			-- has any attempt been made to load schemas? Useful for other parts of the system to base
+			-- preconditions on
+		do
+			Result := load_count > 0
+		end
+
 feature -- Validation
 
 	validate
@@ -185,7 +192,7 @@ feature {NONE} -- Implementation
 				all_schemas.wipe_out
 				create dir.make (schema_directory)
 				if not (dir.exists and dir.is_readable) then
-					add_error ("schema_dir_not_valid", <<schema_directory>>)
+					add_error ("bmm_schema_dir_not_valid", <<schema_directory>>)
 				elseif dir.is_empty then
 					add_error ("bmm_schema_dir_contains_no_schemas", <<schema_directory>>)
 				else
