@@ -828,15 +828,15 @@ feature {NONE} -- Repository events
 				save_dialog.set_title (get_text (ec_export_report_dialog_title))
 				save_dialog.set_file_name (Repository_report_filename)
 				save_dialog.set_start_directory (current_work_directory)
-				save_dialog.filters.extend (["*.xml", get_msg (ec_save_archetype_as_type, <<"XML">>)])
+				save_dialog.filters.extend (["*" + File_ext_xml_default, get_msg (ec_save_archetype_as_type, <<Syntax_type_xml.as_upper>>)])
 				save_dialog.show_modal_to_window (Current)
 				xml_name := save_dialog.file_name.as_string_8
 
 				if not xml_name.is_empty then
 					set_current_work_directory (file_system.dirname (xml_name))
 
-					if not file_system.has_extension (xml_name, ".xml") then
-						xml_name.append (".xml")
+					if not file_system.has_extension (xml_name, File_ext_xml_default) then
+						xml_name.append (File_ext_xml_default)
 					end
 
 					ok_to_write := True
