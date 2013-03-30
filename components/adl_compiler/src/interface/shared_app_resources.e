@@ -172,7 +172,7 @@ feature -- Application Switches
 		require
 			a_schema_list_valid: not a_schema_list.is_empty
 		do
-			app_cfg.put_value("/rm_schemas/load_list", a_schema_list)
+			app_cfg.put_value ("/rm_schemas/load_list", a_schema_list)
 		end
 
 	old_repository_config_table_path: STRING

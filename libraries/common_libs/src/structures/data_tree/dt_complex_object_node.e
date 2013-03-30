@@ -217,13 +217,13 @@ feature -- Modification
 	set_value_at_path (a_value: ANY; a_path: STRING)
 			-- set a leaf value at a path, replacing any previous value
 		require
-			Path_valid: has_path(a_path)
+			Path_valid: has_path (a_path)
 		do
-			if attached {DT_PRIMITIVE_OBJECT} node_at_path(a_path) as a_primitive_node then
-				a_primitive_node.set_value(a_value)
-			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node and attached {SEQUENCE[ANY]} a_value as a_sequence_value then
+			if attached {DT_PRIMITIVE_OBJECT} node_at_path (a_path) as a_primitive_node then
+				a_primitive_node.set_value (a_value)
+			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path (a_path) as a_primitive_list_node and attached {SEQUENCE[ANY]} a_value as a_sequence_value then
 				a_primitive_list_node.set_value (a_sequence_value)
-			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path(a_path) as a_primitive_ivl_node and attached {INTERVAL[PART_COMPARABLE]} a_value as an_interval_value then
+			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path (a_path) as a_primitive_ivl_node and attached {INTERVAL[PART_COMPARABLE]} a_value as an_interval_value then
 				a_primitive_ivl_node.set_value (an_interval_value)
 			end
 		ensure

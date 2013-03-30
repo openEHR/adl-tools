@@ -161,7 +161,7 @@ feature -- Modification
 			if not attached dt_tree then
 				create_default_dt_tree
 			end
-			if has_resource(a_path) then
+			if has_resource (a_path) then
 				dt_tree.set_value_at_path (a_value, a_path)
 			else
 				dt_tree.put_value_at_path (a_value, a_path)
