@@ -6,11 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class EXPR_BINARY_OP_ED_CONTEXT
 
@@ -25,7 +20,7 @@ create
 
 feature -- Access
 
-	arch_node: EXPR_BINARY_OPERATOR
+	arch_node: detachable EXPR_BINARY_OPERATOR
 
 	left_operand_ed_context: detachable EXPR_ITEM_ED_CONTEXT
 

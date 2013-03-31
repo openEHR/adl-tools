@@ -46,6 +46,11 @@ feature -- Definitions
 
 	UTF8_copyright_char: CHARACTER = '%/169/'
 
+	Time_epoch: DATE_TIME
+		once
+			create Result.make_from_epoch (0)
+		end
+
 end
 
 

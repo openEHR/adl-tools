@@ -83,6 +83,11 @@
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
 			</option>
 		</cluster>
+		<cluster name="app_gui_vs" location="..\src\gui_vs\" recursive="true">
+			<option void_safety="initialization">
+				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+			</option>
+		</cluster>
 		<cluster name="app_gui" location="..\src\gui\" recursive="true">
 			<option void_safety="none">
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>

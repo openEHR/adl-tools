@@ -39,7 +39,7 @@ feature -- Initialisation
 			create profile_name.make_from_string (Default_aom_profile_name)
 			create rm_schema_patterns.make (0)
 			create rm_schemas.make (0)
-			create archetype_rm_closure_packages.make (0)
+			create aom_tm_type_mappings.make (0)
 			create file_path.make_empty
 		end
 
@@ -59,31 +59,13 @@ feature -- Access (attributes from file)
 	terminology_profile: detachable AOM_TERMINOLOGY_PROFILE
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
-	archetype_parent_class: detachable STRING
-			-- name of a parent class used within the schema to provide archetype capability,
-			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	archetype_data_value_parent_class: detachable STRING
-			-- name of a parent class of logical 'data types' used within the schema to provide archetype capability,
-			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	archetype_rm_closure_packages: ARRAYED_SET [STRING]
-			-- list of top-level package paths that provide the RM 'model' part in achetype identifiers,
-			-- e.g. the path "org.openehr.ehr" gives "EHR" in "openEHR-EHR". Within this namespace,
-			-- archetypes can be based on any class reachable from classes defined directly in these packages
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
 	archetype_visualise_descendants_of: detachable STRING
-			-- If archetype_parent_class is not set, designate a class whose descendants should be
-			-- made visible in tree and grid renderings of the archetype definition. For openEHR
-			-- and CEN this class is normally the same as the archetype_parent_class, i.e. LOCATABLE
-			-- and RECORD_COMPONENT respectively. It is typically set for CEN, because archetype_
-			-- parent_class may not be stated, due to demographic types not inheriting from it.
-			--
 			-- The effect of this attribute in visualisation is to generate the most natural tree or
 			-- grid-based view of an archetype definition, from the semantic viewpoint.
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
+
+	aom_tm_type_mappings: detachable HASH_TABLE [AOM_TYPE_MAPPING, STRING]
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 feature -- Access
 

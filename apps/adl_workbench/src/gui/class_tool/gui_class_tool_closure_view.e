@@ -523,15 +523,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	convert_node_to_subtype (a_subtype: attached STRING; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
+	convert_node_to_subtype (a_subtype: STRING; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
 			-- rebuild EV tree from interior node of class with a new tree of selected subtype
+		require
+			class_grid_row_valid: attached a_class_grid_row.parent_row
 		local
 			bmm_subtype_def: BMM_CLASS_DEFINITION
 		do
 			bmm_subtype_def := rm_schema.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
-			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli then
-				create rm_node_path.make_from_string (utf32_to_utf8 (gli.tooltip))
+			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli and then attached gli.tooltip as tt then
+				create rm_node_path.make_from_string (utf32_to_utf8 (tt))
 			end
 			if replace_mode then
 				gui_grid.remove_sub_rows (a_class_grid_row)
@@ -540,7 +542,9 @@ feature {NONE} -- Implementation
 				gui_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
-				gui_grid.add_sub_row (a_class_grid_row.parent_row, bmm_subtype_def)
+				check attached a_class_grid_row.parent_row as pr then
+					gui_grid.add_sub_row (pr, bmm_subtype_def)
+				end
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
 				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
 	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))

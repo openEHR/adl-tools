@@ -147,6 +147,9 @@ feature -- Access
 
 feature -- Status Report
 
+	is_dirty: BOOLEAN
+			-- flag to indicate if any content-modifying call has been made since last call to `load' or `save'
+
 	has_resource (a_path:  STRING): BOOLEAN
 			-- True if there is a resource at `a_path'
 		do
@@ -166,6 +169,7 @@ feature -- Modification
 			else
 				dt_tree.put_value_at_path (a_value, a_path)
 			end
+			is_dirty := True
 		end
 
 	put_object (a_path: STRING; a_value: ANY)
@@ -189,6 +193,7 @@ feature -- Modification
 				io.put_string (get_msg (ec_put_object_conversion_failure, <<a_value.generating_type>>))
 				raise ("put_object_conversion_failure")
 			end
+			is_dirty := True
 		end
 
 	add_refresh_listener (an_agent: PROCEDURE [ANY, TUPLE])
@@ -207,6 +212,7 @@ feature -- Element Removal
 			check attached dt_tree.attribute_node_at_path (a_path) as dt_attr then
 				dt_attr.parent.remove_attribute (dt_attr.im_attr_name)
 			end
+			is_dirty := True
 		ensure
 			Path_removed: not has_resource (a_path)
 		end
@@ -220,6 +226,7 @@ feature -- Commands
 				if not attached dt_tree then
 					create_default_dt_tree
 				end
+				is_dirty := False
 			end
 		end
 
@@ -250,6 +257,7 @@ feature -- Commands
 			res_file.put_string (file_header_text)
 			res_file.put_string (dt_serialiser.last_result)
 			res_file.close
+			is_dirty := False
 		end
 
 feature {NONE} -- Implementation

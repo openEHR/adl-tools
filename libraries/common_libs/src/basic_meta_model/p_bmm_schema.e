@@ -305,11 +305,10 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 						end
 
 						-- check if all classes mentioned in each package exist in the local schema
-						from a_pkg.classes.start until a_pkg.classes.off loop
-							if not has_class_definition (a_pkg.classes.item) then
-								add_error (ec_BMM_PKGCL, <<schema_id, a_pkg.classes.item, a_pkg.name>>)
+						across a_pkg.classes as classes_csr loop
+							if not has_class_definition (classes_csr.item) then
+								add_error (ec_BMM_PKGCL, <<schema_id, classes_csr.item, a_pkg.name>>)
 							end
-							a_pkg.classes.forth
 						end
 					end
 			)
@@ -550,11 +549,11 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			end
 
 			if attached {P_BMM_SINGLE_PROPERTY} a_prop_def as a_single_prop_def then
-				if not has_class_definition (a_single_prop_def.type) then
+				if a_single_prop_def.type.is_empty or else not has_class_definition (a_single_prop_def.type) then
 					add_validity_error (a_class_def.source_schema_id, "BMM_SPT", <<a_class_def.source_schema_id, a_class_def.name, a_single_prop_def.name, a_single_prop_def.type>>)
 				end
 			elseif attached {P_BMM_SINGLE_PROPERTY_OPEN} a_prop_def as a_single_prop_def_open then
-				if not a_class_def.generic_parameter_defs.has (a_single_prop_def_open.type) then
+				if not a_class_def.is_generic or else not a_class_def.generic_parameter_defs.has (a_single_prop_def_open.type) then
 					add_validity_error (a_class_def.source_schema_id, "BMM_SPOT", <<a_class_def.source_schema_id, a_class_def.name, a_single_prop_def_open.name, a_single_prop_def_open.type>>)
 				end
 
@@ -697,6 +696,14 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			keys := primitive_types.current_keys
 			from i := 1 until i > keys.count loop
 				primitive_types.replace_key (keys.item(i).as_upper, keys.item(i))
+				i := i + 1
+			end
+
+			keys := class_definitions.current_keys
+			from i := 1 until i > keys.count loop
+				if not keys.item(i).is_equal (keys.item(i).as_upper) then
+					class_definitions.replace_key (keys.item(i).as_upper, keys.item(i))
+				end
 				i := i + 1
 			end
 

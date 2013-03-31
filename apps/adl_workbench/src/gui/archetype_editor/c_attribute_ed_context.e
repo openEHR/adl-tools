@@ -6,7 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
 class C_ATTRIBUTE_ED_CONTEXT
 
@@ -54,7 +53,7 @@ feature -- Access
 	children: ARRAYED_LIST [C_OBJECT_ED_CONTEXT]
 			-- child objects
 
-	parent: C_COMPLEX_OBJECT_ED_CONTEXT
+	parent: detachable C_COMPLEX_OBJECT_ED_CONTEXT
 
 	path: STRING
 			-- path of this node with respect to top of archetype
@@ -107,7 +106,7 @@ feature -- Display
 
 			-- build out child nodes
 			across children as children_csr loop
-				children_csr.item.prepare_display_in_grid (gui_grid)
+				children_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 		end
 
@@ -175,8 +174,8 @@ feature -- Modification
 		do
 			children.extend (a_node)
 			a_node.set_parent (Current)
-			if is_prepared then
-				a_node.prepare_display_in_grid (gui_grid)
+			if is_prepared and attached gui_grid as gg then
+				a_node.prepare_display_in_grid (gg)
 				if is_displayed then
 					a_node.display_in_grid (display_settings)
 				end
@@ -207,8 +206,8 @@ feature -- Modification
 			has_child (a_node)
 		do
 			remove_child_context (a_node)
-			if not is_rm then
-				arch_node.remove_child (a_node.arch_node)
+			if not is_rm and attached a_node.arch_node as arn then
+				arch_node.remove_child (arn)
 			end
 		ensure
 			not has_child (a_node)
@@ -219,8 +218,8 @@ feature -- Modification
 		require
 			not has_child (a_node)
 		do
-			if is_rm then
-				arch_node.put_child (a_node.arch_node)
+			if is_rm and attached a_node.arch_node as arn then
+				arch_node.put_child (arn)
 			end
 			put_child_context (a_node)
 		end
@@ -317,7 +316,11 @@ feature {NONE} -- Context menu
 			end
 		end
 
-	context_menu: EV_MENU
+	context_menu: detachable EV_MENU
+		note
+			option: stable
+		attribute
+		end
 
 	build_context_menu
 		local

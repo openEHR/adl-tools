@@ -7,16 +7,12 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class GUI_CLASS_TOOL_CONTROLLER
 
 inherit
 	GUI_DOCKING_EDITOR_CONTROLLER
 		redefine
-			Editor_group_name, Editor_pixmap, tool_type
+			Editor_group_name, Editor_pixmap, active_tool
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -45,16 +41,23 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER)
+	make (a_docking_manager: SD_DOCKING_MANAGER)
 		do
 			make_docking (a_docking_manager)
+		end
+
+feature -- Access
+
+	active_tool: GUI_CLASS_TOOL
+		do
+			Result := docking_tools.item (active_tool_id).tool
 		end
 
 feature -- Commands
 
 	create_new_tool
 		local
-			new_tool: like tool_type
+			new_tool: like active_tool
 		do
 			create new_tool.make
 			add_new_tool (new_tool)
@@ -71,10 +74,6 @@ feature -- Commands
 			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (Tab_title_width)), get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 			active_tool.selection_history.set_selected_item (a_class_def)
 		end
-
-feature {NONE} -- Implementation
-
-	tool_type: GUI_CLASS_TOOL
 
 end
 

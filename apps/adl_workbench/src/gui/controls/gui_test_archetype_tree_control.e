@@ -114,7 +114,7 @@ feature {NONE} -- Initialisation
 			create diff_source_round_trip_button
 			create test_status_area
 
-			create ev_grid.make
+			create ev_grid
 			ev_grid.disable_row_height_fixed
 			ev_grid.enable_tree
 			ev_grid.hide_tree_node_connectors
@@ -212,6 +212,8 @@ feature {NONE} -- Initialisation
 			diff_source_flat_button.select_actions.extend (agent on_diff_source_flat)
 			diff_source_round_trip_button.select_actions.extend (agent on_diff_round_trip)
 	--		arch_test_processed_count.focus_in_actions.extend (agent text_widget_handler.on_select_all)
+
+			clear
 		end
 
 feature -- Access
@@ -267,18 +269,36 @@ feature -- Access
 	diff_dir_source_flat_new: STRING
 			-- directory where flat files go, renamed to .adlx, for source/flat
 			-- comparison, non-specialised archetypes only
+		attribute
+			create Result.make_empty
+		end
 
 	dadl_source_dir: STRING
 			-- directory where dADL files from source form archetypes are saved
+		attribute
+			create Result.make_empty
+		end
 
 	dadl_flat_dir: STRING
 			-- directory where dADL files from flat form archetypes are saved
+		attribute
+			create Result.make_empty
+		end
 
 	dadl_adl_root: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dadl_round_trip_source_orig_dir: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dadl_round_trip_source_new_dir: STRING
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Status Setting
 
@@ -310,12 +330,16 @@ feature -- Commands
 			ev_grid.wipe_out
 			test_status_area.remove_text
 			create grid_row_stack.make(0)
+			create original_differential_text.make_empty
+			create test_status.make_empty
+			create val_code.make_empty
 		end
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
 			col_csr: INTEGER
+			curr_repo_name: STRING
 		do
 			clear
 
@@ -323,9 +347,13 @@ feature -- Commands
 	 			current_arch_cat.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
 
+ 			check attached repository_config_table.current_repository_name as crn then
+ 				curr_repo_name := crn
+ 			end
+
 			-- put names on columns
 			if ev_grid.column_count > 0 then
-				ev_grid.column (1).set_title ("Archetypes - " + repository_config_table.current_repository_name)
+				ev_grid.column (1).set_title ("Archetypes - " + curr_repo_name)
 
 				if ev_grid.column_count >= first_test_col then
 					from
@@ -519,7 +547,7 @@ feature {NONE} -- Commands
 					loop
 						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
 
-						create test_status.make_empty
+						test_status.wipe_out
 
 						test_result := tests.item_for_iteration.item ([])
 						inspect test_result
@@ -626,14 +654,20 @@ feature {NONE} -- Tests
 				-- even if the archetype doesn't compile. Probably this should become part of the first pass load
 				create amp
 				if target.has_legacy_flat_file then
-					other_details := amp.extract_other_details (target.legacy_flat_text)
+					check attached target.legacy_flat_text as lft then
+						other_details := amp.extract_other_details (lft)
+					end
 				else
 					other_details := amp.extract_other_details (target.differential_text)
 				end
 				if other_details.has (Regression_test_key) then
-					val_code := other_details.item (Regression_test_key)
+					check attached other_details.item (Regression_test_key) as rtk then
+						val_code := rtk
+					end
 				elseif other_details.has (Regression_test_key.as_lower) then
-					val_code := other_details.item (Regression_test_key.as_lower)
+					check attached other_details.item (Regression_test_key.as_lower) as rtk then
+						val_code := rtk
+					end
 				end
 
 				-- check to see if expected regression test result `val_code' (typically some code like "VSONIR" from AOM 1.5 spec)

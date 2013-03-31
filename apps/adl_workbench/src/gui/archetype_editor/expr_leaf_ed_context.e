@@ -4,13 +4,8 @@ note
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class EXPR_LEAF_ED_CONTEXT
 
@@ -25,7 +20,7 @@ create
 
 feature -- Access
 
-	arch_node: EXPR_LEAF
+	arch_node: detachable EXPR_LEAF
 
 feature -- Display
 

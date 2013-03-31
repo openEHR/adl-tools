@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 
 	archetype_id_ctl: EVX_ARCHETYPE_ID_CONTROL
 
-	parent_archetype_id_ctl: EVX_ARCHETYPE_ID_CONTROL
+	parent_archetype_id_ctl: detachable EVX_ARCHETYPE_ID_CONTROL
 
 	dir_setter: EVX_DIRECTORY_SETTER
 

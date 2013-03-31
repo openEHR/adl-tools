@@ -490,8 +490,11 @@ feature -- Access (compiler)
 	status: STRING
 			-- status of last operation
 
-	last_compile_attempt_timestamp: detachable DATE_TIME
+	last_compile_attempt_timestamp: DATE_TIME
 			-- time last compile attempt made, set by set_parse_attempted
+		attribute
+			Result := Time_epoch
+		end
 
 	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
@@ -548,20 +551,18 @@ feature -- Status Report - Compilation
 	compile_attempted: BOOLEAN
 			-- has a compile been attempted in this session?
 		do
-			Result := attached last_compile_attempt_timestamp
+			Result := last_compile_attempt_timestamp /= Time_epoch
 		end
 
 	is_out_of_date: BOOLEAN
 			-- It this archetype out of date with respect to parents or suppliers?
 		do
-			if attached last_compile_attempt_timestamp as lcats then
-				-- see if parents were recompiled more recently
-				Result := is_specialised and then attached specialisation_parent.last_compile_attempt_timestamp as parent_lcats and then parent_lcats > lcats
+			-- see if parents were recompiled more recently
+			Result := is_specialised and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp
 
-				-- see if any supplier was recompiled more recently
-				if not Result and attached suppliers_index as supp_idx then
-					Result := across supp_idx as supp_idx_csr some attached supp_idx_csr.item.last_compile_attempt_timestamp as supp_lcats and then supp_lcats > lcats end
-				end
+			-- see if any supplier was recompiled more recently
+			if not Result and attached suppliers_index as supp_idx then
+				Result := across supp_idx as supp_idx_csr some supp_idx_csr.item.last_compile_attempt_timestamp > last_compile_attempt_timestamp end
 			end
 		end
 
@@ -712,7 +713,7 @@ feature -- Compilation
 			end
 			set_compile_attempt_timestamp
 		ensure
-			Compilation_timestamped: last_compile_attempt_timestamp /= Void
+			Compilation_timestamped: last_compile_attempt_timestamp /= Time_epoch
 		end
 
 	check_compilation_currency
@@ -729,13 +730,13 @@ feature -- Compilation
 			-- signal rebuild from scratch; this rebuilds from existing differential; it only uses legacy if no
 			-- differential yet available. This is because changes in legacy will be detected independently
 		do
-			if attached last_compile_attempt_timestamp then
+			if compile_attempted then
 				current_arch_cat.decrement_compile_attempt_count
 			end
 
 			differential_archetype := Void
 			flat_archetype_cache := Void
-			last_compile_attempt_timestamp := Void
+			last_compile_attempt_timestamp := Time_epoch
 			compilation_state := Cs_unread
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
@@ -1268,7 +1269,7 @@ feature {NONE} -- Implementation
 	set_compile_attempt_timestamp
 			-- Set `compile_attempt_timestamp'
 		do
-			if last_compile_attempt_timestamp = Void then
+			if not compile_attempted then
 				current_arch_cat.update_compile_attempt_count
 			end
 			create last_compile_attempt_timestamp.make_now

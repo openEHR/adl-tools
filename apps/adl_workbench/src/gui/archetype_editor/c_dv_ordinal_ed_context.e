@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class C_DV_ORDINAL_ED_CONTEXT
 
 inherit
@@ -24,7 +20,7 @@ create
 
 feature -- Access
 
-	arch_node: C_DV_ORDINAL
+	arch_node: detachable C_DV_ORDINAL
 			-- archetype node being edited
 
 feature -- Display

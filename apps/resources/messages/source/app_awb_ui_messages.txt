@@ -125,7 +125,10 @@ templates = <
 
 		["aom_profile_grid_profile_col_title"] = <"Profile">
 		["aom_profile_grid_rm_col_title"] = <"Matched Reference Models">
-		["aom_profile_grid_term_col_title"] = <"Matched Terminologies">
+		["aom_profile_grid_term_col_title"] = <"Terminologies">
+		["aom_profile_grid_closures_col_title"] = <"RM Closures">
+		["aom_profile_grid_arch_parent_class_col_title"] = <"Arch Parent Class">
+		["aom_profile_grid_dv_parent_class_col_title"] = <"DV Parent Class">
 		["aom_profile_grid_validated_col_title"] = <"Validation">
 		["aom_profile_grid_edit_col_title"] = <"Edit">
 
@@ -137,6 +140,7 @@ templates = <
 		["rm_schema_grid_schema_col_title"] = <"Schema">
 		["rm_schema_grid_lifecycle_state_col_title"] = <"Lifecycle state">
 		["rm_schema_grid_validated_col_title"] = <"Validated">
+		["rm_schema_dialog_reload_button_text"] = <"Reload">
 
 		-- NEW_ARCHETYPE_DIALOG
 		["create_archetype_dialog_title"] = <"Create new archetype">

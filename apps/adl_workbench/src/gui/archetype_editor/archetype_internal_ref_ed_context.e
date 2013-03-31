@@ -1,15 +1,11 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Editor context for a C_PRMITIVE_OBJECT"
+	description: "Editor context for a ARCHETYPE_INTERNAL_REF"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_INTERNAL_REF_ED_CONTEXT
 
@@ -24,7 +20,7 @@ create
 
 feature -- Access
 
-	arch_node: ARCHETYPE_INTERNAL_REF
+	arch_node: detachable ARCHETYPE_INTERNAL_REF
 			-- archetype node being edited
 
 feature -- Display

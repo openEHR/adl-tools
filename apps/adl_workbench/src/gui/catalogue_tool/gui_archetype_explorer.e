@@ -68,6 +68,8 @@ feature {NONE} -- Initialisation
 			gui_filesys_grid.ev_grid.disable_selection_on_click
 			gui_filesys_grid.ev_grid.enable_selection_on_single_button_click
 
+			clear
+
 			ev_root_container.set_data (Current)
 		end
 
@@ -111,15 +113,19 @@ feature -- Commands
 	select_item_in_tree (ari_global_id: STRING)
 			-- ensure node with global node id `ari_global_id' is visible in the tree
 		local
-			grid_row: detachable EV_GRID_ROW
+			grid_row: EV_GRID_ROW
 		do
 			if semantic_grid_row_map.has (ari_global_id) then
-				grid_row := semantic_grid_row_map.item (ari_global_id)
+				check attached semantic_grid_row_map.item (ari_global_id) as gr then
+					grid_row := gr
+				end
 				gui_semantic_grid.ev_grid.ensure_visible (grid_row)
 				select_item_in_grid (grid_row, ari_global_id)
 			end
 			if filesys_grid_row_map.has (ari_global_id) then
-				grid_row := filesys_grid_row_map.item (ari_global_id)
+				check attached filesys_grid_row_map.item (ari_global_id) as gr then
+					grid_row := gr
+				end
 				gui_filesys_grid.ev_grid.ensure_visible (grid_row)
 				select_item_in_grid (grid_row, ari_global_id)
 			end
@@ -178,11 +184,13 @@ feature {NONE} -- Implementation
 				else
 					gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, aci)
 				end
-				ev_tree_item_stack.extend (gui_semantic_grid.last_row)
- 				semantic_grid_row_map.put (gui_semantic_grid.last_row, aci.global_artefact_identifier)
+				check attached gui_semantic_grid.last_row as lr then
+					ev_tree_item_stack.extend (lr)
+	 				semantic_grid_row_map.put (lr, aci.global_artefact_identifier)
 
- 				-- update contents
-	 			semantic_grid_update_row (gui_semantic_grid.last_row, False)
+	 				-- update contents
+		 			semantic_grid_update_row (lr, False)
+				end
 			end
 		end
 
@@ -199,8 +207,8 @@ feature {NONE} -- Implementation
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
 			text, tooltip: STRING
-			pixmap: EV_PIXMAP
-			col: EV_COLOR
+			pixmap: detachable EV_PIXMAP
+			col: detachable EV_COLOR
 		do
 			if attached {ARCH_CAT_ITEM} ev_row.data as aci then
 				create text.make_empty
@@ -258,7 +266,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	ev_filesys_grid_populate_enter (aci: attached ARCH_CAT_ITEM)
+   	ev_filesys_grid_populate_enter (aci: ARCH_CAT_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
 			if not aci.is_root then
@@ -268,11 +276,13 @@ feature {NONE} -- Implementation
 				else
 					gui_filesys_grid.add_sub_row (ev_tree_item_stack.item, aci)
 				end
-				ev_tree_item_stack.extend (gui_filesys_grid.last_row)
- 				filesys_grid_row_map.put (gui_filesys_grid.last_row, aci.global_artefact_identifier)
+				check attached gui_filesys_grid.last_row as lr then
+					ev_tree_item_stack.extend (lr)
+	 				filesys_grid_row_map.put (lr, aci.global_artefact_identifier)
 
- 				-- update contents
-	 			filesys_grid_update_row (gui_filesys_grid.last_row, False)
+	 				-- update contents
+		 			filesys_grid_update_row (lr, False)
+				end
 			end
 		end
 
@@ -340,7 +350,7 @@ feature {NONE} -- Implementation
 
 	selected_class_node: detachable ARCH_CAT_CLASS_NODE
 
-	select_class_with_delay (acc: attached ARCH_CAT_CLASS_NODE)
+	select_class_with_delay (acc: ARCH_CAT_CLASS_NODE)
 		do
 			selected_class_node := acc
 			delayed_select_class_agent.set_interval (300)
@@ -354,8 +364,10 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_class_agent.set_interval (0)
-						selection_history.set_selected_item (selected_class_node)
-						gui_agents.select_class_agent.call ([selected_class_node.class_definition])
+						check attached selected_class_node as scn then
+							selection_history.set_selected_item (scn)
+							gui_agents.select_class_agent.call ([scn.class_definition])
+						end
 					end
 			)
 		end
@@ -374,14 +386,12 @@ feature {NONE} -- Implementation
 				ev_grid_row.is_expandable
 		end
 
-	grid_item_select_handler (an_ev_grid_item: detachable EV_GRID_ITEM)
+	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
 		do
-			if attached an_ev_grid_item then
-				if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
-					select_archetype_with_delay  (aca)
-				elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
-					select_class_with_delay (accn)
-				end
+			if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
+				select_archetype_with_delay  (aca)
+			elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
+				select_class_with_delay (accn)
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
@@ -480,7 +490,9 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
 			create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, source)
-			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			check attached proximate_ev_window (ev_root_container) as prox_win then
+				dialog.show_modal_to_window (prox_win)
+			end
 			if dialog.is_valid then
 				source.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
 				if not billboard.has_errors then

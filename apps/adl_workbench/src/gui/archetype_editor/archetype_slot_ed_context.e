@@ -4,12 +4,8 @@ note
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_SLOT_ED_CONTEXT
 
@@ -29,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			create assertions_index.make (0)
@@ -38,7 +34,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	arch_node: ARCHETYPE_SLOT
+	arch_node: detachable ARCHETYPE_SLOT
 			-- archetype node being edited
 
 feature -- Display

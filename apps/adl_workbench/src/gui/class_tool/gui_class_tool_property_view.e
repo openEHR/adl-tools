@@ -38,7 +38,7 @@ feature -- Initialisation
 			-- create widgets
 			create ev_root_container
 
-			create ev_grid.make
+			create ev_grid
 			ev_grid.enable_tree
 
 			-- connect widgets

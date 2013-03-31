@@ -41,7 +41,7 @@ feature {NONE} -- Initialisation
 			-- Create controller for the annotations grid.
 		do
 			-- set visual characteristics & events
-			create ev_root_container.make
+			create ev_root_container
 			ev_root_container.set_data (Current)
 			ev_root_container.enable_tree
 		end

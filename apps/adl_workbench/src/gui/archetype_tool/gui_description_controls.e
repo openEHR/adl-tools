@@ -70,7 +70,7 @@ feature {NONE} -- Initialisation
 
 			-- contributors - list
 			create auth_contrib_list_ctl.make_linked (get_text (ec_auth_contrib_label_text),
-				agent :DYNAMIC_LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
+				agent :detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
 				agent (a_str: STRING; i: INTEGER) do source_archetype.description.add_other_contributor (a_str, i) end,
 				agent (a_str: STRING) do source_archetype.description.remove_other_contributor (a_str) end,
 				authoring_tab_undo_redo_chain,
@@ -110,7 +110,7 @@ feature {NONE} -- Initialisation
 			create trans_author_accreditation_vbox
 			lang_translations_hbox.extend (trans_author_accreditation_vbox)
 			create trans_author_ctl.make_linked (get_text (ec_translator_label_text),
-				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
+				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
 				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
 				authoring_tab_undo_redo_chain, 0, min_entry_control_width, False, Void)
@@ -120,7 +120,7 @@ feature {NONE} -- Initialisation
 
 			-- translator accreditation - multi-line text field
 			create trans_accreditation_text_ctl.make_linked (get_text (ec_accreditation_label_text),
-				agent :STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
+				agent :detachable STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
 				agent (a_str: STRING) do translation_details.set_accreditation (a_str) end,
 				agent do translation_details.clear_accreditation end,
 				authoring_tab_undo_redo_chain, 0, 0, False)
@@ -130,7 +130,7 @@ feature {NONE} -- Initialisation
 
 			-- translator other_details - Hash
 			create trans_other_details_ctl.make_linked (get_text (ec_translator_other_details_label_text),
-				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
+				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
 				agent (a_key, a_val: STRING) do translation_details.put_other_details_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
 				authoring_tab_undo_redo_chain,
@@ -141,7 +141,7 @@ feature {NONE} -- Initialisation
 
 			-- copyright - multi-line text
 			create copyright_text_ctl.make_linked (get_text (ec_copyright_label_text),
-				agent :STRING do if attached description_details as dd then Result := dd.copyright end end,
+				agent :detachable STRING do if attached description_details as dd then Result := dd.copyright end end,
 				agent (a_str: STRING) do description_details.set_copyright (a_str) end,
 				agent do description_details.clear_copyright end,
 				authoring_tab_undo_redo_chain, 44, 0, True)
@@ -162,7 +162,7 @@ feature {NONE} -- Initialisation
 
 			-- purpose - mutli-line String
 			create purpose_text_ctl.make_linked (get_text (ec_purpose_label_text),
-				agent :STRING do if attached description_details as dd then Result := dd.purpose end end,
+				agent :detachable STRING do if attached description_details as dd then Result := dd.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
 				Void, description_tab_undo_redo_chain, 0, 0, True)
 			gui_controls.extend (purpose_text_ctl)
@@ -170,7 +170,7 @@ feature {NONE} -- Initialisation
 
 			-- use - mutli-line String
 			create use_text_ctl.make_linked (get_text (ec_use_label_text),
-				agent :STRING do if attached description_details as dd then Result := dd.use end end,
+				agent :detachable STRING do if attached description_details as dd then Result := dd.use end end,
 				agent (a_str: STRING) do description_details.set_use (a_str) end,
 				agent do description_details.clear_use end,
 				description_tab_undo_redo_chain, 0, 0, True)
@@ -179,7 +179,7 @@ feature {NONE} -- Initialisation
 
 			-- misuse - mutli-line String
 			create misuse_text_ctl.make_linked (get_text (ec_misuse_label_text),
-				agent :STRING do if attached description_details as dd then Result := dd.misuse end end,
+				agent :detachable STRING do if attached description_details as dd then Result := dd.misuse end end,
 				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
 				agent do description_details.clear_misuse end,
 				description_tab_undo_redo_chain,
@@ -189,7 +189,7 @@ feature {NONE} -- Initialisation
 
 			-- keywords list
 			create keywords_list_ctl.make_linked (get_text (ec_keywords_label_text),
-				agent :DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
+				agent :detachable DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
 				description_tab_undo_redo_chain,
@@ -204,7 +204,7 @@ feature {NONE} -- Initialisation
 
 			-- resource package - String
 			create resource_package_ctl.make_linked (get_text (ec_packages_label_text),
-				agent :STRING
+				agent :detachable STRING
 					do
 						if attached source_archetype.description.resource_package_uri then
 							Result := source_archetype.description.resource_package_uri.out
@@ -218,7 +218,7 @@ feature {NONE} -- Initialisation
 
 			-- original resources - Hash
 			create original_resources_ctl.make_linked (get_text (ec_resource_orig_res_label_text),
-				agent :HASH_TABLE [STRING, STRING]
+				agent :detachable HASH_TABLE [STRING, STRING]
 					do
 						if attached description_details as dd and then attached dd.original_resource_uri then
 							Result := dd.original_resource_uri

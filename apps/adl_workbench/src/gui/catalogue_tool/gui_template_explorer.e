@@ -32,12 +32,14 @@ feature {NONE} -- Initialisation
 			make_tree_control
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 
+			clear
+			
 			ev_root_container.set_data (Current)
 		end
 
 feature -- Commands
 
-	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
+	update_tree_node_for_archetype (ara: ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		local
 			an_id: STRING
@@ -55,8 +57,12 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 			-- schema of root template
+		note
+			option: stable
+		attribute
+		end
 
 	do_select_archetype
 		do

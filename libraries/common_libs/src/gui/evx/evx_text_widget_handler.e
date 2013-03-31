@@ -17,11 +17,11 @@ inherit
 		end
 
 create
-	make
+	set_root
 
 feature -- Initialisation
 
-	make (a_root: EV_CONTAINER)
+	set_root (a_root: EV_CONTAINER)
 		do
 			root := a_root
 		end

@@ -141,11 +141,11 @@ feature -- Access
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
 		do
-			if attached {DT_PRIMITIVE_OBJECT} node_at_path(a_path) as a_primitive_node then
+			if attached {DT_PRIMITIVE_OBJECT} node_at_path (a_path) as a_primitive_node then
 				Result := a_primitive_node.value
-			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node then
+			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path (a_path) as a_primitive_list_node then
 				Result := a_primitive_list_node.value
-			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path(a_path) as a_primitive_ivl_node then
+			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path (a_path) as a_primitive_ivl_node then
 				Result := a_primitive_ivl_node.value
 			end
 		end
@@ -221,10 +221,10 @@ feature -- Modification
 		do
 			if attached {DT_PRIMITIVE_OBJECT} node_at_path (a_path) as a_primitive_node then
 				a_primitive_node.set_value (a_value)
-			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path (a_path) as a_primitive_list_node and attached {SEQUENCE[ANY]} a_value as a_sequence_value then
-				a_primitive_list_node.set_value (a_sequence_value)
-			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path (a_path) as a_primitive_ivl_node and attached {INTERVAL[PART_COMPARABLE]} a_value as an_interval_value then
-				a_primitive_ivl_node.set_value (an_interval_value)
+			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path (a_path) as a_primitive_list_node and then attached {SEQUENCE[ANY]} a_value as att_seq_val then
+				a_primitive_list_node.set_value (att_seq_val)
+			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path (a_path) as a_primitive_ivl_node and then attached {INTERVAL[PART_COMPARABLE]} a_value as att_ivl_val then
+				a_primitive_ivl_node.set_value (att_ivl_val)
 			end
 		ensure
 			Value_set: value_at_path (a_path) = a_value
@@ -244,9 +244,9 @@ feature -- Modification
 
 			-- deal with the object
 			if an_og_path_item.is_addressable then
-				if attached {SEQUENCE[ANY]} a_value as a_sequence_value then
+				if attached {SEQUENCE [ANY]} a_value as a_sequence_value then
 					create {DT_PRIMITIVE_OBJECT_LIST} dt_obj.make_identified (a_sequence_value, an_og_path_item.object_id)
-				elseif attached {INTERVAL[PART_COMPARABLE]} a_value as an_interval_value then
+				elseif attached {INTERVAL [PART_COMPARABLE]} a_value as an_interval_value then
 					create {DT_PRIMITIVE_OBJECT_INTERVAL} dt_obj.make_identified (an_interval_value, an_og_path_item.object_id)
 				else
 					create {DT_PRIMITIVE_OBJECT} dt_obj.make_identified (a_value, an_og_path_item.object_id)

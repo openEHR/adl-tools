@@ -28,7 +28,7 @@ feature -- Initialisation
 
 	make (enable_tree, row_height_fixed, col_resize_on_collapse_expand, hide_tree_node_connectors: BOOLEAN)
 		do
-			create ev_grid.make
+			create ev_grid
 			if enable_tree then
 				ev_grid.enable_tree
 				if hide_tree_node_connectors then

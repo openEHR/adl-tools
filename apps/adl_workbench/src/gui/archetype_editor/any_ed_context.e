@@ -99,9 +99,17 @@ feature -- Access
 
 	gui_grid: detachable EVX_GRID
 			-- note: stable once attached
+		note
+			option: STABLE
+		attribute
+		end
 
 	gui_grid_row: detachable EV_GRID_ROW
 			-- note: stable once attached
+		note
+			option: STABLE
+		attribute
+		end
 
 	display_settings: GUI_DEFINITION_SETTINGS
 
@@ -166,7 +174,9 @@ feature {NONE} -- Implementation
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
 			if display_settings.show_rm_inheritance and c_meaning_colours.has (node_specialisation_status) then
-				Result := c_meaning_colours.item (node_specialisation_status)
+				check attached c_meaning_colours.item (node_specialisation_status) as cmc then
+					Result := cmc
+				end
 			else
 				Result := archetype_rm_type_color
 			end
@@ -176,7 +186,9 @@ feature {NONE} -- Implementation
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
 			if display_settings.show_rm_inheritance and c_constraint_colours.has (node_specialisation_status) then
-				Result := c_constraint_colours.item (node_specialisation_status)
+				check attached c_constraint_colours.item (node_specialisation_status) as ccc then
+					Result := ccc
+				end
 			else
 				Result := archetype_constraint_color
 			end
@@ -186,7 +198,9 @@ feature {NONE} -- Implementation
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
 			if display_settings.show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
-				Result := c_attribute_colours.item (node_specialisation_status)
+				check attached c_attribute_colours.item (node_specialisation_status) as cac then
+					Result := cac
+				end
 			else
 				Result := archetyped_attribute_color
 			end
@@ -223,9 +237,13 @@ feature {NONE} -- Implementation
 				Result := local_term_string (a_code)
 			elseif ts.has_terminology (a_terminology_id) then
 				if ts.terminology (a_terminology_id).has_concept_id (a_code, display_settings.language) then
-					a_term := ts.terminology (a_terminology_id).term (a_code, display_settings.language)
+					check attached ts.terminology (a_terminology_id).term (a_code, display_settings.language) as t then
+						a_term := t
+					end
 				else
-					a_term := ts.terminology (a_terminology_id).term (a_code, Default_language)
+					check attached ts.terminology (a_terminology_id).term (a_code, Default_language) as t then
+						a_term := t
+					end
 				end
 				if display_settings.show_codes then
 					Result.append (a_term.as_string)

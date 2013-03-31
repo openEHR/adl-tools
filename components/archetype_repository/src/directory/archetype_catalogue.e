@@ -72,11 +72,6 @@ feature -- Definitions
 
 	Template_category: STRING = "templates"
 
-	time_epoch: DATE_TIME
-		once
-			create Result.make_from_epoch (0)
-		end
-
 feature {NONE} -- Initialisation
 
 	make (a_profile_repo_access: PROFILE_REPOSITORY_ACCESS)

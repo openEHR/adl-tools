@@ -102,7 +102,7 @@ feature {NONE} -- Initialization
 
 			-- ============ Archetype ext ref list ============			
 			create arch_id_list_ctl.make_linked (get_text (ec_initial_c_object_config_ext_ref_text),
-				agent :STRING do Result := current_ext_ref end,
+				agent :detachable STRING do Result := current_ext_ref end,
 				arch_ext_ref_list, agent (a_str: STRING) do current_ext_ref := a_str end, Void, Void,
 				0, 0)
 			ev_root_container.extend (arch_id_list_ctl.ev_root_container)
@@ -116,7 +116,7 @@ feature {NONE} -- Initialization
 
 			-- ============ Archetype path list ============			
 			create arch_path_list_ctl.make_linked (get_text (ec_initial_c_object_config_path_ref_text),
-				agent :STRING do Result := current_path_ref end,
+				agent :detachable STRING do Result := current_path_ref end,
 				arch_path_list, agent (a_str: STRING) do current_path_ref := a_str end, Void, Void,
 				0, 0)
 			ev_root_container.extend (arch_path_list_ctl.ev_root_container)
@@ -248,7 +248,7 @@ feature {NONE} -- Implementation
 			Result := ed_context.archetype.matching_logical_paths (display_settings.language, current_rm_type)
 		end
 
-	archetype: ARCHETYPE
+	-- archetype: ARCHETYPE
 
 	ev_root_container: EV_VERTICAL_BOX
 

@@ -4,12 +4,8 @@ note
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class EXPR_UNARY_OP_ED_CONTEXT
 
@@ -24,7 +20,7 @@ create
 
 feature -- Access
 
-	arch_node: EXPR_UNARY_OPERATOR
+	arch_node: detachable EXPR_UNARY_OPERATOR
 
 	operand_ed_context: EXPR_ITEM_ED_CONTEXT
 

@@ -13,7 +13,7 @@ class
 inherit
 	EV_TITLED_WINDOW
 		redefine
-			show, initialize, is_in_default_state
+			show, create_interface_objects, initialize, is_in_default_state
 		end
 
 	EVX_DEFINITIONS
@@ -67,21 +67,17 @@ inherit
 
 feature {NONE} -- Initialization
 
-	frozen initialize
-			-- Initialize `Current'.
+	create_interface_objects
+		local
+			action_bar, arch_output_version_hbox: EV_HORIZONTAL_BOX
+			arch_compile_tool_bar: EV_TOOL_BAR
+			tool_bar_sep_1: EV_TOOL_BAR_SEPARATOR
+			arch_output_version_label: EV_LABEL
+			a_menu: EV_MENU
+			a_menu_item: EV_MENU_ITEM
+			a_menu_sep: EV_MENU_SEPARATOR
 		do
-			Precursor {EV_TITLED_WINDOW}
-
-			set_minimum_width (500)
-			set_minimum_height (350)
-			set_maximum_width (2000)
-			set_maximum_height (2000)
-			set_title (get_msg (ec_main_window_title, <<latest_adl_version>>))
-			close_request_actions.extend (agent exit_app)
-			set_icon_pixmap (adl_workbench_logo)
-
 			create ev_main_vbox
-			extend (ev_main_vbox)
 
 			-- ============== Action Bar ==============
 			create action_bar
@@ -149,107 +145,118 @@ feature {NONE} -- Initialization
 
 			-- ========== Menu ==============
 			create menu
-			set_menu_bar (menu)
-
 
 			-- ============== File Menu ===========
-			create file_menu
-			file_menu.set_text (get_msg (ec_file_menu_text, Void))
-			menu.extend (file_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_file_menu_text, Void))
+			menu.extend (a_menu)
 
-			create file_menu_open
-			file_menu_open.set_text (get_msg (ec_file_menu_open_text, Void))
-			file_menu_open.select_actions.extend (agent catalogue_tool.open_adhoc_archetype)
-			file_menu_open.set_pixmap (get_icon_pixmap ("tool/open_archetype"))
-			file_menu.extend (file_menu_open)
+			-- File > Open
+			create file_open_menu_item
+			file_open_menu_item.set_text (get_msg (ec_file_menu_open_text, Void))
+			file_open_menu_item.select_actions.extend (agent catalogue_tool.open_adhoc_archetype)
+			file_open_menu_item.set_pixmap (get_icon_pixmap ("tool/open_archetype"))
+			a_menu.extend (file_open_menu_item)
 
-			create l_ev_menu_separator_1
-			file_menu.extend (l_ev_menu_separator_1)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create file_menu_save_as
-			file_menu_save_as.set_text (get_msg (ec_file_menu_save_as_text, Void))
-			file_menu_save_as.select_actions.extend (agent catalogue_tool.save_source_archetype_as)
-			file_menu.extend (file_menu_save_as)
+			-- File > Save As
+			create file_save_as_menu_item
+			file_save_as_menu_item.set_text (get_msg (ec_file_menu_save_as_text, Void))
+			file_save_as_menu_item.select_actions.extend (agent catalogue_tool.save_source_archetype_as)
+			a_menu.extend (file_save_as_menu_item)
 
-			create file_menu_export_as
-			file_menu_export_as.set_text (get_msg (ec_file_menu_export_text, Void))
-			file_menu_export_as.select_actions.extend (agent catalogue_tool.export_source_archetype_as)
-			file_menu.extend (file_menu_export_as)
+			-- File > Export As
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_file_menu_export_text, Void))
+			a_menu_item.select_actions.extend (agent catalogue_tool.export_source_archetype_as)
+			a_menu.extend (a_menu_item)
 
-			create file_menu_export_flat_as
-			file_menu_export_flat_as.set_text (get_msg (ec_file_menu_export_flat_as_text, Void))
-			file_menu_export_flat_as.select_actions.extend (agent catalogue_tool.export_flat_archetype_as)
-			file_menu.extend (file_menu_export_flat_as)
+			-- File > Export Flat As
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_file_menu_export_flat_as_text, Void))
+			a_menu_item.select_actions.extend (agent catalogue_tool.export_flat_archetype_as)
+			a_menu.extend (a_menu_item)
 
-			create l_ev_menu_separator_2
-			file_menu.extend (l_ev_menu_separator_2)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create file_menu_exit
-			file_menu_exit.set_text ("E&xit")
-			file_menu_exit.select_actions.extend (agent exit_app)
-			file_menu.extend (file_menu_exit)
+			-- File > Exit
+			create a_menu_item
+			a_menu_item.set_text ("E&xit")
+			a_menu_item.select_actions.extend (agent exit_app)
+			a_menu.extend (a_menu_item)
 
 
 
 			-- ================== Edit menu ==================
-			create edit_menu
-			edit_menu.set_text (get_msg (ec_edit_menu_text, Void))
-			menu.extend (edit_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_edit_menu_text, Void))
+			menu.extend (a_menu)
 
-			create edit_menu_copy
-			edit_menu_copy.set_text (get_msg (ec_edit_menu_text, Void))
-			edit_menu_copy.select_actions.extend (agent text_widget_handler.on_copy)
-			edit_menu.extend (edit_menu_copy)
+			-- Edit > Copy
+			create edit_copy_menu_item
+			edit_copy_menu_item.set_text (get_msg (ec_edit_menu_text, Void))
+			edit_copy_menu_item.select_actions.extend (agent text_widget_handler.on_copy)
+			a_menu.extend (edit_copy_menu_item)
 
-			create edit_menu_select_all
-			edit_menu_select_all.set_text (get_msg (ec_edit_menu_select_all_text, Void))
-			edit_menu_select_all.select_actions.extend (agent text_widget_handler.on_select_all)
-			edit_menu.extend (edit_menu_select_all)
+			-- Edit > Select All
+			create edit_select_all_menu_item
+			edit_select_all_menu_item.set_text (get_msg (ec_edit_menu_select_all_text, Void))
+			edit_select_all_menu_item.select_actions.extend (agent text_widget_handler.on_select_all)
+			a_menu.extend (edit_select_all_menu_item)
 
-			create l_ev_menu_separator_3
-			edit_menu.extend (l_ev_menu_separator_3)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create edit_menu_clipboard
-			edit_menu_clipboard.set_text (get_msg (ec_edit_menu_clipboard_text, Void))
-			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
-			edit_menu.extend (edit_menu_clipboard)
+			-- Edit > Clipboard
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_edit_menu_clipboard_text, Void))
+			a_menu_item.select_actions.extend (agent show_clipboard)
+			a_menu.extend (a_menu_item)
 
 
 
 			-- ================== View menu ==================
-			create view_menu
-			view_menu.set_text (get_msg (ec_view_menu_text, Void))
-			menu.extend (view_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_view_menu_text, Void))
+			menu.extend (a_menu)
 
-			create view_menu_differential
-			view_menu_differential.set_pixmap (get_icon_pixmap ("tool/diff_class"))
-			view_menu_differential.set_text (get_msg (ec_view_menu_differential_text, Void))
-			view_menu_differential.select_actions.extend (agent on_differential_view)
-			view_menu.extend (view_menu_differential)
+			-- View > Differential
+			create view_differential_menu_item
+			view_differential_menu_item.set_pixmap (get_icon_pixmap ("tool/diff_class"))
+			view_differential_menu_item.set_text (get_msg (ec_view_menu_differential_text, Void))
+			view_differential_menu_item.select_actions.extend (agent on_differential_view)
+			a_menu.extend (view_differential_menu_item)
 
-			create view_menu_flat
-			view_menu_flat.set_pixmap (get_icon_pixmap ("tool/flat_class"))
-			view_menu_flat.set_text (get_msg (ec_view_menu_flat_text, Void))
-			view_menu_flat.select_actions.extend (agent on_flat_view)
-			view_menu.extend (view_menu_flat)
+			-- View > Flat
+			create view_flat_menu_item
+			view_flat_menu_item.set_pixmap (get_icon_pixmap ("tool/flat_class"))
+			view_flat_menu_item.set_text (get_msg (ec_view_menu_flat_text, Void))
+			view_flat_menu_item.select_actions.extend (agent on_flat_view)
+			a_menu.extend (view_flat_menu_item)
 
-			create view_menu_new_archetype_tool
-			view_menu_new_archetype_tool.set_text (get_msg (ec_view_menu_new_arch_tab_text, Void))
-			view_menu_new_archetype_tool.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
-			view_menu.extend (view_menu_new_archetype_tool)
+			-- View > New Archetype Tool
+			create view_new_arch_tool_menu_item
+			view_new_arch_tool_menu_item.set_text (get_msg (ec_view_menu_new_arch_tab_text, Void))
+			view_new_arch_tool_menu_item.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+			a_menu.extend (view_new_arch_tool_menu_item)
 
-			create view_menu_new_class_tool
-			view_menu_new_class_tool.set_text (get_msg (ec_view_menu_new_class_tab_text, Void))
-			view_menu_new_class_tool.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
-			view_menu.extend (view_menu_new_class_tool)
+			-- View > New Class Tool
+			create view_new_class_menu_item
+			view_new_class_menu_item.set_text (get_msg (ec_view_menu_new_class_tab_text, Void))
+			view_new_class_menu_item.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
+			a_menu.extend (view_new_class_menu_item)
 
-			create l_ev_menu_separator_4
-			view_menu.extend (l_ev_menu_separator_4)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create view_menu_reset_layout
-			view_menu_reset_layout.set_text (get_msg (ec_view_menu_reset_layout_text, Void))
-			view_menu_reset_layout.select_actions.extend (agent on_reset_tool_layout)
-			view_menu.extend (view_menu_reset_layout)
+			-- View > New Reset layout
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_view_menu_reset_layout_text, Void))
+			a_menu_item.select_actions.extend (agent on_reset_tool_layout)
+			a_menu.extend (a_menu_item)
 
 
 			-- ================== History menu ==================
@@ -258,182 +265,222 @@ feature {NONE} -- Initialization
 
 
 			-- ================== AOM profile menu ==================
-			create aom_profiles_menu
-			aom_profiles_menu.set_text (get_msg (ec_aom_profiles_menu_text, Void))
-			menu.extend (aom_profiles_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_aom_profiles_menu_text, Void))
+			menu.extend (a_menu)
 
-			create aom_profiles_menu_configure
-			aom_profiles_menu_configure.set_text (get_msg (ec_aom_profiles_menu_configure_text, Void))
-			aom_profiles_menu_configure.set_pixmap (get_icon_pixmap ("tool/tools"))
-			aom_profiles_menu_configure.select_actions.extend (agent configure_aom_profiles)
-			aom_profiles_menu.extend (aom_profiles_menu_configure)
+			-- AOM Profile > Configure
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_aom_profiles_menu_configure_text, Void))
+			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
+			a_menu_item.select_actions.extend (agent configure_aom_profiles)
+			a_menu.extend (a_menu_item)
 
 			-- ================== Repository menu ==================
-			create repository_menu
-			repository_menu.set_text (get_msg (ec_repository_menu_text, Void))
-			menu.extend (repository_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_repository_menu_text, Void))
+			menu.extend (a_menu)
 
+			-- Repository > Build All
 			create repository_menu_build_all
 			repository_menu_build_all.set_text (get_msg (ec_repository_menu_build_all_text, Void))
 			repository_menu_build_all.select_actions.extend (agent build_all)
-			repository_menu.extend (repository_menu_build_all)
+			a_menu.extend (repository_menu_build_all)
 
+			-- Repository > Rebuild All
 			create repository_menu_rebuild_all
 			repository_menu_rebuild_all.set_text (get_msg (ec_repository_menu_rebuild_all_text, Void))
 			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
-			repository_menu.extend (repository_menu_rebuild_all)
+			a_menu.extend (repository_menu_rebuild_all)
 
-			create l_ev_menu_separator_5
-			repository_menu.extend (l_ev_menu_separator_5)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
+			-- Repository > Build Subtree
 			create repository_menu_build_subtree
 			repository_menu_build_subtree.set_text (get_msg (ec_repository_menu_build_subtree_text, Void))
 			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
-			repository_menu.extend (repository_menu_build_subtree)
+			a_menu.extend (repository_menu_build_subtree)
 
+			-- Repository > Rebuild Subtree
 			create repository_menu_rebuild_subtree
 			repository_menu_rebuild_subtree.set_text (get_msg (ec_repository_menu_rebuild_subtree_text, Void))
 			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
-			repository_menu.extend (repository_menu_rebuild_subtree)
+			a_menu.extend (repository_menu_rebuild_subtree)
 
-			create l_ev_menu_separator_6
-			repository_menu.extend (l_ev_menu_separator_6)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
+			-- Repository > Export HTML
 			create repository_menu_export_html
 			repository_menu_export_html.set_text (get_msg (ec_repository_menu_export_html_text, Void))
 			repository_menu_export_html.select_actions.extend (agent export_repository (syntax_type_adl_html))
-			repository_menu.extend (repository_menu_export_html)
+			a_menu.extend (repository_menu_export_html)
 
-			create repository_menu_export_json
-			repository_menu_export_json.set_text (get_msg (ec_repository_menu_export_json_text, Void))
-			repository_menu_export_json.select_actions.extend (agent export_repository (syntax_type_json))
-			repository_menu.extend (repository_menu_export_json)
+			-- Repository > Export JSON
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_repository_menu_export_json_text, Void))
+			a_menu_item.select_actions.extend (agent export_repository (syntax_type_json))
+			a_menu.extend (a_menu_item)
 
-			create repository_menu_export_yaml
-			repository_menu_export_yaml.set_text (get_msg (ec_repository_menu_export_yaml_text, Void))
-			repository_menu_export_yaml.select_actions.extend (agent export_repository (syntax_type_yaml))
-			repository_menu.extend (repository_menu_export_yaml)
+			-- Repository > Export YAML
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_repository_menu_export_yaml_text, Void))
+			a_menu_item.select_actions.extend (agent export_repository (syntax_type_yaml))
+			a_menu.extend (a_menu_item)
 
-			create repository_menu_export_xml
-			repository_menu_export_xml.set_text (get_msg (ec_repository_menu_export_xml_text, Void))
-			repository_menu_export_xml.select_actions.extend (agent export_repository (syntax_type_xml))
-			repository_menu.extend (repository_menu_export_xml)
+			-- Repository > Export XML
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_repository_menu_export_xml_text, Void))
+			a_menu_item.select_actions.extend (agent export_repository (syntax_type_xml))
+			a_menu.extend (a_menu_item)
 
-			create repository_menu_export_repository_report
-			repository_menu_export_repository_report.set_text (get_msg (ec_repository_menu_export_report_text, Void))
-			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
-			repository_menu.extend (repository_menu_export_repository_report)
+			-- Repository > Export Repository Report
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_repository_menu_export_report_text, Void))
+			a_menu_item.select_actions.extend (agent export_repository_report)
+			a_menu.extend (a_menu_item)
 
-			create l_ev_menu_separator_7
-			repository_menu.extend (l_ev_menu_separator_7)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
+			-- Repository > Interrupt Build
 			create repository_menu_interrupt_build
 			repository_menu_interrupt_build.set_text (get_msg (ec_repository_menu_interrupt_text, Void))
 			repository_menu_interrupt_build.disable_sensitive
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
-			repository_menu.extend (repository_menu_interrupt_build)
+			a_menu.extend (repository_menu_interrupt_build)
 
-			create repository_menu_refresh
-			repository_menu_refresh.set_text (get_msg (ec_repository_menu_refresh_text, Void))
-			repository_menu_refresh.select_actions.extend (agent refresh_directory)
-			repository_menu.extend (repository_menu_refresh)
+			-- Repository > Refresh
+			create repository_refresh_menu_item
+			repository_refresh_menu_item.set_text (get_msg (ec_repository_menu_refresh_text, Void))
+			repository_refresh_menu_item.select_actions.extend (agent refresh_directory)
+			a_menu.extend (repository_refresh_menu_item)
 
-			create l_ev_menu_separator_8
-			repository_menu.extend (l_ev_menu_separator_8)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create repository_menu_set_repository
-			repository_menu_set_repository.set_text (get_msg (ec_repository_menu_configure_text, Void))
-			repository_menu_set_repository.set_pixmap (get_icon_pixmap ("tool/tools"))
-			repository_menu_set_repository.select_actions.extend (agent configure_repositories)
-			repository_menu.extend (repository_menu_set_repository)
+			-- Repository > Set Repositories
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_repository_menu_configure_text, Void))
+			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
+			a_menu_item.select_actions.extend (agent configure_repositories)
+			a_menu.extend (a_menu_item)
 
 
 			-- ================== RM Schemas menu ==================
-			create rm_schemas_menu
-			rm_schemas_menu.set_text (get_msg (ec_rm_schemas_menu_text, Void))
-			menu.extend (rm_schemas_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_rm_schemas_menu_text, Void))
+			menu.extend (a_menu)
 
-			create rm_schemas_menu_reload_schemas
-			rm_schemas_menu_reload_schemas.set_text (get_msg (ec_rm_schemas_reload_text, Void))
-			rm_schemas_menu_reload_schemas.select_actions.extend (agent reload_schemas)
-			rm_schemas_menu.extend (rm_schemas_menu_reload_schemas)
+			-- RM Schemas > Reload
+			create rm_schemas_reload_menu_item
+			rm_schemas_reload_menu_item.set_text (get_msg (ec_rm_schemas_reload_text, Void))
+			rm_schemas_reload_menu_item.select_actions.extend (agent reload_schemas)
+			a_menu.extend (rm_schemas_reload_menu_item)
 
-			create l_ev_menu_separator_9
-			rm_schemas_menu.extend (l_ev_menu_separator_9)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create rm_schemas_menu_configure_rm_schemas
-			rm_schemas_menu_configure_rm_schemas.set_text (get_msg (ec_rm_schemas_configure_text, Void))
-			rm_schemas_menu_configure_rm_schemas.set_pixmap (get_icon_pixmap ("tool/tools"))
-			rm_schemas_menu_configure_rm_schemas.select_actions.extend (agent set_rm_schemas)
-			rm_schemas_menu.extend (rm_schemas_menu_configure_rm_schemas)
+			-- RM Schemas > Configure
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_rm_schemas_configure_text, Void))
+			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
+			a_menu_item.select_actions.extend (agent set_rm_schemas)
+			a_menu.extend (a_menu_item)
 
 
 			-- ================== XML menu ==================
-			create xml_menu
-			xml_menu.set_text (get_msg (ec_xml_menu_text, Void))
-			menu.extend (xml_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_xml_menu_text, Void))
+			menu.extend (a_menu)
 
-			create l_ev_menu_separator_10
-			xml_menu.extend (l_ev_menu_separator_10)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create xml_menu_conv_rules
-			xml_menu_conv_rules.set_text (get_msg (ec_xml_menu_edit_rules_text, Void))
-			xml_menu_conv_rules.select_actions.extend (agent set_xml_rules)
-			xml_menu.extend (xml_menu_conv_rules)
+			-- XML > Set Rules
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_xml_menu_edit_rules_text, Void))
+			a_menu_item.select_actions.extend (agent set_xml_rules)
+			a_menu.extend (a_menu_item)
 
 
 			-- ================== Tools menu ==================
-			create tools_menu
-			tools_menu.set_text (get_msg (ec_tools_menu_text, Void))
-			menu.extend (tools_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_tools_menu_text, Void))
+			menu.extend (a_menu)
 
-			create tools_menu_clean_generated_files
-			tools_menu_clean_generated_files.set_text (get_msg (ec_tools_menu_clean_text, Void))
-			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
-			tools_menu.extend (tools_menu_clean_generated_files)
+			-- Tools > Clean generated files
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_tools_menu_clean_text, Void))
+			a_menu_item.select_actions.extend (agent clean_generated_files)
+			a_menu.extend (a_menu_item)
 
-			create l_ev_menu_separator_11
-			tools_menu.extend (l_ev_menu_separator_11)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create tools_menu_options
-			tools_menu_options.set_text (get_msg (ec_tools_menu_options_text, Void))
-			tools_menu_options.set_pixmap (get_icon_pixmap ("tool/tools"))
-			tools_menu_options.select_actions.extend (agent set_options)
-			tools_menu.extend (tools_menu_options)
+			-- Tools > Options
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_tools_menu_options_text, Void))
+			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
+			a_menu_item.select_actions.extend (agent set_options)
+			a_menu.extend (a_menu_item)
 
 
 			-- ================== Help menu ==================
-			create help_menu
-			help_menu.set_text (get_msg (ec_help_menu_text, Void))
-			menu.extend (help_menu)
+			create a_menu
+			a_menu.set_text (get_msg (ec_help_menu_text, Void))
+			menu.extend (a_menu)
 
-			create help_menu_contents
-			help_menu_contents.set_text (get_msg (ec_help_menu_online_text, Void))
-			help_menu_contents.select_actions.extend (agent show_online_help)
-			help_menu.extend (help_menu_contents)
+			-- Help > Contents
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_help_menu_online_text, Void))
+			a_menu_item.select_actions.extend (agent show_online_help)
+			a_menu.extend (a_menu_item)
 
-			create help_menu_release_notes
-			help_menu_release_notes.set_text (get_msg (ec_help_menu_release_notes_text, Void))
-			help_menu_release_notes.select_actions.extend (agent show_release_notes)
-			help_menu.extend (help_menu_release_notes)
+			-- Help > Release Notes
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_help_menu_release_notes_text, Void))
+			a_menu_item.select_actions.extend (agent show_release_notes)
+			a_menu.extend (a_menu_item)
 
-			create l_ev_menu_separator_12
-			help_menu.extend (l_ev_menu_separator_12)
+			create a_menu_sep
+			a_menu.extend (a_menu_sep)
 
-			create help_menu_clinical_knowledge_manager
-			help_menu_clinical_knowledge_manager.set_text (get_msg (ec_help_menu_ckm_text, Void))
-			help_menu_clinical_knowledge_manager.select_actions.extend (agent show_clinical_knowledge_manager)
-			help_menu.extend (help_menu_clinical_knowledge_manager)
+			-- Help > CKM
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_help_menu_ckm_text, Void))
+			a_menu_item.select_actions.extend (agent show_clinical_knowledge_manager)
+			a_menu.extend (a_menu_item)
 
-			create help_menu_report_bug
-			help_menu_report_bug.set_text (get_msg (ec_help_menu_report_bug_text, Void))
-			help_menu_report_bug.select_actions.extend (agent show_bug_reporter)
-			help_menu.extend (help_menu_report_bug)
+			-- Help > Report Bug
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_help_menu_report_bug_text, Void))
+			a_menu_item.select_actions.extend (agent show_bug_reporter)
+			a_menu.extend (a_menu_item)
 
-			create help_menu_about
-			help_menu_about.set_text (get_msg (ec_help_menu_about_text, Void))
-			help_menu_about.select_actions.extend (agent show_about)
-			help_menu.extend (help_menu_about)
+			-- Help > About
+			create a_menu_item
+			a_menu_item.set_text (get_msg (ec_help_menu_about_text, Void))
+			a_menu_item.select_actions.extend (agent show_about)
+			a_menu.extend (a_menu_item)
+
+		end
+
+	initialize
+			-- Initialize `Current'.
+		do
+			Precursor {EV_TITLED_WINDOW}
+
+			set_minimum_width (500)
+			set_minimum_height (350)
+			set_maximum_width (2000)
+			set_maximum_height (2000)
+			set_title (get_msg (ec_main_window_title, <<latest_adl_version>>))
+			close_request_actions.extend (agent exit_app)
+			set_icon_pixmap (adl_workbench_logo)
+			extend (ev_main_vbox)
+			set_menu_bar (menu)
 
 
 			-- ================= set up docking ===================
@@ -444,12 +491,13 @@ feature {NONE} -- Initialization
 			create_new_error_tool
 			create_new_test_tool
 			archetype_viewers.create_new_tool
-			view_menu_new_archetype_tool.select_actions.extend (agent archetype_viewers.create_new_tool)
-			view_menu_new_class_tool.select_actions.extend (agent class_tools.create_new_tool)
 
 			-- populate any statically populated controls
 			populate_ui_arch_output_version
 
+			-- setup anything else dependent on docking
+			view_new_class_menu_item.select_actions.extend (agent class_tools.create_new_tool)
+			view_new_arch_tool_menu_item.select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
@@ -479,39 +527,38 @@ feature {NONE} -- Initialization
 			gui_agents.set_refresh_archetype_viewers_agent (agent refresh_archetype_viewers)
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
+
+			text_widget_handler.set_root (Current)
 		end
 
 	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
 		do
-			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
-			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
+			add_menu_shortcut (file_open_menu_item, key_o, True, False, False)
+			add_menu_shortcut (file_save_as_menu_item, key_s, True, False, False)
+			add_menu_shortcut_for_action (edit_copy_menu_item, agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
+			add_menu_shortcut (edit_select_all_menu_item, key_a, True, False, False)
 
-			add_menu_shortcut (file_menu_open, key_o, True, False, False)
-			add_menu_shortcut (file_menu_save_as, key_s, True, False, False)
-			add_menu_shortcut_for_action (edit_menu_copy, agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
-			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
-
-			add_menu_shortcut (view_menu_differential, key_d, True, False, True)
-			add_menu_shortcut (view_menu_flat, key_f, True, False, True)
-			add_menu_shortcut (view_menu_new_archetype_tool, key_t, True, False, False)
-			add_menu_shortcut (view_menu_new_class_tool, key_t, True, False, True)
+			add_menu_shortcut (view_differential_menu_item, key_d, True, False, True)
+			add_menu_shortcut (view_flat_menu_item, key_f, True, False, True)
+			add_menu_shortcut (view_new_arch_tool_menu_item, key_t, True, False, False)
+			add_menu_shortcut (view_new_class_menu_item, key_t, True, False, True)
 
 			add_menu_shortcut (history_bar.menu_item_back, key_left, False, True, False)
 			add_menu_shortcut (history_bar.menu_item_forward, key_right, False, True, False)
 
-			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
-			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
-			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
-			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, False, True)
+			add_menu_shortcut (repository_refresh_menu_item, key_r, True, False, False)
 			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
-			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
+			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, False, True)
+			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
+			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
+			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
 
-			-- ctrl-L = reload current RM schemas
-			add_menu_shortcut (rm_schemas_menu_reload_schemas, key_l, True, False, False)
+			add_menu_shortcut (rm_schemas_reload_menu_item, key_l, True, False, False)
 
-			-- shift-ctrl-L = show line numbers
-			add_shortcut (agent  set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
+			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
+			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
+			add_shortcut (agent set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
 		end
 
 	initialise_session_ui_basic
@@ -533,7 +580,7 @@ feature {NONE} -- Initialization
 	initialise_docking_layout
 			-- initialise visual settings of window remembered from previous session
 		local
-			docking_file_to_use: STRING
+			docking_file_to_use: detachable STRING
 		do
 			if app_maximised then
 				maximize
@@ -1240,7 +1287,11 @@ feature -- Error Tool
 			create Result.make (agent error_tool_title_update)
 		end
 
-	error_docking_pane: SD_CONTENT
+	error_docking_pane: detachable SD_CONTENT
+		note
+			option: stable
+		attribute
+		end
 
 	create_new_error_tool
 		do
@@ -1285,7 +1336,10 @@ feature {NONE} -- Implementation
 			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
 			-- focussed text widgets & cut & paste behaviours
 		once
-			create Result.make (Current)
+			-- FIXME: create with a dummy EV_CONTAINER initially; the argument should be 'Current', i.e the MAIN_WINDOW,
+			-- but we can't supply it when this call gets made because 'make' has not finished yet, and 'Current' doesn't
+			-- pass the void-safety test. So we give it a fake for now, and set the real root at the end of the make routine
+			create Result.set_root (create {EV_CELL})
 		end
 
 	save_resources
@@ -1384,7 +1438,7 @@ feature {NONE} -- Build commands
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
 		local
-			menu_items: ARRAY [EV_MENU_ITEM]
+			menu_items: detachable ARRAY [EV_MENU_ITEM]
 		do
 			if menu_items = Void then
 				menu_items := <<
@@ -1452,33 +1506,6 @@ feature {NONE} -- Build commands
 
 feature {NONE} -- GUI Widgets
 
-	action_bar, arch_output_version_hbox: EV_HORIZONTAL_BOX
-	arch_repositories_combo, arch_output_version_combo: EV_COMBO_BOX
-	arch_compile_tool_bar: EV_TOOL_BAR
-	compile_button, open_button: EV_TOOL_BAR_BUTTON
-	tool_bar_sep_1: EV_TOOL_BAR_SEPARATOR
-	arch_output_version_label: EV_LABEL
-
-	viewer_main_cell: EV_CELL
-
-	menu: EV_MENU_BAR
-	file_menu, edit_menu, view_menu, aom_profiles_menu, repository_menu, rm_schemas_menu, xml_menu, tools_menu, help_menu: EV_MENU
-	file_menu_open, file_menu_save_as, file_menu_export_as, file_menu_export_flat_as, file_menu_exit, edit_menu_copy,
-	edit_menu_select_all, edit_menu_clipboard, view_menu_differential, view_menu_flat, view_menu_new_archetype_tool,
-	view_menu_new_class_tool, view_menu_reset_layout, repository_menu_build_all,
-	aom_profiles_menu_configure,
-	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
-	repository_menu_export_html, repository_menu_export_json, repository_menu_export_yaml, repository_menu_export_xml,
-	repository_menu_export_repository_report, repository_menu_interrupt_build,
-	repository_menu_refresh, repository_menu_set_repository, rm_schemas_menu_reload_schemas,
-	rm_schemas_menu_configure_rm_schemas, xml_menu_conv_rules, tools_menu_clean_generated_files,
-	tools_menu_options, help_menu_contents, help_menu_release_notes, help_menu_icons,
-	help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
-	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4,
-	l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8,
-	l_ev_menu_separator_9, l_ev_menu_separator_10, l_ev_menu_separator_11, l_ev_menu_separator_12: EV_MENU_SEPARATOR
-	ev_main_vbox: EV_VERTICAL_BOX
-
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?
 		do
@@ -1498,6 +1525,16 @@ feature {NONE} -- GUI Widgets
 				(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
 			end
 		end
+
+	ev_main_vbox: EV_VERTICAL_BOX
+	viewer_main_cell: EV_CELL
+	menu: EV_MENU_BAR
+	arch_repositories_combo, arch_output_version_combo: EV_COMBO_BOX
+	file_open_menu_item, file_save_as_menu_item, edit_copy_menu_item, edit_select_all_menu_item, rm_schemas_reload_menu_item,
+	view_differential_menu_item, view_flat_menu_item, view_new_arch_tool_menu_item, view_new_class_menu_item, repository_refresh_menu_item,
+	repository_menu_build_all, repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
+	repository_menu_export_html, repository_menu_interrupt_build: EV_MENU_ITEM
+	compile_button: EV_TOOL_BAR_BUTTON
 
 end
 

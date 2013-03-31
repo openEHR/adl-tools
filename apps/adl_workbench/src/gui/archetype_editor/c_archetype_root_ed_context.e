@@ -4,12 +4,8 @@ note
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_ARCHETYPE_ROOT_ED_CONTEXT
 
@@ -26,7 +22,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	arch_node: C_ARCHETYPE_ROOT
+	arch_node: detachable C_ARCHETYPE_ROOT
 			-- archetype node being edited
 
 feature -- Modification

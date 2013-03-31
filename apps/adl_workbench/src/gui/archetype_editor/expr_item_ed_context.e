@@ -6,11 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class EXPR_ITEM_ED_CONTEXT
 
@@ -30,7 +25,7 @@ feature -- Definitions
 
 feature -- Access
 
-	arch_node: EXPR_ITEM
+	arch_node: detachable EXPR_ITEM
 			-- assertion item being edited
 
 	parent: detachable EXPR_ITEM_ED_CONTEXT
