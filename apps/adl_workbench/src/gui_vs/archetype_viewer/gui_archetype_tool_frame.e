@@ -287,8 +287,8 @@ feature {NONE} -- Implementation
 	tool_out_of_date (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
 			-- Return True if `an_arch_tool' should be populated from scratch
 		do
-			if attached source as src and attached an_arch_tool.source as tool_src then
-				Result := src /= tool_src or else													-- different archetype chosen
+			if attached source as src then
+				Result := src /= an_arch_tool.source or else													-- different archetype chosen
 					not an_arch_tool.is_populated or else											-- some tools are pre-populated
 					an_arch_tool.last_populate_timestamp < src.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
 					an_arch_tool.last_populate_timestamp < src.last_modify_timestamp or				-- source modified more recently than last populate
