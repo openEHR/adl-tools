@@ -24,7 +24,7 @@ feature -- Access
 			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
 		end
 
-	rm_schema_ids: ARRAYED_LIST [STRING]
+	rm_schema_all_ids: ARRAYED_LIST [STRING]
 		do
 			create Result.make_from_array (rm_schemas_access.all_schemas.current_keys)
 		end

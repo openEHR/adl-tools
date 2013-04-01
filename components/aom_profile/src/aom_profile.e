@@ -37,8 +37,8 @@ feature -- Initialisation
 		do
 			reset
 			create profile_name.make_from_string (Default_aom_profile_name)
-			create rm_schema_patterns.make (0)
-			create rm_schemas.make (0)
+			create rm_schema_pattern.make_empty
+			create rm_schema_ids.make (0)
 			create aom_tm_type_mappings.make (0)
 			create file_path.make_empty
 		end
@@ -50,7 +50,7 @@ feature -- Identification
 
 feature -- Access (attributes from file)
 
-	rm_schema_patterns: ARRAYED_LIST [STRING]
+	rm_schema_pattern: STRING
 			-- PERL regex based on id of publisher of Reference Models to which this profile applies.
 			-- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model
 			-- publisher, model name, model release found in .bmm files.
@@ -71,7 +71,7 @@ feature -- Access
 
 	file_path: STRING
 
-	rm_schemas: ARRAYED_LIST [STRING]
+	rm_schema_ids: ARRAYED_LIST [STRING]
 			-- list of rm schemas matched by `rm_schema_patterns'
 
 feature -- Validation
@@ -81,7 +81,7 @@ feature -- Validation
 			if profile_name.is_equal (Default_aom_profile_name) then
 				add_error (ec_ARP_no_profile_name, <<file_path>>)
 			end
-			if rm_schemas.is_empty then
+			if rm_schema_ids.is_empty then
 				add_error (ec_ARP_no_matching_schemas, <<file_path>>)
 			end
 		end
@@ -107,9 +107,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
 			if rm_schemas_access.load_attempted then
-				across rm_schema_patterns as sch_pat_csr loop
-					get_regex_matches (sch_pat_csr.item)
-				end
+				get_regex_matches (rm_schema_pattern)
 			else
 				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
 			end
@@ -126,9 +124,9 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			regex_matcher.set_case_insensitive (True)
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
-				across rm_schema_ids as sch_ids_csr loop
+				across rm_schema_all_ids as sch_ids_csr loop
 					if regex_matcher.recognizes (sch_ids_csr.item) then
-						rm_schemas.extend (sch_ids_csr.item)
+						rm_schema_ids.extend (sch_ids_csr.item)
 					end
 				end
 			else

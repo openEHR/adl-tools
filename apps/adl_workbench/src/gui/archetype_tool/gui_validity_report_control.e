@@ -19,7 +19,6 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Initialization for `Current'.
 		do
 			-- create widgets
 			create ev_root_container
@@ -45,7 +44,6 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
-			-- populate ontology controls
 		do
 			ev_rich_text.set_text (utf8_to_utf32 (source.errors.as_string))
 		end

@@ -84,7 +84,7 @@ feature -- UI Feedback
 			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg (ec_slots_tab_text, Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
-	select_path_item_from_path (a_path: attached STRING)
+	select_path_item_from_path (a_path: STRING)
 			-- select the `a_path' in the paths tab of this tool
 		do
 			if not path_map_control.is_populated then

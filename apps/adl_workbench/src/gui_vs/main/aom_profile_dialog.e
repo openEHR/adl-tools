@@ -40,9 +40,6 @@ feature -- Definitions
 	Grid_profile_col: INTEGER = 1
 	Grid_rm_schemas_col: INTEGER = 2
 	Grid_terminologies_col: INTEGER = 3
---	Grid_rm_closures_col: INTEGER = 4
---	Grid_arch_parent_class_col: INTEGER = 5
---	Grid_dv_parent_class_col: INTEGER = 6
 	Grid_validated_col: INTEGER = 4
 	Grid_edit_col: INTEGER = 5
 	Grid_max_cols: INTEGER
@@ -214,7 +211,6 @@ feature {NONE} -- Implementation
 			row: EV_GRID_ROW
 			aom_profile: AOM_PROFILE
 			prf_name: STRING
---			arch_parent_class, dv_parent_class: STRING
 			rm_schemas_list, terminologies: ARRAYED_LIST [STRING]
 			closures: ARRAYED_SET [STRING]
 		do
@@ -226,12 +222,10 @@ feature {NONE} -- Implementation
 			-- create row containinng widgets for each profile
 			across aom_profiles.profile_descriptor_candidates as profs_csr loop
 				create terminologies.make (0)
---				create arch_parent_class.make_empty
---				create dv_parent_class.make_empty
 				if attached profs_csr.item.profile as prf then
 					aom_profile := prf
 					prf_name := aom_profile.profile_name
-					rm_schemas_list := aom_profile.rm_schemas
+					rm_schemas_list := aom_profile.rm_schema_ids
 					if attached aom_profile.terminology_profile as tpf then
 						if attached tpf.terminology_issuer as iss then
 							terminologies.extend (iss)
@@ -240,19 +234,9 @@ feature {NONE} -- Implementation
 							terminologies.extend (iss)
 						end
 					end
---					if attached aom_profile.archetype_rm_closure_packages as cl then
---						closures := cl
---					end
---					if attached aom_profile.archetype_parent_class as apc then
---						arch_parent_class.append (apc)
---					end
---					if attached aom_profile.archetype_data_value_parent_class as dvpc then
---						dv_parent_class.append (dvpc)
---					end
 				else
 					prf_name := "unknown"
 					create rm_schemas_list.make (0)
---					create closures.make (0)
 				end
 
 				-- column 1 - profile name
@@ -271,20 +255,6 @@ feature {NONE} -- Implementation
 				row.set_item (Grid_terminologies_col, gci)
 				gci.set_item_strings (terminologies)
 				gci.activate
-
---				-- column 4 - RM closures list
---				create gci
---				row.set_item (Grid_rm_closures_col, gci)
---				gci.set_item_strings (closures)
---				gci.activate
-
---				-- column 5 - archetype_parent_class
---				create gli.make_with_text (arch_parent_class)
---				row.set_item (Grid_arch_parent_class_col, gli)
-
---				-- column 6 - data_value_parent_class
---				create gli.make_with_text (dv_parent_class)
---				row.set_item (Grid_dv_parent_class_col, gli)
 
 				-- column 7 - validated
 				create gli.make_with_text ("         ")
@@ -313,9 +283,6 @@ feature {NONE} -- Implementation
 				grid.column (Grid_profile_col).set_title (get_text (ec_aom_profile_grid_profile_col_title))
 				grid.column (Grid_rm_schemas_col).set_title (get_text (ec_aom_profile_grid_rm_col_title))
 				grid.column (Grid_terminologies_col).set_title (get_text (ec_aom_profile_grid_term_col_title))
---				grid.column (Grid_rm_closures_col).set_title (get_text (ec_aom_profile_grid_closures_col_title))
---				grid.column (Grid_arch_parent_class_col).set_title (get_text (ec_aom_profile_grid_arch_parent_class_col_title))
---				grid.column (Grid_dv_parent_class_col).set_title (get_text (ec_aom_profile_grid_dv_parent_class_col_title))
 				grid.column (Grid_validated_col).set_title (get_text (ec_aom_profile_grid_validated_col_title))
 				grid.column (Grid_edit_col).set_title (get_text (ec_aom_profile_grid_edit_col_title))
 
