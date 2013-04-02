@@ -81,6 +81,7 @@ env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compi
 
 terminology = 'terminology'
 rm_schemas = 'rm_schemas'
+aom_profiles = 'aom_profiles'
 
 env.Install(terminology, env.Glob('../terminology/openEHR_RM/RM/Release-1.0.2/*'))
 
@@ -88,6 +89,8 @@ for dir, dirnames, filenames in os.walk('../reference-models'):
 	if '.svn' in dirnames: dirnames.remove('.svn')
 	if '.git' in dirnames: dirnames.remove('.git')
 	env.Install(rm_schemas, [os.path.join(dir, filename) for filename in fnmatch.filter(filenames, '*.bmm')])
+
+env.Install(aom_profiles, env.Glob('apps/aom_profiles/*.arp'))
 
 ###################################################################################################
 # Define how to put installers, etc., into the distribution directory.
@@ -115,7 +118,7 @@ if distrib and len(adl_workbench) > 0:
 	testscripts = 'apps/adlc/test'
 	install = 'apps/adl_workbench/install/' + platform
 
-	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]
+	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles]
 
 	for root in [vim, install, testscripts]:
 		for dir, dirnames, filenames in os.walk(root):
@@ -147,7 +150,7 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [terminology, rm_schemas, vim, testscripts]:
+			for root in [terminology, rm_schemas, aom_profiles, vim, testscripts]:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
@@ -193,7 +196,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(vim, pkg_contents)
 				copy_tree(testscripts, pkg_contents)
 
-				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]:
+				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				substitutions = 's|\&|\&amp;|;'

@@ -102,6 +102,11 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\rm_schemas
     File ..\..\..\..\..\rm_schemas\*
 
+	# AOM profiles
+    SetOutPath $INSTDIR\aom_profiles
+    File ..\..\..\..\..\aom_profiles\*
+
+	# VIM files
     SetOutPath $INSTDIR\vim
     File ..\..\..\..\..\components\adl_compiler\etc\vim\*
 
@@ -157,6 +162,7 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\default_ui_config.cfg
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
     RMDir /r /REBOOTOK $INSTDIR\terminology
+    RMDir /r /REBOOTOK $INSTDIR\aom_profiles
     RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
