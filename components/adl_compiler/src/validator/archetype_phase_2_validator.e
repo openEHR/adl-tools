@@ -537,8 +537,17 @@ end
 						end
 					end
 
-					-- by here the AOM meta-types must be the same; if not, it is an error
-					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
+					-- special case: C_DOMAIN_TYPE replacing a C_COMPLEX_OBJECT
+					if attached {C_COMPLEX_OBJECT} co_parent_flat and attached {C_DOMAIN_TYPE} co_child_diff then
+						if not rm_schema.type_name_conforms_to (co_child_diff.rm_type_name, co_parent_flat.rm_type_name) then
+							add_error (ec_VSONCT, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_child_diff.rm_type_name,
+								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
+								co_parent_flat.rm_type_name>>)
+						end
+
+					-- by here the AOM meta-types must be the same
+					elseif dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 						add_error (ec_VSONT, <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 							co_child_diff.generating_type, co_parent_flat.rm_type_name,
 							ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
@@ -875,15 +884,13 @@ end
 					create apa.make_from_string (a_c_node.path)
 					if not apa.is_phantom_path_at_level (flat_parent.specialisation_depth) then
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
-						Result := flat_parent.has_path (flat_parent_path)
-						if not Result and ca.has_differential_path then
+						if not flat_parent.has_path (flat_parent_path) and ca.has_differential_path then
 							add_error (ec_VDIFP1, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 								ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
+							Result := False
 						end
-					else
-						if not Result and ca.has_differential_path then
-							add_error (ec_VDIFP3, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True)>>)
-						end
+					elseif ca.has_differential_path then
+						add_error (ec_VDIFP3, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True)>>)
 					end
 				end
 			end

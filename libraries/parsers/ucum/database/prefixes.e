@@ -1,25 +1,20 @@
 note
 	component:   "openEHR Reusable Libraries"
 	description: "[
-			 Metric prefixes table, designed on the basis of the Unified Code for Units of
-	             Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of The
-			 Regenstrief Institute For Health Care, Indianapolis.
-			 Published at http://aurora.rg.iupui.edu/UCUM.
-			 Contents of table taken from a file of form: 
-				 [prefixes]	
-				 ;NAME:CASE_SENSITIVE:CASE_INSENSITIVE:VALUE
-				 ;
+				 Metric prefixes table, designed on the basis of the Unified Code for Units of
+		             Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of The
+				 Regenstrief Institute For Health Care, Indianapolis.
+				 Published at http://aurora.rg.iupui.edu/UCUM.
+				 Contents of table taken from a file of form: 
+					 [prefixes]	
+					 ;NAME:CASE_SENSITIVE:CASE_INSENSITIVE:VALUE
+					 ;
 	             ]"
 	keywords:    "metric, units, UCUM"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class PREFIXES
 
@@ -38,7 +33,7 @@ feature -- Initialisation
 
 	make(a_file_name:STRING)
 		require
-			File_name_exists: a_file_name /= Void and then not a_file_name.is_empty
+			File_name_exists: not a_file_name.is_empty
 		local
 			entries:HASH_TABLE[STRING,STRING]
 			pd:PREFIX_DESCRIPTOR
@@ -47,7 +42,7 @@ feature -- Initialisation
 			create prefixes.make(0)
 			create prefixes_by_symbol.make(0)
 
-			entries := prefixes_file.resource_category_values(Prefixes_section_name)
+			entries := prefixes_file.resource_category_values (Prefixes_section_name)
 			from entries.start until entries.off loop
 				create pd.make_from_string(entries.item_for_iteration, ':')
 				if pd.is_valid then
@@ -75,21 +70,21 @@ feature -- Access
 
 	prefix_with_name(a_name:STRING):PREFIX_DESCRIPTOR
 		require
-			Name_exists: a_name /= Void and then has_prefix(a_name)
+			Name_exists: has_prefix(a_name)
 		do
 			Result := prefixes.item(a_name)
 		end
 
 	has_prefix(a_name:STRING):BOOLEAN
 		require
-			Name_exists: a_name /= Void and then not a_name.is_empty
+			Name_exists: not a_name.is_empty
 		do
 			Result := prefixes.has(a_name)
 		end
 
 	has_prefix_symbol(a_symbol:STRING):BOOLEAN
 		require
-			Symbol_exists: a_symbol /= Void and then not a_symbol.is_empty
+			Symbol_exists: not a_symbol.is_empty
 		do
 			Result := prefixes_by_symbol.has(a_symbol)
 		end
@@ -107,7 +102,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	prefixes_file: INI_CONFIG_FILE_ACCESS
+	prefixes_file: DADL_CONFIG_FILE_ACCESS
 
 end
 

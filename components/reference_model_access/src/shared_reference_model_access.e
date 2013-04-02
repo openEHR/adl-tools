@@ -16,12 +16,22 @@ feature -- Access
 			create Result.make
 		end
 
-	rm_schema_for_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
+	rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
 			-- top-level schema for archetype id `an_id'
+		require
+			has_rm_schema_for_archetype_id (an_id)
+		do
+			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
+		end
+
+	rm_schema_for_id (an_id: STRING): BMM_SCHEMA
+			-- validated top-level schema for schema id `an_id'
 		require
 			has_rm_schema_for_id (an_id)
 		do
-			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
+			check attached rm_schemas_access.valid_top_level_schemas.item (an_id) as sch then
+				Result := sch
+			end
 		end
 
 	rm_schema_all_ids: ARRAYED_LIST [STRING]
@@ -29,11 +39,16 @@ feature -- Access
 			create Result.make_from_array (rm_schemas_access.all_schemas.current_keys)
 		end
 
-feature -- Validation
+feature -- Status Report
 
-	has_rm_schema_for_id (an_id: ARCHETYPE_ID): BOOLEAN
+	has_rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BOOLEAN
 		do
 			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
+		end
+
+	has_rm_schema_for_id (an_id: STRING): BOOLEAN
+		do
+			Result := rm_schemas_access.valid_top_level_schemas.has (an_id)
 		end
 
 end

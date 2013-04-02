@@ -36,10 +36,8 @@ feature -- Initialisation
 	make
 		do
 			reset
+			clear
 			create profile_directory.make_empty
-			create profiles.make (0)
-			create profile_descriptors.make (0)
-			create profile_descriptor_candidates.make (0)
 		end
 
 	initialise (an_absolute_dir: STRING)
@@ -66,6 +64,18 @@ feature -- Access
 	profile_descriptor_candidates: ARRAYED_LIST [AOM_PROFILE_DESCRIPTOR]
 			-- found profile descriptor objects
 
+	profiles_for_rm_schemas: HASH_TABLE [AOM_PROFILE, STRING]
+			-- table of AOM_PROFILE keyed by RM schema it applies to
+
+	profile_for_rm_schema (an_id: STRING): AOM_PROFILE
+		require
+			has_profile_for_rm_schema (an_id)
+		do
+			check attached profiles_for_rm_schemas.item (an_id) as a_prof then
+				Result := a_prof
+			end
+		end
+
 feature -- Status Report
 
 	has_profile_directory: BOOLEAN
@@ -85,7 +95,10 @@ feature -- Status Report
 			Result := not profile_descriptor_candidates.is_empty
 		end
 
-feature -- Status Report
+	has_profile_for_rm_schema (an_id: STRING): BOOLEAN
+		do
+			Result := profiles_for_rm_schemas.has (an_id)
+		end
 
 	exception_encountered: BOOLEAN
 			-- set to True if any processing failed
@@ -93,18 +106,24 @@ feature -- Status Report
 feature -- Validation
 
 	validate
+		local
+			a_profile: AOM_PROFILE
 		do
 			across profile_descriptor_candidates as prof_descs_csr loop
 				if prof_descs_csr.item.ready_to_validate then
 					prof_descs_csr.item.validate
 					if prof_descs_csr.item.passed then
 						check attached prof_descs_csr.item.profile as prf then
-							if not profiles.has (prf.profile_name) then
-								profiles.put (prf, prf.profile_name)
-								profile_descriptors.put (prof_descs_csr.item, prf.profile_name)
-							else
-								add_error (ec_aom_profile_duplicate_found, <<prf.file_path, profiles.item (prf.profile_name).file_path>>)
+							a_profile := prf
+						end
+						if not profiles.has (a_profile.profile_name) then
+							profiles.put (a_profile, a_profile.profile_name)
+							profile_descriptors.put (prof_descs_csr.item, a_profile.profile_name)
+							across a_profile.rm_schema_ids as schema_ids_csr loop
+								profiles_for_rm_schemas.put (a_profile, schema_ids_csr.item)
 							end
+						else
+							add_error (ec_aom_profile_duplicate_found, <<a_profile.file_path, profiles.item (a_profile.profile_name).file_path>>)
 						end
 					else
 						merge_errors (prof_descs_csr.item.errors)
@@ -114,6 +133,14 @@ feature -- Validation
 		end
 
 feature -- Commands
+
+	clear
+		do
+			create profiles.make (0)
+			create profile_descriptors.make (0)
+			create profile_descriptor_candidates.make (0)
+			create profiles_for_rm_schemas.make (0)
+		end
 
 	load_profiles
 			-- reload profiles
@@ -125,6 +152,7 @@ feature -- Commands
 			aom_pd: AOM_PROFILE_DESCRIPTOR
 		do
 			reset
+			clear
 			if not exception_encountered then
 				profiles.wipe_out
 				create dir.make (profile_directory)

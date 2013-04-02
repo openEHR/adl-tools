@@ -84,7 +84,7 @@ feature -- Validation
 				proc := pcp
 				proc.initialise (aca, an_rm_schema)
 			else
-				create proc.initialise (aca, an_rm_schema)
+				create proc.make (aca, an_rm_schema)
 				post_parse_processor := proc
 			end
 			proc.execute

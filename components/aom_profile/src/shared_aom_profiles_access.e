@@ -13,7 +13,7 @@ class SHARED_AOM_PROFILES_ACCESS
 
 feature -- Access
 
-	aom_profiles: AOM_PROFILES_ACCESS
+	aom_profiles_access: AOM_PROFILES_ACCESS
 			-- loaded profiles
 		once
 			create Result.make

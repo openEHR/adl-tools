@@ -25,6 +25,8 @@ templates = <
 		["ARP_no_profile_name"] = <"AOM profile $1 has no 'profile_name' setting">
 		["ARP_no_matching_schemas"] = <"No BMM schema ids matching regexes found in 'rm_schema_patterns' setting of AOM profile  $1">
 		["ARP_no_bmm_schemas_loaded"] = <"BMM schemas need to be loaded prior to AOM profiles">
+		["ARP_invalid_class_mapping"] = <"AOM built-in class '$1' is mapped to class '$2' that does not exist in schema $3">
+		["ARP_invalid_property_mapping"] = <"AOM built-in class '$1' property '$2' is mapped to class '$3' property '$4' that does not exist in schema $5">
 		
 	>
 >

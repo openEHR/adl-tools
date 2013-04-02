@@ -2,15 +2,10 @@ note
 	component:   "openEHR Reusable Libraries"
 	description: "Error status flag and reason to be inherited by classes needing its services."
 	keywords:    "error status reporting"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ERROR_STATUS
 
@@ -69,11 +64,9 @@ feature -- Modify
 
 feature {NONE} -- Implementation
 
-	fail_reason_string: STRING
+	fail_reason_string: detachable STRING
 
 	fail_string (op_name, code_context, rep_msg: STRING; rep_code: INTEGER): STRING
-	    require
-			Args_valid: op_name /= Void and code_context /= Void and rep_msg /= Void
 	    local
 			str:STRING
 			charpos, spcpos:INTEGER

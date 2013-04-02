@@ -43,6 +43,9 @@ feature -- Display
 		do
 			precursor (a_gui_grid)
 
+			assertions_index.wipe_out
+			ev_row_index.wipe_out
+
 			-- add closed indicator in constraint column
 			if arch_node.is_closed then
 				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)

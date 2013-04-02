@@ -4,10 +4,9 @@ note
 				 Basic template for any application with access to external resources, event log.
 	             ]"
 	keywords:    "application, template, config, resources"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2005,2006 openEHR Foundation"
+	copyright:   "Copyright (c) 2005- openEHR Foundation"
 	license:     "See notice at bottom of class"
 
 deferred class APPLICATION_TEMPLATE

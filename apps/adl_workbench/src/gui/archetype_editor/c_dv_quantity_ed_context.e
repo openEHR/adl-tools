@@ -35,7 +35,7 @@ feature -- Display
 			-- property constraint
 			if attached arch_node.property then
 				gui_grid.add_sub_row (gui_grid_row, "property")
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "property", Void, c_constraint_colour,
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_property_name ("property"), Void, c_constraint_colour,
 					get_icon_pixmap ("rm/generic/c_meta_attribute"))
 				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
 
@@ -46,9 +46,9 @@ feature -- Display
 			-- magnitude / units / precision constraint
 			if attached arch_node.list then
 				-- build the grid row
-				bmm_prop_magnitude := ed_context.rm_schema.property_definition ("DV_QUANTITY", "magnitude")
-				bmm_prop_units := ed_context.rm_schema.property_definition ("DV_QUANTITY", "units")
-				bmm_prop_precision := ed_context.rm_schema.property_definition ("DV_QUANTITY", "precision")
+				bmm_prop_magnitude := ed_context.rm_schema.property_definition (arch_node.rm_type_name, arch_node.rm_property_name ("magnitude"))
+				bmm_prop_units := ed_context.rm_schema.property_definition (arch_node.rm_type_name, arch_node.rm_property_name ("units"))
+				bmm_prop_precision := ed_context.rm_schema.property_definition (arch_node.rm_type_name, arch_node.rm_property_name ("precision"))
 				bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
 
 				gui_grid.add_sub_row (gui_grid_row, Void)

@@ -12,15 +12,10 @@ note
 				 ;
 	             ]"
 	keywords:    "units, UCUM"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class UNIT_GROUP
 
@@ -140,7 +135,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	units_file: INI_CONFIG_FILE_ACCESS
+	units_file: DADL_CONFIG_FILE_ACCESS
 
 end
 

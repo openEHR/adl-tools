@@ -16,10 +16,36 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
+	SHARED_AOM_PROFILES_ACCESS
+		export
+			{NONE} all;
+		end
+
 create
-	initialise
+	make
 
 feature {ADL15_ENGINE} -- Initialisation
+
+	make (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+			-- set target_descriptor
+			-- initialise reporting variables
+		require
+			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
+		do
+			rm_schema := an_rm_schema
+			set_domain_type_mappings
+
+			target_descriptor := ara
+			check attached ara.differential_archetype as diff_arch then
+				target := diff_arch
+			end
+			if ara.is_specialised then
+				arch_parent_flat := target_descriptor.specialisation_parent.flat_archetype
+			end
+		ensure
+			target_descriptor_set: target_descriptor = ara
+			target_set: attached target
+		end
 
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
@@ -27,7 +53,10 @@ feature {ADL15_ENGINE} -- Initialisation
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			rm_schema := an_rm_schema
+			if rm_schema /= an_rm_schema then
+				rm_schema := an_rm_schema
+				set_domain_type_mappings
+			end
 			target_descriptor := ara
 			check attached ara.differential_archetype as diff_arch then
 				target := diff_arch
@@ -57,6 +86,14 @@ feature -- Commands
 	execute
 		do
 			update_constraint_refs
+			update_c_domain_types
+		end
+
+	clear
+		do
+			c_code_phrase_type_mapping := Void
+			c_dv_ordinal_type_mapping := Void
+			c_dv_quantity_type_mapping := Void
 		end
 
 feature {NONE} -- Implementation
@@ -91,6 +128,71 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+	update_c_domain_types
+			-- update all C_DOMAIN_TYPE nodes with intended RM types
+		local
+			def_it: C_ITERATOR
+		do
+			if attached c_code_phrase_type_mapping or attached c_dv_ordinal_type_mapping or attached c_dv_quantity_type_mapping then
+				create def_it.make (target.definition)
+				def_it.do_all (agent update_c_domain_type, Void)
+			end
+		end
+
+	update_c_domain_type (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- perform validation of node against reference model.
+		do
+			if attached {C_CODE_PHRASE} a_c_node as ccp and attached c_code_phrase_type_mapping as ccp_tm then
+				ccp.set_rm_type_name (ccp_tm.target_class_name)
+				ccp.set_rm_type_mapping (ccp_tm)
+
+			elseif attached {C_DV_ORDINAL} a_c_node as c_dvo and attached c_dv_ordinal_type_mapping as cdvo_tm then
+				c_dvo.set_rm_type_name (cdvo_tm.target_class_name)
+				c_dvo.set_rm_type_mapping (cdvo_tm)
+
+			elseif attached {C_DV_QUANTITY} a_c_node as c_dvq and attached c_dv_quantity_type_mapping as cdvq_tm then
+				c_dvq.set_rm_type_name (cdvq_tm.target_class_name)
+				c_dvq.set_rm_type_mapping (cdvq_tm)
+			end
+		end
+
+	set_domain_type_mappings
+		local
+			aom_profile: AOM_PROFILE
+		do
+			-- find out if any mappings exist in an AOM_PROFILE
+			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
+				if attached aom_profile.aom_rm_type_mappings as aom_tm then
+					if aom_tm.has ("CODE_PHRASE") then
+						c_code_phrase_type_mapping := aom_tm.item ("CODE_PHRASE")
+					else
+						c_code_phrase_type_mapping := Void
+					end
+					if aom_tm.has ("DV_ORDINAL") then
+						c_dv_ordinal_type_mapping := aom_tm.item ("DV_ORDINAL")
+					else
+						c_dv_ordinal_type_mapping := Void
+					end
+					if aom_tm.has ("DV_QUANTITY") then
+						c_dv_quantity_type_mapping := aom_tm.item ("DV_QUANTITY")
+					else
+						c_dv_quantity_type_mapping := Void
+					end
+				else
+					clear
+				end
+			else
+				clear
+			end
+		end
+
+	c_code_phrase_type_mapping: detachable AOM_TYPE_MAPPING
+
+	c_dv_ordinal_type_mapping: detachable AOM_TYPE_MAPPING
+
+	c_dv_quantity_type_mapping: detachable AOM_TYPE_MAPPING
 
 end
 

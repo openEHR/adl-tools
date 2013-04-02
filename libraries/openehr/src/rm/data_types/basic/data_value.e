@@ -20,13 +20,13 @@ inherit
 
 feature -- Initialization
 
-	make_from_string (a_str: attached STRING)
+	make_from_string (a_str: STRING)
 		deferred
 		end
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- string form displayable for humans
 		deferred
 		end

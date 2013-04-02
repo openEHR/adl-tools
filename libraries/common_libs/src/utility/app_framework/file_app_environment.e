@@ -2,15 +2,10 @@ note
 	component:   "openEHR Common Library"
 	description: "Implementation of APP_ENVIRONMENT using text config file."
 	keywords:    "framework"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2005,2006 openEHR Foundation"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class FILE_APP_ENVIRONMENT
 

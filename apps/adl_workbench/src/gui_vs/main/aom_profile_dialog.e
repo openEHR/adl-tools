@@ -35,6 +35,13 @@ inherit
 			copy, default_create
 		end
 
+	EVX_UTILITIES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature -- Definitions
 
 	Grid_profile_col: INTEGER = 1
@@ -109,6 +116,9 @@ feature {NONE} -- Initialisation
 			show_actions.extend (agent grid.set_focus)
 			show_actions.extend (agent do_populate)
 
+			-- add a reload button to the left of Ok/ Cancel
+			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent on_reload)
+
 			enable_edit
 		end
 
@@ -127,6 +137,19 @@ feature -- Commands
 			-- enable editing
 		do
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
+		end
+
+	on_reload
+			-- alow user reload after manual changes while correcting schemas
+		do
+			do_with_wait_cursor (Current, agent reload)
+		end
+
+	reload
+			-- alow user reload after manual changes while correcting schemas
+		do
+			aom_profiles_access.load_profiles
+			do_populate
 		end
 
 feature -- Events
@@ -179,8 +202,8 @@ feature -- Events
 			new_dir := dir_setter.data_control_text
 			if not new_dir.same_string (last_populated_aom_profile_dir) and directory_exists (new_dir) then
 				ok_cancel_buttons.disable_sensitive
-				aom_profiles.initialise (new_dir)
-				if not aom_profiles.found_valid_profiles then
+				aom_profiles_access.initialise (new_dir)
+				if not aom_profiles_access.found_valid_profiles then
 					create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_contains_no_valid_profiles, <<new_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
@@ -207,36 +230,44 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			form_width: INTEGER
 			gli: EV_GRID_LABEL_ITEM
-			gci: EV_GRID_COMBO_ITEM
+			gci: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
 			aom_profile: AOM_PROFILE
 			prf_name: STRING
-			rm_schemas_list, terminologies: ARRAYED_LIST [STRING]
+			rm_schemas_list, terminologies: STRING
 			closures: ARRAYED_SET [STRING]
 		do
 			-- get rid of previously defined rows
 			grid.wipe_out
 			grid.enable_column_resize_immediate
-			grid.set_minimum_height ((aom_profiles.profile_descriptor_candidates.count + 1) * grid.row_height + grid.header.height)
+			grid.set_minimum_height ((aom_profiles_access.profile_descriptor_candidates.count + 1) * grid.row_height + grid.header.height)
 
 			-- create row containinng widgets for each profile
-			across aom_profiles.profile_descriptor_candidates as profs_csr loop
-				create terminologies.make (0)
+			across aom_profiles_access.profile_descriptor_candidates as profs_csr loop
+				create terminologies.make_empty
+				create rm_schemas_list.make_empty
 				if attached profs_csr.item.profile as prf then
 					aom_profile := prf
 					prf_name := aom_profile.profile_name
-					rm_schemas_list := aom_profile.rm_schema_ids
+					across aom_profile.rm_schema_ids as sch_ids loop
+						if sch_ids.target_index > 1 then
+							rm_schemas_list.append (", ")
+						end
+						rm_schemas_list.append (sch_ids.item)
+					end
 					if attached aom_profile.terminology_profile as tpf then
 						if attached tpf.terminology_issuer as iss then
-							terminologies.extend (iss)
+							terminologies.append (iss)
 						end
 						if attached tpf.code_sets_issuer as iss then
-							terminologies.extend (iss)
+							if not terminologies.is_empty then
+								terminologies.append (", ")
+							end
+							terminologies.append (iss)
 						end
 					end
 				else
 					prf_name := "unknown"
-					create rm_schemas_list.make (0)
 				end
 
 				-- column 1 - profile name
@@ -245,16 +276,12 @@ feature {NONE} -- Implementation
 				row := gli.row
 
 				-- column 2 - matched Reference Models list
-				create gci
+				create gci.make_with_text (rm_schemas_list)
 				row.set_item (Grid_rm_schemas_col, gci)
-				gci.set_item_strings (rm_schemas_list)
-				gci.activate
 
 				-- column 3 - matched Terminologies list
-				create gci
+				create gci.make_with_text (terminologies)
 				row.set_item (Grid_terminologies_col, gci)
-				gci.set_item_strings (terminologies)
-				gci.activate
 
 				-- column 7 - validated
 				create gli.make_with_text ("         ")

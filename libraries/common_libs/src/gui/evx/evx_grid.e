@@ -113,7 +113,7 @@ feature -- Modification
 		end
 
 	set_last_row_label_col (a_col: INTEGER; a_text, a_tooltip: detachable STRING; a_fg_colour: detachable EV_COLOR; a_pixmap: detachable EV_PIXMAP)
-			-- add column details to `last_sub_row'
+			-- add column details to `last_row'
 		local
 			gli: EV_GRID_LABEL_ITEM
 		do

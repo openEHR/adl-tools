@@ -125,7 +125,7 @@ feature {NONE} -- Initialisation
 			show_actions.extend (agent grid.set_focus)
 
 			-- add a reload button to the left of Ok/ Cancel
-			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent on_reload_schemas)
+			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent on_reload)
 
 			enable_edit
 			do_populate
@@ -152,13 +152,13 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
 		end
 
-	on_reload_schemas
+	on_reload
 			-- alow user reload after manual changes while correcting schemas
 		do
-			do_with_wait_cursor (Current, agent reload_schemas)
+			do_with_wait_cursor (Current, agent reload)
 		end
 
-	reload_schemas
+	reload
 			-- alow user reload after manual changes while correcting schemas
 		do
 			rm_schemas_access.reload_schemas

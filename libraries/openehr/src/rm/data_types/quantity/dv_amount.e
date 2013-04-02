@@ -95,7 +95,7 @@ feature -- Output
 			end
 		end
 
-	magnitude_as_string: attached STRING
+	magnitude_as_string: STRING
 			-- output the magnitude in its natural form
 		deferred
 		ensure

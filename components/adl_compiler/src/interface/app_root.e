@@ -122,9 +122,9 @@ feature -- Initialisation
 				set_aom_profile_directory (Default_aom_profile_directory)
 			end
 			if directory_exists (aom_profile_directory) then
-				aom_profiles.initialise (aom_profile_directory)
-				if not aom_profiles.found_valid_profiles then
-					merge_errors (aom_profiles.errors)
+				aom_profiles_access.initialise (aom_profile_directory)
+				if not aom_profiles_access.found_valid_profiles then
+					merge_errors (aom_profiles_access.errors)
 				end
 			else
 				add_error (ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)

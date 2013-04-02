@@ -6,18 +6,12 @@ note
 			 as a single value and a single, optional units.
 			 ]"
 	keywords:    "quantity, data"
-
 	requirements:"ISO 18308 TS V1.0 STR 3.2 - 3.4"
 	design:      "openEHR Data Types Reference Model 1.7"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class
 	DV_QUANTITY
@@ -29,9 +23,7 @@ inherit
 		end
 
 create
-	make_from_string,
-	make,
-	default_create
+	make, make_from_string, default_create
 
 feature -- Definitions
 
@@ -48,18 +40,20 @@ feature {NONE} -- Initialisation
 		do
 			units := default_units.twin
 			precision := default_precision
+			create magnitude
 		ensure then
 			units_set_to_default: units.same_string (default_units)
 			precision_set_to_default: precision = default_precision
 		end
 
-	make (a_magnitude: like magnitude; a_units: attached like units; n: like precision)
+	make (a_magnitude: like magnitude; a_units: like units; n: like precision)
 		require
 			units_not_empty: not a_units.is_empty
 			precision_valid: n >= 1
 		do
 			magnitude := a_magnitude
-			set_units (a_units)
+			-- set_units (a_units)
+			units := a_units
 			precision := n
 		ensure
 			magnitude_set: magnitude = a_magnitude
@@ -67,8 +61,9 @@ feature {NONE} -- Initialisation
 			precision_set: precision = n
 		end
 
-	make_from_string (str: attached STRING)
+	make_from_string (a_str: STRING)
 		do
+			default_create
 		end
 
 feature -- Status Report
@@ -84,7 +79,7 @@ feature -- Access
 	magnitude: REAL_REF
 			-- Numeric value of the quantity.
 
-	units: attached STRING
+	units: STRING
 			-- Stringified units, expressed in UCUM unit syntax, e.g. "kg/m^2", “mm[Hg]", "ms-1", "km/h".
 
 	precision: INTEGER
@@ -117,22 +112,22 @@ feature -- Basic Operations
 
 feature -- Modification
 
-	set_units (a_units: attached STRING)
+	set_units (a_units: STRING)
 			-- Set units.
 		require
 			units_not_empty: not a_units.is_empty
-		local
-			parser: UNITS_PARSER
+	--	local
+	--		parser: UNITS_PARSER
 		do
-			create parser.make
-			parser.execute (a_units)
+	--		create parser.make
+	--		parser.execute (a_units)
 
-			if parser.units /= Void then
-				units_impl := parser.units
-				units := a_units
-			end
+	--		if parser.units /= Void then
+	--			units_impl := parser.units
+	--			units := a_units
+	--		end
 		ensure
-			units_set_else_unchanged: units.string.same_string (old units.string) or units.same_string (a_units)
+	--		units_set_else_unchanged: units.string.same_string (old units.string) or units.same_string (a_units)
 		end
 
 	set_precision (n: INTEGER)
@@ -147,7 +142,7 @@ feature -- Modification
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: attached like Current): BOOLEAN
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 			-- two quantities are strictly comparable if they are measuring the same property
 			-- Ideally, we would allow different units within the same property, but there is
 			-- no converter currently implemented, so we also require that the units are identical
@@ -176,7 +171,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	units_impl: UNITS
+	-- units_impl: UNITS
 
 invariant
 	precision_valid: precision >= -1

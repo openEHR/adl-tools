@@ -80,14 +80,14 @@ feature {NONE} -- Initialisation
 			-- Can be created with a .adl or .adls file name extension
 		require
 			Path_valid: not a_path.is_empty
-			Valid_id: has_rm_schema_for_id (arch_thumbnail.archetype_id)
+			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
 		do
 			make_item
 
 			file_repository := a_repository
 
 			id := arch_thumbnail.archetype_id
-			rm_schema := rm_schema_for_id (id)
+			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
@@ -115,14 +115,14 @@ feature {NONE} -- Initialisation
 			-- Can be created with a .adl or .adls file name extension
 		require
 			Path_valid: not a_path.is_empty
-			Valid_id: has_rm_schema_for_id (arch_thumbnail.archetype_id)
+			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
 		do
 			make_item
 
 			file_repository := a_repository
 
 			id := arch_thumbnail.archetype_id
-			rm_schema := rm_schema_for_id (id)
+			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
@@ -145,14 +145,14 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
-			Valid_id: has_rm_schema_for_id (an_id)
+			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 			at: ARTEFACT_TYPE
 		do
 			make_item
 			id := an_id
-			rm_schema := rm_schema_for_id (id)
+			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
 				differential_path := pn
 			end
@@ -179,14 +179,14 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
-			Valid_id: has_rm_schema_for_id (an_id)
+			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 			at: ARTEFACT_TYPE
 		do
 			make_item
 			id := an_id
-			rm_schema := rm_schema_for_id (id)
+			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
 				differential_path := pn
 			end

@@ -77,7 +77,7 @@ feature -- Modification
 					post_error (generator, "build_directory", "parse_archetype_e7", <<full_path>>)
 				elseif arch.is_specialised and then arch.parent_archetype_id_is_old_style then
 					post_error (generator, "build_directory", "parse_archetype_e11", <<full_path, arch.parent_archetype_id.as_string>>)
-				elseif not has_rm_schema_for_id (arch.archetype_id) then
+				elseif not has_rm_schema_for_archetype_id (arch.archetype_id) then
 					post_error (generator, "build_directory", "parse_archetype_e4", <<full_path, arch.archetype_id.as_string>>)
 				elseif not archetype_id_index.has (arch.archetype_id.as_string) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then

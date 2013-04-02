@@ -210,6 +210,8 @@ feature -- Status Report
 							type_strs.forth
 							class_def.generic_parameters.start
 						until
+							-- a) illegal class as generic parameter OR
+							-- b) gen parm class in that position in the defining class is constrained AND THEN NOT has among its ancestors the constrainer class
 							type_strs.off or not has_class_definition (type_strs.item) or
 								(class_def.generic_parameters.item_for_iteration.is_constrained and then not
 								class_definitions.item (type_strs.item).has_ancestor (class_def.generic_parameters.item_for_iteration.conforms_to_type.name))

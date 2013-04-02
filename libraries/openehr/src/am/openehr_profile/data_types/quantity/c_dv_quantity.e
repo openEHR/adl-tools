@@ -226,7 +226,7 @@ feature -- Implementation
 	default_units: detachable STRING
 			-- record default units if property is set; used to generate a default value
 
-	list_item_by_units (a_units: attached STRING): detachable C_QUANTITY_ITEM
+	list_item_by_units (a_units: STRING): detachable C_QUANTITY_ITEM
 			-- return item from `list' whose units match a_units' or else Void
 		require
 			a_units_valid: not a_units.is_empty

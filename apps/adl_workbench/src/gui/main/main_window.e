@@ -651,7 +651,7 @@ feature -- Commands
 			end
 
 			-- if no AOM profiles yet available, ask user to configure
-			if not directory_exists (aom_profile_directory) or not aom_profiles.found_valid_profiles then
+			if not directory_exists (aom_profile_directory) or not aom_profiles_access.found_valid_profiles then
 				configure_aom_profiles
 			end
 

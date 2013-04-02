@@ -161,12 +161,12 @@ feature -- Modification
 			end
 
 			if resources.has(category_name) then
-				resource_list := resources.item(category_name)
-				resource_list.force(s, resource_name)
+				resource_list := resources.item (category_name)
+				resource_list.force (s, resource_name)
 			else
 				create resource_list.make(0)
-				resource_list.put(s, resource_name)
-				resources.put(resource_list, category_name)
+				resource_list.put (s, resource_name)
+				resources.put (resource_list, category_name)
 			end
 		end
 
@@ -248,11 +248,11 @@ feature -- template routines
 					category_name := linebuf.substring(2,linebuf.count-1)
 					linebuf.left_adjust
 					linebuf.right_adjust
-					if not resources.has(category_name) then
+					if not resources.has (category_name) then
 						create cur_res_list.make(0)
-						resources.put(cur_res_list, category_name)
+						resources.put (cur_res_list, category_name)
 					else
-						cur_res_list := resources.item(category_name)
+						cur_res_list := resources.item (category_name)
 					end
 				else
 					if cur_res_list = Void then

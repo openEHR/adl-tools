@@ -225,6 +225,8 @@ feature -- Definitions
 		ec_ARP_no_profile_name: STRING = "ARP_no_profile_name"
 		ec_ARP_no_matching_schemas: STRING = "ARP_no_matching_schemas"
 		ec_ARP_no_bmm_schemas_loaded: STRING = "ARP_no_bmm_schemas_loaded"
+		ec_ARP_invalid_class_mapping: STRING = "ARP_invalid_class_mapping"
+		ec_ARP_invalid_property_mapping: STRING = "ARP_invalid_property_mapping"
 		ec_cfg_file_path_info: STRING = "cfg_file_path_info"
 		ec_repos_found_info: STRING = "repos_found_info"
 		ec_rep_populate_progress_info: STRING = "rep_populate_progress_info"

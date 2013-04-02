@@ -17,10 +17,6 @@ note
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class DV_ORDINAL
 
 inherit
@@ -31,7 +27,7 @@ create
 
 feature -- Initialization
 
-	make (a_value: INTEGER; a_symbol: attached DV_CODED_TEXT)
+	make (a_value: INTEGER; a_symbol: DV_CODED_TEXT)
 			-- make from a value/symbol pair
 		do
 			value := a_value
@@ -43,6 +39,7 @@ feature -- Initialization
 
 	make_from_string (str: STRING)
 		do
+			create symbol.make ("unknown", create {CODE_PHRASE}.default_create)
 		end
 
 feature -- Access
@@ -50,15 +47,10 @@ feature -- Access
 	value: INTEGER
 			-- ordinal value of this datum
 
-	symbol: attached DV_CODED_TEXT
+	symbol: DV_CODED_TEXT
 			-- symbolic representation of this value in the enumeration,
 			-- which may be strings made from “+” symbols, or other enumerations
 			-- of terms such as “mild”, “moderate”, “severe”.
-
-	limits: attached REFERENCE_RANGE [DV_ORDINAL]
-			-- limits of the ordinal enumeration, to allow comparison of an ordinal value to its limits.
-		do
-		end
 
 feature -- Comparison
 
@@ -84,8 +76,6 @@ feature -- Conversion
 
 invariant
 	Value_validity: value > 0
-	Limits_valid: limits.meaning.value.is_equal("limits")
-	Reference_range_valid: other_reference_ranges /= Void and then other_reference_ranges.has(limits)
 
 end
 

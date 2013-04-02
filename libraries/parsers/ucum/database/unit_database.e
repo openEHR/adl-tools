@@ -13,16 +13,13 @@ note
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class UNIT_DATABASE
 
 inherit
 	STRING_UTILITIES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_twin, is_deep_equal
 		redefine
 			out
 		end
@@ -40,8 +37,8 @@ feature -- Initialisation
 			-- look for unit group files ending in ".txt" in `unit_groups_path_name' directory, and
 			-- prefixes file called `prefixes_file_name'
 		require
-			Groups_path_name_exists: unit_groups_path_name /= Void and then not unit_groups_path_name.is_empty
-			Prefixes_file_name_exists: prefixes_file_name /= Void and then not prefixes_file_name.is_empty
+			Groups_path_name_exists: not unit_groups_path_name.is_empty
+			Prefixes_file_name_exists: not prefixes_file_name.is_empty
 		local
 			dir:DIRECTORY
 			files:ARRAYED_LIST[STRING]

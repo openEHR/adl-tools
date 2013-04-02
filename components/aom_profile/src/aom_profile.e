@@ -39,7 +39,6 @@ feature -- Initialisation
 			create profile_name.make_from_string (Default_aom_profile_name)
 			create rm_schema_pattern.make_empty
 			create rm_schema_ids.make (0)
-			create aom_tm_type_mappings.make (0)
 			create file_path.make_empty
 		end
 
@@ -64,7 +63,7 @@ feature -- Access (attributes from file)
 			-- grid-based view of an archetype definition, from the semantic viewpoint.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
-	aom_tm_type_mappings: detachable HASH_TABLE [AOM_TYPE_MAPPING, STRING]
+	aom_rm_type_mappings: detachable HASH_TABLE [AOM_TYPE_MAPPING, STRING]
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 feature -- Access
@@ -77,12 +76,37 @@ feature -- Access
 feature -- Validation
 
 	validate
+		local
+			sch: BMM_SCHEMA
+			rm_class_name: STRING
 		do
 			if profile_name.is_equal (Default_aom_profile_name) then
 				add_error (ec_ARP_no_profile_name, <<file_path>>)
 			end
 			if rm_schema_ids.is_empty then
 				add_error (ec_ARP_no_matching_schemas, <<file_path>>)
+			elseif attached aom_rm_type_mappings as aom_tm then
+				-- check that all type mappings are found in all mentioned schemas
+				across rm_schema_ids as schemas_csr loop
+					if has_rm_schema_for_id (schemas_csr.item) then
+						sch := rm_schema_for_id (schemas_csr.item)
+						across aom_tm as type_mappings_csr loop
+							rm_class_name := type_mappings_csr.item.target_class_name
+							if not sch.has_class_definition (type_mappings_csr.item.target_class_name) then
+								add_error (ec_ARP_invalid_class_mapping, <<type_mappings_csr.item.source_class_name,
+									rm_class_name, sch.schema_id>>)
+							else
+								across type_mappings_csr.item.property_mappings as property_mappings_csr loop
+									if not sch.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
+										add_error (ec_ARP_invalid_property_mapping, <<type_mappings_csr.item.source_class_name,
+											property_mappings_csr.item.source_property_name,
+											rm_class_name, property_mappings_csr.item.target_property_name, sch.schema_id>>)
+									end
+								end
+							end
+						end
+					end
+				end
 			end
 		end
 

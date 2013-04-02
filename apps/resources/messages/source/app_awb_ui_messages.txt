@@ -188,10 +188,10 @@ templates = <
 		["view_menu_new_class_tab_text"] = <"New &Class Tab">
 		["view_menu_reset_layout_text"] = <"&Reset tool layout">
 
-		["aom_profiles_menu_text"] = <"&AOM Profiles">
+		["aom_profiles_menu_text"] = <"AOM &Profiles">
 		["aom_profiles_menu_configure_text"] = <"&Configure">
 
-		["repository_menu_text"] = <"&Repository">
+		["repository_menu_text"] = <"&Archetypes">
 		["repository_menu_build_all_text"] = <"&Build All">
 		["repository_menu_rebuild_all_text"] = <"Rebuild &All">
 		["repository_menu_build_subtree_text"] = <"Build Sub&tree">
@@ -205,7 +205,7 @@ templates = <
 		["repository_menu_export_report_text"] = <"&Export Repository Report...">
 		["repository_menu_configure_text"] = <"&Configure Repositories...">
 
-		["rm_schemas_menu_text"] = <"RM &Schemas">
+		["rm_schemas_menu_text"] = <"&RM Schemas">
 		["rm_schemas_reload_text"] = <"&Reload Schemas">
 		["rm_schemas_configure_text"] = <"&Configure Schemas">
 

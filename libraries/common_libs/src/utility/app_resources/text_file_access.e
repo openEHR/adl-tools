@@ -5,23 +5,16 @@ note
 	             ignoring comments & blank lines.
 			 ]"
 	keywords:    "text file access"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class TEXT_FILE_ACCESS
 
-inherit
-	ERROR_STATUS
-
 feature -- Initialisation
 
-	make (a_file_name: attached STRING)
+	make (a_file_name: STRING)
 			-- initialise config file
 		require
 			file_name_not_empty: not a_file_name.is_empty

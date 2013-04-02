@@ -8,21 +8,20 @@
 -- 	license:     See end of file
 -- 
 
-profile_name = <"openEHR">
+profile_name = <"CIMI">
 
 ----------------------------------------------------------------------------------------
 -- id or PERL regex based on id Reference Models to which this profile applies. 
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_patterns = <"openehr_ehr_extract_.*", "openehr_rm_.*">
+rm_schema_pattern = <"cimi_full.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
 --
 terminology_profile = <
-	terminology_issuer = <"openehr">
-	code_sets_issuer = <"openehr">
+	terminology_issuer = <"cimi">
 >
 
 ----------------------------------------------------------------------------------------
@@ -37,7 +36,7 @@ archetype_visualise_descendants_of = <"ELEMENT">
 aom_rm_type_mappings = <
 	["CODE_PHRASE"] = <
 		source_class_name = <"CODE_PHRASE">
-		target_class_name = <"CODE_PHRASE">
+		target_class_name = <"CODED_TEXT">
 		property_mappings = <
 			["terminology_id"] = <
 				source_property_name = <"terminology_id">
@@ -45,13 +44,13 @@ aom_rm_type_mappings = <
 			>
 			["code_string"] = <
 				source_property_name = <"code_string">
-				target_property_name = <"code_string">
+				target_property_name = <"code">
 			>
 		>
 	>
-	["ORDINAL"] = <
+	["DV_ORDINAL"] = <
 		source_class_name = <"DV_ORDINAL">
-		target_class_name = <"DV_ORDINAL">
+		target_class_name = <"ORDINAL">
 		property_mappings = <
 			["symbol"] = <
 				source_property_name = <"symbol">
@@ -63,9 +62,9 @@ aom_rm_type_mappings = <
 			>
 		>
 	>
-	["QUANTITY"] = <
+	["DV_QUANTITY"] = <
 		source_class_name = <"DV_QUANTITY">
-		target_class_name = <"DV_QUANTITY">
+		target_class_name = <"QUANTITY">
 		property_mappings = <
 			["units"] = <
 				source_property_name = <"units">
@@ -73,7 +72,7 @@ aom_rm_type_mappings = <
 			>
 			["magnitude"] = <
 				source_property_name = <"magnitude">
-				target_property_name = <"magnitude">
+				target_property_name = <"value">
 			>
 			["precision"] = <
 				source_property_name = <"precision">

@@ -313,7 +313,7 @@ feature -- Access
 						gen_param_count := gen_param_count + 1
 						generic_parameters.forth
 					end
-					Result := type_name_as_flat_list (a_class_type_name).i_th (gen_param_count)
+					Result := type_name_as_flat_list (a_class_type_name).i_th (gen_param_count + 1)
 				else
 					Result := prop_type.as_type_string
 				end
@@ -375,7 +375,7 @@ feature -- Status Report
 		require
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := ancestors.has (a_class_name.as_upper) or else all_ancestors.has (a_class_name.as_upper)
+			Result := a_class_name.is_equal (any_type) or else ancestors.has (a_class_name.as_upper) or else all_ancestors.has (a_class_name.as_upper)
 		end
 
 	has_generic_parameter (a_gen_parm_name: STRING): BOOLEAN

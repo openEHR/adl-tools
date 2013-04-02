@@ -39,7 +39,7 @@ inherit
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all;
-			{ANY} has_rm_schema_for_id
+			{ANY} has_rm_schema_for_archetype_id
 		end
 
 	ANY_VALIDATOR
@@ -229,7 +229,7 @@ feature -- Modification
 	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		require
-			Valid_id: has_rm_schema_for_id (an_archetype_id)
+			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 		local
 			aof: APP_OBJECT_FACTORY
 		do
@@ -245,7 +245,7 @@ feature -- Modification
 	add_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
-			Valid_id: has_rm_schema_for_id (an_archetype_id)
+			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		local
 			aof: APP_OBJECT_FACTORY
