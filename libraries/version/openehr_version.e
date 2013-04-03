@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	OPENEHR_VERSION
 
@@ -37,7 +33,7 @@ feature -- Access
 	build: INTEGER = 0
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
-	revision: INTEGER = 0
+	revision: INTEGER = 2066
 			-- The Subversion revision number: automatically set by the SConstruct.
 			-- Make sure this is zero whenever the class is committed to Subversion.
 			-- Builds done within EiffelStudio will therefore always show revision 0.
@@ -45,7 +41,7 @@ feature -- Access
 			-- A proper release build done by the SConstruct will have a non-zero revision number.
 			-- The SConstruct automatically reverts its change, after it has finished building.
 
-	beta: STRING = "8"
+	beta: STRING = "9"
 			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
 
 	out: STRING
