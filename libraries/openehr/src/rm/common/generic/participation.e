@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 				 Used to represent any participation of a Party in some activity, 
 				 which is not explicitly in the model, e.g. assisting nurse. 
@@ -14,10 +14,6 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class PARTICIPATION
 
@@ -34,24 +30,24 @@ feature -- Access
 	performer: PARTY_PROXY
 			-- The party participating in the activity.
 
-	function: DV_TEXT	
-			-- The function of the Party in this participation (a given party might 
+	function: DV_TEXT
+			-- The function of the Party in this participation (a given party might
 			-- participate in more than one way in a given activity).
 
-	mode: DV_CODED_TEXT	
-			-- The modality of the performer / activity interaction, e.g. present, 
+	mode: DV_CODED_TEXT
+			-- The modality of the performer / activity interaction, e.g. present,
 			-- by telephone, by email etc.
-			
-	time: DV_INTERVAL [DV_DATE_TIME]	
-			-- The time interval during which the participation took place, 
-			-- if it is used in an observational context (i.e. recording facts about 
-			-- the past); or the intended time interval of the participation when used 
+
+	time: DV_INTERVAL [DV_DATE_TIME]
+			-- The time interval during which the participation took place,
+			-- if it is used in an observational context (i.e. recording facts about
+			-- the past); or the intended time interval of the participation when used
 			-- in future contexts, such as EHR Instructions.
 
 invariant
 	Performer_exists: performer /= Void
-	Mode_valid: terminology(Terminology_id_openehr).has_code_for_group_id(Group_id_participation_mode, mode.defining_code)			
-	Function_valid: function /= Void and then function.generating_type.is_equal("DV_CODED_TEXT") 
+	Mode_valid: terminology (Terminology_id_openehr).has_code_for_group_id (Group_id_participation_mode, mode.defining_code)
+	Function_valid: function /= Void and then function.generating_type.is_equal("DV_CODED_TEXT")
 -- FIXME: re-instate when a simple way is found to do an 'inline cast'
 --		implies terminology("openehr").codes_for_group_name("participation function", "en")
 --		.has(function.defining_code)

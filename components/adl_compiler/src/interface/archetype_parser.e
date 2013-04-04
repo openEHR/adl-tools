@@ -12,12 +12,8 @@ note
 	keywords:    "parser, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_PARSER
 
@@ -42,7 +38,7 @@ feature -- Access
 	selected_archetype: ARCH_CAT_ARCHETYPE
 			-- The archetype currently selected in the archetype directory.
 		do
-			Result := current_arch_dir.selected_archetype
+			Result := current_arch_cat.selected_archetype
 		end
 
 	differential_archetype: DIFFERENTIAL_ARCHETYPE
@@ -80,11 +76,9 @@ feature -- Factory
 		local
 			aca: ARCH_CAT_ARCHETYPE
 		do
-			app_root.set_current_language (primary_language)
-			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language, 0)
-			current_arch_dir.set_selected_item (aca)
+			create aca.make_new_archetype (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype)
+			current_arch_cat.set_selected_item (aca)
 		ensure
-			language_set: app_root.current_language.same_string (primary_language)
 			archetype_attached: attached selected_archetype
 			archetype_changed: selected_archetype /= old selected_archetype
 			id_set: selected_archetype.id.is_equal (id)

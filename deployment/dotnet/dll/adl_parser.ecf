@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
 	<target name="adl_parser">
 		<root class="ARCHETYPE_PARSER"/>
-		<version major="1" minor="5" release="0" build="0" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2011"/>
+		<version major="1" minor="5" release="0" build="2067" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2011"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 			<exclude>/\.git$</exclude>
@@ -57,8 +57,9 @@
 		</assembly>
 		<assembly name="system" location="$ISE_DOTNET_FRAMEWORK\System.dll" prefix="SYSTEM_DLL_"/>
 		<assembly name="system.xml" location="$ISE_DOTNET_FRAMEWORK\System.Xml.dll" prefix="XML_"/>
-		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
-		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true"/>
+		<cluster name="adl_components" location="..\..\..\components\" recursive="true"/>
+		<cluster name="app_messages" location="..\..\..\apps\resources\messages\compiled\"/>
+		<cluster name="app_env" location="..\env\"/>
 		<cluster name="common_libs" location="..\..\..\libraries\common_libs\src\" recursive="true">
 			<file_rule>
 				<exclude>/other$</exclude>
@@ -84,7 +85,8 @@
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="C_DV_ORDINAL"/>
 		</cluster>
-		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
+		<cluster name="gobo_regexp" location="$ISE_LIBRARY\contrib\library\gobo\library\regexp\" recursive="true"/>
+		<cluster name="parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
 		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
 			<file_rule>
