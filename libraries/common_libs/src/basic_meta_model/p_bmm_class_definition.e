@@ -97,7 +97,7 @@ feature -- Modification
 			is_override := True
 		end
 
-	set_source_schema_id (an_id: attached STRING)
+	set_source_schema_id (an_id: STRING)
 			-- set source schema id
 		do
 			source_schema_id := an_id

@@ -26,7 +26,7 @@ inherit
 		end
 
 	-- FIXME: this is a hack to allow add_custom_dt_dynamic_type_from_string to be called, adding in some
-	-- type correspondences that otherwise the runtime gets wrong if just INTERNAL.type_fromtype_name() is used
+	-- type correspondences that otherwise the runtime gets wrong if just INTERNAL.type_from_type_name() is used
 	DT_TYPES
 		export
 			{NONE} all

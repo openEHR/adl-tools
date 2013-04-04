@@ -1,17 +1,11 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-			 Shared access to ARCHETYPE_COMPILER
-			 ]"
+	description: "Shared access to ARCHETYPE_COMPILER"
 	keywords:    "shared access, archetype compiler"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/shared_archetype_parser.e $"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: 2007-10-02 16:49:19 +0100 (Tue, 02 Oct 2007) $"
 
 class SHARED_ARCHETYPE_COMPILER
 

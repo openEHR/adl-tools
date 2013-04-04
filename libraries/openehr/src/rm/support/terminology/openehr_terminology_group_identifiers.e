@@ -1,17 +1,11 @@
 note
 	component:   "openEHR common definitions"
-	
 	description: "Names of terminologies defined and used internally by openEHR"
 	keywords:    "terminology, vocabulary, identifiers"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class OPENEHR_TERMINOLOGY_GROUP_IDENTIFIERS
 
@@ -30,7 +24,7 @@ feature -- Definitions
 	Group_id_ism_states: STRING = "ISM states"
 
 	Group_id_ism_transitions: STRING = "ISM transitions"
-	
+
 	Group_id_normal_status: STRING = "normal status"
 
 	Group_id_null_flavours: STRING = "null flavours"
@@ -55,6 +49,7 @@ feature -- Comparison
 			-- True if an_id is in the set defined by this class
 		do
 			-- FIXME: to be implemented
+			Result := True
 		end
 
 end
