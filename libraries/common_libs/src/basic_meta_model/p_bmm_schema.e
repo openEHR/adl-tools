@@ -495,16 +495,26 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			create package_classes.make (0)
 			across canonical_packages as pkgs_csr loop
 				pkgs_csr.item.do_recursive_classes (
-					agent (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING; class_list: HASH_TABLE [STRING, STRING])
+					agent (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING; pkg_class_list: HASH_TABLE [STRING, STRING])
 						do
-							if class_list.has (a_class_name.as_lower) and then attached class_list.item (a_class_name.as_lower) as cl_item then
+							if pkg_class_list.has (a_class_name.as_lower) and then attached pkg_class_list.item (a_class_name.as_lower) as cl_item then
 								add_error (ec_BMM_CLDUP, <<schema_id, a_class_name, a_pkg.name, cl_item>>)
 							else
-								class_list.put (a_pkg.name, a_class_name.as_lower)
+								pkg_class_list.put (a_pkg.name, a_class_name.as_lower)
 							end
 						end (?, ?, package_classes)
 				)
 			end
+
+			-- check that every class is in a package
+			do_all_classes (
+				agent (a_class_def: P_BMM_CLASS_DEFINITION; pkg_class_list: HASH_TABLE [STRING, STRING])
+					do
+						if not pkg_class_list.has (a_class_def.name.as_lower) then
+							add_error (ec_BMM_PKGID, <<schema_id, a_class_def.name>>)
+						end
+					end (?, package_classes)
+			)
 
 			-- for all classes, validate all properties
 			do_all_classes (agent (a_class_def: P_BMM_CLASS_DEFINITION) do validate_class (a_class_def) end)
