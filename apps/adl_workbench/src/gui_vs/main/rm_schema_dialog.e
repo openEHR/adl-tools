@@ -161,6 +161,7 @@ feature -- Commands
 	reload
 			-- alow user reload after manual changes while correcting schemas
 		do
+			reset_rm_schemas_load_list
 			rm_schemas_access.reload_schemas
 			do_populate
 		end
@@ -170,9 +171,7 @@ feature -- Events
 	on_ok
 			-- Set shared settings from the dialog widgets.
 		local
-			i: INTEGER
 			error_dialog: EV_INFORMATION_DIALOG
-			rm_schemas_ll: LIST [STRING]
 		do
 			-- we do this call again, even though it might have alredy been executed due to the user using the
 			-- directory browse button (multiple times). We do it here because the user might have also set the
@@ -190,22 +189,7 @@ feature -- Events
 					set_rm_schema_directory (last_populated_rm_schema_dir)
 					has_changed_schema_dir := True
 				end
-
-				-- get the user-chosen list of schemas from the load list Grid
-				create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
-				rm_schemas_ll.compare_objects
-				from i := 1 until i > grid.row_count loop
-					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_schema_col) as gcli and then gcli.is_checked then
-						rm_schemas_ll.extend (gcli.text)
-					end
-					i := i + 1
-				end
-
-				if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
-					set_rm_schemas_load_list (rm_schemas_ll)
-					rm_schemas_access.set_schema_load_list (rm_schemas_ll)
-					has_changed_schema_load_list := True
-				end
+				reset_rm_schemas_load_list
 			end
 		end
 
@@ -252,6 +236,28 @@ feature {NONE} -- Implementation
 		do
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 			populate_grid
+		end
+
+	reset_rm_schemas_load_list
+			-- get the user-chosen list of schemas from the load list Grid first column check boxes
+		local
+			rm_schemas_ll: LIST [STRING]
+			i: INTEGER
+		do
+			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
+			rm_schemas_ll.compare_objects
+			from i := 1 until i > grid.row_count loop
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_schema_col) as gcli and then gcli.is_checked then
+					rm_schemas_ll.extend (gcli.text)
+				end
+				i := i + 1
+			end
+
+			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
+				set_rm_schemas_load_list (rm_schemas_ll)
+				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
+				has_changed_schema_load_list := True
+			end
 		end
 
 	populate_grid
