@@ -433,6 +433,7 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_ERRORS_GREY}.make).to_pixmap end, "tool/errors_grey")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_FLAT}.make).to_pixmap end, "tool/flat")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_FLAT_CLASS}.make).to_pixmap end, "tool/flat_class")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_GLOBE}.make).to_pixmap end, "tool/globe")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_GO}.make).to_pixmap end, "tool/go")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_HISTORY_BACK}.make).to_pixmap end, "tool/history_back")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_HISTORY_FORWARD}.make).to_pixmap end, "tool/history_forward")

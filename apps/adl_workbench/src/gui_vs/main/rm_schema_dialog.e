@@ -265,16 +265,25 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER
 			form_width: INTEGER
+			gli: EV_GRID_LABEL_ITEM
+			row: EV_GRID_ROW
 		do
 			-- get rid of previously defined rows
 			grid.wipe_out
 			grid.enable_column_resize_immediate
 			grid.set_minimum_height (rm_schemas_access.all_schemas.count * grid.row_height + grid.header.height)
 
-			-- create row containinng widgets for each top-level schema, with child schemas in tree
-			across rm_schemas_access.all_schemas as all_schemas_csr loop
-				if all_schemas_csr.item.is_top_level then
-					add_schema_grid_rows (all_schemas_csr.item, Void)
+			-- create row containing widgets for each top-level schema, with child schemas in tree
+			across rm_schemas_access.top_level_schemas_by_publisher as pub_csr loop
+				create gli.make_with_text (pub_csr.key)
+				gli.set_pixmap (get_icon_pixmap ("tool/globe"))
+				grid.set_item (Grid_schema_col, grid.row_count + 1, gli)
+				row := gli.row
+				across pub_csr.item as pub_schemas_csr loop
+					add_schema_publisher_grid_rows (pub_schemas_csr.item, row)
+				end
+				if row.is_expandable then
+					row.expand
 				end
 			end
 
@@ -295,7 +304,7 @@ feature {NONE} -- Implementation
 			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
-	add_schema_grid_rows (a_schema: SCHEMA_DESCRIPTOR; parent_row: detachable EV_GRID_ROW)
+	add_schema_publisher_grid_rows (a_schema_desc: SCHEMA_DESCRIPTOR; parent_row: detachable EV_GRID_ROW)
 			-- add rows for `schema_id' and its children, recursively
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -303,20 +312,19 @@ feature {NONE} -- Implementation
 			gcli: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
 			-- column 1 - name + check box to indicate loaded on top-level schemas
-			if a_schema.is_top_level then
-				create gcli.make_with_text (a_schema.schema_id)
-				gcli.set_is_checked (rm_schemas_access.schemas_load_list.has (a_schema.schema_id))
-				grid.set_item (Grid_schema_col, grid.row_count + 1, gcli)
-				row := gcli.row
+			parent_row.insert_subrow (parent_row.subrow_count + 1)
+			row := parent_row.subrow (parent_row.subrow_count)
+			if a_schema_desc.is_top_level then
+				create gcli.make_with_text (a_schema_desc.schema_id)
+				gcli.set_is_checked (rm_schemas_access.schemas_load_list.has (a_schema_desc.schema_id))
+				row.set_item (Grid_schema_col, gcli)
 			else
-				create gli.make_with_text (a_schema.schema_id)
-				parent_row.insert_subrow (parent_row.subrow_count + 1)
-				row := parent_row.subrow (parent_row.subrow_count)
+				create gli.make_with_text (a_schema_desc.schema_id)
 				row.set_item (Grid_schema_col, gli)
 			end
 
 			-- column 2 - lifecycle state
-			if a_schema.meta_data.has (Metadata_schema_lifecycle_state) and then attached a_schema.meta_data.item (Metadata_schema_lifecycle_state) as ls then
+			if a_schema_desc.meta_data.has (Metadata_schema_lifecycle_state) and then attached a_schema_desc.meta_data.item (Metadata_schema_lifecycle_state) as ls then
 				create gli.make_with_text (ls)
 			else
 				create gli.make_with_text ("(unknown)")
@@ -325,28 +333,28 @@ feature {NONE} -- Implementation
 
 			-- column 3 - validated
 			create gli.make_with_text ("         ")
-			if a_schema.passed and not a_schema.errors.has_warnings then
+			if a_schema_desc.passed and not a_schema_desc.errors.has_warnings then
 				gli.set_pixmap (get_icon_pixmap ("tool/star"))
 			else
-				if a_schema.errors.has_errors then
+				if a_schema_desc.errors.has_errors then
 					gli.set_pixmap (get_icon_pixmap ("tool/errors"))
 				else
 					gli.set_pixmap (get_icon_pixmap ("tool/info"))
 				end
-				gli.select_actions.extend (agent show_schema_validation (a_schema.schema_id))
+				gli.select_actions.extend (agent show_schema_validation (a_schema_desc.schema_id))
 			end
 			row.set_item (Grid_validated_col, gli)
 
 			-- column 4 - create edit button and add to row
 			create gli.make_with_text ("Edit")
 			gli.set_pixmap (get_icon_pixmap ("tool/edit"))
-			gli.select_actions.extend (agent do_edit_schema (a_schema))
+			gli.select_actions.extend (agent do_edit_schema (a_schema_desc))
 			row.set_item (Grid_edit_col, gli)
 
 			-- now do child schemas
-			across a_schema.includes as includes_csr loop
+			across a_schema_desc.includes as includes_csr loop
 				check attached rm_schemas_access.all_schemas.item (includes_csr.item) as sch then
-					add_schema_grid_rows (sch, row)
+					add_schema_publisher_grid_rows (sch, row)
 				end
 			end
 		end

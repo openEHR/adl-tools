@@ -46,6 +46,7 @@ feature {NONE} -- Initialisation
 			create all_schemas.make(0)
 			create candidate_schemas.make(0)
 			create valid_top_level_schemas.make(0)
+			create top_level_schemas_by_publisher.make (0)
 			create schema_inclusion_map.make(0)
 			create schemas_by_rm_closure.make(0)
 			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
@@ -93,6 +94,9 @@ feature -- Access
 	valid_top_level_schemas: HASH_TABLE [BMM_SCHEMA, STRING]
 			-- top-level (root) schemas in use. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 			-- Schemas containing different variants of same model (i.e. model_publisher + model_name) are considered duplicates
+
+	top_level_schemas_by_publisher: HASH_TABLE [ARRAYED_LIST [SCHEMA_DESCRIPTOR], STRING]
+			-- all top-level schemas keyed by issuer
 
 	schema_for_rm_closure (a_qualified_rm_closure_name: STRING): BMM_SCHEMA
 			-- Return schema containing the model-class key `a_qualified_rm_closure_name', e.g. "openEHR-EHR"
@@ -245,10 +249,14 @@ feature {NONE} -- Implementation
 			rm_closures: ARRAYED_LIST [STRING]
 			i: INTEGER
 			finished, incompatible_schema_detected: BOOLEAN
+			tl_schema: BMM_SCHEMA
+			schema_desc: SCHEMA_DESCRIPTOR
+			publisher_schemas: ARRAYED_LIST [SCHEMA_DESCRIPTOR]
 		do
 			if not exception_encountered then
 				-- populate the rm_schemas table first
 				valid_top_level_schemas.wipe_out
+				top_level_schemas_by_publisher.wipe_out
 				schema_inclusion_map.wipe_out
 				candidate_schemas.wipe_out
 
@@ -343,21 +351,23 @@ feature {NONE} -- Implementation
 					-- This will cause each schema to potentially create errors to do with included schemas as well as itself
 					-- These errors then need to be integrated with the original schemas, so as to be reported correctly
 					across candidate_schemas as schemas_csr loop
-						if schemas_csr.item.is_top_level and schemas_load_list.has (schemas_csr.item.schema_id) then
-							if schemas_csr.item.passed and schemas_csr.item.p_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
+						schema_desc := schemas_csr.item
+						if schema_desc.is_top_level and schemas_load_list.has (schema_desc.schema_id) then
+							if schema_desc.passed and schema_desc.p_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
 								-- validate the schema & if passed, put it into `top_level_schemas'
-								schemas_csr.item.validate
-								merge_validation_errors (schemas_csr.item)
-								if schemas_csr.item.passed then
-									schemas_csr.item.create_schema
-									check attached schemas_csr.item.schema as sch then
-										valid_top_level_schemas.extend (sch, schemas_csr.item.schema_id)
+								schema_desc.validate
+								merge_validation_errors (schema_desc)
+								if schema_desc.passed then
+									schema_desc.create_schema
+									check attached schema_desc.schema as sch then
+										tl_schema := sch
 									end
-									if schemas_csr.item.errors.has_warnings then
-										add_warning (ec_bmm_schema_passed_with_warnings, <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+									valid_top_level_schemas.extend (tl_schema, schema_desc.schema_id)
+									if schema_desc.errors.has_warnings then
+										add_warning (ec_bmm_schema_passed_with_warnings, <<schema_desc.schema_id, schema_desc.errors.as_string>>)
 									end
 								else
-									add_error (ec_bmm_schema_post_merge_validate_fail, <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
+									add_error (ec_bmm_schema_post_merge_validate_fail, <<schema_desc.schema_id, schema_desc.errors.as_string>>)
 								end
 							end
 						end
@@ -368,9 +378,9 @@ feature {NONE} -- Implementation
 				schemas_by_rm_closure.wipe_out
 				across valid_top_level_schemas as schemas_csr loop
 					model_publisher := schemas_csr.item.rm_publisher
-					rm_closures := schemas_csr.item.archetype_rm_closure_packages
 
 					-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
+					rm_closures := schemas_csr.item.archetype_rm_closure_packages
 					across rm_closures as rm_closures_csr loop
 						qualified_rm_closure_name := publisher_qualified_rm_closure_key (model_publisher, rm_closures_csr.item)
 						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
@@ -381,6 +391,26 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
+
+				-- add entry to top_level_schemas_by_publisher
+				across all_schemas as schemas_csr loop
+					schema_desc := schemas_csr.item
+					if schema_desc.is_top_level then
+						check attached schema_desc.meta_data.item (metadata_rm_publisher) as pub then
+							model_publisher :=  pub
+						end
+						if not top_level_schemas_by_publisher.has (model_publisher) then
+							create publisher_schemas.make (0)
+							top_level_schemas_by_publisher.put (publisher_schemas, model_publisher)
+						else
+							check attached top_level_schemas_by_publisher.item (model_publisher) as pub_schs then
+								publisher_schemas := pub_schs
+							end
+						end
+						publisher_schemas.extend (schema_desc)
+					end
+				end
+
 				load_count := load_count.item + 1
 			end
 

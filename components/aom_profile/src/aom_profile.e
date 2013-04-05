@@ -127,8 +127,6 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 
 	finalise_dt
 			-- Finalisation work: evaluate rm schema regexes
-		local
-			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
 			if rm_schemas_access.load_attempted then
 				get_regex_matches (rm_schema_pattern)
