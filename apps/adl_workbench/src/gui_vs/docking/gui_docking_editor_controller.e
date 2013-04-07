@@ -187,11 +187,11 @@ feature {NONE} -- Implementation
 		local
 			docking_pane: SD_CONTENT
 			last_ed: detachable SD_CONTENT
-			a_gui_tool_dummy: like active_tool
+	--		a_gui_tool_dummy: like active_tool
 		do
 			-- FIXME: the following line, plus local decl above is to get around cat-call error thrown at
 			-- runtime by the ***** line below, due to manifest tuple static type not being correctly inferred by compiler
-			a_gui_tool_dummy := a_gui_tool
+		--	a_gui_tool_dummy := a_gui_tool
 
 			-- find out what the current last editor in the docking panel is, before making a new one
 			last_ed := docking_manager_last_tool
@@ -206,7 +206,7 @@ feature {NONE} -- Implementation
 			end
 			docking_pane.close_request_actions.extend (agent remove_tool (active_tool_id))
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
-			docking_tools.put ([a_gui_tool_dummy, docking_pane], active_tool_id) -- ***********
+			docking_tools.put ([a_gui_tool, docking_pane], active_tool_id) -- ***********
 		ensure
 			Tool_added_to_index: docking_tools.has (active_tool_id) and then docking_tools.item (active_tool_id).tool = a_gui_tool
 		end
