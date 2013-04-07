@@ -74,10 +74,10 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_profile_repo_access: PROFILE_REPOSITORY_ACCESS)
+	make (a_profile_repo_access: REPOSITORY_ACCESS)
 		do
 			clear
-			profile_repo_access := a_profile_repo_access
+			repository_access := a_profile_repo_access
 			if not semantic_item_tree_prototype.has_children then
 				initialise_semantic_item_tree_prototype
 				clone_semantic_item_tree_prototype
@@ -87,7 +87,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	profile_repo_access: PROFILE_REPOSITORY_ACCESS
+	repository_access: REPOSITORY_ACCESS
 			-- the repository profile accessor from which this catalogue gets its contents
 
 	archetype_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
@@ -173,7 +173,7 @@ feature -- Status Report
 	adhoc_path_valid (a_full_path: STRING): BOOLEAN
 			-- True if path is valid in adhoc repository
 		do
-			Result := profile_repo_access.adhoc_source_repository.is_valid_path (a_full_path)
+			Result := repository_access.adhoc_source_repository.is_valid_path (a_full_path)
 		end
 
 	has_item (an_item: ARCH_CAT_ITEM): BOOLEAN
@@ -216,7 +216,7 @@ feature -- Commands
 			-- populate all indexes from repository source
 		do
 			-- populate source repos from physical medium
-			across profile_repo_access.repositories as profile_repos_csr loop
+			across repository_access.repositories as profile_repos_csr loop
 				profile_repos_csr.item.populate
 			end
 
@@ -234,7 +234,7 @@ feature -- Modification
 			aof: APP_OBJECT_FACTORY
 		do
 			create aof
-			check attached profile_repo_access.reference_repository as ref_repo then
+			check attached repository_access.reference_repository as ref_repo then
 				put_archetype (aof.create_arch_cat_archetype_make_new_archetype (an_archetype_id,
 					ref_repo, in_dir_path), in_dir_path)
 			end
@@ -252,7 +252,7 @@ feature -- Modification
 		do
 			create aof
 			check attached parent_aca.differential_archetype as parent_diff_arch and attached
-				profile_repo_access.reference_repository as ref_repo
+				repository_access.reference_repository as ref_repo
 			then
 				put_archetype (aof.create_arch_cat_archetype_make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
 					ref_repo, in_dir_path), in_dir_path)
@@ -264,10 +264,10 @@ feature -- Modification
 	last_added_archetype: detachable ARCH_CAT_ARCHETYPE
 			-- archetype added by last call to `add_new_archetype' or `add_new_specialised_archetype'
 
-	add_adhoc_archetype (in_dir_path: STRING)
-			-- Add the archetype designated by `in_dir_path' to the ad hoc repository, and graft it into `directory'.
+	add_adhoc_archetype (a_path: STRING)
+			-- Add the archetype designated by `a_path' to the ad hoc repository, and graft it into `directory'.
 		require
-			path_valid: adhoc_path_valid (in_dir_path)
+			path_valid: adhoc_path_valid (a_path)
 		local
 			aca: ARCH_CAT_ARCHETYPE
 		do
@@ -276,11 +276,12 @@ feature -- Modification
 			end
 
 			errors.wipe_out
-			profile_repo_access.adhoc_source_repository.add_item (in_dir_path)
-			if profile_repo_access.adhoc_source_repository.has_path (in_dir_path) then
-				aca := profile_repo_access.adhoc_source_repository.item (in_dir_path)
+			repository_access.adhoc_source_repository.add_item (a_path)
+			if repository_access.adhoc_source_repository.has_path (a_path) then
+				aca := repository_access.adhoc_source_repository.item (a_path)
 				if valid_candidate (aca) then
-					put_archetype (aca, in_dir_path)
+					add_filesys_tree_repo_node (file_system.dirname (a_path))
+					put_archetype (aca, a_path)
 				elseif not has_item_with_id (aca.ontological_parent_name.as_lower) then
 					if aca.is_specialised then
 						add_error (ec_arch_cat_orphan_archetype, <<aca.ontological_parent_name, aca.qualified_key>>)
@@ -288,10 +289,10 @@ feature -- Modification
 						add_error (ec_arch_cat_orphan_archetype_e2, <<aca.ontological_parent_name, aca.qualified_key>>)
 					end
 				elseif has_item_with_id (aca.qualified_key) then
-					add_error (ec_arch_cat_dup_archetype, <<in_dir_path>>)
+					add_error (ec_arch_cat_dup_archetype, <<a_path>>)
 				end
 			else
-				add_error (ec_invalid_filename_e1, <<in_dir_path>>)
+				add_error (ec_invalid_filename_e1, <<a_path>>)
 			end
 		end
 
@@ -479,7 +480,7 @@ feature {NONE} -- Implementation
 
 			clone_semantic_item_tree_prototype
 
-			across profile_repo_access.repositories as profile_repos_csr loop
+			across repository_access.repositories as profile_repos_csr loop
 				archs := profile_repos_csr.item.fast_archetype_list
 
 				-- maintain a list indicating status of each attempted archetype; values:
@@ -531,52 +532,70 @@ feature {NONE} -- Implementation
 	populate_filesys_indexes
 		local
 			repo_path: STRING
-			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
-			filesys_node: ARCH_CAT_FILESYS_NODE
 		do
 			-- create top node (never seen in GUI)
 			create filesys_item_tree.make (Archetype_category.twin)
 
 			-- create nodes for archetypes based on their paths in repository
-			across profile_repo_access.repositories as profile_repos_csr loop
-				-- add a node representing repository root path
-				repo_path := profile_repos_csr.item.full_path
-				create filesys_node.make (repo_path)
-				filesys_item_tree.put_child (filesys_node)
-				filesys_item_index.force (filesys_node, repo_path.as_lower)
+			across repository_access.repositories as repos_csr loop
+				-- add a node representing repository root
+				add_filesys_tree_repo_node (repos_csr.item.full_path)
 
 				-- now go through archetypes and add them in to tree, adding intermediate
 				-- filesystem nodes sa required
-				archs := profile_repos_csr.item.fast_archetype_list
-				across archs as archs_csr loop
-					add_arch_to_filesys_tree (archs_csr.item)
+				across repos_csr.item.fast_archetype_list as archs_csr loop
+					if not archs_csr.item.is_specialised then
+						add_arch_to_filesys_tree (archs_csr.item)
+					end
+				end
+			end
+		end
+
+	add_filesys_tree_repo_node (a_repo_path: STRING)
+			-- add a node directly below the root representing the repository containing the archetype(s)
+		local
+			filesys_node: ARCH_CAT_FILESYS_NODE
+		do
+			create filesys_node.make (a_repo_path)
+			filesys_item_tree.put_child (filesys_node)
+			filesys_item_index.force (filesys_node, a_repo_path.as_lower)
+		end
+
+	has_filesys_repo_for_path (a_path: STRING): BOOLEAN
+			-- True if there is a repo in the `filesys_item_tree' structure that is a
+			-- parent of `a_path' on the file system
+		do
+			if attached filesys_item_tree.children as repo_nodes then
+				Result := across repo_nodes as repo_nodes_csr some
+					file_system.is_subpathname (repo_nodes_csr.item.qualified_name, a_path)
 				end
 			end
 		end
 
 	add_arch_to_filesys_tree (aca: ARCH_CAT_ARCHETYPE)
+			-- add top-level archetype to filesys tree. Specialised archetypes will
+			-- appear automatically, due to being added to top-level parent node during
+			-- semantic tree building
+		require
+			not aca.is_specialised and has_filesys_repo_for_path (aca.differential_path)
 		local
 			parent_dir: STRING
 		do
-			if not aca.is_specialised then
-				parent_dir := file_system.dirname (aca.differential_path).as_lower
-				if not filesys_item_index.has (parent_dir) then
-					add_filesys_nodes (parent_dir)
-				end
-				filesys_item_index.item (parent_dir).put_child (aca)
-				filesys_item_index.force (aca, aca.qualified_key)
+			parent_dir := file_system.dirname (aca.differential_path).as_lower
+			if not filesys_item_index.has (parent_dir) then
+				add_filesys_nodes (parent_dir)
 			end
+			filesys_item_index.item (parent_dir).put_child (aca)
+			filesys_item_index.force (aca, aca.qualified_key)
 		end
 
 	add_filesys_nodes (a_dir_path: STRING)
 			-- create intermediate file system nodes in `filesys_item_tree' based on `a_dir_path'
 		local
-			parent_dir: STRING
 			filesys_node: ARCH_CAT_FILESYS_NODE
+			parent_dir: STRING
 		do
-			check attached file_system.dirname (a_dir_path) as dn then
-				parent_dir := dn
-			end
+			parent_dir := file_system.dirname (a_dir_path)
 			if not filesys_item_index.has (parent_dir) then
 				add_filesys_nodes (parent_dir)
 			end
@@ -748,8 +767,11 @@ feature {NONE} -- Implementation
 			semantic_item_index.force (aca, child_key)
 			archetype_index.force (aca, child_key)
 
-			-- add to filesys index
-			add_arch_to_filesys_tree (aca)
+			-- add to filesys index if top-level archetype (if specialised, the
+			-- connection is already made due to semantic tree link
+			if not aca.is_specialised then
+				add_arch_to_filesys_tree (aca)
+			end
 
 			last_added_archetype := aca
 		ensure

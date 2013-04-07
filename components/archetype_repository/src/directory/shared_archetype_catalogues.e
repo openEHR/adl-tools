@@ -43,7 +43,7 @@ feature -- Access
 			is_current_repository_valid
 		local
 			new_cat: ARCHETYPE_CATALOGUE
-			prof_repo_access: PROFILE_REPOSITORY_ACCESS
+			prof_repo_access: REPOSITORY_ACCESS
 			curr_prof: STRING
 		do
 			init_gen_dirs_from_current_repository

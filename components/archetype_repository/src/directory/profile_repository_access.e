@@ -6,11 +6,10 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
-class PROFILE_REPOSITORY_ACCESS
+class REPOSITORY_ACCESS
 
 inherit
 	SHARED_RESOURCES
