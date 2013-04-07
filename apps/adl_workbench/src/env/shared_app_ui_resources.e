@@ -454,11 +454,9 @@ feature {NONE} -- Implementation
 		once
 			create version
 			create Result.make_empty
-			Result.append ("ADL Workbench%N")
-			Result.append ("Version " + version.out + "%N")
+			Result.append ("ADL " + Latest_adl_version + " Workbench  version " + version.out + "%N")
 			Result.append ("(c) 2003- openEHR Foundation%N")
-			Result.append ("ADL version: " + Latest_adl_version + "%N")
-			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
+			Result.append ("Source - https://github.com/openEHR/adl-tools.git%N")
 			Result.append ("Source license: Mozilla tri-license%N")
 			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
 			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")

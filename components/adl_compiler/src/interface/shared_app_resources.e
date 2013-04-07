@@ -35,10 +35,10 @@ feature -- Definitions
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
 
-	Release_notes_file_path: STRING = "http://www.openehr.org/downloads/ADLworkbench/releasenotes"
+	Release_notes_file_path: STRING = "http://www.openehr.org/downloads/ADLworkbench/release_notes"
 			-- The path to ADL Workbench's release notes.
 
-	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
+	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/ckm/"
 			-- The URL to CKM.
 
 	Repository_report_filename: STRING = "ArchetypeRepositoryReport.xml"
