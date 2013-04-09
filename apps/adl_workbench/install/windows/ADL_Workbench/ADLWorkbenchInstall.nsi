@@ -23,7 +23,7 @@ Name "ADL Workbench"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\adl_workbench.exe"
-!define MUI_FINISHPAGE_SHOWREADME "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
+!define MUI_FINISHPAGE_SHOWREADME "http://www.openehr.org/downloads/ADLworkbench/release_notes"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
