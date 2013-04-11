@@ -411,7 +411,7 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				load_count := load_count.item + 1
+				load_count := load_count + 1
 			end
 
 		rescue
