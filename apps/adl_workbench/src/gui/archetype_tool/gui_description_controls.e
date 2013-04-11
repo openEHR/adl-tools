@@ -48,9 +48,9 @@ feature {NONE} -- Initialisation
 
 			-- lifecycle state control - single line combo text-selection field
 			create lifecycle_state_text_ctl.make_linked (get_text (ec_lifecycle_state_label_text),
-				agent :STRING do Result := source_archetype.description.lifecycle_state end,
+				agent :STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
 				archetype_lifecycle_states,
-				agent (a_str: STRING) do source_archetype.description.set_lifecycle_state (a_str) end,
+				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
 				Void, authoring_tab_undo_redo_chain, 0, 140)
 			gui_controls.extend (lifecycle_state_text_ctl)
 			admin_vbox.extend (lifecycle_state_text_ctl.ev_root_container)
@@ -61,18 +61,18 @@ feature {NONE} -- Initialisation
 
 			-- original_author control - Hash
 			create original_author_ctl.make_linked (get_text (ec_auth_orig_auth_label_text),
-				agent :HASH_TABLE [STRING, STRING] do Result := source_archetype.description.original_author end,
-				agent (a_key, a_val: STRING) do source_archetype.description.put_original_author_item (a_key, a_val) end,
-				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
+				agent :HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
+				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_original_author_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_original_author_item (a_key) end end,
 				authoring_tab_undo_redo_chain,
 				0, min_entry_control_width, False, Void)
 			gui_controls.extend (original_author_ctl)
 
 			-- contributors - list
 			create auth_contrib_list_ctl.make_linked (get_text (ec_auth_contrib_label_text),
-				agent :detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
-				agent (a_str: STRING; i: INTEGER) do source_archetype.description.add_other_contributor (a_str, i) end,
-				agent (a_str: STRING) do source_archetype.description.remove_other_contributor (a_str) end,
+				agent :detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description as desc and then attached desc.other_contributors as oc then Result := oc end end,
+				agent (a_str: STRING; i: INTEGER) do if attached source_archetype.description as desc then desc.add_other_contributor (a_str, i) end end,
+				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.remove_other_contributor (a_str) end end,
 				authoring_tab_undo_redo_chain,
 				0, min_entry_control_width, False)
 			gui_controls.extend (auth_contrib_list_ctl)
@@ -206,11 +206,11 @@ feature {NONE} -- Initialisation
 			create resource_package_ctl.make_linked (get_text (ec_packages_label_text),
 				agent :detachable STRING
 					do
-						if attached source_archetype.description.resource_package_uri then
-							Result := source_archetype.description.resource_package_uri.out
+						if attached source_archetype.description as desc and then attached desc.resource_package_uri as rpi then
+							Result := rpi.out
 						end
 					end,
-				agent (a_str: STRING) do source_archetype.description.set_resource_package_uri (a_str) end,
+				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_resource_package_uri (a_str) end end,
 				agent do source_archetype.description.clear_resource_package_uri end,
 				description_tab_undo_redo_chain, 0, 0, True)
 			gui_controls.extend (resource_package_ctl)
@@ -224,8 +224,8 @@ feature {NONE} -- Initialisation
 							Result := dd.original_resource_uri
 						end
 					end,
-				agent (a_key, a_val: STRING) do description_details.put_original_resource_uri_item (a_key, a_val) end,
-				agent (a_key: STRING) do description_details.remove_original_resource_uri_item (a_key) end,
+				agent (a_key, a_val: STRING) do if attached description_details as dd then dd.put_original_resource_uri_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached description_details as dd then description_details.remove_original_resource_uri_item (a_key) end end,
 				description_tab_undo_redo_chain,
 				44, 0, True, Void)
 			gui_controls.extend (original_resources_ctl)
@@ -338,8 +338,8 @@ feature {NONE} -- Implementation
 		require
 			is_populated
 		do
-			if source_archetype.description.has_details then
-				Result := source_archetype.description.detail_for_language (selected_language)
+			if attached source_archetype.description as desc and then desc.has_details then
+				Result := desc.detail_for_language (selected_language)
 			end
 		end
 
