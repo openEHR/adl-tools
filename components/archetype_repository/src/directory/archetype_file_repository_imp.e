@@ -13,7 +13,7 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_APP_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 		rename
 			file_exists as is_valid_path,
 			directory_exists as is_valid_directory
@@ -21,7 +21,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_ARCHETYPE_RM_ACCESS
 		export
 			{NONE} all
 		end

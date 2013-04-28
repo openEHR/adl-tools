@@ -60,7 +60,7 @@ feature {NONE} -- Definitions
 			Result.extend (({ISO8601_TIME}).type_id)
 			Result.extend (({ISO8601_DURATION}).type_id)
 
-			Result.extend (({CODE_PHRASE}).type_id)
+			Result.extend (({TERMINOLOGY_CODE}).type_id)
 			Result.extend (({URI}).type_id)
 		end
 
@@ -107,7 +107,7 @@ feature {NONE} -- Definitions
 			Result.extend (({SEQUENCE [ISO8601_TIME]}).type_id)
 			Result.extend (({SEQUENCE [ISO8601_DURATION]}).type_id)
 
-			Result.extend (({SEQUENCE [CODE_PHRASE]}).type_id)
+			Result.extend (({SEQUENCE [TERMINOLOGY_CODE]}).type_id)
 			Result.extend (({SEQUENCE [URI]}).type_id)
 		end
 
@@ -260,7 +260,7 @@ feature -- Status Report
 
 	is_dt_primitive_sequence_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
-			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
+			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, TERMINOLOGY_CODE, URI
 		require
 			Type_valid: a_type_id >= 0
 		do
@@ -269,7 +269,7 @@ feature -- Status Report
 
 	is_dt_primitive_interval_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
-			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
+			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, TERMINOLOGY_CODE, URI
 		require
 			Type_valid: a_type_id >= 0
 		do
@@ -285,6 +285,11 @@ feature -- Status Report
 			Result := dt_primitive_sequence_conforming_type (attached_type (a_type_id)) /= 0
 		end
 
+	is_dt_primitive_type (a_type_id: INTEGER): BOOLEAN
+		do
+			Result := is_dt_primitive_atomic_type (a_type_id) or is_dt_primitive_sequence_type (a_type_id) or is_dt_primitive_interval_type (a_type_id)
+		end
+
 	has_dt_primitive_atomic_type (an_obj: ANY): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
@@ -294,14 +299,14 @@ feature -- Status Report
 
 	has_dt_primitive_sequence_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
-			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
+			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, TERMINOLOGY_CODE, URI
 		do
 			Result := is_dt_primitive_sequence_type (attached_type (dynamic_type(an_obj)))
 		end
 
 	has_dt_primitive_interval_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
-			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
+			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, TERMINOLOGY_CODE, URI
 		do
 			Result := is_dt_primitive_interval_type (attached_type (dynamic_type(an_obj)))
 		end

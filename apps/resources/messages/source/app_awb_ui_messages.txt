@@ -140,6 +140,8 @@ templates = <
 		["rm_schema_grid_schema_col_title"] = <"Schema">
 		["rm_schema_grid_lifecycle_state_col_title"] = <"Lifecycle state">
 		["rm_schema_grid_validated_col_title"] = <"Validated">
+		["rm_schema_grid_edit_col_title"] = <"Edit">
+		["rm_schema_grid_xml_schema_export_col_title"] = <"XML Export">
 		["rm_schema_dialog_reload_button_text"] = <"Reload">
 
 		-- NEW_ARCHETYPE_DIALOG
@@ -282,6 +284,7 @@ templates = <
 		["save_archetype_title"] = <"Save Archetype">
 		["export_archetype_title"] = <"Export Archetype">
 		["catalogue_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
+		["catalogue_add_new_archetype_error"] = <"Error adding archetype to repository: $1">
 
 		-- GUI_PATH_MAP_CONTROL
 		["row_filter_frame_text"] = <"Row Filter">

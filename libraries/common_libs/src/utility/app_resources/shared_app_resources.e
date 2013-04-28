@@ -1,75 +1,51 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Shared state information for all nodes of editor tree"
-	keywords:    "visitor, constraint model"
+	description: "Shared application resources for any ADL application, GUI or non-GUI"
+	keywords:    "test, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class ARCH_ED_CONTEXT_STATE
+class SHARED_APP_RESOURCES
 
-create
-	make, make_editable
+inherit
+	SHARED_APP_CONFIG_FILE_ACCESS
 
-feature -- Initialisation
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
 
-	make (aca: ARCH_CAT_ARCHETYPE_UI_STATE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+feature -- Definitions
+
+	Error_db_directory: STRING
+			-- directory of error database files in .dadl format e.g.
+			-- .../error_db/dadl_errors.txt etc
+		once
+			Result := file_system.pathname (application_startup_directory, "error_db")
+		end
+
+feature -- Application Switches
+
+	error_reporting_level: INTEGER
+			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
+			-- all levels >= the one stored will be displayed; Info is the minimum.
 		do
-			source := aca
-			in_differential_view := differential_view_flag
-			rm_schema := an_rm_schema
-			if differential_view_flag then
-				check attached source.differential_archetype as da then
-					archetype := da
-				end
-			else
-				check attached source.flat_archetype as fa then
-					archetype := fa
-				end
+			Result := app_cfg.integer_value ("/general/error_reporting_level")
+			if not is_valid_error_type (Result) then
+				Result := Error_type_info
 			end
-			flat_ontology := source.flat_archetype.ontology
 		end
 
-	make_editable (aca: ARCH_CAT_ARCHETYPE_UI_STATE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+	set_error_reporting_level (v: INTEGER)
+			-- Set `status_reporting_level'.
 		do
-			source := aca
-			in_differential_view := False
-			rm_schema := an_rm_schema
-			archetype := source.flat_archetype_clone
-			flat_ontology := source.flat_archetype_clone.ontology
-			undo_redo_chain := an_undo_redo_chain
-		end
-
-feature -- Access
-
-	source: ARCH_CAT_ARCHETYPE_UI_STATE
-
-	archetype: ARCHETYPE
-
-	in_differential_view: BOOLEAN
-
-	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
-
-	undo_redo_chain: detachable UNDO_REDO_CHAIN
-
-	rm_schema: BMM_SCHEMA
-
-feature -- Status Report
-
-	editing_enabled: BOOLEAN
-		do
-			Result := attached undo_redo_chain
-		end
-
-feature -- Modification
-
-	set_flat_ontology (a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
-		do
-			flat_ontology := a_flat_ontology
+			app_cfg.put_value ("/general/error_reporting_level", v)
 		end
 
 end
+
 
 
 --|
@@ -86,10 +62,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is c_object_ed_context_builder.e.
+--| The Original Code is shared_ui_resources.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2012
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

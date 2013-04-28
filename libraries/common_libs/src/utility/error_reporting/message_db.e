@@ -71,7 +71,7 @@ feature -- Access
 	create_message_line (an_id: STRING; args: detachable ARRAY[STRING]): STRING
 			-- create message as a full line
 		do
-			Result := create_message_content(an_id, args)
+			Result := create_message_content (an_id, args)
 			Result.append_character ('%N')
 		end
 

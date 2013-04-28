@@ -25,6 +25,8 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_DT_OBJECT_CONVERTER
+
 	-- FIXME: this is a hack to allow add_custom_dt_dynamic_type_from_string to be called, adding in some
 	-- type correspondences that otherwise the runtime gets wrong if just INTERNAL.type_from_type_name() is used
 	DT_TYPES
@@ -55,6 +57,9 @@ feature -- Initialisation
 			add_custom_dt_dynamic_type_from_string (({C_STRING}).name, ({C_STRING}).type_id)
 			add_custom_dt_dynamic_type_from_string (({C_DATE}).name, ({C_DATE}).type_id)
 
+			-- add some converter agents for converting between native DT/ODIN types and AOM types
+			dt_object_converter.add_type_converter_agent (agent (a_tc: TERMINOLOGY_CODE): CODE_PHRASE do create Result.make (a_tc.terminology_id, a_tc.code_string) end, ({TERMINOLOGY_CODE}).type_id)
+
 			initialise_serialisers
 			reset
 
@@ -65,7 +70,6 @@ feature -- Initialisation
 
 	initialise_app
 		local
-			strx: STRING
 			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
 			dead_repos: ARRAYED_LIST [STRING]
 		once
@@ -98,17 +102,13 @@ feature -- Initialisation
 			if rm_schema_directory.is_empty then
 				set_rm_schema_directory (Default_rm_schema_directory)
 			end
-			if directory_exists (rm_schema_directory) then
+			if file_system.directory_exists (rm_schema_directory) then
 				rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					create strx.make_empty
-					rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))
-					strx.remove_tail (2) -- remove final ", "
-
 					if repository_config_table.is_empty then
-						add_warning (ec_bmm_schemas_config_not_valid, <<strx, rm_schema_directory>>)
+						add_warning (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
 					else
-						add_error (ec_bmm_schemas_config_not_valid, <<strx, rm_schema_directory>>)
+						add_error (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
 					end
 				end
 			else
@@ -121,7 +121,7 @@ feature -- Initialisation
 			if aom_profile_directory.is_empty then
 				set_aom_profile_directory (Default_aom_profile_directory)
 			end
-			if directory_exists (aom_profile_directory) then
+			if file_system.directory_exists (aom_profile_directory) then
 				aom_profiles_access.initialise (aom_profile_directory)
 				if not aom_profiles_access.found_valid_profiles then
 					merge_errors (aom_profiles_access.errors)

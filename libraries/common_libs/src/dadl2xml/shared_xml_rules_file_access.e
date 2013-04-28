@@ -11,7 +11,7 @@ note
 class SHARED_XML_RULES_FILE_ACCESS
 
 inherit
-	SHARED_APP_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 
 feature -- Access
 

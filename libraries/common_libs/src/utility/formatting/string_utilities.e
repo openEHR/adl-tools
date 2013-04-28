@@ -16,33 +16,9 @@ feature -- Definitions
 
 feature -- Conversion
 
-	primitive_value_to_dadl_string (a_prim_val: ANY): STRING
-			-- generate a string, including dADL delimiters, e.g. "", '' for strings and chars.
-		do
-			if attached {STRING_GENERAL} a_prim_val then
-				Result := "%"" + a_prim_val.out + "%""
-			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
-				Result := "%'" + a_prim_val.out + "%'"
-			elseif attached {CODE_PHRASE} a_prim_val then
-				Result := "[" + a_prim_val.out + "]"
-			else
-				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
-				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
-					Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
-				elseif attached {DATE_TIME} a_prim_val as a_dt then
-					Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
-				else
-					Result := a_prim_val.out
-					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
-					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
-						Result.append(".0")
-					end
-				end
-			end
-		end
-
-	primitive_value_to_simple_string (a_prim_val: ANY): STRING
-			-- generate a basic string
+	serialise_primitive_value (a_prim_val: ANY): STRING
+			-- generate a correctly serialised string for any primitive value, making corrections for
+			-- broken serialisations of DATE_TIME, DATE_TIME_DURATION and REAL
 		do
 			-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
 			if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
@@ -54,58 +30,6 @@ feature -- Conversion
 				-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
 				if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
 					Result.append(".0")
-				end
-			end
-		end
-
-	primitive_value_to_json_string (a_prim_val: ANY): STRING
-			-- generate a string, including JSON delimiters, e.g. "", '' for strings and chars.
-		do
-			if attached {STRING_GENERAL} a_prim_val then
-				Result := "%"" + a_prim_val.out + "%""
-			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
-				Result := "%'" + a_prim_val.out + "%'"
-			elseif attached {CODE_PHRASE} a_prim_val then
-				Result := "%"" + a_prim_val.out + "%""
-			else
-				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
-				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
-					Result := "%"" + (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string + "%""
-				elseif attached {DATE_TIME} a_prim_val as a_dt then
-					Result := "%"" + (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string + "%""
-				elseif attached {ISO8601_DURATION} a_prim_val or attached {ISO8601_DATE_TIME} a_prim_val or attached {ISO8601_DATE} a_prim_val or attached {ISO8601_TIME} a_prim_val then
-					Result := "%"" + a_prim_val.out + "%""
-				else
-					Result := a_prim_val.out.as_lower
-					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
-					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
-						Result.append(".0")
-					end
-				end
-			end
-		end
-
-	primitive_value_to_yaml_string (a_prim_val: ANY): STRING
-			-- generate a string, including YAML delimiters, e.g. "", '' for strings and chars.
-		do
-			if attached {STRING_GENERAL} a_prim_val then
-				Result := "%"" + a_prim_val.out + "%""
-			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
-				Result := a_prim_val.out
-			elseif attached {CODE_PHRASE} a_prim_val then
-				Result := a_prim_val.out
-			else
-				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
-				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
-					Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
-				elseif attached {DATE_TIME} a_prim_val as a_dt then
-					Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
-				else
-					Result := a_prim_val.out.as_lower
-					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
-					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
-						Result.append (".0")
-					end
 				end
 			end
 		end
@@ -130,34 +54,6 @@ feature -- Conversion
 			else
 				Result := str
 			end
-		ensure
-			Result_attached: Result /= Void
-		end
-
-	json_clean (str: STRING): STRING
-			-- generate clean copy of `str' and convert
-			--	\ to \\
-			-- 	" to \"
-			-- otherwise just return original string
-		local
-			i: INTEGER
-		do
-			create Result.make (str.count)
-			from i := 1 until i > str.count loop
-				if str.item (i) = '%N'  then
-					Result.append ("\n")
-				elseif str.item (i) = '%T'  then
-					Result.append ("\t")
-				else
-					if str.item (i) = '\' or str.item (i) = '"' then
-						Result.append_character ('\')
-					end
-					Result.append_character (str.item (i))
-				end
-				i := i + 1
-			end
-		ensure
-			Result_attached: Result /= Void
 		end
 
 feature -- Element Change
@@ -172,11 +68,7 @@ feature -- Element Change
 	    local
 			i, j: INTEGER
 	    do
-			from
-			    i := 1
-			until
-			    i > s1.count
-			loop
+			from i := 1 until i > s1.count loop
 			    if s2.count = 0 then -- removal
 					str.prune_all(s1.item(i));
 			    else
@@ -289,20 +181,6 @@ feature -- Element Change
 		end
 
 feature -- Unicode
-
---	utf8_to_utf32 (utf8_bytes: STRING): attached STRING_32
---			-- `utf8_bytes' converted from a sequence of UTF-8 bytes to 32-bit Unicode characters.
---		require
---			utf8_bytes_attached: utf8_bytes /= Void
---			utf8_bytes_valid: (create {UC_UTF8_ROUTINES}).valid_utf8 (utf8_bytes)
---		local
---			s: STRING
---		do
---			create {UC_UTF8_STRING} s.make_from_utf8 (utf8_bytes)
---			Result := s.as_string_32
---		ensure
---			not_longer: Result.count <= utf8_bytes.count
---		end
 
 	utf8_to_utf32 (utf8_bytes: STRING): STRING_32
 			-- `utf8_bytes' converted from a sequence of UTF-8 bytes to 32-bit Unicode characters.

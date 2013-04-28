@@ -141,8 +141,8 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				if not parser.syntax_error and then attached parser.output as dt_tree then
 					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string (({P_BMM_SCHEMA}).name, Void) as p_sch then
 						add_error (ec_bmm_schema_load_failure_exception, <<schema_path>>)
-					elseif object_converter.errors.has_errors then
-						add_error (ec_bmm_schema_conv_fail_err, <<schema_path, object_converter.errors.as_string>>)
+					elseif dt_object_converter.errors.has_errors then
+						add_error (ec_bmm_schema_conv_fail_err, <<schema_path, dt_object_converter.errors.as_string>>)
 					else
 						p_schema := p_sch
 						passed := True

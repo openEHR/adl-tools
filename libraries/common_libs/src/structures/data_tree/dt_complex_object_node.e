@@ -67,7 +67,7 @@ feature -- Initialisation
 			-- make a data tree from an object
 		do
 			make_anonymous
-			object_converter.populate_dt_from_root_object (an_obj, Current)
+			dt_object_converter.populate_dt_from_root_object (an_obj, Current)
 		end
 
 feature -- Access
@@ -355,7 +355,7 @@ feature -- Conversion
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := object_converter.dt_to_object (Current, a_type_id, make_args)
+			Result := dt_object_converter.dt_to_object (Current, a_type_id, make_args)
 			as_object_ref := Result
 		end
 
@@ -363,7 +363,7 @@ feature -- Conversion
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := object_converter.dt_to_object_from_string (Current, a_type_name, make_args)
+			Result := dt_object_converter.dt_to_object_from_string (Current, a_type_name, make_args)
 			as_object_ref := Result
 		end
 

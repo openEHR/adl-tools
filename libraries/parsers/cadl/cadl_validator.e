@@ -35,7 +35,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APP_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 		export
 			{NONE} all
 		end

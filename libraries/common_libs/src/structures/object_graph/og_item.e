@@ -10,15 +10,7 @@ note
 deferred class OG_ITEM
 
 inherit
-	ANY
-		export
-			{NONE} all
-			{ANY} generating_type
-		undefine
-			is_equal
-		end
-
-	ARCHETYPE_DEFINITIONS
+	OG_DEFINITIONS
 		export
 			{NONE} all
 		undefine

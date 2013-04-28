@@ -483,8 +483,8 @@ feature {NONE} -- Semantic actions
 			yyval10: ISO8601_DURATION
 			yyval26: ARRAYED_LIST [ISO8601_DURATION]
 			yyval34: INTERVAL [ISO8601_DURATION]
-			yyval11: CODE_PHRASE
-			yyval27: ARRAYED_LIST [CODE_PHRASE]
+			yyval11: TERMINOLOGY_CODE
+			yyval27: ARRAYED_LIST [TERMINOLOGY_CODE]
 			yyval12: URI
 			yyval17: ARRAYED_LIST [OG_PATH]
 			yyval15: OG_PATH
@@ -5954,8 +5954,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines10: detachable KL_SPECIAL_ROUTINES [ISO8601_DURATION] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [ISO8601_DURATION]
 
-	yyvs11: SPECIAL [CODE_PHRASE]
-			-- Stack for semantic values of type CODE_PHRASE
+	yyvs11: SPECIAL [TERMINOLOGY_CODE]
+			-- Stack for semantic values of type TERMINOLOGY_CODE
 
 	yyvsc11: INTEGER
 			-- Capacity of semantic value stack `yyvs11'
@@ -5963,8 +5963,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp11: INTEGER
 			-- Top of semantic value stack `yyvs11'
 
-	yyspecial_routines11: detachable KL_SPECIAL_ROUTINES [CODE_PHRASE] note option: stable attribute end
-			-- Routines that ought to be in SPECIAL [CODE_PHRASE]
+	yyspecial_routines11: detachable KL_SPECIAL_ROUTINES [TERMINOLOGY_CODE] note option: stable attribute end
+			-- Routines that ought to be in SPECIAL [TERMINOLOGY_CODE]
 
 	yyvs12: SPECIAL [URI]
 			-- Stack for semantic values of type URI
@@ -6146,8 +6146,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines26: detachable KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DURATION]] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DURATION]]
 
-	yyvs27: SPECIAL [ARRAYED_LIST [CODE_PHRASE]]
-			-- Stack for semantic values of type ARRAYED_LIST [CODE_PHRASE]
+	yyvs27: SPECIAL [ARRAYED_LIST [TERMINOLOGY_CODE]]
+			-- Stack for semantic values of type ARRAYED_LIST [TERMINOLOGY_CODE]
 
 	yyvsc27: INTEGER
 			-- Capacity of semantic value stack `yyvs27'
@@ -6155,8 +6155,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp27: INTEGER
 			-- Top of semantic value stack `yyvs27'
 
-	yyspecial_routines27: detachable KL_SPECIAL_ROUTINES [ARRAYED_LIST [CODE_PHRASE]] note option: stable attribute end
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [CODE_PHRASE]]
+	yyspecial_routines27: detachable KL_SPECIAL_ROUTINES [ARRAYED_LIST [TERMINOLOGY_CODE]] note option: stable attribute end
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [TERMINOLOGY_CODE]]
 
 	yyvs28: SPECIAL [ARRAYED_LIST [ANY]]
 			-- Stack for semantic values of type ARRAYED_LIST [ANY]

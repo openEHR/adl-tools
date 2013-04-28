@@ -13,13 +13,12 @@ note
 class DADL_MINI_PARSER
 
 inherit
-	SHARED_APP_RESOURCES
-		rename
-			file_exists as is_valid_path
+	SHARED_MESSAGE_DB
 		export
-			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_path
+			{NONE} all
 		end
+
+	KL_SHARED_FILE_SYSTEM
 
 feature -- Definitions
 
@@ -66,7 +65,7 @@ feature -- Commands
 			-- `last_parse_valid' set if content matching any attr_name found
 			-- Only works for dadl single-line key/val pairs, i.e. not for values extending over one line
 		require
-			path_valid: is_valid_path (a_full_path)
+			path_valid: file_system.file_exists (a_full_path)
 		local
 			line, val, key, str: STRING
 			lpos, rpos, i: INTEGER

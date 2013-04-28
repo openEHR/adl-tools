@@ -15,7 +15,7 @@ note
 class SHARED_ARCHETYPE_CATALOGUES
 
 inherit
-	SHARED_APP_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 
 feature -- Access
 

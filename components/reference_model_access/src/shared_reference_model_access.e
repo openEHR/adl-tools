@@ -16,14 +16,6 @@ feature -- Access
 			create Result.make
 		end
 
-	rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
-			-- top-level schema for archetype id `an_id'
-		require
-			has_rm_schema_for_archetype_id (an_id)
-		do
-			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
-		end
-
 	rm_schema_for_id (an_id: STRING): BMM_SCHEMA
 			-- validated top-level schema for schema id `an_id'
 		require
@@ -40,11 +32,6 @@ feature -- Access
 		end
 
 feature -- Status Report
-
-	has_rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BOOLEAN
-		do
-			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
-		end
 
 	has_rm_schema_for_id (an_id: STRING): BOOLEAN
 		do

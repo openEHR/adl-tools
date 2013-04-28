@@ -16,7 +16,7 @@ class DT_PRIMITIVE_OBJECT_LIST
 inherit
 	DT_OBJECT_LEAF
 
-	STRING_UTILITIES
+	DT_STRING_UTILITIES
 		export
 			{NONE} all
 		undefine
@@ -46,7 +46,7 @@ feature -- Modification
 			al_time: ARRAYED_LIST [ISO8601_TIME]
 			al_date_time: ARRAYED_LIST [ISO8601_DATE_TIME]
 			al_duration: ARRAYED_LIST [ISO8601_DURATION]
-			al_code_phrase: ARRAYED_LIST [CODE_PHRASE]
+			al_code_phrase: ARRAYED_LIST [TERMINOLOGY_CODE]
 			al_path: ARRAYED_LIST [OG_PATH]
 		do
 			if attached {ARRAYED_LIST [STRING]} a_value as att_al then
@@ -67,9 +67,9 @@ feature -- Modification
 				value := a_value
 			elseif attached {ARRAYED_LIST [ISO8601_DURATION]} a_value as att_al then
 				value := a_value
-			elseif attached {ARRAYED_LIST [CODE_PHRASE]} a_value as att_al then
+			elseif attached {ARRAYED_LIST [TERMINOLOGY_CODE]} a_value as att_al then
 				value := a_value
-			elseif attached {ARRAYED_LIST [detachable CODE_PHRASE]} a_value as det_al then
+			elseif attached {ARRAYED_LIST [detachable TERMINOLOGY_CODE]} a_value as det_al then
 				create al_code_phrase.make (0)
 				across det_al as al_csr loop if attached al_csr.item as v then al_code_phrase.extend (v) end end
 				value := al_code_phrase

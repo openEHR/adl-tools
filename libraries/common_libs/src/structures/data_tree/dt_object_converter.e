@@ -35,6 +35,18 @@ feature -- Definitions
 			-- a safe invalid type number to use to represent 'no static type specified' for routine
 			-- `populate_dt_from_object'
 
+feature -- Modification
+
+	add_type_converter_agent (a_cvt_agent: FUNCTION [ANY, TUPLE[ANY], ANY]; dt_source_type_dyn_type: INTEGER)
+			-- add an agent that can convert a DT primitive type to a type required in source object classes
+			-- This is only needed for functions that map types like TERMINOLOGY_CODE, URI, ISO8601 date/time types
+			-- to a different type that is considered a primitive in another type system
+		require
+			valid_dt_type: is_dt_primitive_type (dt_source_type_dyn_type)
+		do
+			type_converter_agents.put (a_cvt_agent, dt_source_type_dyn_type)
+		end
+
 feature -- Access
 
 	errors: ERROR_ACCUMULATOR
@@ -984,6 +996,8 @@ end
 			-- infer some other type that dt_val must be. For now, the mappings are 1:1, e.g.
 			-- ISO8601_DATE => DATE, but in the future more field information may be needed to make
 			-- the correct inference. If no type match can be made, Result is Void
+		local
+			dt: INTEGER
 		do
 			if attached {ISO8601_DATE} dt_val as iso_date then
 				Result := iso_date.to_date
@@ -994,8 +1008,21 @@ end
 			elseif attached {ISO8601_DURATION} dt_val as iso_duration then
 				Result := iso_duration.to_date_time_duration
 			else
-				Result := "unconverted"
+				dt := attached_type (dynamic_type (dt_val))
+				if type_converter_agents.has (dt) and attached type_converter_agents.item (dt) as cvt_agt then
+					Result := cvt_agt.item ([dt_val])
+				else
+					Result := "unconverted"
+				end
 			end
+		end
+
+feature {SHARED_DT_OBJECT_CONVERTER} -- Implementation
+
+	type_converter_agents: HASH_TABLE [FUNCTION [ANY, TUPLE[ANY], ANY], INTEGER]
+			-- table of conversion functions that will convert a DT primitive type to some other type needed by object classes
+		once
+			create Result.make (0)
 		end
 
 end

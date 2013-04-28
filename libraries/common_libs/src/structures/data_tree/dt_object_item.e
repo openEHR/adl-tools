@@ -17,7 +17,7 @@ inherit
 			parent, representation
 		end
 
-	ARCHETYPE_DEFINITIONS
+	OG_DEFINITIONS
 		export
 			{NONE} all;
 		undefine

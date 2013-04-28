@@ -27,7 +27,7 @@ inherit
 			default_create
 		end
 
-	SHARED_APP_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 		undefine
 			default_create
 		end

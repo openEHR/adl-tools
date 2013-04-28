@@ -24,7 +24,7 @@ inherit
 			is_equal, default_create, copy
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_ARCHETYPE_RM_ACCESS
 		export
 			{NONE} all
 		undefine

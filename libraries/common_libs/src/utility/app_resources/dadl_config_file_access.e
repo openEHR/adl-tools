@@ -181,8 +181,8 @@ feature -- Modification
 			if not attached dt_tree then
 				create_default_dt_tree
 			end
-			obj_dt_tree := object_converter.object_to_dt (a_value)
-			if not object_converter.errors.has_errors then
+			obj_dt_tree := dt_object_converter.object_to_dt (a_value)
+			if not dt_object_converter.errors.has_errors then
 				if has_resource (a_path) and then attached dt_tree.attribute_node_at_path (a_path) as dt_attr then
 					dt_attr.remove_all_children
 					dt_attr.put_child (obj_dt_tree)

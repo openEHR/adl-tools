@@ -14,8 +14,6 @@ class IN_MEMORY_MESSAGE_DB
 inherit
 	MESSAGE_DB
 
-	SHARED_APP_RESOURCES
-
 create
 	make
 

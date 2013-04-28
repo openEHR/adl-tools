@@ -30,8 +30,6 @@ inherit
 
 	EXCEPTIONS
 
-	SHARED_APP_RESOURCES
-
 create
 	make
 

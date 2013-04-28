@@ -1,19 +1,54 @@
 note
-	component:   "openEHR Archetype Project"
-	description: "shared access to DT_OBJECT_CONVERTER"
-	keywords:    "dADL"
-	author:      "Thomas Beale"
+	component:   "openEHR common definitions"
+	description: "Definitions of some basic constant values for the openEHR models"
+	keywords:    "definitions"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class SHARED_DT_OBJECT_CONVERTER
+class BASIC_DEFINITIONS
 
-feature -- Access
+feature -- Definitions
 
-	dt_object_converter: DT_OBJECT_CONVERTER
+	Any_type: STRING = "Any"
+
+	Regex_any_pattern: STRING = ".*"
+
+	CR: CHARACTER = '%/015/'
+
+	LF: CHARACTER = '%/012/'
+
+	Default_language: STRING = "en"
+
+	Default_language_code_set: STRING = "ISO_639-1"
+
+	Default_language_code: TERMINOLOGY_CODE
 		once
-			create Result
+			create Result.make (Default_language_code_set, Default_language)
+		end
+
+	Default_encoding: STRING = "UTF-8"
+
+	Default_encoding_code_set: STRING = "IANA_RFC2978"
+
+	Default_encoding_code: TERMINOLOGY_CODE
+		once
+			create Result.make (Default_encoding_code_set, Default_encoding)
+		end
+
+	UTF8_bom_char_1: CHARACTER = '%/239/'
+	UTF8_bom_char_2: CHARACTER = '%/187/'
+	UTF8_bom_char_3: CHARACTER = '%/191/'
+			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
+			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
+			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
+
+	UTF8_copyright_char: CHARACTER = '%/169/'
+
+	Time_epoch: DATE_TIME
+		once
+			create Result.make_from_epoch (0)
 		end
 
 end
@@ -33,10 +68,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dt_object_converter.e.
+--| The Original Code is basic_definitions.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2005
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

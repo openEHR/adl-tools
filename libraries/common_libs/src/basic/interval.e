@@ -280,28 +280,28 @@ feature -- Output
 			create Result.make(0)
 			if lower_unbounded and attached upper as u then
 				if upper_included then
-					Result.append("<=" + primitive_value_to_simple_string (u))
+					Result.append("<=" + serialise_primitive_value (u))
 				else
-					Result.append("<" + primitive_value_to_simple_string (u))
+					Result.append("<" + serialise_primitive_value (u))
 				end
 			elseif upper_unbounded and attached lower as l then
 				if lower_included then
-					Result.append(">=" + primitive_value_to_simple_string (l))
+					Result.append(">=" + serialise_primitive_value (l))
 				else
-					Result.append(">" + primitive_value_to_simple_string (l))
+					Result.append(">" + serialise_primitive_value (l))
 				end
 			elseif not limits_equal and attached lower as l and then attached upper as u then
 				if lower_included and upper_included then
-					Result.append(primitive_value_to_simple_string (l) + ".." + primitive_value_to_simple_string (u))
+					Result.append(serialise_primitive_value (l) + ".." + serialise_primitive_value (u))
 				elseif lower_included then
-					Result.append(primitive_value_to_simple_string (l) + "..<" + primitive_value_to_simple_string (u))
+					Result.append(serialise_primitive_value (l) + "..<" + serialise_primitive_value (u))
 				elseif upper_included then
-					Result.append(">" + primitive_value_to_simple_string (l) + ".." + primitive_value_to_simple_string (u))
+					Result.append(">" + serialise_primitive_value (l) + ".." + serialise_primitive_value (u))
 				else
-					Result.append(">" + primitive_value_to_simple_string (l) + "..<" + primitive_value_to_simple_string (u))
+					Result.append(">" + serialise_primitive_value (l) + "..<" + serialise_primitive_value (u))
 				end
 			elseif attached lower as l then
-				Result.append (primitive_value_to_dadl_string (l))
+				Result.append (serialise_primitive_value (l))
 			end
 		end
 

@@ -1,54 +1,48 @@
 note
-	component:   "openEHR common definitions"
-	description: "Definitions of some basic constant values for the openEHR models"
-	keywords:    "definitions"
+	component:   "openEHR Archetype Project"
+	description: "Miscellaneous String utilities."
+	keywords:    "formatting"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class BASIC_DEFINITIONS
+class DT_STRING_UTILITIES
 
-feature -- Definitions
+inherit
+	STRING_UTILITIES
 
-	Any_type: STRING = "Any"
+feature -- Conversion
 
-	Regex_any_pattern: STRING = ".*"
-
-	CR: CHARACTER = '%/015/'
-
-	LF: CHARACTER = '%/012/'
-
-	Default_language: STRING = "en"
-
-	Default_language_code_set: STRING = "ISO_639-1"
-
-	Default_language_code: CODE_PHRASE
-		once
-			create Result.make (Default_language_code_set, Default_language)
+	primitive_value_to_dadl_string (a_prim_val: ANY): STRING
+			-- generate a string, including dADL delimiters, e.g. "", '' for strings and chars.
+		do
+			if attached {STRING_GENERAL} a_prim_val then
+				Result := "%"" + a_prim_val.out + "%""
+			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
+				Result := "%'" + a_prim_val.out + "%'"
+			elseif attached {TERMINOLOGY_CODE} a_prim_val then
+				Result := "[" + a_prim_val.out + "]"
+			else
+				Result := serialise_primitive_value (a_prim_val)
+			end
 		end
 
-	Default_encoding: STRING = "UTF-8"
-
-	Default_encoding_code_set: STRING = "IANA_RFC2978"
-
-	Default_encoding_code: CODE_PHRASE
-		once
-			create Result.make (Default_encoding_code_set, Default_encoding)
-		end
-
-	UTF8_bom_char_1: CHARACTER = '%/239/'
-	UTF8_bom_char_2: CHARACTER = '%/187/'
-	UTF8_bom_char_3: CHARACTER = '%/191/'
-			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
-			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
-			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
-
-	UTF8_copyright_char: CHARACTER = '%/169/'
-
-	Time_epoch: DATE_TIME
-		once
-			create Result.make_from_epoch (0)
+	primitive_value_to_simple_string (a_prim_val: ANY): STRING
+			-- generate a basic string
+		do
+			-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
+			if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
+				Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
+			elseif attached {DATE_TIME} a_prim_val as a_dt then
+				Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
+			else
+				Result := a_prim_val.out
+				-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
+				if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
+					Result.append(".0")
+				end
+			end
 		end
 
 end
@@ -68,10 +62,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is basic_definitions.e.
+--| The Original Code is string_routines.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2006
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

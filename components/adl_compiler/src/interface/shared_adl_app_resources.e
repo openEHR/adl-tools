@@ -7,20 +7,15 @@ note
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class SHARED_APP_RESOURCES
+class SHARED_ADL_APP_RESOURCES
 
 inherit
-	SHARED_APP_CONFIG_FILE_ACCESS
+	SHARED_APP_RESOURCES
 		redefine
 			app_cfg_initialise
 		end
 
 	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	SHARED_MESSAGE_DB
 		export
 			{NONE} all
 		end
@@ -67,13 +62,6 @@ feature -- Definitions
 
 	Terminology_filename: STRING = "openehr_terminology.xml"
 			-- name of a terminology file in a given language
-
-	Error_db_directory: STRING
-			-- directory of error database files in .dadl format e.g.
-			-- .../error_db/dadl_errors.txt etc
-		once
-			Result := file_system.pathname (application_startup_directory, "error_db")
-		end
 
 	Default_xml_rules_file_path: STRING
 			-- Default full path to XML rules file for all adl_workbench-derived apps - use the adl_workbench one
@@ -138,22 +126,6 @@ feature -- Application Switches
 			a_lang_attached: not a_lang.is_empty
 		do
 			app_cfg.put_value ("/general/archetype_view_language", a_lang)
-		end
-
-	error_reporting_level: INTEGER
-			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
-			-- all levels >= the one stored will be displayed; Info is the minimum.
-		do
-			Result := app_cfg.integer_value ("/general/error_reporting_level")
-			if not is_valid_error_type (Result) then
-				Result := Error_type_info
-			end
-		end
-
-	set_error_reporting_level (v: INTEGER)
-			-- Set `status_reporting_level'.
-		do
-			app_cfg.put_value ("/general/error_reporting_level", v)
 		end
 
 	rm_schemas_load_list: LIST [STRING]

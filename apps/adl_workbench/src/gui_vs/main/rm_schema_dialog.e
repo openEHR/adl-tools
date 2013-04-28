@@ -48,9 +48,10 @@ feature -- Definitions
 	Grid_lifecycle_state_col: INTEGER = 2
 	Grid_validated_col: INTEGER = 3
 	Grid_edit_col: INTEGER = 4
+	Grid_xml_export_col: INTEGER = 5
 	Grid_max_cols: INTEGER
 		once
-			Result := Grid_edit_col
+			Result := Grid_xml_export_col
 		end
 
 	frame_height: INTEGER = 150
@@ -293,6 +294,8 @@ feature {NONE} -- Implementation
 				grid.column (Grid_schema_col).set_title (get_text (ec_rm_schema_grid_schema_col_title))
 				grid.column (grid_lifecycle_state_col).set_title (get_text (ec_rm_schema_grid_lifecycle_state_col_title))
 				grid.column (Grid_validated_col).set_title (get_text (ec_rm_schema_grid_validated_col_title))
+				grid.column (grid_edit_col).set_title (get_text (ec_rm_schema_grid_edit_col_title))
+				grid.column (grid_xml_export_col).set_title (get_text (ec_rm_schema_grid_xml_schema_export_col_title))
 
 				grid.resize_columns_to_content (Grid_expansion_factor)
 				from i := 1 until i > grid.column_count loop
@@ -346,10 +349,16 @@ feature {NONE} -- Implementation
 			row.set_item (Grid_validated_col, gli)
 
 			-- column 4 - create edit button and add to row
-			create gli.make_with_text ("Edit")
+			create gli.make_with_text ("         ")
 			gli.set_pixmap (get_icon_pixmap ("tool/edit"))
 			gli.select_actions.extend (agent do_edit_schema (a_schema_desc))
 			row.set_item (Grid_edit_col, gli)
+
+			-- column 5 - create XML export button and add to row
+			create gli.make_with_text ("         ")
+			gli.set_pixmap (get_icon_pixmap ("tool/xml"))
+			gli.select_actions.extend (agent do_export_schema (a_schema_desc))
+			row.set_item (Grid_xml_export_col, gli)
 
 			-- now do child schemas
 			across a_schema_desc.includes as includes_csr loop
@@ -364,6 +373,37 @@ feature {NONE} -- Implementation
 		do
 			check attached a_schema.meta_data.item (metadata_schema_path) as msp then
 				execution_environment.launch (text_editor_command + " %"" + msp + "%"")
+			end
+		end
+
+	do_export_schema (schema_desc: SCHEMA_DESCRIPTOR)
+			-- export model as XML and allow saving
+		local
+			serialise_engine: DADL_ENGINE
+			path: STRING
+			fd: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
+		do
+			schema_desc.p_schema.synchronise_to_tree
+
+			create serialise_engine.make
+			serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
+			serialise_engine.serialise (syntax_type_xml, False, False)
+
+			create save_dialog
+			save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
+			save_dialog.set_file_name (schema_desc.schema_id + ".xml")
+			save_dialog.set_start_directory (export_directory)
+			save_dialog.filters.extend (["*.xml", get_msg (ec_save_schema_as, <<"XML">>)])
+			check attached proximate_ev_window (ev_root_container) as prox_win then
+				save_dialog.show_modal_to_window (prox_win)
+			end
+			path := save_dialog.file_name.as_string_8
+
+			if not path.is_empty then
+				create fd.make_create_read_write (path)
+				fd.put_string (serialise_engine.serialised)
+				fd.close
 			end
 		end
 

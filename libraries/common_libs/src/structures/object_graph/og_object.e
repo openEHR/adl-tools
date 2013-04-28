@@ -19,13 +19,6 @@ inherit
 			parent
 		end
 
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all;
-		undefine
-			is_equal
-		end
-
 feature -- Initialisation
 
 	make_anonymous

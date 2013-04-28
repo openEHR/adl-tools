@@ -27,11 +27,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -488,6 +483,7 @@ feature {NONE} -- Implementation
 	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE_UI_STATE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
+			info_dialog: EV_INFORMATION_DIALOG
 		do
 			create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, source)
 			check attached proximate_ev_window (ev_root_container) as prox_win then
@@ -495,12 +491,8 @@ feature {NONE} -- Implementation
 			end
 			if dialog.is_valid then
 				source.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
-				if not billboard.has_errors then
-					populate (source)
-					select_item_in_tree (source.last_added_archetype.id.as_string)
-				else
-					gui_agents.console_tool_append_agent.call ([billboard.content])
-				end
+				populate (source)
+				select_item_in_tree (source.last_added_archetype.id.as_string)
 			end
 			dialog.destroy
 		end
@@ -510,6 +502,7 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 			matching_ids: ARRAYED_SET [STRING]
 			in_dir_path: STRING
+			info_dialog: EV_INFORMATION_DIALOG
 		do
 			-- figure out a reasonable path as the path of some other archetype of the same class
 			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
@@ -524,12 +517,8 @@ feature {NONE} -- Implementation
 			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			if dialog.is_valid then
 				source.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
-				if not billboard.has_errors then
-					populate (source)
-					select_item_in_tree (source.last_added_archetype.id.as_string)
-				else
-					gui_agents.console_tool_append_agent.call ([billboard.content])
-				end
+				populate (source)
+				select_item_in_tree (source.last_added_archetype.id.as_string)
 			end
 			dialog.destroy
 		end

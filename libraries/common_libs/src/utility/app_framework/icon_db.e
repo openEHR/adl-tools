@@ -10,8 +10,6 @@ note
 class ICON_DB
 
 inherit
-	SHARED_APP_RESOURCES
-
 	EVX_DEFINITIONS
 		export
 			{NONE} all

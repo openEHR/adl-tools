@@ -238,11 +238,11 @@ feature -- Output
 		do
 			create Result.make(0)
 			if upper_unbounded then
-				Result.append (primitive_value_to_dadl_string(lower) + "..*")
+				Result.append (serialise_primitive_value (lower) + "..*")
 			elseif not limits_equal then
-				Result.append (primitive_value_to_dadl_string(lower) + ".." + primitive_value_to_dadl_string(upper))
+				Result.append (serialise_primitive_value (lower) + ".." + serialise_primitive_value (upper))
 			else
-				Result.append (primitive_value_to_dadl_string(lower))
+				Result.append (serialise_primitive_value (lower))
 			end
 		end
 

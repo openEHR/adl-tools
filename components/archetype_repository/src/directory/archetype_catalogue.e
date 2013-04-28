@@ -36,7 +36,7 @@ note
 class ARCHETYPE_CATALOGUE
 
 inherit
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_ARCHETYPE_RM_ACCESS
 		export
 			{NONE} all;
 			{ANY} has_rm_schema_for_archetype_id

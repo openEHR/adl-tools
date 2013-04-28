@@ -1,8 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Basic archetype definitions
-				 ]"
+	description: "Basic archetype definitions"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -14,6 +12,8 @@ class ARCHETYPE_DEFINITIONS
 inherit
 	BASIC_DEFINITIONS
 
+	OG_DEFINITIONS
+
 feature -- Syntax Elements
 
 	Archetype_any_constraint: STRING = "*"
@@ -21,9 +21,6 @@ feature -- Syntax Elements
 	Archetype_slot_closed: STRING = "closed"
 
 feature -- Definitions
-
-	Anonymous_node_id: STRING = "unknown"
-			-- default node id for non-identified C_OBJECT nodes
 
 	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.

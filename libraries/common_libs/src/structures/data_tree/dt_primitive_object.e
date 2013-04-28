@@ -16,7 +16,7 @@ class DT_PRIMITIVE_OBJECT
 inherit
 	DT_OBJECT_LEAF
 
-	STRING_UTILITIES
+	DT_STRING_UTILITIES
 		export
 			{NONE} all
 		undefine

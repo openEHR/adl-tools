@@ -216,7 +216,7 @@ feature -- Serialisation
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
 				create comp_onts_helper.make
 				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
-				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
+				ontology_context.set_tree (dt_object_converter.object_to_dt (comp_onts_helper))
 				ontology_context.serialise (a_format, False, False)
 				comp_onts_serialised := ontology_context.serialised
 			else
@@ -267,13 +267,13 @@ feature {NONE} -- Implementation
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
-				elseif not object_converter.errors.has_errors and
+				elseif not dt_object_converter.errors.has_errors and
 					attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
 				then
 					orig_lang_trans := lt
 				else
 					errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
-					errors.append (object_converter.errors)
+					errors.append (dt_object_converter.errors)
 				end
 
 				------------------- description section (optional) ---------------
@@ -284,13 +284,13 @@ feature {NONE} -- Implementation
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
-						elseif not object_converter.errors.has_errors and
+						elseif not dt_object_converter.errors.has_errors and
 							attached {RESOURCE_DESCRIPTION} description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
 						then
 							res_desc := rd
 						else
 							errors.add_error (ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
-							errors.append (object_converter.errors)
+							errors.append (dt_object_converter.errors)
 						end
 					else
 						description_context.reset
@@ -343,13 +343,13 @@ feature {NONE} -- Implementation
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
-						elseif not object_converter.errors.has_errors and
+						elseif not dt_object_converter.errors.has_errors and
 							attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann
 						then
 							annots := res_ann
 						else
 							errors.add_error (ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
-							errors.append (object_converter.errors)
+							errors.append (dt_object_converter.errors)
 						end
 					else
 						annotations_context.reset
@@ -369,7 +369,7 @@ feature {NONE} -- Implementation
 						if is_legacy_flat then
 							if attached orig_lang_trans as olt and then attached {FLAT_ARCHETYPE_ONTOLOGY}
 								ont_tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_ont
-								and not object_converter.errors.has_errors
+								and not dt_object_converter.errors.has_errors
 							then
 								create {FLAT_ARCHETYPE} Result.make (
 									art_type,
@@ -382,12 +382,12 @@ feature {NONE} -- Implementation
 								)
 							else
 								errors.add_error (ec_SAON, Void, generator + ".parse")
-								errors.append (object_converter.errors)
+								errors.append (dt_object_converter.errors)
 							end
 						else
 							if attached orig_lang_trans as olt and then attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY}
 								ont_tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_ont
-								and not object_converter.errors.has_errors
+								and not dt_object_converter.errors.has_errors
 							then
 								create {DIFFERENTIAL_ARCHETYPE} Result.make (
 									art_type,
@@ -400,7 +400,7 @@ feature {NONE} -- Implementation
 								)
 							else
 								errors.add_error (ec_SAON, Void, generator + ".parse")
-								errors.append (object_converter.errors)
+								errors.append (dt_object_converter.errors)
 							end
 						end
 

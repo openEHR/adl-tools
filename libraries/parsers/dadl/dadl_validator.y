@@ -79,7 +79,7 @@ create
 %type <ISO8601_DATE_TIME> date_time_value
 %type <ISO8601_TIME> time_value
 %type <ISO8601_DURATION> duration_value
-%type <CODE_PHRASE> term_code
+%type <TERMINOLOGY_CODE> term_code
 %type <URI> uri_value
 
 %type <DT_COMPLEX_OBJECT_NODE> single_attr_object_block, untyped_single_attr_object_block
@@ -101,7 +101,7 @@ create
 %type <ARRAYED_LIST[ISO8601_TIME]> time_list_value
 %type <ARRAYED_LIST[ISO8601_DATE_TIME]> date_time_list_value
 %type <ARRAYED_LIST[ISO8601_DURATION]> duration_list_value
-%type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
+%type <ARRAYED_LIST[TERMINOLOGY_CODE]> term_code_list_value
 %type <ARRAYED_LIST[ANY]> primitive_list_value
 
 %type <INTERVAL[INTEGER]> integer_interval_value

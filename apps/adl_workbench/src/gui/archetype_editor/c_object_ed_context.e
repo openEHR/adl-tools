@@ -322,7 +322,6 @@ feature {NONE} -- Context menu
 
 	do_convert_to_constraint (a_c_object_type, an_rm_type, occ_str: STRING)
 		local
-			c_obj: C_OBJECT
 			rm_type_spec: BMM_CLASS_DEFINITION
 		do
 			parent.convert_to_constraint

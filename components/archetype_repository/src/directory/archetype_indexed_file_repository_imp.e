@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "File-system repository of archetypes - implementation of ARCHETYPE_INDEXED_REPOSITORY_I."
-	keywords:    "ADL"
+	keywords:    "ADL, archetype, file access"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -13,8 +13,6 @@ inherit
 	ARCHETYPE_INDEXED_REPOSITORY_I
 
 	ARCHETYPE_FILE_REPOSITORY_IMP
-
-	SHARED_REFERENCE_MODEL_ACCESS
 
 	SHARED_MESSAGE_BILLBOARD
 		export

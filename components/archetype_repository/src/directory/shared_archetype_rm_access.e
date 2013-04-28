@@ -1,75 +1,36 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Shared state information for all nodes of editor tree"
-	keywords:    "visitor, constraint model"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	description: "Archetype access to reference models"
+	keywords:    "ADL, archetype, reference model"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class ARCH_ED_CONTEXT_STATE
+class SHARED_ARCHETYPE_RM_ACCESS
 
-create
-	make, make_editable
-
-feature -- Initialisation
-
-	make (aca: ARCH_CAT_ARCHETYPE_UI_STATE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
-		do
-			source := aca
-			in_differential_view := differential_view_flag
-			rm_schema := an_rm_schema
-			if differential_view_flag then
-				check attached source.differential_archetype as da then
-					archetype := da
-				end
-			else
-				check attached source.flat_archetype as fa then
-					archetype := fa
-				end
-			end
-			flat_ontology := source.flat_archetype.ontology
-		end
-
-	make_editable (aca: ARCH_CAT_ARCHETYPE_UI_STATE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
-		do
-			source := aca
-			in_differential_view := False
-			rm_schema := an_rm_schema
-			archetype := source.flat_archetype_clone
-			flat_ontology := source.flat_archetype_clone.ontology
-			undo_redo_chain := an_undo_redo_chain
-		end
+inherit
+	SHARED_REFERENCE_MODEL_ACCESS
 
 feature -- Access
 
-	source: ARCH_CAT_ARCHETYPE_UI_STATE
-
-	archetype: ARCHETYPE
-
-	in_differential_view: BOOLEAN
-
-	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
-
-	undo_redo_chain: detachable UNDO_REDO_CHAIN
-
-	rm_schema: BMM_SCHEMA
+	rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
+			-- top-level schema for archetype id `an_id'
+		require
+			has_rm_schema_for_archetype_id (an_id)
+		do
+			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
+		end
 
 feature -- Status Report
 
-	editing_enabled: BOOLEAN
+	has_rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BOOLEAN
 		do
-			Result := attached undo_redo_chain
-		end
-
-feature -- Modification
-
-	set_flat_ontology (a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
-		do
-			flat_ontology := a_flat_ontology
+			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
 		end
 
 end
+
 
 
 --|
@@ -86,10 +47,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is c_object_ed_context_builder.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2012
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -120,7 +120,6 @@ feature -- Initialisation
 			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			other_invariants: detachable  ARRAYED_LIST [ASSERTION]
 			other_other_metadata: detachable HASH_TABLE [STRING, STRING]
-			other_uid_str: detachable STRING
 		do
 			if attached other.parent_archetype_id as other_pid then
 				other_parent_arch_id := other_pid.deep_twin

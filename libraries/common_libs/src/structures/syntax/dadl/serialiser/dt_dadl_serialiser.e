@@ -17,7 +17,7 @@ inherit
 			{NONE} all
 		end
 
-	STRING_UTILITIES
+	DT_STRING_UTILITIES
 		export
 			{NONE} all
 		end

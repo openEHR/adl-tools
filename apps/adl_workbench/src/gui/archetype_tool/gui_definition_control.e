@@ -350,6 +350,7 @@ feature {NONE} -- Implementation
 			gui_definition_grid.wipe_out
 			gui_rules_grid.wipe_out
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
+			visualise_descendants_class := Void
 		end
 
 	do_populate

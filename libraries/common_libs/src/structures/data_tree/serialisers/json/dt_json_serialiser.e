@@ -211,6 +211,33 @@ feature {NONE} -- Implementation
 			Result.append (symbol (Sym_json_attribute_name_delimiter) + an_attr_name + symbol (Sym_json_attribute_name_delimiter))
 		end
 
+	primitive_value_to_json_string (a_prim_val: ANY): STRING
+			-- generate a string, including JSON delimiters, e.g. "", '' for strings and chars.
+		do
+			if attached {STRING_GENERAL} a_prim_val then
+				Result := "%"" + a_prim_val.out + "%""
+			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
+				Result := "%'" + a_prim_val.out + "%'"
+			elseif attached {TERMINOLOGY_CODE} a_prim_val then
+				Result := "%"" + a_prim_val.out + "%""
+			else
+				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
+				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
+					Result := "%"" + (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string + "%""
+				elseif attached {DATE_TIME} a_prim_val as a_dt then
+					Result := "%"" + (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string + "%""
+				elseif attached {ISO8601_DURATION} a_prim_val or attached {ISO8601_DATE_TIME} a_prim_val or attached {ISO8601_DATE} a_prim_val or attached {ISO8601_TIME} a_prim_val then
+					Result := "%"" + a_prim_val.out + "%""
+				else
+					Result := a_prim_val.out.as_lower
+					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
+					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
+						Result.append(".0")
+					end
+				end
+			end
+		end
+
 end
 
 

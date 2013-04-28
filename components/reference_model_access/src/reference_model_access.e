@@ -112,6 +112,18 @@ feature -- Access
 			-- initial load list for this session, set during initialisation. This may initially be empty
 			-- or contain invalid entries; it will be modified to correctly list the actual schemas found
 
+	schemas_load_list_string: STRING
+			-- generate a list of schema names as a string, for use in error reporting
+		do
+			create Result.make_empty
+			across schemas_load_list as schemas_list_csr loop
+				if schemas_list_csr.cursor_index > 1 then
+					Result.append (", ")
+				end
+				Result.append (schemas_list_csr.item)
+			end
+		end
+
 	load_count: INTEGER
 			-- load counter so other parts of the application can see if anything has changed
 

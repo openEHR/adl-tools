@@ -7,13 +7,12 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class OG_DEFINITIONS
 
 feature -- Definitions
+
+	Anonymous_node_id: STRING = "unknown"
+			-- default node id for non-identified object nodes
 
 	movable_leader: STRING = "//"
 
