@@ -30,7 +30,6 @@ feature -- Application Switches
 			Result := app_cfg.string_list_value ("/rm_schemas/load_list")
 			Result.compare_objects
 		ensure
-			result_attached: attached Result
 			value_comparison: Result.object_comparison
 			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end

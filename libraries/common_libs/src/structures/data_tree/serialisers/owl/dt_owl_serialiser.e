@@ -7,11 +7,7 @@ note
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-class DADL_OWL_SERIALISER
+class DT_OWL_SERIALISER
 
 inherit
 	DT_SERIALISER

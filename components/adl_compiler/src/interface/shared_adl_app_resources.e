@@ -333,7 +333,7 @@ feature -- Application Switches
 			end
 		end
 
-	set_html_export_directory (a_path: attached STRING)
+	set_html_export_directory (a_path: STRING)
 			-- Set the path of directory to which HTML is exported.
 		require
 			path_not_empty: not a_path.is_empty
