@@ -1009,7 +1009,7 @@ end
 				Result := iso_duration.to_date_time_duration
 			else
 				dt := attached_type (dynamic_type (dt_val))
-				if type_converter_agents.has (dt) and attached type_converter_agents.item (dt) as cvt_agt then
+				if type_converter_agents.has (dt) and then attached type_converter_agents.item (dt) as cvt_agt then
 					Result := cvt_agt.item ([dt_val])
 				else
 					Result := "unconverted"

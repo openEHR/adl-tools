@@ -10,7 +10,7 @@ note
 class SHARED_ADL_APP_RESOURCES
 
 inherit
-	SHARED_APP_RESOURCES
+	SHARED_BMM_APP_RESOURCES
 		redefine
 			app_cfg_initialise
 		end
@@ -42,14 +42,6 @@ feature -- Definitions
 			-- default directory of AOM profile files (*.arp files, in dadl format)
 		once
 			Result := file_system.pathname (application_startup_directory, "aom_profiles")
-		end
-
-	Default_rm_schema_directory: STRING
-			-- default directory of Reference Model schema files; same as full path to app + "/rm_schemas";
-			-- contains schema files in .dadl format e.g.
-			-- .../rm_schemas/openehr_rm_102.bmm
-		once
-			Result := file_system.pathname (application_startup_directory, "rm_schemas")
 		end
 
 	Default_terminology_directory: STRING
@@ -126,25 +118,6 @@ feature -- Application Switches
 			a_lang_attached: not a_lang.is_empty
 		do
 			app_cfg.put_value ("/general/archetype_view_language", a_lang)
-		end
-
-	rm_schemas_load_list: LIST [STRING]
-			-- list of RM schemas to use
-		do
-			Result := app_cfg.string_list_value ("/rm_schemas/load_list")
-			Result.compare_objects
-		ensure
-			result_attached: attached Result
-			value_comparison: Result.object_comparison
-			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
-		end
-
-	set_rm_schemas_load_list (a_schema_list: LIST [STRING])
-			-- set rm_schemas(s)
-		require
-			a_schema_list_valid: not a_schema_list.is_empty
-		do
-			app_cfg.put_value ("/rm_schemas/load_list", a_schema_list)
 		end
 
 	old_repository_config_table_path: STRING
@@ -317,20 +290,6 @@ feature -- Application Switches
 			path_not_empty: not a_path.is_empty
 		do
 			app_cfg.put_value ("/file_system/aom_profile_directory", a_path)
-		end
-
-	rm_schema_directory: STRING
-			-- Path of directory where RM schemas are found - note: this should be writable.
-		do
-			Result := app_cfg.string_value_env_var_sub ("/file_system/rm_schema_directory")
-		end
-
-	set_rm_schema_directory (a_path: STRING)
-			-- Set the path of directory where RM schemas are found
-		require
-			path_not_empty: not a_path.is_empty
-		do
-			app_cfg.put_value ("/file_system/rm_schema_directory", a_path)
 		end
 
 	terminology_directory: STRING

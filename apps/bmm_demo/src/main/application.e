@@ -10,19 +10,17 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	APPLICATION
 
 inherit
 	ARGUMENTS
 
+	GLOBAL_ERROR_REPORTING_LEVEL
+
 	SHARED_REFERENCE_MODEL_ACCESS
 
-	SHARED_RESOURCES
+	SHARED_BMM_APP_RESOURCES
 		export
 			{NONE} all
 		end
@@ -32,14 +30,17 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_MESSAGE_BILLBOARD
+	BMM_DEFINITIONS
 		export
 			{NONE} all
 		end
 
-	BMM_DEFINITIONS
-		export
-			{NONE} all
+	ANY_VALIDATOR
+		rename
+			validate as Initialise_app,
+			ready_to_validate as ready_to_initialise_app
+		redefine
+			ready_to_initialise_app
 		end
 
 create
@@ -50,38 +51,42 @@ feature -- Initialization
 	make
 			-- Run application.
 		do
-			initialise
-			io.put_string (billboard.content)
-			if initialised then
-				output_schema_info
+			if ready_to_initialise_app then
+				Initialise_app
+				if not has_errors then
+					output_schema_info
 
-				-- now dmonstrate some usage of the schemas
-				rm_schema := rm_schemas_access.schema_for_rm_closure ("openehr-ehr")
+					-- now dmonstrate some usage of the schemas
+					rm_schema := rm_schemas_access.schema_for_rm_closure ("openehr-ehr")
 
-				io.put_string ("---------------- rm_schema.has_property_path() --------------%N")
-				io.put_string ("CARE_ENTRY has /protocol: " + rm_schema.has_property_path ("CARE_ENTRY", "/protocol").out + "%N")
-				io.put_string ("CARE_ENTRY has /data/events/data: " + rm_schema.has_property_path ("CARE_ENTRY", "/data/events/data").out + "%N")
-				io.put_string ("OBSERVATION has /data/events/data: " + rm_schema.has_property_path ("OBSERVATION", "/data/events/data").out + "%N")
-				io.put_string ("OBSERVATION has /data/events/data/items: " + rm_schema.has_property_path ("OBSERVATION", "/data/events/data/items").out + "%N")
-				io.put_string ("OBSERVATION has /data/events[at0003]/math_function: " + rm_schema.has_property_path ("OBSERVATION", "/data/events[at0003]/math_function").out + "%N")
-				io.put_string ("OBSERVATION has /protocol: " + rm_schema.has_property_path ("OBSERVATION", "/protocol").out + "%N")
-				io.put_string ("OBSERVATION has /data/events[at0002]/data/items[at0.76]/items: " + rm_schema.has_property_path ("OBSERVATION", "/data/events[at0002]/data/items[at0.76]/items").out + "%N" + "%N")
-				io.put_string ("OBSERVATION not has /data/events[at0002]/data/itemsXX[at0.76]/items: " + (not rm_schema.has_property_path ("OBSERVATION", "/data/events[at0002]/data/itemsXX[at0.76]/items")).out + "%N")
-				io.put_string ("COMPOSITION not has /xxxx: " + (not rm_schema.has_property_path ("COMPOSITION", "/xxxx")).out + "%N")
-				io.put_string ("CLUSTER has /items/items/items: " + rm_schema.has_property_path ("CLUSTER", "/items/items/items").out + "%N")
-				io.new_line
+					io.put_string ("---------------- rm_schema.has_property_path() --------------%N")
+					io.put_string ("CARE_ENTRY has /protocol: " + rm_schema.has_property_path ("CARE_ENTRY", "/protocol").out + "%N")
+					io.put_string ("CARE_ENTRY has /data/events/data: " + rm_schema.has_property_path ("CARE_ENTRY", "/data/events/data").out + "%N")
+					io.put_string ("OBSERVATION has /data/events/data: " + rm_schema.has_property_path ("OBSERVATION", "/data/events/data").out + "%N")
+					io.put_string ("OBSERVATION has /data/events/data/items: " + rm_schema.has_property_path ("OBSERVATION", "/data/events/data/items").out + "%N")
+					io.put_string ("OBSERVATION has /data/events[at0003]/math_function: " + rm_schema.has_property_path ("OBSERVATION", "/data/events[at0003]/math_function").out + "%N")
+					io.put_string ("OBSERVATION has /protocol: " + rm_schema.has_property_path ("OBSERVATION", "/protocol").out + "%N")
+					io.put_string ("OBSERVATION has /data/events[at0002]/data/items[at0.76]/items: " + rm_schema.has_property_path ("OBSERVATION", "/data/events[at0002]/data/items[at0.76]/items").out + "%N" + "%N")
+					io.put_string ("OBSERVATION not has /data/events[at0002]/data/itemsXX[at0.76]/items: " + (not rm_schema.has_property_path ("OBSERVATION", "/data/events[at0002]/data/itemsXX[at0.76]/items")).out + "%N")
+					io.put_string ("COMPOSITION not has /xxxx: " + (not rm_schema.has_property_path ("COMPOSITION", "/xxxx")).out + "%N")
+					io.put_string ("CLUSTER has /items/items/items: " + rm_schema.has_property_path ("CLUSTER", "/items/items/items").out + "%N")
+					io.new_line
 
-				io.put_string ("---------------- rm_schema.rm_schema.is_descendant_of() --------------%N")
-				io.put_string ("COMPOSITION is a subclass of LOCATABLE: " + rm_schema.is_descendant_of ("COMPOSITION", "LOCATABLE").out + "%N")
-				io.put_string ("LOCATABLE is not subclass of COMPOSITION" + (not rm_schema.is_descendant_of ("LOCATABLE", "COMPOSITION")).out + "%N")
-				io.new_line
+					io.put_string ("---------------- rm_schema.rm_schema.is_descendant_of() --------------%N")
+					io.put_string ("COMPOSITION is a subclass of LOCATABLE: " + rm_schema.is_descendant_of ("COMPOSITION", "LOCATABLE").out + "%N")
+					io.put_string ("LOCATABLE is not subclass of COMPOSITION" + (not rm_schema.is_descendant_of ("LOCATABLE", "COMPOSITION")).out + "%N")
+					io.new_line
 
-				io.put_string ("---------------- rm_schema.rm_schema.suppliers --------------%N")
-				io.put_string ("All supplier classes of COMPOSITION: %N")
-				across rm_schema.class_definition ("COMPOSITION").suppliers as supps_csr loop
-					io.put_string (supps_csr.item + "%N")
+					io.put_string ("---------------- rm_schema.rm_schema.suppliers --------------%N")
+					io.put_string ("All supplier classes of COMPOSITION: %N")
+					across rm_schema.class_definition ("COMPOSITION").suppliers as supps_csr loop
+						io.put_string (supps_csr.item + "%N")
+					end
+					io.new_line
+				else
+					io.put_string (error_strings)
+					io.put_string ("Check .cfg gile " + app_cfg.file_path + "%N")
 				end
-				io.new_line
 			end
 		end
 
@@ -127,28 +132,22 @@ feature -- Initialization
 			end
 		end
 
-	initialise
-		local
-			dummy_error_accumulator: ERROR_ACCUMULATOR
+	initialise_app
 		once
-			message_db.populate (Error_db_directory, locale_language_short)
-			if message_db.database_loaded then
-				-- set error reporting level in billboard and all error accumulator objects
-				billboard.set_error_reporting_level (Error_type_warning)
-				create dummy_error_accumulator.make
-				dummy_error_accumulator.set_error_reporting_level (Error_type_warning)
+			-- set error reporting level in billboard and all error accumulator objects
+			set_global_error_reporting_level (error_reporting_level)
 
-				-- set up the RM schemas
-				if directory_exists (rm_schema_directory) then
-					rm_schemas_access.initialise_all (rm_schema_directory)
-					if not rm_schemas_access.found_valid_schemas then
-						post_warning (Current, "initialise", "model_access_e6", <<rm_schema_directory, schema_file_extension>>)
-					else
-						initialised := True
-					end
-				else
-					post_error (Current, "initialise", "model_access_e5", <<rm_schema_directory>>)
+			-- set up the RM schemas
+			if rm_schema_directory.is_empty then
+				set_rm_schema_directory (Default_rm_schema_directory)
+			end
+			if file_system.directory_exists (rm_schema_directory) then
+				Rm_schemas_access.initialise_all (rm_schema_directory)
+				if not Rm_schemas_access.found_valid_schemas then
+					add_error (Ec_bmm_schemas_config_not_valid, << rm_schemas_access.schemas_load_list_string, rm_schema_directory >>)
 				end
+			else
+				add_error (Ec_bmm_schema_dir_not_valid, << rm_schema_directory >>)
 			end
 		end
 
@@ -157,24 +156,11 @@ feature -- Access
 	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 
-	Rm_schema_directory: STRING
-			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
-			-- contains schema files in .dadl format e.g.
-			-- .../rm_schemas/openehr_rm_102.dadl
-		once
-			Result := application_startup_directory.twin
-			Result.append (os_directory_separator.out + "rm_schemas")
-		end
-
-	Error_db_directory: STRING
-			-- directory of error database files in .dadl format e.g.
-			-- .../error_db/dadl_errors.txt etc
-		once
-			Result := file_system.pathname (application_startup_directory, "error_db")
-		end
-
 feature -- Status Report
 
-	initialised: BOOLEAN
+	ready_to_initialise_app: BOOLEAN
+		do
+			Result := not App_cfg.errors.has_errors
+		end
 
 end
