@@ -11,7 +11,7 @@ class
 	OPENEHR_TEST_SET
 
 inherit
-	SHARED_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 		undefine
 			default_create
 		end
@@ -20,7 +20,7 @@ inherit
 		rename
 			file_system as test_file_system
 		end
-		
+
 feature {NONE} -- Assertions
 
 	assert_equal (expected, actual: detachable ANY)

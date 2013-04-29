@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_RESOURCES
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal

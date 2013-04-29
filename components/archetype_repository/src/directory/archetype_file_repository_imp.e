@@ -45,7 +45,7 @@ feature -- Status Report
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
 		do
 			if not path.is_empty and attached file_system.dirname (path) as dn then
-				Result := is_valid_directory (dn)
+				Result := file_system.directory_exists (dn)
 			end
 		end
 

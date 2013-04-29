@@ -21,8 +21,8 @@ inherit
 	SHARED_REFERENCE_MODEL_ACCESS
 
 	SHARED_BMM_APP_RESOURCES
-		export
-			{NONE} all
+		redefine
+			Application_developer_name, Default_application_name
 		end
 
 	SHARED_MESSAGE_DB
@@ -45,6 +45,13 @@ inherit
 
 create
 	make
+
+feature -- Definitions
+
+	Application_developer_name: STRING = "openEHR"
+			-- usually the company or organisation name of the application vendor.
+
+	Default_application_name: STRING = "adl_workbench"
 
 feature -- Initialization
 

@@ -12,7 +12,7 @@ class SHARED_ADL_APP_RESOURCES
 inherit
 	SHARED_BMM_APP_RESOURCES
 		redefine
-			app_cfg_initialise
+			app_cfg_initialise, Application_developer_name, Default_application_name
 		end
 
 	ARCHETYPE_DEFINITIONS
@@ -26,6 +26,17 @@ inherit
 		end
 
 feature -- Definitions
+
+	Application_developer_name: STRING
+			-- usually the company or organisation name of the application vendor.
+		once
+			Result := "openEHR"
+		end
+
+	Default_application_name: STRING
+		once
+			Result := "adl_workbench"
+		end
 
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
