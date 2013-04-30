@@ -14,22 +14,17 @@ inherit
 			show
 		end
 
-	WINDOW_ACCELERATORS
+	EVX_WINDOW_ACCELERATORS
 		undefine
-			copy,
-			default_create
+			copy, default_create
 		end
 
-	GUI_UTILITIES
-		export
-			{NONE} all
+	EVX_UTILITIES
 		undefine
 			copy, default_create
 		end
 
 	SHARED_DADL_TEST_OBJECTS
-		export
-			{NONE} all
 		undefine
 			copy, default_create
 		end
@@ -66,7 +61,6 @@ feature -- Status setting
 			end
 
 			populate_explorer
-			append_billboard_to_status_area
 		end
 
 feature {NONE} -- Initialization
@@ -87,10 +81,11 @@ feature -- Events
 	select_explorer_item
 			-- Called by `select_actions' of `explorer_tree'.
 		do
-			if attached {EV_TREE_NODE} explorer_tree.selected_item as node then
-				if attached {PROCEDURE [ANY, TUPLE[ANY]]} node.parent.data as test_proc then
-					test_proc.call ([node.data])
-				end
+			if attached {EV_TREE_NODE} explorer_tree.selected_item as node and then
+				attached {PROCEDURE [ANY, TUPLE[ANY]]} node.parent.data as test_proc
+			then
+				status_area.set_text ("")
+				test_proc.call ([node.data])
 			end
 		end
 
@@ -126,33 +121,28 @@ feature {NONE} -- Implementation
 	populate_explorer
    		local
 			a_node, a_node1, a_node2: EV_TREE_ITEM
-			test_item: TUPLE[HASH_TABLE [ANY, STRING], PROCEDURE [ANY, TUPLE[ANY]], STRING]
-			test_proc: PROCEDURE [ANY, TUPLE[ANY]]
-			tests: HASH_TABLE [ANY, STRING]
-			test_group: STRING
 		do
 			explorer_tree.wipe_out
 			create a_node
  			a_node.set_text ("Test groups")
 			explorer_tree.extend (a_node)
 
-			from test_objects.test_table.start until test_objects.test_table.off loop
+			across test_objects.test_table as test_groups_csr loop
 				create a_node1
-				test_item := test_objects.test_table.item
-				tests ?= test_item.reference_item(1)
-				test_proc ?= test_item.reference_item(2)
-				test_group ?= test_item.reference_item (3)
-		 		a_node1.set_data (test_proc)
-		 		a_node1.set_text (test_group)
-				a_node.extend (a_node1)
-				from tests.start until tests.off loop
-					create a_node2
-		 			a_node2.set_data (tests.item_for_iteration)
-		 			a_node2.set_text (tests.key_for_iteration)
-					a_node1.extend (a_node2)
-					tests.forth
+				if attached test_groups_csr.item.test_set as test_set and
+					attached test_groups_csr.item.test_proc as test_proc and
+					attached test_groups_csr.item.test_name as test_name
+				then
+			 		a_node1.set_data (test_proc)
+			 		a_node1.set_text (test_name)
+					a_node.extend (a_node1)
+					across test_set as test_set_csr loop
+						create a_node2
+			 			a_node2.set_data (test_set_csr.item)
+			 			a_node2.set_text (test_set_csr.key)
+						a_node1.extend (a_node2)
+					end
 				end
-				test_objects.test_table.forth
 			end
 		end
 
@@ -183,8 +173,6 @@ feature {NONE} -- Implementation
 
 	append_status_area (text: STRING)
 			-- Append `text' to `parser_status_area'.
-		require
-			text_attached: text /= Void
 		do
 			status_area.append_text (text)
 			ev_application.process_graphical_events
@@ -192,26 +180,14 @@ feature {NONE} -- Implementation
 
 	update_source_area (text: STRING)
 			-- Write `text' to `source_text'.
-		require
-			text_attached: text /= Void
 		do
 			source_text.set_text (text)
-		end
-
-	append_billboard_to_status_area
-			-- Append bilboard contents to `parser_status_area' and clear billboard.
-		do
-			status_area.append_text (billboard.content)
-			billboard.clear
-			ev_application.process_graphical_events
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
 
 	focus_first_widget (widget: EV_WIDGET)
 			-- Set focus to `widget' or to its first child widget that accepts focus.
-		require
-			widget_attached: widget /= Void
 		local
 			widgets: LINEAR [EV_WIDGET]
 		do

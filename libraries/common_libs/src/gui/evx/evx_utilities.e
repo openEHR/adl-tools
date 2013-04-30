@@ -152,21 +152,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
---	populate_ev_combo_from_ds_hash_keys (ev_combo: EV_COMBO_BOX; ht: detachable DS_HASH_TABLE [ANY, STRING])
---			-- populate combo from hash table items
---		local
---			strs: ARRAYED_LIST [STRING_32]
---		do
---			create strs.make (0)
---			if attached ht then
---				from ht.start until ht.off loop
---					strs.extend (utf8_to_utf32 (ht.key_for_iteration))
---					ht.forth
---				end
---			end
---			ev_combo.set_strings (strs)
---		end
-
 	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
 			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
 		do

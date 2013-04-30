@@ -7,9 +7,6 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-
 class
 	DADL_TEST_OBJECTS
 
@@ -36,7 +33,8 @@ feature -- Initialisation
 
 feature -- Access
 
-	test_table: ARRAYED_LIST [TUPLE [HASH_TABLE [ANY, STRING], PROCEDURE [ANY, TUPLE[ANY]], STRING]]
+	test_table: ARRAYED_LIST [TUPLE [test_set: HASH_TABLE [ANY, STRING]; test_proc: PROCEDURE [ANY, TUPLE[ANY]]; test_name: STRING]]
+			-- list of {test data set, test proc, test set name}
 		once
 			create Result.make(0)
 			Result.extend ([round_trip_tests, agent round_trip, "Round trip tests"])
@@ -52,14 +50,14 @@ feature -- Access
 			file_names: ARRAYED_LIST [STRING]
 		once
 			create Result.make(0)
-			dir_path := file_system.pathname(application_startup_directory, "test_files")
+			dir_path := file_system.pathname (application_startup_directory, "test_files")
 			create dir.make (dir_path)
 			if dir.exists then
 				dir.open_read
 				file_names := dir.linear_representation
 				from file_names.start until file_names.off loop
 					file_name := file_names.item
-					if file_name.ends_with(".dadl") then
+					if file_name.ends_with (".dadl") then
 						file_path := file_system.pathname (dir_path, file_name)
 						create a_dadl_file.make (file_path)
 						a_dadl_file.open_read
@@ -233,10 +231,10 @@ feature -- Test procedures
 			new_obj: ANY
 			dt: DT_COMPLEX_OBJECT_NODE
 		do
-			append_status("%NCreate Data Tree from " + an_obj.generator + " object%N")
+			append_status ("%NCreate Data Tree from " + an_obj.generator + " object%N")
 			create dt.make_from_object (an_obj)
 
-			append_status("Serialise Data Tree to dADL%N")
+			append_status ("Serialise Data Tree to dADL%N")
 			dadl_engine.set_tree (dt)
 			dadl_engine.serialise ("dadl", False, True)
 			set_source_text (dadl_engine.serialised)
@@ -251,8 +249,6 @@ feature -- Test procedures
 					append_status("%TSuccessfully created " + new_obj.generator + " object from DADL%N")
 				else
 					append_status("%TFailed to create " + new_obj.generator + " object from DADL Error%N")
-					append_status(billboard.content)
-					billboard.clear
 				end
 			else
 				append_status (dadl_engine.errors.as_string)
@@ -280,7 +276,7 @@ feature {NONE} -- Implementation
 
 	status_reporting_proc: PROCEDURE [ANY, TUPLE [STRING]]
 
-	append_status (a_text: attached STRING)
+	append_status (a_text: STRING)
 			-- write a_text to reporting location, or else stdout if none
 		do
 			if status_reporting_proc /= Void then
@@ -292,7 +288,7 @@ feature {NONE} -- Implementation
 
 	source_text_proc: PROCEDURE [ANY, TUPLE [STRING]]
 
-	set_source_text (a_text: attached STRING)
+	set_source_text (a_text: STRING)
 			-- write a_text to source text location, or else stdout if none
 		do
 			if source_text_proc /= Void then

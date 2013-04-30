@@ -1,54 +1,31 @@
 note
-	component:   "openEHR dADL Project"
-	description: "Shared application resources for any application, GUI or non-GUI"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	component:   "openEHR Archetype Project"
+	description: "[
+				 Abstract model of any complex data item whose contents are made available in a linear 
+				 vector that can be used by generic screen populating or reporting methods.
+				 ]"
+	keywords:    "statistics"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
-
-class SHARED_APP_RESOURCES
-
-inherit
-	SHARED_RESOURCES
-
-	BASIC_DEFINITIONS
-
-	SHARED_MESSAGE_DB
-
-	SHARED_MESSAGE_BILLBOARD
-
-	SHARED_APP_CONFIG_FILE_ACCESS
+deferred class GENERIC_RENDERABLE
 
 feature -- Access
 
-	error_reporting_level: INTEGER
-			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
-			-- all levels >= the one stored will be displayed; Info is the minimum.
-		local
-			str: STRING
-		do
-			str := app_cfg.string_value ("/general/status_reporting_level")
-			if attached str and str.is_integer and is_valid_error_type (str.to_integer) then
-				Result := str.to_integer
-			else
-				Result := Error_type_info
-			end
+	as_vector: LIST [ANY]
+			-- vector representation for use with generic screen populating methods
+		deferred
 		end
 
-	Error_db_directory: STRING
-			-- directory of error database files in .dadl format e.g.
-			-- .../error_db/dadl_errors.txt etc
-		once
-			Result := file_system.pathname (application_startup_directory, "error_db")
+feature -- Status Report
+
+	is_populated: BOOLEAN
+		deferred
 		end
 
 end
-
 
 
 --|
@@ -65,10 +42,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_app_resources.e.
+--| The Original Code is generic_renderable.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2010
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

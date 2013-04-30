@@ -9,10 +9,6 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
-
 class APP_ROOT
 
 inherit
@@ -31,12 +27,8 @@ feature -- Initialisation
 
 	make
 		once
-			message_db.populate(Error_db_directory, locale_language_short)
-			if Message_db.database_loaded then
-				billboard.set_error_reporting_level(error_reporting_level)
-				dt_serialisers.put(create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl")), "dadl")
-				initialised := True
-			end
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make (create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl")), "dadl")
+			initialised := True
 		end
 
 feature -- Status Report

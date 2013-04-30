@@ -85,10 +85,10 @@ feature -- Commands
 			parsing: in_parse_mode
 		do
 			tree := Void
-			serialised.wipe_out
 			parser_execute
 			if not parser.syntax_error then
 				assign_parser_result
+				serialised.wipe_out
 			end
 		ensure
 			parse_succeeded implies attached tree
