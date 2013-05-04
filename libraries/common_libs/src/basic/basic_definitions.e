@@ -21,21 +21,7 @@ feature -- Definitions
 
 	Default_language: STRING = "en"
 
-	Default_language_code_set: STRING = "ISO_639-1"
-
-	Default_language_code: TERMINOLOGY_CODE
-		once
-			create Result.make (Default_language_code_set, Default_language)
-		end
-
 	Default_encoding: STRING = "UTF-8"
-
-	Default_encoding_code_set: STRING = "IANA_RFC2978"
-
-	Default_encoding_code: TERMINOLOGY_CODE
-		once
-			create Result.make (Default_encoding_code_set, Default_encoding)
-		end
 
 	UTF8_bom_char_1: CHARACTER = '%/239/'
 	UTF8_bom_char_2: CHARACTER = '%/187/'

@@ -17,6 +17,22 @@ inherit
 
 	OPENEHR_CODE_SET_IDENTIFIERS
 
+feature -- Definitions
+
+	Default_language_code_set: STRING = "ISO_639-1"
+
+	Default_language_code: TERMINOLOGY_CODE
+		once
+			create Result.make (Default_language_code_set, Default_language)
+		end
+
+	Default_encoding_code_set: STRING = "IANA_RFC2978"
+
+	Default_encoding_code: TERMINOLOGY_CODE
+		once
+			create Result.make (Default_encoding_code_set, Default_encoding)
+		end
+
 feature -- Access
 
 	terminology (name: STRING): TERMINOLOGY_ACCESS

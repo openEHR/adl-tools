@@ -79,10 +79,5 @@
 				<assertions precondition="true"/>
 			</option>
 		</cluster>
-		<cluster name="reference_model_access" location="..\..\..\components\reference_model_access\src\" recursive="true">
-			<option void_safety="initialization">
-				<assertions precondition="true"/>
-			</option>
-		</cluster>
 	</target>
 </system>

@@ -50,7 +50,7 @@ feature -- Access
 			-- authoring is required to ensure natural language translations can preserve
 			-- quality. Language is relevant in both the description and ontology sections.
 		attribute
-			Result := Default_language_code
+			Result := ts.Default_language_code
 		end
 
 	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]

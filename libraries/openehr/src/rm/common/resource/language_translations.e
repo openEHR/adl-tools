@@ -16,7 +16,7 @@ class LANGUAGE_TRANSLATIONS
 inherit
 	DT_CONVERTIBLE
 
-	TERMINOLOGY_SERVICE
+	SHARED_TERMINOLOGY_SERVICE
 		export
 			{NONE} all
 		end
@@ -65,7 +65,7 @@ feature -- Modification
 	set_original_language_from_string (a_lang: STRING)
 			--
 		do
-			create original_language.make (Default_language_code_set, a_lang)
+			create original_language.make (ts.Default_language_code_set, a_lang)
 		end
 
 	add_new_translation (a_lang: STRING)

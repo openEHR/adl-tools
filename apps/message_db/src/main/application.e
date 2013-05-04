@@ -63,7 +63,7 @@ inherit
 
 	ANY_VALIDATOR
 
-	SHARED_RESOURCES
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end

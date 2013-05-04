@@ -28,6 +28,12 @@ templates = <
 		["dt_nested_type_mismatch"] = <"[Software exception]: Nested structure mismatch for type $1, attribute $2: DT structure is nested, object type is not">
 		["dt_unknown_type_in_source"] = <"Data source mentions unknown type $1 (object add failed)">
 
+		-- syntax errors
+		["STCV"] = <"Syntax error: invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
+
+		["SDAT"] = <"Syntax error (SDAT)invalid attribute value">
+		["SGEE"] = <"Syntax error (SGEE)generic object not enclosed by normal object not allowed">
+
 		-- dADL
 		["VOBAV"] = <"assumed value $1 not within constraint value space">
 		["VCPCV"] = <"invalid term code constraint: $1">

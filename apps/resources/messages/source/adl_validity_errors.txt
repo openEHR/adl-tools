@@ -59,10 +59,6 @@ templates = <
 		["SCDUPT"] = <"Syntax error: invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
 		["SCSRE"] = <"Syntax error: regular expression compile error '$1' is not a valid regular expression">
 		["SCPCV"] = <"Syntax error: invalid term code constraint pattern: $1">
-		["STCV"] = <"Syntax error: invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
-
-		["SDAT"] = <"Syntax error (SDAT)invalid attribute value">
-		["SGEE"] = <"Syntax error (SGEE)generic object not enclosed by normal object not allowed">
 
 		-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 		["VASID"] = <"specialised archetype id not based on specialisation parent archetype id">
