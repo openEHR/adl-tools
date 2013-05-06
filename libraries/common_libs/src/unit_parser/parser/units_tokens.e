@@ -1,7 +1,7 @@
-indexing
+note
 
 	description: "Parser token codes"
-	generator: "geyacc version 3.8"
+	generator: "geyacc version 3.9"
 
 class UNITS_TOKENS
 
@@ -11,13 +11,13 @@ inherit
 
 feature -- Last values
 
-	last_any_value: ANY
+	last_detachable_any_value: detachable ANY
 	last_integer_value: INTEGER
 	last_string_value: STRING
 
 feature -- Access
 
-	token_name (a_token: INTEGER): STRING is
+	token_name (a_token: INTEGER): STRING
 			-- Name of token `a_token'
 		do
 			inspect a_token
@@ -48,13 +48,13 @@ feature -- Access
 
 feature -- Token codes
 
-	V_INTEGER: INTEGER is 258
-	V_IDENTIFIER: INTEGER is 259
-	SYM_OPEN_PAREN: INTEGER is 260
-	SYM_CLOSE_PAREN: INTEGER is 261
-	SYM_START_SUFFIX: INTEGER is 262
-	SYM_END_SUFFIX: INTEGER is 263
-	SYM_START_ANNOT: INTEGER is 264
-	SYM_END_ANNOT: INTEGER is 265
+	V_INTEGER: INTEGER = 258
+	V_IDENTIFIER: INTEGER = 259
+	SYM_OPEN_PAREN: INTEGER = 260
+	SYM_CLOSE_PAREN: INTEGER = 261
+	SYM_START_SUFFIX: INTEGER = 262
+	SYM_END_SUFFIX: INTEGER = 263
+	SYM_START_ANNOT: INTEGER = 264
+	SYM_END_ANNOT: INTEGER = 265
 
 end

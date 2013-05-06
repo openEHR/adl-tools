@@ -1,16 +1,12 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for ADL syntax items"
 	keywords:    "ADL"
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Mozilla tri-license"
-
-	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/parser/adl_scanner.l $"
-	revision:    "$LastChangedRevision: 1874 $"
-	last_change: "$LastChangedDate: 2013-02-27 14:02:03 +1100 (Wed, 27 Feb 2013) $"
 
 class ADL_SCANNER
 
@@ -39,15 +35,14 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 %}
 
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
 ALPHANUM_STR [a-zA-Z0-9_]+
-VALUE_STR [a-zA-Z0-9_\-]+
+VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
@@ -93,8 +88,20 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 ----------/* keywords */ -------------------------------------------------
 
-^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r]* 		{
+^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r\n]+ 		{
 				last_token := SYM_ARCHETYPE
+			}
+
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Oo][Vv][Ee][Rr][Ll][Aa][Yy][ \t\r\n]+ 		{
+				last_token := SYM_TEMPLATE_OVERLAY
+			}
+
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{
+				last_token := SYM_TEMPLATE
+			}
+
+^[Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn][Aa][Ll]_[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{
+				last_token := SYM_OPERATIONAL_TEMPLATE
 			}
 
 [Aa][Dd][Ll]_[Vv][Ee][Rr][Ss][Ii][Oo][Nn] 		{
@@ -105,7 +112,11 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				last_token := SYM_IS_CONTROLLED
 			}
 
-[Uu][Ii][Dd]			{
+[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ee][Dd] 		{
+				last_token := SYM_IS_GENERATED
+			}
+
+[Uu][Ii][Dd] 		{
 				last_token := SYM_UID
 			}
 
@@ -155,9 +166,25 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				ontology_text_start_line := in_lineno
 			}
 
+^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n			{
+				last_token := SYM_ANNOTATIONS
+				set_start_condition(IN_DADL_SECTION)
+				in_lineno := in_lineno + 1
+				annotations_text_start_line := in_lineno
+			}
+
+^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n			{
+				last_token := SYM_COMPONENT_ONTOLOGIES
+				set_start_condition(IN_DADL_SECTION)
+				in_lineno := in_lineno + 1
+				comp_onts_text_start_line := in_lineno
+			}
+
 <IN_DADL_SECTION>{
 	^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	|
-	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition" or "description"
+	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n |
+	^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n	| 
+	^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n	{ -- line starting with "definition" or "description" or "annotations"
 				-- unread the pattern just matched
 				a_text := text
 				from i := text_count until i < 1 loop
@@ -167,14 +194,14 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
 
 				set_start_condition(INITIAL)
 			}
-	\n		{ -- LF
+	\n 		{ -- LF
 				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
 			}
@@ -184,7 +211,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 	<<EOF>> {
 				-- get the dADL section sorted out
 				last_token := V_DADL_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -202,7 +229,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_CADL_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -211,14 +238,17 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 }
 
 <IN_ASSERTION_SECTION>{
-	^[ \t]+[^\n]*\n {
+	^[ \t]+[^\n]*\n {			-- match TAB whitsepace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
+
+	\n+				in_lineno := in_lineno + text_count
+
 	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_ASSERTION_TEXT
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -233,19 +263,19 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 			}
 
 ----------/* term code reference */ -------------------------------------------------
-\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+	{
+{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
 
-----------/* identifiers */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9_]*	{
+----------/* identifiers (used in meta-data section after 'archetype' or other keyword) */ -------------------------------------------------
+{NAMESTR}	{
 					last_token := V_IDENTIFIER
 					last_string_value := text
 			}
@@ -272,17 +302,17 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -297,6 +327,9 @@ feature -- Access
 
 	in_lineno: INTEGER
 			-- Current line number
+
+	source_start_line: INTEGER
+			-- offset of source in other document, else 0
 
 	is_operator: BOOLEAN
 			-- Parsing an operator declaration?
@@ -316,13 +349,16 @@ feature -- Access
 
 	ontology_text_start_line: INTEGER
 
+	annotations_text_start_line: INTEGER
+
+	comp_onts_text_start_line: INTEGER
+
 feature {NONE} -- Constants
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

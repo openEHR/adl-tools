@@ -1,24 +1,24 @@
-indexing
+note
 	description: "[
 				International locale English settings; this class corrects ES's 
 				US english versoin which contains the US non-standard way of 
 				stringifyin dates. This version contains the international 
 				standardised version from ISO8601
 				]"
-	date: 		"$LastChangedDate$"
-	revision: 	"$LastChangedRevision$"
+	date: 		"$LastChangedDate: 2011-05-23 22:29:43 +1000 (Mon, 23 May 2011) $"
+	revision: 	"$LastChangedRevision: 1475 $"
 
-class 
-	DATE_TIME_TOOLS	
+class
+	DATE_TIME_TOOLS
 
-inherit 	
+inherit
 	DATE_TIME_LANGUAGE_CONSTANTS
 
-feature 
+feature
 
-	name: STRING is "English"
+	name: STRING = "English"
 
-	days_text: ARRAY [STRING] is
+	days_text: ARRAY [STRING]
 		once
 			Result := <<
 				"SUN",
@@ -28,12 +28,12 @@ feature
 				"THU",
 				"FRI",
 				"SAT"
-				
+
 			>>
 			Result.compare_objects
 		end
 
-	months_text: ARRAY [STRING] is
+	months_text: ARRAY [STRING]
 		once
 			Result := <<
 				"JAN",
@@ -52,7 +52,7 @@ feature
 			Result.compare_objects
 		end
 
-	long_days_text: ARRAY [STRING] is
+	long_days_text: ARRAY [STRING]
 		once
 			Result := <<
 				"SUNDAY",
@@ -62,12 +62,12 @@ feature
 				"THURSDAY",
 				"FRIDAY",
 				"SATURDAY"
-				
+
 			>>
 			Result.compare_objects
 		end
 
-	long_months_text: ARRAY [STRING] is
+	long_months_text: ARRAY [STRING]
 		once
 			Result := <<
 				"JANUARY",
@@ -86,23 +86,23 @@ feature
 			Result.compare_objects
 		end
 
-	date_default_format_string: STRING is "yyyy-[0]mm-[0]dd"
+	date_default_format_string: STRING = "yyyy-[0]mm-[0]dd"
 			-- ISO 8601 standard
 
-	time_default_format_string: STRING is "[0]hh:[0]mi:[0]ss.ff3"
+	time_default_format_string: STRING = "[0]hh:[0]mi:[0]ss.ff3"
 			-- ISO 8601 standard
 
-	default_format_string: STRING is "yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss.ff3"
+	default_format_string: STRING = "yyyy-[0]mm-[0]dd [0]hh:[0]mi:[0]ss.ff3"
 			-- ISO 8601 standard
 
-end -- class DATE_TIME_TOOLS 
+end -- class DATE_TIME_TOOLS
 
 
 --|----------------------------------------------------------------
 --| EiffelTime: library of reusable components for ISE Eiffel.
 --| Copyright (C) 1986-2001 Interactive Software Engineering Inc.
 --| All rights reserved. Duplication and distribution prohibited.
---| May be used only with ISE Eiffel, under terms of user license. 
+--| May be used only with ISE Eiffel, under terms of user license.
 --| Contact ISE for any other use.
 --|
 --| Interactive Software Engineering Inc.

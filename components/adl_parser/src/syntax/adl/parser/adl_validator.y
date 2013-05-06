@@ -1,21 +1,16 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL"
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003-2005 Deep Thought Informatics Pty Ltd"
-	license:     "The Eiffel Forum Open Source License version 1"
-
-	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/components/adl_parser/src/syntax/adl/parser/adl_validator.y $"
-	revision:    "$LastChangedRevision: 1874 $"
-	last_change: "$LastChangedDate: 2013-02-27 14:02:03 +1100 (Wed, 27 Feb 2013) $"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
 
 class ADL_VALIDATOR
 
 inherit
-
 	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
@@ -33,8 +28,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 
 %}
@@ -55,7 +49,7 @@ creation
 
 %%
 
-input: archetype	
+input: archetype
 		{
 			accept
 		}
@@ -115,6 +109,10 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 	| SYM_IS_CONTROLLED
 		{
 			is_controlled := True
+		}
+	| SYM_IS_GENERATED
+		{
+			is_generated := True
 		}
 	;
 
@@ -212,6 +210,31 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 		}
 	;
 
+arch_annotations: -- no meta-data ok
+	| SYM_ANNOTATIONS V_DADL_TEXT 
+		{ 
+			annotations_text := $2
+		}
+	| SYM_ANNOTATIONS error
+		{
+			raise_error
+			report_error("Error in annotations section")
+			abort
+		}
+	;
+		
+arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT 
+		{ 
+			component_ontologies_text := $2
+		}
+	| SYM_COMPONENT_ONTOLOGIES error
+		{
+			raise_error
+			report_error("Error in component ontologies section")
+			abort
+		}
+	;
+		
 %%
 
 feature -- Initialization
@@ -257,6 +280,8 @@ feature -- Parse Output
 
 	is_controlled: BOOLEAN
 
+	is_generated: BOOLEAN
+
 	parent_archetype_id: ARCHETYPE_ID
 
 	concept: STRING
@@ -270,6 +295,10 @@ feature -- Parse Output
 	invariant_text: STRING
 	
 	ontology_text: STRING
+
+	annotations_text: STRING
+
+	component_ontologies_text: STRING
 
 feature -- Access
 

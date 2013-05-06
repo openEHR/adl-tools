@@ -1,22 +1,16 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for dADL syntax items"
 	keywords:    "ADL, dADL"
-	
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DADL_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -40,8 +34,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 %}
 
@@ -49,7 +42,6 @@ creation
 ALPHANUM [a-zA-Z0-9]
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
-NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
@@ -114,6 +106,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			else
 				last_token := SYM_START_DBLOCK
 				start_block_received := True
+				block_depth := block_depth + 1
 			end
 		}
 
@@ -122,6 +115,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 				last_token := SYM_GT
 			else
 				last_token := SYM_END_DBLOCK
+				block_depth := block_depth - 1
 			end
 		}
 
@@ -135,9 +129,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 [Ff][Aa][Ll][Ss][Ee] 						last_token := SYM_FALSE
 
 [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]			last_token := SYM_INFINITY
-
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-[Qq][Uu][Ee][Rr][Yy]					 	last_token := SYM_QUERY_FUNC
 
 ----------/* URI */ -------------------------------------------------
 [a-z]+:[^<>|\\{}^" ]*	{
@@ -156,7 +147,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[{ALPHANUM}{NAMECHAR}*\]	{
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
@@ -214,7 +205,7 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 					last_string_value := text
 			}
 
-[A-Z]{IDCHAR}*<[a-zA-Z0-9,_<>]+>	{
+[A-Z]{IDCHAR}*[ ]<[a-zA-Z0-9,_<> ]+>	{
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
 			}
@@ -227,9 +218,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 ----------/* CADL Blocks */ -------------------------------------------------
 \{[^{}]*		{				-- beginning of CADL block
-				in_buffer.append_string (text)
-				set_start_condition (IN_CADL_BLOCK)
-				cadl_depth := 1
+				if block_depth = 1 then
+					in_buffer.append_string (text)
+					set_start_condition (IN_CADL_BLOCK)
+					cadl_depth := 1
+				else
+					last_token := ERR_CADL_MISPLACED
+				end
 			}
 
 <IN_CADL_BLOCK> {
@@ -305,7 +300,7 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 					in_buffer.append_string (text_substring (1, text_count - 1))
 				end
 
-				str_ := STRING_.make (in_buffer.count)
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -352,19 +347,21 @@ feature {NONE} -- Local variables
 
 	start_block_received: BOOLEAN
 
+	block_depth: INTEGER
+
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -385,7 +382,7 @@ feature -- Access
 
 feature {NONE} -- Constants
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
 invariant

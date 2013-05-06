@@ -585,6 +585,13 @@
 
 <div class="rule">
 <div class="lhs">
+<span class="lhs_variable" id="duration_pattern">duration_pattern</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_DURATION_CONSTRAINT_PATTERN </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
 <span class="lhs_variable" id="c_duration">c_duration</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_duration_constraint">c_duration_constraint</a> </span></div>
@@ -698,7 +705,11 @@
 <div class="lhs">
 <span class="lhs_variable" id="type_identifier">type_identifier</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_TYPE_IDENTIFIER </span></div>
+&nbsp; <span class="literal_token">&#40; </span><span class="token">V_TYPE_IDENTIFIER </span><span class="literal_token">&#41; </span></div>
+<div class="rhs">
+| <span class="literal_token">&#40; </span><span class="token">V_GENERIC_TYPE_IDENTIFIER </span><span class="literal_token">&#41; </span></div>
+<div class="rhs">
+| <span class="token">V_TYPE_IDENTIFIER </span></div>
 <div class="rhs">
 | <span class="token">V_GENERIC_TYPE_IDENTIFIER </span></div>
 </div>
@@ -970,13 +981,6 @@
 | <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
 <div class="rhs">
 | <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="duration_pattern">duration_pattern</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_ISO8601_DURATION_CONSTRAINT_PATTERN </span></div>
 </div>
 
 <div class="rule">

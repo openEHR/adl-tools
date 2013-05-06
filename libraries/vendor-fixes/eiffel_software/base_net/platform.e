@@ -1,10 +1,10 @@
-indexing
+note
 	description: "Platform-dependent properties."
 	library: "Free implementation of ELKS library"
-	copyright: "Copyright (c) 1986-2006, Eiffel Software and others"
-	license: "Eiffel Forum License v2 (see forum.txt)"
-	date: "$Date$"
-	revision: "$Revision$"
+	status: "See notice at end of class."
+	legal: "See notice at end of class."
+	date: "$Date: 2012-07-17 18:16:12 +1000 (Tue, 17 Jul 2012) $"
+	revision: "$Revision: 1789 $"
 
 class PLATFORM
 
@@ -15,6 +15,9 @@ feature -- Platform
 		external
 			"built_in static"
 		end
+
+	is_scoop_capable: BOOLEAN = False
+			-- Is current platform capable of SCOOP?
 
 	is_dotnet: BOOLEAN = True
 			-- Are we targetting .NET?
@@ -30,6 +33,9 @@ feature -- Platform
 
 	is_mac: BOOLEAN = False
 			-- Are we running on Mac OS?
+
+	is_vxworks: BOOLEAN = False
+			-- Are we running on VxWorks?
 
 	is_little_endian: BOOLEAN
 			-- Is current platform a little endian one?
@@ -257,5 +263,16 @@ feature -- Obsoletes
 		ensure
 			meaningful: Result <= 0
 		end
+
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

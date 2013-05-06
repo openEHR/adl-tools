@@ -207,7 +207,7 @@ feature -- Output
 		do
 			-- FIXME: REAL.out is broken
 			Result := lower.out
-			if lower.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+			if lower.generator.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
 				Result.append(".0")
 			end
 		end
@@ -220,7 +220,7 @@ feature -- Output
 		do
 			-- FIXME: REAL.out is broken
 			Result := upper.out
-			if upper.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+			if upper.generator.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
 				Result.append(".0")
 			end
 		end

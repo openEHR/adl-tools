@@ -35,7 +35,7 @@ create
 
 feature {NONE} -- Implementation
 
-	yy_build_parser_tables is
+	yy_build_parser_tables
 			-- Build parser tables.
 		do
 			yytranslate := yytranslate_template
@@ -50,12 +50,12 @@ feature {NONE} -- Implementation
 			yycheck := yycheck_template
 		end
 
-	yy_create_value_stacks is
+	yy_create_value_stacks
 			-- Create value stacks.
 		do
 		end
 
-	yy_init_value_stacks is
+	yy_init_value_stacks
 			-- Initialize value stacks.
 		do
 			yyvsp1 := -1
@@ -64,25 +64,25 @@ feature {NONE} -- Implementation
 			yyvsp4 := -1
 		end
 
-	yy_clear_value_stacks is
+	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
 		do
-			if yyvs1 /= Void then
-				yyvs1.clear_all
+			if yyvs1 /= Void and yyspecial_routines1 /= Void then
+				yyspecial_routines1.keep_head (yyvs1, 0, yyvsp1 + 1)
 			end
-			if yyvs2 /= Void then
-				yyvs2.clear_all
+			if yyvs2 /= Void and yyspecial_routines2 /= Void then
+				yyspecial_routines2.keep_head (yyvs2, 0, yyvsp2 + 1)
 			end
-			if yyvs3 /= Void then
-				yyvs3.clear_all
+			if yyvs3 /= Void and yyspecial_routines3 /= Void then
+				yyspecial_routines3.keep_head (yyvs3, 0, yyvsp3 + 1)
 			end
-			if yyvs4 /= Void then
-				yyvs4.clear_all
+			if yyvs4 /= Void and yyspecial_routines4 /= Void then
+				yyspecial_routines4.keep_head (yyvs4, 0, yyvsp4 + 1)
 			end
 		end
 
-	yy_push_last_value (yychar1: INTEGER) is
+	yy_push_last_value (yychar1: INTEGER)
 			-- Push semantic value associated with token `last_token'
 			-- (with internal id `yychar1') on top of corresponding
 			-- value stack.
@@ -90,8 +90,8 @@ feature {NONE} -- Implementation
 			inspect yytypes2.item (yychar1)
 			when 1 then
 				yyvsp1 := yyvsp1 + 1
-				if yyvsp1 >= yyvsc1 then
-					if yyvs1 = Void then
+				if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+					if yyvs1 = Void or yyspecial_routines1 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs1")
 						end
@@ -106,11 +106,11 @@ feature {NONE} -- Implementation
 						yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 					end
 				end
-				yyvs1.put (last_any_value, yyvsp1)
+				yyspecial_routines1.force (yyvs1, last_detachable_any_value, yyvsp1)
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
-				if yyvsp2 >= yyvsc2 then
-					if yyvs2 = Void then
+				if yyvsp2 >= yyvsc2 or yyvs2 = Void or yyspecial_routines2 = Void then
+					if yyvs2 = Void or yyspecial_routines2 = Void then
 						debug ("GEYACC")
 							std.error.put_line ("Create yyvs2")
 						end
@@ -125,7 +125,7 @@ feature {NONE} -- Implementation
 						yyvs2 := yyspecial_routines2.resize (yyvs2, yyvsc2)
 					end
 				end
-				yyvs2.put (last_string_value, yyvsp2)
+				yyspecial_routines2.force (yyvs2, last_string_value, yyvsp2)
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: not a token type: ")
@@ -136,15 +136,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	yy_push_error_value is
+	yy_push_error_value
 			-- Push semantic value associated with token 'error'
 			-- on top of corresponding value stack.
 		local
-			yyval1: ANY
+			yyval1: detachable ANY
 		do
 			yyvsp1 := yyvsp1 + 1
-			if yyvsp1 >= yyvsc1 then
-				if yyvs1 = Void then
+			if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+				if yyvs1 = Void or yyspecial_routines1 = Void then
 					debug ("GEYACC")
 						std.error.put_line ("Create yyvs1")
 					end
@@ -159,10 +159,10 @@ feature {NONE} -- Implementation
 					yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 				end
 			end
-			yyvs1.put (yyval1, yyvsp1)
+			yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 		end
 
-	yy_pop_last_value (yystate: INTEGER) is
+	yy_pop_last_value (yystate: INTEGER)
 			-- Pop semantic value from stack when in state `yystate'.
 		local
 			yy_type_id: INTEGER
@@ -187,12 +187,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	yy_run_geyacc
+			-- You must run geyacc to regenerate this class.
+		do
+		end
+
 feature {NONE} -- Semantic actions
 
-	yy_do_action (yy_act: INTEGER) is
+	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
-			yyval1: ANY
+			yyval1: detachable ANY
 			yyval4: OG_PATH
 			yyval3: OG_PATH_ITEM
 		do
@@ -210,8 +215,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -226,7 +231,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
 --|#line 53 "og_path_validator.y"
@@ -241,8 +246,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -257,7 +262,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
 --|#line 58 "og_path_validator.y"
@@ -272,8 +277,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp1 >= yyvsc1 then
-		if yyvs1 = Void then
+	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
+		if yyvs1 = Void or yyspecial_routines1 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs1")
 			end
@@ -288,7 +293,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
 --|#line 63 "og_path_validator.y"
@@ -303,7 +308,7 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
 --|#line 72 "og_path_validator.y"
@@ -317,7 +322,7 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 6 then
 --|#line 79 "og_path_validator.y"
@@ -334,8 +339,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
 	yyvsp1 := yyvsp1 -1
-	if yyvsp4 >= yyvsc4 then
-		if yyvs4 = Void then
+	if yyvsp4 >= yyvsc4 or yyvs4 = Void or yyspecial_routines4 = Void then
+		if yyvs4 = Void or yyspecial_routines4 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs4")
 			end
@@ -350,7 +355,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs4 := yyspecial_routines4.resize (yyvs4, yyvsc4)
 		end
 	end
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 7 then
 --|#line 86 "og_path_validator.y"
@@ -367,7 +372,7 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 8 then
 --|#line 94 "og_path_validator.y"
@@ -385,7 +390,7 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp4 := yyvsp4 -1
 	yyvsp1 := yyvsp1 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 9 then
 --|#line 104 "og_path_validator.y"
@@ -399,8 +404,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp4 := yyvsp4 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp4 >= yyvsc4 then
-		if yyvs4 = Void then
+	if yyvsp4 >= yyvsc4 or yyvs4 = Void or yyspecial_routines4 = Void then
+		if yyvs4 = Void or yyspecial_routines4 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs4")
 			end
@@ -415,7 +420,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs4 := yyspecial_routines4.resize (yyvs4, yyvsc4)
 		end
 	end
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 10 then
 --|#line 108 "og_path_validator.y"
@@ -430,7 +435,7 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 11 then
 --|#line 115 "og_path_validator.y"
@@ -447,8 +452,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp3 >= yyvsc3 then
-		if yyvs3 = Void then
+	if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+		if yyvs3 = Void or yyspecial_routines3 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs3")
 			end
@@ -463,7 +468,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 		end
 	end
-	yyvs3.put (yyval3, yyvsp3)
+	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 when 12 then
 --|#line 122 "og_path_validator.y"
@@ -480,8 +485,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp3 >= yyvsc3 then
-		if yyvs3 = Void then
+	if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+		if yyvs3 = Void or yyspecial_routines3 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs3")
 			end
@@ -496,7 +501,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 		end
 	end
-	yyvs3.put (yyval3, yyvsp3)
+	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 when 13 then
 --|#line 129 "og_path_validator.y"
@@ -513,8 +518,8 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp3 := yyvsp3 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp3 >= yyvsc3 then
-		if yyvs3 = Void then
+	if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
+		if yyvs3 = Void or yyspecial_routines3 = Void then
 			debug ("GEYACC")
 				std.error.put_line ("Create yyvs3")
 			end
@@ -529,7 +534,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 		end
 	end
-	yyvs3.put (yyval3, yyvsp3)
+	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 			else
 				debug ("GEYACC")
@@ -541,7 +546,7 @@ end
 			end
 		end
 
-	yy_do_error_action (yy_act: INTEGER) is
+	yy_do_error_action (yy_act: INTEGER)
 			-- Execute error action.
 		do
 			inspect yy_act
@@ -556,7 +561,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yytranslate_template: SPECIAL [INTEGER] is
+	yytranslate_template: SPECIAL [INTEGER]
 			-- Template for `yytranslate'
 		once
 			Result := yyfixed_array (<<
@@ -591,7 +596,7 @@ feature {NONE} -- Table templates
 			    5,    6,    7,    8, yyDummy>>)
 		end
 
-	yyr1_template: SPECIAL [INTEGER] is
+	yyr1_template: SPECIAL [INTEGER]
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
@@ -599,7 +604,7 @@ feature {NONE} -- Table templates
 			   13,   10,   10,   10, yyDummy>>)
 		end
 
-	yytypes1_template: SPECIAL [INTEGER] is
+	yytypes1_template: SPECIAL [INTEGER]
 			-- Template for `yytypes1'
 		once
 			Result := yyfixed_array (<<
@@ -607,14 +612,14 @@ feature {NONE} -- Table templates
 			    4,    2,    2,    1,    1,    4,    3,    1,    1,    1, yyDummy>>)
 		end
 
-	yytypes2_template: SPECIAL [INTEGER] is
+	yytypes2_template: SPECIAL [INTEGER]
 			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    2,    2,    2,    1,    1,    1, yyDummy>>)
 		end
 
-	yydefact_template: SPECIAL [INTEGER] is
+	yydefact_template: SPECIAL [INTEGER]
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
@@ -622,14 +627,14 @@ feature {NONE} -- Table templates
 			    5,   12,   11,    0,    0,    8,   10,    0,    0,    0, yyDummy>>)
 		end
 
-	yydefgoto_template: SPECIAL [INTEGER] is
+	yydefgoto_template: SPECIAL [INTEGER]
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
 			    5,    6,    7,    8,   17, yyDummy>>)
 		end
 
-	yypact_template: SPECIAL [INTEGER] is
+	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
@@ -637,14 +642,14 @@ feature {NONE} -- Table templates
 			    2, -32768, -32768,    5,    5,    2, -32768,    7,    3, -32768, yyDummy>>)
 		end
 
-	yypgoto_template: SPECIAL [INTEGER] is
+	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
 			    6, -32768, -32768,   -1, -32768, yyDummy>>)
 		end
 
-	yytable_template: SPECIAL [INTEGER] is
+	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
@@ -653,7 +658,7 @@ feature {NONE} -- Table templates
 			   16, yyDummy>>)
 		end
 
-	yycheck_template: SPECIAL [INTEGER] is
+	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
@@ -664,8 +669,8 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Semantic value stacks
 
-	yyvs1: SPECIAL [ANY]
-			-- Stack for semantic values of type ANY
+	yyvs1: SPECIAL [detachable ANY]
+			-- Stack for semantic values of type detachable ANY
 
 	yyvsc1: INTEGER
 			-- Capacity of semantic value stack `yyvs1'
@@ -673,8 +678,8 @@ feature {NONE} -- Semantic value stacks
 	yyvsp1: INTEGER
 			-- Top of semantic value stack `yyvs1'
 
-	yyspecial_routines1: KL_SPECIAL_ROUTINES [ANY]
-			-- Routines that ought to be in SPECIAL [ANY]
+	yyspecial_routines1: detachable KL_SPECIAL_ROUTINES [detachable ANY] note option: stable attribute end
+			-- Routines that ought to be in SPECIAL [detachable ANY]
 
 	yyvs2: SPECIAL [STRING]
 			-- Stack for semantic values of type STRING
@@ -685,7 +690,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp2: INTEGER
 			-- Top of semantic value stack `yyvs2'
 
-	yyspecial_routines2: KL_SPECIAL_ROUTINES [STRING]
+	yyspecial_routines2: detachable KL_SPECIAL_ROUTINES [STRING] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [STRING]
 
 	yyvs3: SPECIAL [OG_PATH_ITEM]
@@ -697,7 +702,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp3: INTEGER
 			-- Top of semantic value stack `yyvs3'
 
-	yyspecial_routines3: KL_SPECIAL_ROUTINES [OG_PATH_ITEM]
+	yyspecial_routines3: detachable KL_SPECIAL_ROUTINES [OG_PATH_ITEM] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [OG_PATH_ITEM]
 
 	yyvs4: SPECIAL [OG_PATH]
@@ -709,28 +714,28 @@ feature {NONE} -- Semantic value stacks
 	yyvsp4: INTEGER
 			-- Top of semantic value stack `yyvs4'
 
-	yyspecial_routines4: KL_SPECIAL_ROUTINES [OG_PATH]
+	yyspecial_routines4: detachable KL_SPECIAL_ROUTINES [OG_PATH] note option: stable attribute end
 			-- Routines that ought to be in SPECIAL [OG_PATH]
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER is 19
+	yyFinal: INTEGER = 19
 			-- Termination state id
 
-	yyFlag: INTEGER is -32768
+	yyFlag: INTEGER = -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER is 10
+	yyNtbase: INTEGER = 10
 			-- Number of tokens
 
-	yyLast: INTEGER is 20
+	yyLast: INTEGER = 20
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER is 263
+	yyMax_token: INTEGER = 263
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER is 15
+	yyNsyms: INTEGER = 15
 			-- Number of symbols
 			-- (terminal and nonterminal)
 

@@ -240,7 +240,7 @@ feature -- Conversion
 						fld_name := field_name(i, Result)
 
 						if a_dt_obj.has_attribute(fld_name) then
-							a_dt_attr := a_dt_obj.attribute(fld_name)
+							a_dt_attr := a_dt_obj.attribute_node (fld_name)
 
 							fld_type_id := field_static_type_of_type(i, a_type_id)
 							if a_dt_attr.is_multiple and not a_dt_attr.is_empty then

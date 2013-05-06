@@ -1,17 +1,12 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
-	description: "Validating parser for Archetype Description Language (ADL)"
-	keywords:    "ADL, dADL"
-	
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004, 2005 Ocean Informatics Pty Ltd"
+	description: "Validating parser for data Archetype Description Language (dADL)"
+	keywords:    "dADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.y $"
-	revision:    "$LastChangedRevision: 761 $"
-	last_change: "$LastChangedDate: 2008-12-05 00:39:42 +1100 (Fri, 05 Dec 2008) $"
 
 class DADL2_VALIDATOR
 
@@ -55,14 +50,13 @@ create
 %token SYM_EQ SYM_ELLIPSIS SYM_LIST_CONTINUE SYM_INFINITY SYM_INTERVAL_DELIM
 %token SYM_DT_UNKNOWN
 
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-%token SYM_QUERY_FUNC
-
-%token SYM_TRUE SYM_FALSE 
+%token SYM_TRUE SYM_FALSE
 %left SYM_LT SYM_GT SYM_LE SYM_GE
 
-%token ERR_CHARACTER ERR_STRING 
+%token ERR_CHARACTER ERR_STRING ERR_CADL_MISPLACED
 %token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_LOCAL_TERM_CODE_REF
+
+%left UNARY_MINUS
 
 %type <STRING> type_identifier
 %type <INTEGER> integer_value
@@ -106,24 +100,24 @@ create
 input: attr_vals	-- anonymous object
 		{
 			output := complex_object_nodes.item
-			debug("dADL_parse")
-				io.put_string("Object data definition validated (non-delimited)%N")
-			end
+debug("dADL_parse")
+	io.put_string("Object data definition validated (non-delimited)%N")
+end
 			accept
 		}
 	| complex_object_block
 		{
 			output := $1
-			debug("dADL_parse")
-				io.put_string("Object data definition validated%N")
-			end
+debug("dADL_parse")
+	io.put_string("Object data definition validated%N")
+end
 			accept
 		}
 	| error
 		{
-			debug("dADL_parse")
-				io.put_string("dADL text NOT validated%N")
-			end
+debug("dADL_parse")
+	io.put_string("dADL text NOT validated%N")
+end
 			abort
 		}
 	;
@@ -133,31 +127,31 @@ input: attr_vals	-- anonymous object
 
 attr_vals: attr_val
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val complete%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val complete%N")
+end
 		}
 	| attr_vals attr_val
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val complete%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val complete%N")
+end
 		}
 	| attr_vals ';' attr_val
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val complete%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val complete%N")
+end
 		}
 	;
 
 
 attr_val: attr_id SYM_EQ object_block -- could be a single or multiple attr
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
-				indent.remove_tail(1)
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
+	indent.remove_tail(1)
+end
 			attr_nodes.remove
 		}
 	;
@@ -166,24 +160,24 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 		{
 			-- create first anonymous object
 			if complex_object_nodes.is_empty then
-				debug("dADL_parse")
-					io.put_string(indent + "attr_id: create complex_object_node.make_anonymous%N")
-					io.put_string(indent + "attr_id: PUSH Object node%N")
-					indent.append("%T")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: create complex_object_node.make_anonymous%N")
+	io.put_string(indent + "attr_id: PUSH Object node%N")
+	indent.append("%T")
+end
 				create complex_object_node.make_anonymous
 				complex_object_nodes.extend(complex_object_node)
 			end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + $1 + ">>)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + $1 + ">>)%N")
+end
 			create attr_node.make_single($1)
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
-						").put_attribute(" + attr_node.rm_attr_name + ")%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
+			").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
+end
 			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
@@ -192,10 +186,10 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 				abort
 			end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_id: PUSH attr node%N")
-				indent.append("%T")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: PUSH attr node%N")
+	indent.append("%T")
+end
 			attr_nodes.extend(attr_node)
 			obj_key := Void
 		}
@@ -254,38 +248,70 @@ multiple_attr_object_block: untyped_multiple_attr_object_block
 --		[keyN] = <...>
 --	>
 --
+-- Here we pop the current attribute node off if it was a synthesised container node,
+-- i.e. created by a call DT_ATTRIBUTE.make_nested_container
+--
 untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_objects SYM_END_DBLOCK
 		{
+			-- if the keyed_objects were all empty, then the attribute can be thrown away 
+			-- as well, since we don't create void object structures
+			if attr_nodes.item.is_empty then
+				attr_nodes.item.parent.remove_attribute (attr_nodes.item.rm_attr_name)
+			end
+
+			-- if the current C_ATTRIBUTE_NODE is a synthesised one, under a keyed object,
+			-- then pop it off the attribute stack, and also pop off its parent object
 			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_generic then
 				-- pop the generic attr node
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
-					indent.remove_tail(1)
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
+	indent.remove_tail(1)
+end
 				attr_nodes.remove
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block: POP Object node(" + complex_object_nodes.item.node_id + ")%N")
-					indent.remove_tail(1)
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block: POP Object node(" + complex_object_nodes.item.node_id + ")%N")
+	indent.remove_tail(1)
+end
 				$$ := complex_object_nodes.item
 				complex_object_nodes.remove
 			end
 		}
 	;
 
+--
+-- This rule supports nestings of container types in dADL of the form:
+--
+--	xxx = <
+--		[key1] = <
+--			[keyA] = <...>
+--			[keyB] = <...>
+--			[keyZ] = <...>
+--		>
+--		[key2] = <...>
+--			[keyA] = <...>
+--			[keyB] = <...>
+--		>
+--	>
+-- 
+-- The above corresponds to the type structure:
+-- 	class X
+--		xxx: CONTAINER_TYPE [CONTAINER_TYPE [LEAF_TYPE]]
+--	end
+--
+--	Where CONTAINER_TYPE is typically ARRAYED_LIST, HASH_TABLE etc
+--
 multiple_attr_object_block_head: SYM_START_DBLOCK
 		{
+			-- if obj_key is set, it means we are inside a keyed object, and we have hit more keyed objects
 			if obj_key /= Void then
-				-- we are in a multi-block which is the value of a keyed object
-				-- so create the object with the key id
 				create complex_object_node.make_identified(obj_key)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
-					debug("dADL_parse")
-						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
-							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
-							complex_object_node.node_id + "))%N")
-					end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
+		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
+		complex_object_node.node_id + "))%N")
+end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
@@ -294,23 +320,23 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					abort
 				end
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: PUSH Obj node%N")
-					indent.append("%T")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: PUSH Obj node%N")
+	indent.append("%T")
+end
 				complex_object_nodes.extend(complex_object_node)
 
 				-- now create a generic attribute node to stand for the hidden attribute of the 
 				-- generic object, e.g. it might be List<T>.items or whatever
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
+end
 				create attr_node.make_multiple_generic
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
-							complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
+			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
+end
 				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
 					complex_object_node.put_attribute(attr_node)
 				else
@@ -319,10 +345,10 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					abort
 				end
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: PUSH attr node%N")
-					indent.append("%T")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: PUSH attr node%N")
+	indent.append("%T")
+end
 				attr_nodes.extend(attr_node)
 			end
 		}
@@ -330,14 +356,23 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 
 keyed_objects: keyed_object
 		{
+debug("dADL_parse")
+	io.put_string(indent + "one keyed object%N")
+end
 		}
 	| keyed_objects keyed_object
 		{
+debug("dADL_parse")
+	io.put_string(indent + "multiple keyed objects%N")
+end
 		}
 	;
 
 keyed_object: object_key SYM_EQ object_block
 		{
+debug("dADL_parse")
+	io.put_string(indent + "(keyed object)%N")
+end
 		}
 	;
 
@@ -345,10 +380,10 @@ object_key: '[' simple_value ']'
 		{
 			obj_key := $2.out
 
-			debug("dADL_parse")
-				io.put_string(indent + "object_key: " + obj_key + 
-					" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "object_key: " + obj_key + 
+		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
+end
 			if not attr_nodes.is_empty then
 				attr_nodes.item.set_multiple
 			else
@@ -365,16 +400,16 @@ object_key: '[' simple_value ']'
 
 single_attr_object_block: untyped_single_attr_object_block
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "untyped single_attr_object_block%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "untyped single_attr_object_block%N")
+end
 			$$ := $1
 		}
 	| type_identifier untyped_single_attr_object_block
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "typed single_attr_object_block; type = " + $1 + "%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "typed single_attr_object_block; type = " + $1 + "%N")
+end
 			$2.set_type_name($1)
 			$$ := $2
 		}
@@ -390,21 +425,21 @@ single_attr_object_block: untyped_single_attr_object_block
 --
 untyped_single_attr_object_block: single_attr_object_complex_head SYM_END_DBLOCK
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "empty_object_complex_body: POP Object node(" + 
-					complex_object_nodes.item.node_id + ")%N")
-				indent.remove_tail(1)
-			end
+debug("dADL_parse")
+	io.put_string(indent + "empty_object_complex_body: POP Object node(" + 
+		complex_object_nodes.item.node_id + ")%N")
+	indent.remove_tail(1)
+end
 			$$ := complex_object_nodes.item
 			complex_object_nodes.remove
 		}
 	| single_attr_object_complex_head attr_vals SYM_END_DBLOCK
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
-					complex_object_nodes.item.node_id + ")%N")
-				indent.remove_tail(1)
-			end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
+		complex_object_nodes.item.node_id + ")%N")
+	indent.remove_tail(1)
+end
 			$$ := complex_object_nodes.item
 			complex_object_nodes.remove
 		}
@@ -414,14 +449,14 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 		{
 			-- if parent attr is not multiple, create an anon object; else an object identified by a key
 			if attr_nodes.is_empty or else not attr_nodes.item.is_multiple then
-				debug("dADL_parse")
-					io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make_anonymous%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make_anonymous%N")
+end
 				create complex_object_node.make_anonymous
 			else
-				debug("dADL_parse")
-					io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_key + ")%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_key + ")%N")
+end
 				create complex_object_node.make_identified(obj_key)
 				obj_key := Void
 			end
@@ -429,11 +464,11 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 			-- now put the new object under its attribute, if one exists
 			if not attr_nodes.is_empty then
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
-					debug("dADL_parse")
-						io.put_string(indent + "single_attr_object_complex_head; attr_nodes(<<" + 
-							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
-							complex_object_node.node_id + "))%N")
-					end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head; attr_nodes(<<" + 
+		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
+		complex_object_node.node_id + "))%N")
+end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
@@ -444,42 +479,45 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 			end
 
 			-- finally, put the new object on the object stack
-			debug("dADL_parse")
-				io.put_string(indent + "single_attr_object_complex_head: PUSH Obj node%N")
-				indent.append("%T")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: PUSH Obj node%N")
+	indent.append("%T")
+end
 			complex_object_nodes.extend(complex_object_node)
 		}
 	;
-
 
 --
 -- ------------------------- primitive objects ---------------------
 --
 primitive_object_block: untyped_primitive_object_block
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "untyped primitive_object_block%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "untyped primitive_object_block%N")
+end
 			$$ := $1
 		}
 	| type_identifier untyped_primitive_object_block
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "typed primitive_object_block; type = " + $1 + "%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "typed primitive_object_block; type = " + $1 + "%N")
+end
 			$2.set_type_name($1)
 			$$ := $2
 		}
 	;
 
+--
+-- untyped primitive blocks can only be of the following types
+--	
+--
 untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_DBLOCK
 		{
-			debug("dADL_parse")
-				io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
-						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
-						leaf_object_node.as_string + ">>)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
+			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
+			leaf_object_node.as_string + ">>)%N")
+end
 			if not attr_nodes.item.has_child_with_id(leaf_object_node.node_id) then
 				attr_nodes.item.put_child(leaf_object_node)
 				$$ := leaf_object_node
@@ -647,6 +685,7 @@ simple_interval_value: integer_interval_value
 
 ---------------------- BASIC DATA VALUES -----------------------
 
+
 type_identifier: '(' V_TYPE_IDENTIFIER ')'
 		{
 			$$ := $2
@@ -682,10 +721,17 @@ string_list_value: V_STRING ',' V_STRING
 			$1.extend($3)
 			$$ := $1
 		}
+	--
+	-- FIXME: the following only for badly formed lists with superfluous continue marks
+	--
+	| string_list_value ',' SYM_LIST_CONTINUE
+		{
+			$$ := $1
+		}
 	| V_STRING ',' SYM_LIST_CONTINUE
 		{
-			create $$.make(0)
-			$$.extend($1)
+			create $$.make (0)
+			$$.extend ($1)
 		}
 	;
 
@@ -793,11 +839,11 @@ real_value: V_REAL
 		{
 			$$ := $1
 		}
-	| '+' V_REAL 
+	| '+' V_REAL %prec UNARY_MINUS
 		{
 			$$ := $2
 		}
-	| '-' V_REAL 
+	| '-' V_REAL %prec UNARY_MINUS
 		{
 			$$ := - $2
 		}
@@ -1388,16 +1434,18 @@ uri_value: V_URI
 
 %%
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new parser.
 		do
 			make_scanner
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING; a_source_start_line: INTEGER) is
+feature -- Commands
+
+	execute(in_text:STRING; a_source_start_line: INTEGER)
 		do
 			reset_scanner
 			accept -- ensure no syntax errors lying around from previous invocation
@@ -1420,7 +1468,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER

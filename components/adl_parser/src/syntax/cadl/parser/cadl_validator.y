@@ -1,17 +1,12 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:	 "ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class CADL_VALIDATOR
 
@@ -51,11 +46,14 @@ inherit
 create
 	make
 %}
+
+%token <STRING> V_ARCHETYPE_ID
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
 %token <STRING> V_LOCAL_CODE V_LOCAL_TERM_CODE_REF V_QUALIFIED_TERM_CODE_REF V_TERM_CODE_CONSTRAINT
 %token <STRING> V_REGEXP
+%token <STRING> V_ABS_PATH V_REL_PATH
 %token <CHARACTER> V_CHARACTER
 %token <STRING> V_URI
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
@@ -69,27 +67,25 @@ create
 
 %token SYM_INTERVAL_DELIM
 %token SYM_TRUE SYM_FALSE 
-%token SYM_GE SYM_LE SYM_NE
--- %token SYM_AND SYM_OR SYM_NOT SYM_XOR SYM_IMPLIES
-%token SYM_EXISTS SYM_FORALL
 %token SYM_THEN SYM_ELSE
 
 %token SYM_EXISTENCE SYM_OCCURRENCES SYM_CARDINALITY 
-%token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_INFINITY SYM_LIST_CONTINUE
-%token SYM_INVARIANT SYM_MATCHES SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
+%token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_LIST_CONTINUE
+%token SYM_INVARIANT SYM_MATCHES SYM_USE_ARCHETYPE SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
 %token SYM_INCLUDE SYM_EXCLUDE
-%token SYM_DT_UNKNOWN
+%token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
 %token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
 %left SYM_AND
-%left '=' SYM_NE SYM_LT SYM_GT SYM_LE SYM_GE
+%left SYM_EXISTS SYM_FORALL SYM_NOT
+%left '=' SYM_NE SYM_LT SYM_GT SYM_LE SYM_GE SYM_MATCHES
 %left '+' '-'
 %left '*' '/' SYM_DIV SYM_MODULO
-%right '^'
-%right SYM_NOT
+%left UNARY_MINUS
+%left '^'
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 
@@ -135,14 +131,12 @@ create
 %type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
 %type <INTERVAL[ISO8601_DURATION]> duration_interval_value
 
-
-
 %%
 
 input: c_complex_object
 		{
 			debug("ADL_parse")
-				io.put_string("CADL definition validated%N")
+				io.put_string("CADL definition parsed%N")
 			end
 
 			accept
@@ -150,7 +144,7 @@ input: c_complex_object
 	| assertions
 		{
 			debug("ADL_parse")
-				io.put_string("assertion definition validated%N")
+				io.put_string("assertion definition parsed%N")
 			end
 
 			accept
@@ -158,7 +152,7 @@ input: c_complex_object
 	| error
 		{
 			debug("ADL_parse")
-				io.put_string("CADL definition NOT validated%N")
+				io.put_string("CADL definition NOT parsed%N")
 			end
 			abort
 		}
@@ -2274,14 +2268,14 @@ uri_value: V_URI
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER) is
+	execute (in_text:STRING; a_source_start_line: INTEGER)
 		do
 			reset
 			source_start_line := a_source_start_line
@@ -2302,7 +2296,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -2326,7 +2320,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	check_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN is
+	check_c_attribute_child(an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN
 			-- check a new child node
 		require
 			Attribute_exists: an_attr /= Void

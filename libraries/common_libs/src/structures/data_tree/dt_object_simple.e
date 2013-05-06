@@ -106,7 +106,7 @@ feature -- Conversion
 				if a_dur = Void then
 					Result := value.out
 					-- FIXME: REAL.out is broken
-					if value.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+					if value.generator.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
 						Result.append(".0")
 					end
 				else

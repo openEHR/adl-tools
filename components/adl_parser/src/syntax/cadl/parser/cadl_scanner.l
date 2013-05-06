@@ -1,17 +1,12 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
-
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
-	license:     "Mozilla tri-license"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
 
 class CADL_SCANNER
 
@@ -64,11 +59,13 @@ IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
+NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+PATH_SEG [a-z][a-zA-Z0-9_]*(\[a[ct][0-9.]+\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
 --------------- Options --------------
-%x IN_STR IN_REGEXP1 IN_REGEXP2 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
+%x IN_STR IN_REGEXP1 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
 %option outfile="cadl_scanner.e"
 
 %%
@@ -101,7 +98,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 ")"			last_token := Right_parenthesis_code
 "$"			last_token := Dollar_code
 
-"??"			last_token := SYM_DT_UNKNOWN
 "?"			last_token := Question_mark_code
 
 "|"			last_token := SYM_INTERVAL_DELIM
@@ -169,11 +165,9 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Uu][Nn][Ii][Qq][Uu][Ee]					last_token := SYM_UNIQUE
 
-[Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]				last_token := SYM_INFINITY
-
 [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]				last_token := SYM_USE_NODE
 
-[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
+[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_USE_ARCHETYPE
 
 [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
 
@@ -181,6 +175,11 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Ee][Xx][Cc][Ll][Uu][Dd][Ee]					last_token := SYM_EXCLUDE
 
+[Aa][Ff][Tt][Ee][Rr]							last_token := SYM_AFTER
+
+[Bb][Ee][Ff][Oo][Rr][Ee]						last_token := SYM_BEFORE
+
+[Cc][Ll][Oo][Ss][Ee][Dd]						last_token := SYM_CLOSED
 
 ----------/* V_URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
@@ -200,7 +199,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 ----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
-\[{ALPHANUM}{NAMECHAR}*\]	{
+
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
@@ -216,7 +216,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --			  code] -- an optional assumed value
 --
 
-\[[a-zA-Z0-9()._\-]+::[ \t\n]*	{
+\[[a-zA-Z0-9()._\-]+::[ \t]*	{
 				in_buffer.append_string (text_substring (2, text_count))
 				set_start_condition (IN_TERM_CONSTRAINT)
 				term_code_count := 0
@@ -224,24 +224,26 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 <IN_TERM_CONSTRAINT> {
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t\n]* { -- match second last line with ';' termination (assumed value)
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 				assumed_term_code_index := term_code_count
 			}
 
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t\n]* {	-- match any line, with ',' termination
+	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t]* {	-- match any line, with ',' termination
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 			}
 
-	\-\-[^\n]*\n {	-- ignore comments
-				do_nothing
-			}
+	-- count line endings
+	\n+			in_lineno := in_lineno + text_count
 
-	[ \t]*[a-zA-Z0-9._\-]*[ \t\n]*\] { -- match final line, terminating in ']'
+	-- count line endings with comments
+	\-\-[^\n]*\n	in_lineno := in_lineno + 1
+
+	[ \t]*[a-zA-Z0-9._\-]*[ \t]*\] { -- match final line, terminating in ']'
 				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
 					last_token := ERR_TERM_CODE_CONSTRAINT
 				else
@@ -267,9 +269,15 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
+----------/* archetype id */ -------------------------------------------------
+{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
+					last_token := V_ARCHETYPE_ID
+					last_string_value := text
+			}
+
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]([\.,][0-9]+)?(Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
@@ -278,7 +286,7 @@ a[ct][0-9.]+ {
 
 ----------/* V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-2][0-9]:[0-6][0-9]:[0-6][0-9]([\.,][0-9]+)?(Z|[+-][0-9]{4})? |
 [0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
@@ -376,7 +384,14 @@ P[yY]?[mM]?[Ww]?[dD]? {
 			}
 
 -- The following version is the correct version.
+-- Single object form
 \([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '(Type_Identifier) whitespace <'
+				set_start_condition (IN_C_DOMAIN_TYPE)
+				in_buffer.append_string (text)
+			}
+
+-- Multiple keyed object form
+\[at[0-9.]+\][	 ]*=[	 ]*\([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '["at0004"] = (Type_Identifier)  <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			}
@@ -398,7 +413,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				-- perform any upgrades to embedded dADL object syntax here by substitution
 				convert_c_dv_names(str_)
 
-				dadl_parser.execute(str_, source_start_line + in_lineno)
+				dadl_parser.execute (str_, source_start_line + in_lineno)
 				if not dadl_parser.syntax_error then
 					if dadl_parser.output.is_typed then
 						tid := dynamic_type_from_string(dadl_parser.output.rm_type_name)
@@ -467,7 +482,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 <IN_REGEXP1> {
 	[^/]*\\\/	{ 		-- match any segments with quoted slashes
 				in_buffer.append_string (text)
-			}
+	}
 
 	[^/}]*\/	{ 		-- match final segment
 				in_buffer.append_string (text)
@@ -477,7 +492,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
  				last_string_value := str_
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
- 			}
+	}
 }
 
 \^[^^\n]*\^		{	-- regexp formed using '^' delimiters
@@ -610,7 +625,7 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -618,9 +633,9 @@ feature {NONE} -- Initialization
 			in_lineno := 1
 		end
 
-feature -- Initialization
+feature -- Commands
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -644,10 +659,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL2_VALIDATOR is
+	dadl_parser: DADL2_VALIDATOR
 		once
 			create Result.make
 		end
@@ -660,7 +675,7 @@ feature {NONE} -- Implementation
 	assumed_term_code_index: INTEGER
 			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
 
-	c_domain_type: C_DOMAIN_TYPE
+	c_domain_type: detachable C_DOMAIN_TYPE
 
 	tid: INTEGER
 

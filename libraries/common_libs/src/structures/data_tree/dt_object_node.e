@@ -110,7 +110,7 @@ feature -- Access
 	attributes: ARRAYED_LIST [DT_ATTRIBUTE_NODE]
 			-- next nodes, keyed by node id or attribute name
 
-	attribute(an_attr_name: STRING): DT_ATTRIBUTE_NODE is
+	attribute_node (an_attr_name: STRING): DT_ATTRIBUTE_NODE is
 			-- return attribute node at an_attr_name
 		require
 			An_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
@@ -298,7 +298,7 @@ feature -- Modification
 		local
 			attr_node: DT_ATTRIBUTE_NODE
 		do
-			attr_node := attribute (attr_name)
+			attr_node := attribute_node (attr_name)
 			representation.remove_child (attr_node.representation)
 			attributes.prune (attr_node)
 		end

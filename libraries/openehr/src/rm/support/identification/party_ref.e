@@ -1,6 +1,6 @@
 indexing
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 			 Reference to PARTY object, e.g. in a demographic service.
 			 ]"
@@ -23,10 +23,10 @@ inherit
 	OBJECT_REF
 
 invariant
-	Type_validity: generating_type.is_equal("PERSON") or 
-					generating_type.is_equal("ORGANISATION") or 
-					generating_type.is_equal("GROUP") or 
-					generating_type.is_equal("AGENT")
+	Type_validity: generating_type.out.is_equal("PERSON") or
+					generating_type.out.is_equal("ORGANISATION") or
+					generating_type.out.is_equal("GROUP") or
+					generating_type.out.is_equal("AGENT")
 
 end
 

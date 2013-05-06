@@ -113,7 +113,7 @@ feature -- Conversion
 					out_val := value.item.out
 					Result.append(out_val)
 					-- FIXME: REAL.out is broken; forgets to output '.0'
-					if value.item.generating_type.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
+					if value.item.generator.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
 						Result.append(".0")
 					end
 				end
@@ -146,7 +146,7 @@ feature -- Conversion
 					out_val := value.item.out
 					Result.append(out_val)
 					-- FIXME: REAL.out is broken; forgets to output '.0'
-					if value.item.generating_type.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
+					if value.item.generator.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
 						Result.append(".0")
 					end
 				end
