@@ -19,6 +19,13 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
+
 	AUTHORED_RESOURCE
 		rename
 			synchronise as synchronise_authored_resource
@@ -30,8 +37,6 @@ create {ADL_ENGINE}
 	make, make_minimal
 
 feature -- Definitions
-
-	Default_concept_code: STRING is "at0000"
 
 feature  {ADL_ENGINE} -- Initialisation
 
@@ -118,10 +123,12 @@ feature -- Access
 	parent_archetype_id: ARCHETYPE_ID
 			-- id of specialisation parent of this archetype
 
-	specialisation_depth: INTEGER is
+	specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
 		do
-			Result := ontology.specialisation_depth
+			Result := specialisation_depth_from_code (concept)
+		ensure
+			non_negative: Result >= 0
 		end
 
 	concept: STRING
@@ -243,55 +250,35 @@ feature -- Access
 			end
 		end
 
-	ontology_unused_term_codes: ARRAYED_LIST[STRING] is
-			-- list of at codes found in ontology that are not referenced
-			-- anywhere in the archetype definition
+	ontology_unused_term_codes: ARRAYED_LIST[STRING]
+			-- list of at codes found in ontology that are not referenced anywhere in the archetype definition
 		local
-			ont_codes: SORTED_TWO_WAY_LIST[STRING]
 			found_codes: ARRAYED_LIST[STRING]
 		do
 			create Result.make(0)
-			Result.compare_objects
-			if not is_specialised then
-				ont_codes := ontology.term_codes
-				found_codes := found_id_node_codes
-				found_codes.append(found_code_node_codes)
-				from
-					ont_codes.start
-				until
-					ont_codes.off
-				loop
-					if not found_codes.has(ont_codes.item) then
-						Result.extend(ont_codes.item)
-					end
-					ont_codes.forth
+			found_codes := found_id_node_codes
+			found_codes.append(found_code_node_codes)
+			across ontology.term_codes as term_codes_csr loop
+				if not found_codes.has(term_codes_csr.item) and specialisation_depth_from_code (term_codes_csr.item) = specialisation_depth then
+					Result.extend(term_codes_csr.item)
 				end
-				Result.prune(concept)
 			end
+			Result.prune(concept)
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	ontology_unused_constraint_codes: ARRAYED_LIST[STRING] is
+	ontology_unused_constraint_codes: ARRAYED_LIST [STRING]
 			-- list of ac codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
 		local
-			ont_codes: SORTED_TWO_WAY_LIST[STRING]
 			found_codes: ARRAYED_LIST[STRING]
 		do
 			create Result.make(0)
-			if not is_specialised then
-				ont_codes := ontology.constraint_codes
-				found_codes := found_constraint_codes
-				from
-					ont_codes.start
-				until
-					ont_codes.off
-				loop
-					if not found_codes.has(ont_codes.item) then
-						Result.extend(ont_codes.item)
-					end
-					ont_codes.forth
+			found_codes := found_constraint_codes
+			across ontology.constraint_codes as constraint_codes_csr loop
+				if not found_codes.has(constraint_codes_csr.item) and specialisation_depth_from_code (constraint_codes_csr.item) = specialisation_depth then
+					Result.extend(constraint_codes_csr.item)
 				end
 			end
 		ensure
@@ -646,30 +633,16 @@ feature -- Modification
 			ontology := a_node
 		end
 
-	ontology_remove_unused_codes is
+	remove_ontology_unused_codes
 			-- remove all term and constraint codes from ontology
-		local
-			code_list: ARRAYED_LIST[STRING]
 		do
 			update_node_lists
-			code_list := ontology_unused_term_codes
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
-				ontology.remove_term_definition(code_list.item)
-				code_list.forth
-			end
 
-			code_list := ontology_unused_constraint_codes
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
-				ontology.remove_constraint_definition(code_list.item)
-				code_list.forth
+			across ontology_unused_term_codes as codes_csr loop
+				ontology.remove_term_definition (codes_csr.item)
+			end
+			across ontology_unused_constraint_codes as codes_csr loop
+				ontology.remove_constraint_definition (codes_csr.item)
 			end
 		end
 
