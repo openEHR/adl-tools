@@ -240,7 +240,9 @@ feature -- Access
 		local
 			p: INTEGER
 		do
-			p := value.last_index_of (axis_separator, value.count) - 1
+			p := value.index_of (axis_separator, 1) + 1
+			p := value.index_of (axis_separator, p) - 1
+
 			Result := value.substring (1, p)
 		ensure
 			rm_entity_plus_domain_concept: Result.is_equal (qualified_rm_entity + axis_separator.out + domain_concept)

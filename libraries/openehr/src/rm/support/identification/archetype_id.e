@@ -38,7 +38,7 @@ feature {NONE} -- Implementation
 			-- Pattern matcher for archetype ids.
 		once
 			create Result.make
-			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
+			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[0-9]+(\.[0-9]+){0,2}$")
 		end
 
 end
