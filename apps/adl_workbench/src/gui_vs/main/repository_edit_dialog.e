@@ -78,6 +78,7 @@ feature {NONE} -- Initialization
 
 			-- ============ Reference path ============
 			create ref_dir_setter.make (get_text (ec_ref_repo_dir_text), agent :STRING do Result := ref_dir end, 0, 0)
+			ref_dir_setter.set_default_directory_agent (agent :STRING do Result := application_startup_directory end)
 			ev_root_container.extend (ref_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (ref_dir_setter.ev_root_container)
 			gui_controls.extend (ref_dir_setter)
@@ -85,6 +86,7 @@ feature {NONE} -- Initialization
 			-- ============ Work path ============
 			create work_dir_setter.make (get_text (ec_work_repo_dir_text), agent :detachable STRING do Result := work_dir end, 0, 0)
 			work_dir_setter.set_default_directory_agent (agent :STRING do Result := ref_dir end)
+			work_dir_setter.set_default_directory_agent (agent :STRING do Result := application_startup_directory end)
 			ev_root_container.extend (work_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (work_dir_setter.ev_root_container)
 			gui_controls.extend (work_dir_setter)

@@ -56,7 +56,8 @@ feature -- Initialisation
 
 			-- tree collapse/expand control
 			create gui_definition_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_definition_grid),
-				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
+				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"), get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
 			gui_definition_control_panel.add_frame (gui_definition_treeview_control.ev_root_container, False)
 
 			-- ========= view detail level options  =========
@@ -136,7 +137,8 @@ feature -- Initialisation
 
 			-- tree collapse/expand control
 			create gui_rules_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_rules_grid),
-				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
+				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"), get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
 			gui_rules_control_panel.add_frame (gui_rules_treeview_control.ev_root_container, False)
 
 

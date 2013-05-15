@@ -57,7 +57,8 @@ feature -- Initialisation
 			ev_root_container.disable_item_expand (control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node)
+			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node,
+				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"), get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
 			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
 
 			-- ========= RM view options =========
