@@ -22,11 +22,6 @@ inherit
 			target
 		end
 
-	SHARED_ADL_APP_RESOURCES
-		export
-			{NONE} all
-		end
-
 feature {ADL15_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)

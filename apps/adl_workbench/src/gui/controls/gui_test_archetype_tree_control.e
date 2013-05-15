@@ -755,7 +755,7 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				target.save_compiled_differential
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_dadl))
+				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_odin))
 				Result := test_passed
 			else
 				Result := test_not_applicable

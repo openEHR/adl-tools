@@ -44,9 +44,17 @@ class
 inherit
 	SHARED_APP_ROOT
 
-	SHARED_ARCHETYPE_SERIALISERS
-
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		end
@@ -95,8 +103,8 @@ feature -- Commands
 				verbose_output := True
 			end
 			if not app_root.has_errors then
-				app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
-				app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+				archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+				archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
 				check attached repository_config_table.current_repository_name as cpn then
 					curr_repo := cpn

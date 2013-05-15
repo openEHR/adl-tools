@@ -31,6 +31,11 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_AOM_PROFILES_ACCESS
+		undefine
+			copy, default_create
+		end
+
 	SHARED_APP_UI_RESOURCES
 		undefine
 			copy, default_create

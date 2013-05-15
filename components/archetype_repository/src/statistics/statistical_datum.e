@@ -9,8 +9,8 @@ note
 
 class STATISTICAL_DATUM
 
-inherit
-	GENERIC_RENDERABLE
+--inherit
+--	GENERIC_RENDERABLE
 
 create
 	make

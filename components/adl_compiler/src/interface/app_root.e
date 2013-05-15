@@ -14,10 +14,6 @@ inherit
 
 	SHARED_ARCHETYPE_CATALOGUES
 
-	SHARED_ARCHETYPE_COMPILER
-
-	SHARED_REFERENCE_MODEL_ACCESS
-
 	SHARED_AOM_PROFILES_ACCESS
 
 	SHARED_ARCHETYPE_SERIALISERS
@@ -25,11 +21,19 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_DT_OBJECT_CONVERTER
-
 	-- FIXME: this is a hack to allow add_custom_dt_dynamic_type_from_string to be called, adding in some
 	-- type correspondences that otherwise the runtime gets wrong if just INTERNAL.type_from_type_name() is used
 	DT_TYPES
+		export
+			{NONE} all
+		end
+
+	SHARED_DT_OBJECT_CONVERTER
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
 		end
@@ -39,6 +43,13 @@ inherit
 			validate as initialise_app, ready_to_validate as ready_to_initialise_app
 		redefine
 			ready_to_initialise_app
+		end
+
+	SHARED_XML_RULES_FILE_ACCESS
+		export
+			{NONE} all
+		undefine
+			app_cfg_initialise, Default_application_name, Application_developer_name
 		end
 
 feature -- Initialisation
@@ -59,6 +70,12 @@ feature -- Initialisation
 
 			-- add some converter agents for converting between native DT/ODIN types and AOM types
 			dt_object_converter.add_type_converter_agent (agent (a_tc: TERMINOLOGY_CODE): CODE_PHRASE do create Result.make (a_tc.terminology_id, a_tc.code_string) end, ({TERMINOLOGY_CODE}).type_id)
+
+			-- add in ADL error message DB to main message DB
+			message_db.add_table (create {ADL_COMPILED_MESSAGE_DB}.make)
+
+			-- set up XML serialiser rules file
+			set_xml_load_rules_agent
 
 			initialise_serialisers
 			reset

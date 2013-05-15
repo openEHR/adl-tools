@@ -240,7 +240,7 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	dadl_validator: DADL_VALIDATOR
+	odin_validator: ODIN_VALIDATOR
 			-- shared dADL_validator for all ARCHETYPE_TERM instances
 		once
 			create Result.make

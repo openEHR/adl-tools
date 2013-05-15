@@ -455,17 +455,17 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	language_context: DADL_ENGINE
+	language_context: ODIN_ENGINE
 
-	description_context: DADL_ENGINE
+	description_context: ODIN_ENGINE
 
 	definition_context: CADL_ENGINE
 
 	invariant_context: ASSERTION_ENGINE
 
-	ontology_context: DADL_ENGINE
+	ontology_context: ODIN_ENGINE
 
-	annotations_context: DADL_ENGINE
+	annotations_context: ODIN_ENGINE
 
 	post_parse_processor: detachable AOM_POST_PARSE_PROCESSOR
 		note

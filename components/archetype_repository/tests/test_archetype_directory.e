@@ -2,7 +2,6 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Tests for manipulating an archetype directory"
 	keywords:    "archetype, ontology, terminology"
-
 	author:      "Peter Gummer"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
@@ -12,17 +11,12 @@ class
 	TEST_ARCHETYPE_DIRECTORY
 
 inherit
-	OPENEHR_TEST_SET
+	ADL_TEST_SET
 		redefine
 			on_prepare
 		end
 
 	SHARED_APP_ROOT
-		undefine
-			default_create
-		end
-
-	SHARED_ADL_APP_RESOURCES
 		undefine
 			default_create
 		end
@@ -34,7 +28,7 @@ feature {NONE} -- Events
 		do
 			Precursor
 			application_developer_name.make_from_string ("openEHR")
-			app_cfg.make (user_config_file_path)
+
 			app_root.initialise_shell
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app

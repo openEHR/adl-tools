@@ -25,6 +25,26 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
+	ADL_COMPILED_MESSAGE_IDS
+		export
+			{NONE} all
+		end
+
+	EOMF_COMPILED_MESSAGE_IDS
+		export
+			{NONE} all
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	Application_developer_name: STRING
@@ -65,30 +85,6 @@ feature -- Definitions
 
 	Terminology_filename: STRING = "openehr_terminology.xml"
 			-- name of a terminology file in a given language
-
-	Default_xml_rules_file_path: STRING
-			-- Default full path to XML rules file for all adl_workbench-derived apps - use the adl_workbench one
-		once
-			Result := file_system.pathname (Default_user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
-		ensure
-			not_empty: not Result.is_empty
-		end
-
-	xml_rules_file_path: STRING
-			-- Full path to XML rules file.
-		once
-			Result := file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
-		ensure
-			not_empty: not Result.is_empty
-		end
-
-	xml_rules_sample_file_path: STRING
-			-- Full path to XML rules file.
-		once
-			Result :=  file_system.pathname (application_startup_directory, extension_replaced ("sample_xml_rules", User_config_file_extension))
-		ensure
-			not_empty: not Result.is_empty
-		end
 
 	Report_css_template_filename: STRING = "ArchetypeRepositoryReport.css"
 

@@ -28,6 +28,16 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
+	ADL_COMPILED_MESSAGE_IDS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -68,7 +78,7 @@ feature -- Definitions
 			create Result.make (4)
 
 			-- non-argument switches
-			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_quiet_switch_desc), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_adlc_quiet_switch_desc), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text (ec_flat_switch_desc), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text (ec_show_config_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text (ec_list_archetypes_switch_desc), False, False))

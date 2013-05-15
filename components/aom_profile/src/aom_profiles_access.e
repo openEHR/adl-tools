@@ -28,6 +28,11 @@ inherit
 			{NONE} all;
 		end
 
+	ADL_COMPILED_MESSAGE_IDS
+		export
+			{NONE} all
+		end
+
 create
 	make
 

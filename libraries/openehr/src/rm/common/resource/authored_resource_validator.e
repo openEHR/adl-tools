@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Common Information Model"
-	description: "Validator for AUTHOR_RESOURCE objects"
+	description: "Validator for AUTHORED_RESOURCE objects"
 	keywords:    "archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -12,6 +12,11 @@ deferred class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
 	ANY_VALIDATOR
+
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialisation
 

@@ -16,6 +16,11 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
+	ADL_COMPILED_MESSAGE_IDS
+		export
+			{NONE} all;
+		end
+
 feature -- Definitions
 
 	Object_node_count: STRING
