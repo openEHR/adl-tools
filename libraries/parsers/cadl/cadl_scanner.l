@@ -408,29 +408,29 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				-- perform any upgrades to embedded dADL object syntax here by substitution
 				convert_c_dv_names(str_)
 
-				dadl_parser_error.wipe_out
-				dadl_parser.execute (str_, source_start_line + in_lineno)
-				if not dadl_parser.syntax_error then
-					if dadl_parser.output.is_typed then
-						tid := dynamic_type_from_string(dadl_parser.output.im_type_name)
+				odin_parser_error.wipe_out
+				odin_parser.execute (str_, source_start_line + in_lineno)
+				if not odin_parser.syntax_error then
+					if odin_parser.output.is_typed then
+						tid := dynamic_type_from_string(odin_parser.output.im_type_name)
 						if tid >= 0 then
-							if attached {C_DOMAIN_TYPE} dadl_parser.output.as_object(tid, Void) as cdt then
+							if attached {C_DOMAIN_TYPE} odin_parser.output.as_object(tid, Void) as cdt then
 								c_domain_type := cdt
 								last_token := V_C_DOMAIN_TYPE
 							else
-								dadl_parser_error.add_error (ec_VDTCV, <<dadl_parser.output.im_type_name>>, "")
+								odin_parser_error.add_error (ec_VDTCV, <<odin_parser.output.im_type_name>>, "")
 								last_token := ERR_C_DOMAIN_TYPE
 							end
 						else
-							dadl_parser_error.add_error (ec_VDTTU, <<dadl_parser.output.im_type_name>>, "")
+							odin_parser_error.add_error (ec_VDTTU, <<odin_parser.output.im_type_name>>, "")
 							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
-						dadl_parser_error.add_error (ec_VDTNT, Void, "")
+						odin_parser_error.add_error (ec_VDTNT, Void, "")
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else
-					dadl_parser_error.append (dadl_parser.errors)
+					odin_parser_error.append (odin_parser.errors)
 					last_token := ERR_C_DOMAIN_TYPE
 				end
 
@@ -648,7 +648,7 @@ feature {NONE} -- Initialization
 			make_compressed_scanner_skeleton
 			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
-			create dadl_parser_error.make
+			create odin_parser_error.make
 		end
 
 feature -- Commands
@@ -680,12 +680,12 @@ feature {NONE} -- Implementation
 	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL_VALIDATOR
+	odin_parser: ODIN_VALIDATOR
 		once
 			create Result.make
 		end
 
-	dadl_parser_error: ERROR_ACCUMULATOR
+	odin_parser_error: ERROR_ACCUMULATOR
 
 	term_code_count: INTEGER
 			-- Number of term codes found so far parsing a TERM_CONSTRAINT.

@@ -28,8 +28,8 @@ feature -- Definitions
 	Syntax_type_adl_html: STRING = "html"
 			-- Name of web publishing syntax type.
 
-	Syntax_type_dadl: STRING = "dadl"
-			-- Name of native dADL syntax type.
+	Syntax_type_odin: STRING = "odin"
+			-- Name of native ODIN syntax type.
 
 	Syntax_type_xml: STRING = "xml"
 			-- Name of XML syntax type.
@@ -59,8 +59,8 @@ feature -- Definitions
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
-	File_ext_dadl: STRING = ".dadl"
-			-- Default extension for dADL format files that don't have some other extension
+	File_ext_odin: STRING = ".odin"
+			-- Default extension for ODIN format files that don't have some other extension
 
 	File_ext_xml_default: STRING = ".xml"
 			-- Default extension for XML format archetype files that don't have some other extension

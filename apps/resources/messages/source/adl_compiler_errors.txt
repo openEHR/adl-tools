@@ -49,7 +49,7 @@ templates = <
 		["compile_exception"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
 
 		-- ADL15_ENGINE
-		["deserialise_e1"] = <"Object deserialisation from dADL failed; type = $1">
+		["deserialise_e1"] = <"Object deserialisation from ODIN failed; type = $1">
 
 		-- ARCHETYPE_VALIDATOR
 		["validate_e1"] = <"specialisation parent is missing">
@@ -86,11 +86,6 @@ templates = <
 		["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
 		["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier $2">
 		["parse_archetype_e11"] = <"Archetype at $1 invalid: old-style 'draft' parent identifier $2">
-
-		-- DADL_MINI_PARSER
-		["parse_dadl_missing_left_delim"] = <"No left delimiter ('<') found in line $1">
-		["parse_dadl_missing_right_delim"] = <"Missing right delimiter ('>') in line $1">
-		["parse_dadl_no_attribs_found"] = <"No attributes found, was expecting $1">
 
 		-- ARCHETYPE_MINI_PARSER
 		["parse_archetype_e8"] = <"Archetype at $1 invalid identifier $2">

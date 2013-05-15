@@ -102,7 +102,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	prefixes_file: DADL_CONFIG_FILE_ACCESS
+	prefixes_file: ODIN_CONFIG_FILE_ACCESS
 
 end
 

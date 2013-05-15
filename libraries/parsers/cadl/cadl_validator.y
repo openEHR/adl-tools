@@ -332,7 +332,7 @@ c_object: c_complex_object
 		}
 	| ERR_C_DOMAIN_TYPE
 		{
-			abort_with_error (ec_SDINV, <<dadl_parser_error.as_string>>)
+			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
 		}
 	| error		
 		{
@@ -1502,7 +1502,7 @@ any_identifier: type_identifier
 	;
 		
 -----------------------------------------------------------------
------------------ TAKEN FROM DADL_VALIDATOR.Y -------------------
+----------------- TAKEN FROM ODIN_VALIDATOR.Y -------------------
 -----------------        DO NOT MODIFY        -------------------
 -----------------------------------------------------------------
 ---------------------- BASIC DATA VALUES -----------------------
@@ -2142,7 +2142,7 @@ uri_value: V_URI
 	;
 
 -----------------------------------------------------------------
-------------- END TAKEN FROM DADL_VALIDATOR.Y -------------------
+------------- END TAKEN FROM ODIN_VALIDATOR.Y -------------------
 -----------------------------------------------------------------
 
 %%
@@ -2305,7 +2305,7 @@ feature {NONE} -- Parse Tree
 
 	bmm_prop_def: detachable BMM_PROPERTY_DEFINITION
 
--------------- FOLLOWING TAKEN FROM DADL_VALIDATOR.Y ---------------
+-------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
 	arch_internal_ref_rm_type_name: detachable STRING

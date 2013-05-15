@@ -344,7 +344,7 @@ feature {NONE} -- Implementation
 
 	last_object_simple_buffer: STRING
 
-	dadl_engine: DADL_ENGINE
+	odin_engine: ODIN_ENGINE
 
 end
 

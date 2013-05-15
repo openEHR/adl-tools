@@ -527,7 +527,7 @@ feature {NONE} -- Implementation
 
 	last_object_simple_buffer: detachable STRING
 
-	dadl_engine: DADL_ENGINE
+	dadl_engine: ODIN_ENGINE
 			-- for handling inline dADL sections like for C_QUANTITY
 		once
 			create Result.make

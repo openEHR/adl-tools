@@ -388,7 +388,7 @@ feature {NONE} -- Implementation
 			-- export schema as XML
 		local
 			schema_desc: SCHEMA_DESCRIPTOR
-			serialise_engine: DADL_ENGINE
+			serialise_engine: ODIN_ENGINE
 			path: STRING
 			fd: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG

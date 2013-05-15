@@ -37,7 +37,7 @@ create
 %token <STRING> V_IDENTIFIER
 %token <STRING> V_ARCHETYPE_ID
 %token <STRING> V_LOCAL_TERM_CODE_REF
-%token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
+%token <STRING> V_ODIN_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_DOTTED_NUMERIC
 %token <STRING> V_VALUE
 
@@ -270,9 +270,9 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 		}
 	;
 
-arch_language: SYM_LANGUAGE V_DADL_TEXT
+arch_language: SYM_LANGUAGE V_ODIN_TEXT
 		{
-			convert_dadl_language($2)
+			convert_odin_language($2)
 			language_text := $2
 			merge_errors (converter_status)
 		}
@@ -282,9 +282,9 @@ arch_language: SYM_LANGUAGE V_DADL_TEXT
 		}
 	;
 
-arch_description: SYM_DESCRIPTION V_DADL_TEXT 
+arch_description: SYM_DESCRIPTION V_ODIN_TEXT 
 		{ 
-			convert_dadl_language($2)
+			convert_odin_language($2)
 			description_text := $2
 			merge_errors (converter_status)
 		}
@@ -316,7 +316,7 @@ arch_invariant: -- no invariant ok
 		}
 	;
 
-arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
+arch_ontology: SYM_ONTOLOGY V_ODIN_TEXT
 		{
 			ontology_text := $2
 		}
@@ -327,7 +327,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 	;
 
 arch_annotations: -- no meta-data ok
-	| SYM_ANNOTATIONS V_DADL_TEXT 
+	| SYM_ANNOTATIONS V_ODIN_TEXT 
 		{ 
 			annotations_text := $2
 		}
@@ -337,7 +337,7 @@ arch_annotations: -- no meta-data ok
 		}
 	;
 		
-arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT 
+arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_ODIN_TEXT 
 		{ 
 			component_ontologies_text := $2
 		}

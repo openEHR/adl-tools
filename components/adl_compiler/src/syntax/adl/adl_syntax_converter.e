@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	perform_syntax_upgrade (dadl_text: STRING)
+	perform_syntax_upgrade (odin_text: STRING)
 			-- perform any upgrades likely to be required on older archetypes
 			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
 		do
@@ -34,7 +34,7 @@ feature -- Access
 
 feature -- ADL 1.4 conversions
 
-	convert_dadl_language (dadl_text: STRING)
+	convert_odin_language (odin_text: STRING)
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
 		local
 			pos, lpos, rpos: INTEGER
@@ -42,40 +42,40 @@ feature -- ADL 1.4 conversions
 		do
 			converter_status.wipe_out
 			-- get type name
-			from pos := dadl_text.substring_index("language = <%"", 1) until pos = 0 loop
-				lpos := dadl_text.index_of('"', pos)
-				rpos := dadl_text.index_of('"', lpos+1)
-				lang := dadl_text.substring (lpos+1, rpos-1)
+			from pos := odin_text.substring_index("language = <%"", 1) until pos = 0 loop
+				lpos := odin_text.index_of('"', pos)
+				rpos := odin_text.index_of('"', lpos+1)
+				lang := odin_text.substring (lpos+1, rpos-1)
 				rep_str := "[" + Terminology_ISO_639_1 + "::" + lang + "]"
-				dadl_text.replace_substring (rep_str, lpos, rpos)
+				odin_text.replace_substring (rep_str, lpos, rpos)
 				converter_status.add_info (ec_syntax_upgraded_i1,
 					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>, "")
-				pos := dadl_text.substring_index("language = <%"", rpos)
+				pos := odin_text.substring_index("language = <%"", rpos)
 			end
 		end
 
-	convert_c_dv_names (dadl_text: STRING)
+	convert_c_dv_names (odin_text: STRING)
 			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
 		local
 			pos: INTEGER
 		do
 			-- get type name
-			pos := dadl_text.substring_index("C_QUANTITY", 1)
+			pos := odin_text.substring_index("C_QUANTITY", 1)
 			if pos > 0 then
-				dadl_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
-				convert_c_quantity_property(dadl_text)
+				odin_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
+				convert_c_quantity_property (odin_text)
 				converter_status.add_info (ec_syntax_upgraded_i1, <<"C_QUANTITY", "C_DV_QUANTITY">>, "")
 			else
-				pos := dadl_text.substring_index("C_ORDINAL", 1)
+				pos := odin_text.substring_index("C_ORDINAL", 1)
 				if pos > 0 then
-					dadl_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
+					odin_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
 					converter_status.add_info (ec_syntax_upgraded_i1, <<"C_ORDINAL", "C_DV_ORDINAL">>, "")
 				end
 			end
 		end
 
-	convert_c_quantity_property (dadl_text: STRING)
+	convert_c_quantity_property (odin_text: STRING)
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
@@ -88,10 +88,10 @@ feature -- ADL 1.4 conversions
 			old_str, prop_name, new_str: STRING
 		do
 			old_str := "property = <%""
-			lpos := dadl_text.substring_index(old_str, 1)
+			lpos := odin_text.substring_index(old_str, 1)
 			if lpos > 0 then
-				rpos := dadl_text.index_of('>', lpos)
-				prop_name := dadl_text.substring (lpos + old_str.count, rpos-2)
+				rpos := odin_text.index_of('>', lpos)
+				prop_name := odin_text.substring (lpos + old_str.count, rpos-2)
 				prop_name.replace_substring_all (" ", "_")
 				if not prop_name.has_substring("openehr::") then
 					new_str := "property = <[openehr::" + prop_name + "]>"
@@ -99,7 +99,7 @@ feature -- ADL 1.4 conversions
 					new_str := "property = <[" + prop_name + "]>"
 				end
 
-				dadl_text.replace_substring (new_str, lpos, rpos)
+				odin_text.replace_substring (new_str, lpos, rpos)
 				converter_status.add_info (ec_syntax_upgraded_i1, <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>, "")
 			end
 		end

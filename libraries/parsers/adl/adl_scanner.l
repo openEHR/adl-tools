@@ -53,7 +53,7 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 --------------- Options --------------
-%x IN_DADL_SECTION IN_CADL_SECTION IN_ASSERTION_SECTION
+%x IN_ODIN_SECTION IN_CADL_SECTION IN_ASSERTION_SECTION
 %option outfile="adl_scanner.e"
 
 %%
@@ -137,14 +137,14 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 ^[Ll][Aa][Nn][Gg][Uu][Aa][Gg][Ee][ \t\r]*\n 	{
 				last_token := SYM_LANGUAGE
-				set_start_condition(IN_DADL_SECTION)
+				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				language_text_start_line := in_lineno
 			}
 
 ^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	{
 				last_token := SYM_DESCRIPTION
-				set_start_condition(IN_DADL_SECTION)
+				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				description_text_start_line := in_lineno
 			}
@@ -165,26 +165,26 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 ^[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Yy][ \t\r]*\n			{
 				last_token := SYM_ONTOLOGY
-				set_start_condition(IN_DADL_SECTION)
+				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				ontology_text_start_line := in_lineno
 			}
 
 ^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n			{
 				last_token := SYM_ANNOTATIONS
-				set_start_condition(IN_DADL_SECTION)
+				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				annotations_text_start_line := in_lineno
 			}
 
 ^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n			{
 				last_token := SYM_COMPONENT_ONTOLOGIES
-				set_start_condition(IN_DADL_SECTION)
+				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				comp_onts_text_start_line := in_lineno
 			}
 
-<IN_DADL_SECTION>{
+<IN_ODIN_SECTION>{
 	^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	|
 	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n |
 	^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n	| 
@@ -197,7 +197,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				end
 
 				-- get the dADL section sorted out
-				last_token := V_DADL_TEXT
+				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
@@ -214,7 +214,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 			}
 	<<EOF>> {
 				-- get the dADL section sorted out
-				last_token := V_DADL_TEXT
+				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
@@ -273,7 +273,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[1-9][0-9]* {
+{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+(\.[0-9]+){0,2} {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}

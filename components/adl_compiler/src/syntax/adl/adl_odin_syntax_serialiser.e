@@ -12,14 +12,10 @@ note
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-class ADL_DADL_SYNTAX_SERIALISER
+class ADL_ODIN_SYNTAX_SERIALISER
 
 inherit
-	DT_DADL_SERIALISER
+	DT_ODIN_SERIALISER
 		redefine
 			start_complex_object_node
 		end

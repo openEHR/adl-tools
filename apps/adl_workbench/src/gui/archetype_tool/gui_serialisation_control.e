@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 		do
 			ev_serialise_adl_rb.set_text (syntax_type_adl.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_adl_rb.set_tooltip (get_msg (ec_show_adl_serialisation_tooltip, <<adl_version_for_flat_output>>))
-			ev_serialise_dadl_rb.set_text (syntax_type_dadl.as_upper + " " + adl_version_for_flat_output)
+			ev_serialise_dadl_rb.set_text (syntax_type_odin.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_dadl_rb.set_tooltip (get_msg (ec_show_dadl_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_xml_rb.set_text (syntax_type_xml.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_xml_rb.set_tooltip (get_msg (ec_show_xml_serialisation_tooltip, <<adl_version_for_flat_output>>))

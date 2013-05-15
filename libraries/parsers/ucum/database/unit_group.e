@@ -126,16 +126,15 @@ feature -- Output
 	out:STRING
 		do
 			create Result.make(0)
-			Result.append(group_name + "%N")
-			from units.start until units.off loop
-				Result.append(indented(units.item_for_iteration.out, "%T") + "%N")
-				units.forth
+			Result.append (group_name + "%N")
+			across units as units_csr loop
+				Result.append (indented (units_csr.item.out, "%T") + "%N")
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	units_file: DADL_CONFIG_FILE_ACCESS
+	units_file: ODIN_CONFIG_FILE_ACCESS
 
 end
 
