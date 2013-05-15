@@ -218,6 +218,7 @@ feature -- Commands
 			-- populate source repos from physical medium
 			across repository_access.repositories as profile_repos_csr loop
 				profile_repos_csr.item.populate
+				errors.append (profile_repos_csr.item.errors)
 			end
 
 			populate_semantic_indexes
@@ -277,6 +278,7 @@ feature -- Modification
 
 			errors.wipe_out
 			repository_access.adhoc_source_repository.add_item (a_path)
+			errors.append (repository_access.adhoc_source_repository.errors)
 			if repository_access.adhoc_source_repository.has_path (a_path) then
 				aca := repository_access.adhoc_source_repository.item (a_path)
 				if valid_candidate (aca) then

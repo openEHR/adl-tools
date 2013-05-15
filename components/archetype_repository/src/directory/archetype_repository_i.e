@@ -32,6 +32,8 @@ feature -- Access
 	group_id: INTEGER
 			-- Id of the group to which this repository belongs.
 
+	errors: ERROR_ACCUMULATOR
+
 feature {ARCHETYPE_CATALOGUE} -- Access
 
 	archetype_id_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]

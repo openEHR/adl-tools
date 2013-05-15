@@ -26,11 +26,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 feature -- Access
 
 	text: detachable STRING
@@ -74,9 +69,9 @@ feature -- Commands
 			if file_context.file_writable (full_path) then
 				file_context.save_file (full_path, a_text)
 				text_timestamp := file_context.file_timestamp
-				post_info (generator, "save_as", "save_as_i1", <<full_path>>)
+				errors.add_info (ec_save_as_i1, <<full_path>>, "save_text_to_file")
 			else
-				post_error (generator, "save_as", "save_as_e1", <<full_path>>)
+				errors.add_error (ec_save_as_e1, <<full_path>>, "save_text_to_file")
 			end
 		end
 

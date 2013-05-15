@@ -14,11 +14,6 @@ inherit
 
 	ARCHETYPE_FILE_REPOSITORY_IMP
 
-	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -64,17 +59,17 @@ feature {NONE} -- Implementation
 							amp.parse (l_full_path)
 							if amp.passed and then attached amp.last_archetype as arch then
 								if arch.archetype_id_is_old_style then
-									post_error (generator, "build_directory", "parse_archetype_e7", <<fn, arch.archetype_id.as_string>>)
+									errors.add_error (ec_parse_archetype_e7, <<fn, arch.archetype_id.as_string>>, "")
 								elseif arch.is_specialised and arch.parent_archetype_id_is_old_style then
-									post_error (generator, "build_directory", "parse_archetype_e11", <<fn, arch.parent_archetype_id.as_string>>)
+									errors.add_error (ec_parse_archetype_e11, <<fn, arch.parent_archetype_id.as_string>>, "")
 								elseif not has_rm_schema_for_archetype_id (arch.archetype_id) then
-									post_error (generator, "build_directory", "parse_archetype_e4", <<fn, arch.archetype_id.as_string>>)
+									errors.add_error (ec_parse_archetype_e4, <<fn, arch.archetype_id.as_string>>, "")
 								else -- create the descriptor and put it into a local Hash for this node
 									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, arch)
 									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else
-								post_error (generator, "build_directory", "general", <<amp.error_strings>>)
+								errors.add_error (ec_general, <<amp.error_strings>>, "")
 							end
 						end
 					end
@@ -89,7 +84,7 @@ feature {NONE} -- Implementation
 							amp.parse (l_full_path)
 							if amp.passed and then attached amp.last_archetype as arch then
 								if not has_rm_schema_for_archetype_id (arch.archetype_id) then
-									post_error (generator, "build_directory", "parse_archetype_e4", <<fn, arch.archetype_id.as_string>>)
+									errors.add_error (ec_parse_archetype_e4, <<fn, arch.archetype_id.as_string>>, "")
 								elseif not archetype_id_index.has (arch.archetype_id.as_string) then
 									ara := aof.create_arch_cat_archetype_make (l_full_path, Current, arch)
 									archetype_id_index.force (ara, ara.id.as_string)
@@ -97,7 +92,7 @@ feature {NONE} -- Implementation
 									-- ignore, because there is already a legacy archetype for this id
 								end
 							else
-								post_error (generator, "build_directory", "general", <<amp.error_strings>>)
+								errors.add_error (ec_general, <<amp.error_strings>>, "")
 							end
 						end
 					end

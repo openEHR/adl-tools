@@ -24,6 +24,7 @@ feature {NONE} -- Initialisation
 		do
 			group_id := a_group_id
 			full_path := dir_name
+			create errors.make
 		ensure
 			root_path_set: full_path = dir_name
 			group_id_set: group_id = a_group_id

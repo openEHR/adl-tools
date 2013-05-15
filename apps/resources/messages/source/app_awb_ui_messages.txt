@@ -1,31 +1,15 @@
 --
 --	component:   openEHR Archetype Project
 --	description: Error database for any ADL application, except for errors defined in official openEHR ADL/AOM error file
---				 
---	keywords:    ADL
+--	keywords:    ADL, UI
 --	author:      Thomas Beale
 --	support:     Ocean Informatics <support@OceanInformatics.com>
 --	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd"
 --	license:     See notice at bottom of class
 --
---	file:        $URL$
---	revision:    $LastChangedRevision$
---	last_change: $LastChangedDate$
---
 
 templates = <
 	["en"] = <
-		-- basic errors
-		["get_icon_pixmap"] = <"No pixmap found for $1">
-		["no_pixmap_found"] = <"No pixmap found for $1">
-
-		-- standard button texts
-		["browse_button_text"] = <"Browse...">
-		["ok_button_text"] = <"OK">
-		["cancel_button_text"] = <"Cancel">
-		["collapse_button_text"] = <">>">
-		["expand_button_text"] = <"<<">
-
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">
 		["retarget_to_this_class"] = <"Retarget to this class">
@@ -44,10 +28,6 @@ templates = <
 		["edit_source_schema"] = <"Edit source schema">
 		["expand_packages"] = <"Expand packages">
 		["export_as_xml"] = <"Export as XML...">
-
-		-- GUI_HASH_TABLE_CONTROL
-		["add_mi"] = <"Add new row">
-		["remove_mi"] = <"Remove row">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["remove_repo_cfg"] = <"Removing invalid configuration (error: $1)">
@@ -304,7 +284,6 @@ templates = <
 		["annotation_value_text"] = <"Annotation value">
 
 		-- GUI_DEFINITION_CONTROL 
-		["view_label_text"] = <"Tree Zoom">
 		["occurrences_removed_text"] = <"(REMOVED)">
 		["annotations_text"] = <"Annotations">
 		["inheritance_status_text"] = <"Inheritance status: ">
@@ -320,18 +299,6 @@ templates = <
 		["rules_grid_col_expr_value_text"] = <"Expression value">
 
 		["assumed_text"] = <"Assumed">
-
-		["expand_complete_button_text"] = <"Expand All">
-		["expand_complete_tooltip"] = <"Completely expand the Node Map">
-
-		["collapse_complete_button_text"] = <"Expand All">
-		["collapse_complete_tooltip"] = <"Completely collapse the Node Map">
-
-		["expand_one_level_button_text"] = <"Expand One">
-		["expand_one_level_tooltip"] = <"Expand one level of the Node Map">
-
-		["collapse_one_level_button_text"] = <"Collapse One">
-		["collapse_one_level_tooltip"] = <"Collapse one level of the Node Map">
 
 		["view_detail_controls_text"] = <"Detail Level">
 		["domain_detail_button_text"] = <"Domain">

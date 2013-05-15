@@ -19,7 +19,7 @@ templates = <
 		["app_exit_with_errors"] = <"Exiting....APP_ROOT initialisation completed with errors">
 
 		-- simple command line options
-		["quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
+		["adlc_quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
 		["flat_switch_desc"] = <"use flat form of archetype[s] for actions, e.g. path extraction etc">
 		["show_config_switch_desc"] = <"show current configuration and defaults">
 		["list_archetypes_switch_desc"] = <"generate list of archetypes in current repository (use for further processing)">
