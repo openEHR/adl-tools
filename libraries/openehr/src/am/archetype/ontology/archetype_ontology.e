@@ -670,7 +670,7 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 			Binding_removed: not has_constraint_binding (a_terminology, a_code)
 		end
 
-feature {TEST_DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Modification
 
 	merge_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
 			-- add a new term definition for language `a_language' and
