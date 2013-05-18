@@ -148,6 +148,7 @@ feature -- Commands
 	reload
 			-- alow user reload after manual changes while correcting schemas
 		do
+			on_set_aom_profile_dir
 			aom_profiles_access.load_profiles
 			do_populate
 		end
