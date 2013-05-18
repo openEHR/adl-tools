@@ -1,5 +1,5 @@
 # 
-#	component:   "Deep Thought Reusable Libraries"
+#	component:   "openEHR ADL Tools"
 #	description: "ADL Parser builder script"
 #	keywords:    "ADL, parser"
 #	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"

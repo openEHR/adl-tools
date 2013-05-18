@@ -14,9 +14,6 @@ note
 	license:     "See notice at bottom of class"
 
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class VERSION_NAMES
 

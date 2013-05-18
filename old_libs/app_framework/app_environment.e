@@ -13,9 +13,6 @@ note
 	copyright:   "Copyright (c) 2005,2006 openEHR Foundation"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class APP_ENVIRONMENT
 

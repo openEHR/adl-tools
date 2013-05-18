@@ -5,8 +5,6 @@ note
 				stringifyin dates. This version contains the international 
 				standardised version from ISO8601
 				]"
-	date: 		"$LastChangedDate$"
-	revision: 	"$LastChangedRevision$"
 
 class
 	DATE_TIME_TOOLS

@@ -1,12 +1,12 @@
 #!/bin/sh
-#	component:   "Deep Thought Reusable Libraries"
+#	component:   "openEHR ADL Tools"
 #	description: "ADL scanner builder script"
 #	keywords:    "ADL, scanner"
 #
 #	author:      "Thomas Beale"
 #	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 #	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
-#	license:     "See notice at bottom of class"
+#	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 #
 #	file:        "$URL$"
 #	revision:    "$LastChangedRevision$"

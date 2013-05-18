@@ -1,5 +1,5 @@
 #!/bin/sh 
-#	component:   "openEHR common libraries"
+#	component:   "openEHR ADL Tools"
 #	description: "Units scanner builder script"
 #	keywords:    "units, scanner"
 #

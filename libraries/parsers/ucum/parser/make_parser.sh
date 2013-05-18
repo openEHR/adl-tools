@@ -1,5 +1,5 @@
 #!/bin/sh 
-#	component:   "openEHR Reusable Libraries"
+#	component:   "openEHR ADL Tools"
 #	description: "Units Parser builder script"
 #	keywords:    "units, parser"
 #

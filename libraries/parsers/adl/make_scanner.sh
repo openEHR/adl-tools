@@ -1,5 +1,5 @@
 # 
-#	component:   "Deep Thought Reusable Libraries"
+#	component:   "openEHR ADL Tools"
 #	description: "ADL scanner builder script"
 #	keywords:    "ADL, scanner"
 #

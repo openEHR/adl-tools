@@ -3,7 +3,7 @@
 # replace code meta-data fields in EOMF library
 #
 
-find . \( -path */EIFGENs/* -o -path '\.git/*' \) -prune -o -name *.e  -print | while read fn
+find . \( -path */EIFGENs/* -o -path '\.git/*' \) -prune -o -name *.[ely]  -print | while read fn
 do
 	if [ ! -f $fn.bak ]; then
 		cp $fn $fn.bak

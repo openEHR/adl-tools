@@ -14,9 +14,6 @@ note
 	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class POINT_EVENT [G -> ITEM_STRUCTURE]
 
