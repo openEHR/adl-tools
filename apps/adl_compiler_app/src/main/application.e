@@ -1,5 +1,5 @@
 note
-	component:   "openEHR Archetype Project"
+	component:   "openEHR ADL Tools"
 	description: "[
 				   This application simulates what a real application written in C, Java or another langauge might do, 
 				   across the language interface. To see a C-language equivalent, go to the directory deployment/C/
@@ -9,7 +9,7 @@ note
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
 	APPLICATION

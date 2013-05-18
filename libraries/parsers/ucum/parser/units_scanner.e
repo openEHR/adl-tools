@@ -1,5 +1,5 @@
 note
-	component:   "openEHR Reusable Libraries"
+	component:   "openEHR ADL Tools"
 	description: "[
 			 Scanner for unit strings conforming to the Unified Code for Units
 	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald
@@ -11,7 +11,7 @@ note
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 
 class UNITS_SCANNER
@@ -73,20 +73,17 @@ if yy_act <= 5 then
 if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
---|#line 57 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 57")
 end
 last_token := Plus_code
 else
---|#line 58 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 58")
 end
 last_token := Minus_code
 end
 else
---|#line 59 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 59")
 end
@@ -94,13 +91,11 @@ last_token := Slash_code
 end
 else
 if yy_act = 4 then
---|#line 60 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 60")
 end
 last_token := Star_code
 else
---|#line 61 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 61")
 end
@@ -110,13 +105,11 @@ end
 else
 if yy_act <= 7 then
 if yy_act = 6 then
---|#line 63 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 63")
 end
 last_token := SYM_OPEN_PAREN
 else
---|#line 64 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 64")
 end
@@ -124,13 +117,11 @@ last_token := SYM_CLOSE_PAREN
 end
 else
 if yy_act = 8 then
---|#line 65 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 65")
 end
 last_token := SYM_START_SUFFIX
 else
---|#line 66 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 66")
 end
@@ -142,13 +133,11 @@ else
 if yy_act <= 13 then
 if yy_act <= 11 then
 if yy_act = 10 then
---|#line 67 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 67")
 end
 last_token := SYM_START_ANNOT
 else
---|#line 68 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 68")
 end
@@ -156,7 +145,6 @@ last_token := SYM_END_ANNOT
 end
 else
 if yy_act = 12 then
---|#line 72 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 72")
 end
@@ -165,7 +153,6 @@ end
 					last_string_value := text
 			
 else
---|#line 78 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 78")
 end
@@ -178,7 +165,6 @@ end
 else
 if yy_act <= 15 then
 if yy_act = 14 then
---|#line 83 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 83")
 end
@@ -195,7 +181,6 @@ end
 					in_buffer.wipe_out
 			
 else
---|#line 97 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 97")
 end
@@ -203,13 +188,11 @@ end
 end
 else
 if yy_act = 16 then
---|#line 98 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 98")
 end
 ;
 else
---|#line 0 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 0")
 end
@@ -225,7 +208,6 @@ end
 		do
 			inspect yy_sc
 when 0 then
---|#line 0 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 0")
 end
@@ -416,39 +398,3 @@ invariant
 
 end
 
---|
---| ***** BEGIN LICENSE BLOCK *****
---| Version: MPL 1.1/GPL 2.0/LGPL 2.1
---|
---| The contents of this file are subject to the Mozilla Public License Version
---| 1.1 (the 'License'); you may not use this file except in compliance with
---| the License. You may obtain a copy of the License at
---| http://www.mozilla.org/MPL/
---|
---| Software distributed under the License is distributed on an 'AS IS' basis,
---| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
---| for the specific language governing rights and limitations under the
---| License.
---|
---| The Original Code is units_scannerl.l
---|
---| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
---| the Initial Developer. All Rights Reserved.
---|
---| Contributor(s):
---|
---| Alternatively, the contents of this file may be used under the terms of
---| either the GNU General Public License Version 2 or later (the 'GPL'), or
---| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
---| in which case the provisions of the GPL or the LGPL are applicable instead
---| of those above. If you wish to allow use of your version of this file only
---| under the terms of either the GPL or the LGPL, and not to allow others to
---| use your version of this file under the terms of the MPL, indicate your
---| decision by deleting the provisions above and replace them with the notice
---| and other provisions required by the GPL or the LGPL. If you do not delete
---| the provisions above, a recipient may use your version of this file under
---| the terms of any one of the MPL, the GPL or the LGPL.
---|
---| ***** END LICENSE BLOCK *****
---|

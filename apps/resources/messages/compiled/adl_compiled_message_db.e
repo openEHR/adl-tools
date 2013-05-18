@@ -1,11 +1,11 @@
 note
-	component:   "openEHR Archetype Project"
+	component:   "openEHR ADL Tools"
 	description: "Generated class from message text files"
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_COMPILED_MESSAGE_DB
 

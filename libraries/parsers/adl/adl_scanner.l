@@ -1,12 +1,12 @@
 %{
 note
-	component:   "openEHR Archetype Project"
+	component:   "openEHR ADL Tools"
 	description: "Scanner for ADL syntax items"
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
-	license:     "Mozilla tri-license"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_SCANNER
 

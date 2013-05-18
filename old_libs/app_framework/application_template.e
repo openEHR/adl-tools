@@ -1,5 +1,5 @@
 note
-	component:   "openEHR Common Libraries"
+	component:   "openEHR ADL Tools"
 	description: "[
 				 Basic template for any application with access to external resources, event log.
 	             ]"
@@ -7,7 +7,7 @@ note
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2005- openEHR Foundation"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class APPLICATION_TEMPLATE
 

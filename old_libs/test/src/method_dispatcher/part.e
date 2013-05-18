@@ -1,12 +1,12 @@
 note
-	component:   "openEHR Reusable Libraries"
+	component:   "openEHR ADL Tools"
 	description: "test object for method dispatcher tests"
 	keywords:    "test, method dispatcher"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 
 class PART

@@ -1,5 +1,5 @@
 note
-	component:   "openEHR Reusable Libraries"
+	component:   "openEHR ADL Tools"
 	description: "[
 			 Parser for unit strings conforming to the Unified Code for Units 
 	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald 
@@ -11,7 +11,7 @@ note
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 
 class UNITS_PARSER
@@ -222,7 +222,6 @@ feature {NONE} -- Semantic actions
 		do
 			inspect yy_act
 when 1 then
---|#line 62 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 62")
 end
@@ -233,7 +232,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
---|#line 63 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 63")
 end
@@ -244,7 +242,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
---|#line 66 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 66")
 end
@@ -256,7 +253,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
---|#line 69 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 69")
 end
@@ -269,7 +265,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
---|#line 74 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 74")
 end
@@ -281,7 +276,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 6 then
---|#line 77 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 77")
 end
@@ -294,7 +288,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 7 then
---|#line 80 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 80")
 end
@@ -309,7 +302,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 8 then
---|#line 86 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 86")
 end
@@ -323,7 +315,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 9 then
---|#line 90 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 90")
 end
@@ -338,7 +329,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 10 then
---|#line 96 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 96")
 end
@@ -372,7 +362,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 11 then
---|#line 102 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 102")
 end
@@ -387,7 +376,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 12 then
---|#line 109 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 109")
 end
@@ -402,7 +390,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 13 then
---|#line 115 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 115")
 end
@@ -417,7 +404,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 14 then
---|#line 121 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 121")
 end
@@ -448,7 +434,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 15 then
---|#line 125 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 125")
 end
@@ -462,7 +447,6 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 16 then
---|#line 129 "units_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 129")
 end
@@ -784,39 +768,3 @@ feature {NONE} -- Implementation
 
 end
 
---|
---| ***** BEGIN LICENSE BLOCK *****
---| Version: MPL 1.1/GPL 2.0/LGPL 2.1
---|
---| The contents of this file are subject to the Mozilla Public License Version
---| 1.1 (the 'License'); you may not use this file except in compliance with
---| the License. You may obtain a copy of the License at
---| http://www.mozilla.org/MPL/
---|
---| Software distributed under the License is distributed on an 'AS IS' basis,
---| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
---| for the specific language governing rights and limitations under the
---| License.
---|
---| The Original Code is units_parser.y
---|
---| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
---| the Initial Developer. All Rights Reserved.
---|
---| Contributor(s):
---|
---| Alternatively, the contents of this file may be used under the terms of
---| either the GNU General Public License Version 2 or later (the 'GPL'), or
---| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
---| in which case the provisions of the GPL or the LGPL are applicable instead
---| of those above. If you wish to allow use of your version of this file only
---| under the terms of either the GPL or the LGPL, and not to allow others to
---| use your version of this file under the terms of the MPL, indicate your
---| decision by deleting the provisions above and replace them with the notice
---| and other provisions required by the GPL or the LGPL. If you do not delete
---| the provisions above, a recipient may use your version of this file under
---| the terms of any one of the MPL, the GPL or the LGPL.
---|
---| ***** END LICENSE BLOCK *****
---|

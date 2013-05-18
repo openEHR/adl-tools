@@ -1,12 +1,12 @@
 %{
 note
-	component:   "openEHR Archetype Project"
+	component:   "openEHR ADL Tools"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class CADL_SCANNER
 
