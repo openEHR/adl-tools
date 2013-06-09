@@ -465,7 +465,7 @@ feature {NONE} -- Implementation
 			Result.append ("Contributors: Peter Gummer%N")
 			Result.append ("Acknowledgements:%N")
 			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
-			Result.append ("  - Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("  - Gobo parsing libraries and tools (http://www.gobosoft.com)%N")
 			Result.append ("  - Jonas Rask Design icons (http://jonasraskdesign.com)%N")
 			Result.append ("  - VisualPharm 'must-have' icons (http://www.visualpharm.com/)%N")
 			Result.append ("    under CC-BY-ND (http://creativecommons.org/licenses/by-nd/3.0/)%N")
