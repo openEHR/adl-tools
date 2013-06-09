@@ -52,15 +52,13 @@ feature -- Commands
 			stats.increment_archetype_metric (target.ontology.term_codes.count, At_code_count)
 			stats.increment_archetype_metric (target.ontology.constraint_codes.count, Ac_code_count)
 			if not target.ontology.term_bindings.is_empty then
-				from target.ontology.term_bindings.start until target.ontology.term_bindings.off loop
-					stats.increment_archetype_metric (target.ontology.term_bindings.item_for_iteration.count, At_code_bindings_count)
-					target.ontology.term_bindings.forth
+				across target.ontology.term_bindings as target_term_bindings_csr loop
+					stats.increment_archetype_metric (target_term_bindings_csr.item.count, At_code_bindings_count)
 				end
 			end
 			if not target.ontology.constraint_bindings.is_empty then
-				from target.ontology.constraint_bindings.start until target.ontology.constraint_bindings.off loop
-					stats.increment_archetype_metric (target.ontology.constraint_bindings.item_for_iteration.count, Ac_code_bindings_count)
-					target.ontology.constraint_bindings.forth
+				across target.ontology.constraint_bindings as target_constraint_bindings_csr loop
+					stats.increment_archetype_metric (target_constraint_bindings_csr.item.count, Ac_code_bindings_count)
 				end
 			end
 

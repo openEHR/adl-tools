@@ -181,6 +181,7 @@ feature {NONE} -- Implementation
 	terminologies: ARRAYED_SET [STRING]
 
 	term_definition_header: ARRAY [STRING]
+			-- generate a set of heading strings for terminology table in ontology viewer
 		local
 			al: ARRAYED_LIST [STRING]
 		do

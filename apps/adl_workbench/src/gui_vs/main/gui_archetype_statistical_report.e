@@ -148,13 +148,13 @@ feature {NONE} -- Implementation
 				ev_rm_grid.column (Grid_model_element_total_col).set_title (get_msg (ec_statistics_grid_model_element_count_col_title, Void))
 
 				rm_class_stats := source.rm_grouped_class_table.item_for_iteration
-				from rm_class_stats.start until rm_class_stats.off loop
+				across rm_class_stats as rm_class_stats_csr loop
 					-- class name in col 1
-					create gli.make_with_text (rm_class_stats.item_for_iteration.rm_class_name)
-					if rm_class_stats.item_for_iteration.is_archetype_root_class then
+					create gli.make_with_text (rm_class_stats_csr.item.rm_class_name)
+					if rm_class_stats_csr.item.is_archetype_root_class then
 						gli.text.append (" *")
 					end
-					class_def := source.bmm_schema.class_definition (rm_class_stats.item_for_iteration.rm_class_name)
+					class_def := source.bmm_schema.class_definition (rm_class_stats_csr.item.rm_class_name)
 					gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.type_category))
 					gli.set_data (class_def)
 					gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
@@ -162,26 +162,23 @@ feature {NONE} -- Implementation
 					class_row := gli.row
 
 					-- class count in col 2
-					create gli.make_with_text (rm_class_stats.item_for_iteration.rm_class_count.out)
+					create gli.make_with_text (rm_class_stats_csr.item.rm_class_count.out)
 					class_row.set_item (Grid_model_element_total_col, gli)
 
 					-- attributes in subrows col 1 and 2
-					from rm_class_stats.item_for_iteration.rm_attributes.start until rm_class_stats.item_for_iteration.rm_attributes.off loop
+					across rm_class_stats_csr.item.rm_attributes as rm_attributes_csr loop
 						class_row.insert_subrow (class_row.subrow_count+1)
 						attr_row := class_row.subrow (class_row.subrow_count)
 
-						create gli.make_with_text (rm_class_stats.item_for_iteration.rm_attributes.key_for_iteration)
-						if attached class_def.flat_properties.item (rm_class_stats.item_for_iteration.rm_attributes.key_for_iteration) as prop_def then
+						create gli.make_with_text (rm_attributes_csr.key)
+						if attached class_def.flat_properties.item (rm_attributes_csr.key) as prop_def then
 							gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_def.multiplicity_key_string))	-- pixmap
 						end
 						attr_row.set_item (Grid_model_element_name_col, gli)
 
-						create gli.make_with_text (rm_class_stats.item_for_iteration.rm_attributes.item_for_iteration.out)
+						create gli.make_with_text (rm_attributes_csr.item.out)
 						attr_row.set_item (Grid_model_element_total_col, gli)
-
-						rm_class_stats.item_for_iteration.rm_attributes.forth
 					end
-					rm_class_stats.forth
 				end
 
 				-- resize grid cols properly

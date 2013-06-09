@@ -57,9 +57,8 @@ feature -- Modification
 
 	add_rm_attribute_occurrences (attr_names: ARRAYED_SET [STRING])
 		do
-			from attr_names.start until attr_names.off loop
-				add_rm_attribute_occurrence (attr_names.item)
-				attr_names.forth
+			across attr_names as attr_names_csr loop
+				add_rm_attribute_occurrence (attr_names_csr.item)
 			end
 		end
 
@@ -68,13 +67,12 @@ feature -- Modification
 			other.rm_class_name.same_string (rm_class_name)
 		do
 			rm_class_count := rm_class_count + other.rm_class_count
-			from other.rm_attributes.start until other.rm_attributes.off loop
-				if rm_attributes.has (other.rm_attributes.key_for_iteration) then
-					rm_attributes.force (rm_attributes.item (other.rm_attributes.key_for_iteration) + other.rm_attributes.item_for_iteration, other.rm_attributes.key_for_iteration)
+			across other.rm_attributes as other_rm_attrs_csr loop
+				if rm_attributes.has (other_rm_attrs_csr.key) then
+					rm_attributes.force (rm_attributes.item (other_rm_attrs_csr.key) + other_rm_attrs_csr.item, other_rm_attrs_csr.key)
 				else
-					rm_attributes.put (other.rm_attributes.item_for_iteration, other.rm_attributes.key_for_iteration)
+					rm_attributes.put (other_rm_attrs_csr.item, other_rm_attrs_csr.key)
 				end
-				other.rm_attributes.forth
 			end
 			is_archetype_root_class := is_archetype_root_class or other.is_archetype_root_class
 		end
