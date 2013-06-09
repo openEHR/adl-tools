@@ -122,7 +122,7 @@ feature -- Access
             create Result.make (0)
         end
 
-	term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
+	term_bindings: HASH_TABLE [HASH_TABLE [TERMINOLOGY_CODE, STRING], STRING]
 			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
         attribute
             create Result.make (0)
@@ -167,7 +167,7 @@ feature -- Access
 			end
 		end
 
-	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
+	term_binding (a_terminology, a_key: STRING): TERMINOLOGY_CODE
 			-- retrieve the term binding from terminology `a_terminology' for code `a_key'
 		require
 			Term_code_valid: has_term_binding (a_terminology, a_key)
@@ -199,7 +199,7 @@ feature -- Access
 			end
 		end
 
-	term_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [CODE_PHRASE, STRING]
+	term_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [TERMINOLOGY_CODE, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: term_bindings.has (a_terminology)
@@ -209,7 +209,7 @@ feature -- Access
 			end
 		end
 
-	term_bindings_for_key (a_key: STRING): HASH_TABLE [CODE_PHRASE, STRING]
+	term_bindings_for_key (a_key: STRING): HASH_TABLE [TERMINOLOGY_CODE, STRING]
 			-- retrieve the term bindings for a key as a table of bound terms keyed by terminology_id
 		require
 			Terminology_valid: has_any_term_binding (a_key)
@@ -485,29 +485,26 @@ feature -- Modification
 			last_added_constraint_definition_code := str
 		end
 
-	add_term_binding (a_code_phrase: CODE_PHRASE; a_code: STRING)
+	add_term_binding (a_term_code: TERMINOLOGY_CODE; a_code: STRING)
 			-- add a new term binding to local code a_code, in the terminology
-			-- group corresponding to the a_code_phrase.terminology
+			-- group corresponding to the a_term_code.terminology
 		require
 			Local_code_valid: has_term_code (a_code)
-			Not_already_added: not has_term_binding (a_code_phrase.terminology_id.name, a_code)
-		local
-			a_terminology: STRING
+			Not_already_added: not has_term_binding (a_term_code.terminology_id, a_code)
 		do
-			a_terminology := a_code_phrase.terminology_id.name
-			if not has_term_bindings (a_terminology) then
-				term_bindings.put (create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
+			if not has_term_bindings (a_term_code.terminology_id) then
+				term_bindings.put (create {HASH_TABLE [TERMINOLOGY_CODE, STRING]}.make(0), a_term_code.terminology_id)
 			end
-			if attached term_bindings.item (a_terminology) as bindings then
-				bindings.put (a_code_phrase, a_code)
+			if attached term_bindings.item (a_term_code.terminology_id) as bindings then
+				bindings.put (a_term_code, a_code)
 			end
 		ensure
-			Binding_added: has_term_binding (a_code_phrase.terminology_id.name, a_code)
+			Binding_added: has_term_binding (a_term_code.terminology_id, a_code)
 		end
 
 	add_constraint_binding (a_uri: URI; a_terminology, a_code: STRING)
 			-- add a new constraint binding to local code a_code, in the terminology
-			-- group corresponding to the a_code_phrase.terminology
+			-- group corresponding to the a_term_code.terminology
 		require
 			Local_code_valid: has_constraint_code (a_code)
 			Not_already_added: not has_constraint_binding (a_terminology, a_code)
@@ -544,15 +541,15 @@ feature -- Modification
 			end
 		end
 
-	replace_term_binding (a_code_phrase: CODE_PHRASE; a_code: STRING)
+	replace_term_binding (a_term_code: TERMINOLOGY_CODE; a_code: STRING)
 			-- replaces existing a term binding to local code a_code, in group a_terminology
 		require
 			Local_code_valid: has_term_code (a_code)
-			Already_added: has_term_binding (a_code_phrase.terminology_id.value, a_code)
+			Already_added: has_term_binding (a_term_code.terminology_id, a_code)
 		do
-			term_bindings.item (a_code_phrase.terminology_id.value).replace (a_code_phrase, a_code)
+			term_bindings.item (a_term_code.terminology_id).replace (a_term_code, a_code)
 		ensure
-			Binding_added: has_term_binding (a_code_phrase.terminology_id.value, a_code)
+			Binding_added: has_term_binding (a_term_code.terminology_id, a_code)
 		end
 
 	replace_constraint_binding (a_uri: URI; a_terminology, a_code: STRING)
@@ -1035,7 +1032,7 @@ feature {P_ARCHETYPE_ONTOLOGY} -- Implementation
 			constraint_definitions := a_constraint_defs
 		end
 
-	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING])
+	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [TERMINOLOGY_CODE, STRING], STRING])
 		do
 			term_bindings := a_term_bindings
 		end

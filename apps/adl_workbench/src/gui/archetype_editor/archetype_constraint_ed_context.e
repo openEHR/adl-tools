@@ -73,7 +73,7 @@ feature {NONE} -- Implementation
 			-- generate a tooltip for this node
 		local
 			p: STRING
-			bindings: HASH_TABLE [CODE_PHRASE, STRING]
+			bindings: HASH_TABLE [TERMINOLOGY_CODE, STRING]
 		do
 			if not is_rm then
 				p := arch_node.path

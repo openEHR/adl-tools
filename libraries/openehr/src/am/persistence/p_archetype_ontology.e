@@ -16,8 +16,6 @@ feature -- Initialisation
 
 	make (an_ontology: ARCHETYPE_ONTOLOGY)
 		local
-			tb_ont: HASH_TABLE [CODE_PHRASE, STRING]
-			cb_ont: HASH_TABLE [URI, STRING]
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 			cb_p_ont: HASH_TABLE [STRING, STRING]
 		do
@@ -26,29 +24,23 @@ feature -- Initialisation
 
 			if attached an_ontology.term_bindings then
 				create term_bindings.make (0)
-				from an_ontology.term_bindings.start until an_ontology.term_bindings.off loop
-					tb_ont := an_ontology.term_bindings.item_for_iteration
+				across an_ontology.term_bindings as terminologies_csr loop
 					create tb_p_ont.make (0)
-					term_bindings.put (tb_p_ont, an_ontology.term_bindings.key_for_iteration)
-					from tb_ont.start until tb_ont.off loop
-						tb_p_ont.put (tb_ont.item_for_iteration.as_string, tb_ont.key_for_iteration)
-						tb_ont.forth
+					term_bindings.put (tb_p_ont, terminologies_csr.key)
+					across terminologies_csr.item as term_bindings_csr loop
+						tb_p_ont.put (term_bindings_csr.item.as_string, term_bindings_csr.key)
 					end
-					an_ontology.term_bindings.forth
 				end
 			end
 
 			if attached an_ontology.constraint_bindings then
 				create constraint_bindings.make (0)
-				from an_ontology.constraint_bindings.start until an_ontology.constraint_bindings.off loop
-					cb_ont := an_ontology.constraint_bindings.item_for_iteration
+				across an_ontology.constraint_bindings as terminologies_csr loop
 					create cb_p_ont.make (0)
-					constraint_bindings.put (cb_p_ont, an_ontology.constraint_bindings.key_for_iteration)
-					from cb_ont.start until cb_ont.off loop
-						cb_p_ont.put (cb_ont.item_for_iteration.as_string, cb_ont.key_for_iteration)
-						cb_ont.forth
+					constraint_bindings.put (cb_p_ont, terminologies_csr.key)
+					across terminologies_csr.item as constraint_bindings_csr loop
+						cb_p_ont.put (constraint_bindings_csr.item.as_string, constraint_bindings_csr.key)
 					end
-					an_ontology.constraint_bindings.forth
 				end
 			end
 
@@ -90,9 +82,9 @@ feature -- Factory
 	populate_ontology (an_ont: ARCHETYPE_ONTOLOGY)
 			-- populate fields not already populated from creation of a C_XXX instance
 		local
-			tb_ont: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
+			tb_ont: HASH_TABLE [HASH_TABLE [TERMINOLOGY_CODE, STRING], STRING]
 			cb_ont: HASH_TABLE [HASH_TABLE [URI, STRING], STRING]
-			tb_ont_code_table: HASH_TABLE [CODE_PHRASE, STRING]
+			tb_ont_code_table: HASH_TABLE [TERMINOLOGY_CODE, STRING]
 			cb_ont_code_table: HASH_TABLE [URI, STRING]
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 			cb_p_ont: HASH_TABLE [STRING, STRING]
