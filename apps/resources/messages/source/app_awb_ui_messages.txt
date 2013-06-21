@@ -241,7 +241,7 @@ templates = <
 		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Repository menu">
 		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
-		["compiler_no_dadl_text"] = <"===================== No dADL (.dadl) text available =======================">
+		["compiler_no_dadl_text"] = <"===================== No ODIN (.odin) text available =======================">
 		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
 		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
 		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
@@ -381,7 +381,7 @@ templates = <
 		["translation_tab_text"] = <"Translation">
 
 		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
-		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
+		["show_dadl_serialisation_tooltip"] = <"Show ODIN $1 serialisation">
 		["show_xml_serialisation_tooltip"] = <"Show XML $1 serialisation">
 		["show_json_serialisation_tooltip"] = <"Show JSON $1 serialisation">
 		["show_yaml_serialisation_tooltip"] = <"Show YAML $1 serialisation">

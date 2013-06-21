@@ -1,11 +1,11 @@
 note
-	component:   "openEHR ADL Tools"
+	component:   "openEHR Archetype Project"
 	description: "Generated class from message text files"
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
-	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
+	license:     "See notice at bottom of class"
 
 class ADL_COMPILED_MESSAGE_DB
 
@@ -462,7 +462,7 @@ feature -- Initialisation
 			message_table.put ("...complete; compile with F7 or other options under Repository menu", ec_populating_directory_complete)
 			message_table.put ("===================== No flat (.adlf) text available =======================", ec_compiler_no_flat_text)
 			message_table.put ("===================== No source (.adls) text available =======================", ec_compiler_no_source_text)
-			message_table.put ("===================== No dADL (.dadl) text available =======================", ec_compiler_no_dadl_text)
+			message_table.put ("===================== No ODIN (.odin) text available =======================", ec_compiler_no_dadl_text)
 			message_table.put ("Read from docking config file $1 failed", ec_read_docking_file_failed)
 			message_table.put ("Write to docking config file $1 failed", ec_write_docking_file_failed)
 			message_table.put ("Copying user docking config file $1 to default location $2", ec_copy_docking_file)
@@ -566,7 +566,7 @@ feature -- Initialisation
 			message_table.put ("Statistics", ec_stat_info_tab_text)
 			message_table.put ("Translation", ec_translation_tab_text)
 			message_table.put ("Show ADL $1 serialisation", ec_show_adl_serialisation_tooltip)
-			message_table.put ("Show dADL $1 serialisation", ec_show_dadl_serialisation_tooltip)
+			message_table.put ("Show ODIN $1 serialisation", ec_show_dadl_serialisation_tooltip)
 			message_table.put ("Show XML $1 serialisation", ec_show_xml_serialisation_tooltip)
 			message_table.put ("Show JSON $1 serialisation", ec_show_json_serialisation_tooltip)
 			message_table.put ("Show YAML $1 serialisation", ec_show_yaml_serialisation_tooltip)
