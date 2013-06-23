@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 
 				-- ensure we have only a unique set
 				across slot_match_ids as slot_match_ids_csr loop
-					if attached {ARCH_CAT_ARCHETYPE_UI_STATE} current_arch_cat.archetype_index.item (slot_match_ids_csr.item) as aca then
+					if attached {ARCH_CAT_ARCHETYPE_EDITABLE} current_arch_cat.archetype_index.item (slot_match_ids_csr.item) as aca then
 						create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([aca]))
 						an_mi.set_pixmap (get_icon_pixmap ("archetype/" + aca.group_name))
 						context_slot_sub_menu.extend (an_mi)

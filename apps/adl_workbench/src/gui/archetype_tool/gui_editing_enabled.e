@@ -23,6 +23,8 @@ feature {NONE}-- Initialization
 		require
 			tool_bar.has_ev_tool_bar
 		do
+			create undo_redo_chain.make (agent update_undo_redo_controls)
+
 			-- undo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"),
 				get_msg (ec_undo_button_tooltip, Void), agent on_undo)
@@ -88,10 +90,9 @@ feature {NONE} -- Implementation
 
 	undo_redo_chain: UNDO_REDO_CHAIN
 
-	update_undo_redo_controls (a_chain: UNDO_REDO_CHAIN)
+	update_undo_redo_controls
 			-- set undo/redo buttons appropriately
 		do
-			undo_redo_chain := a_chain
 			if attached last_commit_time as lct and then undo_redo_chain.last_action_time > lct then
 				is_dirty := True
 			end

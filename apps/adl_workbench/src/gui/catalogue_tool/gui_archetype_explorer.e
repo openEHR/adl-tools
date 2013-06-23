@@ -383,7 +383,7 @@ feature {NONE} -- Implementation
 
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
 		do
-			if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
+			if attached {ARCH_CAT_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay  (aca)
 			elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
 				select_class_with_delay (accn)
@@ -395,7 +395,7 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				if attached an_ev_grid_item then
-					if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
+					if attached {ARCH_CAT_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 						build_archetype_node_context_menu (aca)
 					elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
 						build_class_node_context_menu (accn)
@@ -468,7 +468,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 			-- add further menu items specific to descendant tools
 		local
 			an_mi: EV_MENU_ITEM
@@ -480,7 +480,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG

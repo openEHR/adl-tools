@@ -11,22 +11,22 @@ class APP_OBJECT_FACTORY
 
 feature -- Factory
 
-	create_arch_cat_archetype_make_legacy (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL): ARCH_CAT_ARCHETYPE_UI_STATE
+	create_arch_cat_archetype_make_legacy (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL): ARCH_CAT_ARCHETYPE_EDITABLE
 		do
 			create Result.make_legacy (a_path, a_repository, arch_thumbnail)
 		end
 
-	create_arch_cat_archetype_make (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL): ARCH_CAT_ARCHETYPE_UI_STATE
+	create_arch_cat_archetype_make (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL): ARCH_CAT_ARCHETYPE_EDITABLE
 		do
 			create Result.make (a_path, a_repository, arch_thumbnail)
 		end
 
-	create_arch_cat_archetype_make_new_archetype (an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING): ARCH_CAT_ARCHETYPE_UI_STATE
+	create_arch_cat_archetype_make_new_archetype (an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING): ARCH_CAT_ARCHETYPE_EDITABLE
 		do
 			create Result.make_new_archetype (an_id, a_repository, a_directory)
 		end
 
-	create_arch_cat_archetype_make_new_specialised_archetype (an_id: ARCHETYPE_ID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING): ARCH_CAT_ARCHETYPE_UI_STATE
+	create_arch_cat_archetype_make_new_specialised_archetype (an_id: ARCHETYPE_ID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING): ARCH_CAT_ARCHETYPE_EDITABLE
 		do
 			create Result.make_new_specialised_archetype (an_id, a_parent, a_repository, a_directory)
 		end

@@ -86,9 +86,9 @@ feature {NONE} -- Implementation
    		deferred
    		end
 
-	selected_archetype_node: detachable ARCH_CAT_ARCHETYPE_UI_STATE
+	selected_archetype_node: detachable ARCH_CAT_ARCHETYPE_EDITABLE
 
-	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			selected_archetype_node := aca
 			if selection_history.selected_item /= aca then
@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
 		do
-			if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
+			if attached {ARCH_CAT_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay (aca)
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
@@ -133,14 +133,14 @@ feature {NONE} -- Implementation
 	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
-				if attached an_ev_grid_item and then attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
+				if attached an_ev_grid_item and then attached {ARCH_CAT_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 					build_archetype_node_context_menu (aca)
 				end
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
 
-	build_archetype_node_context_menu (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	build_archetype_node_context_menu (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		local
 			menu: EV_MENU
@@ -166,39 +166,39 @@ feature {NONE} -- Implementation
 			add_tool_specific_archetype_menu_items (menu, aca)
 --	end
 
-			create an_mi.make_with_text_and_action (get_msg (ec_edit_source, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_UI_STATE) do tool_agents.edit_archetype_source_agent.call ([an_aca]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_edit_source, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_EDITABLE) do tool_agents.edit_archetype_source_agent.call ([an_aca]) end (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_save_archetype_as, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_UI_STATE) do tool_agents.save_archetype_agent.call ([an_aca, True, True]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_save_archetype_as, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_EDITABLE) do tool_agents.save_archetype_agent.call ([an_aca, True, True]) end (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_export_archetype_as, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_UI_STATE) do tool_agents.save_archetype_agent.call ([an_aca, True, False]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_export_archetype_as, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_EDITABLE) do tool_agents.save_archetype_agent.call ([an_aca, True, False]) end (aca))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_export_flat_archetype_as, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_UI_STATE) do tool_agents.save_archetype_agent.call ([an_aca, False, False]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_export_flat_archetype_as, Void), agent (an_aca: ARCH_CAT_ARCHETYPE_EDITABLE) do tool_agents.save_archetype_agent.call ([an_aca, False, False]) end (aca))
 			menu.extend (an_mi)
 
 			menu.show
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 			-- add further menu items specific to descendant tools
 		do
 		end
 
-	display_archetype_in_active_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	display_archetype_in_active_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			gui_agents.select_archetype_agent.call ([aca])
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			gui_agents.edit_archetype_in_new_tool_agent.call ([aca])
 		end

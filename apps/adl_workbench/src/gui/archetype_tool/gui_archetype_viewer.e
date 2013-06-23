@@ -186,7 +186,7 @@ feature {NONE} -- Implementation
 	attach_gui_context
 		do
 			if not source.has_gui_context then
-				source.set_gui_context (create {GUI_ARCH_CAT_EDITOR_STATE}.make (source))
+				source.set_gui_context (create {ARCH_CAT_ARCHETYPE_EDITOR_STATE}.make (source))
 			end
 		end
 

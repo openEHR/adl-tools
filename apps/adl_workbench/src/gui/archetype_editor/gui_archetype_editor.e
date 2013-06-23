@@ -94,9 +94,9 @@ feature {NONE} -- Implementation
 
 	make_core_tools
 		do
-			create description_controls.make_editable (agent update_undo_redo_controls)
-			create definition_control.make_editable (agent update_undo_redo_controls)
-			create ontology_controls.make_editable (agent update_undo_redo_controls)
+			create description_controls.make_editable (undo_redo_chain)
+			create definition_control.make_editable (undo_redo_chain)
+			create ontology_controls.make_editable (undo_redo_chain)
 			create annotations_control.make
 			create translation_control.make
 		end
@@ -111,12 +111,12 @@ feature {NONE} -- Implementation
 
 	attach_gui_context
 		local
-			gui_context: GUI_ARCH_CAT_EDITOR_STATE
+			gui_context: ARCH_CAT_ARCHETYPE_EDITOR_STATE
 		do
 			if not source.has_gui_context then
 				create gui_context.make (source)
 				source.set_gui_context (gui_context)
-			elseif attached {GUI_ARCH_CAT_EDITOR_STATE} source.gui_context as gc then
+			elseif attached {ARCH_CAT_ARCHETYPE_EDITOR_STATE} source.gui_context as gc then
 				gui_context := gc
 			end
 			gui_context.set_editable (undo_redo_chain)

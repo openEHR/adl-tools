@@ -167,61 +167,61 @@ feature -- Display
 
 feature -- Modification
 
-	put_child_context (a_node: C_OBJECT_ED_CONTEXT)
+	put_child_context (a_context_node: C_OBJECT_ED_CONTEXT)
 			-- add `a_node' to end of children
 		require
-			not has_child (a_node)
+			not has_child (a_context_node)
 		do
-			children.extend (a_node)
-			a_node.set_parent (Current)
+			children.extend (a_context_node)
+			a_context_node.set_parent (Current)
 			if is_prepared and attached gui_grid as gg then
-				a_node.prepare_display_in_grid (gg)
+				a_context_node.prepare_display_in_grid (gg)
 				if is_displayed then
-					a_node.display_in_grid (display_settings)
+					a_context_node.display_in_grid (display_settings)
 				end
 			end
 		ensure
-			has_child (a_node)
+			has_child (a_context_node)
 		end
 
-	remove_child_context (a_node: C_OBJECT_ED_CONTEXT)
-			-- remove the child `a_node'
+	remove_child_context (a_context_node: C_OBJECT_ED_CONTEXT)
+			-- remove the child `a_context_node'
 		require
-			has_child (a_node)
+			has_child (a_context_node)
 		do
-			children.prune (a_node)
+			children.prune (a_context_node)
 			if is_prepared then
-				gui_grid.ev_grid.remove_row (a_node.gui_grid_row.index)
+				gui_grid.ev_grid.remove_row (a_context_node.gui_grid_row.index)
 				if is_displayed then
 					display_in_grid (display_settings)
 				end
 			end
 		ensure
-			not has_child (a_node)
+			not has_child (a_context_node)
 		end
 
-	detach_child_context (a_node: C_OBJECT_ED_CONTEXT)
+	detach_child_context (a_context_node: C_OBJECT_ED_CONTEXT)
 			-- remove context node `a_node' and its `arch_node'
 		require
-			has_child (a_node)
+			has_child (a_context_node)
 		do
-			remove_child_context (a_node)
-			if not is_rm and attached a_node.arch_node as arn then
+			remove_child_context (a_context_node)
+			if not is_rm and attached a_context_node.arch_node as arn then
 				arch_node.remove_child (arn)
 			end
 		ensure
-			not has_child (a_node)
+			not has_child (a_context_node)
 		end
 
-	reattach_child_context (a_node: C_OBJECT_ED_CONTEXT)
+	reattach_child_context (a_context_node: C_OBJECT_ED_CONTEXT)
 			-- reattach a context node whose arch_node is also detached
 		require
-			not has_child (a_node)
+			not has_child (a_context_node)
 		do
-			if is_rm and attached a_node.arch_node as arn then
+			if is_rm and attached a_context_node.arch_node as arn then
 				arch_node.put_child (arn)
 			end
-			put_child_context (a_node)
+			put_child_context (a_context_node)
 		end
 
 	convert_to_constraint
@@ -235,6 +235,7 @@ feature -- Modification
 				create arch_node.make_single (rm_property.name, Void)
 			end
 			parent.convert_rm_property_to_constraint (Current)
+			build_context_menu
 		end
 
 feature {ANY_ED_CONTEXT} -- Implementation

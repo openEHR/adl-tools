@@ -14,14 +14,14 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_CAT_ARCHETYPE_UI_STATE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+	make (aca: ARCH_CAT_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
 			source := aca
 			create ed_context.make (source, an_rm_schema, differential_view_flag)
 			build_context
 		end
 
-	make_editable (aca: ARCH_CAT_ARCHETYPE_UI_STATE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+	make_editable (aca: ARCH_CAT_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		do
 			source := aca
 			create ed_context.make_editable (source, an_rm_schema, an_undo_redo_chain)
@@ -30,7 +30,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	source: ARCH_CAT_ARCHETYPE_UI_STATE
+	source: ARCH_CAT_ARCHETYPE_EDITABLE
 
 	ed_context: ARCH_ED_CONTEXT_STATE
 

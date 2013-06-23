@@ -20,7 +20,7 @@ inherit
 
 feature -- Access
 
-	source: detachable ARCH_CAT_ARCHETYPE_UI_STATE
+	source: detachable ARCH_CAT_ARCHETYPE_EDITABLE
 			-- archetype descriptor to which this tool is targetted
 
 	source_archetype: detachable ARCHETYPE
@@ -37,7 +37,7 @@ feature -- Access
 			end
 		end
 
-	source_context: detachable ARCH_ED_CONTEXT
+	source_ed_context: detachable ARCH_ED_CONTEXT
 			-- display / editor context, loaded with archetype for display, or a clone, for editing
 		do
 			if not editing_enabled then

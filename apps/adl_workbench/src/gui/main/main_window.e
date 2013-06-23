@@ -1178,7 +1178,7 @@ feature -- Archetype viewers
 			create Result.make (attached_docking_manager)
 		end
 
-	display_archetype (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	display_archetype (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
 			if attached aca.last_compile_attempt_timestamp then
@@ -1188,7 +1188,7 @@ feature -- Archetype viewers
 			archetype_viewers.active_tool.on_select_notebook
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			archetype_viewers.create_new_tool
 			display_archetype (aca)
@@ -1201,7 +1201,7 @@ feature -- Archetype editors
 			create Result.make (attached_docking_manager)
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			archetype_editors.create_new_tool
 			archetype_editors.active_tool.enable_edit
@@ -1209,7 +1209,7 @@ feature -- Archetype editors
 			archetype_editors.active_tool.on_select_notebook
 		end
 
-	archetype_has_editor (aca: ARCH_CAT_ARCHETYPE_UI_STATE): BOOLEAN
+	archetype_has_editor (aca: ARCH_CAT_ARCHETYPE_EDITABLE): BOOLEAN
 		do
 			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.as_string)
 		end

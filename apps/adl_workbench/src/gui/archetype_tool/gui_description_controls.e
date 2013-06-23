@@ -12,7 +12,7 @@ class GUI_DESCRIPTION_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, can_edit, disable_edit, enable_edit, on_selected
+			can_populate, can_repopulate, can_edit, disable_edit, enable_edit
 		end
 
 create
@@ -24,11 +24,9 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+	make_editable (an_undo_redo_chain: like undo_redo_chain)
 		do
-			undo_redo_update_agent := an_undo_redo_update_agent
-			create authoring_tab_undo_redo_chain.make (undo_redo_update_agent)
-			create description_tab_undo_redo_chain.make (undo_redo_update_agent)
+			undo_redo_chain := an_undo_redo_chain
 			make
 		end
 
@@ -39,7 +37,6 @@ feature {NONE} -- Initialisation
 
 			-- ======= root container ===========
 			create ev_root_container
-			ev_root_container.selection_actions.extend (agent on_select_notebook)
 
 			-- ====== Authoring tab =======
 			create admin_vbox
@@ -51,7 +48,7 @@ feature {NONE} -- Initialisation
 				agent :STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
 				archetype_lifecycle_states,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
-				Void, authoring_tab_undo_redo_chain, 0, 140)
+				Void, undo_redo_chain, 0, 140)
 			gui_controls.extend (lifecycle_state_text_ctl)
 			admin_vbox.extend (lifecycle_state_text_ctl.ev_root_container)
 			admin_vbox.disable_item_expand (lifecycle_state_text_ctl.ev_root_container)
@@ -64,7 +61,7 @@ feature {NONE} -- Initialisation
 				agent :HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_original_author_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_original_author_item (a_key) end end,
-				authoring_tab_undo_redo_chain,
+				undo_redo_chain,
 				0, min_entry_control_width, False, Void)
 			gui_controls.extend (original_author_ctl)
 
@@ -73,7 +70,7 @@ feature {NONE} -- Initialisation
 				agent :detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description as desc and then attached desc.other_contributors as oc then Result := oc end end,
 				agent (a_str: STRING; i: INTEGER) do if attached source_archetype.description as desc then desc.add_other_contributor (a_str, i) end end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.remove_other_contributor (a_str) end end,
-				authoring_tab_undo_redo_chain,
+				undo_redo_chain,
 				0, min_entry_control_width, False)
 			gui_controls.extend (auth_contrib_list_ctl)
 			auth_frame_ctl.extend (original_author_ctl.ev_root_container, True)
@@ -113,7 +110,7 @@ feature {NONE} -- Initialisation
 				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
 				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
-				authoring_tab_undo_redo_chain, 0, min_entry_control_width, False, Void)
+				undo_redo_chain, 0, min_entry_control_width, False, Void)
 			gui_controls.extend (trans_author_ctl)
 			trans_languages_ctl.add_linked_control (trans_author_ctl)
 			trans_author_accreditation_vbox.extend (trans_author_ctl.ev_root_container)
@@ -123,7 +120,7 @@ feature {NONE} -- Initialisation
 				agent :detachable STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
 				agent (a_str: STRING) do translation_details.set_accreditation (a_str) end,
 				agent do translation_details.clear_accreditation end,
-				authoring_tab_undo_redo_chain, 0, 0, False)
+				undo_redo_chain, 0, 0, False)
 			gui_controls.extend (trans_accreditation_text_ctl)
 			trans_author_accreditation_vbox.extend (trans_accreditation_text_ctl.ev_root_container)
 			trans_languages_ctl.add_linked_control (trans_accreditation_text_ctl)
@@ -133,7 +130,7 @@ feature {NONE} -- Initialisation
 				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
 				agent (a_key, a_val: STRING) do translation_details.put_other_details_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
-				authoring_tab_undo_redo_chain,
+				undo_redo_chain,
 				0, min_entry_control_width, False, Void)
 			gui_controls.extend (trans_other_details_ctl)
 			trans_languages_ctl.add_linked_control (trans_other_details_ctl)
@@ -144,7 +141,7 @@ feature {NONE} -- Initialisation
 				agent :detachable STRING do if attached description_details as dd then Result := dd.copyright end end,
 				agent (a_str: STRING) do description_details.set_copyright (a_str) end,
 				agent do description_details.clear_copyright end,
-				authoring_tab_undo_redo_chain, 44, 0, True)
+				undo_redo_chain, 44, 0, True)
 			gui_controls.extend (copyright_text_ctl)
 			admin_vbox.extend (copyright_text_ctl.ev_root_container)
 			admin_vbox.disable_item_expand (copyright_text_ctl.ev_root_container)
@@ -164,7 +161,7 @@ feature {NONE} -- Initialisation
 			create purpose_text_ctl.make_linked (get_text (ec_purpose_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
-				Void, description_tab_undo_redo_chain, 0, 0, True)
+				Void, undo_redo_chain, 0, 0, True)
 			gui_controls.extend (purpose_text_ctl)
 			details_frame_ctl.extend (purpose_text_ctl.ev_root_container, True)
 
@@ -173,7 +170,7 @@ feature {NONE} -- Initialisation
 				agent :detachable STRING do if attached description_details as dd then Result := dd.use end end,
 				agent (a_str: STRING) do description_details.set_use (a_str) end,
 				agent do description_details.clear_use end,
-				description_tab_undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (use_text_ctl)
 			details_frame_ctl.extend (use_text_ctl.ev_root_container, True)
 
@@ -182,7 +179,7 @@ feature {NONE} -- Initialisation
 				agent :detachable STRING do if attached description_details as dd then Result := dd.misuse end end,
 				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
 				agent do description_details.clear_misuse end,
-				description_tab_undo_redo_chain,
+				undo_redo_chain,
 				0, 0, True)
 			gui_controls.extend (misuse_text_ctl)
 			details_frame_ctl.extend (misuse_text_ctl.ev_root_container, True)
@@ -192,7 +189,7 @@ feature {NONE} -- Initialisation
 				agent :detachable DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
-				description_tab_undo_redo_chain,
+				undo_redo_chain,
 				0, 200, False)
 			gui_controls.extend (keywords_list_ctl)
 			details_hbox.extend (keywords_list_ctl.ev_root_container)
@@ -212,7 +209,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_resource_package_uri (a_str) end end,
 				agent do source_archetype.description.clear_resource_package_uri end,
-				description_tab_undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (resource_package_ctl)
 			resource_frame_ctl.extend (resource_package_ctl.ev_root_container, False)
 
@@ -226,7 +223,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_key, a_val: STRING) do if attached description_details as dd then dd.put_original_resource_uri_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached description_details as dd then description_details.remove_original_resource_uri_item (a_key) end end,
-				description_tab_undo_redo_chain,
+				undo_redo_chain,
 				44, 0, True, Void)
 			gui_controls.extend (original_resources_ctl)
 			resource_frame_ctl.extend (original_resources_ctl.ev_root_container, False)
@@ -261,25 +258,6 @@ feature -- Status Report
 			-- True if this tool has editing capability
 		do
 			Result := True
-		end
-
-feature -- Events
-
-	on_select_notebook
-		do
-			if editing_enabled then
-				if ev_root_container.selected_item = admin_vbox then
-					undo_redo_update_agent.call ([authoring_tab_undo_redo_chain])
-				else
-					undo_redo_update_agent.call ([description_tab_undo_redo_chain])
-				end
-			end
-		end
-
-	on_selected
-			-- perform when this tool made visible, e.g. by selection of parent notebook tab
-		do
-			on_select_notebook
 		end
 
 feature -- Commands
@@ -318,9 +296,7 @@ feature {NONE} -- Implementation
 
 	trans_languages_ctl: EVX_COMBO_CONTROL
 
-	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
-
-	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: detachable UNDO_REDO_CHAIN
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 

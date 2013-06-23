@@ -7,14 +7,14 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_ARCH_CAT_EDITOR_STATE
+class ARCH_CAT_ARCHETYPE_EDITOR_STATE
 
 create
 	make
 
 feature -- Initialisation
 
-	make (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
+	make (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		do
 			target := aca
 		end
@@ -28,7 +28,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	target: ARCH_CAT_ARCHETYPE_UI_STATE
+	target: ARCH_CAT_ARCHETYPE_EDITABLE
 
 	differential_display_context: ARCH_ED_CONTEXT
 		do

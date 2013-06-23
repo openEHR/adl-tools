@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Node map control - Visualise an archetype structure as a node map"
+	description: "Visualise an archetype definition as a tree-enabled grid"
 	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -12,7 +12,7 @@ class GUI_DEFINITION_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, can_populate, can_repopulate, repopulate, disable_edit, enable_edit, on_selected
+			can_edit, can_populate, can_repopulate, repopulate, disable_edit, enable_edit
 		end
 
 create
@@ -24,10 +24,9 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+	make_editable (an_undo_redo_chain: like undo_redo_chain)
 		do
-			undo_redo_update_agent := an_undo_redo_update_agent
-			create undo_redo_chain.make (undo_redo_update_agent)
+			undo_redo_chain := an_undo_redo_chain
 			make
 		end
 
@@ -163,6 +162,50 @@ feature -- Status Report
 	show_rm_inheritance: BOOLEAN
 			-- True if inheritance status should be shown in definition rendering of specialised archetypes
 
+	local_show_technical_view: BOOLEAN
+
+	local_show_rm_data_properties: BOOLEAN
+
+	local_show_rm_runtime_properties: BOOLEAN
+
+	local_show_rm_infrastructure_properties: BOOLEAN
+
+	show_technical_view: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_technical_view
+			else
+				Result := global_show_technical_view
+			end
+		end
+
+	show_rm_data_properties: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_rm_data_properties
+			else
+				Result := global_show_rm_data_properties
+			end
+		end
+
+	show_rm_runtime_properties: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_rm_runtime_properties
+			else
+				Result := global_show_rm_runtime_properties
+			end
+		end
+
+	show_rm_infrastructure_properties: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_rm_infrastructure_properties
+			else
+				Result := global_show_rm_infrastructure_properties
+			end
+		end
+
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
@@ -189,6 +232,9 @@ feature -- Commands
 		do
 			precursor
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
+			local_show_technical_view := True
+			local_show_rm_data_properties := True
+			show_codes := True
 		end
 
 	disable_edit
@@ -213,7 +259,7 @@ feature -- Commands
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
-			source_context.definition_context.display_in_grid (ui_settings)
+			source_ed_context.definition_context.display_in_grid (ui_settings)
 
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
@@ -221,19 +267,11 @@ feature -- Commands
 			-- repopulate rules grid, where applicable
 			if source_archetype.has_invariants then
 				gui_rules_grid.ev_grid.lock_update
-				across source_context.assertion_contexts as assn_ed_contexts_csr loop
+				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 				gui_rules_grid.resize_columns_to_content
 				gui_rules_grid.ev_grid.unlock_update
-			end
-		end
-
-	on_selected
-			-- perform when this tool made visible, e.g. by selection of parent notebook tab
-		do
-			if editing_enabled then
-				undo_redo_update_agent.call ([undo_redo_chain])
 			end
 		end
 
@@ -242,7 +280,12 @@ feature {NONE} -- Events
 	update_show_technical_view (a_flag: BOOLEAN)
 			-- change state from show_technical_view
 		do
-			set_show_technical_view (not a_flag)
+			if editing_enabled then
+				local_show_technical_view := not a_flag
+			else
+				set_global_show_technical_view (not a_flag)
+			end
+
 			if attached source then
 				repopulate
 			end
@@ -259,15 +302,26 @@ feature {NONE} -- Events
 	update_show_rm_data_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model data properties details in `ev_grid'.
 		do
-			set_show_rm_data_properties (a_flag)
-			if not a_flag then
-				if show_rm_infrastructure_properties then
-					set_show_rm_infrastructure_properties (False)
+			if editing_enabled then
+				local_show_rm_data_properties := a_flag
+				-- if turning off, turn off higher level RM properties
+				if not a_flag then
+					local_show_rm_infrastructure_properties := False
+					local_show_rm_runtime_properties := False
 				end
-				if show_rm_runtime_properties then
-					set_show_rm_runtime_properties (False)
+			else
+				set_global_show_rm_data_properties (a_flag)
+				-- if turning off, turn off higher level RM properties
+				if not a_flag then
+					if global_show_rm_infrastructure_properties then
+						set_global_show_rm_infrastructure_properties (False)
+					end
+					if global_show_rm_runtime_properties then
+						set_global_show_rm_runtime_properties (False)
+					end
 				end
 			end
+
 			if attached source then
 				do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
 			end
@@ -276,15 +330,29 @@ feature {NONE} -- Events
 	update_show_rm_runtime_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model runtime properties details in `ev_grid'.
 		do
-			set_show_rm_runtime_properties (a_flag)
-			if a_flag and not show_rm_data_properties then
-				rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
-			else
-				if not a_flag and show_rm_infrastructure_properties then
-					set_show_rm_infrastructure_properties (False)
+			if editing_enabled then
+				local_show_rm_runtime_properties := a_flag
+				if a_flag and not local_show_rm_data_properties then
+					rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+				else
+					if not a_flag then
+						local_show_rm_infrastructure_properties := False
+					end
+					if attached source then
+						do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+					end
 				end
-				if attached source then
-					do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+			else
+				set_global_show_rm_runtime_properties (a_flag)
+				if a_flag and not global_show_rm_data_properties then
+					rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+				else
+					if not a_flag and global_show_rm_infrastructure_properties then
+						set_global_show_rm_infrastructure_properties (False)
+					end
+					if attached source then
+						do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+					end
 				end
 			end
 		end
@@ -292,11 +360,20 @@ feature {NONE} -- Events
 	update_show_rm_infrastructure_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model infrastructure properties details in `ev_grid'.
 		do
-			set_show_rm_infrastructure_properties (a_flag)
-			if a_flag and not show_rm_runtime_properties then
-				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
-			elseif attached source then
-				do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+			if editing_enabled then
+				local_show_rm_infrastructure_properties := a_flag
+				if a_flag and not local_show_rm_runtime_properties then
+					rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+				elseif attached source then
+					do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+				end
+			else
+				set_global_show_rm_infrastructure_properties (a_flag)
+				if a_flag and not global_show_rm_runtime_properties then
+					rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+				elseif attached source then
+					do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+				end
 			end
 		end
 
@@ -310,11 +387,9 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
-	visualise_descendants_class: detachable STRING
-
-	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
-
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
+
+	visualise_descendants_class: detachable STRING
 
 	ev_definition_hbox: EV_HORIZONTAL_BOX
 
@@ -378,8 +453,8 @@ feature {NONE} -- Implementation
 
 			-- populate the main definition grid
 			gui_definition_grid.ev_grid.lock_update
-			source_context.definition_context.prepare_display_in_grid (gui_definition_grid)
-			source_context.definition_context.display_in_grid (ui_settings)
+			source_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
+			source_ed_context.definition_context.display_in_grid (ui_settings)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
@@ -404,7 +479,7 @@ feature {NONE} -- Implementation
 			-- populate rules grid, where applicable
 			if source_archetype.has_invariants then
 				gui_rules_grid.ev_grid.lock_update
-				across source_context.assertion_contexts as assn_ed_contexts_csr loop
+				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end

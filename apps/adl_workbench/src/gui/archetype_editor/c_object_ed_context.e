@@ -320,20 +320,20 @@ feature {NONE} -- Context menu
 			end
 		end
 
-	do_convert_to_constraint (a_c_object_type, an_rm_type, occ_str: STRING)
+	do_convert_to_constraint (an_rm_type, a_co_type, occ_str: STRING)
 		local
 			rm_type_spec: BMM_CLASS_DEFINITION
 		do
 			parent.convert_to_constraint
 			parent.remove_child_context (Current)
 			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
-			if a_c_object_type.is_equal ("C_COMPLEX_OBJECT") or a_c_object_type.is_equal ("C_PRIMITIVE_OBJECT") then
+			if a_co_type.is_equal (({C_COMPLEX_OBJECT}).name) or a_co_type.is_equal (({C_PRIMITIVE_OBJECT}).name) then
 				parent.add_child_node (rm_type_spec)
-			elseif a_c_object_type.is_equal ("C_ARCHETYPE_ROOT") then
+			elseif a_co_type.is_equal (({C_ARCHETYPE_ROOT}).name) then
 --				parent.add_ext_ref_node (rm_type_spec, an_arch_id)
-			elseif a_c_object_type.is_equal ("ARCHETYPE_SLOT") then
+			elseif a_co_type.is_equal (({ARCHETYPE_SLOT}).name) then
 --				parent.add_slot_node (rm_type_spec)
-			elseif a_c_object_type.is_equal ("CONSTRAINT_REF") then
+			elseif a_co_type.is_equal (({CONSTRAINT_REF})) then
 --				parent.add_constraint_ref_node (rm_type_spec)
 			end
 		end

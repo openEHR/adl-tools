@@ -12,7 +12,7 @@ class GUI_ONTOLOGY_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, can_edit, enable_edit, disable_edit, on_selected
+			can_populate, can_repopulate, can_edit, enable_edit, disable_edit
 		end
 
 	STRING_UTILITIES
@@ -25,10 +25,9 @@ create
 
 feature {NONE} -- Initialisation
 
-	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+	make_editable (an_undo_redo_chain: like undo_redo_chain)
 		do
-			undo_redo_update_agent := an_undo_redo_update_agent
-			create undo_redo_chain.make (undo_redo_update_agent)
+			undo_redo_chain := an_undo_redo_chain
 			make
 		end
 
@@ -136,16 +135,6 @@ feature -- Commands
 			select_coded_term_row (a_term_code, constraint_defs_mlist_ctl.ev_data_control)
 		end
 
-feature -- Events
-
-	on_selected
-			-- perform when this tool made visible, e.g. by selection of parent notebook tab
-		do
-			if editing_enabled then
-				undo_redo_update_agent.call ([undo_redo_chain])
-			end
-		end
-
 feature {NONE} -- Implementation
 
 	term_defs_mlist_ctl, constraint_defs_mlist_ctl: EVX_MULTI_COLUMN_TABLE_CONTROL
@@ -153,8 +142,6 @@ feature {NONE} -- Implementation
 	ev_vsplit: EV_VERTICAL_SPLIT_AREA
 
 	term_defs_frame_ctl, constraint_defs_frame_ctl: EVX_FRAME_CONTROL
-
-	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 

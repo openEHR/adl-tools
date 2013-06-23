@@ -11,9 +11,9 @@ note
 				 Additionally there is a notebook for the main content.
 				 ]"
 	keywords:    "GUI, ADL"
-	author:      "Thomas Beale <t homas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class GUI_ARCHETYPE_TOOL_FRAME
@@ -57,7 +57,8 @@ feature {NONE}-- Initialization
 				ev_primary_source_button := tb
 			end
 
-			-- if editing, add undo and redo buttons
+			-- if editing, add undo and redo buttons; need to do this here to insert the controls
+			-- in the right visual location
 			if can_edit then
 				add_editing_controls
 			end

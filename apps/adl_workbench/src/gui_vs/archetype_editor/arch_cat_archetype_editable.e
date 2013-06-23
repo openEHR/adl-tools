@@ -8,7 +8,7 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 	void_safety: "initial"
 
-class ARCH_CAT_ARCHETYPE_UI_STATE
+class ARCH_CAT_ARCHETYPE_EDITABLE
 
 inherit
 	ARCH_CAT_ARCHETYPE
@@ -28,7 +28,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_gui_context (a_context: GUI_ARCH_CAT_EDITOR_STATE)
+	set_gui_context (a_context: ARCH_CAT_ARCHETYPE_EDITOR_STATE)
 		do
 			gui_context := a_context
 		end
@@ -45,7 +45,7 @@ feature -- Compilation
 
 feature -- Access
 
-	gui_context: detachable GUI_ARCH_CAT_EDITOR_STATE
+	gui_context: detachable ARCH_CAT_ARCHETYPE_EDITOR_STATE
 
 	flat_archetype_clone: FLAT_ARCHETYPE
 			-- produce a clone of the current `flat_archetype'
@@ -59,7 +59,7 @@ feature -- Access
 		end
 
 	commit
-			-- commit modified flat clone to archetype
+			-- commit modified flat clone to archetype as new differential
 		do
 			-- do something with previous version of archetype
 

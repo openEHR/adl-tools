@@ -102,12 +102,15 @@ feature -- Modification
 		require
 			Valid_child: rm_attributes.has (a_child_node.rm_property.name) and not a_child_node.is_rm
 			C_attributes_valid: not c_attributes.has (a_child_node.rm_property.name)
+			Not_already_in_archetype: not arch_node.has_attribute (a_child_node.arch_node.rm_attribute_name)
 		do
 			c_attributes.force (a_child_node, a_child_node.rm_property.name)
 			rm_attributes.remove (a_child_node.rm_property.name)
+			arch_node.put_attribute (a_child_node.arch_node)
 		ensure
-			Converted: c_attributes.item (a_child_node.rm_property.name) = a_child_node
-			Removed_from_rm: not rm_attributes.has (a_child_node.rm_property.name)
+			Moved_to_c_attributes: c_attributes.item (a_child_node.rm_property.name) = a_child_node
+			Removed_from_rm_properties: not rm_attributes.has (a_child_node.rm_property.name)
+			Added_to_archetpe: arch_node.has_attribute (a_child_node.arch_node.rm_attribute_name)
 		end
 
 feature {NONE} -- Implementation
@@ -167,9 +170,9 @@ feature {NONE} -- Implementation
 	can_show_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
 			-- True if `an_rm_prop' should be shown below current object node given current UI settings
 		do
-			Result := show_rm_data_properties
-				and (not an_rm_prop.is_im_runtime or else show_rm_runtime_properties)
-				and (not an_rm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
+			Result := display_settings.show_rm_data_properties
+				and (not an_rm_prop.is_im_runtime or else display_settings.show_rm_runtime_properties)
+				and (not an_rm_prop.is_im_infrastructure or else display_settings.show_rm_infrastructure_properties)
 		end
 
 	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION; ui_settings: GUI_DEFINITION_SETTINGS)

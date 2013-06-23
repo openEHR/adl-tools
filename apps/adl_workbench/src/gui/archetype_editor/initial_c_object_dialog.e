@@ -64,10 +64,6 @@ feature {NONE} -- Initialization
 
 			Precursor {EV_DIALOG}
 
-			-- window characteristics
-			set_title (get_text (ec_initial_c_object_config_dialog_title))
-			set_icon_pixmap (adl_workbench_logo)
-
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
@@ -107,7 +103,7 @@ feature {NONE} -- Initialization
 				0, 0)
 			ev_root_container.extend (arch_id_list_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (arch_id_list_ctl.ev_root_container)
-			if not current_constraint_type.is_equal ("C_ARCHETYPE_ROOT") then
+			if not current_constraint_type.is_equal (({C_ARCHETYPE_ROOT}).name) then
 				arch_id_list_ctl.hide
 			end
 			rm_type_ctl.add_linked_control (arch_id_list_ctl)
@@ -121,7 +117,7 @@ feature {NONE} -- Initialization
 				0, 0)
 			ev_root_container.extend (arch_path_list_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (arch_path_list_ctl.ev_root_container)
-			if not current_constraint_type.is_equal ("ARCHETYPE_INTERNAL_REF") then
+			if not current_constraint_type.is_equal (({ARCHETYPE_INTERNAL_REF}).name) then
 				arch_path_list_ctl.hide
 			end
 			gui_controls.extend (arch_path_list_ctl)
@@ -132,19 +128,24 @@ feature {NONE} -- Initialization
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+--			show_actions.extend (agent constraint_type_ctl.set_focus)
+		end
+
+	initialize
+		do
+			precursor
+
+			-- window characteristics
+			set_title (get_text (ec_initial_c_object_config_dialog_title))
+			set_icon_pixmap (adl_workbench_logo)
+
+			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
 			-- set up form for display
 			enable_edit
 			do_populate
---			show_actions.extend (agent constraint_type_ctl.set_focus)
-		end
-
-	initialize
-		do
-			extend (ev_root_container)
-			precursor
 		end
 
 feature -- Events

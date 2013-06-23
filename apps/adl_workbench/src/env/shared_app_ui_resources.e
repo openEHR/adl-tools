@@ -288,49 +288,49 @@ feature -- Application Switches
 			Result := app_cfg.boolean_value ("/gui/allow_archetype_editing")
 		end
 
-	show_technical_view: BOOLEAN
+	global_show_technical_view: BOOLEAN
 			-- Display the technical view in the archetype definition node tree by default?
 		do
 			Result := app_cfg.boolean_value ("/gui/show_technical_view")
 		end
 
-	set_show_technical_view (flag: BOOLEAN)
+	set_global_show_technical_view (flag: BOOLEAN)
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
 			app_cfg.put_value("/gui/show_technical_view", flag)
 		end
 
-	show_rm_data_properties: BOOLEAN
+	global_show_rm_data_properties: BOOLEAN
 			-- Display the RM data properties in the archetype definition node tree?
 		do
 			Result := app_cfg.boolean_value ("/gui/show_rm_data_properties")
 		end
 
-	set_show_rm_data_properties (flag: BOOLEAN)
+	set_global_show_rm_data_properties (flag: BOOLEAN)
 			-- Set flag for whether to show the RM data properties in the archetype definition node tree
 		do
 			app_cfg.put_value("/gui/show_rm_data_properties", flag)
 		end
 
-	show_rm_runtime_properties: BOOLEAN
+	global_show_rm_runtime_properties: BOOLEAN
 			-- Display the RM runtime properties in the archetype definition node tree?
 		do
 			Result := app_cfg.boolean_value ("/gui/show_rm_runtime_properties")
 		end
 
-	set_show_rm_runtime_properties (flag: BOOLEAN)
+	set_global_show_rm_runtime_properties (flag: BOOLEAN)
 			-- Set flag for whether to show the RM runtime properties in the archetype definition node tree
 		do
 			app_cfg.put_value ("/gui/show_rm_runtime_properties", flag)
 		end
 
-	show_rm_infrastructure_properties: BOOLEAN
+	global_show_rm_infrastructure_properties: BOOLEAN
 			-- Display the RM infrastructure properties in the archetype definition node tree?
 		do
 			Result := app_cfg.boolean_value ("/gui/show_rm_infrastructure_properties")
 		end
 
-	set_show_rm_infrastructure_properties (flag: BOOLEAN)
+	set_global_show_rm_infrastructure_properties (flag: BOOLEAN)
 			-- Set flag for whether to show the RM infrastructure properties in the archetype definition node tree
 		do
 			app_cfg.put_value ("/gui/show_rm_infrastructure_properties", flag)
