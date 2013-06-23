@@ -44,14 +44,14 @@ feature {ARCHETYPE_CATALOGUE} -- Access
 
 feature -- Status Report
 
-	is_valid_path (path: attached STRING): BOOLEAN
+	is_valid_path (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing file on the repository medium?
 		deferred
 		ensure
 			false_if_void: Result implies attached path
 		end
 
-	is_valid_directory (path: attached STRING): BOOLEAN
+	is_valid_directory (path: STRING): BOOLEAN
 			-- Is `path' a valid, existing directory on the repository medium?
 		deferred
 		ensure
