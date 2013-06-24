@@ -163,12 +163,16 @@ feature -- Status Report
 			-- True if inheritance status should be shown in definition rendering of specialised archetypes
 
 	local_show_technical_view: BOOLEAN
+			-- local version of global flag, used only for editing
 
 	local_show_rm_data_properties: BOOLEAN
+			-- local version of global flag, used only for editing
 
 	local_show_rm_runtime_properties: BOOLEAN
+			-- local version of global flag, used only for editing
 
 	local_show_rm_infrastructure_properties: BOOLEAN
+			-- local version of global flag, used only for editing
 
 	show_technical_view: BOOLEAN
 		do
@@ -472,6 +476,13 @@ feature {NONE} -- Implementation
 				gui_definition_treeview_control.on_expand_one_level
 				gui_definition_treeview_control.on_expand_one_level
 			end
+
+			-- if top level not expanded at least once, do so now
+			if gui_definition_grid.ev_grid.row (1).is_expandable and then not gui_definition_grid.ev_grid.row (1).is_expanded then
+				gui_definition_treeview_control.on_expand_one_level
+			end
+
+			-- set grid titles
 			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update

@@ -142,20 +142,26 @@ feature -- Events
 feature -- Commands
 
 	select_flat_view
-			-- Called from MAIN_WINDOW View menu
+			-- select flat view on GUI
 		do
-			if not ev_flat_view_button.is_selected then
-				ev_flat_view_button.enable_select
-				set_view (False)
-			end
+			select_view (False)
 		end
 
 	select_differential_view
-			-- Called from MAIN_WINDOW View menu
+			-- select differential view on GUI
 		do
-			if not ev_differential_view_button.is_selected then
+			select_view (True)
+		end
+
+	select_view (differential_flag: BOOLEAN)
+			-- select a specific view on GUI
+		do
+			if differential_flag and not ev_differential_view_button.is_selected then
 				ev_differential_view_button.enable_select
 				set_view (True)
+			elseif not differential_flag and not ev_flat_view_button.is_selected then
+				ev_flat_view_button.enable_select
+				set_view (False)
 			end
 		end
 
@@ -208,10 +214,8 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			attach_gui_context
-			if differential_view and not ev_differential_view_button.is_selected then
-				ev_differential_view_button.enable_select
-				set_view_tab_texts
-			end
+			select_view (differential_view)
+
 			ev_archetype_id.set_text (source.qualified_name)
 			populate_primary_source
 			if source.is_valid then

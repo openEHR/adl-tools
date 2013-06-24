@@ -33,12 +33,11 @@ feature {NONE}-- Initialization
 	make
 		do
 			precursor
+
 			-- translation control
 			ev_notebook.extend (translation_control.ev_root_container)
 			ev_notebook.set_item_text (translation_control.ev_root_container, get_text (ec_translation_tab_text))
 			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
-
-			select_flat_view
 
 			ev_root_container.set_data (Current)
 		end

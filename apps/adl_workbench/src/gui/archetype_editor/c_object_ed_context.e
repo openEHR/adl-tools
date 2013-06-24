@@ -180,10 +180,41 @@ feature -- Display
 
 feature -- Modification
 
-	convert_to_constraint
-			-- convert to constrained C_OBJECT form
+	remove_node
 		do
+			parent.detach_child_context (Current)
+			ed_context.undo_redo_chain.add_link_simple (gui_grid.ev_grid, agent parent.reattach_child_context (Current), agent parent.detach_child_context (Current))
+		end
 
+	convert_to_constraint (an_rm_type, a_co_type, occ_str: STRING)
+			-- convert this RM node to a constraint node under its attribute node
+		local
+			rm_type_spec: BMM_CLASS_DEFINITION
+		do
+			parent.convert_to_constraint
+			parent.remove_child_context (Current)
+			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
+			if a_co_type.is_equal (({C_COMPLEX_OBJECT}).name) or a_co_type.is_equal (({C_PRIMITIVE_OBJECT}).name) then
+				parent.add_child_node (rm_type_spec)
+			elseif a_co_type.is_equal (({C_ARCHETYPE_ROOT}).name) then
+--				parent.add_ext_ref_node (rm_type_spec, an_arch_id)
+			elseif a_co_type.is_equal (({ARCHETYPE_SLOT}).name) then
+--				parent.add_slot_node (rm_type_spec)
+			elseif a_co_type.is_equal (({CONSTRAINT_REF})) then
+--				parent.add_constraint_ref_node (rm_type_spec)
+			end
+
+			ed_context.undo_redo_chain.add_link_simple (gui_grid.ev_grid,
+				agent
+					do
+						parent.reattach_child_context (Current)
+						parent.detach_child_context (parent.children.last)
+					end,
+				agent
+					do
+						parent.detach_child_context (Current)
+					end
+			)
 		end
 
 feature {NONE} -- Implementation
@@ -278,12 +309,12 @@ feature {NONE} -- Context menu
 				if not is_rm then
 					if not arch_node.is_root then
 						-- add menu item for deleting this node
-						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent do_edit_remove_node)
+						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent remove_node)
 						context_menu.extend (an_mi)
 					end
 				elseif not is_root and then not parent.parent.is_rm and parent.is_rm then
 					-- add menu item for 'convert to constraint'
-					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent do_edit_convert_to_constraint)
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
 					context_menu.extend (an_mi)
 				end
 			end
@@ -294,13 +325,8 @@ feature {NONE} -- Context menu
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 		end
 
-	do_edit_remove_node
-		do
-			parent.detach_child_context (Current)
-			ed_context.undo_redo_chain.add_link_simple (agent parent.reattach_child_context (Current), agent parent.detach_child_context (Current))
-		end
-
-	do_edit_convert_to_constraint
+	ui_offer_convert_to_constraint
+			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
 		local
 			dialog: INITIAL_C_OBJECT_DIALOG
 			def_occ: MULTIPLICITY_INTERVAL
@@ -316,25 +342,7 @@ feature {NONE} -- Context menu
 			create dialog.make (c_type_substitutions, rm_type_substitutions, arch_node_type, rm_type.semantic_class.name, def_occ, ed_context, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (gui_grid.ev_grid))
 			if dialog.is_valid then
-				do_convert_to_constraint (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
-			end
-		end
-
-	do_convert_to_constraint (an_rm_type, a_co_type, occ_str: STRING)
-		local
-			rm_type_spec: BMM_CLASS_DEFINITION
-		do
-			parent.convert_to_constraint
-			parent.remove_child_context (Current)
-			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
-			if a_co_type.is_equal (({C_COMPLEX_OBJECT}).name) or a_co_type.is_equal (({C_PRIMITIVE_OBJECT}).name) then
-				parent.add_child_node (rm_type_spec)
-			elseif a_co_type.is_equal (({C_ARCHETYPE_ROOT}).name) then
---				parent.add_ext_ref_node (rm_type_spec, an_arch_id)
-			elseif a_co_type.is_equal (({ARCHETYPE_SLOT}).name) then
---				parent.add_slot_node (rm_type_spec)
-			elseif a_co_type.is_equal (({CONSTRAINT_REF})) then
---				parent.add_constraint_ref_node (rm_type_spec)
+				convert_to_constraint (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
 			end
 		end
 
@@ -346,28 +354,28 @@ feature {NONE} -- Context menu
 			create Result.make (0)
 			Result.compare_objects
 			if rm_type.semantic_class.is_primitive_type then
-				Result.extend ("C_PRIMITIVE_OBJECT")
+				Result.extend (({C_PRIMITIVE_OBJECT}).name)
 			elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (rm_type.root_class) then
 				c_dv_type_name := "C_" + rm_type.root_class
 				if c_object_constraint_types.has (c_dv_type_name) then
 					Result.extend (c_dv_type_name)
-					if c_dv_type_name.is_equal ("C_CODE_PHRASE") then
-						Result.extend ("CONSTRAINT_REF")
+					if c_dv_type_name.is_equal (({C_CODE_PHRASE}).name) then
+						Result.extend (({CONSTRAINT_REF}).name)
 					end
 				else
-					Result.extend ("C_COMPLEX_OBJECT")
+					Result.extend (({C_COMPLEX_OBJECT}).name)
 					if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
-						Result.extend ("ARCHETYPE_INTERNAL_REF")
+						Result.extend (({ARCHETYPE_INTERNAL_REF}).name)
 					end
 				end
 			else
-				Result.extend ("C_COMPLEX_OBJECT")
-				Result.extend ("ARCHETYPE_SLOT")
+				Result.extend (({C_COMPLEX_OBJECT}).name)
+				Result.extend (({ARCHETYPE_SLOT}).name)
 				if not current_arch_cat.matching_ids (".*", rm_type.root_class, Void).is_empty then
-					Result.extend ("C_ARCHETYPE_ROOT")
+					Result.extend (({C_ARCHETYPE_ROOT}).name)
 				end
 				if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
-					Result.extend ("ARCHETYPE_INTERNAL_REF")
+					Result.extend (({ARCHETYPE_INTERNAL_REF}).name)
 				end
 			end
 		end

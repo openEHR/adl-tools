@@ -67,7 +67,7 @@ feature -- Commands
 			if not has_tools then
 				create_new_tool
 			end
-			active_tool.populate (aca, True, aca.display_language)
+			active_tool.populate (aca, False, aca.display_language)
 			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, Editor_pixmap)
 		end
 

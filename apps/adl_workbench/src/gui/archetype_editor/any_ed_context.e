@@ -163,6 +163,13 @@ feature -- Display
 
 	show_in_grid
 		do
+			--- the following will open out just the one row
+--			if attached gui_grid_row.parent_row as pr and then pr.is_expandable and then not pr.is_expanded then
+--				pr.expand
+--			end
+
+			-- the following opens out a row and its children
+			gui_grid.ev_grid.ensure_visible (gui_grid_row)
 			gui_grid_row.show
 		ensure
 			is_shown_in_grid

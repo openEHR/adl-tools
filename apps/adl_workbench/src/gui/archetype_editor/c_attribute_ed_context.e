@@ -178,6 +178,7 @@ feature -- Modification
 				a_context_node.prepare_display_in_grid (gg)
 				if is_displayed then
 					a_context_node.display_in_grid (display_settings)
+					a_context_node.show_in_grid
 				end
 			end
 		ensure
@@ -340,7 +341,6 @@ feature {NONE} -- Context menu
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
-	    		types_sub_menu.extend (an_mi)
 				across rm_property.type.semantic_class.type_substitutions as subs_csr loop
 					subtype_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
 					create an_mi.make_with_text_and_action (subs_csr.item, agent do_edit_add_child_node (subtype_class_def))
@@ -360,7 +360,7 @@ feature {NONE} -- Context menu
 			not is_rm
 		do
 			add_child_node (a_type_spec)
-			ed_context.undo_redo_chain.add_link_simple (agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
+			ed_context.undo_redo_chain.add_link_simple (gui_grid.ev_grid, agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
 		end
 
 	added_co_ed_node: C_OBJECT_ED_CONTEXT
