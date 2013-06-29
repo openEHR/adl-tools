@@ -33,20 +33,22 @@ feature -- Display
 			precursor (ui_settings)
 
 			-- set constraint column to referenced path
-			create s.make_empty
-			s.append ("use ")
-			if display_settings.show_technical_view then
-				p := arch_node.target_path.twin
-			else
-				p := ed_context.flat_ontology.physical_to_logical_path (arch_node.target_path, display_settings.language, True)
+			if attached arch_node as a_n then
+				create s.make_empty
+				s.append ("use ")
+				if display_settings.show_technical_view then
+					p := a_n.target_path.twin
+				else
+					p := ed_context.flat_ontology.physical_to_logical_path (a_n.target_path, display_settings.language, True)
+				end
+				p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+				p.remove_head (1)
+				s.append (p)
+				create gli.make_with_text (utf8_to_utf32 (s))
+				gli.set_foreground_color (c_attribute_colour)
+				ev_grid_row.set_item (Definition_grid_col_constraint, gli)
+				ev_grid_row.set_height (gli.text_height + Default_grid_row_expansion)
 			end
-			p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
-			p.remove_head (1)
-			s.append (p)
-			create gli.make_with_text (utf8_to_utf32 (s))
-			gli.set_foreground_color (c_attribute_colour)
-			gui_grid_row.set_item (Definition_grid_col_constraint, gli)
-			gui_grid_row.set_height (gli.text_height + Default_grid_row_expansion)
 		end
 
 feature -- Modification

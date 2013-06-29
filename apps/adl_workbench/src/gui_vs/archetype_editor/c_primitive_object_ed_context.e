@@ -7,46 +7,42 @@ note
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CONSTRAINT_REF_ED_CONTEXT
+class C_PRIMITIVE_OBJECT_ED_CONTEXT
 
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, prepare_display_in_grid, display_in_grid
+			arch_node, display_in_grid, rm_type_text
 		end
 
 create
-	make
+	make, make_rm
 
 feature -- Access
 
-	arch_node: detachable CONSTRAINT_REF
+	arch_node: detachable C_PRIMITIVE_OBJECT
 			-- archetype node being edited
 
 feature -- Display
 
-	prepare_display_in_grid (a_gui_grid: EVX_GRID)
-		do
-			precursor (a_gui_grid)
-
-			-- add select event
- 	--		gui_grid_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent add_code_select_context_menu (arch_node.target, ?, ?, ?))
-		end
-
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
-			s: STRING
+			gli: EV_GRID_LABEL_ITEM
 		do
 			precursor (ui_settings)
-
-			-- set meaning column to referenced path
-			create s.make_empty
-			s.append (local_term_string (arch_node.target))
-			gui_grid_row.set_item (Definition_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
+			if attached arch_node as a_n and then not a_n.any_allowed then
+				create gli.make_with_text (a_n.item.as_string)
+				gli.set_foreground_color (c_constraint_colour)
+				ev_grid_row.set_item (Definition_grid_col_constraint, gli)
+			end
 		end
 
-feature -- Modification
+feature {NONE} -- Implementation
 
+	rm_type_text: STRING
+		do
+			Result := rm_type.as_type_string
+		end
 
 end
 

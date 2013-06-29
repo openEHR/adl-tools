@@ -47,43 +47,49 @@ feature -- Display
 			ev_row_index.wipe_out
 
 			-- add closed indicator in constraint column
-			if arch_node.is_closed then
-				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)
-			else
-				-- create child nodes for includes & excludes
-				if arch_node.has_substantive_includes then
-					across arch_node.includes as includes_csr loop
-						gui_grid.add_sub_row (gui_grid_row, includes_csr.item)
+			if attached arch_node as a_n and attached ev_grid_row as gr then
+				if a_n.is_closed then
+					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)
+				else
+					-- create child nodes for includes & excludes
+					if a_n.has_substantive_includes then
+						across a_n.includes as includes_csr loop
+							evx_grid.add_sub_row (gr, includes_csr.item)
 
-						-- put pixmap on RM col
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void,
-							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_include"))
+							-- put pixmap on RM col
+							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void,
+								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_include"))
 
-						-- put blank text in constraint col
-						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+							-- put blank text in constraint col
+							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
 
-						-- remember the association
-						assertions_index.extend (includes_csr.item)
-						ev_row_index.extend (gui_grid.last_row)
+							-- remember the association
+							assertions_index.extend (includes_csr.item)
+							check attached evx_grid.last_row as lr then
+								ev_row_index.extend (lr)
+							end
+						end
+						is_required := a_n.has_open_excludes
+
+					elseif a_n.has_substantive_excludes then
+						across a_n.excludes as excludes_csr loop
+							evx_grid.add_sub_row (gr, excludes_csr.item)
+
+							-- put pixmap on RM col
+							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void,
+								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_exclude"))
+
+							-- put blank text in constraint col
+							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+
+							-- remember the association
+							assertions_index.extend (excludes_csr.item)
+							check attached evx_grid.last_row as lr then
+								ev_row_index.extend (lr)
+							end
+						end
+						is_required := a_n.has_open_includes
 					end
-					is_required := arch_node.has_open_excludes
-
-				elseif arch_node.has_substantive_excludes then
-					across arch_node.excludes as excludes_csr loop
-						gui_grid.add_sub_row (gui_grid_row, excludes_csr.item)
-
-						-- put pixmap on RM col
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void,
-							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_exclude"))
-
-						-- put blank text in constraint col
-						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
-
-						-- remember the association
-						assertions_index.extend (excludes_csr.item)
-						ev_row_index.extend (gui_grid.last_row)
-					end
-					is_required := arch_node.has_open_includes
 				end
 			end
 		end
@@ -94,9 +100,9 @@ feature -- Display
 
 			-- iterate through the assertions
 			across assertions_index as assn_csr loop
-				gui_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
-				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_object_colour, Void)
-				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, c_constraint_colour, Void)
+				evx_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
+				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_object_colour, Void)
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, c_constraint_colour, Void)
 			end
 		end
 
@@ -107,8 +113,8 @@ feature {NONE} -- Implementation
 		local
 			base_pixmap_name, slot_pixmap_name: STRING
 		do
-			if use_rm_pixmaps then
-				base_pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + arch_node.rm_type_name
+			if use_rm_pixmaps and attached arch_node as a_n then
+				base_pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
 				create slot_pixmap_name.make_empty
 				slot_pixmap_name.append (base_pixmap_name)
 				slot_pixmap_name.append ("_slot")
@@ -146,7 +152,7 @@ feature {NONE} -- Implementation
 
 	is_required: BOOLEAN
 
-	context_slot_sub_menu: EV_MENU
+	context_slot_sub_menu: detachable EV_MENU
 
 	build_context_menu
 		local
@@ -156,13 +162,13 @@ feature {NONE} -- Implementation
 			precursor
 			create slot_match_ids.make (0)
 			slot_match_ids.compare_objects
-			if arch_node.has_substantive_includes then
-				across arch_node.includes as slot_includes_csr loop
+			if attached arch_node as a_n and then a_n.has_substantive_includes then
+				across a_n.includes as slot_includes_csr loop
 					if attached {STRING} slot_includes_csr.item.extract_regex as a_regex then
-						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, arch_node.rm_type_name, Void))
+						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, a_n.rm_type_name, Void))
 					end
 				end
-				if arch_node.has_open_excludes then
+				if a_n.has_open_excludes then
 					create context_slot_sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_exact_text))
 				else
 					create context_slot_sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_preferred_text))
@@ -177,8 +183,8 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				if not context_slot_sub_menu.is_empty then
-					context_menu.extend (context_slot_sub_menu)
+				if attached context_slot_sub_menu as sm and then not sm.is_empty then
+					context_menu.extend (sm)
 				end
 			end
 		end

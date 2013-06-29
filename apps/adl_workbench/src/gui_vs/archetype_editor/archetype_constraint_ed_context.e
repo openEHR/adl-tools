@@ -15,7 +15,20 @@ inherit
 			arch_node
 		end
 
+feature -- Initialisation
+
+	make_rm (an_rm_element: like rm_element; an_ed_context: ARCH_ED_CONTEXT_STATE)
+		do
+			ed_context := an_ed_context
+			rm_element := an_rm_element
+			create display_settings.make_default
+		ensure
+			is_rm
+		end
+
 feature -- Access
+
+	rm_element: BMM_MODEL_ELEMENT
 
 	arch_node: detachable ARCHETYPE_CONSTRAINT
 			-- archetype node being edited
@@ -49,15 +62,21 @@ feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
-			gui_grid := a_gui_grid
+			evx_grid := a_gui_grid
 
 			-- create a new row
-			if not is_rm and then arch_node.is_root then
-				gui_grid.add_row (Current)
+			if attached arch_node as a_n and then a_n.is_root then
+				evx_grid.add_row (Current)
 			else
-				gui_grid.add_sub_row (parent.gui_grid_row, Current)
+				check attached parent.ev_grid_row as parent_gr then
+					evx_grid.add_sub_row (parent_gr, Current)
+				end
 			end
-			gui_grid_row := gui_grid.last_row
+			check attached evx_grid.last_row as lr then
+				ev_grid_row := lr
+			end
+		ensure then
+			attached parent as p implies (attached ev_grid_row as gr and then gr.parent_row = p.ev_grid_row)
 		end
 
 feature -- Modification
@@ -78,8 +97,8 @@ feature {NONE} -- Implementation
 			if not is_rm then
 				p := arch_node.path
 				Result := ed_context.flat_ontology.physical_to_logical_path (p, display_settings.language, True)
-				if display_settings.show_rm_inheritance then
-					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  specialisation_status_names.item (node_specialisation_status))
+				if display_settings.show_rm_inheritance and attached specialisation_status_names.item (node_specialisation_status) as nss then
+					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  nss)
 				end
 
 				-- node-based bindings
@@ -100,9 +119,9 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				if ed_context.archetype.has_annotation_at_path (display_settings.language, arch_node.path) then
+				if attached arch_node as a_n and then ed_context.archetype.has_annotation_at_path (display_settings.language, a_n.path) then
 					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
-					Result.append (ed_context.archetype.annotations.annotations_at_path (display_settings.language, arch_node.path).as_string)
+					Result.append (ed_context.archetype.annotations.annotations_at_path (display_settings.language, a_n.path).as_string)
 				end
 			else
 				Result := path
@@ -112,8 +131,13 @@ feature {NONE} -- Implementation
 	node_specialisation_status: INTEGER
 			-- specialisation status of archetype node in this context object
 		do
-			Result := arch_node.specialisation_status
+			if attached arch_node as a_n then
+				Result := a_n.specialisation_status
+			end
 		end
+
+invariant
+	Parent_link_valid: attached arch_node as a_n implies (attached parent as p implies (attached p.arch_node as parent_a_n and then a_n.parent = parent_a_n))
 
 end
 

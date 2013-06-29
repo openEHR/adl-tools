@@ -1,0 +1,440 @@
+note
+	component:   "openEHR ADL Tools"
+	description: "Editor context for any kind of C_OBJECT"
+	keywords:    "archetype, editing"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
+
+deferred class C_OBJECT_ED_CONTEXT
+
+inherit
+	ARCHETYPE_CONSTRAINT_ED_CONTEXT
+		rename
+			rm_element as rm_type
+		redefine
+			make, rm_type, arch_node, parent, prepare_display_in_grid, display_in_grid
+		end
+
+	SHARED_ARCHETYPE_CATALOGUES
+		export
+			{NONE} all
+		end
+
+feature -- Definition
+
+	c_object_colours: HASH_TABLE [EV_COLOR, INTEGER]
+			-- foreground colours for RM type representing inheritance status
+		once
+			create Result.make(0)
+			Result.put (archetype_rm_type_color, ss_added)
+			Result.put (archetype_rm_type_redefined_color, ss_redefined)
+			Result.put (archetype_rm_type_redefined_color, ss_id_redefined)
+			Result.put (archetype_rm_type_inherited_color, ss_inherited)
+		end
+
+	openehr_dv_type_name_leader: STRING = "DV_"
+
+feature -- Initialisation
+
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+		do
+			precursor (an_arch_node, an_ed_context)
+			rm_type := ed_context.rm_schema.class_definition (arch_node.rm_type_name)
+		end
+
+feature -- Access
+
+	arch_node: detachable C_OBJECT
+			-- archetype node being edited
+
+	rm_type: BMM_TYPE_SPECIFIER
+			-- RM class of node being edited
+
+	parent: detachable C_ATTRIBUTE_ED_CONTEXT
+
+	path: STRING
+			-- path of this node with respect to top of archetype
+		do
+			if attached arch_node as an then
+				Result := an.path
+			else
+				Result := parent.path
+			end
+		end
+
+	rm_depth: INTEGER
+			-- depth of this node with respect to its top-most RM (non-constrained) node
+			-- note that this will always be intermediate in the structure, since it has
+			-- to be the child of some archetyped node
+		do
+			Result := parent.rm_depth + 1
+		end
+
+feature -- Display
+
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		local
+			visualise_descendants_class: detachable STRING
+		do
+			precursor (a_gui_grid)
+			if not is_rm and attached ev_grid_row as gr then
+				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
+
+				-- add 'power expander' action to logical C_OBJECT leaf nodes
+				if attached ed_context.rm_schema.archetype_parent_class then
+					visualise_descendants_class := ed_context.rm_schema.archetype_parent_class
+				elseif attached ed_context.rm_schema.archetype_visualise_descendants_of then
+					visualise_descendants_class := ed_context.rm_schema.archetype_visualise_descendants_of
+				end
+				if attached visualise_descendants_class as vdc and then ed_context.rm_schema.is_descendant_of (arch_node.rm_type_name, vdc) then
+					gr.expand_actions.force_extend (agent (evx_grid.ev_grid).expand_tree (gr,
+						agent (a_row: EV_GRID_ROW): BOOLEAN
+							do
+								if attached {ARCHETYPE_CONSTRAINT_ED_CONTEXT} a_row.data as ac_ed_ctxt then
+									Result := attached ac_ed_ctxt.arch_node
+								end
+							end
+						)
+					)
+				end
+			else
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour, rm_type_pixmap (rm_type, ed_context.rm_schema.rm_publisher.as_lower))
+			end
+			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+
+			-- add context menu
+			build_context_menu
+			evx_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent context_menu_event_handler)
+		end
+
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
+		local
+			s: STRING
+			lpos: INTEGER
+		do
+			precursor (ui_settings)
+
+			if attached arch_node as a_n then
+				-- RM name & meaning columns
+				if a_n.is_addressable then
+					if display_settings.show_technical_view then
+						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
+						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
+			 		else
+						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
+						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+					end
+				else
+					if display_settings.show_technical_view then
+						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
+						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+					else -- in non-technical view, display a friendly type name; for openEHR data types, remove the "DV_"
+						create s.make_empty
+						s.append_character ('[')
+						-- FIXME: openEHR specific "DV_" leader processing
+						lpos := 1
+						if a_n.rm_type_name.starts_with (openehr_dv_type_name_leader) then
+							lpos := lpos + openehr_dv_type_name_leader.count
+						end
+						s.append_character (a_n.rm_type_name.item (lpos))
+						s.append (a_n.rm_type_name.substring (lpos+1, a_n.rm_type_name.count).as_lower)
+						s.append_character (']')
+						s.to_lower
+						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
+					end
+				end
+
+				-- card/occ column
+				create s.make_empty
+				if attached a_n.occurrences then
+					if not a_n.occurrences.is_prohibited then
+						s.append (a_n.occurrences_as_string)
+					else
+						s.append (get_text (ec_occurrences_removed_text))
+					end
+				end
+				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour, Void)
+
+				-- constraint column
+				if attached {C_DEFINED_OBJECT} a_n as c_do and then c_do.any_allowed then
+					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+				end
+
+				-- sibling order column
+				if ed_context.in_differential_view then
+					if a_n.is_addressable and then attached a_n.sibling_order then
+						create s.make_empty
+						if a_n.sibling_order.is_after then
+							s.append ("after")
+						else
+							s.append ("before")
+						end
+						s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
+						evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, c_constraint_colour, Void)
+					end
+				end
+			end
+		end
+
+feature -- Modification
+
+	do_remove
+			-- remove this node from its parent
+			-- with UNDO/REDO
+		do
+			parent.remove_child (Current)
+			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+				agent parent.add_child (Current),
+				agent parent.remove_child (Current))
+		end
+
+	do_convert_to_constraint (an_rm_type, a_co_type, occ_str: STRING)
+			-- convert this RM node to a constraint node under its attribute node. We do this
+			-- by removing the current node then doing a new node add; this is consistent with
+			-- when an 'add new node' request is done on an attribute node, which always requires an 'add'
+			-- The steps here are:
+			-- 	* convert parent attr context node to constraint form
+			-- 	* remove this RM object node from parent
+			--	* create and add a new archetype node & object context node to parent
+			-- with UNDO/REDO
+		require
+			is_rm
+		local
+			rm_type_spec: BMM_CLASS_DEFINITION
+			added_child: C_OBJECT_ED_CONTEXT
+			occ: MULTIPLICITY_INTERVAL
+		do
+			create occ.make_from_string (occ_str)
+			parent.remove_child (Current)
+			if parent.is_rm then
+				parent.convert_to_constraint
+			end
+			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
+			if a_co_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) or a_co_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
+				parent.add_new_arch_child (rm_type_spec, occ)
+			elseif a_co_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
+--				parent.add_ext_ref_node (rm_type_spec, occ, an_arch_id)
+			elseif a_co_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
+--				parent.add_slot_node (rm_type_spec, occ)
+			elseif a_co_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
+--				parent.add_constraint_ref_node (rm_type_spec, occ)
+			end
+
+			added_child := parent.children.last
+
+			-- set up undo / redo
+			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
+						-- undo
+					do
+						parent.remove_child (an_added_child)
+						if not parent.has_constraint_children then
+							parent.convert_to_rm
+						end
+						parent.add_child (an_orig_child)
+					end (Current, added_child),
+				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
+						-- redo
+					do
+						parent.remove_child (an_orig_child)
+						if parent.is_rm then
+							parent.convert_to_constraint
+						end
+						parent.add_child (an_added_child)
+					end (Current, added_child)
+			)
+		ensure
+			Current_removed_from_parent: not parent.has_child (Current)
+		end
+
+feature {NONE} -- Implementation
+
+	node_id_text: STRING
+			-- show node_id text either as just rubric, or as node_id|rubric|, depending on `show_codes' setting
+		require
+			attached arch_node as a_n and then a_n.is_addressable
+		do
+			if attached arch_node as a_n then
+				if is_valid_code (a_n.node_id) then
+					if display_settings.show_codes then
+						Result := a_n.node_id + "|" + ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text + "|"
+					else
+						Result := ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text
+					end
+				else
+					Result := a_n.node_id
+				end
+			else
+				create Result.make_empty
+			end
+		end
+
+	rm_type_text: STRING
+		do
+			Result := rm_type.semantic_class.name
+		end
+
+	c_object_colour: EV_COLOR
+			-- generate a foreground colour for RM type representing inheritance status
+		do
+			if attached arch_node as a_n and then (display_settings.show_rm_inheritance and c_object_colours.has (a_n.specialisation_status)) then
+				check attached c_object_colours.item (a_n.specialisation_status) as obj_col then
+					Result := obj_col
+				end
+			else
+				Result := archetype_rm_type_color
+			end
+		end
+
+	c_pixmap: EV_PIXMAP
+			-- find a pixmap for any C_OBJECT node
+		local
+			pixmap_name, c_type_occ_str: STRING
+		do
+			if attached arch_node as a_n then
+				pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
+				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
+					Result := get_icon_pixmap (pixmap_name)
+				else
+					c_type_occ_str := a_n.generating_type + a_n.occurrences_key_string
+					if has_icon_pixmap (c_type_occ_str) then
+						Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + c_type_occ_str)
+					else
+						Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + a_n.generating_type)
+					end
+				end
+			else
+				create Result.default_create
+			end
+		end
+
+feature {NONE} -- Context menu
+
+	context_menu_event_handler (x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		do
+			if button = {EV_POINTER_CONSTANTS}.right then
+				ev_grid_row.item (1).enable_select
+				context_menu.show
+			end
+		end
+
+	context_menu: detachable EV_MENU
+
+	build_context_menu
+			-- create context menu
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			create context_menu
+			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.semantic_class))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
+			context_menu.extend (an_mi)
+
+			if attached arch_node as a_n then
+				-- if this node is addressable, add menu item to show node_id in ontology
+				if a_n.is_addressable then
+					create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code),
+						agent (node_id_str: STRING)
+							do
+								tool_agents.code_select_action_agent.call ([node_id_str])
+							end (a_n.node_id)
+					)
+					context_menu.extend (an_mi)
+				end
+			end
+
+			if not ed_context.editing_enabled then
+				-- add menu item for displaying path in path map
+				if attached arch_node as a_n and attached tool_agents.path_select_action_agent then
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_display_path),
+						agent (path_str: STRING)
+							do
+								tool_agents.path_select_action_agent.call ([path_str])
+							end (a_n.path)
+					)
+					context_menu.extend (an_mi)
+				end
+			else
+				if attached arch_node as a_n then
+					if not a_n.is_root then
+						-- add menu item for deleting this node
+						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent do_remove)
+						context_menu.extend (an_mi)
+					end
+				elseif not is_root and then not parent.parent.is_rm and parent.is_rm then
+					-- add menu item for 'convert to constraint'
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
+					context_menu.extend (an_mi)
+				end
+			end
+		end
+
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
+		end
+
+	ui_offer_convert_to_constraint
+			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
+		local
+			dialog: INITIAL_C_OBJECT_DIALOG
+			def_occ: MULTIPLICITY_INTERVAL
+			rm_type_substitutions: ARRAYED_SET [STRING]
+		do
+			rm_type_substitutions := rm_type.semantic_class.type_substitutions
+			rm_type_substitutions.extend (rm_type.semantic_class.name)
+			if attached {BMM_CONTAINER_PROPERTY} parent.rm_property as bmm_cont_prop and then attached bmm_cont_prop.cardinality as card then
+				def_occ := card
+			else
+				def_occ := parent.rm_property.existence
+			end
+			create dialog.make (c_type_substitutions, rm_type_substitutions, arch_node_type, rm_type.semantic_class.name, def_occ, ed_context, display_settings)
+			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
+			if dialog.is_valid then
+				do_convert_to_constraint (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
+			end
+		end
+
+	c_type_substitutions: ARRAYED_SET [STRING]
+			-- list of possible C_OBJECT concrete descendants that can be used here
+		local
+			c_dv_type_name: STRING
+		do
+			create Result.make (0)
+			Result.compare_objects
+			if rm_type.semantic_class.is_primitive_type then
+				Result.extend (bare_type_name(({C_PRIMITIVE_OBJECT}).name))
+			elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (rm_type.root_class) then
+				c_dv_type_name := "C_" + rm_type.root_class
+				if c_object_constraint_types.has (c_dv_type_name) then
+					Result.extend (c_dv_type_name)
+					if c_dv_type_name.is_equal (bare_type_name(({C_CODE_PHRASE}).name)) then
+						Result.extend (bare_type_name(({CONSTRAINT_REF}).name))
+					end
+				else
+					Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
+					if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
+						Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
+					end
+				end
+			else
+				Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
+				Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
+				if not current_arch_cat.matching_ids (".*", rm_type.root_class, Void).is_empty then
+					Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
+				end
+				if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
+					Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
+				end
+			end
+		end
+
+invariant
+	Child_relationship_validity: attached arch_node as a_n implies (attached parent as p implies (p.arch_node.has_child (a_n)))
+
+end
+
+

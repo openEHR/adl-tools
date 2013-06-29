@@ -64,7 +64,7 @@ feature -- Visitor
 			if a_node.is_root then
 				root_node := ed_node
 			else
-				attr_node_stack.item.put_child_context (ed_node)
+				attr_node_stack.item.pre_attach_child_context (ed_node)
 			end
 		end
 
@@ -80,7 +80,7 @@ feature -- Visitor
 			ed_node: ARCHETYPE_SLOT_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -120,7 +120,7 @@ feature -- Visitor
 			ed_context_stack.extend (new_ed_context)
 			create ed_node.make (a_node, ed_context)
 			obj_node_stack.extend (ed_node)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
@@ -136,7 +136,7 @@ feature -- Visitor
 			ed_node: ARCHETYPE_INTERNAL_REF_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
@@ -145,7 +145,7 @@ feature -- Visitor
 			ed_node: CONSTRAINT_REF_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -154,7 +154,7 @@ feature -- Visitor
 			ed_node: C_PRIMITIVE_OBJECT_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
@@ -168,7 +168,7 @@ feature -- Visitor
 			ed_node: C_CODE_PHRASE_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
@@ -177,7 +177,7 @@ feature -- Visitor
 			ed_node: C_DV_ORDINAL_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
@@ -186,7 +186,7 @@ feature -- Visitor
 			ed_node: C_DV_QUANTITY_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.put_child_context (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
 feature {NONE} -- Implementation

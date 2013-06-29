@@ -691,9 +691,9 @@ feature -- Modification
 			invariants := an_assertion_list
 		end
 
-	set_ontology (a_node: attached like ontology)
+	set_ontology (an_ont: attached like ontology)
 		do
-			ontology := a_node
+			ontology := an_ont
 		end
 
 	add_invariant (an_inv: ASSERTION)

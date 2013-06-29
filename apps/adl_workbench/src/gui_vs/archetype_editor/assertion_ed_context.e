@@ -30,13 +30,15 @@ feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
-			gui_grid := a_gui_grid
+			evx_grid := a_gui_grid
 
 			-- create a new row
-			gui_grid.add_row (arch_node)
-			gui_grid_row := gui_grid.last_row
+			evx_grid.add_row (arch_node)
+			check attached evx_grid.last_row as lr then
+				ev_grid_row := lr
+			end
 
-			expression_context.prepare_display_in_grid (gui_grid)
+			expression_context.prepare_display_in_grid (evx_grid)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -47,12 +49,14 @@ feature -- Display
 			expression_context.display_in_grid (ui_settings)
 
 			create s.make_empty
-			if attached arch_node.tag then
-				s.append (arch_node.tag)
+			if attached arch_node.tag as a_n_tag then
+				s.append (a_n_tag)
 			end
-			gui_grid.set_last_row (gui_grid_row)
-			gui_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, c_meaning_colour, c_pixmap)
-			gui_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, c_meaning_colour, Void)
+			check attached ev_grid_row as gr then
+				evx_grid.set_last_row (gr)
+			end
+			evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, c_meaning_colour, c_pixmap)
+			evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, c_meaning_colour, Void)
 		end
 
 feature -- Modification

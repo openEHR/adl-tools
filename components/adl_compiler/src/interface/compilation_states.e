@@ -14,7 +14,7 @@ feature -- Definitions
 	Cs_unread: INTEGER = 0
 	Cs_lineage_known: INTEGER = 10
 	Cs_ready_to_parse: INTEGER = 20
-	cs_ready_to_parse_legacy: INTEGER = 21
+	Cs_ready_to_parse_legacy: INTEGER = 21
 	Cs_parsed: INTEGER = 22
 	Cs_suppliers_known: INTEGER = 30
 	Cs_ready_to_validate: INTEGER = 40
@@ -37,8 +37,9 @@ feature -- Access
 			create Result.make(0)
 			Result.put("Unread", Cs_unread)
 			Result.put("Lineage known", Cs_lineage_known)
-			Result.put("Ready to parse (legacy .adl archetype)", cs_ready_to_parse_legacy)
 			Result.put("Ready to parse", Cs_ready_to_parse)
+			Result.put("Ready to parse (legacy .adl archetype)", cs_ready_to_parse_legacy)
+			Result.put("Parsed", Cs_parsed)
 			Result.put("Suppliers known", Cs_suppliers_known)
 			Result.put("Ready to validate", Cs_ready_to_validate)
 			Result.put("Validated phase 1", Cs_validated_phase_1)

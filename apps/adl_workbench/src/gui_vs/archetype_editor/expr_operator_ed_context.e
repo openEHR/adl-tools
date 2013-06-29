@@ -23,7 +23,11 @@ feature {NONE} -- Implementation
 
 	c_pixmap: EV_PIXMAP
 		do
-			Result := get_icon_pixmap (Pixmap_path + "operators" + resource_path_separator + arch_node.operator.as_text_symbol)
+			if attached arch_node as a_n then
+				Result := get_icon_pixmap (Pixmap_path + "operators" + resource_path_separator + a_n.operator.as_text_symbol)
+			else
+				create Result.default_create
+			end
 		end
 
 end

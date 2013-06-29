@@ -75,16 +75,8 @@ feature -- Initialisation
 			arch_node := an_arch_node
 			create display_settings.make_default
 		ensure
-			not is_rm
-		end
-
-	make_rm (an_rm_element: like rm_element; an_ed_context: ARCH_ED_CONTEXT_STATE)
-		do
-			ed_context := an_ed_context
-			rm_element := an_rm_element
-			create display_settings.make_default
-		ensure
-			is_rm
+			Is_constraint: not is_rm
+			Not_in_grid: not is_prepared
 		end
 
 feature -- Access
@@ -92,22 +84,20 @@ feature -- Access
 	ed_context: ARCH_ED_CONTEXT_STATE
 			-- assembled context information for display / editing
 
-	rm_element: BMM_MODEL_ELEMENT
-
 	arch_node: detachable ANY
 			-- archetype node being edited in this context
 
-	gui_grid: detachable EVX_GRID
+	evx_grid: detachable EVX_GRID
 			-- note: stable once attached
 		note
-			option: STABLE
+			option: stable
 		attribute
 		end
 
-	gui_grid_row: detachable EV_GRID_ROW
+	ev_grid_row: detachable EV_GRID_ROW
 			-- note: stable once attached
 		note
-			option: STABLE
+			option: stable
 		attribute
 		end
 
@@ -118,7 +108,7 @@ feature -- Status Report
 	is_shown_in_grid: BOOLEAN
 			-- True if this node is included in the grid tree; False if it is there but hidden
 		do
-			Result := gui_grid_row.is_show_requested
+			Result := ev_grid_row.is_show_requested
 		end
 
 	is_rm: BOOLEAN
@@ -129,7 +119,7 @@ feature -- Status Report
 
 	is_prepared: BOOLEAN
 		do
-			Result := attached gui_grid and attached gui_grid_row
+			Result := attached evx_grid and attached ev_grid_row
 		end
 
 	is_displayed: BOOLEAN
@@ -148,7 +138,9 @@ feature -- Display
 			is_prepared
 		do
 			display_settings := ui_settings
-			gui_grid.set_last_row (gui_grid_row)
+			check attached ev_grid_row as gr then
+				evx_grid.set_last_row (gr)
+			end
 			is_displayed := True
 		ensure
 			has_been_displayed: is_displayed
@@ -156,7 +148,7 @@ feature -- Display
 
 	hide_in_grid
 		do
-			gui_grid_row.hide
+			ev_grid_row.hide
 		ensure
 			not is_shown_in_grid
 		end
@@ -169,8 +161,10 @@ feature -- Display
 --			end
 
 			-- the following opens out a row and its children
-			gui_grid.ev_grid.ensure_visible (gui_grid_row)
-			gui_grid_row.show
+			check attached ev_grid_row as gr then
+				evx_grid.ev_grid.ensure_visible (gr)
+				gr.show
+			end
 		ensure
 			is_shown_in_grid
 		end

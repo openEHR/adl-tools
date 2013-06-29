@@ -55,6 +55,20 @@ feature -- Access
 			end
 		end
 
+feature -- Status Report
+
+	context_property_not_in_archetype (a_property_context: C_ATTRIBUTE_ED_CONTEXT): BOOLEAN
+			-- true if `a_property_context' arch_node is under current node's arch_node
+		do
+			Result := attached arch_node as a_n and then attached a_property_context.arch_node as prop_a_n and then not a_n.has_attribute (prop_a_n.rm_attribute_name)
+		end
+
+	context_property_in_archetype (a_property_context: C_ATTRIBUTE_ED_CONTEXT): BOOLEAN
+			-- true if `a_property_context' arch_node is not under current node's arch_node
+		do
+			Result := attached arch_node as a_n and then attached a_property_context.arch_node as prop_a_n and then a_n.has_attribute (prop_a_n.rm_attribute_name)
+		end
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -64,12 +78,12 @@ feature -- Display
 
 			-- set up child property nodes in grid
 			across c_attributes as attr_csr loop
-				attr_csr.item.prepare_display_in_grid (gui_grid)
+				attr_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 
 			-- set up child property rm nodes in grid
 			across rm_attributes as attr_csr loop
-				attr_csr.item.prepare_display_in_grid (gui_grid)
+				attr_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 		end
 
@@ -91,26 +105,53 @@ feature -- Modification
 	put_c_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
 		require
-			not a_node.is_rm and not c_attributes.has (a_node.arch_node.rm_attribute_path)
+			attached a_node.arch_node as child_a_n and then not c_attributes.has (child_a_n.rm_attribute_path)
 		do
-			c_attributes.put (a_node, a_node.arch_node.rm_attribute_path)
-			a_node.set_parent (Current)
+			if attached a_node.arch_node as child_a_n then
+				c_attributes.put (a_node, child_a_n.rm_attribute_path)
+				a_node.set_parent (Current)
+			end
 		end
 
-	convert_rm_property_to_constraint (a_child_node: C_ATTRIBUTE_ED_CONTEXT)
-			-- move RM property `a_child_node' to `c_attributes'
+feature {C_ATTRIBUTE_ED_CONTEXT} -- Modification
+
+	convert_rm_property_to_constraint (a_property_context: C_ATTRIBUTE_ED_CONTEXT)
+			-- move RM property `a_property_context' to `c_attributes'
+			-- and add its archetype node as a child attribute of the current archetype node
 		require
-			Valid_child: rm_attributes.has (a_child_node.rm_property.name) and not a_child_node.is_rm
-			C_attributes_valid: not c_attributes.has (a_child_node.rm_property.name)
-			Not_already_in_archetype: not arch_node.has_attribute (a_child_node.arch_node.rm_attribute_name)
+			Context_is_constraint: not a_property_context.is_rm
+			Rm_attributes_validity: rm_attributes.has (a_property_context.rm_property.name)
+			C_attributes_valid: not c_attributes.has (a_property_context.rm_property.name)
+			Not_already_in_archetype: context_property_not_in_archetype (a_property_context)
 		do
-			c_attributes.force (a_child_node, a_child_node.rm_property.name)
-			rm_attributes.remove (a_child_node.rm_property.name)
-			arch_node.put_attribute (a_child_node.arch_node)
+			c_attributes.force (a_property_context, a_property_context.rm_property.name)
+			rm_attributes.remove (a_property_context.rm_property.name)
+			check attached arch_node as a_n and attached a_property_context.arch_node as prop_a_n then
+				a_n.put_attribute (prop_a_n)
+			end
 		ensure
-			Moved_to_c_attributes: c_attributes.item (a_child_node.rm_property.name) = a_child_node
-			Removed_from_rm_properties: not rm_attributes.has (a_child_node.rm_property.name)
-			Added_to_archetpe: arch_node.has_attribute (a_child_node.arch_node.rm_attribute_name)
+			Moved_to_c_attributes: c_attributes.item (a_property_context.rm_property.name) = a_property_context
+			Removed_from_rm_properties: not rm_attributes.has (a_property_context.rm_property.name)
+			Added_to_archetpe: context_property_in_archetype (a_property_context)
+		end
+
+	convert_constraint_to_rm_property (a_property_context: C_ATTRIBUTE_ED_CONTEXT)
+			-- move constraint property `a_property_context' to `rm_attributes'
+		require
+			Context_is_constraint: not a_property_context.is_rm
+			Rm_attributes_validity: not rm_attributes.has (a_property_context.rm_property.name)
+			C_attributes_validity: c_attributes.has (a_property_context.rm_property.name)
+			Exists_in_archetype: context_property_in_archetype (a_property_context)
+		do
+			rm_attributes.force (a_property_context, a_property_context.rm_property.name)
+			c_attributes.remove (a_property_context.rm_property.name)
+			check attached arch_node as a_n and attached a_property_context.arch_node as prop_a_n then
+				a_n.remove_attribute (prop_a_n)
+			end
+		ensure
+			Moved_to_rm_attributes: rm_attributes.item (a_property_context.rm_property.name) = a_property_context
+			Removed_from_c_attributes: not c_attributes.has (a_property_context.rm_property.name)
+			Removed_from_archetpe: context_property_not_in_archetype (a_property_context)
 		end
 
 feature {NONE} -- Implementation
@@ -127,15 +168,15 @@ feature {NONE} -- Implementation
 	expand_to_rm (ui_settings: GUI_DEFINITION_SETTINGS)
 			--  (if this is an RM node) or else go do the work
 		do
-			if is_rm and gui_grid_row.subrow_count = 0 then
+			if is_rm and ev_grid_row.subrow_count = 0 then
 				-- if there are any candidate properties to be displayed given the current UI settings,
 				-- then set an expand-actions event; if not, get rid of any previously set event
 				if can_show_rm_properties then
-					gui_grid_row.expand_actions.force_extend (agent process_rm_properties (ui_settings))
-					gui_grid_row.ensure_expandable
+					ev_grid_row.expand_actions.force_extend (agent process_rm_properties (ui_settings))
+					ev_grid_row.ensure_expandable
 				else
-					gui_grid_row.expand_actions.wipe_out
-					gui_grid_row.ensure_non_expandable
+					ev_grid_row.expand_actions.wipe_out
+					ev_grid_row.ensure_non_expandable
 				end
 			else
 				process_rm_properties (ui_settings)
@@ -146,9 +187,9 @@ feature {NONE} -- Implementation
 		do
 			-- if we entered here due to lazy load event, get rid of the lazy load
 			-- for previously expanded RM nodes, remove lazy-expand event
-			if is_rm and gui_grid_row.subrow_count = 0 then
-				gui_grid_row.expand_actions.wipe_out
-				gui_grid_row.ensure_non_expandable
+			if is_rm and ev_grid_row.subrow_count = 0 then
+				ev_grid_row.expand_actions.wipe_out
+				ev_grid_row.ensure_non_expandable
 			end
 
 			-- process the properties, which may involve simply hiding ones that are currently visible
@@ -179,7 +220,12 @@ feature {NONE} -- Implementation
 			-- enter a BMM_PROPERTY_DEFINITION
 		local
 			c_attr_ed_node: C_ATTRIBUTE_ED_CONTEXT
+			att_gui_grid: EVX_GRID
 		do
+			check attached evx_grid as gg then
+				att_gui_grid := gg
+			end
+
 			-- see if this property should be shown; if not, leave it for now
 			if can_show_rm_property (an_rm_prop) then
 				-- see if the property was created previously; if not create it new
@@ -189,12 +235,14 @@ feature {NONE} -- Implementation
 					put_rm_attribute (c_attr_ed_node)
 
 					-- once-only prepare step
-					c_attr_ed_node.prepare_display_in_grid (gui_grid)
+					c_attr_ed_node.prepare_display_in_grid (att_gui_grid)
 
 					-- first-time display step
 					c_attr_ed_node.display_in_grid (ui_settings)
 				else
-					c_attr_ed_node := rm_attributes.item (an_rm_prop.name)
+					check attached rm_attributes.item (an_rm_prop.name) as rm_attr then
+						c_attr_ed_node := rm_attr
+					end
 				end
 
 				-- display it (even if it has already been displayed, and can't change,

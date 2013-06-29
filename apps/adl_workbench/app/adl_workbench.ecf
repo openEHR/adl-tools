@@ -85,11 +85,13 @@
 			</option>
 		</cluster>
 		<cluster name="adl_messages" location="..\..\resources\messages\compiled\">
-			<option void_safety="initialization"> </option>
+			<option void_safety="initialization">
+			</option>
 		</cluster>
 		<cluster name="adl_parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="adl_test" location="..\..\..\libraries\test\" recursive="true">
-			<option void_safety="initialization"> </option>
+			<option void_safety="initialization">
+			</option>
 		</cluster>
 		<cluster name="app" location="..\src\env\" recursive="true">
 			<option void_safety="initialization">
@@ -98,12 +100,12 @@
 		</cluster>
 		<cluster name="app_gui" location="..\src\gui\" recursive="true">
 			<option void_safety="none">
-				<assertions precondition="true"/>
+				<assertions precondition="true" postcondition="true"/>
 			</option>
 		</cluster>
 		<cluster name="app_gui_vs" location="..\src\gui_vs\" recursive="true">
 			<option void_safety="initialization">
-				<assertions precondition="true"/>
+				<assertions precondition="true" postcondition="true"/>
 			</option>
 		</cluster>
 		<cluster name="app_icons" location="..\..\resources\icons\compiled\">

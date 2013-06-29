@@ -1215,7 +1215,7 @@ feature -- Archetype editors
 		end
 
 	refresh_archetype_viewers (an_archetype_id: STRING)
-			-- refresh all viewers of archetype with `an_archetype_id'
+			-- repopulate all viewers of archetype with `an_archetype_id'
 		do
 			archetype_viewers.do_all_tools (
 				agent (a_tool: GUI_ARCHETYPE_VIEWER; an_id: STRING)

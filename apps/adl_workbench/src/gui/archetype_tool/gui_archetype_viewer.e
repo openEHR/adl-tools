@@ -185,9 +185,9 @@ feature {NONE} -- Implementation
 
 	attach_gui_context
 		do
-			if not source.has_gui_context then
+	--		if not source.has_gui_context then
 				source.set_gui_context (create {ARCH_CAT_ARCHETYPE_EDITOR_STATE}.make (source))
-			end
+	--		end
 		end
 
 	path_map_control: GUI_PATH_MAP_CONTROL

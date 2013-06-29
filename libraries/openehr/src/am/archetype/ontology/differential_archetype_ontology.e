@@ -54,12 +54,10 @@ feature -- Initialisation
 			term_definitions := a_flat_copy.term_definitions
 			constraint_definitions := a_flat_copy.constraint_definitions
 
-			term_codes := a_flat_copy.term_codes
-			constraint_codes := a_flat_copy.constraint_codes
-
 			term_bindings := a_flat_copy.term_bindings
 			constraint_bindings := a_flat_copy.constraint_bindings
-			highest_refined_code_index := a_flat_copy.highest_refined_code_index
+
+			sync_stored_properties
 		end
 
 feature -- Modification

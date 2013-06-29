@@ -133,12 +133,20 @@ feature -- Commands
 		end
 
 	repopulate
-			-- repopulate current tree items if needed
+			-- repopulate from current data source and with current settings and display
 		require
 			can_repopulate: can_repopulate
 		do
 			do_populate
 			create last_populate_timestamp.make_now
+		end
+
+	redisplay
+			-- redisplay current view, with changed display settings
+		require
+			can_repopulate: can_repopulate
+		do
+			do_display
 		end
 
 	try_repopulate
@@ -211,8 +219,13 @@ feature {GUI_TOOL} -- Implementation
 		end
 
 	do_populate
-			-- populate visual controls
+			-- populate visual controls from data source
 		deferred
+		end
+
+	do_display
+			-- refresh visual controls
+		do
 		end
 
 	ultimate_parent_tool: GUI_TOOL

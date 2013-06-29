@@ -1020,37 +1020,8 @@ feature {ARCHETYPE_ONTOLOGY} -- Modification
 			end
 		end
 
-feature {P_ARCHETYPE_ONTOLOGY} -- Implementation
-
-	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
-		do
-			term_definitions := a_term_defs
-		end
-
-	set_constraint_definitions (a_constraint_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
-		do
-			constraint_definitions := a_constraint_defs
-		end
-
-	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [TERMINOLOGY_CODE, STRING], STRING])
-		do
-			term_bindings := a_term_bindings
-		end
-
-	set_constraint_bindings (a_constraint_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING])
-		do
-			constraint_bindings := a_constraint_bindings
-		end
-
-	set_terminology_extracts (a_term_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
-		do
-			terminology_extracts := a_term_extracts
-		end
-
-feature -- Finalisation
-
-	finalise_dt
-			-- finalisation routine to guarantee validity on creation
+	sync_stored_properties
+			-- update various stored properties to correspond to primary stored properties
 		local
 			code: STRING
 		do
@@ -1083,6 +1054,41 @@ feature -- Finalisation
 					end
 				end
 			end
+		end
+
+feature {P_ARCHETYPE_ONTOLOGY} -- Implementation
+
+	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			term_definitions := a_term_defs
+		end
+
+	set_constraint_definitions (a_constraint_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			constraint_definitions := a_constraint_defs
+		end
+
+	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [TERMINOLOGY_CODE, STRING], STRING])
+		do
+			term_bindings := a_term_bindings
+		end
+
+	set_constraint_bindings (a_constraint_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING])
+		do
+			constraint_bindings := a_constraint_bindings
+		end
+
+	set_terminology_extracts (a_term_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			terminology_extracts := a_term_extracts
+		end
+
+feature -- Finalisation
+
+	finalise_dt
+			-- finalisation routine to guarantee validity on creation
+		do
+			sync_stored_properties
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

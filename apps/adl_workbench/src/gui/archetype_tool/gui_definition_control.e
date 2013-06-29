@@ -12,7 +12,7 @@ class GUI_DEFINITION_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, can_populate, can_repopulate, repopulate, disable_edit, enable_edit
+			can_edit, can_populate, can_repopulate, do_display, disable_edit, enable_edit
 		end
 
 create
@@ -248,37 +248,6 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_editable end)
 		end
 
-	repopulate
-			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
-		local
-			ui_settings: GUI_DEFINITION_SETTINGS
-		do
-			-- populate peripheral controls
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
-
-			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
-			gui_definition_grid.ev_grid.lock_update
-
-			create ui_settings.make (selected_language, show_codes, show_rm_inheritance, show_technical_view,
-				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
-
-			-- repopulate main definition
-			source_ed_context.definition_context.display_in_grid (ui_settings)
-
-			gui_definition_grid.resize_columns_to_content
-			gui_definition_grid.ev_grid.unlock_update
-
-			-- repopulate rules grid, where applicable
-			if source_archetype.has_invariants then
-				gui_rules_grid.ev_grid.lock_update
-				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
-					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
-				end
-				gui_rules_grid.resize_columns_to_content
-				gui_rules_grid.ev_grid.unlock_update
-			end
-		end
-
 feature {NONE} -- Events
 
 	update_show_technical_view (a_flag: BOOLEAN)
@@ -291,7 +260,7 @@ feature {NONE} -- Events
 			end
 
 			if attached source then
-				repopulate
+				redisplay
 			end
 		end
 
@@ -299,7 +268,7 @@ feature {NONE} -- Events
 		do
 			show_codes := a_flag
 			if attached source then
-				repopulate
+				redisplay
 			end
 		end
 
@@ -327,7 +296,7 @@ feature {NONE} -- Events
 			end
 
 			if attached source then
-				do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+				do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
 			end
 		end
 
@@ -343,7 +312,7 @@ feature {NONE} -- Events
 						local_show_rm_infrastructure_properties := False
 					end
 					if attached source then
-						do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+						do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
 					end
 				end
 			else
@@ -355,7 +324,7 @@ feature {NONE} -- Events
 						set_global_show_rm_infrastructure_properties (False)
 					end
 					if attached source then
-						do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+						do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
 					end
 				end
 			end
@@ -369,14 +338,14 @@ feature {NONE} -- Events
 				if a_flag and not local_show_rm_runtime_properties then
 					rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
 				elseif attached source then
-					do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+					do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
 				end
 			else
 				set_global_show_rm_infrastructure_properties (a_flag)
 				if a_flag and not global_show_rm_runtime_properties then
 					rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
 				elseif attached source then
-					do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
+					do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
 				end
 			end
 		end
@@ -385,7 +354,7 @@ feature {NONE} -- Events
 		do
 			show_rm_inheritance := a_flag
 			if attached source then
-				repopulate
+				redisplay
 			end
 		end
 
@@ -439,6 +408,9 @@ feature {NONE} -- Implementation
 		local
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
+			gui_definition_grid.wipe_out
+			gui_rules_grid.wipe_out
+
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
 			-- tree expanding stops)
 			rm_schema := source.rm_schema
@@ -506,6 +478,37 @@ feature {NONE} -- Implementation
 			end
 			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position -
 				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.visible_row_count))
+		end
+
+	do_display
+			-- refresh visual appearance if diff/flat view has changed or RM icons setting changed
+		local
+			ui_settings: GUI_DEFINITION_SETTINGS
+		do
+			-- populate peripheral controls
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
+
+			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
+			gui_definition_grid.ev_grid.lock_update
+
+			create ui_settings.make (selected_language, show_codes, show_rm_inheritance, show_technical_view,
+				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
+
+			-- repopulate main definition
+			source_ed_context.definition_context.display_in_grid (ui_settings)
+
+			gui_definition_grid.resize_columns_to_content
+			gui_definition_grid.ev_grid.unlock_update
+
+			-- repopulate rules grid, where applicable
+			if source_archetype.has_invariants then
+				gui_rules_grid.ev_grid.lock_update
+				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
+				end
+				gui_rules_grid.resize_columns_to_content
+				gui_rules_grid.ev_grid.unlock_update
+			end
 		end
 
 end
