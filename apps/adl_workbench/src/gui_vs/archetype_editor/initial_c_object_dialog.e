@@ -37,7 +37,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_constraint_types, an_rm_types: ARRAYED_LIST [STRING]; a_current_constraint_type, a_current_rm_type: STRING;
-			an_occurrences_default: MULTIPLICITY_INTERVAL; an_ed_context: ARCH_ED_CONTEXT_STATE; a_display_settings: GUI_DEFINITION_SETTINGS)
+			an_occurrences_default: MULTIPLICITY_INTERVAL; an_archetype: ARCHETYPE; a_display_settings: GUI_DEFINITION_SETTINGS)
 			-- Make with RM types, constraint type selection and an occurrences constrainer that is used to determine
 			-- the possible occurrences in this case
 		require
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 			initial_constraint_type := current_constraint_type.twin
 			occurrences_default := an_occurrences_default
 			current_occurrences := occurrences_default.as_string
-			ed_context := an_ed_context
+			archetype := an_archetype
 			display_settings := a_display_settings
 			default_create
 		end
@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 			)
 		end
 
-	ed_context: ARCH_ED_CONTEXT_STATE
+	archetype: ARCHETYPE
 
 	display_settings: GUI_DEFINITION_SETTINGS
 
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 
 	arch_path_list: ARRAYED_LIST [STRING]
 		do
-			Result := ed_context.archetype.matching_logical_paths (display_settings.language, current_rm_type)
+			Result := archetype.matching_logical_paths (display_settings.language, current_rm_type)
 		end
 
 	-- archetype: ARCHETYPE

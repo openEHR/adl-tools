@@ -17,11 +17,6 @@ inherit
 			make, rm_type, arch_node, parent, prepare_display_in_grid, display_in_grid
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
-		export
-			{NONE} all
-		end
-
 feature -- Definition
 
 	c_object_colours: HASH_TABLE [EV_COLOR, INTEGER]
@@ -212,16 +207,7 @@ feature -- Modification
 				parent.convert_to_constraint
 			end
 			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
-			if a_co_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) or a_co_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
-				parent.add_new_arch_child (rm_type_spec, occ)
-			elseif a_co_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
---				parent.add_ext_ref_node (rm_type_spec, occ, an_arch_id)
-			elseif a_co_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
---				parent.add_slot_node (rm_type_spec, occ)
-			elseif a_co_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
---				parent.add_constraint_ref_node (rm_type_spec, occ)
-			end
-
+			parent.add_new_arch_child (rm_type_spec, a_co_type, occ)
 			added_child := parent.children.last
 
 			-- set up undo / redo
@@ -381,54 +367,15 @@ feature {NONE} -- Context menu
 			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
 		local
 			dialog: INITIAL_C_OBJECT_DIALOG
-			def_occ: MULTIPLICITY_INTERVAL
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
 			rm_type_substitutions := rm_type.semantic_class.type_substitutions
 			rm_type_substitutions.extend (rm_type.semantic_class.name)
-			if attached {BMM_CONTAINER_PROPERTY} parent.rm_property as bmm_cont_prop and then attached bmm_cont_prop.cardinality as card then
-				def_occ := card
-			else
-				def_occ := parent.rm_property.existence
-			end
-			create dialog.make (c_type_substitutions, rm_type_substitutions, arch_node_type, rm_type.semantic_class.name, def_occ, ed_context, display_settings)
+			create dialog.make (c_type_substitutions (rm_type), rm_type_substitutions, arch_node_type, rm_type.semantic_class.name,
+				parent.default_occurrences, ed_context.archetype, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then
 				do_convert_to_constraint (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
-			end
-		end
-
-	c_type_substitutions: ARRAYED_SET [STRING]
-			-- list of possible C_OBJECT concrete descendants that can be used here
-		local
-			c_dv_type_name: STRING
-		do
-			create Result.make (0)
-			Result.compare_objects
-			if rm_type.semantic_class.is_primitive_type then
-				Result.extend (bare_type_name(({C_PRIMITIVE_OBJECT}).name))
-			elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (rm_type.root_class) then
-				c_dv_type_name := "C_" + rm_type.root_class
-				if c_object_constraint_types.has (c_dv_type_name) then
-					Result.extend (c_dv_type_name)
-					if c_dv_type_name.is_equal (bare_type_name(({C_CODE_PHRASE}).name)) then
-						Result.extend (bare_type_name(({CONSTRAINT_REF}).name))
-					end
-				else
-					Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
-					if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
-						Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
-					end
-				end
-			else
-				Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
-				Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
-				if not current_arch_cat.matching_ids (".*", rm_type.root_class, Void).is_empty then
-					Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
-				end
-				if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
-					Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
-				end
 			end
 		end
 
