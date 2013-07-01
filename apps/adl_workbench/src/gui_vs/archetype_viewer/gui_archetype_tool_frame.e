@@ -125,11 +125,11 @@ feature -- Events
 				arch_tool.on_selected
 
 				-- update content if out of date in any way
-				if tool_out_of_date (arch_tool) and	arch_tool.can_populate (src) then
+				if tool_populate_required (arch_tool) and arch_tool.can_populate (src) then
 					arch_tool.populate (src, differential_view, selected_language)
 				elseif selected_language /= arch_tool.selected_language and arch_tool.can_repopulate then
 					arch_tool.repopulate_with_language (selected_language)
-				elseif tool_refresh_required (arch_tool) then
+				elseif tool_repopulate_required (arch_tool) and arch_tool.can_repopulate then
 					arch_tool.repopulate
 				end
 			end
@@ -289,22 +289,26 @@ feature {NONE} -- Implementation
 		do
 		end
 
-	tool_out_of_date (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
+	tool_populate_required (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
 			-- Return True if `an_arch_tool' should be populated from scratch
 		do
 			if attached source as src then
-				Result := src /= an_arch_tool.source or else													-- different archetype chosen
-					not an_arch_tool.is_populated or else											-- some tools are pre-populated
+				Result := src /= an_arch_tool.source or else				-- different archetype chosen
+					not an_arch_tool.is_populated							-- some tools are pre-populated
+			end
+		end
+
+	tool_repopulate_required (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
+			-- Return True if `an_arch_tool' should be refreshed with its current content
+		require
+			attached source and an_arch_tool.is_populated
+		do
+			if attached source as src then
+				Result :=
 					an_arch_tool.last_populate_timestamp < src.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
 					an_arch_tool.last_populate_timestamp < src.last_modify_timestamp or				-- source modified more recently than last populate
 					differential_view /= an_arch_tool.differential_view								-- user has changed from flat to diff view or v.v.
 			end
-		end
-
-	tool_refresh_required (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
-			-- Return True if `an_arch_tool' should be refreshed with its current content
-		do
-			Result := False
 		end
 
 end

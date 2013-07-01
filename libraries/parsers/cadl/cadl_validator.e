@@ -1240,7 +1240,7 @@ debug ("GEYACC")
 end
 
 			if (create {ARCHETYPE_ID}).valid_id(yyvs2.item (yyvsp2)) then
-				create yyval9.make(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+				create yyval9.make_external_ref(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 				if yyvs12.item (yyvsp12) /= Void then
 					yyval9.set_occurrences(yyvs12.item (yyvsp12))
 				end
@@ -1276,7 +1276,7 @@ debug ("GEYACC")
 end
 
 			if (create {ARCHETYPE_ID}).valid_id(yyvs2.item (yyvsp2)) then
-				create yyval9.make_with_slot_id(yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
+				create yyval9.make_slot_filler(yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
 				if yyvs12.item (yyvsp12) /= Void then
 					yyval9.set_occurrences(yyvs12.item (yyvsp12))
 				end

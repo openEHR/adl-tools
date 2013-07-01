@@ -348,7 +348,7 @@ c_object: c_complex_object
 c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences 
 		{
 			if (create {ARCHETYPE_ID}).valid_id($4) then
-				create $$.make($2, $4)
+				create $$.make_external_ref ($2, $4)
 				if $6 /= Void then
 					$$.set_occurrences($6)
 				end
@@ -357,7 +357,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
 			if (create {ARCHETYPE_ID}).valid_id($6) then
-				create $$.make_with_slot_id($2, $6, $4)
+				create $$.make_slot_filler ($2, $6, $4)
 				if $8 /= Void then
 					$$.set_occurrences($8)
 				end

@@ -185,7 +185,7 @@ feature -- Modification
 				agent parent.remove_child (Current))
 		end
 
-	do_convert_to_constraint (an_rm_type, a_co_type, occ_str: STRING)
+	do_convert_to_constraint (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS)
 			-- convert this RM node to a constraint node under its attribute node. We do this
 			-- by removing the current node then doing a new node add; this is consistent with
 			-- when an 'add new node' request is done on an attribute node, which always requires an 'add'
@@ -197,17 +197,13 @@ feature -- Modification
 		require
 			is_rm
 		local
-			rm_type_spec: BMM_CLASS_DEFINITION
 			added_child: C_OBJECT_ED_CONTEXT
-			occ: MULTIPLICITY_INTERVAL
 		do
-			create occ.make_from_string (occ_str)
 			parent.remove_child (Current)
 			if parent.is_rm then
 				parent.convert_to_constraint
 			end
-			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
-			parent.add_new_arch_child (rm_type_spec, a_co_type, occ)
+			parent.add_new_arch_child (a_user_params)
 			added_child := parent.children.last
 
 			-- set up undo / redo
@@ -366,16 +362,16 @@ feature {NONE} -- Context menu
 	ui_offer_convert_to_constraint
 			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
 		local
-			dialog: INITIAL_C_OBJECT_DIALOG
+			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
 			rm_type_substitutions := rm_type.semantic_class.type_substitutions
 			rm_type_substitutions.extend (rm_type.semantic_class.name)
 			create dialog.make (c_type_substitutions (rm_type), rm_type_substitutions, arch_node_type, rm_type.semantic_class.name,
-				parent.default_occurrences, ed_context.archetype, display_settings)
+				parent.default_occurrences, ed_context.archetype, parent.child_node_id_required (rm_type.semantic_class.name), display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then
-				do_convert_to_constraint (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
+				do_convert_to_constraint (dialog.user_params)
 			end
 		end
 

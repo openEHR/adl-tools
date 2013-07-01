@@ -28,7 +28,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_gui_context (a_context: ARCH_CAT_ARCHETYPE_EDITOR_STATE)
+	set_gui_context (a_context: ACA_EDITOR_STATE)
 		do
 			gui_context := a_context
 		end
@@ -45,7 +45,7 @@ feature -- Compilation
 
 feature -- Access
 
-	gui_context: detachable ARCH_CAT_ARCHETYPE_EDITOR_STATE
+	gui_context: detachable ACA_EDITOR_STATE
 
 	flat_archetype_clone: FLAT_ARCHETYPE
 			-- produce a clone of the current `flat_archetype'
@@ -66,6 +66,9 @@ feature -- Access
 			-- do diff on flat_archetype_clone
 			differential_archetype := flat_archetype_clone.to_differential
 			differential_archetype.clear_is_generated
+			if attached gui_context as gc then
+				gc.on_commit
+			end
 			save_differential
 			create last_modify_timestamp.make_now
 
@@ -86,7 +89,7 @@ feature {NONE} -- Implementation
 			precursor
 			flat_archetype_clone_cache := Void
 			if has_gui_context then
-				gui_context.clear
+				gui_context.on_commit
 			end
 		end
 

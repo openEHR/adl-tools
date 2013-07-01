@@ -433,56 +433,67 @@ feature -- Conversion
 
 feature -- Modification
 
-	add_new_non_refined_term_definition
-			-- add a new term definition with default content;
+	add_new_non_refined_term_definition (a_text, a_description: STRING)
+			-- add a new term definition with 'text' = `a_text', 'description = `a_description',
+			-- assumed to be in the original language;
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_term_definition'
 		local
-			str: STRING
+			new_term: ARCHETYPE_TERM
 		do
-			str := new_non_refined_term_code
-			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (str))
-			last_added_term_definition_code := str
+			create new_term.make (new_non_refined_term_code)
+			new_term.set_text (a_text)
+			new_term.set_description (a_description)
+			merge_term_definition (original_language, new_term)
+			last_added_term_definition_code := new_term.code
 		end
 
-	add_new_refined_term_definition (parent_code: STRING)
-			-- add a new term definition as child of `parent_code' with default content;
+	add_new_refined_term_definition (parent_code, a_text, a_description: STRING)
+			-- add a new term definition as child of `parent_code'
+			-- with 'text' = `a_text', 'description = `a_description',
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_term_definition'
 		require
 			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
 		local
-			str: STRING
+			new_term: ARCHETYPE_TERM
 		do
-			str := new_refined_term_code (parent_code)
-			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (str))
-			last_added_term_definition_code := str
+			create new_term.make (new_refined_term_code (parent_code))
+			new_term.set_text (a_text)
+			new_term.set_description (a_description)
+			merge_term_definition (original_language, new_term)
+			last_added_term_definition_code := new_term.code
 		end
 
-	add_new_non_refined_constraint_definition
-			-- add a new constraint definition with default content;
+	add_new_non_refined_constraint_definition (a_text, a_description: STRING)
+			-- add a new constraint definition with 'text' = `a_text', 'description = `a_description';
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_constraint_definition'
 		local
-			str: STRING
+			new_term: ARCHETYPE_TERM
 		do
-			str := new_non_refined_constraint_code
-			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (str))
-			last_added_constraint_definition_code := str
+			create new_term.make (new_non_refined_constraint_code)
+			new_term.set_text (a_text)
+			new_term.set_description (a_description)
+			merge_constraint_definition (original_language, new_term)
+			last_added_constraint_definition_code := new_term.code
 		end
 
-	add_new_refined_constraint_definition (parent_code: STRING)
-			-- add a new constraint definition as child of `parent_code' with default content;
+	add_new_refined_constraint_definition (parent_code, a_text, a_description: STRING)
+			-- add a new constraint definition as child of `parent_code'
+			-- with 'text' = `a_text', 'description = `a_description';
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_constraint_definition'
 		require
 			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
 		local
-			str: STRING
+			new_term: ARCHETYPE_TERM
 		do
-			str := new_refined_constraint_code (parent_code)
-			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (str))
-			last_added_constraint_definition_code := str
+			create new_term.make (new_refined_constraint_code (parent_code))
+			new_term.set_text (a_text)
+			new_term.set_description (a_description)
+			merge_constraint_definition (original_language, new_term)
+			last_added_constraint_definition_code := new_term.code
 		end
 
 	add_term_binding (a_term_code: TERMINOLOGY_CODE; a_code: STRING)
@@ -727,7 +738,7 @@ feature {DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Modification
 			end
 		end
 
-feature {TEST_DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Factory
+feature -- Factory
 
 	new_non_refined_term_code: STRING
 			-- create a new at-code at current specialisation depth

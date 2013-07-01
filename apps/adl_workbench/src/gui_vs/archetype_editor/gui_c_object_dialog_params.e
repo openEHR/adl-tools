@@ -1,0 +1,84 @@
+note
+	component:   "openEHR ADL Tools"
+	description: "Dialog to ask for initial details of a new C_OBJECT node to enable conversion from an RM object node"
+	keywords:    "GUI, ADL, archetype"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
+
+class
+	GUI_C_OBJECT_DIALOG_PARAMS
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_constraint_type, a_rm_type, an_occurrences_default_str: STRING)
+			-- Make with RM types, constraint type selection and an occurrences constrainer that is used to determine
+			-- the possible occurrences in this case
+		do
+			rm_type := a_rm_type
+			constraint_type := a_constraint_type
+			occurrences := an_occurrences_default_str
+			create node_id_text.make_from_string ("-")
+			create node_id_description.make_from_string ("-")
+		end
+
+feature -- Access
+
+	rm_type: STRING
+
+	constraint_type: STRING
+
+	occurrences: STRING
+
+	ext_ref:  detachable STRING
+
+	path_ref: detachable STRING
+
+	node_id_text: STRING
+
+	node_id_description: STRING
+
+feature -- Modification
+
+	set_rm_type (a_str: STRING)
+		do
+			rm_type := a_str
+		end
+
+	set_constraint_type (a_str: STRING)
+		do
+			constraint_type := a_str
+		end
+
+	set_occurrences (a_str: STRING)
+		do
+			occurrences := a_str
+		end
+
+	set_node_id_text (a_str: STRING)
+		do
+			node_id_text := a_str
+		end
+
+	set_node_id_description (a_str: STRING)
+		do
+			node_id_description := a_str
+		end
+
+	set_ext_ref (a_str: STRING)
+		do
+			ext_ref := a_str
+		end
+
+	set_path_ref (a_str: STRING)
+		do
+			path_ref := a_str
+		end
+
+end
+
+

@@ -363,6 +363,8 @@ feature -- Definitions
 		ec_initial_c_object_config_occurrences_text: STRING = "initial_c_object_config_occurrences_text"
 		ec_initial_c_object_config_ext_ref_text: STRING = "initial_c_object_config_ext_ref_text"
 		ec_initial_c_object_config_path_ref_text: STRING = "initial_c_object_config_path_ref_text"
+		ec_node_id_text: STRING = "node_id_text"
+		ec_node_id_description: STRING = "node_id_description"
 		ec_c_type_complex_object: STRING = "c_type_complex_object"
 		ec_c_type_primitive_object: STRING = "c_type_primitive_object"
 		ec_c_type_external_constraint_reference: STRING = "c_type_external_constraint_reference"

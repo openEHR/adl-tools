@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (614)
+			create message_table.make (616)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -378,6 +378,8 @@ feature -- Initialisation
 			message_table.put ("Occurrences: ", ec_initial_c_object_config_occurrences_text)
 			message_table.put ("Archetype ref: ", ec_initial_c_object_config_ext_ref_text)
 			message_table.put ("Path ref: ", ec_initial_c_object_config_path_ref_text)
+			message_table.put ("Text: ", ec_node_id_text)
+			message_table.put ("Description: ", ec_node_id_description)
 			message_table.put ("Complex object", ec_c_type_complex_object)
 			message_table.put ("Primitive Object", ec_c_type_primitive_object)
 			message_table.put ("External ref set", ec_c_type_external_constraint_reference)

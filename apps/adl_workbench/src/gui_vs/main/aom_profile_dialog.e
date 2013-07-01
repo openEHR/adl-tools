@@ -158,7 +158,6 @@ feature -- Events
 	on_ok
 			-- Set shared settings from the dialog widgets.
 		local
-			i: INTEGER
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			-- we do this call again, even though it might have alredy been executed due to the user using the
@@ -236,7 +235,6 @@ feature {NONE} -- Implementation
 			aom_profile: AOM_PROFILE
 			prf_name: STRING
 			rm_schemas_list, terminologies: STRING
-			closures: ARRAYED_SET [STRING]
 		do
 			-- get rid of previously defined rows
 			grid.wipe_out

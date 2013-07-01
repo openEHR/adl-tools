@@ -532,8 +532,6 @@ feature {NONE} -- Implementation
 		end
 
 	populate_filesys_indexes
-		local
-			repo_path: STRING
 		do
 			-- create top node (never seen in GUI)
 			create filesys_item_tree.make (Archetype_category.twin)

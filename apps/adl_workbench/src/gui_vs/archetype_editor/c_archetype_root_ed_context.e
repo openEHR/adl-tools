@@ -12,7 +12,7 @@ class C_ARCHETYPE_ROOT_ED_CONTEXT
 inherit
 	C_COMPLEX_OBJECT_ED_CONTEXT
 		redefine
-			arch_node
+			arch_node, rm_properties
 		end
 
 create
@@ -24,6 +24,11 @@ feature -- Access
 
 	arch_node: detachable C_ARCHETYPE_ROOT
 			-- archetype node being edited
+
+	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+		do
+			create Result.make (0)
+		end
 
 feature -- Modification
 

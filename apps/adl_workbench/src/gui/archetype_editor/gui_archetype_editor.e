@@ -14,8 +14,7 @@ inherit
 		redefine
 			make, do_populate, can_populate,
 			can_edit, enable_edit, disable_edit,
-			add_editing_controls, on_set_primary_source,
-			tool_refresh_required
+			add_editing_controls, on_set_primary_source
 		end
 
 	GUI_EDITING_ENABLED
@@ -110,12 +109,12 @@ feature {NONE} -- Implementation
 
 	attach_gui_context
 		local
-			gui_context: ARCH_CAT_ARCHETYPE_EDITOR_STATE
+			gui_context: ACA_EDITOR_STATE
 		do
 			if not source.has_gui_context then
 				create gui_context.make (source)
 				source.set_gui_context (gui_context)
-			elseif attached {ARCH_CAT_ARCHETYPE_EDITOR_STATE} source.gui_context as gc then
+			elseif attached {ACA_EDITOR_STATE} source.gui_context as gc then
 				gui_context := gc
 			end
 			gui_context.set_editable (undo_redo_chain)
@@ -137,12 +136,6 @@ feature {NONE} -- Implementation
 	add_editing_controls
 		do
 			add_undo_redo_commit_toolbar
-		end
-
-	tool_refresh_required (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
-			-- Return True if `an_arch_tool' should be refreshed with its current content
-		do
-			Result := True
 		end
 
 	translation_control: GUI_TRANSLATION_CONTROLS

@@ -483,7 +483,6 @@ feature {NONE} -- Implementation
 	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE_EDITABLE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, source)
 			check attached proximate_ev_window (ev_root_container) as prox_win then
@@ -502,7 +501,6 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 			matching_ids: ARRAYED_SET [STRING]
 			in_dir_path: STRING
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			-- figure out a reasonable path as the path of some other archetype of the same class
 			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)

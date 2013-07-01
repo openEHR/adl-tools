@@ -141,6 +141,9 @@ templates = <
 		["initial_c_object_config_ext_ref_text"] = <"Archetype ref: ">
 		["initial_c_object_config_path_ref_text"] = <"Path ref: ">
 
+		["node_id_text"] = <"Text: ">
+		["node_id_description"] = <"Description: ">
+
 		["c_type_complex_object"] = <"Complex object">
 		["c_type_primitive_object"] = <"Primitive Object">
 		["c_type_external_constraint_reference"] = <"External ref set">

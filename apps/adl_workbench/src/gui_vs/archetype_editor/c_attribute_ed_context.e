@@ -91,6 +91,12 @@ feature -- Status Report
 			Result := across children as child_csr some not child_csr.item.is_rm end
 		end
 
+	child_node_id_required (an_rm_type_name: STRING): BOOLEAN
+		do
+			Result := rm_property.is_container or else
+				attached arch_node as a_n and then (a_n.candidate_child_requires_id (an_rm_type_name))
+		end
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -313,15 +319,17 @@ feature {ANY_ED_CONTEXT} -- Implementation
 		end
 
 	default_occurrences: MULTIPLICITY_INTERVAL
+			-- generate a reasonable default occurrences for child C_objects of this C_attribute
 		do
 			if attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop and then attached bmm_cont_prop.cardinality as card then
-				Result := card
+				Result := card.deep_twin
+				Result.set_lower (0)
 			else
-				Result := rm_property.existence
+				Result := rm_property.existence.deep_twin
 			end
 		end
 
-	create_arch_child (a_type_spec: BMM_TYPE_SPECIFIER; a_co_type: STRING; occ: detachable MULTIPLICITY_INTERVAL): C_OBJECT_ED_CONTEXT
+	create_arch_child (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS): C_OBJECT_ED_CONTEXT
 			-- make new C_OBJECT child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 			-- don't add to context tree or archetype tree
 		require
@@ -333,58 +341,63 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			arch_slot: ARCHETYPE_SLOT
 			cref: CONSTRAINT_REF
 			new_code: detachable STRING
+			rm_type_name: STRING
+			occ: MULTIPLICITY_INTERVAL
+			rm_type_spec: BMM_TYPE_SPECIFIER
 		do
+			rm_type_spec := ed_context.rm_schema.class_definition (a_user_params.rm_type)
+			rm_type_name := a_user_params.rm_type
+
 			-- first figure out if a new code is needed
-			if attached arch_node as a_n and then (a_n.is_multiple or a_n.has_children) then
-				ed_context.archetype.ontology.add_new_non_refined_term_definition
+			if child_node_id_required (rm_type_name) then
+				ed_context.archetype.ontology.add_new_non_refined_term_definition (a_user_params.node_id_text, a_user_params.node_id_description)
 				new_code := ed_context.archetype.ontology.last_added_term_definition_code
 			end
 
-			if a_co_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
-				create cpo.make_any (a_type_spec.semantic_class.name)
+			if a_user_params.constraint_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
+				create cpo.make_any (rm_type_name)
 				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (cpo, ed_context)
 
-			elseif a_co_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
+			elseif a_user_params.constraint_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				if attached new_code as nc then
-					create cco.make_identified (a_type_spec.semantic_class.name, nc)
+					create cco.make_identified (rm_type_name, nc)
 				else
-					create cco.make_anonymous (a_type_spec.semantic_class.name)
+					create cco.make_anonymous (rm_type_name)
 				end
 				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make (cco, ed_context)
 
---			elseif a_co_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
---				if attached new_code as nc then
---					create car.make_identified (a_type_spec.semantic_class.name, nc)
---				else
---					create car.make_anonymous (a_type_spec.semantic_class.name)
---				end
---				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
+			elseif a_user_params.constraint_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
+				check attached a_user_params.ext_ref as arch_id then
+					create car.make_external_ref (rm_type_name, arch_id)
+				end
+				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
 
-			elseif a_co_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
+			elseif a_user_params.constraint_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
 				if attached new_code as nc then
-					create arch_slot.make_identified (a_type_spec.semantic_class.name, nc)
+					create arch_slot.make_identified (rm_type_name, nc)
 				else
-					create arch_slot.make_anonymous (a_type_spec.semantic_class.name)
+					create arch_slot.make_anonymous (rm_type_name)
 				end
 				create {ARCHETYPE_SLOT_ED_CONTEXT} Result.make (arch_slot, ed_context)
 
-			elseif a_co_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
-				ed_context.archetype.ontology.add_new_non_refined_constraint_definition
+			elseif a_user_params.constraint_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
+				ed_context.archetype.ontology.add_new_non_refined_constraint_definition ("-", "-")
 				check attached ed_context.archetype.ontology.last_added_constraint_definition_code as new_ac_code then
 					create cref.make (new_ac_code)
 				end
 				create {CONSTRAINT_REF_ED_CONTEXT} Result.make (cref, ed_context)
 
 			else
-				create cpo.make_any (a_type_spec.semantic_class.name)
+				create cpo.make_any (rm_type_name)
 				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (cpo, ed_context)
 
 			end
 
 			-- set occurrences if overridden from default
-			if attached occ as att_occ and then not att_occ.equal_interval (default_occurrences) then
+			create occ.make_from_string (a_user_params.occurrences)
+			if not occ.equal_interval (default_occurrences) then
 				check attached Result.arch_node as a_n then
-					a_n.set_occurrences (att_occ)
+					a_n.set_occurrences (occ)
 				end
 			end
 		end
@@ -401,11 +414,11 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	add_new_arch_child (a_rm_type_spec: BMM_TYPE_SPECIFIER; a_co_type: STRING; occ: detachable MULTIPLICITY_INTERVAL)
+	add_new_arch_child (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS)
 			-- create and add a new constraint node to archetype and editor tree
 			-- for the RM type `a_type_spec'
 		do
-			add_child (create_arch_child (a_rm_type_spec, a_co_type, occ))
+			add_child (create_arch_child (a_user_params))
 		end
 
 feature {NONE} -- Context menu
@@ -459,42 +472,31 @@ feature {NONE} -- Context menu
 	ui_offer_add_new_arch_child (rm_class_def: BMM_CLASS_DEFINITION)
 			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
 		local
-			dialog: INITIAL_C_OBJECT_DIALOG
-			def_occ: MULTIPLICITY_INTERVAL
+			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 			c_type_subs: ARRAYED_SET [STRING]
 		do
 			create rm_type_substitutions.make (0)
 			rm_type_substitutions.compare_objects
 			rm_type_substitutions.extend (rm_class_def.name)
-			if attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop and then attached bmm_cont_prop.cardinality as card then
-				def_occ := card
-			else
-				def_occ := rm_property.existence
-			end
 			c_type_subs := c_type_substitutions (rm_class_def)
 			c_type_subs.start
 			create dialog.make (c_type_subs, rm_type_substitutions, c_type_subs.item, rm_class_def.name,
-				default_occurrences, ed_context.archetype, display_settings)
+				default_occurrences, ed_context.archetype, child_node_id_required (rm_class_def.name), display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 
 			if dialog.is_valid then
-				do_add_new_arch_child (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
+				do_add_new_arch_child (dialog.user_params)
 			end
 		end
 
-	do_add_new_arch_child (an_rm_type, a_co_type, occ_str: STRING)
+	do_add_new_arch_child (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS)
 		require
 			not is_rm
 		local
-			rm_type_spec: BMM_CLASS_DEFINITION
 			added_child: C_OBJECT_ED_CONTEXT
-			occ: MULTIPLICITY_INTERVAL
 		do
-			create occ.make_from_string (occ_str)
-			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
-
-			add_new_arch_child (rm_type_spec, a_co_type, occ)
+			add_new_arch_child (a_user_params)
 			added_child := children.last
 
 			-- set up undo / redo

@@ -610,7 +610,7 @@ feature {NONE} -- Initialization
 				console_tool.append_text (get_msg_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 			end
 
-			if attached docking_file_to_use and then not docking_manager.open_config (docking_file_to_use) then
+			if attached docking_file_to_use and then not docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
 				console_tool.append_text (get_msg_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
@@ -678,7 +678,7 @@ feature -- Commands
 
 			app_cfg.save
 
-			if not docking_manager.save_data (user_docking_layout_file_path) then
+			if not docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
 				console_tool.append_text (get_msg_line ("write_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 

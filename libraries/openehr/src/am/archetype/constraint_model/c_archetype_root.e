@@ -26,11 +26,11 @@ inherit
 		end
 
 create
-	make, make_with_slot_id
+	make_external_ref, make_slot_filler
 
 feature -- Initialisation
 
-	make (a_rm_type_name, an_archetype_id: STRING)
+	make_external_ref (a_rm_type_name, an_archetype_id: STRING)
 			-- make as an archetype external reference
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
@@ -39,7 +39,7 @@ feature -- Initialisation
 			cco_make_identified (a_rm_type_name, an_archetype_id)
 		end
 
-	make_with_slot_id (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
+	make_slot_filler (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
 			-- make as a slot filler, specialising a slot
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty

@@ -142,37 +142,49 @@ feature {NONE} -- Implementation
 		end
 
 	c_type_substitutions (an_rm_type: BMM_TYPE_SPECIFIER): ARRAYED_SET [STRING]
-			-- list of possible C_OBJECT concrete descendants that can be used here
+			-- list of possible C_OBJECT concrete descendants that can be used on a node of type `an_rm_type'
 		local
 			c_dv_type_name: STRING
+			rm_class_name: STRING
 		do
-			create Result.make (0)
-			Result.compare_objects
-			if an_rm_type.semantic_class.is_primitive_type then
-				Result.extend (bare_type_name(({C_PRIMITIVE_OBJECT}).name))
-			elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (an_rm_type.root_class) then
-				c_dv_type_name := "C_" + an_rm_type.root_class
-				if c_object_constraint_types.has (c_dv_type_name) then
-					Result.extend (c_dv_type_name)
-					if c_dv_type_name.is_equal (bare_type_name(({C_CODE_PHRASE}).name)) then
-						Result.extend (bare_type_name(({CONSTRAINT_REF}).name))
+			rm_class_name := an_rm_type.semantic_class.name
+			if c_type_subs_table.has (rm_class_name) and then attached c_type_subs_table.item (rm_class_name) as tst then
+				Result := tst
+			else
+				create Result.make (0)
+				Result.compare_objects
+				if an_rm_type.semantic_class.is_primitive_type then
+					Result.extend (bare_type_name(({C_PRIMITIVE_OBJECT}).name))
+				elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (an_rm_type.root_class) then
+					c_dv_type_name := "C_" + an_rm_type.root_class
+					if c_object_constraint_types.has (c_dv_type_name) then
+						Result.extend (c_dv_type_name)
+						if c_dv_type_name.is_equal (bare_type_name(({C_CODE_PHRASE}).name)) then
+							Result.extend (bare_type_name(({CONSTRAINT_REF}).name))
+						end
+					else
+						Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
+						if not ed_context.archetype.matching_logical_paths (display_settings.language, an_rm_type.root_class).is_empty then
+							Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
+						end
 					end
 				else
 					Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
+					Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
+			--		if not current_arch_cat.matching_ids (".*", an_rm_type.root_class, Void).is_empty then
+						Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
+			--		end
 					if not ed_context.archetype.matching_logical_paths (display_settings.language, an_rm_type.root_class).is_empty then
 						Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
 					end
 				end
-			else
-				Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
-				Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
-				if not current_arch_cat.matching_ids (".*", an_rm_type.root_class, Void).is_empty then
-					Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
-				end
-				if not ed_context.archetype.matching_logical_paths (display_settings.language, an_rm_type.root_class).is_empty then
-					Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
-				end
+				c_type_subs_table.put (Result, rm_class_name)
 			end
+		end
+
+	c_type_subs_table: HASH_TABLE [ARRAYED_SET [STRING], STRING]
+		once
+			create Result.make (0)
 		end
 
 invariant

@@ -37,9 +37,9 @@ feature -- Factory
 	create_c_archetype_root: C_ARCHETYPE_ROOT
 		do
 			if attached slot_node_id as sni then
-				create Result.make_with_slot_id (rm_type_name, node_id, sni)
+				create Result.make_slot_filler (rm_type_name, node_id, sni)
 			else
-				create Result.make (rm_type_name, node_id)
+				create Result.make_external_ref (rm_type_name, node_id)
 			end
 			populate_c_instance (Result)
 		end

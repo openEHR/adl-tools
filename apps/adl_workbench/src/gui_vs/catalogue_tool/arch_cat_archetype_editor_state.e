@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_CAT_ARCHETYPE_EDITOR_STATE
+class ACA_EDITOR_STATE
 
 create
 	make
@@ -54,14 +54,13 @@ feature -- Access
 
 feature -- Commands
 
-	clear
+	on_commit
 		do
 			differential_display_context_cache := Void
 			flat_display_context_cache := Void
 		end
 
 feature {NONE} -- Implementation
-
 
 	differential_display_context_cache: detachable ARCH_ED_CONTEXT
 			-- differential archetype display context
