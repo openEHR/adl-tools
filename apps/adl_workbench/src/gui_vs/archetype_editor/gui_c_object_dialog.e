@@ -106,6 +106,9 @@ feature {NONE} -- Initialization
 			ev_root_container.extend (constraint_type_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (constraint_type_ctl.ev_root_container)
 			gui_controls.extend (constraint_type_ctl)
+			if constraint_types.count = 1 then
+				constraint_type_ctl.disable_sensitive
+			end
 
 			-- ============ RM type combo-box control ============
 			create rm_type_ctl.make_linked (get_text (ec_initial_c_object_config_rm_type_text),
@@ -116,6 +119,9 @@ feature {NONE} -- Initialization
 			ev_root_container.extend (rm_type_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (rm_type_ctl.ev_root_container)
 			gui_controls.extend (rm_type_ctl)
+			if rm_types.count = 1 then
+				rm_type_ctl.disable_sensitive
+			end
 
 			-- ============ Occurrences ============
 			create occurrences_choice_ctl.make_linked (get_text (ec_initial_c_object_config_occurrences_text),

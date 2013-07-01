@@ -18,20 +18,16 @@ inherit
 create
 	make
 
-feature -- Initialisation
-
 feature -- Access
 
 	arch_node: detachable C_ARCHETYPE_ROOT
 			-- archetype node being edited
 
 	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+			-- don't produce any RM properties, since node is another archetype
 		do
 			create Result.make (0)
 		end
-
-feature -- Modification
-
 
 end
 
