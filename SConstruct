@@ -33,9 +33,7 @@ geyacc_html = Action([['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE
 for scanner, parser, tokens, dir in [
 	['adl_scanner', 'adl_validator', 'adl_tokens', 'libraries/parsers/adl/'],
 	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'libraries/parsers/cadl/'],
-	['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/parsers/dadl/'],
-	['units_scanner', 'units_parser', 'units_tokens', 'libraries/parsers/ucum/parser/'],
-	['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/parsers/path/']
+	['units_scanner', 'units_parser', 'units_tokens', 'libraries/parsers/ucum/parser/']
 ]:
 	gobo(scanner, [dir + scanner + '.e'], dir + scanner + '.l', [gelex])
 	gobo(parser, [dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y', [geyacc])
@@ -57,8 +55,6 @@ if platform == 'windows':
 	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
 	versioned_targets += [adl_parser]
 
-eiffel('bmm_demo', 'apps/bmm_demo/app/bmm_demo.ecf')
-eiffel('dadl_test', 'apps/dadl_test/app/dadl_test.ecf')
 eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
 adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
 
