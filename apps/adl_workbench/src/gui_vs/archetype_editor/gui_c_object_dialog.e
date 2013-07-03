@@ -197,7 +197,7 @@ feature -- Events
 
 feature -- Access
 
-	user_params: GUI_C_OBJECT_DIALOG_PARAMS
+	user_params: C_OBJECT_CREATE_PARAMS
 
 	rm_types: ARRAYED_LIST [STRING]
 

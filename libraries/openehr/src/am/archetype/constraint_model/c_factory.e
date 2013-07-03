@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Factory class for archetype constraint definition"
 	keywords:    "archetype constraint definition"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 
@@ -167,6 +167,7 @@ feature -- Factory
 		do
 			create Result.make(create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
 		end
+
 end
 
 

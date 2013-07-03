@@ -1,11 +1,7 @@
 note
-
 	component:   "openEHR ADL Tools"
-
 	description: "Constrainer type for instances of INTEGER"
 	keywords:    "archetype, boolean, data"
-
-	design:      "openEHR Common Archetype Model 0.2"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"

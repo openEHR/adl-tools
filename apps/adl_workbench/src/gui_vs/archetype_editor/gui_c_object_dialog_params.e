@@ -8,7 +8,7 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
-	GUI_C_OBJECT_DIALOG_PARAMS
+	C_OBJECT_CREATE_PARAMS
 
 create
 	make

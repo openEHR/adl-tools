@@ -17,6 +17,11 @@ inherit
 			make, make_rm, rm_property, arch_node, parent, prepare_display_in_grid, display_in_grid, c_attribute_colour
 		end
 
+	C_PRIMITIVE_FACTORY
+		export
+			{NONE} all
+		end
+
 create
 	make, make_rm
 
@@ -329,7 +334,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	create_arch_child (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS): C_OBJECT_ED_CONTEXT
+	create_arch_child (co_create_params: C_OBJECT_CREATE_PARAMS): C_OBJECT_ED_CONTEXT
 			-- make new C_OBJECT child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 			-- don't add to context tree or archetype tree
 		require
@@ -345,20 +350,20 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			occ: MULTIPLICITY_INTERVAL
 			rm_type_spec: BMM_TYPE_SPECIFIER
 		do
-			rm_type_spec := ed_context.rm_schema.class_definition (a_user_params.rm_type)
-			rm_type_name := a_user_params.rm_type
+			rm_type_spec := ed_context.rm_schema.class_definition (co_create_params.rm_type)
+			rm_type_name := co_create_params.rm_type
 
 			-- first figure out if a new code is needed
 			if child_node_id_required (rm_type_name) then
-				ed_context.archetype.ontology.add_new_non_refined_term_definition (a_user_params.node_id_text, a_user_params.node_id_description)
+				ed_context.archetype.ontology.add_new_non_refined_term_definition (co_create_params.node_id_text, co_create_params.node_id_description)
 				new_code := ed_context.archetype.ontology.last_added_term_definition_code
 			end
 
-			if a_user_params.constraint_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
-				create cpo.make_any (rm_type_name)
+			if co_create_params.constraint_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
+				create cpo.make (create_default_c_primitive (rm_type_name.as_upper))
 				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (cpo, ed_context)
 
-			elseif a_user_params.constraint_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
+			elseif co_create_params.constraint_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				if attached new_code as nc then
 					create cco.make_identified (rm_type_name, nc)
 				else
@@ -366,13 +371,13 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make (cco, ed_context)
 
-			elseif a_user_params.constraint_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
-				check attached a_user_params.ext_ref as arch_id then
+			elseif co_create_params.constraint_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
+				check attached co_create_params.ext_ref as arch_id then
 					create car.make_external_ref (rm_type_name, arch_id)
 				end
 				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
 
-			elseif a_user_params.constraint_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
+			elseif co_create_params.constraint_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
 				if attached new_code as nc then
 					create arch_slot.make_identified (rm_type_name, nc)
 				else
@@ -380,7 +385,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 				create {ARCHETYPE_SLOT_ED_CONTEXT} Result.make (arch_slot, ed_context)
 
-			elseif a_user_params.constraint_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
+			elseif co_create_params.constraint_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
 				ed_context.archetype.ontology.add_new_non_refined_constraint_definition ("-", "-")
 				check attached ed_context.archetype.ontology.last_added_constraint_definition_code as new_ac_code then
 					create cref.make (new_ac_code)
@@ -394,7 +399,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 
 			-- set occurrences if overridden from default
-			create occ.make_from_string (a_user_params.occurrences)
+			create occ.make_from_string (co_create_params.occurrences)
 			if not occ.equal_interval (default_occurrences) then
 				check attached Result.arch_node as a_n then
 					a_n.set_occurrences (occ)
@@ -414,11 +419,11 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	add_new_arch_child (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS)
+	add_new_arch_child (co_create_params: C_OBJECT_CREATE_PARAMS)
 			-- create and add a new constraint node to archetype and editor tree
 			-- for the RM type `a_type_spec'
 		do
-			add_child (create_arch_child (a_user_params))
+			add_child (create_arch_child (co_create_params))
 		end
 
 feature {NONE} -- Context menu
@@ -490,13 +495,13 @@ feature {NONE} -- Context menu
 			end
 		end
 
-	do_add_new_arch_child (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS)
+	do_add_new_arch_child (co_create_params: C_OBJECT_CREATE_PARAMS)
 		require
 			not is_rm
 		local
 			added_child: C_OBJECT_ED_CONTEXT
 		do
-			add_new_arch_child (a_user_params)
+			add_new_arch_child (co_create_params)
 			added_child := children.last
 
 			-- set up undo / redo

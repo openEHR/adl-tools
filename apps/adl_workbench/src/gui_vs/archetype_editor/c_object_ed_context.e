@@ -185,7 +185,7 @@ feature -- Modification
 				agent parent.remove_child (Current))
 		end
 
-	do_convert_to_constraint (a_user_params: GUI_C_OBJECT_DIALOG_PARAMS)
+	do_convert_to_constraint (co_create_params: C_OBJECT_CREATE_PARAMS)
 			-- convert this RM node to a constraint node under its attribute node. We do this
 			-- by removing the current node then doing a new node add; this is consistent with
 			-- when an 'add new node' request is done on an attribute node, which always requires an 'add'
@@ -203,7 +203,7 @@ feature -- Modification
 			if parent.is_rm then
 				parent.convert_to_constraint
 			end
-			parent.add_new_arch_child (a_user_params)
+			parent.add_new_arch_child (co_create_params)
 			added_child := parent.children.last
 
 			-- set up undo / redo
