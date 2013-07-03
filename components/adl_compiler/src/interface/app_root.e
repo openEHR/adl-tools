@@ -34,9 +34,6 @@ inherit
 		end
 
 	SHARED_ARCHETYPE_COMPILER
-		export
-			{NONE} all
-		end
 
 	ANY_VALIDATOR
 		rename
