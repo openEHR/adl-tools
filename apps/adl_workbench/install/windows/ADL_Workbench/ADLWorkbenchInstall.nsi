@@ -104,7 +104,7 @@ Section -Main SEC0000
 
 	# AOM profiles
     SetOutPath $INSTDIR\aom_profiles
-    File ..\..\..\..\..\aom_profiles\*
+    File ..\..\..\..\resources\aom_profiles\*
 
 	# VIM files
     SetOutPath $INSTDIR\vim

@@ -86,7 +86,7 @@ for dir, dirnames, filenames in os.walk('../reference-models'):
 	if '.git' in dirnames: dirnames.remove('.git')
 	env.Install(rm_schemas, [os.path.join(dir, filename) for filename in fnmatch.filter(filenames, '*.bmm')])
 
-env.Install(aom_profiles, env.Glob('apps/aom_profiles/*.arp'))
+env.Install(aom_profiles, env.Glob('apps/resources/aom_profiles/*.arp'))
 
 ###################################################################################################
 # Define how to put installers, etc., into the distribution directory.
