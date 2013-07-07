@@ -108,7 +108,7 @@ feature {NONE} -- Initialisation
 			lang_translations_hbox.extend (trans_author_accreditation_vbox)
 			create trans_author_ctl.make_linked (get_text (ec_translator_label_text),
 				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
-				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
+				agent (a_key, a_val: STRING) do if source_archetype.has_translations then translation_details.put_author_item (a_key, a_val) end end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
 				undo_redo_chain, 0, min_entry_control_width, False, Void)
 			gui_controls.extend (trans_author_ctl)
@@ -128,7 +128,7 @@ feature {NONE} -- Initialisation
 			-- translator other_details - Hash
 			create trans_other_details_ctl.make_linked (get_text (ec_translator_other_details_label_text),
 				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
-				agent (a_key, a_val: STRING) do translation_details.put_other_details_item (a_key, a_val) end,
+				agent (a_key, a_val: STRING) do if source_archetype.has_translations then translation_details.put_other_details_item (a_key, a_val) end end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
 				undo_redo_chain,
 				0, min_entry_control_width, False, Void)
