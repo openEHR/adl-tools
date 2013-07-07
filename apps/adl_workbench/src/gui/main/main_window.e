@@ -489,7 +489,7 @@ feature {NONE} -- Initialization
 
 
 			-- ================= set up docking ===================
-			create docking_manager.make (viewer_main_cell, Current)
+			create internal_docking_manager.make (viewer_main_cell, Current)
 			create_new_catalogue_tool
 			create_new_rm_schema_explorer
 			create_new_console_tool
@@ -610,7 +610,7 @@ feature {NONE} -- Initialization
 				console_tool.append_text (get_msg_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 			end
 
-			if attached docking_file_to_use and then not docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
+			if attached docking_file_to_use and then not internal_docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
 				console_tool.append_text (get_msg_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
@@ -678,7 +678,7 @@ feature -- Commands
 
 			app_cfg.save
 
-			if not docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
+			if not internal_docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
 				console_tool.append_text (get_msg_line ("write_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
@@ -1064,20 +1064,23 @@ feature -- Address Bar control
 
 feature -- Docking controls
 
-	attached_docking_manager: SD_DOCKING_MANAGER
+	docking_manager: SD_DOCKING_MANAGER
 			-- Attached `manager'
 		require
-			not_void: docking_manager /= Void
+			not_void: docking_manager_set
 		local
-			l_result: like docking_manager
+			l_result: like internal_docking_manager
 		do
-			l_result := docking_manager
-			check l_result /= Void end -- Implied by precondition `not_void'
+			l_result := internal_docking_manager
+			check attached l_result end
 			Result := l_result
 		end
 
-	docking_manager: detachable SD_DOCKING_MANAGER
-			-- Docking manager
+	docking_manager_set: BOOLEAN
+			-- If `internal_docking_manager' has been set?
+		do
+			Result := attached internal_docking_manager
+		end
 
 	tool_bar_content: detachable SD_TOOL_BAR_CONTENT
 			-- Tool bar content
@@ -1099,7 +1102,7 @@ feature -- RM Schema explorer
 			a_docking_pane: SD_CONTENT
 		do
 			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg (ec_reference_models_docking_area_title, Void))
-			attached_docking_manager.contents.extend (a_docking_pane)
+			docking_manager.contents.extend (a_docking_pane)
 			rm_schema_explorer.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title (get_msg (ec_reference_models_docking_area_title, Void))
 			a_docking_pane.set_short_title (get_msg (ec_reference_models_docking_area_title, Void))
@@ -1122,7 +1125,7 @@ feature -- RM tools
 
 	rm_tools: GUI_RM_TOOLS_CONTROLLER
 		once
-			create Result.make (attached_docking_manager)
+			create Result.make (docking_manager)
 		end
 
 	display_rm_in_new_tool (an_rm: BMM_SCHEMA)
@@ -1153,7 +1156,7 @@ feature -- Catalogue tool
 				a_docking_pane.set_mini_toolbar (catalogue_tool.mini_tool_bar)
 			end
 			catalogue_tool.set_docking_pane (a_docking_pane)
-			attached_docking_manager.contents.extend (a_docking_pane)
+			docking_manager.contents.extend (a_docking_pane)
 			a_docking_pane.set_long_title (get_msg (ec_catalogue_tool_title, Void))
 			a_docking_pane.set_short_title (get_msg (ec_catalogue_tool_title, Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
@@ -1175,7 +1178,7 @@ feature -- Archetype viewers
 
 	archetype_viewers: GUI_ARCHETYPE_VIEWERS_CONTROLLER
 		once
-			create Result.make (attached_docking_manager)
+			create Result.make (docking_manager)
 		end
 
 	display_archetype (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
@@ -1198,7 +1201,7 @@ feature -- Archetype editors
 
 	archetype_editors: GUI_ARCHETYPE_EDITORS_CONTROLLER
 		once
-			create Result.make (attached_docking_manager)
+			create Result.make (docking_manager)
 		end
 
 	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
@@ -1231,7 +1234,7 @@ feature -- Class tool
 
 	class_tools: GUI_CLASS_TOOL_CONTROLLER
 		once
-			create Result.make (attached_docking_manager)
+			create Result.make (docking_manager)
 		end
 
 	display_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
@@ -1258,7 +1261,7 @@ feature -- Test tool
 			a_docking_pane: SD_CONTENT
 		do
 			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), get_msg (ec_test_tool_title, Void))
-			attached_docking_manager.contents.extend (a_docking_pane)
+			docking_manager.contents.extend (a_docking_pane)
 			a_docking_pane.set_long_title (get_msg (ec_test_tool_title, Void))
 			a_docking_pane.set_short_title (get_msg (ec_test_tool_title, Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
@@ -1278,7 +1281,7 @@ feature -- Console Tool
 		do
 			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), get_msg (ec_console_tool_title, Void))
 			console_tool.set_docking_pane (docking_pane)
-			attached_docking_manager.contents.extend (docking_pane)
+			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
 			docking_pane.set_long_title (get_msg (ec_console_tool_title, Void))
 			docking_pane.set_short_title (get_msg (ec_console_tool_title, Void))
@@ -1301,7 +1304,7 @@ feature -- Error Tool
 	create_new_error_tool
 		do
 			create error_docking_pane.make_with_widget_title_pixmap (error_tool.ev_grid, get_icon_pixmap ("tool/errors"), get_msg (ec_error_tool_title, Void))
-			attached_docking_manager.contents.extend (error_docking_pane)
+			docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			error_docking_pane.set_long_title (get_msg (ec_error_tool_title, Void))
 			error_docking_pane.set_short_title (get_msg (ec_error_tool_title, Void))
@@ -1510,6 +1513,9 @@ feature {NONE} -- Build commands
 		end
 
 feature {NONE} -- GUI Widgets
+
+	internal_docking_manager: detachable SD_DOCKING_MANAGER
+			-- Docking manager
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

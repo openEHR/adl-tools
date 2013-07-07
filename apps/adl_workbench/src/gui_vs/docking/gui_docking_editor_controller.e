@@ -192,6 +192,7 @@ feature {NONE} -- Implementation
 			last_ed := docking_manager_last_tool
 			active_tool_id := docking_tools.count + 1
 			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + active_tool_id.out)
+			docking_pane.close_request_actions.extend (agent remove_tool (active_tool_id))
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.editor)
 			if attached last_ed then
@@ -199,7 +200,6 @@ feature {NONE} -- Implementation
 			else
 				docking_pane.set_top ({SD_ENUMERATION}.left)
 			end
-			docking_pane.close_request_actions.extend (agent remove_tool (active_tool_id))
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
 			docking_tools.put ([a_gui_tool, docking_pane], active_tool_id)
 		ensure
