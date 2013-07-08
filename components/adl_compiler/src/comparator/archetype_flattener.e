@@ -621,7 +621,6 @@ end
 			-- in the specialised attribute, or are C_COMPLEX_OBJECTs (if they are the latter, they will get traversed
 			-- normally by node_graft())
 		local
-			rm_ancestors: ARRAYED_LIST [STRING]
 			merge_obj: C_OBJECT
 			node_id_in_parent: STRING
 		do
@@ -666,15 +665,10 @@ end
 						ca_output.replace_child_by_rm_type_name (merge_obj)
 
 					-- else the node to be added has an RM child type of an existing node - then add it
-					else
-						-- TODO: the following won't be needed when the check in ARCHETYPE_PHASE_2_VALIDATOR (search for '12930')
-						-- is implemented.
-						rm_ancestors := rm_schema.all_ancestor_classes_of (merge_obj.rm_type_name)
-						if rm_ancestors.there_exists (
-							agent (anc_type: STRING; ca: C_ATTRIBUTE): BOOLEAN do Result := ca.has_child_with_rm_type_name (anc_type) end (?, ca_output))
-						then
-							ca_output.put_child (merge_obj)
-						end
+					-- TODO: the following won't be needed when the check in ARCHETYPE_PHASE_2_VALIDATOR (search for '12930')
+					-- is implemented.
+					elseif across rm_schema.all_ancestor_classes_of (merge_obj.rm_type_name) as ancs_csr some ca_output.has_child_with_rm_type_name (ancs_csr.item) end then
+						ca_output.put_child (merge_obj)
 					end
 					child_grafted_path_list.extend (c_obj_csr.item.path)
 				else
