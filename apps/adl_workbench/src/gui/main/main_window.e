@@ -586,36 +586,41 @@ feature {NONE} -- Initialization
 			-- initialise visual settings of window remembered from previous session
 		local
 			docking_file_to_use: detachable STRING
+			docking_exception: BOOLEAN
 		do
 			if app_maximised then
 				maximize
 			end
 
-			-- Determine which Docking layout file to read
-			-- if the default one is the only one, or more recent than the user one, use it
-			-- else use the user's one
-			if file_system.file_exists (default_docking_layout_file_path) then
-				if file_system.file_exists (user_docking_layout_file_path) then
-					if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) then
-						docking_file_to_use := default_docking_layout_file_path
-					else
-						docking_file_to_use := user_docking_layout_file_path
+			if not docking_exception then
+				-- Determine which Docking layout file to read
+				-- if the default one is the only one, or more recent than the user one, use it
+				-- else use the user's one
+				if file_system.file_exists (default_docking_layout_file_path) then
+					if file_system.file_exists (user_docking_layout_file_path) then
+						if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) then
+							docking_file_to_use := default_docking_layout_file_path
+						else
+							docking_file_to_use := user_docking_layout_file_path
+						end
 					end
+				elseif file_system.file_exists (user_docking_layout_file_path) then
+					docking_file_to_use := user_docking_layout_file_path
+					console_tool.append_text (get_msg_line ("copy_docking_file", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+					file_system.copy_file (user_docking_layout_file_path, default_docking_layout_file_path)
+				else
+					console_tool.append_text (get_msg_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 				end
-			elseif file_system.file_exists (user_docking_layout_file_path) then
-				docking_file_to_use := user_docking_layout_file_path
-				console_tool.append_text (get_msg_line ("copy_docking_file", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
-				file_system.copy_file (user_docking_layout_file_path, default_docking_layout_file_path)
-			else
-				console_tool.append_text (get_msg_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
-			end
 
-			if attached docking_file_to_use and then not internal_docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
-				console_tool.append_text (get_msg_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
+				if attached docking_file_to_use and then not internal_docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
+					console_tool.append_text (get_msg_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
+				end
 			end
 
 			-- Splitter layout
 			initialise_splitter (test_tool.ev_root_container, test_split_position)
+		rescue
+			docking_exception := True
 		end
 
 feature -- Commands

@@ -199,6 +199,7 @@ feature {NONE} -- Implementation
 				docking_pane.set_tab_with (last_ed, False)
 			else
 				docking_pane.set_top ({SD_ENUMERATION}.left)
+				docking_pane.set_default_editor_position
 			end
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
 			docking_tools.put ([a_gui_tool, docking_pane], active_tool_id)
