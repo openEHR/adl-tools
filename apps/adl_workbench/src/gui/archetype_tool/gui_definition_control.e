@@ -114,7 +114,7 @@ feature -- Initialisation
 			-- use RM inheritance rendering check button
 			create view_rm_display_inheritance_checkbox_ctl.make_linked (get_text (ec_show_rm_inh_button_text),
 				get_text (ec_show_rm_inh_button_tooltip),
-				agent :BOOLEAN do Result := show_rm_inheritance end, agent update_show_rm_inheritance)
+				agent :BOOLEAN do Result := show_rm_inheritance or editing_enabled end, agent update_show_rm_inheritance)
 			gui_controls.extend (view_rm_display_inheritance_checkbox_ctl)
 			rm_rendering_frame_ctl.extend (view_rm_display_inheritance_checkbox_ctl.ev_data_control, False)
 
@@ -424,7 +424,7 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			create ui_settings.make (selected_language,
-				show_codes, show_rm_inheritance, show_technical_view,
+				show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- populate the main definition grid
@@ -491,7 +491,7 @@ feature {NONE} -- Implementation
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_definition_grid.ev_grid.lock_update
 
-			create ui_settings.make (selected_language, show_codes, show_rm_inheritance, show_technical_view,
+			create ui_settings.make (selected_language, show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
