@@ -38,6 +38,9 @@ feature -- Access
 	arch_node: detachable ARCHETYPE_CONSTRAINT
 			-- archetype node being edited
 
+	arch_node_in_ancestor: detachable ARCHETYPE_CONSTRAINT
+			-- corresponding archetype node in specialisation parent, if applicable
+
 	parent: detachable ARCHETYPE_CONSTRAINT_ED_CONTEXT
 			-- parent node in tree
 
@@ -61,6 +64,12 @@ feature -- Status Report
 			-- True if this node is the top of tree structure
 		do
 			Result := not attached parent
+		end
+
+	is_specialised: BOOLEAN
+			-- True if this node exists in specialised child archetype
+		do
+			Result := ed_context.archetype.is_specialised
 		end
 
 feature -- Display
@@ -141,14 +150,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_type_substitutions (an_rm_type: BMM_TYPE_SPECIFIER): ARRAYED_SET [STRING]
+	aom_types_for_rm_type (an_rm_type: BMM_TYPE_SPECIFIER): ARRAYED_SET [STRING]
 			-- list of possible C_OBJECT concrete descendants that can be used on a node of type `an_rm_type'
 		local
 			c_dv_type_name: STRING
 			rm_class_name: STRING
 		do
 			rm_class_name := an_rm_type.semantic_class.name
-			if c_type_subs_table.has (rm_class_name) and then attached c_type_subs_table.item (rm_class_name) as tst then
+			if aom_types_for_rm_type_table.has (rm_class_name) and then attached aom_types_for_rm_type_table.item (rm_class_name) as tst then
 				Result := tst
 			else
 				create Result.make (0)
@@ -178,11 +187,11 @@ feature {NONE} -- Implementation
 						Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
 					end
 				end
-				c_type_subs_table.put (Result, rm_class_name)
+				aom_types_for_rm_type_table.put (Result, rm_class_name)
 			end
 		end
 
-	c_type_subs_table: HASH_TABLE [ARRAYED_SET [STRING], STRING]
+	aom_types_for_rm_type_table: HASH_TABLE [ARRAYED_SET [STRING], STRING]
 		once
 			create Result.make (0)
 		end

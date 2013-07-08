@@ -49,7 +49,7 @@ feature -- Status Report
 		end
 
 	can_edit: BOOLEAN
-			-- True if this tool had editing capability
+			-- True if this tool has editing capability
 		do
 			Result := True
 		end

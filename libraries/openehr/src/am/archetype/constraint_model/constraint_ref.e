@@ -97,12 +97,6 @@ feature -- Modification
 			external_reference := an_ext_ref
 		end
 
-	set_rm_type_name (a_type_name: STRING)
-			-- set `rm_type_name'
-		do
-			rm_type_name := a_type_name
-		end
-
 feature -- Visitor
 
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER)

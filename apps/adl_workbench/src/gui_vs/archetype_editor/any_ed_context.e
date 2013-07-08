@@ -277,7 +277,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	arch_node_type: STRING
+	arch_node_aom_type: STRING
 			-- generate the type name of `arch_node'
 			-- FIXME: this is a hack, but there seems no other nice way to do it - once functions to generate
 			-- a default instance can't be anchored!

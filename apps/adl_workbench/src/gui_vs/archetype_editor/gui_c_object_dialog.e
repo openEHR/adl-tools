@@ -217,9 +217,18 @@ feature -- Commands
 
 feature -- Modification
 
+	set_term (a_node_id_text, a_node_id_description: STRING)
+			-- set node text/description
+		do
+			user_params.set_node_id_text (a_node_id_text)
+			user_params.set_node_id_description (a_node_id_description)
+			do_populate
+		end
+
 	set_current_constraint_type (a_str: STRING)
 		do
 			user_params.set_constraint_type (a_str)
+			do_populate
 			if user_params.constraint_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) and not arch_ext_ref_list.is_empty then
 				arch_id_list_ctl.show
 				arch_path_list_ctl.hide

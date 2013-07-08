@@ -14,7 +14,7 @@ inherit
 		rename
 			rm_element as rm_property
 		redefine
-			make, make_rm, rm_property, arch_node, parent, prepare_display_in_grid, display_in_grid, c_attribute_colour
+			make, make_rm, rm_property, arch_node, arch_node_in_ancestor, parent, prepare_display_in_grid, display_in_grid, c_attribute_colour
 		end
 
 	C_PRIMITIVE_FACTORY
@@ -30,6 +30,7 @@ feature -- Initialisation
 	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
+			set_arch_node_in_ancestor
 			if an_arch_node.has_differential_path then
 				rm_property := ed_context.rm_schema.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
 			else
@@ -50,6 +51,9 @@ feature -- Access
 
 	arch_node: detachable C_ATTRIBUTE
 			-- archetype node being edited
+
+	arch_node_in_ancestor: detachable C_ATTRIBUTE
+			-- corresponding archetype node in specialisation parent, if applicable
 
 	rm_property: BMM_PROPERTY_DEFINITION
 			-- RM property of node being edited
@@ -484,7 +488,7 @@ feature {NONE} -- Context menu
 			create rm_type_substitutions.make (0)
 			rm_type_substitutions.compare_objects
 			rm_type_substitutions.extend (rm_class_def.name)
-			c_type_subs := c_type_substitutions (rm_class_def)
+			c_type_subs := aom_types_for_rm_type (rm_class_def)
 			c_type_subs.start
 			create dialog.make (c_type_subs, rm_type_substitutions, c_type_subs.item, rm_class_def.name,
 				default_occurrences, ed_context.archetype, child_node_id_required (rm_class_def.name), display_settings)
@@ -515,6 +519,22 @@ feature {NONE} -- Context menu
 						add_child (an_added_child)
 					end (added_child)
 			)
+		end
+
+	set_arch_node_in_ancestor
+		local
+			apa: ARCHETYPE_PATH_ANALYSER
+			ca_path_in_flat: STRING
+		do
+			if attached arch_node as a_n and attached ed_context.parent_archetype as parent_arch then
+				create apa.make_from_string (a_n.path)
+				ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
+				if parent_arch.definition.has_attribute_path (ca_path_in_flat) then
+					check attached parent_arch.definition.c_attribute_at_path (ca_path_in_flat) as ca then
+						arch_node_in_ancestor := ca
+					end
+				end
+			end
 		end
 
 end

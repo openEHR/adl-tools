@@ -184,6 +184,11 @@ feature -- Comparison
 
 feature -- Modification
 
+	set_rm_type_name (a_name: STRING)
+		do
+			rm_type_name := a_name
+		end
+
 	set_occurrences (occ: MULTIPLICITY_INTERVAL)
 			--
 		require

@@ -14,7 +14,7 @@ inherit
 		rename
 			rm_element as rm_type
 		redefine
-			make, rm_type, arch_node, parent, prepare_display_in_grid, display_in_grid
+			make, rm_type, arch_node, arch_node_in_ancestor, parent, prepare_display_in_grid, display_in_grid
 		end
 
 feature -- Definition
@@ -36,6 +36,7 @@ feature -- Initialisation
 	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
+			set_arch_node_in_ancestor
 			rm_type := ed_context.rm_schema.class_definition (arch_node.rm_type_name)
 		end
 
@@ -43,6 +44,9 @@ feature -- Access
 
 	arch_node: detachable C_OBJECT
 			-- archetype node being edited
+
+	arch_node_in_ancestor: detachable C_OBJECT
+			-- corresponding archetype node in specialisation parent, if applicable
 
 	rm_type: BMM_TYPE_SPECIFIER
 			-- RM class of node being edited
@@ -231,6 +235,54 @@ feature -- Modification
 			Current_removed_from_parent: not parent.has_child (Current)
 		end
 
+	do_refine_constraint (co_create_params: C_OBJECT_CREATE_PARAMS)
+			-- refine this Archetye node
+		require
+			is_specialised
+		local
+			new_occ: MULTIPLICITY_INTERVAL
+		do
+			if attached arch_node as a_n then
+				if co_create_params.constraint_type.same_string (a_n.generator) then
+					if not a_n.rm_type_name.same_string (co_create_params.rm_type) then
+						a_n.set_rm_type_name (co_create_params.rm_type)
+						a_n.set_specialisation_status_redefined
+					end
+
+					new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences)
+					if attached a_n.occurrences as occ and then not
+						occ.equal_interval (create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences))
+					then
+						a_n.set_occurrences (new_occ)
+						a_n.set_specialisation_status_redefined
+					end
+				end
+			else -- need to do a remove and add
+
+			end
+			-- set up undo / redo
+--			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+--				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
+--						-- undo
+--					do
+--						parent.remove_child (an_added_child)
+--						if not parent.has_constraint_children then
+--							parent.convert_to_rm
+--						end
+--						parent.add_child (an_orig_child)
+--					end (Current, added_child),
+--				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
+--						-- redo
+--					do
+--						parent.remove_child (an_orig_child)
+--						if parent.is_rm then
+--							parent.convert_to_constraint
+--						end
+--						parent.add_child (an_added_child)
+--					end (Current, added_child)
+--			)
+		end
+
 feature {NONE} -- Implementation
 
 	node_id_text: STRING
@@ -342,9 +394,15 @@ feature {NONE} -- Context menu
 			else
 				if attached arch_node as a_n then
 					if not a_n.is_root then
-						-- add menu item for deleting this node
-						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent do_remove)
-						context_menu.extend (an_mi)
+						if a_n.specialisation_status /= ss_added then
+							-- add menu item to refine constraint
+							create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_refine), agent ui_offer_refine_constraint)
+							context_menu.extend (an_mi)
+						else
+							-- add menu item for deleting this node
+							create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent do_remove)
+							context_menu.extend (an_mi)
+						end
 					end
 				elseif not is_root and then not parent.parent.is_rm and parent.is_rm then
 					-- add menu item for 'convert to constraint'
@@ -359,19 +417,71 @@ feature {NONE} -- Context menu
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 		end
 
+	ui_offer_refine_constraint
+			-- create a dialog with appropriate constraint capture fields and then call the convert_to_constraint routine
+		local
+			dialog: GUI_C_OBJECT_DIALOG
+			rm_type_substitutions: ARRAYED_SET [STRING]
+			spec_parent_rm_type: BMM_CLASS_DEFINITION
+			def_occ: MULTIPLICITY_INTERVAL
+			a_term: ARCHETYPE_TERM
+		do
+			if attached arch_node_in_ancestor as parent_a_n then
+				spec_parent_rm_type := ed_context.rm_schema.class_definition (parent_a_n.rm_type_name)
+				rm_type_substitutions := spec_parent_rm_type.type_substitutions
+				rm_type_substitutions.extend (rm_type.semantic_class.name)
+
+				if attached parent_a_n.occurrences as parent_a_n_occ then
+					def_occ := parent_a_n_occ
+				else
+					def_occ := parent.default_occurrences
+				end
+
+				create dialog.make (aom_types_for_rm_type (spec_parent_rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.semantic_class.name,
+					def_occ, ed_context.archetype, attached arch_node as a_n and then is_valid_code (a_n.node_id), display_settings)
+
+				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
+					a_term := ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id)
+					dialog.set_term (a_term.text, a_term.description)
+				end
+
+				dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
+				if dialog.is_valid then
+					do_refine_constraint (dialog.user_params)
+				end
+			end
+		end
+
 	ui_offer_convert_to_constraint
-			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
+			-- create a dialog with appropriate constraint capture fields and then call the refine_constraint routine
 		local
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
 			rm_type_substitutions := rm_type.semantic_class.type_substitutions
 			rm_type_substitutions.extend (rm_type.semantic_class.name)
-			create dialog.make (c_type_substitutions (rm_type), rm_type_substitutions, arch_node_type, rm_type.semantic_class.name,
+			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.semantic_class.name,
 				parent.default_occurrences, ed_context.archetype, parent.child_node_id_required (rm_type.semantic_class.name), display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then
 				do_convert_to_constraint (dialog.user_params)
+			end
+		end
+
+	set_arch_node_in_ancestor
+			-- set corresponding archetype node in specialisation parent, if applicable
+		local
+			apa: ARCHETYPE_PATH_ANALYSER
+			co_path_in_flat: STRING
+		do
+			if attached arch_node as a_n and attached ed_context.parent_archetype as parent_arch then
+				create apa.make_from_string (a_n.path)
+				co_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
+				if parent_arch.definition.has_object_path (co_path_in_flat) then
+					check attached parent_arch.definition.c_object_at_path (co_path_in_flat) as co then
+						arch_node_in_ancestor := co
+					end
+				end
 			end
 		end
 

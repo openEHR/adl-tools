@@ -134,7 +134,6 @@ templates = <
 
 		-- INITIAL_C_OBJECT_DIALOG
 		["initial_c_object_config_dialog_title"] = <"Configure object constraint">
-		["object_context_menu_convert"] = <"Convert to constraint ...">
 		["initial_c_object_config_constraint_type_text"] = <"Constraint type: ">
 		["initial_c_object_config_rm_type_text"] = <"RM type: ">
 		["initial_c_object_config_occurrences_text"] = <"Occurrences: ">
@@ -332,8 +331,10 @@ templates = <
 		["expand_button_expand_text"] = <"Expand All">
 
 		["menu_option_display_code"] = <"Display code in ontology">
+		["object_context_menu_convert"] = <"Convert to constraint ...">
 		["object_context_menu_display_path"] = <"Display path in path map">
 		["object_context_menu_delete"] = <"Delete node">
+		["object_context_menu_refine"] = <"Refine constraint">
 
 		["attribute_context_menu_add_child"] = <"Add new child node">
 

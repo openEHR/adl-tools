@@ -39,6 +39,9 @@ feature -- Initialisation
 			archetype := source.flat_archetype_clone
 			flat_ontology := source.flat_archetype_clone.ontology
 			undo_redo_chain := an_undo_redo_chain
+			if attached aca.specialisation_parent as par_aca then
+				parent_archetype := par_aca.flat_archetype
+			end
 		end
 
 feature -- Access
@@ -46,6 +49,8 @@ feature -- Access
 	source: ARCH_CAT_ARCHETYPE_EDITABLE
 
 	archetype: ARCHETYPE
+
+	parent_archetype: detachable ARCHETYPE
 
 	in_differential_view: BOOLEAN
 

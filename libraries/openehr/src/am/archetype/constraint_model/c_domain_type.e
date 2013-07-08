@@ -107,11 +107,6 @@ feature -- Duplication
 
 feature -- Modification
 
-	set_rm_type_name (a_name: STRING)
-		do
-			rm_type_name := a_name
-		end
-
 	set_rm_type_mapping (a_rm_type_mapping: attached like rm_type_mapping)
 		do
 			rm_type_mapping := a_rm_type_mapping

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (616)
+			create message_table.make (617)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -372,7 +372,6 @@ feature -- Initialisation
 			message_table.put ("Id $1 already exists in catalogue", ec_duplicate_archetype_id_err_msg)
 			message_table.put ("Concept $1 contains invalid characters", ec_invalid_archetype_id_concept_err)
 			message_table.put ("Configure object constraint", ec_initial_c_object_config_dialog_title)
-			message_table.put ("Convert to constraint ...", ec_object_context_menu_convert)
 			message_table.put ("Constraint type: ", ec_initial_c_object_config_constraint_type_text)
 			message_table.put ("RM type: ", ec_initial_c_object_config_rm_type_text)
 			message_table.put ("Occurrences: ", ec_initial_c_object_config_occurrences_text)
@@ -531,8 +530,10 @@ feature -- Initialisation
 			message_table.put ("Collapse All", ec_expand_button_collapse_text)
 			message_table.put ("Expand All", ec_expand_button_expand_text)
 			message_table.put ("Display code in ontology", ec_menu_option_display_code)
+			message_table.put ("Convert to constraint ...", ec_object_context_menu_convert)
 			message_table.put ("Display path in path map", ec_object_context_menu_display_path)
 			message_table.put ("Delete node", ec_object_context_menu_delete)
+			message_table.put ("Refine constraint", ec_object_context_menu_refine)
 			message_table.put ("Add new child node", ec_attribute_context_menu_add_child)
 			message_table.put ("[includes]", ec_include_text)
 			message_table.put ("[excludes]", ec_exclude_text)

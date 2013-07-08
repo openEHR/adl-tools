@@ -61,22 +61,22 @@ feature -- Modification
 
 	set_node_id_text (a_str: STRING)
 		do
-			node_id_text := a_str
+			node_id_text := a_str.twin
 		end
 
 	set_node_id_description (a_str: STRING)
 		do
-			node_id_description := a_str
+			node_id_description := a_str.twin
 		end
 
 	set_ext_ref (a_str: STRING)
 		do
-			ext_ref := a_str
+			ext_ref := a_str.twin
 		end
 
 	set_path_ref (a_str: STRING)
 		do
-			path_ref := a_str
+			path_ref := a_str.twin
 		end
 
 end
