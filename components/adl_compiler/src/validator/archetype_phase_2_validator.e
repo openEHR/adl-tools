@@ -891,6 +891,7 @@ end
 						end
 					elseif ca.has_differential_path then
 						add_error (ec_VDIFP3, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True)>>)
+						Result := False
 					end
 				end
 			end
