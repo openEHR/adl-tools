@@ -45,6 +45,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_AOM_PROFILES_ACCESS
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	Application_developer_name: STRING

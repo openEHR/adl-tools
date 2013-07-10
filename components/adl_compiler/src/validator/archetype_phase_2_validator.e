@@ -377,6 +377,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_flat: STRING
 			ca_parent_flat: C_ATTRIBUTE
+			cref_conformance_ok: BOOLEAN
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				create apa.make_from_string (a_c_node.path)
@@ -521,6 +522,24 @@ end
 					else
 						add_error (ec_VSCNR, <<co_parent_flat.generating_type, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 							co_child_diff.generating_type, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+					end
+
+				elseif attached {CONSTRAINT_REF} co_child_diff then
+					-- this checks the case where the parent is not a C_CODE_PHRASE, but is a C_COMPLEX_OBJECT whose type is an
+					-- AOM type mapping for C_CODE_PHRASE, or else an ancestor of such a type
+					-- if not then -> VCRR
+					if not attached {C_CODE_PHRASE} co_parent_flat then
+						if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
+							if aom_p.aom_rm_type_mappings.has (bare_type_name(({CODE_PHRASE}).name)) and then attached aom_p.aom_rm_type_mappings.item (bare_type_name(({CODE_PHRASE}).name)) as aom_rm_tm then
+								if aom_rm_tm.target_class_name.same_string (co_parent_flat.rm_type_name) or else rm_schema.class_definition (aom_rm_tm.target_class_name).has_ancestor (co_parent_flat.rm_type_name) then
+									cref_conformance_ok := True
+								end
+							end
+						end
+						if not cref_conformance_ok then
+							add_error (ec_VCRR, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_parent_flat.rm_type_name, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
+						end
 					end
 
 				else

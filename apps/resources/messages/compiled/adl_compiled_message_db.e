@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (617)
+			create message_table.make (618)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -202,6 +202,8 @@ feature -- Initialisation
 			message_table.put ("RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent", ec_VARXTV)
 			message_table.put ("slot filler at $1 does not have matching slot node in flat parent", ec_VARXV)
 			message_table.put ("$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6", ec_VPOV)
+			message_table.put ("CONSTRAINT_REF object node at path $1 redefinition does not conform to RM type $2 parent path $3", ec_VCRR)
+			message_table.put ("redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked", ec_WCRC)
 			message_table.put ("archetype code $1 in ontology more specialised than archetype", ec_VONSD)
 			message_table.put ("archetype code $1 in ontology not present in language $2", ec_VONLC)
 			message_table.put ("Expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1", ec_VONCBU)
@@ -221,7 +223,6 @@ feature -- Initialisation
 			message_table.put ("attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model", ec_WCARMC)
 			message_table.put ("type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed", ec_ICORMTS)
 			message_table.put ("code $1 in ontology not used in archetype definition", ec_WOUC)
-			message_table.put ("redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked", ec_WCRC)
 			message_table.put ("AOM profile file $1 does not exist or not readable", ec_aom_profile_file_not_valid)
 			message_table.put ("AOM profile file $1 load failure; reason: $2", ec_aom_profile_load_failure)
 			message_table.put ("AOM profile file $1 load failure due to exception during processing", ec_aom_profile_load_failure_exception)
