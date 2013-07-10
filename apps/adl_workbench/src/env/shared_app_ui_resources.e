@@ -85,9 +85,10 @@ feature -- Definitions
 
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
-			-- LIGHT GREY
+			-- LIGHT BLUE
 		once
-			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
+			-- create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
+			create Result.make_with_8_bit_rgb (0x33, 0xcc, 0xff)
 		end
 
 	archetype_rm_type_redefined_color: EV_COLOR

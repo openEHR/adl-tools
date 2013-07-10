@@ -293,7 +293,8 @@ feature {NONE} -- Implementation
 			-- Return True if `an_arch_tool' should be populated from scratch
 		do
 			if attached source as src then
-				Result := src /= an_arch_tool.source or else				-- different archetype chosen
+				Result := src /= an_arch_tool.source or						-- different archetype chosen
+					differential_view /= an_arch_tool.differential_view	or	-- user has changed from flat to diff view or v.v.
 					not an_arch_tool.is_populated							-- some tools are pre-populated
 			end
 		end
@@ -306,8 +307,7 @@ feature {NONE} -- Implementation
 			if attached source as src then
 				Result :=
 					an_arch_tool.last_populate_timestamp < src.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
-					an_arch_tool.last_populate_timestamp < src.last_modify_timestamp or				-- source modified more recently than last populate
-					differential_view /= an_arch_tool.differential_view								-- user has changed from flat to diff view or v.v.
+					an_arch_tool.last_populate_timestamp < src.last_modify_timestamp				-- source modified more recently than last populate
 			end
 		end
 
