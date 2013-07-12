@@ -479,7 +479,7 @@ end
 							end
 						end
 					else
-						add_error (ec_compiler_unexpected_error, <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
+						add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
 					end
 				else
 					add_error (ec_VARXV, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True)>>)

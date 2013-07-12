@@ -82,10 +82,10 @@ feature -- Display
 				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
 
 				-- add 'power expander' action to logical C_OBJECT leaf nodes
-				if attached ed_context.rm_schema.archetype_parent_class then
-					visualise_descendants_class := ed_context.rm_schema.archetype_parent_class
-				elseif attached ed_context.rm_schema.archetype_visualise_descendants_of then
-					visualise_descendants_class := ed_context.rm_schema.archetype_visualise_descendants_of
+				if attached ed_context.rm_schema.archetype_parent_class as apc then
+					visualise_descendants_class := apc
+				elseif attached ed_context.rm_schema.archetype_visualise_descendants_of as avdo then
+					visualise_descendants_class := avdo
 				end
 				if attached visualise_descendants_class as vdc and then ed_context.rm_schema.is_descendant_of (arch_node.rm_type_name, vdc) then
 					gr.expand_actions.force_extend (agent (evx_grid.ev_grid).expand_tree (gr,
@@ -189,7 +189,7 @@ feature -- Modification
 				agent parent.remove_child (Current))
 		end
 
-	do_convert_to_constraint (co_create_params: C_OBJECT_CREATE_PARAMS)
+	do_convert_to_constraint (co_create_params: C_OBJECT_PROPERTIES)
 			-- convert this RM node to a constraint node under its attribute node. We do this
 			-- by removing the current node then doing a new node add; this is consistent with
 			-- when an 'add new node' request is done on an attribute node, which always requires an 'add'
@@ -235,27 +235,36 @@ feature -- Modification
 			Current_removed_from_parent: not parent.has_child (Current)
 		end
 
-	do_refine_constraint (co_create_params: C_OBJECT_CREATE_PARAMS)
+	do_refine_constraint (co_create_params: C_OBJECT_PROPERTIES)
 			-- refine this Archetye node
 		require
-			is_specialised
+			is_specialised and not is_rm
 		local
 			new_occ: MULTIPLICITY_INTERVAL
+			node_id_change_required: BOOLEAN
 		do
-			if attached arch_node as a_n then
-				if co_create_params.constraint_type.same_string (a_n.generator) then
-					if not a_n.rm_type_name.same_string (co_create_params.rm_type) then
-						a_n.set_rm_type_name (co_create_params.rm_type)
-						a_n.set_specialisation_status_redefined
-					end
+			if attached arch_node as a_n and then co_create_params.aom_type.same_string (a_n.generator) then
+				-- RM type
+				if not a_n.rm_type_name.same_string (co_create_params.rm_type) then
+					a_n.set_rm_type_name (co_create_params.rm_type)
+					a_n.set_specialisation_status_redefined
+				end
 
-					new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences)
-					if attached a_n.occurrences as occ and then not
-						occ.equal_interval (create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences))
-					then
-						a_n.set_occurrences (new_occ)
-						a_n.set_specialisation_status_redefined
-					end
+				-- occurences
+				new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences)
+				if attached a_n.occurrences as occ and then not
+					occ.equal_interval (create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences))
+				then
+					a_n.set_occurrences (new_occ)
+					a_n.set_specialisation_status_redefined
+				end
+
+				-- node id
+				if not co_create_params.node_id_text.same_string (ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text) then
+					ed_context.flat_ontology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
+				end
+				if not co_create_params.node_id_description.same_string (ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).description) then
+					ed_context.flat_ontology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
 				end
 			else -- need to do a remove and add
 
@@ -447,7 +456,7 @@ feature {NONE} -- Context menu
 
 				dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 				if dialog.is_valid then
-					do_refine_constraint (dialog.user_params)
+					do_refine_constraint (dialog.new_params)
 				end
 			end
 		end
@@ -464,7 +473,7 @@ feature {NONE} -- Context menu
 				parent.default_occurrences, ed_context.archetype, parent.child_node_id_required (rm_type.semantic_class.name), display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then
-				do_convert_to_constraint (dialog.user_params)
+				do_convert_to_constraint (dialog.new_params)
 			end
 		end
 

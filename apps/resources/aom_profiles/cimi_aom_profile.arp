@@ -28,7 +28,7 @@ terminology_profile = <
 -- The effect of this attribute in visualisation is to generate the most natural tree or
 -- grid-based view of an archetype definition, from the semantic viewpoint.
 --
-archetype_visualise_descendants_of = <"ELEMENT">
+archetype_visualise_descendants_of = <"ITEM">
 
 ----------------------------------------------------------------------------------------
 -- mappings from AOM built-in types used for special syntax, and RM types

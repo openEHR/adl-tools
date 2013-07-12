@@ -338,7 +338,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	create_arch_child (co_create_params: C_OBJECT_CREATE_PARAMS): C_OBJECT_ED_CONTEXT
+	create_arch_child (co_create_params: C_OBJECT_PROPERTIES): C_OBJECT_ED_CONTEXT
 			-- make new C_OBJECT child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 			-- don't add to context tree or archetype tree
 		require
@@ -363,11 +363,11 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				new_code := ed_context.archetype.ontology.last_added_term_definition_code
 			end
 
-			if co_create_params.constraint_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
+			if co_create_params.aom_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
 				create cpo.make (create_default_c_primitive (rm_type_name.as_upper))
 				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (cpo, ed_context)
 
-			elseif co_create_params.constraint_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				if attached new_code as nc then
 					create cco.make_identified (rm_type_name, nc)
 				else
@@ -375,13 +375,13 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make (cco, ed_context)
 
-			elseif co_create_params.constraint_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
 				check attached co_create_params.ext_ref as arch_id then
 					create car.make_external_ref (rm_type_name, arch_id)
 				end
 				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
 
-			elseif co_create_params.constraint_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
 				if attached new_code as nc then
 					create arch_slot.make_identified (rm_type_name, nc)
 				else
@@ -389,7 +389,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 				create {ARCHETYPE_SLOT_ED_CONTEXT} Result.make (arch_slot, ed_context)
 
-			elseif co_create_params.constraint_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
 				ed_context.archetype.ontology.add_new_non_refined_constraint_definition ("-", "-")
 				check attached ed_context.archetype.ontology.last_added_constraint_definition_code as new_ac_code then
 					create cref.make (new_ac_code)
@@ -423,7 +423,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	add_new_arch_child (co_create_params: C_OBJECT_CREATE_PARAMS)
+	add_new_arch_child (co_create_params: C_OBJECT_PROPERTIES)
 			-- create and add a new constraint node to archetype and editor tree
 			-- for the RM type `a_type_spec'
 		do
@@ -483,23 +483,23 @@ feature {NONE} -- Context menu
 		local
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
-			c_type_subs: ARRAYED_SET [STRING]
+			aom_type_subs: ARRAYED_SET [STRING]
 		do
 			create rm_type_substitutions.make (0)
 			rm_type_substitutions.compare_objects
 			rm_type_substitutions.extend (rm_class_def.name)
-			c_type_subs := aom_types_for_rm_type (rm_class_def)
-			c_type_subs.start
-			create dialog.make (c_type_subs, rm_type_substitutions, c_type_subs.item, rm_class_def.name,
+			aom_type_subs := aom_types_for_rm_type (rm_class_def)
+			aom_type_subs.start
+			create dialog.make (aom_type_subs, rm_type_substitutions, aom_type_subs.item, rm_class_def.name,
 				default_occurrences, ed_context.archetype, child_node_id_required (rm_class_def.name), display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 
 			if dialog.is_valid then
-				do_add_new_arch_child (dialog.user_params)
+				do_add_new_arch_child (dialog.new_params)
 			end
 		end
 
-	do_add_new_arch_child (co_create_params: C_OBJECT_CREATE_PARAMS)
+	do_add_new_arch_child (co_create_params: C_OBJECT_PROPERTIES)
 		require
 			not is_rm
 		local

@@ -135,6 +135,8 @@ feature -- Definitions
 		end
 
 	occurrences_default_list: HASH_TABLE [MULTIPLICITY_INTERVAL, STRING]
+			-- full set of all possible occurrences values:
+			-- 0..0, 0..1, 1..1, 0..*, 1..*
 		local
 			mult_int: MULTIPLICITY_INTERVAL
 		once

@@ -8,19 +8,19 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
-	C_OBJECT_CREATE_PARAMS
+	C_OBJECT_PROPERTIES
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_constraint_type, a_rm_type, an_occurrences_default_str: STRING)
+	make (an_aom_type, a_rm_type, an_occurrences_default_str: STRING)
 			-- Make with RM types, constraint type selection and an occurrences constrainer that is used to determine
 			-- the possible occurrences in this case
 		do
 			rm_type := a_rm_type
-			constraint_type := a_constraint_type
+			aom_type := an_aom_type
 			occurrences := an_occurrences_default_str
 			create node_id_text.make_from_string ("-")
 			create node_id_description.make_from_string ("-")
@@ -30,7 +30,7 @@ feature -- Access
 
 	rm_type: STRING
 
-	constraint_type: STRING
+	aom_type: STRING
 
 	occurrences: STRING
 
@@ -49,9 +49,9 @@ feature -- Modification
 			rm_type := a_str
 		end
 
-	set_constraint_type (a_str: STRING)
+	set_aom_type (a_str: STRING)
 		do
-			constraint_type := a_str
+			aom_type := a_str
 		end
 
 	set_occurrences (a_str: STRING)
