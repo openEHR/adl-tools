@@ -27,10 +27,10 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+	make_editable (an_undo_redo_update_agent: attached like undo_redo_update_agent)
 		do
 			undo_redo_update_agent := an_undo_redo_update_agent
-			create undo_redo_chain.make (undo_redo_update_agent)
+			create undo_redo_chain.make (an_undo_redo_update_agent)
 			make
 		end
 
@@ -107,6 +107,7 @@ feature {NONE} -- Implementation
 			path_row, ann_row: EV_GRID_ROW
 		do
 			-- figure out if there are any annotations, and what actual language tag they are under
+			check attached selected_language end
 			if source_archetype.has_annotations and then source_archetype.annotations.has_matching_language_tag (selected_language) then
 				lang_key := source_archetype.annotations.matching_language_tag (selected_language)
 

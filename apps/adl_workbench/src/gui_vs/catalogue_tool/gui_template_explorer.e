@@ -33,7 +33,7 @@ feature {NONE} -- Initialisation
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 
 			clear
-			
+
 			ev_root_container.set_data (Current)
 		end
 
@@ -86,9 +86,9 @@ feature {NONE} -- Implementation
 			-- make sure it is a template of some kind
 			if artefact_types.has (ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
-				if semantic_grid_row_map.has (ara.qualified_name) then
+				if semantic_grid_row_map.has (ara.qualified_name) and then attached semantic_grid_row_map.item (ara.qualified_name) as gr then
 					if ara.is_valid then
-						ev_tree_item_stack.extend (semantic_grid_row_map.item (ara.qualified_name))
+						ev_tree_item_stack.extend (gr)
 						gui_semantic_grid.remove_sub_rows (ev_tree_item_stack.item)
 						if attached {EV_GRID_LABEL_ITEM} ev_tree_item_stack.item.item (1) as gli then
 							gli.set_pixmap (catalogue_node_pixmap (ara))
@@ -113,9 +113,8 @@ feature {NONE} -- Implementation
 
 	ev_node_build_enter_action (an_og_node: attached OG_ITEM; indent_level: INTEGER)
 		local
-			ara: ARCH_CAT_ARCHETYPE
-			ca_path: STRING
-			csr: ARCHETYPE_CONSTRAINT
+			ca_path: detachable STRING
+			csr: detachable ARCHETYPE_CONSTRAINT
 		do
 			if attached {ARCHETYPE_CONSTRAINT} an_og_node.content_item as ca then
 				if attached {C_ATTRIBUTE} ca as c_attr then
@@ -125,9 +124,9 @@ feature {NONE} -- Implementation
 					end
 
 					-- now compute the path from this attr node back to the nearest C_ARCHETYPE_ROOT
-					from csr := c_attr until csr.parent = Void loop
+					from csr := c_attr until csr = Void loop
 						if attached {C_ARCHETYPE_ROOT} csr as car then
-							ca_path := c_attr.path_to_node(car)
+							ca_path := c_attr.path_to_node (car)
 						end
 						csr := csr.parent
 					end
@@ -136,12 +135,13 @@ feature {NONE} -- Implementation
 					end
 					if not c_attr.children.off then
 						gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, c_attr)
-						ev_tree_item_stack.extend (gui_semantic_grid.last_row)
-						gui_semantic_grid.set_last_row_label_col (1, ca_path, Void, Void, get_icon_pixmap ("archetype/" +
-							rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
+						check attached gui_semantic_grid.last_row as lr then
+							ev_tree_item_stack.extend (lr)
+							gui_semantic_grid.set_last_row_label_col (1, ca_path, Void, Void, get_icon_pixmap ("archetype/" +
+								rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
+						end
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached source as dir then
-					ara := dir.archetype_index.item (car.archetype_id)
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.archetype_index.item (car.archetype_id) as ara then
 					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
 				end
 			end
@@ -172,7 +172,10 @@ feature {NONE} -- Implementation
 			else
 				gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, aca)
 			end
-			ev_tree_item_stack.extend (gui_semantic_grid.last_row)
+			check attached gui_semantic_grid.last_row as lr then
+				ev_tree_item_stack.extend (lr)
+				semantic_grid_row_map.force (lr, aca.qualified_name)
+			end
 
 			-- tooltip		
 			create tooltip.make_empty
@@ -182,8 +185,6 @@ feature {NONE} -- Implementation
 			end
 
 			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)
-
-			semantic_grid_row_map.force (gui_semantic_grid.last_row, aca.qualified_name)
 		end
 
    	semantic_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)

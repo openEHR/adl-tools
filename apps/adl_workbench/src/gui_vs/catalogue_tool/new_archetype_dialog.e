@@ -83,9 +83,9 @@ feature {NONE} -- Initialization
 			gui_controls.extend (archetype_id_ctl)
 
 			-- ============ parent archetype id data entry control ============
-			if attached parent_archetype_id then
-				create parent_archetype_id_ctl.make_readonly (parent_archetype_id, get_text (ec_parent_archetype_id_label_text),
-					agent :STRING do Result := parent_archetype_id.domain_concept end
+			if attached parent_archetype_id as pid then
+				create parent_archetype_id_ctl.make_readonly (pid, get_text (ec_parent_archetype_id_label_text),
+					agent (a_parent_id: ARCHETYPE_ID):STRING do Result := a_parent_id.domain_concept end (pid)
 				)
 				ev_root_container.extend (parent_archetype_id_ctl.ev_root_container)
 				ev_root_container.disable_item_expand (parent_archetype_id_ctl.ev_root_container)
@@ -182,6 +182,10 @@ feature {NONE} -- Implementation
 	archetype_id_ctl: EVX_ARCHETYPE_ID_CONTROL
 
 	parent_archetype_id_ctl: detachable EVX_ARCHETYPE_ID_CONTROL
+		note
+			option: stable
+		attribute
+		end
 
 	dir_setter: EVX_DIRECTORY_SETTER
 

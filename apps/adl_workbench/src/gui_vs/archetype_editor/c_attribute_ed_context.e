@@ -347,6 +347,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			cpo: C_PRIMITIVE_OBJECT
 			cco: C_COMPLEX_OBJECT
 			car: C_ARCHETYPE_ROOT
+			air: ARCHETYPE_INTERNAL_REF
 			arch_slot: ARCHETYPE_SLOT
 			cref: CONSTRAINT_REF
 			new_code: detachable STRING
@@ -388,6 +389,16 @@ feature {ANY_ED_CONTEXT} -- Implementation
 					create arch_slot.make_anonymous (rm_type_name)
 				end
 				create {ARCHETYPE_SLOT_ED_CONTEXT} Result.make (arch_slot, ed_context)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name)) then
+				check attached co_create_params.path_ref as pr then
+					if attached new_code as nc then
+						create air.make_identified (rm_type_name, nc, pr)
+					else
+						create air.make (rm_type_name, pr)
+					end
+					create {ARCHETYPE_INTERNAL_REF_ED_CONTEXT} Result.make (air, ed_context)
+				end
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
 				ed_context.archetype.ontology.add_new_non_refined_constraint_definition ("-", "-")

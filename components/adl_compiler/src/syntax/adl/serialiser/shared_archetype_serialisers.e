@@ -138,6 +138,19 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
+	archetype_file_extension (diff_flag: BOOLEAN; a_format: STRING): STRING
+		do
+			if diff_flag then
+				check attached archetype_file_extensions [a_format] as ext then
+					Result := ext
+				end
+			else
+				check attached flat_archetype_file_extensions [a_format] as ext then
+					Result := ext
+				end
+			end
+		end
+
 feature -- Status Report
 
 	has_archetype_native_serialiser_format (a_format: STRING): BOOLEAN

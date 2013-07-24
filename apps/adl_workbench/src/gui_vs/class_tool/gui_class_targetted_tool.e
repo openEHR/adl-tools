@@ -22,7 +22,11 @@ feature -- Access
 	source: detachable BMM_CLASS_DEFINITION
 			-- class definition to which this tool is targetted
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
+		note
+			option: stable
+		attribute
+		end
 
 	tool_artefact_id: STRING
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like

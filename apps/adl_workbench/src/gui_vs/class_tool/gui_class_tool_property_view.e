@@ -35,6 +35,9 @@ feature -- Initialisation
 
 	make
 		do
+			create anc_classes.make(0)
+			create flat_properties.make (0)
+
 			-- create widgets
 			create ev_root_container
 
@@ -72,7 +75,9 @@ feature {NONE} -- Implementation
 			ev_grid.column (Grid_property_type_col).set_title (get_msg (ec_property_grid_property_type_col_title, Void))
 
 			-- add the rows
- 			populate_class_node (source)
+			check attached source as src then
+ 				populate_class_node (src)
+ 			end
 
 			-- resize grid cols properly
 			Grid_column_ids.do_all (

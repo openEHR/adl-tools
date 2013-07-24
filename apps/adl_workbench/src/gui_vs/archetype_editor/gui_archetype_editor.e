@@ -92,6 +92,7 @@ feature {NONE} -- Implementation
 
 	make_core_tools
 		do
+			check attached undo_redo_chain end
 			create description_controls.make_editable (undo_redo_chain)
 			create definition_control.make_editable (undo_redo_chain)
 			create ontology_controls.make_editable (undo_redo_chain)
@@ -103,21 +104,28 @@ feature {NONE} -- Implementation
 			-- pre-populate the description and node-map controls
 		do
 			precursor
-			description_controls.populate (source, differential_view, selected_language)
-			definition_control.populate (source, differential_view, selected_language)
+			if attached source as src and attached selected_language as sel_lang then
+				description_controls.populate (src, differential_view, sel_lang)
+				definition_control.populate (src, differential_view, sel_lang)
+			end
 		end
 
 	attach_gui_context
 		local
-			gui_context: ACA_EDITOR_STATE
+			gui_context: detachable ACA_EDITOR_STATE
 		do
-			if not source.has_gui_context then
-				create gui_context.make (source)
-				source.set_gui_context (gui_context)
-			elseif attached {ACA_EDITOR_STATE} source.gui_context as gc then
-				gui_context := gc
+			if attached source as src then
+				if not source.has_gui_context then
+					create gui_context.make (src)
+					source.set_gui_context (gui_context)
+				elseif attached {ACA_EDITOR_STATE} source.gui_context as gc then
+					gui_context := gc
+				end
+				check attached undo_redo_chain end
+				check attached gui_context as gc then
+					gc.set_editable (undo_redo_chain)
+				end
 			end
-			gui_context.set_editable (undo_redo_chain)
 		end
 
 	do_commit

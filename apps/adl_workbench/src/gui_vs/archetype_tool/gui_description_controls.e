@@ -45,7 +45,7 @@ feature {NONE} -- Initialisation
 
 			-- lifecycle state control - single line combo text-selection field
 			create lifecycle_state_text_ctl.make_linked (get_text (ec_lifecycle_state_label_text),
-				agent :STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
+				agent :detachable STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
 				archetype_lifecycle_states,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
 				Void, undo_redo_chain, 0, 140)
@@ -58,7 +58,7 @@ feature {NONE} -- Initialisation
 
 			-- original_author control - Hash
 			create original_author_ctl.make_linked (get_text (ec_auth_orig_auth_label_text),
-				agent :HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
+				agent :detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_original_author_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_original_author_item (a_key) end end,
 				undo_redo_chain,
@@ -90,7 +90,7 @@ feature {NONE} -- Initialisation
 
 			-- translation languages selector
 			create trans_languages_ctl.make (get_text (ec_trans_languages_label_text),
-				agent :DYNAMIC_LIST [STRING]
+				agent :detachable DYNAMIC_LIST [STRING]
 					do
 						if source_archetype.has_translations then
 							Result := create {ARRAYED_LIST [STRING]}.make_from_array (source_archetype.translations.current_keys)
@@ -314,8 +314,8 @@ feature {NONE} -- Implementation
 		require
 			is_populated
 		do
-			if attached source_archetype.description as desc and then desc.has_details then
-				Result := desc.detail_for_language (selected_language)
+			if attached source_archetype.description as desc and then desc.has_details and attached selected_language as sel_lang then
+				Result := desc.detail_for_language (sel_lang)
 			end
 		end
 

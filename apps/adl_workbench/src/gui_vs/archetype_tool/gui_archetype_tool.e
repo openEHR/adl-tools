@@ -60,17 +60,20 @@ feature {NONE}-- Initialization
 
 feature -- UI Feedback
 
-	select_ontology_item_from_code (a_code: attached STRING)
+	select_ontology_item_from_code (a_code: STRING)
 			-- select `a_code' in the ontology tab of this tool
 		do
-			if not ontology_controls.is_populated then
-				ontology_controls.populate (source, differential_view, selected_language)
-			end
-			ev_notebook.select_item (ontology_controls.ev_root_container)
-			if is_term_code (a_code) then
-				ontology_controls.select_term (a_code)
-			elseif is_constraint_code (a_code) then
-				ontology_controls.select_constraint (a_code)
+			if attached source as src then
+				check attached selected_language end
+				if not ontology_controls.is_populated then
+					ontology_controls.populate (src, differential_view, selected_language)
+				end
+				ev_notebook.select_item (ontology_controls.ev_root_container)
+				if is_term_code (a_code) then
+					ontology_controls.select_term (a_code)
+				elseif is_constraint_code (a_code) then
+					ontology_controls.select_constraint (a_code)
+				end
 			end
 		end
 

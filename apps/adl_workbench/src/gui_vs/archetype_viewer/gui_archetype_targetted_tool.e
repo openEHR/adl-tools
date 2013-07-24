@@ -58,7 +58,11 @@ feature -- Access
 			Result := source.id.as_string
 		end
 
-	selected_language: STRING
+	selected_language: detachable STRING
+		note
+			option: stable
+		attribute
+		end
 
 feature -- Status Report
 

@@ -40,6 +40,11 @@ feature -- Initialisation
 	make
 		do
 			create gui_controls.make (0)
+			create rm_node_path.make_root
+			create rm_publisher.make_empty
+			create ev_grid_rm_row_stack.make (0)
+			create ev_grid_rm_row_removals_stack.make (0)
+
 
 			-- create widgets
 			create ev_root_container
@@ -241,7 +246,7 @@ feature {NONE} -- Implementation
 
 	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl, rm_recompute_frame_ctl: EVX_FRAME_CONTROL
+	rm_property_visibility_frame_ctl, rm_rendering_frame_ctl, rm_recompute_frame_ctl: EVX_FRAME_CONTROL
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
@@ -250,8 +255,6 @@ feature {NONE} -- Implementation
 	control_panel: EVX_CONTROL_PANEL
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
-
-	ev_closure_recompute_button: EV_BUTTON
 
 	ev_grid_rm_row_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- stack for building the RM node tree
@@ -264,8 +267,6 @@ feature {NONE} -- Implementation
 
 	rm_node_path: OG_PATH
 
-	node_list: ARRAYED_LIST [EV_TREE_NODE]
-
 	closure_depth: INTEGER
 			-- closure compute depth; limits closure computation to manageable level
 
@@ -274,12 +275,14 @@ feature {NONE} -- Implementation
 		do
 			create rm_node_path.make_root
 			gui_grid.add_row (source)
-			ev_grid_rm_row_stack.extend (gui_grid.last_row)
-			ev_grid_rm_row_removals_stack.extend (False)
-			gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, source.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (source, rm_publisher))
-			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
-	 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
-	 	 	end
+			if attached gui_grid.last_row as lr and attached source as src then
+				ev_grid_rm_row_stack.extend (lr)
+				ev_grid_rm_row_removals_stack.extend (False)
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (src, rm_publisher))
+				if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
+		 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
+		 	 	end
+			end
 		end
 
 	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
@@ -359,6 +362,9 @@ feature {NONE} -- Implementation
 							type_str.append (bmm_gen_parm_def.as_display_type_string)
 							has_type_subs := bmm_gen_parm_def.has_type_substitutions
 							type_spec := a_bmm_prop.type
+
+						else
+							type_spec := a_bmm_prop.type
 						end
 
 						-- ======== property node =========
@@ -385,20 +391,17 @@ feature {NONE} -- Implementation
 						end
 
 						-- add tree expand handler to this node
-						gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
+						if attached gui_grid.last_row as lr then
+							lr.expand_actions.force_extend (agent property_node_expand_handler (lr))
 
-						-- add right-click menu to property node for removal etc
-			--			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
-			--		 		gli.pointer_button_press_actions.force_extend (agent property_node_handler (gli, ?, ?, ?))
-			--			end
-
-						-- ======== type node =========
-						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
-						ev_grid_rm_row_stack.extend (gui_grid.last_row)
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
-						if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
-				 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
-				 	 	end
+							-- ======== type node =========					
+							gui_grid.add_sub_row (lr, type_spec)
+							ev_grid_rm_row_stack.extend (lr)
+							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
+							if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
+					 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
+					 	 	end
+						end
 				 	else
 						ignore := True
 				 	end
@@ -547,11 +550,13 @@ feature {NONE} -- Implementation
 					gui_grid.add_sub_row (pr, bmm_subtype_def)
 				end
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
-				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
-	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
-					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
+				if attached gui_grid.last_row as lr then
+					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
+	 	 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
+						lr.expand_actions.force_extend (agent property_node_expand_handler (lr))
+					end
+					ev_grid_rm_row_stack.extend (lr)
 				end
-				ev_grid_rm_row_stack.extend (gui_grid.last_row)
 			end
 
 			ev_grid_rm_row_removals_stack.extend (False)

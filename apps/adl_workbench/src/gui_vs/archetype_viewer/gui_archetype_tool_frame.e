@@ -120,15 +120,15 @@ feature -- Events
 	on_select_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source as src then
+			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source as src and attached selected_language as sel_lang then
 				-- do anything required when tool becomes visible again
 				arch_tool.on_selected
 
 				-- update content if out of date in any way
 				if tool_populate_required (arch_tool) and arch_tool.can_populate (src) then
-					arch_tool.populate (src, differential_view, selected_language)
-				elseif selected_language /= arch_tool.selected_language and arch_tool.can_repopulate then
-					arch_tool.repopulate_with_language (selected_language)
+					arch_tool.populate (src, differential_view, sel_lang)
+				elseif sel_lang /= arch_tool.selected_language and arch_tool.can_repopulate then
+					arch_tool.repopulate_with_language (sel_lang)
 				elseif tool_repopulate_required (arch_tool) and arch_tool.can_repopulate then
 					arch_tool.repopulate
 				end
@@ -218,6 +218,7 @@ feature {NONE} -- Implementation
 
 			ev_archetype_id.set_text (source.qualified_name)
 			populate_primary_source
+			check attached source end
 			if source.is_valid then
 				ev_adl_version_text.set_text (source.differential_archetype.adl_version)
 				selected_language := source.differential_archetype.original_language.code_string

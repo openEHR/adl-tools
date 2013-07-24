@@ -94,124 +94,106 @@ feature {NONE} -- Initialisation
 
 			-- create widgets
 			create ev_root_container
-			create ev_test_hbox
-			create ev_test_vbox
-			create remove_unused_codes_rb
-			create arch_test_tree_toggle_expand_bn
-			create arch_test_refresh_bn
-			create regression_test_bn
-			create ev_processed_hbox
-			create ev_processed_label
-			create arch_test_processed_count
-			create ev_hsep_1
-			create archetype_test_go_bn
-			create ev_spacer_cell
-			create ev_hsep_2
-			create ev_diff_label
-			create diff_source_button
-			create diff_flat_button
-			create diff_source_flat_button
-			create diff_source_round_trip_button
-			create test_status_area
-
-			create ev_grid
-			ev_grid.disable_row_height_fixed
-			ev_grid.enable_tree
-			ev_grid.hide_tree_node_connectors
-			ev_grid.set_node_pixmaps (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			ev_grid.add_key_event (key_space,
-				agent
-					do
-						if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_grid.selected_cell as gcli then
-							gcli.toggle_is_checked
-							set_checkboxes_recursively (gcli)
-						end
-					end
-			)
-
-			-- connect widgets
-			ev_root_container.extend (ev_test_hbox)
-			ev_test_hbox.extend (ev_grid)
-			ev_test_hbox.extend (ev_test_vbox)
-			ev_test_vbox.extend (remove_unused_codes_rb)
-			ev_test_vbox.extend (arch_test_tree_toggle_expand_bn)
-			ev_test_vbox.extend (arch_test_refresh_bn)
-			ev_test_vbox.extend (regression_test_bn)
-			ev_test_vbox.extend (ev_processed_hbox)
-			ev_processed_hbox.extend (ev_processed_label)
-			ev_processed_hbox.extend (arch_test_processed_count)
-			ev_test_vbox.extend (ev_hsep_1)
-			ev_test_vbox.extend (archetype_test_go_bn)
-			ev_test_vbox.extend (ev_spacer_cell)
-			ev_test_vbox.extend (ev_hsep_2)
-			ev_test_vbox.extend (ev_diff_label)
-			ev_test_vbox.extend (diff_source_button)
-			ev_test_vbox.extend (diff_flat_button)
-			ev_test_vbox.extend (diff_source_flat_button)
-			ev_test_vbox.extend (diff_source_round_trip_button)
-			ev_root_container.extend (test_status_area)
-
-			-- set visual characteristics
 			ev_root_container.set_minimum_width (500)
+
+			create ev_test_hbox
+			ev_root_container.extend (ev_test_hbox)
 			ev_root_container.enable_item_expand (ev_test_hbox)
+
+			-- grid area
+			create evx_grid.make (True, False, True, True)
+			evx_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+--			evx_grid.ev_grid.add_key_event (key_space,
+--				agent
+--					do
+--						if attached {EV_GRID_CHECKABLE_LABEL_ITEM} evx_grid.ev_grid.selected_cell as gcli then
+--							gcli.toggle_is_checked
+--							set_checkboxes_recursively (gcli)
+--						end
+--					end
+--			)
+			ev_test_hbox.extend (evx_grid.ev_grid)
+
+			-- ========== view controls control panel ===========
+			create evx_control_panel.make
+			ev_test_hbox.extend (evx_control_panel.ev_root_container)
+			ev_test_hbox.disable_item_expand (evx_control_panel.ev_root_container)
+
+			-- tree collapse/expand control
+			create evx_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_grid),
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
+				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
+				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
+			evx_control_panel.add_frame (evx_treeview_control.ev_root_container, False)
+
+			--======================== 'Batch update' frame =======================
+			create evx_batch_update_frame.make ("Batch update", 85, 100, False)
+			evx_control_panel.add_frame_control (evx_batch_update_frame, False)
+
+			-- remove unused codes RB
+			create evx_remove_unused_codes_cb.make ("Remove unused codes", "Remove unused codes in archetypes on parse", agent :BOOLEAN do Result := remove_unused_codes end)
+			evx_batch_update_frame.extend (evx_remove_unused_codes_cb.ev_data_control, False)
+
+			--====================== 'Test' frame ========================
+			create evx_test_frame.make ("Test", 85, 100, False)
+			evx_control_panel.add_frame_control (evx_test_frame, False)
+
+			-- test refresh button
+			create evx_arch_test_refresh_bn.make (Void, Void, "Refresh", "Resync to file system and reset statuses", agent populate, Void)
+			evx_test_frame.extend (evx_arch_test_refresh_bn.ev_button, False)
+
+			-- regression test button
+			create evx_regression_test_cb.make_linked ("Regression", "Turn regression testing on for test archetypes",
+				agent :BOOLEAN do Result := regression_test_on end,
+				agent (a_flag: BOOLEAN) do regression_test_on := a_flag end
+			)
+			evx_test_frame.extend (evx_regression_test_cb.ev_data_control, False)
+
+			-- progress indicator
+			create evx_progress_counter.make_readonly ("Processed: ", agent :STRING do Result := last_tested_archetypes_count.out end, 0, 0, True)
+			evx_test_frame.extend (evx_progress_counter.ev_root_container, False)
+
+			-- start / stop button
+			create evx_archetype_test_go_bn.make (get_icon_pixmap ("tool/stop"), get_icon_pixmap ("tool/go"), "Go", "Start running tests", agent archetype_test_go, agent archetype_test_stop)
+			evx_test_frame.extend (evx_archetype_test_go_bn.ev_button, False)
+
+
+			-- ==================== 'Diffs' frame =======================
+			create evx_diffs_frame.make ("Diffs", 85, 100, False)
+			evx_control_panel.add_frame_control (evx_diffs_frame, False)
+
+			-- diff source button
+			create evx_diff_source_button.make (Void, Void,
+				"Source file v Serialised", "Open diff tool on parsed and 1st generation serialised .adls files",
+				 agent on_diff_source, Void)
+			evx_diffs_frame.extend (evx_diff_source_button.ev_button, False)
+
+			-- diff flat button
+			create evx_diff_flat_button.make (Void, Void,
+				"Legacy v gen'd Flat", "Open diff tool on legacy and generated flat files",
+				 agent on_diff_flat, Void)
+			evx_diffs_frame.extend (evx_diff_flat_button.ev_button, False)
+
+			-- diff source flat button
+			create evx_diff_source_flat_button.make (Void, Void,
+				"Source v gen'd Flat",
+				"Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.",
+				 agent on_diff_source_flat, Void)
+			evx_diffs_frame.extend (evx_diff_source_flat_button.ev_button, False)
+
+			-- round trip button
+			create evx_diff_source_round_trip_button.make (Void, Void,
+				"Source v R-trip", "Open diff tool on source and archetype round-tripped through ODIN P_* objects",
+				 agent on_diff_round_trip, Void)
+			evx_diffs_frame.extend (evx_diff_source_round_trip_button.ev_button, False)
+
+			-- status area
+			create test_status_area
+			ev_root_container.extend (test_status_area)
 			ev_root_container.disable_item_expand (test_status_area)
-			ev_test_hbox.disable_item_expand (ev_test_vbox)
-			ev_test_vbox.set_padding (Default_padding_width)
-			ev_test_vbox.set_border_width (Default_border_width)
-			ev_test_vbox.disable_item_expand (remove_unused_codes_rb)
-			ev_test_vbox.disable_item_expand (arch_test_tree_toggle_expand_bn)
-			ev_test_vbox.disable_item_expand (arch_test_refresh_bn)
-			ev_test_vbox.disable_item_expand (regression_test_bn)
-			ev_test_vbox.disable_item_expand (ev_processed_hbox)
-			ev_test_vbox.disable_item_expand (ev_hsep_1)
-			ev_test_vbox.disable_item_expand (archetype_test_go_bn)
-			ev_test_vbox.disable_item_expand (ev_hsep_2)
-			ev_test_vbox.disable_item_expand (ev_diff_label)
-			ev_test_vbox.disable_item_expand (diff_source_button)
-			ev_test_vbox.disable_item_expand (diff_flat_button)
-			ev_test_vbox.disable_item_expand (diff_source_flat_button)
-			ev_test_vbox.disable_item_expand (diff_source_round_trip_button)
-			remove_unused_codes_rb.set_text ("Remove unused codes")
-			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
-			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
-			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
-			arch_test_refresh_bn.set_text ("Refresh")
-			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
-			regression_test_bn.set_text ("Regression off")
-			regression_test_bn.set_tooltip ("Turn regression testing on for test archetypes")
-			ev_processed_hbox.set_minimum_width (110)
-			ev_processed_hbox.set_padding (Default_padding_width)
-			ev_processed_hbox.disable_item_expand (ev_processed_label)
-			ev_processed_label.set_text ("Processed:")
-			ev_processed_label.set_minimum_width (80)
-			ev_processed_label.align_text_right
-			arch_test_processed_count.disable_edit
-			ev_hsep_1.set_minimum_height (15)
-			archetype_test_go_bn.set_text ("Go")
-			archetype_test_go_bn.set_tooltip ("Start running tests")
-			ev_diff_label.set_text ("Diffs")
-			diff_source_button.set_text ("Source file v Serialised")
-			diff_source_button.set_tooltip ("Open diff tool on parsed and 1st generation serialised .adls files")
-			diff_flat_button.set_text ("Legacy v gen'd Flat")
-			diff_flat_button.set_tooltip ("Open diff tool on legacy and generated flat files")
-			diff_source_flat_button.set_text ("Source v gen'd Flat")
-			diff_source_flat_button.set_tooltip ("Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.")
-			diff_source_round_trip_button.set_text ("Source v R-trip")
-			diff_source_round_trip_button.set_tooltip ("Open diff tool on source and archetype round-tripped through dADL P_* objects")
 			test_status_area.set_minimum_height (status_area_min_height)
 			test_status_area.disable_edit
-			archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/go"))
 
-			-- set up events
-			arch_test_tree_toggle_expand_bn.select_actions.extend (agent toggle_expand_tree)
-			arch_test_refresh_bn.select_actions.extend (agent populate)
-			regression_test_bn.select_actions.extend (agent toggle_test_regression)
-			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
-			diff_source_button.select_actions.extend (agent on_diff_source)
-			diff_flat_button.select_actions.extend (agent on_diff_flat)
-			diff_source_flat_button.select_actions.extend (agent on_diff_source_flat)
-			diff_source_round_trip_button.select_actions.extend (agent on_diff_round_trip)
-	--		arch_test_processed_count.focus_in_actions.extend (agent text_widget_handler.on_select_all)
 
 			clear
 		end
@@ -228,8 +210,8 @@ feature -- Access
 			Result.force (agent regression_test, Regression_test_key)
 			Result.force (agent test_save_flat, "->adlf")
 			Result.force (agent test_source_compare, "Compare .adls")
-			Result.force (agent test_save_source_dadl, "src AOM->dADL")
-			Result.force (agent test_read_source_dadl, "src AOM<-dADL")
+			Result.force (agent test_save_source_dadl, "src AOM->ODIN")
+			Result.force (agent test_read_source_dadl, "src AOM<-ODIN")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -273,14 +255,14 @@ feature -- Access
 			create Result.make_empty
 		end
 
-	dadl_source_dir: STRING
-			-- directory where dADL files from source form archetypes are saved
+	odin_source_dir: STRING
+			-- directory where ODIN files from source form archetypes are saved
 		attribute
 			create Result.make_empty
 		end
 
 	dadl_flat_dir: STRING
-			-- directory where dADL files from flat form archetypes are saved
+			-- directory where ODIN files from flat form archetypes are saved
 		attribute
 			create Result.make_empty
 		end
@@ -311,9 +293,6 @@ feature -- Status Setting
 	remove_unused_codes: BOOLEAN
 			-- True means remove unused codes from every archetype	
 
-	test_execution_underway: BOOLEAN
-			-- True during a test run
-
 	test_stop_requested: BOOLEAN
 			-- user requested stop
 
@@ -327,7 +306,7 @@ feature -- Commands
 	clear
 			-- Wipe out content from widgets.
 		do
-			ev_grid.wipe_out
+			evx_grid.wipe_out
 			test_status_area.remove_text
 			create grid_row_stack.make(0)
 			create original_differential_text.make_empty
@@ -338,8 +317,8 @@ feature -- Commands
 	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
-			col_csr: INTEGER
 			curr_repo_name: STRING
+			col_titles: ARRAYED_LIST [STRING]
 		do
 			clear
 
@@ -352,30 +331,23 @@ feature -- Commands
  			end
 
 			-- put names on columns
-			if ev_grid.column_count > 0 then
-				ev_grid.column (1).set_title ("Archetypes - " + curr_repo_name)
-
-				if ev_grid.column_count >= first_test_col then
-					from
-						tests.start
-						col_csr := first_test_col
-					until
-						tests.off
-					loop
-						ev_grid.column (col_csr).set_title (tests.key_for_iteration)
-						tests.forth
-						col_csr := col_csr + 1
+			if evx_grid.column_count > 0 then
+				create col_titles.make (0)
+				col_titles.extend ("Archetypes - " + curr_repo_name)
+				col_titles.extend ("") -- checkbox column
+				if evx_grid.column_count >= first_test_col then
+					across tests as test_csr loop
+						col_titles.extend (test_csr.key)
 					end
+					evx_grid.set_column_titles (col_titles)
 				end
 
 				is_expanded := False
-				toggle_expand_tree
-				ev_grid.column (1).resize_to_content
-				ev_grid.column (2).resize_to_content
 			end
+			evx_grid.expand_tree
+			evx_grid.resize_columns_to_content
 
-			arch_test_processed_count.set_text ("0")
-			remove_unused_codes_rb.disable_select
+			evx_progress_counter.ev_data_control.set_text ("0")
 		end
 
    	set_row_pixmap (row: attached EV_GRID_ROW)
@@ -393,8 +365,8 @@ feature -- Commands
 			row: EV_GRID_ROW
    		do
 			if attached ari then
-				from i := ev_grid.row_count until i = 0 loop
-					row := ev_grid.row (i)
+				from i := evx_grid.row_count until i = 0 loop
+					row := evx_grid.ev_grid.row (i)
 					if row.data /= Void and then row.data.is_equal (ari) then
 						set_row_pixmap (row)
 						i := 0
@@ -407,46 +379,17 @@ feature -- Commands
 
 feature -- Events
 
-	toggle_expand_tree
-			-- toggle expanded status of tree view
-		do
-			if is_expanded then
-				ev_grid.collapse_tree (ev_grid.row (1))
-				arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
-				is_expanded := False
-			else
-				ev_grid.expand_tree (ev_grid.row (1), Void)
-				arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
-				is_expanded := True
-			end
-		end
-
-	toggle_test_regression
-		do
-			if regression_test_on then
-				regression_test_bn.set_text ("Regression off")
-				regression_test_on := False
-			else
-				regression_test_bn.set_text ("Regression on")
-				regression_test_on := True
-			end
-		end
-
-	archetype_test_go_stop
+	archetype_test_go
 			-- Start or stop a test run.
 		do
-			if test_execution_underway then
-				test_stop_requested := True
-			else
-				test_stop_requested := False
-				test_execution_underway := True
-				archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/stop"))
-				archetype_test_go_bn.set_text ("Pause")
-				run_tests
-				test_execution_underway := False
-				archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/go"))
-				archetype_test_go_bn.set_text ("Go")
-			end
+			test_stop_requested := False
+			run_tests
+		end
+
+	archetype_test_stop
+			-- Start or stop a test run.
+		do
+			test_stop_requested := True
 		end
 
 	on_diff_source
@@ -513,11 +456,11 @@ feature {NONE} -- Commands
 			row_csr: INTEGER
 		do
 			reset_output_directories
-			remove_unused_codes := remove_unused_codes_rb.is_selected
+			remove_unused_codes := evx_remove_unused_codes_cb.is_selected
 
 			last_tested_archetypes_count := 0
-			from row_csr := 1 until row_csr > ev_grid.row_count or test_stop_requested loop
-				run_tests_on_row (ev_grid.row (row_csr))
+			from row_csr := 1 until row_csr > evx_grid.row_count or test_stop_requested loop
+				run_tests_on_row (evx_grid.ev_grid.row (row_csr))
 				row_csr := row_csr + 1
 			end
 
@@ -576,7 +519,7 @@ feature {NONE} -- Commands
 					end
 
 					last_tested_archetypes_count := last_tested_archetypes_count + 1
-					arch_test_processed_count.set_text (last_tested_archetypes_count.out)
+					evx_progress_counter.ev_data_control.set_text (last_tested_archetypes_count.out)
 				end
 
 				gcli.set_is_checked (False)
@@ -591,6 +534,8 @@ feature {NONE} -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 			serialised_source_path: STRING
 		do
+			check attached target end
+
 			Result := test_failed
 			if not target.compile_attempted then
 				archetype_compiler.rebuild_lineage (target, 0)
@@ -750,12 +695,12 @@ feature {NONE} -- Tests
 		end
 
 	test_save_source_dadl: INTEGER
-			-- serialise differential archetype to dADL format, and copy to test area for later diffing
+			-- serialise differential archetype to ODIN format, and copy to test area for later diffing
 		do
 			Result := Test_failed
 			if target.is_valid then
 				target.save_compiled_differential
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_odin))
+				file_system.copy_file (target.differential_compiled_path, file_system.pathname (odin_source_dir, target.qualified_name + File_ext_odin))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -786,18 +731,17 @@ feature {NONE} -- Tests
 
 feature {NONE} -- Implementation
 
-	ev_test_vbox: EV_VERTICAL_BOX
-	ev_test_hbox, ev_processed_hbox: EV_HORIZONTAL_BOX
-	remove_unused_codes_rb: EV_CHECK_BUTTON
-	arch_test_tree_toggle_expand_bn,
-	arch_test_refresh_bn, regression_test_bn, archetype_test_go_bn, diff_source_button,
-	diff_flat_button, diff_source_flat_button, diff_source_round_trip_button: EV_BUTTON
-	ev_processed_label, ev_diff_label: EV_LABEL
-	arch_test_processed_count: EV_TEXT_FIELD
-	ev_hsep_1, ev_hsep_2: EV_HORIZONTAL_SEPARATOR
-	ev_spacer_cell: EV_CELL
+	ev_test_hbox: EV_HORIZONTAL_BOX
+	evx_remove_unused_codes_cb, evx_regression_test_cb: EVX_CHECK_BOX_CONTROL
+	evx_arch_test_refresh_bn, evx_archetype_test_go_bn, evx_diff_source_button,
+	evx_diff_flat_button, evx_diff_source_flat_button, evx_diff_source_round_trip_button: EVX_BUTTON
 	test_status_area: EV_TEXT
-	ev_grid: EV_GRID_KBD_MOUSE
+
+	evx_grid: EVX_GRID
+	evx_control_panel: EVX_CONTROL_PANEL
+	evx_treeview_control: EVX_TREEVIEW_CONTROL
+	evx_batch_update_frame, evx_test_frame, evx_diffs_frame: EVX_FRAME_CONTROL
+	evx_progress_counter: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	info_feedback_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
@@ -827,38 +771,26 @@ feature {NONE} -- Implementation
 	populate_gui_tree_node_enter (ari: ARCH_CAT_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		local
-			gli: EV_GRID_LABEL_ITEM
-			row: EV_GRID_ROW
 			col_csr: INTEGER
 		do
 			if ari.has_artefacts or ari.is_root then
-				create gli.make_with_text (utf8_to_utf32 (ari.name))
 				if grid_row_stack.is_empty then
-					ev_grid.set_item (1, 1, gli)
-					row := gli.row
-					gli.enable_select
+					evx_grid.add_row (ari)
 				else
-					row := grid_row_stack.item
-					row.collapse_actions.extend (agent ev_grid.step_to_viewable_parent_of_selected_row)
-
-					-- create a new sub row
-					row.insert_subrow (row.subrow_count + 1)
-
-					-- get the sub row
-					row := row.subrow (row.subrow_count)
-					row.set_item (1, gli)
+					grid_row_stack.item.collapse_actions.extend (agent (evx_grid.ev_grid).step_to_viewable_parent_of_selected_row)
+					evx_grid.add_sub_row (grid_row_stack.item, ari)
 				end
-				add_checkbox (row)
-				row.set_data (ari)
-				set_row_pixmap (row)
-				grid_row_stack.extend (row)
+				evx_grid.set_last_row_label_col (1, ari.name, Void, Void, get_icon_pixmap ("archetype/" + ari.group_name))
+				evx_grid.last_row_add_checkbox (2)
+				check attached evx_grid.last_row as lr then
+					grid_row_stack.extend (lr)
+				end
 
 				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-					gli.set_tooltip (utf8_to_utf32 (ara.full_path))
+					evx_grid.update_last_row_label_col (1, Void, ara.full_path, Void, Void)
 					col_csr := first_test_col
-					from tests.start until tests.off loop
-						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))
-						tests.forth
+					across tests as tests_csr loop
+						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void)
 						col_csr := col_csr + 1
 					end
 				end
@@ -974,9 +906,9 @@ feature {NONE} -- Implementation
 
 			-- dadl serialisation source and flat dirs
 			dadl_root := file_system.pathname (diff_dir_root, "dadl")
-			dadl_source_dir := file_system.pathname (dadl_root, "source")
-			if not file_system.directory_exists (dadl_source_dir) then
-				file_system.recursive_create_directory (dadl_source_dir)
+			odin_source_dir := file_system.pathname (dadl_root, "source")
+			if not file_system.directory_exists (odin_source_dir) then
+				file_system.recursive_create_directory (odin_source_dir)
 			end
 
 			dadl_flat_dir := file_system.pathname (dadl_root, "flat")
@@ -1008,33 +940,6 @@ feature {NONE} -- Implementation
 				end
 				Result.append (str_lst.item)
 				str_lst.forth
-			end
-		end
-
-	add_checkbox (row: EV_GRID_ROW)
-			-- Add the checkbox column to `row' of a grid control
-		local
-			gcli: EV_GRID_CHECKABLE_LABEL_ITEM
-		do
-			create gcli
-			row.set_item (2, gcli)
-			gcli.set_is_checked (True)
-			gcli.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (gcli))
-		ensure
-			at_least_2_columns: row.count >= 2
-		end
-
-	set_checkboxes_recursively (a_gcli: EV_GRID_CHECKABLE_LABEL_ITEM)
-			-- For all sub-items of `item' in a grid control, set their check boxes to match `item', recursively.
-		local
-			i: INTEGER
-		do
-			from i := a_gcli.row.subrow_count until i = 0 loop
-				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} a_gcli.row.subrow (i).item (a_gcli.column.index) as sub_gcli then
-					sub_gcli.set_is_checked (a_gcli.is_checked)
-					set_checkboxes_recursively (sub_gcli)
-				end
-				i := i - 1
 			end
 		end
 

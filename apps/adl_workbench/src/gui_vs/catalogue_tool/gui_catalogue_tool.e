@@ -72,8 +72,10 @@ feature {NONE} -- Initialisation
 			gui_mini_tool_bar.add_tool_bar
 			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_rotate_active"), get_icon_pixmap ("tool/view_rotate_inactive"),
 				get_text (ec_catalogue_mini_toolbar_view_rotate), agent on_rotate_view)
-			rotate_view_button := gui_mini_tool_bar.last_tool_bar_button
-			gui_mini_tool_bar.activate_tool_bar_button (rotate_view_button)
+			check attached gui_mini_tool_bar.last_tool_bar_button as tbb then
+				rotate_view_button := tbb
+				gui_mini_tool_bar.activate_tool_bar_button (tbb)
+			end
 
 			-- set events: select a notebook tab
 			ev_root_container.selection_actions.extend (agent on_select_notebook)
@@ -103,7 +105,9 @@ feature -- Access
 
 	mini_tool_bar: EV_TOOL_BAR
 		do
-			Result := gui_mini_tool_bar.last_tool_bar
+			check attached gui_mini_tool_bar.last_tool_bar as ltb then
+				Result := ltb
+			end
 		end
 
 feature -- Status Report
@@ -178,8 +182,8 @@ feature -- Commands
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
 						source.add_adhoc_archetype (fname)
-						if not source.has_errors then
-							selection_history.set_selected_item (source.last_added_archetype)
+						if not source.has_errors and attached source.last_added_archetype as arch then
+							selection_history.set_selected_item (arch)
 							show
 							repopulate
 						else
@@ -195,24 +199,24 @@ feature -- Commands
 	save_source_archetype_as
 			-- Save source (differential) archetype to a user-specified path
 		do
-			if selection_history.has_validated_selected_archetype then
-				save_archetype (selection_history.selected_archetype, True, True)
+			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
+				save_archetype (aca, True, True)
 			end
 		end
 
 	export_source_archetype_as
 			-- Export source archetype to a user-specified path
 		do
-			if selection_history.has_validated_selected_archetype then
-				save_archetype (selection_history.selected_archetype, True, False)
+			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
+				save_archetype (aca, True, False)
 			end
 		end
 
 	export_flat_archetype_as
 			-- Export flat archetype to a user-specified path
 		do
-			if selection_history.has_validated_selected_archetype then
-				save_archetype (selection_history.selected_archetype, False, False)
+			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
+				save_archetype (aca, False, False)
 			end
 		end
 
@@ -227,19 +231,21 @@ feature -- Events
 
 	on_select_notebook
 		do
-			if ev_root_container.selected_item.data = metrics_viewer then
-				if source.can_build_statistics then
-					source.build_detailed_statistics
-					if not attached metrics_viewer.last_populate_timestamp or else metrics_viewer.last_populate_timestamp < source.last_stats_build_timestamp then
-						metrics_viewer.populate (source)
+			if attached source as src then
+				if ev_root_container.selected_item.data = metrics_viewer then
+					if src.can_build_statistics then
+						src.build_detailed_statistics
+						if not attached metrics_viewer.last_populate_timestamp or else metrics_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
+							metrics_viewer.populate (src)
+						end
 					end
-				end
-			elseif ev_root_container.selected_item.data = stats_viewer then
-				if source.can_build_statistics then
-					source.build_detailed_statistics
-					if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < source.last_stats_build_timestamp then
-						across source.stats as stats_csr loop
-							stats_viewer.populate (stats_csr.item, True)
+				elseif ev_root_container.selected_item.data = stats_viewer then
+					if src.can_build_statistics then
+						src.build_detailed_statistics
+						if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
+							across src.stats as stats_csr loop
+								stats_viewer.populate (stats_csr.item, True)
+							end
 						end
 					end
 				end
@@ -272,21 +278,27 @@ feature {NONE} -- Implementation
 			-- Populate content from visual controls.
 		do
 			docking_pane.set_short_title (get_text (ec_catalogue_tool_title))
-			docking_pane.set_long_title (get_text (ec_catalogue_tool_title) + " " + repository_config_table.current_repository_name)
-			if attached source then
-				archetype_explorer.populate (source)
-				template_explorer.populate (source)
+			check attached repository_config_table.current_repository_name as crn then
+				docking_pane.set_long_title (get_text (ec_catalogue_tool_title) + " " + crn)
+			end
+			if attached source as src then
+				archetype_explorer.populate (src)
+				template_explorer.populate (src)
 				set_stats_metric_tab_appearance
 				on_select_notebook
 				go_to_selected_item
 			end
 		end
 
-	docking_pane: SD_CONTENT
+	docking_pane: detachable SD_CONTENT
+		note
+			option: stable
+		attribute
+		end
 
 	gui_mini_tool_bar: EVX_TOOL_BAR
 
-	rotate_view_button: EV_TOOL_BAR_BUTTON
+	rotate_view_button: detachable EV_TOOL_BAR_BUTTON
 
 	archetype_explorer: GUI_ARCHETYPE_EXPLORER
 
@@ -342,8 +354,10 @@ feature {NONE} -- Implementation
 
 				-- ask the user what format
 				across format_list as formats_csr loop
-					save_dialog.filters.extend (["*" + archetype_file_extensions [formats_csr.item],
+					check attached archetype_file_extensions [formats_csr.item] as file_ext then
+						save_dialog.filters.extend (["*" + file_ext,
 							get_msg (ec_save_archetype_as_type, <<formats_csr.item.as_upper>>)])
+					end
 				end
 
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -353,11 +367,7 @@ feature {NONE} -- Implementation
 					-- finalise the file path & create a handle
 					set_current_work_directory (file_system.dirname (name))
 					format := format_list [save_dialog.selected_filter_index]
-					if diff_flag then
-						ext := archetype_file_extensions [format]
-					else
-						ext := flat_archetype_file_extensions [format]
-					end
+					ext := archetype_file_extension (diff_flag, format)
 					if not file_system.has_extension (name, ext) then
 						name.append (ext)
 					end

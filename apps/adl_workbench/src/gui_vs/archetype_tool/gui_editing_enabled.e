@@ -84,11 +84,29 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	ev_undo_button, ev_redo_button: EV_TOOL_BAR_BUTTON
+	ev_undo_button: detachable EV_TOOL_BAR_BUTTON
+		note
+			option: stable
+		attribute
+		end
 
-	ev_commit_button: EV_TOOL_BAR_BUTTON
+	ev_redo_button: detachable EV_TOOL_BAR_BUTTON
+		note
+			option: stable
+		attribute
+		end
 
-	undo_redo_chain: UNDO_REDO_CHAIN
+	ev_commit_button: detachable EV_TOOL_BAR_BUTTON
+		note
+			option: stable
+		attribute
+		end
+
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
+		note
+			option: stable
+		attribute
+		end
 
 	update_undo_redo_controls
 			-- set undo/redo buttons appropriately
@@ -103,6 +121,7 @@ feature {NONE} -- Implementation
 			-- set undo/redo and commit controls appropriately
 		do
 			-- undo/redo buttons
+			check attached ev_undo_button and attached ev_redo_button end
 			if attached undo_redo_chain then
 				if undo_redo_chain.has_undos then
 					tool_bar.activate_tool_bar_button (ev_undo_button)
@@ -125,6 +144,7 @@ feature {NONE} -- Implementation
 
 	populate_commit_control
 		do
+			check attached ev_commit_button end
 			if is_dirty then
 				tool_bar.activate_tool_bar_button (ev_commit_button)
 			else

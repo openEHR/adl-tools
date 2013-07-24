@@ -32,6 +32,7 @@ feature -- Initialisation
 
 	make
 		do
+			create definition_grid_row_map.make (0)
 			create gui_controls.make (0)
 
 			-- create widgets
@@ -423,6 +424,7 @@ feature {NONE} -- Implementation
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
+			check attached selected_language end
 			create ui_settings.make (selected_language,
 				show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
@@ -433,15 +435,15 @@ feature {NONE} -- Implementation
 			source_ed_context.definition_context.display_in_grid (ui_settings)
 
 			-- make visualisation adjustments
-			if attached visualise_descendants_class then
+			if attached visualise_descendants_class as vis_desc_cl then
 				-- collapse the tree except nodes inheriting from `visualise_descendants_class'
 				gui_definition_treeview_control.on_collapse_except (
-					agent (a_row: EV_GRID_ROW): BOOLEAN
+					agent (a_row: EV_GRID_ROW; vis_desc_class: STRING): BOOLEAN
 						do
 							if attached {C_OBJECT_ED_CONTEXT} a_row.data as co_ed_ctx then
-								Result := not co_ed_ctx.is_rm and rm_schema.is_descendant_of (co_ed_ctx.rm_type.semantic_class.name, visualise_descendants_class)
+								Result := not co_ed_ctx.is_rm and rm_schema.is_descendant_of (co_ed_ctx.rm_type.semantic_class.name, vis_desc_class)
 							end
-						end
+						end (?, vis_desc_cl)
 				)
 			else
 				gui_definition_treeview_control.on_collapse_all
@@ -491,6 +493,7 @@ feature {NONE} -- Implementation
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_definition_grid.ev_grid.lock_update
 
+			check attached selected_language end
 			create ui_settings.make (selected_language, show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 

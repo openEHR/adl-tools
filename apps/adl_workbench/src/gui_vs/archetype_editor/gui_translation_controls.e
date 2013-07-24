@@ -30,15 +30,17 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+	make_editable (an_undo_redo_update_agent: attached like undo_redo_update_agent)
 		do
 			undo_redo_update_agent := an_undo_redo_update_agent
-			create undo_redo_chain.make (undo_redo_update_agent)
+			create undo_redo_chain.make (an_undo_redo_update_agent)
 			make
 		end
 
 	make
 		do
+			create translated_terms.make (0)
+
 			-- set commit handling
 			create gui_controls.make (0)
 
@@ -53,7 +55,12 @@ feature {NONE} -- Initialisation
 
 			-- original text in a tabbed tree format - multi-line text field
 			create original_text_ctl.make (get_text (ec_translation_original_label_text),
-				agent :STRING do Result := extract_original_text (source_archetype) end,
+				agent :STRING
+					do
+						check attached source_archetype as arch then
+							Result := extract_original_text (arch)
+						end
+					end,
 				0, 0, False)
 			gui_controls.extend (original_text_ctl)
 			ev_main_split_area.extend (original_text_ctl.ev_root_container)
@@ -201,11 +208,11 @@ feature {NONE} -- Implementation
 			rubric: STRING
 		do
 			create Result.make_empty
-			if is_valid_code (a_code) then
+			if is_valid_code (a_code) and attached selected_language as sel_lang then
 				if is_term_code (a_code) then
-					rubric := source_archetype.ontology.term_definition (selected_language, a_code).text
+					rubric := source_archetype.ontology.term_definition (sel_lang, a_code).text
 				else
-					rubric := source_archetype.ontology.constraint_definition (selected_language, a_code).text
+					rubric := source_archetype.ontology.constraint_definition (sel_lang, a_code).text
 				end
 				Result.append (annotated_code (a_code, rubric))
 			end

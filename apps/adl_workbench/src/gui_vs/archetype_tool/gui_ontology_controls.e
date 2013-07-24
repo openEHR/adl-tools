@@ -165,7 +165,11 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_TITLED_DATA_CONTROL) do an_item.populate end)
 		end
 
-	terminologies: ARRAYED_SET [STRING]
+	terminologies: detachable ARRAYED_SET [STRING]
+		note
+			option: stable
+		attribute
+		end
 
 	term_definition_header: ARRAY [STRING]
 			-- generate a set of heading strings for terminology table in ontology viewer
@@ -180,6 +184,7 @@ feature {NONE} -- Implementation
 			al.append (archetype_term_keys)
 
 			-- terminology names
+			check attached terminologies end
 			al.append (terminologies)
 
 			Result := al.to_array
@@ -194,6 +199,7 @@ feature {NONE} -- Implementation
 
 			-- column #1, 2, 3 - code, text, description
 			Result.extend (a_code)
+			check attached selected_language end
 			a_term := ontology.term_definition (selected_language, a_code)
 			Result.extend (utf8_to_utf32 (a_term.text))
 			Result.extend (utf8_to_utf32 (a_term.description))
@@ -213,6 +219,7 @@ feature {NONE} -- Implementation
 		local
 			a_term: ARCHETYPE_TERM
 		do
+			check attached selected_language end
 			create Result.make(3)
 
 			-- column #1, 2, 3 - code, text, description
@@ -234,6 +241,7 @@ feature {NONE} -- Implementation
 	update_term_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
 			-- update either term definition or binding in ontology based on `a_col_name' column in displayed table
 		do
+			check attached selected_language end
 			if archetype_term_keys.has (a_col_name) then
 				source_archetype.ontology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
 			elseif source_archetype.ontology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
@@ -246,6 +254,7 @@ feature {NONE} -- Implementation
 	update_constraint_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
 			-- update either constraint definition or binding in ontology based on `a_col_name' column in displayed table
 		do
+			check attached selected_language end
 			if archetype_term_keys.has (a_col_name) then
 				source_archetype.ontology.replace_constraint_definition_item (selected_language, a_code, a_col_name, a_value)
 			elseif source_archetype.ontology.has_constraint_binding (a_col_name, a_code) then -- replace an existing binding

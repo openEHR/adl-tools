@@ -179,11 +179,13 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			ev_class_id.set_text (source.globally_qualified_path)
-			properties_view.populate (source, differential_view)
-			closure_view.populate (source, differential_view)
-			ancestors_view.populate (source, differential_view)
-			descendants_view.populate (source, differential_view)
+			if attached source as src then
+				ev_class_id.set_text (src.globally_qualified_path)
+				properties_view.populate (src, differential_view)
+				closure_view.populate (src, differential_view)
+				ancestors_view.populate (src, differential_view)
+				descendants_view.populate (src, differential_view)
+			end
 		end
 
 	properties_view: GUI_CLASS_TOOL_PROPERTY_VIEW
@@ -206,7 +208,7 @@ feature {NONE} -- Implementation
 
 	ev_view_label: EV_LABEL
 
-	node_path: OG_PATH
+--	node_path: OG_PATH
 
 feature {NONE} -- Inapplicable
 

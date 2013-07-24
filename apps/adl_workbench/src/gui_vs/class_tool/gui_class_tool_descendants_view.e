@@ -1,13 +1,13 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Class map control - Visualise a reference model class as a node map"
-	keywords:    "archetype, cadl, gui"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
-	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	description: "Class descendants view"
+	keywords:    "archetype, gui"
+	author:      "Thomas Beale"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_CLASS_TOOL_ANCESTORS_VIEW
+class GUI_CLASS_TOOL_DESCENDANTS_VIEW
 
 inherit
 	GUI_CLASS_TARGETTED_TOOL
@@ -24,12 +24,16 @@ feature -- Initialisation
 
 	make
 		do
+ 			create ev_tree_item_stack.make (0)
+
 			-- create widgets
 			create ev_root_container
+
 			create ev_tree
 
 			-- connect widgets
 			ev_root_container.extend (ev_tree)
+
 			ev_root_container.set_data (Current)
 		end
 
@@ -52,16 +56,18 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
  			create ev_tree_item_stack.make (0)
- 			a_ti := create_node (source)
- 			ev_tree.extend (a_ti)
-			ev_tree_item_stack.extend (a_ti)
-			populate_ancestor_nodes (source)
-			ev_tree.recursive_do_all (agent ev_tree_item_expand)
+ 			if attached source as src then
+	 			a_ti := create_node (src)
+	 			ev_tree.extend (a_ti)
+				ev_tree_item_stack.extend (a_ti)
+				populate_descendant_nodes (src)
+				ev_tree.recursive_do_all (agent ev_tree_item_expand)
+			end
 		end
 
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 
-   	create_node (a_class_def: attached BMM_CLASS_DEFINITION): EV_TREE_ITEM
+   	create_node (a_class_def: BMM_CLASS_DEFINITION): EV_TREE_ITEM
 			-- create a node for `a_class_def'
  		do
 			create Result
@@ -70,26 +76,26 @@ feature {NONE} -- Implementation
 			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 		end
 
-   	populate_ancestor_nodes (a_class_def: attached BMM_CLASS_DEFINITION)
+   	populate_descendant_nodes (a_class_def: BMM_CLASS_DEFINITION)
 			-- Add sub node node
    		local
 			a_ti: EV_TREE_ITEM
 		do
-			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
-				a_ti := create_node (a_class_def.ancestors.item_for_iteration)
+			from a_class_def.immediate_descendants.start until a_class_def.immediate_descendants.off loop
+				a_ti := create_node (a_class_def.immediate_descendants.item_for_iteration)
 	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
-				populate_ancestor_nodes (a_class_def.ancestors.item_for_iteration)
+				populate_descendant_nodes (a_class_def.immediate_descendants.item_for_iteration)
 				ev_tree_item_stack.remove
-				a_class_def.ancestors.forth
+				a_class_def.immediate_descendants.forth
 			end
 		end
 
-	ev_tree_item_expand (an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_expand (an_ev_tree_node: EV_TREE_NODE)
 			--
 		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
+			if an_ev_tree_node.is_expandable then
 				an_ev_tree_node.expand
 			end
 		end

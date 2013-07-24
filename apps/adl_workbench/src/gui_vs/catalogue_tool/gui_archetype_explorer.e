@@ -85,22 +85,26 @@ feature -- Commands
 			-- update Catalogue tree node with changes in compilation status
 		do
 			-- update semantic grid
-			if semantic_grid_row_map.has (aca.qualified_name) then
-				semantic_grid_update_row (semantic_grid_row_map.item (aca.qualified_name), True)
+			if semantic_grid_row_map.has (aca.qualified_name) and then attached semantic_grid_row_map.item (aca.qualified_name) as gr then
+				semantic_grid_update_row (gr, True)
 			elseif attached aca.old_id then
 				if semantic_grid_row_map.has (aca.old_id.as_string) then
 					semantic_grid_row_map.replace_key (aca.qualified_name, aca.old_id.as_string)
-					semantic_grid_update_row (semantic_grid_row_map.item (aca.qualified_name), True)
+					if attached semantic_grid_row_map.item (aca.qualified_name) as gr then
+						semantic_grid_update_row (gr, True)
+					end
 				end
 			end
 
 			-- update filesys grid
-			if filesys_grid_row_map.has (aca.qualified_name) then
-				filesys_grid_update_row (filesys_grid_row_map.item (aca.qualified_name), True)
+			if filesys_grid_row_map.has (aca.qualified_name) and then attached filesys_grid_row_map.item (aca.qualified_name) as gr then
+				filesys_grid_update_row (gr, True)
 			elseif attached aca.old_id then
 				if filesys_grid_row_map.has (aca.old_id.as_string) then
 					filesys_grid_row_map.replace_key (aca.qualified_name, aca.old_id.as_string)
-					filesys_grid_update_row (filesys_grid_row_map.item (aca.qualified_name), True)
+					if attached filesys_grid_row_map.item (aca.qualified_name) as gr then
+						filesys_grid_update_row (gr, True)
+					end
 				end
 			end
 		end
@@ -484,16 +488,18 @@ feature {NONE} -- Implementation
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
-			create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, source)
-			check attached proximate_ev_window (ev_root_container) as prox_win then
-				dialog.show_modal_to_window (prox_win)
+			if attached source as src then
+				create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, src)
+				check attached proximate_ev_window (ev_root_container) as prox_win then
+					dialog.show_modal_to_window (prox_win)
+				end
+				if dialog.is_valid then
+					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
+					populate (src)
+					select_item_in_tree (src.last_added_archetype.id.as_string)
+				end
+				dialog.destroy
 			end
-			if dialog.is_valid then
-				source.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
-				populate (source)
-				select_item_in_tree (source.last_added_archetype.id.as_string)
-			end
-			dialog.destroy
 		end
 
 	create_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE)
@@ -511,14 +517,16 @@ feature {NONE} -- Implementation
 				in_dir_path := repository_config_table.current_reference_repository_path
 			end
 
-			create dialog.make (in_dir_path, create {ARCHETYPE_ID}.make_new (accn.qualified_name), source)
-			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-			if dialog.is_valid then
-				source.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
-				populate (source)
-				select_item_in_tree (source.last_added_archetype.id.as_string)
+			if attached source as src then
+				create dialog.make (in_dir_path, create {ARCHETYPE_ID}.make_new (accn.qualified_name), src)
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if dialog.is_valid then
+					src.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
+					populate (src)
+					select_item_in_tree (src.last_added_archetype.id.as_string)
+				end
+				dialog.destroy
 			end
-			dialog.destroy
 		end
 
 end
