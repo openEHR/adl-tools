@@ -72,7 +72,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			Result.append (an_ordinal.value.out)
-			Result.append (" - ")
+			Result.append (", ")
 			Result.append (term_string (an_ordinal.symbol.terminology_id.value, an_ordinal.symbol.code_string))
 			if assumed_flag then
 				Result.append (" (" + get_text (ec_assumed_text) + ")")

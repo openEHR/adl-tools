@@ -52,7 +52,7 @@ feature -- Display
 					bmm_prop_magnitude := ed_context.rm_schema.property_definition (a_n.rm_type_name, a_n.rm_property_name ("magnitude"))
 					bmm_prop_units := ed_context.rm_schema.property_definition (a_n.rm_type_name, a_n.rm_property_name ("units"))
 					bmm_prop_precision := ed_context.rm_schema.property_definition (a_n.rm_type_name, a_n.rm_property_name ("precision"))
-					bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
+					bmm_prop_key := bmm_prop_magnitude.name + ", " + bmm_prop_units.name + ", " + bmm_prop_precision.name
 
 					evx_grid.add_sub_row (gr, Void)
 					evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,

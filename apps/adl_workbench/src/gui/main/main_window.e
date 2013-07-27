@@ -806,8 +806,8 @@ feature {NONE} -- Repository events
 			-- Build the subsystem below the currently selected node.
 		do
 			console_tool.show
-			if catalogue_tool.selection_history.has_selected_item then
-				do_build_action (agent archetype_compiler.build_subtree (catalogue_tool.selected_item))
+			if catalogue_tool.selection_history.has_selected_item and then attached catalogue_tool.selected_item as sel_item then
+				do_build_action (agent archetype_compiler.build_subtree (sel_item))
 			end
 		end
 
@@ -815,8 +815,8 @@ feature {NONE} -- Repository events
 			-- Force rebuilding of the whole subsystem below the currently selected node.
 		do
 			console_tool.show
-			if catalogue_tool.selection_history.has_selected_item then
-				do_build_action (agent archetype_compiler.rebuild_subtree (catalogue_tool.selected_item))
+			if catalogue_tool.selection_history.has_selected_item and then attached catalogue_tool.selected_item as sel_item then
+				do_build_action (agent archetype_compiler.rebuild_subtree (sel_item))
 			end
 		end
 
@@ -1371,7 +1371,9 @@ feature {NONE} -- Implementation
 	do_refresh_profile_context (refresh_from_repository: BOOLEAN)
 		do
 			console_tool.show
-			console_tool.append_text (get_msg_line ("populating_directory_start", <<repository_config_table.current_repository_name>>))
+			if attached repository_config_table.current_repository_name as rep_name then
+				console_tool.append_text (get_msg_line ("populating_directory_start", <<rep_name>>))
+			end
 			use_current_repository (refresh_from_repository)
 			console_tool.append_text (current_arch_cat.error_strings)
 			console_tool.append_text (get_msg_line ("populating_directory_complete", Void))

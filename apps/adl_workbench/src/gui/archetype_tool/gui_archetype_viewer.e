@@ -87,11 +87,13 @@ feature -- UI Feedback
 	select_path_item_from_path (a_path: STRING)
 			-- select the `a_path' in the paths tab of this tool
 		do
-			if not path_map_control.is_populated then
-				path_map_control.populate (source, differential_view, selected_language)
+			if attached source as src and attached selected_language as sel_lang then
+				if not path_map_control.is_populated then
+					path_map_control.populate (src, differential_view, sel_lang)
+				end
+				ev_notebook.select_item (path_map_control.ev_root_container)
+				path_map_control.select_path (a_path)
 			end
-			ev_notebook.select_item (path_map_control.ev_root_container)
-			path_map_control.select_path (a_path)
 		end
 
 feature -- Commands
@@ -110,8 +112,8 @@ feature {NONE} -- Events
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key /= Void and then key.code = key_enter then
-					gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_suppliers_tree.selected_item])
+				if key.code = key_enter and attached slot_map_control.ev_suppliers_tree.selected_item as sel_item then
+					gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
 				end
 			end
 		end
@@ -120,8 +122,8 @@ feature {NONE} -- Events
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key /= Void and then key.code = key_enter then
-					gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_clients_tree.selected_item])
+				if key.code = key_enter and attached slot_map_control.ev_clients_tree.selected_item as sel_item then
+					gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
 				end
 			end
 		end
@@ -129,13 +131,17 @@ feature {NONE} -- Events
 	on_slot_map_suppliers_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
 		do
-			gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_suppliers_tree.selected_item])
+			if attached slot_map_control.ev_suppliers_tree.selected_item as sel_item then
+				gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
+			end
 		end
 
 	on_slot_map_clients_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
 		do
-			gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_clients_tree.selected_item])
+			if attached slot_map_control.ev_clients_tree.selected_item as sel_item then
+				gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
+			end
 		end
 
 	on_path_map_key_press (key: EV_KEY)
@@ -172,21 +178,23 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			precursor
-			if source.is_valid then
-				-- pre-populate the description and node-map controls, or else populate the validity control and show it
-				description_controls.populate (source, differential_view, selected_language)
-				definition_control.populate (source, differential_view, selected_language)
-				ev_notebook.select_item (definition_control.ev_root_container)
-			else
-				ev_notebook.select_item (validity_report_control.ev_root_container)
+			if attached source as src and attached selected_language as sel_lang then
+				if src.is_valid then
+					-- pre-populate the description and node-map controls, or else populate the validity control and show it
+					description_controls.populate (src, differential_view, sel_lang)
+					definition_control.populate (src, differential_view, sel_lang)
+					ev_notebook.select_item (definition_control.ev_root_container)
+				else
+					ev_notebook.select_item (validity_report_control.ev_root_container)
+				end
+				set_tab_appearance
 			end
-			set_tab_appearance
 		end
 
 	attach_gui_context
 		do
-			if not source.has_gui_context then
-				source.set_gui_context (create {ACA_EDITOR_STATE}.make (source))
+			if attached source as src and then not src.has_gui_context then
+				src.set_gui_context (create {ACA_EDITOR_STATE}.make (src))
 			end
 		end
 

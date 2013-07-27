@@ -339,8 +339,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 		end
 
 	create_arch_child (co_create_params: C_OBJECT_PROPERTIES): C_OBJECT_ED_CONTEXT
-			-- make new C_OBJECT child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
-			-- don't add to context tree or archetype tree
+			-- make new C_OBJECT child 
 		require
 			not is_rm
 		local

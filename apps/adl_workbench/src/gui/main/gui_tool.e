@@ -220,6 +220,8 @@ feature {GUI_TOOL} -- Implementation
 
 	do_populate
 			-- populate visual controls from data source
+		require
+			is_populated
 		deferred
 		end
 

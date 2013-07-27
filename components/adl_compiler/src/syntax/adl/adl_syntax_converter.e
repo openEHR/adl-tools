@@ -28,7 +28,7 @@ feature -- Access
 
 	perform_syntax_upgrade (odin_text: STRING)
 			-- perform any upgrades likely to be required on older archetypes
-			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
+			-- odin_text will be of form "C_SOME_TYPE <xxxxx>"
 		do
 		end
 
@@ -55,7 +55,7 @@ feature -- ADL 1.4 conversions
 		end
 
 	convert_c_dv_names (odin_text: STRING)
-			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
+			-- convert C_QUANTITY and C_ORDINAL in embedded ODIN sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
 		local
 			pos: INTEGER
@@ -76,7 +76,7 @@ feature -- ADL 1.4 conversions
 		end
 
 	convert_c_quantity_property (odin_text: STRING)
-			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
+			-- convert an old style C_QUANTITY property ODIN fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
 			--		property = <"xxxx">
@@ -151,8 +151,8 @@ feature -- ADL 1.4 conversions
 
 feature -- ADL 1.5 conversions
 
-	convert_dadl_type_name (a_type_name: STRING): STRING
-			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
+	convert_odin_type_name (a_type_name: STRING): STRING
+			-- convert type name preceding <> ODIN block to (typename), i.e. add parentheses
 			-- spec change is part of ADL 1.4.1, Release 1.0.2 of openEHR
 		require
 			type_name_valid: not a_type_name.is_empty
@@ -203,7 +203,7 @@ feature -- ADL 1.5 conversions
 	convert_ontology_to_nested (dt: DT_COMPLEX_OBJECT_NODE)
 			-- convert 'items' nodes in ontology to nested form, corresponding to declaration like
 			-- HASH_TABLE [HASH_TABLE [ARCHETPE_TERM, STRING]]; the ADL way of expression ontology
-			-- has nested structures in the AOM, but non-nested structures in the dADL, due to
+			-- has nested structures in the AOM, but non-nested structures in the ODIN, due to
 			-- intervening 'items' attributes. This routine converts the parsed structure so that
 			-- these attributes are marked in the correct way to indicate nesting of container structures
 			-- which then enables the DT_OBJECT_CONVERTER to correctly generate such structures.

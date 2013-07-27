@@ -38,12 +38,13 @@ feature {NONE} -- Initialization
 	make
 		do
 			create ev_root_container.default_create
-			ev_root_container.set_data (Current)
 
 			create report_controls.make
 			ev_root_container.extend (report_controls.ev_root_container)
 			add_sub_tool (report_controls)
 			enable_selection_history
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

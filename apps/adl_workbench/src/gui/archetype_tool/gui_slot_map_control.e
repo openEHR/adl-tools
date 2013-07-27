@@ -97,12 +97,10 @@ feature {NONE} -- Implementation
 			-- Populate `subtree' from `ids'.
 		local
 			eti: EV_TREE_ITEM
-			ara: ARCH_CAT_ARCHETYPE
 		do
 			across ids as id_csr loop
 				create eti.make_with_text (utf8_to_utf32 (id_csr.item))
-				if current_arch_cat.archetype_index.has(id_csr.item) then
-					ara := current_arch_cat.archetype_index.item (id_csr.item)
+				if current_arch_cat.archetype_index.has(id_csr.item) and then attached current_arch_cat.archetype_index.item (id_csr.item) as ara then
 					eti.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 					eti.set_data (ara)
 				end
@@ -126,29 +124,31 @@ feature {NONE} -- Implementation
 			slots_count: INTEGER
 			used_by_count: INTEGER
 		do
-			if source.has_slots then
-				across source.slot_id_index as slots_csr loop
-					create eti.make_with_text (utf8_to_utf32 (source.differential_archetype.ontology.physical_to_logical_path (slots_csr.key, selected_language, True)))
-					eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
-					ev_suppliers_tree.extend (eti)
-					append_tree (eti, slots_csr.item)
-					slots_count := slots_count + eti.count
-					if eti.is_expandable then
-						eti.expand
+			if attached source as src and attached selected_language as sel_lang then
+				if src.has_slots then
+					across src.slot_id_index as slots_csr loop
+						create eti.make_with_text (utf8_to_utf32 (src.differential_archetype.ontology.physical_to_logical_path (slots_csr.key, sel_lang, True)))
+						eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
+						ev_suppliers_tree.extend (eti)
+						append_tree (eti, slots_csr.item)
+						slots_count := slots_count + eti.count
+						if eti.is_expandable then
+							eti.expand
+						end
 					end
 				end
-			end
 
-			if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
-				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
-			end
+				if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
+					ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
+				end
 
-			if source.is_supplier then
-				append_tree (ev_clients_tree, source.clients_index)
-				used_by_count := used_by_count + ev_clients_tree.count
-			end
+				if src.is_supplier and attached src.clients_index as ci then
+					append_tree (ev_clients_tree, ci)
+					used_by_count := used_by_count + ev_clients_tree.count
+				end
 
-			call_visual_update_action (slots_count, used_by_count)
+				call_visual_update_action (slots_count, used_by_count)
+			end
 		end
 
 	call_visual_update_action (val1, val2: INTEGER)

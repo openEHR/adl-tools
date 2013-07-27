@@ -143,7 +143,8 @@ feature {NONE} -- Implementation
 
 	do_populate
 		local
-			s, syntax_type: STRING
+			syntax_type: detachable STRING
+			s: STRING
 		do
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
@@ -162,6 +163,7 @@ feature {NONE} -- Implementation
 				elseif ev_serialise_yaml_rb.is_selected then
 					syntax_type := Syntax_type_yaml
 				end
+				check attached syntax_type end
 				s := source.serialise_object (not differential_view, syntax_type)
 			end
 			populate_serialised_rich_text (s)

@@ -181,8 +181,8 @@ feature -- Commands
 			match_path, l_path: STRING
 			found: BOOLEAN
 		do
-			if ev_nat_lang_paths_cb.is_selected then
-				match_path := source_archetype.ontology.physical_to_logical_path (a_path, selected_language, True)
+			if ev_nat_lang_paths_cb.is_selected and attached selected_language as sel_lang then
+				match_path := source_archetype.ontology.physical_to_logical_path (a_path, sel_lang, True)
 			else
 				match_path := a_path
 			end
@@ -228,6 +228,7 @@ feature {NONE} -- Implementation
 			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
 
 			create l_paths.make (0)
+			check attached selected_language end
 			if ev_row_filter_combo.text.is_equal ("All") then
 				p_paths := source_archetype.physical_paths
 				if ev_nat_lang_paths_cb.is_selected then

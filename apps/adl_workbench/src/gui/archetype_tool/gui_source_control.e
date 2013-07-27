@@ -67,7 +67,7 @@ feature {NONE} -- Implementation
 
 	ev_souce_rich_text: EV_RICH_TEXT
 
-	ev_source_rb_vbox, ev_source_controls_vbox: EV_VERTICAL_BOX
+	ev_source_controls_vbox: EV_VERTICAL_BOX
 
 	ev_source_padding_cell: EV_CELL
 
@@ -80,14 +80,14 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			if source.has_legacy_flat_file then
-				populate_source_text (source.legacy_flat_text)
-			else
-				populate_source_text (source.differential_text)
+			if source.has_legacy_flat_file and then attached source.legacy_flat_text as ft then
+				populate_source_text (ft)
+			elseif attached source.differential_text as dt then
+				populate_source_text (dt)
 			end
 		end
 
-	populate_source_text (text: attached STRING)
+	populate_source_text (text: STRING)
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
 		local
 			s: STRING
