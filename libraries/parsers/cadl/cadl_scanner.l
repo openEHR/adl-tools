@@ -364,14 +364,14 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				last_string_value := text
 			}
 
-----------/* V_C_DOMAIN_TYPE - sections of dADL syntax */ -------------------------------------------------
+----------/* V_C_DOMAIN_TYPE - sections of ODIN syntax */ -------------------------------------------------
 
--- this is an attempt to match a dADL section inside cADL. It will probably never work properly since 
+-- this is an attempt to match a ODIN section inside cADL. It will probably never work properly since 
 -- there can be '>' inside "||" ranges, and also strings containing any character, e.g. units string
--- containing "{}" chars. The real solution is to use the dADL parser on the buffer from the current
--- point on and be able to fast-forward the cursor to the last character matched by the dADL scanner
+-- containing "{}" chars. The real solution is to use the ODIN parser on the buffer from the current
+-- point on and be able to fast-forward the cursor to the last character matched by the ODIN scanner
 
--- The following version is deprecated, since it does not have the ADL 1.4 dADL parentheses. It should
+-- The following version is deprecated, since it does not have the ADL 1.4 ODIN parentheses. It should
 -- be removed when there are no longer any archetypes containing it.
 [A-Z]{IDCHAR}*[	 \n]*< 			{	-- match a pattern like 'Type_Identifier whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
@@ -397,7 +397,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
  			}
 
 	[^}>]*>+[	 \n]*[}A-Z] 	{ -- final section - '...> whitespace } or beginning of a type identifier'
-				-- get the entire section of dADL
+				-- get the entire section of ODIN
 				in_buffer.append_string (text)
 				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character 
 				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
@@ -405,7 +405,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 				str_.append_string (in_buffer)
 				in_lineno := in_lineno + str_.occurrences('%N')
 
-				-- perform any upgrades to embedded dADL object syntax here by substitution
+				-- perform any upgrades to embedded ODIN object syntax here by substitution
 				convert_c_dv_names(str_)
 
 				odin_parser_error.wipe_out
