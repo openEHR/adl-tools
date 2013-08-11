@@ -1,17 +1,12 @@
 note
-
 	component:   "openEHR ADL Tools"
-
 	description: "Constrainer type for instances of BOOLEAN"
 	keywords:    "archetype, boolean, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-
 
 class C_BOOLEAN
 
@@ -25,16 +20,19 @@ feature -- Initialisation
 
 	make_true
 		do
+			default_create
 			true_valid := True
 		end
 
 	make_false
 		do
+			default_create
 			false_valid := True
 		end
 
 	make_true_false
 		do
+			default_create
 			true_valid := True
 			false_valid := True
 		end

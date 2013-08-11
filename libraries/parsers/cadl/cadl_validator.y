@@ -36,7 +36,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APP_RESOURCES
+	SHARED_ADL_APP_RESOURCES
 		export
 			{NONE} all
 		end
@@ -320,7 +320,8 @@ c_object: c_complex_object
 		}
 	| c_ordinal 
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			-- safe_put_c_attribute_child (c_attrs.item, $1)
+			safe_put_c_attribute_child (c_attrs.item, $1.standard_equivalent)
 		}
 	| c_primitive_object
 		{
@@ -328,7 +329,8 @@ c_object: c_complex_object
 		}
 	| V_C_DOMAIN_TYPE
 		{
-			safe_put_c_attribute_child(c_attrs.item, c_domain_type)
+			safe_put_c_attribute_child (c_attrs.item, c_domain_type.standard_equivalent)
+			-- safe_put_c_attribute_child (c_attrs.item, c_domain_type)
 		}
 	| ERR_C_DOMAIN_TYPE
 		{

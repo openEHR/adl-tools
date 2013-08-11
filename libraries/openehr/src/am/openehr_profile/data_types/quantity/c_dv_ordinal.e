@@ -205,8 +205,73 @@ feature -- Conversion
 		end
 
 	standard_equivalent: C_COMPLEX_OBJECT
+		local
+			ca_symbol, ca_value: C_ATTRIBUTE
+			cpo_symbol, cpo_value: C_PRIMITIVE_OBJECT
+			ca_tuple: detachable C_ATTRIBUTE_TUPLE
+			co_tuple: C_OBJECT_TUPLE
+			i: INTEGER
 		do
+			-- DV_ORDINAL root
 			create Result.make_anonymous (rm_type_name)
+
+			if attached items as att_list then
+
+				-- CA_TUPLE: symbol, value
+				if att_list.count > 1 then
+					create ca_tuple.make
+					Result.put_attribute_tuple (ca_tuple)
+
+					-- create CO_TUPLEs to accommodate the number of items in `list'
+					across att_list as list_items loop
+						create co_tuple.make
+						ca_tuple.put_child (co_tuple)
+					end
+				end
+
+				-- CA: symbol
+				create ca_symbol.make_single ("symbol", Void)
+				Result.put_attribute (ca_symbol)
+				i := 1
+				across att_list as list_items loop
+					-- create a C_TERMINOLOGY_CODE
+					create cpo_symbol.make (create {C_TERMINOLOGY_CODE}.make_with_code (
+						list_items.item.symbol.terminology_id.name,
+						list_items.item.symbol.code_string)
+					)
+					ca_symbol.put_child (cpo_symbol)
+
+					-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
+					if attached ca_tuple as ca_t then
+						ca_t.i_th_child (i).put_member (cpo_symbol)
+						i := i + 1
+					end
+				end
+
+				if attached ca_tuple as ca_t then
+					ca_t.put_member (ca_symbol)
+				end
+
+				-- CA: value
+				create ca_value.make_single ("value", Void)
+				Result.put_attribute (ca_value)
+				i := 1
+				across att_list as list_items loop
+					if attached list_items.item.value as val then
+						create cpo_value.make (create {C_INTEGER}.make_simple_list (val))
+						ca_value.put_child (cpo_value)
+
+						-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
+						if attached ca_tuple as ca_t then
+							ca_t.i_th_child (i).put_member (cpo_value)
+							i := i + 1
+						end
+					end
+				end
+				if attached ca_tuple as ca_t then
+					ca_t.put_member (ca_value)
+				end
+			end
 		end
 
 feature -- Synchronisation

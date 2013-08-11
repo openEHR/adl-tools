@@ -19,12 +19,13 @@ inherit
 	C_PRIMITIVE
 
 create
-	make_range, make_list
+	make_range, make_list, make_simple_list
 
 feature -- Initialisation
 
 	make_range (an_interval: INTERVAL[REAL])
 		do
+			default_create
 			range := an_interval
 		end
 
@@ -33,8 +34,17 @@ feature -- Initialisation
 		require
 			a_list_valid: not a_list.is_empty
 		do
+			default_create
 			create list.make(0)
 			list.append (a_list)
+		end
+
+	make_simple_list (a_val: REAL)
+			-- make from one real
+		do
+			default_create
+			create list.make (0)
+			list.extend (a_val)
 		end
 
 feature -- Access

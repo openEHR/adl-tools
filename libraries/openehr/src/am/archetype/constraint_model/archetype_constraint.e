@@ -42,6 +42,13 @@ feature -- Access
 			Result := path.hash_code
 		end
 
+	second_order_constraints: detachable ARRAYED_LIST [C_2ND_ORDER]
+		do
+			
+		end
+
+	soc_parent: detachable C_2ND_ORDER
+
 feature -- Source Control
 
 	specialisation_level: INTEGER
@@ -132,6 +139,16 @@ feature -- Status report
 		deferred
 		end
 
+	has_second_order_constraints: BOOLEAN
+		do
+			Result := attached second_order_constraints
+		end
+
+	is_second_order_constrained: BOOLEAN
+		do
+			Result := attached soc_parent
+		end
+
 feature -- Comparison
 
 	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
@@ -153,12 +170,32 @@ feature -- Modification
 			is_path_compressible := True
 		end
 
+--	put_second_order_constraint (a_soc: C_2ND_ORDER)
+--		local
+--			socs: ARRAYED_LIST [C_2ND_ORDER]
+--		do
+--			if attached second_order_constraints as s then
+--				socs := s
+--			else
+--				create socs.make (1)
+--			end
+--			socs.extend (a_soc)
+--		end
+
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
 	set_parent (a_node: like parent)
-			-- set parent
+			-- set `parent'
 		do
 			parent := a_node
+		end
+
+feature {C_2ND_ORDER} -- Modification
+
+	set_soc_parent (a_node: like soc_parent)
+			-- set `soc_parent'
+		do
+			soc_parent := a_node
 		end
 
 feature -- Visitor

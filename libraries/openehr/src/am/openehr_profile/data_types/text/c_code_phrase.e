@@ -16,7 +16,7 @@ inherit
 		end
 
 create
-	make_from_pattern, make_from_terminology_id, make_dt, default_create
+	make_from_pattern, make_from_terminology_id, make_dt, default_create, make_from_code_phrase
 
 feature -- Definitions
 
@@ -30,6 +30,18 @@ feature -- Initialisation
 	default_create
 		do
 			make_from_terminology_id ("(uninitialised)")
+		end
+
+	make_from_code_phrase (a_code_phrase: CODE_PHRASE)
+			-- Make from `a_code_phrase'.
+		do
+			terminology_id := a_code_phrase.terminology_id
+			create code_list.make (1)
+			code_list.extend (a_code_phrase.code_string)
+		ensure
+			Not_any_allowed: not any_allowed
+			Terminology_id_set: terminology_id = a_code_phrase.terminology_id
+			Code_list_set: attached code_list as cl and then cl.first = a_code_phrase.code_string
 		end
 
 	make_from_terminology_id (a_terminology_id: STRING)
@@ -148,12 +160,17 @@ feature -- Status Report
 		end
 
 	has_parent_code (a_code: STRING): BOOLEAN
-			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is sepcialised
+			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is a specialised local code
+			-- else return True
 		require
 			Code_valid: not a_code.is_empty
 		do
-			if attached code_list as clist and is_refined_code (a_code) then
-				Result := clist.has (specialisation_parent_from_code (a_code))
+			if is_valid_code (a_code) then
+				if attached code_list as clist and is_refined_code (a_code) then
+					Result := clist.has (specialisation_parent_from_code (a_code))
+				end
+			else
+				Result := True
 			end
 		end
 

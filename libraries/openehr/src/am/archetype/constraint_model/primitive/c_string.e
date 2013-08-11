@@ -29,12 +29,14 @@ feature -- Initialization
 	make_any
 			-- make completely open
 		do
+			default_create
 			is_open := True
 		end
 
 	make_from_string (str: STRING)
 			-- make from a single string
 		do
+			default_create
 			create strings.make(0)
 			strings.extend(str)
 			strings.compare_objects
@@ -49,6 +51,7 @@ feature -- Initialization
 			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
 		do
+			default_create
 			regexp := str.twin
 			regexp_default_delimiter := using_default_delimiter
 			create regexp_parser.make
@@ -65,6 +68,7 @@ feature -- Initialization
 
 	make_from_string_list (lst: LIST[STRING])
 		do
+			default_create
 			create strings.make (0)
 			strings.fill (lst)
 			strings.compare_objects

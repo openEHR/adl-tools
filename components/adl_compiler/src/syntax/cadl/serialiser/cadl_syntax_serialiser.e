@@ -47,7 +47,7 @@ create
 feature -- Visitor
 
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
-			-- start serialising an C_COMPLEX_OBJECT
+			-- start serialising a C_COMPLEX_OBJECT
 		do
 			serialise_sibling_order (a_node, depth)
 			last_result.append (create_indent (depth))
@@ -80,7 +80,7 @@ feature -- Visitor
 		end
 
 	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
-			-- end serialising an C_COMPLEX_OBJECT
+			-- end serialising a C_COMPLEX_OBJECT
 		do
 			if a_node.is_prohibited then
 				-- output final '%N' (done below)
@@ -95,6 +95,14 @@ feature -- Visitor
 				serialise_comment (a_node)
 
 			else
+				-- deal with attribute tuples
+				if attached a_node.attribute_tuples as att_tuples then
+					across att_tuples as att_tuples_csr loop
+						start_c_attribute_tuple (att_tuples_csr.item, depth + 1)
+						end_c_attribute_tuple (att_tuples_csr.item, depth + 1)
+					end
+				end
+
 				-- output '%T}%N'
 				last_result.append (create_indent(depth))
 				last_result.append (symbol(SYM_END_CBLOCK))
@@ -181,52 +189,117 @@ feature -- Visitor
 		local
 			p: STRING
 		do
-			-- path-compressed output form
-			if a_node.has_differential_path then
-				p := a_node.path
-			else
-				p := a_node.rm_attribute_name
-			end
-			last_result.append (create_indent(depth) + apply_style(p, identifier_style (a_node)) + format_item(FMT_SPACE))
-
-			serialise_existence(a_node, depth)
-			serialise_cardinality(a_node, depth)
-
-			if a_node.any_allowed then
-				if not attached a_node.existence and not attached a_node.cardinality then
-					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-					last_result.append (symbol(SYM_START_CBLOCK))
-					last_result.append (symbol(SYM_ANY))
+			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				-- path-compressed output form
+				if a_node.has_differential_path then
+					p := a_node.path
+				else
+					p := a_node.rm_attribute_name
 				end
-			else
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (symbol(SYM_START_CBLOCK))
-				last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (create_indent (depth) + apply_style (p, identifier_style (a_node)) + format_item (FMT_SPACE))
+
+				serialise_existence (a_node, depth)
+				serialise_cardinality (a_node, depth)
+
+				if a_node.any_allowed then
+					if not attached a_node.existence and not attached a_node.cardinality then
+						last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+						last_result.append (symbol (SYM_START_CBLOCK))
+						last_result.append (symbol (SYM_ANY))
+					end
+				else
+					last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+					last_result.append (symbol (SYM_START_CBLOCK))
+					last_result.append (format_item(FMT_NEWLINE))
+				end
 			end
 		end
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
 		do
-			if last_object_simple then
-				last_result.append (symbol(SYM_END_CBLOCK))
-				if attached last_object_simple_buffer as s then
-					last_result.append (s)
-					s.wipe_out
-				end
-				last_object_simple := False
+			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				if last_object_simple then
+					last_result.append (symbol(SYM_END_CBLOCK))
+					if attached last_object_simple_buffer as s then
+						last_result.append (s)
+						s.wipe_out
+					end
+					last_object_simple := False
 
-			elseif a_node.any_allowed then
-				if not attached a_node.existence and not attached a_node.cardinality then
+				elseif a_node.any_allowed then
+					if not attached a_node.existence and not attached a_node.cardinality then
+						last_result.append (symbol(SYM_END_CBLOCK))
+					end
+
+				else
+					last_result.append (create_indent(depth))
 					last_result.append (symbol(SYM_END_CBLOCK))
 				end
 
-			else
-				last_result.append (create_indent(depth))
-				last_result.append (symbol(SYM_END_CBLOCK))
+				last_result.append (format_item(FMT_NEWLINE))
 			end
+		end
 
+	start_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE; depth: INTEGER)
+			-- enter a C_ATTRIBUTE_TUPLE
+		local
+			p: STRING
+		do
+			last_result.append (create_indent (depth) + "[")
+			across a_node.members as c_attrs_csr loop
+		--		serialise_existence (a_node, depth)
+		--		serialise_cardinality (a_node, depth)
+				if c_attrs_csr.item.has_differential_path then
+					p := c_attrs_csr.item.path
+				else
+					p := c_attrs_csr.item.rm_attribute_name
+				end
+				last_result.append (p)
+				if not c_attrs_csr.is_last then
+					last_result.append (", ")
+				end
+			end
+			last_result.append ("]" + format_item (FMT_SPACE))
+
+			last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+			last_result.append (symbol (SYM_START_CBLOCK))
 			last_result.append (format_item(FMT_NEWLINE))
+
+			across a_node.children as c_obj_tuples_csr loop
+				start_c_object_tuple (c_obj_tuples_csr.item, depth + 1)
+		--		end_c_object_tuple (c_obj_tuples_csr.item)
+			end
+		end
+
+	end_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE; depth: INTEGER)
+			-- exit a C_ATTRIBUTE_TUPLE
+		do
+			last_result.append (create_indent (depth) + symbol (SYM_END_CBLOCK))
+			last_result.append (format_item (FMT_NEWLINE))
+		end
+
+	start_c_object_tuple (a_node: C_OBJECT_TUPLE; depth: INTEGER)
+			-- start serialising an C_OBJECT_TUPLE
+		local
+			s: STRING
+		do
+			last_result.append (create_indent (depth) + "[" + format_item (FMT_SPACE))
+			across a_node.members as c_prim_objs_csr loop
+				if attached {C_STRING} c_prim_objs_csr.item as c_str and then attached c_str.strings then
+					s := c_str.clean_as_string (agent clean)
+				else
+					s := c_prim_objs_csr.item.as_string
+				end
+				last_result.append (apply_style (s, STYLE_VALUE))
+				if not c_prim_objs_csr.is_last then
+					last_result.append (", ")
+				end
+			end
+			last_result.append ("]" + format_item (FMT_SPACE))
+			last_result.append (format_item (FMT_NEWLINE))
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -238,9 +311,9 @@ feature -- Visitor
 				serialise_occurrences (a_node, depth)
 			end
 			last_result.append (a_node.target_path)
-			last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+			last_result.append (format_item (FMT_INDENT) + apply_style (format_item(FMT_COMMENT) +
 						safe_comment (ontology.physical_to_logical_path (a_node.target_path, language, False)), STYLE_COMMENT))
-			last_result.append (format_item(FMT_NEWLINE))
+			last_result.append (format_item (FMT_NEWLINE))
 		end
 
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
@@ -318,14 +391,17 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
-			if attached {C_STRING} a_node.item as c_str and then attached c_str.strings then
-				s := c_str.clean_as_string(agent clean)
-			else
-				s := a_node.as_string
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
+				if attached {C_STRING} a_node.item as c_str and then attached c_str.strings then
+					s := c_str.clean_as_string(agent clean)
+				else
+					s := a_node.as_string
+				end
+				last_result.append (apply_style (s, STYLE_VALUE))
+				last_object_simple := True
 			end
-			last_result.append (apply_style (s, STYLE_VALUE))
-			last_object_simple := True
 		end
 
 	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
@@ -333,9 +409,9 @@ feature -- Visitor
 			-- C_DOMAIN_TYPEs not having a special syntax like C_CODE_PHRASE and C_DV_ORDINAL (and note
 			-- that in some archetypes, these types can be represented with dADL blocks)
 		do
-			dadl_engine.set_tree (a_node.dt_representation)
-			dadl_engine.serialise (output_format, False, True)
-			last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
+			odin_engine.set_tree (a_node.dt_representation)
+			odin_engine.serialise (output_format, False, True)
+			last_result.append ((create {STRING_UTILITIES}).indented (odin_engine.serialised, create_indent(depth)))
 		end
 
 	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
@@ -398,9 +474,9 @@ feature -- Visitor
 		do
 			if a_node.any_allowed then
 				-- output in C_DV_ORDINAL style
-				dadl_engine.set_tree (a_node.dt_representation)
-				dadl_engine.serialise (output_format, False, True)
-				last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
+				odin_engine.set_tree (a_node.dt_representation)
+				odin_engine.serialise (output_format, False, True)
+				last_result.append ((create {STRING_UTILITIES}).indented (odin_engine.serialised, create_indent(depth)))
 			elseif a_node.items.count = 1 then
 				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append (apply_style(clean(a_node.as_string), STYLE_TERM_REF))
@@ -527,7 +603,7 @@ feature {NONE} -- Implementation
 
 	last_object_simple_buffer: detachable STRING
 
-	dadl_engine: ODIN_ENGINE
+	odin_engine: ODIN_ENGINE
 			-- for handling inline dADL sections like for C_QUANTITY
 		once
 			create Result.make

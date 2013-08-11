@@ -87,6 +87,16 @@ feature -- Status Report
 			Result := any_allowed or else True
 		end
 
+	has_magnitude_constraint: BOOLEAN
+		do
+			Result := attached list as l and then attached l.first.magnitude
+		end
+
+	has_precision_constraint: BOOLEAN
+		do
+			Result := attached list as l and then attached l.first.precision
+		end
+
 feature -- Statistics
 
 	constrained_rm_attributes: ARRAYED_SET [STRING]
@@ -186,9 +196,104 @@ feature -- Conversion
 		end
 
 	standard_equivalent: C_COMPLEX_OBJECT
+			-- if there is no `list' or a list with only one member, create a normal structure for the type DV_QUANTITY
+			-- if there are two or more `list' items, create a 2nd order structure
+		local
+			ca_property, ca_units, ca_magnitude, ca_precision: C_ATTRIBUTE
+			cpo_units, cpo_magnitude, cpo_precision: C_PRIMITIVE_OBJECT
+			ccp_property: C_CODE_PHRASE
+			ca_tuple: detachable C_ATTRIBUTE_TUPLE
+			co_tuple: C_OBJECT_TUPLE
+			i: INTEGER
 		do
-			-- FIXME: to be implemented
+			-- DV_QUANTITY root
 			create Result.make_anonymous (rm_type_name)
+
+			-- CA: property
+			if attached property as prop then
+				create ca_property.make_single ("property", Void)
+				create ccp_property.make_from_code_phrase (prop)
+				ca_property.put_child (ccp_property)
+				Result.put_attribute (ca_property)
+			end
+
+			if attached list as att_list then
+
+				-- CA_TUPLE: units, magnitude, precision
+				if att_list.count > 1 then
+					create ca_tuple.make
+					Result.put_attribute_tuple (ca_tuple)
+
+					-- create CO_TUPLEs to accommodate the number of items in `list'
+					across att_list as list_items loop
+						create co_tuple.make
+						ca_tuple.put_child (co_tuple)
+					end
+				end
+
+				-- CA: units
+				create ca_units.make_single ("units", Void)
+				Result.put_attribute (ca_units)
+				i := 1
+				across att_list as list_items loop
+					create cpo_units.make (create {C_STRING}.make_from_string (list_items.item.units))
+					ca_units.put_child (cpo_units)
+
+					-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
+					if attached ca_tuple as ca_t then
+						ca_t.i_th_child (i).put_member (cpo_units)
+						i := i + 1
+					end
+				end
+
+				if attached ca_tuple as ca_t then
+					ca_t.put_member (ca_units)
+				end
+
+				-- CA: magnitude
+				if has_magnitude_constraint then
+					create ca_magnitude.make_single ("magnitude", Void)
+					Result.put_attribute (ca_magnitude)
+					i := 1
+					across att_list as list_items loop
+						if attached list_items.item.magnitude as mag then
+							create cpo_magnitude.make (create {C_REAL}.make_range (mag))
+							ca_magnitude.put_child (cpo_magnitude)
+
+							-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
+							if attached ca_tuple as ca_t then
+								ca_t.i_th_child (i).put_member (cpo_magnitude)
+								i := i + 1
+							end
+						end
+					end
+					if attached ca_tuple as ca_t then
+						ca_t.put_member (ca_magnitude)
+					end
+				end
+
+				-- CA: precision
+				if has_precision_constraint then
+					create ca_precision.make_single ("precision", Void)
+					Result.put_attribute (ca_precision)
+					i := 1
+					across att_list as list_items loop
+						if attached list_items.item.precision as prec then
+							create cpo_precision.make (create {C_INTEGER}.make_range (prec))
+							ca_precision.put_child (cpo_precision)
+
+							-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
+							if attached ca_tuple as ca_t then
+								ca_t.i_th_child (i).put_member (cpo_precision)
+								i := i + 1
+							end
+						end
+					end
+					if attached ca_tuple as ca_t then
+						ca_t.put_member (ca_precision)
+					end
+				end
+			end
 		end
 
 feature -- Visitor

@@ -2,7 +2,6 @@ note
 	component:   "openEHR ADL Tools"
 	description: "parent type of constrainer types of simple types"
 	keywords:    "archetype, string, data"
-	design:      "openEHR Common Archetype Model 0.2"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -13,7 +12,18 @@ deferred class C_PRIMITIVE
 inherit
 	ANY
 		redefine
-			out
+			out, default_create
+		end
+
+feature -- Initialisaiton
+
+	default_create
+			-- set `rm_type_name'
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		do
+			rm_type_name := generating_type
+			rm_type_name.remove_head (2)
 		end
 
 feature -- Access
@@ -28,12 +38,28 @@ feature -- Access
 			-- FIXME: consider consolidating with assumed_value in C_DOMAIN_TYPE
 
 	rm_type_name: STRING
-			-- generate a Reference Model type name that this type constrains. Generally this is
-			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
-			-- it is not true.
+			-- Reference Model type name that this type constrains
+
+feature -- AOM type mappings
+
+	rm_type_mapping: detachable AOM_TYPE_MAPPING
+			-- optional mapping from property names in descendants of this type to property names in
+			-- an RM type
+
+	rm_property_name (a_key: STRING): STRING
+			-- return the name of a property name that is either a native one of this class,
+			-- or else a mapped name from a reference model in use by the compiler
 		do
-			Result := generating_type
-			Result.remove_head (2)
+			if attached rm_type_mapping as rm_tm and then rm_tm.property_mappings.has (a_key) and then attached rm_tm.property_mappings.item (a_key) as prop_mapping then
+				Result := prop_mapping.target_property_name
+			else
+				Result := a_key
+			end
+		end
+
+	set_rm_type_mapping (a_rm_type_mapping: attached like rm_type_mapping)
+		do
+			rm_type_mapping := a_rm_type_mapping
 		end
 
 feature -- Status Report
@@ -49,6 +75,11 @@ feature -- Status Report
 		end
 
 feature -- Modification
+
+	set_rm_type_name (a_name: STRING)
+		do
+			rm_type_name := a_name
+		end
 
 	set_assumed_value (a_value: like prototype_value)
 			-- set `assumed_value'

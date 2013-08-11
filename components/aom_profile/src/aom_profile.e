@@ -69,6 +69,15 @@ feature -- Access (attributes from file)
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 	aom_rm_type_mappings: detachable HASH_TABLE [AOM_TYPE_MAPPING, STRING]
+			-- mappings from AOM built-in types to actual types in RM: whenever
+			-- the type name is encountered in an archetype, it is mapped to a specific RM type
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
+
+	aom_rm_type_substitutions: detachable HASH_TABLE [STRING, STRING]
+			-- allowed type substitutions: Actual RM type names keyed by AOM built-in types which can
+			-- subsitute for them in an archetype. E.g. <value = "String", key = "ISO8601_DATE"> means
+			-- that if RM property TYPE.some_property is of type String, an ISO8601_DATE is allowed at that
+			-- position in the archetype.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 feature -- Access
@@ -77,6 +86,22 @@ feature -- Access
 
 	rm_schema_ids: ARRAYED_LIST [STRING]
 			-- list of rm schemas matched by `rm_schema_patterns'
+
+feature -- Status Report
+
+	has_type_substitution (an_aom_type, an_rm_type: STRING): BOOLEAN
+			-- is there a type substitution for `an_aom_type', `an_rm_type'?
+		do
+			Result := attached aom_rm_type_substitutions as type_subs and then
+				type_subs.has (an_aom_type) and then
+				type_subs.item (an_aom_type).is_case_insensitive_equal (an_rm_type)
+		end
+
+	has_any_type_substitution (an_aom_type: STRING): BOOLEAN
+			-- is there any type substitution for `an_aom_type'?
+		do
+			Result := attached aom_rm_type_substitutions as type_subs and then type_subs.has (an_aom_type)
+		end
 
 feature -- Validation
 

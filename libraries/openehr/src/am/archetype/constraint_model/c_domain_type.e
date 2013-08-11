@@ -60,6 +60,8 @@ feature -- Access
 			create Result.make_empty
 		end
 
+feature -- AOM type mappings
+
 	rm_type_mapping: detachable AOM_TYPE_MAPPING
 			-- optional mapping from property names in descendants of this type to property names in
 			-- an RM type

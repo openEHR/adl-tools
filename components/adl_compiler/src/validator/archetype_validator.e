@@ -35,6 +35,9 @@ feature {ADL15_ENGINE} -- Initialisation
 			check attached target_descriptor.differential_archetype as da then
 				initialise_authored_resource (da)
 			end
+			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
+				aom_profile := aom_p
+			end
 		ensure
 			target_descriptor_set: target_descriptor = ara
 			target_set: attached target
@@ -63,6 +66,20 @@ feature {NONE} -- Implementation
 	rm_schema: BMM_SCHEMA
 		attribute
 			create Result.make (unknown_value, unknown_value, unknown_value)
+		end
+
+	aom_profile: detachable AOM_PROFILE
+
+	has_any_type_substitution (an_aom_type: STRING): BOOLEAN
+			-- is there any type substitution for `an_aom_type'?
+		do
+			Result := attached aom_profile as aom_p and then aom_p.has_any_type_substitution (an_aom_type)
+		end
+
+	has_type_substitution (an_aom_type, an_rm_type: STRING): BOOLEAN
+			-- is there a type substitution for `an_aom_type', `an_rm_type'?
+		do
+			Result := attached aom_profile as aom_p and then aom_p.has_type_substitution (an_aom_type, an_rm_type)
 		end
 
 	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN

@@ -13,7 +13,7 @@ class C_DATE
 inherit
 	C_PRIMITIVE
 		redefine
-			rm_type_name
+			default_create
 		end
 
 	DATE_TIME_ROUTINES
@@ -21,6 +21,7 @@ inherit
 			{NONE} all;
 			{ANY} valid_iso8601_date_constraint_pattern, valid_iso8601_date, iso8601_string_to_date
 		undefine
+			default_create,
 			out
 		end
 
@@ -29,8 +30,15 @@ create
 
 feature -- Initialisation
 
+	default_create
+		do
+			rm_type_name := Iso_class_name_leader.twin
+			rm_type_name.append (generating_type.out.substring (3, generating_type.out.count))
+		end
+
 	make_range (an_interval: INTERVAL[ISO8601_DATE])
 		do
+			default_create
 			range := an_interval
 		ensure
 			range = an_interval
@@ -49,6 +57,7 @@ feature -- Initialisation
 		local
 			lower, upper: detachable ISO8601_DATE
 		do
+			default_create
 			if attached a_lower_str as l_str then
 				create lower.make_from_string (l_str)
 			end
@@ -76,6 +85,7 @@ feature -- Initialisation
 		require
 			a_pattern_valid: valid_iso8601_date_constraint_pattern (a_pattern)
 		do
+			default_create
 			pattern := a_pattern
 		ensure
 			pattern_set: pattern = a_pattern
@@ -102,12 +112,6 @@ feature -- Access
 				-- Result := FIXME - generate a default from a pattern
 				create Result.default_create
 			end
-		end
-
-	rm_type_name: STRING
-		once
-			Result := Iso_class_name_leader.twin
-			Result.append (generating_type.out.substring (3, generating_type.out.count))
 		end
 
 feature -- Status Report

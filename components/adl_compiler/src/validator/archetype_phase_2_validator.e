@@ -529,7 +529,7 @@ end
 					-- AOM type mapping for C_CODE_PHRASE, or else an ancestor of such a type
 					-- if not then -> VCRR
 					if not attached {C_CODE_PHRASE} co_parent_flat then
-						if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
+						if attached aom_profile as aom_p then
 							if aom_p.aom_rm_type_mappings.has (bare_type_name(({CODE_PHRASE}).name)) and then attached aom_p.aom_rm_type_mappings.item (bare_type_name(({CODE_PHRASE}).name)) as aom_rm_tm then
 								if aom_rm_tm.target_class_name.same_string (co_parent_flat.rm_type_name) or else rm_schema.class_definition (aom_rm_tm.target_class_name).has_ancestor (co_parent_flat.rm_type_name) then
 									cref_conformance_ok := True
@@ -775,7 +775,7 @@ end
 	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model.
 		local
-			arch_parent_attr_type, model_attr_class: STRING
+			arch_parent_attr_type, rm_attr_type: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do
@@ -793,19 +793,24 @@ end
 					end
 
 					if not invalid_types.has (arch_parent_attr_type) then
-						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
-											rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
-							model_attr_class := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
+						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) then
+							rm_attr_type := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
 
-							-- check for type substitutions such as ISO8601_DATE which appear in the archetype as a String
-							if rm_schema.substitutions.has (co.rm_type_name) and then rm_schema.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
-								add_info (ec_ICORMTS, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True), model_attr_class,
-									arch_parent_attr_type, co.parent.rm_attribute_name>>)
-							else
+							-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
+							-- has a String field (within some other kind of DATE class)
+							if has_type_substitution (co.rm_type_name, rm_attr_type) then
+								add_info (ec_ICORMTS, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
+									rm_attr_type, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+								co.set_rm_type_name (rm_attr_type)
+
+							elseif not rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
 								add_error (ec_VCORMT, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
-									model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+									rm_attr_type, arch_parent_attr_type, co.parent.rm_attribute_name>>)
 								invalid_types.extend (co.rm_type_name)
 							end
+						else
+							-- this error case will have been detected below
+							raise ("rm_node_validate: location 1")
 						end
 					end
 				end
@@ -891,11 +896,9 @@ end
 					-- C_DV_QUANTITY is used
 					add_error (ec_VCORM, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
 					Result := False
-				else
-					if not invalid_types.has (co.rm_type_name) then
-						add_error (ec_VCORM, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
-						invalid_types.extend (co.rm_type_name)
-					end
+				elseif not invalid_types.has (co.rm_type_name) and not has_any_type_substitution (co.rm_type_name) then
+					add_error (ec_VCORM, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
+					invalid_types.extend (co.rm_type_name)
 					Result := False
 				end
 			elseif attached {C_ATTRIBUTE} a_c_node as ca then

@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "node in ADL parse tree"
-	keywords:    "test, ADL"
+	keywords:    "attribute, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -595,8 +595,9 @@ feature -- Validation
 			Result := valid_child (an_obj)
 			if Result then
 				if is_single then
-					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.node_id))
-						or not has_child_with_rm_type_name (an_obj.rm_type_name)
+					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.node_id)) or
+						not has_child_with_rm_type_name (an_obj.rm_type_name) or
+						(attached {C_PRIMITIVE_OBJECT} an_obj) -- and then an_obj.is_second_order_constrained)
 				else
 					Result := not has_child_with_id (an_obj.node_id)
 				end

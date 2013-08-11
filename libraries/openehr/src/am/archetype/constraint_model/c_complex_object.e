@@ -14,7 +14,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "checked"
 
 class C_COMPLEX_OBJECT
 
@@ -70,6 +69,10 @@ feature -- Source Control
 		end
 
 feature -- Access
+
+	attribute_tuples: detachable ARRAYED_LIST [C_ATTRIBUTE_TUPLE]
+			-- attributes that occur in tuples of 2 or more
+			-- currently limited to attributes whose values are C_PRIMITIVEs
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 		attribute
@@ -232,6 +235,19 @@ feature -- Modification
 		do
 			representation.remove_all_children
 			attributes.wipe_out
+		end
+
+	put_attribute_tuple (an_attr_tuple: C_ATTRIBUTE_TUPLE)
+		local
+			attr_tuples: ARRAYED_LIST [C_ATTRIBUTE_TUPLE]
+		do
+			if attached attribute_tuples as ats then
+				attr_tuples := ats
+			else
+				create attr_tuples.make (1)
+				attribute_tuples := attr_tuples
+			end
+			attr_tuples.extend (an_attr_tuple)
 		end
 
 feature -- Output

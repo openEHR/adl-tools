@@ -91,6 +91,7 @@ feature -- Commands
 
 	clear
 		do
+			c_terminology_code_type_mapping := Void
 			c_code_phrase_type_mapping := Void
 			c_dv_ordinal_type_mapping := Void
 			c_dv_quantity_type_mapping := Void
@@ -143,7 +144,12 @@ feature {NONE} -- Implementation
 	update_c_domain_type (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model.
 		do
-			if attached {C_CODE_PHRASE} a_c_node as ccp and attached c_code_phrase_type_mapping as ccp_tm then
+			if attached {C_PRIMITIVE_OBJECT} a_c_node as cpo and then attached {C_TERMINOLOGY_CODE} cpo.item as ctc and attached c_terminology_code_type_mapping as ctc_tm then
+				cpo.set_rm_type_name (ctc_tm.target_class_name)
+				ctc.set_rm_type_name (ctc_tm.target_class_name)
+				ctc.set_rm_type_mapping (ctc_tm)
+
+			elseif attached {C_CODE_PHRASE} a_c_node as ccp and attached c_code_phrase_type_mapping as ccp_tm then
 				ccp.set_rm_type_name (ccp_tm.target_class_name)
 				ccp.set_rm_type_mapping (ccp_tm)
 
@@ -165,6 +171,11 @@ feature {NONE} -- Implementation
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
 				if attached aom_profile.aom_rm_type_mappings as aom_tm then
+					if aom_tm.has ("TERMINOLOGY_CODE") then
+						c_terminology_code_type_mapping := aom_tm.item ("TERMINOLOGY_CODE")
+					else
+						c_terminology_code_type_mapping := Void
+					end
 					if aom_tm.has ("CODE_PHRASE") then
 						c_code_phrase_type_mapping := aom_tm.item ("CODE_PHRASE")
 					else
@@ -187,6 +198,8 @@ feature {NONE} -- Implementation
 				clear
 			end
 		end
+
+	c_terminology_code_type_mapping: detachable AOM_TYPE_MAPPING
 
 	c_code_phrase_type_mapping: detachable AOM_TYPE_MAPPING
 
