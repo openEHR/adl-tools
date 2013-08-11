@@ -188,6 +188,7 @@ feature {NONE} -- Implementation
 					ev_notebook.select_item (validity_report_control.ev_root_container)
 				end
 				set_tab_appearance
+				set_view_tab_texts
 			end
 		end
 

@@ -295,6 +295,7 @@ feature {NONE} -- Implementation
 		do
 			if attached source as src then
 				Result := src /= an_arch_tool.source or						-- different archetype chosen
+					not attached src.gui_context or							-- gui refresh forced by explicit recompile request
 					differential_view /= an_arch_tool.differential_view	or	-- user has changed from flat to diff view or v.v.
 					not an_arch_tool.is_populated							-- some tools are pre-populated
 			end
