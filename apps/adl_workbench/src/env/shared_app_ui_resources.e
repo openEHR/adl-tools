@@ -457,9 +457,8 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			Result.append ("ADL " + Latest_adl_version + " Workbench  version " + version.out + "%N")
 			Result.append ("(c) 2003- openEHR Foundation%N")
-			Result.append ("Source - https://github.com/openEHR/adl-tools.git%N")
-			Result.append ("Source license: Mozilla tri-license%N")
-			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
+			Result.append ("Source: https://github.com/openEHR/adl-tools.git%N")
+			Result.append ("Source license: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
 			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")
 			Result.append ("Funded by: Thomas Beale; Ocean Informatics%N")
 			Result.append ("Author: Thomas Beale%N")
