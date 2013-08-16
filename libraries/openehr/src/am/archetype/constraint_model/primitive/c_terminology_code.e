@@ -12,7 +12,7 @@ class C_TERMINOLOGY_CODE
 inherit
 	C_PRIMITIVE
 
-	BASIC_DEFINITIONS
+	OPENEHR_DEFINITIONS
 		export
 			{NONE} all
 		undefine
@@ -21,13 +21,6 @@ inherit
 
 create
 	make, make_with_codes, make_with_code
-
-feature -- Definitions
-
-	-- FIXME: these have been copied from CODE_PHRASE for now;
-	-- in future, this class should just use C_CODE_PHRASE to represent its data
-
-	separator: STRING = "::"
 
 feature -- Initialisation
 
@@ -70,7 +63,30 @@ feature -- Access
 			create Result.make (terminology_id, "01")
 		end
 
+	code_count: INTEGER
+			-- number of codes in code_list
+		do
+			if attached code_list then
+				Result := code_list.count
+			end
+		end
+
 feature -- Status Report
+
+	any_allowed: BOOLEAN
+			-- True if any value allowed
+			-- i.e. no terminology_id or code_list
+		do
+			Result := terminology_id = Void and code_list = Void
+		end
+
+	is_local: BOOLEAN
+			-- True if this terminology id = "local"
+		require
+			not any_allowed
+		do
+			Result := terminology_id.is_equal (Local_terminology_id)
+		end
 
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
 		do
@@ -102,6 +118,13 @@ feature -- Modification
 			terminology_version := a_version
 		end
 
+	set_assumed_value_from_code (a_code: STRING)
+		require
+			code_list.has (a_code)
+		do
+			create assumed_value.make (terminology_id, a_code)
+		end
+
 feature -- Output
 
 	as_string: STRING
@@ -112,7 +135,7 @@ feature -- Output
 			if attached terminology_version as tv then
 				Result.append (tv)
 			end
-			Result.append (separator)
+			Result.append (Terminology_separator)
 
 			if attached code_list as clist then
 				across clist as code_list_csr loop
@@ -129,6 +152,8 @@ feature -- Output
 
 			Result.append ("]")
 		end
+
+feature {NONE} -- Implementation
 
 end
 

@@ -114,7 +114,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_coded_term (an_item: C_CODE_PHRASE)
+	make_coded_term (an_item: C_TERMINOLOGY_CODE)
 			-- node is a term value
    		do
 			item := an_item

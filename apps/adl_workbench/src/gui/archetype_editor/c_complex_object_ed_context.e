@@ -24,6 +24,7 @@ feature -- Initialisation
 		do
 			precursor (an_arch_node, an_ed_context)
 			create c_attributes.make (0)
+			create c_attribute_tuples.make (0)
 			create rm_attributes.make (0)
 		end
 
@@ -31,6 +32,7 @@ feature -- Initialisation
 		do
 			precursor (an_rm_type, an_ed_context)
 			create c_attributes.make (0)
+			create c_attribute_tuples.make (0)
 			create rm_attributes.make (0)
 		end
 
@@ -41,6 +43,9 @@ feature -- Access
 
 	c_attributes: HASH_TABLE [C_ATTRIBUTE_ED_CONTEXT, STRING]
 			-- editor nodes for real C_ATTRIBUTEs that are found in C_COMPLEX_OBJECT.attributes
+
+	c_attribute_tuples: ARRAYED_LIST [C_ATTRIBUTE_TUPLE_ED_CONTEXT]
+			-- editor nodes for C_ATTRIBUTE_TUPLEs that are found in C_COMPLEX_OBJECT.attribute_tuples
 
 	rm_attributes: HASH_TABLE [C_ATTRIBUTE_ED_CONTEXT, STRING]
 			-- Editor nodes for unconstrained RM attributes that have been lazy-requested for viewing
@@ -81,6 +86,11 @@ feature -- Display
 				attr_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 
+			-- set up child property tuple nodes in grid
+			across c_attribute_tuples as attr_tuples_csr loop
+				attr_tuples_csr.item.prepare_display_in_grid (a_gui_grid)
+			end
+
 			-- set up child property rm nodes in grid
 			across rm_attributes as attr_csr loop
 				attr_csr.item.prepare_display_in_grid (a_gui_grid)
@@ -93,6 +103,10 @@ feature -- Display
 
 			across c_attributes as attr_csr loop
 				attr_csr.item.display_in_grid (ui_settings)
+			end
+
+			across c_attribute_tuples as attr_tuples_csr loop
+				attr_tuples_csr.item.display_in_grid (ui_settings)
 			end
 
 			if not rm_properties.is_empty then
@@ -111,6 +125,13 @@ feature -- Modification
 				c_attributes.put (a_node, child_a_n.rm_attribute_path)
 				a_node.set_parent (Current)
 			end
+		end
+
+	put_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE_ED_CONTEXT)
+			-- add a new attribute_tuple node
+		do
+			c_attribute_tuples.extend (a_node)
+			a_node.set_parent (Current)
 		end
 
 feature {C_ATTRIBUTE_ED_CONTEXT} -- Modification

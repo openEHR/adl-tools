@@ -162,8 +162,8 @@ feature -- Access
 	ontology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in ontology that are not referenced anywhere in the archetype definition
 		local
-			data_codes: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
-			id_atcodes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
+			data_codes: like data_codes_index
+			id_atcodes: like id_atcodes_index
 		do
 			create Result.make (0)
 			data_codes := data_codes_index

@@ -32,7 +32,7 @@ terminology_profile = <
 archetype_visualise_descendants_of = <"ITEM">
 
 ----------------------------------------------------------------------------------------
--- mappings from AOM built-in types used for special syntax, and RM types
+-- mappings from AOM built-in types used for RM types
 --
 aom_rm_type_mappings = <
 	["TERMINOLOGY_CODE"] = <
@@ -60,6 +60,6 @@ aom_rm_type_substitutions = <
 	["ISO8601_DATE_TIME"] = <"String">
 	["ISO8601_TIME"] = <"String">
 	["ISO8601_DURATION"] = <"String">
-	["TERMINOLOGY_CODE"] = <"DV_CODED_TEXT">
+	["CODE_PHRASE"] = <"DV_CODED_TEXT">
 	["REAL"] = <"Double">
 >

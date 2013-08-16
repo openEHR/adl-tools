@@ -41,6 +41,11 @@ feature -- Access
 			Result := children.i_th (i)
 		end
 
+	last_child: C_OBJECT_TUPLE
+		do
+			Result := children.last
+		end
+
 feature -- Status report
 
 feature -- Comparison

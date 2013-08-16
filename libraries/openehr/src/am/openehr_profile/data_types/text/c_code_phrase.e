@@ -252,7 +252,7 @@ feature -- Source Control
 			-- from an outside terminology, there is no way to know definitively.
 		do
 			create Result.make (ss_propagated)
-			if not any_allowed and terminology_id.is_local and code_list /= Void then
+			if not any_allowed and terminology_id.is_local and attached code_list then
 				across code_list as code_list_csr loop
 					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list_csr.item, spec_level))
 				end

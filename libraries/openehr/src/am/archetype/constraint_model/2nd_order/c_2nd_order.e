@@ -22,6 +22,18 @@ feature -- Access
 
 	member_type: detachable ARCHETYPE_CONSTRAINT
 
+	i_th_member (i: INTEGER): attached like member_type
+		require
+			i_in_range: i > 0 and i <= members.count
+		do
+			Result := members.i_th (i)
+		end
+
+	count: INTEGER
+		do
+			Result := members.count
+		end
+
 feature -- Status report
 
 feature -- Comparison

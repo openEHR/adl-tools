@@ -245,19 +245,12 @@ feature -- Visitor
 
 	start_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE_TUPLE
-		local
-			p: STRING
 		do
 			last_result.append (create_indent (depth) + "[")
 			across a_node.members as c_attrs_csr loop
 		--		serialise_existence (a_node, depth)
 		--		serialise_cardinality (a_node, depth)
-				if c_attrs_csr.item.has_differential_path then
-					p := c_attrs_csr.item.path
-				else
-					p := c_attrs_csr.item.rm_attribute_name
-				end
-				last_result.append (p)
+				last_result.append (c_attrs_csr.item.rm_attribute_name)
 				if not c_attrs_csr.is_last then
 					last_result.append (", ")
 				end
@@ -270,7 +263,10 @@ feature -- Visitor
 
 			across a_node.children as c_obj_tuples_csr loop
 				start_c_object_tuple (c_obj_tuples_csr.item, depth + 1)
-		--		end_c_object_tuple (c_obj_tuples_csr.item)
+				if not c_obj_tuples_csr.is_last then
+					last_result.append (",")
+				end
+				last_result.append (format_item (FMT_NEWLINE))
 			end
 		end
 
@@ -286,20 +282,21 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			last_result.append (create_indent (depth) + "[" + format_item (FMT_SPACE))
+			last_result.append (create_indent (depth) + "[")
 			across a_node.members as c_prim_objs_csr loop
+				last_result.append (symbol (SYM_START_CBLOCK))
 				if attached {C_STRING} c_prim_objs_csr.item as c_str and then attached c_str.strings then
 					s := c_str.clean_as_string (agent clean)
 				else
 					s := c_prim_objs_csr.item.as_string
 				end
 				last_result.append (apply_style (s, STYLE_VALUE))
+				last_result.append (symbol (SYM_END_CBLOCK))
 				if not c_prim_objs_csr.is_last then
 					last_result.append (", ")
 				end
 			end
 			last_result.append ("]" + format_item (FMT_SPACE))
-			last_result.append (format_item (FMT_NEWLINE))
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)

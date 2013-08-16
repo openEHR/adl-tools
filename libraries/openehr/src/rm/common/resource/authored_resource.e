@@ -44,7 +44,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_language: CODE_PHRASE
+	original_language: TERMINOLOGY_CODE
 			-- Language in which this resource was initially authored. Although there
 			-- is no language primacy of resources overall, the language of original
 			-- authoring is required to ensure natural language translations can preserve

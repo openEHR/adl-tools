@@ -112,7 +112,7 @@ feature -- Display
 		do
 			precursor (a_gui_grid)
 
-			-- set an empty string in the meaning column, so later updates have an object to modify
+			-- set an empty string in the rm_name column, so later updates have an object to modify
 			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
 
 			-- constraints
@@ -339,7 +339,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 		end
 
 	create_arch_child (co_create_params: C_OBJECT_PROPERTIES): C_OBJECT_ED_CONTEXT
-			-- make new C_OBJECT child 
+			-- make new C_OBJECT child
 		require
 			not is_rm
 		local

@@ -9,7 +9,7 @@
 		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="none" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
-			<debug name="adl_parse" enabled="true"/>
+			<debug name="adl_parse" enabled="false"/>
 			<debug name="adl_tree" enabled="false"/>
 			<debug name="arch_dir" enabled="false"/>
 			<debug name="bb" enabled="false"/>

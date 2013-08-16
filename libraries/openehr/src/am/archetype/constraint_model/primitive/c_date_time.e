@@ -121,8 +121,8 @@ feature -- Status Report
 
 	valid_value (a_value: ISO8601_DATE_TIME): BOOLEAN
 		do
-			if range /= Void then
-				Result := range.has(a_value)
+			if attached range as rng then
+				Result := rng.has(a_value)
 			else
 				-- Result := a_value matches pattern FIXME - to be implemented
 				Result := True

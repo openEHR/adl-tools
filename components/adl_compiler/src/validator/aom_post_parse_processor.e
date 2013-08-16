@@ -32,6 +32,8 @@ feature {ADL15_ENGINE} -- Initialisation
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
+			create att_c_terminology_code_type_mapping
+			
 			rm_schema := an_rm_schema
 			set_domain_type_mappings
 
@@ -86,15 +88,12 @@ feature -- Commands
 	execute
 		do
 			update_constraint_refs
-			update_c_domain_types
+			update_aom_mapped_types
 		end
 
 	clear
 		do
 			c_terminology_code_type_mapping := Void
-			c_code_phrase_type_mapping := Void
-			c_dv_ordinal_type_mapping := Void
-			c_dv_quantity_type_mapping := Void
 		end
 
 feature {NONE} -- Implementation
@@ -130,36 +129,26 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	update_c_domain_types
-			-- update all C_DOMAIN_TYPE nodes with intended RM types
+	update_aom_mapped_types
+			-- Find any types that have a AOM profile type mapping and write the
+			-- mapping in
 		local
 			def_it: C_ITERATOR
 		do
-			if attached c_code_phrase_type_mapping or attached c_dv_ordinal_type_mapping or attached c_dv_quantity_type_mapping then
+			if attached c_terminology_code_type_mapping as ctc_tm then
+				att_c_terminology_code_type_mapping := ctc_tm
 				create def_it.make (target.definition)
-				def_it.do_all (agent update_c_domain_type, Void)
+				def_it.do_all (agent update_aom_mapped_type, Void)
 			end
 		end
 
-	update_c_domain_type (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	update_aom_mapped_type (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model.
 		do
-			if attached {C_PRIMITIVE_OBJECT} a_c_node as cpo and then attached {C_TERMINOLOGY_CODE} cpo.item as ctc and attached c_terminology_code_type_mapping as ctc_tm then
-				cpo.set_rm_type_name (ctc_tm.target_class_name)
-				ctc.set_rm_type_name (ctc_tm.target_class_name)
-				ctc.set_rm_type_mapping (ctc_tm)
-
-			elseif attached {C_CODE_PHRASE} a_c_node as ccp and attached c_code_phrase_type_mapping as ccp_tm then
-				ccp.set_rm_type_name (ccp_tm.target_class_name)
-				ccp.set_rm_type_mapping (ccp_tm)
-
-			elseif attached {C_DV_ORDINAL} a_c_node as c_dvo and attached c_dv_ordinal_type_mapping as cdvo_tm then
-				c_dvo.set_rm_type_name (cdvo_tm.target_class_name)
-				c_dvo.set_rm_type_mapping (cdvo_tm)
-
-			elseif attached {C_DV_QUANTITY} a_c_node as c_dvq and attached c_dv_quantity_type_mapping as cdvq_tm then
-				c_dvq.set_rm_type_name (cdvq_tm.target_class_name)
-				c_dvq.set_rm_type_mapping (cdvq_tm)
+			if attached {C_PRIMITIVE_OBJECT} a_c_node as cpo and then attached {C_TERMINOLOGY_CODE} cpo.item as ctc then
+				cpo.set_rm_type_name (att_c_terminology_code_type_mapping.target_class_name)
+				ctc.set_rm_type_name (att_c_terminology_code_type_mapping.target_class_name)
+				ctc.set_rm_type_mapping (att_c_terminology_code_type_mapping)
 			end
 		end
 
@@ -171,25 +160,10 @@ feature {NONE} -- Implementation
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
 				if attached aom_profile.aom_rm_type_mappings as aom_tm then
-					if aom_tm.has ("TERMINOLOGY_CODE") then
-						c_terminology_code_type_mapping := aom_tm.item ("TERMINOLOGY_CODE")
+					if aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
+						c_terminology_code_type_mapping := aom_tm.item (bare_type_name (({TERMINOLOGY_CODE}).name))
 					else
 						c_terminology_code_type_mapping := Void
-					end
-					if aom_tm.has ("CODE_PHRASE") then
-						c_code_phrase_type_mapping := aom_tm.item ("CODE_PHRASE")
-					else
-						c_code_phrase_type_mapping := Void
-					end
-					if aom_tm.has ("DV_ORDINAL") then
-						c_dv_ordinal_type_mapping := aom_tm.item ("DV_ORDINAL")
-					else
-						c_dv_ordinal_type_mapping := Void
-					end
-					if aom_tm.has ("DV_QUANTITY") then
-						c_dv_quantity_type_mapping := aom_tm.item ("DV_QUANTITY")
-					else
-						c_dv_quantity_type_mapping := Void
 					end
 				else
 					clear
@@ -201,11 +175,8 @@ feature {NONE} -- Implementation
 
 	c_terminology_code_type_mapping: detachable AOM_TYPE_MAPPING
 
-	c_code_phrase_type_mapping: detachable AOM_TYPE_MAPPING
-
-	c_dv_ordinal_type_mapping: detachable AOM_TYPE_MAPPING
-
-	c_dv_quantity_type_mapping: detachable AOM_TYPE_MAPPING
+	att_c_terminology_code_type_mapping: AOM_TYPE_MAPPING
+			-- logically attached version of c_terminology_code_type_mapping
 
 end
 

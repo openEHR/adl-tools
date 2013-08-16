@@ -103,15 +103,6 @@ feature -- Factory
 			a_parent.put_child (Result)
 		end
 
-	create_c_code_phrase_from_pattern (a_parent: C_ATTRIBUTE; a_term_constraint: STRING): C_CODE_PHRASE
-			-- create a "term" node from term in string form "terminology(version)::code_phrase, code_phrase, ..."
-		require
-			term_constraint_valid: not a_term_constraint.is_empty
-		do
-			create Result.make_from_pattern(a_term_constraint)
-			a_parent.put_child (Result)
-		end
-
 	create_constraint_ref (a_parent: C_ATTRIBUTE; a_code: STRING): CONSTRAINT_REF
 			-- create a "term" node from term in string form "ac0039"
 		require
