@@ -11,7 +11,7 @@ note
 class C_DATE
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 		redefine
 			default_create
 		end
@@ -21,8 +21,7 @@ inherit
 			{NONE} all;
 			{ANY} valid_iso8601_date_constraint_pattern, valid_iso8601_date, iso8601_string_to_date
 		undefine
-			default_create,
-			out
+			default_create, out
 		end
 
 create
@@ -32,8 +31,7 @@ feature -- Initialisation
 
 	default_create
 		do
-			rm_type_name := Iso_class_name_leader.twin
-			rm_type_name.append (generating_type.out.substring (3, generating_type.out.count))
+			rm_type_name := bare_type_name (({ISO8601_DATE}).name)
 		end
 
 	make_range (an_interval: INTERVAL[ISO8601_DATE])
@@ -126,19 +124,6 @@ feature -- Status Report
 			end
 		end
 
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if attached pattern as p and attached other.pattern as other_p then
-				Result := valid_date_constraint_replacements.item (other_p.as_upper).has (p.as_upper)
-			elseif attached range as rng and attached other.range as other_rng then
-
-				Result := other_rng.contains (rng)
-			end
-		end
-
 feature -- Output
 
 	as_string: STRING
@@ -151,6 +136,19 @@ feature -- Output
 			end
 			if attached assumed_value as av then
 				Result.append("; " + av.out)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if attached pattern as p and attached other.pattern as other_p then
+				Result := valid_date_constraint_replacements.item (other_p.as_upper).has (p.as_upper)
+			elseif attached range as rng and attached other.range as other_rng then
+
+				Result := other_rng.contains (rng)
 			end
 		end
 

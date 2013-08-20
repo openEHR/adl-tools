@@ -31,7 +31,7 @@ feature -- Display
 		do
 			precursor (ui_settings)
 			if attached arch_node as a_n and then not a_n.any_allowed then
-				create gli.make_with_text (utf8_to_utf32 (a_n.item.as_string))
+				create gli.make_with_text (utf8_to_utf32 (a_n.as_string))
 				gli.set_foreground_color (c_constraint_colour)
 				ev_grid_row.set_item (Definition_grid_col_constraint, gli)
 			end

@@ -1,22 +1,17 @@
 note
-
 	component:   "openEHR ADL Tools"
-
 	description: "Constrainer type for instances of REAL"
 	keywords:    "archetype, boolean, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-
 class C_REAL
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 
 create
 	make_range, make_list, make_simple_list
@@ -73,18 +68,6 @@ feature -- Status Report
 			end
 		end
 
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
-			elseif attached list as l and attached other.list as other_l then
-				Result := across l as l_csr some other_l.has (l_csr.item) end
-			end
-		end
-
 feature -- Output
 
 	as_string: STRING
@@ -115,6 +98,18 @@ feature -- Output
 					out_val.append (".0")
 				end
 				Result.append ("; " + out_val)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			elseif attached list as l and attached other.list as other_l then
+				Result := across l as l_csr some other_l.has (l_csr.item) end
 			end
 		end
 

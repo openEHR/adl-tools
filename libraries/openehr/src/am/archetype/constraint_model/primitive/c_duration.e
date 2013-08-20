@@ -11,7 +11,7 @@ note
 class C_DURATION
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 		redefine
 			default_create
 		end
@@ -36,8 +36,7 @@ feature {NONE} -- Initialisation
 
 	default_create
 		do
-			rm_type_name := Iso_class_name_leader.twin
-			rm_type_name.append (generating_type.out.substring (3, generating_type.out.count))
+			rm_type_name := bare_type_name (({ISO8601_DURATION}).name)
 		end
 
 	make (a_pattern, a_lower_str, an_upper_str: detachable STRING; include_lower, include_upper: BOOLEAN)
@@ -145,41 +144,11 @@ feature -- Status Report
 	valid_value (duration: ISO8601_DURATION): BOOLEAN
 			-- Is `duration' within `range'?
 		do
-			Result := True
-
 			if attached pattern then
 				-- FIXME: TO BE IMPLEMENTED	
 			end
 
 			Result := Result and (range /= Void implies range.has (duration))
-		end
-
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node constraint is a subset of `other'
-		do
-			Result := pattern_conforms_to (other) and range_conforms_to (other)
-		end
-
-	pattern_conforms_to (other: like Current): BOOLEAN
-			-- True if the pattern of this node is or narrower than that in `other'
-		do
-			if attached pattern as pat and attached other.pattern as other_pat then
-				Result := compute_pattern_conformance (pat, other_pat)
-			else
-				Result := True
-			end
-		end
-
-	range_conforms_to (other: like Current): BOOLEAN
-			-- True if the pattern of this node is or narrower than that in `other'
-		do
-			if attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
-			else
-				Result := True
-			end
 		end
 
 feature -- Output
@@ -205,6 +174,32 @@ feature -- Output
 		end
 
 feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node constraint is a subset of `other'
+		do
+			Result := pattern_conforms_to (other) and range_conforms_to (other)
+		end
+
+	pattern_conforms_to (other: like Current): BOOLEAN
+			-- True if the pattern of this node is or narrower than that in `other'
+		do
+			if attached pattern as pat and attached other.pattern as other_pat then
+				Result := compute_pattern_conformance (pat, other_pat)
+			else
+				Result := True
+			end
+		end
+
+	range_conforms_to (other: like Current): BOOLEAN
+			-- True if the pattern of this node is or narrower than that in `other'
+		do
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			else
+				Result := True
+			end
+		end
 
 	compute_pattern_conformance (a_child_pattern, a_pattern: STRING): BOOLEAN
 		do

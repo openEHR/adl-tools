@@ -70,7 +70,7 @@ create
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
 %token <STRING> V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN V_ISO8601_TIME_CONSTRAINT_PATTERN
 %token <STRING> V_ISO8601_DATE_CONSTRAINT_PATTERN V_ISO8601_DURATION_CONSTRAINT_PATTERN
-%token <C_DOMAIN_TYPE> V_C_DOMAIN_TYPE
+%token <C_DV_QUANTITY> V_C_DV_QUANTITY
 
 %token SYM_START_CBLOCK SYM_END_CBLOCK	-- constraint block
 
@@ -86,7 +86,7 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
+%token ERR_CHARACTER ERR_STRING ERR_C_DV_QUANTITY ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -108,7 +108,6 @@ create
 %type <SIBLING_ORDER> sibling_order
 %type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
-%type <C_PRIMITIVE> c_primitive
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 
 %type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
@@ -125,7 +124,6 @@ create
 %type <ISO8601_DATE_TIME> date_time_value
 %type <ISO8601_TIME> time_value
 %type <ISO8601_DURATION> duration_value
-%type <CODE_PHRASE> term_code
 %type <STRING> any_identifier
 %type <STRING> string_value
 %type <URI> uri_value
@@ -147,8 +145,8 @@ create
 
 %type <CARDINALITY> c_cardinality cardinality_range
 %type <CONSTRAINT_REF> constraint_ref
-%type <C_DV_ORDINAL> c_ordinal
-%type <ORDINAL> ordinal
+%type <C_COMPLEX_OBJECT> c_ordinal
+%type <C_OBJECT_TUPLE> ordinal
 %type <C_BOOLEAN> c_boolean
 %type <C_STRING> c_string
 %type <C_DATE_TIME> c_date_time
@@ -309,17 +307,17 @@ c_object: c_complex_object
 		}
 	| c_ordinal 
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1.standard_equivalent)
+			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| c_primitive_object
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
-	| V_C_DOMAIN_TYPE
+	| V_C_DV_QUANTITY
 		{
-			safe_put_c_attribute_child (c_attrs.item, c_domain_type.standard_equivalent)
+			safe_put_c_attribute_child (c_attrs.item, c_dv_quantity.standard_equivalent)
 		}
-	| ERR_C_DOMAIN_TYPE
+	| ERR_C_DV_QUANTITY
 		{
 			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
 		}
@@ -499,13 +497,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		}
 	;
 
-c_primitive_object: c_primitive
-		{
-			create $$.make ($1)
-		}
-	;
-
-c_primitive: c_integer 
+c_primitive_object: c_integer 
 		{
 			debug ("ADL_parse")
 				io.put_string (indent + "C_INTEGER: " +  $1.as_string + "%N")
@@ -899,7 +891,7 @@ boolean_leaf: boolean_literal
 -- the following form of expression has a relative path which is only allowed with Slot definitions.
 -- The absolute path form is for assertions in the rules section
 --
-arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
+arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
 			debug ("ADL_invariant")
 				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
@@ -910,7 +902,7 @@ arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive 
 		}
 	;
 
-boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
+boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
 			debug ("ADL_invariant")
 				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
@@ -1545,30 +1537,68 @@ c_boolean: SYM_TRUE
 		}
 	;
 
+----------------------------------------------------------------------------------------
+--
+-- LEGACY ADL 1.4 Ordinal Syntax; converted here to C_ATTRIBUTE_TUPLE structure
+--
+
 c_ordinal: ordinal
 		{
-			create $$.default_create
-			$$.add_item ($1)
+			create $$.make_anonymous ("DV_ORDINAL")
+
+			-- create a C_ATTR_TUPLE and connect the received C_OBJ_TUPLE to it
+			$$.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)
+			$$.attribute_tuples.first.put_child ($1)
+
+			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
+			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
+			$$.attribute_tuples.first.put_member ($$.c_attribute ("value"))
+			$$.c_attribute ("value").put_child ($1.i_th_member (1))
+
+			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
+			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
+			$$.attribute_tuples.first.put_member ($$.c_attribute ("symbol"))
+			$$.c_attribute ("symbol").put_child ($1.i_th_member (2))
 		}
 	| c_ordinal ',' ordinal
 		{
-			if $1.has_item ($3.value) then
-				abort_with_error (ec_VCOV, <<$3.value.out>>)
-			elseif $1.has_code_phrase ($3.symbol) then
-				abort_with_error (ec_VCOC, <<$3.symbol.code_string>>)
-			else
-				$1.add_item ($3)
-			end
 			$$ := $1
+
+			check attached {C_INTEGER} $3.i_th_member (1) as ci then
+				c_int := ci
+			end
+			check attached {C_TERMINOLOGY_CODE} $3.i_th_member (2) as cs then
+				c_term_code := cs
+			end
+			if $$.c_attribute ("value").children.there_exists (
+					agent (co: C_OBJECT; c_val: C_INTEGER): BOOLEAN
+						do
+							Result := attached {C_INTEGER} co as ci and then ci.node_conforms_to (c_val, rm_schema)
+						end (?, c_int)
+				)
+			then
+				abort_with_error (ec_VCOV, <<c_int.prototype_value.out>>)
+
+			elseif $$.c_attribute ("symbol").children.there_exists (
+					agent (co: C_OBJECT; c_sym: C_TERMINOLOGY_CODE): BOOLEAN
+						do
+							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.node_conforms_to (c_sym, rm_schema)
+						end (?, c_term_code)
+				)
+			then
+				abort_with_error (ec_VCOC, <<c_term_code.prototype_value.out>>)
+
+			else
+				$$.c_attribute ("value").put_child ($3.i_th_member (1))
+				$$.c_attribute ("symbol").put_child ($3.i_th_member (2))
+			end
 		}
  	| c_ordinal ';' integer_value
  		{
-			if $1.has_item ($3) then
-				$1.set_assumed_value_from_integer ($3)
-			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
-			end
 			$$ := $1
+
+			-- assumed value for C_DV_ORDINAL not supported
+			add_warning (ec_WDTOAV, Void)
  		}
  	| c_ordinal ';' error
  		{
@@ -1576,11 +1606,23 @@ c_ordinal: ordinal
  		}
 	;
 
-ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
+ordinal: integer_value SYM_INTERVAL_DELIM c_terminology_code
 		{
-			create $$.make ($1, create {CODE_PHRASE}.make_from_string ($3))
+			-- create C_OBJECT_TUPLE
+			create $$.make 
+
+			-- create and add the value C_PRIMITIVE_OBJECT
+			$$.put_member (create {C_INTEGER}.make_simple_list ($1))
+
+			-- create and add the symbol C_PRIMITIVE_OBJECT
+			$$.put_member ($3)
 		}
 	;
+
+--
+-- END LEGACY ADL 1.4 Ordinal Syntax; converted here to C_ATTRIBUTE_TUPLE structure
+--
+----------------------------------------------------------------------------------------
 
 constraint_ref: V_LOCAL_TERM_CODE_REF	-- e.g. "ac0003"
 		{
@@ -2277,5 +2319,9 @@ feature {NONE} -- Implementation
 	str: detachable STRING
 
 	og_path: detachable OG_PATH
+
+	-- legacy C_DV_ORDINAL variables
+	c_int: C_INTEGER
+	c_term_code: C_TERMINOLOGY_CODE
 
 end

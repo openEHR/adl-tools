@@ -6,8 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "initial"
-
 
 class C_DEFINITION_RENDERER
 
@@ -20,7 +18,6 @@ inherit
 			end_archetype_slot,
 			end_archetype_internal_ref,
 			end_constraint_ref,
-			end_c_code_phrase, end_c_ordinal, end_c_quantity,
 			end_c_primitive_object,
 			do_rm_property
 		end
@@ -474,185 +471,6 @@ feature -- Visitor
 			end
 		end
 
-	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- enter an C_DOMAIN_TYPE
-		do
-		end
-
-	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- enter an C_CODE_PHRASE
-		local
-			row: EV_GRID_ROW
-			constraint_str: STRING
-			i: INTEGER
-			bmm_prop: BMM_PROPERTY_DEFINITION
-		do
-			start_c_object (a_node, depth)
-			row := node_grid_row_map.item (a_node)
-
-			-- terminology_id field
-			if attached a_node.terminology_id then
-				-- build the grid row
-				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
-				if not updating then
-					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-					gui_grid.set_last_row_label_col (Definition_grid_col_constraint, a_node.terminology_id.value, Void, c_constraint_colour (a_node), Void)
-				end
-			end
-
-			-- code_string field
-			if attached a_node.code_list then
-				create constraint_str.make_empty
-				from a_node.code_list.start until a_node.code_list.off loop
-					constraint_str.append_string (term_string (a_node.terminology_id.value, a_node.code_list.item))
-					if a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item) then
-						constraint_str.append (" (" + get_text (ec_assumed_text) + ")")
-					end
-					if not a_node.code_list.islast then
-						constraint_str.append_string ("%N")
-					end
-					a_node.code_list.forth
-				end
-
-				-- build the grid row
-				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
-				if not updating then
-					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
-				else
-					from i := 1 until i > row.subrow_count loop
-						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop.name) then
-							gui_grid.set_last_row (row.subrow (i))
-							gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
-							i := row.subrow_count + 1
-						end
-						i := i + 1
-					end
-				end
-			end
-		end
-
-	end_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- exit an C_CODE_PHRASE
-		do
-			if not updating then
-				ev_grid_row_stack.remove
-			end
-		end
-
-	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- enter an C_DV_ORDINAL
-		local
-			assumed_flag: BOOLEAN
-			row: EV_GRID_ROW
-			constraint_str: STRING
-			i: INTEGER
-			bmm_prop_key: STRING
-			bmm_prop_value, bmm_prop_symbol: BMM_PROPERTY_DEFINITION
-		do
-			start_c_object (a_node, depth)
-			row := node_grid_row_map.item (a_node)
-
-			if not a_node.any_allowed then
-				-- build the constraint string
-				create constraint_str.make_empty
-				from a_node.items.start until a_node.items.off loop
-					assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.value = a_node.items.item.value
-					constraint_str.append_string (object_ordinal_item_string (a_node.items.item, assumed_flag))
-					if not a_node.items.islast then
-						constraint_str.append_string ("%N")
-					end
-					a_node.items.forth
-				end
-
-				-- build the grid row
-				bmm_prop_value := rm_schema.property_definition ("DV_ORDINAL", "value")
-				bmm_prop_symbol := rm_schema.property_definition ("DV_ORDINAL", "symbol")
-				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
-				if not updating then
-					gui_grid.add_sub_row (row, bmm_prop_key)
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
-						get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
-				else
-					from i := 1 until i > row.subrow_count loop
-						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
-							gui_grid.set_last_row (row.subrow (i))
-							gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
-							i := row.subrow_count + 1
-						end
-						i := i + 1
-					end
-				end
-			end
-		end
-
-	end_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- exit an C_DV_ORDINAL
-		do
-			if not updating then
-				ev_grid_row_stack.remove
-			end
-		end
-
-	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
-		local
-			row: EV_GRID_ROW
-			constraint_str: STRING
-			bmm_prop_key: STRING
-			bmm_prop_magnitude, bmm_prop_units, bmm_prop_precision: BMM_PROPERTY_DEFINITION
-		do
-			start_c_object (a_node, depth)
-			row := node_grid_row_map.item (a_node)
-
-			if not updating then
-				-- property constraint
-				if attached a_node.property then
-					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "property", Void, c_constraint_colour (a_node), get_icon_pixmap ("rm/generic/c_meta_attribute"))
-					gui_grid.set_last_row_label_col (Definition_grid_col_constraint, term_string (a_node.property.terminology_id.value, a_node.property.code_string), Void, c_constraint_colour (a_node), Void)
-				end
-
-				-- magnitude / units / precision constraint
-				if attached a_node.list then
-					create constraint_str.make_empty
-					from a_node.list.start until a_node.list.off loop
-						constraint_str.append_string (c_quantity_item_string (a_node.list.item))
-						if not a_node.list.islast then
-							constraint_str.append_string ("%N")
-						end
-						a_node.list.forth
-					end
-					-- assumed value
-					if a_node.has_assumed_value then
-						constraint_str.append ("%N" + a_node.assumed_value.magnitude_as_string + " (" + get_text (ec_assumed_text) + ")")
-					end
-
-					-- build the grid row
-					bmm_prop_magnitude := rm_schema.property_definition ("DV_QUANTITY", "magnitude")
-					bmm_prop_units := rm_schema.property_definition ("DV_QUANTITY", "units")
-					bmm_prop_precision := rm_schema.property_definition ("DV_QUANTITY", "precision")
-					bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
-
-					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
-						get_icon_pixmap ("rm/generic/" + bmm_prop_magnitude.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
-				end
-			end
-		end
-
-	end_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- exit a C_DV_QUANTITY
-		do
-			if not updating then
-				ev_grid_row_stack.remove
-			end
-		end
-
 	do_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; co: C_OBJECT; depth: INTEGER)
 			-- enter a BMM_PROPERTY_DEFINITION
 		local
@@ -886,35 +704,6 @@ feature {NONE} -- Implementation
 	language: STRING
 			-- IETF RFC 5646 language tag; wll be an exact text match
 			-- for one of the 'languages' in the archetype
-
-	c_quantity_item_string (a_node: C_QUANTITY_ITEM): attached STRING
-			-- generate string form of node or object for use in tree node
-		do
-			create Result.make_empty
-			if a_node.magnitude /= Void then
-				Result.append (a_node.magnitude.as_string)
-			end
-			Result.append (" | ")
-			if a_node.units /= Void then
-				Result.append (a_node.units)
-			end
-			Result.append (" | ")
-			if a_node.precision /= Void then
-				Result.append (a_node.precision.as_string)
-			end
-		end
-
-	object_ordinal_item_string (an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING
-			-- generate string form of node or object for use in tree node
-		do
-			create Result.make_empty
-			Result.append (an_ordinal.value.out)
-			Result.append (" - ")
-			Result.append (term_string (an_ordinal.symbol.terminology_id.value, an_ordinal.symbol.code_string))
-			if assumed_flag then
-				Result.append (" (" + get_text (ec_assumed_text) + ")")
-			end
-		end
 
 	local_term_string (a_code: STRING): STRING
 			-- generate a string of the form "[code|rubric|]" if in technical mode,

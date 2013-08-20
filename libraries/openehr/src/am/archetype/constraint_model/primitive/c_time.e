@@ -11,7 +11,7 @@ note
 class C_TIME
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 		redefine
 			default_create
 		end
@@ -33,8 +33,7 @@ feature -- Initialisation
 
 	default_create
 		do
-			rm_type_name := Iso_class_name_leader.twin
-			rm_type_name.append (generating_type.out.substring (3, generating_type.out.count))
+			rm_type_name := bare_type_name (({ISO8601_TIME}).name)
 		end
 
 	make_range (an_interval: INTERVAL[ISO8601_TIME])
@@ -122,18 +121,6 @@ feature -- Status Report
 			end
 		end
 
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if attached pattern as att_pattern and attached other.pattern as att_other_pattern then
-				Result := valid_time_constraint_replacements.item (att_other_pattern.as_upper).has (att_pattern.as_upper)
-			elseif attached range as att_range and attached other.range as other_att_range then
-				Result := other_att_range.contains (att_range)
-			end
-		end
-
 feature -- Output
 
 	as_string: STRING
@@ -146,6 +133,18 @@ feature -- Output
 			end
 			if attached assumed_value as av then
 				Result.append ("; " + av.out)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if attached pattern as att_pattern and attached other.pattern as att_other_pattern then
+				Result := valid_time_constraint_replacements.item (att_other_pattern.as_upper).has (att_pattern.as_upper)
+			elseif attached range as att_range and attached other.range as other_att_range then
+				Result := other_att_range.contains (att_range)
 			end
 		end
 

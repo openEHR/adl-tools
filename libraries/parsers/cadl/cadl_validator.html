@@ -129,9 +129,9 @@
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span></div>
 <div class="rhs">
-| <span class="token">V_C_DOMAIN_TYPE </span></div>
+| <span class="token">V_C_DV_QUANTITY </span></div>
 <div class="rhs">
-| <span class="token">ERR_C_DOMAIN_TYPE </span></div>
+| <span class="token">ERR_C_DV_QUANTITY </span></div>
 <div class="rhs">
 | <span class="token">error </span></div>
 </div>
@@ -203,13 +203,6 @@
 <div class="rule">
 <div class="lhs">
 <span class="lhs_variable" id="c_primitive_object">c_primitive_object</span>: </div>
-<div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_primitive">c_primitive</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_primitive">c_primitive</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_integer">c_integer</a> </span></div>
 <div class="rhs">
@@ -402,14 +395,14 @@
 <div class="lhs">
 <span class="lhs_variable" id="arch_outer_constraint_expr">arch_outer_constraint_expr</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_REL_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive">c_primitive</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+&nbsp; <span class="token">V_REL_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
 <span class="lhs_variable" id="boolean_constraint">boolean_constraint</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_ABS_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive">c_primitive</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+&nbsp; <span class="token">V_ABS_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 <div class="rhs">
 | <span class="token">V_ABS_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_terminology_code">c_terminology_code</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
@@ -755,7 +748,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="ordinal">ordinal</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="token">V_QUALIFIED_TERM_CODE_REF </span></div>
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#c_terminology_code">c_terminology_code</a> </span></div>
 </div>
 
 <div class="rule">

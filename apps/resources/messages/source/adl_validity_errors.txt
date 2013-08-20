@@ -132,6 +132,7 @@ templates = <
 		["VDTCV"] = <"Conversion of C_DOMAIN_TYPE descendant $1 failed">
 		["VDTTU"] = <"C_DOMAIN_TYPE descendant type $1 unknown or not visible in type system">
 		["VDTNT"] = <"C_DOMAIN_TYPE descendant type does not include type">
+		["WDTOAV"] = <"C_DV_ORDINAL assumed value not supported">
 
 
 		-- ARCHETYPE_INTERNAL_REF

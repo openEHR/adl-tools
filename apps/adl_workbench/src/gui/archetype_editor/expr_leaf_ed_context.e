@@ -59,7 +59,7 @@ feature {NONE} -- Implementation
 					else
 						Result.append (a_n.item.out)
 					end
-				elseif a_n.is_constraint and attached {C_CODE_PHRASE} a_n.item as c_cp then
+				elseif a_n.is_constraint and attached {C_TERMINOLOGY_CODE} a_n.item as c_cp then
 					Result.append (c_code_phrase_str (c_cp))
 				else
 					Result.append (a_n.as_string)

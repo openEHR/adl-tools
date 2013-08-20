@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (621)
+			create message_table.make (622)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -192,6 +192,7 @@ feature -- Initialisation
 			message_table.put ("Conversion of C_DOMAIN_TYPE descendant $1 failed", ec_VDTCV)
 			message_table.put ("C_DOMAIN_TYPE descendant type $1 unknown or not visible in type system", ec_VDTTU)
 			message_table.put ("C_DOMAIN_TYPE descendant type does not include type", ec_VDTNT)
+			message_table.put ("C_DV_ORDINAL assumed value not supported", ec_WDTOAV)
 			message_table.put ("ARCHETYPE_INTERNAL_REF path $1 not found in archetype", ec_VUNP)
 			message_table.put ("node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4", ec_VSUNT)
 			message_table.put ("definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed' or prohibited (occurrences matches {0})", ec_VASMD)

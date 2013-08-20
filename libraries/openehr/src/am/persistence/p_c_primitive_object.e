@@ -23,23 +23,19 @@ feature -- Initialisation
 	make (a_cpo: C_PRIMITIVE_OBJECT)
 		do
 			precursor (a_cpo)
-			item := a_cpo.item
+			item := a_cpo
 		end
 
 feature -- Access
 
-	item: detachable C_PRIMITIVE
+	item: C_PRIMITIVE_OBJECT
 
 feature -- Factory
 
 	create_c_primitive_object: C_PRIMITIVE_OBJECT
 		do
-			if attached item as cp then
-				create Result.make (cp)
-				populate_c_instance (Result)
-			else
-				create Result.make_any (rm_type_name)
-			end
+			Result := item
+			populate_c_instance (Result)
 		end
 
 end

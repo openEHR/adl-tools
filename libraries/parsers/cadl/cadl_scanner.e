@@ -946,24 +946,24 @@ end
 					if odin_parser.output.is_typed then
 						tid := dynamic_type_from_string(odin_parser.output.im_type_name)
 						if tid >= 0 then
-							if attached {C_DOMAIN_TYPE} odin_parser.output.as_object(tid, Void) as cdt then
-								c_domain_type := cdt
-								last_token := V_C_DOMAIN_TYPE
+							if attached {C_DV_QUANTITY} odin_parser.output.as_object(tid, Void) as cdt then
+								c_dv_quantity := cdt
+								last_token := V_C_DV_QUANTITY
 							else
 								odin_parser_error.add_error (ec_VDTCV, <<odin_parser.output.im_type_name>>, "")
-								last_token := ERR_C_DOMAIN_TYPE
+								last_token := ERR_C_DV_QUANTITY
 							end
 						else
 							odin_parser_error.add_error (ec_VDTTU, <<odin_parser.output.im_type_name>>, "")
-							last_token := ERR_C_DOMAIN_TYPE
+							last_token := ERR_C_DV_QUANTITY
 						end
 					else
 						odin_parser_error.add_error (ec_VDTNT, Void, "")
-						last_token := ERR_C_DOMAIN_TYPE
+						last_token := ERR_C_DV_QUANTITY
 					end
 				else
 					odin_parser_error.append (odin_parser.errors)
-					last_token := ERR_C_DOMAIN_TYPE
+					last_token := ERR_C_DV_QUANTITY
 				end
 
 				in_buffer.wipe_out
@@ -3178,7 +3178,7 @@ feature {NONE} -- Implementation
 	assumed_term_code_index: INTEGER
 			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
 
-	c_domain_type: detachable C_DOMAIN_TYPE
+	c_dv_quantity: detachable C_DV_QUANTITY
 
 	tid: INTEGER
 

@@ -133,16 +133,16 @@ feature -- Visitor
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			synchronise_to_tree
-			precursor (visitor, depth)
-			visitor.start_c_domain_type (Current, depth)
+--			synchronise_to_tree
+--			precursor (visitor, depth)
+--			visitor.start_c_domain_type (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor (visitor, depth)
-			visitor.end_c_domain_type (Current, depth)
+--			precursor (visitor, depth)
+--			visitor.end_c_domain_type (Current, depth)
 		end
 
 end

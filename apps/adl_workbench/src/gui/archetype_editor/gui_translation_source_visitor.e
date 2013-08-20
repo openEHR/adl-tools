@@ -26,7 +26,7 @@ feature -- Access
 
 	output: STRING
 			-- extracted term output
-	
+
 feature -- Visitor
 
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
@@ -72,26 +72,6 @@ feature -- Visitor
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
-		do
-		end
-
-	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- enter an C_DOMAIN_TYPE
-		do
-		end
-
-	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- enter an C_CODE_PHRASE
-		do
-		end
-
-	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- enter an C_DV_ORDINAL
-		do
-		end
-
-	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
 		do
 		end
 

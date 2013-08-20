@@ -325,7 +325,7 @@ feature -- Factory
 			Result.merge (c_primitive_defaults.current_keys)
 		end
 
-	c_primitive_defaults: HASH_TABLE [FUNCTION [ANY, TUPLE, C_PRIMITIVE], STRING]
+	c_primitive_defaults: HASH_TABLE [FUNCTION [ANY, TUPLE, C_PRIMITIVE_OBJECT], STRING]
 			-- a set of C_PRIMTIVE default creator agents, keyed by their type name
 		once
 			create Result.make (0)
@@ -341,9 +341,11 @@ feature -- Factory
 			Result.put (agent create_c_date_time_make_lower_unbounded ("2000-01-01T12:00:00"), bare_type_name (({C_DATE_TIME}).name))
 			Result.put (agent create_c_time_make_lower_unbounded ("12:00:00"), bare_type_name (({C_TIME}).name))
 			Result.put (agent create_c_date_make_lower_unbounded ("2000-01-01"), bare_type_name (({C_DATE}).name))
+
+			Result.put (agent create_c_terminology_code ("local::at0001"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
 		end
 
-	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE
+	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE_OBJECT
 		require
 			c_primitive_types.has ("C_" + rm_type)
 		do
@@ -428,7 +430,7 @@ feature -- Factory
 			end
 
 			if attached code_list as att_code_list then
-				create Result.make_with_codes (terminology_id, att_code_list)
+				create Result.make_from_codes (terminology_id, att_code_list)
 			else
 				create Result.make (terminology_id)
 			end

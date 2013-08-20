@@ -11,12 +11,17 @@ note
 class C_STRING
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
+		redefine
+			default_create
+		end
 
 create
-	make_any, make_from_string, make_from_regexp, make_from_string_list
+	make_open, make_from_string, make_from_regexp, make_from_string_list, make_any
 
 feature -- Definitions
+
+	Regex_any_string: STRING = ".*"
 
 	default_delimiter: CHARACTER = '/'
 
@@ -26,7 +31,16 @@ feature -- Definitions
 
 feature -- Initialization
 
-	make_any
+	default_create
+			-- set `rm_type_name'
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		do
+			rm_type_name := generating_type
+			rm_type_name.remove_head (2)
+		end
+
+	make_open
 			-- make completely open
 		do
 			default_create
@@ -77,19 +91,10 @@ feature -- Initialization
 			not_open: not is_open
 		end
 
-feature -- Modification
-
-	set_open
+	make_any
+			-- make using an open regex, i.e. ".*"
 		do
-			is_open := True
-		end
-
-	add_string (str: STRING)
-		do
-			strings.extend (str)
-		ensure
-			extended: strings.count = old strings.count + 1
-			str_valid: valid_value (str)
+			regexp := Regex_any_string
 		end
 
 feature -- Access
@@ -140,8 +145,6 @@ feature -- Status Report
 			Result := attached regexp
 		end
 
-feature -- Status Report
-
 	valid_value (a_value: STRING): BOOLEAN
 		do
 			if is_open then
@@ -157,19 +160,26 @@ feature -- Status Report
 			-- if True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used		
 
-feature -- Comparison
+feature -- Modification
 
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+	set_open
 		do
-			-- FIXME: TO BE IMPLEMENTED
+			is_open := True
+		end
+
+	add_string (str: STRING)
+		do
+			strings.extend (str)
+		ensure
+			extended: strings.count = old strings.count + 1
+			str_valid: valid_value (str)
 		end
 
 feature -- Output
 
 	as_string: STRING
 		do
-			create Result.make(0)
+			create Result.make_empty
 
 			if attached strings as strs then
 				across strs as strings_csr loop
@@ -221,6 +231,12 @@ feature -- Output
 		end
 
 feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
+		end
 
 	regexp_parser: detachable RX_PCRE_REGULAR_EXPRESSION
 		note

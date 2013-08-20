@@ -10,17 +10,10 @@ note
 class C_TERMINOLOGY_CODE
 
 inherit
-	C_PRIMITIVE
-
-	OPENEHR_DEFINITIONS
-		export
-			{NONE} all
-		undefine
-			default_create, out
-		end
+	C_PRIMITIVE_OBJECT
 
 create
-	make, make_with_codes, make_with_code
+	make, make_from_codes, make_from_code, make_from_terminology_code
 
 feature -- Initialisation
 
@@ -30,7 +23,7 @@ feature -- Initialisation
 			terminology_id := a_terminology_id
 		end
 
-	make_with_codes (a_terminology_id: STRING; codes: SET [STRING])
+	make_from_codes (a_terminology_id: STRING; codes: SET [STRING])
 		require
 			Codes_valid: codes.object_comparison and not codes.is_empty
 		do
@@ -41,13 +34,22 @@ feature -- Initialisation
 			code_list.merge (codes)
 		end
 
-	make_with_code (a_terminology_id: STRING; code: STRING)
+	make_from_code (a_terminology_id: STRING; code: STRING)
 		do
 			default_create
 			terminology_id := a_terminology_id
 			create code_list.make
 			code_list.compare_objects
 			code_list.extend (code)
+		end
+
+	make_from_terminology_code (a_terminology_code: TERMINOLOGY_CODE)
+		do
+			default_create
+			terminology_id := a_terminology_code.terminology_id
+			create code_list.make
+			code_list.compare_objects
+			code_list.extend (a_terminology_code.code_string)
 		end
 
 feature -- Access
@@ -60,7 +62,11 @@ feature -- Access
 
 	prototype_value: TERMINOLOGY_CODE
 		do
-			create Result.make (terminology_id, "01")
+			if attached code_list as cl then
+				create Result.make (terminology_id, cl.first)
+			else
+				create Result.make (terminology_id, "01")
+			end
 		end
 
 	code_count: INTEGER
@@ -72,13 +78,6 @@ feature -- Access
 		end
 
 feature -- Status Report
-
-	any_allowed: BOOLEAN
-			-- True if any value allowed
-			-- i.e. no terminology_id or code_list
-		do
-			Result := terminology_id = Void and code_list = Void
-		end
 
 	is_local: BOOLEAN
 			-- True if this terminology id = "local"
@@ -95,18 +94,6 @@ feature -- Status Report
 					Result := att_codes.has (a_value.code_string)
 				else
 					Result := True
-				end
-			end
-		end
-
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if other.terminology_id.is_equal (terminology_id) then
-				if attached code_list as att_codes and then attached other.code_list as other_att_codes then
-					Result := att_codes.is_subset (other_att_codes)
 				end
 			end
 		end
@@ -154,6 +141,16 @@ feature -- Output
 		end
 
 feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if other.terminology_id.is_equal (terminology_id) then
+				if attached code_list as att_codes and then attached other.code_list as other_att_codes then
+					Result := att_codes.is_subset (other_att_codes)
+				end
+			end
+		end
 
 end
 

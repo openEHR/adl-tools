@@ -88,36 +88,6 @@ feature -- Visitor
 			archetype.accodes_index.item (a_node.target).extend (a_node)
 		end
 
-	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- enter an C_CODE_PHRASE
-		do
-			start_c_domain_type(a_node, depth)
-			if not a_node.any_allowed and then (a_node.is_local and a_node.code_count > 0) then
-				from a_node.code_list.start until a_node.code_list.off loop
-					if not archetype.data_atcodes_index.has (a_node.code_list.item) then
-						archetype.data_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
-					end
-					archetype.data_atcodes_index.item (a_node.code_list.item).extend (a_node)
-					a_node.code_list.forth
-				end
-			end
-		end
-
-	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- enter an C_DV_ORDINAL
-		do
-			start_c_domain_type(a_node, depth)
-			if not a_node.any_allowed and then a_node.is_local then
-				from a_node.items.start until a_node.items.off loop
-					if not archetype.data_atcodes_index.has (a_node.items.item.symbol.code_string) then
-						archetype.data_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
-					end
-					archetype.data_atcodes_index.item (a_node.items.item.symbol.code_string).extend (a_node)
-					a_node.items.forth
-				end
-			end
-		end
-
 	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE; see if it has a differential path, in which case there may be at-codes
 			-- referenced there not visible elsewhere in the structure; these need to be found and added to
@@ -152,18 +122,17 @@ feature -- Visitor
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
-		end
-
-	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- enter an C_DOMAIN_TYPE
-		do
-			start_c_object(a_node, depth)
-		end
-
-	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
-		do
-			start_c_domain_type(a_node, depth)
+			if attached {C_TERMINOLOGY_CODE} a_node as ctc then
+				start_c_object (a_node, depth)
+				if not ctc.any_allowed and then (ctc.is_local and ctc.code_count > 0) then
+					across ctc.code_list as code_list_csr loop
+						if not archetype.data_atcodes_index.has (code_list_csr.item) then
+							archetype.data_atcodes_index.put (create {ARRAYED_LIST [C_OBJECT]}.make(0), code_list_csr.item)
+						end
+						archetype.data_atcodes_index.item (code_list_csr.item).extend (ctc)
+					end
+				end
+			end
 		end
 
 end

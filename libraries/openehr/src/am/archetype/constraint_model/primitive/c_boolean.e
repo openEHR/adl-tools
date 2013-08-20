@@ -3,15 +3,15 @@ note
 	description: "Constrainer type for instances of BOOLEAN"
 	keywords:    "archetype, boolean, data"
 	design:      "openEHR Common Archetype Model 0.2"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class C_BOOLEAN
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 
 create
 	make_true, make_false, make_true_false
@@ -42,7 +42,7 @@ feature -- Access
 	prototype_value: BOOLEAN_REF
 		do
 			create Result
-			Result.set_item(true_valid)
+			Result.set_item (true_valid)
 		end
 
 feature -- Status Report
@@ -56,14 +56,6 @@ feature -- Status Report
 	valid_value (a_value: BOOLEAN_REF): BOOLEAN
 		do
 			Result := (a_value.item and true_valid) or else (not a_value.item and false_valid)
-		end
-
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			Result := (true_valid implies other.true_valid) and (false_valid implies other.false_valid)
 		end
 
 feature -- Output
@@ -81,16 +73,24 @@ feature -- Output
 				Result.append((not False_valid).out)
 			end
 			if assumed_value /= Void then
-				Result.append("; " + assumed_value.out)
+				Result.append ("; " + assumed_value.out)
 			end
 		end
 
 	as_canonical_string: STRING
 		do
 			create Result.make(0)
-			Result.append("<true_valid>" + true_valid.out + "</true_valid>")
-			Result.append("<false_valid>" + false_valid.out + "</false_valid>")
-			Result.append("<assumed_value>" + assumed_value.out + "</assumed_value>")
+			Result.append ("<true_valid>" + true_valid.out + "</true_valid>")
+			Result.append ("<false_valid>" + false_valid.out + "</false_valid>")
+			Result.append ("<assumed_value>" + assumed_value.out + "</assumed_value>")
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			Result := (true_valid implies other.true_valid) and (false_valid implies other.false_valid)
 		end
 
 invariant

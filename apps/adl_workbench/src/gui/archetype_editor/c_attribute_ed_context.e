@@ -30,6 +30,7 @@ feature -- Initialisation
 	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
+			create internal_ref_for_rm_type.make (0)
 			set_arch_node_in_ancestor
 			if an_arch_node.has_differential_path then
 				rm_property := ed_context.rm_schema.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
@@ -343,7 +344,6 @@ feature {ANY_ED_CONTEXT} -- Implementation
 		require
 			not is_rm
 		local
-			cpo: C_PRIMITIVE_OBJECT
 			cco: C_COMPLEX_OBJECT
 			car: C_ARCHETYPE_ROOT
 			air: ARCHETYPE_INTERNAL_REF
@@ -363,9 +363,10 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				new_code := ed_context.archetype.ontology.last_added_term_definition_code
 			end
 
-			if co_create_params.aom_type.is_equal (bare_type_name(({C_PRIMITIVE_OBJECT}).name)) then
-				create cpo.make (create_default_c_primitive (rm_type_name.as_upper))
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (cpo, ed_context)
+			if c_primitive_subtypes.has (co_create_params.aom_type) then
+				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
+					create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (c_prim_agt.item ([]), ed_context)
+				end
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				if attached new_code as nc then
@@ -407,8 +408,8 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				create {CONSTRAINT_REF_ED_CONTEXT} Result.make (cref, ed_context)
 
 			else
-				create cpo.make_any (rm_type_name)
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (cpo, ed_context)
+				-- Should never get here
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_open, ed_context)
 
 			end
 
@@ -540,9 +541,7 @@ feature {NONE} -- Context menu
 				create apa.make_from_string (a_n.path)
 				ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
 				if parent_arch.definition.has_attribute_path (ca_path_in_flat) then
-					check attached parent_arch.definition.c_attribute_at_path (ca_path_in_flat) as ca then
-						arch_node_in_ancestor := ca
-					end
+					arch_node_in_ancestor := parent_arch.definition.c_attribute_at_path (ca_path_in_flat)
 				end
 			end
 		end

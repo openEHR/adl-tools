@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 			a_class_stat_accum, an_attr_stat_accum: RM_CLASS_STATISTICS
 			apa: ARCHETYPE_PATH_ANALYSER
 			flat_parent: FLAT_ARCHETYPE
-			ca: C_ATTRIBUTE
+			ca, ca_parent_flat: C_ATTRIBUTE
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				-- capture total node count
@@ -114,11 +114,10 @@ feature {NONE} -- Implementation
 							-- it is an attribute for a different RM object type
 							create apa.make_from_string (ca.rm_attribute_path)
 							flat_parent := target_descriptor.specialisation_parent.flat_archetype
-							if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
-								create an_attr_stat_accum.make (ca_parent_flat.parent.rm_type_name, ca_parent_flat.parent.is_root)
-								an_attr_stat_accum.add_rm_attribute_occurrence (ca_parent_flat.rm_attribute_name)
-								stat_accums.extend (an_attr_stat_accum)
-							end
+							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+							create an_attr_stat_accum.make (ca_parent_flat.parent.rm_type_name, ca_parent_flat.parent.is_root)
+							an_attr_stat_accum.add_rm_attribute_occurrence (ca_parent_flat.rm_attribute_name)
+							stat_accums.extend (an_attr_stat_accum)
 						end
 						cco.attributes.forth
 					end

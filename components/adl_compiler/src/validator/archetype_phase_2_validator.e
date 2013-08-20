@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 			-- For specialised archetypes, requires flat parent to be available
 		local
 			depth, code_depth: INTEGER
-			cp: CODE_PHRASE
+			cp: TERMINOLOGY_CODE
 		do
 			depth := ontology.specialisation_depth
 
@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			-- see if every term code used in an ORDINAL or a CODE_PHRASE is in ontology
+			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in ontology
 			across target.data_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in ontology
 				if codes_csr.key.starts_with (Term_code_leader) then
@@ -197,12 +197,12 @@ feature {NONE} -- Implementation
 					end
 				else
 					create cp.make_from_string (codes_csr.key)
-					if ts.has_terminology (cp.terminology_id.value) then
-						if not ts.terminology (cp.terminology_id.value).has_concept (cp.code_string) then
-							add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id.value>>)
+					if ts.has_terminology (cp.terminology_id) then
+						if not ts.terminology (cp.terminology_id).has_concept (cp.code_string) then
+							add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id>>)
 						end
 					else
-						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id.value>>)
+						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
 					end
 				end
 			end
@@ -383,13 +383,9 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (a_c_node.path)
 				ca_path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
 				if flat_parent.definition.has_attribute_path (ca_path_in_flat) then
-					check attached flat_parent.definition.c_attribute_at_path (ca_path_in_flat) as ca then
-						ca_parent_flat := ca
-					end
+					ca_parent_flat := flat_parent.definition.c_attribute_at_path (ca_path_in_flat)
 				else -- must be due to an internal ref; look in full attr_path_map
-					check attached flat_parent.c_attr_at_path (ca_path_in_flat) as ca then
-						ca_parent_flat := ca
-					end
+					ca_parent_flat := flat_parent.c_attr_at_path (ca_path_in_flat)
 				end
 
 				if not ca_child_diff.node_conforms_to (ca_parent_flat, rm_schema) then
@@ -514,10 +510,10 @@ debug ("validate")
 end
 
 				-- meta-type (i.e. AOM type) checking...
-				-- this check sees if the node is a C_CODE_PHRASE redefinition of a CONSTRAINT_REF node, which is legal, since we say that
-				-- C_CODE_PHRASE conforms to CONSTRAINT_REF. Its validity is not testable in any way (sole exception in AOM) - just warn
+				-- this check sees if the node is a C_TERMINOLOGY_CODE redefinition of a CONSTRAINT_REF node, which is legal, since we say that
+				-- C_TERMINOLOGY_CODE conforms to CONSTRAINT_REF. Its validity is not testable in any way (sole exception in AOM) - just warn
 				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
-					if attached {C_CODE_PHRASE} co_child_diff as ccp then
+					if attached {C_TERMINOLOGY_CODE} co_child_diff as ccp then
 						add_warning (ec_WCRC, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 					else
 						add_error (ec_VSCNR, <<co_parent_flat.generating_type, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
@@ -525,12 +521,12 @@ end
 					end
 
 				elseif attached {CONSTRAINT_REF} co_child_diff then
-					-- this checks the case where the parent is not a C_CODE_PHRASE, but is a C_COMPLEX_OBJECT whose type is an
-					-- AOM type mapping for C_CODE_PHRASE, or else an ancestor of such a type
+					-- this checks the case where the parent is not a C_TERMINOLOGY_CODE, but is a C_COMPLEX_OBJECT whose type is an
+					-- AOM type mapping for C_TERMINOLOGY_CODE, or else an ancestor of such a type
 					-- if not then -> VCRR
-					if not attached {C_CODE_PHRASE} co_parent_flat then
+					if not attached {C_TERMINOLOGY_CODE} co_parent_flat then
 						if attached aom_profile as aom_p then
-							if aom_p.aom_rm_type_mappings.has (bare_type_name(({CODE_PHRASE}).name)) and then attached aom_p.aom_rm_type_mappings.item (bare_type_name(({CODE_PHRASE}).name)) as aom_rm_tm then
+							if aom_p.aom_rm_type_mappings.has (bare_type_name(({TERMINOLOGY_CODE}).name)) and then attached aom_p.aom_rm_type_mappings.item (bare_type_name(({TERMINOLOGY_CODE}).name)) as aom_rm_tm then
 								if aom_rm_tm.target_class_name.same_string (co_parent_flat.rm_type_name) or else rm_schema.class_definition (aom_rm_tm.target_class_name).has_ancestor (co_parent_flat.rm_type_name) then
 									cref_conformance_ok := True
 								end
@@ -638,7 +634,7 @@ end
 						-- could be a leaf object value redefinition
 						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_parent_flat as cpo_flat then
 							add_error (ec_VPOV, <<cpo_child.rm_type_name, ontology.physical_to_logical_path (cpo_child.path, target_descriptor.archetype_view_language, True),
-								cpo_child.item.as_string, cpo_flat.item.as_string, cpo_flat.rm_type_name,
+								cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
 								ontology.physical_to_logical_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
 
 						elseif attached {C_DOMAIN_TYPE} co_child_diff as cdt_child and attached {C_DOMAIN_TYPE} co_parent_flat as cdt_flat then
@@ -704,6 +700,7 @@ end
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 			flat_parent_path: STRING
+			ca_parent_flat: C_ATTRIBUTE
 		do
 			-- if it is a C_ARCHETYPE_ROOT, it is either a slot filler or an external reference. If the former, it is
 			-- redefining an ARCHETYPE_SLOT node, and needs to be validated; if the latter it is a new node, and will
@@ -738,10 +735,9 @@ end
 						-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
 						elseif attached a_c_obj.sibling_order as sib_ord then
 							create apa.make_from_string (a_c_node.parent.path)
-							check attached flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
-								if not ca_parent_flat.has_child_with_id (sib_ord.sibling_node_id) then
-									add_error (ec_VSSM, <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
-								end
+							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+							if not ca_parent_flat.has_child_with_id (sib_ord.sibling_node_id) then
+								add_error (ec_VSSM, <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
 							end
 						else
 debug ("validate")

@@ -177,6 +177,7 @@ feature -- Definitions
 		ec_VDTCV: STRING = "VDTCV"
 		ec_VDTTU: STRING = "VDTTU"
 		ec_VDTNT: STRING = "VDTNT"
+		ec_WDTOAV: STRING = "WDTOAV"
 		ec_VUNP: STRING = "VUNP"
 		ec_VSUNT: STRING = "VSUNT"
 		ec_VASMD: STRING = "VASMD"

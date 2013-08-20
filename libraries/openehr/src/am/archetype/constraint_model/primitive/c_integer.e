@@ -10,7 +10,7 @@ note
 class C_INTEGER
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 
 create
 	make_range, make_list, make_simple_list
@@ -69,18 +69,6 @@ feature -- Status Report
 			end
 		end
 
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
-			elseif attached list as l and attached other.list as other_l then
-				Result := across l as l_csr some other_l.has (l_csr.item) end
-			end
-		end
-
 feature -- Output
 
 	as_string: STRING
@@ -104,6 +92,18 @@ feature -- Output
 	as_canonical_string: STRING
 		do
 			Result := as_string
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			elseif attached list as l and attached other.list as other_l then
+				Result := across l as l_csr some other_l.has (l_csr.item) end
+			end
 		end
 
 invariant

@@ -87,13 +87,6 @@ feature -- Factory
 			a_parent.put_attribute(Result)
 		end
 
-	create_c_primitive_object (a_parent: C_ATTRIBUTE; an_item: C_PRIMITIVE): C_PRIMITIVE_OBJECT
-			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
-		do
-			create Result.make(an_item)
-			a_parent.put_child (Result)
-		end
-
 	create_archetype_internal_ref (a_parent: C_ATTRIBUTE; a_type_name:STRING; a_path: STRING): ARCHETYPE_INTERNAL_REF
 			-- create a "use" node
 		require
@@ -109,33 +102,6 @@ feature -- Factory
 			code_valid: not a_code.is_empty
 		do
 			create Result.make (a_code)
-			a_parent.put_child (Result)
-		end
-
-	create_c_dv_ordinal (a_parent: C_ATTRIBUTE): C_DV_ORDINAL
-			-- create an empty "ordinal" node.
-			-- Populate it using create_ordinal in this factory, then
-			-- C_DV_ORDINAL.add_item(an_ordinal)
-		do
-			create Result.default_create
-			a_parent.put_child (Result)
-		end
-
-	create_ordinal (a_value: INTEGER; a_symbol_code_phrase: STRING): ORDINAL
-			-- create an ORDINAL from an integer value, and a symbol defined as a term
-			-- string of the usual form, i.e. "terminology::code_string"
-		require
-			A_symbol_valid: not a_symbol_code_phrase.is_empty
-		do
-			create Result.make (a_value, create {CODE_PHRASE}.make_from_string(a_symbol_code_phrase))
-		end
-
-	create_c_dv_quantity (a_parent: C_ATTRIBUTE): C_DV_QUANTITY
-			-- create an empty C_DV_QUANTITY node.
-		require
-			parent_valid: a_parent /= Void
-		do
-			create Result.default_create
 			a_parent.put_child (Result)
 		end
 

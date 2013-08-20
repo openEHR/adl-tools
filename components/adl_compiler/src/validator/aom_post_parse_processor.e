@@ -33,7 +33,7 @@ feature {ADL15_ENGINE} -- Initialisation
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			create att_c_terminology_code_type_mapping
-			
+
 			rm_schema := an_rm_schema
 			set_domain_type_mappings
 
@@ -145,10 +145,9 @@ feature {NONE} -- Implementation
 	update_aom_mapped_type (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model.
 		do
-			if attached {C_PRIMITIVE_OBJECT} a_c_node as cpo and then attached {C_TERMINOLOGY_CODE} cpo.item as ctc then
-				cpo.set_rm_type_name (att_c_terminology_code_type_mapping.target_class_name)
+			if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
 				ctc.set_rm_type_name (att_c_terminology_code_type_mapping.target_class_name)
-				ctc.set_rm_type_mapping (att_c_terminology_code_type_mapping)
+	--			ctc.set_rm_type_mapping (att_c_terminology_code_type_mapping)
 			end
 		end
 

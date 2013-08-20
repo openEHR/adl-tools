@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 			if attached arch_node as c_attr_tuple then
 				across c_attr_tuple.children as c_obj_tuples_csr loop
 					across c_obj_tuples_csr.item.members as c_prim_objs_csr loop
-						Result.append (c_prim_objs_csr.item.item.as_string)
+						Result.append (c_prim_objs_csr.item.as_string)
 						if not c_prim_objs_csr.is_last then
 							Result.append (", ")
 						end

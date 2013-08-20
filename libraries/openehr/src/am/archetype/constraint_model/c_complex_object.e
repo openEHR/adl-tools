@@ -79,31 +79,31 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	c_attribute (an_attr_name: STRING): detachable C_ATTRIBUTE
+	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
 		require
-			an_attr_name_valid: has_attribute(an_attr_name)
+			an_attr_name_valid: has_attribute (an_attr_name)
 		do
-			if attached {C_ATTRIBUTE} representation.child_with_id(an_attr_name).content_item as ca then
+			check attached {C_ATTRIBUTE} representation.child_with_id (an_attr_name).content_item as ca then
 				Result := ca
 			end
 		end
 
-	c_attribute_at_path (a_path: STRING): detachable C_ATTRIBUTE
+	c_attribute_at_path (a_path: STRING): C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
 			a_path_valid: has_path (a_path)
 		do
-			if attached {C_ATTRIBUTE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string (a_path)).content_item as ca then
+			check attached {C_ATTRIBUTE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string (a_path)).content_item as ca then
 				Result := ca
 			end
 		end
 
-	c_object_at_path (a_path: STRING): detachable C_OBJECT
+	c_object_at_path (a_path: STRING): C_OBJECT
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
-			a_path_valid: has_path(a_path)
+			a_path_valid: has_path (a_path)
 		do
-			if attached {C_OBJECT} representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as co then
+			check attached {C_OBJECT} representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as co then
 				Result := co
 			end
 		end
@@ -222,10 +222,8 @@ feature -- Modification
 		require
 			Attribute_name_valid: has_attribute (an_attr_name)
 		do
-			if attached c_attribute (an_attr_name) as ca then
-				attributes.prune_all (ca)
-				representation.remove_child (ca.representation)
-			end
+			attributes.prune_all (c_attribute (an_attr_name))
+			representation.remove_child (c_attribute (an_attr_name).representation)
 		ensure
 			not has_attribute (an_attr_name)
 		end

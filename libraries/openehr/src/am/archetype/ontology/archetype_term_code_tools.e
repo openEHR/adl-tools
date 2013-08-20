@@ -34,9 +34,12 @@ class ARCHETYPE_TERM_CODE_TOOLS
 inherit
 	SPECIALISATION_STATUSES
 
-feature -- Definitions
+	OPENEHR_DEFINITIONS
+		export
+			{NONE} all
+		end
 
-	Local_terminology_id: STRING = "local"
+feature -- Definitions
 
 	Default_code_number_string: STRING = "0000"
 

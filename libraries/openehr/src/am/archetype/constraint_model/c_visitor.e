@@ -114,46 +114,6 @@ feature -- Visitor
 		do
 		end
 
-	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- enter an C_DOMAIN_TYPE
-		deferred
-		end
-
-	end_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- exit an C_DOMAIN_TYPE
-		do
-		end
-
-	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- enter an C_CODE_PHRASE
-		deferred
-		end
-
-	end_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- exit an C_CODE_PHRASE
-		do
-		end
-
-	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- enter an C_DV_ORDINAL
-		deferred
-		end
-
-	end_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- exit an C_DV_ORDINAL
-		do
-		end
-
-	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
-		deferred
-		end
-
-	end_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- exit a C_DV_QUANTITY
-		do
-		end
-
 	do_rm_class (a_bmm_class: BMM_CLASS_DEFINITION; a_c_object: C_OBJECT; depth: INTEGER)
 			-- enter a BMM_CLASS_DEFINITION
 		do

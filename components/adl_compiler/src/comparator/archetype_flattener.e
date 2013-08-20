@@ -260,9 +260,7 @@ end
 debug ("flatten")
 	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting new sibling object " + cco_child_diff.path + "%N")
 end
-						check attached arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path) as ca then
-							ca_output := ca
-						end
+						ca_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
 						new_cco_child := cco_child_diff.safe_deep_twin
 						new_cco_child.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
 						new_cco_child.set_specialisation_status_redefined
@@ -395,9 +393,7 @@ debug ("flatten")
 	io.put_string ("%T%Tmatched attr " + ca_child.rm_attribute_name +
 	" in parent object in flat archetype%N")
 end
-										check attached cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name) as ca then
-											ca_output := ca
-										end
+										ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
 										if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
 											ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
 										else

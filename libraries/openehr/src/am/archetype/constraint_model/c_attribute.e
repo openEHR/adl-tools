@@ -201,16 +201,15 @@ feature -- Access
 			Result := children.item
 		end
 
-	children_matching_id (a_node_id: STRING): ARRAYED_LIST[C_OBJECT]
+	children_matching_id (a_node_id: STRING): ARRAYED_LIST [C_OBJECT]
 			-- find child nodes with node_ids that contain `a_node_id', e.g. 'at0013' would match
 			-- nodes with ids 'at0013.1', 'at0013.2', 'at0013.1.5' and so on
 		do
 			create Result.make(0)
-			from children.start until children.off loop
- 				if children.item.node_id.has_substring (a_node_id) then
- 					Result.extend (children.item)
+			across children as children_csr loop
+ 				if children_csr.item.node_id.has_substring (a_node_id) then
+ 					Result.extend (children_csr.item)
  				end
-				children.forth
 			end
 		end
 
@@ -312,6 +311,12 @@ feature -- Status Report
 						Result := a_child.rm_type_name.is_equal (a_rm_type)
 					end (?, a_type_name)
 			)
+		end
+
+	has_child_matching (match_agt: FUNCTION [ANY, TUPLE [C_OBJECT], BOOLEAN]): BOOLEAN
+			-- has a child node matching `match_agt'
+		do
+			Result := children.there_exists (match_agt)
 		end
 
 	has_child (a_node: C_OBJECT): BOOLEAN
