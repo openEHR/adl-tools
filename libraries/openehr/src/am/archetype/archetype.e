@@ -736,7 +736,9 @@ feature {NONE} -- Implementation
 					c_o := definition.c_object_at_path (tgt_path_str)
 					-- now add the paths below it
 					across src_nodes as src_nodes_csr loop
-						src_node_path := src_nodes_csr.item.representation.path
+						check attached src_nodes_csr.item.representation as rep and then attached rep.path as p then
+							src_node_path := p
+						end
 
 						-- pick up the node id from the root node of the target path
 						-- unless the source location has its own node id and is a sibling child of the target node of the reference

@@ -90,12 +90,19 @@ feature {NONE} -- Implementation
 		end
 
 	constraint_str: STRING
+		local
+			s: STRING
 		do
 			create Result.make_empty
 			if attached arch_node as c_attr_tuple then
 				across c_attr_tuple.children as c_obj_tuples_csr loop
 					across c_obj_tuples_csr.item.members as c_prim_objs_csr loop
-						Result.append (c_prim_objs_csr.item.as_string)
+						if attached {C_TERMINOLOGY_CODE} c_prim_objs_csr.item as ctc then
+							s := c_terminology_code_str (ctc)
+						else
+							s := c_prim_objs_csr.item.as_string
+						end
+						Result.append (s)
 						if not c_prim_objs_csr.is_last then
 							Result.append (", ")
 						end

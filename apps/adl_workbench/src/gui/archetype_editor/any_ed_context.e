@@ -256,16 +256,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_code_phrase_str (a_ccp: C_TERMINOLOGY_CODE): STRING
+	c_terminology_code_str (a_ccp: C_TERMINOLOGY_CODE): STRING
 		do
 			create Result.make_empty
-			across a_ccp.code_list as codes_csr loop
-				Result.append_string (term_string (a_ccp.terminology_id, codes_csr.item))
-				if a_ccp.has_assumed_value and then a_ccp.assumed_value.code_string.is_equal (codes_csr.item) then
-					Result.append (" (" + get_text (ec_assumed_text) + ")")
-				end
-				if not codes_csr.is_last then
-					Result.append_string ("%N")
+			if attached a_ccp.code_list as cl then
+				across cl as codes_csr loop
+					Result.append_string (term_string (a_ccp.terminology_id, codes_csr.item))
+					if a_ccp.has_assumed_value and then a_ccp.assumed_value.code_string.is_equal (codes_csr.item) then
+						Result.append (" (" + get_text (ec_assumed_text) + ")")
+					end
+					if not codes_csr.is_last then
+						Result.append_string ("%N")
+					end
 				end
 			end
 		end

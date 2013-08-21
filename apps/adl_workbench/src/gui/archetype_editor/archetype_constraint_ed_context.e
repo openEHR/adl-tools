@@ -12,7 +12,7 @@ deferred class ARCHETYPE_CONSTRAINT_ED_CONTEXT
 inherit
 	ANY_ED_CONTEXT
 		redefine
-			arch_node
+			arch_node, is_prepared
 		end
 
 	SHARED_ARCHETYPE_CATALOGUES
@@ -29,7 +29,8 @@ feature -- Initialisation
 			create display_settings.make_default
 			create internal_ref_for_rm_type.make (0)
 		ensure
-			is_rm
+			Is_rm: is_rm
+			Not_in_grid: not is_prepared
 		end
 
 feature -- Access
@@ -73,6 +74,13 @@ feature -- Status Report
 			Result := ed_context.archetype.is_specialised
 		end
 
+	is_prepared: BOOLEAN
+			-- True if grid row connections are valid
+		do
+			Result := attached evx_grid and attached ev_grid_row as gr and then
+				(attached parent as p implies (gr.parent_row = p.ev_grid_row))
+		end
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -90,8 +98,6 @@ feature -- Display
 			check attached evx_grid.last_row as lr then
 				ev_grid_row := lr
 			end
-		ensure then
-			attached parent as p implies (attached ev_grid_row as gr and then gr.parent_row = p.ev_grid_row)
 		end
 
 feature -- Modification

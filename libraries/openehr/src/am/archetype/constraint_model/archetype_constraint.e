@@ -44,72 +44,6 @@ feature -- Access
 
 	soc_parent: detachable C_2ND_ORDER
 
-feature -- Source Control
-
-	specialisation_level: INTEGER
-			-- specialisation level of this node within archetype
-
-	set_specialisation_level (a_level: INTEGER)
-			-- set specialisation level of this node within archetype
-		require
-			a_level > 0
-		do
-			specialisation_level := a_level
-		end
-
-	specialisation_status: INTEGER
-			-- status of this node in the source text of this archetype with respect to the
-			-- specialisation hierarchy. Determined from initial parse, and subsequent editing on structure
-
-	set_specialisation_status_added
-		do
-			specialisation_status := ss_added
-		end
-
-	set_specialisation_status_redefined
-		do
-			specialisation_status := ss_redefined
-		end
-
-	set_specialisation_status_inherited
-		do
-			specialisation_status := ss_inherited
-		end
-
-	set_specialisation_status (a_spec_status: INTEGER)
-		require
-			valid_specialisation_status (a_spec_status)
-		do
-			specialisation_status := a_spec_status
-		end
-
-	inferred_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
-			-- status of this node in the source text of this archetype with respect to the
-			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown.
-			-- USED ONLY FOR DIFFing legacy flat form into differential form
-		require
-			valid_specialisation_level: archetype_specialisation_level >= 0
-		deferred
-		end
-
-	inferred_rolled_up_specialisation_status: detachable SPECIALISATION_STATUS
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
-			-- subtree to remove to convert an archetype to differential form
-			-- USED ONLY FOR DIFFing legacy flat form into differential form
-		note
-			option: transient
-		attribute
-		end
-
-	set_inferred_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
-			-- USED ONLY FOR DIFFing legacy flat form into differential form
-		require
-			valid_specialisation_status: valid_specialisation_status (a_status.value)
-		do
-			inferred_rolled_up_specialisation_status := a_status
-		end
-
 feature -- Status report
 
 	is_path_compressible: BOOLEAN
@@ -221,6 +155,72 @@ feature -- Duplication
 			representation.set_parent (og_p)
 		ensure
 			Result.parent = Void
+		end
+
+feature -- Source Control
+
+	specialisation_level: INTEGER
+			-- specialisation level of this node within archetype
+
+	set_specialisation_level (a_level: INTEGER)
+			-- set specialisation level of this node within archetype
+		require
+			a_level > 0
+		do
+			specialisation_level := a_level
+		end
+
+	specialisation_status: INTEGER
+			-- status of this node in the source text of this archetype with respect to the
+			-- specialisation hierarchy. Determined from initial parse, and subsequent editing on structure
+
+	set_specialisation_status_added
+		do
+			specialisation_status := ss_added
+		end
+
+	set_specialisation_status_redefined
+		do
+			specialisation_status := ss_redefined
+		end
+
+	set_specialisation_status_inherited
+		do
+			specialisation_status := ss_inherited
+		end
+
+	set_specialisation_status (a_spec_status: INTEGER)
+		require
+			valid_specialisation_status (a_spec_status)
+		do
+			specialisation_status := a_spec_status
+		end
+
+	inferred_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
+			-- status of this node in the source text of this archetype with respect to the
+			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown.
+			-- USED ONLY FOR DIFFing legacy flat form into differential form
+		require
+			valid_specialisation_level: archetype_specialisation_level >= 0
+		deferred
+		end
+
+	inferred_rolled_up_specialisation_status: detachable SPECIALISATION_STATUS
+			-- status of this node taking into consideration effective_specialisation_status of
+			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
+			-- subtree to remove to convert an archetype to differential form
+			-- USED ONLY FOR DIFFing legacy flat form into differential form
+		note
+			option: transient
+		attribute
+		end
+
+	set_inferred_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
+			-- USED ONLY FOR DIFFing legacy flat form into differential form
+		require
+			valid_specialisation_status: valid_specialisation_status (a_status.value)
+		do
+			inferred_rolled_up_specialisation_status := a_status
 		end
 
 feature {NONE} -- Implementation

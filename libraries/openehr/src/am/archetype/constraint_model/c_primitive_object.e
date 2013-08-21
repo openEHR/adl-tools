@@ -43,13 +43,7 @@ feature -- Comparison
 	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			if precursor (other, an_rm_schema) then
-				if other.any_allowed then
-					Result := True
-				else
-					Result := do_node_conforms_to (other)
-				end
-			end
+			Result := precursor (other, an_rm_schema) and do_node_conforms_to (other)
 		end
 
 feature -- Output
