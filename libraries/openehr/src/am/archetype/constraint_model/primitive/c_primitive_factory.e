@@ -386,14 +386,16 @@ feature -- Factory
 					across codes as codes_csr loop
 						code_set.extend (codes_csr.item)
 					end
+
+					-- code list length will differ if there were duplicates
 					if code_set.count /= codes.count then
-						errors.add_error (ec_STCDC, <<>>, "valid_c_terminology_code_string")
+						errors.add_error (ec_STCDC, Void, "valid_c_terminology_code_string")
 					elseif attached assumed_code as ac and then not code_set.has (ac) then
 						errors.add_error (ec_STCAC, <<ac>>, "valid_c_terminology_code_string")
 					end
 				end
 			else
-				errors.add_error (ec_STCNT, <<>>, "valid_c_terminology_code_string")
+				errors.add_error (ec_STCNT, Void, "valid_c_terminology_code_string")
 			end
 
 			Result := not errors.has_errors

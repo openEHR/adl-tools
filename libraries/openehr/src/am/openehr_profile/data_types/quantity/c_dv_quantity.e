@@ -102,25 +102,6 @@ feature -- Conversion
 					end
 				end
 
-				-- CA: units
-				create ca_units.make_single ("units", Void)
-				Result.put_attribute (ca_units)
-				i := 1
-				across att_list as list_items loop
-					create cpo_units.make_from_string (list_items.item.units)
-					ca_units.put_child (cpo_units)
-
-					-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
-					if attached ca_tuple as ca_t then
-						ca_t.i_th_child (i).put_member (cpo_units)
-						i := i + 1
-					end
-				end
-
-				if attached ca_tuple as ca_t then
-					ca_t.put_member (ca_units)
-				end
-
 				-- CA: magnitude
 				if has_magnitude_constraint then
 					create ca_magnitude.make_single ("magnitude", Void)
@@ -141,6 +122,25 @@ feature -- Conversion
 					if attached ca_tuple as ca_t then
 						ca_t.put_member (ca_magnitude)
 					end
+				end
+
+				-- CA: units
+				create ca_units.make_single ("units", Void)
+				Result.put_attribute (ca_units)
+				i := 1
+				across att_list as list_items loop
+					create cpo_units.make_from_string (list_items.item.units)
+					ca_units.put_child (cpo_units)
+
+					-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
+					if attached ca_tuple as ca_t then
+						ca_t.i_th_child (i).put_member (cpo_units)
+						i := i + 1
+					end
+				end
+
+				if attached ca_tuple as ca_t then
+					ca_t.put_member (ca_units)
 				end
 
 				-- CA: precision

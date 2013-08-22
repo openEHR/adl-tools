@@ -145,10 +145,11 @@ feature -- Status Report
 			-- Is `duration' within `range'?
 		do
 			if attached pattern then
-				-- FIXME: TO BE IMPLEMENTED	
+				-- FIXME: TO BE IMPLEMENTED
+				Result := True
 			end
 
-			Result := Result and (range /= Void implies range.has (duration))
+			Result := Result and (attached range as rng and then rng.has (duration))
 		end
 
 feature -- Output

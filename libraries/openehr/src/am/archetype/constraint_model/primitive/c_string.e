@@ -12,9 +12,6 @@ class C_STRING
 
 inherit
 	C_PRIMITIVE_OBJECT
-		redefine
-			default_create
-		end
 
 create
 	make_open, make_from_string, make_from_regexp, make_from_string_list, make_any
@@ -31,15 +28,6 @@ feature -- Definitions
 
 feature -- Initialization
 
-	default_create
-			-- set `rm_type_name'
-			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
-			-- it is not true.
-		do
-			rm_type_name := generating_type
-			rm_type_name.remove_head (2)
-		end
-
 	make_open
 			-- make completely open
 		do
@@ -52,8 +40,8 @@ feature -- Initialization
 		do
 			default_create
 			create strings.make(0)
-			strings.extend(str)
 			strings.compare_objects
+			strings.extend (str)
 		ensure
 			strings_attached: strings /= Void
 			not_open: not is_open
@@ -75,17 +63,19 @@ feature -- Initialization
 				regexp := Regexp_compile_error.twin
 			end
 		ensure
-			strings_void: strings = Void
+			strings_void: not attached strings
 			not_open: not is_open
 			regexp.is_equal(str) xor regexp.is_equal (Regexp_compile_error)
 		end
 
 	make_from_string_list (lst: LIST[STRING])
+		require
+			not lst.is_empty
 		do
 			default_create
 			create strings.make (0)
-			strings.fill (lst)
 			strings.compare_objects
+			strings.fill (lst)
 		ensure
 			strings_attached: attached strings
 			not_open: not is_open
@@ -149,10 +139,10 @@ feature -- Status Report
 		do
 			if is_open then
 				Result := True
-			elseif attached strings then
-				Result := strings.has (a_value)
-			elseif attached regexp_parser as rexpp then
-				Result := rexpp.recognizes (a_value)
+			elseif attached strings as strs then
+				Result := strs.has (a_value)
+			elseif attached regexp_parser as rep then
+				Result := rep.recognizes (a_value)
 			end
 		end
 
@@ -183,7 +173,7 @@ feature -- Output
 
 			if attached strings as strs then
 				across strs as strings_csr loop
-					if strings_csr.target_index > 1 then
+					if not strings_csr.is_first then
 						Result.append (", ")
 					end
 					Result.append_character ('%"')
@@ -210,7 +200,7 @@ feature -- Output
 			create Result.make(0)
 			if attached strings as strs then
 				across strs as strings_csr loop
-					if strings_csr.target_index > 1 then
+					if not strings_csr.is_first then
 						Result.append(", ")
 					end
 					Result.append_character ('%"')

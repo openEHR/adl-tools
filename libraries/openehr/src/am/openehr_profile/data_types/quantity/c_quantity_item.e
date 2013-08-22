@@ -29,6 +29,9 @@ feature -- Access
 
 	units: STRING
 			-- constraint on units
+		attribute
+			create Result.make_empty
+		end
 
 	magnitude: detachable INTERVAL [REAL]
 			-- constraint on magnitude
