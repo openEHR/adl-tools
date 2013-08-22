@@ -1591,6 +1591,7 @@ c_ordinal: ordinal
 			else
 				$$.c_attribute ("value").put_child ($3.i_th_member (1))
 				$$.c_attribute ("symbol").put_child ($3.i_th_member (2))
+				$$.attribute_tuples.first.put_child ($3)
 			end
 		}
  	| c_ordinal ';' integer_value
