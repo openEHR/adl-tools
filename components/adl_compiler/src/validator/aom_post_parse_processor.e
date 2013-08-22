@@ -32,21 +32,11 @@ feature {ADL15_ENGINE} -- Initialisation
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
+			create rm_schema.make ("test", "test", "1.0")
 			create att_c_terminology_code_type_mapping
-
-			rm_schema := an_rm_schema
-			set_domain_type_mappings
-
-			target_descriptor := ara
-			check attached ara.differential_archetype as diff_arch then
-				target := diff_arch
-			end
-			if ara.is_specialised then
-				arch_parent_flat := target_descriptor.specialisation_parent.flat_archetype
-			end
+			initialise (ara, an_rm_schema)
 		ensure
 			target_descriptor_set: target_descriptor = ara
-			target_set: attached target
 		end
 
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
@@ -68,7 +58,6 @@ feature {ADL15_ENGINE} -- Initialisation
 			end
 		ensure
 			target_descriptor_set: target_descriptor = ara
-			target_set: attached target
 		end
 
 feature -- Access
@@ -158,12 +147,8 @@ feature {NONE} -- Implementation
 			-- find out if any mappings exist in an AOM_PROFILE
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
-				if attached aom_profile.aom_rm_type_mappings as aom_tm then
-					if aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
-						c_terminology_code_type_mapping := aom_tm.item (bare_type_name (({TERMINOLOGY_CODE}).name))
-					else
-						c_terminology_code_type_mapping := Void
-					end
+				if attached aom_profile.aom_rm_type_mappings as aom_tm and then aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
+					c_terminology_code_type_mapping := aom_tm.item (bare_type_name (({TERMINOLOGY_CODE}).name))
 				else
 					clear
 				end
