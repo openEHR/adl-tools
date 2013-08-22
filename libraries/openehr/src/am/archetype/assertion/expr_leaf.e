@@ -13,9 +13,9 @@ note
 						  most often this will be a C_PRIMITIVE_OBJECT.
 				 ]"
 	keywords:    "assertion, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 
@@ -30,8 +30,7 @@ inherit
 create
 	make_boolean, make_integer, make_real, make_string, make_character,
 	make_archetype_definition_ref, make_archetype_ref,
-	make_ordinal, make_coded_term,
-	make_constraint
+	make_coded_term, make_constraint
 
 feature -- Definitions
 
@@ -106,15 +105,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_ordinal (an_item: ORDINAL)
-			-- node is a ordinal value
-   		do
-			item := an_item
-			type := an_item.generator
-			reference_type := Ref_type_constant
-		end
-
-	make_coded_term (an_item: C_CODE_PHRASE)
+	make_coded_term (an_item: C_TERMINOLOGY_CODE)
 			-- node is a term value
    		do
 			item := an_item
@@ -122,7 +113,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constraint
 		end
 
-	make_constraint (an_item: C_PRIMITIVE)
+	make_constraint (an_item: C_PRIMITIVE_OBJECT)
 			-- node is a constraint on a primitive type; can only be used with "matches" function
    		do
 			item := an_item

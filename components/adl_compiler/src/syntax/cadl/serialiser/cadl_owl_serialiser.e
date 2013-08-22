@@ -186,96 +186,6 @@ feature -- Modification
 			end
 		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- start serialising an C_DOMAIN_TYPE
-		do
-		end
-
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- start serialising an C_CODE_PHRASE
-		local
-			adl_term: ARCHETYPE_TERM
-		do
-			if a_node.code_count = 1 or a_node.code_count = 0 then
-				-- last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
-				-- create last_object_simple_buffer.make(0)
-				if a_node.is_local and a_node.code_count = 1 then
-					-- last_object_simple_buffer.append(format_item(FMT_INDENT))
-
-					adl_term := ontology.term_definition(language, a_node.code_list.first)
-					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					--	adl_term.item("text"), STYLE_COMMENT))			
-				end
-				last_object_simple := True
-
-			elseif a_node.code_count > 1 then
-				-- last_result.append(create_indent(depth) + apply_style(clean("[" + a_node.terminology_id.as_string +
-				--	a_node.separator), STYLE_TERM_REF) + format_item(FMT_NEWLINE))
-				from
-					a_node.code_list.start
-				until
-					a_node.code_list.off
-				loop
-					-- last_result.append(create_indent(depth) + apply_style(clean(a_node.code_list.item), STYLE_TERM_REF))
-					if not a_node.code_list.islast then
-						-- last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
-					else
-						-- last_result.append(apply_style("]", STYLE_TERM_REF))
-					end
-					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.code_list.item)
-						-- last_result.append(format_item(FMT_INDENT) +
-							-- apply_style(format_item(FMT_COMMENT) +
-							-- adl_term.item("text"), STYLE_COMMENT))			
-					end
-					-- last_result.append(format_item(FMT_NEWLINE))
-					a_node.code_list.forth
-				end
-			end
-		end
-
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- start serialising an C_DV_ORDINAL
-		local
-			adl_term: ARCHETYPE_TERM
-			i: INTEGER
-		do
-			if a_node.items.count = 1 then
-				-- last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
-				create last_object_simple_buffer.make(0)
-				if a_node.is_local then
-					-- last_object_simple_buffer.append(format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
-					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						-- adl_term.item("text"), STYLE_COMMENT))			
-				end
-				last_object_simple := True
-			elseif a_node.items.count > 1 then
-				from
-					a_node.items.start
-					i := 1
-				until
-					a_node.items.off
-				loop
-					-- last_result.append(create_indent(depth) + apply_style(a_node.items.item.as_string, STYLE_TERM_REF))
-					if i < a_node.items.count then
-						-- last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
-					else -- pad same number of spaces
-						-- last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
-					end
-					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
-						-- last_result.append(format_item(FMT_INDENT) +
-							-- apply_style(format_item(FMT_COMMENT) +
-							-- adl_term.item("text"), STYLE_COMMENT))			
-					end
-					-- last_result.append(format_item(FMT_NEWLINE))
-					a_node.items.forth
-					i := i + 1
-				end
-			end
-		end
-
 	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
 			-- any positive range
 		do
@@ -326,11 +236,6 @@ feature -- Modification
 
 	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
-		do
-		end
-
-	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
 		do
 		end
 

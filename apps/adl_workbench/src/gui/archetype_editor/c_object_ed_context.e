@@ -35,6 +35,7 @@ feature -- Initialisation
 
 	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
+			create internal_ref_for_rm_type.make (0)
 			precursor (an_arch_node, an_ed_context)
 			set_arch_node_in_ancestor
 			rm_type := ed_context.rm_schema.class_definition (arch_node.rm_type_name)
@@ -241,7 +242,6 @@ feature -- Modification
 			is_specialised and not is_rm
 		local
 			new_occ: MULTIPLICITY_INTERVAL
-			node_id_change_required: BOOLEAN
 		do
 			if attached arch_node as a_n and then co_create_params.aom_type.same_string (a_n.generator) then
 				-- RM type
@@ -487,9 +487,7 @@ feature {NONE} -- Context menu
 				create apa.make_from_string (a_n.path)
 				co_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
 				if parent_arch.definition.has_object_path (co_path_in_flat) then
-					check attached parent_arch.definition.c_object_at_path (co_path_in_flat) as co then
-						arch_node_in_ancestor := co
-					end
+					arch_node_in_ancestor := parent_arch.definition.c_object_at_path (co_path_in_flat)
 				end
 			end
 		end

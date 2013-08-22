@@ -31,12 +31,13 @@ terminology_profile = <
 archetype_visualise_descendants_of = <"ITEM">
 
 ----------------------------------------------------------------------------------------
--- mappings from AOM built-in types used for special syntax, and RM types
+-- mappings from AOM built-in types used for RM types
 --
+
 aom_rm_type_mappings = <
-	["CODE_PHRASE"] = <
-		source_class_name = <"CODE_PHRASE">
-		target_class_name = <"CODED_TEXT">
+	["TERMINOLOGY_CODE"] = <
+		source_class_name = <"TERMINOLOGY_CODE">
+		target_class_name = <"CODED_TERM">
 		property_mappings = <
 			["terminology_id"] = <
 				source_property_name = <"terminology_id">
@@ -44,40 +45,20 @@ aom_rm_type_mappings = <
 			>
 			["code_string"] = <
 				source_property_name = <"code_string">
-				target_property_name = <"code">
+				target_property_name = <"code_string">
 			>
 		>
 	>
-	["DV_ORDINAL"] = <
-		source_class_name = <"DV_ORDINAL">
-		target_class_name = <"ORDINAL">
-		property_mappings = <
-			["symbol"] = <
-				source_property_name = <"symbol">
-				target_property_name = <"symbol">
-			>
-			["value"] = <
-				source_property_name = <"value">
-				target_property_name = <"value">
-			>
-		>
-	>
-	["DV_QUANTITY"] = <
-		source_class_name = <"DV_QUANTITY">
-		target_class_name = <"QUANTITY">
-		property_mappings = <
-			["units"] = <
-				source_property_name = <"units">
-				target_property_name = <"units">
-			>
-			["magnitude"] = <
-				source_property_name = <"magnitude">
-				target_property_name = <"value">
-			>
-			["precision"] = <
-				source_property_name = <"precision">
-				target_property_name = <"precision">
-			>
-		>
-	>
+>
+
+----------------------------------------------------------------------------------------
+-- allowed substitutions from AOM built-in types to RM types
+--
+
+aom_rm_type_substitutions = <
+	["ISO8601_DATE"] = <"String">
+	["ISO8601_DATE_TIME"] = <"String">
+	["ISO8601_TIME"] = <"String">
+	["ISO8601_DURATION"] = <"String">
+	["REAL"] = <"Double">
 >

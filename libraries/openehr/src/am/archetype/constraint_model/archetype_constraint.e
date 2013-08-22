@@ -42,6 +42,121 @@ feature -- Access
 			Result := path.hash_code
 		end
 
+	soc_parent: detachable C_2ND_ORDER
+
+feature -- Status report
+
+	is_path_compressible: BOOLEAN
+			-- flag to indicate this node is in a specialised archetype and makes no structural changes
+			-- to the corresponding node in the flat parent, and therefore, this node can be compressed.
+			-- Note that congruent node_id definition is allowed, since node ids are not lost in paths.
+
+	is_leaf: BOOLEAN
+			-- True if this node is a terminal node
+		do
+			Result := representation.is_leaf
+		end
+
+	is_root: BOOLEAN
+			-- True if this node is a top node
+		do
+			Result := representation.is_root
+		end
+
+	is_prohibited: BOOLEAN
+			-- True if node is prohibited, i.e. excluded
+		deferred
+		end
+
+	is_second_order_constrained: BOOLEAN
+		do
+			Result := attached soc_parent
+		end
+
+feature -- Comparison
+
+	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+		deferred
+		end
+
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- An error message can be obtained by calling node_conformance_failure_reason
+		deferred
+		end
+
+feature -- Modification
+
+	set_is_path_compressible
+			-- set `is_path_compressible'
+		do
+			is_path_compressible := True
+		end
+
+feature {ARCHETYPE_CONSTRAINT} -- Modification
+
+	set_parent (a_node: like parent)
+			-- set `parent'
+		do
+			parent := a_node
+		end
+
+feature {C_2ND_ORDER} -- Modification
+
+	set_soc_parent (a_node: like soc_parent)
+			-- set `soc_parent'
+		do
+			soc_parent := a_node
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		deferred
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		deferred
+		end
+
+feature -- Representation
+
+	representation: attached like representation_cache
+		do
+			if attached representation_cache as rc then
+				Result := rc
+			else
+				Result := create_default_representation
+				Result.set_content (Current)
+				representation_cache := Result
+			end
+		end
+
+feature -- Duplication
+
+	safe_deep_twin: like Current
+			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
+		local
+			p: like parent
+			og_p: like representation.parent
+		do
+			p := parent
+			parent := Void
+
+			og_p := representation.parent
+			representation.set_root
+
+			Result := deep_twin
+
+			parent := p
+			representation.set_parent (og_p)
+		ensure
+			Result.parent = Void
+		end
+
 feature -- Source Control
 
 	specialisation_level: INTEGER
@@ -106,106 +221,6 @@ feature -- Source Control
 			valid_specialisation_status: valid_specialisation_status (a_status.value)
 		do
 			inferred_rolled_up_specialisation_status := a_status
-		end
-
-feature -- Status report
-
-	is_path_compressible: BOOLEAN
-			-- flag to indicate this node is in a specialised archetype and makes no structural changes
-			-- to the corresponding node in the flat parent, and therefore, this node can be compressed.
-			-- Note that congruent node_id definition is allowed, since node ids are not lost in paths.
-
-	is_leaf: BOOLEAN
-			-- True if this node is a terminal node
-		do
-			Result := representation.is_leaf
-		end
-
-	is_root: BOOLEAN
-			-- True if this node is a top node
-		do
-			Result := representation.is_root
-		end
-
-	is_prohibited: BOOLEAN
-			-- True if node is prohibited, i.e. excluded
-		deferred
-		end
-
-feature -- Comparison
-
-	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
-		deferred
-		end
-
-	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
-			-- An error message can be obtained by calling node_conformance_failure_reason
-		deferred
-		end
-
-feature -- Modification
-
-	set_is_path_compressible
-			-- set `is_path_compressible'
-		do
-			is_path_compressible := True
-		end
-
-feature {ARCHETYPE_CONSTRAINT} -- Modification
-
-	set_parent (a_node: like parent)
-			-- set parent
-		do
-			parent := a_node
-		end
-
-feature -- Visitor
-
-	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at start of block for this node
-		deferred
-		end
-
-	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at end of block for this node
-		deferred
-		end
-
-feature -- Representation
-
-	representation: attached like representation_cache
-		do
-			if attached representation_cache as rc then
-				Result := rc
-			else
-				Result := create_default_representation
-				Result.set_content (Current)
-				representation_cache := Result
-			end
-		end
-
-feature -- Duplication
-
-	safe_deep_twin: like Current
-			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
-		local
-			p: like parent
-			og_p: like representation.parent
-		do
-			p := parent
-			parent := Void
-
-			og_p := representation.parent
-			representation.set_root
-
-			Result := deep_twin
-
-			parent := p
-			representation.set_parent (og_p)
-		ensure
-			Result.parent = Void
 		end
 
 feature {NONE} -- Implementation

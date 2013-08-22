@@ -53,7 +53,10 @@ templates = <
 		["SCDTPT"] = <"Syntax error: invalid date/time constraint pattern; allowed patterns: $1">
 		["SCDUPT"] = <"Syntax error: invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
 		["SCSRE"] = <"Syntax error: regular expression compile error '$1' is not a valid regular expression">
-		["SCPCV"] = <"Syntax error: invalid term code constraint pattern: $1">
+		["STCCP"] = <"Syntax error: invalid term code constraint pattern: $1">
+		["STCDC"] = <"Syntax error: duplicate code(s) found in code list">
+		["STCAC"] = <"Syntax error: assumed value code $1 not found in code list">
+		["STCNT"] = <"Syntax error: terminology not specified">
 
 		-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
 		["VASID"] = <"specialised archetype id not based on specialisation parent archetype id">
@@ -129,6 +132,7 @@ templates = <
 		["VDTCV"] = <"Conversion of C_DOMAIN_TYPE descendant $1 failed">
 		["VDTTU"] = <"C_DOMAIN_TYPE descendant type $1 unknown or not visible in type system">
 		["VDTNT"] = <"C_DOMAIN_TYPE descendant type does not include type">
+		["WDTOAV"] = <"C_DV_ORDINAL assumed value not supported">
 
 
 		-- ARCHETYPE_INTERNAL_REF
@@ -154,13 +158,13 @@ templates = <
 
 		-- CONSTRAINT_REF
 		["VCRR"] = <"CONSTRAINT_REF object node at path $1 redefinition does not conform to RM type $2 parent path $3">
-		["WCRC"] = <"redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">
+		["WCRC"] = <"redefinition of CONSTRAINT_REF (ac_code node) by C_TERMINOLOGY_CODE node at path $1 in child - not checked">
 
 		-- ontology-related validity
 		["VONSD"] = <"archetype code $1 in ontology more specialised than archetype">
 		["VONLC"] = <"archetype code $1 in ontology not present in language $2">
 		["VONCBU"] = <"Expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1">
-		["VONTBC"] = <"Expecting CODE_PHRASE, e.g. [terminology_id::code]">
+		["VONTBC"] = <"Expecting TERMINOLOGY_CODE, e.g. [terminology_id::code]">
 		["VONG"] = <"Expecting primitive object node at path $1">
 
 		-- rules section

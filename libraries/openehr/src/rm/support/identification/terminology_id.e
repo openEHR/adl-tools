@@ -36,10 +36,6 @@ feature -- Definitions
 
 	default_value: STRING = "openEHR"
 
-	Local_terminology_id: STRING = "local"
-			-- predefined id of terminology to indicate it is local to
-			-- the knowledge resource in which it occurs, e.g. an archetype
-
 	Version_id_left_delimiter: STRING = "("
 
 	Version_id_right_delimiter: STRING = ")"

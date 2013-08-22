@@ -25,11 +25,6 @@ inherit
 			{ANY} specialisation_depth_from_code, is_valid_code;
 		end
 
-	BASIC_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 feature -- Source Control
 
 	set_specialisation_status_id_redefined

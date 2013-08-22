@@ -12,7 +12,14 @@ class C_PRIMITIVE_FACTORY
 inherit
 	ISO8601_FACTORY
 
-	BASIC_DEFINITIONS
+	SHARED_ADL_APP_RESOURCES
+
+feature -- Access
+
+	errors: ERROR_ACCUMULATOR
+		once
+			create Result.make
+		end
 
 feature -- Factory
 
@@ -318,7 +325,7 @@ feature -- Factory
 			Result.merge (c_primitive_defaults.current_keys)
 		end
 
-	c_primitive_defaults: HASH_TABLE [FUNCTION [ANY, TUPLE, C_PRIMITIVE], STRING]
+	c_primitive_defaults: HASH_TABLE [FUNCTION [ANY, TUPLE, C_PRIMITIVE_OBJECT], STRING]
 			-- a set of C_PRIMTIVE default creator agents, keyed by their type name
 		once
 			create Result.make (0)
@@ -334,15 +341,106 @@ feature -- Factory
 			Result.put (agent create_c_date_time_make_lower_unbounded ("2000-01-01T12:00:00"), bare_type_name (({C_DATE_TIME}).name))
 			Result.put (agent create_c_time_make_lower_unbounded ("12:00:00"), bare_type_name (({C_TIME}).name))
 			Result.put (agent create_c_date_make_lower_unbounded ("2000-01-01"), bare_type_name (({C_DATE}).name))
+
+			Result.put (agent create_c_terminology_code ("local::at0001"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
 		end
 
-	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE
+	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE_OBJECT
 		require
 			c_primitive_types.has ("C_" + rm_type)
 		do
 			check attached c_primitive_defaults.item ("C_" + rm_type) as p_agt then
 				Result := p_agt.item ([])
 			end
+		end
+
+	valid_c_terminology_code_string (a_string: STRING): BOOLEAN
+			-- Verify that the string of form "terminology_id::[code, code, ... [; code]]" is valid
+		require
+			String_valid: not a_string.is_empty
+		local
+			sep_pos, end_pos: INTEGER
+			str, code_str: STRING
+			assumed_code: detachable STRING
+			codes: LIST[STRING]
+			code_set: ARRAYED_SET[STRING]
+		do
+			errors.wipe_out
+			str := a_string.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (Terminology_separator, 1)
+			if sep_pos > 1 then
+				-- get the part after the terminology_id
+				end_pos := str.index_of (';', sep_pos)-1
+				if end_pos < 0 then
+					end_pos := str.count
+				else
+					assumed_code := str.substring (end_pos+2, str.count)
+				end
+				if end_pos > sep_pos + Terminology_separator.count then
+					code_str := str.substring (sep_pos + Terminology_separator.count, end_pos)
+					codes := code_str.split (',')
+					create code_set.make (0)
+					code_set.compare_objects
+					across codes as codes_csr loop
+						code_set.extend (codes_csr.item)
+					end
+
+					-- code list length will differ if there were duplicates
+					if code_set.count /= codes.count then
+						errors.add_error (ec_STCDC, Void, "valid_c_terminology_code_string")
+					elseif attached assumed_code as ac and then not code_set.has (ac) then
+						errors.add_error (ec_STCAC, <<ac>>, "valid_c_terminology_code_string")
+					end
+				end
+			else
+				errors.add_error (ec_STCNT, Void, "valid_c_terminology_code_string")
+			end
+
+			Result := not errors.has_errors
+		end
+
+	create_c_terminology_code (a_string: STRING): C_TERMINOLOGY_CODE
+			-- Make from string of form "terminology_id::code, code, ... [; code]".
+			-- String "terminology_id::" is legal.
+		require
+			valid_c_terminology_code_string (a_string)
+		local
+			sep_pos, end_pos: INTEGER
+			str: STRING
+			code_list: detachable LINKED_SET [STRING]
+			terminology_id: STRING
+			assumed_value: detachable STRING
+		do
+			str := a_string.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (Terminology_separator, 1)
+			terminology_id := str.substring (1, sep_pos-1)
+
+			end_pos := str.index_of (';', sep_pos)-1
+			if end_pos < 0 then
+				end_pos := str.count
+			else
+				assumed_value := str.substring (end_pos+2, str.count)
+			end
+			if end_pos > sep_pos + Terminology_separator.count then
+				create code_list.make
+				code_list.compare_objects
+				code_list.append (str.substring (sep_pos + Terminology_separator.count, end_pos).split (','))
+			end
+
+			if attached code_list as att_code_list then
+				create Result.make_from_codes (terminology_id, att_code_list)
+			else
+				create Result.make (terminology_id)
+			end
+			if attached assumed_value then
+				Result.set_assumed_value_from_code (assumed_value)
+			end
+		ensure
+			not Result.any_allowed
 		end
 
 end

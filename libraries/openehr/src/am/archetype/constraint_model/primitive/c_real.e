@@ -1,30 +1,26 @@
 note
-
 	component:   "openEHR ADL Tools"
-
 	description: "Constrainer type for instances of REAL"
 	keywords:    "archetype, boolean, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-
 class C_REAL
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 
 create
-	make_range, make_list
+	make_range, make_list, make_simple_list
 
 feature -- Initialisation
 
 	make_range (an_interval: INTERVAL[REAL])
 		do
+			default_create
 			range := an_interval
 		end
 
@@ -33,8 +29,17 @@ feature -- Initialisation
 		require
 			a_list_valid: not a_list.is_empty
 		do
+			default_create
 			create list.make(0)
 			list.append (a_list)
+		end
+
+	make_simple_list (a_val: REAL)
+			-- make from one real
+		do
+			default_create
+			create list.make (0)
+			list.extend (a_val)
 		end
 
 feature -- Access
@@ -60,18 +65,6 @@ feature -- Status Report
 				Result := r.has (a_value)
 			elseif attached list as l then
 				Result := l.has (a_value)
-			end
-		end
-
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
-			elseif attached list as l and attached other.list as other_l then
-				Result := across l as l_csr some other_l.has (l_csr.item) end
 			end
 		end
 
@@ -105,6 +98,18 @@ feature -- Output
 					out_val.append (".0")
 				end
 				Result.append ("; " + out_val)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			elseif attached list as l and attached other.list as other_l then
+				Result := across l as l_csr some other_l.has (l_csr.item) end
 			end
 		end
 

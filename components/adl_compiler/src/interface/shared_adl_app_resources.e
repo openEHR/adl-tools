@@ -35,11 +35,6 @@ inherit
 			{NONE} all
 		end
 
-	EOMF_COMPILED_MESSAGE_IDS
-		export
-			{NONE} all
-		end
-
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all

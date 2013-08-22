@@ -11,9 +11,9 @@ note
 class C_DATE_TIME
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 		redefine
-			rm_type_name
+			default_create
 		end
 
 	DATE_TIME_ROUTINES
@@ -22,6 +22,7 @@ inherit
 			{ANY} valid_iso8601_date_time_constraint_pattern, valid_iso8601_date_time,
 					iso8601_string_to_date_time
 		undefine
+			default_create,
 			out
 		end
 
@@ -30,8 +31,14 @@ create
 
 feature -- Initialisation
 
+	default_create
+		do
+			rm_type_name := bare_type_name (({ISO8601_DATE_TIME}).name)
+		end
+
 	make_range (an_interval: INTERVAL[ISO8601_DATE_TIME])
 		do
+			default_create
 			range := an_interval
 		end
 
@@ -48,6 +55,7 @@ feature -- Initialisation
 		local
 			lower, upper: detachable ISO8601_DATE_TIME
 		do
+			default_create
 			if attached a_lower_str as l_str then
 				create lower.make_from_string (l_str)
 			end
@@ -71,6 +79,7 @@ feature -- Initialisation
 		local
 			spc_index: INTEGER
 		do
+			default_create
 			create pattern.make(0)
 			pattern.append (a_pattern)
 			if not a_pattern.has (Time_leader) then
@@ -107,33 +116,15 @@ feature -- Access
 			end
 		end
 
-	rm_type_name: STRING
-		once
-			Result := Iso_class_name_leader.twin
-			Result.append (generating_type.out.substring (3, generating_type.out.count))
-		end
-
 feature -- Status Report
 
 	valid_value (a_value: ISO8601_DATE_TIME): BOOLEAN
 		do
-			if range /= Void then
-				Result := range.has(a_value)
+			if attached range as rng then
+				Result := rng.has(a_value)
 			else
 				-- Result := a_value matches pattern FIXME - to be implemented
 				Result := True
-			end
-		end
-
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			if attached pattern as p and attached other.pattern as other_p then
-				Result := valid_time_constraint_replacements.item (other_p.as_upper).has (p.as_upper)
-			elseif attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
 			end
 		end
 
@@ -149,6 +140,18 @@ feature -- Output
 			end
 			if attached assumed_value as av then
 				Result.append ("; " + av.out)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if attached pattern as p and attached other.pattern as other_p then
+				Result := valid_time_constraint_replacements.item (other_p.as_upper).has (p.as_upper)
+			elseif attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
 			end
 		end
 

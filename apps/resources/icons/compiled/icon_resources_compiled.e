@@ -4,7 +4,7 @@ note
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
-	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
+	license:     "See notice at bottom of class"
 
 class ICON_RESOURCES_COMPILED
 
@@ -363,6 +363,7 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_DV_TEXT}.make).to_pixmap end, "rm/openehr/dv_text")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_DV_URI}.make).to_pixmap end, "rm/openehr/dv_uri")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ELEMENT}.make).to_pixmap end, "rm/openehr/element")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ELEMENT_SLOT}.make).to_pixmap end, "rm/openehr/element_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ENTRY}.make).to_pixmap end, "rm/openehr/entry")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ENTRY32X32}.make).to_pixmap end, "rm/openehr/entry32x32")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ENTRY_SLOT}.make).to_pixmap end, "rm/openehr/entry_slot")

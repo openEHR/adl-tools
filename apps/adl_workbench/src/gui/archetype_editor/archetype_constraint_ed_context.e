@@ -12,7 +12,7 @@ deferred class ARCHETYPE_CONSTRAINT_ED_CONTEXT
 inherit
 	ANY_ED_CONTEXT
 		redefine
-			arch_node
+			arch_node, is_prepared
 		end
 
 	SHARED_ARCHETYPE_CATALOGUES
@@ -27,8 +27,10 @@ feature -- Initialisation
 			ed_context := an_ed_context
 			rm_element := an_rm_element
 			create display_settings.make_default
+			create internal_ref_for_rm_type.make (0)
 		ensure
-			is_rm
+			Is_rm: is_rm
+			Not_in_grid: not is_prepared
 		end
 
 feature -- Access
@@ -72,6 +74,13 @@ feature -- Status Report
 			Result := ed_context.archetype.is_specialised
 		end
 
+	is_prepared: BOOLEAN
+			-- True if grid row connections are valid
+		do
+			Result := attached evx_grid and attached ev_grid_row as gr and then
+				(attached parent as p implies (gr.parent_row = p.ev_grid_row))
+		end
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -89,8 +98,6 @@ feature -- Display
 			check attached evx_grid.last_row as lr then
 				ev_grid_row := lr
 			end
-		ensure then
-			attached parent as p implies (attached ev_grid_row as gr and then gr.parent_row = p.ev_grid_row)
 		end
 
 feature -- Modification
@@ -153,48 +160,38 @@ feature {NONE} -- Implementation
 	aom_types_for_rm_type (an_rm_type: BMM_TYPE_SPECIFIER): ARRAYED_SET [STRING]
 			-- list of possible C_OBJECT concrete descendants that can be used on a node of type `an_rm_type'
 		local
-			c_dv_type_name: STRING
 			rm_class_name: STRING
 		do
 			rm_class_name := an_rm_type.semantic_class.name
-			if aom_types_for_rm_type_table.has (rm_class_name) and then attached aom_types_for_rm_type_table.item (rm_class_name) as tst then
-				Result := tst
+
+			-- add AOM constraint types for RM primitive types
+			-- FIXME: in Eiffel 7.3 replace with reflection generated set of C_PRIMITIVE_OBJECT descendant type names
+			if an_rm_type.semantic_class.is_primitive_type then
+				Result := c_primitive_subtypes
+
 			else
 				create Result.make (0)
 				Result.compare_objects
-				if an_rm_type.semantic_class.is_primitive_type then
-					Result.extend (bare_type_name(({C_PRIMITIVE_OBJECT}).name))
-				elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (an_rm_type.root_class) then
-					c_dv_type_name := "C_" + an_rm_type.root_class
-					if c_object_constraint_types.has (c_dv_type_name) then
-						Result.extend (c_dv_type_name)
-						if c_dv_type_name.is_equal (bare_type_name(({C_CODE_PHRASE}).name)) then
-							Result.extend (bare_type_name(({CONSTRAINT_REF}).name))
-						end
-					else
-						Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
-						if not ed_context.archetype.matching_logical_paths (display_settings.language, an_rm_type.root_class).is_empty then
-							Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
-						end
-					end
-				else
-					Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
-					Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
-			--		if not current_arch_cat.matching_ids (".*", an_rm_type.root_class, Void).is_empty then
-						Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
-			--		end
+				Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
+				Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
+				Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
+
+				-- figure out whether INTERNAL_REFs would be valid for this RM type (i.e. are there any other
+				-- nodes of this type in the archetype?); if so add ARCHETYPE_INTERNAL_REF
+				if not internal_ref_for_rm_type.has (rm_class_name) then
 					if not ed_context.archetype.matching_logical_paths (display_settings.language, an_rm_type.root_class).is_empty then
-						Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
+						internal_ref_for_rm_type.put (True, an_rm_type.root_class)
+					else
+						internal_ref_for_rm_type.put (False, an_rm_type.root_class)
 					end
 				end
-				aom_types_for_rm_type_table.put (Result, rm_class_name)
+				if internal_ref_for_rm_type.item (rm_class_name) then
+					Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
+				end
 			end
 		end
 
-	aom_types_for_rm_type_table: HASH_TABLE [ARRAYED_SET [STRING], STRING]
-		once
-			create Result.make (0)
-		end
+	internal_ref_for_rm_type: HASH_TABLE [BOOLEAN, STRING]
 
 invariant
 	Parent_link_valid: attached arch_node as a_n implies (attached parent as p implies (attached p.arch_node as parent_a_n and then a_n.parent = parent_a_n))

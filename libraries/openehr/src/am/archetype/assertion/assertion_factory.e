@@ -60,19 +60,13 @@ feature -- Factory
 			create Result.make_character(an_item)
 		end
 
-	create_expr_leaf_ordinal (an_item: ORDINAL): EXPR_LEAF
-			-- node is a ordinal value
-   		do
-			create Result.make_ordinal (an_item)
-		end
-
-	create_expr_leaf_coded_term (an_item: C_CODE_PHRASE): EXPR_LEAF
+	create_expr_leaf_coded_term (an_item: C_TERMINOLOGY_CODE): EXPR_LEAF
 			-- node is a coded term value
    		do
 			create Result.make_coded_term (an_item)
 		end
 
-	create_expr_leaf_constraint(an_item: C_PRIMITIVE): EXPR_LEAF
+	create_expr_leaf_constraint(an_item: C_PRIMITIVE_OBJECT): EXPR_LEAF
 			-- node is a constraint on a primitive type; can only be used with "matches" function
 			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
    		do

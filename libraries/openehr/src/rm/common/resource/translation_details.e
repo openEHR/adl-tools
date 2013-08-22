@@ -42,7 +42,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: CODE_PHRASE
+	language: TERMINOLOGY_CODE
 			-- Language of translation
 		attribute
 			Result := default_language_code.deep_twin
@@ -63,7 +63,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_language (a_lang: CODE_PHRASE)
+	set_language (a_lang: TERMINOLOGY_CODE)
 			-- set language
 		do
 			language := a_lang

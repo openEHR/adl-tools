@@ -1,14 +1,14 @@
 %{
 note
 	component:   "openEHR ADL Tools"
-	description: "Validating parser for Archetype Description Language (ADL)"
-	keywords:	 "ADL"
+	description: "Parser for Archetype Description Language 1.4 (ADL)"
+	keywords:	 "ADL, 1.4"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_VALIDATOR
+class CADL_VALIDATOR_14
 
 inherit
 	PARSER_VALIDATOR
@@ -17,7 +17,7 @@ inherit
 			make as make_parser_skeleton
 		end
 
-	CADL_SCANNER
+	CADL_SCANNER_14
 		rename
 			make as make_scanner
 		redefine
@@ -70,7 +70,7 @@ create
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
 %token <STRING> V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN V_ISO8601_TIME_CONSTRAINT_PATTERN
 %token <STRING> V_ISO8601_DATE_CONSTRAINT_PATTERN V_ISO8601_DURATION_CONSTRAINT_PATTERN
-%token <C_DV_QUANTITY> V_C_DV_QUANTITY
+%token <C_DOMAIN_TYPE> V_C_DOMAIN_TYPE
 
 %token SYM_START_CBLOCK SYM_END_CBLOCK	-- constraint block
 
@@ -86,7 +86,7 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_C_DV_QUANTITY ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
+%token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -108,12 +108,13 @@ create
 %type <SIBLING_ORDER> sibling_order
 %type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
+%type <C_PRIMITIVE> c_primitive
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 
-%type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
+%type <EXPR_ITEM> boolean_node
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
-%type <EXPR_BINARY_OPERATOR> boolean_binop_expr arithmetic_relop_expr arithmetic_arith_binop_expr arch_outer_constraint_expr boolean_constraint
-%type <EXPR_LEAF> arithmetic_value boolean_literal
+%type <EXPR_BINARY_OPERATOR> boolean_binop_expr arithmetic_relop_expr arithmetic_arith_binop_expr arch_outer_constraint_expr boolean_constraint_expr
+%type <EXPR_LEAF> arithmetic_leaf boolean_leaf 
 %type <EXPR_ITEM> arithmetic_node
 
 %type <INTEGER> integer_value
@@ -124,6 +125,7 @@ create
 %type <ISO8601_DATE_TIME> date_time_value
 %type <ISO8601_TIME> time_value
 %type <ISO8601_DURATION> duration_value
+%type <CODE_PHRASE> term_code
 %type <STRING> any_identifier
 %type <STRING> string_value
 %type <URI> uri_value
@@ -131,6 +133,13 @@ create
 %type <ARRAYED_LIST[STRING]> string_list_value string_list_value_continue
 %type <ARRAYED_LIST[INTEGER]> integer_list_value
 %type <ARRAYED_LIST[REAL]> real_list_value
+%type <ARRAYED_LIST[CHARACTER_REF]> character_list_value
+%type <ARRAYED_LIST[BOOLEAN_REF]> boolean_list_value
+%type <ARRAYED_LIST[ISO8601_DATE]> date_list_value
+%type <ARRAYED_LIST[ISO8601_TIME]> time_list_value
+%type <ARRAYED_LIST[ISO8601_DATE_TIME]> date_time_list_value
+%type <ARRAYED_LIST[ISO8601_DURATION]> duration_list_value
+%type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
 
 %type <INTERVAL[INTEGER]> integer_interval_value
 %type <INTERVAL[REAL]> real_interval_value
@@ -145,8 +154,9 @@ create
 
 %type <CARDINALITY> c_cardinality cardinality_range
 %type <CONSTRAINT_REF> constraint_ref
-%type <C_COMPLEX_OBJECT> c_ordinal
-%type <C_OBJECT_TUPLE> ordinal
+%type <C_CODE_PHRASE> c_code_phrase
+%type <C_DV_ORDINAL> c_ordinal
+%type <ORDINAL> ordinal
 %type <C_BOOLEAN> c_boolean
 %type <C_STRING> c_string
 %type <C_DATE_TIME> c_date_time
@@ -155,30 +165,29 @@ create
 %type <C_TIME> c_time
 %type <C_REAL> c_real
 %type <C_INTEGER> c_integer
-%type <C_TERMINOLOGY_CODE> c_terminology_code
 
 %%
 
 input: c_complex_object
 		{
-			debug ("ADL_parse")
-				io.put_string ("CADL definition parsed%N")
+			debug("ADL_parse")
+				io.put_string("CADL definition parsed%N")
 			end
 			output := $1
 			accept
 		}
 	| assertions
 		{
-			debug ("ADL_parse")
-				io.put_string ("assertion definition parsed%N")
+			debug("ADL_parse")
+				io.put_string("assertion definition parsed%N")
 			end
 			output := $1
 			accept
 		}
 	| error
 		{
-			debug ("ADL_parse")
-				io.put_string ("CADL definition NOT parsed%N")
+			debug("ADL_parse")
+				io.put_string("CADL definition NOT parsed%N")
 			end
 			abort
 		}
@@ -186,9 +195,9 @@ input: c_complex_object
 
 c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
 		{ 
-			debug ("ADL_parse")
-				io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
-				indent.remove_tail (1)
+			debug("ADL_parse")
+				io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+				indent.remove_tail(1)
 			end
 			$$ := object_nodes.item
 			object_nodes.remove
@@ -197,9 +206,9 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 		{
 			-- ok in case where occurrences or node_id is being redefined in a specialised archetype or template
 			if differential_syntax then
-				debug ("ADL_parse")
-					io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
-					indent.remove_tail (1)
+				debug("ADL_parse")
+					io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+					indent.remove_tail(1)
 				end
 				$$ := object_nodes.item
 				object_nodes.remove
@@ -212,18 +221,18 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 c_complex_object_head: c_complex_object_id c_occurrences 
 		{
 			if $2 /= Void then
-				complex_obj.set_occurrences ($2)
+				complex_obj.set_occurrences($2)
 			end
 
 			if rm_schema.has_class_definition (complex_obj.rm_type_name) then
-				object_nodes.extend (complex_obj)
-				debug ("ADL_parse")
-					io.put_string (indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
+				object_nodes.extend(complex_obj)
+				debug("ADL_parse")
+					io.put_string(indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
 					if $2 /= Void then
-						io.put_string ("; occurrences=(" + $2.as_string + ")") 
+						io.put_string("; occurrences=(" + $2.as_string + ")") 
 					end
 					io.new_line
-					indent.append ("%T")
+					indent.append("%T")
 				end
 
 				-- put it under current attribute, unless it is the root object, in which case it will be returned
@@ -239,41 +248,22 @@ c_complex_object_head: c_complex_object_id c_occurrences
 
 c_complex_object_id: type_identifier
 		{
-			create complex_obj.make_anonymous ($1)
+			create complex_obj.make_anonymous($1)
 		}
 	| type_identifier V_LOCAL_TERM_CODE_REF
 		{
-			create complex_obj.make_identified ($1, $2)
-		}
-	| sibling_order type_identifier V_LOCAL_TERM_CODE_REF
-		{
-			if differential_syntax then
-				create complex_obj.make_identified ($2, $3)
-				complex_obj.set_sibling_order ($1)
-			else
-				abort_with_error (ec_SDSF, Void)
-			end
-		}
-	;
-
-sibling_order: SYM_AFTER V_LOCAL_TERM_CODE_REF
-		{
-			$$ := create {SIBLING_ORDER}.make_after ($2)
-		}
-	| SYM_BEFORE V_LOCAL_TERM_CODE_REF
-		{
-			$$ := create {SIBLING_ORDER}.make_before ($2)
+			create complex_obj.make_identified($1, $2)
 		}
 	;
 
 c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + 
+			debug("ADL_parse")
+				io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + 
 					" [id=" + object_nodes.item.node_id + "] - any_allowed%N") 
 			end
 		}
-	| c_attribute_defs
+	| c_attributes			
 		{
 		}
 	| error
@@ -305,6 +295,10 @@ c_object: c_complex_object
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
+	| c_code_phrase
+		{
+			safe_put_c_attribute_child (c_attrs.item, $1)
+		}
 	| c_ordinal 
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
@@ -313,11 +307,11 @@ c_object: c_complex_object
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
-	| V_C_DV_QUANTITY
+	| V_C_DOMAIN_TYPE
 		{
-			safe_put_c_attribute_child (c_attrs.item, c_dv_quantity.standard_equivalent)
+			safe_put_c_attribute_child (c_attrs.item, c_domain_type)
 		}
-	| ERR_C_DV_QUANTITY
+	| ERR_C_DOMAIN_TYPE
 		{
 			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
 		}
@@ -334,19 +328,19 @@ c_object: c_complex_object
 --
 c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences 
 		{
-			if (create {ARCHETYPE_ID}).valid_id ($4) then
+			if (create {ARCHETYPE_ID}).valid_id($4) then
 				create $$.make_external_ref ($2, $4)
 				if $6 /= Void then
-					$$.set_occurrences ($6)
+					$$.set_occurrences($6)
 				end
 			end
 		}
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
-			if (create {ARCHETYPE_ID}).valid_id ($6) then
+			if (create {ARCHETYPE_ID}).valid_id($6) then
 				create $$.make_slot_filler ($2, $6, $4)
 				if $8 /= Void then
-					$$.set_occurrences ($8)
+					$$.set_occurrences($8)
 				end
 			end
 		}
@@ -379,21 +373,21 @@ archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 				$$.set_occurrences ($2)
 			end
 
-			debug ("ADL_parse")
-				io.put_string (indent + "create ARCHETYPE_INTERNAL_REF ")
+			debug("ADL_parse")
+				io.put_string(indent + "create ARCHETYPE_INTERNAL_REF ")
 				io.put_string ($$.rm_type_name) 
 				if $$.is_addressable then
-					io.put_string ("[" + $$.node_id + "] ")
+					io.put_string("[" + $$.node_id + "] ")
 				else
-					io.put_string (" ")
+					io.put_string(" ")
 				end
 				if $$.use_target_occurrences then
-					io.put_string ("occurrences=(use target) ")
+					io.put_string("occurrences=(use target) ")
 				elseif $2 /= Void then
-					io.put_string ("occurrences=" + $$.occurrences.as_string + " ")
+					io.put_string("occurrences=" + $$.occurrences.as_string + " ")
 				end
 				io.put_string (" => " + $$.target_path + "%N") 
-				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (ARCHETYPE_INTERNAL_REF)%N") 
+				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child(ARCHETYPE_INTERNAL_REF)%N") 
 			end
 		}
 	| SYM_USE_NODE type_identifier error 
@@ -417,14 +411,14 @@ archetype_internal_ref_head: SYM_USE_NODE type_identifier
 archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK
 		{
 			if attached $4 then
-				$1.set_includes ($4)
+				$1.set_includes($4)
 			end
 			if attached $5 then
-				$1.set_excludes ($5)
+				$1.set_excludes($5)
 			end
 
-			debug ("ADL_parse")
-				indent.remove_tail (1)
+			debug("ADL_parse")
+				indent.remove_tail(1)
 			end
 			$$ := $1
 		}
@@ -440,16 +434,16 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 c_archetype_slot_head: c_archetype_slot_id c_occurrences 
 		{
 			if attached $2 then
-				$1.set_occurrences ($2)
+				$1.set_occurrences($2)
 			end
 
-			debug ("ADL_parse")
-				io.put_string (indent + "create ARCHETYPE_SLOT " + $1.rm_type_name + " [id=" + $1.node_id + "]")
+			debug("ADL_parse")
+				io.put_string(indent + "create ARCHETYPE_SLOT " + $1.rm_type_name + " [id=" + $1.node_id + "]")
 				if attached $2 then
-					io.put_string ("; occurrences=(" + $2.as_string + ")") 
+					io.put_string("; occurrences=(" + $2.as_string + ")") 
 				end
 				io.new_line
-				indent.append ("%T")
+				indent.append("%T")
 			end
 			$$ := $1
 		}
@@ -457,38 +451,38 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 
 c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			create $$.make_anonymous ($2)
+			create $$.make_anonymous($2)
 		}
 	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier
 		{
 			if differential_syntax then
-				create $$.make_anonymous ($3)
-				$$.set_sibling_order ($1)
+				create $$.make_anonymous($3)
+				$$.set_sibling_order($1)
 			else
 				abort_with_error (ec_SDSF, Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
-			create $$.make_identified ($2, $3)
+			create $$.make_identified($2, $3)
 		}
 	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			if differential_syntax then
-				create $$.make_identified ($3, $4)
-				$$.set_sibling_order ($1)
+				create $$.make_identified($3, $4)
+				$$.set_sibling_order($1)
 			else
 				abort_with_error (ec_SDSF, Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier SYM_CLOSED
 		{
-			create $$.make_anonymous ($2)
+			create $$.make_anonymous($2)
 			$$.set_closed
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF SYM_CLOSED
 		{
-			create $$.make_identified ($2, $3)
+			create $$.make_identified($2, $3)
 			$$.set_closed
 		}
 	| SYM_ALLOW_ARCHETYPE error
@@ -497,66 +491,65 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		}
 	;
 
-c_primitive_object: c_integer 
+c_primitive_object: c_primitive
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_INTEGER: " +  $1.as_string + "%N")
+			create $$.make ($1)
+		}
+	;
+
+c_primitive: c_integer 
+		{
+			debug("ADL_parse")
+				io.put_string(indent + "C_INTEGER: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_real
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_REAL: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_REAL: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_date
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_DATE: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_DATE: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_time
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_TIME: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_TIME: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_date_time
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_DATE_TIME: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_DATE_TIME: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_duration
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_DURATION: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_DURATION: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_string
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_STRING: " +  $1.as_string + "%N")
-			end
-			$$ := $1
-		}
-	| c_terminology_code
-		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_TERMINOLOGY_CODE: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_STRING: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
 	| c_boolean
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "C_BOOLEAN: " +  $1.as_string + "%N")
+			debug("ADL_parse")
+				io.put_string(indent + "C_BOOLEAN: " +  $1.as_string + "%N")
 			end
 			$$ := $1
 		}
@@ -569,27 +562,19 @@ c_any: '*'
 
 ---------------- BODY - relationships ----------------
 
-c_attribute_defs: c_attribute_def
+c_attributes: c_attribute			
 		{
 		}
-	| c_attribute_defs c_attribute_def
+	| c_attributes c_attribute		
 		{
 		}
 	;
 
-c_attribute_def: c_attribute
-		{
-		}
-	| c_attribute_tuple
-		{
-		}
-		;
-
 c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK	
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "POP ATTR_NODE " + c_attrs.item.rm_attribute_name + "%N") 
-				indent.remove_tail (1)
+			debug("ADL_parse")
+				io.put_string(indent + "POP ATTR_NODE " + c_attrs.item.rm_attribute_name + "%N") 
+				indent.remove_tail(1)
 			end
 			c_attrs.remove
 		}
@@ -610,33 +595,33 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 		{
 			rm_attribute_name := $1
-			if not object_nodes.item.has_attribute (rm_attribute_name) then
+			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
 					bmm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
 					if bmm_prop_def.is_container then
-						create attr_node.make_multiple (rm_attribute_name, $2, $3)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out)
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							if $3 /= Void then io.put_string ("; cardinality=(" + $3.as_string + ")") end
+						create attr_node.make_multiple(rm_attribute_name, $2, $3)
+						c_attrs.put(attr_node)
+						debug("ADL_parse")
+							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out)
+							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
+							if $3 /= Void then io.put_string("; cardinality=(" + $3.as_string + ")") end
 							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
+							indent.append("%T")
 						end
-						object_nodes.item.put_attribute (attr_node)
+						object_nodes.item.put_attribute(attr_node)
 					elseif $3 = Void then
-						create attr_node.make_single (rm_attribute_name, $2)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out) 
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							if $3 /= Void then io.put_string ("; cardinality=(" + $3.as_string + ")") end
+						create attr_node.make_single(rm_attribute_name, $2)
+						c_attrs.put(attr_node)
+						debug("ADL_parse")
+							io.put_string(indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out) 
+							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
+							if $3 /= Void then io.put_string("; cardinality=(" + $3.as_string + ")") end
 							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
+							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
+							indent.append("%T")
 						end
-						object_nodes.item.put_attribute (attr_node)
+						object_nodes.item.put_attribute(attr_node)
 					else -- error - cardinality stated, but on a non-container attribute
 						abort_with_error (ec_VSAM2, <<rm_attribute_name>>)
 					end
@@ -645,50 +630,6 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				end
 			else
 				abort_with_error (ec_VCATU, <<rm_attribute_name>>)
-			end
-		}
-	| V_ABS_PATH c_existence c_cardinality
-		{
-			create og_path.make_from_string ($1)
-			rm_attribute_name := og_path.last.attr_name
-			parent_path_str := og_path.parent_path.as_string
-
-			if not object_nodes.item.has_attribute ($1) then
-				-- check RM to see if path is valid, and if it is a container
-				if rm_schema.has_property_path (object_nodes.item.rm_type_name, $1) then
-					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, $1)
-					if bmm_prop_def.is_container then
-						create attr_node.make_multiple (rm_attribute_name, $2, $3)
-						attr_node.set_differential_path (parent_path_str)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + $1 + "; container = " + attr_node.is_multiple.out) 
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
-						end
-						object_nodes.item.put_attribute (attr_node)
-					elseif $3 = Void then
-						create attr_node.make_single (rm_attribute_name, $2)
-						attr_node.set_differential_path (parent_path_str)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + $1 + "; container = " + attr_node.is_multiple.out) 
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
-						end
-						object_nodes.item.put_attribute (attr_node)
-					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error (ec_VSAM2, <<$1>>)
-					end
-				else
-					abort_with_error (ec_VDIFP2, <<$1>>)
-				end
-			else
-				abort_with_error (ec_VCATU, <<$1>>)
 			end
 		}
 	;
@@ -701,93 +642,17 @@ c_attr_values: c_object
 		} 
 	| c_any	-- to allow a property to have any value
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "ATTR_NODE " + attr_node.rm_attribute_name + "  - any_allowed%N") 
+			debug("ADL_parse")
+				io.put_string(indent + "ATTR_NODE " + attr_node.rm_attribute_name + "  - any_allowed%N") 
 			end
 		}
-	;
-
-c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK	
-		{
-			-- add the tuple's C_ATTRIBUTEs to the current object node's children
-			across c_attr_tuple.members as c_attrs_csr loop
-				if not object_nodes.item.has_attribute (c_attrs_csr.item.rm_attribute_name) then
-					object_nodes.item.put_attribute (c_attrs_csr.item)
-				else
-					abort_with_error (ec_VCATU, <<c_attrs_csr.item.rm_attribute_name>>)
-				end
-			end
-
-			-- add the tuple to the current object node
-			object_nodes.item.put_attribute_tuple (c_attr_tuple)
-
-			debug ("ADL_parse")
-				indent.remove_tail (1)
-				io.put_string (indent + "C_ATTR_TUPLE (complete)%N") 
-			end
-		}
-	;
-
-c_tuple_attr_ids: V_ATTRIBUTE_IDENTIFIER
-		{
-			create c_attr_tuple.make
-			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single ($1, Void))
-			debug ("ADL_parse")
-				io.put_string (indent + "enter C_ATTR_TUPLE%N") 
-				indent.append ("%T")
-				io.put_string (indent + "add C_ATTR_TUPLE id " + $1 + "%N") 
-			end
-		}
-	| c_tuple_attr_ids ',' V_ATTRIBUTE_IDENTIFIER
-		{
-			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single ($3, Void))
-			debug ("ADL_parse")
-				io.put_string (indent + "add C_ATTR_TUPLE id " + $3 + "%N") 
-			end
-		}
-	;
-		  
-c_attr_tuple_values: c_attr_tuple_value
-		{
-		} 
-	| c_attr_tuple_values ',' c_attr_tuple_value
-		{
-		} 
-	;
-
-c_attr_tuple_value: '[' c_tuple_values ']'
-		{
-			debug ("ADL_parse")
-				io.put_string (indent + "c_attr_tuple_value - received one tuple %N") 
-			end
-		}
-	;
-
-c_tuple_values: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK	
-		{
-			create c_obj_tuple.make
-			c_obj_tuple.put_member ($2)
-			c_attr_tuple.put_child (c_obj_tuple)
-			c_attr_tuple.i_th_member (c_obj_tuple.count).put_child ($2)
-			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_obj_tuple.count).rm_attribute_name + " %N")
-			end
-		} 
-	| c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
-		{
-			c_obj_tuple.put_member ($4)
-			c_attr_tuple.i_th_member (c_obj_tuple.count).put_child ($4)
-			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_obj_tuple.count).rm_attribute_name + " %N")
-			end
-		} 
 	;
 
 c_includes: -- Empty
 	| SYM_INCLUDE assertions
 		{
-			debug ("include list")
-				io.put_string (indent + "[---assertion expression---] %N")
+			debug("include list")
+				io.put_string(indent + "[---assertion expression---] %N")
 			end
 			$$ := $2
 		}
@@ -796,8 +661,8 @@ c_includes: -- Empty
 c_excludes: -- Empty
 	| SYM_EXCLUDE assertions
 		{
-			debug ("exclude list")
-				io.put_string (indent + "[---assertion expression---] %N")
+			debug("exclude list")
+				io.put_string(indent + "[---assertion expression---] %N")
 			end
 			$$ := $2
 		}
@@ -809,7 +674,7 @@ c_excludes: -- Empty
 
 assertions: assertion
 		{
-			create $$.make (0)
+			create $$.make(0)
 			$$.extend ($1)
 		}
 	| assertions assertion
@@ -847,16 +712,10 @@ boolean_node: boolean_leaf
 		{
 			$$ := $1
 		}
-	| boolean_expr
+	| boolean_unop_expr
 		{
-			$$ := $1
-		}
-	;
-		
-boolean_expr: boolean_unop_expr
-		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + $1.as_string + "]%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_node: REDUCE from boolean_unop_expr: [" + $1.as_string + "]%N") 
 			end
 			$$ := $1
 		}
@@ -864,16 +723,14 @@ boolean_expr: boolean_unop_expr
 		{
 			$$ := $1
 		}
-	;
-		
-boolean_leaf: boolean_literal
+	| arithmetic_relop_expr
 		{
 			$$ := $1
 		}
-	| boolean_constraint
+	| boolean_constraint_expr
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + $1.as_string + "]%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_node: REDUCE from boolean_constraint_expr: [" + $1.as_string + "]%N") 
 			end
 			$$ := $1
 		}
@@ -881,40 +738,36 @@ boolean_leaf: boolean_literal
 		{
 			$$ := $2
 		}
-	| arithmetic_relop_expr
-		{
-			$$ := $1
-		}
 	;
 		
 --
 -- the following form of expression has a relative path which is only allowed with Slot definitions.
 -- The absolute path form is for assertions in the rules section
 --
-arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_matches),
+			create $$.make(create {OPERATOR_KIND}.make(op_matches),
 				create {EXPR_LEAF}.make_archetype_ref ($1),
 				create {EXPR_LEAF}.make_constraint ($4))
 		}
 	;
 
-boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+boolean_constraint_expr: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_constraint_expr:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
+			create $$.make(create {OPERATOR_KIND}.make(op_matches), 
 				create {EXPR_LEAF}.make_archetype_definition_ref ($1),
 				create {EXPR_LEAF}.make_constraint ($4))
 		}
-	| V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_terminology_code SYM_END_CBLOCK
+	| V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_code_phrase SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_constraint_expr:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
 				create {EXPR_LEAF}.make_archetype_definition_ref ($1),
@@ -928,22 +781,22 @@ boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object S
 --
 boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: exists " + $2 + "%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_unop_expr: exists " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
 	| SYM_NOT V_ABS_PATH
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: not " + $2 + "%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_unop_expr: not " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
 	| SYM_NOT '(' boolean_node ')'
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: not [(" + $3.as_string + ")] %N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_unop_expr: not [(" + $3.as_string + ")] %N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_not), $3)
 		}
@@ -957,10 +810,10 @@ boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 -- expressions with signature
 --	BOOLEAN OP BOOLEAN: BOOLEAN
 --
-boolean_binop_expr: boolean_node boolean_binop_symbol boolean_leaf
+boolean_binop_expr: boolean_node boolean_binop_symbol boolean_node
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
 		}
@@ -988,7 +841,7 @@ boolean_binop_symbol: SYM_OR
 -- leaves with signature
 --	BOOLEAN
 --
-boolean_literal: SYM_TRUE
+boolean_leaf: SYM_TRUE
 		{
 			create $$.make_boolean (True)
 		}
@@ -1004,8 +857,8 @@ boolean_literal: SYM_TRUE
 --
 arithmetic_relop_expr: arithmetic_node relational_binop_symbol arithmetic_node
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arithmetic_relop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "arithmetic_relop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
 		}
@@ -1023,15 +876,9 @@ arithmetic_node: arithmetic_leaf
 		{
 			$$ := $1
 		}
-	;
-
-arithmetic_leaf: arithmetic_value
-		{
-			$$ := $1
-		}
 	| '(' arithmetic_node ')'
 		{
-			debug ("ADL_invariant")
+			debug("ADL_invariant")
 				io.put_string (indent + "(expr) %N") 
 			end
 			$$ := $2
@@ -1042,10 +889,10 @@ arithmetic_leaf: arithmetic_value
 -- expressions with signature
 --	ARITHMETIC OP ARITHMETIC: ARITHMETIC
 --
-arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_leaf
+arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_node
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arithmetic_arith_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "arithmetic_arith_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
 		}
@@ -1055,24 +902,24 @@ arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_
 -- leaves with signature
 --	ARITHMETIC
 --
-arithmetic_value:  integer_value
+arithmetic_leaf:  integer_value
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arith_leaf - integer: " + $1.out + "%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "arith_leaf - integer: " + $1.out + "%N") 
 			end
 			create $$.make_integer ($1)
 		}
 	| real_value
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arith_leaf - real: " + $1.out + "%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "arith_leaf - real: " + $1.out + "%N") 
 			end
 			create $$.make_real ($1)
 		}
 	| V_ABS_PATH
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arith_leaf - path: " + $1 + "%N") 
+			debug("ADL_invariant")
+				io.put_string(indent + "arith_leaf - path: " + $1 + "%N") 
 			end
 			create $$.make_archetype_definition_ref ($1)
 		}
@@ -1150,7 +997,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 		{
 			if $1 = 0 then
 				if $3 = 0 then
-					create $$.make_point (0)
+					create $$.make_point(0)
 				elseif $3 = 1 then
 					create $$.make_bounded (0, 1)
 				else
@@ -1158,7 +1005,7 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 				end
 			elseif $1 = 1 then
 				if $3 = 1 then
-					create $$.make_point (1)
+					create $$.make_point(1)
 				else
 					abort_with_error (ec_SEXLU2, Void)
 				end
@@ -1304,15 +1151,15 @@ c_real: real_value
 
 c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		{
-			if valid_iso8601_date_constraint_pattern ($1) then
-				create $$.make_from_pattern ($1)
+			if valid_iso8601_date_constraint_pattern($1) then
+				create $$.make_from_pattern($1)
 			else
-				create str.make (0)
+				create str.make(0)
 				from valid_date_constraint_patterns.start until valid_date_constraint_patterns.off loop
 					if not valid_date_constraint_patterns.isfirst then
-						str.append (", ")
+						str.append(", ")
 					end
-					str.append (valid_date_constraint_patterns.item)
+					str.append(valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
 				abort_with_error (ec_SCDPT, <<str>>)
@@ -1320,7 +1167,7 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		}
 	| date_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_DATE]}.make_point ($1))
+			create $$.make_range (create {INTERVAL [ISO8601_DATE]}.make_point($1))
 		}
 	| date_interval_value
 		{
@@ -1343,13 +1190,13 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 
 c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		{
-			if valid_iso8601_time_constraint_pattern ($1) then
-				create $$.make_from_pattern ($1)
+			if valid_iso8601_time_constraint_pattern($1) then
+				create $$.make_from_pattern($1)
 			else
-				create str.make (0)
+				create str.make(0)
 				across valid_time_constraint_patterns as patterns_csr loop
 					if patterns_csr.cursor_index > 1 then
-						str.append (", ")
+						str.append(", ")
 					end
 					str.append (patterns_csr.item)
 				end
@@ -1358,7 +1205,7 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		}
 	| time_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_TIME]}.make_point ($1))
+			create $$.make_range (create {INTERVAL [ISO8601_TIME]}.make_point($1))
 		}
 	| time_interval_value
 		{
@@ -1382,12 +1229,12 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_date_time_constraint_pattern ($1) then
-				create $$.make_from_pattern ($1)
+				create $$.make_from_pattern($1)
 			else
 				create str.make (0)
 				across valid_date_time_constraint_patterns as patterns_csr loop
 					if patterns_csr.cursor_index > 1 then
-						str.append (", ")
+						str.append(", ")
 					end
 					str.append (patterns_csr.item)
 				end
@@ -1396,7 +1243,7 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	| date_time_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_DATE_TIME]}.make_point ($1))
+			create $$.make_range (create {INTERVAL [ISO8601_DATE_TIME]}.make_point($1))
 		}
 	| date_time_interval_value
 		{
@@ -1404,8 +1251,8 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	| c_date_time ';' date_time_value
 		{
-			if $1.valid_value ($3) then
-				$1.set_assumed_value ($3)
+			if $1.valid_value($3) then
+				$1.set_assumed_value($3)
 				$$ := $1
 			else
 				abort_with_error (ec_VOBAV, <<$3.out>>)
@@ -1435,7 +1282,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		}
 	| duration_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_DURATION]}.make_point ($1))
+			create $$.make_range (create {INTERVAL [ISO8601_DURATION]}.make_point($1))
 		}
 	| duration_interval_value
 		{
@@ -1471,7 +1318,7 @@ c_string: V_STRING 	-- single value, generates closed list
 		}
 	| V_REGEXP -- regular expression with "//" or "^^" delimiters
 		{
-			create $$.make_from_regexp ($1.substring (2, $1.count - 1), $1.item (1) = '/')
+			create $$.make_from_regexp ($1.substring (2, $1.count - 1), $1.item(1) = '/')
 			if $$.regexp.is_equal ({C_STRING}.regexp_compile_error) then
 				abort_with_error (ec_SCSRE, <<$1>>)
 			end
@@ -1490,21 +1337,6 @@ c_string: V_STRING 	-- single value, generates closed list
 			abort_with_error (ec_SCSAV, Void)
 		}
 	;
-
-c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
-		{
-			if constraint_model_factory.valid_c_terminology_code_string ($1) then
-				$$ := constraint_model_factory.create_c_terminology_code ($1)
-			else
-				abort_with_errors (constraint_model_factory.errors)
-			end
-		}
-	| V_QUALIFIED_TERM_CODE_REF
-		{
-			$$ := constraint_model_factory.create_c_terminology_code ($1)
-		}
-	;
- 
 
 c_boolean: SYM_TRUE
 		{
@@ -1537,69 +1369,30 @@ c_boolean: SYM_TRUE
 		}
 	;
 
-----------------------------------------------------------------------------------------
---
--- LEGACY ADL 1.4 Ordinal Syntax; converted here to C_ATTRIBUTE_TUPLE structure
---
-
 c_ordinal: ordinal
 		{
-			create $$.make_anonymous ("DV_ORDINAL")
-
-			-- create a C_ATTR_TUPLE and connect the received C_OBJ_TUPLE to it
-			$$.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)
-			$$.attribute_tuples.first.put_child ($1)
-
-			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
-			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
-			$$.attribute_tuples.first.put_member ($$.c_attribute ("value"))
-			$$.c_attribute ("value").put_child ($1.i_th_member (1))
-
-			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
-			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
-			$$.attribute_tuples.first.put_member ($$.c_attribute ("symbol"))
-			$$.c_attribute ("symbol").put_child ($1.i_th_member (2))
+			create $$.default_create
+			$$.add_item ($1)
 		}
 	| c_ordinal ',' ordinal
 		{
-			$$ := $1
-
-			check attached {C_INTEGER} $3.i_th_member (1) as ci then
-				c_int := ci
-			end
-			check attached {C_TERMINOLOGY_CODE} $3.i_th_member (2) as cs then
-				c_term_code := cs
-			end
-			if $$.c_attribute ("value").children.there_exists (
-					agent (co: C_OBJECT; c_val: C_INTEGER): BOOLEAN
-						do
-							Result := attached {C_INTEGER} co as ci and then ci.node_conforms_to (c_val, rm_schema)
-						end (?, c_int)
-				)
-			then
-				abort_with_error (ec_VCOV, <<c_int.prototype_value.out>>)
-
-			elseif $$.c_attribute ("symbol").children.there_exists (
-					agent (co: C_OBJECT; c_sym: C_TERMINOLOGY_CODE): BOOLEAN
-						do
-							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.node_conforms_to (c_sym, rm_schema)
-						end (?, c_term_code)
-				)
-			then
-				abort_with_error (ec_VCOC, <<c_term_code.prototype_value.out>>)
-
+			if $1.has_item ($3.value) then
+				abort_with_error (ec_VCOV, <<$3.value.out>>)
+			elseif $1.has_code_phrase ($3.symbol) then
+				abort_with_error (ec_VCOC, <<$3.symbol.code_string>>)
 			else
-				$$.c_attribute ("value").put_child ($3.i_th_member (1))
-				$$.c_attribute ("symbol").put_child ($3.i_th_member (2))
-				$$.attribute_tuples.first.put_child ($3)
+				$1.add_item ($3)
 			end
+			$$ := $1
 		}
  	| c_ordinal ';' integer_value
  		{
+			if $1.has_item ($3) then
+				$1.set_assumed_value_from_integer ($3)
+			else
+				abort_with_error (ec_VOBAV, <<$3.out>>)
+			end
 			$$ := $1
-
-			-- assumed value for C_DV_ORDINAL not supported
-			add_warning (ec_WDTOAV, Void)
  		}
  	| c_ordinal ';' error
  		{
@@ -1607,27 +1400,31 @@ c_ordinal: ordinal
  		}
 	;
 
-ordinal: integer_value SYM_INTERVAL_DELIM c_terminology_code
+ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 		{
-			-- create C_OBJECT_TUPLE
-			create $$.make 
-
-			-- create and add the value C_PRIMITIVE_OBJECT
-			$$.put_member (create {C_INTEGER}.make_simple_list ($1))
-
-			-- create and add the symbol C_PRIMITIVE_OBJECT
-			$$.put_member ($3)
+			create $$.make ($1, create {CODE_PHRASE}.make_from_string ($3))
 		}
 	;
 
---
--- END LEGACY ADL 1.4 Ordinal Syntax; converted here to C_ATTRIBUTE_TUPLE structure
---
-----------------------------------------------------------------------------------------
+c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
+		{
+			create $$.default_create
 
+			if $$.valid_pattern ($1) then
+				$$.make_from_pattern ($1)
+			else
+				abort_with_error (ec_VOBAV, <<$$.fail_reason>>)
+			end
+		}
+	| V_QUALIFIED_TERM_CODE_REF
+		{
+			create $$.make_from_pattern($1)
+		}
+	;
+ 
 constraint_ref: V_LOCAL_TERM_CODE_REF	-- e.g. "ac0003"
 		{
-			create $$.make ($1)
+			create $$.make($1)
 		}
 	;
 
@@ -1641,7 +1438,21 @@ any_identifier: type_identifier
 		}
 	;
 		
-type_identifier: V_TYPE_IDENTIFIER
+-----------------------------------------------------------------
+----------------- TAKEN FROM ODIN_VALIDATOR.Y -------------------
+-----------------        DO NOT MODIFY        -------------------
+-----------------------------------------------------------------
+---------------------- BASIC DATA VALUES -----------------------
+
+type_identifier: '(' V_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| '(' V_GENERIC_TYPE_IDENTIFIER ')'
+		{
+			$$ := $2
+		}
+	| V_TYPE_IDENTIFIER
 		{
 			$$ := $1
 		}
@@ -1651,12 +1462,6 @@ type_identifier: V_TYPE_IDENTIFIER
 		}
 	;
 
------------------------------------------------------------------
------------------ TAKEN FROM ODIN_VALIDATOR.Y -------------------
------------------        DO NOT MODIFY        -------------------
------------------------------------------------------------------
----------------------- BASIC DATA VALUES -----------------------
-
 string_value: V_STRING
 		{
 			$$ := $1
@@ -1665,13 +1470,13 @@ string_value: V_STRING
 
 string_list_value: V_STRING ',' V_STRING
 		{
-			create $$.make (0)
-			$$.extend ($1)
-			$$.extend ($3)
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| string_list_value ',' V_STRING
 		{
-			$1.extend ($3)
+			$1.extend($3)
 			$$ := $1
 		}
 	;
@@ -1703,19 +1508,19 @@ integer_value: V_INTEGER {
 
 integer_list_value: integer_value ',' integer_value
 		{
-			create $$.make (0)
-			$$.extend ($1)
-			$$.extend ($3)
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| integer_list_value ',' integer_value
 		{
-			$1.extend ($3)
+			$1.extend($3)
 			$$ := $1
 		}
 	| integer_value ',' SYM_LIST_CONTINUE
 		{
-			create $$.make (0)
-			$$.extend ($1)
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1769,7 +1574,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create $$.make_point($2)
 		}
 	;
 
@@ -1789,19 +1594,19 @@ real_value: V_REAL
 
 real_list_value: real_value ',' real_value
 		{
-			create $$.make (0)
-			$$.extend ($1)
-			$$.extend ($3)
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
 	| real_list_value ',' real_value
 		{
-			$1.extend ($3)
+			$1.extend($3)
 			$$ := $1
 		}
 	| real_value ',' SYM_LIST_CONTINUE
 		{
-			create $$.make (0)
-			$$.extend ($1)
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1855,7 +1660,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create $$.make_point($2)
 		}
 	;
 
@@ -1869,19 +1674,73 @@ boolean_value: SYM_TRUE
 		}
 	;
 
+boolean_list_value: boolean_value ',' boolean_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| boolean_list_value ',' boolean_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| boolean_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
 character_value: V_CHARACTER
 		{
 			$$ := $1
 		}
 	;
 
+character_list_value: character_value ',' character_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| character_list_value ',' character_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| character_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
 date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 		{
-			if valid_iso8601_date ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_date($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VIDV, <<$1>>)
 			end
+		}
+	;
+
+date_list_value: date_value ',' date_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| date_list_value ',' date_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| date_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1935,17 +1794,35 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create $$.make_point($2)
 		}
 	;
 
 time_value: V_ISO8601_EXTENDED_TIME
 		{
-			if valid_iso8601_time ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_time($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VITV, <<$1>>)
 			end
+		}
+	;
+
+time_list_value: time_value ',' time_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| time_list_value ',' time_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| time_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1999,17 +1876,35 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create $$.make_point($2)
 		}
 	;
 
 date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 		{
-			if valid_iso8601_date_time ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_date_time($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VIDTV, <<$1>>)
 			end
+		}
+	;
+
+date_time_list_value: date_time_value ',' date_time_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| date_time_list_value ',' date_time_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| date_time_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -2063,17 +1958,35 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create $$.make_point($2)
 		}
 	;
 
 duration_value: V_ISO8601_DURATION
 		{
-			if valid_iso8601_duration ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_duration($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VIDUV, <<$1>>)
 			end
+		}
+	;
+
+duration_list_value: duration_value ',' duration_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| duration_list_value ',' duration_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| duration_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -2127,13 +2040,13 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create $$.make_point($2)
 		}
 	;
 
 term_code: V_QUALIFIED_TERM_CODE_REF
 		{
-			create $$.make_from_string ($1)
+			create $$.make_from_string($1)
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
@@ -2141,9 +2054,27 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		}
 	;
 
+term_code_list_value: term_code ',' term_code
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| term_code_list_value ',' term_code
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| term_code ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
 uri_value: V_URI
 		{
-			create $$.make_from_string ($1)
+			create $$.make_from_string($1)
 		}
 	;
 
@@ -2163,11 +2094,10 @@ feature -- Initialization
 		do
 			make_scanner
 			make_parser_skeleton
-			create object_nodes.make (0)
-			create c_attrs.make (0)
+			create object_nodes.make(0)
+			create c_attrs.make(0)
 			create time_vc
 			create date_vc
-			create indent.make_empty
 		end
 
 	reset
@@ -2203,7 +2133,7 @@ feature -- Initialization
 				Result.append (f_buffer.file.name + ", ")
 			end
 			Result.append ("line " + (in_lineno + source_start_line).out)
-			Result.append (" [last token = " + token_name (last_token) + "]")
+			Result.append(" [last token = " + token_name (last_token) + "]")
 		end
 
 feature -- Access
@@ -2219,14 +2149,20 @@ feature {NONE} -- Implementation
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
 		require
-			Not_already_added: not an_attr.has_child (an_obj)
+			Not_already_added: not an_attr.has_child(an_obj)
 		do
-			debug ("ADL_parse")
-				io.put_string (indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child (" + 
+			debug("ADL_parse")
+				io.put_string(indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child(" + 
 						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
 			end
-			if check_c_attribute_child (an_attr, an_obj) then
-				c_attrs.item.put_child (an_obj)
+			-- attach the object if it is either in the RM or if it is a built-in domain type like C_CODE_PHRASE
+			-- This still might fail later on, because the domain type needs to have a wrapper in the RM
+			if rm_schema.has_class_definition (an_obj.rm_type_name) or attached {C_DOMAIN_TYPE} an_obj then
+				if check_c_attribute_child(an_attr, an_obj) then
+					c_attrs.item.put_child(an_obj)
+				end
+			else
+				abort_with_error (ec_VCORM, <<an_obj.rm_type_name, c_attrs.item.path>>)
 			end
 		end
 
@@ -2244,27 +2180,27 @@ feature {NONE} -- Implementation
 			else
 				ar.extend ("rm_type_name=" + an_obj.rm_type_name) -- $2
 			end
-			ar.extend (an_attr.rm_attribute_name) -- $3
+			ar.extend(an_attr.rm_attribute_name) -- $3
 
 			if an_attr.is_single then
 				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
-					err_code := ec_VACSO
+					err_code := "VACSO"
 				elseif an_obj.is_addressable and an_attr.has_child_with_id (an_obj.node_id) then
-					err_code := ec_VACSI
+					err_code := "VACSI"
 				elseif not an_obj.is_addressable and an_attr.has_child_with_rm_type_name (an_obj.rm_type_name) then
-					err_code := ec_VACSIT
+					err_code := "VACSIT"
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
 				if not an_obj.is_addressable then
-					err_code := ec_VACMI
+					err_code := "VACMI"
 				elseif an_attr.has_child_with_id (an_obj.node_id) then
-					err_code := ec_VACMM
+					err_code := "VACMM"
 				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
 						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and
 						an_obj.occurrences.upper > an_attr.cardinality.interval.upper then
-					err_code := ec_VACMCU
+					err_code := "VACMCU"
 					ar.extend (an_obj.occurrences.upper.out)
 					ar.extend (an_attr.cardinality.interval.upper.out)
 				else
@@ -2306,9 +2242,6 @@ feature {NONE} -- Parse Tree
 
 	bmm_prop_def: detachable BMM_PROPERTY_DEFINITION
 
-	c_attr_tuple: detachable C_ATTRIBUTE_TUPLE
-	c_obj_tuple: C_OBJECT_TUPLE
-
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
@@ -2316,13 +2249,12 @@ feature {NONE} -- Implementation
 	arch_internal_ref_node_id: detachable STRING
 
 	indent: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	str: detachable STRING
 
 	og_path: detachable OG_PATH
-
-	-- legacy C_DV_ORDINAL variables
-	c_int: C_INTEGER
-	c_term_code: C_TERMINOLOGY_CODE
 
 end

@@ -14,7 +14,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "checked"
 
 class C_COMPLEX_OBJECT
 
@@ -71,36 +70,40 @@ feature -- Source Control
 
 feature -- Access
 
+	attribute_tuples: detachable ARRAYED_LIST [C_ATTRIBUTE_TUPLE]
+			-- attributes that occur in tuples of 2 or more
+			-- currently limited to attributes whose values are C_PRIMITIVEs
+
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 		attribute
 			create Result.make (0)
 		end
 
-	c_attribute (an_attr_name: STRING): detachable C_ATTRIBUTE
+	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
 		require
-			an_attr_name_valid: has_attribute(an_attr_name)
+			an_attr_name_valid: has_attribute (an_attr_name)
 		do
-			if attached {C_ATTRIBUTE} representation.child_with_id(an_attr_name).content_item as ca then
+			check attached {C_ATTRIBUTE} representation.child_with_id (an_attr_name).content_item as ca then
 				Result := ca
 			end
 		end
 
-	c_attribute_at_path (a_path: STRING): detachable C_ATTRIBUTE
+	c_attribute_at_path (a_path: STRING): C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
 			a_path_valid: has_path (a_path)
 		do
-			if attached {C_ATTRIBUTE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string (a_path)).content_item as ca then
+			check attached {C_ATTRIBUTE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string (a_path)).content_item as ca then
 				Result := ca
 			end
 		end
 
-	c_object_at_path (a_path: STRING): detachable C_OBJECT
+	c_object_at_path (a_path: STRING): C_OBJECT
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
-			a_path_valid: has_path(a_path)
+			a_path_valid: has_path (a_path)
 		do
-			if attached {C_OBJECT} representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as co then
+			check attached {C_OBJECT} representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as co then
 				Result := co
 			end
 		end
@@ -219,10 +222,8 @@ feature -- Modification
 		require
 			Attribute_name_valid: has_attribute (an_attr_name)
 		do
-			if attached c_attribute (an_attr_name) as ca then
-				attributes.prune_all (ca)
-				representation.remove_child (ca.representation)
-			end
+			attributes.prune_all (c_attribute (an_attr_name))
+			representation.remove_child (c_attribute (an_attr_name).representation)
 		ensure
 			not has_attribute (an_attr_name)
 		end
@@ -232,6 +233,19 @@ feature -- Modification
 		do
 			representation.remove_all_children
 			attributes.wipe_out
+		end
+
+	put_attribute_tuple (an_attr_tuple: C_ATTRIBUTE_TUPLE)
+		local
+			attr_tuples: ARRAYED_LIST [C_ATTRIBUTE_TUPLE]
+		do
+			if attached attribute_tuples as ats then
+				attr_tuples := ats
+			else
+				create attr_tuples.make (1)
+				attribute_tuples := attr_tuples
+			end
+			attr_tuples.extend (an_attr_tuple)
 		end
 
 feature -- Output

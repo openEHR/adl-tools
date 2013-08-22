@@ -31,24 +31,18 @@ feature -- Initialisation
 			end
 			if a_ca.has_children then
 				create children.make (0)
-				from a_ca.children.start until a_ca.children.off loop
-					if attached {C_ARCHETYPE_ROOT} a_ca.children.item as c_ar then
+				across a_ca.children as c_objs_csr loop
+					if attached {C_ARCHETYPE_ROOT} c_objs_csr.item as c_ar then
 						children.extend (create {P_C_ARCHETYPE_ROOT}.make(c_ar))
-					elseif attached {C_COMPLEX_OBJECT} a_ca.children.item as c_co then
+					elseif attached {C_COMPLEX_OBJECT} c_objs_csr.item as c_co then
 						children.extend (create {P_C_COMPLEX_OBJECT}.make(c_co))
-					elseif attached {ARCHETYPE_SLOT} a_ca.children.item as a_s then
+					elseif attached {ARCHETYPE_SLOT} c_objs_csr.item as a_s then
 						children.extend (create {P_ARCHETYPE_SLOT}.make(a_s))
-					elseif attached {ARCHETYPE_INTERNAL_REF} a_ca.children.item as a_ir then
+					elseif attached {ARCHETYPE_INTERNAL_REF} c_objs_csr.item as a_ir then
 						children.extend (create {P_ARCHETYPE_INTERNAL_REF}.make(a_ir))
-					elseif attached {CONSTRAINT_REF} a_ca.children.item as cr then
+					elseif attached {CONSTRAINT_REF} c_objs_csr.item as cr then
 						children.extend (create {P_CONSTRAINT_REF}.make(cr))
-					elseif attached {C_CODE_PHRASE} a_ca.children.item as c_cp then
-						children.extend (create {P_C_CODE_PHRASE}.make(c_cp))
-					elseif attached {C_DV_ORDINAL} a_ca.children.item as c_dvo then
-						children.extend (create {P_C_DV_ORDINAL}.make(c_dvo))
-					elseif attached {C_DV_QUANTITY} a_ca.children.item as c_dvq then
-						children.extend (create {P_C_DV_QUANTITY}.make(c_dvq))
-					elseif attached {C_PRIMITIVE_OBJECT} a_ca.children.item as c_po then
+					elseif attached {C_PRIMITIVE_OBJECT} c_objs_csr.item as c_po then
 						children.extend (create {P_C_PRIMITIVE_OBJECT}.make(c_po))
 					end
 					a_ca.children.forth
@@ -97,24 +91,18 @@ feature -- Factory
 			end
 
 			if attached children then
-				across children as children_csr loop
-					if attached {P_C_ARCHETYPE_ROOT} children_csr.item as p_c_ar then
+				across children as p_c_objs_csr loop
+					if attached {P_C_ARCHETYPE_ROOT} p_c_objs_csr.item as p_c_ar then
 						Result.put_child (p_c_ar.create_c_archetype_root)
-					elseif attached {P_C_COMPLEX_OBJECT} children_csr.item as p_c_co then
+					elseif attached {P_C_COMPLEX_OBJECT} p_c_objs_csr.item as p_c_co then
 						Result.put_child (p_c_co.create_c_complex_object)
-					elseif attached {P_ARCHETYPE_SLOT} children_csr.item as p_a_s then
+					elseif attached {P_ARCHETYPE_SLOT} p_c_objs_csr.item as p_a_s then
 						Result.put_child (p_a_s.create_archetype_slot)
-					elseif attached {P_ARCHETYPE_INTERNAL_REF} children_csr.item as p_a_ir then
+					elseif attached {P_ARCHETYPE_INTERNAL_REF} p_c_objs_csr.item as p_a_ir then
 						Result.put_child (p_a_ir.create_archetype_internal_ref)
-					elseif attached {P_CONSTRAINT_REF} children_csr.item as p_cr then
+					elseif attached {P_CONSTRAINT_REF} p_c_objs_csr.item as p_cr then
 						Result.put_child (p_cr.create_constraint_ref)
-					elseif attached {P_C_CODE_PHRASE} children_csr.item as p_c_cp then
-						Result.put_child (p_c_cp.create_c_code_phrase)
-					elseif attached {P_C_DV_ORDINAL} children_csr.item as p_c_dvo then
-						Result.put_child (p_c_dvo.create_c_dv_ordinal)
-					elseif attached {P_C_DV_QUANTITY} children_csr.item as p_c_dvq then
-						Result.put_child (p_c_dvq.create_c_dv_quantity)
-					elseif attached {P_C_PRIMITIVE_OBJECT} children_csr.item as p_c_po then
+					elseif attached {P_C_PRIMITIVE_OBJECT} p_c_objs_csr.item as p_c_po then
 						Result.put_child (p_c_po.create_c_primitive_object)
 					end
 				end

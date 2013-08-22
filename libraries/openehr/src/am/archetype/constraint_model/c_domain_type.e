@@ -60,6 +60,8 @@ feature -- Access
 			create Result.make_empty
 		end
 
+feature -- AOM type mappings
+
 	rm_type_mapping: detachable AOM_TYPE_MAPPING
 			-- optional mapping from property names in descendants of this type to property names in
 			-- an RM type
@@ -131,16 +133,16 @@ feature -- Visitor
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			synchronise_to_tree
-			precursor (visitor, depth)
-			visitor.start_c_domain_type (Current, depth)
+--			synchronise_to_tree
+--			precursor (visitor, depth)
+--			visitor.start_c_domain_type (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor (visitor, depth)
-			visitor.end_c_domain_type (Current, depth)
+--			precursor (visitor, depth)
+--			visitor.end_c_domain_type (Current, depth)
 		end
 
 end

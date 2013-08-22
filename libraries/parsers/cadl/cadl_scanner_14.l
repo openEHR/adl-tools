@@ -1,14 +1,14 @@
 %{
 note
 	component:   "openEHR ADL Tools"
-	description: "Scanner for CADL syntax items"
+	description: "Scanner for CADL syntax v 1.4"
 	keywords:    "CADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_SCANNER
+class CADL_SCANNER_14
 
 inherit
 	YY_COMPRESSED_SCANNER_SKELETON
@@ -18,7 +18,7 @@ inherit
 			output as print_out
 		end
 
-	CADL_TOKENS
+	CADL_TOKENS_14
 		export
 			{NONE} all
 		end
@@ -414,24 +414,24 @@ P[yY]?[mM]?[Ww]?[dD]? {
 					if odin_parser.output.is_typed then
 						tid := dynamic_type_from_string(odin_parser.output.im_type_name)
 						if tid >= 0 then
-							if attached {C_DV_QUANTITY} odin_parser.output.as_object(tid, Void) as cdt then
-								c_dv_quantity := cdt
-								last_token := V_C_DV_QUANTITY
+							if attached {C_DOMAIN_TYPE} odin_parser.output.as_object(tid, Void) as cdt then
+								c_domain_type := cdt
+								last_token := V_C_DOMAIN_TYPE
 							else
 								odin_parser_error.add_error (ec_VDTCV, <<odin_parser.output.im_type_name>>, "")
-								last_token := ERR_C_DV_QUANTITY
+								last_token := ERR_C_DOMAIN_TYPE
 							end
 						else
 							odin_parser_error.add_error (ec_VDTTU, <<odin_parser.output.im_type_name>>, "")
-							last_token := ERR_C_DV_QUANTITY
+							last_token := ERR_C_DOMAIN_TYPE
 						end
 					else
 						odin_parser_error.add_error (ec_VDTNT, Void, "")
-						last_token := ERR_C_DV_QUANTITY
+						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else
 					odin_parser_error.append (odin_parser.errors)
-					last_token := ERR_C_DV_QUANTITY
+					last_token := ERR_C_DOMAIN_TYPE
 				end
 
 				in_buffer.wipe_out
@@ -539,12 +539,13 @@ P[yY]?[mM]?[Ww]?[dD]? {
 
 ----------/* reals */ -------------------------------------------------
 
-[0-9]+\.[0-9]+						|
-[0-9]+\.[0-9]+[eE][+-]?[0-9]+		{
+[0-9]+\./[^.0-9]				|
+[0-9]+\.[0-9]*[eE][+-]?[0-9]+		|
+[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?	{
 						last_token := V_REAL
 						last_real_value := text.to_real
-			}
-[0-9]{1,3}(_[0-9]{3})+\.[0-9]+	|
+					}
+[0-9]{1,3}(_[0-9]{3})+\./[^.0-9]	|
 [0-9]{1,3}(_[0-9]{3})*\.([0-9]{1,3}(_[0-9]{3})*)?[eE][+-]?[0-9]{1,3}(_[0-9]{3})*	|
 ([0-9]{1,3}(_[0-9]{3})*)?\.[0-9]{1,3}(_[0-9]{3})*([eE][+-]?[0-9]{1,3}(_[0-9]{3})*)?	{
 						last_token := V_REAL
@@ -559,7 +560,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-			}
+					}
 
 		-- The first and fourth expressions use a trailing context
 		-- to make sure that an integer followed by two dots is
@@ -692,7 +693,7 @@ feature {NONE} -- Implementation
 	assumed_term_code_index: INTEGER
 			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
 
-	c_dv_quantity: detachable C_DV_QUANTITY
+	c_domain_type: detachable C_DOMAIN_TYPE
 
 	tid: INTEGER
 

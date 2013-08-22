@@ -11,12 +11,14 @@ note
 class C_STRING
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 
 create
-	make_any, make_from_string, make_from_regexp, make_from_string_list
+	make_open, make_from_string, make_from_regexp, make_from_string_list, make_any
 
 feature -- Definitions
+
+	Regex_any_string: STRING = ".*"
 
 	default_delimiter: CHARACTER = '/'
 
@@ -26,18 +28,20 @@ feature -- Definitions
 
 feature -- Initialization
 
-	make_any
+	make_open
 			-- make completely open
 		do
+			default_create
 			is_open := True
 		end
 
 	make_from_string (str: STRING)
 			-- make from a single string
 		do
+			default_create
 			create strings.make(0)
-			strings.extend(str)
 			strings.compare_objects
+			strings.extend (str)
 		ensure
 			strings_attached: strings /= Void
 			not_open: not is_open
@@ -49,6 +53,7 @@ feature -- Initialization
 			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
 		do
+			default_create
 			regexp := str.twin
 			regexp_default_delimiter := using_default_delimiter
 			create regexp_parser.make
@@ -58,34 +63,28 @@ feature -- Initialization
 				regexp := Regexp_compile_error.twin
 			end
 		ensure
-			strings_void: strings = Void
+			strings_void: not attached strings
 			not_open: not is_open
 			regexp.is_equal(str) xor regexp.is_equal (Regexp_compile_error)
 		end
 
 	make_from_string_list (lst: LIST[STRING])
+		require
+			not lst.is_empty
 		do
+			default_create
 			create strings.make (0)
-			strings.fill (lst)
 			strings.compare_objects
+			strings.fill (lst)
 		ensure
 			strings_attached: attached strings
 			not_open: not is_open
 		end
 
-feature -- Modification
-
-	set_open
+	make_any
+			-- make using an open regex, i.e. ".*"
 		do
-			is_open := True
-		end
-
-	add_string (str: STRING)
-		do
-			strings.extend (str)
-		ensure
-			extended: strings.count = old strings.count + 1
-			str_valid: valid_value (str)
+			regexp := Regex_any_string
 		end
 
 feature -- Access
@@ -136,16 +135,14 @@ feature -- Status Report
 			Result := attached regexp
 		end
 
-feature -- Status Report
-
 	valid_value (a_value: STRING): BOOLEAN
 		do
 			if is_open then
 				Result := True
-			elseif attached strings then
-				Result := strings.has (a_value)
-			elseif attached regexp_parser as rexpp then
-				Result := rexpp.recognizes (a_value)
+			elseif attached strings as strs then
+				Result := strs.has (a_value)
+			elseif attached regexp_parser as rep then
+				Result := rep.recognizes (a_value)
 			end
 		end
 
@@ -153,23 +150,30 @@ feature -- Status Report
 			-- if True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used		
 
-feature -- Comparison
+feature -- Modification
 
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+	set_open
 		do
-			-- FIXME: TO BE IMPLEMENTED
+			is_open := True
+		end
+
+	add_string (str: STRING)
+		do
+			strings.extend (str)
+		ensure
+			extended: strings.count = old strings.count + 1
+			str_valid: valid_value (str)
 		end
 
 feature -- Output
 
 	as_string: STRING
 		do
-			create Result.make(0)
+			create Result.make_empty
 
 			if attached strings as strs then
 				across strs as strings_csr loop
-					if strings_csr.target_index > 1 then
+					if not strings_csr.is_first then
 						Result.append (", ")
 					end
 					Result.append_character ('%"')
@@ -196,7 +200,7 @@ feature -- Output
 			create Result.make(0)
 			if attached strings as strs then
 				across strs as strings_csr loop
-					if strings_csr.target_index > 1 then
+					if not strings_csr.is_first then
 						Result.append(", ")
 					end
 					Result.append_character ('%"')
@@ -217,6 +221,12 @@ feature -- Output
 		end
 
 feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
+		end
 
 	regexp_parser: detachable RX_PCRE_REGULAR_EXPRESSION
 		note

@@ -162,8 +162,8 @@ feature -- Access
 	ontology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in ontology that are not referenced anywhere in the archetype definition
 		local
-			data_codes: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
-			id_atcodes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
+			data_codes: like data_codes_index
+			id_atcodes: like id_atcodes_index
 		do
 			create Result.make (0)
 			data_codes := data_codes_index
@@ -240,11 +240,15 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- perform validation of node against reference model
 			-- This function gets executed on nodes 1 level BELOW where the is_congruent marker is True
+		local
+			ca2: C_ATTRIBUTE
+			co2: C_OBJECT
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				-- these are attributes that are not congruent to any node in the parent archetype,
 				-- i.e. they don't exist in the parent.
-				if converted_def.has_attribute_path (ca.path) and then attached converted_def.c_attribute_at_path (ca.path) as ca2 then
+				if converted_def.has_attribute_path (ca.path) then
+					ca2 := converted_def.c_attribute_at_path (ca.path)
 					if not ca2.has_differential_path then
 						debug("compress")
 							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
@@ -258,17 +262,18 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then
-					if converted_def.has_object_path (co.path) and then attached converted_def.c_object_at_path (co.path) as co2 then
+					if converted_def.has_object_path (co.path) then
+						co2 := converted_def.c_object_at_path (co.path)
 						if not co2.parent.has_differential_path then
-							debug("compress")
-								io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
-							end
+debug("compress")
+	io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
+end
 							co2.parent.set_differential_path_to_here
 						end
 					else
-						debug("compress")
-							io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
-						end
+		debug("compress")
+			io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
+		end
 					end
 				end
 			end

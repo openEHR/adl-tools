@@ -411,16 +411,16 @@ feature {NONE} -- Implementation
 					legacy_path := lfp
 				end
 				if aca.has_differential_file then
-					create question_dialog.make_with_text (get_msg_line ("edit_which_file_question",
+					create question_dialog.make_with_text (get_msg_line (ec_edit_which_file_question,
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
 					question_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.qualified_name>>))
-					question_dialog.set_buttons (<<get_text (ec_catalogue_edit_differential_button_text), get_text ("catalogue_edit_adl14_button_text")>>)
+					question_dialog.set_buttons (<<get_text (ec_catalogue_edit_differential_button_text), get_text (ec_catalogue_edit_adl14_button_text)>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-					if question_dialog.selected_button.starts_with ("L") then
+					if question_dialog.selected_button.is_equal (get_text (ec_catalogue_edit_adl14_button_text)) then
 						path := legacy_path
 					end
 				else
-					create info_dialog.make_with_text (get_msg_line ("edit_legacy_file_info",
+					create info_dialog.make_with_text (get_msg_line (ec_edit_legacy_file_info,
 						<<file_system.basename (legacy_path)>>))
 					info_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.id.as_string>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))

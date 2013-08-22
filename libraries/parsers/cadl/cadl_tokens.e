@@ -16,7 +16,7 @@ feature -- Last values
 	last_integer_value: INTEGER
 	last_real_value: REAL
 	last_character_value: CHARACTER
-	last_c_domain_type_value: C_DOMAIN_TYPE
+	last_c_dv_quantity_value: C_DV_QUANTITY
 
 feature -- Access
 
@@ -78,8 +78,8 @@ feature -- Access
 				Result := "V_ISO8601_DATE_CONSTRAINT_PATTERN"
 			when V_ISO8601_DURATION_CONSTRAINT_PATTERN then
 				Result := "V_ISO8601_DURATION_CONSTRAINT_PATTERN"
-			when V_C_DOMAIN_TYPE then
-				Result := "V_C_DOMAIN_TYPE"
+			when V_C_DV_QUANTITY then
+				Result := "V_C_DV_QUANTITY"
 			when SYM_START_CBLOCK then
 				Result := "SYM_START_CBLOCK"
 			when SYM_END_CBLOCK then
@@ -134,8 +134,8 @@ feature -- Access
 				Result := "ERR_CHARACTER"
 			when ERR_STRING then
 				Result := "ERR_STRING"
-			when ERR_C_DOMAIN_TYPE then
-				Result := "ERR_C_DOMAIN_TYPE"
+			when ERR_C_DV_QUANTITY then
+				Result := "ERR_C_DV_QUANTITY"
 			when ERR_TERM_CODE_CONSTRAINT then
 				Result := "ERR_TERM_CODE_CONSTRAINT"
 			when ERR_V_QUALIFIED_TERM_CODE_REF then
@@ -204,7 +204,7 @@ feature -- Token codes
 	V_ISO8601_TIME_CONSTRAINT_PATTERN: INTEGER = 280
 	V_ISO8601_DATE_CONSTRAINT_PATTERN: INTEGER = 281
 	V_ISO8601_DURATION_CONSTRAINT_PATTERN: INTEGER = 282
-	V_C_DOMAIN_TYPE: INTEGER = 283
+	V_C_DV_QUANTITY: INTEGER = 283
 	SYM_START_CBLOCK: INTEGER = 284
 	SYM_END_CBLOCK: INTEGER = 285
 	SYM_ANY: INTEGER = 286
@@ -232,7 +232,7 @@ feature -- Token codes
 	SYM_CLOSED: INTEGER = 308
 	ERR_CHARACTER: INTEGER = 309
 	ERR_STRING: INTEGER = 310
-	ERR_C_DOMAIN_TYPE: INTEGER = 311
+	ERR_C_DV_QUANTITY: INTEGER = 311
 	ERR_TERM_CODE_CONSTRAINT: INTEGER = 312
 	ERR_V_QUALIFIED_TERM_CODE_REF: INTEGER = 313
 	ERR_V_ISO8601_DURATION: INTEGER = 314

@@ -17,6 +17,13 @@ inherit
 			{NONE} all
 		end
 
+	EXCEPTIONS
+		rename
+			class_name as exception_class_name
+		export
+			{NONE} all
+		end
+
 feature {NONE} -- Initialisation
 
 	initialise (a_target: like target)

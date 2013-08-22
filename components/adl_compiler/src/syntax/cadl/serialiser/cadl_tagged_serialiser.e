@@ -21,7 +21,6 @@ inherit
 			start_archetype_slot, end_archetype_slot,
 			start_archetype_internal_ref, start_constraint_ref,
 			start_c_archetype_root,
-			start_c_code_phrase, start_c_ordinal, start_c_quantity,
 			start_c_primitive_object
 		end
 
@@ -276,114 +275,62 @@ feature -- Modification
 			last_object_simple := True
 		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- start serialising an C_DOMAIN_TYPE
-		do
-		end
+--	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
+--			-- start serialising an C_CODE_PHRASE
+--		local
+--			adl_term: ARCHETYPE_TERM
+--			attrs: HASH_TABLE [STRING, STRING]
+--		do
+--			if a_node.code_count = 1 or a_node.code_count = 0 then
+--				last_result.remove_tail(format_item(FMT_NEWLINE).count)
+--				last_result.append(clean(a_node.as_string))
+--				create last_object_simple_buffer.make(0)
+--				if a_node.is_local and then a_node.code_count = 1 then
+--					adl_term := ontology.term_definition(language, a_node.code_list.first)
+--					last_object_simple_buffer.append(xml_tag_enclose("text",
+--						adl_term.item("text"), Void))
+--					from
+--						ontology.terminologies_available.start
+--					until
+--						ontology.terminologies_available.off
+--					loop
+--						if
+--							ontology.has_term_binding(ontology.terminologies_available.item, adl_term.item("text")) then
+--							create attrs.make(0)
+--							attrs.put(ontology.terminologies_available.item, "terminology")
+--							last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) +
+--								xml_tag_enclose("binding",
+--								ontology.term_binding(ontology.terminologies_available.item, adl_term.item("text")).code_string,
+--								attrs))
+--						end
+--						ontology.terminologies_available.forth
+--					end
+--				end
+--				last_object_simple := True
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- start serialising an C_CODE_PHRASE
-		local
-			adl_term: ARCHETYPE_TERM
-			attrs: HASH_TABLE [STRING, STRING]
-		do
-			if a_node.code_count = 1 or a_node.code_count = 0 then
-				last_result.remove_tail(format_item(FMT_NEWLINE).count)
-				last_result.append(clean(a_node.as_string))
-				create last_object_simple_buffer.make(0)
-				if a_node.is_local and then a_node.code_count = 1 then
-					adl_term := ontology.term_definition(language, a_node.code_list.first)
-					last_object_simple_buffer.append(xml_tag_enclose("text",
-						adl_term.item("text"), Void))
-					from
-						ontology.terminologies_available.start
-					until
-						ontology.terminologies_available.off
-					loop
-						if
-							ontology.has_term_binding(ontology.terminologies_available.item, adl_term.item("text")) then
-							create attrs.make(0)
-							attrs.put(ontology.terminologies_available.item, "terminology")
-							last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) +
-								xml_tag_enclose("binding",
-								ontology.term_binding(ontology.terminologies_available.item, adl_term.item("text")).code_string,
-								attrs))
-						end
-						ontology.terminologies_available.forth
-					end
-				end
-				last_object_simple := True
-
-			elseif a_node.code_count > 1 then
-				last_result.append(create_indent(depth) + clean("[" + a_node.terminology_id.value +
-					a_node.separator) + format_item(FMT_NEWLINE))
-				from
-					a_node.code_list.start
-				until
-					a_node.code_list.off
-				loop
-					last_result.append(create_indent(depth) + clean(a_node.code_list.item))
-					if not a_node.code_list.islast then
-						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
-					else
-						last_result.append("]")
-					end
-					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.code_list.item)
-						last_result.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))
-					end
-					last_result.append(format_item(FMT_NEWLINE))
-					a_node.code_list.forth
-				end
-			end
-		end
-
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- start serialising an C_DV_ORDINAL
-		local
-			adl_term: ARCHETYPE_TERM
-			i: INTEGER
-		do
-			if a_node.items.count = 1 then
-				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
-				last_result.append(clean(a_node.as_string))
-				create last_object_simple_buffer.make(0)
-				if a_node.is_local then
-					last_object_simple_buffer.append(format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
-					last_object_simple_buffer.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))
-				end
-				last_object_simple := True
-			elseif a_node.items.count > 1 then
-				from
-					a_node.items.start
-					i := 1
-				until
-					a_node.items.off
-				loop
-					last_result.append(create_indent(depth) + a_node.items.item.as_string)
-					if i < a_node.items.count then
-						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
-					else -- pad same number of spaces
-						last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
-					end
-					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
-						last_result.append(format_item(FMT_INDENT) +
-							format_item(FMT_COMMENT) +
-							adl_term.item("text"))
-					end
-					last_result.append(format_item(FMT_NEWLINE))
-					a_node.items.forth
-					i := i + 1
-				end
-			end
-		end
-
-	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
-		do
-		end
+--			elseif a_node.code_count > 1 then
+--				last_result.append(create_indent(depth) + clean("[" + a_node.terminology_id.value +
+--					a_node.separator) + format_item(FMT_NEWLINE))
+--				from
+--					a_node.code_list.start
+--				until
+--					a_node.code_list.off
+--				loop
+--					last_result.append(create_indent(depth) + clean(a_node.code_list.item))
+--					if not a_node.code_list.islast then
+--						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
+--					else
+--						last_result.append("]")
+--					end
+--					if a_node.is_local then
+--						adl_term := ontology.term_definition(language, a_node.code_list.item)
+--						last_result.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))
+--					end
+--					last_result.append(format_item(FMT_NEWLINE))
+--					a_node.code_list.forth
+--				end
+--			end
+--		end
 
 	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT

@@ -8,13 +8,11 @@ note
 	             Examples: value sets {trace, +, ++, +++}, or {low, med, high}.
 				 ]"
 	keywords:    "ordinal, quantity"
-
 	requirements:"ISO 18308 TS V1.0 STR 3.2"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class DV_ORDINAL

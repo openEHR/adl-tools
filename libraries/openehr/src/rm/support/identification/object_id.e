@@ -21,6 +21,13 @@ inherit
 			out
 		end
 
+	OPENEHR_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			is_equal, out
+		end
+
 feature {NONE} -- Initialization
 
 	make_from_string (a_string: STRING)

@@ -28,7 +28,9 @@ feature -- Initialisation
 					create tb_p_ont.make (0)
 					term_bindings.put (tb_p_ont, terminologies_csr.key)
 					across terminologies_csr.item as term_bindings_csr loop
-						tb_p_ont.put (term_bindings_csr.item.as_string, term_bindings_csr.key)
+						check attached term_bindings_csr.item as a_term then
+							tb_p_ont.put (a_term.as_string, term_bindings_csr.key)
+						end
 					end
 				end
 			end
@@ -39,7 +41,9 @@ feature -- Initialisation
 					create cb_p_ont.make (0)
 					constraint_bindings.put (cb_p_ont, terminologies_csr.key)
 					across terminologies_csr.item as constraint_bindings_csr loop
-						cb_p_ont.put (constraint_bindings_csr.item.as_string, constraint_bindings_csr.key)
+						check attached constraint_bindings_csr.item as a_term then
+							cb_p_ont.put (a_term.as_string, constraint_bindings_csr.key)
+						end
 					end
 				end
 			end

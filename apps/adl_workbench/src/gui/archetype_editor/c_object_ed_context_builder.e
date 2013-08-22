@@ -71,6 +71,13 @@ feature -- Visitor
 	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- exit a C_COMPLEX_OBJECT
 		do
+			-- deal with attribute tuples
+			if attached a_node.attribute_tuples as att_tuples then
+				across att_tuples as att_tuples_csr loop
+					start_c_attribute_tuple (att_tuples_csr.item, depth + 1)
+				end
+			end
+
 			obj_node_stack.remove
 		end
 
@@ -88,15 +95,29 @@ feature -- Visitor
 		local
 			ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
-			create ed_node.make (a_node, ed_context)
-			obj_node_stack.item.put_c_attribute (ed_node)
-			attr_node_stack.extend (ed_node)
+			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ed_node.make (a_node, ed_context)
+				obj_node_stack.item.put_c_attribute (ed_node)
+				attr_node_stack.extend (ed_node)
+			end
 		end
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit a C_ATTRIBUTE
 		do
-			attr_node_stack.remove
+			if not a_node.is_second_order_constrained then
+				attr_node_stack.remove
+			end
+		end
+
+	start_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE; depth: INTEGER)
+			-- enter a C_ATTRIBUTE_TUPLE
+		local
+			ed_node: C_ATTRIBUTE_TUPLE_ED_CONTEXT
+		do
+			create ed_node.make (a_node, ed_context)
+			obj_node_stack.item.put_c_attribute_tuple (ed_node)
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
@@ -153,40 +174,11 @@ feature -- Visitor
 		local
 			ed_node: C_PRIMITIVE_OBJECT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
-		end
-
-	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- enter an C_DOMAIN_TYPE
-		do
-		end
-
-	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- enter an C_CODE_PHRASE
-		local
-			ed_node: C_CODE_PHRASE_ED_CONTEXT
-		do
-			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
-		end
-
-	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- enter an C_DV_ORDINAL
-		local
-			ed_node: C_DV_ORDINAL_ED_CONTEXT
-		do
-			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
-		end
-
-	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
-			-- enter a C_DV_QUANTITY
-		local
-			ed_node: C_DV_QUANTITY_ED_CONTEXT
-		do
-			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ed_node.make (a_node, ed_context)
+				attr_node_stack.item.pre_attach_child_context (ed_node)
+			end
 		end
 
 feature {NONE} -- Implementation

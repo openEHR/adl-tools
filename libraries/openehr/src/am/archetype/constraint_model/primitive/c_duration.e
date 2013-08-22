@@ -11,9 +11,9 @@ note
 class C_DURATION
 
 inherit
-	C_PRIMITIVE
+	C_PRIMITIVE_OBJECT
 		redefine
-			rm_type_name
+			default_create
 		end
 
 	DATE_TIME_ROUTINES
@@ -34,6 +34,11 @@ create
 
 feature {NONE} -- Initialisation
 
+	default_create
+		do
+			rm_type_name := bare_type_name (({ISO8601_DURATION}).name)
+		end
+
 	make (a_pattern, a_lower_str, an_upper_str: detachable STRING; include_lower, include_upper: BOOLEAN)
 			-- Create from an ISO8601-based pattern, together with two ISO8601 strings representing an interval.
 			-- If either `a_lower' or `an_upper' is Void, the interval is open-ended;
@@ -49,6 +54,7 @@ feature {NONE} -- Initialisation
 		local
 			lower_duration, upper_duration: detachable ISO8601_DURATION
 		do
+			default_create
 			pattern := a_pattern
 
 			if attached a_lower_str as lower_dur then
@@ -74,6 +80,7 @@ feature {NONE} -- Initialisation
 	make_range (an_interval: attached like range)
 			-- Create from an ISO8601-based interval.
 		do
+			default_create
 			range := an_interval
 		ensure
 			interval_set: range = an_interval
@@ -85,6 +92,7 @@ feature {NONE} -- Initialisation
 		require
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
 		do
+			default_create
 			pattern := a_pattern
 		ensure
 			pattern_set: pattern = a_pattern
@@ -96,6 +104,7 @@ feature {NONE} -- Initialisation
 		require
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
 		do
+			default_create
 			pattern := a_pattern
 			range := an_interval
 		ensure
@@ -130,52 +139,17 @@ feature -- Access
 			end
 		end
 
-	rm_type_name: STRING
-		once
-			Result := Iso_class_name_leader.twin
-			Result.append (generating_type.out.substring (3, generating_type.out.count))
-		end
-
 feature -- Status Report
 
 	valid_value (duration: ISO8601_DURATION): BOOLEAN
 			-- Is `duration' within `range'?
 		do
-			Result := True
-
 			if attached pattern then
-				-- FIXME: TO BE IMPLEMENTED	
-			end
-
-			Result := Result and (range /= Void implies range.has (duration))
-		end
-
-feature -- Comparison
-
-	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node constraint is a subset of `other'
-		do
-			Result := pattern_conforms_to (other) and range_conforms_to (other)
-		end
-
-	pattern_conforms_to (other: like Current): BOOLEAN
-			-- True if the pattern of this node is or narrower than that in `other'
-		do
-			if attached pattern as pat and attached other.pattern as other_pat then
-				Result := compute_pattern_conformance (pat, other_pat)
-			else
+				-- FIXME: TO BE IMPLEMENTED
 				Result := True
 			end
-		end
 
-	range_conforms_to (other: like Current): BOOLEAN
-			-- True if the pattern of this node is or narrower than that in `other'
-		do
-			if attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
-			else
-				Result := True
-			end
+			Result := Result and (attached range as rng and then rng.has (duration))
 		end
 
 feature -- Output
@@ -201,6 +175,32 @@ feature -- Output
 		end
 
 feature {NONE} -- Implementation
+
+	do_node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node constraint is a subset of `other'
+		do
+			Result := pattern_conforms_to (other) and range_conforms_to (other)
+		end
+
+	pattern_conforms_to (other: like Current): BOOLEAN
+			-- True if the pattern of this node is or narrower than that in `other'
+		do
+			if attached pattern as pat and attached other.pattern as other_pat then
+				Result := compute_pattern_conformance (pat, other_pat)
+			else
+				Result := True
+			end
+		end
+
+	range_conforms_to (other: like Current): BOOLEAN
+			-- True if the pattern of this node is or narrower than that in `other'
+		do
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			else
+				Result := True
+			end
+		end
 
 	compute_pattern_conformance (a_child_pattern, a_pattern: STRING): BOOLEAN
 		do
