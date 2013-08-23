@@ -103,8 +103,8 @@ feature -- Visitor
 				end
 
 				-- output '%T}%N'
-				last_result.append (create_indent(depth))
-				last_result.append (symbol(SYM_END_CBLOCK))
+				last_result.append (create_indent (depth))
+				last_result.append (symbol (SYM_END_CBLOCK))
 			end
 
 			last_result.append (format_item(FMT_NEWLINE))
@@ -210,7 +210,7 @@ feature -- Visitor
 				else
 					last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 					last_result.append (symbol (SYM_START_CBLOCK))
-					last_result.append (format_item(FMT_NEWLINE))
+					last_result.append (format_item (FMT_NEWLINE))
 				end
 			end
 		end
@@ -220,25 +220,25 @@ feature -- Visitor
 		do
 			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
 			if not a_node.is_second_order_constrained then
-				if last_object_simple then
-					last_result.append (symbol(SYM_END_CBLOCK))
-					if attached last_object_simple_buffer as s then
+				if last_object_inline then
+					last_result.append (symbol (SYM_END_CBLOCK))
+					if attached last_coded_constraint_comment as s then
 						last_result.append (s)
 						s.wipe_out
 					end
-					last_object_simple := False
+					last_object_inline := False
 
 				elseif a_node.any_allowed then
 					if not attached a_node.existence and not attached a_node.cardinality then
-						last_result.append (symbol(SYM_END_CBLOCK))
+						last_result.append (symbol (SYM_END_CBLOCK))
 					end
 
 				else
-					last_result.append (create_indent(depth))
-					last_result.append (symbol(SYM_END_CBLOCK))
+					last_result.append (create_indent (depth))
+					last_result.append (symbol (SYM_END_CBLOCK))
 				end
 
-				last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (format_item (FMT_NEWLINE))
 			end
 		end
 
@@ -247,16 +247,16 @@ feature -- Visitor
 		do
 			last_result.append (create_indent (depth) + "[")
 			across a_node.members as c_attrs_csr loop
+				last_result.append (c_attrs_csr.item.rm_attribute_name)
 		--		serialise_existence (a_node, depth)
 		--		serialise_cardinality (a_node, depth)
-				last_result.append (c_attrs_csr.item.rm_attribute_name)
 				if not c_attrs_csr.is_last then
 					last_result.append (", ")
 				end
 			end
 			last_result.append ("]" + format_item (FMT_SPACE))
 
-			last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+			last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 			last_result.append (symbol (SYM_START_CBLOCK))
 			last_result.append (format_item(FMT_NEWLINE))
 
@@ -265,6 +265,14 @@ feature -- Visitor
 				if not c_obj_tuples_csr.is_last then
 					last_result.append (",")
 				end
+
+				-- append any pending comment
+				if attached last_coded_constraint_comment as s then
+					last_result.append (s)
+					s.wipe_out
+				end
+				last_object_inline := False
+
 				last_result.append (format_item (FMT_NEWLINE))
 			end
 		end
@@ -365,15 +373,17 @@ feature -- Visitor
 	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- start serialising a CONSTRAINT_REF
 		do
-			last_result.remove_tail (format_item (FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
+			-- remove last newline due to C_ATTRIBUTE
+			last_result.remove_tail (format_item (FMT_NEWLINE).count)
+
 			last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
-			create last_object_simple_buffer.make(0)
-			last_object_simple_buffer.append (format_item (FMT_INDENT))
 
 			-- add the comment
-			last_object_simple_buffer.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+			create last_coded_constraint_comment.make(0)
+			last_coded_constraint_comment.append (format_item (FMT_INDENT))
+			last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 					safe_comment (ontology.constraint_definition (language, a_node.target).text), STYLE_COMMENT))
-			last_object_simple := True
+			last_object_inline := True
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -381,84 +391,25 @@ feature -- Visitor
 		do
 			-- ignore objs which are under c_attribute_tuples
 			if not a_node.is_second_order_constrained then
-				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
+				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
 				if attached {C_STRING} a_node as c_str and then attached c_str.strings then
 					last_result.append (apply_style (c_str.clean_as_string (agent clean), STYLE_VALUE))
+					last_object_inline := True
 				elseif attached {C_TERMINOLOGY_CODE} a_node as ctc then
 					serialise_c_terminology_code (ctc, depth)
 				else
 					last_result.append (apply_style (a_node.as_string, STYLE_VALUE))
+					last_object_inline := True
 				end
-				last_object_simple := True
 			end
 		end
-
---	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
---			-- start serialising an C_DV_ORDINAL
---		local
---			i: INTEGER
---		do
---			if a_node.any_allowed then
---				-- output in C_DV_ORDINAL style
---				odin_engine.set_tree (a_node.dt_representation)
---				odin_engine.serialise (output_format, False, True)
---				last_result.append ((create {STRING_UTILITIES}).indented (odin_engine.serialised, create_indent(depth)))
---			elseif a_node.items.count = 1 then
---				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
---				last_result.append (apply_style(clean(a_node.as_string), STYLE_TERM_REF))
---				create last_object_simple_buffer.make(0)
---				if a_node.is_local then
---					last_object_simple_buffer.append (format_item(FMT_INDENT))
---					check attached ontology.term_definition (language, a_node.items.first.symbol.code_string) as adl_term then
---						last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
---							safe_comment(adl_term.text), STYLE_COMMENT))
---					end
---				end
---				last_object_simple := True
-
---			elseif a_node.items.count > 1 then
---				from
---					a_node.items.start
---					i := 1
---				until
---					a_node.items.off
---				loop
---					last_result.append (create_indent(depth) + apply_style(a_node.items.item.as_string, STYLE_TERM_REF))
---					if i < a_node.items.count then
---						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
---					elseif a_node.assumed_value /= Void then
---						last_result.append (format_item(FMT_ASSUMED_VALUE_SEPARATOR))
---					else -- pad same number of spaces
---						last_result.append (create {STRING}.make_filled (' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
---					end
---					if a_node.is_local then
---						check attached ontology.term_definition (language, a_node.items.item.symbol.code_string) as adl_term then
---							last_result.append (format_item(FMT_INDENT) +
---								apply_style(format_item(FMT_COMMENT) +
---								safe_comment (adl_term.text), STYLE_COMMENT))
---						end
---					end
---					last_result.append (format_item(FMT_NEWLINE))
---					a_node.items.forth
---					i := i + 1
---				end
-
---				if a_node.assumed_value /= Void then
---					last_result.append (create_indent(depth) + apply_style(a_node.assumed_value.value.out, STYLE_TERM_REF))
---					last_result.append (create {STRING}.make_filled (' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
---					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
---							"assumed value", STYLE_COMMENT))
---					last_result.append (format_item(FMT_NEWLINE))
---				end
---			end
---		end
 
 	serialise_occurrences (a_node: C_OBJECT; depth: INTEGER)
 			-- any positive range
 		local
 			s: STRING
 		do
-			if a_node.occurrences /= Void then
+			if attached a_node.occurrences then
 				last_result.append (apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.occurrences.as_string
@@ -472,7 +423,7 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if a_node.existence /= Void then
+			if attached a_node.existence then
 				last_result.append (apply_style(symbol(SYM_EXISTENCE), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.existence.as_string
@@ -486,7 +437,7 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if a_node.is_multiple and a_node.cardinality /= Void then
+			if a_node.is_multiple and attached a_node.cardinality then
 				last_result.append (apply_style(symbol(SYM_CARDINALITY), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				s := a_node.cardinality.as_string
@@ -526,23 +477,27 @@ feature {NONE} -- Implementation
 
 	serialise_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
 		do
-			--
 			if a_node.code_count = 1 or a_node.code_count = 0 then
-				last_result.remove_tail (format_item (FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
+				-- output the actual constraint value
 				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
-				create last_object_simple_buffer.make(0)
+
+				-- hold the comment over in `last_object_simple_buffer'
+				create last_coded_constraint_comment.make(0)
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code (a_node.code_list.first)) then
-					last_object_simple_buffer.append (format_item (FMT_INDENT))
+					last_coded_constraint_comment.append (format_item (FMT_INDENT))
 
 					check attached ontology.term_definition (language, a_node.code_list.first) as adl_term then
-						last_object_simple_buffer.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+						last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 							safe_comment (adl_term.text), STYLE_COMMENT))
 					end
 				end
-				last_object_simple := True
+				last_object_inline := True
 
 			else
-				last_result.append (create_indent(depth) + apply_style("[" +
+				-- add a newline, because for all other C_PRIMITIVE_OBJECTs the existing one will be stripped, but this
+				-- is a multi-line output and needs to start on a new line
+				last_result.append (format_item (FMT_NEWLINE))
+				last_result.append (create_indent (depth) + apply_style("[" +
 					a_node.terminology_id + Terminology_separator, STYLE_TERM_REF) +
 					format_item (FMT_NEWLINE))
 
@@ -557,7 +512,7 @@ feature {NONE} -- Implementation
 					end
 
 					if a_node.is_local and ontology.has_term_code (code_list_csr.item) then
-						check attached ontology.term_definition(language, code_list_csr.item) as adl_term then
+						check attached ontology.term_definition (language, code_list_csr.item) as adl_term then
 							last_result.append (format_item(FMT_INDENT) +
 								apply_style (format_item (FMT_COMMENT) +
 								safe_comment (adl_term.text), STYLE_COMMENT))
@@ -576,10 +531,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	last_object_simple: BOOLEAN
+	last_object_inline: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
 
-	last_object_simple_buffer: detachable STRING
+	last_coded_constraint_comment: detachable STRING
 
 	odin_engine: ODIN_ENGINE
 			-- for handling inline dADL sections like for C_QUANTITY
@@ -600,7 +555,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	serialise_comment (a_node: attached C_OBJECT)
+	serialise_comment (a_node: C_OBJECT)
 			-- the valid_code() check below is to ensure we have an at-code not an archetype id,
 			-- as can occur in a template
 		local
@@ -609,7 +564,7 @@ feature {NONE} -- Implementation
 			if a_node.is_addressable then
 				s := a_node.node_id
 				if is_valid_code(s) and ontology.has_term_code(s) then
-					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+					last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 						safe_comment (ontology.term_definition(language, s).text), STYLE_COMMENT))
 				end
 			end
