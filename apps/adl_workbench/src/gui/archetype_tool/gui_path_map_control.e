@@ -220,6 +220,7 @@ feature {NONE} -- Implementation
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
 			i: INTEGER
+			co: C_OBJECT
 		do
 			ev_path_list.wipe_out
 			ev_path_list.set_column_titles (path_control_column_names)
@@ -247,15 +248,16 @@ feature {NONE} -- Implementation
 			until
 				p_paths.off
 			loop
-				if attached {C_OBJECT} source_archetype.c_object_at_path (p_paths.item) as c_o then
+				if source_archetype.has_object_path (p_paths.item) then
+					co := source_archetype.c_object_at_path (p_paths.item)
 					create list_row
 					if not l_paths.is_empty then
 						list_row.extend (utf8_to_utf32 (l_paths.item))
 					else
 						list_row.extend (utf8_to_utf32 (p_paths.item))
 					end
-					list_row.extend (utf8_to_utf32 (c_o.rm_type_name))
-					list_row.extend (utf8_to_utf32 (c_o.generating_type))
+					list_row.extend (utf8_to_utf32 (co.rm_type_name))
+					list_row.extend (utf8_to_utf32 (co.generating_type))
 					ev_path_list.extend (list_row)
 				end
 

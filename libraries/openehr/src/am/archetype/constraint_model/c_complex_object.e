@@ -128,7 +128,8 @@ feature -- Access
 		end
 
 	all_paths: HASH_TABLE [detachable C_OBJECT, STRING]
-			-- All paths below this point, including this node.
+			-- All paths below this point, including this node, with C_OBJECT at each
+			-- path that is an object path, and Void at paths that are attribute paths.
 		do
 			create Result.make (0)
 			across representation.all_paths as paths_csr loop

@@ -279,10 +279,14 @@ feature {NONE} -- Implementation
 					object_at_matching_path := Void
 					if attached target.matching_path (ref_path_csr.key) as p then
 						arch_path := p
-						object_at_matching_path := target.c_object_at_path (arch_path)
+						if target.has_object_path (arch_path) then
+							object_at_matching_path := target.c_object_at_path (arch_path)
+						end
 					elseif attached flat_parent and then attached flat_parent.matching_path (ref_path_csr.key) as p then
 						arch_path := p
-						object_at_matching_path := flat_parent.c_object_at_path (arch_path)
+						if flat_parent.has_object_path (arch_path) then
+							object_at_matching_path := flat_parent.c_object_at_path (arch_path)
+						end
 					end
 					if attached object_at_matching_path as omp and attached arch_path as ap then
 						arch_rm_type_name := omp.rm_type_name
@@ -375,7 +379,7 @@ feature {NONE} -- Implementation
 		local
 			co_parent_flat: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			ca_path_in_flat: STRING
+			ca_path_in_flat, co_path_in_flat: STRING
 			ca_parent_flat: C_ATTRIBUTE
 			cref_conformance_ok: BOOLEAN
 		do
@@ -451,7 +455,8 @@ end
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (car.slot_path)
-				if attached {ARCHETYPE_SLOT} flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as a_slot then
+				co_path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
+				if flat_parent.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_parent.c_object_at_path (co_path_in_flat) as a_slot then
 					if parent_slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error (ec_VARXS, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
@@ -484,9 +489,7 @@ end
 			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
-				check attached flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as cpf then
-					co_parent_flat := cpf
-				end
+				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
 				-- The above won't work in the case where there are multiple alternative objects with no identifiers
 				-- in the flat parent - so we need to do a search based on RM type matching to find the matching C_OBJECT in the flat
@@ -781,9 +784,7 @@ end
 						check attached co.parent.differential_path as diff_path then
 							create apa.make_from_string (diff_path)
 						end
-						check attached flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as co_parent_flat then
-							arch_parent_attr_type := co_parent_flat.rm_type_name
-						end
+						arch_parent_attr_type := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)).rm_type_name
 					else
 						arch_parent_attr_type := co.parent.parent.rm_type_name
 					end
@@ -815,9 +816,7 @@ end
 					check attached ca.differential_path as diff_path then
 						create apa.make_from_string (diff_path)
 					end
-					check attached flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as co_parent_flat then
-						arch_parent_attr_type := co_parent_flat.rm_type_name
-					end
+					arch_parent_attr_type := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth)).rm_type_name
 				else
 					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end

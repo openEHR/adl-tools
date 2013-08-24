@@ -347,12 +347,12 @@ end
 										create apa.make_from_string (child_diff_path)
 										check attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
 											cco_output_flat_proximate := cco
-										end
 debug ("flatten")
 	io.put_string ("%T%Tchild has differential path " +
 		child_diff_path + "; flat proximate path = " +
 		cco_output_flat_proximate.path + "%N")
 end
+										end
 
 										-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
 										-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
