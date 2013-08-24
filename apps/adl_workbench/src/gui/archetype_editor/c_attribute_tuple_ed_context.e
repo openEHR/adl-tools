@@ -57,7 +57,10 @@ feature -- Display
 				-- set meaning column empty
 				evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
-				-- set constraint column empty
+				-- update tooltip in RM column
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
+
+				-- set constraint column
 				evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 			end
 		end
@@ -65,6 +68,10 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
 			precursor (ui_settings)
+			-- update tooltip in RM column
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
+
+			-- set constraint column
 			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 		end
 
@@ -76,6 +83,38 @@ feature -- Modification
 		end
 
 feature {NONE} -- Implementation
+
+	node_tooltip_str: STRING
+			-- generate a tooltip for this node
+		local
+			p: STRING
+		do
+			create Result.make_empty
+
+			if attached arch_node as c_attr_tuple then
+				across c_attr_tuple.members as c_attrs_csr loop
+					p := c_attrs_csr.item.path
+
+					-- append the path, optionally with inheritance status
+					Result.append (ed_context.flat_ontology.physical_to_logical_path (p, display_settings.language, True))
+					Result.append ("%N")
+					if display_settings.show_rm_inheritance and attached specialisation_status_names.item (node_specialisation_status) as nss then
+						Result.append (get_text (ec_inheritance_status_text) +  nss + "%N")
+					end
+
+					-- append any annotations
+					if ed_context.archetype.has_annotation_at_path (display_settings.language, p) then
+						Result.append (get_text (ec_annotations_text) + ":%N")
+						Result.append ("%T")
+						Result.append (ed_context.archetype.annotations.annotations_at_path (display_settings.language, p).as_string)
+					end
+
+					if not c_attrs_csr.is_last then
+						Result.append ("%N")
+					end
+				end
+			end
+		end
 
 	c_pixmap: EV_PIXMAP
 		do

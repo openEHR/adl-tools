@@ -42,12 +42,8 @@ feature -- Output
 			-- etc
 		do
 			create Result.make_empty
-			from items.start until items.off loop
-				Result.append (items.key_for_iteration)
-				Result.append (": ")
-				Result.append (items.item_for_iteration)
-				Result.append_character ('%N')
-				items.forth
+			across items as items_csr loop
+				Result.append (items_csr.key + ": " + items_csr.item + "%N")
 			end
 		end
 

@@ -29,8 +29,6 @@ feature -- Definition
 			Result.put (archetype_rm_type_inherited_color, ss_inherited)
 		end
 
-	openehr_dv_type_name_leader: STRING = "DV_"
-
 feature -- Initialisation
 
 	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
@@ -130,18 +128,12 @@ feature -- Display
 					if display_settings.show_technical_view then
 						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
 						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
-					else -- in non-technical view, display a friendly type name; for openEHR data types, remove the "DV_"
+					else -- in non-technical view, display a friendly type name
 						create s.make_empty
-						s.append_character ('[')
-						-- FIXME: openEHR specific "DV_" leader processing
-						lpos := 1
-						if a_n.rm_type_name.starts_with (openehr_dv_type_name_leader) then
-							lpos := lpos + openehr_dv_type_name_leader.count
-						end
-						s.append_character (a_n.rm_type_name.item (lpos))
-						s.append (a_n.rm_type_name.substring (lpos+1, a_n.rm_type_name.count).as_lower)
-						s.append_character (']')
-						s.to_lower
+--						s.append_character ('[')
+--						s.append (a_n.rm_type_name)
+--						s.append_character (']')
+--						s.to_lower
 						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
 					end
 				end
