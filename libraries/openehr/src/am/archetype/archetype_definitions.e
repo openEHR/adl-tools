@@ -133,6 +133,8 @@ feature -- Definitions
 		end
 
 	c_primitive_subtypes: ARRAYED_SET [STRING]
+			-- FIXME: replace with reflection-based implementation as descendants of
+			-- C_PRIMITIVE_OBJECT when compiling with Eiffel 7.3
 		do
 			create Result.make (0)
 			Result.compare_objects

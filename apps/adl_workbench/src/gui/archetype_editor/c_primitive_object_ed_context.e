@@ -37,7 +37,7 @@ feature -- Display
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
-			s: STRING
+			s, attr_name: STRING
 		do
 			display_settings := ui_settings
 			check attached ev_grid_row as gr then
@@ -45,7 +45,16 @@ feature -- Display
 			end
 			is_displayed := True
 
-			if attached arch_node as a_n and then not a_n.any_allowed then
+			if attached arch_node as a_n and then attached a_n.parent as parent_ca and then not a_n.any_allowed then
+				-- if in technical mode, show primitive data type
+				if display_settings.show_technical_view then
+					attr_name := parent_ca.rm_attribute_name + ": " + a_n.rm_type_name
+				else
+					attr_name := parent_ca.rm_attribute_name
+				end
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_name, Void, Void, Void)
+
+				-- constraint value
 				if attached {C_TERMINOLOGY_CODE} a_n as ctc then
 					s := c_terminology_code_str (ctc)
 				else

@@ -28,8 +28,6 @@ feature -- Access
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
-		local
-			bmm_prop_key: STRING
 		do
 			evx_grid := a_gui_grid
 
@@ -41,33 +39,27 @@ feature -- Display
 				ev_grid_row := lr
 			end
 
-			if attached arch_node as c_attr_tuple then
-				create bmm_prop_key.make_empty
-				across c_attr_tuple.members as c_attrs_csr loop
-					bmm_prop_key.append (c_attrs_csr.item.rm_attribute_name)
-					if not c_attrs_csr.is_last then
-						bmm_prop_key.append (", ")
-					end
-				end
+			-- rm_name col
+			evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_string, Void, c_attribute_colour,
+				get_icon_pixmap ("rm/generic/c_attribute"))
 
-				-- rm_name col
-				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
-					get_icon_pixmap ("rm/generic/c_attribute"))
+			-- set meaning column empty
+			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
-				-- set meaning column empty
-				evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+			-- update tooltip in RM column
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
-				-- update tooltip in RM column
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
-
-				-- set constraint column
-				evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
-			end
+			-- set constraint column
+			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
 			precursor (ui_settings)
+
+			-- RM name col - if in technical mode, show primitive data type
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, Void, Void, Void)
+
 			-- update tooltip in RM column
 			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
@@ -125,6 +117,34 @@ feature {NONE} -- Implementation
 		do
 			if attached arch_node as c_attr_tuple then
 				Result := c_attr_tuple.members.first.specialisation_status
+			end
+		end
+
+	rm_string: STRING
+		local
+			ca_rm_type: STRING
+		do
+			create Result.make_empty
+			if attached arch_node as c_attr_tuple then
+				across c_attr_tuple.members as c_attrs_csr loop
+					check attached c_attrs_csr.item.children.first as cpo then
+						ca_rm_type := cpo.rm_type_name
+					end
+
+					-- if in technical mode, show primitive data type
+					if display_settings.show_technical_view then
+						Result.append (c_attrs_csr.item.rm_attribute_name + ": " + ca_rm_type)
+					else
+						Result.append (c_attrs_csr.item.rm_attribute_name)
+					end
+
+					if not c_attrs_csr.is_last then
+						Result.append (", ")
+						if display_settings.show_technical_view then
+							Result.append ("%N")
+						end
+					end
+				end
 			end
 		end
 
