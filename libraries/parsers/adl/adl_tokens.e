@@ -12,7 +12,7 @@ inherit
 feature -- Last values
 
 	last_detachable_any_value: detachable ANY
-	last_string_value: STRING
+	last_string_value: detachable STRING
 
 feature -- Access
 

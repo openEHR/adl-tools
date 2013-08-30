@@ -12,11 +12,11 @@ inherit
 feature -- Last values
 
 	last_detachable_any_value: detachable ANY
-	last_string_value: STRING
-	last_integer_value: INTEGER
-	last_real_value: REAL
-	last_character_value: CHARACTER
-	last_c_dv_quantity_value: C_DV_QUANTITY
+	last_string_value: detachable STRING
+	last_integer_value: detachable INTEGER
+	last_real_value: detachable REAL
+	last_character_value: detachable CHARACTER
+	last_c_dv_quantity_value: detachable C_DV_QUANTITY
 
 feature -- Access
 

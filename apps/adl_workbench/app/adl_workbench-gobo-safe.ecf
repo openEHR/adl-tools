@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
+	<target name="adl_workbench">
+		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
+		<file_rule>
+			<exclude>/\.git$</exclude>
+			<exclude>/\.svn$</exclude>
+		</file_rule>
+		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="initialization" syntax="standard" namespace="openehr">
+			<debug name="__unnamed_debug__" enabled="false"/>
+			<debug name="adl_invariant" enabled="false"/>
+			<debug name="adl_parse" enabled="false"/>
+			<debug name="adl_tree" enabled="false"/>
+			<debug name="arch_dir" enabled="false"/>
+			<debug name="bb" enabled="false"/>
+			<debug name="compiler" enabled="false"/>
+			<debug name="compress" enabled="false"/>
+			<debug name="dadl_parse" enabled="false"/>
+			<debug name="dlg_dispatcher" enabled="false"/>
+			<debug name="dt" enabled="false"/>
+			<debug name="exclude list" enabled="false"/>
+			<debug name="flatten" enabled="false"/>
+			<debug name="gelex" enabled="false"/>
+			<debug name="geyacc" enabled="false"/>
+			<debug name="include list" enabled="false"/>
+			<debug name="og_path" enabled="false"/>
+			<debug name="og_path_parse" enabled="false"/>
+			<debug name="refactor_fixme" enabled="false"/>
+			<debug name="rm_ontology" enabled="false"/>
+			<debug name="rm_schema" enabled="false"/>
+			<debug name="validate" enabled="false"/>
+			<debug name="vision2_windows" enabled="false"/>
+			<debug name="vision2_windows_gdi" enabled="false"/>
+			<debug name="wel" enabled="false"/>
+			<debug name="wel_gdi_count" enabled="false"/>
+			<debug name="wel_gdi_references" enabled="false"/>
+			<debug name="win_dispatcher" enabled="false"/>
+			<assertions precondition="true" check="true"/>
+			<warning name="export_class_missing" enabled="true"/>
+			<warning name="old_verbatim_strings" enabled="true"/>
+			<warning name="syntax" enabled="true"/>
+			<warning name="vjrv" enabled="true"/>
+		</option>
+		<setting name="address_expression" value="false"/>
+		<setting name="array_optimization" value="false"/>
+		<setting name="automatic_backup" value="true"/>
+		<setting name="check_vape" value="true"/>
+		<setting name="console_application" value="false"/>
+		<setting name="dead_code_removal" value="true"/>
+		<setting name="dynamic_runtime" value="false"/>
+		<setting name="exception_trace" value="true"/>
+		<setting name="inlining" value="false"/>
+		<setting name="inlining_size" value="4"/>
+		<setting name="line_generation" value="false"/>
+		<setting name="concurrency" value="thread"/>
+
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf">
+			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
+		</library>
+		<library name="docking" location="$ISE_LIBRARY\library\docking\docking-safe.ecf"/>
+		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding-safe.ecf"/>
+		<library name="gobo_kernel" location="$GOBO\library\kernel\library.ecf"/>
+		<library name="gobo_lexical" location="$GOBO\library\lexical\library.ecf"/>
+		<library name="gobo_lexical_skl" location="$GOBO\library\lexical\library_skl.ecf"/>
+		<library name="gobo_parse" location="$GOBO\library\parse\library.ecf"/>
+		<library name="gobo_parse_skl" location="$GOBO\library\parse\library_skl.ecf"/>
+		<library name="gobo_regexp" location="$GOBO\library\regexp\library.ecf"/>
+		<library name="gobo_utility" location="$GOBO\library\utility\library.ecf"/>
+		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n-safe.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process-safe.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf">
+			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
+			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
+		</library>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
+		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
+		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
+
+		<library name="app_support" location="$EOMF\library\app_support\eomf_app_support-gobo-safe.ecf"/>
+		<library name="odin" location="$EOMF\library\odin\odin-gobo-safe.ecf"/>
+		<library name="bmm" location="$EOMF\library\bmm\bmm-gobo-safe.ecf"/>
+		<library name="eomf_gui" location="$EOMF\library\gui\eomf_gui-gobo-safe.ecf">
+			<option>
+				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
+			</option>
+		</library>
+
+		<cluster name="adl_components" location="..\..\..\components\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
+			</option>
+		</cluster>
+		<cluster name="adl_messages" location="..\..\resources\messages\compiled\">
+		</cluster>
+		<cluster name="adl_parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
+		<cluster name="adl_test" location="..\..\..\libraries\test\" recursive="true">
+		</cluster>
+		<cluster name="app" location="..\src\env\" recursive="true">
+			<option>
+				<assertions precondition="true"/>
+			</option>
+		</cluster>
+		<cluster name="app_gui" location="..\src\gui\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true"/>
+			</option>
+		</cluster>
+		<cluster name="app_icons" location="..\..\resources\icons\compiled\">
+			<option>
+				<assertions precondition="true"/>
+			</option>
+		</cluster>
+		<cluster name="app_resources" location="$EOMF\library\app_resources\">
+			<option>
+				<assertions precondition="true"/>
+			</option>
+		</cluster>
+		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+			</option>
+			<visible class="C_CODE_PHRASE"/>
+			<visible class="C_DV_QUANTITY"/>
+			<visible class="CODE_PHRASE"/>
+		</cluster>
+		<cluster name="version" location="..\..\..\libraries\version\" recursive="true">
+			<option>
+			</option>
+		</cluster>
+		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
+			<file_rule>
+				<exclude>/base_net$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>/implementation_gtk$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/other$</exclude>
+				<include>/windows$</include>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<include>/other$</include>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+		</override>
+	</target>
+</system>

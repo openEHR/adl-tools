@@ -61,6 +61,15 @@ feature {NONE} -- Implementation
 	yy_create_value_stacks
 			-- Create value stacks.
 		do
+			create yyspecial_routines1
+			yyvsc1 := yyInitial_yyvs_size
+			yyvs1 := yyspecial_routines1.make (yyvsc1)
+			create yyspecial_routines2
+			yyvsc2 := yyInitial_yyvs_size
+			yyvs2 := yyspecial_routines2.make (yyvsc2)
+			create yyspecial_routines3
+			yyvsc3 := yyInitial_yyvs_size
+			yyvs3 := yyspecial_routines3.make (yyvsc3)
 		end
 
 	yy_init_value_stacks
@@ -75,15 +84,9 @@ feature {NONE} -- Implementation
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
 		do
-			if yyvs1 /= Void and yyspecial_routines1 /= Void then
-				yyspecial_routines1.keep_head (yyvs1, 0, yyvsp1 + 1)
-			end
-			if yyvs2 /= Void and yyspecial_routines2 /= Void then
-				yyspecial_routines2.keep_head (yyvs2, 0, yyvsp2 + 1)
-			end
-			if yyvs3 /= Void and yyspecial_routines3 /= Void then
-				yyspecial_routines3.keep_head (yyvs3, 0, yyvsp3 + 1)
-			end
+			yyvs1.keep_head (0)
+			yyvs2.keep_head (0)
+			yyvs3.keep_head (0)
 		end
 
 	yy_push_last_value (yychar1: INTEGER)
@@ -94,61 +97,46 @@ feature {NONE} -- Implementation
 			inspect yytypes2.item (yychar1)
 			when 1 then
 				yyvsp1 := yyvsp1 + 1
-				if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
-					if yyvs1 = Void or yyspecial_routines1 = Void then
-						debug ("GEYACC")
-							std.error.put_line ("Create yyvs1")
-						end
-						create yyspecial_routines1
-						yyvsc1 := yyInitial_yyvs_size
-						yyvs1 := yyspecial_routines1.make (yyvsc1)
-					else
-						debug ("GEYACC")
-							std.error.put_line ("Resize yyvs1")
-						end
-						yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-						yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+				if yyvsp1 >= yyvsc1 then
+					debug ("GEYACC")
+						std.error.put_line ("Resize yyvs1")
 					end
+					yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+					yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
 				end
-				yyspecial_routines1.force (yyvs1, last_detachable_any_value, yyvsp1)
+				if attached last_detachable_any_value as yyl_last_detachable_any_value then
+					yyspecial_routines1.force (yyvs1, yyl_last_detachable_any_value, yyvsp1)
+				else
+					yyspecial_routines1.force (yyvs1, ({detachable ANY}).default, yyvsp1)
+				end
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
-				if yyvsp2 >= yyvsc2 or yyvs2 = Void or yyspecial_routines2 = Void then
-					if yyvs2 = Void or yyspecial_routines2 = Void then
-						debug ("GEYACC")
-							std.error.put_line ("Create yyvs2")
-						end
-						create yyspecial_routines2
-						yyvsc2 := yyInitial_yyvs_size
-						yyvs2 := yyspecial_routines2.make (yyvsc2)
-					else
-						debug ("GEYACC")
-							std.error.put_line ("Resize yyvs2")
-						end
-						yyvsc2 := yyvsc2 + yyInitial_yyvs_size
-						yyvs2 := yyspecial_routines2.resize (yyvs2, yyvsc2)
+				if yyvsp2 >= yyvsc2 then
+					debug ("GEYACC")
+						std.error.put_line ("Resize yyvs2")
 					end
+					yyvsc2 := yyvsc2 + yyInitial_yyvs_size
+					yyvs2 := yyspecial_routines2.aliased_resized_area (yyvs2, yyvsc2)
 				end
-				yyspecial_routines2.force (yyvs2, last_integer_value, yyvsp2)
+				if attached last_integer_value as yyl_last_integer_value then
+					yyspecial_routines2.force (yyvs2, yyl_last_integer_value, yyvsp2)
+				else
+					yyspecial_routines2.force (yyvs2, ({INTEGER}).default, yyvsp2)
+				end
 			when 3 then
 				yyvsp3 := yyvsp3 + 1
-				if yyvsp3 >= yyvsc3 or yyvs3 = Void or yyspecial_routines3 = Void then
-					if yyvs3 = Void or yyspecial_routines3 = Void then
-						debug ("GEYACC")
-							std.error.put_line ("Create yyvs3")
-						end
-						create yyspecial_routines3
-						yyvsc3 := yyInitial_yyvs_size
-						yyvs3 := yyspecial_routines3.make (yyvsc3)
-					else
-						debug ("GEYACC")
-							std.error.put_line ("Resize yyvs3")
-						end
-						yyvsc3 := yyvsc3 + yyInitial_yyvs_size
-						yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
+				if yyvsp3 >= yyvsc3 then
+					debug ("GEYACC")
+						std.error.put_line ("Resize yyvs3")
 					end
+					yyvsc3 := yyvsc3 + yyInitial_yyvs_size
+					yyvs3 := yyspecial_routines3.aliased_resized_area (yyvs3, yyvsc3)
 				end
-				yyspecial_routines3.force (yyvs3, last_string_value, yyvsp3)
+				if attached last_string_value as yyl_last_string_value then
+					yyspecial_routines3.force (yyvs3, yyl_last_string_value, yyvsp3)
+				else
+					yyspecial_routines3.force (yyvs3, ({STRING}).default, yyvsp3)
+				end
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: not a token type: ")
@@ -166,21 +154,12 @@ feature {NONE} -- Implementation
 			yyval1: detachable ANY
 		do
 			yyvsp1 := yyvsp1 + 1
-			if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
-				if yyvs1 = Void or yyspecial_routines1 = Void then
-					debug ("GEYACC")
-						std.error.put_line ("Create yyvs1")
-					end
-					create yyspecial_routines1
-					yyvsc1 := yyInitial_yyvs_size
-					yyvs1 := yyspecial_routines1.make (yyvsc1)
-				else
-					debug ("GEYACC")
-						std.error.put_line ("Resize yyvs1")
-					end
-					yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-					yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+			if yyvsp1 >= yyvsc1 then
+				debug ("GEYACC")
+					std.error.put_line ("Resize yyvs1")
 				end
+				yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+				yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
 			end
 			yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 		end
@@ -222,8 +201,9 @@ feature {NONE} -- Semantic actions
 		do
 			inspect yy_act
 when 1 then
+--|#line 59 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 62")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 59")
 end
 
 
@@ -232,8 +212,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
+--|#line 60 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 63")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 60")
 end
 
 
@@ -242,8 +223,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
+--|#line 63 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 66")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 63")
 end
 
 				create units.make(units_items)
@@ -253,8 +235,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
+--|#line 66 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 69")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 66")
 end
 
 				create units.make(units_items)
@@ -265,8 +248,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
+--|#line 71 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 74")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 71")
 end
 
 				units_items.extend(units_item)
@@ -276,8 +260,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 6 then
+--|#line 74 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 77")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 74")
 end
 
 				units_items.extend(units_item)
@@ -288,8 +273,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 7 then
+--|#line 77 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 80")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 77")
 end
 
 -- // make the exponent negative of what it was
@@ -302,8 +288,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 8 then
+--|#line 83 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 86")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 83")
 end
 
 -- // meaning is unit with exponent of +1 
@@ -315,8 +302,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 9 then
+--|#line 87 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 90")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 87")
 end
 
 -- // meaning is unit with exponent of +1 
@@ -329,8 +317,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 10 then
+--|#line 93 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 96")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 93")
 end
 
 -- // note - we cannot tell if prefix is included or not - that requires	
@@ -343,27 +332,19 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
-		if yyvs1 = Void or yyspecial_routines1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+	if yyvsp1 >= yyvsc1 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs1")
 		end
+		yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+		yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 11 then
+--|#line 99 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 102")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 99")
 end
 
 				str1 := yyvs3.item (yyvsp3)
@@ -376,8 +357,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 12 then
+--|#line 106 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 109")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 106")
 end
 
 				yyval1 := yyvs3.item (yyvsp3)
@@ -390,8 +372,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 13 then
+--|#line 112 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 115")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 112")
 end
 
 				yyval1 := yyvs3.item (yyvsp3)
@@ -404,8 +387,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 14 then
+--|#line 118 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 121")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 118")
 end
 
 				int_val := last_string_value.to_integer
@@ -415,27 +399,19 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp1 >= yyvsc1 or yyvs1 = Void or yyspecial_routines1 = Void then
-		if yyvs1 = Void or yyspecial_routines1 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs1")
-			end
-			create yyspecial_routines1
-			yyvsc1 := yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.make (yyvsc1)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs1")
-			end
-			yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
+	if yyvsp1 >= yyvsc1 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs1")
 		end
+		yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+		yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 15 then
+--|#line 122 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 125")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 122")
 end
 
 				int_val := last_string_value.to_integer
@@ -447,8 +423,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 16 then
+--|#line 126 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 129")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 126")
 end
 
 				int_val := - last_string_value.to_integer
@@ -605,7 +582,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp1: INTEGER
 			-- Top of semantic value stack `yyvs1'
 
-	yyspecial_routines1: detachable KL_SPECIAL_ROUTINES [detachable ANY] note option: stable attribute end
+	yyspecial_routines1: KL_SPECIAL_ROUTINES [detachable ANY]
 			-- Routines that ought to be in SPECIAL [detachable ANY]
 
 	yyvs2: SPECIAL [INTEGER]
@@ -617,7 +594,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp2: INTEGER
 			-- Top of semantic value stack `yyvs2'
 
-	yyspecial_routines2: detachable KL_SPECIAL_ROUTINES [INTEGER] note option: stable attribute end
+	yyspecial_routines2: KL_SPECIAL_ROUTINES [INTEGER]
 			-- Routines that ought to be in SPECIAL [INTEGER]
 
 	yyvs3: SPECIAL [STRING]
@@ -629,7 +606,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp3: INTEGER
 			-- Top of semantic value stack `yyvs3'
 
-	yyspecial_routines3: detachable KL_SPECIAL_ROUTINES [STRING] note option: stable attribute end
+	yyspecial_routines3: KL_SPECIAL_ROUTINES [STRING]
 			-- Routines that ought to be in SPECIAL [STRING]
 
 feature {NONE} -- Constants
