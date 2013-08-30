@@ -1080,49 +1080,49 @@ arithmetic_value:  integer_value
 
 relational_binop_symbol: '='
 		{
-			$$ := operator_symbols.item (op_eq)
+			$$ := operator_symbol (op_eq)
 		}
 	| SYM_NE
 		{
-			$$ := operator_symbols.item (op_ne)
+			$$ := operator_symbol (op_ne)
 		}
 	| SYM_LE
 		{
-			$$ := operator_symbols.item (op_le)
+			$$ := operator_symbol (op_le)
 		}
 	| SYM_LT
 		{
-			$$ := operator_symbols.item (op_lt)
+			$$ := operator_symbol (op_lt)
 		}
 	| SYM_GE
 		{
-			$$ := operator_symbols.item (op_ge)
+			$$ := operator_symbol (op_ge)
 		}
 	| SYM_GT
 		{
-			$$ := operator_symbols.item (op_gt)
+			$$ := operator_symbol (op_gt)
 		}
 	;
 
 arithmetic_binop_symbol: '/'
 		{
-			$$ := operator_symbols.item (op_divide)
+			$$ := operator_symbol (op_divide)
 		}
 	| '*'
 		{
-			$$ := operator_symbols.item (op_multiply)
+			$$ := operator_symbol (op_multiply)
 		}
 	| '+'
 		{
-			$$ := operator_symbols.item (op_plus)
+			$$ := operator_symbol (op_plus)
 		}
 	| '-'
 		{
-			$$ := operator_symbols.item (op_minus)
+			$$ := operator_symbol (op_minus)
 		}
 	| '^'
 		{
-			$$ := operator_symbols.item (op_exp)
+			$$ := operator_symbol (op_exp)
 		}
 	;
 
@@ -2238,6 +2238,7 @@ feature {NONE} -- Implementation
 			ar: ARRAYED_LIST[STRING]
 		do
 			create ar.make (0)
+			create err_code.make_empty
 			ar.extend (an_obj.generating_type) -- $1
 			if an_obj.is_addressable then
 				ar.extend ("node_id=" + an_obj.node_id) -- $2

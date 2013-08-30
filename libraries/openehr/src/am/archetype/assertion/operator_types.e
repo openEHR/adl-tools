@@ -267,9 +267,8 @@ feature -- Access
 		require
 			valid_operator (an_op)
 		do
-			create Result.make_empty
-			if attached operator_symbols.item (an_op) as sym then
-				Result.append (sym)
+			check attached operator_symbols.item (an_op) as sym then
+				Result := sym
 			end
 		end
 
