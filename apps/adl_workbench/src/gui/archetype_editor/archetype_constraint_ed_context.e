@@ -169,6 +169,9 @@ feature {NONE} -- Implementation
 			if an_rm_type.semantic_class.is_primitive_type then
 				Result := c_primitive_subtypes
 
+			-- deal with mapped types in AOM profile
+--			elseif  then
+
 			else
 				create Result.make (0)
 				Result.compare_objects

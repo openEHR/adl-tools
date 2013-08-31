@@ -25,12 +25,6 @@ feature -- Access
 
 	member_type: detachable C_PRIMITIVE_OBJECT
 
-feature -- Status report
-
-feature -- Comparison
-
-feature -- Modification
-
 end
 
 
