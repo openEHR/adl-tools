@@ -648,6 +648,7 @@ feature {NONE} -- Initialization
 			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 			create odin_parser_error.make
+			create str_.make_empty
 		end
 
 feature -- Commands
