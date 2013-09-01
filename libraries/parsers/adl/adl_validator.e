@@ -90,11 +90,7 @@ feature {NONE} -- Implementation
 					yyvsc1 := yyvsc1 + yyInitial_yyvs_size
 					yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
 				end
-				if attached last_detachable_any_value as yyl_last_detachable_any_value then
-					yyspecial_routines1.force (yyvs1, yyl_last_detachable_any_value, yyvsp1)
-				else
-					yyspecial_routines1.force (yyvs1, ({detachable ANY}).default, yyvsp1)
-				end
+				yyspecial_routines1.force (yyvs1, last_detachable_any_value, yyvsp1)
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
 				if yyvsp2 >= yyvsc2 then
@@ -104,11 +100,7 @@ feature {NONE} -- Implementation
 					yyvsc2 := yyvsc2 + yyInitial_yyvs_size
 					yyvs2 := yyspecial_routines2.aliased_resized_area (yyvs2, yyvsc2)
 				end
-				if attached last_string_value as yyl_last_string_value then
-					yyspecial_routines2.force (yyvs2, yyl_last_string_value, yyvsp2)
-				else
-					yyspecial_routines2.force (yyvs2, ({STRING}).default, yyvsp2)
-				end
+				yyspecial_routines2.force (yyvs2, last_string_value, yyvsp2)
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: not a token type: ")
@@ -167,10 +159,12 @@ feature {NONE} -- Semantic actions
 	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
+			yy_retried: BOOLEAN
 			yyval1: detachable ANY
 			yyval2: STRING
 		do
-			inspect yy_act
+			if not yy_retried then
+				inspect yy_act
 when 1 then
 --|#line 54 "adl_validator.y"
 debug ("GEYACC")
@@ -701,7 +695,7 @@ end
 
 			concept := yyvs2.item (yyvsp2)
 			debug("ADL_parse")
-				io.put_string("concept = " + concept + "%N")
+				io.put_string("concept = " + yyvs2.item (yyvsp2) + "%N")
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -946,13 +940,19 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-			else
-				debug ("GEYACC")
-					std.error.put_string ("Error in parser: unknown rule id: ")
-					std.error.put_integer (yy_act)
-					std.error.put_new_line
+				else
+					debug ("GEYACC")
+						std.error.put_string ("Error in parser: unknown rule id: ")
+						std.error.put_integer (yy_act)
+						std.error.put_new_line
+					end
+					abort
 				end
-				abort
+			end
+		rescue
+			if yy_parsing_status = yyAborted then
+				yy_retried := True
+				retry
 			end
 		end
 
@@ -1194,6 +1194,11 @@ feature -- Initialization
 			make_scanner
 			make_parser_skeleton
 			create other_metadata.make (0)
+			create archetype_id.default_create
+			create definition_text.make_empty
+			create language_text.make_empty
+			create ontology_text.make_empty
+			create artefact_type.default_create
 		end
 
 	reset
@@ -1228,9 +1233,9 @@ feature -- Parse Output
 
 	other_metadata: HASH_TABLE [STRING, STRING]
 
-	adl_version: STRING
+	adl_version: detachable STRING
 
-	uid: HIER_OBJECT_ID
+	uid: detachable HIER_OBJECT_ID
 
 	is_controlled: BOOLEAN
 
@@ -1238,27 +1243,25 @@ feature -- Parse Output
 
 	artefact_type: ARTEFACT_TYPE
 
-	parent_archetype_id: ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_ID
 
-	concept: STRING
+	concept: detachable STRING
 
 	language_text: STRING
 
-	description_text: STRING
+	description_text: detachable STRING
 
 	definition_text: STRING
 
-	invariant_text: STRING
+	invariant_text: detachable STRING
 	
 	ontology_text: STRING
 
-	annotations_text: STRING
+	annotations_text: detachable STRING
 
-	component_ontologies_text: STRING
+	component_ontologies_text: detachable STRING
 
 feature {NONE} -- Implementation 
-
-	str: STRING
 
 	arch_id: ARCHETYPE_ID
 		once

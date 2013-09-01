@@ -12,6 +12,9 @@ class NATIVE_CADL_SERIALISATION_PROFILE
 
 inherit
 	NATIVE_SERIALISATION_PROFILE
+		redefine
+			make
+		end
 
 	CADL_TOKENS
 		export
@@ -20,6 +23,16 @@ inherit
 
 create
 	make
+
+feature -- Initialisation
+
+	make (an_output_format: STRING)
+			-- make with the output format name this serialiser is to be associated with
+		do
+			precursor (an_output_format)
+			create last_string_value.make_empty
+			create last_c_dv_quantity_value.default_create
+		end
 
 feature {NONE} -- Implementation
 

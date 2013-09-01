@@ -3,7 +3,7 @@ note
 	description: "Parser token codes"
 	generator: "geyacc version 3.9"
 
-class ADL_TOKENS
+deferred class ADL_TOKENS
 
 inherit
 
@@ -12,7 +12,7 @@ inherit
 feature -- Last values
 
 	last_detachable_any_value: detachable ANY
-	last_string_value: detachable STRING
+	last_string_value: STRING
 
 feature -- Access
 

@@ -16,6 +16,9 @@ class ASSERTION_SYNTAX_SERIALISER
 
 inherit
 	ASSERTION_SERIALISER
+		redefine
+			make
+		end
 
 	CADL_TOKENS
 		export
@@ -24,6 +27,16 @@ inherit
 
 create
 	make
+
+feature -- Initialisation
+
+	make (a_profile: SERIALISATION_PROFILE)
+			-- set profile
+		do
+			precursor (a_profile)
+			create last_string_value.make_empty
+			create last_c_dv_quantity_value.default_create
+		end
 
 feature -- Modification
 

@@ -3,7 +3,7 @@ note
 	description: "Parser token codes"
 	generator: "geyacc version 3.9"
 
-class UNITS_TOKENS
+deferred class UNITS_TOKENS
 
 inherit
 
@@ -12,8 +12,8 @@ inherit
 feature -- Last values
 
 	last_detachable_any_value: detachable ANY
-	last_integer_value: detachable INTEGER
-	last_string_value: detachable STRING
+	last_integer_value: INTEGER
+	last_string_value: STRING
 
 feature -- Access
 

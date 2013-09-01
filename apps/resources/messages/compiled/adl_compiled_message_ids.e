@@ -92,6 +92,7 @@ feature -- Definitions
 		ec_SDINV: STRING = "SDINV"
 		ec_SCCOG: STRING = "SCCOG"
 		ec_SUAID: STRING = "SUAID"
+		ec_SUAIDI: STRING = "SUAIDI"
 		ec_SOCCF: STRING = "SOCCF"
 		ec_SUNPA: STRING = "SUNPA"
 		ec_SCOAT: STRING = "SCOAT"

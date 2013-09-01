@@ -26,6 +26,7 @@ templates = <
 		["SDINV"] = <"Syntax error: invalid dADL section; error: $1">
 		["SCCOG"] = <"Syntax error: expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
 		["SUAID"] = <"Syntax error: expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
+		["SUAIDI"] = <"Syntax error: invalid archetype id $1">
 		["SOCCF"] = <"Syntax error: expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
 		["SUNPA"] = <"Syntax error: expecting absolute path in use_node statement">
 		["SCOAT"] = <"Syntax error: expecting attribute definition(s)">

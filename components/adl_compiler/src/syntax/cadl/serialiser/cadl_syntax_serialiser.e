@@ -17,6 +17,7 @@ class CADL_SYNTAX_SERIALISER
 inherit
 	C_SERIALISER
 		redefine
+			make,
 			start_c_complex_object, end_c_complex_object,
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
@@ -42,6 +43,16 @@ inherit
 
 create
 	make
+
+feature -- Initialisation
+
+	make (a_profile: SERIALISATION_PROFILE)
+			-- set profile
+		do
+			precursor (a_profile)
+			create last_string_value.make_empty
+			create last_c_dv_quantity_value.default_create
+		end
 
 feature -- Visitor
 

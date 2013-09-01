@@ -11,6 +11,9 @@ class ARCHETYPE_ADL_SERIALISER
 
 inherit
 	ARCHETYPE_MULTIPART_SERIALISER
+		redefine
+			make
+		end
 
 	ADL_TOKENS
 		export
@@ -24,6 +27,15 @@ inherit
 
 create
 	make
+
+feature -- Initialisation
+
+	make (a_profile: SERIALISATION_PROFILE)
+			-- set profile
+		do
+			precursor (a_profile)
+			create last_string_value.make_empty
+		end
 
 feature -- Serialisation
 

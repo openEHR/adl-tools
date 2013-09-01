@@ -947,7 +947,7 @@ end
 						tid := dynamic_type_from_string(odin_parser.output.im_type_name)
 						if tid >= 0 then
 							if attached {C_DV_QUANTITY} odin_parser.output.as_object(tid, Void) as cdt then
-								c_dv_quantity := cdt
+								last_c_dv_quantity_value := cdt
 								last_token := V_C_DV_QUANTITY
 							else
 								odin_parser_error.add_error (ec_VDTCV, <<odin_parser.output.im_type_name>>, "")
@@ -3139,6 +3139,8 @@ feature {NONE} -- Initialization
 			in_lineno := 1
 			create odin_parser_error.make
 			create str_.make_empty
+			create last_string_value.make_empty
+			create last_c_dv_quantity_value.default_create
 		end
 
 feature -- Commands
@@ -3182,8 +3184,6 @@ feature {NONE} -- Implementation
 
 	assumed_term_code_index: INTEGER
 			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
-
-	c_dv_quantity: detachable C_DV_QUANTITY
 
 	tid: INTEGER
 

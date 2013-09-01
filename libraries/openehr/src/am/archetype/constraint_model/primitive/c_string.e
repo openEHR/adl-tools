@@ -52,13 +52,16 @@ feature -- Initialization
 			-- make from a regular expression contained in 'str' (not including delimiters);
 			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
+		local
+			s: STRING
 		do
 			default_create
-			regexp := str.twin
+			s := str.twin
+			regexp := s
 			regexp_default_delimiter := using_default_delimiter
 			create regexp_parser.make
 			regexp_parser.set_case_insensitive (True)
-			regexp_parser.compile (regexp)
+			regexp_parser.compile (s)
 			if not regexp_parser.is_compiled then
 				regexp := Regexp_compile_error.twin
 			end
