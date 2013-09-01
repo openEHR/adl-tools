@@ -120,7 +120,6 @@
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
 			</option>
-			<visible class="C_CODE_PHRASE"/>
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="CODE_PHRASE"/>
 		</cluster>
