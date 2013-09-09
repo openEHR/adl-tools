@@ -418,14 +418,14 @@ feature -- Conversion
 			create Result.make(0)
 			Result.append (str)
 			from
-				start_pos := str.substring_index("[" + Term_code_leader, 1)
+				start_pos := str.substring_index ("[" + Term_code_leader, 1)
 			until
 				start_pos <= 0
 			loop
-				end_pos := str.index_of(']', start_pos)
-				code := str.substring(start_pos+1, end_pos-1)
-				if has_term_code(code) then
-					Result.replace_substring_all (code, term_definition(lang, code).text)
+				end_pos := str.index_of (']', start_pos)
+				code := str.substring (start_pos+1, end_pos-1)
+				if has_term_code (code) then
+					Result.replace_substring_all (code, term_definition (lang, code).text)
 				end
 				start_pos := str.substring_index ("[" + Term_code_leader, end_pos)
 			end
