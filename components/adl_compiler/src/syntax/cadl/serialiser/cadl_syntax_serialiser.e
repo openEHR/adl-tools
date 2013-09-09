@@ -212,12 +212,16 @@ feature -- Visitor
 				serialise_existence (a_node, depth)
 				serialise_cardinality (a_node, depth)
 
+				-- output:
+				--	matches {*
 				if a_node.any_allowed then
 					if not attached a_node.existence and not attached a_node.cardinality then
 						last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 						last_result.append (symbol (SYM_START_CBLOCK))
 						last_result.append (symbol (SYM_ANY))
 					end
+				-- output:
+				--	matches {%N
 				else
 					last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 					last_result.append (symbol (SYM_START_CBLOCK))
@@ -231,6 +235,9 @@ feature -- Visitor
 		do
 			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
 			if not a_node.is_second_order_constrained then
+
+				-- For inline objects, output:
+				--	} -- stored comment
 				if last_object_inline then
 					last_result.append (symbol (SYM_END_CBLOCK))
 					if attached last_coded_constraint_comment as s then
@@ -420,10 +427,10 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if attached a_node.occurrences then
-				last_result.append (apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				s := a_node.occurrences.as_string
+			if attached a_node.occurrences as att_occ then
+				last_result.append (apply_style (symbol (SYM_OCCURRENCES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				s := att_occ.as_string
 				last_result.append (symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
 					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
@@ -434,10 +441,10 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if attached a_node.existence then
+			if attached a_node.existence as att_ex then
 				last_result.append (apply_style(symbol(SYM_EXISTENCE), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				s := a_node.existence.as_string
+				s := att_ex.as_string
 				last_result.append (symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
 					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
@@ -448,10 +455,10 @@ feature -- Visitor
 		local
 			s: STRING
 		do
-			if a_node.is_multiple and attached a_node.cardinality then
-				last_result.append (apply_style(symbol(SYM_CARDINALITY), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				s := a_node.cardinality.as_string
+			if a_node.is_multiple and attached a_node.cardinality as att_card then
+				last_result.append (apply_style (symbol (SYM_CARDINALITY), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				s := att_card.as_string
 				last_result.append (symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
 					symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
@@ -462,15 +469,15 @@ feature {NONE} -- Implementation
 	serialise_sibling_order (a_node: C_OBJECT; depth: INTEGER)
 			-- serialise C_OBJECT.sibling_order if this is a differential archetype (it should not be there otherwise)
 		do
-			if differential_view and attached a_node.sibling_order then
+			if differential_view and attached a_node.sibling_order as att_sib_ord then
 				last_result.append (create_indent (depth))
-				if a_node.sibling_order.is_after then
-					last_result.append (apply_style(symbol(SYM_AFTER), STYLE_KEYWORD) + format_item(FMT_SPACE))
+				if att_sib_ord.is_after then
+					last_result.append (apply_style (symbol (SYM_AFTER), STYLE_KEYWORD) + format_item(FMT_SPACE))
 				else
-					last_result.append (apply_style(symbol(SYM_BEFORE), STYLE_KEYWORD) + format_item(FMT_SPACE))
+					last_result.append (apply_style (symbol (SYM_BEFORE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 				end
-				last_result.append (apply_style("[" + a_node.sibling_order.sibling_node_id + "]", STYLE_TERM_REF))
-				last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (apply_style ("[" + att_sib_ord.sibling_node_id + "]", STYLE_TERM_REF))
+				last_result.append (format_item (FMT_NEWLINE))
 			end
 		end
 
@@ -488,22 +495,28 @@ feature {NONE} -- Implementation
 
 	serialise_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
 		do
+			-- first case is inline output of the form "[terminology::code]"
+			-- A comment containing the original language rubric of the code is held in a buffer, since the
+			-- main visiting traversal still has to append a terminating '}' before the comment can be added
 			if a_node.code_count = 1 or a_node.code_count = 0 then
 				-- output the actual constraint value
 				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
 
-				-- hold the comment over in `last_object_simple_buffer'
+				-- hold the comment over in `last_coded_constraint_comment'
 				create last_coded_constraint_comment.make(0)
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code (a_node.code_list.first)) then
 					last_coded_constraint_comment.append (format_item (FMT_INDENT))
-
-					check attached ontology.term_definition (language, a_node.code_list.first) as adl_term then
-						last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-							safe_comment (adl_term.text), STYLE_COMMENT))
-					end
+					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+						safe_comment (ontology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
 				end
 				last_object_inline := True
 
+			-- this case is for multi-line output of the form:
+			-- [terminology::
+			--	code1,			-- rubric 1
+			--	code2,			-- rubric 2
+			--	codeN;			-- rubric N
+			--	assumed_code]	-- assumed value
 			else
 				-- add a newline, because for all other C_PRIMITIVE_OBJECTs the existing one will be stripped, but this
 				-- is a multi-line output and needs to start on a new line
@@ -512,26 +525,27 @@ feature {NONE} -- Implementation
 					a_node.terminology_id + Terminology_separator, STYLE_TERM_REF) +
 					format_item (FMT_NEWLINE))
 
+				-- the following loop puts out lines of the form
+				--	code1,			-- rubric 1			
 				across a_node.code_list as code_list_csr loop
 					last_result.append (create_indent(depth) + apply_style (code_list_csr.item, STYLE_TERM_REF))
 					if not code_list_csr.is_last then
 						last_result.append (format_item (FMT_LIST_ITEM_SEPARATOR))
 					elseif attached a_node.assumed_value then
 						last_result.append (format_item (FMT_ASSUMED_VALUE_SEPARATOR))
-					else -- this will only get done if there is no assumed value
+					else -- this will get done if there is no assumed value
 						last_result.append (apply_style ("]", STYLE_TERM_REF))
 					end
 
 					if a_node.is_local and ontology.has_term_code (code_list_csr.item) then
-						check attached ontology.term_definition (language, code_list_csr.item) as adl_term then
-							last_result.append (format_item(FMT_INDENT) +
-								apply_style (format_item (FMT_COMMENT) +
-								safe_comment (adl_term.text), STYLE_COMMENT))
-						end
+						last_result.append (format_item(FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+							safe_comment (ontology.term_definition (language, code_list_csr.item).text), STYLE_COMMENT))
 					end
 					last_result.append (format_item (FMT_NEWLINE))
 				end
 
+				-- The following puts out a line like the following, for the case where there is an assumed value
+				--	assumed_code]	-- assumed value
 				if attached a_node.assumed_value as av then
 					last_result.append (create_indent(depth) + apply_style(av.code_string, STYLE_TERM_REF))
 					last_result.append (apply_style ("]", STYLE_TERM_REF))
