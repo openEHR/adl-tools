@@ -14,7 +14,7 @@ inherit
 	C_PRIMITIVE_OBJECT
 
 create
-	make_true, make_false, make_true_false
+	make_true, make_false, make_true_false, default_create
 
 feature -- Initialisation
 
@@ -83,6 +83,14 @@ feature -- Output
 			Result.append ("<true_valid>" + true_valid.out + "</true_valid>")
 			Result.append ("<false_valid>" + false_valid.out + "</false_valid>")
 			Result.append ("<assumed_value>" + assumed_value.out + "</assumed_value>")
+		end
+
+feature {P_C_BOOLEAN} -- Modification
+
+	set_constraint (a_false_valid, a_true_valid: BOOLEAN)
+		do
+			false_valid := a_false_valid
+			true_valid := a_true_valid
 		end
 
 feature {NONE} -- Implementation

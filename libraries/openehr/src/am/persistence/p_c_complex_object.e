@@ -20,14 +20,13 @@ create
 
 feature -- Initialisation
 
-	make (a_cco: attached C_COMPLEX_OBJECT)
+	make (a_cco: C_COMPLEX_OBJECT)
 		do
 			precursor (a_cco)
 			if a_cco.has_attributes then
 				create attributes.make (0)
-				from a_cco.attributes.start until a_cco.attributes.off loop
-					attributes.extend (create {P_C_ATTRIBUTE}.make(a_cco.attributes.item))
-					a_cco.attributes.forth
+				across a_cco.attributes as ca_csr loop
+					attributes.extend (create {P_C_ATTRIBUTE}.make (ca_csr.item))
 				end
 			end
 		end

@@ -1,8 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Constrainer type for instances of DURATION"
-	keywords:    "archetype, date, data"
-	design:      "openEHR Common Archetype Model 0.2"
+	keywords:    "archetype, date, duration"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
@@ -30,7 +29,8 @@ create
 	make,
 	make_range,
 	make_from_pattern,
-	make_pattern_with_range
+	make_pattern_with_range,
+	default_create
 
 feature {NONE} -- Initialisation
 
@@ -172,6 +172,14 @@ feature -- Output
 			end
 		ensure then
 			not_empty: not Result.is_empty
+		end
+
+feature {P_C_DURATION} -- Modification
+
+	set_constraint (a_range: like range; a_pattern: detachable STRING)
+		do
+			range := a_range
+			pattern := a_pattern
 		end
 
 feature {NONE} -- Implementation

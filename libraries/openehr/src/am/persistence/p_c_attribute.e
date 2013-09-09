@@ -42,10 +42,25 @@ feature -- Initialisation
 						children.extend (create {P_ARCHETYPE_INTERNAL_REF}.make(a_ir))
 					elseif attached {CONSTRAINT_REF} c_objs_csr.item as cr then
 						children.extend (create {P_CONSTRAINT_REF}.make(cr))
-					elseif attached {C_PRIMITIVE_OBJECT} c_objs_csr.item as c_po then
-						children.extend (create {P_C_PRIMITIVE_OBJECT}.make(c_po))
+					elseif attached {C_INTEGER} c_objs_csr.item as c_po then
+						children.extend (create {P_C_INTEGER}.make(c_po))
+					elseif attached {C_REAL} c_objs_csr.item as c_po then
+						children.extend (create {P_C_REAL}.make(c_po))
+					elseif attached {C_DATE} c_objs_csr.item as c_po then
+						children.extend (create {P_C_DATE}.make(c_po))
+					elseif attached {C_TIME} c_objs_csr.item as c_po then
+						children.extend (create {P_C_TIME}.make(c_po))
+					elseif attached {C_DATE_TIME} c_objs_csr.item as c_po then
+						children.extend (create {P_C_DATE_TIME}.make(c_po))
+					elseif attached {C_DURATION} c_objs_csr.item as c_po then
+						children.extend (create {P_C_DURATION}.make(c_po))
+					elseif attached {C_BOOLEAN} c_objs_csr.item as c_po then
+						children.extend (create {P_C_BOOLEAN}.make(c_po))
+					elseif attached {C_TERMINOLOGY_CODE} c_objs_csr.item as c_po then
+						children.extend (create {P_C_TERMINOLOGY_CODE}.make(c_po))
+					elseif attached {C_STRING} c_objs_csr.item as c_po then
+						children.extend (create {P_C_STRING}.make(c_po))
 					end
-					a_ca.children.forth
 				end
 			end
 		end
@@ -74,12 +89,12 @@ feature -- Factory
 			ex: detachable MULTIPLICITY_INTERVAL
 			card: detachable CARDINALITY
 		do
-			if attached existence as e then
-				create ex.make_from_string (e)
+			if attached existence as att_ex then
+				create ex.make_from_string (att_ex)
 			end
 			if is_multiple then
-				if attached cardinality as c then
-					create card.make_from_string (c)
+				if attached cardinality as att_card then
+					create card.make_from_string (att_card)
 				end
 				create Result.make_multiple (rm_attribute_name, ex, card)
 			else

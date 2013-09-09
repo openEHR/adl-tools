@@ -14,7 +14,7 @@ inherit
 	C_PRIMITIVE_OBJECT
 
 create
-	make_open, make_from_string, make_from_regexp, make_from_string_list, make_any
+	make_open, make_from_string, make_from_regexp, make_from_string_list, make_any, default_create
 
 feature -- Definitions
 
@@ -166,6 +166,19 @@ feature -- Modification
 		ensure
 			extended: strings.count = old strings.count + 1
 			str_valid: valid_value (str)
+		end
+
+feature {P_C_STRING} -- Modification
+
+	set_constraint (a_strings: detachable ARRAYED_LIST [STRING];
+			a_regexp: detachable STRING;
+			a_is_open: BOOLEAN;
+			a_regexp_default_delimiter: BOOLEAN)
+		do
+			strings := a_strings
+			regexp := a_regexp
+			is_open := a_is_open
+			regexp_default_delimiter := a_regexp_default_delimiter
 		end
 
 feature -- Output

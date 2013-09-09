@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Constrainer type for instances of INTEGER"
-	keywords:    "archetype, boolean, data"
+	keywords:    "archetype, integer"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -13,7 +13,7 @@ inherit
 	C_PRIMITIVE_OBJECT
 
 create
-	make_range, make_list, make_simple_list
+	make_range, make_list, make_simple_list, default_create
 
 feature -- Initialisation
 
@@ -92,6 +92,14 @@ feature -- Output
 	as_canonical_string: STRING
 		do
 			Result := as_string
+		end
+
+feature {P_C_INTEGER} -- Modification
+
+	set_constraint (a_range: like range; a_list: like list)
+		do
+			list := a_list
+			range := a_range
 		end
 
 feature {NONE} -- Implementation
