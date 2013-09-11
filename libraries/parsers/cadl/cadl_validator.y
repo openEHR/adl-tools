@@ -98,7 +98,7 @@ create
 %left UNARY_MINUS
 %left '^'
 
-%type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
+%type <detachable ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 %type <ASSERTION> assertion
 
 %type <C_ARCHETYPE_ROOT> c_archetype_root
@@ -106,9 +106,14 @@ create
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
-%type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
+%type <detachable MULTIPLICITY_INTERVAL> c_occurrences c_existence
+%type <MULTIPLICITY_INTERVAL> occurrence_spec existence_spec
+%type <C_COMPLEX_OBJECT> c_complex_object_id c_complex_object_head
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
+%type <C_ATTRIBUTE> c_attr_head
+
+%type <detachable C_OBJECT_TUPLE> c_tuple_values
 
 %type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
@@ -143,7 +148,8 @@ create
 %type <STRING> relational_binop_symbol
 %type <STRING> boolean_binop_symbol
 
-%type <CARDINALITY> c_cardinality cardinality_range
+%type <detachable CARDINALITY> c_cardinality
+%type <CARDINALITY> cardinality_range
 %type <CONSTRAINT_REF> constraint_ref
 %type <C_COMPLEX_OBJECT> c_ordinal
 %type <C_OBJECT_TUPLE> ordinal
@@ -204,52 +210,53 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 				$$ := object_nodes.item
 				object_nodes.remove
 			else
-				abort_with_error (ec_VCOCDocc, <<complex_obj.rm_type_name, complex_obj.path>>)
+				abort_with_error (ec_VCOCDocc, <<$1.rm_type_name, $1.path>>)
 			end
 		}
 	;
 
 c_complex_object_head: c_complex_object_id c_occurrences 
 		{
-			if $2 /= Void then
-				complex_obj.set_occurrences ($2)
+			$$ := $1
+			if attached $2 as att_occ then
+				$1.set_occurrences (att_occ)
 			end
 
-			if rm_schema.has_class_definition (complex_obj.rm_type_name) then
-				object_nodes.extend (complex_obj)
-				debug ("ADL_parse")
-					io.put_string (indent + "PUSH create OBJECT_NODE " + complex_obj.rm_type_name + " [id=" + complex_obj.node_id + "] ")
-					if $2 /= Void then
-						io.put_string ("; occurrences=(" + $2.as_string + ")") 
-					end
-					io.new_line
-					indent.append ("%T")
-				end
+			if rm_schema.has_class_definition ($1.rm_type_name) then
+				object_nodes.extend ($1)
+debug ("ADL_parse")
+	io.put_string (indent + "PUSH create OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "] ")
+	if $2 /= Void then
+		io.put_string ("; occurrences=(" + $2.as_string + ")") 
+	end
+	io.new_line
+	indent.append ("%T")
+end
 
 				-- put it under current attribute, unless it is the root object, in which case it will be returned
 				-- via the 'output' attribute of this parser
 				if not c_attrs.is_empty then
-					safe_put_c_attribute_child (c_attrs.item, complex_obj)
+					safe_put_c_attribute_child (c_attrs.item, $1)
 				end
 			else
-				abort_with_error (ec_VCORM, <<complex_obj.rm_type_name, complex_obj.path>>)
+				abort_with_error (ec_VCORM, <<$1.rm_type_name, $1.path>>)
 			end
 		}
 	;
 
 c_complex_object_id: type_identifier
 		{
-			create complex_obj.make_anonymous ($1)
+			create $$.make_anonymous ($1)
 		}
 	| type_identifier V_LOCAL_TERM_CODE_REF
 		{
-			create complex_obj.make_identified ($1, $2)
+			create $$.make_identified ($1, $2)
 		}
 	| sibling_order type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			if differential_syntax then
-				create complex_obj.make_identified ($2, $3)
-				complex_obj.set_sibling_order ($1)
+				create $$.make_identified ($2, $3)
+				$$.set_sibling_order ($1)
 			else
 				abort_with_error (ec_SDSF, Void)
 			end
@@ -315,7 +322,7 @@ c_object: c_complex_object
 		}
 	| V_C_DV_QUANTITY
 		{
-			safe_put_c_attribute_child (c_attrs.item, c_dv_quantity.standard_equivalent)
+			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent)
 		}
 	| ERR_C_DV_QUANTITY
 		{
@@ -336,18 +343,22 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 		{
 			if (create {ARCHETYPE_ID}).valid_id ($4) then
 				create $$.make_external_ref ($2, $4)
-				if $6 /= Void then
-					$$.set_occurrences ($6)
+				if attached $6 as occ then
+					$$.set_occurrences (occ)
 				end
+			else
+				abort_with_error (ec_SUAIDI, <<$4>>)
 			end
 		}
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
 			if (create {ARCHETYPE_ID}).valid_id ($6) then
 				create $$.make_slot_filler ($2, $6, $4)
-				if $8 /= Void then
-					$$.set_occurrences ($8)
+				if attached $8 as occ then
+					$$.set_occurrences (occ)
 				end
+			else
+				abort_with_error (ec_SUAIDI, <<$4>>)
 			end
 		}
 	| SYM_USE_ARCHETYPE type_identifier error
@@ -359,8 +370,8 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 		{
 			create og_path.make_from_string ($3)
-			if attached arch_internal_ref_node_id then
-				create $$.make_identified (arch_internal_ref_rm_type_name, arch_internal_ref_node_id, $3)
+			if attached arch_internal_ref_node_id as air_node_id then
+				create $$.make_identified (arch_internal_ref_rm_type_name, air_node_id, $3)
 			else
 				create $$.make (arch_internal_ref_rm_type_name, $3)
 
@@ -375,8 +386,8 @@ archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 				end
 
 			end
-			if attached $2 then
-				$$.set_occurrences ($2)
+			if attached $2 as att_occ then
+				$$.set_occurrences (att_occ)
 			end
 
 			debug ("ADL_parse")
@@ -416,11 +427,11 @@ archetype_internal_ref_head: SYM_USE_NODE type_identifier
 
 archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK
 		{
-			if attached $4 then
-				$1.set_includes ($4)
+			if attached $4 as att_c_incs then
+				$1.set_includes (att_c_incs)
 			end
-			if attached $5 then
-				$1.set_excludes ($5)
+			if attached $5 as att_c_excs then
+				$1.set_excludes (att_c_excs)
 			end
 
 			debug ("ADL_parse")
@@ -439,8 +450,8 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 
 c_archetype_slot_head: c_archetype_slot_id c_occurrences 
 		{
-			if attached $2 then
-				$1.set_occurrences ($2)
+			if attached $2 as att_occ then
+				$1.set_occurrences (att_occ)
 			end
 
 			debug ("ADL_parse")
@@ -614,29 +625,28 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
 					bmm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
 					if bmm_prop_def.is_container then
-						create attr_node.make_multiple (rm_attribute_name, $2, $3)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out)
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							if $3 /= Void then io.put_string ("; cardinality=(" + $3.as_string + ")") end
-							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
-						end
-						object_nodes.item.put_attribute (attr_node)
+						create $$.make_multiple (rm_attribute_name, $2, $3)
+						c_attrs.put ($$)
+debug ("ADL_parse")
+	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + $$.is_multiple.out)
+	if attached $2 as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
+	if attached $3 as att_card then io.put_string ("; cardinality=(" + att_card.as_string + ")") end
+	io.new_line
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	indent.append ("%T")
+end
+						object_nodes.item.put_attribute ($$)
 					elseif $3 = Void then
-						create attr_node.make_single (rm_attribute_name, $2)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + attr_node.is_multiple.out) 
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							if $3 /= Void then io.put_string ("; cardinality=(" + $3.as_string + ")") end
-							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
-						end
-						object_nodes.item.put_attribute (attr_node)
+						create $$.make_single (rm_attribute_name, $2)
+						c_attrs.put ($$)
+debug ("ADL_parse")
+	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + $$.is_multiple.out) 
+	if attached $2 as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
+	io.new_line
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	indent.append ("%T")
+end
+						object_nodes.item.put_attribute ($$)
 					else -- error - cardinality stated, but on a non-container attribute
 						abort_with_error (ec_VSAM2, <<rm_attribute_name>>)
 					end
@@ -658,29 +668,31 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				if rm_schema.has_property_path (object_nodes.item.rm_type_name, $1) then
 					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, $1)
 					if bmm_prop_def.is_container then
-						create attr_node.make_multiple (rm_attribute_name, $2, $3)
-						attr_node.set_differential_path (parent_path_str)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + $1 + "; container = " + attr_node.is_multiple.out) 
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
-						end
-						object_nodes.item.put_attribute (attr_node)
+						create $$.make_multiple (rm_attribute_name, $2, $3)
+						$$.set_differential_path (parent_path_str)
+						c_attrs.put ($$)
+debug ("ADL_parse")
+	io.put_string (indent + "PUSH create ATTR_NODE " + $1 + "; container = " + $$.is_multiple.out) 
+	if attached $2 as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
+	if attached $3 as att_card then io.put_string ("; cardinality=(" + att_card.as_string + ")") end
+	io.new_line
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	indent.append ("%T")
+end
+						object_nodes.item.put_attribute ($$)
+
 					elseif $3 = Void then
-						create attr_node.make_single (rm_attribute_name, $2)
-						attr_node.set_differential_path (parent_path_str)
-						c_attrs.put (attr_node)
-						debug ("ADL_parse")
-							io.put_string (indent + "PUSH create ATTR_NODE " + $1 + "; container = " + attr_node.is_multiple.out) 
-							if $2 /= Void then io.put_string (" existence={" + $2.as_string + "}") end
-							io.new_line
-							io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
-							indent.append ("%T")
-						end
-						object_nodes.item.put_attribute (attr_node)
+						create $$.make_single (rm_attribute_name, $2)
+						$$.set_differential_path (parent_path_str)
+						c_attrs.put ($$)
+debug ("ADL_parse")
+	io.put_string (indent + "PUSH create ATTR_NODE " + $1 + "; container = " + $$.is_multiple.out) 
+	if attached $2 as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
+	io.new_line
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	indent.append ("%T")
+end
+						object_nodes.item.put_attribute ($$)
 					else -- error - cardinality stated, but on a non-container attribute
 						abort_with_error (ec_VSAM2, <<$1>>)
 					end
@@ -701,9 +713,6 @@ c_attr_values: c_object
 		} 
 	| c_any	-- to allow a property to have any value
 		{
-			debug ("ADL_parse")
-				io.put_string (indent + "ATTR_NODE " + attr_node.rm_attribute_name + "  - any_allowed%N") 
-			end
 		}
 	;
 
@@ -765,20 +774,21 @@ c_attr_tuple_value: '[' c_tuple_values ']'
 
 c_tuple_values: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK	
 		{
-			create c_obj_tuple.make
-			c_obj_tuple.put_member ($2)
-			c_attr_tuple.put_child (c_obj_tuple)
-			c_attr_tuple.i_th_member (c_obj_tuple.count).put_child ($2)
+			create $$.make
+			$$.put_member ($2)
+			c_attr_tuple.put_child ($$)
+			c_attr_tuple.i_th_member ($$.count).put_child ($2)
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_obj_tuple.count).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member ($$.count).rm_attribute_name + " %N")
 			end
 		} 
 	| c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
-			c_obj_tuple.put_member ($4)
-			c_attr_tuple.i_th_member (c_obj_tuple.count).put_child ($4)
+			$$ := $1
+			$$.put_member ($4)
+			c_attr_tuple.i_th_member ($$.count).put_child ($4)
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_obj_tuple.count).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member ($$.count).rm_attribute_name + " %N")
 			end
 		} 
 	;
@@ -968,19 +978,19 @@ boolean_binop_expr: boolean_node boolean_binop_symbol boolean_leaf
 
 boolean_binop_symbol: SYM_OR
 		{
-			$$ := operator_symbols.item (op_or)
+			$$ := operator_symbol (op_or)
 		}
 	| SYM_AND
 		{
-			$$ := operator_symbols.item (op_and)
+			$$ := operator_symbol (op_and)
 		}
 	| SYM_XOR
 		{
-			$$ := operator_symbols.item (op_xor)
+			$$ := operator_symbol (op_xor)
 		}
 	| SYM_IMPLIES
 		{
-			$$ := operator_symbols.item (op_implies)
+			$$ := operator_symbol (op_implies)
 		}
 	;
 
@@ -2167,7 +2177,13 @@ feature -- Initialization
 			create c_attrs.make (0)
 			create time_vc
 			create date_vc
+			create str.make_empty
 			create indent.make_empty
+			create rm_attribute_name.make_empty
+			create arch_internal_ref_rm_type_name.make_empty
+			create parent_path_str.make_empty
+			create c_term_code.make ("openehr")
+			create c_int.make_simple_list (0)
 		end
 
 	reset
@@ -2214,7 +2230,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	rm_schema: detachable BMM_SCHEMA
+	rm_schema: BMM_SCHEMA
+		attribute
+			create Result.default_create
+		end
 
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
@@ -2281,7 +2300,6 @@ feature {NONE} -- Implementation
 feature {NONE} -- Parse Tree
 
 	object_nodes: ARRAYED_STACK [C_COMPLEX_OBJECT]
-	complex_obj: C_COMPLEX_OBJECT
 
 	c_attrs: ARRAYED_STACK [C_ATTRIBUTE]
 			-- main stack of attributes during construction
@@ -2295,10 +2313,8 @@ feature {NONE} -- Parse Tree
 			create Result.make (0)
 		end
 
-	attr_node: detachable C_ATTRIBUTE
-
-	rm_attribute_name: detachable STRING
-	parent_path_str: detachable STRING
+	rm_attribute_name: STRING
+	parent_path_str: STRING
 
 	invariant_expr: detachable STRING
 
@@ -2307,20 +2323,25 @@ feature {NONE} -- Parse Tree
 
 	bmm_prop_def: detachable BMM_PROPERTY_DEFINITION
 
-	c_attr_tuple: detachable C_ATTRIBUTE_TUPLE
-	c_obj_tuple: C_OBJECT_TUPLE
+	c_attr_tuple: C_ATTRIBUTE_TUPLE
+		attribute
+			create Result.make
+		end
 
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
-	arch_internal_ref_rm_type_name: detachable STRING
+	arch_internal_ref_rm_type_name: STRING
 	arch_internal_ref_node_id: detachable STRING
 
 	indent: STRING
 
-	str: detachable STRING
+	str: STRING
 
-	og_path: detachable OG_PATH
+	og_path: OG_PATH
+		attribute
+			create Result.make_root
+		end
 
 	-- legacy C_DV_ORDINAL variables
 	c_int: C_INTEGER

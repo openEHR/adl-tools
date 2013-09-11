@@ -1113,7 +1113,7 @@ feature -- File Operations
 		end
 
 	save_compiled_differential
-			-- save validated differential archetype in fast-retrieve form (dADL)
+			-- save validated differential archetype in fast-retrieve form (ODIN)
 		require
 			Archetype_valid: is_valid
 		local
@@ -1140,18 +1140,18 @@ feature -- File Operations
 			has_differential_compiled_file
 		local
 			fd: PLAIN_TEXT_FILE
-			dadl_text: STRING
+			odin_text: STRING
 		do
 			create Result.make_empty
 			if file_system.file_exists (differential_compiled_path) then
-				-- read the serialised P_ARCHETYPE (dADL format) file
+				-- read the serialised P_ARCHETYPE (ODIN format) file
 				create fd.make_open_read (differential_compiled_path)
 				fd.read_stream (fd.count)
-				dadl_text := fd.last_string
+				odin_text := fd.last_string
 				fd.close
 
-				-- parse the dADL to DT then materialise to AOM
-				archetype_serialise_engine.set_source (dadl_text, 1)
+				-- parse the ODIN to DT then materialise to AOM
+				archetype_serialise_engine.set_source (odin_text, 1)
 				archetype_serialise_engine.parse
 				if archetype_serialise_engine.parse_succeeded then
 					if attached {P_ARCHETYPE} archetype_serialise_engine.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
@@ -1195,7 +1195,7 @@ feature -- Output
 
 	serialise_object (flat_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
-			-- format like dADL, XML, JSON etc
+			-- format like ODIN, XML, JSON etc
 		require
 			Archetype_valid: is_valid
 			Format_valid: has_dt_serialiser_format (a_format)

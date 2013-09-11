@@ -1,11 +1,10 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Constrainer type for instances of REAL"
-	keywords:    "archetype, boolean, data"
-	design:      "openEHR Common Archetype Model 0.2"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	keywords:    "archetype, real"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class C_REAL
@@ -14,7 +13,7 @@ inherit
 	C_PRIMITIVE_OBJECT
 
 create
-	make_range, make_list, make_simple_list
+	make_range, make_list, make_simple_list, default_create
 
 feature -- Initialisation
 
@@ -99,6 +98,14 @@ feature -- Output
 				end
 				Result.append ("; " + out_val)
 			end
+		end
+
+feature {P_C_REAL} -- Modification
+
+	set_constraint (a_range: like range; a_list: like list)
+		do
+			list := a_list
+			range := a_range
 		end
 
 feature {NONE} -- Implementation

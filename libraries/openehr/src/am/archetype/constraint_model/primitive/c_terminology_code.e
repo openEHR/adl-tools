@@ -12,8 +12,13 @@ class C_TERMINOLOGY_CODE
 inherit
 	C_PRIMITIVE_OBJECT
 
+	OPENEHR_DEFINITIONS
+		undefine
+			default_create, out
+		end
+
 create
-	make, make_from_codes, make_from_code, make_from_terminology_code
+	make, make_from_codes, make_from_code, make_from_terminology_code, default_create
 
 feature -- Initialisation
 
@@ -55,6 +60,9 @@ feature -- Initialisation
 feature -- Access
 
 	terminology_id: STRING
+		attribute
+			create Result.make_from_string (Local_terminology_id)
+		end
 
 	terminology_version: detachable STRING
 
@@ -110,6 +118,15 @@ feature -- Modification
 			code_list.has (a_code)
 		do
 			create assumed_value.make (terminology_id, a_code)
+		end
+
+feature {P_C_TERMINOLOGY_CODE} -- Modification
+
+	set_constraint (a_terminology_id: STRING; a_terminology_version: detachable STRING; a_code_list: detachable LINKED_SET [STRING])
+		do
+			terminology_id := a_terminology_id
+			terminology_version := a_terminology_version
+			code_list := a_code_list
 		end
 
 feature -- Output

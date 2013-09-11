@@ -27,7 +27,7 @@ inherit
 		end
 
 create
-	make_range, make_string_range, make_from_pattern
+	make_range, make_string_range, make_from_pattern, default_create
 
 feature -- Initialisation
 
@@ -134,6 +134,14 @@ feature -- Output
 			if attached assumed_value as av then
 				Result.append ("; " + av.out)
 			end
+		end
+
+feature {P_C_TIME} -- Modification
+
+	set_constraint (a_range: like range; a_pattern: detachable STRING)
+		do
+			range := a_range
+			pattern := a_pattern
 		end
 
 feature {NONE} -- Implementation

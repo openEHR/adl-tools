@@ -359,8 +359,6 @@ feature {NONE} -- Implementation
 				------------------- build the archetype --------------					
 				if not errors.has_errors then
 					if attached definition_context.tree as definition and
-						attached adl_parser.archetype_id as id and
-						attached adl_parser.artefact_type as art_type and
 						attached ontology_context.tree as ont_tree
 					then
 						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
@@ -372,8 +370,8 @@ feature {NONE} -- Implementation
 								and not dt_object_converter.errors.has_errors
 							then
 								create {FLAT_ARCHETYPE} Result.make (
-									art_type,
-									id,
+									adl_parser.artefact_type,
+									adl_parser.archetype_id,
 									olt.original_language,
 									adl_parser.uid,
 									res_desc,	-- may be Void
@@ -390,8 +388,8 @@ feature {NONE} -- Implementation
 								and not dt_object_converter.errors.has_errors
 							then
 								create {DIFFERENTIAL_ARCHETYPE} Result.make (
-									art_type,
-									id,
+									adl_parser.artefact_type,
+									adl_parser.archetype_id,
 									olt.original_language,
 									adl_parser.uid,
 									res_desc,	-- may be Void

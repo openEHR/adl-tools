@@ -19,10 +19,21 @@ inherit
 	HTML_SERIALISATION_PROFILE
 		export
 			{NONE} all
+		redefine
+			make
 		end
 
 create
 	make
+
+feature -- Initialisation
+
+	make (an_output_format: STRING)
+			-- make with the output format name this serialiser is to be associated with
+		do
+			precursor (an_output_format)
+			create last_string_value.make_empty
+		end
 
 feature {NONE} -- Implementation
 

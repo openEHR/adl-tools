@@ -261,7 +261,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 		{
 			concept := $2
 			debug("ADL_parse")
-				io.put_string("concept = " + concept + "%N")
+				io.put_string("concept = " + $2 + "%N")
 			end
 		}
 	| SYM_CONCEPT error
@@ -357,6 +357,11 @@ feature -- Initialization
 			make_scanner
 			make_parser_skeleton
 			create other_metadata.make (0)
+			create archetype_id.default_create
+			create definition_text.make_empty
+			create language_text.make_empty
+			create ontology_text.make_empty
+			create artefact_type.default_create
 		end
 
 	reset
@@ -391,9 +396,9 @@ feature -- Parse Output
 
 	other_metadata: HASH_TABLE [STRING, STRING]
 
-	adl_version: STRING
+	adl_version: detachable STRING
 
-	uid: HIER_OBJECT_ID
+	uid: detachable HIER_OBJECT_ID
 
 	is_controlled: BOOLEAN
 
@@ -401,27 +406,25 @@ feature -- Parse Output
 
 	artefact_type: ARTEFACT_TYPE
 
-	parent_archetype_id: ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_ID
 
-	concept: STRING
+	concept: detachable STRING
 
 	language_text: STRING
 
-	description_text: STRING
+	description_text: detachable STRING
 
 	definition_text: STRING
 
-	invariant_text: STRING
+	invariant_text: detachable STRING
 	
 	ontology_text: STRING
 
-	annotations_text: STRING
+	annotations_text: detachable STRING
 
-	component_ontologies_text: STRING
+	component_ontologies_text: detachable STRING
 
 feature {NONE} -- Implementation 
-
-	str: STRING
 
 	arch_id: ARCHETYPE_ID
 		once

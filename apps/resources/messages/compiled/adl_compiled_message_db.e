@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (622)
+			create message_table.make (623)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -107,6 +107,7 @@ feature -- Initialisation
 			message_table.put ("Syntax error: invalid dADL section; error: $1", ec_SDINV)
 			message_table.put ("Syntax error: expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference", ec_SCCOG)
 			message_table.put ("Syntax error: expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement", ec_SUAID)
+			message_table.put ("Syntax error: invalid archetype id $1", ec_SUAIDI)
 			message_table.put ("Syntax error: expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'", ec_SOCCF)
 			message_table.put ("Syntax error: expecting absolute path in use_node statement", ec_SUNPA)
 			message_table.put ("Syntax error: expecting attribute definition(s)", ec_SCOAT)

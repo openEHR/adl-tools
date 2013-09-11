@@ -37,7 +37,7 @@ create
 
 feature -- Initialisation
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		do
 			reset

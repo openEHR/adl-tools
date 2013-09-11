@@ -40,6 +40,8 @@ feature {NONE} -- Initialisation
 	make
 		do
 			create translated_terms.make (0)
+			create attr_buffer.make_empty
+			create original_text.make_empty
 
 			-- set commit handling
 			create gui_controls.make (0)

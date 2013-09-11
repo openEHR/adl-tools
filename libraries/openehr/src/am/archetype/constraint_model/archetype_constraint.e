@@ -43,6 +43,10 @@ feature -- Access
 		end
 
 	soc_parent: detachable C_2ND_ORDER
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Status report
 

@@ -210,8 +210,8 @@ feature -- Access
 			Result.force (agent regression_test, Regression_test_key)
 			Result.force (agent test_save_flat, "->adlf")
 			Result.force (agent test_source_compare, "Compare .adls")
-			Result.force (agent test_save_source_dadl, "src AOM->ODIN")
-			Result.force (agent test_read_source_dadl, "src AOM<-ODIN")
+			Result.force (agent test_save_source_odin, "src AOM->ODIN")
+			Result.force (agent test_read_source_odin, "src AOM<-ODIN")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -261,23 +261,23 @@ feature -- Access
 			create Result.make_empty
 		end
 
-	dadl_flat_dir: STRING
+	odin_flat_dir: STRING
 			-- directory where ODIN files from flat form archetypes are saved
 		attribute
 			create Result.make_empty
 		end
 
-	dadl_adl_root: STRING
+	odin_adl_root: STRING
 		attribute
 			create Result.make_empty
 		end
 
-	diff_dadl_round_trip_source_orig_dir: STRING
+	diff_odin_round_trip_source_orig_dir: STRING
 		attribute
 			create Result.make_empty
 		end
 
-	diff_dadl_round_trip_source_new_dir: STRING
+	diff_odin_round_trip_source_new_dir: STRING
 		attribute
 			create Result.make_empty
 		end
@@ -428,7 +428,7 @@ feature -- Events
 					when Diff_source_flat then
 						do_diff_command (diff_dir_source_flat_orig, diff_dir_source_flat_new)
 					when Diff_round_trip then
-						do_diff_command (diff_dadl_round_trip_source_orig_dir, diff_dadl_round_trip_source_new_dir)
+						do_diff_command (diff_odin_round_trip_source_orig_dir, diff_odin_round_trip_source_new_dir)
 					else
 						-- do nothing
 					end
@@ -663,11 +663,14 @@ feature {NONE} -- Tests
 					-- extensions or else it gets confused)
 					check attached file_system.pathname (diff_dir_source_flat_new, target.qualified_name + File_ext_archetype_adl_diff) as pn then
 						file_system.copy_file (flat_path, pn)
+					end
 				end
-				end
-				if target.status.is_empty then
+
+				if not target.has_errors then
 					Result := test_passed
-				else
+				end
+
+				if not target.status.is_empty then
 					test_status.append (target.status + "%N")
 				end
 			else
@@ -679,7 +682,7 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		do
 			Result := Test_failed
-			if target.is_valid and target.differential_text /= Void then
+			if target.is_valid then
 				if original_differential_text.count = target.differential_text.count then
 					if original_differential_text.same_string (target.differential_text) then
 						Result := Test_passed
@@ -694,7 +697,7 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_save_source_dadl: INTEGER
+	test_save_source_odin: INTEGER
 			-- serialise differential archetype to ODIN format, and copy to test area for later diffing
 		do
 			Result := Test_failed
@@ -707,19 +710,19 @@ feature {NONE} -- Tests
 			end
 		end
 
-	test_read_source_dadl: INTEGER
+	test_read_source_odin: INTEGER
 		local
 			fd: PLAIN_TEXT_FILE
 		do
 			Result := Test_failed
 			if target.is_valid then
-				if attached target.read_compiled_differential as adl_text then
+				if target.has_differential_compiled_file then
 					-- original .adls file, for diffing
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_dadl_round_trip_source_orig_dir, target.qualified_name + File_ext_archetype_source))
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, target.qualified_name + File_ext_archetype_source))
 
-					-- post-dadl round-tripped file
-					create fd.make_create_read_write (file_system.pathname (diff_dadl_round_trip_source_new_dir, target.qualified_name + File_ext_archetype_source))
-					fd.put_string (adl_text)
+					-- post-odin round-tripped file
+					create fd.make_create_read_write (file_system.pathname (diff_odin_round_trip_source_new_dir, target.qualified_name + File_ext_archetype_source))
+					fd.put_string (target.read_compiled_differential)
 					fd.close
 
 					Result := test_passed
@@ -824,18 +827,18 @@ feature {NONE} -- Implementation
 			--					|		+---- new
 			--					|		+---- orig
 			--					|
-			--					+---- dadl
+			--					+---- odin
 			--					|		+---- source
 			--					|		+---- flat
 			--					|
-			--					+---- dadl_adl
+			--					+---- odin_adl
 			--							+---- orig
 			--							+---- new
 			--
 		require
 			has_current_repository
 		local
-			curr_prof, diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, dadl_root: STRING
+			curr_prof, diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, odin_root: STRING
 		do
 			diff_dirs_available := False
 
@@ -904,29 +907,29 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			-- dadl serialisation source and flat dirs
-			dadl_root := file_system.pathname (diff_dir_root, "dadl")
-			odin_source_dir := file_system.pathname (dadl_root, "source")
+			-- odin serialisation source and flat dirs
+			odin_root := file_system.pathname (diff_dir_root, "odin")
+			odin_source_dir := file_system.pathname (odin_root, "source")
 			if not file_system.directory_exists (odin_source_dir) then
 				file_system.recursive_create_directory (odin_source_dir)
 			end
 
-			dadl_flat_dir := file_system.pathname (dadl_root, "flat")
-			if not file_system.directory_exists (dadl_flat_dir) then
-				file_system.recursive_create_directory (dadl_flat_dir)
+			odin_flat_dir := file_system.pathname (odin_root, "flat")
+			if not file_system.directory_exists (odin_flat_dir) then
+				file_system.recursive_create_directory (odin_flat_dir)
 			end
 
-			-- dirs for adl files produced by serialised first to dadl, reading back dadl,
+			-- dirs for adl files produced by serialised first to odin, reading back odin,
 			-- deserialising then reserialising as adls
-			dadl_adl_root := file_system.pathname (diff_dir_root, "dadl_adl")
-			diff_dadl_round_trip_source_orig_dir := file_system.pathname (dadl_adl_root, "orig")
-			if not file_system.directory_exists (diff_dadl_round_trip_source_orig_dir) then
-				file_system.recursive_create_directory (diff_dadl_round_trip_source_orig_dir)
+			odin_adl_root := file_system.pathname (diff_dir_root, "odin_adl")
+			diff_odin_round_trip_source_orig_dir := file_system.pathname (odin_adl_root, "orig")
+			if not file_system.directory_exists (diff_odin_round_trip_source_orig_dir) then
+				file_system.recursive_create_directory (diff_odin_round_trip_source_orig_dir)
 			end
 
-			diff_dadl_round_trip_source_new_dir := file_system.pathname (dadl_adl_root, "new")
-			if not file_system.directory_exists (diff_dadl_round_trip_source_new_dir) then
-				file_system.recursive_create_directory (diff_dadl_round_trip_source_new_dir)
+			diff_odin_round_trip_source_new_dir := file_system.pathname (odin_adl_root, "new")
+			if not file_system.directory_exists (diff_odin_round_trip_source_new_dir) then
+				file_system.recursive_create_directory (diff_odin_round_trip_source_new_dir)
 			end
 		end
 

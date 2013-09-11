@@ -73,31 +73,36 @@ if yy_act <= 5 then
 if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
+--|#line 54 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 57")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 54")
 end
 last_token := Plus_code
 else
+--|#line 55 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 58")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 55")
 end
 last_token := Minus_code
 end
 else
+--|#line 56 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 59")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 56")
 end
 last_token := Slash_code
 end
 else
 if yy_act = 4 then
+--|#line 57 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 60")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 57")
 end
 last_token := Star_code
 else
+--|#line 58 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 61")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 58")
 end
 last_token := Caret_code
 end
@@ -105,25 +110,29 @@ end
 else
 if yy_act <= 7 then
 if yy_act = 6 then
+--|#line 60 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 63")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 60")
 end
 last_token := SYM_OPEN_PAREN
 else
+--|#line 61 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 64")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 61")
 end
 last_token := SYM_CLOSE_PAREN
 end
 else
 if yy_act = 8 then
+--|#line 62 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 65")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 62")
 end
 last_token := SYM_START_SUFFIX
 else
+--|#line 63 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 66")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 63")
 end
 last_token := SYM_END_SUFFIX
 end
@@ -133,28 +142,32 @@ else
 if yy_act <= 13 then
 if yy_act <= 11 then
 if yy_act = 10 then
+--|#line 64 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 67")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 64")
 end
 last_token := SYM_START_ANNOT
 else
+--|#line 65 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 68")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 65")
 end
 last_token := SYM_END_ANNOT
 end
 else
 if yy_act = 12 then
+--|#line 69 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 72")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 69")
 end
 
 					last_token := V_IDENTIFIER
 					last_string_value := text
 			
 else
+--|#line 75 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 78")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 75")
 end
 
 					last_token := V_INTEGER
@@ -165,8 +178,9 @@ end
 else
 if yy_act <= 15 then
 if yy_act = 14 then
+--|#line 80 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 83")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 80")
 end
 
 					last_token := V_INTEGER
@@ -181,18 +195,21 @@ end
 					in_buffer.wipe_out
 			
 else
+--|#line 94 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 97")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 94")
 end
  last_token := Semicolon_code; terminate 
 end
 else
 if yy_act = 16 then
+--|#line 95 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 98")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 95")
 end
 ;
 else
+--|#line 0 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 0")
 end
@@ -208,6 +225,7 @@ end
 		do
 			inspect yy_sc
 when 0 then
+--|#line 0 "units_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 0")
 end
