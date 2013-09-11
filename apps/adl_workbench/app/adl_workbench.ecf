@@ -89,7 +89,6 @@
 			</option>
 		</cluster>
 		<cluster name="adl_messages" location="..\..\resources\messages\compiled\"/>
-		<cluster name="adl_parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="adl_test" location="..\..\..\libraries\test\" recursive="true"/>
 		<cluster name="app" location="..\src\env\" recursive="true">
 			<option>
