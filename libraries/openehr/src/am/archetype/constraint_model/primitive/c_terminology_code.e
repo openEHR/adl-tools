@@ -14,7 +14,7 @@ inherit
 
 	OPENEHR_DEFINITIONS
 		undefine
-			default_create, out
+			out, default_create
 		end
 
 create
@@ -28,23 +28,19 @@ feature -- Initialisation
 			terminology_id := a_terminology_id
 		end
 
-	make_from_codes (a_terminology_id: STRING; codes: SET [STRING])
+	make_from_codes (a_terminology_id: STRING; codes: LIST [STRING])
 		require
 			Codes_valid: codes.object_comparison and not codes.is_empty
 		do
 			default_create
 			terminology_id := a_terminology_id
-			create code_list.make
-			code_list.compare_objects
-			code_list.merge (codes)
+			code_list.append (codes)
 		end
 
 	make_from_code (a_terminology_id: STRING; code: STRING)
 		do
 			default_create
 			terminology_id := a_terminology_id
-			create code_list.make
-			code_list.compare_objects
 			code_list.extend (code)
 		end
 
@@ -52,8 +48,6 @@ feature -- Initialisation
 		do
 			default_create
 			terminology_id := a_terminology_code.terminology_id
-			create code_list.make
-			code_list.compare_objects
 			code_list.extend (a_terminology_code.code_string)
 		end
 
@@ -66,12 +60,22 @@ feature -- Access
 
 	terminology_version: detachable STRING
 
-	code_list: detachable LINKED_SET [STRING]
+	code_list: ARRAYED_LIST [STRING]
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
+
+	count: INTEGER
+			-- number of individual constraint items
+		do
+			Result := code_list.count
+		end
 
 	prototype_value: TERMINOLOGY_CODE
 		do
-			if attached code_list as cl then
-				create Result.make (terminology_id, cl.first)
+			if not code_list.is_empty then
+				create Result.make (terminology_id, code_list.first)
 			else
 				create Result.make (terminology_id, "01")
 			end
@@ -80,9 +84,13 @@ feature -- Access
 	code_count: INTEGER
 			-- number of codes in code_list
 		do
-			if attached code_list then
-				Result := code_list.count
-			end
+			Result := code_list.count
+		end
+
+	i_th_constraint (i: INTEGER): C_TERMINOLOGY_CODE
+			-- extract i-th code from list and make a TERMINOLOGY_CODE from that
+		do
+			create Result.make_from_code (terminology_id, code_list.i_th (i))
 		end
 
 feature -- Status Report
@@ -98,8 +106,8 @@ feature -- Status Report
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
 		do
 			if a_value.terminology_id.is_equal (terminology_id) then
-				if attached code_list as att_codes then
-					Result := att_codes.has (a_value.code_string)
+				if not code_list.is_empty then
+					Result := code_list.has (a_value.code_string)
 				else
 					Result := True
 				end
@@ -107,6 +115,21 @@ feature -- Status Report
 		end
 
 feature -- Modification
+
+	merge_tuple (other: like Current)
+			-- merge the constraints of `other' into this constraint object. We just add items to
+			-- the end of lists of constraints in the subtypes, since the constraints may represent
+			-- a tuple vector, in which case duplicates are allowed
+		do
+			code_list.merge_right (other.code_list)
+		end
+
+	add_code (a_code: STRING)
+		require
+			not attached code_list or else attached code_list as cl and then not cl.has (a_code)
+		do
+			code_list.extend (a_code)
+		end
 
 	set_terminology_version (a_version: STRING)
 		do
@@ -122,11 +145,13 @@ feature -- Modification
 
 feature {P_C_TERMINOLOGY_CODE} -- Modification
 
-	set_constraint (a_terminology_id: STRING; a_terminology_version: detachable STRING; a_code_list: detachable LINKED_SET [STRING])
+	set_constraint (a_terminology_id: STRING; a_terminology_version: detachable STRING; a_code_list: detachable ARRAYED_LIST [STRING])
 		do
 			terminology_id := a_terminology_id
 			terminology_version := a_terminology_version
-			code_list := a_code_list
+			if attached a_code_list as att_cl then
+				code_list := att_cl
+			end
 		end
 
 feature -- Output
@@ -141,13 +166,11 @@ feature -- Output
 			end
 			Result.append (Terminology_separator)
 
-			if attached code_list as clist then
-				across clist as code_list_csr loop
+			across code_list as code_list_csr loop
 				if not code_list_csr.is_first then
-						Result.append (", ")
-					end
-					Result.append (code_list_csr.item)
+					Result.append (", ")
 				end
+				Result.append (code_list_csr.item)
 			end
 
 			if attached assumed_value as av then
@@ -163,10 +186,21 @@ feature {NONE} -- Implementation
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if other.terminology_id.is_equal (terminology_id) then
-				if attached code_list as att_codes and then attached other.code_list as other_att_codes then
-					Result := att_codes.is_subset (other_att_codes)
-				end
+				Result := is_list_subset (code_list, other.code_list)
 			end
+		end
+
+	is_list_subset (list1, list2: like code_list): BOOLEAN
+			-- determine if list1 is a subset of list 2, even though they
+			-- might contain duplicates
+		local
+			set1, set2: ARRAYED_SET [STRING]
+		do
+			create set1.make (0)
+			set1.fill (list1)
+			create set2.make (0)
+			set2.fill (list2)
+			Result := set1.is_subset (set2)
 		end
 
 end

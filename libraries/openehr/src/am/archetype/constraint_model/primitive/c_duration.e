@@ -10,34 +10,20 @@ note
 class C_DURATION
 
 inherit
-	C_PRIMITIVE_OBJECT
+	C_TEMPORAL [ISO8601_DURATION]
 		redefine
-			default_create
-		end
-
-	DATE_TIME_ROUTINES
-		export
-			{NONE} all
-			{ANY} valid_iso8601_duration, iso8601_string_to_duration, valid_iso8601_duration_constraint_pattern
-		undefine
-			is_equal,
-			default_create,
-			out
+			valid_value, as_string, do_node_conforms_to
 		end
 
 create
 	make,
-	make_range,
+	make_interval,
+	make_list, make_list_simple, make_simple, 
 	make_from_pattern,
 	make_pattern_with_range,
 	default_create
 
 feature {NONE} -- Initialisation
-
-	default_create
-		do
-			rm_type_name := bare_type_name (({ISO8601_DURATION}).name)
-		end
 
 	make (a_pattern, a_lower_str, an_upper_str: detachable STRING; include_lower, include_upper: BOOLEAN)
 			-- Create from an ISO8601-based pattern, together with two ISO8601 strings representing an interval.
@@ -53,6 +39,7 @@ feature {NONE} -- Initialisation
 				iso8601_string_to_comparable_duration (l_str) <= iso8601_string_to_comparable_duration (u_str)
 		local
 			lower_duration, upper_duration: detachable ISO8601_DURATION
+			ivl: detachable INTERVAL [ISO8601_DURATION]
 		do
 			default_create
 			pattern := a_pattern
@@ -66,90 +53,75 @@ feature {NONE} -- Initialisation
 			end
 
 			if attached upper_duration as upper_dur and attached lower_duration as lower_dur then
-				create range.make_bounded (lower_dur, upper_dur, include_lower, include_upper)
+				if upper_dur.is_equal (lower_dur) then
+					create {POINT_INTERVAL [ISO8601_DURATION]} ivl.make (lower_dur)
+				else
+					create {PROPER_INTERVAL [ISO8601_DURATION]} ivl.make_bounded (lower_dur, upper_dur, include_lower, include_upper)
+				end
 			elseif attached upper_duration as upper_dur then
-				create range.make_lower_unbounded (upper_dur, include_upper)
+				create {PROPER_INTERVAL [ISO8601_DURATION]} ivl.make_lower_unbounded (upper_dur, include_upper)
 			elseif attached lower_duration as lower_dur then
-				create range.make_upper_unbounded (lower_dur, include_lower)
+				create {PROPER_INTERVAL [ISO8601_DURATION]} ivl.make_upper_unbounded (lower_dur, include_lower)
+			end
+			check attached ivl as att_ivl then
+				list.extend (att_ivl)
 			end
 		ensure
 			pattern_set: pattern = a_pattern
-			interval_if_lower_or_upper: (a_lower_str /= Void or an_upper_str /= Void) xor range = Void
+			interval_if_lower_or_upper: (a_lower_str /= Void or an_upper_str /= Void) xor list.is_empty
 		end
 
-	make_range (an_interval: attached like range)
-			-- Create from an ISO8601-based interval.
-		do
-			default_create
-			range := an_interval
-		ensure
-			interval_set: range = an_interval
-			pattern_void: pattern = Void
-		end
-
-	make_from_pattern (a_pattern: STRING)
-			-- Create from an ISO8601-based pattern.
-		require
-			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
-		do
-			default_create
-			pattern := a_pattern
-		ensure
-			pattern_set: pattern = a_pattern
-			interval_void: range = Void
-		end
-
-	make_pattern_with_range (a_pattern: STRING; an_interval: attached like range)
+	make_pattern_with_range (a_pattern: STRING; an_interval: INTERVAL [ISO8601_DURATION])
 			-- Create from an ISO8601-based pattern, together with an ISO8601-based interval.
 		require
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
 		do
 			default_create
+			create list.make (0)
+			list.extend (an_interval)
 			pattern := a_pattern
-			range := an_interval
 		ensure
 			pattern_set: pattern = a_pattern
-			interval_set: range = an_interval
+			interval_set: list.has (an_interval)
 		end
 
 feature -- Access
 
-	pattern: detachable STRING
-			-- ISO8601-based pattern.
-			-- Allowed patterns:
-			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
-
-	range: detachable INTERVAL [ISO8601_DURATION]
-			-- ISO8601-based interval.
-
-	prototype_value: ISO8601_DURATION
-			-- Default duration value.
+	string_to_item (a_str: STRING): ISO8601_DURATION
+			-- convert `a_str' to an object of type G
 		do
-			if attached range as rng then
-				if attached rng.lower as l then
-					Result := l
-				elseif attached rng.upper as u then
-					Result := u
-				else
-					create Result.default_create
-				end
-			else
-				-- Result := FIXME - generate a default from a pattern
-				create Result.default_create
-			end
+			Result := iso8601_string_to_duration (a_str)
 		end
 
 feature -- Status Report
 
-	valid_value (duration: ISO8601_DURATION): BOOLEAN
-			-- Is `duration' within `range'?
+	valid_value (a_value: ISO8601_DURATION): BOOLEAN
+			-- Is `a_value' within `range' and matches `pattern' if it is also defined?
 		do
+			if attached list as att_range then
+				Result := across att_range as ivl_csr some ivl_csr.item.has (a_value) end
+			end
 			if attached pattern then
 				-- FIXME: TO BE IMPLEMENTED
-				Result := True
+				Result := Result and True
 			end
+		end
 
-			Result := Result and (attached range as rng and then rng.has (duration))
+	valid_string (a_str: STRING): BOOLEAN
+			-- True if `a_str' is a valid ISO8601-based duration pattern.
+			-- Allowed patterns:
+			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
+		do
+			Result := valid_iso8601_duration (a_str)
+		end
+
+	valid_pattern_constraint (a_pattern: STRING): BOOLEAN
+		do
+			Result := valid_iso8601_duration_constraint_pattern (a_pattern)
+		end
+
+	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
+		do
 		end
 
 feature -- Output
@@ -161,25 +133,22 @@ feature -- Output
 			if attached pattern as pat then
 				Result.append (pat)
 			end
-			if attached range as rng then
+			if attached list as att_range then
 				if attached pattern then
 					Result.append_character ('/')
 				end
-				Result.append ("|" + rng.as_string + "|")
+				across att_range as ivl_csr loop
+					Result.append ("|" + ivl_csr.item.as_string + "|")
+					if not ivl_csr.is_last then
+						Result.append (", ")
+					end
+				end
 			end
 			if attached assumed_value as av then
 				Result.append ("; " + av.as_string)
 			end
 		ensure then
 			not_empty: not Result.is_empty
-		end
-
-feature {P_C_DURATION} -- Modification
-
-	set_constraint (a_range: like range; a_pattern: detachable STRING)
-		do
-			range := a_range
-			pattern := a_pattern
 		end
 
 feature {NONE} -- Implementation
@@ -193,8 +162,8 @@ feature {NONE} -- Implementation
 	pattern_conforms_to (other: like Current): BOOLEAN
 			-- True if the pattern of this node is or narrower than that in `other'
 		do
-			if attached pattern as pat and attached other.pattern as other_pat then
-				Result := compute_pattern_conformance (pat, other_pat)
+			if attached pattern as att_pattern and attached other.pattern as att_other_pattern then
+				Result := valid_pattern_constraint_replacement (att_pattern, att_other_pattern)
 			else
 				Result := True
 			end
@@ -203,22 +172,17 @@ feature {NONE} -- Implementation
 	range_conforms_to (other: like Current): BOOLEAN
 			-- True if the pattern of this node is or narrower than that in `other'
 		do
-			if attached range as rng and attached other.range as other_rng then
-				Result := other_rng.contains (rng)
+			if attached list as rng and attached other.list as other_rng then
+				across rng as ivl_csr loop
+					Result := across other_rng as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
+				end
 			else
 				Result := True
 			end
 		end
 
-	compute_pattern_conformance (a_child_pattern, a_pattern: STRING): BOOLEAN
-		do
-			-- TODO: child pattern can only narrow parent pattern
-			Result := True
-		end
-
 invariant
-	basic_validity: attached pattern or attached range
-	pattern_valid: attached pattern as p implies valid_iso8601_duration_constraint_pattern (p)
+	basic_validity: attached pattern or attached list
 
 end
 

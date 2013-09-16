@@ -12,9 +12,12 @@ class C_STRING
 
 inherit
 	C_PRIMITIVE_OBJECT
+		redefine
+			default_create
+		end
 
 create
-	make_open, make_from_string, make_from_regexp, make_from_string_list, make_any, default_create
+	make_open, make_simple, make_from_regexp, make_list, make_any, default_create
 
 feature -- Definitions
 
@@ -24,9 +27,15 @@ feature -- Definitions
 
 	alternative_delimiter: CHARACTER = '^'
 
-	Regexp_compile_error: STRING = "regexp COMPILE ERROR"
+	Invalid_regex_message: STRING = "invalid regex"
 
 feature -- Initialization
+
+	default_create
+		do
+			precursor
+			create list.make(0)
+		end
 
 	make_open
 			-- make completely open
@@ -35,15 +44,12 @@ feature -- Initialization
 			is_open := True
 		end
 
-	make_from_string (str: STRING)
+	make_simple (str: STRING)
 			-- make from a single string
 		do
 			default_create
-			create strings.make(0)
-			strings.compare_objects
-			strings.extend (str)
+			list.extend (str)
 		ensure
-			strings_attached: strings /= Void
 			not_open: not is_open
 			str_valid: valid_value (str)
 		end
@@ -63,52 +69,57 @@ feature -- Initialization
 			regexp_parser.set_case_insensitive (True)
 			regexp_parser.compile (s)
 			if not regexp_parser.is_compiled then
-				regexp := Regexp_compile_error.twin
+				regexp := Invalid_regex_message
 			end
 		ensure
-			strings_void: not attached strings
 			not_open: not is_open
-			regexp.is_equal(str) xor regexp.is_equal (Regexp_compile_error)
 		end
 
-	make_from_string_list (lst: LIST[STRING])
+	make_list (lst: LIST[STRING])
 		require
 			not lst.is_empty
 		do
 			default_create
-			create strings.make (0)
-			strings.compare_objects
-			strings.fill (lst)
+			list.compare_objects
+			list.fill (lst)
 		ensure
-			strings_attached: attached strings
 			not_open: not is_open
 		end
 
 	make_any
 			-- make using an open regex, i.e. ".*"
 		do
+			default_create
 			regexp := Regex_any_string
 		end
 
 feature -- Access
 
-	strings: detachable ARRAYED_LIST [STRING]
+	list: ARRAYED_LIST [STRING]
 			-- representation of constraint as allowed values for the constrained string
 
 	regexp: detachable STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
+	count: INTEGER
+			-- number of individual constraint items
+		do
+			Result := list.count
+		end
+
+	i_th_constraint (i: INTEGER): STRING
+			-- obtain i-th constraint item
+		do
+			Result := list.i_th (i)
+		end
+
 	prototype_value: STRING
 			-- 	generate a default value from this constraint object
 		do
-			if attached strings then
-				if is_open then
-					Result := "*"
-				elseif strings.count > 0 then
-					Result := strings.first
-				else
-					create Result.make_empty
-				end
+			if is_open then
+				Result := "*"
+			elseif not list.is_empty then
+				Result := list.first
 			elseif attached regexp then
 				create Result.make_empty
 				-- FIXME - what is default from regexp?
@@ -142,8 +153,8 @@ feature -- Status Report
 		do
 			if is_open then
 				Result := True
-			elseif attached strings as strs then
-				Result := strs.has (a_value)
+			elseif not list.is_empty then
+				Result := list.has (a_value)
 			elseif attached regexp_parser as rep then
 				Result := rep.recognizes (a_value)
 			end
@@ -155,6 +166,14 @@ feature -- Status Report
 
 feature -- Modification
 
+	merge_tuple (other: like Current)
+			-- merge the constraints of `other' into this constraint object. We just add items to
+			-- the end of lists of constraints in the subtypes, since the constraints may represent
+			-- a tuple vector, in which case duplicates are allowed
+		do
+			list.merge_right (other.list)
+		end
+
 	set_open
 		do
 			is_open := True
@@ -162,9 +181,9 @@ feature -- Modification
 
 	add_string (str: STRING)
 		do
-			strings.extend (str)
+			list.extend (str)
 		ensure
-			extended: strings.count = old strings.count + 1
+			extended: list.count = old list.count + 1
 			str_valid: valid_value (str)
 		end
 
@@ -175,7 +194,9 @@ feature {P_C_STRING} -- Modification
 			a_is_open: BOOLEAN;
 			a_regexp_default_delimiter: BOOLEAN)
 		do
-			strings := a_strings
+			if attached a_strings as strs then
+				list := strs
+			end
 			regexp := a_regexp
 			is_open := a_is_open
 			regexp_default_delimiter := a_regexp_default_delimiter
@@ -186,9 +207,8 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make_empty
-
-			if attached strings as strs then
-				across strs as strings_csr loop
+			if not list.is_empty then
+				across list as strings_csr loop
 					if not strings_csr.is_first then
 						Result.append (", ")
 					end
@@ -207,15 +227,14 @@ feature -- Output
 			if attached assumed_value then
 				Result.append("; %"" + assumed_value.out + "%"")
 			end
-
 		end
 
 	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
-			if attached strings as strs then
-				across strs as strings_csr loop
+			if not list.is_empty then
+				across list as strings_csr loop
 					if not strings_csr.is_first then
 						Result.append(", ")
 					end
@@ -251,7 +270,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	strings_regexp_mutex: strings /= Void xor regexp /= Void
+	strings_regexp_mutex: not list.is_empty xor regexp /= Void
 
 end
 

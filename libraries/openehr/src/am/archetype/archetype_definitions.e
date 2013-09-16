@@ -14,6 +14,8 @@ inherit
 
 	OG_DEFINITIONS
 
+	ODIN_DEFINITIONS
+
 feature -- Syntax Elements
 
 	Archetype_any_constraint: STRING = "*"
@@ -27,18 +29,6 @@ feature -- Definitions
 
 	Syntax_type_adl_html: STRING = "html"
 			-- Name of web publishing syntax type.
-
-	Syntax_type_odin: STRING = "odin"
-			-- Name of native ODIN syntax type.
-
-	Syntax_type_xml: STRING = "xml"
-			-- Name of XML syntax type.
-
-	Syntax_type_json: STRING = "json"
-			-- Name of JSON syntax type.
-
-	Syntax_type_yaml: STRING = "yaml"
-			-- Name of YAML syntax type.
 
 	File_ext_archetype_web_page: STRING = ".html"
 			-- Extension of web page containing ADL syntax
@@ -58,18 +48,6 @@ feature -- Definitions
 			-- and one is flat, and diff tools need to see the same extension;
 			-- also we don't want users to get confused about what kind of files
 			-- these are
-
-	File_ext_odin: STRING = ".odin"
-			-- Default extension for ODIN format files that don't have some other extension
-
-	File_ext_xml_default: STRING = ".xml"
-			-- Default extension for XML format archetype files that don't have some other extension
-
-	File_ext_json_default: STRING = ".json"
-			-- Default extension for JSON format archetype files that don't have some other extension
-
-	File_ext_yaml_default: STRING = ".yaml"
-			-- Default extension for YAML format archetype files that don't have some other extension
 
 	Aom_profile_file_match_regex: STRING
 		once

@@ -125,7 +125,7 @@ feature -- Output
 			Result.append(interval.lower.out)
 			if interval.upper_unbounded then
 				Result.append("..*")
-			elseif not interval.limits_equal then
+			elseif not interval.is_point then
 				Result.append(".." + interval.upper.out)
 			end
 

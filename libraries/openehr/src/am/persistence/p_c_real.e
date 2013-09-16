@@ -23,15 +23,12 @@ feature -- Initialisation
 	make (a_cpo: C_REAL)
 		do
 			precursor (a_cpo)
-			range := a_cpo.range
-			list := a_cpo.list
+			range := a_cpo.list
 		end
 
 feature -- Access
 
-	range: detachable INTERVAL [REAL]
-
-	list: detachable ARRAYED_LIST [REAL]
+	range: ARRAYED_LIST [INTERVAL [REAL]]
 
 feature -- Factory
 
@@ -44,7 +41,7 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_REAL)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (range, list)
+			a_c_o.set_constraint (range)
 		end
 
 end

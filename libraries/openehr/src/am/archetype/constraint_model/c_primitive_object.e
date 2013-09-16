@@ -30,6 +30,20 @@ feature -- Initialisaiton
 			rm_type_name.remove_head (2)
 		end
 
+feature -- Access
+
+	count: INTEGER
+			-- number of tuple constraint items
+		deferred
+		end
+
+	i_th_constraint (i: INTEGER): ANY
+			-- obtain i-th tuple constraint item
+		require
+			i > 0 and i <= count
+		deferred
+		end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN
@@ -44,6 +58,15 @@ feature -- Comparison
 			-- True if this node is a subset of, or the same as `other'
 		do
 			Result := precursor (other, an_rm_schema) and do_node_conforms_to (other)
+		end
+
+feature -- Modification
+
+	merge_tuple (other: like Current)
+			-- merge the constraints of `other' into this constraint object. We just add items to
+			-- the end of lists of constraints in the subtypes, since the constraints may represent
+			-- a tuple vector, in which case duplicates are allowed
+		deferred
 		end
 
 feature -- Output

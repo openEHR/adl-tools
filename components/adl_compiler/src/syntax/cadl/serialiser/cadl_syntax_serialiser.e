@@ -75,17 +75,17 @@ feature -- Visitor
 				if not (attached a_node.occurrences or
 					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
 				then
-					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-					last_result.append (symbol(SYM_START_CBLOCK))
-					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
+					last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+					last_result.append (symbol (SYM_START_CBLOCK))
+					last_result.append (apply_style (symbol (SYM_ANY), STYLE_VALUE))
 				end
 
 			-- output  'matches {%N' or 'matches { -- comment%N'
 			else
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (symbol(SYM_START_CBLOCK))
+				last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				last_result.append (symbol (SYM_START_CBLOCK))
 				serialise_comment (a_node)
-				last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (format_item (FMT_NEWLINE))
 			end
 		end
 
@@ -262,7 +262,12 @@ feature -- Visitor
 
 	start_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE_TUPLE
+		local
+			tuple_idx, tuple_count: INTEGER
+			att_cpo: C_PRIMITIVE_OBJECT
 		do
+			-- output:
+			--	[attr1, attr2, ...]
 			last_result.append (create_indent (depth) + "[")
 			across a_node.members as c_attrs_csr loop
 				last_result.append (c_attrs_csr.item.rm_attribute_name)
@@ -274,13 +279,37 @@ feature -- Visitor
 			end
 			last_result.append ("]" + format_item (FMT_SPACE))
 
+			-- output:
+			--	matches {
 			last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 			last_result.append (symbol (SYM_START_CBLOCK))
 			last_result.append (format_item(FMT_NEWLINE))
 
-			across a_node.children as c_obj_tuples_csr loop
-				start_c_object_tuple (c_obj_tuples_csr.item, depth + 1)
-				if not c_obj_tuples_csr.is_last then
+			-- loop across the tuples
+			tuple_count := a_node.tuple_count
+			from tuple_idx := 1 until tuple_idx > tuple_count loop
+				-- loop across the attributes contributing to the tuple
+				last_result.append (create_indent (depth+1) + "[")
+				across a_node.members as c_attrs_csr loop
+					check attached {C_PRIMITIVE_OBJECT} c_attrs_csr.item.children.first as cpo then
+						att_cpo := cpo
+					end
+					last_result.append (symbol (SYM_START_CBLOCK))
+					if attached {C_STRING} att_cpo as c_str and then attached c_str.list then
+						last_result.append (apply_style (c_str.clean_as_string (agent clean), STYLE_VALUE))
+					elseif attached {C_TERMINOLOGY_CODE} att_cpo as ctc then
+						serialise_c_terminology_code (ctc.i_th_constraint (tuple_idx), depth)
+					else
+						last_result.append (apply_style (att_cpo.i_th_constraint (tuple_idx).out, STYLE_VALUE))
+					end
+					last_result.append (symbol (SYM_END_CBLOCK))
+					if not c_attrs_csr.is_last then
+						last_result.append (", ")
+					end
+				end
+				last_result.append ("]" + format_item (FMT_SPACE))
+
+				if tuple_idx < tuple_count then
 					last_result.append (",")
 				end
 
@@ -292,6 +321,8 @@ feature -- Visitor
 				last_object_inline := False
 
 				last_result.append (format_item (FMT_NEWLINE))
+
+				tuple_idx := tuple_idx + 1
 			end
 		end
 
@@ -300,27 +331,6 @@ feature -- Visitor
 		do
 			last_result.append (create_indent (depth) + symbol (SYM_END_CBLOCK))
 			last_result.append (format_item (FMT_NEWLINE))
-		end
-
-	start_c_object_tuple (a_node: C_OBJECT_TUPLE; depth: INTEGER)
-			-- start serialising an C_OBJECT_TUPLE
-		do
-			last_result.append (create_indent (depth) + "[")
-			across a_node.members as c_prim_objs_csr loop
-				last_result.append (symbol (SYM_START_CBLOCK))
-				if attached {C_STRING} c_prim_objs_csr.item as c_str and then attached c_str.strings then
-					last_result.append (apply_style (c_str.clean_as_string (agent clean), STYLE_VALUE))
-				elseif attached {C_TERMINOLOGY_CODE} c_prim_objs_csr.item as ctc then
-					serialise_c_terminology_code (ctc, depth)
-				else
-					last_result.append (apply_style (c_prim_objs_csr.item.as_string, STYLE_VALUE))
-				end
-				last_result.append (symbol (SYM_END_CBLOCK))
-				if not c_prim_objs_csr.is_last then
-					last_result.append (", ")
-				end
-			end
-			last_result.append ("]" + format_item (FMT_SPACE))
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -410,7 +420,7 @@ feature -- Visitor
 			-- ignore objs which are under c_attribute_tuples
 			if not a_node.is_second_order_constrained then
 				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
-				if attached {C_STRING} a_node as c_str and then attached c_str.strings then
+				if attached {C_STRING} a_node as c_str and then attached c_str.list then
 					last_result.append (apply_style (c_str.clean_as_string (agent clean), STYLE_VALUE))
 					last_object_inline := True
 				elseif attached {C_TERMINOLOGY_CODE} a_node as ctc then
@@ -550,7 +560,7 @@ feature {NONE} -- Implementation
 					last_result.append (create_indent(depth) + apply_style(av.code_string, STYLE_TERM_REF))
 					last_result.append (apply_style ("]", STYLE_TERM_REF))
 					last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-							"assumed value", STYLE_COMMENT))
+							get_text (ec_assumed_text), STYLE_COMMENT))
 					last_result.append (format_item (FMT_NEWLINE))
 				end
 			end

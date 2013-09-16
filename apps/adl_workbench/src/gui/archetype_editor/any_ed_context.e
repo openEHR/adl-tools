@@ -257,6 +257,10 @@ feature {NONE} -- Implementation
 		end
 
 	c_terminology_code_str (a_ccp: C_TERMINOLOGY_CODE): STRING
+			-- output just the code rubrics from `a_ccp' in the form of a list:
+			--	term1
+			--	term2 (assumed)
+			--	term3
 		do
 			create Result.make_empty
 			if attached a_ccp.code_list as cl then

@@ -74,8 +74,6 @@ feature -- Conversion
 			cpo_precision: C_INTEGER
 			ccp_property: C_TERMINOLOGY_CODE
 			ca_tuple: detachable C_ATTRIBUTE_TUPLE
-			co_tuple: C_OBJECT_TUPLE
-			i: INTEGER
 		do
 			-- DV_QUANTITY root
 			create Result.make_anonymous (rm_type_name)
@@ -94,28 +92,19 @@ feature -- Conversion
 				if att_list.count > 1 then
 					create ca_tuple.make
 					Result.put_attribute_tuple (ca_tuple)
-
-					-- create CO_TUPLEs to accommodate the number of items in `list'
-					across att_list as list_items loop
-						create co_tuple.make
-						ca_tuple.put_child (co_tuple)
-					end
 				end
 
 				-- CA: magnitude
 				if has_magnitude_constraint then
 					create ca_magnitude.make_single ("magnitude", Void)
 					Result.put_attribute (ca_magnitude)
-					i := 1
-					across att_list as list_items loop
-						if attached list_items.item.magnitude as mag then
-							create cpo_magnitude.make_range (mag)
-							ca_magnitude.put_child (cpo_magnitude)
-
-							-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
-							if attached ca_tuple as ca_t then
-								ca_t.i_th_child (i).put_member (cpo_magnitude)
-								i := i + 1
+					across att_list as c_qty_items_csr loop
+						if attached c_qty_items_csr.item.magnitude as mag then
+							if c_qty_items_csr.is_first then
+								create cpo_magnitude.make_interval (mag)
+								ca_magnitude.put_child (cpo_magnitude)
+							elseif attached {C_REAL} ca_magnitude.children.first as c_real then
+								c_real.add_interval (mag)
 							end
 						end
 					end
@@ -127,18 +116,14 @@ feature -- Conversion
 				-- CA: units
 				create ca_units.make_single ("units", Void)
 				Result.put_attribute (ca_units)
-				i := 1
-				across att_list as list_items loop
-					create cpo_units.make_from_string (list_items.item.units)
-					ca_units.put_child (cpo_units)
-
-					-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
-					if attached ca_tuple as ca_t then
-						ca_t.i_th_child (i).put_member (cpo_units)
-						i := i + 1
+				across att_list as c_qty_items_csr loop
+					if c_qty_items_csr.is_first then
+						create cpo_units.make_simple (c_qty_items_csr.item.units)
+						ca_units.put_child (cpo_units)
+					elseif attached {C_STRING} ca_units.children.first as c_string then
+						c_string.add_string (c_qty_items_csr.item.units)
 					end
 				end
-
 				if attached ca_tuple as ca_t then
 					ca_t.put_member (ca_units)
 				end
@@ -147,16 +132,13 @@ feature -- Conversion
 				if has_precision_constraint then
 					create ca_precision.make_single ("precision", Void)
 					Result.put_attribute (ca_precision)
-					i := 1
-					across att_list as list_items loop
-						if attached list_items.item.precision as prec then
-							create cpo_precision.make_range (prec)
-							ca_precision.put_child (cpo_precision)
-
-							-- connect up the CA_TUPLE => CO_TUPLE => C_P_O
-							if attached ca_tuple as ca_t then
-								ca_t.i_th_child (i).put_member (cpo_precision)
-								i := i + 1
+					across att_list as c_qty_items_csr loop
+						if attached c_qty_items_csr.item.precision as prec then
+							if c_qty_items_csr.is_first then
+								create cpo_precision.make_interval (prec)
+								ca_precision.put_child (cpo_precision)
+							elseif attached {C_INTEGER} ca_precision.children.first as c_integer then
+								c_integer.add_interval (prec)
 							end
 						end
 					end

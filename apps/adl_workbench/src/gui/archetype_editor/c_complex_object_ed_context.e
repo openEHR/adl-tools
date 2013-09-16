@@ -82,18 +82,18 @@ feature -- Display
 			precursor (a_gui_grid)
 
 			-- set up child property nodes in grid
-			across c_attributes as attr_csr loop
-				attr_csr.item.prepare_display_in_grid (a_gui_grid)
+			across c_attributes as c_attrs_csr loop
+				c_attrs_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 
 			-- set up child property tuple nodes in grid
-			across c_attribute_tuples as attr_tuples_csr loop
-				attr_tuples_csr.item.prepare_display_in_grid (a_gui_grid)
+			across c_attribute_tuples as c_attr_tuples_csr loop
+				c_attr_tuples_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 
 			-- set up child property rm nodes in grid
-			across rm_attributes as attr_csr loop
-				attr_csr.item.prepare_display_in_grid (a_gui_grid)
+			across rm_attributes as rm_attrs_csr loop
+				rm_attrs_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 		end
 
@@ -101,12 +101,12 @@ feature -- Display
 		do
 			precursor (ui_settings)
 
-			across c_attributes as attr_csr loop
-				attr_csr.item.display_in_grid (ui_settings)
+			across c_attributes as c_attrs_csr loop
+				c_attrs_csr.item.display_in_grid (ui_settings)
 			end
 
-			across c_attribute_tuples as attr_tuples_csr loop
-				attr_tuples_csr.item.display_in_grid (ui_settings)
+			across c_attribute_tuples as c_attr_tuples_csr loop
+				c_attr_tuples_csr.item.display_in_grid (ui_settings)
 			end
 
 			if not rm_properties.is_empty then

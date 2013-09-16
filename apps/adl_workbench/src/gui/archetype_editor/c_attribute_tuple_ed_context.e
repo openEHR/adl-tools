@@ -40,14 +40,14 @@ feature -- Display
 			end
 
 			-- rm_name col
-			evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_string, Void, c_attribute_colour,
+			evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_string, node_tooltip_str, c_attribute_colour,
 				get_icon_pixmap ("rm/generic/c_attribute"))
 
 			-- set meaning column empty
 			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
 			-- update tooltip in RM column
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
+		--	evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
 			-- set constraint column
 			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
@@ -58,13 +58,13 @@ feature -- Display
 			precursor (ui_settings)
 
 			-- RM name col - if in technical mode, show primitive data type
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, Void, Void, Void)
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, Void, Void)
 
 			-- update tooltip in RM column
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
+		--	evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
 			-- set constraint column
-			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 		end
 
 feature -- Modification
@@ -121,6 +121,13 @@ feature {NONE} -- Implementation
 		end
 
 	rm_string: STRING
+			-- generate a set of attribute names in two possible forms:
+			-- If not technical_mode:
+			--	attr1, attr2, attr3
+			-- If technical_mode:
+			--	attr1: TYPE1
+			--	attr2: TYPE2
+			--	attr3: TYPE3
 		local
 			ca_rm_type: STRING
 		do
@@ -150,25 +157,26 @@ feature {NONE} -- Implementation
 
 	constraint_str: STRING
 		local
-			s: STRING
+			tuple_count, i: INTEGER
 		do
 			create Result.make_empty
 			if attached arch_node as c_attr_tuple then
-				across c_attr_tuple.children as c_obj_tuples_csr loop
-					across c_obj_tuples_csr.item.members as c_prim_objs_csr loop
-						if attached {C_TERMINOLOGY_CODE} c_prim_objs_csr.item as ctc then
-							s := c_terminology_code_str (ctc)
-						else
-							s := c_prim_objs_csr.item.as_string
+				tuple_count := c_attr_tuple.tuple_count
+				from i := 1 until i > tuple_count loop
+					across c_attr_tuple.members as ca_csr loop
+						if attached {C_TERMINOLOGY_CODE} ca_csr.item.children.first as ctc then
+							Result.append (c_terminology_code_str (ctc.i_th_constraint (i)))
+						elseif attached {C_PRIMITIVE_OBJECT} ca_csr.item.children.first as cpo then
+							Result.append (cpo.i_th_constraint (i).out)
 						end
-						Result.append (s)
-						if not c_prim_objs_csr.is_last then
+						if not ca_csr.is_last then
 							Result.append (", ")
 						end
 					end
-					if not c_obj_tuples_csr.is_last then
+					if i < tuple_count then
 						Result.append ("%N")
 					end
+					i := i + 1
 				end
 			end
 		end

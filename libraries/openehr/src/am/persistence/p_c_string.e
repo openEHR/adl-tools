@@ -23,7 +23,7 @@ feature -- Initialisation
 	make (a_cpo: C_STRING)
 		do
 			precursor (a_cpo)
-			strings := a_cpo.strings
+			strings := a_cpo.list
 			regexp := a_cpo.regexp
 			is_open := a_cpo.is_open
 			regexp_default_delimiter := a_cpo.regexp_default_delimiter

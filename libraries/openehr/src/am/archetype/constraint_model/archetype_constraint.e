@@ -74,7 +74,7 @@ feature -- Status report
 
 	is_second_order_constrained: BOOLEAN
 		do
-			Result := attached soc_parent
+			Result := attached soc_parent or else (attached parent as att_parent and then att_parent.is_second_order_constrained)
 		end
 
 feature -- Comparison

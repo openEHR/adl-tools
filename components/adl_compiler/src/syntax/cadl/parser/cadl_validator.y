@@ -86,7 +86,8 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_C_DV_QUANTITY ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
+%token ERR_CHARACTER ERR_STRING ERR_C_DV_QUANTITY ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
+%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -113,8 +114,6 @@ create
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 %type <C_ATTRIBUTE> c_attr_head
 
-%type <detachable C_OBJECT_TUPLE> c_tuple_values
-
 %type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
 %type <EXPR_BINARY_OPERATOR> boolean_binop_expr arithmetic_relop_expr arithmetic_arith_binop_expr arch_outer_constraint_expr boolean_constraint
@@ -124,7 +123,6 @@ create
 %type <INTEGER> integer_value
 %type <REAL> real_value
 %type <BOOLEAN> boolean_value
-%type <CHARACTER> character_value
 %type <ISO8601_DATE> date_value
 %type <ISO8601_DATE_TIME> date_time_value
 %type <ISO8601_TIME> time_value
@@ -133,16 +131,28 @@ create
 %type <STRING> string_value
 %type <URI> uri_value
 
-%type <ARRAYED_LIST[STRING]> string_list_value string_list_value_continue
-%type <ARRAYED_LIST[INTEGER]> integer_list_value
-%type <ARRAYED_LIST[REAL]> real_list_value
+%type <ARRAYED_LIST[STRING]> string_list
+%type <ARRAYED_LIST[INTEGER]> integer_list
+%type <ARRAYED_LIST[REAL]> real_list
+%type <ARRAYED_LIST[BOOLEAN]> boolean_list
+%type <ARRAYED_LIST[ISO8601_DATE]> date_list
+%type <ARRAYED_LIST[ISO8601_TIME]> time_list
+%type <ARRAYED_LIST[ISO8601_DATE_TIME]> date_time_list
+%type <ARRAYED_LIST[ISO8601_DURATION]> duration_list
 
-%type <INTERVAL[INTEGER]> integer_interval_value
-%type <INTERVAL[REAL]> real_interval_value
-%type <INTERVAL[ISO8601_TIME]> time_interval_value
-%type <INTERVAL[ISO8601_DATE]> date_interval_value
-%type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
-%type <INTERVAL[ISO8601_DURATION]> duration_interval_value
+%type <INTERVAL[INTEGER]> integer_interval
+%type <INTERVAL[REAL]> real_interval
+%type <INTERVAL[ISO8601_TIME]> time_interval
+%type <INTERVAL[ISO8601_DATE]> date_interval
+%type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval
+%type <INTERVAL[ISO8601_DURATION]> duration_interval
+
+%type <ARRAYED_LIST [INTERVAL[INTEGER]]> integer_interval_list
+%type <ARRAYED_LIST [INTERVAL[REAL]]> real_interval_list
+%type <ARRAYED_LIST [INTERVAL[ISO8601_TIME]]> time_interval_list
+%type <ARRAYED_LIST [INTERVAL[ISO8601_DATE]]> date_interval_list
+%type <ARRAYED_LIST [INTERVAL[ISO8601_DATE_TIME]]> date_time_interval_list
+%type <ARRAYED_LIST [INTERVAL[ISO8601_DURATION]]> duration_interval_list
 
 %type <STRING> arithmetic_binop_symbol
 %type <STRING> relational_binop_symbol
@@ -152,7 +162,7 @@ create
 %type <CARDINALITY> cardinality_range
 %type <CONSTRAINT_REF> constraint_ref
 %type <C_COMPLEX_OBJECT> c_ordinal
-%type <C_OBJECT_TUPLE> ordinal
+%type <ORDINAL> ordinal
 %type <C_BOOLEAN> c_boolean
 %type <C_STRING> c_string
 %type <C_DATE_TIME> c_date_time
@@ -162,6 +172,7 @@ create
 %type <C_REAL> c_real
 %type <C_INTEGER> c_integer
 %type <C_TERMINOLOGY_CODE> c_terminology_code
+%type <TERMINOLOGY_CODE> term_code
 
 %%
 
@@ -730,6 +741,8 @@ c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_
 			-- add the tuple to the current object node
 			object_nodes.item.put_attribute_tuple (c_attr_tuple)
 
+			c_attr_tuple_count := 0
+
 			debug ("ADL_parse")
 				indent.remove_tail (1)
 				io.put_string (indent + "C_ATTR_TUPLE (complete)%N") 
@@ -769,26 +782,32 @@ c_attr_tuple_value: '[' c_tuple_values ']'
 			debug ("ADL_parse")
 				io.put_string (indent + "c_attr_tuple_value - received one tuple %N") 
 			end
+			c_attr_tuple_count := c_attr_tuple_count + 1
 		}
 	;
 
 c_tuple_values: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK	
 		{
-			create $$.make
-			$$.put_member ($2)
-			c_attr_tuple.put_child ($$)
-			c_attr_tuple.i_th_member ($$.count).put_child ($2)
+			c_attr_tuple_item := 1
+			if c_attr_tuple_count = 0 then
+				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child ($2)
+			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
+				cpo.merge_tuple ($2)
+			end
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member ($$.count).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (1).rm_attribute_name + " %N")
 			end
 		} 
 	| c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
-			$$ := $1
-			$$.put_member ($4)
-			c_attr_tuple.i_th_member ($$.count).put_child ($4)
+			c_attr_tuple_item := c_attr_tuple_item + 1
+			if c_attr_tuple_count = 0 then
+				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child ($4)
+			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
+				cpo.merge_tuple ($4)
+			end
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member ($$.count).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
 			end
 		} 
 	;
@@ -1260,15 +1279,19 @@ occurrence_spec: integer_value
 
 c_integer: integer_value
 		{
-			create $$.make_list (create {ARRAYED_LIST [INTEGER]}.make_from_array (<<$1>>))
+			create $$.make_simple ($1)
 		}
-	| integer_list_value
+	| integer_list
+		{
+			create $$.make_list_simple ($1)
+		}
+	| integer_interval
+		{
+			create $$.make_interval ($1)
+		}
+	| integer_interval_list
 		{
 			create $$.make_list ($1)
-		}
-	| integer_interval_value
-		{
-			create $$.make_range ($1)
 		}
 	| c_integer ';' integer_value
 		{
@@ -1287,15 +1310,19 @@ c_integer: integer_value
 
 c_real: real_value
 		{
-			create $$.make_list (create {ARRAYED_LIST [REAL]}.make_from_array (<<$1>>))
+			create $$.make_simple ($1)
 		}
-	| real_list_value
+	| real_list
+		{
+			create $$.make_list_simple ($1)
+		}
+	| real_interval
+		{
+			create $$.make_interval ($1)
+		}
+	| real_interval_list
 		{
 			create $$.make_list ($1)
-		}
-	| real_interval_value
-		{
-			create $$.make_range ($1)
 		}
 	| c_real ';' real_value
 		{
@@ -1330,11 +1357,19 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		}
 	| date_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_DATE]}.make_point ($1))
+			create $$.make_simple ($1)
 		}
-	| date_interval_value
+	| date_list
 		{
-			create $$.make_range ($1)
+			create $$.make_list_simple ($1)
+		}
+	| date_interval
+		{
+			create $$.make_interval ($1)
+		}
+	| date_interval_list
+		{
+			create $$.make_list ($1)
 		}
 	| c_date ';' date_value
 		{
@@ -1368,11 +1403,19 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		}
 	| time_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_TIME]}.make_point ($1))
+			create $$.make_simple ($1)
 		}
-	| time_interval_value
+	| time_list
 		{
-			create $$.make_range ($1)
+			create $$.make_list_simple ($1)
+		}
+	| time_interval
+		{
+			create $$.make_interval ($1)
+		}
+	| time_interval_list
+		{
+			create $$.make_list ($1)
 		}
 	| c_time ';' time_value
 		{
@@ -1406,11 +1449,19 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	| date_time_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_DATE_TIME]}.make_point ($1))
+			create $$.make_simple ($1)
 		}
-	| date_time_interval_value
+	| date_time_list
 		{
-			create $$.make_range ($1)
+			create $$.make_list_simple ($1)
+		}
+	| date_time_interval
+		{
+			create $$.make_interval ($1)
+		}
+	| date_time_interval_list
+		{
+			create $$.make_list ($1)
 		}
 	| c_date_time ';' date_time_value
 		{
@@ -1435,7 +1486,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				abort_with_error (ec_SCDUPT, Void)
 			end
 		}
-	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval_value
+	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 		{
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_pattern_with_range ($1, $3)
@@ -1445,11 +1496,19 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		}
 	| duration_value
 		{
-			create $$.make_range (create {INTERVAL [ISO8601_DURATION]}.make_point ($1))
+			create $$.make_simple ($1)
 		}
-	| duration_interval_value
+	| duration_list
 		{
-			create $$.make_range ($1)
+			create $$.make_list_simple ($1)
+		}
+	| duration_interval
+		{
+			create $$.make_interval ($1)
+		}
+	| duration_interval_list
+		{
+			create $$.make_list ($1)
 		}
 	| c_duration ';' duration_value
 		{
@@ -1468,21 +1527,16 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 
 c_string: V_STRING 	-- single value, generates closed list
 		{
-			create $$.make_from_string_list (create {ARRAYED_LIST [STRING]}.make_from_array (<<$1>>))
+			create $$.make_simple ($1)
 		}
-	| string_list_value
+	| string_list
 		{
-			create $$.make_from_string_list ($1)
-		}
-	| string_list_value_continue
-		{
-			create $$.make_from_string_list ($1)
-			$$.set_open
+			create $$.make_list ($1)
 		}
 	| V_REGEXP -- regular expression with "//" or "^^" delimiters
 		{
 			create $$.make_from_regexp ($1.substring (2, $1.count - 1), $1.item (1) = '/')
-			if $$.regexp.is_equal ({C_STRING}.regexp_compile_error) then
+			if $$.regexp.is_equal ({C_STRING}.Invalid_regex_message) then
 				abort_with_error (ec_SCSRE, <<$1>>)
 			end
 		}
@@ -1514,7 +1568,6 @@ c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at00
 			$$ := constraint_model_factory.create_c_terminology_code ($1)
 		}
 	;
- 
 
 c_boolean: SYM_TRUE
 		{
@@ -1524,13 +1577,9 @@ c_boolean: SYM_TRUE
 		{
 			create $$.make_false
 		}
-	| SYM_TRUE ',' SYM_FALSE 
+	| boolean_list
 		{
-			create $$.make_true_false
-		}
-	| SYM_FALSE ',' SYM_TRUE 
-		{
-			create $$.make_true_false
+			create $$.make_list ($1)
 		}
 	| c_boolean ';' boolean_value
 		{
@@ -1558,50 +1607,44 @@ c_ordinal: ordinal
 
 			-- create a C_ATTR_TUPLE and connect the received C_OBJ_TUPLE to it
 			$$.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)
-			$$.attribute_tuples.first.put_child ($1)
 
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
 			$$.attribute_tuples.first.put_member ($$.c_attribute ("value"))
-			$$.c_attribute ("value").put_child ($1.i_th_member (1))
+			$$.c_attribute ("value").put_child (create {C_INTEGER}.make_simple ($1.value))
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
 			$$.attribute_tuples.first.put_member ($$.c_attribute ("symbol"))
-			$$.c_attribute ("symbol").put_child ($1.i_th_member (2))
+			$$.c_attribute ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code ($1.symbol))
 		}
 	| c_ordinal ',' ordinal
 		{
 			$$ := $1
 
-			check attached {C_INTEGER} $3.i_th_member (1) as ci then
-				c_int := ci
-			end
-			check attached {C_TERMINOLOGY_CODE} $3.i_th_member (2) as cs then
-				c_term_code := cs
-			end
 			if $$.c_attribute ("value").children.there_exists (
-					agent (co: C_OBJECT; c_val: C_INTEGER): BOOLEAN
+					agent (co: C_OBJECT; a_val: INTEGER): BOOLEAN
 						do
-							Result := attached {C_INTEGER} co as ci and then ci.node_conforms_to (c_val, rm_schema)
-						end (?, c_int)
+							Result := attached {C_INTEGER} co as ci and then ci.valid_value (a_val)
+						end (?, $3.value)
 				)
 			then
-				abort_with_error (ec_VCOV, <<c_int.prototype_value.out>>)
+				abort_with_error (ec_VCOV, <<$3.value.out>>)
 
 			elseif $$.c_attribute ("symbol").children.there_exists (
-					agent (co: C_OBJECT; c_sym: C_TERMINOLOGY_CODE): BOOLEAN
+					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
 						do
-							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.node_conforms_to (c_sym, rm_schema)
-						end (?, c_term_code)
+							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.valid_value (a_sym)
+						end (?, $3.symbol)
 				)
 			then
-				abort_with_error (ec_VCOC, <<c_term_code.prototype_value.out>>)
+				abort_with_error (ec_VCOC, <<$3.symbol.out>>)
 
-			else
-				$$.c_attribute ("value").put_child ($3.i_th_member (1))
-				$$.c_attribute ("symbol").put_child ($3.i_th_member (2))
-				$$.attribute_tuples.first.put_child ($3)
+			elseif attached {C_INTEGER} $$.c_attribute ("value").children.first as ci and 
+				attached {C_TERMINOLOGY_CODE} $$.c_attribute ("symbol").children.first as ctc 
+			then
+				ci.add_value ($3.value)
+				ctc.add_code ($3.symbol.code_string)
 			end
 		}
  	| c_ordinal ';' integer_value
@@ -1617,16 +1660,10 @@ c_ordinal: ordinal
  		}
 	;
 
-ordinal: integer_value SYM_INTERVAL_DELIM c_terminology_code
+ordinal: integer_value SYM_INTERVAL_DELIM term_code
 		{
-			-- create C_OBJECT_TUPLE
-			create $$.make 
-
-			-- create and add the value C_PRIMITIVE_OBJECT
-			$$.put_member (create {C_INTEGER}.make_simple_list ($1))
-
-			-- create and add the symbol C_PRIMITIVE_OBJECT
-			$$.put_member ($3)
+			-- create ORDINAL
+			create $$.make ($1, $3)
 		}
 	;
 
@@ -1667,29 +1704,28 @@ type_identifier: V_TYPE_IDENTIFIER
 -----------------------------------------------------------------
 ---------------------- BASIC DATA VALUES -----------------------
 
+
 string_value: V_STRING
 		{
 			$$ := $1
 		}
 	;
 
-string_list_value: V_STRING ',' V_STRING
+string_list: V_STRING ',' V_STRING
 		{
-			create $$.make (0)
-			$$.extend ($1)
-			$$.extend ($3)
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
-	| string_list_value ',' V_STRING
+	| string_list ',' V_STRING
 		{
-			$1.extend ($3)
+			$1.extend($3)
 			$$ := $1
 		}
-	;
-
---
--- FIXME: the first one below only for badly formed lists with superfluous continue marks
---
-string_list_value_continue: string_list_value ',' SYM_LIST_CONTINUE
+	--
+	-- FIXME: the following only for badly formed lists with superfluous continue marks
+	--
+	| string_list ',' SYM_LIST_CONTINUE
 		{
 			$$ := $1
 		}
@@ -1711,28 +1747,28 @@ integer_value: V_INTEGER {
 		}
 	;
 
-integer_list_value: integer_value ',' integer_value
+integer_list: integer_value ',' integer_value
 		{
-			create $$.make (0)
-			$$.extend ($1)
-			$$.extend ($3)
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
-	| integer_list_value ',' integer_value
+	| integer_list ',' integer_value
 		{
-			$1.extend ($3)
+			$1.extend($3)
 			$$ := $1
 		}
 	| integer_value ',' SYM_LIST_CONTINUE
 		{
-			create $$.make (0)
-			$$.extend ($1)
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
-integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
+integer_interval: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded ($2, $4, True, True)
+				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
@@ -1740,7 +1776,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded ($3, $5, False, True)
+				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
@@ -1748,7 +1784,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded ($2, $5, True, False)
+				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
@@ -1756,30 +1792,48 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded ($3, $6, False, False)
+				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded ($3, $6, False, False)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, False)
+			create {PROPER_INTERVAL [INTEGER]} $$.make_lower_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, True)
+			create {PROPER_INTERVAL [INTEGER]} $$.make_lower_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, False)
+			create {PROPER_INTERVAL [INTEGER]} $$.make_upper_unbounded ($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, True)
+			create {PROPER_INTERVAL [INTEGER]} $$.make_upper_unbounded ($3, True)
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create {POINT_INTERVAL [INTEGER]} $$.make ($2)
+		}
+	;
+
+integer_interval_list: integer_interval ',' integer_interval
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| integer_interval_list ',' integer_interval
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| integer_interval ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1797,28 +1851,28 @@ real_value: V_REAL
 		}
 	;
 
-real_list_value: real_value ',' real_value
+real_list: real_value ',' real_value
 		{
-			create $$.make (0)
-			$$.extend ($1)
-			$$.extend ($3)
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
 		}
-	| real_list_value ',' real_value
+	| real_list ',' real_value
 		{
-			$1.extend ($3)
+			$1.extend($3)
 			$$ := $1
 		}
 	| real_value ',' SYM_LIST_CONTINUE
 		{
-			create $$.make (0)
-			$$.extend ($1)
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
-real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
+real_interval: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded ($2, $4, True, True)
+				create {PROPER_INTERVAL [REAL]} $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
@@ -1826,7 +1880,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded ($3, $5, False, True)
+				create {PROPER_INTERVAL [REAL]} $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
@@ -1834,7 +1888,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded ($2, $5, True, False)
+				create {PROPER_INTERVAL [REAL]} $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
@@ -1842,30 +1896,48 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded ($3, $6, False, False)
+				create {PROPER_INTERVAL [REAL]} $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, False)
+			create {PROPER_INTERVAL [REAL]} $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, True)
+			create {PROPER_INTERVAL [REAL]} $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, False)
+			create {PROPER_INTERVAL [REAL]} $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, True)
+			create {PROPER_INTERVAL [REAL]} $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create {POINT_INTERVAL [REAL]} $$.make($2)
+		}
+	;
+
+real_interval_list: real_interval ',' real_interval
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| real_interval_list ',' real_interval
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| real_interval ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
@@ -1879,26 +1951,56 @@ boolean_value: SYM_TRUE
 		}
 	;
 
-character_value: V_CHARACTER
+boolean_list: boolean_value ',' boolean_value
 		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| boolean_list ',' boolean_value
+		{
+			$1.extend($3)
 			$$ := $1
+		}
+	| boolean_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
 date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 		{
-			if valid_iso8601_date ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_date($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VIDV, <<$1>>)
 			end
 		}
 	;
 
-date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
+date_list: date_value ',' date_value
+		{
+			create $$.make(0)
+			$$.extend ($1)
+			$$.extend ($3)
+		}
+	| date_list ',' date_value
+		{
+			$1.extend ($3)
+			$$ := $1
+		}
+	| date_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend ($1)
+		}
+	;
+
+date_interval: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded ($2, $4, True, True)
+				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
@@ -1906,7 +2008,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded ($3, $5, False, True)
+				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
@@ -1914,7 +2016,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded ($2, $5, True, False)
+				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
@@ -1922,47 +2024,83 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded ($3, $6, False, False)
+				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create {POINT_INTERVAL [ISO8601_DATE]} $$.make ($2)
+		}
+	;
+
+date_interval_list: date_interval ',' date_interval
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| date_interval_list ',' date_interval
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| date_interval ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
 time_value: V_ISO8601_EXTENDED_TIME
 		{
-			if valid_iso8601_time ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_time($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VITV, <<$1>>)
 			end
 		}
 	;
 
-time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
+time_list: time_value ',' time_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| time_list ',' time_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| time_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
+time_interval: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded ($2, $4, True, True)
+				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
@@ -1970,7 +2108,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded ($3, $5, False, True)
+				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
@@ -1978,7 +2116,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded ($2, $5, True, False)
+				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
@@ -1986,47 +2124,83 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded ($3, $6, False, False)
+				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create {POINT_INTERVAL [ISO8601_TIME]} $$.make ($2)
+		}
+	;
+
+time_interval_list: time_interval ',' time_interval
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| time_interval_list ',' time_interval
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| time_interval ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
 date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 		{
-			if valid_iso8601_date_time ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_date_time($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VIDTV, <<$1>>)
 			end
 		}
 	;
 
-date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value  SYM_INTERVAL_DELIM
+date_time_list: date_time_value ',' date_time_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| date_time_list ',' date_time_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| date_time_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
+date_time_interval: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value  SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded ($2, $4, True, True)
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
@@ -2034,7 +2208,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded ($3, $5, False, True)
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
@@ -2042,7 +2216,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded ($2, $5, True, False)
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
@@ -2050,47 +2224,83 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded ($3, $6, False, False)
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create {POINT_INTERVAL [ISO8601_DATE_TIME]} $$.make ($2)
+		}
+	;
+
+date_time_interval_list: date_time_interval ',' date_time_interval
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| date_time_interval_list ',' date_time_interval
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| date_time_interval ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
 		}
 	;
 
 duration_value: V_ISO8601_DURATION
 		{
-			if valid_iso8601_duration ($1) then
-				create $$.make_from_string ($1)
+			if valid_iso8601_duration($1) then
+				create $$.make_from_string($1)
 			else
 				abort_with_error (ec_VIDUV, <<$1>>)
 			end
 		}
 	;
 
-duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
+duration_list: duration_value ',' duration_value
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| duration_list ',' duration_value
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| duration_value ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
+duration_interval: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create $$.make_bounded ($2, $4, True, True)
+				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
 			end
@@ -2098,7 +2308,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create $$.make_bounded ($3, $5, False, True)
+				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
 			end
@@ -2106,7 +2316,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create $$.make_bounded ($2, $5, True, False)
+				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
 			end
@@ -2114,32 +2324,54 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create $$.make_bounded ($3, $6, False, False)
+				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_lower_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, False)
+			create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_upper_unbounded ($3, True)
+			create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_INTERVAL_DELIM
 		{
-			create $$.make_point ($2)
+			create {POINT_INTERVAL [ISO8601_DURATION]} $$.make ($2)
 		}
 	;
+
+duration_interval_list: duration_interval ',' duration_interval
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| duration_interval_list ',' duration_interval
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| duration_interval ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
+-----------------------------------------------------------------
+------------- END TAKEN FROM ODIN_VALIDATOR.Y -------------------
+-----------------------------------------------------------------
 
 term_code: V_QUALIFIED_TERM_CODE_REF
 		{
@@ -2157,9 +2389,6 @@ uri_value: V_URI
 		}
 	;
 
------------------------------------------------------------------
-------------- END TAKEN FROM ODIN_VALIDATOR.Y -------------------
------------------------------------------------------------------
 
 %%
 
@@ -2182,8 +2411,6 @@ feature -- Initialization
 			create rm_attribute_name.make_empty
 			create arch_internal_ref_rm_type_name.make_empty
 			create parent_path_str.make_empty
-			create c_term_code.make ("openehr")
-			create c_int.make_simple_list (0)
 		end
 
 	reset
@@ -2328,6 +2555,10 @@ feature {NONE} -- Parse Tree
 			create Result.make
 		end
 
+	c_attr_tuple_item: INTEGER
+
+	c_attr_tuple_count: INTEGER
+
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
@@ -2342,9 +2573,5 @@ feature {NONE} -- Implementation
 		attribute
 			create Result.make_root
 		end
-
-	-- legacy C_DV_ORDINAL variables
-	c_int: C_INTEGER
-	c_term_code: C_TERMINOLOGY_CODE
 
 end

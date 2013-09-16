@@ -48,7 +48,7 @@ feature -- Access
 
 	terminology_version: detachable STRING
 
-	code_list: detachable LINKED_SET [STRING]
+	code_list: detachable ARRAYED_LIST [STRING]
 
 end
 

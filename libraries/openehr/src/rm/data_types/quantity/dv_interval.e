@@ -6,15 +6,12 @@ note
 				 An interval is a contiguous subrange of a comparable base type.
 				 ]"
 	keywords:    "intervals"
-
 	requirements:"ISO 18308 TS V1.0 STR 3.5, 3.9"
 	design:      "openEHR Data Types Reference Model 1.7"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-
 
 class DV_INTERVAL [G -> DV_ORDERED]
 
@@ -22,9 +19,11 @@ inherit
 	DATA_VALUE
 		undefine
 			default_create,
-			is_equal
+			is_equal,
+			out
 		end
-	INTERVAL [G]
+	
+	PROPER_INTERVAL [G]
 		redefine
 			as_string
 		end

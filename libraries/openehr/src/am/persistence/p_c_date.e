@@ -23,13 +23,13 @@ feature -- Initialisation
 	make (a_cpo: C_DATE)
 		do
 			precursor (a_cpo)
-			range := a_cpo.range
+			range := a_cpo.list
 			pattern := a_cpo.pattern
 		end
 
 feature -- Access
 
-	range: detachable INTERVAL [ISO8601_DATE]
+	range: detachable ARRAYED_LIST [INTERVAL [ISO8601_DATE]]
 
 	pattern: detachable STRING
 

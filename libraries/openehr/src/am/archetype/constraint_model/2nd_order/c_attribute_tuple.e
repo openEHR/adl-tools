@@ -14,47 +14,25 @@ class C_ATTRIBUTE_TUPLE
 inherit
 	C_2ND_ORDER
 		redefine
-			member_type, make
+			member_type
 		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make
-		do
-			precursor
-			create children.make (0)
-		end
-
 feature -- Access
 
 	member_type: detachable C_ATTRIBUTE
 
-	children: ARRAYED_LIST [C_OBJECT_TUPLE]
-
-	i_th_child (i: INTEGER): C_OBJECT_TUPLE
-		require
-			i_in_range: i > 0 and i <= children.count
+	tuple_count: INTEGER
+			-- number of actual tuples. determined by looking at first child of first C_ATTRIBUTE and
+			-- obtaining its count
 		do
-			Result := children.i_th (i)
-		end
-
-	last_child: C_OBJECT_TUPLE
-		do
-			Result := children.last
-		end
-
-feature -- Status report
-
-feature -- Comparison
-
-feature -- Modification
-
-	put_child (a_child: C_OBJECT_TUPLE)
-		do
-			children.extend (a_child)
+			if not members.is_empty and then i_th_member (1).has_children and then
+				attached {C_PRIMITIVE_OBJECT} i_th_member (1).children.first as cpo
+			then
+				Result := cpo.count
+			end
 		end
 
 end

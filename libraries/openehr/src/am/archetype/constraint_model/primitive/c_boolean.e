@@ -14,48 +14,86 @@ inherit
 	C_PRIMITIVE_OBJECT
 
 create
-	make_true, make_false, make_true_false, default_create
+	make_true, make_false, make_true_false, make_list, default_create
 
 feature -- Initialisation
 
 	make_true
 		do
 			default_create
-			true_valid := True
+			list.extend (True)
 		end
 
 	make_false
 		do
 			default_create
-			false_valid := True
+			list.extend (False)
 		end
 
 	make_true_false
 		do
 			default_create
-			true_valid := True
-			false_valid := True
+			list.extend (True)
+			list.extend (False)
+		end
+
+	make_list (a_list: like list)
+		do
+			list := a_list
 		end
 
 feature -- Access
 
+	list: ARRAYED_LIST [BOOLEAN]
+		attribute
+			create Result.make (0)
+		end
+
+	count: INTEGER
+			-- number of individual constraint items
+		do
+			Result := list.count
+		end
+
+	i_th_constraint (i: INTEGER): BOOLEAN
+			-- obtain i-th constraint item
+		do
+			Result := list.i_th (i)
+		end
+
 	prototype_value: BOOLEAN_REF
 		do
 			create Result
-			Result.set_item (true_valid)
+			Result.set_item (list.first)
 		end
 
 feature -- Status Report
 
 	true_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "True"
+		do
+			Result := across list as list_csr some list_csr.item = True end
+		end
 
 	false_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "False"
+		do
+			Result := across list as list_csr some list_csr.item = False end
+		end
 
 	valid_value (a_value: BOOLEAN_REF): BOOLEAN
 		do
 			Result := (a_value.item and true_valid) or else (not a_value.item and false_valid)
+		end
+
+feature -- Modification
+
+	merge_tuple (other: like Current)
+			-- merge the constraints of `other' into this constraint object. We just add items to
+			-- the end of lists of constraints in the subtypes, since the constraints may represent
+			-- a tuple vector, in which case duplicates are allowed
+		do
+			list.merge_right (other.list)
 		end
 
 feature -- Output
@@ -63,34 +101,22 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make(0)
-			if true_valid then
-				Result.append(True_valid.out)
-				if false_valid then
+			across list as list_csr loop
+				Result.append_boolean (list_csr.item)
+				if not list_csr.is_last then
 					Result.append(", ")
 				end
 			end
-			if false_valid then
-				Result.append((not False_valid).out)
-			end
-			if assumed_value /= Void then
+			if attached assumed_value then
 				Result.append ("; " + assumed_value.out)
 			end
 		end
 
-	as_canonical_string: STRING
-		do
-			create Result.make(0)
-			Result.append ("<true_valid>" + true_valid.out + "</true_valid>")
-			Result.append ("<false_valid>" + false_valid.out + "</false_valid>")
-			Result.append ("<assumed_value>" + assumed_value.out + "</assumed_value>")
-		end
-
 feature {P_C_BOOLEAN} -- Modification
 
-	set_constraint (a_false_valid, a_true_valid: BOOLEAN)
+	set_constraint (a_list: like list)
 		do
-			false_valid := a_false_valid
-			true_valid := a_true_valid
+			list := a_list
 		end
 
 feature {NONE} -- Implementation

@@ -23,8 +23,7 @@ feature -- Initialisation
 	make (a_cpo: C_BOOLEAN)
 		do
 			precursor (a_cpo)
-			true_valid := a_cpo.true_valid
-			false_valid := a_cpo.false_valid
+			list := a_cpo.list
 		end
 
 feature -- Factory
@@ -38,16 +37,12 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_BOOLEAN)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (false_valid, true_valid)
+			a_c_o.set_constraint (list)
 		end
 
 feature -- Access
 
-	true_valid: BOOLEAN
-			-- True if the value being constrained is allowed to be "True"
-
-	false_valid: BOOLEAN
-			-- True if the value being constrained is allowed to be "False"
+	list: ARRAYED_LIST [BOOLEAN]
 
 end
 

@@ -110,7 +110,6 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			s: STRING
-			lpos: INTEGER
 		do
 			precursor (ui_settings)
 

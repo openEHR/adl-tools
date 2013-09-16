@@ -23,7 +23,7 @@ feature -- Initialisation
 	make (a_cpo: C_DATE_TIME)
 		do
 			precursor (a_cpo)
-			range := a_cpo.range
+			range := a_cpo.list
 			pattern := a_cpo.pattern
 		end
 
@@ -43,7 +43,7 @@ feature -- Factory
 
 feature -- Access
 
-	range: detachable INTERVAL [ISO8601_DATE_TIME]
+	range: detachable ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]
 
 	pattern: detachable STRING
 

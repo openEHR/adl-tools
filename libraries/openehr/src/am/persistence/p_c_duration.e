@@ -23,7 +23,7 @@ feature -- Initialisation
 	make (a_cpo: C_DURATION)
 		do
 			precursor (a_cpo)
-			range := a_cpo.range
+			range := a_cpo.list
 			pattern := a_cpo.pattern
 		end
 
@@ -31,7 +31,7 @@ feature -- Access
 
 	pattern: detachable STRING
 
-	range: detachable INTERVAL [ISO8601_DURATION]
+	range: detachable ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]
 
 feature -- Factory
 
