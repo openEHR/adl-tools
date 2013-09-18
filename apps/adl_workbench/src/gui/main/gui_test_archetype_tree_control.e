@@ -47,6 +47,13 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -156,6 +163,10 @@ feature {NONE} -- Initialisation
 			-- start / stop button
 			create evx_archetype_test_go_bn.make (get_icon_pixmap ("tool/stop"), get_icon_pixmap ("tool/go"), "Go", "Start running tests", agent archetype_test_go, agent archetype_test_stop)
 			evx_test_frame.extend (evx_archetype_test_go_bn.ev_button, False)
+
+			-- close button
+			create evx_close_bn.make (Void, Void, "Close", "Close test tool", agent on_close, Void)
+			evx_test_frame.extend (evx_close_bn.ev_button, False)
 
 
 			-- ==================== 'Diffs' frame =======================
@@ -378,6 +389,11 @@ feature -- Commands
 		end
 
 feature -- Events
+
+	on_close
+		do
+			gui_agents.close_test_tool_agent.call ([])
+		end
 
 	archetype_test_go
 			-- Start or stop a test run.
@@ -622,7 +638,7 @@ feature {NONE} -- Tests
 				if not val_code.is_empty then
 					if target.is_valid then
 						if not val_code.is_case_insensitive_equal (Regression_fail_code) and
-							(val_code.is_case_insensitive_equal (Regression_pass_code) or target.errors.has_matching_warning (val_code)) and
+							(val_code.is_case_insensitive_equal (Regression_pass_code) or else target.errors.has_matching_warning (val_code)) and
 							not target.errors.has_errors
 						then
 							Result := test_passed
@@ -630,7 +646,7 @@ feature {NONE} -- Tests
 							Result := test_failed
 						end
 					else
-						if val_code.is_case_insensitive_equal (Regression_fail_code) or target.errors.has_matching_error (val_code) then
+						if val_code.is_case_insensitive_equal (Regression_fail_code) or else target.errors.has_matching_error (val_code) then
 							Result := test_passed
 						else
 							Result := test_failed
@@ -736,7 +752,7 @@ feature {NONE} -- Implementation
 
 	ev_test_hbox: EV_HORIZONTAL_BOX
 	evx_remove_unused_codes_cb, evx_regression_test_cb: EVX_CHECK_BOX_CONTROL
-	evx_arch_test_refresh_bn, evx_archetype_test_go_bn, evx_diff_source_button,
+	evx_arch_test_refresh_bn, evx_archetype_test_go_bn, evx_diff_source_button, evx_close_bn,
 	evx_diff_flat_button, evx_diff_source_flat_button, evx_diff_source_round_trip_button: EVX_BUTTON
 	test_status_area: EV_TEXT
 

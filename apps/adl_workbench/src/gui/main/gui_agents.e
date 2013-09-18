@@ -43,6 +43,9 @@ feature -- Access
 	show_tool_with_artefact_agent: detachable FUNCTION [ANY, TUPLE [STRING], BOOLEAN]
 			-- if there is a live tool with artefact with id = `an_id' then show it and return True
 
+	close_test_tool_agent: detachable PROCEDURE [ANY, TUPLE]
+			-- agent to close test tool
+
 feature -- Modification
 
 	set_history_update_agent (an_agent: like history_update_agent)
@@ -123,6 +126,11 @@ feature -- Modification
 	set_show_tool_with_artefact_agent (an_agent: like show_tool_with_artefact_agent)
 		do
 			show_tool_with_artefact_agent := an_agent
+		end
+
+	set_close_test_tool_agent (an_agent: like close_test_tool_agent)
+		do
+			close_test_tool_agent := an_agent
 		end
 
 end
