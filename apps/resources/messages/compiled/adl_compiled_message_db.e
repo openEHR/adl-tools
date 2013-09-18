@@ -104,7 +104,7 @@ feature -- Initialisation
 			message_table.put ("Syntax error in ontology section", ec_SAON)
 			message_table.put ("Syntax error in annotations section", ec_SAAN)
 			message_table.put ("Syntax error: differential syntax not allowed in top-level archetype", ec_SDSF)
-			message_table.put ("Syntax error: invalid dADL section; error: $1", ec_SDINV)
+			message_table.put ("Syntax error: invalid ODIN section; error: $1", ec_SDINV)
 			message_table.put ("Syntax error: expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference", ec_SCCOG)
 			message_table.put ("Syntax error: expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement", ec_SUAID)
 			message_table.put ("Syntax error: invalid archetype id $1", ec_SUAIDI)
