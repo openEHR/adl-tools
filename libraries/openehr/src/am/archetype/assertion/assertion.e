@@ -45,14 +45,14 @@ feature -- Access
 	expression: EXPR_ITEM
 
 	extract_regex: detachable STRING
-			-- extract regex from id matches {/regex/} style assertion used in slots
+			-- extract regex from assertion of form:
+			-- 'id matches {/regex/}'
 		do
-			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then bin_op.operator.value = op_matches then
-				if attached {EXPR_LEAF} bin_op.right_operand as a_leaf then
-					if attached {C_STRING} a_leaf.item as c_str then
-						Result := c_str.regexp
-					end
-				end
+			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then bin_op.operator.value = op_matches and then
+				attached {EXPR_LEAF} bin_op.right_operand as rhs and then
+				attached {C_STRING} rhs.item as c_str
+			then
+				Result := c_str.regexp
 			end
 		end
 
@@ -61,7 +61,7 @@ feature -- Status Report
 	matches_any: BOOLEAN
 			-- True if the regex = {/.*/} i.e. matches anything
 		do
-			Result := extract_regex.is_equal (Regex_any_pattern)
+			Result := attached extract_regex as att_regex and then att_regex.is_equal (Regex_any_pattern)
 		end
 
 feature -- Output
