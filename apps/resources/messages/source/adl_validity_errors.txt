@@ -10,7 +10,7 @@
 
 templates = <
 	["en"] = <
-		------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
+		------------------------- syntax errors: see the cADL, ODIN and ADL syntax validators ---------------------
 		["SARID"] = <"Syntax error in artefact identification clause; expecting archetype id (format = model_issuer-package-class.concept.version)">
 		["SASID"] = <"Syntax error in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
 		["SACO"] = <"Syntax error in 'concept' clause; expecting TERM_CODE reference">
@@ -23,7 +23,7 @@ templates = <
 		["SAAN"] = <"Syntax error in annotations section">
 
 		["SDSF"] = <"Syntax error: differential syntax not allowed in top-level archetype">
-		["SDINV"] = <"Syntax error: invalid dADL section; error: $1">
+		["SDINV"] = <"Syntax error: invalid ODIN section; error: $1">
 		["SCCOG"] = <"Syntax error: expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
 		["SUAID"] = <"Syntax error: expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
 		["SUAIDI"] = <"Syntax error: invalid archetype id $1">
