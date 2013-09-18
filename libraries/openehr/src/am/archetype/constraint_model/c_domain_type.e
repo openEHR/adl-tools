@@ -95,7 +95,7 @@ feature -- Duplication
 
 	safe_deep_twin: like Current
 		local
-			dt_c_obj: detachable DT_COMPLEX_OBJECT_NODE
+			dt_c_obj: detachable DT_COMPLEX_OBJECT
 		do
 			if attached dt_representation as dt_co then
 				dt_c_obj := dt_co

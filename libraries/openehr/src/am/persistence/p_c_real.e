@@ -10,40 +10,29 @@ note
 class P_C_REAL
 
 inherit
-	P_C_PRIMITIVE_OBJECT
+	P_C_COMPARABLE [REAL]
 		redefine
-			make, populate_c_instance
+			list, populate_c_instance
 		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make (a_cpo: C_REAL)
-		do
-			precursor (a_cpo)
-			range := a_cpo.list
-		end
-
 feature -- Access
 
-	range: ARRAYED_LIST [INTERVAL [REAL]]
+	list: ARRAYED_LIST [INTERVAL [REAL]]
 
 feature -- Factory
 
 	create_c_primitive_object: C_REAL
 		do
-			create Result.default_create
+			create Result.make_list (list)
 			populate_c_instance (Result)
 		end
 
 	populate_c_instance (a_c_o: C_REAL)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (range)
 		end
 
 end
-
-

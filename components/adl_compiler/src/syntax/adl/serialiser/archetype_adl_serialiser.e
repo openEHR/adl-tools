@@ -63,7 +63,7 @@ feature -- Serialisation
 			end
 
 			if not desc_serialised.is_empty then
-				last_result.append (apply_style(symbol(SYM_DESCRIPTION), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_DESCRIPTION), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (desc_serialised)
 			end
 

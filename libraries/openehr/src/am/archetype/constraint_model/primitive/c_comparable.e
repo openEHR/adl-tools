@@ -101,7 +101,7 @@ feature -- Modification
 			-- the end of lists of constraints in the subtypes, since the constraints may represent
 			-- a tuple vector, in which case duplicates are allowed
 		do
-			list.merge_right (other.list)
+			list.append (other.list)
 		end
 
 	add_value (a_val: G)

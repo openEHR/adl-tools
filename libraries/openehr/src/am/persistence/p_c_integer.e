@@ -10,38 +10,29 @@ note
 class P_C_INTEGER
 
 inherit
-	P_C_PRIMITIVE_OBJECT
+	P_C_COMPARABLE [INTEGER]
 		redefine
-			make, populate_c_instance
+			list, populate_c_instance
 		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make (a_cpo: C_INTEGER)
-		do
-			precursor (a_cpo)
-			range := a_cpo.list
-		end
-
 feature -- Access
 
-	range: ARRAYED_LIST [INTERVAL [INTEGER]]
+	list: ARRAYED_LIST [INTERVAL [INTEGER]]
 
 feature -- Factory
 
 	create_c_primitive_object: C_INTEGER
 		do
-			create Result.default_create
+			create Result.make_list (list)
 			populate_c_instance (Result)
 		end
 
 	populate_c_instance (a_c_o: C_INTEGER)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (range)
 		end
 
 end

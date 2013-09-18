@@ -7,31 +7,25 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class P_C_DATE
+deferred class P_C_TEMPORAL [G -> ISO8601_TYPE]
 
 inherit
-	P_C_TEMPORAL [ISO8601_DATE]
+	P_C_COMPARABLE [G]
 		redefine
-			populate_c_instance
+			make
 		end
 
-create
-	make
+feature -- Initialisation
 
-feature -- Factory
-
-	create_c_primitive_object: C_DATE
+	make (a_cpo: C_TEMPORAL[G])
 		do
-			create Result.default_create
-			populate_c_instance (Result)
+			precursor (a_cpo)
+			pattern := a_cpo.pattern
 		end
 
-	populate_c_instance (a_c_o: C_DATE)
-		do
-			precursor (a_c_o)
-			a_c_o.set_constraint (list, pattern)
-		end
+feature -- Access
+
+	pattern: detachable STRING
 
 end
-
 

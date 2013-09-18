@@ -165,6 +165,12 @@ feature -- Status Report
 			Result := attributes.count > 0
 		end
 
+	has_attribute_tuples: BOOLEAN
+			-- True if any attribute nodes below this node
+		do
+			Result := attached attribute_tuples
+		end
+
 	has_path (a_path: STRING): BOOLEAN
 			-- does a_path exist from this node?
 		do

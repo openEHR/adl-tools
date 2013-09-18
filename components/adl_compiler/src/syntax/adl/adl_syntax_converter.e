@@ -200,7 +200,7 @@ feature -- ADL 1.5 conversions
 			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_to_nested (dt: DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_to_nested (dt: DT_COMPLEX_OBJECT)
 			-- convert 'items' nodes in ontology to nested form, corresponding to declaration like
 			-- HASH_TABLE [HASH_TABLE [ARCHETPE_TERM, STRING]]; the ADL way of expression ontology
 			-- has nested structures in the AOM, but non-nested structures in the ODIN, due to
@@ -224,14 +224,14 @@ feature -- ADL 1.5 conversions
 			convert_ontology_items_to_nested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_nested (dt: DT_COMPLEX_OBJECT_NODE; attr_name: STRING)
+	convert_ontology_items_to_nested (dt: DT_COMPLEX_OBJECT; attr_name: STRING)
 			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
 		do
 			if dt.has_attribute (attr_name) then
 				across dt.attribute_node (attr_name).children as dt_objs_csr loop
-					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
+					if attached {DT_COMPLEX_OBJECT} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
 						attached dt_co.attribute_node ("items") as dt_attr
 					then
 						dt_attr.set_nested_container
@@ -240,7 +240,7 @@ feature -- ADL 1.5 conversions
 			end
 		end
 
-	convert_ontology_to_unnested (dt: DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_to_unnested (dt: DT_COMPLEX_OBJECT)
 			-- routine to reverse effects of `convert_ontology_to_nested' for
 			-- standard ADL1.4 style serialisation
 		do
@@ -250,14 +250,14 @@ feature -- ADL 1.5 conversions
 			convert_ontology_items_to_unnested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_unnested (dt: DT_COMPLEX_OBJECT_NODE; attr_name: STRING)
+	convert_ontology_items_to_unnested (dt: DT_COMPLEX_OBJECT; attr_name: STRING)
 			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
 		do
 			if dt.has_attribute (attr_name) then
 				across dt.attribute_node (attr_name).children as dt_objs_csr loop
-					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
+					if attached {DT_COMPLEX_OBJECT} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
 						attached dt_co.attribute_node ("items") as dt_attr
 					then
 						dt_attr.unset_nested

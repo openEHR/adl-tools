@@ -34,10 +34,6 @@ feature -- Access
 			Result := members.count
 		end
 
-feature -- Status report
-
-feature -- Comparison
-
 feature -- Modification
 
 	put_member (a_member: attached like member_type)

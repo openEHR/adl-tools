@@ -10,28 +10,13 @@ note
 class P_C_TIME
 
 inherit
-	P_C_PRIMITIVE_OBJECT
+	P_C_TEMPORAL [ISO8601_TIME]
 		redefine
-			make, populate_c_instance
+			populate_c_instance
 		end
 
 create
 	make
-
-feature -- Initialisation
-
-	make (a_cpo: C_TIME)
-		do
-			precursor (a_cpo)
-			range := a_cpo.list
-			pattern := a_cpo.pattern
-		end
-
-feature -- Access
-
-	range: detachable ARRAYED_LIST [INTERVAL [ISO8601_TIME]]
-
-	pattern: detachable STRING
 
 feature -- Factory
 
@@ -44,7 +29,7 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_TIME)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (range, pattern)
+			a_c_o.set_constraint (list, pattern)
 		end
 
 end

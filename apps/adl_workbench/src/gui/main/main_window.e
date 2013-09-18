@@ -500,7 +500,7 @@ feature {NONE} -- Initialization
 			-- populate any statically populated controls
 			populate_ui_arch_output_version
 
-			-- setup anything else dependent on docking
+			-- set up anything else dependent on docking
 			view_new_class_menu_item.select_actions.extend (agent class_tools.create_new_tool)
 			view_new_arch_tool_menu_item.select_actions.extend (agent archetype_viewers.create_new_tool)
 

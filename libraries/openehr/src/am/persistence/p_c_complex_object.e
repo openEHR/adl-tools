@@ -21,6 +21,8 @@ create
 feature -- Initialisation
 
 	make (a_cco: C_COMPLEX_OBJECT)
+		local
+			attr_tuples: ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
 		do
 			precursor (a_cco)
 			if a_cco.has_attributes then
@@ -28,12 +30,22 @@ feature -- Initialisation
 				across a_cco.attributes as ca_csr loop
 					attributes.extend (create {P_C_ATTRIBUTE}.make (ca_csr.item))
 				end
+
+				if a_cco.has_attribute_tuples then
+					create attr_tuples.make (0)
+					across a_cco.attribute_tuples as ca_tuple_csr loop
+						attr_tuples.extend (create {P_C_ATTRIBUTE_TUPLE}.make (ca_tuple_csr.item))
+					end
+					attribute_tuples := attr_tuples
+				end
 			end
 		end
 
 feature -- Access
 
 	attributes: detachable ARRAYED_LIST [P_C_ATTRIBUTE]
+
+	attribute_tuples: detachable ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
 
 feature -- Factory
 
@@ -51,9 +63,15 @@ feature -- Factory
 			-- populate fields not already populated from creation of a C_XXX instance
 		do
 			precursor (a_c_o)
-			if attached attributes then
-				across attributes as attrs_csr loop
+			if attached attributes as attrs then
+				across attrs as attrs_csr loop
 					a_c_o.put_attribute (attrs_csr.item.create_c_attribute)
+				end
+
+				if attached attribute_tuples as attr_tuples then
+					across attr_tuples as ca_tuples_csr loop
+						a_c_o.put_attribute_tuple (ca_tuples_csr.item.create_c_attribute_tuple (a_c_o.attributes))
+					end
 				end
 			end
 		end

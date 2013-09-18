@@ -23,7 +23,7 @@ feature -- Initialisation
 	make (a_cpo: C_STRING)
 		do
 			precursor (a_cpo)
-			strings := a_cpo.list
+			list := a_cpo.list
 			regexp := a_cpo.regexp
 			is_open := a_cpo.is_open
 			regexp_default_delimiter := a_cpo.regexp_default_delimiter
@@ -31,7 +31,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	strings: detachable ARRAYED_LIST [STRING]
+	list: detachable ARRAYED_LIST [STRING]
 
 	regexp: detachable STRING
 
@@ -50,7 +50,7 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_STRING)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (strings, regexp, is_open, regexp_default_delimiter)
+			a_c_o.set_constraint (list, regexp, is_open, regexp_default_delimiter)
 		end
 
 end

@@ -121,7 +121,7 @@ feature -- Modification
 			-- the end of lists of constraints in the subtypes, since the constraints may represent
 			-- a tuple vector, in which case duplicates are allowed
 		do
-			code_list.merge_right (other.code_list)
+			code_list.append (other.code_list)
 		end
 
 	add_code (a_code: STRING)

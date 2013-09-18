@@ -307,7 +307,7 @@ feature -- Visitor
 						last_result.append (", ")
 					end
 				end
-				last_result.append ("]" + format_item (FMT_SPACE))
+				last_result.append ("]")
 
 				if tuple_idx < tuple_count then
 					last_result.append (",")
