@@ -291,12 +291,12 @@ feature -- Visitor
 				-- loop across the attributes contributing to the tuple
 				last_result.append (create_indent (depth+1) + "[")
 				across a_node.members as c_attrs_csr loop
+					last_result.append (symbol (SYM_START_CBLOCK))
 					check attached {C_PRIMITIVE_OBJECT} c_attrs_csr.item.children.first as cpo then
 						att_cpo := cpo
 					end
-					last_result.append (symbol (SYM_START_CBLOCK))
-					if attached {C_STRING} att_cpo as c_str and then attached c_str.list then
-						last_result.append (apply_style (c_str.clean_as_string (agent clean), STYLE_VALUE))
+					if attached {C_STRING} att_cpo as c_str then
+						last_result.append (apply_style (clean (c_str.i_th_constraint (tuple_idx)), STYLE_VALUE))
 					elseif attached {C_TERMINOLOGY_CODE} att_cpo as ctc then
 						serialise_c_terminology_code (ctc.i_th_constraint (tuple_idx), depth)
 					else
