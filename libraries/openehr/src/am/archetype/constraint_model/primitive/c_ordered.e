@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class C_COMPARABLE [G -> COMPARABLE create default_create end]
+deferred class C_ORDERED [G -> COMPARABLE create default_create end]
 
 inherit
 	C_PRIMITIVE_OBJECT
@@ -60,7 +60,7 @@ feature -- Access
 
 	list: ARRAYED_LIST [INTERVAL [G]]
 
-	count: INTEGER
+	list_count: INTEGER
 			-- number of individual constraint items
 		do
 			Result := list.count
