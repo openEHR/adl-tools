@@ -17,7 +17,7 @@ inherit
 
 feature -- Initialisation
 
-	make (a_cc: C_COMPARABLE [G])
+	make (a_cc: C_ORDERED [G])
 		do
 			precursor (a_cc)
 			list := a_cc.list

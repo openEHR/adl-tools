@@ -10,7 +10,7 @@ note
 deferred class C_TEMPORAL [G -> ISO8601_TYPE create default_create, make_from_string end]
 
 inherit
-	C_COMPARABLE [G]
+	C_ORDERED [G]
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
@@ -28,7 +28,7 @@ feature -- Initialisation
 
 	default_create
 		do
-			precursor {C_COMPARABLE}
+			precursor {C_ORDERED}
 			rm_type_name := bare_type_name (({G}).name)
 		end
 
