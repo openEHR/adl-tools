@@ -32,7 +32,7 @@ feature -- Initialisaiton
 
 feature -- Access
 
-	count: INTEGER
+	list_count: INTEGER
 			-- number of tuple constraint items
 		deferred
 		end
@@ -40,7 +40,7 @@ feature -- Access
 	i_th_constraint (i: INTEGER): ANY
 			-- obtain i-th tuple constraint item
 		require
-			i > 0 and i <= count
+			i > 0 and i <= list_count
 		deferred
 		end
 
