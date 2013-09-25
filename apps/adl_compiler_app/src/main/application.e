@@ -36,7 +36,7 @@ feature -- Initialization
 	main
 		local
 			repo_table: REPOSITORY_CONFIG_TABLE
-			new_repo: STRING
+			new_repo: detachable STRING
 		do
 			app_root.initialise_app
 			if not app_root.has_errors then
@@ -53,7 +53,9 @@ feature -- Initialization
 						else
 							new_repo := app_root.repository_config_table.current_repository_name
 						end
-						app_root.repository_config_table.set_current_repository_name (new_repo)
+						check attached new_repo as att_new_repo then
+							app_root.repository_config_table.set_current_repository_name (att_new_repo)
+						end
 
 						print (get_text (ec_rep_populate_progress_info))
 						app_root.use_current_repository (False)

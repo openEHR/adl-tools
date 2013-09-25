@@ -23,6 +23,8 @@
 		<library name="gobo_lexical_skl" location="$GOBO\library\lexical\library_skl.ecf"/>
 		<library name="gobo_parse" location="$GOBO\library\parse\library.ecf"/>
 		<library name="gobo_parse_skl" location="$GOBO\library\parse\library_skl.ecf"/>
+		<library name="gobo_regexp" location="$GOBO\library\regexp\library.ecf"/>
+		<library name="gobo_utility" location="$GOBO\library\utility\library.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n-safe.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
@@ -55,12 +57,9 @@
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
 			</option>
-			<visible class="C_DV_ORDINAL"/>
-			<visible class="C_CODE_PHRASE"/>
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="CODE_PHRASE"/>
 		</cluster>
-		<cluster name="adl_parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
 
 		<override name="vendor_fixes" location="$EOMF\library\vendor-fixes\" recursive="true">
