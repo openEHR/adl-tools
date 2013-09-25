@@ -12,7 +12,7 @@ class P_C_BOOLEAN
 inherit
 	P_C_PRIMITIVE_OBJECT
 		redefine
-			make, populate_c_instance
+			make, assumed_value, populate_c_instance
 		end
 
 create
@@ -25,6 +25,11 @@ feature -- Initialisation
 			precursor (a_cpo)
 			list := a_cpo.list
 		end
+
+feature -- Access
+
+    assumed_value: BOOLEAN_REF
+    		-- FIXME: only needed because 7.3 compiler fails to correctly infer type from predecessor
 
 feature -- Factory
 

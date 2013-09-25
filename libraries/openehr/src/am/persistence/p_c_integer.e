@@ -12,13 +12,16 @@ class P_C_INTEGER
 inherit
 	P_C_COMPARABLE [INTEGER]
 		redefine
-			list, populate_c_instance
+			assumed_value, list, populate_c_instance
 		end
 
 create
 	make
 
 feature -- Access
+
+    assumed_value: INTEGER_REF
+    		-- FIXME: only needed because 7.3 compiler fails to correctly infer type from predecessor
 
 	list: ARRAYED_LIST [INTERVAL [INTEGER]]
 
