@@ -31,7 +31,7 @@ feature -- Access
 			if not members.is_empty and then i_th_member (1).has_children and then
 				attached {C_PRIMITIVE_OBJECT} i_th_member (1).children.first as cpo
 			then
-				Result := cpo.count
+				Result := cpo.list_count
 			end
 		end
 

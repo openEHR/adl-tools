@@ -101,7 +101,7 @@ feature -- Access
 	regexp: detachable STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
-	count: INTEGER
+	list_count: INTEGER
 			-- number of individual constraint items
 		do
 			Result := list.count

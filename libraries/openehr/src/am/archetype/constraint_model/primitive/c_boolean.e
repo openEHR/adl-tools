@@ -39,6 +39,7 @@ feature -- Initialisation
 
 	make_list (a_list: like list)
 		do
+			default_create
 			list := a_list
 		end
 
@@ -49,7 +50,7 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	count: INTEGER
+	list_count: INTEGER
 			-- number of individual constraint items
 		do
 			Result := list.count

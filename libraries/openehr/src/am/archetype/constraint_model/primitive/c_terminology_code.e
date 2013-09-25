@@ -66,7 +66,7 @@ feature -- Access
 			Result.compare_objects
 		end
 
-	count: INTEGER
+	list_count: INTEGER
 			-- number of individual constraint items
 		do
 			Result := code_list.count
