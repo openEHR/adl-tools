@@ -10,10 +10,10 @@ note
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_PHASE_2_VALIDATOR
+class AOM_PHASE_2_VALIDATOR
 
 inherit
-	ARCHETYPE_VALIDATOR
+	AOM_VALIDATOR
 		redefine
 			validate, target
 		end

@@ -12,7 +12,7 @@ note
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCHETYPE_VALIDATOR
+deferred class AOM_VALIDATOR
 
 inherit
 	AUTHORED_RESOURCE_VALIDATOR

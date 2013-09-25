@@ -92,7 +92,7 @@ feature -- Validation
 
 	phase_1_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		local
-			proc: ARCHETYPE_PHASE_1_VALIDATOR
+			proc: AOM_PHASE_1_VALIDATOR
 		do
 			validation_passed := False
 			if attached phase_1_validator as pv then
@@ -109,7 +109,7 @@ feature -- Validation
 
 	phase_2_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		local
-			proc: ARCHETYPE_PHASE_2_VALIDATOR
+			proc: AOM_PHASE_2_VALIDATOR
 		do
 			validation_passed := False
 			if attached phase_2_validator as pv then
@@ -126,7 +126,7 @@ feature -- Validation
 
 	phase_3_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		local
-			proc: ARCHETYPE_PHASE_3_VALIDATOR
+			proc: AOM_PHASE_3_VALIDATOR
 		do
 			validation_passed := False
 			if attached phase_3_validator as pv then
@@ -471,19 +471,19 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	phase_1_validator: detachable ARCHETYPE_PHASE_1_VALIDATOR
+	phase_1_validator: detachable AOM_PHASE_1_VALIDATOR
 		note
 			option: stable
 		attribute
 		end
 
-	phase_2_validator: detachable ARCHETYPE_PHASE_2_VALIDATOR
+	phase_2_validator: detachable AOM_PHASE_2_VALIDATOR
 		note
 			option: stable
 		attribute
 		end
 
-	phase_3_validator: detachable ARCHETYPE_PHASE_3_VALIDATOR
+	phase_3_validator: detachable AOM_PHASE_3_VALIDATOR
 		note
 			option: stable
 		attribute
