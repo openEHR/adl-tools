@@ -172,6 +172,10 @@ templates = <
 		["view_menu_new_class_tab_text"] = <"New &Class Tab">
 		["view_menu_reset_layout_text"] = <"&Reset tool layout">
 
+		["history_menu_text"] = <"H&istory">
+		["history_menu_back_text"] = <"&Back">
+		["history_menu_forward_text"] = <"&Forward">
+
 		["aom_profiles_menu_text"] = <"AOM &Profiles">
 		["aom_profiles_menu_configure_text"] = <"&Configure">
 
@@ -206,6 +210,10 @@ templates = <
 		["help_menu_ckm_text"] = <"Clinical &Knowledge Manager">
 		["help_menu_report_bug_text"] = <"Report a &Bug">
 		["help_menu_about_text"] = <"&About AWB">
+
+		-- MAIN_WINDOW - Toolbar
+		["history_button_back_one_item_text"] = <"Back one item">
+		["history_button_forward_one_item_text"] = <"Forward one item">
 
 		-- MAIN_WINDOW - titles
 		["main_window_title"] = <"Archetype Definition Language $1 Workbench">

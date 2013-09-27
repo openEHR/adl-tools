@@ -170,6 +170,19 @@ feature -- Access
 
 feature -- Application Switches
 
+	last_exec_app_version: STRING
+			-- version of app when last run; used to detect if certain things
+			-- should be done on a new version of the app
+		do
+			Result := app_cfg.string_value ("/exec/app_version")
+		end
+
+	set_last_exec_app_version (a_ver: STRING)
+			-- set the version of app when last run
+		do
+			app_cfg.put_value ("/exec/app_version", a_ver)
+		end
+
 	current_work_directory: STRING
 			-- Directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
@@ -383,9 +396,14 @@ feature -- Application Switches
 		end
 
 	text_editor_command: STRING
-			-- Path of editor application for ADL files.
+			-- Path of editor application for ADL files; use default if nothing
+			-- configured
 		do
 			Result := app_cfg.string_value_env_var_sub ("/commands/text_editor_command")
+			if Result.is_empty then
+				Result := default_text_editor_command
+				set_text_editor_command (Result)
+			end
 		end
 
 	set_text_editor_command (a_value: STRING)
@@ -397,9 +415,14 @@ feature -- Application Switches
 		end
 
 	editor_app_command: STRING
-			-- Path of editor application for ADL files.
+			-- Path of editor application for ADL files; use default if nothing
+			-- configured
 		do
 			Result := app_cfg.string_value_env_var_sub ("/commands/editor_app_command")
+			if Result.is_empty then
+				Result := default_editor_app_command
+				set_editor_app_command (Result)
+			end
 		end
 
 	set_editor_app_command (a_value: STRING)
@@ -411,9 +434,14 @@ feature -- Application Switches
 		end
 
 	difftool_command: STRING
-			-- Path of diff tool application for ADL files.
+			-- Path of diff tool application for ADL files; use default if nothing
+			-- configured
 		do
 			Result := app_cfg.string_value_env_var_sub ("/commands/difftool_command")
+			if Result.is_empty then
+				Result := default_difftool_command
+				set_difftool_command (Result)
+			end
 		end
 
 	set_difftool_command (a_value: STRING)
@@ -446,27 +474,28 @@ feature {NONE} -- Implementation
 
 	splash_text: STRING
 			-- Text for splash screens, About boxes, etc.
-		local
-			version: OPENEHR_VERSION
 		once
-			create version
 			create Result.make_empty
-			Result.append ("ADL " + Latest_adl_version + " Workbench  version " + version.out + "%N")
+			Result.append ("ADL " + Latest_adl_version + " Workbench  version " + app_version.out + "%N")
 			Result.append ("(c) 2003- openEHR Foundation%N")
-			Result.append ("Source: https://github.com/openEHR/adl-tools.git%N")
-			Result.append ("Source license: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
-			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")
-			Result.append ("Funded by: Thomas Beale; Ocean Informatics%N")
-			Result.append ("Author: Thomas Beale%N")
-			Result.append ("Contributors: Peter Gummer%N")
+			Result.append ("         Source: https://github.com/openEHR/adl-tools.git%N")
+			Result.append ("        License: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
+			Result.append ("       Support: http://www.openehr.org/issues/browse/AWBPR%N")
+			Result.append ("    Funded by: Thomas Beale; Ocean Informatics%N")
+			Result.append ("          Author: Thomas Beale%N")
+			Result.append ("Contributors: Peter Gummer, Ian McNicoll MD%N")
 			Result.append ("Acknowledgements:%N")
 			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
 			Result.append ("  - Gobo parsing libraries and tools (http://www.gobosoft.com)%N")
 			Result.append ("  - Jonas Rask Design icons (http://jonasraskdesign.com)%N")
-			Result.append ("  - VisualPharm 'must-have' icons (http://www.visualpharm.com/)%N")
-			Result.append ("    under CC-BY-ND (http://creativecommons.org/licenses/by-nd/3.0/)%N")
+			Result.append ("  - VisualPharm (http://www.visualpharm.com/) 'must-have' icons (CC-BY-ND 3.0)%N")
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+	app_version: OPENEHR_VERSION
+		once
+			create Result
 		end
 
 end

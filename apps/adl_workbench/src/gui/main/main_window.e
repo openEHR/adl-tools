@@ -21,7 +21,9 @@ inherit
 			is_equal, default_create, copy
 		end
 
-	EVX_WINDOW_ACCELERATORS
+	EV_KEY_CONSTANTS
+		export
+			{NONE} all
 		undefine
 			copy, default_create
 		end
@@ -78,9 +80,6 @@ feature {NONE} -- Initialization
 			arch_compile_tool_bar: EV_TOOL_BAR
 			tool_bar_sep_1: EV_TOOL_BAR_SEPARATOR
 			arch_output_version_label: EV_LABEL
-			a_menu: EV_MENU
-			a_menu_item: EV_MENU_ITEM
-			a_menu_sep: EV_MENU_SEPARATOR
 		do
 			create ev_root_vbox
 
@@ -156,334 +155,87 @@ feature {NONE} -- Initialization
 			ev_main_vbox.extend (viewer_main_cell)
 
 
-			-- ========== Menu ==============
-			create menu
+			-- ========== Menu bar ==============
+			create evx_menu_bar.make
 
-			-- ============== File Menu ===========
-			create a_menu
-			a_menu.set_text (get_text (ec_file_menu_text))
-			menu.extend (a_menu)
-
-			-- File > Open
-			create file_open_menu_item
-			file_open_menu_item.set_text (get_text (ec_file_menu_open_text))
-			file_open_menu_item.select_actions.extend (agent catalogue_tool.open_adhoc_archetype)
-			file_open_menu_item.set_pixmap (get_icon_pixmap ("tool/open_archetype"))
-			a_menu.extend (file_open_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- File > Save As
-			create file_save_as_menu_item
-			file_save_as_menu_item.set_text (get_text (ec_file_menu_save_as_text))
-			file_save_as_menu_item.select_actions.extend (agent catalogue_tool.save_source_archetype_as)
-			a_menu.extend (file_save_as_menu_item)
-
-			-- File > Export As
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_file_menu_export_text))
-			a_menu_item.select_actions.extend (agent catalogue_tool.export_source_archetype_as)
-			a_menu.extend (a_menu_item)
-
-			-- File > Export Flat As
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_file_menu_export_flat_as_text))
-			a_menu_item.select_actions.extend (agent catalogue_tool.export_flat_archetype_as)
-			a_menu.extend (a_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- File > Exit
-			create a_menu_item
-			a_menu_item.set_text ("E&xit")
-			a_menu_item.select_actions.extend (agent exit_app)
-			a_menu.extend (a_menu_item)
-
-
+			-- ========== File Menu ===========
+			evx_menu_bar.add_menu ("File", get_text (ec_file_menu_text))
+			evx_menu_bar.add_menu_item ("File>Open", get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent catalogue_tool.open_adhoc_archetype)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("File>Save As", get_text (ec_file_menu_save_as_text), Void, agent catalogue_tool.save_source_archetype_as)
+			evx_menu_bar.add_menu_item ("File>Export", get_text (ec_file_menu_export_text), Void, agent catalogue_tool.export_source_archetype_as)
+			evx_menu_bar.add_menu_item ("File>Export Flat", get_text (ec_file_menu_export_flat_as_text), Void, agent catalogue_tool.export_flat_archetype_as)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Exit", "E&xit", Void, agent exit_app)
 
 			-- ================== Edit menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_edit_menu_text))
-			menu.extend (a_menu)
-
-			-- Edit > Copy
-			create edit_copy_menu_item
-			edit_copy_menu_item.set_text (get_text (ec_edit_menu_text))
-			edit_copy_menu_item.select_actions.extend (agent text_widget_handler.on_copy)
-			a_menu.extend (edit_copy_menu_item)
-
-			-- Edit > Select All
-			create edit_select_all_menu_item
-			edit_select_all_menu_item.set_text (get_text (ec_edit_menu_select_all_text))
-			edit_select_all_menu_item.select_actions.extend (agent text_widget_handler.on_select_all)
-			a_menu.extend (edit_select_all_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Edit > Clipboard
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_edit_menu_clipboard_text))
-			a_menu_item.select_actions.extend (agent show_clipboard)
-			a_menu.extend (a_menu_item)
-
-
+			evx_menu_bar.add_menu ("Edit", get_text (ec_edit_menu_text))
+			evx_menu_bar.add_menu_item ("Edit>Copy", get_text (ec_edit_menu_copy_text), Void, agent text_widget_handler.on_copy)
+			evx_menu_bar.add_menu_item ("Edit>Select All", get_text (ec_edit_menu_select_all_text), Void, agent text_widget_handler.on_select_all)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Edit>Show Clipboard", get_text (ec_edit_menu_clipboard_text), Void, agent show_clipboard)
 
 			-- ================== View menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_view_menu_text))
-			menu.extend (a_menu)
-
-			-- View > Differential
-			create view_differential_menu_item
-			view_differential_menu_item.set_pixmap (get_icon_pixmap ("tool/diff_class"))
-			view_differential_menu_item.set_text (get_text (ec_view_menu_differential_text))
-			view_differential_menu_item.select_actions.extend (agent on_differential_view)
-			a_menu.extend (view_differential_menu_item)
-
-			-- View > Flat
-			create view_flat_menu_item
-			view_flat_menu_item.set_pixmap (get_icon_pixmap ("tool/flat_class"))
-			view_flat_menu_item.set_text (get_text (ec_view_menu_flat_text))
-			view_flat_menu_item.select_actions.extend (agent on_flat_view)
-			a_menu.extend (view_flat_menu_item)
-
-			-- View > New Archetype Tool
-			create view_new_arch_tool_menu_item
-			view_new_arch_tool_menu_item.set_text (get_text (ec_view_menu_new_arch_tab_text))
-			view_new_arch_tool_menu_item.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
-			a_menu.extend (view_new_arch_tool_menu_item)
-
-			-- View > New Class Tool
-			create view_new_class_menu_item
-			view_new_class_menu_item.set_text (get_text (ec_view_menu_new_class_tab_text))
-			view_new_class_menu_item.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
-			a_menu.extend (view_new_class_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- View > New Reset layout
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_view_menu_reset_layout_text))
-			a_menu_item.select_actions.extend (agent on_reset_tool_layout)
-			a_menu.extend (a_menu_item)
-
+			evx_menu_bar.add_menu ("View", get_text (ec_view_menu_text))
+			evx_menu_bar.add_menu_item ("View>Differential", get_text (ec_view_menu_differential_text), get_icon_pixmap ("tool/diff_class"), agent on_differential_view)
+			evx_menu_bar.add_menu_item ("View>Flat", get_text (ec_view_menu_flat_text), get_icon_pixmap ("tool/flat_class"), agent on_flat_view)
+			evx_menu_bar.add_menu_item ("View>New Archetype Tool", get_text (ec_view_menu_new_arch_tab_text), get_icon_pixmap ("tool/archetype_tool_new"), Void)
+			evx_menu_bar.add_menu_item ("View>New Class Tool", get_text (ec_view_menu_new_class_tab_text), get_icon_pixmap ("tool/class_tool_new"), Void)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("View>Reset Layout", get_text (ec_view_menu_reset_layout_text), Void, agent on_reset_tool_layout)
 
 			-- ================== History menu ==================
-
-			menu.extend (history_bar.menu)
-
+			history_bar.initialise_menu (evx_menu_bar)
 
 			-- ================== AOM profile menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_aom_profiles_menu_text))
-			menu.extend (a_menu)
-
-			-- AOM Profile > Configure
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_aom_profiles_menu_configure_text))
-			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
-			a_menu_item.select_actions.extend (agent configure_aom_profiles)
-			a_menu.extend (a_menu_item)
+			evx_menu_bar.add_menu ("AOM Profiles", get_text (ec_aom_profiles_menu_text))
+			evx_menu_bar.add_menu_item ("AOM Profiles>Configure", get_text (ec_aom_profiles_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_aom_profiles)
 
 			-- ================== Repository menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_repository_menu_text))
-			menu.extend (a_menu)
-
-			-- Repository > Build All
-			create repository_menu_build_all
-			repository_menu_build_all.set_text (get_text (ec_repository_menu_build_all_text))
-			repository_menu_build_all.select_actions.extend (agent build_all)
-			a_menu.extend (repository_menu_build_all)
-
-			-- Repository > Rebuild All
-			create repository_menu_rebuild_all
-			repository_menu_rebuild_all.set_text (get_text (ec_repository_menu_rebuild_all_text))
-			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
-			a_menu.extend (repository_menu_rebuild_all)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Repository > Build Subtree
-			create repository_menu_build_subtree
-			repository_menu_build_subtree.set_text (get_text (ec_repository_menu_build_subtree_text))
-			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
-			a_menu.extend (repository_menu_build_subtree)
-
-			-- Repository > Rebuild Subtree
-			create repository_menu_rebuild_subtree
-			repository_menu_rebuild_subtree.set_text (get_text (ec_repository_menu_rebuild_subtree_text))
-			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
-			a_menu.extend (repository_menu_rebuild_subtree)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Repository > Export HTML
-			create repository_menu_export_html
-			repository_menu_export_html.set_text (get_text (ec_repository_menu_export_html_text))
-			repository_menu_export_html.select_actions.extend (agent export_repository (syntax_type_adl_html))
-			a_menu.extend (repository_menu_export_html)
-
-			-- Repository > Export JSON
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_repository_menu_export_json_text))
-			a_menu_item.select_actions.extend (agent export_repository (syntax_type_json))
-			a_menu.extend (a_menu_item)
-
-			-- Repository > Export YAML
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_repository_menu_export_yaml_text))
-			a_menu_item.select_actions.extend (agent export_repository (syntax_type_yaml))
-			a_menu.extend (a_menu_item)
-
-			-- Repository > Export XML
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_repository_menu_export_xml_text))
-			a_menu_item.select_actions.extend (agent export_repository (syntax_type_xml))
-			a_menu.extend (a_menu_item)
-
-			-- Repository > Export Repository Report
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_repository_menu_export_report_text))
-			a_menu_item.select_actions.extend (agent export_repository_report)
-			a_menu.extend (a_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Repository > Interrupt Build
-			create repository_menu_interrupt_build
-			repository_menu_interrupt_build.set_text (get_text (ec_repository_menu_interrupt_text))
-			repository_menu_interrupt_build.disable_sensitive
-			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
-			a_menu.extend (repository_menu_interrupt_build)
-
-			-- Repository > Refresh
-			create repository_refresh_menu_item
-			repository_refresh_menu_item.set_text (get_text (ec_repository_menu_refresh_text))
-			repository_refresh_menu_item.select_actions.extend (agent refresh_directory)
-			a_menu.extend (repository_refresh_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Repository > Set Repositories
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_repository_menu_configure_text))
-			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
-			a_menu_item.select_actions.extend (agent configure_repositories)
-			a_menu.extend (a_menu_item)
-
+			evx_menu_bar.add_menu ("Repository", get_text (ec_repository_menu_text))
+			evx_menu_bar.add_menu_item ("Repository>Build All", get_text (ec_repository_menu_build_all_text), Void, agent build_all)
+			evx_menu_bar.add_menu_item ("Repository>Rebuild All", get_text (ec_repository_menu_rebuild_all_text), Void, agent rebuild_all)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Repository>Build Subtree", get_text (ec_repository_menu_build_subtree_text), Void, agent build_subtree)
+			evx_menu_bar.add_menu_item ("Repository>Rebuild Subtree", get_text (ec_repository_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Repository>Export HTML", get_text (ec_repository_menu_export_html_text), Void, agent export_repository (syntax_type_adl_html))
+			evx_menu_bar.add_menu_item ("Repository>Export JSON", get_text (ec_repository_menu_export_json_text), Void, agent export_repository (syntax_type_json))
+			evx_menu_bar.add_menu_item ("Repository>Export YAML", get_text (ec_repository_menu_export_yaml_text), Void, agent export_repository (syntax_type_yaml))
+			evx_menu_bar.add_menu_item ("Repository>Export XML", get_text (ec_repository_menu_export_xml_text), Void, agent export_repository (syntax_type_xml))
+			evx_menu_bar.add_menu_item ("Repository>Report", get_text (ec_repository_menu_export_report_text), Void, agent export_repository_report)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item_disabled ("Repository>Interrupt Build", get_text (ec_repository_menu_interrupt_text), Void, agent interrupt_build)
+			evx_menu_bar.add_menu_item ("Repository>Refresh", get_text (ec_repository_menu_refresh_text), Void, agent refresh_directory)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Repository>Configure", get_text (ec_repository_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
 
 			-- ================== RM Schemas menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_rm_schemas_menu_text))
-			menu.extend (a_menu)
-
-			-- RM Schemas > Reload
-			create rm_schemas_reload_menu_item
-			rm_schemas_reload_menu_item.set_text (get_text (ec_rm_schemas_reload_text))
-			rm_schemas_reload_menu_item.select_actions.extend (agent reload_schemas)
-			a_menu.extend (rm_schemas_reload_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- RM Schemas > Configure
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_rm_schemas_configure_text))
-			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
-			a_menu_item.select_actions.extend (agent set_rm_schemas)
-			a_menu.extend (a_menu_item)
-
+			evx_menu_bar.add_menu ("RM Schemas", get_text (ec_rm_schemas_menu_text))
+			evx_menu_bar.add_menu_item ("RM Schemas>Reload", get_text (ec_rm_schemas_reload_text), Void, agent reload_schemas)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("RM Schemas>Configure", get_text (ec_rm_schemas_configure_text), get_icon_pixmap ("tool/tools"), agent set_rm_schemas)
 
 			-- ================== XML menu ==================
-			create a_menu
-			a_menu.set_text (get_msg (ec_xml_menu_text, Void))
-			menu.extend (a_menu)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- XML > Set Rules
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_xml_menu_edit_rules_text))
-			a_menu_item.select_actions.extend (agent set_xml_rules)
-			a_menu.extend (a_menu_item)
-
+			evx_menu_bar.add_menu ("XML", get_text (ec_xml_menu_text))
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("XML>Edit Rules", get_text (ec_xml_menu_edit_rules_text), get_icon_pixmap ("tool/tools"), agent set_xml_rules)
 
 			-- ================== Tools menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_tools_menu_text))
-			menu.extend (a_menu)
-
-			-- Tools > Test tool
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_test_tool_title))
-			a_menu_item.select_actions.extend (agent open_test_tool)
-			a_menu.extend (a_menu_item)
-
-			-- Tools > Clean generated files
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_tools_menu_clean_text))
-			a_menu_item.select_actions.extend (agent clean_generated_files)
-			a_menu.extend (a_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Tools > Options
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_tools_menu_options_text))
-			a_menu_item.set_pixmap (get_icon_pixmap ("tool/tools"))
-			a_menu_item.select_actions.extend (agent set_options)
-			a_menu.extend (a_menu_item)
-
+			evx_menu_bar.add_menu ("Tools", get_text (ec_tools_menu_text))
+			evx_menu_bar.add_menu_item ("Tools>Test Tool", get_text (ec_test_tool_title), Void, agent open_test_tool)
+			evx_menu_bar.add_menu_item ("Tools>Clean Files", get_text (ec_tools_menu_clean_text), Void, agent clean_generated_files)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Tools>Options", get_text (ec_tools_menu_options_text), get_icon_pixmap ("tool/tools"), agent set_options)
 
 			-- ================== Help menu ==================
-			create a_menu
-			a_menu.set_text (get_text (ec_help_menu_text))
-			menu.extend (a_menu)
-
-			-- Help > Contents
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_help_menu_online_text))
-			a_menu_item.select_actions.extend (agent show_online_help)
-			a_menu.extend (a_menu_item)
-
-			-- Help > Release Notes
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_help_menu_release_notes_text))
-			a_menu_item.select_actions.extend (agent show_release_notes)
-			a_menu.extend (a_menu_item)
-
-			create a_menu_sep
-			a_menu.extend (a_menu_sep)
-
-			-- Help > CKM
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_help_menu_ckm_text))
-			a_menu_item.select_actions.extend (agent show_clinical_knowledge_manager)
-			a_menu.extend (a_menu_item)
-
-			-- Help > Report Bug
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_help_menu_report_bug_text))
-			a_menu_item.select_actions.extend (agent show_bug_reporter)
-			a_menu.extend (a_menu_item)
-
-			-- Help > About
-			create a_menu_item
-			a_menu_item.set_text (get_text (ec_help_menu_about_text))
-			a_menu_item.select_actions.extend (agent show_about)
-			a_menu.extend (a_menu_item)
-
+			evx_menu_bar.add_menu ("Help", get_text (ec_help_menu_text))
+			evx_menu_bar.add_menu_item ("Help>Online Help", get_text (ec_help_menu_online_text), Void, agent show_online_help)
+			evx_menu_bar.add_menu_item ("Help>Release Notes", get_text (ec_help_menu_release_notes_text), Void, agent show_release_notes)
+			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Help>CKM", get_text (ec_help_menu_ckm_text), Void, agent show_clinical_knowledge_manager)
+			evx_menu_bar.add_menu_item ("Help>Report Bug", get_text (ec_help_menu_report_bug_text), Void, agent show_bug_reporter)
+			evx_menu_bar.add_menu_item ("Help>About", get_text (ec_help_menu_about_text), Void, agent show_about)
 		end
 
 	initialize
@@ -491,6 +243,7 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_TITLED_WINDOW}
 
+			-- basic UI parameters
 			set_minimum_width (500)
 			set_minimum_height (350)
 			set_maximum_width (2000)
@@ -499,10 +252,9 @@ feature {NONE} -- Initialization
 			close_request_actions.extend (agent exit_app)
 			set_icon_pixmap (adl_workbench_logo)
 			extend (ev_root_vbox)
-			set_menu_bar (menu)
+			set_menu_bar (evx_menu_bar.ev_menu_bar)
 
-
-			-- ================= set up docking ===================
+			-- set up docking & tools
 			create internal_docking_manager.make (viewer_main_cell, Current)
 			create_new_catalogue_tool
 			create_new_rm_schema_explorer
@@ -515,21 +267,36 @@ feature {NONE} -- Initialization
 			populate_ui_arch_output_version
 
 			-- set up anything else dependent on docking
-			view_new_class_menu_item.select_actions.extend (agent class_tools.create_new_tool)
-			view_new_arch_tool_menu_item.select_actions.extend (agent archetype_viewers.create_new_tool)
+			evx_menu_bar.menu_item ("View>New Class Tool").select_actions.extend (agent class_tools.create_new_tool)
+			evx_menu_bar.menu_item ("View>New Archetype Tool").select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 			archetype_compiler.set_full_compile_visual_update_action (agent catalogue_tool.on_full_compile)
 
-			-- text widget handling
-			text_widget_handler.focus_first_widget (viewer_main_cell)
-
 			-- accelerators
 			initialise_accelerators
 
+			-- configuration
+			initialise_config
+
+			-- UI callback agents
+			initialise_ui_agents
+
+			-- UI text widget handler set up (should be built into Vision)
+			text_widget_handler.set_root (Current)
+
+			-- UI app location
+			initialise_ui_basic
+
+			-- UI docking
+			initialise_docking_layout
+		end
+
+	initialise_ui_agents
 			-- GUI agents
+		do
 			gui_agents.set_history_update_agent	(agent history_bar.populate)
 			gui_agents.set_history_set_active_agent	(agent history_bar.set_active_tool)
 			gui_agents.set_console_tool_append_agent (agent console_tool.append_text)
@@ -547,49 +314,61 @@ feature {NONE} -- Initialization
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
 			gui_agents.set_close_test_tool_agent (agent close_test_tool)
-
-			text_widget_handler.set_root (Current)
 		end
 
 	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
+		local
+			evx_accelerators: EVX_ACCELERATORS
 		do
-			add_menu_shortcut (file_open_menu_item, key_o, True, False, False)
-			add_menu_shortcut (file_save_as_menu_item, key_s, True, False, False)
-			add_menu_shortcut_for_action (edit_copy_menu_item, agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
-			add_menu_shortcut (edit_select_all_menu_item, key_a, True, False, False)
+			create evx_accelerators.make (accelerators)
+			evx_menu_bar.set_accelerators (evx_accelerators)
 
-			add_menu_shortcut (view_differential_menu_item, key_d, True, False, True)
-			add_menu_shortcut (view_flat_menu_item, key_f, True, False, True)
-			add_menu_shortcut (view_new_arch_tool_menu_item, key_t, True, False, False)
-			add_menu_shortcut (view_new_class_menu_item, key_t, True, False, True)
+			evx_menu_bar.add_menu_shortcut ("File>Open", key_o, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("File>Save As", key_s, True, False, False)
+			evx_menu_bar.add_menu_shortcut_for_action ("Edit>Copy", agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("Edit>Select All", key_a, True, False, False)
 
-			add_menu_shortcut (history_bar.menu_item_back, key_left, False, True, False)
-			add_menu_shortcut (history_bar.menu_item_forward, key_right, False, True, False)
+			evx_menu_bar.add_menu_shortcut ("View>Differential", key_d, True, False, True)
+			evx_menu_bar.add_menu_shortcut ("View>Flat", key_f, True, False, True)
+			evx_menu_bar.add_menu_shortcut ("View>New Archetype Tool", key_t, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("View>New Class Tool", key_t, True, False, True)
 
-			add_menu_shortcut (repository_refresh_menu_item, key_r, True, False, False)
-			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
-			add_menu_shortcut (repository_menu_rebuild_subtree, key_f7, True, False, True)
-			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
-			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
-			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
+			history_bar.add_shortcuts
 
-			add_menu_shortcut (rm_schemas_reload_menu_item, key_l, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("Repository>Refresh", key_r, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("Repository>Interrupt Build", key_escape, False, False, True)
+			evx_menu_bar.add_menu_shortcut ("Repository>Rebuild Subtree", key_f7, True, False, True)
+			evx_menu_bar.add_menu_shortcut ("Repository>Build Subtree", key_f7, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("Repository>Rebuild All", key_f7, False, False, True)
+			evx_menu_bar.add_menu_shortcut ("Repository>Build All", key_f7, False, False, False)
 
-			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
-			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
-			add_shortcut (agent set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("RM Schemas>Reload", key_l, True, False, False)
+
+			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
+			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
+			evx_accelerators.add_shortcut (agent set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
 		end
 
-	initialise_session_ui_basic
+	initialise_config
+			-- set up some configuration
+		do
+		end
+
+	initialise_ui_basic
 			-- initialise visual settings of window remembered from previous session
 		do
+			-- text widget handling
+			text_widget_handler.focus_first_widget (viewer_main_cell)
+
+			-- set app x,y position on screen
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
 			else
 				set_position (10, 10)
 			end
 
+			-- set app width and height
 			if app_width > 0 and app_height > 0 then
 				set_size (app_width, app_height)
 			else
@@ -613,7 +392,9 @@ feature {NONE} -- Initialization
 				-- else use the user's one
 				if file_system.file_exists (default_docking_layout_file_path) then
 					if file_system.file_exists (user_docking_layout_file_path) then
-						if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) then
+						if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) or
+							not last_exec_app_version.same_string (app_version.out)
+						then
 							docking_file_to_use := default_docking_layout_file_path
 						else
 							docking_file_to_use := user_docking_layout_file_path
@@ -643,21 +424,7 @@ feature -- Commands
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			initialise_session_ui_basic
 			Precursor
-			initialise_docking_layout
-
-			if text_editor_command.is_empty then
-				set_text_editor_command (default_text_editor_command)
-			end
-
-			if editor_app_command.is_empty then
-				set_editor_app_command (default_editor_app_command)
-			end
-
-			if difftool_command.is_empty then
-				set_difftool_command (default_difftool_command)
-			end
 
 			-- if no RM schemas yet available, ask user to configure
 			if not directory_exists (rm_schema_directory) or not rm_schemas_access.found_valid_schemas then
@@ -707,6 +474,7 @@ feature -- Commands
 			end
 			set_app_maximised (is_maximized)
 			set_test_split_position (test_tool.ev_root_container.split_position)
+			set_last_exec_app_version (app_version.out)
 
 			app_cfg.save
 
@@ -1481,26 +1249,21 @@ feature {NONE} -- Implementation
 feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
-			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
+			-- Perform `action', with an wait mouse cursor and disabling the build menus, until done.
 		local
-			menu_items: detachable ARRAY [EV_MENU_ITEM]
+			build_started: BOOLEAN
 		do
-			if menu_items = Void then
-				menu_items := <<
-					repository_menu_build_all,
-					repository_menu_rebuild_all,
-					repository_menu_build_subtree,
-					repository_menu_rebuild_subtree,
-					repository_menu_export_html
-				>>
-
-				menu_items.do_all (agent {EV_MENU_ITEM}.disable_sensitive)
-				repository_menu_interrupt_build.enable_sensitive
+			if not build_started then
+				evx_menu_bar.disable_menu_items (<<"Repository>Build All", "Repository>Rebuild All",
+					"Repository>Build Subtree", "Repository>Rebuild Subtree", "Repository>Export HTML">>)
+				evx_menu_bar.enable_menu_items (<<"Repository>Interrupt Build">>)
+				build_started := True
 				do_with_wait_cursor (Current, action)
 			end
 
-			menu_items.do_all (agent {EV_MENU_ITEM}.enable_sensitive)
-			repository_menu_interrupt_build.disable_sensitive
+			evx_menu_bar.enable_menu_items (<<"Repository>Build All", "Repository>Rebuild All",
+				"Repository>Build Subtree", "Repository>Rebuild Subtree", "Repository>Export HTML">>)
+			evx_menu_bar.disable_menu_items (<<"Repository>Interrupt Build">>)
 		rescue
 			retry
 		end
@@ -1576,12 +1339,8 @@ feature {NONE} -- GUI Widgets
 
 	ev_main_vbox, ev_root_vbox: EV_VERTICAL_BOX
 	viewer_main_cell: EV_CELL
-	menu: EV_MENU_BAR
+	evx_menu_bar: EVX_MENU_BAR
 	arch_repositories_combo, arch_output_version_combo: EV_COMBO_BOX
-	file_open_menu_item, file_save_as_menu_item, edit_copy_menu_item, edit_select_all_menu_item, rm_schemas_reload_menu_item,
-	view_differential_menu_item, view_flat_menu_item, view_new_arch_tool_menu_item, view_new_class_menu_item, repository_refresh_menu_item,
-	repository_menu_build_all, repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
-	repository_menu_export_html, repository_menu_interrupt_build: EV_MENU_ITEM
 	compile_button: EV_TOOL_BAR_BUTTON
 
 end

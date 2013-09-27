@@ -19,6 +19,11 @@ inherit
 			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
+	EV_KEY_CONSTANTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -26,49 +31,39 @@ feature -- Initialisation
 
 	make
 		do
-			-- menu
+			create evx_menu_bar.make
 			create menu
-			create menu_item_back
-			create menu_item_forward
-			create menu_separator
 
 			-- tool bar
 			create tool_bar
 			tool_bar.disable_vertical_button_style
 
 			create back_button
-			back_button.set_tooltip ("Back one item")
+			back_button.set_tooltip (get_text (ec_history_button_back_one_item_text))
 			back_button.set_pixmap (get_icon_pixmap ("tool/history_back"))
+			tool_bar.extend (back_button)
 
 			create tool_bar_sep_3
-			create forward_button
-			forward_button.set_tooltip ("Forward one item")
-			forward_button.set_pixmap (get_icon_pixmap ("tool/history_forward"))
-
-			-- Connect widgets
-			menu.extend (menu_item_back)
-			menu.extend (menu_item_forward)
-			menu.extend (menu_separator)
-
-			tool_bar.extend (back_button)
 			tool_bar.extend (tool_bar_sep_3)
+
+			create forward_button
+			forward_button.set_tooltip (get_text (ec_history_button_forward_one_item_text))
+			forward_button.set_pixmap (get_icon_pixmap ("tool/history_forward"))
 			tool_bar.extend (forward_button)
-
-			-- Set visual characteristics
-			menu.set_text ("H&istory")
-			menu_item_back.set_text ("&Back")
-			menu_item_forward.set_text ("&Forward")
-			menu_item_back.set_pixmap (get_icon_pixmap ("tool/history_back"))
-			menu_item_forward.set_pixmap (get_icon_pixmap ("tool/history_forward"))
-
-			-- menu events
-			menu.select_actions.extend (agent on_history)
-			menu_item_back.select_actions.extend (agent on_back)
-			menu_item_forward.select_actions.extend (agent on_forward)
 
 			-- toolbar button events
 			back_button.select_actions.extend (agent on_back)
 			forward_button.select_actions.extend (agent on_forward)
+		end
+
+	initialise_menu (a_menu_bar: EVX_MENU_BAR)
+		do
+			evx_menu_bar := a_menu_bar
+			evx_menu_bar.add_menu_with_action ("History", get_text (ec_history_menu_text), agent on_history)
+			menu := evx_menu_bar.last_menu
+			evx_menu_bar.add_menu_item ("History>Back", get_text (ec_history_menu_back_text), get_icon_pixmap ("tool/history_back"), agent on_back)
+			evx_menu_bar.add_menu_item ("History>Forward", get_text (ec_history_menu_forward_text), get_icon_pixmap ("tool/history_forward"), agent on_forward)
+			evx_menu_bar.add_menu_separator
 		end
 
 feature -- Access
@@ -82,6 +77,14 @@ feature -- Status Report
 			-- True if there is an active tool at the moment
 		do
 			Result := attached active_tool
+		end
+
+feature -- Modification
+
+	add_shortcuts
+		do
+			evx_menu_bar.add_menu_shortcut ("History>Back", key_left, False, True, False)
+			evx_menu_bar.add_menu_shortcut ("History>Forward", key_right, False, True, False)
 		end
 
 feature -- Commands
@@ -102,10 +105,10 @@ feature -- Events
 	on_history
 			-- On opening the History menu, append the list of recent archetypes.
 		do
-			menu.wipe_out
-			menu.extend (menu_item_back)
-			menu.extend (menu_item_forward)
-			menu.extend (menu_separator)
+			menu.go_i_th (3)
+			from until menu.count = 3 loop
+				menu.remove_right
+			end
 
 			if has_active_tool then
 				active_tool.selection_history.recently_selected_items (20).do_all (
@@ -151,18 +154,18 @@ feature -- Events
 	populate
 		do
 			if has_active_tool and then active_tool.selection_history.has_previous then
-				menu_item_back.enable_sensitive
+				evx_menu_bar.enable_menu_items (<<"History>Back">>)
 				back_button.enable_sensitive
 			else
-				menu_item_back.disable_sensitive
+				evx_menu_bar.disable_menu_items (<<"History>Back">>)
 				back_button.disable_sensitive
 			end
 
 			if has_active_tool and then active_tool.selection_history.has_next then
-				menu_item_forward.enable_sensitive
+				evx_menu_bar.enable_menu_items (<<"History>Forward">>)
 				forward_button.enable_sensitive
 			else
-				menu_item_forward.disable_sensitive
+				evx_menu_bar.disable_menu_items (<<"History>Forward">>)
 				forward_button.disable_sensitive
 			end
 		end
@@ -173,8 +176,6 @@ feature {MAIN_WINDOW} -- Widgets
 	tool_bar_sep_3: EV_TOOL_BAR_SEPARATOR
 	back_button, forward_button: EV_TOOL_BAR_BUTTON
 	menu: EV_MENU
-	menu_item_back, menu_item_forward: EV_MENU_ITEM
-	menu_separator: EV_MENU_SEPARATOR
 
 	go_to_history_item (an_id: STRING)
 		do
@@ -182,6 +183,8 @@ feature {MAIN_WINDOW} -- Widgets
 			active_tool.go_to_selected_item
 			populate
 		end
+
+	evx_menu_bar: EVX_MENU_BAR
 
 end
 
