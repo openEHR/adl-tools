@@ -278,9 +278,6 @@ feature {NONE} -- Initialization
 			-- accelerators
 			initialise_accelerators
 
-			-- configuration
-			initialise_config
-
 			-- UI callback agents
 			initialise_ui_agents
 
@@ -348,11 +345,6 @@ feature {NONE} -- Initialization
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
 			evx_accelerators.add_shortcut (agent set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
-		end
-
-	initialise_config
-			-- set up some configuration
-		do
 		end
 
 	initialise_ui_basic

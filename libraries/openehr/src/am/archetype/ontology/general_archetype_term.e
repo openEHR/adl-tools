@@ -107,18 +107,18 @@ feature -- Initialisation
 
 feature -- Access
 
-	code: attached STRING
+	code: STRING
 
-	keys: attached ARRAYED_LIST [STRING]
+	keys: ARRAYED_LIST [STRING]
 			-- return all attribute keys for this term
 		do
 			create Result.make_from_array (items.current_keys)
 		end
 
-	items: attached HASH_TABLE [STRING, STRING]
+	items: HASH_TABLE [STRING, STRING]
 			-- data items
 
-	item (a_key: attached STRING): STRING
+	item (a_key: STRING): STRING
 			--
 		require
 			has_key(a_key)
@@ -128,7 +128,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_key (a_key: attached STRING): BOOLEAN
+	has_key (a_key: STRING): BOOLEAN
 			--
 		require
 			not a_key.is_empty
@@ -138,7 +138,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_item (a_key, value: attached STRING)
+	add_item (a_key, value: STRING)
 		require
 			Key_valid: not has_key(a_key)
 			Value_valid: not value.is_empty
@@ -146,7 +146,7 @@ feature -- Modification
 			items.force(value, a_key)
 		end
 
-	replace_item (a_key, value: attached STRING)
+	replace_item (a_key, value: STRING)
 		require
 			Key_valid: has_key(a_key)
 			Value_valid: not value.is_empty
@@ -156,8 +156,8 @@ feature -- Modification
 
 feature -- Output
 
-	out: attached STRING
-			-- output term in standard dADL form (not the archetype form):
+	out: STRING
+			-- output term in standard ODIN form (not the archetype form):
 			--  code = <"somecode">
 			--  items = <
 			--		["key1"] = <"value1">
@@ -180,7 +180,7 @@ feature -- Output
 
 feature -- Factory
 
-	create_translated_term (a_lang: attached STRING): ARCHETYPE_TERM
+	create_translated_term (a_lang: STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with '*' prepended and '(lang)' appended - this acts as an obvious
 			-- placeholder for translation. The lang is the original lang of a_term.
@@ -208,7 +208,7 @@ feature -- Factory
 									end (?, items, Result.items))
 		end
 
-	create_derived_term (a_code: attached STRING): attached ARCHETYPE_TERM
+	create_derived_term (a_code: attached STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with an '!' appended to each term to indicate that it needs to be edited.
 			-- The new term has the code `a_code'.
@@ -237,8 +237,8 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	odin_validator: ODIN_VALIDATOR
-			-- shared dADL_validator for all ARCHETYPE_TERM instances
+	odin_validator: ODIN_PARSER
+			-- shared ODIN validator for all ARCHETYPE_TERM instances
 		once
 			create Result.make
 		end
