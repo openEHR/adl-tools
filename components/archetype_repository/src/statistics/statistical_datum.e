@@ -9,9 +9,6 @@ note
 
 class STATISTICAL_DATUM
 
-inherit
-	GENERIC_RENDERABLE
-
 create
 	make
 
@@ -41,26 +38,19 @@ feature -- Access
 
 	average: REAL
 		do
-			if is_populated then
+			if population > 0 then
 				Result := (total / population).truncated_to_integer
 			end
 		end
 
-	as_vector: LIST [ANY]
+	as_list: LIST [STRING]
 			-- vector representation for use with generic screen populating methods
 		do
-			create {ARRAYED_LIST [ANY]} Result.make(0)
-			Result.extend (total)
-			Result.extend (minimum)
-			Result.extend (maximum)
-			Result.extend (average)
-		end
-
-feature -- Status Report
-
-	is_populated: BOOLEAN
-		do
-			Result := population > 0
+			create {ARRAYED_LIST [STRING]} Result.make(0)
+			Result.extend (total.out)
+			Result.extend (minimum.out)
+			Result.extend (maximum.out)
+			Result.extend (average.out)
 		end
 
 feature -- Modification

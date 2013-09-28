@@ -50,6 +50,14 @@ feature -- Access
 			create Result.make (0)
 		end
 
+	archetype_metrics_list: HASH_TABLE [LIST [STRING], STRING]
+		do
+			create Result.make (0)
+			across archetype_metrics as stat_items_csr loop
+				Result.put (stat_items_csr.item.as_list, stat_items_csr.key)
+			end
+		end
+
 	rm_grouped_class_table: HASH_TABLE [HASH_TABLE [RM_CLASS_STATISTICS, STRING], STRING]
 			-- table of grouped stats of all RM classes, keyed by class name, with
 			-- each group keyed by a base class name, e.g. 'LOCATABLE', 'DATA_VALUE', 'Any' etc

@@ -92,7 +92,6 @@ feature {NONE} -- Implementation
 			ev_rm_breakdown_nb: EV_NOTEBOOK
 			gli: EV_GRID_LABEL_ITEM
 			class_row, attr_row: EV_GRID_ROW
-			rm_class_stats: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 			class_def: BMM_CLASS_DEFINITION
 		do
 			-----------------------------------
@@ -130,16 +129,16 @@ feature {NONE} -- Implementation
 
 			-- archetype metrics list
 			ev_arch_stats_list.set_column_titles (Summary_table_col_titles)
-			populate_ev_multi_list_from_hash (ev_arch_stats_list, source.archetype_metrics)
+			populate_ev_multi_list_from_hash_list (ev_arch_stats_list, source.archetype_metrics_list)
 			ev_arch_stats_frame.set_minimum_height ((ev_arch_stats_list.count + 3) * ev_arch_stats_list.row_height)
 
 			-- breakdown grid
-			from source.rm_grouped_class_table.start until source.rm_grouped_class_table.off loop
+			across source.rm_grouped_class_table as class_table_csr loop
 				-- populate RM breakdown notebook tabs
 				create ev_rm_grid
 				ev_rm_grid.enable_tree
 				ev_rm_breakdown_nb.extend (ev_rm_grid)
-				ev_rm_breakdown_nb.set_item_text (ev_rm_grid, source.rm_grouped_class_table.key_for_iteration)
+				ev_rm_breakdown_nb.set_item_text (ev_rm_grid, class_table_csr.key)
 
 				-- column names
 				ev_rm_grid.insert_new_column (Grid_model_element_name_col)
@@ -147,8 +146,7 @@ feature {NONE} -- Implementation
 				ev_rm_grid.insert_new_column (Grid_model_element_total_col)
 				ev_rm_grid.column (Grid_model_element_total_col).set_title (get_msg (ec_statistics_grid_model_element_count_col_title, Void))
 
-				rm_class_stats := source.rm_grouped_class_table.item_for_iteration
-				across rm_class_stats as rm_class_stats_csr loop
+				across class_table_csr.item as rm_class_stats_csr loop
 					-- class name in col 1
 					create gli.make_with_text (rm_class_stats_csr.item.rm_class_name)
 					if rm_class_stats_csr.item.is_archetype_root_class then
@@ -189,7 +187,6 @@ feature {NONE} -- Implementation
 							a_grid.column(i).set_width ((a_grid.column (i).width * 1.1).ceiling)
 						end (?, ev_rm_grid)
 				)
-				source.rm_grouped_class_table.forth
 			end
 
 		end
