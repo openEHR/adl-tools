@@ -46,7 +46,7 @@ inherit
 			{NONE} all
 		end
 
-	DATE_TIME_ROUTINES
+	C_DATE_TIME_ROUTINES
 		export
 			{NONE} all
 		end

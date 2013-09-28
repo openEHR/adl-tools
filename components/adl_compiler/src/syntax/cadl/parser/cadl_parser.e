@@ -45,7 +45,7 @@ inherit
 			{NONE} all
 		end
 
-	DATE_TIME_ROUTINES
+	C_DATE_TIME_ROUTINES
 		export
 			{NONE} all
 		end
@@ -709,7 +709,7 @@ end
 			end
 			output := yyvs1.item (yyvsp1)
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -725,7 +725,7 @@ end
 			end
 			output := yyvs7.item (yyvsp7)
 			accept
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -749,7 +749,7 @@ end
 				io.put_string ("CADL definition NOT parsed%N")
 			end
 			abort
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -761,12 +761,12 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+				io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N")
 				indent.remove_tail (1)
 			end
 			yyval1 := object_nodes.item
 			object_nodes.remove
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
@@ -782,7 +782,7 @@ end
 			-- ok in case where occurrences or node_id is being redefined in a specialised archetype or template
 			if differential_syntax then
 				debug ("ADL_parse")
-					io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+					io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N")
 					indent.remove_tail (1)
 				end
 				yyval1 := object_nodes.item
@@ -790,7 +790,7 @@ end
 			else
 				abort_with_error (ec_VCOCDocc, <<yyvs14.item (yyvsp14).rm_type_name, yyvs14.item (yyvsp14).path>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -820,7 +820,7 @@ end
 debug ("ADL_parse")
 	io.put_string (indent + "PUSH create OBJECT_NODE " + yyvs14.item (yyvsp14).rm_type_name + " [id=" + yyvs14.item (yyvsp14).node_id + "] ")
 	if yyvs12.item (yyvsp12) /= Void then
-		io.put_string ("; occurrences=(" + yyvs12.item (yyvsp12).as_string + ")") 
+		io.put_string ("; occurrences=(" + yyvs12.item (yyvsp12).as_string + ")")
 	end
 	io.new_line
 	indent.append ("%T")
@@ -834,7 +834,7 @@ end
 			else
 				abort_with_error (ec_VCORM, <<yyvs14.item (yyvsp14).rm_type_name, yyvs14.item (yyvsp14).path>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp12 := yyvsp12 -1
@@ -847,7 +847,7 @@ debug ("GEYACC")
 end
 
 			create yyval14.make_anonymous (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -868,7 +868,7 @@ debug ("GEYACC")
 end
 
 			create yyval14.make_identified (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp14 := yyvsp14 + 1
@@ -894,7 +894,7 @@ end
 			else
 				abort_with_error (ec_SDSF, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp14 := yyvsp14 + 1
@@ -916,7 +916,7 @@ debug ("GEYACC")
 end
 
 			yyval11 := create {SIBLING_ORDER}.make_after (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp11 := yyvsp11 + 1
@@ -938,7 +938,7 @@ debug ("GEYACC")
 end
 
 			yyval11 := create {SIBLING_ORDER}.make_before (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp11 := yyvsp11 + 1
@@ -960,10 +960,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + 
-					" [id=" + object_nodes.item.node_id + "] - any_allowed%N") 
+				io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name +
+					" [id=" + object_nodes.item.node_id + "] - any_allowed%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -974,7 +974,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 294")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -986,7 +986,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCOAT, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -997,7 +997,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 307")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1009,7 +1009,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs9.item (yyvsp9))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1030,7 +1030,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs10.item (yyvsp10))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1051,7 +1051,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs16.item (yyvsp16))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1072,7 +1072,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs50.item (yyvsp50))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1093,7 +1093,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs14.item (yyvsp14))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1114,7 +1114,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs15.item (yyvsp15))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1135,7 +1135,7 @@ debug ("GEYACC")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1156,7 +1156,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1168,7 +1168,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCCOG, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1187,7 +1187,7 @@ end
 			else
 				abort_with_error (ec_SUAIDI, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp9 := yyvsp9 + 1
@@ -1217,7 +1217,7 @@ end
 			else
 				abort_with_error (ec_SUAIDI, <<yyvs2.item (yyvsp2 - 1)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 8
 	yyvsp9 := yyvsp9 + 1
@@ -1240,7 +1240,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SUAID, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp9 := yyvsp9 + 1
@@ -1284,7 +1284,7 @@ end
 
 			debug ("ADL_parse")
 				io.put_string (indent + "create ARCHETYPE_INTERNAL_REF ")
-				io.put_string (yyval10.rm_type_name) 
+				io.put_string (yyval10.rm_type_name)
 				if yyval10.is_addressable then
 					io.put_string ("[" + yyval10.node_id + "] ")
 				else
@@ -1295,10 +1295,10 @@ end
 				elseif yyvs12.item (yyvsp12) /= Void then
 					io.put_string ("occurrences=" + yyval10.occurrences.as_string + " ")
 				end
-				io.put_string (" => " + yyval10.target_path + "%N") 
-				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (ARCHETYPE_INTERNAL_REF)%N") 
+				io.put_string (" => " + yyval10.target_path + "%N")
+				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (ARCHETYPE_INTERNAL_REF)%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp10 := yyvsp10 + 1
@@ -1321,7 +1321,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SUNPA, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp10 := yyvsp10 + 1
@@ -1344,7 +1344,7 @@ end
 
 			arch_internal_ref_rm_type_name := yyvs2.item (yyvsp2)
 			arch_internal_ref_node_id := Void
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -1358,7 +1358,7 @@ end
 
 			arch_internal_ref_rm_type_name := yyvs2.item (yyvsp2 - 1)
 			arch_internal_ref_node_id := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp2 := yyvsp2 -2
@@ -1381,7 +1381,7 @@ end
 				indent.remove_tail (1)
 			end
 			yyval16 := yyvs16.item (yyvsp16)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp1 := yyvsp1 -3
@@ -1398,7 +1398,7 @@ end
 				abort_with_error (ec_VASMD, <<yyvs16.item (yyvsp16).rm_type_name, c_attrs.item.path>>)
 			end
 			yyval16 := yyvs16.item (yyvsp16)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
@@ -1416,13 +1416,13 @@ end
 			debug ("ADL_parse")
 				io.put_string (indent + "create ARCHETYPE_SLOT " + yyvs16.item (yyvsp16).rm_type_name + " [id=" + yyvs16.item (yyvsp16).node_id + "]")
 				if attached yyvs12.item (yyvsp12) then
-					io.put_string ("; occurrences=(" + yyvs12.item (yyvsp12).as_string + ")") 
+					io.put_string ("; occurrences=(" + yyvs12.item (yyvsp12).as_string + ")")
 				end
 				io.new_line
 				indent.append ("%T")
 			end
 			yyval16 := yyvs16.item (yyvsp16)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp12 := yyvsp12 -1
@@ -1435,7 +1435,7 @@ debug ("GEYACC")
 end
 
 			create yyval16.make_anonymous (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp16 := yyvsp16 + 1
@@ -1462,7 +1462,7 @@ end
 			else
 				abort_with_error (ec_SDSF, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp16 := yyvsp16 + 1
@@ -1485,7 +1485,7 @@ debug ("GEYACC")
 end
 
 			create yyval16.make_identified (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp16 := yyvsp16 + 1
@@ -1512,7 +1512,7 @@ end
 			else
 				abort_with_error (ec_SDSF, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp16 := yyvsp16 + 1
@@ -1536,7 +1536,7 @@ end
 
 			create yyval16.make_anonymous (yyvs2.item (yyvsp2))
 			yyval16.set_closed
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp16 := yyvsp16 + 1
@@ -1559,7 +1559,7 @@ end
 
 			create yyval16.make_identified (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 			yyval16.set_closed
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp16 := yyvsp16 + 1
@@ -1581,7 +1581,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SUAS, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp16 := yyvsp16 + 1
@@ -1605,7 +1605,7 @@ end
 				io.put_string (indent + "C_INTEGER: " +  yyvs59.item (yyvsp59).as_string + "%N")
 			end
 			yyval15 := yyvs59.item (yyvsp59)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1629,7 +1629,7 @@ end
 				io.put_string (indent + "C_REAL: " +  yyvs58.item (yyvsp58).as_string + "%N")
 			end
 			yyval15 := yyvs58.item (yyvsp58)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1653,7 +1653,7 @@ end
 				io.put_string (indent + "C_DATE: " +  yyvs56.item (yyvsp56).as_string + "%N")
 			end
 			yyval15 := yyvs56.item (yyvsp56)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1677,7 +1677,7 @@ end
 				io.put_string (indent + "C_TIME: " +  yyvs57.item (yyvsp57).as_string + "%N")
 			end
 			yyval15 := yyvs57.item (yyvsp57)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1701,7 +1701,7 @@ end
 				io.put_string (indent + "C_DATE_TIME: " +  yyvs54.item (yyvsp54).as_string + "%N")
 			end
 			yyval15 := yyvs54.item (yyvsp54)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1725,7 +1725,7 @@ end
 				io.put_string (indent + "C_DURATION: " +  yyvs55.item (yyvsp55).as_string + "%N")
 			end
 			yyval15 := yyvs55.item (yyvsp55)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1749,7 +1749,7 @@ end
 				io.put_string (indent + "C_STRING: " +  yyvs53.item (yyvsp53).as_string + "%N")
 			end
 			yyval15 := yyvs53.item (yyvsp53)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1773,7 +1773,7 @@ end
 				io.put_string (indent + "C_TERMINOLOGY_CODE: " +  yyvs60.item (yyvsp60).as_string + "%N")
 			end
 			yyval15 := yyvs60.item (yyvsp60)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1797,7 +1797,7 @@ end
 				io.put_string (indent + "C_BOOLEAN: " +  yyvs52.item (yyvsp52).as_string + "%N")
 			end
 			yyval15 := yyvs52.item (yyvsp52)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp15 := yyvsp15 + 1
@@ -1817,7 +1817,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 587")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1828,7 +1828,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 594")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1839,7 +1839,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 597")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -1851,7 +1851,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 602")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1862,7 +1862,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 605")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -1874,11 +1874,11 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "POP ATTR_NODE " + c_attrs.item.rm_attribute_name + "%N") 
+				io.put_string (indent + "POP ATTR_NODE " + c_attrs.item.rm_attribute_name + "%N")
 				indent.remove_tail (1)
 			end
 			c_attrs.remove
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
@@ -1896,7 +1896,7 @@ end
 			else
 				abort_with_error (ec_SCAS, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -1917,7 +1917,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCAS, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
@@ -1942,7 +1942,7 @@ debug ("ADL_parse")
 	if attached yyvs12.item (yyvsp12) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
 	if attached yyvs48.item (yyvsp48) as att_card then io.put_string ("; cardinality=(" + att_card.as_string + ")") end
 	io.new_line
-	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N")
 	indent.append ("%T")
 end
 						object_nodes.item.put_attribute (yyval17)
@@ -1950,10 +1950,10 @@ end
 						create yyval17.make_single (rm_attribute_name, yyvs12.item (yyvsp12))
 						c_attrs.put (yyval17)
 debug ("ADL_parse")
-	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + yyval17.is_multiple.out) 
+	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + yyval17.is_multiple.out)
 	if attached yyvs12.item (yyvsp12) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
 	io.new_line
-	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N")
 	indent.append ("%T")
 end
 						object_nodes.item.put_attribute (yyval17)
@@ -1966,7 +1966,7 @@ end
 			else
 				abort_with_error (ec_VCATU, <<rm_attribute_name>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp17 := yyvsp17 + 1
@@ -2001,11 +2001,11 @@ end
 						yyval17.set_differential_path (parent_path_str)
 						c_attrs.put (yyval17)
 debug ("ADL_parse")
-	io.put_string (indent + "PUSH create ATTR_NODE " + yyvs2.item (yyvsp2) + "; container = " + yyval17.is_multiple.out) 
+	io.put_string (indent + "PUSH create ATTR_NODE " + yyvs2.item (yyvsp2) + "; container = " + yyval17.is_multiple.out)
 	if attached yyvs12.item (yyvsp12) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
 	if attached yyvs48.item (yyvsp48) as att_card then io.put_string ("; cardinality=(" + att_card.as_string + ")") end
 	io.new_line
-	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N")
 	indent.append ("%T")
 end
 						object_nodes.item.put_attribute (yyval17)
@@ -2015,10 +2015,10 @@ end
 						yyval17.set_differential_path (parent_path_str)
 						c_attrs.put (yyval17)
 debug ("ADL_parse")
-	io.put_string (indent + "PUSH create ATTR_NODE " + yyvs2.item (yyvsp2) + "; container = " + yyval17.is_multiple.out) 
+	io.put_string (indent + "PUSH create ATTR_NODE " + yyvs2.item (yyvsp2) + "; container = " + yyval17.is_multiple.out)
 	if attached yyvs12.item (yyvsp12) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
 	io.new_line
-	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
+	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N")
 	indent.append ("%T")
 end
 						object_nodes.item.put_attribute (yyval17)
@@ -2031,7 +2031,7 @@ end
 			else
 				abort_with_error (ec_VCATU, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp17 := yyvsp17 + 1
@@ -2053,7 +2053,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 719")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -2064,7 +2064,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 722")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2076,7 +2076,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 725")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -2103,9 +2103,9 @@ end
 
 			debug ("ADL_parse")
 				indent.remove_tail (1)
-				io.put_string (indent + "C_ATTR_TUPLE (complete)%N") 
+				io.put_string (indent + "C_ATTR_TUPLE (complete)%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp1 := yyvsp1 -6
@@ -2120,11 +2120,11 @@ end
 			create c_attr_tuple.make
 			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs2.item (yyvsp2), Void))
 			debug ("ADL_parse")
-				io.put_string (indent + "enter C_ATTR_TUPLE%N") 
+				io.put_string (indent + "enter C_ATTR_TUPLE%N")
 				indent.append ("%T")
-				io.put_string (indent + "add C_ATTR_TUPLE id " + yyvs2.item (yyvsp2) + "%N") 
+				io.put_string (indent + "add C_ATTR_TUPLE id " + yyvs2.item (yyvsp2) + "%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -2146,9 +2146,9 @@ end
 
 			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs2.item (yyvsp2), Void))
 			debug ("ADL_parse")
-				io.put_string (indent + "add C_ATTR_TUPLE id " + yyvs2.item (yyvsp2) + "%N") 
+				io.put_string (indent + "add C_ATTR_TUPLE id " + yyvs2.item (yyvsp2) + "%N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -2161,7 +2161,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 772")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
@@ -2172,7 +2172,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 775")
 end
 
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -2185,10 +2185,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "c_attr_tuple_value - received one tuple %N") 
+				io.put_string (indent + "c_attr_tuple_value - received one tuple %N")
 			end
 			c_attr_tuple_count := c_attr_tuple_count + 1
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -2209,7 +2209,7 @@ end
 			debug ("ADL_parse")
 				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (1).rm_attribute_name + " %N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -2231,7 +2231,7 @@ end
 			debug ("ADL_parse")
 				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
@@ -2267,7 +2267,7 @@ end
 				io.put_string (indent + "[---assertion expression---] %N")
 			end
 			yyval7 := yyvs7.item (yyvsp7)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2302,7 +2302,7 @@ end
 				io.put_string (indent + "[---assertion expression---] %N")
 			end
 			yyval7 := yyvs7.item (yyvsp7)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -2316,7 +2316,7 @@ end
 
 			create yyval7.make (0)
 			yyval7.extend (yyvs8.item (yyvsp8))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp7 := yyvsp7 + 1
@@ -2338,7 +2338,7 @@ end
 
 			yyvs7.item (yyvsp7).extend (yyvs8.item (yyvsp8))
 			yyval7 := yyvs7.item (yyvsp7)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp8 := yyvsp8 -1
@@ -2351,7 +2351,7 @@ debug ("GEYACC")
 end
 
 			create yyval8.make (yyvs18.item (yyvsp18), yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp8 := yyvsp8 + 1
@@ -2374,7 +2374,7 @@ debug ("GEYACC")
 end
 
 			create yyval8.make (yyvs18.item (yyvsp18), Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp8 := yyvsp8 + 1
@@ -2395,7 +2395,7 @@ debug ("GEYACC")
 end
 
 			create yyval8.make (yyvs20.item (yyvsp20), Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp8 := yyvsp8 + 1
@@ -2416,7 +2416,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SINVS, <<yyvs2.item (yyvsp2)>>)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp8 := yyvsp8 + 1
@@ -2438,7 +2438,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs18.item (yyvsp18)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
@@ -2450,7 +2450,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs18.item (yyvsp18)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
@@ -2462,10 +2462,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + yyvs19.item (yyvsp19).as_string + "]%N") 
+				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + yyvs19.item (yyvsp19).as_string + "]%N")
 			end
 			yyval18 := yyvs19.item (yyvsp19)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2486,7 +2486,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs20.item (yyvsp20)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2507,7 +2507,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs21.item (yyvsp21)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2528,10 +2528,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + yyvs20.item (yyvsp20).as_string + "]%N") 
+				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + yyvs20.item (yyvsp20).as_string + "]%N")
 			end
 			yyval18 := yyvs20.item (yyvsp20)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2552,7 +2552,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs18.item (yyvsp18)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -2565,7 +2565,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs20.item (yyvsp20)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2586,12 +2586,12 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + yyvs2.item (yyvsp2) + " matches {" + yyvs15.item (yyvsp15).as_string + "}%N") 
+				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + yyvs2.item (yyvsp2) + " matches {" + yyvs15.item (yyvsp15).as_string + "}%N")
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (op_matches),
 				create {EXPR_LEAF}.make_archetype_ref (yyvs2.item (yyvsp2)),
 				create {EXPR_LEAF}.make_constraint (yyvs15.item (yyvsp15)))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp20 := yyvsp20 + 1
@@ -2614,12 +2614,12 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs15.item (yyvsp15).as_string + "}%N") 
+				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs15.item (yyvsp15).as_string + "}%N")
 			end
-			create yyval20.make (create {OPERATOR_KIND}.make (op_matches), 
+			create yyval20.make (create {OPERATOR_KIND}.make (op_matches),
 				create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)),
 				create {EXPR_LEAF}.make_constraint (yyvs15.item (yyvsp15)))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp20 := yyvsp20 + 1
@@ -2642,12 +2642,12 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs60.item (yyvsp60).as_string + "}%N") 
+				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs60.item (yyvsp60).as_string + "}%N")
 			end
-			create yyval20.make (create {OPERATOR_KIND}.make (op_matches), 
+			create yyval20.make (create {OPERATOR_KIND}.make (op_matches),
 				create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)),
 				create {EXPR_LEAF}.make_coded_term (yyvs60.item (yyvsp60)))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp20 := yyvsp20 + 1
@@ -2670,10 +2670,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: exists " + yyvs2.item (yyvsp2) + "%N") 
+				io.put_string (indent + "boolean_unop_expr: exists " + yyvs2.item (yyvsp2) + "%N")
 			end
 			create yyval19.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp19 := yyvsp19 + 1
@@ -2695,10 +2695,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: not " + yyvs2.item (yyvsp2) + "%N") 
+				io.put_string (indent + "boolean_unop_expr: not " + yyvs2.item (yyvsp2) + "%N")
 			end
 			create yyval19.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp19 := yyvsp19 + 1
@@ -2720,10 +2720,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: not [(" + yyvs18.item (yyvsp18).as_string + ")] %N") 
+				io.put_string (indent + "boolean_unop_expr: not [(" + yyvs18.item (yyvsp18).as_string + ")] %N")
 			end
 			create yyval19.make (create {OPERATOR_KIND}.make (op_not), yyvs18.item (yyvsp18))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp19 := yyvsp19 + 1
@@ -2745,7 +2745,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SEXPT, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp19 := yyvsp19 + 1
@@ -2766,10 +2766,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_binop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N") 
+				io.put_string (indent + "boolean_binop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N")
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs18.item (yyvsp18 - 1), yyvs18.item (yyvsp18))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 + 1
@@ -2791,7 +2791,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_or)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -2812,7 +2812,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_and)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -2833,7 +2833,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_xor)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -2854,7 +2854,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_implies)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -2875,7 +2875,7 @@ debug ("GEYACC")
 end
 
 			create yyval21.make_boolean (True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp21 := yyvsp21 + 1
@@ -2896,7 +2896,7 @@ debug ("GEYACC")
 end
 
 			create yyval21.make_boolean (False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp21 := yyvsp21 + 1
@@ -2917,10 +2917,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arithmetic_relop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N") 
+				io.put_string (indent + "arithmetic_relop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N")
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs18.item (yyvsp18 - 1), yyvs18.item (yyvsp18))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 + 1
@@ -2942,7 +2942,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs18.item (yyvsp18)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
@@ -2954,7 +2954,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs20.item (yyvsp20)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2975,7 +2975,7 @@ debug ("GEYACC")
 end
 
 			yyval18 := yyvs21.item (yyvsp21)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp18 := yyvsp18 + 1
@@ -2996,10 +2996,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "(expr) %N") 
+				io.put_string (indent + "(expr) %N")
 			end
 			yyval18 := yyvs18.item (yyvsp18)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -3012,10 +3012,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arithmetic_arith_binop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N") 
+				io.put_string (indent + "arithmetic_arith_binop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N")
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs18.item (yyvsp18 - 1), yyvs18.item (yyvsp18))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 + 1
@@ -3037,10 +3037,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arith_leaf - integer: " + yyvs3.item (yyvsp3).out + "%N") 
+				io.put_string (indent + "arith_leaf - integer: " + yyvs3.item (yyvsp3).out + "%N")
 			end
 			create yyval21.make_integer (yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp21 := yyvsp21 + 1
@@ -3061,10 +3061,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arith_leaf - real: " + yyvs4.item (yyvsp4).out + "%N") 
+				io.put_string (indent + "arith_leaf - real: " + yyvs4.item (yyvsp4).out + "%N")
 			end
 			create yyval21.make_real (yyvs4.item (yyvsp4))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp21 := yyvsp21 + 1
@@ -3085,10 +3085,10 @@ debug ("GEYACC")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arith_leaf - path: " + yyvs2.item (yyvsp2) + "%N") 
+				io.put_string (indent + "arith_leaf - path: " + yyvs2.item (yyvsp2) + "%N")
 			end
 			create yyval21.make_archetype_definition_ref (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp21 := yyvsp21 + 1
@@ -3109,7 +3109,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_eq)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3130,7 +3130,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_ne)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3151,7 +3151,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_le)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3172,7 +3172,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_lt)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3193,7 +3193,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_ge)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3214,7 +3214,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_gt)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3235,7 +3235,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_divide)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3256,7 +3256,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_multiply)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3277,7 +3277,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_plus)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3298,7 +3298,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_minus)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3319,7 +3319,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := operator_symbol (op_exp)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp2 := yyvsp2 + 1
@@ -3359,7 +3359,7 @@ debug ("GEYACC")
 end
 
 			yyval12 := yyvs13.item (yyvsp13)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp12 := yyvsp12 + 1
@@ -3387,7 +3387,7 @@ end
 			else
 				abort_with_error (ec_SEXLSG, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp13 := yyvsp13 + 1
@@ -3424,7 +3424,7 @@ end
 			else
 				abort_with_error (ec_SEXLMG, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
@@ -3465,7 +3465,7 @@ debug ("GEYACC")
 end
 
 			yyval48 := yyvs49.item (yyvsp49)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp48 := yyvsp48 + 1
@@ -3487,7 +3487,7 @@ debug ("GEYACC")
 end
 
 			create yyval49.make (yyvs13.item (yyvsp13))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp49 := yyvsp49 + 1
@@ -3508,7 +3508,7 @@ debug ("GEYACC")
 end
 
 			create yyval49.make (yyvs13.item (yyvsp13))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp49 := yyvsp49 + 1
@@ -3531,7 +3531,7 @@ end
 
 			create yyval49.make (yyvs13.item (yyvsp13))
 			yyval49.set_unordered
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp49 := yyvsp49 + 1
@@ -3554,7 +3554,7 @@ end
 
 			create yyval49.make (yyvs13.item (yyvsp13))
 			yyval49.set_unique
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp49 := yyvsp49 + 1
@@ -3577,7 +3577,7 @@ end
 
 			create yyval49.make (yyvs13.item (yyvsp13))
 			yyval49.set_unique
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp49 := yyvsp49 + 1
@@ -3601,7 +3601,7 @@ end
 			create yyval49.make (yyvs13.item (yyvsp13))
 			yyval49.set_unique
 			yyval49.set_unordered
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp49 := yyvsp49 + 1
@@ -3624,7 +3624,7 @@ end
 
 			create yyval49.make (yyvs13.item (yyvsp13))
 			yyval49.set_unique
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp49 := yyvsp49 + 1
@@ -3648,7 +3648,7 @@ end
 			create yyval49.make (yyvs13.item (yyvsp13))
 			yyval49.set_unique
 			yyval49.set_unordered
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp49 := yyvsp49 + 1
@@ -3689,7 +3689,7 @@ debug ("GEYACC")
 end
 
 			yyval12 := yyvs13.item (yyvsp13)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp12 := yyvsp12 + 1
@@ -3711,7 +3711,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SOCCF, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp12 := yyvsp12 + 1
@@ -3732,7 +3732,7 @@ debug ("GEYACC")
 end
 
 			create yyval13.make_point (yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp13 := yyvsp13 + 1
@@ -3753,7 +3753,7 @@ debug ("GEYACC")
 end
 
 			create yyval13.make_upper_unbounded (0)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp13 := yyvsp13 + 1
@@ -3774,7 +3774,7 @@ debug ("GEYACC")
 end
 
 			create yyval13.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
@@ -3796,7 +3796,7 @@ debug ("GEYACC")
 end
 
 			create yyval13.make_upper_unbounded (yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp13 := yyvsp13 + 1
@@ -3818,7 +3818,7 @@ debug ("GEYACC")
 end
 
 			create yyval59.make_simple (yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp59 := yyvsp59 + 1
@@ -3839,7 +3839,7 @@ debug ("GEYACC")
 end
 
 			create yyval59.make_list_simple (yyvs29.item (yyvsp29))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp59 := yyvsp59 + 1
@@ -3860,7 +3860,7 @@ debug ("GEYACC")
 end
 
 			create yyval59.make_interval (yyvs36.item (yyvsp36))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp59 := yyvsp59 + 1
@@ -3881,7 +3881,7 @@ debug ("GEYACC")
 end
 
 			create yyval59.make_list (yyvs42.item (yyvsp42))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp59 := yyvsp59 + 1
@@ -3907,7 +3907,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs3.item (yyvsp3).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -3921,7 +3921,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCIAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -3934,7 +3934,7 @@ debug ("GEYACC")
 end
 
 			create yyval58.make_simple (yyvs4.item (yyvsp4))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp58 := yyvsp58 + 1
@@ -3955,7 +3955,7 @@ debug ("GEYACC")
 end
 
 			create yyval58.make_list_simple (yyvs30.item (yyvsp30))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp58 := yyvsp58 + 1
@@ -3976,7 +3976,7 @@ debug ("GEYACC")
 end
 
 			create yyval58.make_interval (yyvs37.item (yyvsp37))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp58 := yyvsp58 + 1
@@ -3997,7 +3997,7 @@ debug ("GEYACC")
 end
 
 			create yyval58.make_list (yyvs43.item (yyvsp43))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp58 := yyvsp58 + 1
@@ -4023,7 +4023,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs4.item (yyvsp4).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4037,7 +4037,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCRAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4062,7 +4062,7 @@ end
 				end
 				abort_with_error (ec_SCDPT, <<str>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp56 := yyvsp56 + 1
@@ -4083,7 +4083,7 @@ debug ("GEYACC")
 end
 
 			create yyval56.make_simple (yyvs23.item (yyvsp23))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp56 := yyvsp56 + 1
@@ -4104,7 +4104,7 @@ debug ("GEYACC")
 end
 
 			create yyval56.make_list_simple (yyvs32.item (yyvsp32))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp56 := yyvsp56 + 1
@@ -4125,7 +4125,7 @@ debug ("GEYACC")
 end
 
 			create yyval56.make_interval (yyvs39.item (yyvsp39))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp56 := yyvsp56 + 1
@@ -4146,7 +4146,7 @@ debug ("GEYACC")
 end
 
 			create yyval56.make_list (yyvs45.item (yyvsp45))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp56 := yyvsp56 + 1
@@ -4172,7 +4172,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs23.item (yyvsp23).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4186,7 +4186,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCDAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4210,7 +4210,7 @@ end
 				end
 				abort_with_error (ec_SCTPT, <<str>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp57 := yyvsp57 + 1
@@ -4231,7 +4231,7 @@ debug ("GEYACC")
 end
 
 			create yyval57.make_simple (yyvs25.item (yyvsp25))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp57 := yyvsp57 + 1
@@ -4252,7 +4252,7 @@ debug ("GEYACC")
 end
 
 			create yyval57.make_list_simple (yyvs33.item (yyvsp33))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp57 := yyvsp57 + 1
@@ -4273,7 +4273,7 @@ debug ("GEYACC")
 end
 
 			create yyval57.make_interval (yyvs38.item (yyvsp38))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp57 := yyvsp57 + 1
@@ -4294,7 +4294,7 @@ debug ("GEYACC")
 end
 
 			create yyval57.make_list (yyvs44.item (yyvsp44))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp57 := yyvsp57 + 1
@@ -4320,7 +4320,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs25.item (yyvsp25).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4334,7 +4334,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCTAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4358,7 +4358,7 @@ end
 				end
 				abort_with_error (ec_SCDTPT, <<str>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp54 := yyvsp54 + 1
@@ -4379,7 +4379,7 @@ debug ("GEYACC")
 end
 
 			create yyval54.make_simple (yyvs24.item (yyvsp24))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp54 := yyvsp54 + 1
@@ -4400,7 +4400,7 @@ debug ("GEYACC")
 end
 
 			create yyval54.make_list_simple (yyvs34.item (yyvsp34))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp54 := yyvsp54 + 1
@@ -4421,7 +4421,7 @@ debug ("GEYACC")
 end
 
 			create yyval54.make_interval (yyvs40.item (yyvsp40))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp54 := yyvsp54 + 1
@@ -4442,7 +4442,7 @@ debug ("GEYACC")
 end
 
 			create yyval54.make_list (yyvs46.item (yyvsp46))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp54 := yyvsp54 + 1
@@ -4468,7 +4468,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs24.item (yyvsp24).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4482,7 +4482,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCDTAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4499,7 +4499,7 @@ end
 			else
 				abort_with_error (ec_SCDUPT, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
@@ -4524,7 +4524,7 @@ end
 			else
 				abort_with_error (ec_SCDUPT, Void)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp55 := yyvsp55 + 1
@@ -4547,7 +4547,7 @@ debug ("GEYACC")
 end
 
 			create yyval55.make_simple (yyvs26.item (yyvsp26))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
@@ -4568,7 +4568,7 @@ debug ("GEYACC")
 end
 
 			create yyval55.make_list_simple (yyvs35.item (yyvsp35))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
@@ -4589,7 +4589,7 @@ debug ("GEYACC")
 end
 
 			create yyval55.make_interval (yyvs41.item (yyvsp41))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
@@ -4610,7 +4610,7 @@ debug ("GEYACC")
 end
 
 			create yyval55.make_list (yyvs47.item (yyvsp47))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
@@ -4636,7 +4636,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs26.item (yyvsp26).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4650,7 +4650,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCDUAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4663,7 +4663,7 @@ debug ("GEYACC")
 end
 
 			create yyval53.make_simple (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp53 := yyvsp53 + 1
@@ -4684,7 +4684,7 @@ debug ("GEYACC")
 end
 
 			create yyval53.make_list (yyvs28.item (yyvsp28))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp53 := yyvsp53 + 1
@@ -4708,7 +4708,7 @@ end
 			if yyval53.regexp.is_equal ({C_STRING}.Invalid_regex_message) then
 				abort_with_error (ec_SCSRE, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp53 := yyvsp53 + 1
@@ -4734,7 +4734,7 @@ end
 			else
 				abort_with_error (ec_VOBAV, <<yyvs2.item (yyvsp2).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4748,7 +4748,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCSAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4765,7 +4765,7 @@ end
 			else
 				abort_with_errors (constraint_model_factory.errors)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp60 := yyvsp60 + 1
@@ -4786,7 +4786,7 @@ debug ("GEYACC")
 end
 
 			yyval60 := constraint_model_factory.create_c_terminology_code (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp60 := yyvsp60 + 1
@@ -4807,7 +4807,7 @@ debug ("GEYACC")
 end
 
 			create yyval52.make_true
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp52 := yyvsp52 + 1
@@ -4828,7 +4828,7 @@ debug ("GEYACC")
 end
 
 			create yyval52.make_false
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp52 := yyvsp52 + 1
@@ -4849,7 +4849,7 @@ debug ("GEYACC")
 end
 
 			create yyval52.make_list (yyvs31.item (yyvsp31))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp52 := yyvsp52 + 1
@@ -4875,7 +4875,7 @@ end
 				abort_with_error (ec_VOBAV, <<yyvs22.item (yyvsp22).out>>)
 			end
 			yyval52 := yyvs52.item (yyvsp52)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4889,7 +4889,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCBAV, Void)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -4915,7 +4915,7 @@ end
 			yyval14.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
 			yyval14.attribute_tuples.first.put_member (yyval14.c_attribute ("symbol"))
 			yyval14.c_attribute ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code (yyvs51.item (yyvsp51).symbol))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp14 := yyvsp14 + 1
@@ -4955,13 +4955,13 @@ end
 			then
 				abort_with_error (ec_VCOC, <<yyvs51.item (yyvsp51).symbol.out>>)
 
-			elseif attached {C_INTEGER} yyval14.c_attribute ("value").children.first as ci and 
-				attached {C_TERMINOLOGY_CODE} yyval14.c_attribute ("symbol").children.first as ctc 
+			elseif attached {C_INTEGER} yyval14.c_attribute ("value").children.first as ci and
+				attached {C_TERMINOLOGY_CODE} yyval14.c_attribute ("symbol").children.first as ctc
 			then
 				ci.add_value (yyvs51.item (yyvsp51).value)
 				ctc.add_code (yyvs51.item (yyvsp51).symbol.code_string)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4978,7 +4978,7 @@ end
 
 			-- assumed value for C_DV_ORDINAL not supported
 			add_warning (ec_WDTOAV, Void)
- 		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -4992,7 +4992,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_SCOAV, Void)
- 		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -5006,7 +5006,7 @@ end
 
 			-- create ORDINAL
 			create yyval51.make (yyvs3.item (yyvsp3), yyvs61.item (yyvsp61))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp51 := yyvsp51 + 1
@@ -5029,7 +5029,7 @@ debug ("GEYACC")
 end
 
 			create yyval50.make (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp50 := yyvsp50 + 1
@@ -5050,7 +5050,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
@@ -5062,7 +5062,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
@@ -5074,7 +5074,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
@@ -5086,7 +5086,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
@@ -5098,7 +5098,7 @@ debug ("GEYACC")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
@@ -5112,7 +5112,7 @@ end
 			create yyval28.make(0)
 			yyval28.extend(yyvs2.item (yyvsp2 - 1))
 			yyval28.extend(yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp28 := yyvsp28 + 1
@@ -5135,7 +5135,7 @@ end
 
 			yyvs28.item (yyvsp28).extend(yyvs2.item (yyvsp2))
 			yyval28 := yyvs28.item (yyvsp28)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5149,7 +5149,7 @@ debug ("GEYACC")
 end
 
 			yyval28 := yyvs28.item (yyvsp28)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -5163,7 +5163,7 @@ end
 
 			create yyval28.make (0)
 			yyval28.extend (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp28 := yyvsp28 + 1
@@ -5185,7 +5185,7 @@ debug ("GEYACC")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
@@ -5197,7 +5197,7 @@ debug ("GEYACC")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -5210,7 +5210,7 @@ debug ("GEYACC")
 end
 
 			yyval3 := - yyvs3.item (yyvsp3)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -5225,7 +5225,7 @@ end
 			create yyval29.make(0)
 			yyval29.extend(yyvs3.item (yyvsp3 - 1))
 			yyval29.extend(yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
@@ -5248,7 +5248,7 @@ end
 
 			yyvs29.item (yyvsp29).extend(yyvs3.item (yyvsp3))
 			yyval29 := yyvs29.item (yyvsp29)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5263,7 +5263,7 @@ end
 
 			create yyval29.make(0)
 			yyval29.extend(yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
@@ -5289,7 +5289,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp36 := yyvsp36 + 1
@@ -5315,7 +5315,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp36 := yyvsp36 + 1
@@ -5341,7 +5341,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp36 := yyvsp36 + 1
@@ -5367,7 +5367,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp36 := yyvsp36 + 1
@@ -5389,7 +5389,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [INTEGER]} yyval36.make_lower_unbounded (yyvs3.item (yyvsp3), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -5411,7 +5411,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [INTEGER]} yyval36.make_lower_unbounded (yyvs3.item (yyvsp3), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -5433,7 +5433,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [INTEGER]} yyval36.make_upper_unbounded (yyvs3.item (yyvsp3), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -5455,7 +5455,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [INTEGER]} yyval36.make_upper_unbounded (yyvs3.item (yyvsp3), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
@@ -5477,7 +5477,7 @@ debug ("GEYACC")
 end
 
 			create {POINT_INTERVAL [INTEGER]} yyval36.make (yyvs3.item (yyvsp3))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp36 := yyvsp36 + 1
@@ -5501,7 +5501,7 @@ end
 			create yyval42.make(0)
 			yyval42.extend(yyvs36.item (yyvsp36 - 1))
 			yyval42.extend(yyvs36.item (yyvsp36))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp42 := yyvsp42 + 1
@@ -5524,7 +5524,7 @@ end
 
 			yyvs42.item (yyvsp42).extend(yyvs36.item (yyvsp36))
 			yyval42 := yyvs42.item (yyvsp42)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5539,7 +5539,7 @@ end
 
 			create yyval42.make(0)
 			yyval42.extend(yyvs36.item (yyvsp36))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp42 := yyvsp42 + 1
@@ -5561,7 +5561,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
@@ -5573,7 +5573,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := yyvs4.item (yyvsp4)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -5586,7 +5586,7 @@ debug ("GEYACC")
 end
 
 			yyval4 := - yyvs4.item (yyvsp4)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -5601,7 +5601,7 @@ end
 			create yyval30.make(0)
 			yyval30.extend(yyvs4.item (yyvsp4 - 1))
 			yyval30.extend(yyvs4.item (yyvsp4))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
@@ -5624,7 +5624,7 @@ end
 
 			yyvs30.item (yyvsp30).extend(yyvs4.item (yyvsp4))
 			yyval30 := yyvs30.item (yyvsp30)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5639,7 +5639,7 @@ end
 
 			create yyval30.make(0)
 			yyval30.extend(yyvs4.item (yyvsp4))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
@@ -5665,7 +5665,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp37 := yyvsp37 + 1
@@ -5691,7 +5691,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp37 := yyvsp37 + 1
@@ -5717,7 +5717,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp37 := yyvsp37 + 1
@@ -5743,7 +5743,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp37 := yyvsp37 + 1
@@ -5765,7 +5765,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [REAL]} yyval37.make_lower_unbounded(yyvs4.item (yyvsp4), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -5787,7 +5787,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [REAL]} yyval37.make_lower_unbounded(yyvs4.item (yyvsp4), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -5809,7 +5809,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [REAL]} yyval37.make_upper_unbounded(yyvs4.item (yyvsp4), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -5831,7 +5831,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [REAL]} yyval37.make_upper_unbounded(yyvs4.item (yyvsp4), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
@@ -5853,7 +5853,7 @@ debug ("GEYACC")
 end
 
 			create {POINT_INTERVAL [REAL]} yyval37.make(yyvs4.item (yyvsp4))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp37 := yyvsp37 + 1
@@ -5877,7 +5877,7 @@ end
 			create yyval43.make(0)
 			yyval43.extend(yyvs37.item (yyvsp37 - 1))
 			yyval43.extend(yyvs37.item (yyvsp37))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp43 := yyvsp43 + 1
@@ -5900,7 +5900,7 @@ end
 
 			yyvs43.item (yyvsp43).extend(yyvs37.item (yyvsp37))
 			yyval43 := yyvs43.item (yyvsp43)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -5915,7 +5915,7 @@ end
 
 			create yyval43.make(0)
 			yyval43.extend(yyvs37.item (yyvsp37))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp43 := yyvsp43 + 1
@@ -5937,7 +5937,7 @@ debug ("GEYACC")
 end
 
 			yyval22 := True
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp22 := yyvsp22 + 1
@@ -5958,7 +5958,7 @@ debug ("GEYACC")
 end
 
 			yyval22 := False
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp22 := yyvsp22 + 1
@@ -5981,7 +5981,7 @@ end
 			create yyval31.make(0)
 			yyval31.extend(yyvs22.item (yyvsp22 - 1))
 			yyval31.extend(yyvs22.item (yyvsp22))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp31 := yyvsp31 + 1
@@ -6004,7 +6004,7 @@ end
 
 			yyvs31.item (yyvsp31).extend(yyvs22.item (yyvsp22))
 			yyval31 := yyvs31.item (yyvsp31)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -6019,7 +6019,7 @@ end
 
 			create yyval31.make(0)
 			yyval31.extend(yyvs22.item (yyvsp22))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp31 := yyvsp31 + 1
@@ -6045,7 +6045,7 @@ end
 			else
 				abort_with_error (ec_VIDV, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp23 := yyvsp23 + 1
@@ -6068,7 +6068,7 @@ end
 			create yyval32.make(0)
 			yyval32.extend (yyvs23.item (yyvsp23 - 1))
 			yyval32.extend (yyvs23.item (yyvsp23))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp32 := yyvsp32 + 1
@@ -6091,7 +6091,7 @@ end
 
 			yyvs32.item (yyvsp32).extend (yyvs23.item (yyvsp23))
 			yyval32 := yyvs32.item (yyvsp32)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -6106,7 +6106,7 @@ end
 
 			create yyval32.make(0)
 			yyval32.extend (yyvs23.item (yyvsp23))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp32 := yyvsp32 + 1
@@ -6132,7 +6132,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp39 := yyvsp39 + 1
@@ -6158,7 +6158,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp39 := yyvsp39 + 1
@@ -6184,7 +6184,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp39 := yyvsp39 + 1
@@ -6210,7 +6210,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp39 := yyvsp39 + 1
@@ -6232,7 +6232,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_lower_unbounded(yyvs23.item (yyvsp23), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp39 := yyvsp39 + 1
@@ -6254,7 +6254,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_lower_unbounded(yyvs23.item (yyvsp23), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp39 := yyvsp39 + 1
@@ -6276,7 +6276,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_upper_unbounded(yyvs23.item (yyvsp23), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp39 := yyvsp39 + 1
@@ -6298,7 +6298,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_upper_unbounded(yyvs23.item (yyvsp23), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp39 := yyvsp39 + 1
@@ -6320,7 +6320,7 @@ debug ("GEYACC")
 end
 
 			create {POINT_INTERVAL [ISO8601_DATE]} yyval39.make (yyvs23.item (yyvsp23))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp39 := yyvsp39 + 1
@@ -6344,7 +6344,7 @@ end
 			create yyval45.make(0)
 			yyval45.extend(yyvs39.item (yyvsp39 - 1))
 			yyval45.extend(yyvs39.item (yyvsp39))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp45 := yyvsp45 + 1
@@ -6367,7 +6367,7 @@ end
 
 			yyvs45.item (yyvsp45).extend(yyvs39.item (yyvsp39))
 			yyval45 := yyvs45.item (yyvsp45)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -6382,7 +6382,7 @@ end
 
 			create yyval45.make(0)
 			yyval45.extend(yyvs39.item (yyvsp39))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp45 := yyvsp45 + 1
@@ -6408,7 +6408,7 @@ end
 			else
 				abort_with_error (ec_VITV, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp25 := yyvsp25 + 1
@@ -6431,7 +6431,7 @@ end
 			create yyval33.make(0)
 			yyval33.extend(yyvs25.item (yyvsp25 - 1))
 			yyval33.extend(yyvs25.item (yyvsp25))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp33 := yyvsp33 + 1
@@ -6454,7 +6454,7 @@ end
 
 			yyvs33.item (yyvsp33).extend(yyvs25.item (yyvsp25))
 			yyval33 := yyvs33.item (yyvsp33)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -6469,7 +6469,7 @@ end
 
 			create yyval33.make(0)
 			yyval33.extend(yyvs25.item (yyvsp25))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp33 := yyvsp33 + 1
@@ -6495,7 +6495,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp38 := yyvsp38 + 1
@@ -6521,7 +6521,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp38 := yyvsp38 + 1
@@ -6547,7 +6547,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp38 := yyvsp38 + 1
@@ -6573,7 +6573,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp38 := yyvsp38 + 1
@@ -6595,7 +6595,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_lower_unbounded(yyvs25.item (yyvsp25), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -6617,7 +6617,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_lower_unbounded(yyvs25.item (yyvsp25), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -6639,7 +6639,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_upper_unbounded(yyvs25.item (yyvsp25), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -6661,7 +6661,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_upper_unbounded(yyvs25.item (yyvsp25), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp38 := yyvsp38 + 1
@@ -6683,7 +6683,7 @@ debug ("GEYACC")
 end
 
 			create {POINT_INTERVAL [ISO8601_TIME]} yyval38.make (yyvs25.item (yyvsp25))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp38 := yyvsp38 + 1
@@ -6707,7 +6707,7 @@ end
 			create yyval44.make(0)
 			yyval44.extend(yyvs38.item (yyvsp38 - 1))
 			yyval44.extend(yyvs38.item (yyvsp38))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp44 := yyvsp44 + 1
@@ -6730,7 +6730,7 @@ end
 
 			yyvs44.item (yyvsp44).extend(yyvs38.item (yyvsp38))
 			yyval44 := yyvs44.item (yyvsp44)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -6745,7 +6745,7 @@ end
 
 			create yyval44.make(0)
 			yyval44.extend(yyvs38.item (yyvsp38))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp44 := yyvsp44 + 1
@@ -6771,7 +6771,7 @@ end
 			else
 				abort_with_error (ec_VIDTV, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp24 := yyvsp24 + 1
@@ -6794,7 +6794,7 @@ end
 			create yyval34.make(0)
 			yyval34.extend(yyvs24.item (yyvsp24 - 1))
 			yyval34.extend(yyvs24.item (yyvsp24))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp34 := yyvsp34 + 1
@@ -6817,7 +6817,7 @@ end
 
 			yyvs34.item (yyvsp34).extend(yyvs24.item (yyvsp24))
 			yyval34 := yyvs34.item (yyvsp34)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -6832,7 +6832,7 @@ end
 
 			create yyval34.make(0)
 			yyval34.extend(yyvs24.item (yyvsp24))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp34 := yyvsp34 + 1
@@ -6858,7 +6858,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp40 := yyvsp40 + 1
@@ -6884,7 +6884,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp40 := yyvsp40 + 1
@@ -6910,7 +6910,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp40 := yyvsp40 + 1
@@ -6936,7 +6936,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp40 := yyvsp40 + 1
@@ -6958,7 +6958,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_lower_unbounded(yyvs24.item (yyvsp24), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
@@ -6980,7 +6980,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_lower_unbounded(yyvs24.item (yyvsp24), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
@@ -7002,7 +7002,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_upper_unbounded(yyvs24.item (yyvsp24), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
@@ -7024,7 +7024,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_upper_unbounded(yyvs24.item (yyvsp24), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
@@ -7046,7 +7046,7 @@ debug ("GEYACC")
 end
 
 			create {POINT_INTERVAL [ISO8601_DATE_TIME]} yyval40.make (yyvs24.item (yyvsp24))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp40 := yyvsp40 + 1
@@ -7070,7 +7070,7 @@ end
 			create yyval46.make(0)
 			yyval46.extend(yyvs40.item (yyvsp40 - 1))
 			yyval46.extend(yyvs40.item (yyvsp40))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp46 := yyvsp46 + 1
@@ -7093,7 +7093,7 @@ end
 
 			yyvs46.item (yyvsp46).extend(yyvs40.item (yyvsp40))
 			yyval46 := yyvs46.item (yyvsp46)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -7108,7 +7108,7 @@ end
 
 			create yyval46.make(0)
 			yyval46.extend(yyvs40.item (yyvsp40))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp46 := yyvsp46 + 1
@@ -7134,7 +7134,7 @@ end
 			else
 				abort_with_error (ec_VIDUV, <<yyvs2.item (yyvsp2)>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp26 := yyvsp26 + 1
@@ -7157,7 +7157,7 @@ end
 			create yyval35.make(0)
 			yyval35.extend(yyvs26.item (yyvsp26 - 1))
 			yyval35.extend(yyvs26.item (yyvsp26))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp35 := yyvsp35 + 1
@@ -7180,7 +7180,7 @@ end
 
 			yyvs35.item (yyvsp35).extend(yyvs26.item (yyvsp26))
 			yyval35 := yyvs35.item (yyvsp35)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -7195,7 +7195,7 @@ end
 
 			create yyval35.make(0)
 			yyval35.extend(yyvs26.item (yyvsp26))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp35 := yyvsp35 + 1
@@ -7221,7 +7221,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp41 := yyvsp41 + 1
@@ -7247,7 +7247,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp41 := yyvsp41 + 1
@@ -7273,7 +7273,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp41 := yyvsp41 + 1
@@ -7299,7 +7299,7 @@ end
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp41 := yyvsp41 + 1
@@ -7321,7 +7321,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_lower_unbounded(yyvs26.item (yyvsp26), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp41 := yyvsp41 + 1
@@ -7343,7 +7343,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_lower_unbounded(yyvs26.item (yyvsp26), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp41 := yyvsp41 + 1
@@ -7365,7 +7365,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_upper_unbounded(yyvs26.item (yyvsp26), False)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp41 := yyvsp41 + 1
@@ -7387,7 +7387,7 @@ debug ("GEYACC")
 end
 
 			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_upper_unbounded(yyvs26.item (yyvsp26), True)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp41 := yyvsp41 + 1
@@ -7409,7 +7409,7 @@ debug ("GEYACC")
 end
 
 			create {POINT_INTERVAL [ISO8601_DURATION]} yyval41.make (yyvs26.item (yyvsp26))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp41 := yyvsp41 + 1
@@ -7433,7 +7433,7 @@ end
 			create yyval47.make(0)
 			yyval47.extend(yyvs41.item (yyvsp41 - 1))
 			yyval47.extend(yyvs41.item (yyvsp41))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp47 := yyvsp47 + 1
@@ -7456,7 +7456,7 @@ end
 
 			yyvs47.item (yyvsp47).extend(yyvs41.item (yyvsp41))
 			yyval47 := yyvs47.item (yyvsp47)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -7471,7 +7471,7 @@ end
 
 			create yyval47.make(0)
 			yyval47.extend(yyvs41.item (yyvsp41))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp47 := yyvsp47 + 1
@@ -7493,7 +7493,7 @@ debug ("GEYACC")
 end
 
 			create yyval61.make_from_string (yyvs2.item (yyvsp2))
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp61 := yyvsp61 + 1
@@ -7514,7 +7514,7 @@ debug ("GEYACC")
 end
 
 			abort_with_error (ec_STCV, <<yyvs2.item (yyvsp2)>>)
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp61 := yyvsp61 + 1
@@ -8900,7 +8900,7 @@ feature -- Initialization
 
 			create time_vc
 			create date_vc
-	
+
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -8918,7 +8918,7 @@ feature -- Initialization
 feature -- Access
 
 	differential_syntax: BOOLEAN
-			-- True if the supplied text to parse is differential, in which case it can contain the 
+			-- True if the supplied text to parse is differential, in which case it can contain the
 			-- differential syntax variants, i.e. ordering markers and specialisation paths
 
 feature {NONE} -- Implementation
@@ -8934,8 +8934,8 @@ feature {NONE} -- Implementation
 			Not_already_added: not an_attr.has_child (an_obj)
 		do
 			debug ("ADL_parse")
-				io.put_string (indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child (" + 
-						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
+				io.put_string (indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child (" +
+						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N")
 			end
 			if check_c_attribute_child (an_attr, an_obj) then
 				c_attrs.item.put_child (an_obj)
@@ -8974,7 +8974,7 @@ feature {NONE} -- Implementation
 					err_code := ec_VACMI
 				elseif an_attr.has_child_with_id (an_obj.node_id) then
 					err_code := ec_VACMM
-				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
+				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and
 						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and
 						an_obj.occurrences.upper > an_attr.cardinality.interval.upper then
 					err_code := ec_VACMCU
@@ -9026,7 +9026,7 @@ feature {NONE} -- Parse Tree
 	c_attr_tuple_count: INTEGER
 
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
-feature {NONE} -- Implementation 
+feature {NONE} -- Implementation
 
 	arch_internal_ref_rm_type_name: STRING
 	arch_internal_ref_node_id: detachable STRING

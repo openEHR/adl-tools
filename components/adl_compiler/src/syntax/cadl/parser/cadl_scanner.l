@@ -682,7 +682,7 @@ feature {NONE} -- Implementation
 	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	odin_parser: ODIN_VALIDATOR
+	odin_parser: ODIN_PARSER
 		once
 			create Result.make
 		end

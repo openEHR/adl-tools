@@ -13,6 +13,6 @@
 #	last_change: "$LastChangedDate$"
 #
 
-geyacc --new_typing -v parser_errs.txt -t CADL_TOKENS -o cadl_validator.e cadl_validator.y
+geyacc --new_typing -v parser_errs.txt -t CADL_TOKENS -o cadl_parser.e cadl_parser.y
 
-geyacc --doc=html -v parser_errs.txt -t CADL_TOKENS -o cadl_validator.html cadl_validator.y
+geyacc --doc=html -v parser_errs.txt -t CADL_TOKENS -o cadl_parser.html cadl_parser.y

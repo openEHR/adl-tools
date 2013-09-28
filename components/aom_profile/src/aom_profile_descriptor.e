@@ -89,7 +89,7 @@ feature -- Validation
 
 feature {NONE} -- Implementation
 
-	parser: ODIN_VALIDATOR
+	parser: ODIN_PARSER
 		once
 			create Result.make
 		end
