@@ -17,7 +17,7 @@ inherit
 			default_create, prototype_value, valid_value, as_string, do_node_conforms_to
 		end
 
-	DATE_TIME_ROUTINES
+	C_DATE_TIME_ROUTINES
 		export
 			{NONE} all;
 		undefine
