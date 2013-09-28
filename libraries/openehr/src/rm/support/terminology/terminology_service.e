@@ -66,7 +66,7 @@ feature -- Status Report
 		require
 			name_valid: not a_name.is_empty
 		do
-			Result := terminologies.has (a_name)
+			Result := terminologies.has (a_name.as_lower)
 		end
 
 	has_code_set (name: STRING): BOOLEAN
@@ -75,7 +75,7 @@ feature -- Status Report
 		require
 			name_valid: not name.is_empty
 		do
-			Result := code_sets.has (name)
+			Result := code_sets.has (name.as_lower)
 		end
 
 feature -- Modification
@@ -84,7 +84,7 @@ feature -- Modification
 		require
 			not has_terminology (a_name)
 		do
-			terminologies.put (create {TERMINOLOGY_ACCESS}.make (a_name), a_name)
+			terminologies.put (create {TERMINOLOGY_ACCESS}.make (a_name), a_name.as_lower)
 		end
 
 feature {NONE} -- Implementation
