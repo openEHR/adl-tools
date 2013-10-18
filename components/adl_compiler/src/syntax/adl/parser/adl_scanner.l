@@ -196,7 +196,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 					i := i - 1
 				end
 
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -213,7 +213,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				in_buffer.append_string(text)
 			}
 	<<EOF>> {
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -224,13 +224,14 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 }
 
 <IN_CADL_SECTION>{
-	^[ \t]+[^\n]*\n {
+^[ \t]+[^\n]*\n {
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
-	\n+				in_lineno := in_lineno + text_count
 
-	^[^ \t] { -- non-white space at start
+\n+				in_lineno := in_lineno + text_count
+
+^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_CADL_TEXT
 				create str_.make (in_buffer.count)
@@ -242,7 +243,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 }
 
 <IN_ASSERTION_SECTION>{
-	^[ \t]+[^\n]*\n {			-- match TAB whitsepace <anything> \n
+	^[ \t]+[^\n]*\n {			-- match ^whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}

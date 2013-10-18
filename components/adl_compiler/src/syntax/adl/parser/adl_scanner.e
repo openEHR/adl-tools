@@ -439,7 +439,7 @@ end
 					i := i - 1
 				end
 
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -461,7 +461,7 @@ end
 					i := i - 1
 				end
 
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -487,7 +487,7 @@ end
 					i := i - 1
 				end
 
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -509,7 +509,7 @@ end
 					i := i - 1
 				end
 
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -555,15 +555,15 @@ end
 end
 else
 if yy_act = 46 then
---|#line 231 "adl_scanner.l"
+--|#line 232 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 231")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 232")
 end
 in_lineno := in_lineno + text_count
 else
---|#line 233 "adl_scanner.l"
+--|#line 234 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 233")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 234")
 end
  -- non-white space at start
 				unread_character(text.item(1))
@@ -579,25 +579,25 @@ end
 else
 if yy_act <= 49 then
 if yy_act = 48 then
---|#line 245 "adl_scanner.l"
+--|#line 246 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 245")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 246")
 end
-			-- match TAB whitsepace <anything> \n
+			-- match ^whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	
 else
---|#line 250 "adl_scanner.l"
+--|#line 251 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 250")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 251")
 end
 in_lineno := in_lineno + text_count
 end
 else
---|#line 252 "adl_scanner.l"
+--|#line 253 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 252")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 253")
 end
  -- non-white space at start
 				unread_character(text.item(1))
@@ -614,18 +614,18 @@ else
 if yy_act <= 54 then
 if yy_act <= 52 then
 if yy_act = 51 then
---|#line 264 "adl_scanner.l"
+--|#line 265 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 264")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 265")
 end
 
 					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
 			
 else
---|#line 270 "adl_scanner.l"
+--|#line 271 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 270")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 271")
 end
 
 					last_token := V_LOCAL_TERM_CODE_REF
@@ -634,18 +634,18 @@ end
 end
 else
 if yy_act = 53 then
---|#line 276 "adl_scanner.l"
+--|#line 277 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 276")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 277")
 end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			
 else
---|#line 282 "adl_scanner.l"
+--|#line 283 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 282")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 283")
 end
 
 					last_token := V_IDENTIFIER
@@ -656,18 +656,18 @@ end
 else
 if yy_act <= 56 then
 if yy_act = 55 then
---|#line 288 "adl_scanner.l"
+--|#line 289 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 288")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 289")
 end
 
 					last_token := V_VALUE
 					last_string_value := text
 			
 else
---|#line 295 "adl_scanner.l"
+--|#line 296 "adl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 295")
+	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 296")
 end
 -- ignore unmatched chars
 end
@@ -701,7 +701,7 @@ debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_scanner.l' at line 0")
 end
 
-				-- get the dADL section sorted out
+				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -717,6 +717,7 @@ end
 feature {NONE} -- Table templates
 
 	yy_nxt_template: SPECIAL [INTEGER]
+			-- Template for `yy_nxt'
 		once
 			Result := yy_fixed_array (<<
 			    0,   10,   11,   12,   11,   13,   14,   15,   16,   17,
@@ -831,6 +832,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_chk_template: SPECIAL [INTEGER]
+			-- Template for `yy_chk'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -945,6 +947,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_base_template: SPECIAL [INTEGER]
+			-- Template for `yy_base'
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,   29,  772,   47,  767,   51,  754,   53,  754,
@@ -988,6 +991,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_def_template: SPECIAL [INTEGER]
+			-- Template for `yy_def'
 		once
 			Result := yy_fixed_array (<<
 			    0,  329,    1,  330,  330,  331,  332,  331,  333,  329,
@@ -1031,12 +1035,13 @@ feature {NONE} -- Table templates
 		end
 
 	yy_ec_template: SPECIAL [INTEGER]
+			-- Template for `yy_ec'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
 			    3,    1,    1,    4,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    4,    5,    1,    1,    6,    1,    1,    1,
+			    1,    1,    2,    5,    1,    1,    6,    1,    1,    1,
 			    7,    8,    9,   10,   11,   12,   13,   14,   15,   15,
 			   15,   15,   15,   15,   15,   15,   15,   15,   16,   17,
 			    1,   18,    1,   19,    1,   20,   21,   22,   23,   24,
@@ -1064,6 +1069,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_meta_template: SPECIAL [INTEGER]
+			-- Template for `yy_meta'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    2,    1,    1,    1,    1,    1,    1,
@@ -1074,6 +1080,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_accept_template: SPECIAL [INTEGER]
+			-- Template for `yy_accept'
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,   58,

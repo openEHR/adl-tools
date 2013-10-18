@@ -1,11 +1,11 @@
 note
-	component:   "openEHR Archetype Project"
+	component:   "Eiffel Object Modelling Framework"
 	description: "Generated class from message text files"
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_COMPILED_MESSAGE_IDS
 
@@ -78,6 +78,7 @@ feature -- Definitions
 		ec_arch_stats_supplier_archetypes_text: STRING = "arch_stats_supplier_archetypes_text"
 		ec_arch_stats_primitive_text: STRING = "arch_stats_primitive_text"
 		ec_arch_stats_non_primitive_text: STRING = "arch_stats_non_primitive_text"
+		ec_SUNK: STRING = "SUNK"
 		ec_SARID: STRING = "SARID"
 		ec_SASID: STRING = "SASID"
 		ec_SACO: STRING = "SACO"

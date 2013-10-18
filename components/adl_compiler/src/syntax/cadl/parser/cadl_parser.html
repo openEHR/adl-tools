@@ -1,0 +1,1172 @@
+<html>
+<head>
+	<title>Grammar</title>
+	<style type="text/css">
+	<!--
+	body {
+		font-family: Verdana,Georgia,Geneva,sans serif;
+		font-size: 11pt;
+	}
+	a:link {
+		color: green;
+	}
+	a:visited {
+		color: green;
+	}
+	a:hover {
+		color: white;
+		background-color: blue;
+	}
+	a:active {
+		color: red;
+	}
+	.lhs {
+		font-weight: bold;
+	}
+	.rhs {
+		margin: 0% 0% 0% 3%;
+	}
+	.empty {
+		color: gray;
+	}
+	.literal_token {
+		font-family: Courier New,Courier; 
+		color: blue;
+	}
+	.token {
+		font-family: Courier New,Courier; 
+		font-style: italic;
+		color: black;
+	}
+	.rule {
+		margin: 2% 0% 0% 1%;
+	}
+	.lhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: navy;
+	}
+	.rhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: green;
+	}
+	-->
+	</style>
+</head>
+<body>
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="input">input</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_complex_object">c_complex_object</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#assertions">assertions</a> </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_complex_object">c_complex_object</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_complex_object_head">c_complex_object_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_complex_object_body">c_complex_object_body</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_complex_object_head">c_complex_object_head</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_complex_object_head">c_complex_object_head</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_complex_object_id">c_complex_object_id</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_complex_object_id">c_complex_object_id</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="sibling_order">sibling_order</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_AFTER </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="token">SYM_BEFORE </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_complex_object_body">c_complex_object_body</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_any">c_any</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attribute_defs">c_attribute_defs</a> </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_object">c_object</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_complex_object">c_complex_object</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_archetype_root">c_archetype_root</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#archetype_internal_ref">archetype_internal_ref</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#archetype_slot">archetype_slot</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#constraint_ref">constraint_ref</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_ordinal">c_ordinal</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span></div>
+<div class="rhs">
+| <span class="token">V_C_DV_QUANTITY </span></div>
+<div class="rhs">
+| <span class="token">ERR_C_DV_QUANTITY </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_archetype_root">c_archetype_root</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_LOCAL_CODE </span><span class="literal_token">&#44; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="archetype_internal_ref">archetype_internal_ref</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#archetype_internal_ref_head">archetype_internal_ref_head</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="archetype_internal_ref_head">archetype_internal_ref_head</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="archetype_slot">archetype_slot</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_archetype_slot_head">c_archetype_slot_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_includes">c_includes</a> </span><span class="rhs_variable"><a href="#c_excludes">c_excludes</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_archetype_slot_head">c_archetype_slot_head</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_archetype_slot_head">c_archetype_slot_head</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_archetype_slot_id">c_archetype_slot_id</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_archetype_slot_id">c_archetype_slot_id</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">SYM_CLOSED </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span><span class="token">SYM_CLOSED </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_primitive_object">c_primitive_object</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_integer">c_integer</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_real">c_real</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_date">c_date</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_time">c_time</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_date_time">c_date_time</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_duration">c_duration</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_string">c_string</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_terminology_code">c_terminology_code</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_boolean">c_boolean</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_any">c_any</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#42; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attribute_defs">c_attribute_defs</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_attribute_def">c_attribute_def</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attribute_defs">c_attribute_defs</a> </span><span class="rhs_variable"><a href="#c_attribute_def">c_attribute_def</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attribute_def">c_attribute_def</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_attribute">c_attribute</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attribute_tuple">c_attribute_tuple</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attribute">c_attribute</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="token">error </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attr_head">c_attr_head</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span><span class="rhs_variable"><a href="#c_existence">c_existence</a> </span><span class="rhs_variable"><a href="#c_cardinality">c_cardinality</a> </span></div>
+<div class="rhs">
+| <span class="token">V_ABS_PATH </span><span class="rhs_variable"><a href="#c_existence">c_existence</a> </span><span class="rhs_variable"><a href="#c_cardinality">c_cardinality</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attr_values">c_attr_values</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_any">c_any</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attribute_tuple">c_attribute_tuple</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#91; </span><span class="rhs_variable"><a href="#c_tuple_attr_ids">c_tuple_attr_ids</a> </span><span class="literal_token">&#93; </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attr_tuple_values">c_attr_tuple_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_tuple_attr_ids">c_tuple_attr_ids</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_tuple_attr_ids">c_tuple_attr_ids</a> </span><span class="literal_token">&#44; </span><span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attr_tuple_values">c_attr_tuple_values</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_attr_tuple_value">c_attr_tuple_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_attr_tuple_values">c_attr_tuple_values</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#c_attr_tuple_value">c_attr_tuple_value</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_attr_tuple_value">c_attr_tuple_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#91; </span><span class="rhs_variable"><a href="#c_tuple_values">c_tuple_values</a> </span><span class="literal_token">&#93; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_tuple_values">c_tuple_values</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_tuple_values">c_tuple_values</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_includes">c_includes</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_INCLUDE </span><span class="rhs_variable"><a href="#assertions">assertions</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_excludes">c_excludes</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_EXCLUDE </span><span class="rhs_variable"><a href="#assertions">assertions</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="assertions">assertions</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#assertion">assertion</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#assertions">assertions</a> </span><span class="rhs_variable"><a href="#assertion">assertion</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="assertion">assertion</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#any_identifier">any_identifier</a> </span><span class="literal_token">&#58; </span><span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#arch_outer_constraint_expr">arch_outer_constraint_expr</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#any_identifier">any_identifier</a> </span><span class="literal_token">&#58; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_node">boolean_node</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#boolean_leaf">boolean_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_expr">boolean_expr</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_expr">boolean_expr</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#boolean_unop_expr">boolean_unop_expr</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_binop_expr">boolean_binop_expr</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_leaf">boolean_leaf</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#boolean_literal">boolean_literal</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_constraint">boolean_constraint</a> </span></div>
+<div class="rhs">
+| <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span><span class="literal_token">&#41; </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#arithmetic_relop_expr">arithmetic_relop_expr</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_outer_constraint_expr">arch_outer_constraint_expr</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_REL_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_constraint">boolean_constraint</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ABS_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="token">V_ABS_PATH </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_terminology_code">c_terminology_code</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_unop_expr">boolean_unop_expr</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_EXISTS </span><span class="token">V_ABS_PATH </span></div>
+<div class="rhs">
+| <span class="token">SYM_NOT </span><span class="token">V_ABS_PATH </span></div>
+<div class="rhs">
+| <span class="token">SYM_NOT </span><span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span><span class="literal_token">&#41; </span></div>
+<div class="rhs">
+| <span class="token">SYM_EXISTS </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_binop_expr">boolean_binop_expr</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span><span class="rhs_variable"><a href="#boolean_binop_symbol">boolean_binop_symbol</a> </span><span class="rhs_variable"><a href="#boolean_leaf">boolean_leaf</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_binop_symbol">boolean_binop_symbol</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_OR </span></div>
+<div class="rhs">
+| <span class="token">SYM_AND </span></div>
+<div class="rhs">
+| <span class="token">SYM_XOR </span></div>
+<div class="rhs">
+| <span class="token">SYM_IMPLIES </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_literal">boolean_literal</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_TRUE </span></div>
+<div class="rhs">
+| <span class="token">SYM_FALSE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arithmetic_relop_expr">arithmetic_relop_expr</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arithmetic_node">arithmetic_node</a> </span><span class="rhs_variable"><a href="#relational_binop_symbol">relational_binop_symbol</a> </span><span class="rhs_variable"><a href="#arithmetic_node">arithmetic_node</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arithmetic_node">arithmetic_node</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arithmetic_leaf">arithmetic_leaf</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#arithmetic_arith_binop_expr">arithmetic_arith_binop_expr</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arithmetic_leaf">arithmetic_leaf</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arithmetic_value">arithmetic_value</a> </span></div>
+<div class="rhs">
+| <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#arithmetic_node">arithmetic_node</a> </span><span class="literal_token">&#41; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arithmetic_arith_binop_expr">arithmetic_arith_binop_expr</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arithmetic_node">arithmetic_node</a> </span><span class="rhs_variable"><a href="#arithmetic_binop_symbol">arithmetic_binop_symbol</a> </span><span class="rhs_variable"><a href="#arithmetic_leaf">arithmetic_leaf</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arithmetic_value">arithmetic_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_value">real_value</a> </span></div>
+<div class="rhs">
+| <span class="token">V_ABS_PATH </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="relational_binop_symbol">relational_binop_symbol</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#61; </span></div>
+<div class="rhs">
+| <span class="token">SYM_NE </span></div>
+<div class="rhs">
+| <span class="token">SYM_LE </span></div>
+<div class="rhs">
+| <span class="token">SYM_LT </span></div>
+<div class="rhs">
+| <span class="token">SYM_GE </span></div>
+<div class="rhs">
+| <span class="token">SYM_GT </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arithmetic_binop_symbol">arithmetic_binop_symbol</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#47; </span></div>
+<div class="rhs">
+| <span class="literal_token">&#42; </span></div>
+<div class="rhs">
+| <span class="literal_token">&#43; </span></div>
+<div class="rhs">
+| <span class="literal_token">&#45; </span></div>
+<div class="rhs">
+| <span class="literal_token">&#94; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_existence">c_existence</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_EXISTENCE </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#existence_spec">existence_spec</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="existence_spec">existence_spec</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_INTEGER </span></div>
+<div class="rhs">
+| <span class="token">V_INTEGER </span><span class="token">SYM_ELLIPSIS </span><span class="token">V_INTEGER </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_cardinality">c_cardinality</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_CARDINALITY </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#cardinality_range">cardinality_range</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="cardinality_range">cardinality_range</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_occurrences">c_occurrences</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_OCCURRENCES </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="token">SYM_OCCURRENCES </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="occurrence_spec">occurrence_spec</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="literal_token">&#42; </span></div>
+<div class="rhs">
+| <span class="token">V_INTEGER </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="token">V_INTEGER </span><span class="token">SYM_ELLIPSIS </span><span class="literal_token">&#42; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_integer">c_integer</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_list">integer_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_interval">integer_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_interval_list">integer_interval_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_integer">c_integer</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_integer">c_integer</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_real">c_real</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#real_value">real_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_list">real_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_interval">real_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_interval_list">real_interval_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_real">c_real</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_real">c_real</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_date">c_date</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_DATE_CONSTRAINT_PATTERN </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_value">date_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_list">date_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_interval">date_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_interval_list">date_interval_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_date">c_date</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_date">c_date</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_time">c_time</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_TIME_CONSTRAINT_PATTERN </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_value">time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_list">time_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_interval">time_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_interval_list">time_interval_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_time">c_time</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_time">c_time</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_date_time">c_date_time</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_list">date_time_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_interval">date_time_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_interval_list">date_time_interval_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_date_time">c_date_time</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_date_time">c_date_time</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_duration">c_duration</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_DURATION_CONSTRAINT_PATTERN </span></div>
+<div class="rhs">
+| <span class="token">V_ISO8601_DURATION_CONSTRAINT_PATTERN </span><span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_value">duration_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_list">duration_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_interval_list">duration_interval_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_duration">c_duration</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_duration">c_duration</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_string">c_string</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_STRING </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#string_list">string_list</a> </span></div>
+<div class="rhs">
+| <span class="token">V_REGEXP </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_string">c_string</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#string_value">string_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_string">c_string</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_terminology_code">c_terminology_code</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_TERM_CODE_CONSTRAINT </span></div>
+<div class="rhs">
+| <span class="token">V_QUALIFIED_TERM_CODE_REF </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_boolean">c_boolean</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_TRUE </span></div>
+<div class="rhs">
+| <span class="token">SYM_FALSE </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_list">boolean_list</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_boolean">c_boolean</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#boolean_value">boolean_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_boolean">c_boolean</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_ordinal">c_ordinal</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#ordinal">ordinal</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_ordinal">c_ordinal</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#ordinal">ordinal</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_ordinal">c_ordinal</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_ordinal">c_ordinal</a> </span><span class="literal_token">&#59; </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="ordinal">ordinal</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#term_code">term_code</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="constraint_ref">constraint_ref</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="any_identifier">any_identifier</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+<div class="rhs">
+| <span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="type_identifier">type_identifier</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_TYPE_IDENTIFIER </span></div>
+<div class="rhs">
+| <span class="token">V_GENERIC_TYPE_IDENTIFIER </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="string_value">string_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_STRING </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="string_list">string_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_STRING </span><span class="literal_token">&#44; </span><span class="token">V_STRING </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#string_list">string_list</a> </span><span class="literal_token">&#44; </span><span class="token">V_STRING </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#string_list">string_list</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+<div class="rhs">
+| <span class="token">V_STRING </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="integer_value">integer_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_INTEGER </span></div>
+<div class="rhs">
+| <span class="literal_token">&#43; </span><span class="token">V_INTEGER </span></div>
+<div class="rhs">
+| <span class="literal_token">&#45; </span><span class="token">V_INTEGER </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="integer_list">integer_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_list">integer_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="integer_interval">integer_interval</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="integer_interval_list">integer_interval_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#integer_interval">integer_interval</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#integer_interval">integer_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_interval_list">integer_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#integer_interval">integer_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_interval">integer_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="real_value">real_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_REAL </span></div>
+<div class="rhs">
+| <span class="literal_token">&#43; </span><span class="token">V_REAL </span></div>
+<div class="rhs">
+| <span class="literal_token">&#45; </span><span class="token">V_REAL </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="real_list">real_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_list">real_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="real_interval">real_interval</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#real_value">real_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="real_interval_list">real_interval_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#real_interval">real_interval</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#real_interval">real_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_interval_list">real_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#real_interval">real_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#real_interval">real_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_value">boolean_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_TRUE </span></div>
+<div class="rhs">
+| <span class="token">SYM_FALSE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="boolean_list">boolean_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#boolean_value">boolean_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#boolean_value">boolean_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_list">boolean_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#boolean_value">boolean_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#boolean_value">boolean_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_value">date_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_EXTENDED_DATE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_list">date_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_list">date_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_interval">date_interval</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_value">date_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_interval_list">date_interval_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#date_interval">date_interval</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_interval">date_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_interval_list">date_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_interval">date_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_interval">date_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="time_value">time_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_EXTENDED_TIME </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="time_list">time_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_list">time_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="time_interval">time_interval</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#time_value">time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="time_interval_list">time_interval_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#time_interval">time_interval</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#time_interval">time_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_interval_list">time_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#time_interval">time_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#time_interval">time_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_time_value">date_time_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_EXTENDED_DATE_TIME </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_time_list">date_time_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_list">date_time_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_time_interval">date_time_interval</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#date_time_value">date_time_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="date_time_interval_list">date_time_interval_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#date_time_interval">date_time_interval</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_time_interval">date_time_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_interval_list">date_time_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#date_time_interval">date_time_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#date_time_interval">date_time_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="duration_value">duration_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ISO8601_DURATION </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="duration_list">duration_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_list">duration_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="duration_interval">duration_interval</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_ELLIPSIS </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LT </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_LE </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GT </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="token">SYM_GE </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+<div class="rhs">
+| <span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#duration_value">duration_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="duration_interval_list">duration_interval_list</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_interval_list">duration_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="term_code">term_code</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_QUALIFIED_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="token">ERR_V_QUALIFIED_TERM_CODE_REF </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="uri_value">uri_value</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_URI </span></div>
+</div>
+
+</body>
+</html>

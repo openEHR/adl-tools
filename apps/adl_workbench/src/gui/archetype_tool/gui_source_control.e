@@ -76,8 +76,8 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			if attached source.differential_text as dt then
-				populate_source_text (dt)
+			if source.has_differential_file then
+				populate_source_text (source.differential_text)
 			elseif source.has_legacy_flat_file and then attached source.legacy_flat_text as ft then
 				populate_source_text (ft)
 			end

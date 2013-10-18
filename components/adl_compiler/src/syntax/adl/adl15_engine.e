@@ -38,6 +38,7 @@ feature {NONE} -- Initialisation
 
 	make
 		do
+			create adl_parser.make
 			create language_context.make
 			create description_context.make
 			create definition_context.make
@@ -57,7 +58,7 @@ feature -- Access
 feature -- Parsing
 
 	parse_differential (a_text: STRING; an_rm_schema: BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
-			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
+			-- parse text as differential archetype.
 		do
 			rm_schema := an_rm_schema
 			if attached {DIFFERENTIAL_ARCHETYPE} parse (a_text, False) as da then
@@ -66,7 +67,7 @@ feature -- Parsing
 		end
 
 	parse_legacy_flat (a_text: STRING; an_rm_schema: BMM_SCHEMA): detachable FLAT_ARCHETYPE
-			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
+			-- parse text as flat archetype.
 		do
 			rm_schema := an_rm_schema
 			if attached {FLAT_ARCHETYPE} parse (a_text, True) as fa then
@@ -250,7 +251,6 @@ feature {NONE} -- Implementation
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
 		do
-			create adl_parser.make
 			adl_parser.execute (a_text)
 
 			create errors.make

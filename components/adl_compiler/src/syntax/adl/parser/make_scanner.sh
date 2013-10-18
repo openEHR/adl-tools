@@ -7,9 +7,5 @@
 #	copyright:   "Copyright (c) 2002-2010 Ocean Informatics"
 #	licence:     "The Mozilla tri-license"
 #
-#	file:        "$URL$"
-#	revision:    "$LastChangedRevision$"
-#	last_change: "$LastChangedDate$"
-#
 
 gelex adl_scanner.l

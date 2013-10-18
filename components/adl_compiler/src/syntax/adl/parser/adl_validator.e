@@ -243,7 +243,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 78")
 end
 
-			abort
+			abort_with_error (ec_SUNK, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1211,13 +1211,29 @@ feature -- Initialization
 	execute (in_text:STRING)
 		do
 			reset
+
+			create artefact_type.default_create
+			adl_version := Void
+			other_metadata.wipe_out
+			create archetype_id.default_create
+			uid := Void
+			parent_archetype_id := Void
+
+			language_text.wipe_out
+			description_text := Void
+			definition_text.wipe_out
+			ontology_text.wipe_out
+			invariant_text := Void
+			annotations_text := Void
+			component_ontologies_text := Void
+
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	error_loc: attached STRING
+	error_loc: STRING
 		do
 			create Result.make_empty
 			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then

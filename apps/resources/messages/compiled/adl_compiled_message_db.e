@@ -1,11 +1,11 @@
 note
-	component:   "openEHR Archetype Project"
+	component:   "Eiffel Object Modelling Framework"
 	description: "Generated class from message text files"
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_COMPILED_MESSAGE_DB
 
@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (628)
+			create message_table.make (629)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -93,6 +93,7 @@ feature -- Initialisation
 			message_table.put ("Supplier archetypes", ec_arch_stats_supplier_archetypes_text)
 			message_table.put ("Primitive", ec_arch_stats_primitive_text)
 			message_table.put ("Non-primitive", ec_arch_stats_non_primitive_text)
+			message_table.put ("Syntax error (unknown cause)", ec_SUNK)
 			message_table.put ("Syntax error in artefact identification clause; expecting archetype id (format = model_issuer-package-class.concept.version)", ec_SARID)
 			message_table.put ("Syntax error in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)", ec_SASID)
 			message_table.put ("Syntax error in 'concept' clause; expecting TERM_CODE reference", ec_SACO)
