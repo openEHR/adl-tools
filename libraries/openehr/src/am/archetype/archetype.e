@@ -811,11 +811,12 @@ feature {NONE} -- Implementation
 				across object_path_map as c_obj_csr loop
 					if attached c_obj_csr.item as c_obj and then not c_obj.is_root then
 						attr_path := c_obj_csr.key.twin
+						-- remove any trailing predicate part from object path
 						if attr_path.item (attr_path.count) = {OG_PATH_ITEM}.predicate_right_delim then
 							attr_path.remove_tail (attr_path.count - attr_path.last_index_of ({OG_PATH_ITEM}.predicate_left_delim, attr_path.count) + 1)
-							if not Result.has (attr_path) and attached c_obj.parent as p then
-								Result.put (p, attr_path)
-							end
+						end
+						if not Result.has (attr_path) and attached c_obj.parent as ca then
+							Result.put (ca, attr_path)
 						end
 					end
 				end
