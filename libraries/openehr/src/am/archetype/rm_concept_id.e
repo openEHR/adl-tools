@@ -28,6 +28,9 @@ inherit
 
 feature -- Definitions
 
+	namespace_separator: STRING = "::"
+			-- separator between namespace and rest of id
+
 	axis_separator: CHARACTER = '.'
 			-- major separator between values on the different axes
 
@@ -41,6 +44,8 @@ feature -- Definitions
 			-- separator between sections in an axis
 
 	Default_concept: STRING = "any"
+
+	Version_delimiter: STRING = "v"
 
 	Default_version_id: STRING = "v1"
 
@@ -153,7 +158,7 @@ feature -- Access
 		end
 
 	domain_concept: STRING
-			-- shortened version of concept name, e.g.
+			-- shortened form of concept name, e.g.
 			-- "blood_pressure", "problem-diagnosis"
 		local
 			p, q: INTEGER
@@ -178,6 +183,7 @@ feature -- Access
 		end
 
 	version_id: STRING
+			-- a string of the form 'vN'
 		local
 			p: INTEGER
 		do
