@@ -12,13 +12,13 @@ class C_DURATION
 inherit
 	C_TEMPORAL [ISO8601_DURATION]
 		redefine
-			valid_value, as_string, do_node_conforms_to
+			valid_value, as_string, assumed_value, do_node_conforms_to
 		end
 
 create
 	make,
 	make_interval,
-	make_list, make_list_simple, make_simple, 
+	make_list, make_list_simple, make_simple,
 	make_from_pattern,
 	make_pattern_with_range,
 	default_create
@@ -92,6 +92,9 @@ feature -- Access
 		do
 			Result := iso8601_string_to_duration (a_str)
 		end
+
+    assumed_value: detachable ISO8601_DURATION
+            -- value to be assumed if none sent in data
 
 feature -- Status Report
 

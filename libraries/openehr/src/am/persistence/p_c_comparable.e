@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class P_C_COMPARABLE [G->COMPARABLE]
+deferred class P_C_ORDERED [G->COMPARABLE]
 
 inherit
 	P_C_PRIMITIVE_OBJECT

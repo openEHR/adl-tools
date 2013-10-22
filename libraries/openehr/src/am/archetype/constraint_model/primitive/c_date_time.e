@@ -12,6 +12,9 @@ class C_DATE_TIME
 
 inherit
 	C_TEMPORAL [ISO8601_DATE_TIME]
+		redefine
+			assumed_value
+		end
 
 create
 	make_interval, make_list, make_list_simple, make_simple, make_string_interval, make_from_pattern, default_create
@@ -23,6 +26,9 @@ feature -- Access
 		do
 			Result := iso8601_string_to_date_time (a_str)
 		end
+
+    assumed_value: detachable ISO8601_DATE_TIME
+            -- value to be assumed if none sent in data
 
 feature -- Status Report
 

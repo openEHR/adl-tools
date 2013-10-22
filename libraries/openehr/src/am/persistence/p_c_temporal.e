@@ -10,7 +10,7 @@ note
 deferred class P_C_TEMPORAL [G -> ISO8601_TYPE]
 
 inherit
-	P_C_COMPARABLE [G]
+	P_C_ORDERED [G]
 		redefine
 			make
 		end

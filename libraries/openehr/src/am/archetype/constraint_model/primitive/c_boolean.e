@@ -12,6 +12,9 @@ class C_BOOLEAN
 
 inherit
 	C_PRIMITIVE_OBJECT
+		redefine
+			assumed_value
+		end
 
 create
 	make_true, make_false, make_true_false, make_list, default_create
@@ -62,7 +65,10 @@ feature -- Access
 			Result := list.i_th (i)
 		end
 
-	prototype_value: BOOLEAN_REF
+    assumed_value: detachable BOOLEAN_REF
+            -- value to be assumed if none sent in data
+
+	prototype_value: BOOLEAN
 		do
 			create Result
 			Result.set_item (list.first)
@@ -82,9 +88,9 @@ feature -- Status Report
 			Result := across list as list_csr some list_csr.item = False end
 		end
 
-	valid_value (a_value: BOOLEAN_REF): BOOLEAN
+	valid_value (a_value: BOOLEAN): BOOLEAN
 		do
-			Result := (a_value.item and true_valid) or else (not a_value.item and false_valid)
+			Result := (a_value and true_valid) or else (not a_value and false_valid)
 		end
 
 feature -- Modification

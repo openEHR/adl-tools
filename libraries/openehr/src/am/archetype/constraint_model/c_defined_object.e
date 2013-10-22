@@ -22,7 +22,7 @@ feature -- Access
 		deferred
 		end
 
-    assumed_value: detachable like prototype_value
+    assumed_value: detachable ANY
             -- value to be assumed if none sent in data
 
 feature -- Status Report
@@ -44,10 +44,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_assumed_value (a_value: attached like assumed_value)
+	set_assumed_value (a_value: like prototype_value)
 			-- set `assumed_value'
 		require
-			valid_value(a_value)
+			valid_value (a_value)
 		do
 			assumed_value := a_value
 		ensure

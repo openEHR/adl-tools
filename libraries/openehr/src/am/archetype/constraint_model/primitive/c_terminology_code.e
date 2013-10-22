@@ -11,6 +11,9 @@ class C_TERMINOLOGY_CODE
 
 inherit
 	C_PRIMITIVE_OBJECT
+		redefine
+			assumed_value
+		end
 
 	OPENEHR_DEFINITIONS
 		undefine
@@ -80,6 +83,8 @@ feature -- Access
 				create Result.make (terminology_id, "01")
 			end
 		end
+
+	assumed_value: detachable TERMINOLOGY_CODE
 
 	code_count: INTEGER
 			-- number of codes in code_list

@@ -13,7 +13,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create
+			default_create, assumed_value
 		end
 
 create
@@ -127,6 +127,8 @@ feature -- Access
 				create Result.make_empty
 			end
 		end
+
+	assumed_value: detachable STRING
 
 	regexp_delimiter: CHARACTER
 			-- return correct delimiter according to `regexp_default_delimiter'

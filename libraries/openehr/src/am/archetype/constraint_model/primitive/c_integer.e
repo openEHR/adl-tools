@@ -12,27 +12,16 @@ class C_INTEGER
 inherit
 	C_ORDERED [INTEGER]
 		redefine
-			valid_value, set_assumed_value
+			assumed_value
 		end
 
 create
 	make_interval, make_list_simple, make_list, make_simple, default_create
 
-feature -- Status Report
+feature -- Access
 
-	valid_value (a_value: INTEGER): BOOLEAN
-    		-- FIXME: only needed because 7.3 compiler fails to correctly infer type from predecessor
-		do
-			Result := precursor (a_value)
-		end
-
-feature -- Modification
-
-	set_assumed_value (a_value: INTEGER)
-    		-- FIXME: only needed because 7.3 compiler fails to correctly infer type from predecessor
-		do
-			assumed_value := a_value
-		end
+    assumed_value: detachable INTEGER_REF
+            -- value to be assumed if none sent in data
 
 end
 

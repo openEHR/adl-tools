@@ -12,7 +12,7 @@ deferred class C_ORDERED [G -> COMPARABLE create default_create end]
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create
+			default_create, assumed_value
 		end
 
 feature -- Initialisation
@@ -87,6 +87,8 @@ feature -- Access
 			end
 		end
 
+	assumed_value: detachable COMPARABLE
+
 feature -- Status Report
 
 	valid_value (a_value: G): BOOLEAN
@@ -131,7 +133,8 @@ feature -- Output
 						Result.append (", ")
 					end
 				end
-				if attached assumed_value as av then
+
+				if attached {G} assumed_value as av then
 					Result.append ("; " + format_value (av))
 				end
 			end
