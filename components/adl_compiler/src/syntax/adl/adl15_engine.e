@@ -448,7 +448,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	adl_parser: ADL_VALIDATOR
+	adl_parser: ADL_PARSER
 		attribute
 			create Result.make
 		end

@@ -8,7 +8,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_VALIDATOR
+class ADL_PARSER
 
 inherit
 	PARSER_VALIDATOR
@@ -381,6 +381,8 @@ feature -- Initialization
 			create archetype_id.default_create
 			uid := Void
 			parent_archetype_id := Void
+			is_controlled := False
+			is_generated := False
 
 			language_text.wipe_out
 			description_text := Void
