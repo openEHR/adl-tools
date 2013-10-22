@@ -216,7 +216,7 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 		require
 			Target_specialised: is_specialised
 			Is_generated: is_generated
-			Is_valid: is_valid
+		--	Is_valid: is_valid
 		local
 			def_it: C_ITERATOR
 		do
