@@ -44,7 +44,7 @@ feature -- Access
 		require
 			id_valid: has_terminology (name)
 		do
-			check attached terminologies.item (name) as t then Result := t end
+			check attached terminologies.item (name.as_lower) as t then Result := t end
 		end
 
 	code_set (code_set_id: STRING): CODE_SET_ACCESS
@@ -52,7 +52,7 @@ feature -- Access
 		require
 			id_valid: has_code_set (code_set_id)
 		do
-			check attached code_sets.item (code_set_id) as c then Result := c end
+			check attached code_sets.item (code_set_id.as_lower) as c then Result := c end
 		end
 
 feature -- Status Report
