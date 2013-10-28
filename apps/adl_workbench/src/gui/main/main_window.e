@@ -136,7 +136,7 @@ feature {NONE} -- Initialization
 
 			create arch_output_version_label
 			arch_output_version_label.set_text (get_text (ec_adl_version_label_text))
-			arch_output_version_label.set_tooltip (get_text (ec_adl_version_label_tooltip))
+			arch_output_version_label.set_tooltip (get_text (ec_adl_serialisation_level_tooltip))
 			arch_output_version_hbox.extend (arch_output_version_label)
 			arch_output_version_hbox.disable_item_expand (arch_output_version_label)
 
@@ -1283,7 +1283,7 @@ feature {NONE} -- Build commands
 		end
 
 	set_adl_version_from_combo
-			-- set ADL version
+			-- set ADL version used for flat output
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
