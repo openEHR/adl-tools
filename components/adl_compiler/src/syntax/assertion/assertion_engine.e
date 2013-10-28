@@ -97,7 +97,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	parser: CADL_VALIDATOR
+	parser: CADL_PARSER
 
 	rm_schema: detachable BMM_SCHEMA
 

@@ -49,6 +49,20 @@ feature -- Definitions
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
+	Namespace_separator: STRING = "::"
+			-- separator between namespace and rest of id
+
+	Axis_separator: CHARACTER = '.'
+			-- major separator between values on the different axes
+
+	Section_separator: CHARACTER = '-'
+			-- separator between sections in an axis
+
+	Section_separator_string: STRING = "-"
+			-- separator between sections in an axis
+
+	Version_delimiter: STRING = "v"
+
 	Aom_profile_file_match_regex: STRING
 		once
 			Result :=  ".*\" + Aom_profile_file_extension + "$"

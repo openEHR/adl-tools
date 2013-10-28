@@ -140,7 +140,7 @@ source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID
 		{
 			$1.right_adjust
 			create artefact_type.make_from_type_name ($1)
-			if arch_id.valid_id ($3) then
+			if archetype_id_parser.valid_id ($3) then
 				create archetype_id.make_from_string ($3)
 			else
 				abort_with_error (ec_SASID, Void)
@@ -170,7 +170,7 @@ opt_identification: opt_artefact_type arch_meta_data V_ARCHETYPE_ID
 		{
 			$1.right_adjust
 			create artefact_type.make_from_type_name ($1)
-			if arch_id.valid_id ($3) then
+			if archetype_id_parser.valid_id ($3) then
 				create archetype_id.make_from_string ($3)
 			else
 				abort_with_error (ec_SASID, Void)
@@ -245,7 +245,7 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 
 arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			if arch_id.valid_id ($2) then
+			if archetype_id_parser.valid_id ($2) then
 				create parent_archetype_id.make_from_string ($2)
 			else
 				abort_with_error (ec_SASID, Void)
@@ -410,7 +410,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 feature -- Parse Output
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: ARCHETYPE_HRID
 
 	other_metadata: HASH_TABLE [STRING, STRING]
 
@@ -424,7 +424,7 @@ feature -- Parse Output
 
 	artefact_type: ARTEFACT_TYPE
 
-	parent_archetype_id: detachable ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_HRID
 
 	concept: detachable STRING
 
@@ -444,9 +444,9 @@ feature -- Parse Output
 
 feature {NONE} -- Implementation 
 
-	arch_id: ARCHETYPE_ID
+	archetype_id_parser: ARCHETYPE_HRID_PARSER
 		once
-			create Result
+			create Result.make
 		end
 
 end

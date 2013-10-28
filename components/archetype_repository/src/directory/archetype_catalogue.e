@@ -121,7 +121,7 @@ feature -- Access
 			Rm_closure_valid: an_rm_closure /= Void implies not an_rm_closure.is_empty
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
-			arch_id: ARCHETYPE_ID
+			arch_id: ARCHETYPE_HRID
 			is_candidate: BOOLEAN
 			rm_type, rm_closure: detachable STRING
 		do
@@ -143,9 +143,9 @@ feature -- Access
 					if regex_matcher.recognizes (archs_csr.key) then
 						if attached rm_type as rmt then
 							create arch_id.make_from_string (archs_csr.key)
-							is_candidate := rmt.is_equal (arch_id.rm_entity.as_lower)
+							is_candidate := rmt.is_equal (arch_id.rm_class.as_lower)
 							if is_candidate and attached rm_closure as rmc then
-								is_candidate := rmc.is_equal (arch_id.rm_name.as_lower)
+								is_candidate := rmc.is_equal (arch_id.rm_closure.as_lower)
 							end
 						else
 							is_candidate := True
@@ -227,7 +227,7 @@ feature -- Commands
 
 feature -- Modification
 
-	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
+	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
@@ -243,7 +243,7 @@ feature -- Modification
 			has_item_with_id (an_archetype_id.as_string)
 		end
 
-	add_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
+	add_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)

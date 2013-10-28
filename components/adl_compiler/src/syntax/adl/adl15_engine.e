@@ -404,8 +404,8 @@ feature {NONE} -- Implementation
 
 						if attached Result as new_arch then
 							-- add optional parts
-							if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
-								new_arch.set_parent_archetype_id (parent_id)
+							if attached adl_parser.parent_archetype_id as att_parent_id then
+								new_arch.set_parent_archetype_id (att_parent_id)
 							end
 
 							if attached adl_parser.adl_version as adl_av then

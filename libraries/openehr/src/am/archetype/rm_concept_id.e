@@ -26,26 +26,14 @@ inherit
 			is_less
 		end
 
+	ARCHETYPE_DEFINITIONS
+		undefine
+			is_equal, out, default_create
+		end
+
 feature -- Definitions
 
-	namespace_separator: STRING = "::"
-			-- separator between namespace and rest of id
-
-	axis_separator: CHARACTER = '.'
-			-- major separator between values on the different axes
-
-	axis_separator_string: STRING = "."
-			-- major separator between values on the different axes
-
-	section_separator: CHARACTER = '-'
-			-- separator between sections in an axis
-
-	section_separator_string: STRING = "-"
-			-- separator between sections in an axis
-
 	Default_concept: STRING = "any"
-
-	Version_delimiter: STRING = "v"
 
 	Default_version_id: STRING = "v1"
 

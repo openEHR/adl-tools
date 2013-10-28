@@ -14,19 +14,19 @@ inherit
 
 feature -- Access
 
-	rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BMM_SCHEMA
+	rm_schema_for_archetype_id (an_id: ARCHETYPE_HRID): BMM_SCHEMA
 			-- top-level schema for archetype id `an_id'
 		require
 			has_rm_schema_for_archetype_id (an_id)
 		do
-			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_package_name)
+			Result := rm_schemas_access.schema_for_rm_closure (an_id.qualified_rm_closure)
 		end
 
 feature -- Status Report
 
-	has_rm_schema_for_archetype_id (an_id: ARCHETYPE_ID): BOOLEAN
+	has_rm_schema_for_archetype_id (an_id: ARCHETYPE_HRID): BOOLEAN
 		do
-			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
+			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_rm_closure)
 		end
 
 end

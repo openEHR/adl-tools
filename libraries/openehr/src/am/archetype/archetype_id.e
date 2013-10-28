@@ -1,6 +1,5 @@
 note
 	component:   "openEHR ADL Tools"
-
 	description: "[
 				 Multi-axial archetype identifier of the form:
 				 		qualified_rm_entity.domain_concept.version
@@ -11,7 +10,6 @@ note
 				 		version = string
 				 ]"
 	keywords:    "archetype"
-
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"

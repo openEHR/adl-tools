@@ -31,12 +31,13 @@ feature -- Initialisation
 
 			make_from_other (an_archetype)
 
-			archetype_id := an_archetype.archetype_id.as_string
+			create archetype_id.make (an_archetype.archetype_id)
+
 			adl_version := an_archetype.adl_version
 			artefact_type := an_archetype.artefact_type.type_name
 
-			if an_archetype.is_specialised then
-				parent_archetype_id := an_archetype.parent_archetype_id.as_string
+			if attached an_archetype.parent_archetype_id as att_pid then
+				create parent_archetype_id.make (att_pid)
 			end
 
 			is_generated := an_archetype.is_generated
@@ -66,7 +67,7 @@ feature -- Access
 	artefact_object_type: detachable STRING
 			-- records object model type of the original artefact
 
-	archetype_id: detachable STRING
+	archetype_id: detachable P_ARCHETYPE_HRID
 
 	other_metadata: detachable HASH_TABLE [STRING, STRING]
 
@@ -76,7 +77,7 @@ feature -- Access
 	artefact_type: detachable STRING
 			-- design type of artefact, archetype, template, template-component, etc
 
-	parent_archetype_id: detachable STRING
+	parent_archetype_id: detachable P_ARCHETYPE_HRID
 			-- id of specialisation parent of this archetype
 
 	uid: detachable STRING
@@ -102,21 +103,24 @@ feature -- Factory
 
 	create_archetype: detachable ARCHETYPE
 		local
-			o_parent_archetype_id, o_archetype_id: detachable ARCHETYPE_ID
+			o_parent_archetype_id, o_archetype_id: detachable ARCHETYPE_HRID
 			o_diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			o_flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
 			o_artefact_type: ARTEFACT_TYPE
 			o_uid: detachable HIER_OBJECT_ID
 		do
-			if attached parent_archetype_id as pid then
-				create o_parent_archetype_id.make_from_string (pid)
+			if attached parent_archetype_id as att_pid then
+				create o_parent_archetype_id.make_from_string (att_pid.physical_id)
 			end
 
-			if attached archetype_id as aid and attached artefact_type as at and attached adl_version as o_adl_version and
-				attached original_language as o_original_language and attached description as o_description and
-				attached definition as o_definition and attached ontology as ont
+			if attached archetype_id as att_aid
+				and attached artefact_type as at
+				and attached adl_version as o_adl_version
+				and attached original_language as o_original_language
+				and attached description as o_description
+				and attached definition as o_definition and attached ontology as ont
 			then
-				create o_archetype_id.make_from_string (aid)
+				create o_archetype_id.make_from_string (att_aid.physical_id)
 				create o_artefact_type.make_from_type_name (at)
 				if attached uid as att_uid then
 					create o_uid.make_from_string (att_uid)

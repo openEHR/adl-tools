@@ -104,7 +104,7 @@ feature {NONE} -- Implementation
 						end
 					end
 				else -- otherwise just display the template root
-					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_class + "." + ara.name, catalogue_node_pixmap (ara), ara)
 					semantic_grid_row_map.force (ev_tree_item_stack.item, ara.qualified_name)
 					ev_tree_item_stack.remove
 				end
@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 						end
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.archetype_index.item (car.archetype_id) as ara then
-					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_class + "." + ara.name, catalogue_node_pixmap (ara), ara)
 				end
 			end
 		end

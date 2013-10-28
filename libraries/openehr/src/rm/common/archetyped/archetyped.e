@@ -15,20 +15,16 @@ class ARCHETYPED
 
 feature -- Access
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: ARCHETYPE_HRID
 			-- id of the archetype in the global archetype library
 
 	rm_version: STRING = "1"
-			-- relevant for exchange and implementations the version  of  the  RM  at  the  time  of creation 
-			-- of this archetyped object. 
+			-- relevant for exchange and implementations the version  of  the  RM  at  the  time  of creation
+			-- of this archetyped object.
 
 	access_control: ACCESS_GROUP_REF
 			-- Access control settings for this archetyped structure
-		
-invariant
-	Archetype_id_exists: archetype_id /= Void
-	Rm_version_exists: rm_version /= Void
-	
+
 end
 
 

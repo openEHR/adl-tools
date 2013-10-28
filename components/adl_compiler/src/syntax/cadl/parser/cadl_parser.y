@@ -8,7 +8,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_VALIDATOR
+class CADL_PARSER
 
 inherit
 	PARSER_VALIDATOR
@@ -352,7 +352,7 @@ c_object: c_complex_object
 --
 c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences 
 		{
-			if (create {ARCHETYPE_ID}).valid_id ($4) then
+			if archetype_id_parser.valid_id ($4) then
 				create $$.make_external_ref ($2, $4)
 				if attached $6 as occ then
 					$$.set_occurrences (occ)
@@ -363,7 +363,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 		}
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
-			if (create {ARCHETYPE_ID}).valid_id ($6) then
+			if archetype_id_parser.valid_id ($6) then
 				create $$.make_slot_filler ($2, $6, $4)
 				if attached $8 as occ then
 					$$.set_occurrences (occ)
@@ -2572,6 +2572,11 @@ feature {NONE} -- Implementation
 	og_path: OG_PATH
 		attribute
 			create Result.make_root
+		end
+
+	archetype_id_parser: ARCHETYPE_HRID_PARSER
+		once
+			create Result.make
 		end
 
 end

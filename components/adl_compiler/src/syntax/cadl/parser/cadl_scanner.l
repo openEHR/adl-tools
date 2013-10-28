@@ -50,6 +50,7 @@ create
 
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
+ALPHANUM_STR [a-zA-Z0-9_]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
@@ -265,7 +266,7 @@ a[ct][0-9.]+ {
 		}
 
 ----------/* archetype id */ -------------------------------------------------
-{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
+({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}

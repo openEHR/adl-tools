@@ -114,7 +114,7 @@ feature -- Initialisation
 	make_from_other (other: like Current)
 			-- duplicate from another archetype
 		local
-			other_parent_arch_id: detachable ARCHETYPE_ID
+			other_parent_arch_id: detachable like archetype_id
 			other_annotations: detachable RESOURCE_ANNOTATIONS
 			other_description: detachable RESOURCE_DESCRIPTION
 			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
@@ -153,11 +153,20 @@ feature -- Initialisation
 
 feature -- Access
 
+	rm_release: STRING
+			-- Semver.org compatible release of the reference model on which the archetype was based.
+			-- This does not imply conformance limited only to this release, since an archetype may
+			-- be valid with respect to multiple releases of a reference model. Conformance is captured
+			-- outside of the archetype.
+		attribute
+			create Result.make_from_string ("1.0.2")
+		end
+
 	uid: detachable HIER_OBJECT_ID
 			-- optional UID identifier of this artefact
 			-- FIXME: should really be in AUTHORED_RESOURCE
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: ARCHETYPE_HRID
 
 	other_metadata: detachable HASH_TABLE [STRING, STRING]
 
@@ -173,7 +182,7 @@ feature -- Access
 			Result := archetype_id.version_id
 		end
 
-	parent_archetype_id: detachable ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_HRID
 			-- id of specialisation parent of this archetype
 
 	specialisation_depth: INTEGER
@@ -662,7 +671,7 @@ feature -- Modification
 			other_metadata.item (a_key).is_equal ((True).out)
 		end
 
-	set_parent_archetype_id (an_id: ARCHETYPE_ID)
+	set_parent_archetype_id (an_id: like archetype_id)
 		do
 			parent_archetype_id := an_id
 		end
@@ -830,7 +839,7 @@ invariant
 	Description_valid: not artefact_type.is_overlay implies attached description
 	Concept_valid: concept.is_equal (ontology.concept_code)
 	Invariants_valid: attached invariants implies not invariants.is_empty
-	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_entity.as_lower)
+	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_class.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and attached parent_archetype_id)
 
 end

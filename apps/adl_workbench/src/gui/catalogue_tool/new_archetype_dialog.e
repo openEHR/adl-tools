@@ -36,7 +36,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_start_dir: STRING; an_id_template: ARCHETYPE_ID; a_source: ARCHETYPE_CATALOGUE)
+	make (a_start_dir: STRING; an_id_template: ARCHETYPE_HRID; a_source: ARCHETYPE_CATALOGUE)
 			-- Make with a an initial directory
 		do
 			archetype_directory := a_start_dir
@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 			Id_set: archetype_id = an_id_template
 		end
 
-	make_specialised (a_start_dir: STRING; an_id_template, a_parent_id: ARCHETYPE_ID; a_source: ARCHETYPE_CATALOGUE)
+	make_specialised (a_start_dir: STRING; an_id_template, a_parent_id: attached like parent_archetype_id; a_source: ARCHETYPE_CATALOGUE)
 			-- Make with a an initial directory and a parent id
 		do
 			parent_archetype_id := a_parent_id
@@ -73,11 +73,11 @@ feature {NONE} -- Initialization
 
 			-- ============ archetype id data entry control ============
 			create archetype_id_ctl.make_linked (archetype_id, get_text (ec_archetype_id_label_text),
-				agent :STRING do Result := archetype_id.domain_concept end,
-				agent (a_str: STRING) do archetype_id.set_domain_concept (a_str) end,
+				agent :STRING do Result := archetype_id.concept_id end,
+				agent (a_str: STRING) do archetype_id.set_concept_id (a_str) end,
 				Void, Void
 			)
-			archetype_id_ctl.set_validity_agents (agent archetype_id.valid_domain_concept, agent get_msg (ec_invalid_archetype_id_concept_err, ?))
+			archetype_id_ctl.set_validity_agents (agent archetype_id.valid_concept_id, agent get_msg (ec_invalid_archetype_id_concept_err, ?))
 			ev_root_container.extend (archetype_id_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (archetype_id_ctl.ev_root_container)
 			gui_controls.extend (archetype_id_ctl)
@@ -85,7 +85,7 @@ feature {NONE} -- Initialization
 			-- ============ parent archetype id data entry control ============
 			if attached parent_archetype_id as pid then
 				create parent_archetype_id_ctl.make_readonly (pid, get_text (ec_parent_archetype_id_label_text),
-					agent (a_parent_id: ARCHETYPE_ID):STRING do Result := a_parent_id.domain_concept end (pid)
+					agent (a_parent_id: like parent_archetype_id):STRING do Result := a_parent_id.concept_id end (pid)
 				)
 				ev_root_container.extend (parent_archetype_id_ctl.ev_root_container)
 				ev_root_container.disable_item_expand (parent_archetype_id_ctl.ev_root_container)
@@ -133,7 +133,7 @@ feature -- Events
 				create error_dialog.make_with_text (get_msg (ec_duplicate_archetype_id_err_msg, <<archetype_id.as_string>>))
 				error_dialog.show_modal_to_window (Current)
 			elseif not has_rm_schema_for_archetype_id (archetype_id) then
-				create error_dialog.make_with_text (get_msg (ec_model_access_e7, <<archetype_id.qualified_package_name>>))
+				create error_dialog.make_with_text (get_msg (ec_model_access_e7, <<archetype_id.qualified_rm_closure>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				archetype_directory := dir_setter.data_control_text
@@ -144,10 +144,10 @@ feature -- Events
 
 feature -- Access
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: ARCHETYPE_HRID
 			-- current value of archetype id
 
-	parent_archetype_id: detachable ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_HRID
 			-- parent archetype id
 
 	archetype_directory: STRING

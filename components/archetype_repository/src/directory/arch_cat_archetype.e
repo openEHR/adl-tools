@@ -149,7 +149,7 @@ feature {NONE} -- Initialisation
 			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -183,7 +183,7 @@ feature {NONE} -- Initialisation
 			validated: is_valid
 		end
 
-	make_new_specialised_archetype (an_id: ARCHETYPE_ID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -381,13 +381,13 @@ feature -- Access (semantic)
 			-- type of artefact i.e. archetype, template, template_component, operational_template
 			-- see ARTEFACT_TYPE class
 
-	id: ARCHETYPE_ID
+	id: ARCHETYPE_HRID
 			-- Archetype identifier.
 
-	old_id: detachable ARCHETYPE_ID
+	old_id: detachable like id
 			-- previous Archetype identifier, due to change by editing
 
-	parent_id: detachable ARCHETYPE_ID
+	parent_id: detachable like id
 			-- Archetype identifier of specialisation parent
 
 	suppliers_index: detachable HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
@@ -410,7 +410,7 @@ feature -- Access (semantic)
 			if is_specialised then
 				Result := parent_id.as_string
 			else
-				Result := id.qualified_rm_entity
+				Result := id.qualified_rm_class
 			end
 		end
 
@@ -423,9 +423,9 @@ feature -- Access (semantic)
 		local
 			str: STRING
 		do
-			str := id.domain_concept_version
-			if is_specialised and is_legacy and str.has ({ARCHETYPE_ID}.section_separator) then
-				Result := str.substring (str.last_index_of ({ARCHETYPE_ID}.section_separator, str.count) + 1, str.count)
+			str := id.concept_id_version
+			if is_specialised and is_legacy and str.has (section_separator) then
+				Result := str.substring (str.last_index_of (section_separator, str.count) + 1, str.count)
 			else
 				Result := str
 			end
@@ -1410,21 +1410,21 @@ feature {NONE} -- Implementation
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
+						add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
 					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
 							if attached {STRING} excludes_csr.item.extract_regex as a_regex then
-								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_name) as ids_csr loop
+								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
 									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
 						end
 					end
 				else
-					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
 				end
 
 				-- now post the results in the reverse indexes

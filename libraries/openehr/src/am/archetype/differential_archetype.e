@@ -40,7 +40,7 @@ feature -- Initialisation
 			create ontology.make_empty(an_original_language, 0)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
-			create definition.make_identified (an_id.rm_entity, ontology.concept_code.twin)
+			create definition.make_identified (an_id.rm_class, ontology.concept_code.twin)
 			is_dirty := True
 			is_valid := True
 		ensure
@@ -67,7 +67,7 @@ feature -- Initialisation
 			create ontology.make_empty (an_original_language, a_parent.specialisation_depth + 1)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
-			create definition.make_identified (an_id.rm_entity, ontology.concept_code.twin)
+			create definition.make_identified (an_id.rm_class, ontology.concept_code.twin)
 			parent_archetype_id := a_parent.archetype_id.deep_twin
 			is_dirty := True
 			is_valid := True

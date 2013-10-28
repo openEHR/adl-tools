@@ -518,7 +518,7 @@ feature {NONE} -- Implementation
 			end
 
 			if attached source as src then
-				create dialog.make (in_dir_path, create {ARCHETYPE_ID}.make_new (accn.qualified_name), src)
+				create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), src)
 				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then
 					src.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)

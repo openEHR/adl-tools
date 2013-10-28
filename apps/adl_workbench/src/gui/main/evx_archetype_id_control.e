@@ -31,20 +31,20 @@ create
 
 feature -- Initialisation
 
-	make (an_id_template: ARCHETYPE_ID; a_title: STRING; a_data_source_agent: like data_source_agent)
+	make (an_id_template: ARCHETYPE_HRID; a_title: STRING; a_data_source_agent: like data_source_agent)
 		do
 			make_text_ctl (a_title, a_data_source_agent, 0, 0, True)
 			make_id_controls (an_id_template)
 		end
 
-	make_readonly (an_id_template: ARCHETYPE_ID; a_title: detachable STRING; a_data_source_agent: like data_source_agent)
+	make_readonly (an_id_template: ARCHETYPE_HRID; a_title: detachable STRING; a_data_source_agent: like data_source_agent)
 			-- make so that no user interaction with visual control is possible
 		do
 			make_readonly_text_ctl (a_title, a_data_source_agent, 0, 0, True)
 			make_id_controls (an_id_template)
 		end
 
-	make_linked (an_id_template: ARCHETYPE_ID; a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_linked (an_id_template: ARCHETYPE_HRID; a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain)
@@ -62,18 +62,18 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	make_id_controls (an_id_template: ARCHETYPE_ID)
+	make_id_controls (an_id_template: ARCHETYPE_HRID)
 		do
 			-- issuer label
 			create id_issuer_label
-			id_issuer_label.set_text (an_id_template.qualified_rm_entity + an_id_template.axis_separator_string)
+			id_issuer_label.set_text (an_id_template.qualified_rm_class + an_id_template.axis_separator.out)
 			ev_root_container.start
 			ev_root_container.put_right (id_issuer_label)
 			ev_root_container.disable_item_expand (id_issuer_label)
 
 			-- version label
 			create id_version_label
-			id_version_label.set_text (an_id_template.axis_separator_string + an_id_template.version_id)
+			id_version_label.set_text (an_id_template.axis_separator.out + an_id_template.version_id)
 			ev_root_container.finish
 			ev_root_container.put_right (id_version_label)
 			ev_root_container.disable_item_expand (id_version_label)

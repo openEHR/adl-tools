@@ -57,7 +57,7 @@ feature -- Access
 			end
 		end
 
-	serialised_archetype (format: attached STRING): attached STRING
+	serialised_archetype (format: STRING): STRING
 			-- Serialisation of the current archetype into `format'.
 		do
 			if attached flat_archetype then
@@ -69,7 +69,7 @@ feature -- Access
 
 feature -- Factory
 
-	create_new_archetype (id: attached ARCHETYPE_ID; primary_language: attached STRING)
+	create_new_archetype (id: ARCHETYPE_HRID; primary_language: STRING)
 			-- Create a new top-level archetype and install it into the directory.
 		require
 			primary_language_not_empty: not primary_language.is_empty

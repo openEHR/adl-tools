@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_VALIDATOR
+class CADL_PARSER
 
 inherit
 	PARSER_VALIDATOR
@@ -1179,7 +1179,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_parser.y' at line 353")
 end
 
-			if (create {ARCHETYPE_ID}).valid_id (yyvs2.item (yyvsp2)) then
+			if archetype_id_parser.valid_id (yyvs2.item (yyvsp2)) then
 				create yyval9.make_external_ref (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 				if attached yyvs12.item (yyvsp12) as occ then
 					yyval9.set_occurrences (occ)
@@ -1209,7 +1209,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_parser.y' at line 364")
 end
 
-			if (create {ARCHETYPE_ID}).valid_id (yyvs2.item (yyvsp2)) then
+			if archetype_id_parser.valid_id (yyvs2.item (yyvsp2)) then
 				create yyval9.make_slot_filler (yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
 				if attached yyvs12.item (yyvsp12) as occ then
 					yyval9.set_occurrences (occ)
@@ -9038,6 +9038,11 @@ feature {NONE} -- Implementation
 	og_path: OG_PATH
 		attribute
 			create Result.make_root
+		end
+
+	archetype_id_parser: ARCHETYPE_HRID_PARSER
+		once
+			create Result.make
 		end
 
 end

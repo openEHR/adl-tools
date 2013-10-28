@@ -34,7 +34,7 @@ feature -- Initialisation
 			-- make as an archetype external reference
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Archetype_id_valid: (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
+			Archetype_id_valid: valid_archetype_id (an_archetype_id)
 		do
 			cco_make_identified (a_rm_type_name, an_archetype_id)
 		end
@@ -43,7 +43,7 @@ feature -- Initialisation
 			-- make as a slot filler, specialising a slot
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Archetype_id_valid: (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
+			Archetype_id_valid: valid_archetype_id (an_archetype_id)
 			Slot_id_valid: not a_slot_node_id.is_empty
 		do
 			cco_make_identified (a_rm_type_name, an_archetype_id)

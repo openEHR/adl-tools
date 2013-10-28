@@ -36,7 +36,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_id: ARCHETYPE_ID
+	archetype_id: ARCHETYPE_HRID
 
 --	adl_version: STRING
 --			-- ADL version of this archetype
@@ -44,7 +44,7 @@ feature -- Access
 	artefact_type: INTEGER
 			-- design type of artefact, archetype, template, template-component, etc
 
-	parent_archetype_id: detachable ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_HRID
 			-- id of specialisation parent of this archetype
 
 	other_details: detachable HASH_TABLE [STRING, STRING]

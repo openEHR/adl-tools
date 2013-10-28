@@ -32,7 +32,7 @@ inherit
 	BMM_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} package_name_delimiter, section_separator
+			{ANY} package_name_delimiter
 		undefine
 			is_equal
 		end

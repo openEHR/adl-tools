@@ -91,8 +91,8 @@ feature {NONE} -- Implementation
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
 				add_warning (ec_validate_e3, <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
-			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
-				add_error (ec_VARDT, <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
+			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_class) then
+				add_error (ec_VARDT, <<target.archetype_id.rm_class, target.definition.rm_type_name>>)
 			elseif not is_valid_concept_code (target.concept) then
 				add_error (ec_VARCN, <<target.concept>>)
 			elseif target_descriptor.is_specialised then
@@ -157,7 +157,7 @@ feature {NONE} -- Implementation
 			-- validate all C_ARCHETYPE_ROOT objects in a basic way
 		local
 			c_ar_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
-			filler_id: ARCHETYPE_ID
+			filler_id: ARCHETYPE_HRID
 		do
 			across target.suppliers_index as supp_csr loop
 				if not current_arch_cat.archetype_index.has (supp_csr.key) then
@@ -168,8 +168,8 @@ feature {NONE} -- Implementation
 				c_ar_list := supp_csr.item
 				across c_ar_list as arch_root_csr loop
 					create filler_id.make_from_string (arch_root_csr.item.archetype_id)
-					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_entity) or else
-						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_entity)) then
+					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
+						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_class)) then
 						add_error (ec_VARXTV, <<arch_root_csr.item.archetype_id, arch_root_csr.item.rm_type_name>>)
 					end
 				end

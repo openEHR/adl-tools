@@ -28,7 +28,7 @@ class EXTRACT_SPEC
 feature -- Access
 
 	extract_type: STRING
-			-- Coded term indicating the type of content required, e.g. 
+			-- Coded term indicating the type of content required, e.g.
 			-- “openEHR EHR”
 			-- “openEHR demographic”
 			-- “other EHR/EMR”
@@ -37,19 +37,19 @@ feature -- Access
 	includes_directory: BOOLEAN
 			-- True if extract includes a Folder directory
 
-	directory_archetype: ARCHETYPE_ID
-			-- Identifier of archetype to use for local Folder structure; if Void and 
-			-- includes_directory is True, a non-archetyped directory is used. 
+	directory_archetype: ARCHETYPE_HRID
+			-- Identifier of archetype to use for local Folder structure; if Void and
+			-- includes_directory is True, a non-archetyped directory is used.
 
-	content_spec: EXTRACT_CONTENT_SPEC	
+	content_spec: EXTRACT_CONTENT_SPEC
 			-- Specification of information items to include in the Extract.
 
-	version_spec: EXTRACT_VERSION_SPEC	
-			-- Specification of which versions of information items to include in the Extract. 
-			-- If Void, the default is latest versions only (which is reasonable for non-versioning 
+	version_spec: EXTRACT_VERSION_SPEC
+			-- Specification of which versions of information items to include in the Extract.
+			-- If Void, the default is latest versions only (which is reasonable for non-versioning
 			-- systems as well).
 
-	other_details: ITEM_STRUCTURE	
+	other_details: ITEM_STRUCTURE
 			-- Other specification items. Archetypable.
 
 invariant

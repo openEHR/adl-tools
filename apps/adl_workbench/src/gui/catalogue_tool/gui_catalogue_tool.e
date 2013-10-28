@@ -120,7 +120,7 @@ feature -- Status Report
 	valid_item_id (a_key: STRING): BOOLEAN
 			-- key is a valid identifier of an item managed in this tool
 		do
-			Result := (create {ARCHETYPE_ID}.default_create).valid_id (a_key)
+			Result := (create {ARCHETYPE_HRID}.default_create).valid_id (a_key)
 		end
 
 feature -- Commands
