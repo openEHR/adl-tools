@@ -36,6 +36,10 @@ feature -- Status Report
 		deferred
 		end
 
+	valid_assumed_value (a_value: like assumed_value): BOOLEAN
+		deferred
+		end
+
 	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
@@ -44,10 +48,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_assumed_value (a_value: like prototype_value)
+	set_assumed_value (a_value: attached like assumed_value)
 			-- set `assumed_value'
 		require
-			valid_value (a_value)
+			valid_assumed_value (a_value)
 		do
 			assumed_value := a_value
 		ensure

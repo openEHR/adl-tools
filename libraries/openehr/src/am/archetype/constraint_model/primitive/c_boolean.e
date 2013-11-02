@@ -93,6 +93,11 @@ feature -- Status Report
 			Result := (a_value and true_valid) or else (not a_value and false_valid)
 		end
 
+	valid_assumed_value (a_value: BOOLEAN_REF): BOOLEAN
+		do
+			Result := valid_value (a_value.item)
+		end
+
 feature -- Modification
 
 	merge_tuple (other: like Current)

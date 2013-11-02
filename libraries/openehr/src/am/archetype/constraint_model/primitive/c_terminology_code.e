@@ -119,6 +119,11 @@ feature -- Status Report
 			end
 		end
 
+	valid_assumed_value (a_value: TERMINOLOGY_CODE): BOOLEAN
+		do
+			Result := valid_value (a_value)
+		end
+
 feature -- Modification
 
 	merge_tuple (other: like Current)

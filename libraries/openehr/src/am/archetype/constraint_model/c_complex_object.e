@@ -201,6 +201,11 @@ feature -- Status Report
 			-- FIXME: to be implemented
 		end
 
+	valid_assumed_value (a_value: like assumed_value): BOOLEAN
+		do
+			-- FIXME: to be implemented
+		end
+
 feature -- Modification
 
 	put_attribute (an_attr: C_ATTRIBUTE)

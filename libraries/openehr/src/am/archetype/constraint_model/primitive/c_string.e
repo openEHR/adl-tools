@@ -162,6 +162,11 @@ feature -- Status Report
 			end
 		end
 
+	valid_assumed_value (a_value: STRING): BOOLEAN
+		do
+			Result := valid_value (a_value)
+		end
+
 	regexp_default_delimiter: BOOLEAN
 			-- if True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used		

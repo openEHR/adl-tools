@@ -23,6 +23,13 @@ feature -- Access
     assumed_value: detachable INTEGER_REF
             -- value to be assumed if none sent in data
 
+feature -- Status Report
+
+	valid_assumed_value (a_value: INTEGER_REF): BOOLEAN
+		do
+			Result := valid_value (a_value.item)
+		end
+
 end
 
 

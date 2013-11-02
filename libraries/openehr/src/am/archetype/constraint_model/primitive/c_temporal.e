@@ -115,6 +115,13 @@ feature -- Status Report
 			end
 		end
 
+	valid_assumed_value (a_value: attached like assumed_value): BOOLEAN
+		do
+			if attached {G} a_value as val then
+				Result := valid_value (val)
+			end
+		end
+
 	valid_string (a_str: STRING): BOOLEAN
 			-- True if `a_str' is a valid string form of the data item G
 		deferred

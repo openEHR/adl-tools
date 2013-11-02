@@ -23,6 +23,13 @@ feature -- Access
     assumed_value: detachable REAL_REF
             -- value to be assumed if none sent in data
 
+feature -- Status Report
+
+	valid_assumed_value (a_value: REAL_REF): BOOLEAN
+		do
+			Result := valid_value (a_value.item)
+		end
+
 feature -- Conversion
 
 	format_value (a_val: REAL): STRING
