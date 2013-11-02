@@ -63,6 +63,8 @@ feature -- Definitions
 
 	Version_delimiter: STRING = "v"
 
+	Version_axis_delimiter: STRING = ".v"
+
 	Aom_profile_file_match_regex: STRING
 		once
 			Result :=  ".*\" + Aom_profile_file_extension + "$"

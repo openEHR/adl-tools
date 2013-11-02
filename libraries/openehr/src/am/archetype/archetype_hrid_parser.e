@@ -83,26 +83,26 @@ feature -- Commands
 		local
 			strs, qual_class_strs: LIST [STRING]
 			ns_idx, start_pos, end_pos, sym_pos: INTEGER
-			sect1, qual_class, ver_str, sym: STRING
+			local_hrid, ver_str, sym: STRING
 		do
 			reset
-			strs := an_id.split (axis_separator)
 			if adl15_id_regex.matches (an_id) then
 				is_adl15_id := True
 
 				-- look for namespace in first section
-				sect1 := strs.i_th (1)
-				ns_idx := sect1.substring_index (namespace_separator, 1)
+				ns_idx := an_id.substring_index (namespace_separator, 1)
 				if ns_idx > 0 then
-					create namespace.make (sect1.substring (1, ns_idx - 1))
+					create namespace.make (an_id.substring (1, ns_idx - 1))
 					start_pos := ns_idx + namespace_separator.count
 				else
 					start_pos := 1
 				end
-				qual_class := sect1.substring (start_pos, sect1.count)
+				local_hrid := an_id.substring (start_pos, an_id.count)
+
+				strs := local_hrid.split (axis_separator)
 
 				-- separate the qualified class part
-				qual_class_strs := qual_class.split (section_separator)
+				qual_class_strs := strs.i_th (1).split (section_separator)
 				rm_publisher := qual_class_strs.i_th (1)
 				rm_closure := qual_class_strs.i_th (2)
 				rm_class := qual_class_strs.i_th (3)
@@ -110,12 +110,12 @@ feature -- Commands
 				-- concept part
 				concept_id := strs.i_th (2)
 
-				-- version part: looks like .vN.M.P or .vN.M.P+Q or .vN.M.P-rcQ or .vN.M.P+uQ
-				ver_str := strs.i_th (2)
-				start_pos := 1 + Version_delimiter.count
+				-- version part: looks like vN.M.P or vN.M.P+Q or vN.M.P-rcQ or vN.M.P+uQ
+				ver_str := an_id.substring (an_id.substring_index (version_axis_delimiter, 1), an_id.count)
+				start_pos := 1 + version_axis_delimiter.count
 
 				sym := version_status_symbol_text (vs_unstable)
-				sym_pos := ver_str.substring_index (sym, 1)
+				sym_pos := ver_str.substring_index (sym, start_pos)
 
 				-- case: +uQ
 				if sym_pos > 0 then
@@ -125,7 +125,7 @@ feature -- Commands
 				else
 					-- case: -rcQ
 					sym := version_status_symbol_text (vs_release_candidate)
-					sym_pos := ver_str.substring_index (sym, 1)
+					sym_pos := ver_str.substring_index (sym, start_pos)
 					if sym_pos > 0 then
 						end_pos := sym_pos - 1
 						commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
@@ -133,7 +133,7 @@ feature -- Commands
 					else
 						-- case: +Q
 						sym := version_status_symbol_text (vs_build)
-						sym_pos := ver_str.substring_index (sym, 1)
+						sym_pos := ver_str.substring_index (sym, start_pos)
 						if sym_pos > 0 then
 							end_pos := sym_pos - 1
 							commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
@@ -148,11 +148,11 @@ feature -- Commands
 
 			elseif adl14_id_regex.matches (an_id) then
 				is_adl14_id := True
-				sect1 := strs.i_th (1)
-				qual_class := sect1.substring (1, sect1.count)
+
+				strs := an_id.split (axis_separator)
 
 				-- separate the qualified class part
-				qual_class_strs := qual_class.split (section_separator)
+				qual_class_strs := strs.i_th (1).split (section_separator)
 				rm_publisher := qual_class_strs.i_th (1)
 				rm_closure := qual_class_strs.i_th (2)
 				rm_class := qual_class_strs.i_th (3)
