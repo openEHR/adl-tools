@@ -128,7 +128,13 @@ feature -- Output
 			create Result.make(0)
 			if not list.is_empty then
 				across list as ivl_csr loop
-					Result.append ("|" + ivl_csr.item.as_string + "|")
+					if not ivl_csr.item.is_point then
+						Result.append_character ('|')
+					end
+					Result.append (ivl_csr.item.as_string)
+					if not ivl_csr.item.is_point then
+						Result.append_character ('|')
+					end
 					if not ivl_csr.is_last then
 						Result.append (", ")
 					end
@@ -137,6 +143,19 @@ feature -- Output
 				if attached {G} assumed_value as av then
 					Result.append ("; " + format_value (av))
 				end
+			end
+		end
+
+	i_th_constraint_as_string (i: INTEGER): STRING
+			-- obtain i-th constraint item
+		do
+			create Result.make(0)
+			if not list.i_th(i).is_point then
+				Result.append_character ('|')
+			end
+			Result.append (list.i_th(i).as_string)
+			if not list.i_th(i).is_point then
+				Result.append_character ('|')
 			end
 		end
 

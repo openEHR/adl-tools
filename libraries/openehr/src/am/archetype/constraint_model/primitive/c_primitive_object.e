@@ -75,6 +75,13 @@ feature -- Output
 		deferred
 		end
 
+	i_th_constraint_as_string (i: INTEGER): STRING
+			-- serialised form of i-th constraint in a tuple
+		require
+			i > 0 and i <= list_count
+		deferred
+		end
+
 	out: STRING
 		do
 			Result := as_string

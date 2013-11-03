@@ -212,6 +212,8 @@ feature {P_C_STRING} -- Modification
 feature -- Output
 
 	as_string: STRING
+			-- seriaised form of this object, with no modifications; use `as_string_clean' to
+			-- apply a cleaner function
 		do
 			create Result.make_empty
 			if not list.is_empty then
@@ -236,7 +238,7 @@ feature -- Output
 			end
 		end
 
-	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_string_clean (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
@@ -260,6 +262,24 @@ feature -- Output
 			if attached assumed_value then
 				Result.append ("; %"" + cleaner.item ([assumed_value.out]) + "%"")
 			end
+		end
+
+	i_th_constraint_as_string (i: INTEGER): STRING
+			-- serialised form of i-th tuple constraint of this object
+		do
+			create Result.make(0)
+			Result.append_character ('%"')
+			Result.append (list.i_th (i))
+			Result.append_character ('%"')
+		end
+
+	i_th_constraint_as_string_clean (i: INTEGER; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			create Result.make(0)
+			Result.append_character ('%"')
+			Result.append (cleaner.item ([list.i_th (i)]))
+			Result.append_character ('%"')
 		end
 
 feature {NONE} -- Implementation

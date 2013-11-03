@@ -245,8 +245,8 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (release_version)
-			Result.append (version_status_symbol_text (version_status))
 			if commit_number > 0 then
+				Result.append (version_status_symbol_text (version_status))
 				Result.append (commit_number.out)
 			end
 		end

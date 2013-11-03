@@ -11,6 +11,9 @@ class ARCHETYPE_HRID_PARSER
 
 inherit
 	ANY_VALIDATOR
+		redefine
+			reset
+		end
 
 	VERSION_STATUSES
 		export
@@ -29,12 +32,6 @@ feature -- Initialisation
 
 	make
 		do
-			namespace := Void
-			create rm_publisher.make_empty
-			create rm_closure.make_empty
-			create rm_class.make_empty
-			create concept_id.make_empty
-			create release_version.make_empty
 			reset
 		end
 
@@ -86,7 +83,7 @@ feature -- Commands
 			ns_idx, start_pos, end_pos, sym_pos: INTEGER
 			local_hrid, ver_str, sym: STRING
 		do
-			make
+			reset
 			if adl15_id_regex.matches (an_id) then
 				is_adl15_id := True
 
@@ -173,6 +170,19 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	reset
+		do
+			precursor
+			namespace := Void
+			create rm_publisher.make_empty
+			create rm_closure.make_empty
+			create rm_class.make_empty
+			create concept_id.make_empty
+			create release_version.make_empty
+			version_status := 0
+			commit_number := 0
+		end
 
 	adl14_id_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for all archetype ids.

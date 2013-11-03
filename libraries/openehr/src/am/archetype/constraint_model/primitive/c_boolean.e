@@ -124,6 +124,13 @@ feature -- Output
 			end
 		end
 
+	i_th_constraint_as_string (i: INTEGER): STRING
+			-- serialised form of i-th tuple constraint of this object
+		do
+			create Result.make(0)
+			Result.append_boolean (list.i_th (i))
+		end
+
 feature {P_C_BOOLEAN} -- Modification
 
 	set_constraint (a_list: like list)

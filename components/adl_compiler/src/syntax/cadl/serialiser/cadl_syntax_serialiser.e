@@ -296,11 +296,9 @@ feature -- Visitor
 						att_cpo := cpo
 					end
 					if attached {C_STRING} att_cpo as c_str then
-						last_result.append (apply_style (clean (c_str.i_th_constraint (tuple_idx)), STYLE_VALUE))
-					elseif attached {C_TERMINOLOGY_CODE} att_cpo as ctc then
-						serialise_c_terminology_code (ctc.i_th_constraint (tuple_idx), depth)
+						last_result.append (apply_style (c_str.i_th_constraint_as_string_clean (tuple_idx, agent clean), STYLE_VALUE))
 					else
-						last_result.append (apply_style (att_cpo.i_th_constraint (tuple_idx).out, STYLE_VALUE))
+						last_result.append (apply_style (att_cpo.i_th_constraint_as_string (tuple_idx), STYLE_VALUE))
 					end
 					last_result.append (symbol (SYM_END_CBLOCK))
 					if not c_attrs_csr.is_last then
@@ -421,7 +419,7 @@ feature -- Visitor
 			if not a_node.is_second_order_constrained then
 				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
 				if attached {C_STRING} a_node as c_str and then attached c_str.list then
-					last_result.append (apply_style (c_str.clean_as_string (agent clean), STYLE_VALUE))
+					last_result.append (apply_style (c_str.as_string_clean (agent clean), STYLE_VALUE))
 					last_object_inline := True
 				elseif attached {C_TERMINOLOGY_CODE} a_node as ctc then
 					serialise_c_terminology_code (ctc, depth)

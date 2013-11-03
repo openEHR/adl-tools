@@ -190,6 +190,20 @@ feature -- Output
 			Result.append ("]")
 		end
 
+	i_th_constraint_as_string (i: INTEGER): STRING
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			create Result.make(0)
+			Result.append_character ('[')
+			Result.append (terminology_id)
+			if attached terminology_version as tv then
+				Result.append (tv)
+			end
+			Result.append (Terminology_separator)
+			Result.append (code_list.i_th (i))
+			Result.append_character (']')
+		end
+
 feature {NONE} -- Implementation
 
 	do_node_conforms_to (other: like Current): BOOLEAN

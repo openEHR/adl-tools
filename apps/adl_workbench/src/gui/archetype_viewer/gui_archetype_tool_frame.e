@@ -64,7 +64,7 @@ feature {NONE}-- Initialization
 			end
 
 			-- archetype id: namespace
-			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_namespace_tooltip, 80)
+			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_namespace_tooltip, 120)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_namespace := tf
 			end

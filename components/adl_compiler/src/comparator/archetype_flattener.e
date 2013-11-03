@@ -230,7 +230,7 @@ end
 			def_it.do_until_surface (agent node_graft, agent node_test)
 		end
 
-	node_graft (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform grafts of node from differential archetype on corresponding node in flat parent
 			-- only interested in C_COMPLEX_OBJECTs; we deal with all the other node types by iterating the
 			-- children of C_COMPLEX_OBJECTs
@@ -284,9 +284,12 @@ end
 								cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
 							end
 
-						else -- otherwise is it a normal override
+						-- otherwise is it a normal override
+						else
 debug ("flatten")
-	io.put_string ("%TOVERLAY immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
+	io.put_string ("%TOVERLAY immediate node " +
+		cco_child_diff.node_id + " on flat parent " +
+		cco_output_flat.node_id + "%N")
 end
 							-- firstly, add overrides from immediate child node to corresponding flat node
 							-- this if statement needed because the first branch is what we have to do in order to
@@ -298,15 +301,18 @@ end
 								cco_output_flat.overlay_differential (cco_child_diff, rm_schema)
 							end
 
-							-- Deal with the case of the output object matches {*} (i.e. 'any') specifically here (it could be
-							-- also done below, if the merge algorithms were updated to handle empty target C_ATTRIBUTEs).
-							-- If output_flat node matches any, and it is addressable (which means the differential child node must also be,
-							-- and must therefore be intended as an override; if it wasn't, it will be treated as an alternative)
-							-- then replace it with a complete clones of the child attributes of the current C_OBJECT in the differential
+							-- Deal with the case of the output object matches {*} (i.e. 'any') specifically here
+							-- (it could be also done below, if the merge algorithms were updated to handle empty
+							-- target C_ATTRIBUTEs). If output_flat node matches any, and it is addressable (which
+							-- means the differential child node must also be, and must therefore be intended as
+							-- an override; if it wasn't, it will be treated as an alternative) then replace it
+							-- with a complete clone of the child attributes of the current C_OBJECT in the
+							-- differential
 							if cco_output_flat.any_allowed and cco_output_flat.is_addressable then
 debug ("flatten")
 	io.put_string ("%T** parent matches ANY - REPLACING node [" +
-		cco_output_flat.node_id + "] with complete clone of child node [" +
+		cco_output_flat.node_id +
+		"] with complete clone of child node [" +
 		cco_child_diff.node_id + "]**%N")
 end
 								-- take care of the children of the object node in the differential
@@ -326,23 +332,26 @@ end
 									cco_output_flat.put_attribute (ca_child_copy)
 								end
 								child_grafted_path_list.extend (cco_child_diff.path)
-							else
 
-								-- iterate through child attributes and overlay a) new object nodes in existing container attributes,
-								-- and b) new attribute nodes from child. Note that these attributes are in general specified by paths,
-								-- so they can overlay arbitrarily deep points in the flat output structure.
+							else
 debug ("flatten")
 	io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
 end
+								-- iterate through child attributes and overlay a) new object nodes in existing container
+								-- attributes, and b) new attribute nodes from child. Note that these attributes are in
+								-- general specified by paths, so they can overlay arbitrarily deep points in the flat
+								-- output structure.
 								across cco_child_diff.attributes as child_attrs_csr loop
 									ca_child := child_attrs_csr.item
 debug ("flatten")
 	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
 end
 
-									-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cco_output_flat that
-									-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
-									-- has a differential path, its true object parent in the flat parent archetype is given by the differential path
+									-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent
+									-- - it is either the cco_output_flat that corresponds to the parent object from
+									-- the differential child with we started this routine, or if the current attribute
+									-- has a differential path, its true object parent in the flat parent archetype
+									-- is given by the differential path
 									if ca_child.has_differential_path and then attached ca_child.differential_path as child_diff_path then
 										create apa.make_from_string (child_diff_path)
 										check attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
@@ -354,9 +363,10 @@ debug ("flatten")
 end
 										end
 
-										-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
-										-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
-										-- nodes in the flat output
+										-- there may be object ids on the path from the original parent attribute to
+										-- the proximate attribute in the flat parent that are overridden by object-ids
+										-- in the differential path; for these we need to replace the node ids of the
+										-- relevant nodes in the flat output
 										create c_path_in_diff.make_from_string (child_diff_path)
 										c_path_in_diff.finish
 										from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop

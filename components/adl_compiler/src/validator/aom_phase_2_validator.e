@@ -720,16 +720,17 @@ end
 					-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
 					-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
 					if attached {C_OBJECT} a_c_node as a_c_obj then
-						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id (= "unknown") OR
-									(specialisation_depth_from_code (a_c_obj.node_id)
-											<= flat_parent.specialisation_depth or else 			-- node with node_id from previous level OR
-									is_refined_code (a_c_obj.node_id)) then							-- node id refined (i.e. not new)
-
+						if not is_valid_code (a_c_obj.node_id) or else						-- node with no node_id (= "unknown") OR
+							(specialisation_depth_from_code (a_c_obj.node_id)
+									<= flat_parent.specialisation_depth or else 			-- node with node_id from previous level OR
+							is_refined_code (a_c_obj.node_id)) 								-- node id refined (i.e. not new)
+						then
 							create apa.make_from_string(a_c_node.path)
 							flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
-							Result := flat_parent.has_path (flat_parent_path)
+							Result := flat_parent.has_object_path (flat_parent_path)
 							if not Result and a_c_obj.is_addressable then -- if it is an addressable node it should have a matching node in flat parent
-								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name, ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
+									ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
 									ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
 							end
 
@@ -744,7 +745,9 @@ end
 							end
 						else
 debug ("validate")
-	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + ontology.physical_to_logical_path (a_c_node.path, target_descriptor.archetype_view_language, True) + " ignored %N")
+	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
+		ontology.physical_to_logical_path (a_c_node.path,
+		target_descriptor.archetype_view_language, True) + " ignored %N")
 end
 						end
 
