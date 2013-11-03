@@ -80,6 +80,10 @@ feature -- Access (attributes from file)
 			-- position in the archetype.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
+	aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
+			-- list of mappings of lifecycle state names used in archetypes to AOM lifecycle state
+			-- names. value = AOM lifecycle state; key = source lifecycle state
+
 feature -- Access
 
 	file_path: STRING
@@ -103,6 +107,12 @@ feature -- Status Report
 			Result := attached aom_rm_type_substitutions as type_subs and then type_subs.has (an_aom_type)
 		end
 
+	has_lifecycle_state_mapping (a_state_name: STRING): BOOLEAN
+			-- is there an AOM lifecycle state for `a_state_name'?
+		do
+			Result := attached aom_lifecycle_mappings as att_ls and then att_ls.has (a_state_name)
+		end
+
 feature -- Validation
 
 	validate
@@ -115,25 +125,36 @@ feature -- Validation
 			end
 			if rm_schema_ids.is_empty then
 				add_error (ec_ARP_no_matching_schemas, <<file_path>>)
-			elseif attached aom_rm_type_mappings as aom_tm then
-				-- check that all type mappings are found in all mentioned schemas
-				across rm_schema_ids as schemas_csr loop
-					if has_rm_schema_for_id (schemas_csr.item) then
-						sch := rm_schema_for_id (schemas_csr.item)
-						across aom_tm as type_mappings_csr loop
-							rm_class_name := type_mappings_csr.item.target_class_name
-							if not sch.has_class_definition (type_mappings_csr.item.target_class_name) then
-								add_error (ec_ARP_invalid_class_mapping, <<type_mappings_csr.item.source_class_name,
-									rm_class_name, sch.schema_id>>)
-							else
-								across type_mappings_csr.item.property_mappings as property_mappings_csr loop
-									if not sch.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
-										add_error (ec_ARP_invalid_property_mapping, <<type_mappings_csr.item.source_class_name,
-											property_mappings_csr.item.source_property_name,
-											rm_class_name, property_mappings_csr.item.target_property_name, sch.schema_id>>)
+			else
+				if attached aom_rm_type_mappings as aom_tm then
+					-- check that all type mappings are found in all mentioned schemas
+					across rm_schema_ids as schemas_csr loop
+						if has_rm_schema_for_id (schemas_csr.item) then
+							sch := rm_schema_for_id (schemas_csr.item)
+							across aom_tm as type_mappings_csr loop
+								rm_class_name := type_mappings_csr.item.target_class_name
+								if not sch.has_class_definition (type_mappings_csr.item.target_class_name) then
+									add_error (ec_ARP_invalid_class_mapping, <<type_mappings_csr.item.source_class_name,
+										rm_class_name, sch.schema_id>>)
+								else
+									across type_mappings_csr.item.property_mappings as property_mappings_csr loop
+										if not sch.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
+											add_error (ec_ARP_invalid_property_mapping, <<type_mappings_csr.item.source_class_name,
+												property_mappings_csr.item.source_property_name,
+												rm_class_name, property_mappings_csr.item.target_property_name, sch.schema_id>>)
+										end
 									end
 								end
 							end
+						end
+					end
+				end
+
+				-- check lifecycle state mappings
+				if attached aom_lifecycle_mappings as att_ls then
+					across att_ls as ls_csr loop
+						if not Archetype_lifecycle_states.has (ls_csr.item) then
+							add_error (ec_ARP_invalid_lifecycle_state_mapping, <<ls_csr.key, ls_csr.item, profile_name>>)
 						end
 					end
 				end

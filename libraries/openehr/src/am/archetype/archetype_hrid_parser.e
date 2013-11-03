@@ -29,6 +29,7 @@ feature -- Initialisation
 
 	make
 		do
+			namespace := Void
 			create rm_publisher.make_empty
 			create rm_closure.make_empty
 			create rm_class.make_empty
@@ -85,7 +86,7 @@ feature -- Commands
 			ns_idx, start_pos, end_pos, sym_pos: INTEGER
 			local_hrid, ver_str, sym: STRING
 		do
-			reset
+			make
 			if adl15_id_regex.matches (an_id) then
 				is_adl15_id := True
 

@@ -27,7 +27,7 @@ templates = <
 		["ARP_no_bmm_schemas_loaded"] = <"BMM schemas need to be loaded prior to AOM profiles">
 		["ARP_invalid_class_mapping"] = <"AOM built-in class '$1' is mapped to class '$2' that does not exist in schema $3">
 		["ARP_invalid_property_mapping"] = <"AOM built-in class '$1' property '$2' is mapped to class '$3' property '$4' that does not exist in schema $5">
-		
+		["ARP_invalid_lifecycle_state_mapping"] = <"RM lifecycle state '$1' mapped to non-existent AOM state '$2' in Archetype profile $3">
 	>
 >
 

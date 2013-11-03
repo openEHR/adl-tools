@@ -54,18 +54,21 @@ feature -- Status Report
 
 	has_magnitude_constraint: BOOLEAN
 		do
-			Result := attached list as l and then attached l.first.magnitude
+			Result := attached list as att_list and then
+				across att_list as list_csr some attached list_csr.item.magnitude end
 		end
 
 	has_precision_constraint: BOOLEAN
 		do
-			Result := attached list as l and then attached l.first.precision
+			Result := attached list as att_list and then
+				across att_list as list_csr some attached list_csr.item.precision end
 		end
 
 feature -- Conversion
 
 	standard_equivalent: C_COMPLEX_OBJECT
-			-- if there is no `list' or a list with only one member, create a normal structure for the type DV_QUANTITY
+			-- if there is no `list' or a list with only one member, create a normal structure
+			-- for the type DV_QUANTITY
 			-- if there are two or more `list' items, create a 2nd order structure
 		local
 			ca_property, ca_units, ca_magnitude, ca_precision: C_ATTRIBUTE

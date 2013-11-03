@@ -140,6 +140,17 @@ feature -- Access
 	namespace: detachable INTERNET_ID
 			-- Reverse domain name namespace identifier.
 
+	namespace_string: STRING
+			-- Reverse domain name namespace identifier as a string;
+			-- empty string if not present
+		do
+			if attached namespace as ns then
+				Result := ns.value
+			else
+				create Result.make_empty
+			end
+		end
+
 	rm_publisher: STRING
 			-- Name of the Reference Model publisher.
 

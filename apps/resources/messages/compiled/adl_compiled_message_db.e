@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (629)
+			create message_table.make (635)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -243,6 +243,7 @@ feature -- Initialisation
 			message_table.put ("BMM schemas need to be loaded prior to AOM profiles", ec_ARP_no_bmm_schemas_loaded)
 			message_table.put ("AOM built-in class '$1' is mapped to class '$2' that does not exist in schema $3", ec_ARP_invalid_class_mapping)
 			message_table.put ("AOM built-in class '$1' property '$2' is mapped to class '$3' property '$4' that does not exist in schema $5", ec_ARP_invalid_property_mapping)
+			message_table.put ("RM lifecycle state '$1' mapped to non-existent AOM state '$2' in Archetype profile $3", ec_ARP_invalid_lifecycle_state_mapping)
 			message_table.put ("Config file path: $1", ec_cfg_file_path_info)
 			message_table.put ("Repositories available:", ec_repos_found_info)
 			message_table.put ("Populating repository $1 ...", ec_rep_populate_progress_info)
@@ -559,6 +560,11 @@ feature -- Initialisation
 			message_table.put ("Archetype source lengths differ: original =  $1; new = $2", ec_Test_arch_compare_i2)
 			message_table.put ("Set differential archetype view", ec_set_differential_archetype_view)
 			message_table.put ("Set flat archetype view", ec_set_flat_archetype_view)
+			message_table.put ("Archetype ID namepace (reverse domin name of publisher)", ec_archetype_hrid_namespace_tooltip)
+			message_table.put ("Archetype ID qualified RM class name as RM_publisher-RM_closure-RM_class_name", ec_archetype_hrid_qualified_rm_class_tooltip)
+			message_table.put ("Archetype ID concept_id - human readable key to an ontology node", ec_archetype_hrid_concept_id_tooltip)
+			message_table.put ("Archetype ID version ID, in form major.minor.patch [+|+u|-rc commit_number]", ec_archetype_hrid_version_id_tooltip)
+			message_table.put ("Archetype lifecycle state", ec_archetype_lifecycle_tooltip)
 			message_table.put ("If active, this archetype is the primary authoring source (active means is_generated=True)", ec_archetype_is_primary_source_button_text)
 			message_table.put ("Form", ec_diff_flat_form_label)
 			message_table.put ("View differential archetype form", ec_differential_view_button_tooltip)

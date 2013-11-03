@@ -63,10 +63,46 @@ feature {NONE}-- Initialization
 				add_editing_controls
 			end
 
-			-- archetype id
-			tool_bar.add_expanding_text_field ("", "")
+			-- archetype id: namespace
+			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_namespace_tooltip, 80)
 			check attached tool_bar.last_text_field as tf then
-				ev_archetype_id := tf
+				ev_archetype_hrid_namespace := tf
+			end
+
+			-- archetype id: namespace separator '::'
+			tool_bar.add_label (namespace_separator, 8, False, False)
+
+			-- archetype id: qualified RM class
+			tool_bar.add_expanding_text_field ("", ec_archetype_hrid_qualified_rm_class_tooltip)
+			check attached tool_bar.last_text_field as tf then
+				ev_archetype_hrid_qualified_rm_class := tf
+			end
+
+			-- archetype id: axis separator '.'
+			tool_bar.add_label (axis_separator.out, 3, False, False)
+
+			-- archetype id: concept_id
+			tool_bar.add_expanding_text_field ("", ec_archetype_hrid_concept_id_tooltip)
+			check attached tool_bar.last_text_field as tf then
+				ev_archetype_hrid_concept_id := tf
+			end
+
+			-- archetype id: axis separator '.'
+			tool_bar.add_label (axis_separator.out, 3, False, False)
+
+			-- archetype id: version_id
+			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_version_id_tooltip, 60)
+			check attached tool_bar.last_text_field as tf then
+				ev_archetype_hrid_version_id := tf
+			end
+
+			-- separator '@'
+			tool_bar.add_label ("@", 12, False, False)
+
+			-- archetype lifecycle
+			tool_bar.add_fixed_text_field ("", ec_archetype_lifecycle_tooltip, 80)
+			check attached tool_bar.last_text_field as tf then
+				ev_archetype_lifecycle_state := tf
 			end
 
 			-- diff/flat 'View' label + diff & flat controls
@@ -109,7 +145,9 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	ev_archetype_id: EV_TEXT_FIELD
+	ev_archetype_hrid_namespace, ev_archetype_hrid_qualified_rm_class, ev_archetype_hrid_concept_id, ev_archetype_hrid_version_id: EV_TEXT_FIELD
+
+	ev_archetype_lifecycle_state: EV_TEXT_FIELD
 
 	ev_root_container: EV_VERTICAL_BOX
 
@@ -205,7 +243,13 @@ feature {NONE} -- Implementation
 	do_clear
 			-- Wipe out content from visual controls.
 		do
-			ev_archetype_id.remove_text
+			ev_archetype_hrid_namespace.remove_text
+			ev_archetype_hrid_qualified_rm_class.remove_text
+			ev_archetype_hrid_concept_id.remove_text
+			ev_archetype_hrid_version_id.remove_text
+
+			ev_archetype_lifecycle_state.remove_text
+
 			ev_adl_version_text.remove_text
 			ev_language_combo.wipe_out
 			ev_language_combo.remove_text
@@ -216,10 +260,18 @@ feature {NONE} -- Implementation
 			attach_gui_context
 			select_view (differential_view)
 
-			ev_archetype_id.set_text (source.qualified_name)
+			-- populate parts of archetype_hrid
+			ev_archetype_hrid_namespace.set_text (source.id.namespace_string)
+			ev_archetype_hrid_qualified_rm_class.set_text (source.id.qualified_rm_class)
+			ev_archetype_hrid_concept_id.set_text (source.id.concept_id)
+			ev_archetype_hrid_version_id.set_text (source.id.version_id)
+
 			populate_primary_source
 			check attached source end
 			if source.is_valid then
+				-- lifecycle state
+				ev_archetype_lifecycle_state.set_text (source.differential_archetype.description.lifecycle_state)
+
 				ev_adl_version_text.set_text (source.differential_archetype.adl_version)
 				selected_language := source.differential_archetype.original_language.code_string
 				populate_languages

@@ -102,12 +102,16 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend ("Initial")
-			Result.extend ("Draft")
-			Result.extend ("Review")
-			Result.extend ("Approved")
-			Result.extend ("Obsolete")
-			Result.extend ("Superseded")
+			Result.extend ("unmanaged")
+			Result.extend ("initial")
+			Result.extend ("in_review")
+			Result.extend ("suspended")
+			Result.extend ("unstable")
+			Result.extend ("release_candidate")
+			Result.extend ("published")
+			Result.extend ("obsolete")
+			Result.extend ("superseded")
+			Result.extend ("deprecated")
 		end
 
 	Unknown_value: STRING = "(Unknown)"

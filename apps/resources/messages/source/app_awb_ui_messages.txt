@@ -367,6 +367,12 @@ templates = <
 		["set_flat_archetype_view"] = <"Set flat archetype view">
 
 		-- GUI_ARCHETYPE_TOOL_FRAME
+		["archetype_hrid_namespace_tooltip"] = <"Archetype ID namepace (reverse domin name of publisher)">
+		["archetype_hrid_qualified_rm_class_tooltip"] = <"Archetype ID qualified RM class name as RM_publisher-RM_closure-RM_class_name">
+		["archetype_hrid_concept_id_tooltip"] = <"Archetype ID concept_id - human readable key to an ontology node">
+		["archetype_hrid_version_id_tooltip"] = <"Archetype ID version ID, in form major.minor.patch [+|+u|-rc commit_number]">
+		["archetype_lifecycle_tooltip"] = <"Archetype lifecycle state">
+
 		["archetype_is_primary_source_button_text"] = <"If active, this archetype is the primary authoring source (active means is_generated=True)">
 		["diff_flat_form_label"] = <"Form">
 		["differential_view_button_tooltip"] = <"View differential archetype form">
