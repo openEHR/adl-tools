@@ -17,12 +17,15 @@ inherit
 			{NONE} all
 		end
 
+	RESOURCE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make, make_dt, default_create
 
 feature -- Definitions
-
-	Default_lifecycle_state: STRING = "initial"
 
 	Default_original_author: STRING = "????"
 
@@ -60,7 +63,7 @@ feature -- Access
         attribute
             create Result.make (0)
             Result.put (Default_original_author, "name")
-       end
+		end
 
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
@@ -77,7 +80,7 @@ feature -- Access
 			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
 		attribute
-			create Result.make_from_string (Default_lifecycle_state)
+			create Result.make_from_string (Initial_resource_lifecycle_state)
 		end
 
 	other_contributors: detachable ARRAYED_LIST [STRING]

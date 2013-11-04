@@ -16,6 +16,8 @@ inherit
 
 	ODIN_DEFINITIONS
 
+	RESOURCE_DEFINITIONS
+
 feature -- Syntax Elements
 
 	Archetype_any_constraint: STRING = "*"
@@ -94,24 +96,6 @@ feature -- Definitions
 			-- set of 'key's of an ARCHETYPE_TERM, currently 'text' and 'description'
 		once
 			Result := (create {ARCHETYPE_TERM}.default_create).Keys
-		end
-
-	Archetype_lifecycle_states: ARRAYED_LIST [STRING]
-			-- list of archetype authoring lifecycle states
-			-- TODO: obtain from openEHR terminology
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("unmanaged")
-			Result.extend ("initial")
-			Result.extend ("in_review")
-			Result.extend ("suspended")
-			Result.extend ("unstable")
-			Result.extend ("release_candidate")
-			Result.extend ("published")
-			Result.extend ("obsolete")
-			Result.extend ("superseded")
-			Result.extend ("deprecated")
 		end
 
 	Unknown_value: STRING = "(Unknown)"

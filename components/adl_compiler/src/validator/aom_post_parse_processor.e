@@ -21,6 +21,11 @@ inherit
 			{NONE} all;
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all;
+		end
+
 create
 	make
 
@@ -47,6 +52,9 @@ feature {ADL15_ENGINE} -- Initialisation
 		do
 			if rm_schema /= an_rm_schema then
 				rm_schema := an_rm_schema
+				if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
+				end
 				set_domain_type_mappings
 			end
 			target_descriptor := ara
@@ -72,12 +80,15 @@ feature -- Access
 
 	rm_schema: BMM_SCHEMA
 
+	aom_profile: detachable AOM_PROFILE
+
 feature -- Commands
 
 	execute
 		do
 			update_constraint_refs
 			update_aom_mapped_types
+			update_lifecycle_state
 		end
 
 	clear
@@ -140,14 +151,22 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	update_lifecycle_state
+		do
+			if not valid_resource_lifecycle_state (target.description.lifecycle_state) and then
+				attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (target.description.lifecycle_state)
+			then
+				target.description.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (target.description.lifecycle_state))
+			else
+				target.description.set_lifecycle_state (Initial_resource_lifecycle_state)
+			end
+		end
+
 	set_domain_type_mappings
-		local
-			aom_profile: AOM_PROFILE
 		do
 			-- find out if any mappings exist in an AOM_PROFILE
-			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
-				if attached aom_profile.aom_rm_type_mappings as aom_tm and then aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
+			if attached aom_profile as att_ap then
+				if attached att_ap.aom_rm_type_mappings as aom_tm and then aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
 					c_terminology_code_type_mapping := aom_tm.item (bare_type_name (({TERMINOLOGY_CODE}).name))
 				else
 					clear

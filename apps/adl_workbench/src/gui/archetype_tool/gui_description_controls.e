@@ -46,7 +46,7 @@ feature {NONE} -- Initialisation
 			-- lifecycle state control - single line combo text-selection field
 			create lifecycle_state_text_ctl.make_linked (get_text (ec_lifecycle_state_label_text),
 				agent :detachable STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
-				archetype_lifecycle_states,
+				resource_lifecycle_states,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
 				Void, undo_redo_chain, 0, 140)
 			gui_controls.extend (lifecycle_state_text_ctl)

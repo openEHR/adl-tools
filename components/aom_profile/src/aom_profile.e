@@ -84,6 +84,15 @@ feature -- Access (attributes from file)
 			-- list of mappings of lifecycle state names used in archetypes to AOM lifecycle state
 			-- names. value = AOM lifecycle state; key = source lifecycle state
 
+	aom_lifecycle_mapping (a_state_name: STRING): STRING
+		require
+			has_lifecycle_state_mapping (a_state_name)
+		do
+			check attached aom_lifecycle_mappings as att_ls and then attached att_ls.item (a_state_name.as_lower) as map_state then
+				Result := map_state
+			end
+		end
+
 feature -- Access
 
 	file_path: STRING
@@ -110,7 +119,7 @@ feature -- Status Report
 	has_lifecycle_state_mapping (a_state_name: STRING): BOOLEAN
 			-- is there an AOM lifecycle state for `a_state_name'?
 		do
-			Result := attached aom_lifecycle_mappings as att_ls and then att_ls.has (a_state_name)
+			Result := attached aom_lifecycle_mappings as att_ls and then att_ls.has (a_state_name.as_lower)
 		end
 
 feature -- Validation
@@ -153,7 +162,7 @@ feature -- Validation
 				-- check lifecycle state mappings
 				if attached aom_lifecycle_mappings as att_ls then
 					across att_ls as ls_csr loop
-						if not Archetype_lifecycle_states.has (ls_csr.item) then
+						if not Resource_lifecycle_states.has (ls_csr.item) then
 							add_error (ec_ARP_invalid_lifecycle_state_mapping, <<ls_csr.key, ls_csr.item, profile_name>>)
 						end
 					end

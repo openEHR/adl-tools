@@ -1379,7 +1379,7 @@ feature {NONE} -- Implementation
 		do
 			an_arch.description.put_original_author_item ("name", author_name)
 			an_arch.description.put_original_author_item ("organisation", author_org)
-			an_arch.description.set_lifecycle_state (Archetype_lifecycle_states.first)
+			an_arch.description.set_lifecycle_state (Resource_lifecycle_states.first)
 			an_arch.description.add_original_language_details
 			an_arch.description.detail_for_original_language.set_copyright (author_copyright)
 		end
