@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 			filler_id: ARCHETYPE_HRID
 		do
 			across target.suppliers_index as supp_csr loop
-				if not current_arch_cat.archetype_index.has (supp_csr.key) then
+				if not current_arch_cat.has_matching_archetype_id (supp_csr.key) then
 					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				end
 

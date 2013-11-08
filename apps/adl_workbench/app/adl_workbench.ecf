@@ -6,7 +6,7 @@
 			<exclude>/\.git$</exclude>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="true" warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="initialization" syntax="standard" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="initialization" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
@@ -17,7 +17,7 @@
 			<debug name="compress" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
-			<debug name="dt" enabled="true"/>
+			<debug name="dt" enabled="false"/>
 			<debug name="exclude list" enabled="false"/>
 			<debug name="flatten" enabled="false"/>
 			<debug name="gelex" enabled="false"/>
@@ -53,7 +53,6 @@
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="concurrency" value="thread"/>
-
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
 		<library name="eomf_bmm" location="$EOMF\library\bmm\bmm.ecf"/>
 		<library name="eomf_gui" location="$EOMF\library\gui\eomf_gui.ecf">
@@ -69,7 +68,6 @@
 		<library name="gobo_parse_skl" location="$GOBO\library\parse\library_skl.ecf"/>
 		<library name="gobo_regexp" location="$GOBO\library\regexp\library.ecf"/>
 		<library name="gobo_utility" location="$GOBO\library\utility\library.ecf"/>
-
 		<library name="ise_base" location="$ISE_LIBRARY\library\base\base-safe.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
@@ -85,7 +83,6 @@
 		<library name="ise_vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
 		<library name="ise_xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="ise_xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
-		
 		<cluster name="adl_components" location="..\..\..\components\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>

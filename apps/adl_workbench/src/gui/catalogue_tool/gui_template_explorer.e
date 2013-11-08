@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 								rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 						end
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.archetype_index.item (car.archetype_id) as ara then
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.matching_archetype (car.archetype_id) as ara then
 					attach_node (ara.id.rm_class + "." + ara.name, catalogue_node_pixmap (ara), ara)
 				end
 			end
@@ -150,7 +150,7 @@ feature {NONE} -- Implementation
 	ev_node_build_exit_action (an_og_node: attached OG_ITEM; indent_level: INTEGER)
 		do
 			if attached {C_ATTRIBUTE} an_og_node.content_item as c_attr then
-				from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item as car loop
+				from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item loop
 					c_attr.children.forth
 				end
 				if not c_attr.children.off then

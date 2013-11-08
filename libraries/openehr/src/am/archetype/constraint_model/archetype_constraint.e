@@ -170,6 +170,10 @@ feature -- Source Control
 
 	specialisation_level: INTEGER
 			-- specialisation level of this node within archetype
+		note
+			option: transient
+		attribute
+		end
 
 	set_specialisation_level (a_level: INTEGER)
 			-- set specialisation level of this node within archetype
@@ -182,6 +186,10 @@ feature -- Source Control
 	specialisation_status: INTEGER
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Determined from initial parse, and subsequent editing on structure
+		note
+			option: transient
+		attribute
+		end
 
 	set_specialisation_status_added
 		do

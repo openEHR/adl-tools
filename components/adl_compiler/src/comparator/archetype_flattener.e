@@ -241,7 +241,7 @@ end
 			c_path_in_diff: OG_PATH
 			ca_child, ca_child_copy, ca_output, cco_csr_parent: C_ATTRIBUTE
 		do
-			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node as car then
+			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node then
 				create apa.make_from_string (cco_child_diff.path)
 				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
 debug ("flatten")
@@ -629,6 +629,8 @@ end
 		local
 			merge_obj: C_OBJECT
 			node_id_in_parent: STRING
+			apa: ARCHETYPE_PATH_ANALYSER
+			a_path: STRING
 		do
 			across ca_child.children as c_obj_csr loop
 				if attached {ARCHETYPE_SLOT} c_obj_csr.item as arch_slot then
@@ -658,28 +660,34 @@ end
 					ca_output.put_child (merge_obj)
 					child_grafted_path_list.extend (car.path)
 
-				elseif not attached {C_COMPLEX_OBJECT} c_obj_csr.item then
-					merge_obj := c_obj_csr.item.safe_deep_twin
-					merge_obj.set_specialisation_status_redefined
-
-					-- if identified, find corresponding node in parent & replace completely
-					if c_obj_csr.item.is_addressable then
-						ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
-
-					-- not identified - find a node of same type, then replace completely
-					elseif ca_output.has_child_with_rm_type_name (merge_obj.rm_type_name) then
-						ca_output.replace_child_by_rm_type_name (merge_obj)
-
-					-- else the node to be added has an RM child type of an existing node - then add it
-					-- TODO: the following won't be needed when the check in ARCHETYPE_PHASE_2_VALIDATOR (search for '12930')
-					-- is implemented.
-					elseif across rm_schema.all_ancestor_classes_of (merge_obj.rm_type_name) as ancs_csr some ca_output.has_child_with_rm_type_name (ancs_csr.item) end then
-						ca_output.put_child (merge_obj)
-					end
-					child_grafted_path_list.extend (c_obj_csr.item.path)
 				else
-					debug ("flatten")
-						io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + c_obj_csr.item.path + "%N")
+					-- we deal with non-C_COMPLEX_OBJECTs except in the case where the object is completely new in the flat
+					-- parent, which means it should just be copied in completely
+					create apa.make_from_string (c_obj_csr.item.path)
+					a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
+					if not attached {C_COMPLEX_OBJECT} c_obj_csr.item or else not arch_output_flat.has_object_path (a_path) then
+						merge_obj := c_obj_csr.item.safe_deep_twin
+						merge_obj.set_specialisation_status_redefined
+
+						-- if identified, find corresponding node in parent & replace completely
+						if c_obj_csr.item.is_addressable then
+							ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
+
+						-- not identified - find a node of same type, then replace completely
+						elseif ca_output.has_child_with_rm_type_name (merge_obj.rm_type_name) then
+							ca_output.replace_child_by_rm_type_name (merge_obj)
+
+						-- else the node to be added has an RM child type of an existing node - then add it
+						-- TODO: the following won't be needed when the check in ARCHETYPE_PHASE_2_VALIDATOR (search for '12930')
+						-- is implemented.
+						elseif across rm_schema.all_ancestor_classes_of (merge_obj.rm_type_name) as ancs_csr some ca_output.has_child_with_rm_type_name (ancs_csr.item) end then
+							ca_output.put_child (merge_obj)
+						end
+						child_grafted_path_list.extend (c_obj_csr.item.path)
+					else
+						debug ("flatten")
+							io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + c_obj_csr.item.path + "%N")
+						end
 					end
 				end
 			end
@@ -829,7 +837,7 @@ debug ("flatten")
 end
 			across arch_output_flat.suppliers_index as xref_idx_csr loop
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-				arch_root_cco := current_arch_cat.archetype_index.item (xref_idx_csr.key).flat_archetype.definition
+				arch_root_cco := current_arch_cat.matching_archetype (xref_idx_csr.key).flat_archetype.definition
 
 				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier archetype id xref_idx.key_for_iteration
 				-- into each one of these C_ARCHETYPE_ROOT nodes, clone the flat definition structure from the supplier archetype

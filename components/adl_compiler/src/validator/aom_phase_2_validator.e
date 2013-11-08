@@ -373,6 +373,25 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
+	slot_filler_archetype_id_exists (a_slot_path, a_filler_archetype_id: STRING): BOOLEAN
+			-- Return true if, for a slot path that is known in the parent slot index, there are
+			-- actually archetypes whose ids match
+		require
+			parent_slot_id_index.has (a_slot_path)
+		local
+			ids: ARRAYED_SET[STRING]
+		do
+			check attached parent_slot_id_index.item (a_slot_path) as att_ids then
+				ids := att_ids
+			end
+
+			-- try for direct match, or else filler id is compatible with available actual ids
+			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
+			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
+			Result := ids.has (a_filler_archetype_id) or else
+				across ids as actual_ids_csr some actual_ids_csr.item.starts_with (a_filler_archetype_id) end
+		end
+
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype
 			-- SIDE-EFFECT: sets is_path_compressible markers on child archetype nodes
@@ -461,7 +480,7 @@ end
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error (ec_VARXS, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
-						elseif not parent_slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
+						elseif not slot_filler_archetype_id_exists (a_slot.path, car.archetype_id) then -- matches def, but not found in actual list from current repo
 							add_error (ec_VARXR, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then

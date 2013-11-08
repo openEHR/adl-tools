@@ -153,18 +153,20 @@ feature {NONE} -- Implementation
 
 	update_lifecycle_state
 		do
-			if not valid_resource_lifecycle_state (target.description.lifecycle_state) and then
-				attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (target.description.lifecycle_state)
-			then
-				target.description.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (target.description.lifecycle_state))
-			else
-				target.description.set_lifecycle_state (Initial_resource_lifecycle_state)
+			if attached target.description as att_desc then
+				if not valid_resource_lifecycle_state (att_desc.lifecycle_state) and then
+					attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (att_desc.lifecycle_state)
+				then
+					att_desc.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (att_desc.lifecycle_state))
+				else
+					att_desc.set_lifecycle_state (Initial_resource_lifecycle_state)
+				end
 			end
 		end
 
 	set_domain_type_mappings
-		do
 			-- find out if any mappings exist in an AOM_PROFILE
+		do
 			if attached aom_profile as att_ap then
 				if attached att_ap.aom_rm_type_mappings as aom_tm and then aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
 					c_terminology_code_type_mapping := aom_tm.item (bare_type_name (({TERMINOLOGY_CODE}).name))

@@ -87,11 +87,11 @@ feature {NONE}-- Initialization
 				ev_archetype_hrid_concept_id := tf
 			end
 
-			-- archetype id: axis separator '.'
-			tool_bar.add_label (axis_separator.out, 3, False, False)
+			-- archetype id: axis/version separator '.v'
+			tool_bar.add_label (version_axis_delimiter, 8, False, False)
 
 			-- archetype id: version_id
-			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_version_id_tooltip, 60)
+			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_version_id_tooltip, 70)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_version_id := tf
 			end

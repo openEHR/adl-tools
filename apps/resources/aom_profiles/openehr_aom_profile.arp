@@ -63,3 +63,31 @@ aom_rm_type_substitutions = <
 	["CODE_PHRASE"] = <"DV_CODED_TEXT">
 	["REAL"] = <"Double">
 >
+
+----------------------------------------------------------------------------------------
+-- allowed substitutions from source RM lifecycle states to AOM lifecycle states
+-- States on the value side (right hand side) must be the AOM states:
+--
+--	"unmanaged"
+--	"initial"
+--	"in_review"
+--	"suspended"
+--	"unstable"
+--	"release_candidate"
+--	"published"
+--	"obsolete"
+--	"superseded"
+--	"deprecated"
+
+--
+
+aom_lifecycle_mappings = <
+	["AuthorDraft"] = <"initial">
+	["Draft"] = <"unstable">
+	["TeamReview"] = <"unstable">
+	["Team Review"] = <"unstable">
+	["ReviewSuspended"] = <"unstable">
+	["Review Suspended"] = <"unstable">
+	["Reassess"] = <"published">
+>
+

@@ -986,7 +986,7 @@ feature {NONE} -- Compilation
 				-- determine the suppliers list for ongoing compilation; exclude an reference to the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
 				across diff_arch.suppliers_index as supp_idx_csr loop
-					if current_arch_cat.archetype_index.has (supp_idx_csr.key) and then attached current_arch_cat.archetype_index.item (supp_idx_csr.key) as supp_arch and then
+					if current_arch_cat.has_matching_archetype_id (supp_idx_csr.key) and then attached current_arch_cat.matching_archetype (supp_idx_csr.key) as supp_arch and then
 						not supp_idx_csr.key.is_case_insensitive_equal (id.as_string)
 					then
 						suppliers_index.put (supp_arch, supp_idx_csr.key)

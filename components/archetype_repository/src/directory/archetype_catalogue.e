@@ -91,7 +91,7 @@ feature -- Access
 			-- the repository profile accessor from which this catalogue gets its contents
 
 	archetype_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
-			-- index of archetype descriptors keyed by mixed-case archetype id. Used in rest of application
+			-- index of archetype descriptors keyed by mixed-case archetype id.
 		attribute
 			create Result.make (0)
 		end
@@ -162,6 +162,37 @@ feature -- Access
 			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end
 		end
 
+	matching_archetype (an_archetype_id_template: STRING): ARCH_CAT_ARCHETYPE
+			-- Return true if, for a slot path that is known in the parent slot index, there are
+			-- actually archetypes whose ids match
+		require
+			has_matching_archetype_id (an_archetype_id_template)
+		local
+			ids: ARRAYED_LIST[STRING]
+			matching_id: STRING
+			matching_aca: detachable ARCH_CAT_ARCHETYPE
+		do
+			-- try for direct match, or else filler id is compatible with available actual ids
+			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
+			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
+			if attached archetype_index.item (an_archetype_id_template) as att_aca then
+				matching_aca := att_aca
+			else
+				create ids.make_from_array (archetype_index.current_keys)
+				from ids.start until ids.off or attached matching_aca loop
+					if ids.item.starts_with (an_archetype_id_template) and then
+						attached archetype_index.item (ids.item) as att_aca
+					then
+						matching_aca := att_aca
+					end
+					ids.forth
+				end
+			end
+			check attached matching_aca as att_matching_aca then
+				Result := att_matching_aca
+			end
+		end
+
 	last_stats_build_timestamp: DATE_TIME
 			-- timestamp of stats build
 
@@ -194,6 +225,22 @@ feature -- Status Report
 		do
 			Result := has_item_with_id (aca.ontological_parent_name) and
 				not has_item_with_id (aca.qualified_key)
+		end
+
+	has_matching_archetype_id (an_archetype_id_template: STRING): BOOLEAN
+			-- Return true if, for a slot path that is known in the parent slot index, there are
+			-- actually archetypes whose ids match
+		local
+			ids: ARRAYED_LIST[STRING]
+		do
+			-- try for direct match, or else filler id is compatible with available actual ids
+			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
+			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
+			Result := archetype_index.has (an_archetype_id_template)
+			if not Result then
+				create ids.make_from_array (archetype_index.current_keys)
+				Result := across ids as actual_ids_csr some actual_ids_csr.item.starts_with (an_archetype_id_template) end
+			end
 		end
 
 feature -- Commands

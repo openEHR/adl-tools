@@ -187,11 +187,22 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 
 	finalise_dt
 			-- Finalisation work: evaluate rm schema regexes
+		local
+			lc_aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
 		do
 			if rm_schemas_access.load_attempted then
 				get_regex_matches (rm_schema_pattern)
 			else
 				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
+			end
+
+			-- convert lifecycle states table to all lower case
+			if attached aom_lifecycle_mappings as aom_ls_mappings then
+				create lc_aom_lifecycle_mappings.make (0)
+				across aom_ls_mappings as state_mappings_csr loop
+					lc_aom_lifecycle_mappings.put (state_mappings_csr.item.as_lower, state_mappings_csr.key.as_lower)
+				end
+				aom_lifecycle_mappings := lc_aom_lifecycle_mappings
 			end
 		end
 
@@ -202,6 +213,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
+			-- deal with RM schema regexes
 			create regex_matcher.make
 			regex_matcher.set_case_insensitive (True)
 			regex_matcher.compile (a_regex)
