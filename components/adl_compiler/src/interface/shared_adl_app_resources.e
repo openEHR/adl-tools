@@ -192,6 +192,42 @@ feature -- Application Switches
 			current_repo_set: repository_config_table.current_repository_name.same_string (a_repo_name)
 		end
 
+	namespace_table_path: STRING
+			-- path of the NAMESPACE_TABLE within the parent object representing the whole .cfg file
+		once
+			Result := "/" + {NAMESPACE_TABLE}.root_attribute_name
+		end
+
+	namespace_table: NAMESPACE_TABLE
+			-- hash of namespaces and references. The data are stored in the following way:
+			--
+			--	namespace_table = <
+			--		 namespaces = <
+			--			 ["oe"] = <"org.openehr">
+			--			 ["nhs"] = <"uk.gov.nhs">
+			--		 >
+			--	>
+			--
+		do
+			if attached namespace_table_cache.item as nsi then
+				Result := nsi
+			else
+				if attached {NAMESPACE_TABLE} app_cfg.object_value (namespace_table_path, ({NAMESPACE_TABLE}).name) as p then
+					Result := p
+				else
+					create Result.default_create
+				end
+				namespace_table_cache.put (Result)
+			end
+		end
+
+	set_namespace_table (a_namespace_table: NAMESPACE_TABLE)
+			-- set namespace table.
+		do
+			namespace_table_cache.put (a_namespace_table)
+			app_cfg.put_object (namespace_table_path, a_namespace_table)
+		end
+
 	init_gen_dirs_from_current_repository
 			-- create compiler source and flat generated file areas for current repository
 		require
@@ -444,18 +480,23 @@ feature -- Application Switches
 feature {NONE} -- Cached Settings
 
 	compiler_gen_source_directory: STRING
-			-- Path of directory where compiled source files go in dADL serialisation form
+			-- Path of directory where compiled source files go in ODIN serialisation form
 		once
 			create Result.make_empty
 		end
 
 	compiler_gen_flat_directory: STRING
-			-- Path of directory where compiled flat files go in dADL serialisation form
+			-- Path of directory where compiled flat files go in ODIN serialisation form
 		once
 			create Result.make_empty
 		end
 
 	repository_config_table_cache: CELL [detachable REPOSITORY_CONFIG_TABLE]
+		once
+			create Result.put (Void)
+		end
+
+	namespace_table_cache: CELL [detachable NAMESPACE_TABLE]
 		once
 			create Result.put (Void)
 		end

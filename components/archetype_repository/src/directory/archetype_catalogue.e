@@ -162,11 +162,11 @@ feature -- Access
 			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end
 		end
 
-	matching_archetype (an_archetype_id_template: STRING): ARCH_CAT_ARCHETYPE
+	matching_archetype (an_archetype_ref: STRING): ARCH_CAT_ARCHETYPE
 			-- Return true if, for a slot path that is known in the parent slot index, there are
 			-- actually archetypes whose ids match
 		require
-			has_matching_archetype_id (an_archetype_id_template)
+			has_archetype_id_for_ref (an_archetype_ref)
 		local
 			ids: ARRAYED_LIST[STRING]
 			matching_id: STRING
@@ -175,12 +175,12 @@ feature -- Access
 			-- try for direct match, or else filler id is compatible with available actual ids
 			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
-			if attached archetype_index.item (an_archetype_id_template) as att_aca then
+			if attached archetype_index.item (an_archetype_ref) as att_aca then
 				matching_aca := att_aca
 			else
 				create ids.make_from_array (archetype_index.current_keys)
 				from ids.start until ids.off or attached matching_aca loop
-					if ids.item.starts_with (an_archetype_id_template) and then
+					if ids.item.starts_with (an_archetype_ref) and then
 						attached archetype_index.item (ids.item) as att_aca
 					then
 						matching_aca := att_aca
@@ -227,7 +227,7 @@ feature -- Status Report
 				not has_item_with_id (aca.qualified_key)
 		end
 
-	has_matching_archetype_id (an_archetype_id_template: STRING): BOOLEAN
+	has_archetype_id_for_ref (an_archetype_ref: STRING): BOOLEAN
 			-- Return true if, for a slot path that is known in the parent slot index, there are
 			-- actually archetypes whose ids match
 		local
@@ -236,10 +236,10 @@ feature -- Status Report
 			-- try for direct match, or else filler id is compatible with available actual ids
 			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
-			Result := archetype_index.has (an_archetype_id_template)
+			Result := archetype_index.has (an_archetype_ref)
 			if not Result then
 				create ids.make_from_array (archetype_index.current_keys)
-				Result := across ids as actual_ids_csr some actual_ids_csr.item.starts_with (an_archetype_id_template) end
+				Result := across ids as actual_ids_csr some actual_ids_csr.item.starts_with (an_archetype_ref) end
 			end
 		end
 

@@ -477,11 +477,11 @@ end
 				co_path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
 				if flat_parent.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_parent.c_object_at_path (co_path_in_flat) as a_slot then
 					if parent_slot_id_index.has (a_slot.path) then
-						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
-							add_error (ec_VARXS, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
+						if not archetype_id_matches_slot (car.archetype_ref, a_slot) then -- doesn't even match the slot definition
+							add_error (ec_VARXS, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_ref>>)
 
-						elseif not slot_filler_archetype_id_exists (a_slot.path, car.archetype_id) then -- matches def, but not found in actual list from current repo
-							add_error (ec_VARXR, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
+						elseif not slot_filler_archetype_id_exists (a_slot.path, car.archetype_ref) then -- matches def, but not found in actual list from current repo
+							add_error (ec_VARXR, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_ref>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
 							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.equal_interval (par_flat_occ) then

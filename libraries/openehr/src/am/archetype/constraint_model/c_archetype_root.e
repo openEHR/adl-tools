@@ -56,7 +56,7 @@ feature -- Access
 			-- record node id of slot in parent archetype that this object fills, in the case a slot exists;
 			-- only set in flat form of archetype
 
-	archetype_id: STRING
+	archetype_ref: STRING
 			-- id of filler archetype
 		do
 			Result := node_id
@@ -87,7 +87,7 @@ feature -- Output
 				Result.append (snid + ", ")
 			end
 			if is_addressable then
-				Result.append (archetype_id + ", ")
+				Result.append (archetype_ref + ", ")
 			end
 			if attached occurrences as occ then
 				Result.append (occ.as_string)

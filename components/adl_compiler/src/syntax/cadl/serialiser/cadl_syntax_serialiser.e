@@ -353,7 +353,7 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			ontologies.extend (current_arch_cat.matching_archetype (a_node.archetype_id).flat_archetype.ontology)
+			ontologies.extend (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.ontology)
 
 			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				start_c_complex_object (a_node, depth)
@@ -367,7 +367,7 @@ feature -- Visitor
 				if attached a_node.slot_node_id then
 					id.append (a_node.slot_node_id + ", ")
 				end
-				id.append (a_node.archetype_id + "]")
+				id.append (a_node.archetype_ref + "]")
 				last_result.append (apply_style(id, STYLE_TERM_REF))
 
 				last_result.append (format_item(FMT_SPACE))

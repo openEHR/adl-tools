@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 								rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 						end
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.matching_archetype (car.archetype_id) as ara then
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.matching_archetype (car.archetype_ref) as ara then
 					attach_node (ara.id.rm_class + "." + ara.name, catalogue_node_pixmap (ara), ara)
 				end
 			end

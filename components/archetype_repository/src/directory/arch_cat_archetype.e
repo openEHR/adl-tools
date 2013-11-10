@@ -418,12 +418,17 @@ feature -- Access (semantic)
 			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
 	name: STRING
-			-- domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
+			-- namespace + domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
 			-- return only the final section
 		local
 			str: STRING
 		do
-			str := id.concept_id_version
+			create str.make_empty
+			if attached id.namespace then
+				str.append (id.namespace_string)
+				str.append (namespace_separator)
+			end
+			str.append (id.concept_id_version)
 			if is_specialised and is_legacy and str.has (section_separator) then
 				Result := str.substring (str.last_index_of (section_separator, str.count) + 1, str.count)
 			else
@@ -986,7 +991,7 @@ feature {NONE} -- Compilation
 				-- determine the suppliers list for ongoing compilation; exclude an reference to the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
 				across diff_arch.suppliers_index as supp_idx_csr loop
-					if current_arch_cat.has_matching_archetype_id (supp_idx_csr.key) and then attached current_arch_cat.matching_archetype (supp_idx_csr.key) as supp_arch and then
+					if current_arch_cat.has_archetype_id_for_ref (supp_idx_csr.key) and then attached current_arch_cat.matching_archetype (supp_idx_csr.key) as supp_arch and then
 						not supp_idx_csr.key.is_case_insensitive_equal (id.as_string)
 					then
 						suppliers_index.put (supp_arch, supp_idx_csr.key)

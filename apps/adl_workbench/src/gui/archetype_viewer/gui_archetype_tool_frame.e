@@ -270,7 +270,9 @@ feature {NONE} -- Implementation
 			check attached source end
 			if source.is_valid then
 				-- lifecycle state
-				ev_archetype_lifecycle_state.set_text (source.differential_archetype.description.lifecycle_state)
+				if not source.differential_archetype.artefact_type.is_overlay then
+					ev_archetype_lifecycle_state.set_text (source.differential_archetype.description.lifecycle_state)
+				end
 
 				ev_adl_version_text.set_text (source.differential_archetype.adl_version)
 				selected_language := source.differential_archetype.original_language.code_string

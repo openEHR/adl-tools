@@ -160,17 +160,17 @@ feature {NONE} -- Implementation
 			filler_id: ARCHETYPE_HRID
 		do
 			across target.suppliers_index as supp_csr loop
-				if not current_arch_cat.has_matching_archetype_id (supp_csr.key) then
+				if not current_arch_cat.has_archetype_id_for_ref (supp_csr.key) then
 					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				end
 
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
 				c_ar_list := supp_csr.item
 				across c_ar_list as arch_root_csr loop
-					create filler_id.make_from_string (arch_root_csr.item.archetype_id)
+					create filler_id.make_from_string (arch_root_csr.item.archetype_ref)
 					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
 						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_class)) then
-						add_error (ec_VARXTV, <<arch_root_csr.item.archetype_id, arch_root_csr.item.rm_type_name>>)
+						add_error (ec_VARXTV, <<arch_root_csr.item.archetype_ref, arch_root_csr.item.rm_type_name>>)
 					end
 				end
 			end

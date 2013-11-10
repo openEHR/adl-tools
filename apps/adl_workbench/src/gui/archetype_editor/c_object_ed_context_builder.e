@@ -137,7 +137,7 @@ feature -- Visitor
 			new_ed_context: ARCH_ED_CONTEXT_STATE
 		do
 			new_ed_context := ed_context.twin
-			new_ed_context.set_flat_ontology (current_arch_cat.matching_archetype (a_node.archetype_id).flat_archetype.ontology)
+			new_ed_context.set_flat_ontology (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.ontology)
 			ed_context_stack.extend (new_ed_context)
 			create ed_node.make (a_node, ed_context)
 			obj_node_stack.extend (ed_node)
