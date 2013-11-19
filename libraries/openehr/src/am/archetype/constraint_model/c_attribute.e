@@ -334,6 +334,12 @@ feature -- Status Report
 			end
 		end
 
+	has_unidentified_child: BOOLEAN
+			-- return True if there are any children with no identifier
+		do
+			Result := children.there_exists (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
+		end
+
 	candidate_child_requires_id (a_type_name: STRING): BOOLEAN
 			-- True if a candidate child node with rm_type_name = `a_type_name' needs a node id;
 			-- i.e. if is_multiple or else `has_child_with_rm_type_name'

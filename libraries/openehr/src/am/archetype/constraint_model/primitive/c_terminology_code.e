@@ -221,9 +221,13 @@ feature {NONE} -- Implementation
 			set1, set2: ARRAYED_SET [STRING]
 		do
 			create set1.make (0)
+			set1.compare_objects
 			set1.fill (list1)
+
 			create set2.make (0)
+			set2.compare_objects
 			set2.fill (list2)
+			
 			Result := set1.is_subset (set2)
 		end
 

@@ -115,7 +115,8 @@ templates = <
 		["VARCN"] = <"root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*">
 		["VSSM"] = <"node at path $1 has order marker referring to non-existant sibling node $2">
 
-		["VSONI"] = <"$1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
+		["VSONI"] = <"$1 object node at path $2 node identifier does not conform to $3 node at parent path $4">
+		["VSONIF"] = <"$1 object node at path $2 has node identifier but C_ATTRIBUTE at $3 in flat parent has non-identified object nodes">
 		["VSONIN"] = <"object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
 		["VSONIRocc"] = <"object node at path $1 occurrences $2 redefines parent node occurrences $3 but node_id $4 not redefined">
 		["VSONIRrm"] = <"object node at path $1 RM type $2 redefines parent node RM type $3 but node_id $4 not redefined">

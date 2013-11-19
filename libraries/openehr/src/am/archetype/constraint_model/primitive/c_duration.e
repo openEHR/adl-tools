@@ -125,6 +125,7 @@ feature -- Status Report
 
 	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
 		do
+			Result := valid_duration_constraint_replacement (a_pattern, an_other_pattern)
 		end
 
 feature -- Output
@@ -175,9 +176,9 @@ feature {NONE} -- Implementation
 	range_conforms_to (other: like Current): BOOLEAN
 			-- True if the pattern of this node is or narrower than that in `other'
 		do
-			if attached list as rng and attached other.list as other_rng then
-				across rng as ivl_csr loop
-					Result := across other_rng as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
+			if not list.is_empty and not other.list.is_empty then
+				across list as ivl_csr loop
+					Result := across other.list as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
 				end
 			else
 				Result := True

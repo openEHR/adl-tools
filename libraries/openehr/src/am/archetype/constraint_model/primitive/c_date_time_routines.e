@@ -39,13 +39,8 @@ feature -- Definitions
 			Result.put (<<"YYYY-MM-??", "YYYY-MM-DD", "YYYY-MM-XX", "YYYY-??-XX", "YYYY-XX-XX">>, "YYYY-??-??")
 			Result.put (<<"YYYY-MM-XX", "YYYY-XX-XX">>, "YYYY-??-XX")
 			Result.put (<<>>, "YYYY-XX-XX")	-- no replacements possible
-			from
-				Result.start
-			until
-				Result.off
-			loop
-				Result.item_for_iteration.compare_objects
-				Result.forth
+			across Result as items_csr loop
+				items_csr.item.compare_objects
 			end
 		ensure
 			not_empty: not Result.is_empty
@@ -74,13 +69,8 @@ feature -- Definitions
 			Result.put (<<>>, "HH:MM:XX")	-- no replacements possible
 			Result.put (<<"HH:MM:??", "HH:MM:SS", "HH:MM:XX", "HH:??:XX">>, "HH:??:??")
 			Result.put (<<"HH:MM:XX">>, "HH:??:XX")
-			from
-				Result.start
-			until
-				Result.off
-			loop
-				Result.item_for_iteration.compare_objects
-				Result.forth
+			across Result as items_csr loop
+				items_csr.item.compare_objects
 			end
 		ensure
 			not_empty: not Result.is_empty
@@ -111,16 +101,26 @@ feature -- Definitions
 			Result.put (<<"YYYY-MM-DDTHH:??:XX", "YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:??")
 			Result.put (<<"YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:XX")
 			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX", "YYYY-MM-DDTHH:??:??", "YYYY-MM-DDTHH:??:XX">>, "YYYY-??-??T??:??:??")
-			from
-				Result.start
-			until
-				Result.off
-			loop
-				Result.item_for_iteration.compare_objects
-				Result.forth
+			across Result as items_csr loop
+				items_csr.item.compare_objects
 			end
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+	valid_duration_constraint_replacement (a_dur, conforms_to_dur: STRING): BOOLEAN
+			-- true if ISO8601 duration string `a_dur' conforms to `conforms_to_dur'
+		local
+			src_uc, conf_to_uc: STRING
+			i: INTEGER
+		do
+			src_uc := a_dur.as_upper
+			conf_to_uc := conforms_to_dur.as_upper
+
+			from i := 2 until i > src_uc.count or not conf_to_uc.has (src_uc.item (i)) loop
+				i := i + 1
+			end
+			Result := i > src_uc.count
 		end
 
 feature -- Status Report

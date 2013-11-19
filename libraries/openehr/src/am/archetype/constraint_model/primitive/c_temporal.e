@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Basic_validity: not list.is_empty xor pattern /= Void
+	Basic_validity: not list.is_empty or pattern /= Void
 	Pattern_validity: attached pattern as p implies valid_pattern_constraint (p)
 
 end

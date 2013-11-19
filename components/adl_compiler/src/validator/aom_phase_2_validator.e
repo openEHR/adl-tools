@@ -574,14 +574,16 @@ end
 						end
 					end
 
-					-- special case: C_DOMAIN_TYPE replacing a C_COMPLEX_OBJECT
-					if attached {C_COMPLEX_OBJECT} co_parent_flat and attached {C_DOMAIN_TYPE} co_child_diff then
-						if not rm_schema.type_name_conforms_to (co_child_diff.rm_type_name, co_parent_flat.rm_type_name) then
-							add_error (ec_VSONCT, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_child_diff.rm_type_name,
-								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
-								co_parent_flat.rm_type_name>>)
-						end
+	-- special case: C_DOMAIN_TYPE replacing a C_COMPLEX_OBJECT
+	-- FIXME: now obsolete in ADL 1.5
+	if attached {C_COMPLEX_OBJECT} co_parent_flat and attached {C_DOMAIN_TYPE} co_child_diff then
+		if not rm_schema.type_name_conforms_to (co_child_diff.rm_type_name, co_parent_flat.rm_type_name) then
+			add_error (ec_VSONCT, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+				co_child_diff.rm_type_name,
+				ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
+				co_parent_flat.rm_type_name>>)
+		end
+		raise ("specialised_node_validate: : C_DOMAIN_TYPE branch #1 should never be entered")
 
 					-- by here the AOM meta-types must be the same
 					elseif dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
@@ -633,7 +635,7 @@ end
 						-- node id non-conformance value mismatch was the reason
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
-								add_error (ec_VSONCI, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VSONI, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 									co_child_diff.node_id,
 									ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 									co_parent_flat.node_id>>)
@@ -649,9 +651,10 @@ end
 
 						-- node id non-conformance presence / absence was the reason
 						elseif co_parent_flat.is_addressable then
-							add_error (ec_VSONI, <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_parent_flat.rm_type_name,
-								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
+							add_error (ec_VSONI, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_child_diff.node_id,
+								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
+								co_parent_flat.node_id>>)
 
 						-- could be a leaf object value redefinition
 						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_parent_flat as cpo_flat then
@@ -659,9 +662,11 @@ end
 								cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
 								ontology.physical_to_logical_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
 
-						elseif attached {C_DOMAIN_TYPE} co_child_diff as cdt_child and attached {C_DOMAIN_TYPE} co_parent_flat as cdt_flat then
-							add_error (ec_VSDTV, <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
-								cdt_flat.rm_type_name, ontology.physical_to_logical_path (cdt_flat.path, target_descriptor.archetype_view_language, True)>>)
+	-- FIXME: following should never occur in ADL 1.5
+	elseif attached {C_DOMAIN_TYPE} co_child_diff as cdt_child and attached {C_DOMAIN_TYPE} co_parent_flat as cdt_flat then
+		add_error (ec_VSDTV, <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
+			cdt_flat.rm_type_name, ontology.physical_to_logical_path (cdt_flat.path, target_descriptor.archetype_view_language, True)>>)
+		raise ("specialised_node_validate: C_DOMAIN_TYPE branch #2 should never be entered")
 
 						else
 							add_error (ec_VUNK, <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
@@ -730,44 +735,66 @@ end
 			-- to determine if it has a corresponding node in the flat parent.
 			if passed then
 				if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-					create apa.make_from_string(car.slot_path)
+					create apa.make_from_string (car.slot_path)
 					flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 					Result := flat_parent.has_path (flat_parent_path)
 				else
-					-- if check below is False, it means the path is to a node that is new in the current archetype,
-					-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
-					-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
-					-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
 					if attached {C_OBJECT} a_c_node as a_c_obj then
-						if not is_valid_code (a_c_obj.node_id) or else						-- node with no node_id (= "unknown") OR
-							(specialisation_depth_from_code (a_c_obj.node_id)
-									<= flat_parent.specialisation_depth or else 			-- node with node_id from previous level OR
-							is_refined_code (a_c_obj.node_id)) 								-- node id refined (i.e. not new)
-						then
-							create apa.make_from_string(a_c_node.path)
+						-- if following check is False, it means the path is to a node that is new in the current archetype,
+						-- and therefore there is nothing in the parent to validate it against. Invalid codes, i.e. the 'unknown' code
+						-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
+						-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
+
+						-- node with no id, treat it as a redefine if same path exists in flat parent
+						if not is_valid_code (a_c_obj.node_id) then
+							create apa.make_from_string (a_c_node.path)
 							flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 							Result := flat_parent.has_object_path (flat_parent_path)
-							if not Result and a_c_obj.is_addressable then -- if it is an addressable node it should have a matching node in flat parent
-								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
-									ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
-									ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
+
+						-- node has an id
+						else
+							if not a_c_node.is_root then
+								-- if parent C_ATTR in flat parent has any children, they must also have ids
+								create apa.make_from_string (a_c_node.parent.path)
+								ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+								if ca_parent_flat.has_unidentified_child then
+									add_error (ec_VSONIF, <<a_c_obj.rm_type_name, a_c_obj.node_id,
+										ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
+								end
 							end
 
-						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
-						-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
-						-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-						elseif attached a_c_obj.sibling_order as sib_ord then
-							create apa.make_from_string (a_c_node.parent.path)
-							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-							if not ca_parent_flat.has_child_with_id (sib_ord.sibling_node_id) then
-								add_error (ec_VSSM, <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
-							end
-						else
+							-- if we survived that, then we want to know if it is an overlay or new node; if overlay, then check it
+							if passed then
+								if specialisation_depth_from_code (a_c_obj.node_id)
+									<= flat_parent.specialisation_depth or else 			-- node with node_id from previous level OR
+									is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
+								then
+									create apa.make_from_string (a_c_node.path)
+									flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
+									Result := flat_parent.has_object_path (flat_parent_path)
+									if not Result then -- it should have a matching node in flat parent
+										add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
+											ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
+											ontology.physical_to_logical_path (flat_parent_path, target_descriptor.archetype_view_language, True)>>)
+									end
+
+								-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
+								-- sibling order refers to a valid node in the parent flat. Arguably this should be done in the main
+								-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
+								elseif attached a_c_obj.sibling_order as sib_ord then
+									create apa.make_from_string (a_c_node.parent.path)
+									ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+									if not ca_parent_flat.has_child_with_id (sib_ord.sibling_node_id) then
+										add_error (ec_VSSM, <<ontology.physical_to_logical_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+									end
+								else
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
 		ontology.physical_to_logical_path (a_c_node.path,
 		target_descriptor.archetype_view_language, True) + " ignored %N")
 end
+								end
+							end
 						end
 
 					elseif attached {C_ATTRIBUTE} a_c_node as ca then

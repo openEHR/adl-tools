@@ -71,6 +71,7 @@ feature -- Visitor
 				serialise_comment (a_node)
 
 			-- output 'matches {*' if any_allowed, and no occurrences defined or node_id redefinition
+			-- else output nothing
 			elseif a_node.any_allowed then
 				if not (attached a_node.occurrences or
 					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)

@@ -35,6 +35,7 @@ feature -- Initialization
 		do
 			precursor
 			create list.make(0)
+			list.compare_objects
 		end
 
 	make_open
@@ -80,7 +81,6 @@ feature -- Initialization
 			not lst.is_empty
 		do
 			default_create
-			list.compare_objects
 			list.fill (lst)
 		ensure
 			not_open: not is_open
@@ -287,7 +287,11 @@ feature {NONE} -- Implementation
 	do_node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			-- FIXME: TO BE IMPLEMENTED
+			if is_regexp and other.is_regexp then
+				-- FIXME: TO BE IMPLEMENTED
+			elseif not list.is_empty and not other.list.is_empty then
+				Result := across list as list_csr all other.list.has (list_csr.item) end
+			end
 		end
 
 	regexp_parser: detachable RX_PCRE_REGULAR_EXPRESSION
