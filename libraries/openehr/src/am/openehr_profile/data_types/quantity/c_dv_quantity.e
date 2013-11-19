@@ -54,14 +54,14 @@ feature -- Status Report
 
 	has_magnitude_constraint: BOOLEAN
 		do
-			Result := attached list as att_list and then
-				across att_list as list_csr some attached list_csr.item.magnitude end
+			Result := attached list as cq_item_list and then
+				across cq_item_list as list_csr some attached list_csr.item.magnitude end
 		end
 
 	has_precision_constraint: BOOLEAN
 		do
-			Result := attached list as att_list and then
-				across att_list as list_csr some attached list_csr.item.precision end
+			Result := attached list as cq_item_list and then
+				across cq_item_list as list_csr some attached list_csr.item.precision end
 		end
 
 feature -- Conversion
@@ -73,10 +73,12 @@ feature -- Conversion
 		local
 			ca_property, ca_units, ca_magnitude, ca_precision: C_ATTRIBUTE
 			cpo_units: C_STRING
-			cpo_magnitude: C_REAL
-			cpo_precision: C_INTEGER
+			cpo_magnitude: detachable C_REAL
+			cpo_precision: detachable C_INTEGER
 			ccp_property: C_TERMINOLOGY_CODE
 			ca_tuple: detachable C_ATTRIBUTE_TUPLE
+			new_mag: INTERVAL[REAL]
+			new_prec: INTERVAL[INTEGER]
 		do
 			-- DV_QUANTITY root
 			create Result.make_anonymous (rm_type_name)
@@ -89,26 +91,36 @@ feature -- Conversion
 				Result.put_attribute (ca_property)
 			end
 
-			if attached list as att_list then
+			if attached list as cq_item_list then
 
 				-- CA_TUPLE: units, magnitude, precision
-				if att_list.count > 1 then
+				if cq_item_list.count > 1 and (has_magnitude_constraint or has_precision_constraint) then
 					create ca_tuple.make
 					Result.put_attribute_tuple (ca_tuple)
 				end
 
 				-- CA: magnitude
+				-- it might be that not every tuple branch constraint has a magnitude constraint,
+				-- so we have to deal with 'any' constraints in there as well
 				if has_magnitude_constraint then
 					create ca_magnitude.make_single ("magnitude", Void)
 					Result.put_attribute (ca_magnitude)
-					across att_list as c_qty_items_csr loop
-						if attached c_qty_items_csr.item.magnitude as mag then
-							if c_qty_items_csr.is_first then
-								create cpo_magnitude.make_interval (mag)
-								ca_magnitude.put_child (cpo_magnitude)
-							elseif attached {C_REAL} ca_magnitude.children.first as c_real then
-								c_real.add_interval (mag)
+					across cq_item_list as cq_items_csr loop
+						if cq_items_csr.is_first then
+							if attached cq_items_csr.item.magnitude as mag then
+								new_mag := mag
+							else
+								create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
 							end
+							create cpo_magnitude.make_interval (new_mag)
+							ca_magnitude.put_child (cpo_magnitude)
+						elseif attached cpo_magnitude as c_real then
+							if attached cq_items_csr.item.magnitude as mag then
+								new_mag := mag
+							else
+								create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
+							end
+							c_real.add_interval (new_mag)
 						end
 					end
 					if attached ca_tuple as ca_t then
@@ -119,12 +131,12 @@ feature -- Conversion
 				-- CA: units
 				create ca_units.make_single ("units", Void)
 				Result.put_attribute (ca_units)
-				across att_list as c_qty_items_csr loop
-					if c_qty_items_csr.is_first then
-						create cpo_units.make_simple (c_qty_items_csr.item.units)
+				across cq_item_list as cq_items_csr loop
+					if cq_items_csr.is_first then
+						create cpo_units.make_simple (cq_items_csr.item.units)
 						ca_units.put_child (cpo_units)
 					elseif attached {C_STRING} ca_units.children.first as c_string then
-						c_string.add_string (c_qty_items_csr.item.units)
+						c_string.add_string (cq_items_csr.item.units)
 					end
 				end
 				if attached ca_tuple as ca_t then
@@ -132,17 +144,27 @@ feature -- Conversion
 				end
 
 				-- CA: precision
+				-- it might be that not every tuple branch constraint has a precision constraint,
+				-- so we have to deal with 'any' constraints in there as well
 				if has_precision_constraint then
 					create ca_precision.make_single ("precision", Void)
 					Result.put_attribute (ca_precision)
-					across att_list as c_qty_items_csr loop
-						if attached c_qty_items_csr.item.precision as prec then
-							if c_qty_items_csr.is_first then
-								create cpo_precision.make_interval (prec)
-								ca_precision.put_child (cpo_precision)
-							elseif attached {C_INTEGER} ca_precision.children.first as c_integer then
-								c_integer.add_interval (prec)
+					across cq_item_list as cq_items_csr loop
+						if cq_items_csr.is_first then
+							if attached cq_items_csr.item.precision as prec then
+								new_prec := prec
+							else
+								create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
 							end
+							create cpo_precision.make_interval (new_prec)
+							ca_precision.put_child (cpo_precision)
+						elseif attached cpo_precision as c_real then
+							if attached cq_items_csr.item.precision as prec then
+								new_prec := prec
+							else
+								create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
+							end
+							c_real.add_interval (new_prec)
 						end
 					end
 					if attached ca_tuple as ca_t then
