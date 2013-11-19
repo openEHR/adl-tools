@@ -358,9 +358,35 @@ templates = <
 		["path_term_bindings_tooltip_text"] = <"Term bindings to path:">
 		["node_term_bindings_tooltip_text"] = <"Term bindings to node id:">
 
-		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
+		-- GUI_TEST_TOOL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
 		["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
+		["Test_remove_unused_codes_button_text"] = <"Remove unused codes">
+		["Test_remove_unused_codes_button_tooltip"] = <"Remove unused codes in archetypes on parse">
+		["Test_refresh_button_text"] = <"Refresh">
+		["Test_refresh_button_tooltip"] = <"Resync to file system and reset statuses">
+		["Test_regression_checkbox_text"] = <"Regression">
+		["Test_regression_checkbox_tooltip"] = <"Turn regression testing on for test archetypes">
+		["Test_processed_indicator_text"] = <"Processed: ">
+		["Test_start_stop_button_text"] = <"Compile">
+		["Test_start_stop_button_tooltip"] = <"Execute tests">
+		["Test_close_tool_button_text"] = <"Close">
+		["Test_close_tool_button_tooltip"] = <"Close test tool">
+
+		["Test_source_serialised_button_text"] = <"Source file v Serialised">
+		["Test_source_serialised_button_tooltip"] = <"Open diff tool on parsed and 1st generation serialised .adls files">
+		["Test_diff_flat_button_text"] = <"Legacy v gen'd Flat">
+		["Test_diff_flat_button_tooltip"] = <"Open diff tool on legacy and generated flat files">
+		["Test_source_gen_flat_button_text"] = <"Source v gen'd Flat">
+		["Test_source_gen_flat_button_tooltip"] = <"Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.">
+		["Test_source_roundtrip_button_text"] = <"Source v R-trip">
+		["Test_source_roundtrip_button_tooltip"] = <"Open diff tool on source and archetype round-tripped through ODIN P_* objects">
+
+		["Test_parse_test_title"] = <"Parse">
+		["Test_save_flat_test_title"] = <"->flat">
+		["Test_source_compare_test_title"] = <"Compare .adls">
+		["Test_save_source_odin_test_title"] = <"src AOM->ODIN">
+		["Test_read_source_odin_test_title"] = <"src AOM<-ODIN">
 
 		-- GUI_CLASS_MAP_CONTROL
 		["set_differential_archetype_view"] = <"Set differential archetype view">

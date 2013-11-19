@@ -1046,7 +1046,7 @@ feature -- Class tool
 
 feature -- Test tool
 
-	test_tool: GUI_TEST_ARCHETYPE_TREE_CONTROL
+	test_tool: GUI_TEST_TOOL
 		once
 			create Result.make (agent info_feedback)
 		end

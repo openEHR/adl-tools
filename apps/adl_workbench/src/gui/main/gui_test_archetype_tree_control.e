@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_TEST_ARCHETYPE_TREE_CONTROL
+class GUI_TEST_TOOL
 
 inherit
 	EV_SHARED_APPLICATION
@@ -52,11 +52,6 @@ inherit
 			{NONE} all
 		undefine
 			copy, default_create
-		end
-
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
 		end
 
 	EVX_DEFINITIONS
@@ -138,7 +133,8 @@ feature {NONE} -- Initialisation
 			evx_control_panel.add_frame_control (evx_batch_update_frame, False)
 
 			-- remove unused codes RB
-			create evx_remove_unused_codes_cb.make ("Remove unused codes", "Remove unused codes in archetypes on parse", agent :BOOLEAN do Result := remove_unused_codes end)
+			create evx_remove_unused_codes_cb.make (get_text (ec_Test_remove_unused_codes_button_text), get_text (ec_Test_remove_unused_codes_button_tooltip),
+				agent :BOOLEAN do Result := remove_unused_codes end)
 			evx_batch_update_frame.extend (evx_remove_unused_codes_cb.ev_data_control, False)
 
 			--====================== 'Test' frame ========================
@@ -146,26 +142,27 @@ feature {NONE} -- Initialisation
 			evx_control_panel.add_frame_control (evx_test_frame, False)
 
 			-- test refresh button
-			create evx_arch_test_refresh_bn.make (Void, Void, "Refresh", "Resync to file system and reset statuses", agent populate, Void)
+			create evx_arch_test_refresh_bn.make (Void, Void, get_text (ec_Test_refresh_button_text), get_text (ec_Test_refresh_button_tooltip), agent populate, Void)
 			evx_test_frame.extend (evx_arch_test_refresh_bn.ev_button, False)
 
 			-- regression test button
-			create evx_regression_test_cb.make_linked ("Regression", "Turn regression testing on for test archetypes",
+			create evx_regression_test_cb.make_linked (get_text (ec_Test_regression_checkbox_text), get_text (ec_Test_regression_checkbox_tooltip),
 				agent :BOOLEAN do Result := regression_test_on end,
 				agent (a_flag: BOOLEAN) do regression_test_on := a_flag end
 			)
 			evx_test_frame.extend (evx_regression_test_cb.ev_data_control, False)
 
 			-- progress indicator
-			create evx_progress_counter.make_readonly ("Processed: ", agent :STRING do Result := last_tested_archetypes_count.out end, 0, 0, True)
+			create evx_progress_counter.make_readonly (get_text (ec_Test_processed_indicator_text), agent :STRING do Result := last_tested_archetypes_count.out end, 0, 0, True)
 			evx_test_frame.extend (evx_progress_counter.ev_root_container, False)
 
 			-- start / stop button
-			create evx_archetype_test_go_bn.make (get_icon_pixmap ("tool/stop"), get_icon_pixmap ("tool/go"), "Go", "Start running tests", agent archetype_test_go, agent archetype_test_stop)
+			create evx_archetype_test_go_bn.make (get_icon_pixmap ("tool/stop"), get_icon_pixmap ("tool/go"), get_text (ec_Test_start_stop_button_text),
+				get_text (ec_Test_start_stop_button_tooltip), agent archetype_test_go, agent archetype_test_stop)
 			evx_test_frame.extend (evx_archetype_test_go_bn.ev_button, False)
 
 			-- close button
-			create evx_close_bn.make (Void, Void, "Close", "Close test tool", agent on_close, Void)
+			create evx_close_bn.make (Void, Void, get_text (ec_Test_close_tool_button_text), get_text (ec_Test_close_tool_button_tooltip), agent on_close, Void)
 			evx_test_frame.extend (evx_close_bn.ev_button, False)
 
 
@@ -175,26 +172,25 @@ feature {NONE} -- Initialisation
 
 			-- diff source button
 			create evx_diff_source_button.make (Void, Void,
-				"Source file v Serialised", "Open diff tool on parsed and 1st generation serialised .adls files",
+				get_text (ec_Test_source_serialised_button_text), get_text (ec_Test_source_serialised_button_tooltip),
 				 agent on_diff_source, Void)
 			evx_diffs_frame.extend (evx_diff_source_button.ev_button, False)
 
 			-- diff flat button
 			create evx_diff_flat_button.make (Void, Void,
-				"Legacy v gen'd Flat", "Open diff tool on legacy and generated flat files",
+				get_text (ec_Test_diff_flat_button_text), get_text (ec_Test_diff_flat_button_tooltip),
 				 agent on_diff_flat, Void)
 			evx_diffs_frame.extend (evx_diff_flat_button.ev_button, False)
 
 			-- diff source flat button
 			create evx_diff_source_flat_button.make (Void, Void,
-				"Source v gen'd Flat",
-				"Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.",
+				get_text (ec_Test_source_gen_flat_button_text), get_text (ec_Test_source_gen_flat_button_tooltip),
 				 agent on_diff_source_flat, Void)
 			evx_diffs_frame.extend (evx_diff_source_flat_button.ev_button, False)
 
 			-- round trip button
 			create evx_diff_source_round_trip_button.make (Void, Void,
-				"Source v R-trip", "Open diff tool on source and archetype round-tripped through ODIN P_* objects",
+				get_text (ec_Test_source_roundtrip_button_text), get_text (ec_Test_source_roundtrip_button_tooltip),
 				 agent on_diff_round_trip, Void)
 			evx_diffs_frame.extend (evx_diff_source_round_trip_button.ev_button, False)
 
@@ -217,12 +213,12 @@ feature -- Access
 			-- table of test routines
 		once
 			create Result.make (0)
-			Result.force (agent test_parse, "Parse")
+			Result.force (agent test_parse, get_text (ec_Test_parse_test_title))
 			Result.force (agent regression_test, Regression_test_key)
-			Result.force (agent test_save_flat, "->adlf")
-			Result.force (agent test_source_compare, "Compare .adls")
-			Result.force (agent test_save_source_odin, "src AOM->ODIN")
-			Result.force (agent test_read_source_odin, "src AOM<-ODIN")
+			Result.force (agent test_save_flat, get_text (ec_Test_save_flat_test_title))
+			Result.force (agent test_source_compare, get_text (ec_Test_source_compare_test_title))
+			Result.force (agent test_save_source_odin, get_text (ec_Test_save_source_odin_test_title))
+			Result.force (agent test_read_source_odin, get_text (ec_Test_read_source_odin_test_title))
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -548,7 +544,7 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
-			serialised_source_path: STRING
+			orig_fname, src_fname, diff_fname, flat_fname, serialised_source_path: STRING
 		do
 			check attached target end
 
@@ -578,22 +574,27 @@ feature {NONE} -- Tests
 
 				-- save source as serialised to $repository/source/new area
 				if diff_dirs_available then
+					orig_fname := file_system.basename (target.differential_path)
+					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
+					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
+					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
+
 					-- save source as read in (not serialised) to $repository/source/orig area
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, target.qualified_name + File_ext_archetype_source))
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, src_fname))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
-					serialised_source_path := file_system.pathname (diff_dir_source_new, target.qualified_name + File_ext_archetype_source)
+					serialised_source_path := file_system.pathname (diff_dir_source_new, src_fname)
 					target.save_differential_as (serialised_source_path, Syntax_type_adl)
 
 					-- for top-level archetypes only, copy above serialised source to $repository/source_flat/orig area as well, using extension .adlx
 					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
 				--	if not target.is_specialised then
-						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.qualified_name + File_ext_archetype_adl_diff))
+						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, diff_fname))
 				--	end
 
 					-- save legacy ADL
 					if target.has_legacy_flat_file then
-						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, target.qualified_name + File_ext_archetype_flat))
+						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
 					end
 				end
 			else
@@ -665,21 +666,21 @@ feature {NONE} -- Tests
 	test_save_flat: INTEGER
 			-- parse archetype, save in source form and return result
 		local
-			flat_path: STRING
+			orig_fname, diff_fname, flat_fname, flat_path: STRING
 		do
 			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
-					check attached file_system.pathname (diff_dir_flat_new, target.qualified_name + File_ext_archetype_flat) as pn then
-						flat_path := pn
-					end
+					orig_fname := file_system.basename (target.differential_path)
+					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
+					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
+
+					flat_path := file_system.pathname (diff_dir_flat_new, flat_fname)
 					target.save_flat_as (flat_path, Syntax_type_adl)
 
 					-- copy above flat file to $repository/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 					-- extensions or else it gets confused)
-					check attached file_system.pathname (diff_dir_source_flat_new, target.qualified_name + File_ext_archetype_adl_diff) as pn then
-						file_system.copy_file (flat_path, pn)
-					end
+					file_system.copy_file (flat_path, file_system.pathname (diff_dir_source_flat_new, diff_fname))
 				end
 
 				if not target.has_errors then
@@ -715,11 +716,16 @@ feature {NONE} -- Tests
 
 	test_save_source_odin: INTEGER
 			-- serialise differential archetype to ODIN format, and copy to test area for later diffing
+		local
+			orig_fname, odin_fname: STRING
 		do
 			Result := Test_failed
 			if target.is_valid then
 				target.save_compiled_differential
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (odin_source_dir, target.qualified_name + File_ext_odin))
+				orig_fname := file_system.basename (target.differential_path)
+				odin_fname := extension_replaced (orig_fname, File_ext_odin)
+
+				file_system.copy_file (target.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -729,15 +735,19 @@ feature {NONE} -- Tests
 	test_read_source_odin: INTEGER
 		local
 			fd: PLAIN_TEXT_FILE
+			orig_fname, src_fname: STRING
 		do
 			Result := Test_failed
 			if target.is_valid then
 				if target.has_differential_compiled_file then
+					orig_fname := file_system.basename (target.differential_path)
+					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
+
 					-- original .adls file, for diffing
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, target.qualified_name + File_ext_archetype_source))
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, src_fname))
 
 					-- post-odin round-tripped file
-					create fd.make_create_read_write (file_system.pathname (diff_odin_round_trip_source_new_dir, target.qualified_name + File_ext_archetype_source))
+					create fd.make_create_read_write (file_system.pathname (diff_odin_round_trip_source_new_dir, src_fname))
 					fd.put_string (target.read_compiled_differential)
 					fd.close
 
