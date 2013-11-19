@@ -78,6 +78,8 @@ feature -- Initialisation
 		do
 			create namespace.make (a_namespace)
 			make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version, a_version_status, a_commit_number)
+		ensure
+			not is_adl14_id
 		end
 
 	make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version: STRING; a_version_status, a_commit_number: INTEGER)
@@ -98,6 +100,8 @@ feature -- Initialisation
 			release_version := a_release_version
 			version_status := a_version_status
 			commit_number := a_commit_number
+		ensure
+			not is_adl14_id
 		end
 
 	make_from_string (a_str: STRING)
@@ -113,6 +117,7 @@ feature -- Initialisation
 			release_version := id_parser.release_version
 			version_status := id_parser.version_status
 			commit_number := id_parser.commit_number
+			is_adl14_id := id_parser.is_adl14_id
 		end
 
 	make_new (a_qualified_rm_class: STRING)
@@ -128,6 +133,8 @@ feature -- Initialisation
 			rm_publisher := qual_class_strs.i_th (1)
 			rm_closure := qual_class_strs.i_th (2)
 			rm_class := qual_class_strs.i_th (3)
+		ensure
+			not is_adl14_id
 		end
 
 	default_create
@@ -194,6 +201,19 @@ feature -- Access
 			Result.append_character (axis_separator)
 			Result.append (Version_delimiter)
 			Result.append (version_id)
+		end
+
+	semantic_id: STRING
+			-- namespace + domain concept part of archetype id + version
+		local
+			str: STRING
+		do
+			create Result.make_empty
+			if attached namespace then
+				Result.append (namespace_string)
+				Result.append (namespace_separator)
+			end
+			Result.append (concept_id_version)
 		end
 
 	release_version: STRING
@@ -323,6 +343,13 @@ feature -- Output
 	as_string: STRING
 		do
 			Result := physical_id
+		end
+
+	as_filename: STRING
+			-- form of `as_string' legal on most file systems
+		do
+			Result := as_string
+			Result.replace_substring_all (namespace_separator, "__")
 		end
 
 	as_abbreviated_string: STRING

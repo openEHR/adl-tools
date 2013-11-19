@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
-						text.append (aca.name)
+						text.append (aca.semantic_id)
 					end
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
@@ -311,7 +311,7 @@ feature {NONE} -- Implementation
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
-						text.append (aca.name)
+						text.append (aca.semantic_id)
 					end
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)

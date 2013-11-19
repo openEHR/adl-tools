@@ -169,7 +169,6 @@ feature -- Access
 			has_archetype_id_for_ref (an_archetype_ref)
 		local
 			ids: ARRAYED_LIST[STRING]
-			matching_id: STRING
 			matching_aca: detachable ARCH_CAT_ARCHETYPE
 		do
 			-- try for direct match, or else filler id is compatible with available actual ids
