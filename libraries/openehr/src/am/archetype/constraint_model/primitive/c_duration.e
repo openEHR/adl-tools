@@ -77,7 +77,6 @@ feature {NONE} -- Initialisation
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
 		do
 			default_create
-			create list.make (0)
 			list.extend (an_interval)
 			pattern := a_pattern
 		ensure

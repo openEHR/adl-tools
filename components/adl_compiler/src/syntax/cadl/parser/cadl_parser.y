@@ -807,7 +807,7 @@ c_tuple_values: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 				cpo.merge_tuple ($4)
 			end
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
 			end
 		} 
 	;
@@ -1478,18 +1478,18 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	;
 
-c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 		{
 			if valid_iso8601_duration_constraint_pattern ($1) then
-				create $$.make_from_pattern ($1)
+				create $$.make_pattern_with_range ($1, $3)
 			else
 				abort_with_error (ec_SCDUPT, Void)
 			end
 		}
-	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
+	| V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_duration_constraint_pattern ($1) then
-				create $$.make_pattern_with_range ($1, $3)
+				create $$.make_from_pattern ($1)
 			else
 				abort_with_error (ec_SCDUPT, Void)
 			end

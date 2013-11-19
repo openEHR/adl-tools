@@ -211,8 +211,8 @@ rule 174 c_date_time -> date_time_interval
 rule 175 c_date_time -> date_time_interval_list
 rule 176 c_date_time -> c_date_time ';' date_time_value
 rule 177 c_date_time -> c_date_time ';' error
-rule 178 c_duration -> V_ISO8601_DURATION_CONSTRAINT_PATTERN
-rule 179 c_duration -> V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
+rule 178 c_duration -> V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
+rule 179 c_duration -> V_ISO8601_DURATION_CONSTRAINT_PATTERN
 rule 180 c_duration -> duration_value
 rule 181 c_duration -> duration_list
 rule 182 c_duration -> duration_interval
@@ -432,7 +432,7 @@ SYM_GE (token 326) 117 226 244 265 281 297 313
 '+' (token 43) 121 214 232
 '-' (token 45) 122 215 233
 '*' (token 42) 51 120 142 144
-'/' (token 47) 119 179
+'/' (token 47) 119 178
 SYM_DIV (token 327)
 SYM_MODULO (token 328)
 UNARY_MINUS (token 329)
@@ -501,7 +501,7 @@ real_interval (50) on left: 237 238 239 240 241 242 243 244 245, on right: 153 2
 time_interval (51) on left: 274 275 276 277 278 279 280 281 282, on right: 167 283 284 285
 date_interval (52) on left: 258 259 260 261 262 263 264 265 266, on right: 160 267 268 269
 date_time_interval (53) on left: 290 291 292 293 294 295 296 297 298, on right: 174 299 300 301
-duration_interval (54) on left: 306 307 308 309 310 311 312 313 314, on right: 179 182 315 316 317
+duration_interval (54) on left: 306 307 308 309 310 311 312 313 314, on right: 178 182 315 316 317
 integer_interval_list (55) on left: 228 229 230, on right: 148 229
 real_interval_list (56) on left: 246 247 248, on right: 154 247
 time_interval_list (57) on left: 283 284 285, on right: 168 284
@@ -1812,8 +1812,8 @@ state 84
 	c_date_time  ->  . date_time_interval_list   (rule 175)
 	c_date_time  ->  . c_date_time ';' date_time_value   (rule 176)
 	c_date_time  ->  . c_date_time ';' error   (rule 177)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 178)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 179)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 178)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 179)
 	c_duration  ->  . duration_value   (rule 180)
 	c_duration  ->  . duration_list   (rule 181)
 	c_duration  ->  . duration_interval   (rule 182)
@@ -2048,8 +2048,8 @@ state 85
 	c_date_time  ->  . date_time_interval_list   (rule 175)
 	c_date_time  ->  . c_date_time ';' date_time_value   (rule 176)
 	c_date_time  ->  . c_date_time ';' error   (rule 177)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 178)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 179)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 178)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 179)
 	c_duration  ->  . duration_value   (rule 180)
 	c_duration  ->  . duration_list   (rule 181)
 	c_duration  ->  . duration_interval   (rule 182)
@@ -2525,12 +2525,12 @@ state 100
 
 state 101
 
-	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN .   (rule 178)
-	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN . '/' duration_interval   (rule 179)
+	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN . '/' duration_interval   (rule 178)
+	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN .   (rule 179)
 
 	'/'	shift, and go to state 176
 
-	$default	reduce using rule 178 (c_duration)
+	$default	reduce using rule 179 (c_duration)
 
 
 
@@ -3470,7 +3470,7 @@ state 175
 
 state 176
 
-	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' . duration_interval   (rule 179)
+	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' . duration_interval   (rule 178)
 	duration_interval  ->  . SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM   (rule 306)
 	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM   (rule 307)
 	duration_interval  ->  . SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM   (rule 308)
@@ -4573,9 +4573,9 @@ state 266
 
 state 267
 
-	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval .   (rule 179)
+	c_duration  ->  V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval .   (rule 178)
 
-	$default	reduce using rule 179 (c_duration)
+	$default	reduce using rule 178 (c_duration)
 
 
 
@@ -5372,8 +5372,8 @@ state 345
 	c_date_time  ->  . date_time_interval_list   (rule 175)
 	c_date_time  ->  . c_date_time ';' date_time_value   (rule 176)
 	c_date_time  ->  . c_date_time ';' error   (rule 177)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 178)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 179)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 178)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 179)
 	c_duration  ->  . duration_value   (rule 180)
 	c_duration  ->  . duration_list   (rule 181)
 	c_duration  ->  . duration_interval   (rule 182)
@@ -6694,8 +6694,8 @@ state 441
 	c_date_time  ->  . date_time_interval_list   (rule 175)
 	c_date_time  ->  . c_date_time ';' date_time_value   (rule 176)
 	c_date_time  ->  . c_date_time ';' error   (rule 177)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 178)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 179)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 178)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 179)
 	c_duration  ->  . duration_value   (rule 180)
 	c_duration  ->  . duration_list   (rule 181)
 	c_duration  ->  . duration_interval   (rule 182)
@@ -7814,8 +7814,8 @@ state 532
 	c_date_time  ->  . date_time_interval_list   (rule 175)
 	c_date_time  ->  . c_date_time ';' date_time_value   (rule 176)
 	c_date_time  ->  . c_date_time ';' error   (rule 177)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 178)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 179)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 178)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 179)
 	c_duration  ->  . duration_value   (rule 180)
 	c_duration  ->  . duration_list   (rule 181)
 	c_duration  ->  . duration_interval   (rule 182)
@@ -8513,8 +8513,8 @@ state 558
 	c_date_time  ->  . date_time_interval_list   (rule 175)
 	c_date_time  ->  . c_date_time ';' date_time_value   (rule 176)
 	c_date_time  ->  . c_date_time ';' error   (rule 177)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 178)
-	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 179)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 178)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 179)
 	c_duration  ->  . duration_value   (rule 180)
 	c_duration  ->  . duration_list   (rule 181)
 	c_duration  ->  . duration_interval   (rule 182)

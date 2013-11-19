@@ -2229,7 +2229,7 @@ end
 				cpo.merge_tuple (yyvs15.item (yyvsp15))
 			end
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4495,15 +4495,17 @@ debug ("GEYACC")
 end
 
 			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval55.make_from_pattern (yyvs2.item (yyvsp2))
+				create yyval55.make_pattern_with_range (yyvs2.item (yyvsp2), yyvs41.item (yyvsp41))
 			else
 				abort_with_error (ec_SCDUPT, Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
+	yyssp := yyssp - 3
 	yyvsp55 := yyvsp55 + 1
 	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -1
+	yyvsp41 := yyvsp41 -1
 	if yyvsp55 >= yyvsc55 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs55")
@@ -4520,17 +4522,15 @@ debug ("GEYACC")
 end
 
 			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval55.make_pattern_with_range (yyvs2.item (yyvsp2), yyvs41.item (yyvsp41))
+				create yyval55.make_from_pattern (yyvs2.item (yyvsp2))
 			else
 				abort_with_error (ec_SCDUPT, Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
+	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
 	yyvsp2 := yyvsp2 -1
-	yyvsp1 := yyvsp1 -1
-	yyvsp41 := yyvsp41 -1
 	if yyvsp55 >= yyvsc55 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs55")
@@ -7741,7 +7741,7 @@ feature {NONE} -- Table templates
 			    0,   88,  108,    0,    0,    0,    9,    0,  140,    0,
 			   97,    0,  112,  109,  104,   81,   78,   95,  250,  249,
 
-			    0,  178,  157,  164,  171,  302,  286,  270,  254,  188,
+			    0,  179,  157,  164,  171,  302,  286,  270,  254,  188,
 			  191,  192,  186,    0,  145,  151,    0,  158,  172,  165,
 			  180,  187,  146,  152,  195,  159,  166,  173,  181,  147,
 			  153,  167,  160,  174,  182,  148,  154,  168,  161,  175,
@@ -7758,7 +7758,7 @@ feature {NONE} -- Table templates
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,  227,    0,  245,    0,  266,
-			    0,  298,    0,  282,    0,  314,    0,  179,  212,  209,
+			    0,  298,    0,  282,    0,  314,    0,  178,  212,  209,
 			  218,  216,    0,    0,  236,  234,  253,  250,  249,  251,
 			  257,  255,  289,  287,  273,  271,  305,  303,  211,  210,
 			  217,  235,  252,  256,  272,  288,  304,  230,    0,  228,
