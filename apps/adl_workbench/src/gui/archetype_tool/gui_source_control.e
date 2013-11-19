@@ -78,6 +78,8 @@ feature {NONE} -- Implementation
 		do
 			if source.has_differential_file then
 				populate_source_text (source.differential_text)
+			elseif source.has_invalid_differential_file and then attached source.invalid_differential_text as inv_diff_text then
+				populate_source_text (inv_diff_text)
 			elseif source.has_legacy_flat_file and then attached source.legacy_flat_text as ft then
 				populate_source_text (ft)
 			end
