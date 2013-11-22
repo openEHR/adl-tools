@@ -356,6 +356,17 @@ T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 
 ----------/* V_ISO8601_DURATION_CONSTRAINT_PATTERN */ -------------------------------------------------
 
+-- the following is an erroroneous form of the one below to cope with the AE bug that causes a duration 
+-- constraint of the form {pattern/} to be written out, i.e. trailing '/'. For now we provide a dedicated
+-- syntax error on this, so at least modellers know what to fix
+
+P[yY]?[mM]?[Ww]?[dD]?T[hH]?[mM]?[sS]?\/\} |
+P[yY]?[mM]?[Ww]?[dD]?\/\} {
+				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
+				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character 
+				last_string_value := text
+			}
+
 -- the following includes the openEHR deviation from ISO8601, to allow 'W' to be mixed in with 
 -- other designators
 

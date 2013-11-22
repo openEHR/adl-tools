@@ -132,7 +132,7 @@ feature -- Initialisation
 			message_table.put ("Syntax error: invalid date constraint pattern; allowed patterns: $1", ec_SCDPT)
 			message_table.put ("Syntax error: invalid time constraint pattern; allowed patterns: $1", ec_SCTPT)
 			message_table.put ("Syntax error: invalid date/time constraint pattern; allowed patterns: $1", ec_SCDTPT)
-			message_table.put ("Syntax error: invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]", ec_SCDUPT)
+			message_table.put ("Syntax error: invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w] [/duration_interval]", ec_SCDUPT)
 			message_table.put ("Syntax error: regular expression compile error '$1' is not a valid regular expression", ec_SCSRE)
 			message_table.put ("Syntax error: invalid term code constraint pattern: $1", ec_STCCP)
 			message_table.put ("Syntax error: duplicate code(s) found in code list", ec_STCDC)

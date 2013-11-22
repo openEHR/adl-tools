@@ -310,6 +310,12 @@ feature -- Representation
 
 invariant
 	Any_allowed_validity: any_allowed xor not attributes.is_empty
+	Tuple_validity: attached attribute_tuples as ats implies ats.for_all (
+		agent (cat: C_ATTRIBUTE_TUPLE): BOOLEAN
+			do
+				Result := cat.members.for_all (agent (ca: C_ATTRIBUTE): BOOLEAN do Result := attributes.has (ca) end)
+			end
+	)
 
 end
 
