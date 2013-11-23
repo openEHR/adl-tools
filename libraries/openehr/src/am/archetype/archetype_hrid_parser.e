@@ -109,13 +109,19 @@ feature -- Commands
 				concept_id := strs.i_th (2)
 
 				-- version part: looks like vN.M.P or vN.M.P+Q or vN.M.P-rcQ or vN.M.P+uQ
-				ver_str := an_id.substring (an_id.substring_index (version_axis_delimiter, 1), an_id.count)
-				start_pos := 1 + version_axis_delimiter.count
-
-				sym := version_status_symbol_text (vs_unstable)
-				sym_pos := ver_str.substring_index (sym, start_pos)
+				create ver_str.make_empty
+				from strs.go_i_th (3) until strs.off loop
+					ver_str.append (strs.item)
+					if not strs.islast then
+						ver_str.append_character (Axis_separator)
+					end
+					strs.forth
+				end
+				start_pos := 1 + Version_delimiter.count
 
 				-- case: +uQ
+				sym := version_status_symbol_text (vs_unstable)
+				sym_pos := ver_str.substring_index (sym, start_pos)
 				if sym_pos > 0 then
 					end_pos := sym_pos - 1
 					commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
@@ -199,9 +205,9 @@ feature {NONE} -- Implementation
 			-- 	will match ids like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
-			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-rc204
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-rc2
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1+u105
-			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1+334
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1+33
 		once
 			create Result.make
 			Result.compile ("^([a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)*::)?[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[0-9]+(\.[0-9]+){2}((-rc|\+u|\+)[0-9]+)?$")
