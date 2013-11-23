@@ -57,15 +57,15 @@ feature {NONE} -- Implementation
 						elseif adl_legacy_flat_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
 							amp.parse (l_full_path)
-							if amp.passed and then attached amp.last_archetype as arch then
-								if arch.archetype_id_is_old_style then
-									errors.add_error (ec_parse_archetype_e7, <<fn, arch.archetype_id.as_string>>, "")
-								elseif arch.is_specialised and arch.parent_archetype_id_is_old_style then
-									errors.add_error (ec_parse_archetype_e11, <<fn, arch.parent_archetype_id.as_string>>, "")
-								elseif not has_rm_schema_for_archetype_id (arch.archetype_id) then
-									errors.add_error (ec_parse_archetype_e4, <<fn, arch.archetype_id.as_string>>, "")
+							if amp.passed and then attached amp.last_archetype as arch_tn then
+								if arch_tn.archetype_id_is_old_style then
+									errors.add_error (ec_parse_archetype_e7, <<fn, arch_tn.archetype_id.as_string>>, "")
+								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style then
+									errors.add_error (ec_parse_archetype_e11, <<fn, arch_tn.parent_archetype_id.as_string>>, "")
+								elseif not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
+									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.as_string>>, "")
 								else -- create the descriptor and put it into a local Hash for this node
-									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, arch)
+									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, arch_tn)
 									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else
@@ -82,11 +82,11 @@ feature {NONE} -- Implementation
 						if adl_differential_filename_pattern_regex.matches (fn) then
 							l_full_path := file_system.pathname (a_path, fn)
 							amp.parse (l_full_path)
-							if amp.passed and then attached amp.last_archetype as arch then
-								if not has_rm_schema_for_archetype_id (arch.archetype_id) then
-									errors.add_error (ec_parse_archetype_e4, <<fn, arch.archetype_id.as_string>>, "")
-								elseif not archetype_id_index.has (arch.archetype_id.as_string) then
-									ara := aof.create_arch_cat_archetype_make (l_full_path, Current, arch)
+							if amp.passed and then attached amp.last_archetype as arch_tn then
+								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
+									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.as_string>>, "")
+								elseif not archetype_id_index.has (arch_tn.archetype_id.as_string) then
+									ara := aof.create_arch_cat_archetype_make (l_full_path, Current, arch_tn)
 									archetype_id_index.force (ara, ara.id.as_string)
 								else
 									-- ignore, because there is already a legacy archetype for this id
