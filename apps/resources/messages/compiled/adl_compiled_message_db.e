@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (660)
+			create message_table.make (661)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -51,6 +51,7 @@ feature -- Initialisation
 			message_table.put ("------------- $1 ---- $2 (already attempted - PASSED with warnings) -------------%N$3", ec_compiler_already_attempted_validated_with_warnings)
 			message_table.put ("Location: $1", ec_compiler_unexpected_error)
 			message_table.put ("EXCEPTION in last operation on archetype $1; details = $2; stack = $3", ec_compile_exception)
+			message_table.put ("Infinite compilation dependency loop detected on archetype $1; descent depth = $2; quitting", ec_compiler_infinite_regress)
 			message_table.put ("Object deserialisation from ODIN failed; type = $1", ec_deserialise_e1)
 			message_table.put ("specialisation parent is missing", ec_validate_e1)
 			message_table.put ("archetype id in descriptor $1 does not match id at top of file $2", ec_validate_e3)

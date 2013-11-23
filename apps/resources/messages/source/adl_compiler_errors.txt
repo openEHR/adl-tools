@@ -46,6 +46,7 @@ templates = <
 		["compiler_already_attempted_validated_with_warnings"] = <"------------- $1 ---- $2 (already attempted - PASSED with warnings) -------------%N$3">
 		["compiler_unexpected_error"] = <"Location: $1">
 		["compile_exception"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
+		["compiler_infinite_regress"] = <"Infinite compilation dependency loop detected on archetype $1; descent depth = $2; quitting">
 
 		-- ADL15_ENGINE
 		["deserialise_e1"] = <"Object deserialisation from ODIN failed; type = $1">

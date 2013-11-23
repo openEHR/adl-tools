@@ -540,8 +540,8 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		end
 
 	suppliers_index: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
-			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
-			-- i.e. <list of use_archetype nodes> keyed by archetype id template they refer to
+			-- table of {list<C_ARCHETYPE_ROOT>, archetype_ref}
+			-- i.e. <list of use_archetype nodes> keyed by archetype ref from template they refer to
 		local
 			def_it: C_ITERATOR
 		do
