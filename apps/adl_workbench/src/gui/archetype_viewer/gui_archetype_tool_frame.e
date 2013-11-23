@@ -44,6 +44,7 @@ feature {NONE}-- Initialization
 
 			-- connect toolbar to parent widget
 			create tool_bar.make
+			tool_bar.set_visual_appearance (2, 0)
 			ev_root_container.extend (tool_bar.ev_root_container)
 			ev_root_container.disable_item_expand (tool_bar.ev_root_container)
 
@@ -64,7 +65,7 @@ feature {NONE}-- Initialization
 			end
 
 			-- archetype id: namespace
-			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_namespace_tooltip, 120)
+			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_hrid_namespace_tooltip), 120)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_namespace := tf
 			end
@@ -73,7 +74,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label (namespace_separator, 8, False, False)
 
 			-- archetype id: qualified RM class
-			tool_bar.add_expanding_text_field ("", ec_archetype_hrid_qualified_rm_class_tooltip)
+			tool_bar.add_expanding_text_field ("", get_text (ec_archetype_hrid_qualified_rm_class_tooltip))
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_qualified_rm_class := tf
 			end
@@ -82,7 +83,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label (axis_separator.out, 3, False, False)
 
 			-- archetype id: concept_id
-			tool_bar.add_expanding_text_field ("", ec_archetype_hrid_concept_id_tooltip)
+			tool_bar.add_expanding_text_field ("", get_text (ec_archetype_hrid_concept_id_tooltip))
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_concept_id := tf
 			end
@@ -91,7 +92,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label (version_axis_delimiter, 8, False, False)
 
 			-- archetype id: version_id
-			tool_bar.add_fixed_text_field ("", ec_archetype_hrid_version_id_tooltip, 70)
+			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_hrid_version_id_tooltip), 70)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_version_id := tf
 			end
@@ -100,7 +101,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label ("@", 12, False, False)
 
 			-- archetype lifecycle
-			tool_bar.add_fixed_text_field ("", ec_archetype_lifecycle_tooltip, 80)
+			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_lifecycle_tooltip), 80)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_lifecycle_state := tf
 			end
