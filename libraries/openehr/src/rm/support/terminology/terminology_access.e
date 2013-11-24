@@ -51,14 +51,14 @@ feature -- Access
 
 	term (a_concept_id, a_lang: STRING): detachable DV_CODED_TEXT
 		require
-			has_concept_id (a_concept_id, a_lang)
+			has_concept_id_for_language (a_concept_id, a_lang)
 		do
 			Result := term_index.item (a_lang).item (a_concept_id)
 		end
 
 feature -- Status Report
 
-	has_concept (a_concept_id: STRING): BOOLEAN
+	has_concept_id (a_concept_id: STRING): BOOLEAN
 			-- 	True if a_code exists in this code set
 		require
 			Concept_id_valid: not a_concept_id.is_empty
@@ -69,7 +69,7 @@ feature -- Status Report
 			end
 		end
 
-	has_concept_id (a_concept_id, a_lang: STRING): BOOLEAN
+	has_concept_id_for_language (a_concept_id, a_lang: STRING): BOOLEAN
 			-- 	True if a_code exists in this code set
 		require
 			Concept_id_valid: not a_concept_id.is_empty

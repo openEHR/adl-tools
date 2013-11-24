@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 			if a_terminology_id.is_equal (Local_terminology_id) then
 				Result := local_term_string (a_code)
 			elseif ts.has_terminology (a_terminology_id) then
-				if ts.terminology (a_terminology_id).has_concept_id (a_code, display_settings.language) then
+				if ts.terminology (a_terminology_id).has_concept_id_for_language (a_code, display_settings.language) then
 					check attached ts.terminology (a_terminology_id).term (a_code, display_settings.language) as t then
 						a_term := t
 					end

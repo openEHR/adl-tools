@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 				else
 					create cp.make_from_string (codes_csr.key)
 					if ts.has_terminology (cp.terminology_id) then
-						if not ts.terminology (cp.terminology_id).has_concept (cp.code_string) then
+						if not ts.terminology (cp.terminology_id).has_concept_id (cp.code_string) then
 							add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id>>)
 						end
 					else

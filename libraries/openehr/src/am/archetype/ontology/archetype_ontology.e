@@ -67,7 +67,8 @@ feature -- Initialisation
 feature -- Access
 
 	original_language:  STRING
-			-- original language of the ontology, as set at archetype creation or parsing time
+			-- original language of the ontology, as set at archetype creation or parsing time; must
+			-- be a code in the ISO 639-1 2 character language code-set.
 
 	concept_code: STRING
 			-- term code of the concept of the ontology as a whole
@@ -144,8 +145,6 @@ feature -- Access
 		ensure
 			non_negative: Result >= 0
 		end
-
-feature -- Access
 
 	term_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_language' for code `a_code'
