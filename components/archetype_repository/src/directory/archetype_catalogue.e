@@ -140,7 +140,7 @@ feature -- Access
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
 				across archetype_index as archs_csr loop
-					if regex_matcher.recognizes (archs_csr.key) then
+					if regex_matcher.matches (archs_csr.key) then
 						if attached rm_type as rmt then
 							create arch_id.make_from_string (archs_csr.key)
 							is_candidate := rmt.is_equal (arch_id.rm_class.as_lower)
