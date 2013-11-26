@@ -77,6 +77,8 @@ feature -- Status Report
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		local
+			cco: C_COMPLEX_OBJECT
 		do
 			-- set up this node in grid
 			precursor (a_gui_grid)
@@ -215,7 +217,7 @@ feature {NONE} -- Implementation
 
 			-- process the properties, which may involve simply hiding ones that are currently visible
 			across rm_properties as props_csr loop
-				if not c_attributes.has (props_csr.item.name) then
+				if not c_attributes.has (props_csr.item.name) and not (attached arch_node as cco and then cco.attribute_is_tuple_constrained (props_csr.item.name)) then
 					prepare_rm_property (props_csr.item, ui_settings)
 				end
 			end

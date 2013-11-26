@@ -35,6 +35,14 @@ feature -- Access
 			end
 		end
 
+feature -- Status Report
+
+	has_attribute (an_attr_name: STRING): BOOLEAN
+			-- True if this tuple constrains an attribute called `an_attr_name'
+		do
+			Result := across members as ca_csr some ca_csr.item.rm_attribute_name.same_string (an_attr_name) end
+		end
+
 end
 
 

@@ -196,6 +196,12 @@ feature -- Status Report
 			Result := representation.has_child_with_id (an_attr_name)
 		end
 
+	attribute_is_tuple_constrained (an_attr_name: STRING): BOOLEAN
+			-- True if attribute `an_attr_name' is constrained by a tuple constraint in this object
+		do
+			Result := attached attribute_tuples as att_tuples and then across att_tuples as tuples_csr some tuples_csr.item.has_attribute (an_attr_name) end
+		end
+
 	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			-- FIXME: to be implemented
