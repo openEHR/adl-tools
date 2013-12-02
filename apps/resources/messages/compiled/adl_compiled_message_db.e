@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (661)
+			create message_table.make (662)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -226,7 +226,8 @@ feature -- Initialisation
 			message_table.put ("attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model", ec_VCAEX)
 			message_table.put ("attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model", ec_VCACA)
 			message_table.put ("attribute $1 in object node at $2 cardinality $3 same as in reference model", ec_WCACA)
-			message_table.put ("attribute $1 at path $2 multiplicity $3 does not correspond to multiplicity $4 of attribute in reference model", ec_VCAM)
+			message_table.put ("single-valued attribute at path $1 cardinality does not conform to cardinality $2 of container attribute in reference model", ec_VCAMs)
+			message_table.put ("container attribute at path $1 with cardinality $2 does not conform to attribute in reference model, which is single-valued", ec_VCAMm)
 			message_table.put ("attribute $1 in object node at $2 existence $3 same as in reference model", ec_WCAEX)
 			message_table.put ("attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model", ec_WCARMC)
 			message_table.put ("type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed", ec_ICORMTS)

@@ -656,7 +656,7 @@ end
 								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 								co_parent_flat.node_id>>)
 
-						-- could be a leaf object value redefinition
+						-- leaf object value redefinition
 						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_parent_flat as cpo_flat then
 							add_error (ec_VPOV, <<cpo_child.rm_type_name, ontology.physical_to_logical_path (cpo_child.path, target_descriptor.archetype_view_language, True),
 								cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
@@ -888,29 +888,34 @@ end
 						end
 					end
 					if ca.is_multiple then
+						-- RM also has container property here
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
-							if attached ca.cardinality as ca_card then
-								if not cont_prop.cardinality.contains (ca_card.interval) then
-									if not target.is_specialised and cont_prop.cardinality.equal_interval (ca_card.interval) then
-										add_warning (ec_WCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-											ca_card.interval.as_string>>)
-										if not validation_strict then
-											ca.remove_cardinality
-										end
-									else
+							if attached ca.cardinality as ca_card and then not cont_prop.cardinality.contains (ca_card.interval) then
+								if cont_prop.cardinality.equal_interval (ca_card.interval) then
+									if validation_strict then
 										add_error (ec_VCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 											ca_card.interval.as_string, cont_prop.cardinality.as_string>>)
+									else
+										add_warning (ec_WCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+											ca_card.interval.as_string>>)
+										ca.remove_cardinality
 									end
+								else
+									add_error (ec_VCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+										ca_card.interval.as_string, cont_prop.cardinality.as_string>>)
 								end
 							end
 						else -- archetype has multiple attribute but RM does not
-							add_error (ec_VCAM, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-								ca.cardinality.as_string, "(single-valued)">>)
+							add_error (ec_VCAMm, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+								ca.cardinality.as_string>>)
 						end
+
+					-- archetype attribute is single-valued, but RM has a container attribute
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
-						add_error (ec_VCAM, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-							"(single-valued)", cont_prop_2.cardinality.as_string>>)
+						add_error (ec_VCAMs, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
+							cont_prop_2.cardinality.as_string>>)
 					end
+
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
 						add_warning (ec_WCARMC, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),

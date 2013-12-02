@@ -876,6 +876,9 @@ feature -- Compilation
 				signal_from_scratch
 			end
 
+			-- get rid of any .adlx file from a previous compile
+			remove_invalid_differential
+
 			-- FIXME: The following code is only needed for a period of time during which legacy users
 			-- may have generated .adlf files into their source repositories; in the future, this will
 			-- never happen, so the code below can be removed (e.g. at release following ADL 1.5 release)
@@ -944,6 +947,7 @@ feature {NONE} -- Compilation
 		local
 			legacy_flat_archetype: detachable FLAT_ARCHETYPE
 		do
+			remove_invalid_differential
 			check attached legacy_flat_text as lft then
 				legacy_flat_archetype := adl15_engine.parse_legacy_flat (lft, rm_schema)
 			end
@@ -963,11 +967,15 @@ feature {NONE} -- Compilation
 					if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
 						set_archetype_view_language (differential_archetype.original_language.code_string)
 					end
+
+					-- now validate in two stages
 					validate
+
 					-- if differential archetype was generated from an old-style flat, perform path compression
 					if differential_archetype.is_specialised then
 						differential_archetype.convert_to_differential_paths
 					end
+
 					if compilation_state = Cs_validated_phase_2 then
 				 		save_differential
 
@@ -1143,6 +1151,14 @@ feature -- File Operations
 		do
 			if attached differential_archetype as da and attached invalid_differential_path as inv_diff_path then
 				file_repository.save_text_to_file (inv_diff_path, adl15_engine.serialise (da, Syntax_type_adl, da.original_language.code_string))
+			end
+		end
+
+	remove_invalid_differential
+			-- remove any invalid differential file from a previous compile
+		do
+			if attached invalid_differential_path as inv_diff_path and then file_repository.is_valid_path (inv_diff_path) then
+				file_system.delete_file (inv_diff_path)
 			end
 		end
 
