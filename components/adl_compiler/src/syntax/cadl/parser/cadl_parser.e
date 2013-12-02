@@ -4060,7 +4060,7 @@ end
 					str.append (valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
-				abort_with_error (ec_SCDPT, <<str>>)
+				abort_with_error (ec_SCDPT, <<yyvs2.item (yyvsp2), str>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4208,7 +4208,7 @@ end
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCTPT, <<str>>)
+				abort_with_error (ec_SCTPT, <<yyvs2.item (yyvsp2), str>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4356,7 +4356,7 @@ end
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCDTPT, <<str>>)
+				abort_with_error (ec_SCDTPT, <<yyvs2.item (yyvsp2), str>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4497,7 +4497,7 @@ end
 			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
 				create yyval55.make_pattern_with_range (yyvs2.item (yyvsp2), yyvs41.item (yyvsp41))
 			else
-				abort_with_error (ec_SCDUPT, Void)
+				abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4524,7 +4524,7 @@ end
 			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
 				create yyval55.make_from_pattern (yyvs2.item (yyvsp2))
 			else
-				abort_with_error (ec_SCDUPT, Void)
+				abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4662,7 +4662,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_parser.y' at line 1528")
 end
 
-			abort_with_error (ec_SCDUPT, Void)
+			abort_with_error (ec_SCDUPT, <<yyvs1.item (yyvsp1).out>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1

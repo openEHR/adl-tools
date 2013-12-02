@@ -1353,7 +1353,7 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 					str.append (valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
-				abort_with_error (ec_SCDPT, <<str>>)
+				abort_with_error (ec_SCDPT, <<$1, str>>)
 			end
 		}
 	| date_value
@@ -1399,7 +1399,7 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCTPT, <<str>>)
+				abort_with_error (ec_SCTPT, <<$1, str>>)
 			end
 		}
 	| time_value
@@ -1445,7 +1445,7 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCDTPT, <<str>>)
+				abort_with_error (ec_SCDTPT, <<$1, str>>)
 			end
 		}
 	| date_time_value
@@ -1484,7 +1484,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_pattern_with_range ($1, $3)
 			else
-				abort_with_error (ec_SCDUPT, Void)
+				abort_with_error (ec_SCDUPT, <<$1>>)
 			end
 		}
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN
@@ -1492,7 +1492,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_from_pattern ($1)
 			else
-				abort_with_error (ec_SCDUPT, Void)
+				abort_with_error (ec_SCDUPT, <<$1>>)
 			end
 		}
 	| duration_value
@@ -1527,7 +1527,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
 		{
-			abort_with_error (ec_SCDUPT, Void)
+			abort_with_error (ec_SCDUPT, <<$1.out>>)
 		}
 	;
 

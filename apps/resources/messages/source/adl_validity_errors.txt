@@ -50,12 +50,12 @@ templates = <
 		["SCBAV"] = <"Syntax error: invalid assumed value; must be a 'True' or 'False'">
 		["SCOAV"] = <"Syntax error: invalid assumed value; must be an ordinal integer value">
 
-		["SCDPT"] = <"Syntax error: invalid date constraint pattern; allowed patterns: $1">
-		["SCTPT"] = <"Syntax error: invalid time constraint pattern; allowed patterns: $1">
-		["SCDTPT"] = <"Syntax error: invalid date/time constraint pattern; allowed patterns: $1">
-		["SCDUPT"] = <"Syntax error: invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w] [/duration_interval]">
+		["SCDPT"] = <"Syntax error: invalid date constraint pattern '$1'; allowed patterns: $2">
+		["SCTPT"] = <"Syntax error: invalid time constraint pattern '$1'; allowed patterns: $2">
+		["SCDTPT"] = <"Syntax error: invalid date/time constraint pattern '$1'; allowed patterns: $2">
+		["SCDUPT"] = <"Syntax error: invalid duration constraint pattern '$1'; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w] [/duration_interval]">
 		["SCSRE"] = <"Syntax error: regular expression compile error '$1' is not a valid regular expression">
-		["STCCP"] = <"Syntax error: invalid term code constraint pattern: $1">
+		["STCCP"] = <"Syntax error: invalid term code constraint pattern '$1': $2">
 		["STCDC"] = <"Syntax error: duplicate code(s) found in code list">
 		["STCAC"] = <"Syntax error: assumed value code $1 not found in code list">
 		["STCNT"] = <"Syntax error: terminology not specified">
