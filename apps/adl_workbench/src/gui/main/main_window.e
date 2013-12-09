@@ -768,7 +768,7 @@ feature {NONE} -- Tools menu events
 			end
 		end
 
-	delete_generated_files (ara: attached ARCH_CAT_ARCHETYPE)
+	delete_generated_files (ara: ARCH_CAT_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
