@@ -484,6 +484,7 @@ feature {NONE} -- Implementation
 			Result.append ("    Funded by: Thomas Beale; Ocean Informatics%N")
 			Result.append ("          Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer, Ian McNicoll MD%N")
+			Result.append ("%N")
 			Result.append ("Acknowledgements:%N")
 			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
 			Result.append ("  - Gobo parsing libraries and tools (http://www.gobosoft.com)%N")
