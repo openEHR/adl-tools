@@ -362,8 +362,8 @@ T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 
 P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)?\/\} {
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
-				last_string_value := text
 				unread_character(last_string_value.item(last_string_value.count)) -- put back the last character 
+				last_string_value := text
 			}
 
 -- the following includes the openEHR deviation from ISO8601, to allow 'W' to be mixed in with 

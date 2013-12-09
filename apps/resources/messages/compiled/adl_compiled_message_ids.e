@@ -216,6 +216,8 @@ feature -- Definitions
 		ec_WCAEX: STRING = "WCAEX"
 		ec_WCARMC: STRING = "WCARMC"
 		ec_ICORMTS: STRING = "ICORMTS"
+		ec_WCAEX14: STRING = "WCAEX14"
+		ec_WCACA14: STRING = "WCACA14"
 		ec_WOUC: STRING = "WOUC"
 		ec_aom_profile_file_not_valid: STRING = "aom_profile_file_not_valid"
 		ec_aom_profile_load_failure: STRING = "aom_profile_load_failure"

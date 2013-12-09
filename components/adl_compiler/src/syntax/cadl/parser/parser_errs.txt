@@ -53,8 +53,8 @@ rule 16 c_object -> c_archetype_root
 rule 17 c_object -> archetype_internal_ref
 rule 18 c_object -> archetype_slot
 rule 19 c_object -> constraint_ref
-rule 20 c_object -> c_ordinal
-rule 21 c_object -> c_primitive_object
+rule 20 c_object -> c_primitive_object
+rule 21 c_object -> c_ordinal
 rule 22 c_object -> V_C_DV_QUANTITY
 rule 23 c_object -> ERR_C_DV_QUANTITY
 rule 24 c_object -> error
@@ -385,36 +385,36 @@ V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN (token 279) 171
 V_ISO8601_TIME_CONSTRAINT_PATTERN (token 280) 164
 V_ISO8601_DATE_CONSTRAINT_PATTERN (token 281) 157
 V_ISO8601_DURATION_CONSTRAINT_PATTERN (token 282) 178 179
-V_C_DV_QUANTITY (token 283) 22
-V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR (token 284) 186
-SYM_START_CBLOCK (token 285) 4 32 56 58 64 70 71 90 91 92 125 129 139
-SYM_END_CBLOCK (token 286) 4 32 56 58 64 70 71 90 91 92 125 129 139
-SYM_ANY (token 287)
-SYM_INTERVAL_DELIM (token 288) 203 220 221 222 223 224 225 226 227 228 238 239 240 241 242 243 244 245 246 259 260 261 262 263 264 265 266 267 275 276 277 278 279 280 281 282 283 291 292 293 294 295 296 297 298 299 307 308 309 310 311 312 313 314 315
-SYM_TRUE (token 289) 102 194 250
-SYM_FALSE (token 290) 103 195 251
-SYM_THEN (token 291)
-SYM_ELSE (token 292)
-SYM_EXISTENCE (token 293) 125
-SYM_OCCURRENCES (token 294) 139 140
-SYM_CARDINALITY (token 295) 129
-SYM_UNORDERED (token 296) 132 135 137
-SYM_ORDERED (token 297) 131 134 136
-SYM_UNIQUE (token 298) 133 134 135 136 137
-SYM_ELLIPSIS (token 299) 127 143 144 220 221 222 223 238 239 240 241 259 260 261 262 275 276 277 278 291 292 293 294 307 308 309 310
-SYM_LIST_CONTINUE (token 300) 212 213 219 231 237 249 254 258 270 274 286 290 302 306 318
-SYM_MATCHES (token 301) 4 32 56 58 64 90 91 92 125 129 139
-SYM_USE_ARCHETYPE (token 302) 25 26 27
-SYM_ALLOW_ARCHETYPE (token 303) 35 36 37 38 39 40 41
-SYM_USE_NODE (token 304) 29 30 31
-SYM_INCLUDE (token 305) 73
-SYM_EXCLUDE (token 306) 75
-SYM_AFTER (token 307) 10
-SYM_BEFORE (token 308) 11
-SYM_CLOSED (token 309) 39 40
-ERR_CHARACTER (token 310)
-ERR_STRING (token 311)
-ERR_C_DV_QUANTITY (token 312) 23
+V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR (token 283) 186
+V_C_DV_QUANTITY (token 284) 22
+ERR_C_DV_QUANTITY (token 285) 23
+SYM_START_CBLOCK (token 286) 4 32 56 58 64 70 71 90 91 92 125 129 139
+SYM_END_CBLOCK (token 287) 4 32 56 58 64 70 71 90 91 92 125 129 139
+SYM_ANY (token 288)
+SYM_INTERVAL_DELIM (token 289) 203 220 221 222 223 224 225 226 227 228 238 239 240 241 242 243 244 245 246 259 260 261 262 263 264 265 266 267 275 276 277 278 279 280 281 282 283 291 292 293 294 295 296 297 298 299 307 308 309 310 311 312 313 314 315
+SYM_TRUE (token 290) 102 194 250
+SYM_FALSE (token 291) 103 195 251
+SYM_THEN (token 292)
+SYM_ELSE (token 293)
+SYM_EXISTENCE (token 294) 125
+SYM_OCCURRENCES (token 295) 139 140
+SYM_CARDINALITY (token 296) 129
+SYM_UNORDERED (token 297) 132 135 137
+SYM_ORDERED (token 298) 131 134 136
+SYM_UNIQUE (token 299) 133 134 135 136 137
+SYM_ELLIPSIS (token 300) 127 143 144 220 221 222 223 238 239 240 241 259 260 261 262 275 276 277 278 291 292 293 294 307 308 309 310
+SYM_LIST_CONTINUE (token 301) 212 213 219 231 237 249 254 258 270 274 286 290 302 306 318
+SYM_MATCHES (token 302) 4 32 56 58 64 90 91 92 125 129 139
+SYM_USE_ARCHETYPE (token 303) 25 26 27
+SYM_ALLOW_ARCHETYPE (token 304) 35 36 37 38 39 40 41
+SYM_USE_NODE (token 305) 29 30 31
+SYM_INCLUDE (token 306) 73
+SYM_EXCLUDE (token 307) 75
+SYM_AFTER (token 308) 10
+SYM_BEFORE (token 309) 11
+SYM_CLOSED (token 310) 39 40
+ERR_CHARACTER (token 311)
+ERR_STRING (token 312)
 ERR_TERM_CODE_CONSTRAINT (token 313)
 ERR_V_ISO8601_DURATION (token 314)
 ERR_V_QUALIFIED_TERM_CODE_REF (token 315) 320
@@ -463,7 +463,7 @@ occurrence_spec (10) on left: 141 142 143 144, on right: 130 131 132 133 134 135
 existence_spec (11) on left: 126 127, on right: 125
 c_complex_object_id (12) on left: 7 8 9, on right: 6
 c_complex_object_head (13) on left: 6, on right: 4 5
-c_primitive_object (14) on left: 42 43 44 45 46 47 48 49 50, on right: 21 70 71 90 91
+c_primitive_object (14) on left: 42 43 44 45 46 47 48 49 50, on right: 20 70 71 90 91
 c_archetype_slot_id (15) on left: 35 36 37 38 39 40 41, on right: 34
 c_archetype_slot_head (16) on left: 34, on right: 32 33
 archetype_slot (17) on left: 32 33, on right: 18
@@ -516,7 +516,7 @@ boolean_binop_symbol (63) on left: 98 99 100 101, on right: 97
 c_cardinality (64) on left: 128 129, on right: 59 60
 cardinality_range (65) on left: 130 131 132 133 134 135 136 137, on right: 129
 constraint_ref (66) on left: 204, on right: 19
-c_ordinal (67) on left: 199 200 201 202, on right: 20 200 201 202
+c_ordinal (67) on left: 199 200 201 202, on right: 21 200 201 202
 ordinal (68) on left: 203, on right: 199 200
 c_boolean (69) on left: 194 195 196 197 198, on right: 50 197 198
 c_string (70) on left: 187 188 189 190 191, on right: 48 190 191
@@ -5316,8 +5316,8 @@ state 346
 	c_object  ->  . archetype_internal_ref   (rule 17)
 	c_object  ->  . archetype_slot   (rule 18)
 	c_object  ->  . constraint_ref   (rule 19)
-	c_object  ->  . c_ordinal   (rule 20)
-	c_object  ->  . c_primitive_object   (rule 21)
+	c_object  ->  . c_primitive_object   (rule 20)
+	c_object  ->  . c_ordinal   (rule 21)
 	c_object  ->  . V_C_DV_QUANTITY   (rule 22)
 	c_object  ->  . ERR_C_DV_QUANTITY   (rule 23)
 	c_object  ->  . error   (rule 24)
@@ -5528,17 +5528,17 @@ state 346
 	'*'	shift, and go to state 155
 	'-'	shift, and go to state 2
 	'+'	shift, and go to state 3
-	ERR_C_DV_QUANTITY	shift, and go to state 419
 	SYM_BEFORE	shift, and go to state 6
 	SYM_AFTER	shift, and go to state 7
-	SYM_USE_NODE	shift, and go to state 420
-	SYM_ALLOW_ARCHETYPE	shift, and go to state 421
-	SYM_USE_ARCHETYPE	shift, and go to state 422
+	SYM_USE_NODE	shift, and go to state 419
+	SYM_ALLOW_ARCHETYPE	shift, and go to state 420
+	SYM_USE_ARCHETYPE	shift, and go to state 421
 	SYM_FALSE	shift, and go to state 98
 	SYM_TRUE	shift, and go to state 99
 	SYM_INTERVAL_DELIM	shift, and go to state 100
-	V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR	shift, and go to state 101
+	ERR_C_DV_QUANTITY	shift, and go to state 422
 	V_C_DV_QUANTITY	shift, and go to state 423
+	V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR	shift, and go to state 101
 	V_ISO8601_DURATION_CONSTRAINT_PATTERN	shift, and go to state 102
 	V_ISO8601_DATE_CONSTRAINT_PATTERN	shift, and go to state 103
 	V_ISO8601_TIME_CONSTRAINT_PATTERN	shift, and go to state 104
@@ -6377,14 +6377,6 @@ state 418
 
 state 419
 
-	c_object  ->  ERR_C_DV_QUANTITY .   (rule 23)
-
-	$default	reduce using rule 23 (c_object)
-
-
-
-state 420
-
 	archetype_internal_ref  ->  SYM_USE_NODE . type_identifier error   (rule 29)
 	archetype_internal_ref_head  ->  SYM_USE_NODE . type_identifier   (rule 30)
 	archetype_internal_ref_head  ->  SYM_USE_NODE . type_identifier V_LOCAL_TERM_CODE_REF   (rule 31)
@@ -6398,7 +6390,7 @@ state 420
 
 
 
-state 421
+state 420
 
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE . type_identifier   (rule 35)
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE . type_identifier V_LOCAL_TERM_CODE_REF   (rule 37)
@@ -6416,7 +6408,7 @@ state 421
 
 
 
-state 422
+state 421
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE . type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences   (rule 25)
 	c_archetype_root  ->  SYM_USE_ARCHETYPE . type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences   (rule 26)
@@ -6428,6 +6420,14 @@ state 422
 	V_TYPE_IDENTIFIER	shift, and go to state 14
 
 	type_identifier	go to state 474
+
+
+
+state 422
+
+	c_object  ->  ERR_C_DV_QUANTITY .   (rule 23)
+
+	$default	reduce using rule 23 (c_object)
 
 
 
@@ -6505,9 +6505,9 @@ state 429
 
 state 430
 
-	c_object  ->  c_primitive_object .   (rule 21)
+	c_object  ->  c_primitive_object .   (rule 20)
 
-	$default	reduce using rule 21 (c_object)
+	$default	reduce using rule 20 (c_object)
 
 
 
@@ -6570,7 +6570,7 @@ state 435
 
 state 436
 
-	c_object  ->  c_ordinal .   (rule 20)
+	c_object  ->  c_ordinal .   (rule 21)
 	c_ordinal  ->  c_ordinal . ',' ordinal   (rule 200)
 	c_ordinal  ->  c_ordinal . ';' integer_value   (rule 201)
 	c_ordinal  ->  c_ordinal . ';' error   (rule 202)
@@ -6578,7 +6578,7 @@ state 436
 	';'	shift, and go to state 480
 	','	shift, and go to state 481
 
-	$default	reduce using rule 20 (c_object)
+	$default	reduce using rule 21 (c_object)
 
 
 
@@ -6644,8 +6644,8 @@ state 442
 	c_object  ->  . archetype_internal_ref   (rule 17)
 	c_object  ->  . archetype_slot   (rule 18)
 	c_object  ->  . constraint_ref   (rule 19)
-	c_object  ->  . c_ordinal   (rule 20)
-	c_object  ->  . c_primitive_object   (rule 21)
+	c_object  ->  . c_primitive_object   (rule 20)
+	c_object  ->  . c_ordinal   (rule 21)
 	c_object  ->  . V_C_DV_QUANTITY   (rule 22)
 	c_object  ->  . ERR_C_DV_QUANTITY   (rule 23)
 	c_object  ->  . error   (rule 24)
@@ -6851,18 +6851,18 @@ state 442
 
 	'-'	shift, and go to state 2
 	'+'	shift, and go to state 3
-	ERR_C_DV_QUANTITY	shift, and go to state 419
 	SYM_BEFORE	shift, and go to state 6
 	SYM_AFTER	shift, and go to state 7
-	SYM_USE_NODE	shift, and go to state 420
-	SYM_ALLOW_ARCHETYPE	shift, and go to state 421
-	SYM_USE_ARCHETYPE	shift, and go to state 422
+	SYM_USE_NODE	shift, and go to state 419
+	SYM_ALLOW_ARCHETYPE	shift, and go to state 420
+	SYM_USE_ARCHETYPE	shift, and go to state 421
 	SYM_FALSE	shift, and go to state 98
 	SYM_TRUE	shift, and go to state 99
 	SYM_INTERVAL_DELIM	shift, and go to state 100
 	SYM_END_CBLOCK	shift, and go to state 483
-	V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR	shift, and go to state 101
+	ERR_C_DV_QUANTITY	shift, and go to state 422
 	V_C_DV_QUANTITY	shift, and go to state 423
+	V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR	shift, and go to state 101
 	V_ISO8601_DURATION_CONSTRAINT_PATTERN	shift, and go to state 102
 	V_ISO8601_DATE_CONSTRAINT_PATTERN	shift, and go to state 103
 	V_ISO8601_TIME_CONSTRAINT_PATTERN	shift, and go to state 104

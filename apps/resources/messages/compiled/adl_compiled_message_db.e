@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (662)
+			create message_table.make (664)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -231,6 +231,8 @@ feature -- Initialisation
 			message_table.put ("attribute $1 in object node at $2 existence $3 same as in reference model", ec_WCAEX)
 			message_table.put ("attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model", ec_WCARMC)
 			message_table.put ("type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed", ec_ICORMTS)
+			message_table.put ("ADL 1.4 archetype - attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model", ec_WCAEX14)
+			message_table.put ("ADL 1.4 archetype - attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model", ec_WCACA14)
 			message_table.put ("code $1 in ontology not used in archetype definition", ec_WOUC)
 			message_table.put ("AOM profile file $1 does not exist or not readable", ec_aom_profile_file_not_valid)
 			message_table.put ("AOM profile file $1 load failure; reason: $2", ec_aom_profile_load_failure)

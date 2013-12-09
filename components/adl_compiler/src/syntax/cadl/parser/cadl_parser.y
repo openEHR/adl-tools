@@ -70,8 +70,16 @@ create
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
 %token <STRING> V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN V_ISO8601_TIME_CONSTRAINT_PATTERN
 %token <STRING> V_ISO8601_DATE_CONSTRAINT_PATTERN V_ISO8601_DURATION_CONSTRAINT_PATTERN
+%token <STRING> V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
+
+--
+-- LEGACY ADL 1.4 Syntax
+--
 %token <C_DV_QUANTITY> V_C_DV_QUANTITY
-%token V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
+%token ERR_C_DV_QUANTITY
+--
+-- END LEGACY ADL 1.4 Syntax
+--
 
 %token SYM_START_CBLOCK SYM_END_CBLOCK	-- constraint block
 
@@ -87,7 +95,7 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_C_DV_QUANTITY ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
+%token ERR_CHARACTER ERR_STRING ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
 %token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
 
 %left SYM_IMPLIES
@@ -162,8 +170,16 @@ create
 %type <detachable CARDINALITY> c_cardinality
 %type <CARDINALITY> cardinality_range
 %type <CONSTRAINT_REF> constraint_ref
+
+--
+-- LEGACY ADL 1.4 Syntax
+--
 %type <C_COMPLEX_OBJECT> c_ordinal
 %type <ORDINAL> ordinal
+--
+-- END LEGACY ADL 1.4 Syntax
+--
+
 %type <C_BOOLEAN> c_boolean
 %type <C_STRING> c_string
 %type <C_DATE_TIME> c_date_time
@@ -214,7 +230,7 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 	| c_complex_object_head
 		{
 			-- ok in case where occurrences or node_id is being redefined in a specialised archetype or template
-			if differential_syntax then
+			if is_adl15_archetype then
 				debug ("ADL_parse")
 					io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
 					indent.remove_tail (1)
@@ -266,7 +282,7 @@ c_complex_object_id: type_identifier
 		}
 	| sibling_order type_identifier V_LOCAL_TERM_CODE_REF
 		{
-			if differential_syntax then
+			if is_adl15_archetype then
 				create $$.make_identified ($2, $3)
 				$$.set_sibling_order ($1)
 			else
@@ -324,11 +340,14 @@ c_object: c_complex_object
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
-	| c_ordinal 
+	| c_primitive_object
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
-	| c_primitive_object
+--
+-- LEGACY ADL 1.4 Syntax
+--
+	| c_ordinal 
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
@@ -340,6 +359,9 @@ c_object: c_complex_object
 		{
 			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
 		}
+--
+-- END LEGACY ADL 1.4 Syntax
+--
 	| error		
 		{
 			abort_with_error (ec_SCCOG, Void)
@@ -484,7 +506,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		}
 	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			if differential_syntax then
+			if is_adl15_archetype then
 				create $$.make_anonymous ($3)
 				$$.set_sibling_order ($1)
 			else
@@ -497,7 +519,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		}
 	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
-			if differential_syntax then
+			if is_adl15_archetype then
 				create $$.make_identified ($3, $4)
 				$$.set_sibling_order ($1)
 			else
@@ -618,7 +640,7 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 		}
 	| c_attr_head -- ok if existence is being changed in specialised archetype
 		{
-			if differential_syntax then
+			if is_adl15_archetype then
 				c_attrs.remove
 			else
 				abort_with_error (ec_SCAS, Void)
@@ -635,8 +657,22 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 			rm_attribute_name := $1
 			if not object_nodes.item.has_attribute (rm_attribute_name) then
 				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
-					bmm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
-					if bmm_prop_def.is_container then
+					rm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
+					if rm_prop_def.is_container then
+	-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
+	if not is_adl15_archetype then
+		if attached $2 as ivl and then ivl.is_equal (rm_prop_def.existence) then
+			add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
+			$2 := Void
+		end
+		if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def and then
+			attached $3 as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
+			ivl.interval.contains (rm_cont_prop_def.cardinality))
+		then
+			add_warning (ec_WCACA14, <<rm_attribute_name, parent_path_str, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
+			$3 := Void
+		end
+	end
 						create $$.make_multiple (rm_attribute_name, $2, $3)
 						c_attrs.put ($$)
 debug ("ADL_parse")
@@ -648,7 +684,15 @@ debug ("ADL_parse")
 	indent.append ("%T")
 end
 						object_nodes.item.put_attribute ($$)
-					elseif $3 = Void then
+
+					elseif not attached $3 then
+	-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
+	if not is_adl15_archetype then
+		if attached $2 as ivl and then ivl.is_equal (rm_prop_def.existence) then
+			add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
+			$2 := Void
+		end
+	end
 						create $$.make_single (rm_attribute_name, $2)
 						c_attrs.put ($$)
 debug ("ADL_parse")
@@ -678,8 +722,23 @@ end
 			if not object_nodes.item.has_attribute ($1) then
 				-- check RM to see if path is valid, and if it is a container
 				if rm_schema.has_property_path (object_nodes.item.rm_type_name, $1) then
-					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, $1)
-					if bmm_prop_def.is_container then
+					rm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, $1)
+					if rm_prop_def.is_container then
+
+	-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
+	if not is_adl15_archetype then
+		if attached $2 as ivl and then ivl.is_equal (rm_prop_def.existence) then
+			add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
+			$2 := Void
+		end
+		if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def and then
+			attached $3 as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
+			ivl.interval.contains (rm_cont_prop_def.cardinality))
+		then
+			add_warning (ec_WCACA14, <<rm_attribute_name, parent_path_str, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
+			$3 := Void
+		end
+	end
 						create $$.make_multiple (rm_attribute_name, $2, $3)
 						$$.set_differential_path (parent_path_str)
 						c_attrs.put ($$)
@@ -693,7 +752,14 @@ debug ("ADL_parse")
 end
 						object_nodes.item.put_attribute ($$)
 
-					elseif $3 = Void then
+					elseif not attached $3 then
+	-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
+	if not is_adl15_archetype then
+		if attached $2 as ivl and then ivl.is_equal (rm_prop_def.existence) then
+			add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
+			$2 := Void
+		end
+	end
 						create $$.make_single (rm_attribute_name, $2)
 						$$.set_differential_path (parent_path_str)
 						c_attrs.put ($$)
@@ -2426,12 +2492,12 @@ feature -- Initialization
 			accept
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
+	execute (in_text:STRING; a_source_start_line: INTEGER; is_adl15_archetype_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
 		do
 			reset
 			rm_schema := an_rm_schema
 			source_start_line := a_source_start_line
-			differential_syntax := differential_flag
+			is_adl15_archetype := is_adl15_archetype_flag
 
 			create indent.make_empty
 
@@ -2457,7 +2523,7 @@ feature -- Initialization
 
 feature -- Access
 
-	differential_syntax: BOOLEAN
+	is_adl15_archetype: BOOLEAN
 			-- True if the supplied text to parse is differential, in which case it can contain the 
 			-- differential syntax variants, i.e. ordering markers and specialisation paths
 
@@ -2554,7 +2620,7 @@ feature {NONE} -- Parse Tree
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
 
-	bmm_prop_def: detachable BMM_PROPERTY_DEFINITION
+	rm_prop_def: detachable BMM_PROPERTY_DEFINITION
 
 	c_attr_tuple: C_ATTRIBUTE_TUPLE
 		attribute
