@@ -408,8 +408,10 @@ feature -- Visitor
 			-- add the comment
 			create last_coded_constraint_comment.make(0)
 			last_coded_constraint_comment.append (format_item (FMT_INDENT))
-			last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-					safe_comment (ontology.constraint_definition (language, a_node.target).text), STYLE_COMMENT))
+			if ontology.has_constraint_code (a_node.target) then
+				last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+						safe_comment (ontology.constraint_definition (language, a_node.target).text), STYLE_COMMENT))
+			end
 			last_object_inline := True
 		end
 
@@ -579,10 +581,10 @@ feature {NONE} -- Implementation
 	identifier_style (constraint: ARCHETYPE_CONSTRAINT): INTEGER
 			-- The formatting identifier style appropriate to the the specialisation status of `constraint'.
 		do
-			inspect constraint.inferred_specialisation_status (ontology.specialisation_depth).value
-			when {SPECIALISATION_STATUS}.ss_inherited then
+			inspect constraint.specialisation_status
+			when ss_inherited then
 				Result := style_inherited_identifier
-			when {SPECIALISATION_STATUS}.ss_redefined then
+			when ss_redefined then
 				Result := style_redefined_identifier
 			else
 				Result := style_identifier

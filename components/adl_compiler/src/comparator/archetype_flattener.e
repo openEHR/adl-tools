@@ -224,7 +224,7 @@ end
 			child_grafted_path_list.wipe_out
 
 			-- traverse flat output and mark every node as inherited
-			arch_output_flat.definition.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_inherited)
+			arch_output_flat.definition.set_subtree_specialisation_status (ss_inherited)
 
 			create def_it.make (arch_child_diff.definition)
 			def_it.do_until_surface (agent node_graft, agent node_test)
@@ -262,7 +262,7 @@ debug ("flatten")
 end
 						ca_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
 						new_cco_child := cco_child_diff.safe_deep_twin
-						new_cco_child.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+						new_cco_child.set_subtree_specialisation_status (ss_added)
 						new_cco_child.set_specialisation_status_redefined
 						ca_output.put_sibling_child (new_cco_child)
 						child_grafted_path_list.extend (cco_child_diff.path)
@@ -296,9 +296,9 @@ end
 							-- ensure the parent C_ATTR child link to the object is maintained properly. The else
 							-- branch only for the root node, which has no parent...
 							if attached cco_output_flat.parent then
-								cco_output_flat.parent.overlay_differential (cco_output_flat, cco_child_diff, rm_schema)
+								cco_output_flat.parent.overlay_differential (cco_output_flat, cco_child_diff, agent rm_schema.type_conforms_to)
 							else
-								cco_output_flat.overlay_differential (cco_child_diff, rm_schema)
+								cco_output_flat.overlay_differential (cco_child_diff, agent rm_schema.type_conforms_to)
 							end
 
 							-- Deal with the case of the output object matches {*} (i.e. 'any') specifically here
@@ -322,7 +322,7 @@ debug ("flatten")
 	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
 end
 									ca_child_copy := ca_child.safe_deep_twin
-									ca_child_copy.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+									ca_child_copy.set_subtree_specialisation_status (ss_added)
 debug ("flatten")
 	io.put_string ("%T%Tin child only; deep_clone attribute " +
 		ca_child.rm_attribute_name + " at " + ca_child.path +
@@ -438,7 +438,7 @@ end
 									-- do a deep clone of the whole attribute from the child to the output
 									else
 										ca_child_copy := ca_child.safe_deep_twin
-										ca_child_copy.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+										ca_child_copy.set_subtree_specialisation_status (ss_added)
 										child_grafted_path_list.extend (ca_child.path)
 										ca_child_copy.clear_differential_path
 debug ("flatten")
@@ -566,7 +566,7 @@ end
 						-- They are nodes that are identified nodes (all children of multiply-valued attributes are identified)
 						-- AND that have been added OR ELSE are C_ARCHETYPE_ROOTs
 						if is_valid_code (ca_child.children.i_th(i).node_id)
-							and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added
+							and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added
 							or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i)
 						then
 							child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
@@ -588,9 +588,9 @@ end
 									end
 								end
 								if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
-									merge_car.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+									merge_car.set_subtree_specialisation_status (ss_added)
 								else
-									merge_obj.set_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+									merge_obj.set_specialisation_status (ss_added)
 								end
 							end
 
@@ -642,7 +642,7 @@ end
 							flat_arch_slot.set_closed
 							flat_arch_slot.set_specialisation_status_redefined
 						end
-					elseif specialisation_status_from_code (arch_slot.node_id, arch_child_diff.specialisation_depth).value = ss_added then
+					elseif specialisation_status_from_code (arch_slot.node_id, arch_child_diff.specialisation_depth) = ss_added then
 						merge_obj := arch_slot.safe_deep_twin
 						ca_output.put_child (merge_obj)
 						merge_obj.set_specialisation_status_added
@@ -655,7 +655,7 @@ end
 				elseif attached {C_ARCHETYPE_ROOT} c_obj_csr.item as car then
 					merge_obj := car.safe_deep_twin
 					if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
-						merge_car.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+						merge_car.set_subtree_specialisation_status (ss_added)
 					end
 					ca_output.put_child (merge_obj)
 					child_grafted_path_list.extend (car.path)

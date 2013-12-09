@@ -158,7 +158,7 @@ feature -- Access
 			Valid_result: is_valid_code (Result)
 		end
 
-	specialisation_status_from_code (a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS
+	specialisation_status_from_code (a_code: STRING; a_depth: INTEGER): INTEGER
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
 			-- 		at0001 at depth 0 ==> ss_added
@@ -184,20 +184,20 @@ feature -- Access
 			code_at_this_level: STRING
 		do
 			if a_depth > specialisation_depth_from_code(a_code) then
-				create Result.make (ss_inherited)
+				Result := ss_inherited
 			else
 				code_at_this_level := index_from_code_at_level(a_code, a_depth)
 				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
 				if code_defined_in_this_level then
 					if a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then -- parent is valid
-						create Result.make (ss_redefined)
+						Result := ss_redefined
 					else
-						create Result.make (ss_added)
+						Result := ss_added
 					end
 				elseif a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then
-					create Result.make (ss_inherited)
+					Result := ss_inherited
 				else
-					create Result.make (ss_undefined)
+					Result := ss_undefined
 				end
 			end
 		end
@@ -219,7 +219,7 @@ feature -- Access
 			code_num_part: STRING
 			lpos, rpos, depth_count: INTEGER
 		do
-			spec_depth := specialisation_depth_from_code(a_code)
+			spec_depth := specialisation_depth_from_code (a_code)
 			code_num_part := a_code.substring (term_code_leader.count+1, a_code.count)
 
 			-- determine left hand position

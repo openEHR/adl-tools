@@ -73,30 +73,6 @@ feature -- Access
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
 			-- on specialised nodes
 
-	inferred_specialisation_depth: INTEGER
-			-- specialisation level of this node if identified
-		require
-			is_valid_code (node_id)
-		do
-			Result := specialisation_depth_from_code (node_id)
-		end
-
-	inferred_specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
-			-- status of this node in the source text of this archetype with respect to the
-			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
-			-- detects specialisation status for identified nodes
-		do
-			if not is_valid_code (node_id) then
-				create Result.make (ss_propagated)
-			else
-				if inferred_specialisation_depth < spec_level then
-					create Result.make (ss_inherited)
-				else
-					Result := specialisation_status_from_code (node_id, spec_level)
-				end
-			end
-		end
-
 feature -- Status report
 
 	is_addressable: BOOLEAN
@@ -113,8 +89,18 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other', other than
+	c_equal (other: like Current): BOOLEAN
+			-- True if Current and `other' are identical locally (child objects may differ)
+			-- Used when diff'ing two flat archetypes, to determine if a node is just a copy
+			-- (i.e. no redefinitions) of the other.
+		do
+			Result := occurrences ~ other.occurrences and
+				node_id.is_equal (other.node_id) and
+				rm_type_name.is_case_insensitive_equal (other.rm_type_name)
+		end
+
+	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses no constraintsin addition to `other', other than
 			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
 			-- `other' is assumed to be in a flat archetype
 			-- Used to determine if path segments can be compressed;
@@ -126,7 +112,7 @@ feature -- Comparison
 			Result := rm_type_name.is_equal (other.rm_type_name) and not attached occurrences and node_id_conforms_to (other) and not attached sibling_order
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- `other' is assumed to be in a flat archetype.
 			-- Returns True only when the following is True:
@@ -137,21 +123,14 @@ feature -- Comparison
 		do
 			if is_addressable and other.is_addressable then
 				if node_id.is_equal (other.node_id) then
-					Result := rm_type_name.is_equal (other.rm_type_name) and (not attached occurrences or else
+					Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and (not attached occurrences or else
 						attached occurrences as occ and then occ.is_prohibited)
 				else
-					Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other)
+					Result := rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]) and occurrences_conforms_to (other) and node_id_conforms_to (other)
 				end
 			elseif not is_addressable and not other.is_addressable then
-				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)
+				Result := rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]) and occurrences_conforms_to (other)
 			end
-		end
-
-	rm_type_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
-			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
-			-- according to the underlying reference model; `other' is assumed to be in a flat archetype
-		do
-			Result := rm_type_name.is_equal (other.rm_type_name) or an_rm_schema.is_descendant_of (rm_type_name, other.rm_type_name)
 		end
 
 	occurrences_conforms_to (other: C_OBJECT): BOOLEAN
@@ -203,8 +182,8 @@ feature -- Modification
 
 	set_sibling_order (a_sibling_order: SIBLING_ORDER)
 			-- set sibling order
-		require
-			inferred_specialisation_depth > 0
+--		require
+--			specialisation_depth > 0
 		do
 			sibling_order := a_sibling_order
 		ensure
@@ -223,8 +202,8 @@ feature -- Modification
 
 	set_sibling_order_after (a_node_id: STRING)
 			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
-		require
-			specialisation_depth_from_code (a_node_id) < inferred_specialisation_depth
+--		require
+--			specialisation_depth_from_code (a_node_id) < specialisation_depth
 		do
 			create sibling_order.make_after (a_node_id)
 		ensure
@@ -246,20 +225,20 @@ feature -- Modification
 			representation.set_node_id (an_object_id)
 		end
 
-	overlay_differential (other: like Current; an_rm_schema: BMM_SCHEMA)
+	overlay_differential (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN])
 			-- apply any differences from `other' to this object node including:
 			-- 	node_id
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
 		require
-			Other_valid: other.node_conforms_to (Current, an_rm_schema)
+			Other_valid: other.c_conforms_to (Current, rm_type_conformance_checker)
 		do
 			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
 				set_specialisation_status_id_redefined
 			end
-			if not other.rm_type_name.is_equal (rm_type_name) then
+			if not other.rm_type_name.is_case_insensitive_equal (rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 				set_specialisation_status_redefined
 			end

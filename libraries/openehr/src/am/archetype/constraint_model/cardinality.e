@@ -3,12 +3,17 @@ note
 	description: "cardinality representation in ADL parse tree"
 	keywords:    "cardinality, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-
 class CARDINALITY
+
+inherit
+	ANY
+		redefine
+			is_equal
+		end
 
 create
 	make, make_from_string
@@ -91,16 +96,16 @@ feature -- Status Report
 
 feature -- Comparison
 
-	equal_interval(other: attached CARDINALITY): BOOLEAN
-			-- is this and `other' the same interval
+	is_equal (other: like Current): BOOLEAN
+			-- True if this and `other' are the same logical interval
 		do
-			Result := interval.equal_interval (other.interval)
+			Result := interval.is_equal (other.interval) and is_ordered = other.is_ordered and is_unique = other.is_unique
 		end
 
-	contains (other: attached CARDINALITY): BOOLEAN
+	contains (other: CARDINALITY): BOOLEAN
 			-- Does current cardinality contain `other'?
 		do
-			Result := interval.contains(other.interval)
+			Result := interval.contains (other.interval)
 		end
 
 feature -- Modification
@@ -117,7 +122,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- output as a string, excluding default items
 		do
 			create Result.make(0)

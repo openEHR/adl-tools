@@ -77,15 +77,15 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_process (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		local
 			proc: AOM_POST_PARSE_PROCESSOR
 		do
 			if attached post_parse_processor as pcp then
 				proc := pcp
-				proc.initialise (aca, an_rm_schema)
+				proc.initialise (an_arch, aca, an_rm_schema)
 			else
-				create proc.make (aca, an_rm_schema)
+				create proc.make (an_arch, aca, an_rm_schema)
 				post_parse_processor := proc
 			end
 			proc.execute

@@ -60,11 +60,19 @@ feature -- Access
 
 	commit
 			-- commit modified flat clone to archetype as new differential
+		local
+			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
 			-- do something with previous version of archetype
 
 			-- do diff on flat_archetype_clone
-			differential_archetype := flat_archetype_clone.to_differential
+			if is_specialised then
+				create archetype_comparator.make_create_differential (Current)
+				differential_archetype := archetype_comparator.differential_child
+			else
+				create differential_archetype.make_from_flat (flat_archetype_clone)
+			end
+
 			differential_archetype.clear_is_generated
 			if attached gui_context as gc then
 				gc.on_commit

@@ -82,7 +82,6 @@ feature -- Validation
 			-- validation requiring valid specialisation parent
 			if passed then
 				if target.is_specialised then
-					target.build_rolled_up_status
 					validate_specialised_basics
 					validate_specialised_definition
 				end
@@ -411,7 +410,7 @@ feature {NONE} -- Implementation
 					ca_parent_flat := flat_parent.c_attr_at_path (ca_path_in_flat)
 				end
 
-				if not ca_child_diff.node_conforms_to (ca_parent_flat, rm_schema) then
+				if not ca_child_diff.c_conforms_to (ca_parent_flat, agent rm_schema.type_conforms_to) then
 					if ca_child_diff.is_single and not ca_parent_flat.is_single then
 						add_error (ec_VSAM1, <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 
@@ -430,12 +429,6 @@ feature {NONE} -- Implementation
 										ccd_ex.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
 										cpf_ex.as_string>>)
 									ca_child_diff.remove_existence
-									if ca_child_diff.parent.is_path_compressible then
-debug ("validate")
-	io.put_string (" (setting is_path_compressible) %N")
-end
-										ca_child_diff.set_is_path_compressible
-									end
 								end
 							end
 						end
@@ -451,18 +444,21 @@ end
 										ccd_card.as_string, ontology.physical_to_logical_path (ca_parent_flat.path, target_descriptor.archetype_view_language, True),
 										cpf_card.as_string>>)
 									ca_child_diff.remove_cardinality
-									if ca_child_diff.parent.is_path_compressible then
-debug ("validate")
-	io.put_string (" (setting is_path_compressible) %N")
-end
-										ca_child_diff.set_is_path_compressible
-									end
 								end
 							end
 						end
+
+						-- if the existence and cardinality redefinitions were removed, then this node is not redefined
+						-- and can be path-compressed
+						if not attached ca_child_diff.existence and not attached ca_child_diff.cardinality and ca_child_diff.parent.is_path_compressible then
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
+							ca_child_diff.set_is_path_compressible
+						end
 					end
 
-				elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
+				elseif ca_child_diff.c_congruent_to (ca_parent_flat, agent rm_schema.type_conforms_to) and ca_child_diff.parent.is_path_compressible then
 debug ("validate")
 	io.put_string (">>>>> validate: C_ATTRIBUTE in child at " +
 	ca_child_diff.path + " CONGRUENT to parent node " +
@@ -484,7 +480,7 @@ end
 							add_error (ec_VARXR, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_ref>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
-							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.equal_interval (par_flat_occ) then
+							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.is_equal (par_flat_occ) then
 								if validation_strict then
 									add_error (ec_VSONCO, <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
 										ontology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
@@ -593,10 +589,10 @@ end
 							co_parent_flat.generating_type>>)
 
 					-- they should also be conformant as defined by the node_conforms_to() function
-					elseif not co_child_diff.node_conforms_to (co_parent_flat, rm_schema) then
+					elseif not co_child_diff.c_conforms_to (co_parent_flat, agent rm_schema.type_conforms_to) then
 
 						-- RM type non-conformance was the reason
-						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
+						if not rm_schema.type_conforms_to (co_child_diff.rm_type_name, co_parent_flat.rm_type_name) then
 							add_error (ec_VSONCT, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_child_diff.rm_type_name,
 								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
@@ -606,7 +602,7 @@ end
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
 							-- if the occurrences interval is just a copy of the one in the flat, treat it as an error only if
 							-- compiling strict, else remove the duplicate and just warn
-							if attached co_child_diff.occurrences as child_occ and then attached co_parent_flat.occurrences as par_flat_occ and then child_occ.equal_interval (par_flat_occ) then
+							if attached co_child_diff.occurrences as child_occ and then attached co_parent_flat.occurrences as par_flat_occ and then child_occ.is_equal (par_flat_occ) then
 								if validation_strict then
 									add_error (ec_VSONCO, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.occurrences_as_string,
@@ -640,7 +636,7 @@ end
 									ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 									co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
-								if not co_child_diff.rm_type_name.is_equal (co_parent_flat.rm_type_name) then -- has to be that RM type was redefined but at-code wasn't
+								if not co_child_diff.rm_type_name.is_case_insensitive_equal (co_parent_flat.rm_type_name) then -- has to be that RM type was redefined but at-code wasn't
 									add_error (ec_VSONIRrm, <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 										co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 								else -- has to be the occurrences was redefined, but the at-code wasn't
@@ -678,7 +674,7 @@ end
 						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.
-						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.c_congruent_to (co_parent_flat, agent rm_schema.type_conforms_to) and
 							(co_child_diff.is_root or else co_child_diff.parent.is_path_compressible)
 						then
 debug ("validate")
@@ -687,8 +683,8 @@ debug ("validate")
 	ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True))
 end
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
-								-- if this node in the diff archetype is the root, or else if the corresponding node in the flat parent has children,
-								-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat parent node children
+								-- if this node in the diff archetype is the root, or else if the corresponding node in the flat parent has attributes,
+								-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat parent node attributes
 								-- need to be preserved)
 								if co_child_diff.is_root or cco_pf.has_attributes then
 									co_child_diff.set_is_path_compressible
@@ -842,17 +838,18 @@ end
 						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) then
 							rm_attr_type := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
 
-							-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
-							-- has a String field (within some other kind of DATE class)
-							if has_type_substitution (co.rm_type_name, rm_attr_type) then
-								add_info (ec_ICORMTS, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
-									rm_attr_type, arch_parent_attr_type, co.parent.rm_attribute_name>>)
-								co.set_rm_type_name (rm_attr_type)
-
-							elseif not rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
-								add_error (ec_VCORMT, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
-									rm_attr_type, arch_parent_attr_type, co.parent.rm_attribute_name>>)
-								invalid_types.extend (co.rm_type_name)
+							if not rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
+								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
+								-- has a String field (within some other kind of DATE class)
+								if has_type_substitution (co.rm_type_name, rm_attr_type) then
+									add_info (ec_ICORMTS, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
+										rm_attr_type, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+									co.set_rm_type_name (rm_attr_type)
+								else
+									add_error (ec_VCORMT, <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True),
+										rm_attr_type, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+									invalid_types.extend (co.rm_type_name)
+								end
 							end
 						else
 							-- this error case will have been detected below
@@ -875,7 +872,7 @@ end
 					rm_prop_def := rm_schema.property_definition (arch_parent_attr_type, ca.rm_attribute_name)
 					if attached ca.existence as ca_ex then
 						if not rm_prop_def.existence.contains (ca_ex) then
-							if not target.is_specialised and rm_prop_def.existence.equal_interval (ca_ex) then
+							if not target.is_specialised and rm_prop_def.existence.is_equal (ca_ex) then
 								add_warning (ec_WCAEX, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 									ca_ex.as_string>>)
 								if not validation_strict then
@@ -889,12 +886,12 @@ end
 					end
 					if ca.is_multiple then
 						-- RM also has container property here
-						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
-							if attached ca.cardinality as ca_card and then not cont_prop.cardinality.contains (ca_card.interval) then
-								if cont_prop.cardinality.equal_interval (ca_card.interval) then
+						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def then
+							if attached ca.cardinality as ca_card and then not rm_cont_prop_def.cardinality.contains (ca_card.interval) then
+								if rm_cont_prop_def.cardinality.is_equal (ca_card.interval) then
 									if validation_strict then
 										add_error (ec_VCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-											ca_card.interval.as_string, cont_prop.cardinality.as_string>>)
+											ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 									else
 										add_warning (ec_WCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
 											ca_card.interval.as_string>>)
@@ -902,7 +899,7 @@ end
 									end
 								else
 									add_error (ec_VCACA, <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-										ca_card.interval.as_string, cont_prop.cardinality.as_string>>)
+										ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 								end
 							end
 						else -- archetype has multiple attribute but RM does not
@@ -911,9 +908,9 @@ end
 						end
 
 					-- archetype attribute is single-valued, but RM has a container attribute
-					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
+					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def then
 						add_error (ec_VCAMs, <<ontology.physical_to_logical_path (ca.path, target_descriptor.archetype_view_language, True),
-							cont_prop_2.cardinality.as_string>>)
+							rm_cont_prop_def.cardinality.as_string>>)
 					end
 
 					if rm_prop_def.is_computed then

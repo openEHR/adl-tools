@@ -16,7 +16,7 @@ inherit
 		end
 
 create
-	make, make_minimal, make_minimal_child, make_from_legacy_flat, make_all, make_from_other
+	make, make_minimal, make_minimal_child, make_from_flat, make_all, make_from_other
 
 feature -- Initialisation
 
@@ -85,74 +85,15 @@ feature -- Initialisation
 			Is_valid: is_valid
 		end
 
-	make_from_legacy_flat (a_flat: FLAT_ARCHETYPE)
-			-- create from a legacy flat archetype (which has no overlay markers) by cloning and then removing inherited parts
-			-- the pieces of `a_flat' will be used, without cloning
-		require
-			not a_flat.is_generated
-		local
-			c_it: C_ITERATOR
-			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
+	make_from_flat (a_flat: FLAT_ARCHETYPE)
 		do
 			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.archetype_id, a_flat.parent_archetype_id,
 					a_flat.is_controlled, a_flat.uid, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
 					a_flat.description, a_flat.definition, a_flat.invariants,
 					a_flat.ontology.to_differential, a_flat.annotations)
-
-			if is_specialised then
-				build_rolled_up_status
-
-				-- using rolled_up_specialisation statuses in nodes of definition
-				-- generate a list of nodes/paths for deletion from a flat-form archetype
-				create inherited_subtree_list.make (0)
-				create c_it.make (definition)
-				c_it.do_at_surface (
-					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING])
-						do
-							subtree_list.put (a_c_node, a_c_node.path)
-						end (?, ?, inherited_subtree_list),
-					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.inferred_rolled_up_specialisation_status.value = ss_inherited end
-				)
-
-				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
-				across inherited_subtree_list as subtree_csr loop
-					if attached {C_OBJECT} subtree_csr.item as cco_1 then
-						-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
-						-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
-						-- the RM schema
-						if attached cco_1.parent and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
-							if attached {C_OBJECT} cco_1.parent.child_after (cco_1) as cco_next and then
-								cco_next.inferred_specialisation_status (specialisation_depth).value = ss_added
-							then
-								cco_next.set_sibling_order_after (cco_1.node_id)
-							end
-							if attached {C_OBJECT} cco_1.parent.child_before (cco_1) as cco_prev and then
-								cco_prev.inferred_specialisation_status (specialisation_depth).value = ss_added
-							then
-								cco_prev.set_sibling_order_before (cco_1.node_id)
-							end
-						end
-					end
-				end
-
-				-- now remove inherited subtrees
-				across inherited_subtree_list as subtree_csr loop
-					if attached {C_OBJECT} subtree_csr.item as cco_2 then
-						if cco_2.parent /= Void then
-							cco_2.parent.remove_child (cco_2)
-						else
-							-- cco_2 must be the parent, which means the entire definition is a copy of that from the parent archetype
-						end
-					elseif attached {C_ATTRIBUTE} subtree_csr.item as c_attr then
-						c_attr.parent.remove_attribute (c_attr)
-					end
-				end
-			end
-
 			is_generated := True
-
-			-- rebuild all internal references, path cache etc
-			rebuild
+		ensure
+			is_generated
 		end
 
 feature -- Access
@@ -205,7 +146,7 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
-feature {ARCH_CAT_ARCHETYPE} -- Structure
+feature {ARCH_CAT_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
 
 	convert_to_differential_paths
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
@@ -216,7 +157,6 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 		require
 			Target_specialised: is_specialised
 			Is_generated: is_generated
-		--	Is_valid: is_valid
 		local
 			def_it: C_ITERATOR
 		do

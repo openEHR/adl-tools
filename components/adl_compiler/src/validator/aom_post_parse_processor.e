@@ -31,7 +31,7 @@ create
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	make (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -39,12 +39,10 @@ feature {ADL15_ENGINE} -- Initialisation
 		do
 			create rm_schema.make ("test", "test", "1.0")
 			create att_c_terminology_code_type_mapping
-			initialise (ara, an_rm_schema)
-		ensure
-			target_descriptor_set: target_descriptor = ara
+			initialise (a_target, ara, an_rm_schema)
 		end
 
-	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -57,23 +55,15 @@ feature {ADL15_ENGINE} -- Initialisation
 				end
 				set_domain_type_mappings
 			end
-			target_descriptor := ara
-			check attached ara.differential_archetype as diff_arch then
-				target := diff_arch
-			end
+			target := a_target
 			if ara.is_specialised then
-				arch_parent_flat := target_descriptor.specialisation_parent.flat_archetype
+				arch_parent_flat := ara.specialisation_parent.flat_archetype
 			end
-		ensure
-			target_descriptor_set: target_descriptor = ara
 		end
 
 feature -- Access
 
-	target_descriptor: ARCH_CAT_ARCHETYPE
-			-- differential archetype being validated
-
-	target: DIFFERENTIAL_ARCHETYPE
+	target: ARCHETYPE
 			-- differential archetype being processed
 
 	arch_parent_flat: detachable FLAT_ARCHETYPE

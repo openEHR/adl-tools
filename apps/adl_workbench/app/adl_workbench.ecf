@@ -11,6 +11,7 @@
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
 			<debug name="adl_tree" enabled="false"/>
+			<debug name="arch_comp" enabled="true"/>
 			<debug name="arch_dir" enabled="false"/>
 			<debug name="bb" enabled="false"/>
 			<debug name="compiler" enabled="false"/>

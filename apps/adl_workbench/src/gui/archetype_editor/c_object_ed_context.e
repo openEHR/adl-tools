@@ -244,7 +244,7 @@ feature -- Modification
 				-- occurences
 				new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences)
 				if attached a_n.occurrences as occ and then not
-					occ.equal_interval (create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences))
+					occ.is_equal (create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences))
 				then
 					a_n.set_occurrences (new_occ)
 					a_n.set_specialisation_status_redefined

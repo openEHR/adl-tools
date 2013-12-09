@@ -270,7 +270,7 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 			Result.compare_objects
 			across occurrences_default_list as occs_csr loop
-				if occurrences_default.equal_interval (occs_csr.item) or occurrences_default.contains (occs_csr.item) then
+				if occurrences_default.is_equal (occs_csr.item) or occurrences_default.contains (occs_csr.item) then
 					Result.extend (occs_csr.item.as_string)
 				end
 			end

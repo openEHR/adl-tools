@@ -84,12 +84,18 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is a duplicate of `other'
+			-- Normally used to detect redefinition while diffing two flat archetypes
+		deferred
+		end
+
+	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		deferred
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- An error message can be obtained by calling node_conformance_failure_reason
 		deferred
@@ -168,21 +174,6 @@ feature -- Duplication
 
 feature -- Source Control
 
-	specialisation_level: INTEGER
-			-- specialisation level of this node within archetype
-		note
-			option: transient
-		attribute
-		end
-
-	set_specialisation_level (a_level: INTEGER)
-			-- set specialisation level of this node within archetype
-		require
-			a_level > 0
-		do
-			specialisation_level := a_level
-		end
-
 	specialisation_status: INTEGER
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Determined from initial parse, and subsequent editing on structure
@@ -213,16 +204,7 @@ feature -- Source Control
 			specialisation_status := a_spec_status
 		end
 
-	inferred_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
-			-- status of this node in the source text of this archetype with respect to the
-			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown.
-			-- USED ONLY FOR DIFFing legacy flat form into differential form
-		require
-			valid_specialisation_level: archetype_specialisation_level >= 0
-		deferred
-		end
-
-	inferred_rolled_up_specialisation_status: detachable SPECIALISATION_STATUS
+	rolled_up_specialisation_status: INTEGER
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
@@ -232,12 +214,12 @@ feature -- Source Control
 		attribute
 		end
 
-	set_inferred_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
+	set_rolled_up_specialisation_status (a_status: INTEGER)
 			-- USED ONLY FOR DIFFing legacy flat form into differential form
 		require
-			valid_specialisation_status: valid_specialisation_status (a_status.value)
+			valid_specialisation_status: valid_specialisation_status (a_status)
 		do
-			inferred_rolled_up_specialisation_status := a_status
+			rolled_up_specialisation_status := a_status
 		end
 
 feature {NONE} -- Implementation

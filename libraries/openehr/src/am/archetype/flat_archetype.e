@@ -103,18 +103,18 @@ feature -- Access
 
 feature -- Factory
 
-	to_differential: DIFFERENTIAL_ARCHETYPE
-			-- generate differential form of archetype if specialised, to be in differential form,
-			-- based on inspecting each node's `specialisation_level'
-		require
-			is_generated
-		local
-			def_it: C_ITERATOR
-		do
+--	to_differential: DIFFERENTIAL_ARCHETYPE
+--			-- generate differential form of archetype if specialised, to be in differential form,
+--			-- based on inspecting each node's `specialisation_level'
+--		require
+--			is_generated
+--		local
+--			def_it: C_ITERATOR
+--		do
 --			if not is_specialised then
-				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
-					is_controlled, uid, other_metadata, original_language, translations, description, definition, invariants,
-					ontology.to_differential, annotations)
+--				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
+--					is_controlled, uid, other_metadata, original_language, translations, description, definition, invariants,
+--					ontology.to_differential, annotations)
 --			else
 --				-- ======= deal with main archetype =======
 
@@ -145,99 +145,99 @@ feature -- Factory
 --				-- ======= annotations =======
 
 --			end
-		end
+--		end
 
-	node_diff_extract_additions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- record all added nodes & paths (including sibling order markers, which remain in the
-			-- in-memory flat)
-		local
-			node_path: STRING
-		do
-			node_path := a_c_node.path
-			if attached {C_OBJECT} a_c_node as co then
-				if not diff_added_obj_nodes.has (node_path) then
-					diff_added_obj_nodes.put (create {ARRAYED_LIST [C_OBJECT]}.make (0), node_path)
-				end
-				diff_added_obj_nodes.item (node_path).extend (co)
-			elseif attached {C_ATTRIBUTE} a_c_node as ca then
-				if not diff_added_attr_nodes.has (node_path) then
-					diff_added_attr_nodes.put (create {ARRAYED_LIST [C_ATTRIBUTE]}.make (0), node_path)
-				end
-				diff_added_attr_nodes.item (node_path).extend (ca)
-			end
-		end
+--	node_diff_extract_additions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+--			-- record all added nodes & paths (including sibling order markers, which remain in the
+--			-- in-memory flat)
+--		local
+--			node_path: STRING
+--		do
+--			node_path := a_c_node.path
+--			if attached {C_OBJECT} a_c_node as co then
+--				if not diff_added_obj_nodes.has (node_path) then
+--					diff_added_obj_nodes.put (create {ARRAYED_LIST [C_OBJECT]}.make (0), node_path)
+--				end
+--				diff_added_obj_nodes.item (node_path).extend (co)
+--			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+--				if not diff_added_attr_nodes.has (node_path) then
+--					diff_added_attr_nodes.put (create {ARRAYED_LIST [C_ATTRIBUTE]}.make (0), node_path)
+--				end
+--				diff_added_attr_nodes.item (node_path).extend (ca)
+--			end
+--		end
 
-	node_diff_extract_redefinitions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		local
-			ss: INTEGER
-		do
-			ss := a_c_node.specialisation_status
-			if attached {C_OBJECT} a_c_node as co then
-				-- solely node_id was redefined
-				if ss = {SPECIALISATION_STATUSES}.ss_id_redefined then
-					diff_redefined_id_nodes.put (co.node_id, co.path)
+--	node_diff_extract_redefinitions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+--		local
+--			ss: INTEGER
+--		do
+--			ss := a_c_node.specialisation_status
+--			if attached {C_OBJECT} a_c_node as co then
+--				-- solely node_id was redefined
+--				if ss = {SPECIALISATION_STATUSES}.ss_id_redefined then
+--					diff_redefined_id_nodes.put (co.node_id, co.path)
 
-				-- occurrences and/or rm_type (C_COMPLEX_OBJECT case), and/or other redefinitions for
-				-- other C_OBJECT subtypes - just remember the node
-				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
-					diff_redefined_obj_nodes.put (co, co.path)
-				end
+--				-- occurrences and/or rm_type (C_COMPLEX_OBJECT case), and/or other redefinitions for
+--				-- other C_OBJECT subtypes - just remember the node
+--				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
+--					diff_redefined_obj_nodes.put (co, co.path)
+--				end
 
-			-- must be redefined cardinality and/or existence
-			elseif attached {C_ATTRIBUTE} a_c_node as ca then
-				diff_redefined_attr_nodes.put (ca, ca.path)
-			end
-		end
+--			-- must be redefined cardinality and/or existence
+--			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+--				diff_redefined_attr_nodes.put (ca, ca.path)
+--			end
+--		end
 
-	diff_added_obj_nodes: detachable HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+--	diff_added_obj_nodes: detachable HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
 
-	diff_added_attr_nodes: detachable HASH_TABLE [ARRAYED_LIST [C_ATTRIBUTE], STRING]
+--	diff_added_attr_nodes: detachable HASH_TABLE [ARRAYED_LIST [C_ATTRIBUTE], STRING]
 
-	diff_redefined_obj_nodes: detachable HASH_TABLE [C_OBJECT, STRING]
+--	diff_redefined_obj_nodes: detachable HASH_TABLE [C_OBJECT, STRING]
 
-	diff_redefined_attr_nodes: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
+--	diff_redefined_attr_nodes: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
 
-	diff_redefined_id_nodes: detachable HASH_TABLE [STRING, STRING]
-			-- table of redefined node_id keyed by path; these correspond to C_OBJECT nodes whose
-			-- only redefinition was in the id, and which appeared in the orginal differential in
-			-- compressed paths
+--	diff_redefined_id_nodes: detachable HASH_TABLE [STRING, STRING]
+--			-- table of redefined node_id keyed by path; these correspond to C_OBJECT nodes whose
+--			-- only redefinition was in the id, and which appeared in the orginal differential in
+--			-- compressed paths
 
-	diff_nodes: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
-			-- table of C_ATTRIBUTEs keyed by path, each is one of:
-			--	* redefined - changed cardinality is only possible change
-			-- 	* added new, with child C_OBJECTs
-			--	* compressed path C_ATTRIBUTEs, containing added/redefined C_OBJECTs
+--	diff_nodes: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
+--			-- table of C_ATTRIBUTEs keyed by path, each is one of:
+--			--	* redefined - changed cardinality is only possible change
+--			-- 	* added new, with child C_OBJECTs
+--			--	* compressed path C_ATTRIBUTEs, containing added/redefined C_OBJECTs
 
-	debug_node_diff_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		local
-			s: STRING
-			ss: INTEGER
-		do
-			create s.make_filled ('-', depth*4)
-			s.append ("> ")
+--	debug_node_diff_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+--		local
+--			s: STRING
+--			ss: INTEGER
+--		do
+--			create s.make_filled ('-', depth*4)
+--			s.append ("> ")
 
-			ss := a_c_node.specialisation_status
-			if attached {C_OBJECT} a_c_node as co then
-				s.append (co.rm_type_name)
-				if co.is_addressable then
-					s.append ("[" + co.node_id + "|" + ontology.term_definition (original_language.code_string, co.node_id).text + "]")
-				end
-			elseif attached {C_ATTRIBUTE} a_c_node as ca then
-				s.append (ca.rm_attribute_name)
-			end
+--			ss := a_c_node.specialisation_status
+--			if attached {C_OBJECT} a_c_node as co then
+--				s.append (co.rm_type_name)
+--				if co.is_addressable then
+--					s.append ("[" + co.node_id + "|" + ontology.term_definition (original_language.code_string, co.node_id).text + "]")
+--				end
+--			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+--				s.append (ca.rm_attribute_name)
+--			end
 
-			if attached specialisation_status_symbols.item (ss) as spec_sym then
-				s.append_character (' ')
-				s.append (spec_sym)
-			end
+--			if attached specialisation_status_symbols.item (ss) as spec_sym then
+--				s.append_character (' ')
+--				s.append (spec_sym)
+--			end
 
-			s.append_character ('%N')
-			io.put_string (s)
-		end
+--			s.append_character ('%N')
+--			io.put_string (s)
+--		end
 
-	node_diff_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		do
-		end
+--	node_diff_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+--		do
+--		end
 
 end
 

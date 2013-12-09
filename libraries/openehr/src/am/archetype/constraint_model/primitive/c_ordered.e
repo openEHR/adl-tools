@@ -12,7 +12,7 @@ deferred class C_ORDERED [G -> COMPARABLE create default_create end]
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, assumed_value
+			default_create, assumed_value, c_equal
 		end
 
 feature -- Initialisation
@@ -94,6 +94,20 @@ feature -- Status Report
 	valid_value (a_value: G): BOOLEAN
 		do
 			Result := across list as ivl_csr some ivl_csr.item.has (a_value) end
+		end
+
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'
+		do
+			if precursor (other) and list_count = other.list_count then
+				Result := True
+				from list.start until list.off or not Result loop
+					Result := across other.list as other_list_csr some other_list_csr.item.is_equal (list.item) end
+					list.forth
+				end
+			end
 		end
 
 feature -- Modification

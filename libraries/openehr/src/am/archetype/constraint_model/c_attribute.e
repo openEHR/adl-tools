@@ -224,15 +224,6 @@ feature -- Access
 			Result := children.item
 		end
 
-feature {C_ROLLUP_BUILDER} -- Source Control
-
-	inferred_specialisation_status (a_specialisation_level: INTEGER): SPECIALISATION_STATUS
-			-- status of this node in the source text of this archetype with respect to the
-			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
-		do
-			create Result.make (ss_propagated)
-		end
-
 feature -- Status Report
 
 	any_allowed: BOOLEAN
@@ -351,13 +342,20 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is a duplicate of `other'
+			-- Normally used to detect redefinition while diffing two flat archetypes
+		do
+			Result := cardinality ~ other.cardinality and existence ~ other.existence
+		end
+
+	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses no additional constraints than `other'.
 		do
 			Result := existence = Void and ((is_single and other.is_single) or (is_multiple and other.is_multiple and cardinality = Void))
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
 			--	cardinality
@@ -380,8 +378,7 @@ feature -- Comparison
 			-- True if the existence of this node is a duplicate of other.existence, which is
 			-- non-conformant except in non-strict mode
 		do
-			Result := attached existence as ex and then attached other.existence as other_ex and then
-				other_ex.equal_interval (ex)
+			Result := existence ~ other.existence
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN
@@ -398,8 +395,7 @@ feature -- Comparison
 			-- True if the cardinality of this node is a duplicate of other.cardinality, which is
 			-- non-conformant except in non-strict mode
 		do
-			Result := attached cardinality as card and then attached other.cardinality as other_card and then
-				other_card.equal_interval (card)
+			Result := cardinality ~ other.cardinality
 		end
 
 feature -- Modification
@@ -574,16 +570,16 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential (a_flat_obj, diff_obj: C_OBJECT; an_rm_schema: BMM_SCHEMA)
+	overlay_differential (a_flat_obj, diff_obj: C_OBJECT; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN])
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
-			Diff_obj_valid: diff_obj.node_conforms_to (a_flat_obj, an_rm_schema)
+			Diff_obj_valid: diff_obj.c_conforms_to (a_flat_obj, rm_type_conformance_checker)
 		do
 			if not a_flat_obj.node_id.is_equal (diff_obj.node_id) then
 				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
 			end
-			a_flat_obj.overlay_differential (diff_obj, an_rm_schema)
+			a_flat_obj.overlay_differential (diff_obj, rm_type_conformance_checker)
 		end
 
 	convert_to_ghost

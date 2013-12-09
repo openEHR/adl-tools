@@ -414,20 +414,6 @@ feature -- Status Setting
 
 feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
-	build_rolled_up_status
-			-- set rolled_up_specialisation statuses in nodes of definition
-			-- only useful to call for specialised archetypes
-		require
-			is_specialised
-		local
-			a_c_iterator: OG_CONTENT_ITERATOR
-			rollup_builder: C_ROLLUP_BUILDER
-		do
-			create rollup_builder.make (Current)
-			create a_c_iterator.make (definition.representation, rollup_builder)
-			a_c_iterator.do_all
-		end
-
 	id_atcodes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
 			-- are other uses of term codes from the ontology, which is why this attribute is not just called
@@ -722,6 +708,20 @@ feature {ADL15_ENGINE} -- ADL 1.5 Serialisation
 		end
 
 feature {NONE} -- Implementation
+
+	build_rolled_up_status
+			-- set rolled_up_specialisation statuses in nodes of definition
+			-- only useful to call for specialised archetypes
+		require
+			is_specialised
+		local
+			a_c_iterator: OG_CONTENT_ITERATOR
+			rollup_builder: C_ROLLUP_BUILDER
+		do
+			create rollup_builder.make (Current)
+			create a_c_iterator.make (definition.representation, rollup_builder)
+			a_c_iterator.do_all
+		end
 
 	build_physical_paths
 			-- generate physical paths from definition structure; if no changes made on archetype

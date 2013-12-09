@@ -32,9 +32,6 @@ feature -- Definitions
 	ss_inherited: INTEGER = 3
 			-- this node is inherited here unchanged
 
-	ss_propagated: INTEGER = 4
-			-- this node's status is the same as its parent's
-
 feature -- Access
 
 	specialisation_status_names: HASH_TABLE [STRING, INTEGER]
@@ -48,7 +45,6 @@ feature -- Access
 			Result.put ("inherited", ss_inherited)
 			Result.put ("redefined", ss_redefined)
 			Result.put ("node id redefined", ss_id_redefined)
-			Result.put ("propagated", ss_propagated)
 		end
 
 	specialisation_status_symbols: HASH_TABLE [STRING, INTEGER]
@@ -60,7 +56,6 @@ feature -- Access
 			Result.put ("^", ss_inherited)
 			Result.put ("/+", ss_redefined)
 			Result.put ("/", ss_id_redefined)
-			Result.put ("=", ss_propagated)
 		end
 
 feature -- Status Report
@@ -68,7 +63,15 @@ feature -- Status Report
 	valid_specialisation_status (a_status: INTEGER): BOOLEAN
 			-- True if a_status is a valid source status
 		do
-			Result := a_status >= ss_undefined and a_status <= ss_propagated
+			Result := a_status >= ss_undefined and a_status <= ss_inherited
+		end
+
+	specialisation_dominant_status (this_status, other_status: INTEGER): INTEGER
+			-- determine which of Current and other_status is dominant at a given node, due
+			-- to sub-node values; order is:
+			-- added, redefined, inherited
+		do
+			Result := this_status.min (other_status)
 		end
 
 end

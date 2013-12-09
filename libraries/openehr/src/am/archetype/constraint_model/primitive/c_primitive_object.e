@@ -16,7 +16,7 @@ deferred class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			default_create, out, enter_subtree, exit_subtree, node_conforms_to
+			default_create, out, enter_subtree, exit_subtree, c_conforms_to, c_equal
 		end
 
 feature -- Initialisaiton
@@ -26,8 +26,7 @@ feature -- Initialisaiton
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
 		do
-			rm_type_name := generating_type
-			rm_type_name.remove_head (2)
+			rm_type_name := aom_builtin_type
 		end
 
 feature -- Access
@@ -44,6 +43,14 @@ feature -- Access
 		deferred
 		end
 
+	aom_builtin_type: STRING
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		do
+			Result := generating_type
+			Result.remove_head (2)
+		end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN
@@ -54,10 +61,18 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			Result := precursor (other, an_rm_schema) and do_node_conforms_to (other)
+			Result := precursor (other, rm_type_conformance_checker) and do_node_conforms_to (other)
+		end
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if Current and `other' are semantically the same locally (child objects may differ)
+		do
+			Result := occurrences ~ other.occurrences and
+				node_id.is_equal (other.node_id) and
+				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
 		end
 
 feature -- Modification

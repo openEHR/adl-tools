@@ -415,7 +415,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 
 			-- set occurrences if overridden from default
 			create occ.make_from_string (co_create_params.occurrences)
-			if not occ.equal_interval (default_occurrences) then
+			if not occ.is_equal (default_occurrences) then
 				check attached Result.arch_node as a_n then
 					a_n.set_occurrences (occ)
 				end

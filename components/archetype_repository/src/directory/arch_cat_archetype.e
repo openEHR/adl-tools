@@ -132,6 +132,7 @@ feature {NONE} -- Initialisation
 			file_repository := a_repository
 
 			id := arch_thumbnail.archetype_id
+			is_generated := arch_thumbnail.is_generated
 			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
@@ -630,6 +631,24 @@ feature -- Status Report - Compilation
 			Result := old_ontological_parent_name /= Void
 		end
 
+	generate_differential: DIFFERENTIAL_ARCHETYPE
+			-- generate differential from compiled flat; if is_specialised, then
+			-- result will be path-compressed differential form archetype
+		require
+			is_valid
+		local
+			archetype_comparator: ARCHETYPE_COMPARATOR
+		do
+			if is_specialised then
+				create archetype_comparator.make_create_differential (Current)
+				check attached archetype_comparator.differential_child as da then
+					Result := da
+				end
+			else
+				create Result.make_from_flat (flat_archetype)
+			end
+		end
+
 feature -- Status Report - Semantic
 
 	is_specialised: BOOLEAN
@@ -664,10 +683,17 @@ feature -- Status Report - Semantic
 			Result := attached clients_index
 		end
 
+	is_generated: BOOLEAN
+			-- value of is_generated from last file read
+
 	differential_generated: BOOLEAN
 			-- True if the differential form was generated from the flat form
 		do
-			Result := not attached differential_archetype or else differential_archetype.is_generated
+			if attached differential_archetype then
+				Result := differential_archetype.is_generated
+			else
+				Result := is_generated
+			end
 		end
 
 	has_artefacts: BOOLEAN = True
@@ -868,10 +894,11 @@ feature -- Compilation
 		local
 			flat_path: STRING
 		do
+			status.wipe_out
 			if differential_generated then
 				if has_differential_file then
 					file_repository.delete_file (differential_path)
-					status := get_msg_line ("clean_generated_file", <<differential_path>>)
+					status.append (get_msg_line ("clean_generated_file", <<differential_path>>))
 				end
 				signal_from_scratch
 			end
@@ -946,23 +973,40 @@ feature {NONE} -- Compilation
 			Legacy_file_available: has_legacy_flat_file
 		local
 			legacy_flat_archetype: detachable FLAT_ARCHETYPE
+			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
 			remove_invalid_differential
+			flat_archetype_cache := Void
+
+			-- perform the parse; this can fail, i.e. not result generated
 			check attached legacy_flat_text as lft then
 				legacy_flat_archetype := adl15_engine.parse_legacy_flat (lft, rm_schema)
 			end
-			flat_archetype_cache := Void
-			if attached legacy_flat_archetype as lft then
-				add_info (ec_compile_legacy_i1, <<id.as_string>>)
-				create differential_archetype.make_from_legacy_flat (lft)
+			if attached legacy_flat_archetype as flat_arch then
 			 	compilation_state := Cs_parsed
-				if is_specialised and not specialisation_parent.is_valid then
-					compilation_state := cs_lineage_invalid
-					add_error (ec_compile_e1, <<parent_id.as_string>>)
-				else
-					-- perform post-parse object structure finalisation
-					adl15_engine.post_parse_process (Current, rm_schema)
+				add_info (ec_compile_legacy_i1, <<id.as_string>>)
 
+				-- perform post-parse processing and then diff conversion
+				if is_specialised then
+					-- run the comparator over the legacy flat archetype if specialised; it will mark all
+					-- nodes with a local and also rolled up inheritance status
+					if specialisation_parent.is_valid and attached specialisation_parent as att_sp then
+						adl15_engine.post_parse_process (flat_arch, Current, rm_schema)
+						create archetype_comparator.make (att_sp, flat_arch)
+						archetype_comparator.compare
+						archetype_comparator.generate_diff
+				--		archetype_comparator.compress_differential_child
+						differential_archetype := archetype_comparator.differential_child
+					else
+						compilation_state := cs_lineage_invalid
+						add_error (ec_compile_e1, <<parent_id.as_string>>)
+					end
+				else
+					adl15_engine.post_parse_process (flat_arch, Current, rm_schema)
+					create differential_archetype.make_from_flat (flat_arch)
+				end
+
+				if compilation_state = Cs_parsed then
 				 	compilation_state := Cs_ready_to_validate
 					if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
 						set_archetype_view_language (differential_archetype.original_language.code_string)
@@ -972,24 +1016,25 @@ feature {NONE} -- Compilation
 					validate
 
 					-- if differential archetype was generated from an old-style flat, perform path compression
+					-- FIXME: currently has to be done after validation, because path-compression markers are
+					-- added there as a side-effect. Should be done in a separate pass
 					if differential_archetype.is_specialised then
 						differential_archetype.convert_to_differential_paths
 					end
 
 					if compilation_state = Cs_validated_phase_2 then
 				 		save_differential
-
-						-- now validate on flat form
 						validate_flat
 				 	else
 				 		save_invalid_differential
 					end
 				end
 			else
-				merge_errors (adl15_engine.errors)
 			 	compilation_state := Cs_convert_legacy_failed
 			end
 
+			-- pick up all errors & warnings
+			merge_errors (adl15_engine.errors)
 			status.prepend (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed, Cs_convert_legacy_failed, Cs_lineage_invalid>>).has (compilation_state)
@@ -1017,7 +1062,7 @@ feature {NONE} -- Compilation
 				end
 
 				-- perform post-parse object structure finalisation
-				adl15_engine.post_parse_process (Current, rm_schema)
+				adl15_engine.post_parse_process (diff_arch, Current, rm_schema)
 
 				-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
@@ -1040,10 +1085,11 @@ feature {NONE} -- Compilation
 					set_archetype_view_language (diff_arch.original_language.code_string)
 				end
 			else
-				merge_errors (adl15_engine.errors)
 				compilation_state := Cs_parse_failed
 			end
 
+			-- pick up all errors & warnings
+			merge_errors (adl15_engine.errors)
 			status.copy (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
@@ -1076,7 +1122,6 @@ feature {NONE} -- Compilation
 				compilation_state := Cs_validate_failed
 			end
 			differential_archetype.set_is_valid (adl15_engine.validation_passed)
-
 			status.copy (errors.as_string_filtered (False, False, True))
 		ensure then
 			Compilation_state: (<<Cs_validated_phase_1, Cs_validated_phase_2, Cs_validate_failed>>).has (compilation_state)
@@ -1104,7 +1149,6 @@ feature {NONE} -- Compilation
 				compilation_state := Cs_validate_failed
 			end
 			differential_archetype.set_is_valid (adl15_engine.validation_passed)
-
 			status.copy (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)

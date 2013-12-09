@@ -13,7 +13,7 @@ class C_BOOLEAN
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			assumed_value
+			assumed_value, c_equal
 		end
 
 create
@@ -96,6 +96,15 @@ feature -- Status Report
 	valid_assumed_value (a_value: BOOLEAN_REF): BOOLEAN
 		do
 			Result := valid_value (a_value.item)
+		end
+
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'
+		do
+			Result := precursor (other) and list_count = other.list_count and then
+				across list as list_csr all other.list.has (list_csr.item) end
 		end
 
 feature -- Modification

@@ -13,7 +13,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, assumed_value
+			default_create, assumed_value, c_equal
 		end
 
 create
@@ -170,6 +170,16 @@ feature -- Status Report
 	regexp_default_delimiter: BOOLEAN
 			-- if True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used		
+
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'
+		do
+			Result := precursor (other) and list_count = other.list_count and then
+				across list as list_csr all other.list.has (list_csr.item) end
+				and then regexp ~ other.regexp
+		end
 
 feature -- Modification
 

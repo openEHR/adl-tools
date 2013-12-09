@@ -14,7 +14,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			default_create, prototype_value, valid_value, as_string, do_node_conforms_to
+			aom_builtin_type, prototype_value, valid_value, as_string, do_node_conforms_to, c_equal
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -25,12 +25,6 @@ inherit
 		end
 
 feature -- Initialisation
-
-	default_create
-		do
-			precursor {C_ORDERED}
-			rm_type_name := bare_type_name (({G}).name)
-		end
 
 	make_string_interval (a_lower_str, an_upper_str: detachable STRING)
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
@@ -103,6 +97,13 @@ feature -- Access
 		deferred
 		end
 
+	aom_builtin_type: STRING
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		do
+			Result := bare_type_name (({G}).name)
+		end
+
 feature -- Status Report
 
 	valid_value (a_value: G): BOOLEAN
@@ -133,6 +134,15 @@ feature -- Status Report
 
 	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
 		deferred
+		end
+
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'
+		do
+			Result := precursor (other)
+				and then pattern ~ other.pattern
 		end
 
 feature -- Output

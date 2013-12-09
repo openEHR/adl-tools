@@ -12,7 +12,7 @@ class C_TERMINOLOGY_CODE
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			assumed_value
+			assumed_value, c_equal
 		end
 
 	OPENEHR_DEFINITIONS
@@ -124,6 +124,17 @@ feature -- Status Report
 			Result := valid_value (a_value)
 		end
 
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'
+		do
+			Result := precursor (other) and list_count = other.list_count and then
+				terminology_id.is_equal (other.terminology_id) and then
+				terminology_version ~ other.terminology_version and then
+				across code_list as list_csr all other.code_list.has (list_csr.item) end
+		end
+
 feature -- Modification
 
 	merge_tuple (other: like Current)
@@ -227,7 +238,7 @@ feature {NONE} -- Implementation
 			create set2.make (0)
 			set2.compare_objects
 			set2.fill (list2)
-			
+
 			Result := set1.is_subset (set2)
 		end
 
