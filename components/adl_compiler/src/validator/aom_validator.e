@@ -22,6 +22,12 @@ inherit
 			target
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+			{ANY} is_valid_at_code, is_valid_ac_code, is_valid_code
+		end
+
 feature {ADL15_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)

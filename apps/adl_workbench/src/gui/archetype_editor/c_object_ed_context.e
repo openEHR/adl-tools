@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 			attached arch_node as a_n and then a_n.is_addressable
 		do
 			if attached arch_node as a_n then
-				if is_valid_code (a_n.node_id) then
+				if is_valid_at_code (a_n.node_id) then
 					if display_settings.show_codes then
 						Result := a_n.node_id + "|" + ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text + "|"
 					else

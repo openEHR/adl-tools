@@ -48,6 +48,8 @@ feature -- Access
 	last_archetype: detachable ARCHETYPE_THUMBNAIL
 			-- thumbnail form of last parsed archetype
 
+	is_generated: BOOLEAN
+
 feature -- Commands
 
 	parse (a_full_path: STRING)
@@ -76,7 +78,7 @@ feature -- Commands
 
 			-- first line
 			if lines[1].has ('(') then
-				arch_is_generated := lines[1].has_substring(Generated_flag_string)
+				is_generated := lines[1].has_substring (Generated_flag_string)
 
 				-- extract ADL version
 				-- FIXME: uncomment the following if ADL version needed in thumbnail
@@ -125,7 +127,7 @@ feature -- Commands
 						end
 					end
 
-					create last_archetype.make (archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, arch_is_generated)
+					create last_archetype.make (archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
 					if attached parent_id_str as pid_str then
 						last_archetype.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
 					end

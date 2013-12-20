@@ -56,8 +56,10 @@ feature -- Validation
 
 			-- basic validation
 			validate_basics
+			validate_structure
 
-			-- rebuilding might not work earlier
+			-- rebuilding might not work earlier because there might be invalid
+			-- node ids
 			if passed then
 				target.rebuild
 			end
@@ -101,6 +103,30 @@ feature {NONE} -- Implementation
 				end
  			elseif specialisation_depth_from_code (target.concept) /= 0 then
  				add_error (ec_VACSDtop, <<specialisation_depth_from_code (target.concept).out>>)
+			end
+		end
+
+	validate_structure
+			-- validate definition structure of archetype
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make (target.definition)
+			def_it.do_until_surface (agent structure_validate_node,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := True end)
+		end
+
+	structure_validate_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- perform validation of node against reference model.
+		do
+			if attached {C_ATTRIBUTE} a_c_node as ca then
+				if not target.is_specialised and then ca.has_differential_path then
+					add_error (ec_VDIFV, <<ca.path>>)
+				end
+			elseif attached {C_OBJECT} a_c_node as co and then not co.is_addressable and not attached {C_PRIMITIVE_OBJECT} a_c_node then
+				check attached co.parent as parent_ca then
+					add_error (ec_VSONID, <<parent_ca.path, co.rm_type_name>>)
+				end
 			end
 		end
 
@@ -154,7 +180,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_suppliers
-			-- validate all C_ARCHETYPE_ROOT objects in a basic way
+			-- check that all C_ARCHETYPE_ROOT objects have an archetype id
 		local
 			c_ar_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
 			filler_id: ARCHETYPE_HRID

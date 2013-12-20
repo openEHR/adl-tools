@@ -63,6 +63,16 @@ feature -- Definitions
 
 	Specialisation_separator: CHARACTER = '.'
 
+	Code_number_length: INTEGER
+			-- length of top-level codes, e.g. "0001"
+		once
+			Result := Default_code_number_string.count
+		end
+
+	Code_modulus: INTEGER = 1000
+			-- numeric modulus to turn a code of any size into
+			-- a 3 digit number
+
 	Term_code_length: INTEGER
 			-- length of top-level term codes, e.g. "at0001"
 		once
@@ -76,8 +86,7 @@ feature -- Definitions
 			-- a regex to match any term of any depth
 		once
 			create Result.make_empty
-			Result.append (Term_code_leader)
-			Result.append ("[0-9]+(\.[0-9]+)*")
+			Result.append ("^at[0-9]+(\.[0-9]+)*$")
 		end
 
 	Constraint_code_length: INTEGER
@@ -92,11 +101,22 @@ feature -- Definitions
 			-- a regex to match any term of any depth
 		once
 			create Result.make_empty
-			Result.append (Constraint_code_leader)
-			Result.append ("[0-9]+(\.[0-9]+)*")
+			Result.append ("^ac[0-9]+(\.[0-9]+)*$")
 		end
 
+	Any_code_regex_pattern: STRING
+			-- a regex to match any term of any depth
+		once
+			create Result.make_empty
+			Result.append ("^(at|ac|id)[0-9]+(\.[0-9]+)*$")
+		end
+
+	Id_code_leader: STRING = "id"
+			-- leader of all id codes
+
 	Zero_filler: STRING = ".0"
+
+	Zero_leader: STRING = "0."
 
 	Annotated_code_text_delimiter: CHARACTER = '|'
 			-- delimiter for creating annotated terms of form 'nnnn|term text|'
@@ -108,11 +128,11 @@ feature -- Definitions
 feature -- Access
 
 	specialisation_parent_from_code (a_code: STRING): STRING
-			-- get parent of this specialised code
+			-- get immediate parent of this specialised code
 		require
 			Code_valid: specialisation_depth_from_code(a_code) > 0
 		do
-			Result := a_code.substring (1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
+			Result := a_code.substring (1, a_code.last_index_of (Specialisation_separator, a_code.count)-1)
 		ensure
 			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
 		end
@@ -141,10 +161,7 @@ feature -- Access
 				end
 
 				-- if there are trailing 0s, get rid of them
-				from
-				until
-					finished
-				loop
+				from until finished loop
 					if a_code.substring (idx-1, idx).is_equal (Zero_filler) then
 						idx := idx - 2
 					else
@@ -280,8 +297,20 @@ feature -- Comparison
 			Result := a_code.starts_with (constraint_code_leader)
 		end
 
+	is_valid_at_code (a_code: STRING): BOOLEAN
+			-- Is `a_code' a valid "at" code? It can be any of:
+		do
+			Result := Term_code_regex_matcher.recognizes (a_code)
+		end
+
+	is_valid_ac_code (a_code: STRING): BOOLEAN
+			-- Is `a_code' a valid "at" code? It can be any of:
+		do
+			Result := Constraint_code_regex_matcher.recognizes (a_code)
+		end
+
 	is_valid_code (a_code: STRING): BOOLEAN
-			-- Is `a_code' a valid "at" or "ac" code? It can be any of:
+			-- Is `a_code' a valid "at", "ac" or "id" code? It can be any of:
 			-- at0000
 			-- at000n
 			-- at0.n, at0.1.n, at0.0.n etc
@@ -295,6 +324,8 @@ feature -- Comparison
 				if a_code.starts_with (term_code_leader) then
 					i := term_code_leader.count
 				elseif a_code.starts_with (constraint_code_leader) then
+					i := constraint_code_leader.count
+				elseif a_code.starts_with (id_code_leader) then
 					i := constraint_code_leader.count
 				end
 
@@ -343,7 +374,7 @@ feature -- Comparison
 			-- and then any trailing '.0' pieces, do we end up with a valid code? If so
 			-- it means that the code corresponds to a real node from `a_level' or higher
 		require
-			Code_valid: is_valid_code(a_code)
+			Code_valid: is_valid_code (a_code)
 			Level_valid: a_level >= 0
 		local
 			s: STRING
@@ -423,6 +454,74 @@ feature -- Factory
 			level_set: specialisation_depth_from_code (Result) = at_level
 		end
 
+	new_id_code_at_level (a_str: STRING; at_level: INTEGER; id_codes: detachable TWO_WAY_SORTED_SET [STRING]): STRING
+			-- generate a new code of the form 'idNNNN' based on `string', used to generate code via hashing
+			-- id_codes contains the id codes already in use in the calling context; the returned code will be
+			-- unique with respect to this set.
+		require
+			String_valid: not a_str.is_empty
+		local
+			i, code: INTEGER
+			code_num_str, leader: STRING
+		do
+			leader := Id_code_leader.twin
+			from i := 0 until i >= at_level loop
+				leader.append (Zero_leader)
+				i := i + 1
+			end
+
+			code := a_str.hash_code \\ Code_modulus
+			code_num_str := code.out
+			Result := leader.twin
+			if at_level = 0 then
+				Result.append (Default_code_number_string.substring (1, Code_number_length - code_num_str.count))
+			end
+			Result.append (code_num_str)
+			if attached id_codes as att_codes then
+				from until not att_codes.has (Result) loop
+					code := code + 1
+					code_num_str := code.out
+					Result := leader.twin
+					if at_level = 0 then
+						Result.append (Default_code_number_string.substring (1, Code_number_length - code_num_str.count))
+					end
+					Result.append (code_num_str)
+				end
+				att_codes.extend (Result)
+			end
+		end
+
+	new_refined_code_at_level (a_parent_code: STRING; at_level: INTEGER; id_codes: TWO_WAY_SORTED_SET [STRING]): STRING
+			-- Create a new at|ac|id-code at specialisation depth `at_level', based on `a_parent_code'
+			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
+			-- Note: a code of "at0001" has specialisation depth 0
+		require
+			level_valid: at_level > 0
+		local
+			i, code: INTEGER
+			leader: STRING
+		do
+			create leader.make_from_string (a_parent_code)
+
+			from i := specialisation_depth_from_code (a_parent_code) + 1 until i >= at_level loop
+				leader.append (Zero_filler)
+				i := i + 1
+			end
+
+			leader.append_character (Specialisation_separator)
+
+			-- generate a code-tail
+			code := 1
+			Result := leader + code.out
+			from until not id_codes.has (Result) loop
+				code := code + 1
+				Result := leader + code.out
+			end
+			id_codes.extend (Result)
+		ensure
+			Result_valid: specialised_code_tail (Result).to_integer > 0
+		end
+
 feature -- Conversion
 
 	annotated_code (a_code, a_text: STRING): STRING
@@ -436,6 +535,13 @@ feature -- Conversion
 		end
 
 feature -- Pattern Matching
+
+	Any_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+			-- match any term code
+		once
+			create Result.make
+			Result.compile (Any_code_regex_pattern)
+		end
 
 	Term_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- match any term code

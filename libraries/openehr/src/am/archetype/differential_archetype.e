@@ -92,6 +92,7 @@ feature -- Initialisation
 					a_flat.description, a_flat.definition, a_flat.invariants,
 					a_flat.ontology.to_differential, a_flat.annotations)
 			is_generated := True
+			rebuild
 		ensure
 			is_generated
 		end

@@ -18,11 +18,6 @@ inherit
 			validate, target
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 	ADL_SYNTAX_CONVERTER
 		export
 			{NONE} all
@@ -55,9 +50,6 @@ feature -- Validation
 				flat_parent := target_descriptor.specialisation_parent.flat_archetype
  			end
 
- 			-- structure validation
-			validate_structure
-
 			-- reference model validation - needed for all archetypes, top-level and
 			-- specialised, since specialised archetypes can contain new nodes that need to be
 			-- validated all the way through to the RM
@@ -68,24 +60,12 @@ feature -- Validation
 				validate_reference_model
 			end
 
-			-- validation requiring the archetype xref tables
-			if passed then
-				validate_definition_codes
-			end
-
-			-- validation of ontology requiring flat parent
-			if passed then
-				validate_ontology_languages
-				validate_ontology_bindings
-			end
-
 			-- validation requiring valid specialisation parent
 			if passed then
 				if target.is_specialised then
 					validate_specialised_basics
 					validate_specialised_definition
 				end
-				validate_internal_references
 				validate_assertions
 				validate_annotations
 			end
@@ -98,166 +78,6 @@ feature {NONE} -- Implementation
 
 	flat_parent: detachable FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised
-
-	validate_ontology_languages
-			-- Are all `term_codes' and `constraint_codes' found in all languages?
-			-- For specialised archetypes, requires flat parent to be available
-		local
-			langs: ARRAYED_SET [STRING]
-		do
-			langs := ontology.languages_available
-			across langs as langs_csr loop
-				across ontology.term_codes as code_csr loop
-					if not (ontology.has_term_definition (langs_csr.item, code_csr.item) or
-						target.is_specialised and then flat_parent.ontology.has_term_definition (langs_csr.item, code_csr.item))
-					then
-						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
-					end
-				end
-				across ontology.constraint_codes as code_csr loop
-					if not (ontology.has_constraint_definition (langs_csr.item, code_csr.item) or
-						target.is_specialised and then flat_parent.ontology.has_constraint_definition (langs_csr.item, code_csr.item))
-					then
-						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
-					end
-				end
-			end
-		end
-
-	validate_ontology_bindings
-			-- Are all `term_bindings' valid, i.e.
-			-- for atomic bindings:
-			-- 		is every term mentioned in the term_definitions?
-			-- for path bindings:
-			-- 		does every path mentioned exist in flat archetype?
-			--
-			-- Are all `constraint_bindings' valid, i.e.
-			-- for atomic bindings:
-			-- 		is every term mentioned in the constraint_definitions?
-			--
-		do
-			across ontology.term_bindings as bindings_csr loop
-				across bindings_csr.item as bindings_for_lang_csr loop
-					if not ((is_valid_code (bindings_for_lang_csr.key) and then ontology.has_term_code (bindings_for_lang_csr.key)) or
-						(not target.is_specialised and then target.has_path (bindings_for_lang_csr.key)) or
-						(target.is_specialised and then (flat_parent.ontology.has_term_code (bindings_for_lang_csr.key) or target.has_path (bindings_for_lang_csr.key))))
-					then
-						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
-					end
-				end
-			end
-			across ontology.constraint_bindings as bindings_csr loop
-				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_constraint_code (bindings_for_lang_csr.key) or
-						target.is_specialised and flat_parent.ontology.has_constraint_code (bindings_for_lang_csr.key))
-					then
-						add_error (ec_VOCBK, <<bindings_for_lang_csr.key>>)
-					end
-				end
-			end
-		end
-
-	validate_definition_codes
-			-- Check if all at- and ac-codes found in the definition node tree are in the ontology (including inherited items).
-			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
-			-- For specialised archetypes, requires flat parent to be available
-		local
-			depth, code_depth: INTEGER
-			cp: TERMINOLOGY_CODE
-		do
-			depth := ontology.specialisation_depth
-
-			across target.id_atcodes_index as codes_csr loop
-				code_depth := specialisation_depth_from_code (codes_csr.key)
-				if code_depth > depth then
-					add_error (ec_VONSD, <<codes_csr.key>>)
-				elseif code_depth < depth then
-					if not flat_parent.ontology.has_term_code (codes_csr.key) then
-						add_error (ec_VATDF1, <<codes_csr.key>>)
-					end
-				elseif not ontology.has_term_code (codes_csr.key) then
-					add_error (ec_VATDF2, <<codes_csr.key>>)
-				end
-			end
-
-			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in ontology
-			across target.data_codes_index as codes_csr loop
-				-- validate local codes for depth & presence in ontology
-				if codes_csr.key.starts_with (Term_code_leader) then
-					code_depth := specialisation_depth_from_code (codes_csr.key)
-					if code_depth > depth then
-						add_error (ec_VATCD, <<codes_csr.key, depth.out>>)
-					elseif code_depth < depth then
-						if not flat_parent.ontology.has_term_code (codes_csr.key) then
-							add_error (ec_VATDF1, <<codes_csr.key>>)
-						end
-					elseif not ontology.has_term_code (codes_csr.key) then
-						add_error (ec_VATDF2, <<codes_csr.key>>)
-					end
-				else
-					create cp.make_from_string (codes_csr.key)
-					if ts.has_terminology (cp.terminology_id) then
-						if not ts.terminology (cp.terminology_id).has_concept_id (cp.code_string) then
-							add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id>>)
-						end
-					else
-						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
-					end
-				end
-			end
-
-			-- check if all found constraint_codes are defined in constraint_definitions,
-			across target.accodes_index as codes_csr loop
-				code_depth := specialisation_depth_from_code (codes_csr.key)
-				if code_depth > depth then
-					add_error (ec_VATCD, <<codes_csr.key, depth.out>>)
-				elseif code_depth < depth then
-					if not flat_parent.ontology.has_constraint_code (codes_csr.key) then
-						add_error (ec_VACDF1, <<codes_csr.key>>)
-					end
-				elseif not ontology.has_constraint_code (codes_csr.key) then
-					add_error (ec_VACDF2, <<codes_csr.key>>)
-				end
-			end
-		end
-
-	validate_internal_references
-			-- Validate items in `found_internal_references'.
-			-- For specialised archetypes, requires flat parent to be available
-		do
-			across target.use_node_index as use_refs_csr loop
-				if target.definition.has_path (use_refs_csr.key) then
-					convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, target)
-				elseif target.is_specialised and flat_parent.definition.has_path (use_refs_csr.key) then
-					check attached flat_parent as fp then
-						convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, fp)
-					end
-				else
-					add_error (ec_VUNP, <<use_refs_csr.key>>)
-				end
-			end
-		end
-
-	validate_structure
-			-- validate definition structure of archetype
-		local
-			def_it: C_ITERATOR
-		do
-			invalid_types.wipe_out
-			create def_it.make (target.definition)
-			def_it.do_until_surface (agent structure_validate_node,
-				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := True end)
-		end
-
-	structure_validate_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- perform validation of node against reference model.
-		do
-			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if not target.is_specialised and then ca.has_differential_path then
-					add_error (ec_VDIFV, <<ca.path>>)
-				end
-			end
-		end
 
 	validate_assertions
 			-- validate the invariants if any, which entails checking that all path references are valid against

@@ -26,6 +26,11 @@ inherit
 			{NONE} all;
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+		end
+
 create
 	make
 
@@ -58,7 +63,10 @@ feature {ADL15_ENGINE} -- Initialisation
 			target := a_target
 			if ara.is_specialised then
 				arch_parent_flat := ara.specialisation_parent.flat_archetype
+				arch_parent_flat.rebuild
 			end
+			create id_codes.make
+			id_codes.compare_objects
 		end
 
 feature -- Access
@@ -79,6 +87,7 @@ feature -- Commands
 			update_constraint_refs
 			update_aom_mapped_types
 			update_lifecycle_state
+			add_id_codes
 		end
 
 	clear
@@ -172,6 +181,104 @@ feature {NONE} -- Implementation
 
 	att_c_terminology_code_type_mapping: AOM_TYPE_MAPPING
 			-- logically attached version of c_terminology_code_type_mapping
+
+	add_id_codes
+			-- add id-codes on nodes with no code
+		local
+			def_it: C_ITERATOR
+		do
+			-- make a copy of current ARCHETYPE_INTERNAL_REFs and invariants lists
+			-- so that any paths can be corrected
+			use_node_index := target.use_node_index
+			invariants_index := target.invariants_index
+
+			-- fix definition
+			create def_it.make (target.definition)
+			def_it.do_all (agent do_add_id_code, Void)
+		end
+
+	 do_add_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	 	local
+	 		apa: ARCHETYPE_PATH_ANALYSER
+	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
+	 		parent_flat: FLAT_ARCHETYPE
+	 		parent_ca: C_ATTRIBUTE
+	 		parent_co: C_OBJECT
+	 	do
+	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then not c_obj.is_addressable then
+	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
+	 			old_path := c_obj.path
+ 				id_code := new_id_code_at_level (old_path, target.specialisation_depth, id_codes)
+	 			if target.is_specialised then
+	 				-- generate a path; since the terminal object doesn't currently have any node_id,
+	 				-- the path will actually just point to the parent C_ATTRIBUTE
+	 				create apa.make_from_string (c_obj.path)
+	 				if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
+		 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
+		 				check attached arch_parent_flat as att_pf then
+		 					parent_flat := att_pf
+		 				end
+		 				if parent_flat.has_path (path_in_flat) then
+		 					parent_ca := parent_flat.c_attr_at_path (path_in_flat)
+		 					if parent_ca.has_child_with_rm_type_name (c_obj.rm_type_name) then
+		 						parent_co := parent_ca.child_with_rm_type_name (c_obj.rm_type_name)
+		 						parent_id_code := parent_co.node_id
+	 							id_code := parent_id_code
+
+	 							-- initially assume straight inheritance, so that different node_id is not
+	 							-- used as a reason for c_equal() to fail
+	 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
+		 						if not c_obj.c_equal (parent_co) then
+		 							-- they really are different; use a redefined code instead
+				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, id_codes)
+		 						end
+			 				end
+		 				end
+	 				end
+	 			end
+				c_obj.parent.replace_node_id (c_obj.node_id, id_code)
+
+				-- fix any matching use nodes with this path
+				across use_node_index as use_node_idx_csr loop
+					if use_node_idx_csr.key.starts_with (old_path) then
+						across use_node_idx_csr.item as use_nodes_csr loop
+							create new_path.make_from_string (c_obj.path)
+							if use_node_idx_csr.key.count > old_path.count then
+								new_path.append (use_node_idx_csr.key.substring (old_path.count + 1, use_node_idx_csr.key.count))
+							end
+							use_nodes_csr.item.set_target_path (new_path)
+						end
+					end
+				end
+
+				-- fix any matching invariant nodes with this path
+				across invariants_index as invs_idx_csr loop
+					if invs_idx_csr.key.starts_with (old_path) then
+						across invs_idx_csr.item as invs_csr loop
+							if invs_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
+								create new_path.make_from_string (c_obj.path)
+								if invs_idx_csr.key.count > old_path.count then
+									new_path.append (invs_idx_csr.key.substring (old_path.count + 1, invs_idx_csr.key.count))
+								end
+								invs_csr.item.make_archetype_definition_ref (new_path)
+							end
+						end
+					end
+				end
+	 		end
+	 	end
+
+	id_codes: TWO_WAY_SORTED_SET [STRING]
+
+	use_node_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
+		attribute
+			create Result.make (0)
+		end
+
+	invariants_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
+		attribute
+			create Result.make (0)
+		end
 
 end
 

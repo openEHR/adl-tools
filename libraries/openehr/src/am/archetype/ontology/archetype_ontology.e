@@ -18,7 +18,8 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_concept_code, is_valid_code, specialisation_depth_from_code
+			{ANY} is_valid_concept_code, is_valid_at_code, is_valid_ac_code,
+				is_valid_code, specialisation_depth_from_code
 		end
 
 	ARCHETYPE_DEFINITIONS
@@ -250,15 +251,13 @@ feature -- Access
 			loop
 				if og_phys_path.item.is_addressable then
 					term_code := og_phys_path.item.object_id
-					if is_valid_code (term_code) then
-						if has_term_code (term_code) then
-							if with_codes then
-								log_str := annotated_code (term_code, term_definition (a_language, term_code).text)
-							else
-								log_str := term_definition (a_language, term_code).text
-							end
-							og_log_path.item.set_object_id (log_str)
+					if is_valid_at_code (term_code) and then has_term_code (term_code) then
+						if with_codes then
+							log_str := annotated_code (term_code, term_definition (a_language, term_code).text)
+						else
+							log_str := term_definition (a_language, term_code).text
 						end
+						og_log_path.item.set_object_id (log_str)
 					else
 						og_log_path.item.set_object_id (term_code)
 					end
@@ -962,7 +961,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Modification
 			-- spec depth = 0: at0047 -> use the 0047 & compare with current highest
 			-- spec depth = 3: at0.0.12 -> use the 12 & compare with current highest
 		require
-			Code_valid: is_valid_code (a_code)
+			Code_valid: is_valid_at_code (a_code)
 		local
 			idx: INTEGER
 			idx_string: STRING
@@ -982,7 +981,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Modification
 			-- update highest_constraint_code_index for this level;
 			-- ignore acXXXX codes not of the level of this archetype
 		require
-			Code_valid: is_valid_code (a_code)
+			Code_valid: is_valid_ac_code (a_code)
 		local
 			idx: INTEGER
 			idx_string: STRING
@@ -1066,7 +1065,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Modification
 			end
 		end
 
-feature {P_ARCHETYPE_ONTOLOGY} -- Implementation
+feature {P_ARCHETYPE_ONTOLOGY, ADL14_ARCHETYPE_ONTOLOGY} -- Implementation
 
 	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
 		do

@@ -365,6 +365,12 @@ feature {NONE} -- Implementation
 						convert_ontology_to_nested (ont_tree)  -- perform any version upgrade conversions
 
 						if is_legacy_flat then
+--							
+-- following is for if we make ADL 1.5 ontology section 1 table for all codes and 1 for all bindings, with
+-- bindings being all URIs
+--							if attached orig_lang_trans as olt and then attached {ADL14_ARCHETYPE_ONTOLOGY}
+--								ont_tree.as_object (({ADL14_ARCHETYPE_ONTOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as adl14_ont
+--								and not dt_object_converter.errors.has_errors
 							if attached orig_lang_trans as olt and then attached {FLAT_ARCHETYPE_ONTOLOGY}
 								ont_tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_ont
 								and not dt_object_converter.errors.has_errors
@@ -377,6 +383,7 @@ feature {NONE} -- Implementation
 									res_desc,	-- may be Void
 									definition,
 									flat_ont
+--									adl14_ont.to_flat_ontology
 								)
 							else
 								errors.add_error (ec_SAON, Void, generator + ".parse")

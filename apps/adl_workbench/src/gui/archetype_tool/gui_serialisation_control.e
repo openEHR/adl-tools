@@ -58,22 +58,22 @@ feature {NONE}-- Initialization
 
 			-- serialise radio buttons
 			create ev_serialise_adl_rb
-			create ev_serialise_dadl_rb
+			create ev_serialise_odin_rb
 			create ev_serialise_xml_rb
 			create ev_serialise_json_rb
 			create ev_serialise_yaml_rb
 			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_dadl_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_odin_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_json_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_yaml_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_dadl_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_odin_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_yaml_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_odin_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_yaml_rb)
@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
 
 	ev_serialise_controls_frame: EV_FRAME
 
-	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb, ev_serialise_json_rb, ev_serialise_yaml_rb: EV_RADIO_BUTTON
+	ev_serialise_adl_rb, ev_serialise_odin_rb, ev_serialise_xml_rb, ev_serialise_json_rb, ev_serialise_yaml_rb: EV_RADIO_BUTTON
 
 	ev_flatten_with_rm_cb, ev_line_numbers_cb: EV_CHECK_BUTTON
 
@@ -150,11 +150,13 @@ feature {NONE} -- Implementation
 			if ev_serialise_adl_rb.is_selected then
 				if not differential_view then
 					s := source.flat_text (ev_flatten_with_rm_cb.is_selected)
+				elseif attached source.serialised_differential_archetype as sda then
+					s := sda
 				else
-					s := source.differential_text
+					create s.make_empty
 				end
 			else
-				if ev_serialise_dadl_rb.is_selected then
+				if ev_serialise_odin_rb.is_selected then
 					syntax_type := Syntax_type_adl
 				elseif ev_serialise_xml_rb.is_selected then
 					syntax_type := Syntax_type_xml
@@ -186,8 +188,8 @@ feature {NONE} -- Implementation
 		do
 			ev_serialise_adl_rb.set_text (syntax_type_adl.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_adl_rb.set_tooltip (get_msg (ec_show_adl_serialisation_tooltip, <<adl_version_for_flat_output>>))
-			ev_serialise_dadl_rb.set_text (syntax_type_odin.as_upper + " " + adl_version_for_flat_output)
-			ev_serialise_dadl_rb.set_tooltip (get_msg (ec_show_dadl_serialisation_tooltip, <<adl_version_for_flat_output>>))
+			ev_serialise_odin_rb.set_text (syntax_type_odin.as_upper + " " + adl_version_for_flat_output)
+			ev_serialise_odin_rb.set_tooltip (get_msg (ec_show_dadl_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_xml_rb.set_text (syntax_type_xml.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_xml_rb.set_tooltip (get_msg (ec_show_xml_serialisation_tooltip, <<adl_version_for_flat_output>>))
 			ev_serialise_json_rb.set_text (syntax_type_json.as_upper + " " + adl_version_for_flat_output)

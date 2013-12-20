@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (664)
+			create message_table.make (662)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -149,12 +149,9 @@ feature -- Initialisation
 			message_table.put ("archetype concept code $1 not used in definition", ec_VACCD)
 			message_table.put ("translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections", ec_VOTM)
 			message_table.put ("code $1 specialisation depth greater than that of archetype $2", ec_VATCD)
-			message_table.put ("node id at-code $1 from specialisation parent not defined in ontology of any parent archetype", ec_VATDF1)
-			message_table.put ("node id at-code $1 not defined in ontology of current archetype", ec_VATDF2)
-			message_table.put ("at-code $1 used in constraint from specialisation parent not defined in ontology of any parent archetype", ec_VATDC1)
-			message_table.put ("at-code $1 used in constraint not defined in ontology of current archetype", ec_VATDC2)
-			message_table.put ("constraint code $1 from specialisation parent not defined in ontology of any parent archetype", ec_VACDF1)
-			message_table.put ("constraint code $1 not found in ontology of current archetype", ec_VACDF2)
+			message_table.put ("node id at-code $1 from not defined in flat ontology", ec_VATDF)
+			message_table.put ("at-code $1 used in constraint not defined in flat ontology", ec_VATDC)
+			message_table.put ("constraint code $1 not defined in flat ontology", ec_VACDF)
 			message_table.put ("term binding key $1 must either be valid term code or valid path in flat archetype", ec_VOTBK)
 			message_table.put ("constraint binding key $1 must be a valid constraint code", ec_VOCBK)
 			message_table.put ("External code $1 not found in terminology $2", ec_VETDF)
@@ -186,6 +183,7 @@ feature -- Initialisation
 			message_table.put ("object node at path $1 RM type $2 redefines parent node RM type $3 but node_id $4 not redefined", ec_VSONIRrm)
 			message_table.put ("illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child", ec_VSCNR)
 			message_table.put ("object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)", ec_VCOCDocc)
+			message_table.put ("object node at path $1, RM type $2, has no node identifier", ec_VSONID)
 			message_table.put ("$1 object node at path $2 (AOM type $3) does not conform to $4 node at parent path $5 (AOM type $6)", ec_VSONT)
 			message_table.put ("object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4", ec_VSONCT)
 			message_table.put ("object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4", ec_VSONCO)

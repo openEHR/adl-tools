@@ -91,6 +91,8 @@ feature {NONE} -- Initialisation
 		require
 			Path_valid: not a_path.is_empty
 			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
+		local
+			amp: ARCHETYPE_MINI_PARSER
 		do
 			make_item
 
@@ -105,11 +107,17 @@ feature {NONE} -- Initialisation
 
 			legacy_flat_path := a_path
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+
+			-- differential file details
 			differential_path := extension_replaced (a_path, File_ext_archetype_source)
-			invalid_differential_path := extension_replaced (a_path, File_ext_archetype_adl_diff)
 			if has_differential_file then
 				differential_text_timestamp := differential_file_timestamp
+				-- have a look at the differential archetype
+				create amp
+				amp.parse (differential_path)
+				is_differential_generated := amp.is_generated
 			end
+			invalid_differential_path := extension_replaced (a_path, File_ext_archetype_adl_diff)
 
 			finalise_make
 
@@ -132,7 +140,7 @@ feature {NONE} -- Initialisation
 			file_repository := a_repository
 
 			id := arch_thumbnail.archetype_id
-			is_generated := arch_thumbnail.is_generated
+			is_differential_generated := arch_thumbnail.is_generated
 			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
@@ -316,6 +324,13 @@ feature -- Access (semantic)
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
+
+	serialised_differential_archetype: detachable STRING
+		do
+			if attached differential_archetype as da then
+				Result := adl15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+			end
+		end
 
 	flat_archetype: FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
@@ -683,18 +698,8 @@ feature -- Status Report - Semantic
 			Result := attached clients_index
 		end
 
-	is_generated: BOOLEAN
-			-- value of is_generated from last file read
-
-	differential_generated: BOOLEAN
+	is_differential_generated: BOOLEAN
 			-- True if the differential form was generated from the flat form
-		do
-			if attached differential_archetype then
-				Result := differential_archetype.is_generated
-			else
-				Result := is_generated
-			end
-		end
 
 	has_artefacts: BOOLEAN = True
 			-- True if there are any archetypes at or below this point
@@ -770,7 +775,7 @@ feature -- Compilation
 					when Cs_validated_phase_2 then
 						validate_flat
 					when Cs_validated then
-						post_parse_process
+						post_compile_actions
 						finished := True
 					else
 						finished := True
@@ -895,7 +900,7 @@ feature -- Compilation
 			flat_path: STRING
 		do
 			status.wipe_out
-			if differential_generated then
+			if is_differential_generated then
 				if has_differential_file then
 					file_repository.delete_file (differential_path)
 					status.append (get_msg_line ("clean_generated_file", <<differential_path>>))
@@ -914,7 +919,7 @@ feature -- Compilation
 				file_repository.delete_file (flat_path)
 			end
 		ensure
-			Reset_if_differential_generated: differential_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
+			Reset_if_differential_generated: is_differential_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
 
 	signal_exception
@@ -1025,6 +1030,7 @@ feature {NONE} -- Compilation
 					if compilation_state = Cs_validated_phase_2 then
 				 		save_differential
 						validate_flat
+						differential_archetype.set_is_valid (adl15_engine.validation_passed)
 				 	else
 				 		save_invalid_differential
 					end
@@ -1034,7 +1040,6 @@ feature {NONE} -- Compilation
 			end
 
 			-- pick up all errors & warnings
-			merge_errors (adl15_engine.errors)
 			status.prepend (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed, Cs_convert_legacy_failed, Cs_lineage_invalid>>).has (compilation_state)
@@ -1121,7 +1126,6 @@ feature {NONE} -- Compilation
 			else
 				compilation_state := Cs_validate_failed
 			end
-			differential_archetype.set_is_valid (adl15_engine.validation_passed)
 			status.copy (errors.as_string_filtered (False, False, True))
 		ensure then
 			Compilation_state: (<<Cs_validated_phase_1, Cs_validated_phase_2, Cs_validate_failed>>).has (compilation_state)
@@ -1148,10 +1152,19 @@ feature {NONE} -- Compilation
 			else
 				compilation_state := Cs_validate_failed
 			end
-			differential_archetype.set_is_valid (adl15_engine.validation_passed)
 			status.copy (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)
+		end
+
+	post_compile_actions
+		require
+			compilation_state = Cs_validated
+		do
+			-- extract reference archetype marker, if it exists
+			if attached differential_archetype.description as desc and then attached desc.other_details as dets and then dets.has ("model_level") then
+				is_reference_archetype := dets.item ("model_level").is_equal ("reference")
+			end
 		end
 
 feature {ARCHETYPE_CATALOGUE} -- Modification
@@ -1180,8 +1193,8 @@ feature -- File Operations
 		require
 			is_valid_differential
 		do
-			check attached differential_archetype as da then
-				file_repository.save_text_to_file (differential_path, adl15_engine.serialise (da, Syntax_type_adl, current_archetype_language))
+			check attached serialised_differential_archetype as sda then
+				file_repository.save_text_to_file (differential_path, sda)
 			end
 			differential_text_timestamp := differential_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)
@@ -1462,20 +1475,6 @@ feature {NONE} -- Implementation
 --			if has_gui_context then
 --				gui_context.clear
 --			end
-		end
-
-	post_parse_process
-		require
-			compilation_state = Cs_validated
-		do
-			-- extract reference archetype marker, if it exists
-			if attached differential_archetype.description as desc then
-				if attached desc.other_details as dets then
-					if dets.has ("model_level") then
-						is_reference_archetype := dets.item ("model_level").is_equal ("reference")
-					end
-				end
-			end
 		end
 
 	set_archetype_default_details (an_arch: DIFFERENTIAL_ARCHETYPE)

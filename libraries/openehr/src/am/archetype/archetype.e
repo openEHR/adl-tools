@@ -214,10 +214,8 @@ feature -- Paths
 			if not attached physical_paths_cache then
 				build_physical_paths
 			end
-			if attached physical_paths_cache as ppc then
+			check attached physical_paths_cache as ppc then
 				Result := ppc
-			else
-				create Result.make (0)
 			end
 		end
 
@@ -228,10 +226,8 @@ feature -- Paths
 			if not attached physical_leaf_paths_cache then
 				build_physical_paths
 			end
-			if attached physical_leaf_paths_cache as plpc then
+			check attached physical_leaf_paths_cache as plpc then
 				Result := plpc
-			else
-				create Result.make (0)
 			end
 		end
 
@@ -242,10 +238,8 @@ feature -- Paths
 			if not attached object_path_map_cache then
 				build_physical_paths
 			end
-			if attached object_path_map_cache as opmc then
+			check attached object_path_map_cache as opmc then
 				Result := opmc
-			else
-				create Result.make (0)
 			end
 		end
 
@@ -412,12 +406,25 @@ feature -- Status Setting
 			is_generated := False
 		end
 
+	set_is_dirty
+			-- set is_dirty flag
+		do
+			is_dirty := True
+		end
+
+	clear_is_dirty
+			-- unset is_dirty flag
+		do
+			is_dirty := False
+		end
+
 feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
 	id_atcodes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
-			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
-			-- are other uses of term codes from the ontology, which is why this attribute is not just called
-			-- 'term_codes_xref_table')
+			-- table of {list<node>, code} for at-codes that identify nodes in archetype
+			-- for later checking in ontology. Doesn't include id-codes.
+			-- (note that there are other uses of term codes from the ontology, which is
+			-- why this attribute is not just called 'term_codes_xref_table')
 		local
 			def_it: C_ITERATOR
 		do
@@ -428,20 +435,19 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 					local
 						og_path: OG_PATH
 					do
-						if attached {C_ATTRIBUTE} a_c_node as ca then
-							if attached ca.differential_path as diff_path then
-								create og_path.make_from_string (diff_path)
-								across og_path as path_csr loop
-									if path_csr.item.is_addressable and is_valid_code (path_csr.item.object_id) then
-										if not idx.has (path_csr.item.object_id) then
-											idx.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
-										end
-										idx.item (path_csr.item.object_id).extend (ca)
+						-- if it's a differential path, get the at-codes from the path
+						if attached {C_ATTRIBUTE} a_c_node as ca and then attached ca.differential_path as diff_path then
+							create og_path.make_from_string (diff_path)
+							across og_path as path_csr loop
+								if path_csr.item.is_addressable and is_valid_at_code (path_csr.item.object_id) then
+									if not idx.has (path_csr.item.object_id) then
+										idx.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
 									end
+									idx.item (path_csr.item.object_id).extend (ca)
 								end
 							end
 						elseif attached {C_OBJECT} a_c_node as co then
-							if co.is_addressable and is_valid_code (co.node_id) then
+							if co.is_addressable and is_valid_at_code (co.node_id) then
 								if not idx.has (co.node_id) then
 									idx.put (create {ARRAYED_LIST [C_OBJECT]}.make(0), co.node_id)
 								end
@@ -692,7 +698,7 @@ feature -- Modification
 		do
 			build_physical_paths
 			if is_specialised then
-				build_rolled_up_status
+				roll_up_inheritance_status
 			end
 			is_dirty := False
 		end
@@ -709,7 +715,7 @@ feature {ADL15_ENGINE} -- ADL 1.5 Serialisation
 
 feature {NONE} -- Implementation
 
-	build_rolled_up_status
+	roll_up_inheritance_status
 			-- set rolled_up_specialisation statuses in nodes of definition
 			-- only useful to call for specialised archetypes
 		require
@@ -813,10 +819,11 @@ feature {NONE} -- Implementation
 		local
 			attr_path: STRING
 		do
-			if attached attr_path_map_cache as apmc then
+			if attached attr_path_map_cache as apmc and not is_dirty then
 				Result := apmc
 			else
 				create Result.make(0)
+				-- the following finds C_ATTRIBUTEs that have objects under them
 				across object_path_map as c_obj_csr loop
 					if attached c_obj_csr.item as c_obj and then not c_obj.is_root then
 						attr_path := c_obj_csr.key.twin
@@ -829,6 +836,14 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
+
+				-- there can be be C_ATTRIBUTEs that are under a C_OBJECT that have no children
+				across object_path_map as c_obj_csr loop
+					if not attached c_obj_csr.item and not Result.has (c_obj_csr.key) and then attached definition.c_attribute_at_path (c_obj_csr.key) as ca then
+						Result.put (ca, c_obj_csr.key.twin)
+					end
+				end
+
 				attr_path_map_cache := Result
 			end
 		end

@@ -56,7 +56,7 @@ NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
-PATH_SEG [a-z][a-zA-Z0-9_]*(\[a[ct][0-9.]+\])?
+PATH_SEG [a-z][a-zA-Z0-9_]*(\[(at|id)[0-9.]+\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -196,7 +196,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 ----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
 
-\[a[ct][0-9.]+\] {
+\[(ac|at|id)[0-9]+(\.[0-9]+)*\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
@@ -260,7 +260,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 ----------/* V_LOCAL_CODE */ ----------------------------------------
 
-a[ct][0-9.]+ {
+(ac|at|id)[0-9]+(\.[0-9]+)* {
 				last_token := V_LOCAL_CODE
 				last_string_value := text
 		}

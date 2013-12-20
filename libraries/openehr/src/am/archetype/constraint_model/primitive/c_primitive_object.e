@@ -3,7 +3,7 @@ note
 	description: "[
 				 Node of simple type in an ADL parse tree. Simple
 				 types include: STRING, INTEGER, REAL, CHARACTER,
-				 BOOLEAN. Occurrences set to the default of {1..1}
+				 BOOLEAN.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"

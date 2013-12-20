@@ -83,9 +83,9 @@ feature -- Comparison
 			a_c_iterator: OG_CONTENT_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
---			-- first phase - mark all nodes as added by default
---			create def_it.make (flat_child.definition)
---			def_it.do_all (agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do a_c_node.set_specialisation_status_added end, agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do  end)
+			-- first phase - mark all nodes as added by default
+			create def_it.make (flat_child.definition)
+			def_it.do_all (agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do a_c_node.set_specialisation_status_added end, agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do  end)
 
 			-- now mark nodes as added / redefined based on their
 			-- direct counterparts (if they exist) in the flat parent

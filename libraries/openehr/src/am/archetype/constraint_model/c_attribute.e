@@ -564,8 +564,10 @@ feature -- Modification
 			Old_id_valid: has_child_with_id (old_id)
 			New_id_valid: not new_id.is_empty
 		do
-			representation.replace_node_id (old_id, new_id)
-			representation.child_with_id (new_id).set_node_id (new_id)
+			if not old_id.same_string (new_id) then
+				representation.replace_node_id (old_id, new_id)
+				representation.child_with_id (new_id).set_node_id (new_id)
+			end
 		ensure
 			has_child_with_id (new_id)
 		end
