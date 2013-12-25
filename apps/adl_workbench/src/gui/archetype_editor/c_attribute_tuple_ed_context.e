@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 					-- append the path, optionally with inheritance status
 					Result.append (ed_context.flat_ontology.physical_to_logical_path (p, display_settings.language, True))
 					Result.append ("%N")
-					if display_settings.show_rm_inheritance and attached specialisation_status_names.item (node_specialisation_status) as nss then
+					if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
 						Result.append (get_text (ec_inheritance_status_text) +  nss + "%N")
 					end
 
@@ -113,7 +113,7 @@ feature {NONE} -- Implementation
 			Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + "c_attribute")
 		end
 
-	node_specialisation_status: INTEGER
+	specialisation_status: INTEGER
 		do
 			if attached arch_node as c_attr_tuple then
 				Result := c_attr_tuple.members.first.specialisation_status

@@ -114,6 +114,7 @@ feature -- Visitor
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
+			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
 		end
 
 end

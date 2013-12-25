@@ -200,18 +200,18 @@ feature -- Access
 			code_defined_in_this_level: BOOLEAN
 			code_at_this_level: STRING
 		do
-			if a_depth > specialisation_depth_from_code(a_code) then
+			if a_depth > specialisation_depth_from_code (a_code) then
 				Result := ss_inherited
 			else
-				code_at_this_level := index_from_code_at_level(a_code, a_depth)
-				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
+				code_at_this_level := index_from_code_at_level (a_code, a_depth)
+				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.is_equal (Default_code_number_string) -- takes account of anomalous "0000" code
 				if code_defined_in_this_level then
-					if a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then -- parent is valid
+					if a_depth > 0 and code_exists_at_level (a_code, a_depth - 1) then -- parent is valid
 						Result := ss_redefined
 					else
 						Result := ss_added
 					end
-				elseif a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then
+				elseif a_depth > 0 and code_exists_at_level (a_code, a_depth - 1) then
 					Result := ss_inherited
 				else
 					Result := ss_undefined
@@ -230,7 +230,7 @@ feature -- Access
 			--		a_code = at0.4.5	a_depth = 1 -> 4
 			--		a_code = at0.4.5	a_depth = 2 -> 5
 		require
-			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code(a_code)
+			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code (a_code)
 		local
 			spec_depth: INTEGER
 			code_num_part: STRING

@@ -25,7 +25,6 @@ feature -- Definition
 			create Result.make(0)
 			Result.put (archetype_rm_type_color, ss_added)
 			Result.put (archetype_rm_type_redefined_color, ss_redefined)
-			Result.put (archetype_rm_type_redefined_color, ss_id_redefined)
 			Result.put (archetype_rm_type_inherited_color, ss_inherited)
 		end
 
@@ -124,6 +123,8 @@ feature -- Display
 						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 					end
 				else
+-- FIXME: obsolete code
+io.put_string ("Entered C_OBJECT_ED_CONTEXT.display_in_grid - should be obsolete with all nodes being addresable%N")
 					if display_settings.show_technical_view then
 						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
 						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
@@ -312,9 +313,16 @@ feature {NONE} -- Implementation
 
 	c_object_colour: EV_COLOR
 			-- generate a foreground colour for RM type representing inheritance status
+		local
+			spec_sts: INTEGER
 		do
-			if attached arch_node as a_n and then (display_settings.show_rm_inheritance and c_object_colours.has (a_n.specialisation_status)) then
-				check attached c_object_colours.item (a_n.specialisation_status) as obj_col then
+			if display_settings.show_rm_inheritance then
+				if ev_grid_row.is_expandable and not ev_grid_row.is_expanded then
+					spec_sts := rolled_up_specialisation_status
+				else
+					spec_sts := specialisation_status
+				end
+				check attached c_object_colours.item (spec_sts) as obj_col then
 					Result := obj_col
 				end
 			else

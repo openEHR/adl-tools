@@ -77,8 +77,6 @@ feature -- Status Report
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
-		local
-			cco: C_COMPLEX_OBJECT
 		do
 			-- set up this node in grid
 			precursor (a_gui_grid)

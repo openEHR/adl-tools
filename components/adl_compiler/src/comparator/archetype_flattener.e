@@ -42,7 +42,7 @@ feature -- Initialisation
 			rm_schema := an_rm_schema
 			child_desc := a_child_desc
 			if a_child_desc.is_specialised then
-				flat_parent_desc := child_desc.specialisation_parent
+				flat_parent_desc := child_desc.specialisation_ancestor
 			else
 				flat_parent_desc := Void
 			end
@@ -381,7 +381,7 @@ debug ("flatten")
 		" in flat structure with " + c_path_in_diff.item.object_id + "%N")
 end
 												cco_csr_parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
-												cco_csr.set_specialisation_status_id_redefined
+												cco_csr.set_specialisation_status_redefined
 											end
 											check attached cco_csr_parent.parent as p then
 												cco_csr := p

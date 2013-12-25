@@ -70,12 +70,10 @@ feature -- Visitor
 			if a_node.is_prohibited then
 				serialise_comment (a_node)
 
-			-- output 'matches {*' if any_allowed, and no occurrences defined or node_id redefinition
-			-- else output nothing
+			-- for nodes that match anything, output 'matches {*' except if specialised, since in that case, there must be
+			-- an override local to the node, i.e. RM type, node id or occurrences.
 			elseif a_node.any_allowed then
-				if not (attached a_node.occurrences or
-					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
-				then
+				if not archetype.is_specialised then
 					last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 					last_result.append (symbol (SYM_START_CBLOCK))
 					last_result.append (apply_style (symbol (SYM_ANY), STYLE_VALUE))
@@ -98,9 +96,7 @@ feature -- Visitor
 
 			elseif a_node.any_allowed then
 				-- output '}%N' or '} -- comment%N'
-				if not (attached a_node.occurrences or
-					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
-				then
+				if not archetype.is_specialised then
 					last_result.append (symbol(SYM_END_CBLOCK))
 				end
 				serialise_comment (a_node)

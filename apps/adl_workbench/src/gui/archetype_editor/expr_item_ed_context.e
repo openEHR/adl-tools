@@ -44,7 +44,7 @@ feature {EXPR_ITEM_ED_CONTEXT} -- Implementation
 		deferred
 		end
 
-	node_specialisation_status: INTEGER
+	specialisation_status: INTEGER
 			-- specialisation status of archetype node in this context object
 		do
 			Result := Ss_added

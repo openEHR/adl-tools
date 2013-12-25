@@ -29,15 +29,15 @@ create
 
 feature -- Initialisation
 
-	make (a_parent_aca: ARCH_CAT_ARCHETYPE; a_child_archetype: FLAT_ARCHETYPE)
+	make (an_ancestor_aca: ARCH_CAT_ARCHETYPE; a_target_archetype: FLAT_ARCHETYPE)
 			-- create with two archetypes for comparison
 		require
-			Valid_parent_archetype: a_parent_aca.is_valid
-			Child_archetype_valid: a_child_archetype.is_specialised
+			Valid_ancestor_archetype: an_ancestor_aca.is_valid
+			Target_archetype_valid: a_target_archetype.is_specialised
 		do
-			parent_descriptor := a_parent_aca
-			flat_parent := parent_descriptor.flat_archetype
-			flat_child := a_child_archetype
+			ancestor_descriptor := an_ancestor_aca
+			flat_ancestor := ancestor_descriptor.flat_archetype
+			flat_target := a_target_archetype
 		end
 
 	make_create_differential (a_child_aca: ARCH_CAT_ARCHETYPE)
@@ -45,7 +45,7 @@ feature -- Initialisation
 		require
 			Child_archetype_valid: a_child_aca.is_valid and a_child_aca.is_specialised
 		do
-			check attached a_child_aca.specialisation_parent as parent_aca then
+			check attached a_child_aca.specialisation_ancestor as parent_aca then
 				make (parent_aca, a_child_aca.flat_archetype)
 			end
 			compare
@@ -55,66 +55,74 @@ feature -- Initialisation
 
 feature -- Access
 
-	parent_descriptor: ARCH_CAT_ARCHETYPE
+	ancestor_descriptor: ARCH_CAT_ARCHETYPE
 			-- compiled parent archetype descriptor
 
-	flat_parent: FLAT_ARCHETYPE
+	flat_ancestor: FLAT_ARCHETYPE
 			-- compiled parent archetype
 
-	flat_child: FLAT_ARCHETYPE
+	flat_target: FLAT_ARCHETYPE
 			-- flat form of child archetype
 
-	differential_child: detachable DIFFERENTIAL_ARCHETYPE
+	differential_output: detachable DIFFERENTIAL_ARCHETYPE
 			-- generated differential result of calling `
 
 feature -- Status Report
 
-	child_is_marked: BOOLEAN
-			-- True if `compare' has been run on `flat_child'
+	target_is_marked: BOOLEAN
+			-- True if `compare' has been run on `flat_target'
 
 feature -- Comparison
 
 	compare
 			-- validate definition of specialised archetype against flat parent
 		require
-			Child_specialised: flat_child.is_specialised
+			Child_specialised: flat_target.is_specialised
 		local
 			def_it: C_ITERATOR
 			a_c_iterator: OG_CONTENT_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
 			-- first phase - mark all nodes as added by default
-			create def_it.make (flat_child.definition)
-			def_it.do_all (agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do a_c_node.set_specialisation_status_added end, agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do  end)
+			create def_it.make (flat_target.definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					do
+						a_c_node.set_specialisation_status_added
+					end,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					do
+					end
+			)
 
 			-- now mark nodes as added / redefined based on their
 			-- direct counterparts (if they exist) in the flat parent
-			create def_it.make (flat_child.definition)
+			create def_it.make (flat_target.definition)
 			def_it.do_until_surface (agent child_node_compare, agent child_node_test)
 
 			-- phase 2 - roll up the changes
-			create rollup_builder.make (flat_child)
-			create a_c_iterator.make (flat_child.definition.representation, rollup_builder)
+			create rollup_builder.make (flat_target)
+			create a_c_iterator.make (flat_target.definition.representation, rollup_builder)
 			a_c_iterator.do_all
 
-			child_is_marked := True
-			differential_child := Void
+			target_is_marked := True
+			differential_output := Void
 		ensure
-			Child_marked: child_is_marked
-			Diff_needs_regenerating: not attached differential_child
+			Child_marked: target_is_marked
+			Diff_needs_regenerating: not attached differential_output
 		end
 
 	generate_diff
 			-- create differential form of archetype based on flat_child
 		require
-			child_is_marked
+			target_is_marked
 		local
 			c_it: C_ITERATOR
 			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 			diff_child: DIFFERENTIAL_ARCHETYPE
 		do
-			create diff_child.make_from_flat (flat_child)
-			differential_child := diff_child
+			create diff_child.make_from_flat (flat_target)
+			differential_output := diff_child
 
 			-- using rolled_up_specialisation statuses in nodes of definition
 			-- generate a list of nodes/paths for deletion from flat-form archetype
@@ -168,15 +176,15 @@ feature -- Comparison
 			-- rebuild all internal references, path cache etc
 			diff_child.rebuild
 		ensure
-			Diff_generated: attached differential_child
+			Diff_generated: attached differential_output
 		end
 
 	compress_differential_child
 			-- perform path-compression on differential child archetype
 		require
-			Diff_available: attached differential_child
+			Diff_available: attached differential_output
 		do
-			check attached differential_child as diff_child then
+			check attached differential_output as diff_child then
 				diff_child.convert_to_differential_paths
 			end
 		end
@@ -187,22 +195,22 @@ feature {NONE} -- Implementation
 			-- set specialisation status markers in `a_c_node' based on comparison with
 			-- parent
 		local
-			ca_parent_flat: C_ATTRIBUTE
-			co_parent_flat: C_OBJECT
+			ca_in_flat_anc: C_ATTRIBUTE
+			co_in_flat_anc: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			path_in_flat: STRING
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child then
 				create apa.make_from_string (a_c_node.path)
-				path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
-				if flat_parent.definition.has_attribute_path (path_in_flat) then
-					ca_parent_flat := flat_parent.definition.c_attribute_at_path (path_in_flat)
+				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
+				if flat_ancestor.definition.has_attribute_path (path_in_flat) then
+					ca_in_flat_anc := flat_ancestor.definition.c_attribute_at_path (path_in_flat)
 				else -- must be due to an internal ref; look in full attr_path_map
-					ca_parent_flat := flat_parent.c_attr_at_path (path_in_flat)
+					ca_in_flat_anc := flat_ancestor.c_attr_at_path (path_in_flat)
 				end
 
 				-- if existence or cardinality have changed, it's a redefinition
-				if not ca_child.c_equal (ca_parent_flat) then
+				if not ca_child.c_equal (ca_in_flat_anc) then
 					ca_child.set_specialisation_status_redefined
 				else
 					ca_child.set_specialisation_status_inherited
@@ -218,13 +226,13 @@ feature {NONE} -- Implementation
 			-- other kind of C_OBJECT
 			elseif attached {C_OBJECT} a_c_node as co_child then
 				create apa.make_from_string (a_c_node.path)
-				path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
-				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
+				co_in_flat_anc := flat_ancestor.c_object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
 				-- if occurrences different, or node_id different, or RM type different or else primitive object constraint different
-				if not co_child.c_equal (co_parent_flat) then
+				if not co_child.c_equal (co_in_flat_anc) then
 					co_child.set_specialisation_status_redefined
---					if not co_child.node_id.is_equal (co_parent_flat.node_id) and (co_child.is_root or else (attached co_child.parent as ca_par and then ca_par.is_path_compressible)) then
+--					if not co_child.node_id.is_equal (co_in_flat_anc.node_id) and (co_child.is_root or else (attached co_child.parent as ca_par and then ca_par.is_path_compressible)) then
 --						co_child.set_is_path_compressible
 --					end
 				else
@@ -242,24 +250,24 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_ARCHETYPE_ROOT} a_c_node as car_child then
 				create apa.make_from_string (car_child.slot_path)
-				Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+				Result := flat_ancestor.has_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
 			elseif attached {C_OBJECT} a_c_node as co_child then
 				if not co_child.is_addressable then
 					create apa.make_from_string (a_c_node.path)
-					Result := flat_parent.has_object_path (apa.path_at_level (flat_parent.specialisation_depth))
-				elseif specialisation_depth_from_code (co_child.node_id) <= flat_parent.specialisation_depth -- node from previous level
+					Result := flat_ancestor.has_object_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				elseif specialisation_depth_from_code (co_child.node_id) <= flat_ancestor.specialisation_depth -- node from previous level
 					or else is_refined_code (co_child.node_id)  -- from current level, refined
 				then
 					create apa.make_from_string (a_c_node.path)
-					Result := flat_parent.has_object_path (apa.path_at_level (flat_parent.specialisation_depth))
+					Result := flat_ancestor.has_object_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 				else
 					-- it's a new code at this level; don't do anything, this branch will be treated as 'added'
 				end
 
 			elseif attached {C_ATTRIBUTE} a_c_node as ca_child then
 				create apa.make_from_string (a_c_node.path)
-				Result := flat_parent.has_path (apa.path_at_level (flat_parent.specialisation_depth))
+				Result := flat_ancestor.has_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 			end
 		end
 

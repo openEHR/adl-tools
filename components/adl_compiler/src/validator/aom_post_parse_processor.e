@@ -62,7 +62,7 @@ feature {ADL15_ENGINE} -- Initialisation
 			end
 			target := a_target
 			if ara.is_specialised then
-				arch_parent_flat := ara.specialisation_parent.flat_archetype
+				arch_parent_flat := ara.specialisation_ancestor.flat_archetype
 				arch_parent_flat.rebuild
 			end
 			create id_codes.make

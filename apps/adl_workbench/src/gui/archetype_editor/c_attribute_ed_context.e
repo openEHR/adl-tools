@@ -302,9 +302,22 @@ feature {ANY_ED_CONTEXT} -- Implementation
 
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
+		local
+			spec_sts: INTEGER
 		do
 			if not is_rm then
-				Result := precursor
+				if display_settings.show_rm_inheritance then
+					if ev_grid_row.is_expandable and not ev_grid_row.is_expanded then
+						spec_sts := rolled_up_specialisation_status
+					else
+						spec_sts := specialisation_status
+					end
+					check attached c_attribute_colours.item (spec_sts) as cac then
+						Result := cac
+					end
+				else
+					Result := archetyped_attribute_color
+				end
 			else
 				Result := rm_attribute_colour
 			end

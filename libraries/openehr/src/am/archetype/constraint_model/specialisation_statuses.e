@@ -26,10 +26,7 @@ feature -- Definitions
 	ss_redefined: INTEGER = 1
 			-- this node is inherited and redefined here
 
-	ss_id_redefined: INTEGER = 2
-			-- this node is inherited and its id only is redefined here
-
-	ss_inherited: INTEGER = 3
+	ss_inherited: INTEGER = 2
 			-- this node is inherited here unchanged
 
 feature -- Access
@@ -44,7 +41,6 @@ feature -- Access
 			Result.put ("added", ss_added)
 			Result.put ("inherited", ss_inherited)
 			Result.put ("redefined", ss_redefined)
-			Result.put ("node id redefined", ss_id_redefined)
 		end
 
 	specialisation_status_symbols: HASH_TABLE [STRING, INTEGER]
@@ -54,8 +50,7 @@ feature -- Access
 			Result.put ("?", ss_undefined)
 			Result.put ("+", ss_added)
 			Result.put ("^", ss_inherited)
-			Result.put ("/+", ss_redefined)
-			Result.put ("/", ss_id_redefined)
+			Result.put ("/", ss_redefined)
 		end
 
 feature -- Status Report

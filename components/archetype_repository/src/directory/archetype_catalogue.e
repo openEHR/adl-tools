@@ -409,7 +409,7 @@ feature -- Traversal
 			create lineage.make (1)
 			from csr := aca until csr = Void loop
 				lineage.put_front (csr)
-				csr := csr.specialisation_parent
+				csr := csr.specialisation_ancestor
 			end
 			lineage.do_all (action)
 		end

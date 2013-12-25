@@ -730,7 +730,7 @@ feature {NONE} -- Implementation
 		end
 
 	build_physical_paths
-			-- generate physical paths from definition structure; if no changes made on archetype
+			-- generate physical paths from definition structure
 		local
 			src_node_path: OG_PATH
 			src_node_path_str: STRING

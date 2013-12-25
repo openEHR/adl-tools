@@ -208,7 +208,6 @@ feature -- Source Control
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
-			-- USED ONLY FOR DIFFing legacy flat form into differential form
 		note
 			option: transient
 		attribute

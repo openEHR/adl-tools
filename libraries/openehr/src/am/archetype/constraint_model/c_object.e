@@ -25,13 +25,6 @@ inherit
 			{ANY} specialisation_depth_from_code, is_valid_code;
 		end
 
-feature -- Source Control
-
-	set_specialisation_status_id_redefined
-		do
-			specialisation_status := ss_id_redefined
-		end
-
 feature -- Access
 
 	rm_type_name: STRING
@@ -100,7 +93,7 @@ feature -- Comparison
 		end
 
 	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses no constraintsin addition to `other', other than
+			-- True if this node on its own (ignoring any subparts) expresses no constraints in addition to `other', other than
 			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
 			-- `other' is assumed to be in a flat archetype
 			-- Used to determine if path segments can be compressed;
@@ -109,7 +102,8 @@ feature -- Comparison
 			--	occurrences
 			-- 	sibling order
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and not attached occurrences and node_id_conforms_to (other) and not attached sibling_order
+			Result := rm_type_name.is_equal (other.rm_type_name) and not attached occurrences and
+				node_id_conforms_to (other) and not attached sibling_order
 		end
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -118,19 +112,11 @@ feature -- Comparison
 			-- Returns True only when the following is True:
 			--	rm_type_name is the same or a subtype of RM type of flat parent node;
 			--	occurrences is same (= Void) or a sub-interval
-			--	node_id is the same, or if either rm_type or occurrences changed, then it is specialised UNLESS
-			--  			occurrences was redefined to {0}
+			--	node_id is the same, or redefined to a legal code at the level of the owning archetype
 		do
-			if is_addressable and other.is_addressable then
-				if node_id.is_equal (other.node_id) then
-					Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and (not attached occurrences or else
-						attached occurrences as occ and then occ.is_prohibited)
-				else
-					Result := rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]) and occurrences_conforms_to (other) and node_id_conforms_to (other)
-				end
-			elseif not is_addressable and not other.is_addressable then
-				Result := rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]) and occurrences_conforms_to (other)
-			end
+			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
+				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
+				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
 		end
 
 	occurrences_conforms_to (other: C_OBJECT): BOOLEAN
@@ -236,7 +222,7 @@ feature -- Modification
 		do
 			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
-				set_specialisation_status_id_redefined
+				set_specialisation_status_redefined
 			end
 			if not other.rm_type_name.is_case_insensitive_equal (rm_type_name) then
 				rm_type_name := other.rm_type_name.twin

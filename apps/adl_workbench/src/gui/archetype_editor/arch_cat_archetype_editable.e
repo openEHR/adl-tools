@@ -68,7 +68,7 @@ feature -- Access
 			-- do diff on flat_archetype_clone
 			if is_specialised then
 				create archetype_comparator.make_create_differential (Current)
-				differential_archetype := archetype_comparator.differential_child
+				differential_archetype := archetype_comparator.differential_output
 			else
 				create differential_archetype.make_from_flat (flat_archetype_clone)
 			end

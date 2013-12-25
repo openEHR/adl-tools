@@ -174,8 +174,8 @@ feature {NONE} -- Implementation
 	c_meaning_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if display_settings.show_rm_inheritance and c_meaning_colours.has (node_specialisation_status) then
-				check attached c_meaning_colours.item (node_specialisation_status) as cmc then
+			if display_settings.show_rm_inheritance and c_meaning_colours.has (specialisation_status) then
+				check attached c_meaning_colours.item (specialisation_status) as cmc then
 					Result := cmc
 				end
 			else
@@ -186,8 +186,8 @@ feature {NONE} -- Implementation
 	c_constraint_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if display_settings.show_rm_inheritance and c_constraint_colours.has (node_specialisation_status) then
-				check attached c_constraint_colours.item (node_specialisation_status) as ccc then
+			if display_settings.show_rm_inheritance and c_constraint_colours.has (specialisation_status) then
+				check attached c_constraint_colours.item (specialisation_status) as ccc then
 					Result := ccc
 				end
 			else
@@ -198,8 +198,8 @@ feature {NONE} -- Implementation
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if display_settings.show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
-				check attached c_attribute_colours.item (node_specialisation_status) as cac then
+			if display_settings.show_rm_inheritance then
+				check attached c_attribute_colours.item (specialisation_status) as cac then
 					Result := cac
 				end
 			else
@@ -276,7 +276,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_specialisation_status: INTEGER
+	specialisation_status: INTEGER
 			-- specialisation status of `arch_node'
 		require
 			not is_rm

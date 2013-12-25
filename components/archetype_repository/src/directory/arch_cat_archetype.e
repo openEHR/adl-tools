@@ -458,7 +458,7 @@ feature -- Access (semantic)
 			end
 		end
 
-	specialisation_parent: detachable ARCH_CAT_ARCHETYPE
+	specialisation_ancestor: detachable ARCH_CAT_ARCHETYPE
 		do
 			if attached {ARCH_CAT_ARCHETYPE} parent as aca then
 				Result := aca
@@ -597,7 +597,7 @@ feature -- Status Report - Compilation
 			-- It this archetype out of date with respect to parents or suppliers?
 		do
 			-- see if parents were recompiled more recently
-			Result := is_specialised and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp
+			Result := is_specialised and then specialisation_ancestor.last_compile_attempt_timestamp > last_compile_attempt_timestamp
 
 			-- see if any supplier was recompiled more recently
 			if not Result and attached suppliers_index as supp_idx then
@@ -656,7 +656,7 @@ feature -- Status Report - Compilation
 		do
 			if is_specialised then
 				create archetype_comparator.make_create_differential (Current)
-				check attached archetype_comparator.differential_child as da then
+				check attached archetype_comparator.differential_output as da then
 					Result := da
 				end
 			else
@@ -760,7 +760,7 @@ feature -- Compilation
 					when Cs_unread then
 						initialise
 					when Cs_lineage_known then
-						if specialisation_parent.is_valid then
+						if specialisation_ancestor.is_valid then
 							compilation_state := Cs_ready_to_parse
 						else
 							compilation_state := cs_lineage_invalid
@@ -995,13 +995,13 @@ feature {NONE} -- Compilation
 				if is_specialised then
 					-- run the comparator over the legacy flat archetype if specialised; it will mark all
 					-- nodes with a local and also rolled up inheritance status
-					if specialisation_parent.is_valid and attached specialisation_parent as att_sp then
+					if specialisation_ancestor.is_valid and attached specialisation_ancestor as att_sp then
 						adl15_engine.post_parse_process (flat_arch, Current, rm_schema)
 						create archetype_comparator.make (att_sp, flat_arch)
 						archetype_comparator.compare
 						archetype_comparator.generate_diff
 				--		archetype_comparator.compress_differential_child
-						differential_archetype := archetype_comparator.differential_child
+						differential_archetype := archetype_comparator.differential_output
 					else
 						compilation_state := cs_lineage_invalid
 						add_error (ec_compile_e1, <<parent_id.as_string>>)
@@ -1495,7 +1495,7 @@ feature {NONE} -- Implementation
 			slot_idx: like slot_id_index
 		do
 			if is_specialised then
-				slot_idx := specialisation_parent.slot_id_index
+				slot_idx := specialisation_ancestor.slot_id_index
 			else
 				create slot_idx.make (0)
 			end
@@ -1561,8 +1561,8 @@ invariant
 	differential_archetype_attached_if_valid: is_valid implies attached differential_archetype
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
 
-	parent_existence: specialisation_parent /= Void implies is_specialised
-	parent_validity: (specialisation_parent /= Void and not ontology_location_changed) implies parent_id.is_equal (specialisation_parent.id)
+	parent_existence: specialisation_ancestor /= Void implies is_specialised
+	parent_validity: (specialisation_ancestor /= Void and not ontology_location_changed) implies parent_id.is_equal (specialisation_ancestor.id)
 	clients_index_valid: clients_index /= Void implies not clients_index.is_empty
 
 end

@@ -118,7 +118,7 @@ feature {NONE} -- Implementation
 			if not is_rm then
 				p := arch_node.path
 				Result := ed_context.flat_ontology.physical_to_logical_path (p, display_settings.language, True)
-				if display_settings.show_rm_inheritance and attached specialisation_status_names.item (node_specialisation_status) as nss then
+				if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
 					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  nss)
 				end
 
@@ -149,11 +149,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_specialisation_status: INTEGER
+	specialisation_status: INTEGER
 			-- specialisation status of archetype node in this context object
 		do
 			if attached arch_node as a_n then
 				Result := a_n.specialisation_status
+			end
+		end
+
+	rolled_up_specialisation_status: INTEGER
+			-- rolled up specialisation status of archetype node in this context object
+		do
+			if attached arch_node as a_n then
+				Result := a_n.rolled_up_specialisation_status
 			end
 		end
 
