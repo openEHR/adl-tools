@@ -211,8 +211,9 @@ feature {P_C_STRING} -- Modification
 			a_is_open: BOOLEAN;
 			a_regexp_default_delimiter: BOOLEAN)
 		do
+			default_create
 			if attached a_strings as strs then
-				list := strs
+				list.fill (strs)
 			end
 			regexp := a_regexp
 			is_open := a_is_open

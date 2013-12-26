@@ -192,9 +192,11 @@ feature {NONE} -- Implementation
 			use_node_index := target.use_node_index
 			invariants_index := target.invariants_index
 
-			-- fix definition
-			create def_it.make (target.definition)
-			def_it.do_all (agent do_add_id_code, Void)
+			-- fix definition; if no concept code, then don't bother
+			if is_valid_code (target.concept) then
+				create def_it.make (target.definition)
+				def_it.do_all (agent do_add_id_code, Void)
+			end
 		end
 
 	 do_add_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
