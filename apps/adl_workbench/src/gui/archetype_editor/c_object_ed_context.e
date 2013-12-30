@@ -253,10 +253,10 @@ feature -- Modification
 
 				-- node id
 				if not co_create_params.node_id_text.same_string (ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text) then
-					ed_context.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
+					ed_context.flat_terminology.replace_id_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
 				end
 				if not co_create_params.node_id_description.same_string (ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).description) then
-					ed_context.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
+					ed_context.flat_terminology.replace_id_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
 				end
 			else -- need to do a remove and add
 
@@ -288,17 +288,19 @@ feature {NONE} -- Implementation
 
 	node_id_text: STRING
 			-- show node_id text either as just rubric, or as node_id|rubric|, depending on `show_codes' setting
-		require
-			attached arch_node as a_n and then a_n.is_addressable
 		do
 			if attached arch_node as a_n then
-				if is_valid_term_code (a_n.node_id) then
-					if display_settings.show_codes then
-						Result := a_n.node_id + "|" + ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text + "|"
+				if is_id_code (a_n.node_id) then
+					if ed_context.flat_terminology.has_id_code (a_n.node_id) then
+						if display_settings.show_codes then
+							Result := a_n.node_id + "|" + ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text + "|"
+						else
+							Result := ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text
+						end
 					else
-						Result := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
+						create Result.make_empty
 					end
-				else
+				else -- it must be an archetype id in a template structure
 					Result := a_n.node_id
 				end
 			else

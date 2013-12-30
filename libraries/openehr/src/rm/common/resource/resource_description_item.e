@@ -43,7 +43,7 @@ feature -- Initialisation
 			purpose.append (Default_purpose)
 		end
 
-	make (a_lang: CODE_PHRASE; a_purpose: STRING)
+	make (a_lang: TERMINOLOGY_CODE; a_purpose: STRING)
 		require
 			Purpose_valid: not a_purpose.is_empty
 		do
@@ -68,7 +68,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: CODE_PHRASE
+	language: TERMINOLOGY_CODE
 			-- Language of this item
 
 	purpose: STRING
@@ -268,7 +268,7 @@ feature -- Copying
 		do
 			prefix_str := "*"
 			suffix_str := "(" + a_lang + ")"
-			create Result.make (create {CODE_PHRASE}.make (Default_language_code_set, a_lang), prefix_str + purpose + suffix_str)
+			create Result.make (create {TERMINOLOGY_CODE}.make (Default_language_code_set, a_lang), prefix_str + purpose + suffix_str)
 			if attached use as att_use then
 				Result.set_use (prefix_str + att_use + suffix_str)
 			end

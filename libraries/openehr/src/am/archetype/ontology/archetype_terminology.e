@@ -33,10 +33,6 @@ feature -- Definitions
 
 	Sym_constraint_definitions: STRING = "constraint_definitions"
 
-	Sym_term_bindings: STRING = "term_bindings"
-
-	Sym_constraint_bindings: STRING = "constraint_bindings"
-
 feature -- Initialisation
 
 	make (an_original_lang, a_concept_code: STRING)
@@ -76,8 +72,8 @@ feature -- Access
 		do
 			create Result.make(0)
 			Result.compare_objects
-			across term_definitions as term_defs_csr loop
-				Result.extend (term_defs_csr.key)
+			across id_definitions as ids_csr loop
+				Result.extend (ids_csr.key)
 			end
 		end
 
@@ -220,7 +216,7 @@ feature -- Access
 			end
 		end
 
-	term_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [TERMINOLOGY_CODE, STRING]
+	term_bindings_for_terminology (a_terminology: STRING): HASH_TABLE [TERMINOLOGY_CODE, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: term_bindings.has (a_terminology)
@@ -231,14 +227,14 @@ feature -- Access
 		end
 
 	term_bindings_for_key (a_key: STRING): HASH_TABLE [TERMINOLOGY_CODE, STRING]
-			-- retrieve the term bindings for a key as a table of bound terms keyed by terminology_id
+			-- retrieve the term bindings for a key (code or path) as a table of bound terms keyed by terminology_id
 		require
 			Terminology_valid: has_any_term_binding (a_key)
 		do
 			create Result.make (0)
-			across term_bindings as bindings_for_lang_csr loop
-				if bindings_for_lang_csr.item.has (a_key) and then attached bindings_for_lang_csr.item.item (a_key) as binding_for_key then
-					Result.put (binding_for_key, bindings_for_lang_csr.key)
+			across term_bindings as bindings_for_terminology_csr loop
+				if attached bindings_for_terminology_csr.item.item (a_key) as binding_for_key then
+					Result.put (binding_for_key, bindings_for_terminology_csr.key)
 				end
 			end
 		end
@@ -327,7 +323,7 @@ feature -- Status Report
 		require
 			Language_valid: not a_language.is_empty
 		do
-			Result := term_definitions.has (a_language)
+			Result := id_definitions.has (a_language)
 		end
 
 	has_terminology (a_terminology: STRING): BOOLEAN
@@ -362,6 +358,19 @@ feature -- Status Report
 			Result := constraint_codes.has (a_code)
 		end
 
+	has_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in the relevant code table of this terminology?
+		require
+			Language_valid: not a_language.is_empty
+		local
+			refs: like refs_tuple
+		do
+			refs := refs_tuple (a_code)
+			if refs.definitions.has (a_language) and then attached refs.definitions.item (a_language) as term_def_for_lang then
+				Result := term_def_for_lang.has (a_code)
+			end
+		end
+
 	has_id_definition (a_language, a_code: STRING): BOOLEAN
 			-- is `a_code' defined in `a_language' in the id-codes of this terminology?
 		require
@@ -393,7 +402,7 @@ feature -- Status Report
 		end
 
 	has_any_term_binding (a_key: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_key' for any terminology
+			-- true if there is any term binding for code or path `a_key' for any terminology
 		do
 			Result := across term_bindings as bindings_csr some bindings_csr.item.has (a_key) end
 		end
@@ -481,7 +490,7 @@ feature -- Conversion
 
 feature -- Modification
 
-	put_new_added_id_definition (a_text, a_description: STRING)
+	create_added_id_definition (a_text, a_description: STRING)
 			-- add a new term definition with 'text' = `a_text', 'description = `a_description',
 			-- assumed to be in the original language;
 			-- automatically add translation placeholders in all other languages
@@ -490,11 +499,11 @@ feature -- Modification
 			new_term: ARCHETYPE_TERM
 		do
 			create new_term.make_all (new_added_id_code_at_level (specialisation_depth, highest_term_code), a_text, a_description)
-			merge_definition (original_language, new_term)
+			put_new_definition (original_language, new_term)
 			last_new_id_definition_code := new_term.code
 		end
 
-	put_new_refined_id_definition (a_parent_code, a_text, a_description: STRING)
+	create_refined_id_definition (a_parent_code, a_text, a_description: STRING)
 			-- add a new term definition as child of `a_parent_code'
 			-- with 'text' = `a_text', 'description = `a_description',
 			-- automatically add translation placeholders in all other languages
@@ -511,11 +520,11 @@ feature -- Modification
 				high_code := 1
 			end
 			create new_term.make_all (new_refined_code_at_level (a_parent_code, specialisation_depth, high_code), a_text, a_description)
-			merge_definition (original_language, new_term)
+			put_new_definition (original_language, new_term)
 			last_new_id_definition_code := new_term.code
 		end
 
-	put_new_added_term_definition (a_text, a_description: STRING)
+	create_added_term_definition (a_text, a_description: STRING)
 			-- add a new term definition with 'text' = `a_text', 'description = `a_description',
 			-- assumed to be in the original language;
 			-- automatically add translation placeholders in all other languages
@@ -524,11 +533,11 @@ feature -- Modification
 			new_term: ARCHETYPE_TERM
 		do
 			create new_term.make_all (new_added_term_code_at_level (specialisation_depth, highest_term_code), a_text, a_description)
-			merge_definition (original_language, new_term)
+			put_new_definition (original_language, new_term)
 			last_new_term_definition_code := new_term.code
 		end
 
-	put_new_refined_term_definition (a_parent_code, a_text, a_description: STRING)
+	create_refined_term_definition (a_parent_code, a_text, a_description: STRING)
 			-- add a new term definition as child of `a_parent_code'
 			-- with 'text' = `a_text', 'description = `a_description',
 			-- automatically add translation placeholders in all other languages
@@ -545,11 +554,11 @@ feature -- Modification
 				high_code := 1
 			end
 			create new_term.make_all (new_refined_code_at_level (a_parent_code, specialisation_depth, high_code), a_text, a_description)
-			merge_definition (original_language, new_term)
+			put_new_definition (original_language, new_term)
 			last_new_term_definition_code := new_term.code
 		end
 
-	put_new_added_constraint_definition (a_text, a_description: STRING)
+	create_added_constraint_definition (a_text, a_description: STRING)
 			-- add a new constraint definition with 'text' = `a_text', 'description = `a_description';
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_constraint_definition'
@@ -557,11 +566,11 @@ feature -- Modification
 			new_term: ARCHETYPE_TERM
 		do
 			create new_term.make_all (new_added_term_code_at_level (specialisation_depth, highest_constraint_code), a_text, a_description)
-			merge_definition (original_language, new_term)
+			put_new_definition (original_language, new_term)
 			last_new_constraint_definition_code := new_term.code
 		end
 
-	put_new_refined_constraint_definition (a_parent_code, a_text, a_description: STRING)
+	create_refined_constraint_definition (a_parent_code, a_text, a_description: STRING)
 			-- add a new constraint definition as child of `a_parent_code'
 			-- with 'text' = `a_text', 'description = `a_description';
 			-- automatically add translation placeholders in all other languages
@@ -578,7 +587,7 @@ feature -- Modification
 				high_code := 1
 			end
 			create new_term.make_all (new_refined_code_at_level (a_parent_code, specialisation_depth, high_code), a_text, a_description)
-			merge_definition (original_language, new_term)
+			put_new_definition (original_language, new_term)
 			last_new_constraint_definition_code := new_term.code
 		end
 
@@ -599,7 +608,7 @@ feature -- Modification
 			Binding_added: has_term_binding (a_term_code.terminology_id, a_code)
 		end
 
-	add_constraint_binding (a_uri: URI; a_terminology, a_code: STRING)
+	put_constraint_binding (a_uri: URI; a_terminology, a_code: STRING)
 			-- add a new constraint binding to local code a_code, in the terminology
 			-- group corresponding to the a_term_code.terminology
 		require
@@ -682,7 +691,7 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 	remove_definition (a_code: STRING)
 			-- completely remove the term from the terminology
 		require
-			Code_valid: has_code (a_code)
+			Code_found: has_code (a_code)
 		local
 			terminologies: ARRAYED_LIST[STRING]
 			langs_to_remove: ARRAYED_LIST[STRING]
@@ -720,8 +729,8 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 	remove_term_binding (a_code, a_terminology: STRING)
 			-- remove term binding to local code in group a_terminology
 		require
-			Local_code_valid: has_term_code(a_code)
-			Has_binding: has_term_binding(a_terminology, a_code)
+			Local_code_exists: has_term_code (a_code)
+			Has_binding: has_term_binding (a_terminology, a_code)
 		do
 			term_bindings.item (a_terminology).remove (a_code)
 			if term_bindings.item (a_terminology).count = 0 then
@@ -747,22 +756,37 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 
 feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
 
-	merge_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
+	put_new_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
 			-- add a new term definition for language `a_language' and
 			-- automatically add translation placeholders in all other languages
 		require
-			Language_valid: has_language (a_language)
-			Term_valid: not has_id_code (a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+			Term_valid: not has_code (a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+			Definition_is_new: not has_definition (a_language, a_term.code)
 		local
 			refs: like refs_tuple
+			trans_term: ARCHETYPE_TERM
 		do
 			refs := refs_tuple (a_term.code)
-			put_definition (a_language, a_term)
+			if not refs.definitions.has (a_language) then
+				refs.definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_language)
+			end
+			refs.definitions.item (a_language).force (a_term, a_term.code)
+			trans_term := a_term.create_translated_term (original_language)
+			across refs.definitions as term_defs_csr loop
+				if not term_defs_csr.key.is_equal (a_language) then
+					if not refs.definitions.has (term_defs_csr.key) then
+						refs.definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_defs_csr.key)
+					end
+					term_defs_csr.item.force (trans_term.deep_twin, trans_term.code)
+				end
+			end
+
 			refs.codes.extend (a_term.code)
 			update_highest_refined_codes (a_term.code)
 			update_highest_code (a_term.code)
 		ensure
 			Code_valid: has_code (a_term.code)
+			Definition_added: has_definition (a_language, a_term.code)
 		end
 
 	replace_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
@@ -776,7 +800,7 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
 		do
 			refs := refs_tuple (a_term.code)
 			if a_language.is_equal (original_language) and replace_translations then
-				put_definition (a_language, a_term) -- replace all translations as well
+				put_new_definition (a_language, a_term) -- replace all translations as well
 			else
 				refs.definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
 			end
@@ -809,31 +833,6 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 
 	highest_constraint_code: INTEGER
 			-- highest added constraint code at the level of this terminology; 0 if none so far
-
-	put_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- put a term definition for language `a_language' and
-			-- automatically add translation placeholders in all other languages
-			-- Has the effect of adding a new term or replacing an existing one
-		local
-			trans_term: ARCHETYPE_TERM
-			refs: like refs_tuple
-		do
-			refs := refs_tuple (a_term.code)
-			if not refs.definitions.has (a_language) then
-				refs.definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_language)
-			end
-			refs.definitions.item (a_language).force (a_term, a_term.code)
-			trans_term := a_term.create_translated_term (original_language)
-			across refs.definitions as term_defs_csr loop
-				if not term_defs_csr.key.is_equal (a_language) then
-					if not refs.definitions.has (term_defs_csr.key) then
-						refs.definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_defs_csr.key)
-					end
-					term_defs_csr.item.force (trans_term.deep_twin, trans_term.code)
-				end
-			end
-			refs.codes.extend (a_term.code)
-		end
 
 	update_highest_refined_codes (a_code: STRING)
 			-- Update `highest_refined_code_index' list with `a_code', if it happens to be refined at this level.
@@ -959,9 +958,6 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 					end
 				end
 			end
-
-			-- have to resync properties to regenerate id_codes, terms_codes etc
-			sync_stored_properties
 		end
 
 feature {ADL_15_ENGINE} -- Legacy
@@ -976,51 +972,80 @@ feature {ADL_15_ENGINE} -- Legacy
 			conv_bindings: HASH_TABLE [TERMINOLOGY_CODE, STRING]
 			conv_term: ARCHETYPE_TERM
 			bind_term: TERMINOLOGY_CODE
+			path_strs: HASH_TABLE [STRING, STRING]
+			new_path: STRING
 		do
 			-- move at-code terms that are really id-codes out of term_definitions and into id_definitions
+			-- only applies to terms of the specialisation level of this archetype
 			across converted_codes as at_id_codes_csr loop
-				create conv_terms.make (0)
-				-- find the term definitions in all languages
-				across term_definitions as term_defs_for_lang_csr loop
-					check attached term_defs_for_lang_csr.item.item (at_id_codes_csr.key) as att_term then
-						conv_term := att_term
-					end
-					conv_term.set_code (at_id_codes_csr.item)
-					conv_terms.put (conv_term, term_defs_for_lang_csr.key)
-				end
-
 				-- find the term bindings in all terminologies
-				create conv_bindings.make (0)
-				across term_bindings as term_bindings_for_terminology_csr loop
-					if attached term_bindings_for_terminology_csr.item.item (at_id_codes_csr.key) as att_bt then
-						bind_term := att_bt
-						conv_bindings.put (bind_term, term_bindings_for_terminology_csr.key)
+				-- first case: binding is against just the single code
+				if has_any_term_binding (at_id_codes_csr.key) then
+					conv_bindings := term_bindings_for_key (at_id_codes_csr.key)
+				else
+					create conv_bindings.make (0)
+				end
+
+				-- add bindings back in keyed by new id codes
+				across conv_bindings as id_bindings_csr loop
+					put_term_binding (id_bindings_csr.item, at_id_codes_csr.item)
+				end
+
+				-- second case: binding is keyed by path containing node id code
+				across term_bindings as bindings_for_terminology_csr loop
+					create path_strs.make (0)
+					across bindings_for_terminology_csr.item as bindings_csr loop
+						if bindings_csr.key.has_substring (at_id_codes_csr.key) then
+							new_path := bindings_csr.key.twin
+							new_path.replace_substring_all (at_id_codes_csr.key, at_id_codes_csr.item)
+							path_strs.put (new_path, bindings_csr.key)
+						end
+					end
+
+					-- now go replace the path keys with the modified path keys
+					across path_strs as paths_csr loop
+						bindings_for_terminology_csr.item.replace_key (paths_csr.item, paths_csr.key)
 					end
 				end
 
-				-- completely remove the term from definitions and bindings
-				remove_definition (at_id_codes_csr.key)
+				-- now do the id codes
+				if specialisation_depth_from_code (at_id_codes_csr.item) = specialisation_depth then
+					create conv_terms.make (0)
+					-- find the term definitions in all languages
+					across term_definitions as term_defs_for_lang_csr loop
+						check attached term_defs_for_lang_csr.item.item (at_id_codes_csr.key) as att_term then
+							conv_term := att_term
+						end
+						conv_term.set_code (at_id_codes_csr.item)
+						conv_terms.put (conv_term, term_defs_for_lang_csr.key)
+					end
 
-				-- add it back in as an id code
-				across conv_terms as id_codes_csr loop
-					put_definition (id_codes_csr.key, id_codes_csr.item)
-				end
+					-- completely remove the old term code from definitions and bindings
+					remove_definition (at_id_codes_csr.key)
 
-				-- add bindings back in as id codes
-				across conv_bindings as id_bindings_csr loop
-					put_term_binding (id_bindings_csr.item, at_id_codes_csr.key)
+					-- add it back in as an id code
+					across conv_terms as id_terms_csr loop
+						if has_id_code (at_id_codes_csr.key) then
+							replace_definition (id_terms_csr.key, id_terms_csr.item, False)
+						else
+							put_new_definition (id_terms_csr.key, id_terms_csr.item)
+						end
+					end
 				end
 			end
 
 			-- now for the remaining at-coded terms in term_definitions, reformat
 			across term_definitions as term_defs_for_lang_csr loop
 				create conv_terms.make (0)
-				across term_defs_for_lang_csr.item as term_csr loop
-					term_csr.item.set_code (adl_14_code_reformatted (term_csr.item.code))
-					conv_terms.put (term_csr.item, term_csr.item.code)
+				across term_defs_for_lang_csr.item as terms_csr loop
+					terms_csr.item.set_code (adl_14_code_reformatted (terms_csr.item.code))
+					conv_terms.put (terms_csr.item, terms_csr.item.code)
 				end
 				term_definitions.replace (conv_terms, term_defs_for_lang_csr.key)
 			end
+
+			-- have to resync properties to regenerate id_codes, terms_codes etc
+			sync_stored_properties
 		end
 
 feature {P_ARCHETYPE_TERMINOLOGY} -- Implementation

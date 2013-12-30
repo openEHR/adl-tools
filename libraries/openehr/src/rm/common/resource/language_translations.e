@@ -2,7 +2,7 @@ note
 	component:   "openEHR ADL Tools"
 	description: "[
 				 Helper class containing just the translations attribute of AUTHORED_RESOURCE;
-				 used by pre-ADL2 parsing to convert dADL text of translations in language section
+				 used by pre-ADL1.5 parsing to convert ODIN text of translations in language section
 				 of archetype into an object that can then be pasted into the archetype.
 				 ]"
 	keywords:    "archetype, translation"
@@ -38,7 +38,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_language: CODE_PHRASE
+	original_language: TERMINOLOGY_CODE
 		attribute
 			create Result.default_create
 		end

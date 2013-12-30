@@ -60,7 +60,7 @@ feature -- Initialisation
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language = an_original_language
 			Definition_set: definition = a_definition
-			Ontology_set: terminology = a_terminology
+			Terminology_set: terminology = a_terminology
 			Is_dirty: is_dirty
 			Not_generated: not is_generated
 		end
@@ -106,7 +106,7 @@ feature -- Initialisation
 			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
 			Invariants_set: rules = a_rules
-			Ontology_set: terminology = a_terminology
+			Terminology_set: terminology = a_terminology
 			Is_dirty: is_dirty
 			Not_generated: not is_generated
 		end

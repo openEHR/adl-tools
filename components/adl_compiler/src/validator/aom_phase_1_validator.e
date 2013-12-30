@@ -278,6 +278,7 @@ feature {NONE} -- Implementation
 
 	validate_definition_codes
 			-- Check if all at- and ac-codes found in the definition node tree are in the terminology (including inherited items).
+			-- Note that id-codes are optional in the terminology for objects under single-valued C_ATTRIBUTEs.
 			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
@@ -288,15 +289,19 @@ feature {NONE} -- Implementation
 			arch_depth := target.specialisation_depth
 			across target.id_codes_index as codes_csr loop
 				spec_depth := specialisation_depth_from_code (codes_csr.key)
-				if spec_depth > arch_depth then
-					add_error (ec_VONSD, <<codes_csr.key>>)
-				elseif spec_depth < arch_depth then
-					if not flat_ancestor.terminology.has_id_code (codes_csr.key) then
-						add_error (ec_VATDF, <<codes_csr.key>>)
-					end
-				elseif spec_depth = arch_depth then
-					if not terminology.has_id_code (codes_csr.key) then
-						add_error (ec_VATDF, <<codes_csr.key>>)
+				
+				-- since id-codes are only required to be defined in the terminology if they identify
+				-- nodes under multiply-valued C_ATTRIBUTEs, we have to check their parent C_ATTRIBUTE type
+				-- to decide. There can be more than one C_OBJECT with the same id-code.
+				across codes_csr.item as ac_csr loop
+					if spec_depth > arch_depth then
+						add_error (ec_VONSD, <<codes_csr.key>>)
+					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
+						if spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) then
+							add_error (ec_VATDF, <<codes_csr.key>>)
+						elseif spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key) then
+							add_error (ec_VATDF, <<codes_csr.key>>)
+						end
 					end
 				end
 			end
@@ -308,21 +313,15 @@ feature {NONE} -- Implementation
 					spec_depth := specialisation_depth_from_code (codes_csr.key)
 					if spec_depth > arch_depth then
 						add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
-					elseif spec_depth < arch_depth then
-						if not flat_ancestor.terminology.has_term_code (codes_csr.key) then
-							add_error (ec_VATDF, <<codes_csr.key>>)
-						end
-					elseif spec_depth = arch_depth then
-						if not terminology.has_term_code (codes_csr.key) then
-							add_error (ec_VATDF, <<codes_csr.key>>)
-						end
+					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_term_code (codes_csr.key) then
+						add_error (ec_VATDF, <<codes_csr.key>>)
+					elseif spec_depth = arch_depth and not terminology.has_term_code (codes_csr.key) then
+						add_error (ec_VATDF, <<codes_csr.key>>)
 					end
 				else
 					create cp.make_from_string (codes_csr.key)
-					if ts.has_terminology (cp.terminology_id) then
-						if not ts.terminology (cp.terminology_id).has_concept_id (cp.code_string) then
-							add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id>>)
-						end
+					if ts.has_terminology (cp.terminology_id) and not ts.terminology (cp.terminology_id).has_concept_id (cp.code_string) then
+						add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id>>)
 					else
 						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
 					end
@@ -334,14 +333,10 @@ feature {NONE} -- Implementation
 				spec_depth := specialisation_depth_from_code (codes_csr.key)
 				if spec_depth > arch_depth then
 					add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
-				elseif spec_depth < arch_depth then
-					if not flat_ancestor.terminology.has_constraint_code (codes_csr.key) then
-						add_error (ec_VACDF, <<codes_csr.key>>)
-					end
-				elseif spec_depth = arch_depth then
-					if not terminology.has_constraint_code (codes_csr.key) then
-						add_error (ec_VACDF, <<codes_csr.key>>)
-					end
+				elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_constraint_code (codes_csr.key) then
+					add_error (ec_VACDF, <<codes_csr.key>>)
+				elseif spec_depth = arch_depth and not terminology.has_constraint_code (codes_csr.key) then
+					add_error (ec_VACDF, <<codes_csr.key>>)
 				end
 			end
 		end

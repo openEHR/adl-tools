@@ -105,6 +105,13 @@ feature -- Definitions
 	Annotated_code_text_delimiter_string: STRING = "|"
 			-- string form of above
 
+	Terminal_node_id: STRING
+			-- special 'id9999' code that identifies all terminal primitive objects
+		once
+			create Result.make_from_string (id_code_leader)
+			Result.append ("9999")
+		end
+
 feature -- Access
 
 	specialisation_parent_from_code (a_code: STRING): STRING
@@ -254,7 +261,7 @@ feature -- Access
 
 	specialised_code_tail (a_code: STRING): STRING
 			-- get code tail from a specialised code, e.g. from
-			-- "at0032.0.1", the result is "1"; from
+			-- "at32.0.1", the result is "1"; from
 			-- "at4.3", the result is "3"
 		require
 			code_valid: is_valid_code (a_code)
@@ -447,16 +454,32 @@ feature -- Conversion
 			Result.append_character (Annotated_code_text_delimiter)
 		end
 
-	adl_14_id_code_renumbered (an_adl_14_code: STRING): STRING
+	adl_14_id_code_converted (an_adl_14_code: STRING): STRING
 			-- convert the lead numeric part of an ADL 1.4 at-code that has a level 0 part,
-			-- and is being used as an id-code (i.e. occurs next to a class name in cADL text) by:
-			--
-			-- Changing "at" to "id"
-			-- removing leading '0's in top level code part ('0001' in at0001.3.1), if applicable
-			-- renumbering to be 1 higher (at0001.3.1 => at2.3.1)
+			-- and is being used as an id-code. Convert via `adl_14_code_renumbered' and then
+			-- change leader from `at' to `id'
 		do
 			Result := adl_14_code_renumbered (an_adl_14_code)
 			Result.replace_substring (Id_code_leader, 1, 2)
+		end
+
+	adl_14_path_converted (an_adl_14_path: STRING): STRING
+			-- convert `an_adl_14_path' containing ADL 1.4 at-codes to a path containing,
+			-- ADL 1.5 id-codes, using `adl_14_code_renumbered'
+			-- `an_adl_14_path' should be a well-formed path as recognised by a regex,
+			-- of the form /aaaa/bbbb[atNNNN]/cccc[atNNNN]/dddd
+		local
+			lpos, rpos: INTEGER
+			at_code: STRING
+		do
+			create Result.make_from_string (an_adl_14_path)
+			lpos := an_adl_14_path.index_of ('[', 1)
+			from until lpos = 0 or lpos >= Result.count loop
+				rpos := an_adl_14_path.index_of (']', lpos)
+				at_code := an_adl_14_path.substring (lpos+1, rpos-1)
+				Result.replace_substring_all (at_code, adl_14_id_code_converted (at_code))
+				lpos := an_adl_14_path.index_of ('[', rpos)
+			end
 		end
 
 	adl_14_code_renumbered (an_adl_14_code: STRING): STRING

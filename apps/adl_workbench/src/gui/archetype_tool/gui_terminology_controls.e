@@ -40,13 +40,17 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
-			create ev_vsplit
-			ev_root_container.extend (ev_vsplit)
+			create ev_vsplit_1
+			ev_root_container.extend (ev_vsplit_1)
+
+			create ev_vsplit_2
+			ev_vsplit_1.extend (ev_vsplit_2)
+			ev_vsplit_1.enable_item_expand (ev_vsplit_2)
 
 			-- id defs + bindings
 			create id_defs_frame_ctl.make (get_msg (ec_id_defs_frame_text, Void), 0, 0, True)
-			ev_vsplit.extend (id_defs_frame_ctl.ev_root_container)
-			ev_vsplit.enable_item_expand (id_defs_frame_ctl.ev_root_container)
+			ev_vsplit_2.extend (id_defs_frame_ctl.ev_root_container)
+			ev_vsplit_2.enable_item_expand (id_defs_frame_ctl.ev_root_container)
 
 			create id_defs_mlist_ctl.make_editable (
 				agent :LIST [STRING] do Result := terminology.id_codes end,
@@ -62,8 +66,8 @@ feature {NONE} -- Initialisation
 
 			-- term defs + bindings
 			create term_defs_frame_ctl.make (get_msg (ec_term_defs_frame_text, Void), 0, 0, True)
-			ev_vsplit.extend (term_defs_frame_ctl.ev_root_container)
-			ev_vsplit.enable_item_expand (term_defs_frame_ctl.ev_root_container)
+			ev_vsplit_2.extend (term_defs_frame_ctl.ev_root_container)
+			ev_vsplit_2.enable_item_expand (term_defs_frame_ctl.ev_root_container)
 
 			create term_defs_mlist_ctl.make_editable (
 				agent :LIST [STRING] do Result := terminology.term_codes end,
@@ -79,8 +83,8 @@ feature {NONE} -- Initialisation
 
 			-- constraint defs + bindings
 			create constraint_defs_frame_ctl.make (get_msg (ec_constraint_defs_frame_text, Void), 0, 0, True)
-			ev_vsplit.extend (constraint_defs_frame_ctl.ev_root_container)
-			ev_vsplit.disable_item_expand (constraint_defs_frame_ctl.ev_root_container)
+			ev_vsplit_1.extend (constraint_defs_frame_ctl.ev_root_container)
+			ev_vsplit_1.disable_item_expand (constraint_defs_frame_ctl.ev_root_container)
 
 			create constraint_defs_mlist_ctl.make_editable (
 				agent :LIST [STRING] do Result := terminology.constraint_codes end,
@@ -155,7 +159,7 @@ feature {NONE} -- Implementation
 
 	id_defs_mlist_ctl, term_defs_mlist_ctl, constraint_defs_mlist_ctl: EVX_MULTI_COLUMN_TABLE_CONTROL
 
-	ev_vsplit: EV_VERTICAL_SPLIT_AREA
+	ev_vsplit_1, ev_vsplit_2: EV_VERTICAL_SPLIT_AREA
 
 	id_defs_frame_ctl, term_defs_frame_ctl, constraint_defs_frame_ctl: EVX_FRAME_CONTROL
 
@@ -313,7 +317,7 @@ feature {NONE} -- Implementation
 			elseif source_archetype.terminology.has_constraint_binding (a_col_name, a_code) then -- replace an existing binding
 				source_archetype.terminology.replace_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.add_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+				source_archetype.terminology.put_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			end
 		end
 

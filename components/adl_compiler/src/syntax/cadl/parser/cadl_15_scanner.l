@@ -55,10 +55,14 @@ IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
-NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
-PATH_SEG [a-z][a-zA-Z0-9_]*(\[(at|id)[0-9.]+\])?
-CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
+NAMESTR [a-zA-Z][a-zA-Z0-9_]+
+
 ID_CODE_LEADER id
+CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
+ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
+ADL_14_AC_CODE ac(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
+PATH_SEG [a-z][a-zA-Z0-9_]*(\[id(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*\])?
+ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -202,20 +206,20 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 \[at0000(\.1)*\] {
 		last_token := V_ROOT_ID_CODE
 		code := text_substring (2, text_count - 1)
-		last_string_value := adl_14_id_code_renumbered (code)
+		last_string_value := adl_14_id_code_converted (code)
 		converted_codes.put (last_string_value, code)
 	}
-\[at0+{CODE_STR}\] {
+\[{ADL_14_AT_CODE}\] {
 		last_token := V_ID_CODE
 		code := text_substring (2, text_count - 1)
-		last_string_value := adl_14_id_code_renumbered (code)
+		last_string_value := adl_14_id_code_converted (code)
 		converted_codes.put (last_string_value, code)
 	}
-at0+{CODE_STR} {
+{ADL_14_AT_CODE} {
 		last_token := V_ID_CODE_STR
-		last_string_value := adl_14_id_code_renumbered (text)
+		last_string_value := adl_14_id_code_converted (text)
 	}
-\[ac0+{CODE_STR}\] {
+\[{ADL_14_AC_CODE}\] {
 		last_token := V_CONSTRAINT_CODE_REF
 		code := text_substring (2, text_count - 1)
 		last_string_value := adl_14_code_renumbered (code)
@@ -438,23 +442,39 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 			}
 
 ----------/* V_ABS_PATH */ -------------------------------------------------
-(\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[code]"
-				last_token := V_ABS_PATH
-				last_string_value := text
-			}
+(\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[id-code]"
+			last_token := V_ABS_PATH
+			last_string_value := text
+		}
 
 ----------/* V_REL_PATH */ -------------------------------------------------
-{PATH_SEG}(\/{PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[code]"
-				last_token := V_REL_PATH
-				last_string_value := text
-			}
+{PATH_SEG}(\/{PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[id-code]"
+			last_token := V_REL_PATH
+			last_string_value := text
+		}
+
+-------------------------------------------------------------------
+--- START transitional at-code identifier codes in ADL 1.5 archetypes
+---
+(\/{ADL_14_PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[at-code]"
+			last_token := V_ABS_PATH
+			last_string_value := adl_14_path_converted (text)
+		}
+
+{ADL_14_PATH_SEG}(\/{ADL_14_PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[at-code]"
+			last_token := V_REL_PATH
+			last_string_value := adl_14_path_converted (text)
+		}
+---
+--- END transitional at-code identifier codes in ADL 1.5 archetypes
+-------------------------------------------------------------------
 
 ----------/* V_REGEXP */ -------------------------------------------------
-"{/" 			{
-				last_token := SYM_START_CBLOCK
-				set_start_condition (IN_REGEXP1)
-				in_buffer.append_character ('/')
-			}
+"{/" 	{
+			last_token := SYM_START_CBLOCK
+			set_start_condition (IN_REGEXP1)
+			in_buffer.append_character ('/')
+		}
 
 <IN_REGEXP1> {
 	[^/[]*	{ 		-- match segment consisting of non / or [

@@ -26,11 +26,6 @@ inherit
 
 	C_COMMON
 
-	ADL_14_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 	OPERATOR_TYPES
 		export
 			{NONE} all

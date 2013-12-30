@@ -51,7 +51,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_language: CODE_PHRASE
+	original_language: TERMINOLOGY_CODE
 			-- a copy of original_language from parent object
         attribute
             create Result.make (default_language_code_set, default_language)

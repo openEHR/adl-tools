@@ -43,8 +43,9 @@ feature -- Initialisation
 feature -- Modification
 
 	merge (other: FLAT_ARCHETYPE_TERMINOLOGY)
-			-- append all the codes from the other ontology to this one; used to create the ontology for flat-form archetypes
-			-- only languages that exist in the current ontology are merged from `other'
+			-- append all the codes from the other terminology to this one; used to create the
+			-- terminology for flat-form archetypes. Only languages that exist in the current
+			-- terminology are merged from `other'
 		require
 			Other_valid: semantically_conforms_to (other)
 		local
@@ -61,7 +62,7 @@ feature -- Modification
 						if has_id_code (lang_terms_csr.key) then
 							replace_definition (a_lang, lang_terms_csr.item.deep_twin, False)
 						else
-							merge_definition (a_lang, lang_terms_csr.item.deep_twin)
+							put_new_definition (a_lang, lang_terms_csr.item.deep_twin)
 						end
 					end
 				end
@@ -78,7 +79,7 @@ feature -- Modification
 						if has_term_code (lang_terms_csr.key) then
 							replace_definition (a_lang, lang_terms_csr.item.deep_twin, False)
 						else
-							merge_definition (a_lang, lang_terms_csr.item.deep_twin)
+							put_new_definition (a_lang, lang_terms_csr.item.deep_twin)
 						end
 					end
 				end
@@ -95,7 +96,7 @@ feature -- Modification
 						if has_constraint_code (lang_terms_csr.key) then
 							replace_definition (a_lang, lang_terms_csr.item.deep_twin, False)
 						else
-							merge_definition (a_lang, lang_terms_csr.item.deep_twin)
+							put_new_definition (a_lang, lang_terms_csr.item.deep_twin)
 						end
 					end
 				end
@@ -111,7 +112,7 @@ feature -- Modification
 			-- constraint bindings; first add the bindings to terminologies that are not there at all
 			across other.constraint_bindings as bindings_csr loop
 				across bindings_csr.item as bindings_list_csr loop
-					add_constraint_binding (bindings_list_csr.item.deep_twin, bindings_csr.key, bindings_list_csr.key)
+					put_constraint_binding (bindings_list_csr.item.deep_twin, bindings_csr.key, bindings_list_csr.key)
 				end
 			end
 		ensure

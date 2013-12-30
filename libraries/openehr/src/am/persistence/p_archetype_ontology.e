@@ -110,7 +110,7 @@ feature -- Factory
 				create tb_ont_code_table.make (0)
 				tb_ont.put (tb_ont_code_table, term_bindings_csr.key)
 				across tb_p_ont as p_term_bindings_csr loop
-					tb_ont_code_table.put (create {CODE_PHRASE}.make_from_string (p_term_bindings_csr.item), p_term_bindings_csr.key)
+					tb_ont_code_table.put (create {TERMINOLOGY_CODE}.make_from_string (p_term_bindings_csr.item), p_term_bindings_csr.key)
 				end
 			end
 			a_terminology.set_term_bindings (tb_ont)

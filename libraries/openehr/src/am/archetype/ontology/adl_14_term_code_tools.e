@@ -1,29 +1,29 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-			 Tools for manipulating archetype codes. Term codes take the form of 'atNNNN.N..'.
-			 At the first level, 'atNNNN' is used; specialised codes are of the 
-			 form 'atNNNN.N' to watever depth require; intervening '0's are allowed,
-			 indicating that the code is a child of a parent more than one level
-			 up, e.g. 'at0021.0.3' is the 3rd specialisation of the top level code
-			 'at0021', in the 2nd specialsiation level.
+				 Tools for manipulating ADL 1.4 archetype codes. Term codes take the form of 'atNNNN.N..'.
+				 At the first level, 'atNNNN' is used; specialised codes are of the 
+				 form 'atNNNN.N' to watever depth require; intervening '0's are allowed,
+				 indicating that the code is a child of a parent more than one level
+				 up, e.g. 'at0021.0.3' is the 3rd specialisation of the top level code
+				 'at0021', in the 2nd specialsiation level.
 
-			 New codes can also be introduced in specialised archetypes, which are
-			 not themselves specialisations of any existing code. These have the form
-			 'at.NN.NN', e.g. 'at.0.0.2'
-			 
-			 The factory routines in this class are smart - they don't just make new specialised
-			 codes by adding '.1', but by looking at the current hash of codes known in the 
-			 archetype ontology into which this class is inherited.
-			 
-			 NOTE: there is a logical anomaly in how we use codes: 'at0000' is a legitimate code in 
-			 an archetype; 'at0000.1' is a specialisation of this, but 'at0.1' is a newly 
-			 introduced node at level 1. This means that cods have to be lexically processed 
-			 sometimes to detect the 'at0000' pattern, to get correct results. Fixing this 
-			 is probably impossible now, but potentially all at0000 should move to being at0001.
-			 The same problem is true with the code 'ac0000'.
-			 ]"
-	keywords:    "archetype, ontology, coded term"
+				 New codes can also be introduced in specialised archetypes, which are
+				 not themselves specialisations of any existing code. These have the form
+				 'at.NN.NN', e.g. 'at.0.0.2'
+				 
+				 The factory routines in this class are smart - they don't just make new specialised
+				 codes by adding '.1', but by looking at the current hash of codes known in the 
+				 archetype ontology into which this class is inherited.
+				 
+				 NOTE: there is a logical anomaly in how we use codes: 'at0000' is a legitimate code in 
+				 an archetype; 'at0000.1' is a specialisation of this, but 'at0.1' is a newly 
+				 introduced node at level 1. This means that cods have to be lexically processed 
+				 sometimes to detect the 'at0000' pattern, to get correct results. Fixing this 
+				 is probably impossible now, but potentially all at0000 should move to being at0001.
+				 The same problem is true with the code 'ac0000'.
+				 ]"
+	keywords:    "archetype, coded term"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -41,128 +41,94 @@ inherit
 
 feature -- Definitions
 
-	Default_code_number_string: STRING = "0000"
+	default_adl_14_code_number_string: STRING = "0000"
 
-	Default_concept_code: STRING
+	Default_adl_14_concept_code: STRING
 			-- FIXME: the 0000 code should not be allowed to be used in an archetype
 			-- definition secton, since it violates the rule that a '0' code means
 			-- "not defined here" (i.e. it is normally a filler for lower down codes)
 			-- THIS SHOULD BE CHANGED to at0001
 		once
-			Result := Term_code_leader + Default_code_number_string
+			Result := Adl_14_term_code_leader + default_adl_14_code_number_string
 		end
 
-	Default_constraint_code: STRING
+	Default_adl_14_constraint_code: STRING
 			-- FIXME: the 0000 code should not be allowed to be used in an archetype
 			-- definition secton, since it violates the rule that a '0' code means
 			-- "not defined here" (i.e. it is normally a filler for lower down codes)
 			-- THIS SHOULD BE CHANGED to ac0001
 		once
-			Result := Constraint_code_leader + Default_code_number_string
+			Result := Adl_14_constraint_code_leader + default_adl_14_code_number_string
 		end
 
-	Specialisation_separator: CHARACTER = '.'
+	Adl_14_specialisation_separator: CHARACTER = '.'
 
-	Code_number_length: INTEGER
-			-- length of top-level codes, e.g. "0001"
-		once
-			Result := Default_code_number_string.count
-		end
-
-	Code_modulus: INTEGER = 1000
-			-- numeric modulus to turn a code of any size into
-			-- a 3 digit number
-
-	Term_code_length: INTEGER
-			-- length of top-level term codes, e.g. "at0001"
-		once
-			Result := Default_concept_code.count
-		end
-
-	Term_code_leader: STRING = "at"
+	Adl_14_term_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
-	Term_code_regex_pattern: STRING
+	Adl_14_term_code_regex_pattern: STRING
 			-- a regex to match any term of any depth
 		once
 			create Result.make_empty
 			Result.append ("^at[0-9]+(\.[0-9]+)*$")
 		end
 
-	Constraint_code_length: INTEGER
-			-- length of top-level constraint codes, e.g. "ac0001"
-		once
-			Result := Default_constraint_code.count
-		end
+	Adl_14_constraint_code_leader: STRING = "ac"
 
-	Constraint_code_leader: STRING = "ac"
-
-	Constraint_code_regex_pattern: STRING
+	Adl_14_constraint_code_regex_pattern: STRING
 			-- a regex to match any term of any depth
 		once
 			create Result.make_empty
 			Result.append ("^ac[0-9]+(\.[0-9]+)*$")
 		end
 
-	Any_code_regex_pattern: STRING
+	Any_adl_14_code_regex_pattern: STRING
 			-- a regex to match any term of any depth
 		once
 			create Result.make_empty
-			Result.append ("^(at|ac|id)[0-9]+(\.[0-9]+)*$")
+			Result.append ("^(at|ac)[0-9]+(\.[0-9]+)*$")
 		end
 
-	Id_code_leader: STRING = "id"
-			-- leader of all id codes
-
-	Zero_filler: STRING = ".0"
-
-	Zero_leader: STRING = "0."
-
-	Annotated_code_text_delimiter: CHARACTER = '|'
-			-- delimiter for creating annotated terms of form 'nnnn|term text|'
-			-- as commonly used in SNOMED CT
-
-	Annotated_code_text_delimiter_string: STRING = "|"
-			-- string form of above
+	Adl_14_zero_filler: STRING = ".0"
 
 feature -- Access
 
-	specialisation_parent_from_code (a_code: STRING): STRING
+	adl_14_specialisation_parent_from_code (a_code: STRING): STRING
 			-- get immediate parent of this specialised code
 		require
-			Code_valid: specialisation_depth_from_code(a_code) > 0
+			Code_valid: adl_14_specialisation_depth_from_code(a_code) > 0
 		do
-			Result := a_code.substring (1, a_code.last_index_of (Specialisation_separator, a_code.count)-1)
+			Result := a_code.substring (1, a_code.last_index_of (Adl_14_specialisation_separator, a_code.count)-1)
 		ensure
-			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
+			Valid_result: adl_14_specialisation_depth_from_code(Result) = adl_14_specialisation_depth_from_code(a_code) - 1
 		end
 
-	code_at_level (a_code: STRING; a_level: INTEGER): STRING
+	adl_14_code_at_level (a_code: STRING; a_level: INTEGER): STRING
 			-- get valid form of this code at `a_level'
 		require
 			Level_valid: a_level >= 0
-			Code_valid: code_exists_at_level (a_code, a_level)
+			Code_valid: adl_14_code_exists_at_level (a_code, a_level)
 		local
 			i, idx: INTEGER
 			finished: BOOLEAN
 		do
-			if specialisation_depth_from_code (a_code) < a_level then
+			if adl_14_specialisation_depth_from_code (a_code) < a_level then
 				Result := a_code.twin
 			else
 				-- this loop finds the index in a code string of the character just before a_level-1'th '.'
 				from
-					i := specialisation_depth_from_code (a_code)
+					i := adl_14_specialisation_depth_from_code (a_code)
 					idx := a_code.count
 				until
 					i = a_level
 				loop
-					idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+					idx := a_code.last_index_of (Adl_14_specialisation_separator, idx) - 1
 					i := i - 1
 				end
 
 				-- if there are trailing 0s, get rid of them
 				from until finished loop
-					if a_code.substring (idx-1, idx).is_equal (Zero_filler) then
+					if a_code.substring (idx-1, idx).is_equal (Adl_14_zero_filler) then
 						idx := idx - 2
 					else
 						finished := True
@@ -172,10 +138,10 @@ feature -- Access
 				Result := a_code.substring (1, idx)
 			end
 		ensure
-			Valid_result: is_valid_code (Result)
+			Valid_result: is_valid_adl_14_code (Result)
 		end
 
-	specialisation_status_from_code (a_code: STRING; a_depth: INTEGER): INTEGER
+	adl_14_specialisation_status_from_code (a_code: STRING; a_depth: INTEGER): INTEGER
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
 			-- 		at0001 at depth 0 ==> ss_added
@@ -194,24 +160,24 @@ feature -- Access
 			--		at0.1.1 at depth 4 ==> ss_inherited
 			--		at0009.0.0.1 at depth 5 ==> ss_inherited
 		require
-			Code_valid: is_valid_code(a_code)
+			Code_valid: is_valid_adl_14_code(a_code)
 			Depth_valid: a_depth >= 0
 		local
 			code_defined_in_this_level: BOOLEAN
 			code_at_this_level: STRING
 		do
-			if a_depth > specialisation_depth_from_code (a_code) then
+			if a_depth > adl_14_specialisation_depth_from_code (a_code) then
 				Result := ss_inherited
 			else
-				code_at_this_level := index_from_code_at_level (a_code, a_depth)
-				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.is_equal (Default_code_number_string) -- takes account of anomalous "0000" code
+				code_at_this_level := adl_14_index_from_code_at_level (a_code, a_depth)
+				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.is_equal (default_adl_14_code_number_string) -- takes account of anomalous "0000" code
 				if code_defined_in_this_level then
-					if a_depth > 0 and code_exists_at_level (a_code, a_depth - 1) then -- parent is valid
+					if a_depth > 0 and adl_14_code_exists_at_level (a_code, a_depth - 1) then -- parent is valid
 						Result := ss_redefined
 					else
 						Result := ss_added
 					end
-				elseif a_depth > 0 and code_exists_at_level (a_code, a_depth - 1) then
+				elseif a_depth > 0 and adl_14_code_exists_at_level (a_code, a_depth - 1) then
 					Result := ss_inherited
 				else
 					Result := ss_undefined
@@ -219,7 +185,7 @@ feature -- Access
 			end
 		end
 
-	index_from_code_at_level (a_code: STRING; a_depth: INTEGER): STRING
+	adl_14_index_from_code_at_level (a_code: STRING; a_depth: INTEGER): STRING
 			-- get the numeric part of the code from this code, at a_depth
 			-- for example:
 			-- 		a_code = at0001		a_depth = 0 -> 0001
@@ -230,14 +196,14 @@ feature -- Access
 			--		a_code = at0.4.5	a_depth = 1 -> 4
 			--		a_code = at0.4.5	a_depth = 2 -> 5
 		require
-			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code (a_code)
+			Depth_valid: a_depth >= 0 and a_depth <= adl_14_specialisation_depth_from_code (a_code)
 		local
 			spec_depth: INTEGER
 			code_num_part: STRING
 			lpos, rpos, depth_count: INTEGER
 		do
-			spec_depth := specialisation_depth_from_code (a_code)
-			code_num_part := a_code.substring (term_code_leader.count+1, a_code.count)
+			spec_depth := adl_14_specialisation_depth_from_code (a_code)
+			code_num_part := a_code.substring (Adl_14_term_code_leader.count+1, a_code.count)
 
 			-- determine left hand position
 			from
@@ -246,14 +212,14 @@ feature -- Access
 			until
 				lpos > code_num_part.count or depth_count = a_depth
 			loop
-				if code_num_part.item (lpos) = Specialisation_separator then
+				if code_num_part.item (lpos) = Adl_14_specialisation_separator then
 					depth_count := depth_count + 1
 				end
 				lpos := lpos + 1
 			end
 
 			-- determine right hand position
-			rpos := code_num_part.index_of (Specialisation_separator, lpos)
+			rpos := code_num_part.index_of (Adl_14_specialisation_separator, lpos)
 			if rpos = 0 then
 				rpos := code_num_part.count
 			else
@@ -262,54 +228,54 @@ feature -- Access
 			Result := code_num_part.substring(lpos, rpos)
 		end
 
-	specialisation_depth_from_code (a_code: STRING): INTEGER
+	adl_14_specialisation_depth_from_code (a_code: STRING): INTEGER
 			-- Infer number of levels of specialisation from `a_code'.
 		require
-			code_valid: is_valid_code (a_code)
+			code_valid: is_valid_adl_14_code (a_code)
 		do
-			Result := a_code.occurrences (Specialisation_separator)
+			Result := a_code.occurrences (Adl_14_specialisation_separator)
 		ensure
 			non_negative: Result >= 0
 		end
 
-	specialised_code_tail (a_code: STRING): STRING
+	adl_14_specialised_code_tail (a_code: STRING): STRING
 			-- get code tail from a specialised code, e.g. from
 			-- "at0032.0.1", the result is "1"; from
 			-- "at0004.3", the result is "3"
 		require
-			code_valid: is_valid_code (a_code)
-			not_root_code: is_refined_code (a_code)
+			code_valid: is_valid_adl_14_code (a_code)
+			not_root_code: is_adl_14_refined_code (a_code)
 		do
-			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
+			Result := a_code.substring (a_code.last_index_of (Adl_14_specialisation_separator, a_code.count) + 1, a_code.count)
 		end
 
 feature -- Comparison
 
-	is_term_code (a_code: STRING): BOOLEAN
+	is_adl_14_term_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "at" code?
 		do
-			Result := a_code.starts_with (term_code_leader)
+			Result := a_code.starts_with (Adl_14_term_code_leader)
 		end
 
-	is_constraint_code (a_code: STRING): BOOLEAN
+	is_adl_14_constraint_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "ac" code?
 		do
-			Result := a_code.starts_with (constraint_code_leader)
+			Result := a_code.starts_with (Adl_14_constraint_code_leader)
 		end
 
-	is_valid_at_code (a_code: STRING): BOOLEAN
+	is_valid_adl_14_at_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' a valid "at" code? It can be any of:
 		do
-			Result := Term_code_regex_matcher.recognizes (a_code)
+			Result := Adl_14_term_code_regex_matcher.recognizes (a_code)
 		end
 
-	is_valid_ac_code (a_code: STRING): BOOLEAN
+	is_valid_adl_14_ac_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' a valid "at" code? It can be any of:
 		do
-			Result := Constraint_code_regex_matcher.recognizes (a_code)
+			Result := Adl_14_constraint_code_regex_matcher.recognizes (a_code)
 		end
 
-	is_valid_code (a_code: STRING): BOOLEAN
+	is_valid_adl_14_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' a valid "at", "ac" or "id" code? It can be any of:
 			-- at0000
 			-- at000n
@@ -321,21 +287,19 @@ feature -- Comparison
 			str: STRING
 		do
 			if not a_code.is_empty then
-				if a_code.starts_with (term_code_leader) then
-					i := term_code_leader.count
-				elseif a_code.starts_with (constraint_code_leader) then
-					i := constraint_code_leader.count
-				elseif a_code.starts_with (id_code_leader) then
-					i := constraint_code_leader.count
+				if a_code.starts_with (Adl_14_term_code_leader) then
+					i := Adl_14_term_code_leader.count
+				elseif a_code.starts_with (Adl_14_constraint_code_leader) then
+					i := Adl_14_constraint_code_leader.count
 				end
 
 				if i > 0 then
 					str := a_code.substring (i + 1, a_code.count)
-					if str.is_equal (default_code_number_string) then
+					if str.is_equal (default_adl_14_code_number_string) then
 						Result := True
 					else
-						if str.has (specialisation_separator) then
-							str.remove_head (str.last_index_of(Specialisation_separator, str.count))
+						if str.has (Adl_14_specialisation_separator) then
+							str.remove_head (str.last_index_of (Adl_14_specialisation_separator, str.count))
 						end
 						if str.is_integer then
 							Result := str.to_integer > 0
@@ -345,65 +309,65 @@ feature -- Comparison
 			end
 		end
 
-	is_refined_code (a_code: STRING): BOOLEAN
+	is_adl_14_refined_code (a_code: STRING): BOOLEAN
 			-- a code has been specialised if there is a non-zero code index anywhere above the last index
 			-- e.g. at0.0.1 -> False
 			--      at0001.0.1 -> True
 			-- OR: if the code is a specialisation of the at0000 code, e.g. at0000.1, it will also return true, even
 			-- though it breaks the above rule. This occurs because we allowed at0000 to be a real code!
 		require
-			Code_valid: is_valid_code (a_code)
+			Code_valid: is_valid_adl_14_code (a_code)
 		local
 			idx_str: STRING
 		do
-			if specialisation_depth_from_code(a_code) > 0 then
-				idx_str := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
-				idx_str.prune_all (Specialisation_separator)
+			if adl_14_specialisation_depth_from_code(a_code) > 0 then
+				idx_str := a_code.substring(Adl_14_term_code_leader.count+1, a_code.last_index_of(Adl_14_specialisation_separator, a_code.count)-1)
+				idx_str.prune_all (Adl_14_specialisation_separator)
 				Result := idx_str.to_integer > 0
 
 				-- this deals with the exception
 				if not Result then
-					Result := a_code.starts_with (default_concept_code)
+					Result := a_code.starts_with (Default_adl_14_concept_code)
 				end
 			end
 		end
 
-	code_exists_at_level (a_code: STRING; a_level: INTEGER): BOOLEAN
+	adl_14_code_exists_at_level (a_code: STRING; a_level: INTEGER): BOOLEAN
 			-- is `a_code' valid at level `a_level' or less, i.e. if we remove its
 			-- trailing specialised part corresponding to specialisation below `a_level',
 			-- and then any trailing '.0' pieces, do we end up with a valid code? If so
 			-- it means that the code corresponds to a real node from `a_level' or higher
 		require
-			Code_valid: is_valid_code (a_code)
+			Code_valid: is_valid_adl_14_code (a_code)
 			Level_valid: a_level >= 0
 		local
 			s: STRING
 			idx, i: INTEGER
 		do
-			if a_level >= specialisation_depth_from_code(a_code) then
+			if a_level >= adl_14_specialisation_depth_from_code(a_code) then
 				Result := True
 			else
 				-- this loop finds the index in a code string of the character just before a_level-1'th '.'
 				from
-					i := specialisation_depth_from_code (a_code)
+					i := adl_14_specialisation_depth_from_code (a_code)
 					idx := a_code.count
 				until
 					i = a_level
 				loop
-					idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+					idx := a_code.last_index_of (Adl_14_specialisation_separator, idx) - 1
 					i := i - 1
 				end
-				s := a_code.substring(Term_code_leader.count+1, idx)
-				if s.starts_with (Default_code_number_string) then
+				s := a_code.substring(Adl_14_term_code_leader.count+1, idx)
+				if s.starts_with (default_adl_14_code_number_string) then
 					Result := True
 				else
-					s.prune_all (Specialisation_separator)
+					s.prune_all (Adl_14_specialisation_separator)
 					Result := s.to_integer > 0
 				end
 			end
 		end
 
-	is_valid_concept_code (a_code: STRING): BOOLEAN
+	is_valid_adl_14_concept_code (a_code: STRING): BOOLEAN
 			-- check if `a_code' is a valid root concept code of an archetype
 			-- True if a_code has form at0000, or at0000.1, at0000.1.1 etc
 		require
@@ -411,16 +375,16 @@ feature -- Comparison
 		local
 			csr: INTEGER
 		do
-			Result := a_code.starts_with (default_concept_code)
+			Result := a_code.starts_with (Default_adl_14_concept_code)
 			if Result then
-				from csr := Default_concept_code.count + 1 until csr > a_code.count or not Result loop
-					Result := a_code.count >= csr + 1 and (a_code.item (csr) = Specialisation_separator and a_code.item (csr + 1) = '1')
+				from csr := Default_adl_14_concept_code.count + 1 until csr > a_code.count or not Result loop
+					Result := a_code.count >= csr + 1 and (a_code.item (csr) = Adl_14_specialisation_separator and a_code.item (csr + 1) = '1')
 					csr := csr + 2
 				end
 			end
 		end
 
-	codes_conformant (a_child_code, a_parent_code: STRING): BOOLEAN
+	adl_14_codes_conformant (a_child_code, a_parent_code: STRING): BOOLEAN
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
 		require
@@ -432,29 +396,29 @@ feature -- Comparison
 
 feature -- Factory
 
-	new_concept_code_at_level (at_level: INTEGER): STRING
+	new_adl_14_concept_code_at_level (at_level: INTEGER): STRING
 			-- make a new term code for use as the root concept code of an archetype
-			-- at level = 0 -> Default_concept_code
-			-- at level = 1 -> Default_concept_code.1
-			-- at level = 2 -> Default_concept_code.1.1
+			-- at level = 0 -> Default_adl_14_concept_code
+			-- at level = 1 -> Default_adl_14_concept_code.1
+			-- at level = 2 -> Default_adl_14_concept_code.1.1
 			-- etc
 		require
 			level_valid: at_level >= 0
 		local
 			i: INTEGER
 		do
-			create Result.make_from_string (default_concept_code)
+			create Result.make_from_string (Default_adl_14_concept_code)
 			from until i >= at_level loop
-				Result.append_character (Specialisation_separator)
+				Result.append_character (Adl_14_specialisation_separator)
 				Result.append_character ('1')
 				i := i + 1
 			end
 		ensure
-			valid: is_valid_concept_code (Result)
-			level_set: specialisation_depth_from_code (Result) = at_level
+			valid: is_valid_adl_14_concept_code (Result)
+			level_set: adl_14_specialisation_depth_from_code (Result) = at_level
 		end
 
-	new_refined_code_at_level (a_parent_code: STRING; at_level: INTEGER; id_codes: TWO_WAY_SORTED_SET [STRING]): STRING
+	new_adl_14_refined_code_at_level (a_parent_code: STRING; at_level: INTEGER; id_codes: TWO_WAY_SORTED_SET [STRING]): STRING
 			-- Create a new at|ac|id-code at specialisation depth `at_level', based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
 			-- Note: a code of "at0001" has specialisation depth 0
@@ -466,12 +430,12 @@ feature -- Factory
 		do
 			create leader.make_from_string (a_parent_code)
 
-			from i := specialisation_depth_from_code (a_parent_code) + 1 until i >= at_level loop
-				leader.append (Zero_filler)
+			from i := adl_14_specialisation_depth_from_code (a_parent_code) + 1 until i >= at_level loop
+				leader.append (Adl_14_zero_filler)
 				i := i + 1
 			end
 
-			leader.append_character (Specialisation_separator)
+			leader.append_character (Adl_14_specialisation_separator)
 
 			-- generate a code-tail
 			code := 1
@@ -482,42 +446,30 @@ feature -- Factory
 			end
 			id_codes.extend (Result)
 		ensure
-			Result_valid: specialised_code_tail (Result).to_integer > 0
-		end
-
-feature -- Conversion
-
-	annotated_code (a_code, a_text: STRING): STRING
-			-- create annotated term of form 'nnnn|term text|' as commonly used in SNOMED CT
-		do
-			create Result.make_empty
-			Result.append (a_code)
-			Result.append_character (Annotated_code_text_delimiter)
-			Result.append (a_text)
-			Result.append_character (Annotated_code_text_delimiter)
+			Result_valid: adl_14_specialised_code_tail (Result).to_integer > 0
 		end
 
 feature -- Pattern Matching
 
-	Any_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	Any_adl_14_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- match any term code
 		once
 			create Result.make
-			Result.compile (Any_code_regex_pattern)
+			Result.compile (Any_adl_14_code_regex_pattern)
 		end
 
-	Term_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	Adl_14_term_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- match any term code
 		once
 			create Result.make
-			Result.compile (Term_code_regex_pattern)
+			Result.compile (Adl_14_term_code_regex_pattern)
 		end
 
-	Constraint_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	Adl_14_constraint_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- match any term code
 		once
 			create Result.make
-			Result.compile (Constraint_code_regex_pattern)
+			Result.compile (Adl_14_constraint_code_regex_pattern)
 		end
 
 end

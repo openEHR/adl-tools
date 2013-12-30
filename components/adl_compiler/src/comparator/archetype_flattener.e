@@ -103,7 +103,7 @@ end
 				flatten_other_metadata
 				flatten_definition
 				flatten_invariants
-				flatten_ontology
+				flatten_terminology
 				flatten_annotations
 				arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
 				arch_output_flat.rebuild
@@ -764,7 +764,7 @@ end
 			end
 		end
 
-	flatten_ontology
+	flatten_terminology
 			-- build the flat archetype ontology as the sum of parent and source ontologies
 		do
 			arch_output_flat.terminology.merge (arch_parent_flat.terminology)
