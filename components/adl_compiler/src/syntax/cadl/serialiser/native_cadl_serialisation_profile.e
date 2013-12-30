@@ -1,9 +1,9 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Serialisation profile for native CADL"
-	keywords:    "test, ADL"
+	keywords:    "serialisation, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
@@ -16,7 +16,7 @@ inherit
 			make
 		end
 
-	CADL_TOKENS
+	CADL_15_TOKENS
 		export
 			{NONE} all
 		end
@@ -31,7 +31,6 @@ feature -- Initialisation
 		do
 			precursor (an_output_format)
 			create last_string_value.make_empty
-			create last_c_dv_quantity_value.default_create
 		end
 
 feature {NONE} -- Implementation

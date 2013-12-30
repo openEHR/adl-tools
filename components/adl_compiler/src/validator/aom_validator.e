@@ -3,7 +3,7 @@ note
 	description: "[
 				 Validator of standalone archetype (i.e. without reference to parent archetypes
 				 in the case of specialised archetypes). The validation done here checks the use
-				 of codes defined in the ontology against their use in the definition of the 
+				 of codes defined in the terminology against their use in the definition of the 
 				 archetype.
 		         ]"
 	keywords:    "constraint model"
@@ -22,13 +22,13 @@ inherit
 			target
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_at_code, is_valid_ac_code, is_valid_code
+			{ANY} is_valid_code
 		end
 
-feature {ADL15_ENGINE} -- Initialisation
+feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
@@ -63,10 +63,10 @@ feature {NONE} -- Implementation
 	target: ARCHETYPE
 			-- differential archetype being validated
 
-	ontology: ARCHETYPE_ONTOLOGY
-			-- The ontology of the current archetype.
+	terminology: ARCHETYPE_TERMINOLOGY
+			-- The terminology of the current archetype.
 		do
-			Result := target.ontology
+			Result := target.terminology
 		end
 
 	rm_schema: BMM_SCHEMA

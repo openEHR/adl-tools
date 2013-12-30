@@ -19,12 +19,6 @@ inherit
 			parent, representation_cache
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all;
-			{ANY} specialisation_depth_from_code, is_valid_code;
-		end
-
 feature -- Access
 
 	rm_type_name: STRING

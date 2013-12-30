@@ -12,7 +12,7 @@ deferred class ARCHETYPE_CONSTRAINT
 inherit
 	VISITABLE
 
-	SPECIALISATION_STATUSES
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} valid_specialisation_status

@@ -13,14 +13,14 @@ class XML_CADL_SERIALISATION_PROFILE
 inherit
 	XML_SERIALISATION_PROFILE
 
-	CADL_TOKENS
+	CADL_15_TOKENS
 		export
 			{NONE} all
 		end
 
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER]
@@ -36,13 +36,13 @@ feature {NONE} -- Implementation
 
 			Result.put("include",			SYM_INCLUDE)
 			Result.put("exclude",			SYM_EXCLUDE)
-			
+
 			Result.put("{",					SYM_START_CBLOCK)
 			Result.put("}",					SYM_END_CBLOCK)
 			Result.put("*",					SYM_ANY)
 			Result.put("invariant",			SYM_INVARIANT)
-		end	
-	
+		end
+
 	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
@@ -58,7 +58,7 @@ feature {NONE} -- Implementation
 			Result.put("item",			TAG_ITEM)
 			Result.put("code",			TAG_CODE)
 			Result.put("text",			TAG_TEXT)
-		end	
+		end
 
 end
 

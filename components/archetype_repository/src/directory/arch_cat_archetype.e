@@ -328,7 +328,7 @@ feature -- Access (semantic)
 	serialised_differential_archetype: detachable STRING
 		do
 			if attached differential_archetype as da then
-				Result := adl15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+				Result := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
 			end
 		end
 
@@ -364,9 +364,9 @@ feature -- Access (semantic)
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
 			if include_rm then
-				Result := adl15_engine.serialise (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
+				Result := adl_15_engine.serialise (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
 			else
-				Result := adl15_engine.serialise (flat_archetype, Syntax_type_adl, current_archetype_language)
+				Result := adl_15_engine.serialise (flat_archetype, Syntax_type_adl, current_archetype_language)
 			end
 		end
 
@@ -985,7 +985,7 @@ feature {NONE} -- Compilation
 
 			-- perform the parse; this can fail, i.e. not result generated
 			check attached legacy_flat_text as lft then
-				legacy_flat_archetype := adl15_engine.parse_legacy_flat (lft, rm_schema)
+				legacy_flat_archetype := adl_14_engine.parse (lft, rm_schema)
 			end
 			if attached legacy_flat_archetype as flat_arch then
 			 	compilation_state := Cs_parsed
@@ -996,7 +996,7 @@ feature {NONE} -- Compilation
 					-- run the comparator over the legacy flat archetype if specialised; it will mark all
 					-- nodes with a local and also rolled up inheritance status
 					if specialisation_ancestor.is_valid and attached specialisation_ancestor as att_sp then
-						adl15_engine.post_parse_process (flat_arch, Current, rm_schema)
+						adl_14_engine.post_parse_process (flat_arch, Current, rm_schema)
 						create archetype_comparator.make (att_sp, flat_arch)
 						archetype_comparator.compare
 						archetype_comparator.generate_diff
@@ -1007,7 +1007,7 @@ feature {NONE} -- Compilation
 						add_error (ec_compile_e1, <<parent_id.as_string>>)
 					end
 				else
-					adl15_engine.post_parse_process (flat_arch, Current, rm_schema)
+					adl_14_engine.post_parse_process (flat_arch, Current, rm_schema)
 					create differential_archetype.make_from_flat (flat_arch)
 				end
 
@@ -1030,7 +1030,7 @@ feature {NONE} -- Compilation
 					if compilation_state = Cs_validated_phase_2 then
 				 		save_differential
 						validate_flat
-						differential_archetype.set_is_valid (adl15_engine.validation_passed)
+						differential_archetype.set_is_valid (adl_14_engine.validation_passed)
 				 	else
 				 		save_invalid_differential
 					end
@@ -1057,7 +1057,7 @@ feature {NONE} -- Compilation
 		do
 			add_info (ec_parse_i2, Void)
 			flat_archetype_cache := Void
-			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
+			differential_archetype := adl_15_engine.parse (differential_text, rm_schema)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
@@ -1067,7 +1067,7 @@ feature {NONE} -- Compilation
 				end
 
 				-- perform post-parse object structure finalisation
-				adl15_engine.post_parse_process (diff_arch, Current, rm_schema)
+				adl_15_engine.post_parse_process (diff_arch, Current, rm_schema)
 
 				-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
@@ -1094,7 +1094,7 @@ feature {NONE} -- Compilation
 			end
 
 			-- pick up all errors & warnings
-			merge_errors (adl15_engine.errors)
+			merge_errors (adl_15_engine.errors)
 			status.copy (errors.as_string_filtered (False, False, True))
 		ensure
 			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
@@ -1108,17 +1108,17 @@ feature {NONE} -- Compilation
 			--	validate failed: Cs_ready_to_validate --> Cs_validate_failed
 		do
 			-- phase 1: validate archetype stand-alone
-			adl15_engine.phase_1_validate (Current, rm_schema)
-			merge_errors (adl15_engine.errors)
+			adl_15_engine.phase_1_validate (Current, rm_schema)
+			merge_errors (adl_15_engine.errors)
 
-			if adl15_engine.validation_passed then
+			if adl_15_engine.validation_passed then
 				compilation_state := Cs_validated_phase_1
 
 	 			-- phase 2: validate archetype against flat parent
-				adl15_engine.phase_2_validate (Current, rm_schema)
-				merge_errors (adl15_engine.errors)
+				adl_15_engine.phase_2_validate (Current, rm_schema)
+				merge_errors (adl_15_engine.errors)
 
-				if adl15_engine.validation_passed then
+				if adl_15_engine.validation_passed then
 					compilation_state := Cs_validated_phase_2
 				else
 					compilation_state := Cs_validate_failed
@@ -1142,13 +1142,13 @@ feature {NONE} -- Compilation
 			flat_archetype_cache := Void
 
 			-- phase 3: validate flattened archetype
-			adl15_engine.phase_3_validate (Current, rm_schema)
-			merge_errors (adl15_engine.errors)
-			if adl15_engine.validation_passed then
+			adl_15_engine.phase_3_validate (Current, rm_schema)
+			merge_errors (adl_15_engine.errors)
+			if adl_15_engine.validation_passed then
 				add_info (ec_parse_archetype_i2, <<id.as_string>>)
 				compilation_state := Cs_validated
 				-- not yet in use
-				--	adl15_engine.post_compile_process (Current, rm_schema)
+				--	adl_15_engine.post_compile_process (Current, rm_schema)
 			else
 				compilation_state := Cs_validate_failed
 			end
@@ -1207,7 +1207,7 @@ feature -- File Operations
 			-- is not read but is useful for debugging the diff algorithm
 		do
 			if attached differential_archetype as da and attached invalid_differential_path as inv_diff_path then
-				file_repository.save_text_to_file (inv_diff_path, adl15_engine.serialise (da, Syntax_type_adl, da.original_language.code_string))
+				file_repository.save_text_to_file (inv_diff_path, adl_15_engine.serialise (da, Syntax_type_adl, da.original_language.code_string))
 			end
 		end
 
@@ -1228,7 +1228,7 @@ feature -- File Operations
 		do
 			if has_archetype_native_serialiser_format (a_format) then
 				check attached differential_archetype as da then
-					file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (da, a_format, current_archetype_language))
+					file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (da, a_format, current_archetype_language))
 				end
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
@@ -1246,7 +1246,7 @@ feature -- File Operations
 			if a_format.same_string (Syntax_type_adl) then
 				file_repository.save_text_to_file (a_full_path, flat_text (False))
 			elseif has_archetype_native_serialiser_format (a_format) then
-				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (flat_archetype, a_format, current_archetype_language))
+				file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (True, a_format))
 			end
@@ -1311,7 +1311,7 @@ feature -- File Operations
 					if attached {P_ARCHETYPE} archetype_serialise_engine.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
 						if attached {DIFFERENTIAL_ARCHETYPE} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
-							Result := adl15_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
+							Result := adl_15_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
 						end
 					end
 				end
@@ -1335,11 +1335,11 @@ feature -- Output
 			elseif has_archetype_native_serialiser_format (a_format) then
 				if flat_flag then
 					check attached flat_archetype as fa then
-						Result := adl15_engine.serialise (fa, a_format, current_archetype_language)
+						Result := adl_15_engine.serialise (fa, a_format, current_archetype_language)
 					end
 				else
 					check attached differential_archetype as da then
-						Result := adl15_engine.serialise (da, a_format, current_archetype_language)
+						Result := adl_15_engine.serialise (da, a_format, current_archetype_language)
 					end
 				end
 			else -- must be a DT serialisation format

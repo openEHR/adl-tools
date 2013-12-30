@@ -12,7 +12,7 @@ class DIFFERENTIAL_ARCHETYPE
 inherit
 	ARCHETYPE
 		redefine
-			add_language_tag, ontology, make_from_other
+			add_language_tag, terminology, make_from_other
 		end
 
 create
@@ -37,10 +37,10 @@ feature -- Initialisation
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			adl_version := 	Latest_adl_version
-			create ontology.make_empty(an_original_language, 0)
+			create terminology.make_empty(an_original_language, 0)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
-			create definition.make_identified (an_id.rm_class, ontology.concept_code.twin)
+			create definition.make_identified (an_id.rm_class, terminology.concept_code.twin)
 			is_dirty := True
 			is_valid := True
 		ensure
@@ -48,7 +48,7 @@ feature -- Initialisation
 			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
-			Ontology_original_language_set: original_language.code_string.is_equal (ontology.original_language)
+			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Not_specialised: not is_specialised
 			Definition_root_node_id: definition.node_id.is_equal (concept)
 			Not_generated: not is_generated
@@ -64,10 +64,10 @@ feature -- Initialisation
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			adl_version := 	Latest_adl_version
-			create ontology.make_empty (an_original_language, a_parent.specialisation_depth + 1)
+			create terminology.make_empty (an_original_language, a_parent.specialisation_depth + 1)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
-			create definition.make_identified (an_id.rm_class, ontology.concept_code.twin)
+			create definition.make_identified (an_id.rm_class, terminology.concept_code.twin)
 			parent_archetype_id := a_parent.archetype_id.deep_twin
 			is_dirty := True
 			is_valid := True
@@ -76,7 +76,7 @@ feature -- Initialisation
 			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
-			Ontology_original_language_set: original_language.code_string.is_equal (ontology.original_language)
+			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Specialisation_depth_valid: specialisation_depth = a_parent.specialisation_depth + 1
 			Parent_set: parent_archetype_id.as_string.same_string (a_parent.archetype_id.as_string)
 			Definition_root_node_id: definition.node_id.is_equal (concept)
@@ -89,8 +89,8 @@ feature -- Initialisation
 		do
 			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.archetype_id, a_flat.parent_archetype_id,
 					a_flat.is_controlled, a_flat.uid, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
-					a_flat.description, a_flat.definition, a_flat.invariants,
-					a_flat.ontology.to_differential, a_flat.annotations)
+					a_flat.description, a_flat.definition, a_flat.rules,
+					a_flat.terminology.to_differential, a_flat.annotations)
 			is_generated := True
 			rebuild
 		ensure
@@ -99,34 +99,34 @@ feature -- Initialisation
 
 feature -- Access
 
-	ontology: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	terminology: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY
 
-	ontology_unused_term_codes: ARRAYED_LIST [STRING]
-			-- list of at codes found in ontology that are not referenced anywhere in the archetype definition
+	terminology_unused_term_codes: ARRAYED_LIST [STRING]
+			-- list of at codes found in terminology that are not referenced anywhere in the archetype definition
 		local
-			data_codes: like data_codes_index
-			id_atcodes: like id_atcodes_index
+			term_codes: like term_codes_index
+			id_codes: like id_codes_index
 		do
 			create Result.make (0)
-			data_codes := data_codes_index
-			id_atcodes := id_atcodes_index
-			across ontology.term_codes as term_codes_csr loop
-				if not id_atcodes.has (term_codes_csr.item) and not data_codes.has (term_codes_csr.item) then
+			term_codes := term_codes_index
+			id_codes := id_codes_index
+			across terminology.term_codes as term_codes_csr loop
+				if not id_codes.has (term_codes_csr.item) and not term_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)
 				end
 			end
 			Result.prune (concept)
 		end
 
-	ontology_unused_constraint_codes: ARRAYED_LIST [STRING]
-			-- list of ac codes found in ontology that are not referenced
+	terminology_unused_constraint_codes: ARRAYED_LIST [STRING]
+			-- list of ac codes found in terminology that are not referenced
 			-- anywhere in the archetype definition
 		local
 			accodes: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
 		do
 			create Result.make (0)
-			accodes := accodes_index
-			across ontology.constraint_codes as constraint_codes_csr loop
+			accodes := constraint_codes_index
+			across terminology.constraint_codes as constraint_codes_csr loop
 				if not accodes.has (constraint_codes_csr.item) then
 					Result.extend (constraint_codes_csr.item)
 				end
@@ -225,7 +225,7 @@ feature -- Modification
 	set_definition_node_id (a_term_code: STRING)
 			-- set the node_id of the archetype root node to a_term_id
 		require
-			Valid_term_code: ontology.has_term_code (a_term_code)
+			Valid_term_code: terminology.has_term_code (a_term_code)
 		do
 			definition.set_node_id (a_term_code)
 		end
@@ -239,20 +239,20 @@ feature -- Modification
 
 	add_language_tag (a_lang_tag: STRING)
 			-- add a new language to the archetype - creates new language section in
-			-- ontology, translations and resource description
+			-- terminology, translations and resource description
 		do
 			precursor (a_lang_tag)
-			ontology.add_language (a_lang_tag)
+			terminology.add_language (a_lang_tag)
 		end
 
-	remove_ontology_unused_codes
-			-- remove all term and constraint codes from ontology
+	remove_terminology_unused_codes
+			-- remove all term and constraint codes from terminology
 		do
-			across ontology_unused_term_codes as codes_csr loop
-				ontology.remove_term_definition (codes_csr.item)
+			across terminology_unused_term_codes as codes_csr loop
+				terminology.remove_definition (codes_csr.item)
 			end
-			across ontology_unused_constraint_codes as codes_csr loop
-				ontology.remove_constraint_definition (codes_csr.item)
+			across terminology_unused_constraint_codes as codes_csr loop
+				terminology.remove_definition (codes_csr.item)
 			end
 		end
 

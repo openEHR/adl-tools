@@ -853,7 +853,7 @@ feature {NONE} -- Implementation
 			if aca.is_valid then
 				catalogue_metrics.force (catalogue_metrics.item (valid_archetype_count) + 1, valid_archetype_count)
 
-				terminologies := aca.differential_archetype.ontology.terminologies_available
+				terminologies := aca.differential_archetype.terminology.terminologies_available
 				across terminologies as terminologies_csr loop
 					if not terminology_bindings_statistics.has (terminologies_csr.item) then
 						terminology_bindings_statistics.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies_csr.item)

@@ -1,30 +1,31 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Persistent form of ARCHETYPE_ONTOLOGY class"
+	description: "Persistent form of ARCHETYPE_TERMINOLOGY class"
 	keywords:    "archetype, ontology, terminology"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class P_ARCHETYPE_ONTOLOGY
+class P_ARCHETYPE_TERMINOLOGY
 
 create
 	make
 
 feature -- Initialisation
 
-	make (an_ontology: ARCHETYPE_ONTOLOGY)
+	make (a_terminology: ARCHETYPE_TERMINOLOGY)
 		local
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 			cb_p_ont: HASH_TABLE [STRING, STRING]
 		do
-			term_definitions := an_ontology.term_definitions
-			constraint_definitions := an_ontology.constraint_definitions
+			id_definitions := a_terminology.id_definitions
+			term_definitions := a_terminology.term_definitions
+			constraint_definitions := a_terminology.constraint_definitions
 
-			if attached an_ontology.term_bindings then
+			if attached a_terminology.term_bindings then
 				create term_bindings.make (0)
-				across an_ontology.term_bindings as terminologies_csr loop
+				across a_terminology.term_bindings as terminologies_csr loop
 					create tb_p_ont.make (0)
 					term_bindings.put (tb_p_ont, terminologies_csr.key)
 					across terminologies_csr.item as term_bindings_csr loop
@@ -35,9 +36,9 @@ feature -- Initialisation
 				end
 			end
 
-			if attached an_ontology.constraint_bindings then
+			if attached a_terminology.constraint_bindings then
 				create constraint_bindings.make (0)
-				across an_ontology.constraint_bindings as terminologies_csr loop
+				across a_terminology.constraint_bindings as terminologies_csr loop
 					create cb_p_ont.make (0)
 					constraint_bindings.put (cb_p_ont, terminologies_csr.key)
 					across terminologies_csr.item as constraint_bindings_csr loop
@@ -48,10 +49,16 @@ feature -- Initialisation
 				end
 			end
 
-			terminology_extracts := an_ontology.terminology_extracts
+			terminology_extracts := a_terminology.terminology_extracts
 		end
 
 feature -- Access
+
+	id_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+			-- table of id definitions, keyed by code, keyed by language
+		attribute
+			create Result.make (0)
+		end
 
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
@@ -83,7 +90,7 @@ feature -- Access
 
 feature -- Factory
 
-	populate_ontology (an_ont: ARCHETYPE_ONTOLOGY)
+	populate_terminology (a_terminology: ARCHETYPE_TERMINOLOGY)
 			-- populate fields not already populated from creation of a C_XXX instance
 		local
 			tb_ont: HASH_TABLE [HASH_TABLE [TERMINOLOGY_CODE, STRING], STRING]
@@ -93,8 +100,9 @@ feature -- Factory
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 			cb_p_ont: HASH_TABLE [STRING, STRING]
 		do
-			an_ont.set_term_definitions (term_definitions)
-			an_ont.set_constraint_definitions (constraint_definitions)
+			a_terminology.set_id_definitions (id_definitions)
+			a_terminology.set_term_definitions (term_definitions)
+			a_terminology.set_constraint_definitions (constraint_definitions)
 
 			create tb_ont.make (0)
 			across term_bindings as term_bindings_csr loop
@@ -105,7 +113,7 @@ feature -- Factory
 					tb_ont_code_table.put (create {CODE_PHRASE}.make_from_string (p_term_bindings_csr.item), p_term_bindings_csr.key)
 				end
 			end
-			an_ont.set_term_bindings (tb_ont)
+			a_terminology.set_term_bindings (tb_ont)
 
 			create cb_ont.make (0)
 			across constraint_bindings as constraint_bindings_csr loop
@@ -116,7 +124,7 @@ feature -- Factory
 					cb_ont_code_table.put (create {URI}.make_from_string (p_constraint_bindings_csr.item), p_constraint_bindings_csr.key)
 				end
 			end
-			an_ont.set_constraint_bindings (cb_ont)
+			a_terminology.set_constraint_bindings (cb_ont)
 		end
 
 end

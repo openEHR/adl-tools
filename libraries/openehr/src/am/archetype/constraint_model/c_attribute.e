@@ -15,11 +15,6 @@ inherit
 			parent, representation_cache, path
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export {NONE}
-			all
-		end
-
 	C_COMMON
 		export {NONE}
 			all
@@ -319,6 +314,8 @@ feature -- Status Report
 	has_non_identified_alternatives: BOOLEAN
 			-- return True if there are multiple alternative children (for a single-valued attribute)
 			-- with no identifiers
+		obsolete
+			"to support LEGACY ADL 1.4"
 		do
 			if is_single and child_count > 1 then
 				Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
@@ -327,6 +324,8 @@ feature -- Status Report
 
 	has_unidentified_child: BOOLEAN
 			-- return True if there are any children with no identifier
+		obsolete
+			"to support LEGACY ADL 1.4"
 		do
 			Result := children.there_exists (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
 		end
@@ -334,6 +333,8 @@ feature -- Status Report
 	candidate_child_requires_id (a_type_name: STRING): BOOLEAN
 			-- True if a candidate child node with rm_type_name = `a_type_name' needs a node id;
 			-- i.e. if is_multiple or else `has_child_with_rm_type_name'
+		obsolete
+			"to support LEGACY ADL 1.4"
 		require
 			Type_name_valid: not a_type_name.is_empty
 		do

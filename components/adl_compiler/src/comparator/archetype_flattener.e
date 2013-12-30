@@ -19,7 +19,7 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export {NONE}
 			all
 		end
@@ -629,8 +629,6 @@ end
 		local
 			merge_obj: C_OBJECT
 			node_id_in_parent: STRING
-			apa: ARCHETYPE_PATH_ANALYSER
-			a_path: STRING
 		do
 			across ca_child.children as c_obj_csr loop
 				if attached {ARCHETYPE_SLOT} c_obj_csr.item as arch_slot then
@@ -760,7 +758,7 @@ end
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
 			if arch_child_diff.has_invariants then
-				across arch_child_diff.invariants as invs_csr loop
+				across arch_child_diff.rules as invs_csr loop
 					arch_output_flat.add_invariant (invs_csr.item.deep_twin)
 				end
 			end
@@ -769,7 +767,7 @@ end
 	flatten_ontology
 			-- build the flat archetype ontology as the sum of parent and source ontologies
 		do
-			arch_output_flat.ontology.merge (arch_parent_flat.ontology)
+			arch_output_flat.terminology.merge (arch_parent_flat.terminology)
 		end
 
 	flatten_annotations
@@ -854,17 +852,17 @@ end
 	template_overlay_supplier_ontologies
 			-- process `template_ontology_overlay_list' to overlay target ontologies.
 		local
-			ont: FLAT_ARCHETYPE_ONTOLOGY
+			ont: FLAT_ARCHETYPE_TERMINOLOGY
 		do
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template ontologies &&&&&&%N")
 end
 			if attached {OPERATIONAL_TEMPLATE} arch_output_flat as opt then
 				across child_desc.suppliers_index as supp_idx_csr loop
-					ont := supp_idx_csr.item.flat_archetype.ontology
-					opt.add_component_ontology (ont, supp_idx_csr.key)
+					ont := supp_idx_csr.item.flat_archetype.terminology
+					opt.add_component_terminology (ont, supp_idx_csr.key)
 debug ("flatten")
-	io.put_string ("%T adding ontology from " +
+	io.put_string ("%T adding terminology from " +
 	supp_idx_csr.key + "%N")
 end
 				end

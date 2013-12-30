@@ -50,14 +50,14 @@ feature -- Initialisation
 
 			create definition.make (an_archetype.definition)
 
-			invariants := an_archetype.invariants
+			rules := an_archetype.rules
 
-			create ontology.make (an_archetype.ontology)
+			create terminology.make (an_archetype.terminology)
 
-			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt and then attached opt.component_ontologies then
-				create component_ontologies.make(0)
-				across opt.component_ontologies as opt_comp_onts_csr loop
-					component_ontologies.put (create {P_ARCHETYPE_ONTOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
+			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt and then attached opt.component_terminologies then
+				create component_terminologies.make(0)
+				across opt.component_terminologies as opt_comp_onts_csr loop
+					component_terminologies.put (create {P_ARCHETYPE_TERMINOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
 				end
 			end
 		end
@@ -84,11 +84,11 @@ feature -- Access
 
 	definition: detachable P_C_COMPLEX_OBJECT
 
-	invariants: detachable ARRAYED_LIST [ASSERTION]
+	rules: detachable ARRAYED_LIST [ASSERTION]
 
-	ontology: detachable P_ARCHETYPE_ONTOLOGY
+	terminology: detachable P_ARCHETYPE_TERMINOLOGY
 
-	component_ontologies: detachable HASH_TABLE [P_ARCHETYPE_ONTOLOGY, STRING]
+	component_terminologies: detachable HASH_TABLE [P_ARCHETYPE_TERMINOLOGY, STRING]
 
 feature -- Status Report
 
@@ -104,8 +104,8 @@ feature -- Factory
 	create_archetype: detachable ARCHETYPE
 		local
 			o_parent_archetype_id, o_archetype_id: detachable ARCHETYPE_HRID
-			o_diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
-			o_flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
+			o_diff_arch_ont: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY
+			o_flat_arch_ont: FLAT_ARCHETYPE_TERMINOLOGY
 			o_artefact_type: ARTEFACT_TYPE
 			o_uid: detachable HIER_OBJECT_ID
 		do
@@ -118,7 +118,7 @@ feature -- Factory
 				and attached adl_version as o_adl_version
 				and attached original_language as o_original_language
 				and attached description as o_description
-				and attached definition as o_definition and attached ontology as ont
+				and attached definition as o_definition and attached terminology as ont
 			then
 				create o_archetype_id.make_from_string (att_aid.physical_id)
 				create o_artefact_type.make_from_type_name (at)
@@ -128,7 +128,7 @@ feature -- Factory
 
 				if artefact_object_type.same_string ("DIFFERENTIAL_ARCHETYPE") then
 					create o_diff_arch_ont.make (original_language.as_string, o_definition.node_id)
-					ont.populate_ontology (o_diff_arch_ont)
+					ont.populate_terminology (o_diff_arch_ont)
 					o_diff_arch_ont.finalise_dt
 
 					create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
@@ -143,14 +143,14 @@ feature -- Factory
 						translations,
 						o_description,
 						o_definition.create_c_complex_object,
-						invariants,
+						rules,
 						o_diff_arch_ont,
 						annotations
 					)
 
 				else
 					create o_flat_arch_ont.make (original_language.as_string, o_definition.node_id)
-					ont.populate_ontology (o_flat_arch_ont)
+					ont.populate_terminology (o_flat_arch_ont)
 					o_flat_arch_ont.finalise_dt
 
 					create {FLAT_ARCHETYPE} Result.make_all (
@@ -165,7 +165,7 @@ feature -- Factory
 						translations,
 						o_description,
 						o_definition.create_c_complex_object,
-						invariants,
+						rules,
 						o_flat_arch_ont,
 						annotations
 					)

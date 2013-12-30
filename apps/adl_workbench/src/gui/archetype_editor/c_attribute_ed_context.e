@@ -101,12 +101,6 @@ feature -- Status Report
 			Result := across children as child_csr some not child_csr.item.is_rm end
 		end
 
-	child_node_id_required (an_rm_type_name: STRING): BOOLEAN
-		do
-			Result := rm_property.is_container or else
-				attached arch_node as a_n and then (a_n.candidate_child_requires_id (an_rm_type_name))
-		end
-
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -144,7 +138,7 @@ feature -- Display
 					if display_settings.show_technical_view then
 						attr_str.append (a_n.rm_attribute_path)
 					else
-						attr_str.append (ed_context.flat_ontology.physical_to_logical_path (a_n.rm_attribute_path, display_settings.language, True))
+						attr_str.append (ed_context.flat_terminology.physical_to_logical_path (a_n.rm_attribute_path, display_settings.language, True))
 					end
 					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 					attr_str.remove_head (1)
@@ -371,10 +365,8 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			rm_type_name := co_create_params.rm_type
 
 			-- first figure out if a new code is needed
-			if child_node_id_required (rm_type_name) then
-				ed_context.archetype.ontology.add_new_non_refined_term_definition (co_create_params.node_id_text, co_create_params.node_id_description)
-				new_code := ed_context.archetype.ontology.last_added_term_definition_code
-			end
+			ed_context.archetype.terminology.put_new_added_id_definition (co_create_params.node_id_text, co_create_params.node_id_description)
+			new_code := ed_context.archetype.terminology.last_new_id_definition_code
 
 			if c_primitive_subtypes.has (co_create_params.aom_type) then
 				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
@@ -414,8 +406,8 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
-				ed_context.archetype.ontology.add_new_non_refined_constraint_definition ("-", "-")
-				check attached ed_context.archetype.ontology.last_added_constraint_definition_code as new_ac_code then
+				ed_context.archetype.terminology.put_new_added_constraint_definition ("-", "-")
+				check attached ed_context.archetype.terminology.last_new_constraint_definition_code as new_ac_code then
 					create cref.make (new_ac_code)
 				end
 				create {CONSTRAINT_REF_ED_CONTEXT} Result.make (cref, ed_context)
@@ -515,7 +507,7 @@ feature {NONE} -- Context menu
 			aom_type_subs := aom_types_for_rm_type (rm_class_def)
 			aom_type_subs.start
 			create dialog.make (aom_type_subs, rm_type_substitutions, aom_type_subs.item, rm_class_def.name,
-				default_occurrences, ed_context.archetype, child_node_id_required (rm_class_def.name), display_settings)
+				default_occurrences, ed_context.archetype, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 
 			if dialog.is_valid then

@@ -109,7 +109,8 @@ templates = <
 		["VACMI"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
 		["VACMM"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
-		["VARCN"] = <"root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*">
+		["VARCN"] = <"invalid root object node_id (concept code) $1; should follow regex pattern 'id1(\\.1)*'">
+		["VARND"] = <"invalid object node_id $1; should follow regex pattern 'id[1-9][0-9]*(\\.[1-9][0-9]*)*'">
 		["VSSM"] = <"node at path $1 has order marker referring to non-existant sibling node $2">
 
 		["VSONI"] = <"$1 object node at path $2 node identifier does not conform to $3 node at parent path $4">

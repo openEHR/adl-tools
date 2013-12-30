@@ -524,6 +524,7 @@ templates = <
 		["rm_primitive_types_nb_tab_text"] = <"Primitive types">
 
 		-- GUI_ONTOLOGY_CONTROLS
+		["id_defs_frame_text"] = <"Id definitions and bindings">
 		["term_defs_frame_text"] = <"Term definitions and bindings">
 		["constraint_defs_frame_text"] = <"Constraint definitions and bindings">
 

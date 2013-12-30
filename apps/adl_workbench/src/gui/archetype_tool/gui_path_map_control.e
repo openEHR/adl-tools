@@ -182,7 +182,7 @@ feature -- Commands
 			found: BOOLEAN
 		do
 			if ev_nat_lang_paths_cb.is_selected and attached selected_language as sel_lang then
-				match_path := source_archetype.ontology.physical_to_logical_path (a_path, sel_lang, True)
+				match_path := source_archetype.terminology.physical_to_logical_path (a_path, sel_lang, True)
 			else
 				match_path := a_path
 			end

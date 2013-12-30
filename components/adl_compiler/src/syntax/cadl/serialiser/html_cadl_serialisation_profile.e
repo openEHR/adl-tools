@@ -15,7 +15,7 @@ inherit
 			make
 		end
 
-	CADL_TOKENS
+	CADL_15_TOKENS
 		export
 			{NONE} all
 		end
@@ -30,7 +30,6 @@ feature -- Initialisation
 		do
 			precursor (an_output_format)
 			create last_string_value.make_empty
-			create last_c_dv_quantity_value.default_create
 		end
 
 feature {NONE} -- Implementation

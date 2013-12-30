@@ -10,7 +10,7 @@ note
 class XML_ADL_SERIALISATION_PROFILE
 
 inherit
-	ADL_TOKENS
+	ADL_15_TOKENS
 		export
 			{NONE} all
 		end
@@ -30,14 +30,18 @@ feature {NONE} -- Implementation
 		once
 			create Result.make(0)
 			Result.put("archetype",		SYM_ARCHETYPE)
+			Result.put("template",		SYM_TEMPLATE)
+			Result.put("template_overlay",		SYM_TEMPLATE_OVERLAY)
 			Result.put("adl_version",	SYM_ADL_VERSION)
 			Result.put("controlled",	SYM_IS_CONTROLLED)
-			Result.put("concept",		SYM_CONCEPT)
 			Result.put("specialize",	SYM_SPECIALIZE)
 			Result.put("description",	SYM_DESCRIPTION)
 			Result.put("definition",	SYM_DEFINITION)
-			Result.put("invariant",		SYM_INVARIANT)
-			Result.put("ontology",		SYM_ONTOLOGY)
+			Result.put("rules",		SYM_RULES)
+			Result.put("terminology",	SYM_TERMINOLOGY)
+			Result.put("annotations",	SYM_ANNOTATIONS)
+			Result.put("component_terminologies",	SYM_COMPONENT_TERMINOLOGIES)
+			Result.put("uid",	SYM_UID)
 		end
 
 	tags: HASH_TABLE[STRING, INTEGER]

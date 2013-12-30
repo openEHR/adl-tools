@@ -28,7 +28,7 @@ feature -- Initialisation
 					archetype := fa
 				end
 			end
-			flat_ontology := source.flat_archetype.ontology
+			flat_terminology := source.flat_archetype.terminology
 		end
 
 	make_editable (aca: ARCH_CAT_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
@@ -37,7 +37,7 @@ feature -- Initialisation
 			in_differential_view := False
 			rm_schema := an_rm_schema
 			archetype := source.flat_archetype_clone
-			flat_ontology := source.flat_archetype_clone.ontology
+			flat_terminology := source.flat_archetype_clone.terminology
 			undo_redo_chain := an_undo_redo_chain
 			if attached aca.specialisation_ancestor as par_aca then
 				parent_archetype := par_aca.flat_archetype
@@ -54,7 +54,7 @@ feature -- Access
 
 	in_differential_view: BOOLEAN
 
-	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
+	flat_terminology: FLAT_ARCHETYPE_TERMINOLOGY
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
@@ -69,9 +69,9 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_flat_ontology (a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
+	set_flat_ontology (a_flat_ontology: FLAT_ARCHETYPE_TERMINOLOGY)
 		do
-			flat_ontology := a_flat_ontology
+			flat_terminology := a_flat_ontology
 		end
 
 end

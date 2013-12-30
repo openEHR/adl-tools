@@ -13,7 +13,7 @@ class ARCHETYPE_XML_SERIALISER
 inherit
 	ARCHETYPE_SERIALISER
 
-	ADL_TOKENS
+	ADL_15_TOKENS
 		export
 			{NONE} all
 		end

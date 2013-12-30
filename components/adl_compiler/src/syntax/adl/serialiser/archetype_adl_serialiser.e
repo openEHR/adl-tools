@@ -15,7 +15,7 @@ inherit
 			make
 		end
 
-	ADL_TOKENS
+	ADL_15_TOKENS
 		export
 			{NONE} all
 		end
@@ -45,8 +45,8 @@ feature -- Serialisation
 
 	serialise_from_parts (an_archetype: ARCHETYPE;
 				lang_serialised, desc_serialised, def_serialised: STRING;
-				inv_serialised: STRING; ont_serialised: STRING;
-				ann_serialised, comp_onts_serialised: STRING)
+				rules_serialised: STRING; term_serialised: STRING;
+				ann_serialised, comp_terms_serialised: STRING)
 		do
 			last_result.wipe_out
 
@@ -55,7 +55,7 @@ feature -- Serialisation
 			serialise_initialise
 			serialise_archetype_id
 			serialise_archetype_specialise
-			serialise_archetype_concept
+--			serialise_archetype_concept
 
 			if not lang_serialised.is_empty then
 				last_result.append (apply_style(symbol(SYM_LANGUAGE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
@@ -72,14 +72,14 @@ feature -- Serialisation
 				last_result.append (def_serialised)
 			end
 
-			if not inv_serialised.is_empty then
-				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_INVARIANT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (inv_serialised)
+			if not rules_serialised.is_empty then
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_RULES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (rules_serialised)
 			end
 
-			if not ont_serialised.is_empty then
-				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_ONTOLOGY), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (ont_serialised)
+			if not term_serialised.is_empty then
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_TERMINOLOGY), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (term_serialised)
 			end
 
 			if not ann_serialised.is_empty then
@@ -87,9 +87,9 @@ feature -- Serialisation
 				last_result.append (ann_serialised)
 			end
 
-			if not comp_onts_serialised.is_empty then
-				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_COMPONENT_ONTOLOGIES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (comp_onts_serialised)
+			if not comp_terms_serialised.is_empty then
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_COMPONENT_TERMINOLOGIES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (comp_terms_serialised)
 			end
 
 			serialise_finalise
@@ -174,14 +174,14 @@ feature -- Serialisation
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
-	serialise_archetype_concept
-		do
-			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} archetype as fa then
-				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (create_indent(1) + apply_style("[" + archetype.concept + "]", STYLE_TERM_REF))
-				last_result.append (format_item(FMT_NEWLINE))
-			end
-		end
+--	serialise_archetype_concept
+--		do
+--			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} archetype as fa then
+--				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+--				last_result.append (create_indent(1) + apply_style("[" + archetype.concept + "]", STYLE_TERM_REF))
+--				last_result.append (format_item(FMT_NEWLINE))
+--			end
+--		end
 
 	serialise_archetype_specialise
 		do

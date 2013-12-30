@@ -3,9 +3,10 @@
 #	description: "ADL scanner builder script"
 #	keywords:    "ADL, scanner"
 #
-#	author:      "Thomas Beale <thomas@deepthought.com.au>"
-#	copyright:   "Copyright (c) 2002-2010 Ocean Informatics"
-#	licence:     "The Mozilla tri-license"
+#	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+#	copyright:   "Copyright (c) 2002- Ocean Informatics"
+#	licence:     "Apache 2.0 license"
 #
 
-gelex adl_scanner.l
+gelex adl_14_scanner.l
+gelex adl_15_scanner.l

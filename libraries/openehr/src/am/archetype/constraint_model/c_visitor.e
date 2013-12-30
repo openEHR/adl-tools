@@ -19,7 +19,7 @@ feature -- Initialisation
 			differential_view := attached {DIFFERENTIAL_ARCHETYPE} an_archetype
 			archetype_specialisation_level := archetype.specialisation_depth
 			ontologies.wipe_out
-			ontologies.extend (archetype.ontology)
+			ontologies.extend (archetype.terminology)
 		end
 
 feature -- Visitor
@@ -141,13 +141,13 @@ feature {NONE} -- Implementation
 			-- specialisation level of the archetype whose definition structure
 			-- this object processes
 
-	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
+	ontologies: ARRAYED_STACK [ARCHETYPE_TERMINOLOGY]
 			-- we use a stack here to handle ontologies inside operational templates
 		attribute
 			create Result.make (0)
 		end
 
-	ontology: ARCHETYPE_ONTOLOGY
+	ontology: ARCHETYPE_TERMINOLOGY
 			-- The ontology for `target_archetype'.
 		do
 			Result := ontologies.item

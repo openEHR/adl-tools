@@ -28,7 +28,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+	component_terminologies: HASH_TABLE [FLAT_ARCHETYPE_TERMINOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
 		attribute
@@ -37,11 +37,11 @@ feature -- Access
 
 feature -- Modification
 
-	add_component_ontology (an_ontology: attached FLAT_ARCHETYPE_ONTOLOGY; an_archetype_id: attached STRING)
+	add_component_terminology (a_terminology: FLAT_ARCHETYPE_TERMINOLOGY; an_archetype_id: STRING)
 		require
 			Archetype_id_attached: not an_archetype_id.is_empty
 		do
-			component_ontologies.put (an_ontology, an_archetype_id)
+			component_terminologies.put (a_terminology, an_archetype_id)
 		end
 
 feature -- Serialisation
@@ -51,9 +51,8 @@ feature -- Serialisation
 			-- serialisation
 		do
 			precursor
-			from component_ontologies.start until component_ontologies.off loop
-				component_ontologies.item_for_iteration.synchronise_to_tree
-				component_ontologies.forth
+			across component_terminologies as terminologies_csr loop
+				terminologies_csr.item.synchronise_to_tree
 			end
 		end
 

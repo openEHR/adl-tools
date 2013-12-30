@@ -12,7 +12,12 @@ class SHARED_ADL_ENGINE
 
 feature {NONE} -- Implementation
 
-	adl15_engine: ADL15_ENGINE
+	adl_15_engine: ADL_15_ENGINE
+		once
+			create Result.make
+		end
+
+	adl_14_engine: ADL_14_ENGINE
 		once
 			create Result.make
 		end

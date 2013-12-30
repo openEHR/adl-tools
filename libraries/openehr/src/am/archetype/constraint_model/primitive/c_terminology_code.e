@@ -175,6 +175,21 @@ feature {P_C_TERMINOLOGY_CODE} -- Modification
 			end
 		end
 
+feature -- Conversion
+
+	adl_14_reformat_codes
+			-- renumber codes to support ADL 1.4 at-codes being used in ADL 1.5
+		obsolete
+			"Support for ADL 1.4 at-codes in ADL 1.5 archetypes"
+		do
+			if is_local then
+				from code_list.start until code_list.off loop
+					code_list.replace (adl_14_code_reformatted (code_list.item))
+					code_list.forth
+				end
+			end
+		end
+
 feature -- Output
 
 	as_string: STRING

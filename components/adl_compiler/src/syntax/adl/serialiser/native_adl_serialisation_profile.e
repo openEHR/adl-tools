@@ -10,7 +10,7 @@ note
 class NATIVE_ADL_SERIALISATION_PROFILE
 
 inherit
-	ADL_TOKENS
+	ADL_15_TOKENS
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
@@ -47,15 +47,14 @@ feature {NONE} -- Implementation
 			Result.put("adl_version",	SYM_ADL_VERSION)
 			Result.put("controlled",	SYM_IS_CONTROLLED)
 			Result.put("generated",	SYM_IS_GENERATED)
-			Result.put("concept",		SYM_CONCEPT)
 			Result.put("specialize",	SYM_SPECIALIZE)
 			Result.put("language",		SYM_LANGUAGE)
 			Result.put("description",	SYM_DESCRIPTION)
 			Result.put("definition",	SYM_DEFINITION)
-			Result.put("invariant",		SYM_INVARIANT)
-			Result.put("ontology",		SYM_ONTOLOGY)
+			Result.put("rules",		SYM_RULES)
+			Result.put("terminology",		SYM_TERMINOLOGY)
 			Result.put("annotations",	SYM_ANNOTATIONS)
-			Result.put("component_ontologies",	SYM_COMPONENT_ONTOLOGIES)
+			Result.put("component_terminologies",	SYM_COMPONENT_TERMINOLOGIES)
 			Result.put("uid",	SYM_UID)
 		end
 

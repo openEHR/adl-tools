@@ -18,11 +18,6 @@ inherit
 			validate, target
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 	ADL_SYNTAX_CONVERTER
 		export
 			{NONE} all
@@ -84,13 +79,13 @@ feature -- Validation
 				validate_suppliers
 			end
 
-			-- basic validation ontology
+			-- basic validation terminology
 			if passed then
 				validate_definition_codes
-				validate_ontology_languages
-				validate_ontology_bindings
-				report_unused_ontology_codes
-				validate_ontology_code_spec_levels
+				validate_terminology_languages
+				validate_terminology_bindings
+				report_unused_terminology_codes
+				validate_terminology_code_spec_levels
 			end
 		end
 
@@ -106,7 +101,7 @@ feature {NONE} -- Implementation
 				add_warning (ec_validate_e3, <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_class) then
 				add_error (ec_VARDT, <<target.archetype_id.rm_class, target.definition.rm_type_name>>)
-			elseif not is_valid_concept_code (target.concept) then
+			elseif not is_valid_root_id_code (target.concept) then
 				add_error (ec_VARCN, <<target.concept>>)
 			elseif target_descriptor.is_specialised then
 				if target.specialisation_depth /= target_descriptor.specialisation_ancestor.flat_archetype.specialisation_depth + 1 then
@@ -164,17 +159,17 @@ feature {NONE} -- Implementation
 		end
 
 	validate_languages_consistency
-			-- check to see that all linguistic items in ontology, description, etc are all coherent
+			-- check to see that all linguistic items in terminology, description, etc are all coherent
 		local
 			langs: ARRAYED_SET [STRING]
 			err_str: STRING
 		do
-			-- check that languages defined in translations section are in the archetype ontology
+			-- check that languages defined in translations section are in the archetype terminology
 			langs := target.languages_available
-			if not langs.is_subset (target.ontology.languages_available) then
+			if not langs.is_subset (target.terminology.languages_available) then
 				create err_str.make (0)
 				across langs as langs_csr loop
-					if not target.ontology.languages_available.has (langs_csr.item) then
+					if not target.terminology.languages_available.has (langs_csr.item) then
 						if not err_str.is_empty then
 							err_str.append (", ")
 						end
@@ -234,37 +229,47 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_ontology_code_spec_levels
-			-- See if there are any codes in the ontology that should not be there - either or lower or higher
+	validate_terminology_code_spec_levels
+			-- See if there are any codes in the terminology that should not be there - either or lower or higher
 			-- level of specialisation.
 		do
-			across ontology.term_codes as terms_csr loop
-				if specialisation_depth_from_code (terms_csr.item) /= ontology.specialisation_depth then
+			across terminology.id_codes as terms_csr loop
+				if specialisation_depth_from_code (terms_csr.item) /= terminology.specialisation_depth then
 					add_error (ec_VONSD, <<terms_csr.item>>)
 				end
 			end
-			across ontology.constraint_codes as terms_csr loop
-				if specialisation_depth_from_code (terms_csr.item) /= ontology.specialisation_depth then
+			across terminology.term_codes as terms_csr loop
+				if specialisation_depth_from_code (terms_csr.item) /= terminology.specialisation_depth then
+					add_error (ec_VONSD, <<terms_csr.item>>)
+				end
+			end
+			across terminology.constraint_codes as terms_csr loop
+				if specialisation_depth_from_code (terms_csr.item) /= terminology.specialisation_depth then
 					add_error (ec_VONSD, <<terms_csr.item>>)
 				end
 			end
 		end
 
-	validate_ontology_languages
+	validate_terminology_languages
 			-- Are all `term_codes' and `constraint_codes' found in all languages?
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
 			langs: ARRAYED_SET [STRING]
 		do
-			langs := ontology.languages_available
+			langs := terminology.languages_available
 			across langs as langs_csr loop
-				across ontology.term_codes as code_csr loop
-					if not ontology.has_term_definition (langs_csr.item, code_csr.item) then
+				across terminology.id_codes as code_csr loop
+					if not terminology.has_id_definition (langs_csr.item, code_csr.item) then
 						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
-				across ontology.constraint_codes as code_csr loop
-					if not ontology.has_constraint_definition (langs_csr.item, code_csr.item) then
+				across terminology.term_codes as code_csr loop
+					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
+						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
+					end
+				end
+				across terminology.constraint_codes as code_csr loop
+					if not terminology.has_constraint_definition (langs_csr.item, code_csr.item) then
 						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
@@ -272,7 +277,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_definition_codes
-			-- Check if all at- and ac-codes found in the definition node tree are in the ontology (including inherited items).
+			-- Check if all at- and ac-codes found in the definition node tree are in the terminology (including inherited items).
 			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
@@ -281,34 +286,34 @@ feature {NONE} -- Implementation
 			spec_depth: INTEGER
 		do
 			arch_depth := target.specialisation_depth
-			across target.id_atcodes_index as codes_csr loop
+			across target.id_codes_index as codes_csr loop
 				spec_depth := specialisation_depth_from_code (codes_csr.key)
 				if spec_depth > arch_depth then
 					add_error (ec_VONSD, <<codes_csr.key>>)
 				elseif spec_depth < arch_depth then
-					if not flat_ancestor.ontology.has_term_code (codes_csr.key) then
+					if not flat_ancestor.terminology.has_id_code (codes_csr.key) then
 						add_error (ec_VATDF, <<codes_csr.key>>)
 					end
 				elseif spec_depth = arch_depth then
-					if not ontology.has_term_code (codes_csr.key) then
+					if not terminology.has_id_code (codes_csr.key) then
 						add_error (ec_VATDF, <<codes_csr.key>>)
 					end
 				end
 			end
 
-			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in ontology
-			across target.data_codes_index as codes_csr loop
-				-- validate local codes for depth & presence in ontology
+			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in terminology
+			across target.term_codes_index as codes_csr loop
+				-- validate local codes for depth & presence in terminology
 				if codes_csr.key.starts_with (Term_code_leader) then
 					spec_depth := specialisation_depth_from_code (codes_csr.key)
 					if spec_depth > arch_depth then
 						add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
 					elseif spec_depth < arch_depth then
-						if not flat_ancestor.ontology.has_term_code (codes_csr.key) then
+						if not flat_ancestor.terminology.has_term_code (codes_csr.key) then
 							add_error (ec_VATDF, <<codes_csr.key>>)
 						end
 					elseif spec_depth = arch_depth then
-						if not ontology.has_term_code (codes_csr.key) then
+						if not terminology.has_term_code (codes_csr.key) then
 							add_error (ec_VATDF, <<codes_csr.key>>)
 						end
 					end
@@ -325,23 +330,23 @@ feature {NONE} -- Implementation
 			end
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
-			across target.accodes_index as codes_csr loop
+			across target.constraint_codes_index as codes_csr loop
 				spec_depth := specialisation_depth_from_code (codes_csr.key)
 				if spec_depth > arch_depth then
 					add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
 				elseif spec_depth < arch_depth then
-					if not flat_ancestor.ontology.has_constraint_code (codes_csr.key) then
+					if not flat_ancestor.terminology.has_constraint_code (codes_csr.key) then
 						add_error (ec_VACDF, <<codes_csr.key>>)
 					end
 				elseif spec_depth = arch_depth then
-					if not ontology.has_constraint_code (codes_csr.key) then
+					if not terminology.has_constraint_code (codes_csr.key) then
 						add_error (ec_VACDF, <<codes_csr.key>>)
 					end
 				end
 			end
 		end
 
-	validate_ontology_bindings
+	validate_terminology_bindings
 			-- Are all `term_bindings' valid, i.e.
 			-- for atomic bindings:
 			-- 		is every term mentioned in the term_definitions?
@@ -353,32 +358,32 @@ feature {NONE} -- Implementation
 			-- 		is every term mentioned in the constraint_definitions?
 			--
 		do
-			across ontology.term_bindings as bindings_csr loop
+			across terminology.term_bindings as bindings_csr loop
 				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_term_code (bindings_for_lang_csr.key) or else
+					if not (is_valid_code (bindings_for_lang_csr.key) and then terminology.has_term_code (bindings_for_lang_csr.key) or else
 						target.has_path (bindings_for_lang_csr.key))
 					then
 						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
 					end
 				end
 			end
-			across ontology.constraint_bindings as bindings_csr loop
+			across terminology.constraint_bindings as bindings_csr loop
 				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_constraint_code (bindings_for_lang_csr.key)) then
+					if not (is_valid_code (bindings_for_lang_csr.key) and then terminology.has_constraint_code (bindings_for_lang_csr.key)) then
 						add_error (ec_VOCBK, <<bindings_for_lang_csr.key>>)
 					end
 				end
 			end
 		end
 
-	report_unused_ontology_codes
-			-- populate lists of at-codes and ac-codes found in ontology that
+	report_unused_terminology_codes
+			-- populate lists of at-codes and ac-codes found in terminology that
 			-- are not referenced anywhere in the archetype definition
 		do
-			across target.ontology_unused_term_codes as unused_codes_csr loop
+			across target.terminology_unused_term_codes as unused_codes_csr loop
 				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
 			end
-			across target.ontology_unused_constraint_codes as unused_codes_csr loop
+			across target.terminology_unused_constraint_codes as unused_codes_csr loop
 				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
 			end
 		end

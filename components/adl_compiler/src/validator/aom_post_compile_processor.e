@@ -12,7 +12,7 @@ class AOM_POST_COMPILE_PROCESSOR
 create
 	initialise
 
-feature {ADL15_ENGINE} -- Initialisation
+feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target

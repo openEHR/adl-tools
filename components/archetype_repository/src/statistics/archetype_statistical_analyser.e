@@ -49,15 +49,16 @@ feature -- Commands
 			def_it: C_ITERATOR
 		do
 			-- add archetype-level counts
-			stats.increment_archetype_metric (target.ontology.term_codes.count, At_code_count)
-			stats.increment_archetype_metric (target.ontology.constraint_codes.count, Ac_code_count)
-			if not target.ontology.term_bindings.is_empty then
-				across target.ontology.term_bindings as target_term_bindings_csr loop
+			stats.increment_archetype_metric (target.terminology.id_codes.count, Id_code_count)
+			stats.increment_archetype_metric (target.terminology.term_codes.count, At_code_count)
+			stats.increment_archetype_metric (target.terminology.constraint_codes.count, Ac_code_count)
+			if not target.terminology.term_bindings.is_empty then
+				across target.terminology.term_bindings as target_term_bindings_csr loop
 					stats.increment_archetype_metric (target_term_bindings_csr.item.count, At_code_bindings_count)
 				end
 			end
-			if not target.ontology.constraint_bindings.is_empty then
-				across target.ontology.constraint_bindings as target_constraint_bindings_csr loop
+			if not target.terminology.constraint_bindings.is_empty then
+				across target.terminology.constraint_bindings as target_constraint_bindings_csr loop
 					stats.increment_archetype_metric (target_constraint_bindings_csr.item.count, Ac_code_bindings_count)
 				end
 			end
@@ -105,8 +106,8 @@ feature {NONE} -- Implementation
 				create a_class_stat_accum.make (co.rm_type_name, co.is_root)
 				stat_accums.extend (a_class_stat_accum)
 				if attached {C_COMPLEX_OBJECT} co as cco then
-					from cco.attributes.start until cco.attributes.off loop
-						ca := cco.attributes.item
+					across cco.attributes as attrs_csr loop
+						ca := attrs_csr.item
 						if not ca.has_differential_path then
 							a_class_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
 						else
@@ -119,7 +120,6 @@ feature {NONE} -- Implementation
 							an_attr_stat_accum.add_rm_attribute_occurrence (ca_parent_flat.rm_attribute_name)
 							stat_accums.extend (an_attr_stat_accum)
 						end
-						cco.attributes.forth
 					end
 				elseif attached {C_DOMAIN_TYPE} co as cdt then
 					a_class_stat_accum.add_rm_attribute_occurrences (cdt.constrained_rm_attributes)

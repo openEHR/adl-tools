@@ -10,10 +10,10 @@ note
 class ARCHETYPE_PATH_ANALYSER
 
 inherit
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_concept_code
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 create

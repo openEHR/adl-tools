@@ -3,10 +3,9 @@ note
 	description: "Serialiser Manager for archetype definition"
 	keywords:    "archetype constraint definition"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-
 
 class C_SERIALISER_MGR
 
@@ -23,16 +22,14 @@ create
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY)
+	make(a_target: C_COMPLEX_OBJECT; format: STRING; a_terminology: ARCHETYPE_TERMINOLOGY)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
-			Target_exists: a_target /= Void
-			Format_valid: format /= Void and then has_c_serialiser_format(format)
-			Ontology_valid: an_ontology /= Void
+			Format_valid: has_c_serialiser_format(format)
 		do
 			set_target(a_target)
 			visitor := c_serialiser_for_format(format)
-			visitor.initialise(an_ontology)
+			visitor.initialise(a_terminology)
 		end
 
 feature -- Command

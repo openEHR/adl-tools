@@ -37,7 +37,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_aom_types, an_rm_types: ARRAYED_LIST [STRING]; an_old_aom_type, an_old_rm_type: STRING;
-			an_occurrences_default: MULTIPLICITY_INTERVAL; an_archetype: ARCHETYPE; node_id_required_flag: BOOLEAN;
+			an_occurrences_default: MULTIPLICITY_INTERVAL; an_archetype: ARCHETYPE;
 			a_display_settings: GUI_DEFINITION_SETTINGS)
 			-- Make with RM types, constraint type selection and an occurrences constrainer that is used to determine
 			-- the possible occurrences in this case
@@ -55,8 +55,6 @@ feature {NONE} -- Initialization
 
 			archetype := an_archetype
 			display_settings := a_display_settings
-
-			node_id_required := node_id_required_flag
 
 			default_create
 		end
@@ -80,22 +78,18 @@ feature {NONE} -- Initialization
 				agent (v:STRING) do new_params.set_node_id_text (v) end,
 				Void, Void,
 				0, 0, True)
-			if node_id_required then
-				ev_root_container.extend (node_id_text_ctl.ev_root_container)
-				ev_root_container.disable_item_expand (node_id_text_ctl.ev_root_container)
-				gui_controls.extend (node_id_text_ctl)
-			end
+			ev_root_container.extend (node_id_text_ctl.ev_root_container)
+			ev_root_container.disable_item_expand (node_id_text_ctl.ev_root_container)
+			gui_controls.extend (node_id_text_ctl)
 
 			create node_id_description_ctl.make_linked (get_text (ec_node_id_description),
 				agent :STRING do Result := new_params.node_id_description end,
 				agent (v:STRING) do new_params.set_node_id_description (v) end,
 				Void, Void,
 				0, 0, True)
-			if node_id_required then
-				ev_root_container.extend (node_id_description_ctl.ev_root_container)
-				ev_root_container.disable_item_expand (node_id_description_ctl.ev_root_container)
-				gui_controls.extend (node_id_description_ctl)
-			end
+			ev_root_container.extend (node_id_description_ctl.ev_root_container)
+			ev_root_container.disable_item_expand (node_id_description_ctl.ev_root_container)
+			gui_controls.extend (node_id_description_ctl)
 
 			-- ============ constraint type combo-box control ============
 			create aom_type_ctl.make_linked (get_text (ec_initial_c_object_config_constraint_type_text),
@@ -260,8 +254,6 @@ feature {NONE} -- Implementation
 	archetype: ARCHETYPE
 
 	display_settings: GUI_DEFINITION_SETTINGS
-
-	node_id_required: BOOLEAN
 
 	occurrences_default: MULTIPLICITY_INTERVAL
 

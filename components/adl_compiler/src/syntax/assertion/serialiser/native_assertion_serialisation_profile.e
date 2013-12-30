@@ -13,14 +13,14 @@ class NATIVE_ASSERTION_SERIALISATION_PROFILE
 inherit
 	NATIVE_SERIALISATION_PROFILE
 
-	CADL_TOKENS
+	CADL_15_TOKENS
 		export
 			{NONE} all
 		end
 
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER]
@@ -31,8 +31,8 @@ feature {NONE} -- Implementation
 			Result.put("{",				SYM_START_CBLOCK)
 			Result.put("}",				SYM_END_CBLOCK)
 			Result.put("*",				SYM_ANY)
-		end	
-	
+		end
+
 end
 
 

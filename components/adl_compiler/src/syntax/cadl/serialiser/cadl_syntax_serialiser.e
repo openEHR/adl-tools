@@ -26,7 +26,7 @@ inherit
 			start_c_primitive_object
 		end
 
-	CADL_TOKENS
+	CADL_15_TOKENS
 		export
 			{NONE} all
 		end
@@ -36,7 +36,7 @@ inherit
 			{NONE} all
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -51,7 +51,6 @@ feature -- Initialisation
 		do
 			precursor (a_profile)
 			create last_string_value.make_empty
-			create last_c_dv_quantity_value.default_create
 		end
 
 feature -- Visitor
@@ -350,7 +349,7 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			ontologies.extend (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.ontology)
+			ontologies.extend (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
 
 			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				start_c_complex_object (a_node, depth)

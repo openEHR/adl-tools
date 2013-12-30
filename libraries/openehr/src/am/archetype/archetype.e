@@ -16,10 +16,10 @@ inherit
 			{ANY} deep_twin, valid_adl_version
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_concept_code, deep_twin
+			{ANY} deep_twin
 		end
 
 	AUTHORED_RESOURCE
@@ -40,7 +40,7 @@ feature -- Initialisation
 			a_uid: like uid;
 			a_description: like description;
 			a_definition: like definition;
-			an_ontology: like ontology)
+			a_terminology: like terminology)
 				-- make from pieces obtained by parsing
 		require
 			Description_valid: not an_artefact_type.is_overlay implies attached a_description
@@ -51,7 +51,7 @@ feature -- Initialisation
 			original_language := an_original_language
 			description := a_description
 			definition := a_definition
-			ontology := an_ontology
+			terminology := a_terminology
 			is_dirty := True
 			uid := a_uid
 		ensure
@@ -60,7 +60,7 @@ feature -- Initialisation
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language = an_original_language
 			Definition_set: definition = a_definition
-			Ontology_set: ontology = an_ontology
+			Ontology_set: terminology = a_terminology
 			Is_dirty: is_dirty
 			Not_generated: not is_generated
 		end
@@ -76,25 +76,25 @@ feature -- Initialisation
 			a_translations: like translations;
 			a_description: like description;
 			a_definition: like definition;
-			an_invariants: like invariants;
-			an_ontology: like ontology;
+			a_rules: like rules;
+			a_terminology: like terminology;
 			an_annotations: like annotations)
 				-- make from all possible items
 		require
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 			Description_valid: not an_artefact_type.is_overlay implies attached a_description
-			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
+			Invariants_valid: a_rules /= Void implies not a_rules.is_empty
 		do
 			make (an_artefact_type, an_id,
 					an_original_language, a_uid,
 					a_description,
-					a_definition, an_ontology)
+					a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
 			adl_version := an_adl_version
 			is_controlled := is_controlled_flag
 			other_metadata := an_other_metadata
-			invariants := an_invariants
+			rules := a_rules
 			annotations := an_annotations
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
@@ -105,8 +105,8 @@ feature -- Initialisation
 			Original_language_set: original_language = an_original_language
 			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
-			Invariants_set: invariants = an_invariants
-			Ontology_set: ontology = an_ontology
+			Invariants_set: rules = a_rules
+			Ontology_set: terminology = a_terminology
 			Is_dirty: is_dirty
 			Not_generated: not is_generated
 		end
@@ -134,7 +134,7 @@ feature -- Initialisation
 				other_annotations := other_annots.safe_deep_twin
 			end
 			if other.has_invariants then
-				other_invariants := other.invariants.deep_twin
+				other_invariants := other.rules.deep_twin
 			end
 			if attached other.other_metadata then
 				other_other_metadata := other.other_metadata.deep_twin
@@ -143,7 +143,7 @@ feature -- Initialisation
 					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
 					other_description, other.definition.deep_twin, other_invariants,
-					other.ontology.safe_deep_twin, other_annotations)
+					other.terminology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
 
 			rebuild
@@ -201,9 +201,9 @@ feature -- Access
 
 	definition: C_COMPLEX_OBJECT
 
-	invariants: detachable ARRAYED_LIST [ASSERTION]
+	rules: detachable ARRAYED_LIST [ASSERTION]
 
-	ontology: ARCHETYPE_ONTOLOGY
+	terminology: ARCHETYPE_TERMINOLOGY
 
 feature -- Paths
 
@@ -246,7 +246,7 @@ feature -- Paths
 	logical_paths (a_lang: STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING]
 			-- paths with human readable terms substituted
 		require
-			has_language: ontology.has_language (a_lang)
+			has_language: terminology.has_language (a_lang)
 		local
 			phys_paths: ARRAYED_LIST [STRING]
 		do
@@ -259,20 +259,20 @@ feature -- Paths
 			end
 
 			across phys_paths as phys_paths_csr loop
-				Result.extend (ontology.physical_to_logical_path (phys_paths_csr.item, a_lang, True))
+				Result.extend (terminology.physical_to_logical_path (phys_paths_csr.item, a_lang, True))
 			end
 		end
 
 	matching_logical_paths (a_lang, rm_type: STRING): ARRAYED_LIST [STRING]
 			-- paths to nodes which have type `rm_type', with human readable terms substituted
 		require
-			has_language: ontology.has_language (a_lang)
+			has_language: terminology.has_language (a_lang)
 		do
 			create Result.make (0)
 			Result.compare_objects
 			across object_path_map as object_path_map_csr loop
 				if attached object_path_map_csr.item and then object_path_map_csr.item.rm_type_name.is_equal (rm_type) then
-					Result.extend (ontology.physical_to_logical_path (object_path_map_csr.key, a_lang, True))
+					Result.extend (terminology.physical_to_logical_path (object_path_map_csr.key, a_lang, True))
 				end
 			end
 		end
@@ -341,7 +341,7 @@ feature -- Status Report
 	has_invariants: BOOLEAN
 			-- true if there are invariants
 		do
-			Result := attached invariants
+			Result := attached rules
 		end
 
 	has_path (a_path: STRING): BOOLEAN
@@ -418,9 +418,9 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
-feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
+feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, ARCHETYPE_FLATTENER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
-	id_atcodes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
+	id_codes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for at-codes that identify nodes in archetype
 			-- for later checking in ontology. Doesn't include id-codes.
 			-- (note that there are other uses of term codes from the ontology, which is
@@ -435,11 +435,11 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 					local
 						og_path: OG_PATH
 					do
-						-- if it's a differential path, get the at-codes from the path
+						-- if it's a differential path, get the id-codes from the path
 						if attached {C_ATTRIBUTE} a_c_node as ca and then attached ca.differential_path as diff_path then
 							create og_path.make_from_string (diff_path)
 							across og_path as path_csr loop
-								if path_csr.item.is_addressable and is_valid_at_code (path_csr.item.object_id) then
+								if path_csr.item.is_addressable and is_valid_id_code (path_csr.item.object_id) then
 									if not idx.has (path_csr.item.object_id) then
 										idx.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
 									end
@@ -447,7 +447,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 								end
 							end
 						elseif attached {C_OBJECT} a_c_node as co then
-							if co.is_addressable and is_valid_at_code (co.node_id) then
+							if co.is_addressable and is_valid_id_code (co.node_id) then
 								if not idx.has (co.node_id) then
 									idx.put (create {ARRAYED_LIST [C_OBJECT]}.make(0), co.node_id)
 								end
@@ -458,7 +458,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				Void)
 		end
 
-	data_codes_index: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
+	term_codes_index: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- in C_TERMINOLOGY_CODE types
 			-- keys are either local codes, e.g. "at0044" or fully qualified non-local code strings
@@ -490,7 +490,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				Void)
 		end
 
-	accodes_index: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
+	constraint_codes_index: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
 			-- table of {list<node>, code} for constraint codes in archetype
 		local
 			def_it: C_ITERATOR
@@ -560,7 +560,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			if has_invariants then
-				across invariants as inv_csr loop
+				across rules as inv_csr loop
 					create def_it.make (inv_csr.item)
 					def_it.do_all (
 						agent (a_node: EXPR_ITEM; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING])
@@ -676,21 +676,21 @@ feature -- Modification
 	set_invariants (an_assertion_list: ARRAYED_LIST[ASSERTION])
 			-- set invariants
 		do
-			invariants := an_assertion_list
+			rules := an_assertion_list
 		end
 
-	set_ontology (an_ont: attached like ontology)
+	set_ontology (an_ont: attached like terminology)
 		do
-			ontology := an_ont
+			terminology := an_ont
 		end
 
 	add_invariant (an_inv: ASSERTION)
 			-- add a new invariant
 		do
-			if invariants = Void then
-				create invariants.make(0)
+			if rules = Void then
+				create rules.make(0)
 			end
-			invariants.extend(an_inv)
+			rules.extend(an_inv)
 		end
 
 	rebuild
@@ -703,14 +703,14 @@ feature -- Modification
 			is_dirty := False
 		end
 
-feature {ADL15_ENGINE} -- ADL 1.5 Serialisation
+feature {ADL_15_ENGINE} -- ADL 1.5 Serialisation
 
 	synchronise_adl15
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do
 			precursor
-			ontology.synchronise_to_tree
+			terminology.synchronise_to_tree
 		end
 
 feature {NONE} -- Implementation
@@ -852,8 +852,8 @@ feature {NONE} -- Implementation
 
 invariant
 	Description_valid: not artefact_type.is_overlay implies attached description
-	Concept_valid: concept.is_equal (ontology.concept_code)
-	Invariants_valid: attached invariants implies not invariants.is_empty
+	Concept_valid: concept.is_equal (terminology.concept_code)
+	Invariants_valid: attached rules implies not rules.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_class.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and attached parent_archetype_id)
 

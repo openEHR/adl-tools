@@ -71,7 +71,7 @@ feature {NONE} -- Implementation
 		do
 			if ed_context.archetype.has_invariants then
 				create assn_ed_context_builder.make (ed_context)
-				across ed_context.archetype.invariants as inv_csr loop
+				across ed_context.archetype.rules as inv_csr loop
 					create assn_iterator.make (inv_csr.item, assn_ed_context_builder)
 					assn_iterator.do_all
 					check attached assn_ed_context_builder.root_node as rn then

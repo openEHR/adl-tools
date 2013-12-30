@@ -252,11 +252,11 @@ feature -- Modification
 				end
 
 				-- node id
-				if not co_create_params.node_id_text.same_string (ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text) then
-					ed_context.flat_ontology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
+				if not co_create_params.node_id_text.same_string (ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text) then
+					ed_context.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
 				end
-				if not co_create_params.node_id_description.same_string (ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).description) then
-					ed_context.flat_ontology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
+				if not co_create_params.node_id_description.same_string (ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).description) then
+					ed_context.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
 				end
 			else -- need to do a remove and add
 
@@ -292,11 +292,11 @@ feature {NONE} -- Implementation
 			attached arch_node as a_n and then a_n.is_addressable
 		do
 			if attached arch_node as a_n then
-				if is_valid_at_code (a_n.node_id) then
+				if is_valid_term_code (a_n.node_id) then
 					if display_settings.show_codes then
-						Result := a_n.node_id + "|" + ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text + "|"
+						Result := a_n.node_id + "|" + ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text + "|"
 					else
-						Result := ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id).text
+						Result := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
 					end
 				else
 					Result := a_n.node_id
@@ -446,10 +446,10 @@ feature {NONE} -- Context menu
 				end
 
 				create dialog.make (aom_types_for_rm_type (spec_parent_rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.semantic_class.name,
-					def_occ, ed_context.archetype, attached arch_node as a_n and then is_valid_code (a_n.node_id), display_settings)
+					def_occ, ed_context.archetype, display_settings)
 
 				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
-					a_term := ed_context.flat_ontology.term_definition (display_settings.language, a_n.node_id)
+					a_term := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id)
 					dialog.set_term (a_term.text, a_term.description)
 				end
 
@@ -469,7 +469,7 @@ feature {NONE} -- Context menu
 			rm_type_substitutions := rm_type.semantic_class.type_substitutions
 			rm_type_substitutions.extend (rm_type.semantic_class.name)
 			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.semantic_class.name,
-				parent.default_occurrences, ed_context.archetype, parent.child_node_id_required (rm_type.semantic_class.name), display_settings)
+				parent.default_occurrences, ed_context.archetype, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then
 				do_convert_to_constraint (dialog.new_params)

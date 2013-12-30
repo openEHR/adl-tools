@@ -32,7 +32,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_TERMINOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
 		attribute

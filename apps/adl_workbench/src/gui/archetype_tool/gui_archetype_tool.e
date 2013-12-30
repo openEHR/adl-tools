@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -112,7 +112,7 @@ feature {NONE} -- Implementation
 
 	definition_control: GUI_DEFINITION_CONTROL
 
-	ontology_controls: GUI_ONTOLOGY_CONTROLS
+	ontology_controls: GUI_TERMINOLOGY_CONTROLS
 
 	annotations_control: GUI_ANNOTATIONS_CONTROL
 

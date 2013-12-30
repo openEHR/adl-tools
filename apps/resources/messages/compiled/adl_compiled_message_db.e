@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (662)
+			create message_table.make (665)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -83,6 +83,7 @@ feature -- Initialisation
 			message_table.put ("Object nodes", ec_arch_stats_object_nodes_text)
 			message_table.put ("Archetypable nodes", ec_arch_stats_archetypable_nodes_text)
 			message_table.put ("Data value nodes", ec_arch_stats_data_value_nodes_text)
+			message_table.put ("Id-codes", ec_arch_stats_id_codes_text)
 			message_table.put ("At-codes", ec_arch_stats_at_codes_text)
 			message_table.put ("Ac-codes", ec_arch_stats_ac_codes_text)
 			message_table.put ("At-code bindings", ec_arch_stats_at_code_bindings_text)
@@ -174,7 +175,8 @@ feature -- Initialisation
 			message_table.put ("for multiply-valued attribute $1, minimum object count $2 must be less than cardinality upper limit $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)", ec_VACMCO)
 			message_table.put ("cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id", ec_VACMI)
 			message_table.put ("cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id", ec_VACMM)
-			message_table.put ("root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*", ec_VARCN)
+			message_table.put ("invalid root object node_id (concept code) $1; should follow regex pattern 'id1(\.1)*'", ec_VARCN)
+			message_table.put ("invalid object node_id $1; should follow regex pattern 'id[1-9][0-9]*(\.[1-9][0-9]*)*'", ec_VARND)
 			message_table.put ("node at path $1 has order marker referring to non-existant sibling node $2", ec_VSSM)
 			message_table.put ("$1 object node at path $2 node identifier does not conform to $3 node at parent path $4", ec_VSONI)
 			message_table.put ("$1 object node at path $2 has node identifier but C_ATTRIBUTE at $3 in flat parent has non-identified object nodes", ec_VSONIF)
@@ -684,6 +686,7 @@ feature -- Initialisation
 			message_table.put ("Terminology bindings", ec_term_bindings_frame_text)
 			message_table.put ("$1 types", ec_rm_types_nb_tab_text)
 			message_table.put ("Primitive types", ec_rm_primitive_types_nb_tab_text)
+			message_table.put ("Id definitions and bindings", ec_id_defs_frame_text)
 			message_table.put ("Term definitions and bindings", ec_term_defs_frame_text)
 			message_table.put ("Constraint definitions and bindings", ec_constraint_defs_frame_text)
 			message_table.put ("Convert to subtype", ec_context_menu_convert_node_to_subtype)

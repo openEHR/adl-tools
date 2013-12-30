@@ -38,6 +38,11 @@ feature -- Definitions
 			Result := get_text (ec_arch_stats_data_value_nodes_text)
 		end
 
+	Id_code_count: STRING
+		once
+			Result := get_text (ec_arch_stats_id_codes_text)
+		end
+
 	At_code_count: STRING
 		once
 			Result := get_text (ec_arch_stats_at_codes_text)
@@ -63,6 +68,7 @@ feature -- Definitions
 			Result := <<Object_node_count,
 				Archetypable_node_count,
 				Archetype_data_value_node_count,
+				Id_code_count,
 				At_code_count,
 				Ac_code_count,
 				At_code_bindings_count,

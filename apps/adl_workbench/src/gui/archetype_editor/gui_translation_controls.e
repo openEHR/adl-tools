@@ -16,7 +16,7 @@ inherit
 			can_populate, can_repopulate, can_edit, disable_edit, enable_edit
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -212,9 +212,9 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			if is_valid_code (a_code) and attached selected_language as sel_lang then
 				if is_term_code (a_code) then
-					rubric := source_archetype.ontology.term_definition (sel_lang, a_code).text
+					rubric := source_archetype.terminology.term_definition (sel_lang, a_code).text
 				else
-					rubric := source_archetype.ontology.constraint_definition (sel_lang, a_code).text
+					rubric := source_archetype.terminology.constraint_definition (sel_lang, a_code).text
 				end
 				Result.append (annotated_code (a_code, rubric))
 			end

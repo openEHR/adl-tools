@@ -7,15 +7,9 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-
 class ARCHETYPE_TERM
 
 inherit
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 	DT_CONVERTIBLE
 
 create
@@ -72,7 +66,7 @@ feature -- Access
 
 	code: STRING
         attribute
-            create Result.make_from_string (Default_concept_code)
+            create Result.make_empty
         end
 
 	text: STRING

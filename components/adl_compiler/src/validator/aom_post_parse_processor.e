@@ -26,7 +26,7 @@ inherit
 			{NONE} all;
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 		end
@@ -34,7 +34,7 @@ inherit
 create
 	make
 
-feature {ADL15_ENGINE} -- Initialisation
+feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 			proximal_co: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
-			across target.accodes_index as ac_codes_csr loop
+			across target.constraint_codes_index as ac_codes_csr loop
 				across ac_codes_csr.item as cref_list_csr loop
 					check attached cref_list_csr.item.parent as p then
 						proximal_ca := p
@@ -192,6 +192,8 @@ feature {NONE} -- Implementation
 			use_node_index := target.use_node_index
 			invariants_index := target.invariants_index
 
+			highest_added_code := 5000
+
 			-- fix definition; if no concept code, then don't bother
 			if is_valid_code (target.concept) then
 				create def_it.make (target.definition)
@@ -210,7 +212,8 @@ feature {NONE} -- Implementation
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then not c_obj.is_addressable then
 	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
 	 			old_path := c_obj.path
- 				id_code := new_id_code_at_level (old_path, target.specialisation_depth, id_codes)
+ 				id_code := new_added_id_code_at_level (target.specialisation_depth, highest_added_code)
+ 				highest_added_code := highest_added_code + 1
 	 			if target.is_specialised then
 	 				-- generate a path; since the terminal object doesn't currently have any node_id,
 	 				-- the path will actually just point to the parent C_ATTRIBUTE
@@ -232,7 +235,11 @@ feature {NONE} -- Implementation
 	 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
 		 						if not c_obj.c_equal (parent_co) then
 		 							-- they really are different; use a redefined code instead
-				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, id_codes)
+		 							if not highest_refined_code_index.has (parent_id_code) then
+		 								highest_refined_code_index.put (1, parent_id_code)
+		 							end
+				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, highest_refined_code_index.item (parent_id_code))
+				 					highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
 		 						end
 			 				end
 		 				end
@@ -269,6 +276,17 @@ feature {NONE} -- Implementation
 				end
 	 		end
 	 	end
+
+	highest_added_code: INTEGER
+
+	highest_refined_code_index: HASH_TABLE [INTEGER, STRING]
+			-- Table of current highest code keyed by its parent code, for all specialised codes
+			-- in this terminology at its level of specialisation.
+			-- For example the entry for key 'at0007' could be 5, meaning that current top child
+			-- code of 'at7' is 'at7.5'
+        attribute
+            create Result.make (0)
+        end
 
 	id_codes: TWO_WAY_SORTED_SET [STRING]
 

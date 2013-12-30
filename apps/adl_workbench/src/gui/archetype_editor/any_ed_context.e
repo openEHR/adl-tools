@@ -26,7 +26,7 @@ inherit
 			{NONE} all
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
+	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 			-- or else "rubric"
 		do
 			create Result.make_empty
-			if attached {ARCHETYPE_TERM} ed_context.flat_ontology.definition_for_code (display_settings.language, a_code) as ont_term then
+			if attached {ARCHETYPE_TERM} ed_context.flat_terminology.definition_for_code (display_settings.language, a_code) as ont_term then
 				if display_settings.show_codes then
 					Result.append (a_code + "|" + ont_term.text + "|")
 				else

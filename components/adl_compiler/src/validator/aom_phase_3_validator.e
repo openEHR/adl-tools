@@ -18,7 +18,7 @@ inherit
 create
 	initialise
 
-feature {ADL15_ENGINE} -- Initialisation
+feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (a_target_desc: like target_descriptor; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
