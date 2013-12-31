@@ -69,6 +69,7 @@ feature -- Parsing
 			adl_parser.execute (a_text)
 
 			create errors.make
+			dt_object_converter.reset
 
 			if adl_parser.syntax_error then
 				errors.append (adl_parser.errors)
@@ -174,16 +175,16 @@ feature -- Parsing
 				------------------- build the archetype --------------					
 				if not errors.has_errors then
 					if attached definition_context.tree as definition and
-						attached terminology_context.tree as ont_tree
+						attached terminology_context.tree as terminology_tree
 					then
 						if attached orig_lang_trans as olt and then attached {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}
-							ont_tree.as_object (({DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_ont
-							and not dt_object_converter.errors.has_errors
+							terminology_tree.as_object (({DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_terminology
+							and then not dt_object_converter.errors.has_errors
 						then
 							-----------------------------------------------------------------------------------------------
 							-- ADL 1.5 transitional id code support
 							-- reprocess the terminology to move id-codes into their own section from the term-codes section
-							diff_ont.convert_at_id_codes (definition_context.parser.converted_codes)
+							diff_terminology.convert_at_id_codes (definition_context.parser.converted_codes)
 							--
 							-----------------------------------------------------------------------------------------------							
 
@@ -195,7 +196,7 @@ feature -- Parsing
 								adl_parser.uid,
 								res_desc,	-- may be Void
 								definition,
-								diff_ont
+								diff_terminology
 							)
 						else
 							errors.add_error (ec_SAON, Void, generator + ".parse")
