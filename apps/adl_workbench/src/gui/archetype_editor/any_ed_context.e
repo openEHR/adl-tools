@@ -216,11 +216,11 @@ feature {NONE} -- Implementation
 			-- or else "rubric"
 		do
 			create Result.make_empty
-			if attached {ARCHETYPE_TERM} ed_context.flat_terminology.definition_for_code (display_settings.language, a_code) as ont_term then
+			if attached {ARCHETYPE_TERM} ed_context.flat_terminology.definition_for_code (display_settings.language, a_code) as arch_term then
 				if display_settings.show_codes then
-					Result.append (a_code + "|" + ont_term.text + "|")
+					Result.append (annotated_code (a_code, arch_term.text))
 				else
-					Result.append (ont_term.text)
+					Result.append (arch_term.text)
 				end
 			else
 				Result.append (a_code)

@@ -498,6 +498,7 @@ feature -- Definitions
 		ec_annotation_path_text: STRING = "annotation_path_text"
 		ec_annotation_key_text: STRING = "annotation_key_text"
 		ec_annotation_value_text: STRING = "annotation_value_text"
+		ec_attribute_removed_text: STRING = "attribute_removed_text"
 		ec_occurrences_removed_text: STRING = "occurrences_removed_text"
 		ec_annotations_text: STRING = "annotations_text"
 		ec_inheritance_status_text: STRING = "inheritance_status_text"

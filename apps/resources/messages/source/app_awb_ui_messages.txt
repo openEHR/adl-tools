@@ -294,6 +294,7 @@ templates = <
 		["annotation_value_text"] = <"Annotation value">
 
 		-- GUI_DEFINITION_CONTROL 
+		["attribute_removed_text"] = <"(REMOVED)">
 		["occurrences_removed_text"] = <"(REMOVED)">
 		["annotations_text"] = <"Annotations">
 		["inheritance_status_text"] = <"Inheritance status: ">

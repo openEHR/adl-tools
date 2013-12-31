@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (665)
+			create message_table.make (666)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -513,6 +513,7 @@ feature -- Initialisation
 			message_table.put ("Path", ec_annotation_path_text)
 			message_table.put ("Annotation key", ec_annotation_key_text)
 			message_table.put ("Annotation value", ec_annotation_value_text)
+			message_table.put ("(REMOVED)", ec_attribute_removed_text)
 			message_table.put ("(REMOVED)", ec_occurrences_removed_text)
 			message_table.put ("Annotations", ec_annotations_text)
 			message_table.put ("Inheritance status: ", ec_inheritance_status_text)

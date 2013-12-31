@@ -140,9 +140,9 @@ io.put_string ("Entered C_OBJECT_ED_CONTEXT.display_in_grid - should be obsolete
 
 				-- card/occ column
 				create s.make_empty
-				if attached a_n.occurrences then
-					if not a_n.occurrences.is_prohibited then
-						s.append (a_n.occurrences_as_string)
+				if attached a_n.occurrences as att_occ then
+					if not att_occ.is_prohibited then
+						s.append (att_occ.as_string)
 					else
 						s.append (get_text (ec_occurrences_removed_text))
 					end
@@ -293,7 +293,7 @@ feature {NONE} -- Implementation
 				if is_id_code (a_n.node_id) then
 					if ed_context.flat_terminology.has_id_code (a_n.node_id) then
 						if display_settings.show_codes then
-							Result := a_n.node_id + "|" + ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text + "|"
+							Result := annotated_code (a_n.node_id, ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text)
 						else
 							Result := ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text
 						end

@@ -127,7 +127,7 @@ feature -- Display
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
-			attr_str: STRING
+			attr_str, ex_str: STRING
 		do
 			precursor (ui_settings)
 
@@ -148,8 +148,14 @@ feature -- Display
 				end
 
 				-- constraints
-				if attached a_n.existence then
-					evx_grid.update_last_row_label_col (Definition_grid_col_existence, a_n.existence.as_string, Void, c_constraint_colour, Void)
+				create ex_str.make_empty
+				if attached a_n.existence as att_ex then
+					if not att_ex.is_prohibited then
+						ex_str.append (att_ex.as_string)
+					else
+						ex_str.append (get_text (ec_attribute_removed_text))
+					end
+					evx_grid.update_last_row_label_col (Definition_grid_col_existence, ex_str, Void, c_constraint_colour, Void)
 				end
 				if attached a_n.cardinality then
 					evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, a_n.cardinality.as_string, Void, c_constraint_colour, Void)

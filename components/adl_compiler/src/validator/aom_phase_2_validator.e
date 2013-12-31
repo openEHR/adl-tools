@@ -302,10 +302,10 @@ end
 						elseif not car.occurrences_conforms_to (a_slot) then
 							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.is_equal (par_flat_occ) then
 								if validation_strict then
-									add_error (ec_VSONCO, <<terminology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+									add_error (ec_VSONCO, <<terminology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), occ.as_string,
 										terminology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
 								else
-									add_warning (ec_VSONCO, <<terminology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+									add_warning (ec_VSONCO, <<terminology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), occ.as_string,
 										terminology.physical_to_logical_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
 									car.remove_occurrences
 								end
@@ -415,13 +415,11 @@ end
 							if attached co_child_diff.occurrences as child_occ and then attached co_in_flat_anc.occurrences as par_flat_occ and then child_occ.is_equal (par_flat_occ) then
 								if validation_strict then
 									add_error (ec_VSONCO, <<terminology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-										co_child_diff.occurrences_as_string,
-										terminology.physical_to_logical_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+										child_occ.as_string, terminology.physical_to_logical_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
 										par_flat_occ.as_string>>)
 								else
 									add_warning (ec_VSONCO, <<terminology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-										co_child_diff.occurrences_as_string,
-										terminology.physical_to_logical_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+										child_occ.as_string, terminology.physical_to_logical_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
 										par_flat_occ.as_string>>)
 									co_child_diff.remove_occurrences
 									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
