@@ -1096,6 +1096,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		once
 			create Result.make(0)
 			Result.compare_objects
+			Result.extend ("id_definitions")
 			Result.extend ("term_definitions")
 			Result.extend ("constraint_definitions")
 			Result.extend ("term_bindings")
