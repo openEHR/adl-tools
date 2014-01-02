@@ -22,6 +22,11 @@ inherit
 				is_valid_code, specialisation_depth_from_code
 		end
 
+	ADL_14_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -806,6 +811,30 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
 			end
 		end
 
+	put_definition_and_translations (a_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]; a_code: STRING)
+			-- add or replace the terms in `a_terms' in the languages which are the keys of `a_terms'
+		require
+			Code_new: not has_code (a_code)
+			Code_depth_valid: specialisation_depth_from_code (a_code) <= specialisation_depth
+			Term_codes_identical: across a_terms as a_terms_csr all a_terms_csr.item.code.is_equal(a_code) end
+		local
+			refs: like refs_tuple
+		do
+			refs := refs_tuple (a_code)
+
+			across a_terms as a_terms_csr loop
+				if not refs.definitions.has (a_terms_csr.key) then
+					refs.definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_terms_csr.key)
+				end
+				refs.definitions.item (a_terms_csr.key).force (a_terms_csr.item, a_code)
+			end
+			refs.codes.extend (a_code)
+			update_highest_refined_codes (a_code)
+			update_highest_code (a_code)
+		ensure
+			Code_valid: has_code (a_code)
+		end
+
 feature {ARCHETYPE_TERMINOLOGY} -- Modification
 
 	has_path (a_path: STRING): BOOLEAN
@@ -973,31 +1002,34 @@ feature {ADL_15_ENGINE} -- Legacy
 			conv_term: ARCHETYPE_TERM
 			bind_term: TERMINOLOGY_CODE
 			path_strs: HASH_TABLE [STRING, STRING]
-			new_path: STRING
+			old_code, new_code, new_path: STRING
 		do
 			-- move at-code terms that are really id-codes out of term_definitions and into id_definitions
 			-- only applies to terms of the specialisation level of this archetype
-			across converted_codes as at_id_codes_csr loop
+			across converted_codes as conv_codes_csr loop
+				old_code := conv_codes_csr.key
+				new_code := conv_codes_csr.item
+
 				-- find the term bindings in all terminologies
 				-- first case: binding is against just the single code
-				if has_any_term_binding (at_id_codes_csr.key) then
-					conv_bindings := term_bindings_for_key (at_id_codes_csr.key)
+				if has_any_term_binding (old_code) then
+					conv_bindings := term_bindings_for_key (old_code)
 				else
 					create conv_bindings.make (0)
 				end
 
 				-- add bindings back in keyed by new id codes
 				across conv_bindings as id_bindings_csr loop
-					put_term_binding (id_bindings_csr.item, at_id_codes_csr.item)
+					put_term_binding (id_bindings_csr.item, new_code)
 				end
 
 				-- second case: binding is keyed by path containing node id code
 				across term_bindings as bindings_for_terminology_csr loop
 					create path_strs.make (0)
 					across bindings_for_terminology_csr.item as bindings_csr loop
-						if bindings_csr.key.has_substring (at_id_codes_csr.key) then
+						if bindings_csr.key.has_substring (old_code) then
 							new_path := bindings_csr.key.twin
-							new_path.replace_substring_all (at_id_codes_csr.key, at_id_codes_csr.item)
+							new_path.replace_substring_all (old_code, new_code)
 							path_strs.put (new_path, bindings_csr.key)
 						end
 					end
@@ -1009,28 +1041,33 @@ feature {ADL_15_ENGINE} -- Legacy
 				end
 
 				-- now do the id codes
-				if specialisation_depth_from_code (at_id_codes_csr.item) = specialisation_depth then
+				if specialisation_depth_from_code (new_code) = specialisation_depth then
 					create conv_terms.make (0)
-					-- find the term definitions in all languages
-					across term_definitions as term_defs_for_lang_csr loop
-						check attached term_defs_for_lang_csr.item.item (at_id_codes_csr.key) as att_term then
-							conv_term := att_term
+					if is_adl_14_term_code (old_code) then
+						-- find the term definitions in all languages
+						across term_definitions as term_defs_for_lang_csr loop
+							check attached term_defs_for_lang_csr.item.item (old_code) as att_term then
+								conv_term := att_term
+							end
+							conv_term.set_code (new_code)
+							conv_terms.put (conv_term, term_defs_for_lang_csr.key)
 						end
-						conv_term.set_code (at_id_codes_csr.item)
-						conv_terms.put (conv_term, term_defs_for_lang_csr.key)
+					elseif is_adl_14_constraint_code (old_code) then
+						-- find the term definitions in all languages
+						across constraint_definitions as term_defs_for_lang_csr loop
+							check attached term_defs_for_lang_csr.item.item (old_code) as att_term then
+								conv_term := att_term
+							end
+							conv_term.set_code (new_code)
+							conv_terms.put (conv_term, term_defs_for_lang_csr.key)
+						end
 					end
 
 					-- completely remove the old term code from definitions and bindings
-					remove_definition (at_id_codes_csr.key)
+					remove_definition (old_code)
 
 					-- add it back in as an id code
-					across conv_terms as id_terms_csr loop
-						if has_id_code (at_id_codes_csr.key) then
-							replace_definition (id_terms_csr.key, id_terms_csr.item, False)
-						else
-							put_new_definition (id_terms_csr.key, id_terms_csr.item)
-						end
-					end
+					put_definition_and_translations (conv_terms, new_code)
 				end
 			end
 

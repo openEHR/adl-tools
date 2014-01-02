@@ -68,6 +68,7 @@ feature -- Parsing
 			adl_parser.execute (a_text)
 
 			create errors.make
+			dt_object_converter.reset
 
 			if adl_parser.syntax_error then
 				errors.append (adl_parser.errors)
@@ -180,7 +181,7 @@ feature -- Parsing
 
 						if attached orig_lang_trans as olt and then attached {FLAT_ARCHETYPE_TERMINOLOGY}
 							ont_tree.as_object (({FLAT_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_ont
-							and not dt_object_converter.errors.has_errors
+							and then not dt_object_converter.errors.has_errors
 						then
 							create Result.make (
 								adl_parser.artefact_type,
@@ -354,9 +355,9 @@ feature -- Serialisation
 				invariant_context.serialise (a_format)
 			end
 
-			-- ontology section
+			-- terminology section
 			check attached an_archetype.terminology.dt_representation as dt_ont then
-				-- this is a hack which causes ontology section to be output as ODIN with the 'items' attributes
+				-- this is a hack which causes terminology section to be output as ODIN with the 'items' attributes
 				-- rather than the native nested structure
 				convert_ontology_to_unnested (dt_ont)
 

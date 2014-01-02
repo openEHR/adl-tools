@@ -274,6 +274,11 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
+
+				-- fix any matching annotations nodes with this path
+				if attached target.annotations as att_ann then
+					att_ann.update_annotation_path (old_path, c_obj.path)
+				end
 	 		end
 	 	end
 

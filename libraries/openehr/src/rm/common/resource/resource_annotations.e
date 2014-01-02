@@ -33,6 +33,11 @@ inherit
 
 	DT_CONVERTIBLE
 
+	ADL_15_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+		end
+
 create
 	make_dt
 
@@ -103,11 +108,17 @@ feature -- Status Report
 		end
 
 	has_annotation_at_path (a_lang, a_path: STRING): BOOLEAN
-			-- True if `a_path' is found in  `items'
+			-- True if `a_path' is found in  `items' for `a_lang'
 		do
 			if items.has (a_lang) and then attached items.item (a_lang) as item_at_lang then
 				Result := item_at_lang.has_path (a_path)
 			end
+		end
+
+	has_any_annotation_at_path (a_path: STRING): BOOLEAN
+			-- True if `a_path' is found in `items' for any language
+		do
+			Result := across items as anns_for_lang_csr some anns_for_lang_csr.item.items.has (a_path) end
 		end
 
 feature -- Modification
@@ -140,7 +151,48 @@ feature -- Modification
 			end
 		end
 
-feature {DT_OBJECT_CONVERTER} -- Conversion
+	update_annotation_path (old_path, new_path: STRING)
+			-- replace `old_path' where it occurs as annotation key with `new_path',
+			-- including partial path replacements in larger paths
+		local
+			conv_paths: HASH_TABLE [STRING, STRING]
+		do
+			across items as anns_for_lang_csr loop
+				create conv_paths.make (0)
+				across anns_for_lang_csr.item.items as annots_csr loop
+					if annots_csr.key.is_equal (old_path) then
+						conv_paths.put (new_path, old_path)
+					elseif annots_csr.key.starts_with (old_path) then
+						conv_paths.put (new_path + annots_csr.key.substring (old_path.count+1, annots_csr.key.count), annots_csr.key)
+					end
+				end
+				across conv_paths as conv_paths_csr loop
+					anns_for_lang_csr.item.items.replace_key (conv_paths_csr.item, conv_paths_csr.key)
+				end
+			end
+		end
+
+feature {ADL_14_ENGINE, ADL_15_ENGINE} -- Legacy
+
+	convert_at_id_paths (converted_codes: HASH_TABLE [STRING, STRING])
+			-- convert paths containing at-codes that are being used as id-codes
+		obsolete
+			"Support ADL 1.4 style at-codes used as id-codes"
+		local
+			converted_paths: HASH_TABLE [STRING, STRING]
+		do
+			across items as items_for_lang_csr loop
+				create converted_paths.make (0)
+				across items_for_lang_csr.item.items as items_at_path_csr loop
+					converted_paths.put (adl_14_path_converted (items_at_path_csr.key), items_at_path_csr.key)
+				end
+				across converted_paths as paths_csr loop
+					items_for_lang_csr.item.items.replace_key (paths_csr.item, paths_csr.key)
+				end
+			end
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Serialisation
 
 	persistent_attributes: ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure

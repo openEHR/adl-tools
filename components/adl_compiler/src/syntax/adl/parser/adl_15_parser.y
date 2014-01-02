@@ -104,7 +104,7 @@ operational_template: opt_identification
 		arch_rules
 		arch_terminology
 		arch_annotations
-		arch_component_ontologies
+		arch_component_terminologies
 	;
 
 source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID 
@@ -294,9 +294,9 @@ arch_annotations: -- no meta-data ok
 		}
 	;
 		
-arch_component_ontologies: SYM_COMPONENT_TERMINOLOGIES V_ODIN_TEXT 
+arch_component_terminologies: SYM_COMPONENT_TERMINOLOGIES V_ODIN_TEXT 
 		{ 
-			component_ontologies_text := $2
+			component_terminologies_text := $2
 		}
 	| SYM_COMPONENT_TERMINOLOGIES error
 		{
@@ -347,7 +347,7 @@ feature -- Initialization
 			terminology_text.wipe_out
 			rules_text := Void
 			annotations_text := Void
-			component_ontologies_text := Void
+			component_terminologies_text := Void
 
 			set_input_buffer (new_string_buffer (in_text))
 			parse
@@ -397,7 +397,7 @@ feature -- Parse Output
 
 	annotations_text: detachable STRING
 
-	component_ontologies_text: detachable STRING
+	component_terminologies_text: detachable STRING
 
 feature {NONE} -- Implementation 
 

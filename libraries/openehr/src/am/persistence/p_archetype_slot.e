@@ -24,22 +24,26 @@ feature -- Initialisation
 	make (an_as: ARCHETYPE_SLOT)
 		do
 			precursor (an_as)
-			includes := an_as.includes
-			excludes := an_as.excludes
+			if not an_as.includes.is_empty then
+				includes := an_as.includes
+			end
+			if not an_as.excludes.is_empty then
+				excludes := an_as.excludes
+			end
 			is_closed := an_as.is_closed
 		end
 
 feature -- Access
 
-	includes: ARRAYED_LIST [ASSERTION]
+	includes: detachable ARRAYED_LIST [ASSERTION]
 
-	excludes: ARRAYED_LIST [ASSERTION]
+	excludes: detachable ARRAYED_LIST [ASSERTION]
 
 	is_closed: BOOLEAN
 
 feature -- Factory
 
-	create_archetype_slot: attached ARCHETYPE_SLOT
+	create_archetype_slot: ARCHETYPE_SLOT
 		do
 			if attached node_id as nid then
 				create Result.make_identified (rm_type_name, nid)

@@ -97,6 +97,9 @@ feature -- Access
 
 	list: ARRAYED_LIST [STRING]
 			-- representation of constraint as allowed values for the constrained string
+		attribute
+			create Result.make (0)
+		end
 
 	regexp: detachable STRING
 			-- representation of constraint as PERL-compliant regexp pattern
