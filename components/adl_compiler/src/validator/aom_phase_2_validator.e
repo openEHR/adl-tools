@@ -66,7 +66,7 @@ feature -- Validation
 					validate_specialised_basics
 					validate_specialised_definition
 				end
-				validate_assertions
+				validate_rules
 				validate_annotations
 			end
 		end
@@ -79,8 +79,8 @@ feature {NONE} -- Implementation
 	flat_ancestor: detachable FLAT_ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
 
-	validate_assertions
-			-- validate the invariants if any, which entails checking that all path references are valid against
+	validate_rules
+			-- validate the rules if any, which entails checking that all path references are valid against
 			-- the flat archetype if specialised
 			-- update ASSERTION EXPR_ITEM_LEAF object reference nodes with proper type names
 			-- obtained from the AOM objects pointed to
@@ -91,8 +91,8 @@ feature {NONE} -- Implementation
 			og_tail_path: OG_PATH
 			object_at_matching_path: detachable C_OBJECT
 		do
-			if target.has_invariants then
-				across target.invariants_index as ref_path_csr loop
+			if target.has_rules then
+				across target.rules_index as ref_path_csr loop
 					-- get a matching path from archetype - has to be there, either exact or partial
 					ref_rm_type_name := Void
 					object_at_matching_path := Void

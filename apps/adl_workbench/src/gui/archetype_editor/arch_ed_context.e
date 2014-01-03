@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 			assn_iterator: EXPR_VISITOR_ITERATOR
 			assn_ed_context_builder: ASSERTION_ED_CONTEXT_BUILDER
 		do
-			if ed_context.archetype.has_invariants then
+			if ed_context.archetype.has_rules then
 				create assn_ed_context_builder.make (ed_context)
 				across ed_context.archetype.rules as inv_csr loop
 					create assn_iterator.make (inv_csr.item, assn_ed_context_builder)

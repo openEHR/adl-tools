@@ -45,7 +45,7 @@ feature -- Commands
 
 	execute
 		do
-			if target.has_invariants then
+			if target.has_rules then
 				update_assertions
 			end
 		end
@@ -56,12 +56,12 @@ feature {NONE} -- Implementation
 			-- update ASSERTION EXPR_ITEM_LEAF object reference nodes with proper type names
 			-- obtained from the AOM objects pointed to
 		require
-			target.has_invariants
+			target.has_rules
 		local
 			ref_rm_type_name, tail_path: STRING
 			bmm_class: BMM_CLASS_DEFINITION
 		do
-			across target.invariants_index as ref_path_csr loop
+			across target.rules_index as ref_path_csr loop
 				-- get a matching path from archetype - has to be there, either exact or partial
 				if attached target_flat.matching_path (ref_path_csr.key) as arch_path then
 					ref_rm_type_name := target_flat.c_object_at_path (arch_path).rm_type_name

@@ -45,7 +45,7 @@ feature -- Display
 			end
 			is_displayed := True
 
-			if attached arch_node as a_n and then attached a_n.parent as parent_ca and then not a_n.any_allowed then
+			if attached arch_node as a_n and then attached a_n.parent as parent_ca then
 				-- if in technical mode, show primitive data type
 				if display_settings.show_technical_view then
 					attr_name := parent_ca.rm_attribute_name + ": " + a_n.rm_type_name

@@ -27,11 +27,6 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN
-			-- True if any value allowed ('*' received in parsed input)
-		deferred
-		end
-
 	valid_value (a_value: like prototype_value): BOOLEAN
 		deferred
 		end
@@ -60,7 +55,6 @@ feature -- Modification
 
 invariant
 	Assumed_value_valid: attached assumed_value as av implies valid_value (av)
-	Any_allowed_validity: not (any_allowed and is_prohibited)
 
 end
 

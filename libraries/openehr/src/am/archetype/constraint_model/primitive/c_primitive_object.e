@@ -52,14 +52,6 @@ feature -- Access
 			Result.remove_head (2)
 		end
 
-feature -- Status Report
-
-	any_allowed: BOOLEAN
-			-- False since all C_PRIMITIVE_OBJECTs represent some constraint
-		do
-			Result := False
-		end
-
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN

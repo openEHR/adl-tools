@@ -37,6 +37,8 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 			create representation_cache.make (an_object_id)
 			representation_cache.set_content (Current)
+		ensure
+			Any_allowed: any_allowed
 		end
 
 	make_anonymous (a_rm_type_name: STRING)
@@ -47,6 +49,8 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 			create representation_cache.make_anonymous
 			representation_cache.set_content (Current)
+		ensure
+			Any_allowed: any_allowed
 		end
 
 feature -- Source Control
@@ -315,6 +319,7 @@ feature -- Representation
 		end
 
 invariant
+	Prohibited_validity: not (any_allowed and is_prohibited)
 	Any_allowed_validity: any_allowed xor not attributes.is_empty
 	Tuple_validity: attached attribute_tuples as ats implies ats.for_all (
 		agent (cat: C_ATTRIBUTE_TUPLE): BOOLEAN

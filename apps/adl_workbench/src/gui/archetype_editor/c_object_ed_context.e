@@ -150,7 +150,7 @@ io.put_string ("Entered C_OBJECT_ED_CONTEXT.display_in_grid - should be obsolete
 				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour, Void)
 
 				-- constraint column
-				if attached {C_DEFINED_OBJECT} a_n as c_do and then c_do.any_allowed then
+				if attached {C_COMPLEX_OBJECT} a_n as cco and then cco.any_allowed then
 					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
 				end
 
@@ -297,6 +297,8 @@ feature {NONE} -- Implementation
 						else
 							Result := ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text
 						end
+					elseif display_settings.show_codes then
+						Result := a_n.node_id
 					else
 						create Result.make_empty
 					end

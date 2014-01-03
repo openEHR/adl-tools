@@ -37,6 +37,8 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 			create representation_cache.make (an_object_id)
 			representation_cache.set_content (Current)
+		ensure
+			Any_allowed: any_allowed
 		end
 
 	make_anonymous (a_rm_type_name: attached STRING)
@@ -47,6 +49,8 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 			create representation_cache.make_anonymous
 			representation_cache.set_content (Current)
+		ensure
+			Any_allowed: any_allowed
 		end
 
 feature -- Access

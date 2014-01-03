@@ -13,8 +13,13 @@ inherit
 	ISO8601_FACTORY
 
 	C_DATE_TIME_ROUTINES
-	
+
 	SHARED_ADL_APP_RESOURCES
+
+	ADL_15_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
 
 feature -- Access
 
@@ -441,8 +446,6 @@ feature -- Factory
 			if attached assumed_value then
 				Result.set_assumed_value_from_code (assumed_value)
 			end
-		ensure
-			not Result.any_allowed
 		end
 
 end

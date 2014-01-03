@@ -757,7 +757,7 @@ end
 	flatten_invariants
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
-			if arch_child_diff.has_invariants then
+			if arch_child_diff.has_rules then
 				across arch_child_diff.rules as invs_csr loop
 					arch_output_flat.add_invariant (invs_csr.item.deep_twin)
 				end

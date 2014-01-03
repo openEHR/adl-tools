@@ -69,17 +69,8 @@ feature -- Visitor
 			if a_node.is_prohibited then
 				serialise_comment (a_node)
 
-			-- for nodes that match anything, output 'matches {*' except if specialised, since in that case, there must be
-			-- an override local to the node, i.e. RM type, node id or occurrences.
-			elseif a_node.any_allowed then
-				if not archetype.is_specialised then
-					last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
-					last_result.append (symbol (SYM_START_CBLOCK))
-					last_result.append (apply_style (symbol (SYM_ANY), STYLE_VALUE))
-				end
-
 			-- output  'matches {%N' or 'matches { -- comment%N'
-			else
+			elseif not a_node.any_allowed then
 				last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 				last_result.append (symbol (SYM_START_CBLOCK))
 				serialise_comment (a_node)
@@ -95,9 +86,6 @@ feature -- Visitor
 
 			elseif a_node.any_allowed then
 				-- output '}%N' or '} -- comment%N'
-				if not archetype.is_specialised then
-					last_result.append (symbol(SYM_END_CBLOCK))
-				end
 				serialise_comment (a_node)
 
 			else
@@ -126,27 +114,16 @@ feature -- Visitor
 
 			serialise_type_node_id (a_node, depth)
 
+			-- output occurrences
+			serialise_occurrences (a_node, depth)
+
 			if a_node.is_closed then
 				-- output 'closed ' or 'closed -- comment'
 				last_result.append (apply_style(symbol(SYM_CLOSED), STYLE_KEYWORD) + format_item(FMT_SPACE))
 				serialise_comment (a_node)
 
-			elseif a_node.any_allowed then
-				-- output 'matches {*'
-				-- (comment has to be serialised in end_ routine)
-				serialise_occurrences(a_node, depth)
-				if not (attached a_node.occurrences or
-					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
-				then
-					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-					last_result.append (symbol(SYM_START_CBLOCK))
-					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
-				end
-
-			else
-				-- output occurrences
+			elseif not a_node.any_allowed then
 				-- 'matches { -- comment%N' or 'matches {%N'
-				serialise_occurrences(a_node, depth)
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (symbol(SYM_START_CBLOCK))
 				serialise_comment (a_node)
@@ -161,12 +138,7 @@ feature -- Visitor
 				last_result.append (format_item(FMT_NEWLINE))
 
 			elseif a_node.any_allowed then
-				-- output '}%N' or '} -- comment%N'
-				if not (attached a_node.occurrences or
-					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
-				then
-					last_result.append (symbol(SYM_END_CBLOCK))
-				end
+				-- output ' -- comment%N'
 				serialise_comment (a_node)
 				last_result.append (format_item(FMT_NEWLINE))
 
@@ -209,16 +181,8 @@ feature -- Visitor
 				serialise_cardinality (a_node, depth)
 
 				-- output:
-				--	matches {*
-				if a_node.any_allowed then
-					if not attached a_node.existence and not attached a_node.cardinality then
-						last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
-						last_result.append (symbol (SYM_START_CBLOCK))
-						last_result.append (symbol (SYM_ANY))
-					end
-				-- output:
 				--	matches {%N
-				else
+				if not a_node.any_allowed then
 					last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 					last_result.append (symbol (SYM_START_CBLOCK))
 					last_result.append (format_item (FMT_NEWLINE))
@@ -242,12 +206,7 @@ feature -- Visitor
 					end
 					last_object_inline := False
 
-				elseif a_node.any_allowed then
-					if not attached a_node.existence and not attached a_node.cardinality then
-						last_result.append (symbol (SYM_END_CBLOCK))
-					end
-
-				else
+				elseif not a_node.any_allowed then
 					last_result.append (create_indent (depth))
 					last_result.append (symbol (SYM_END_CBLOCK))
 				end
@@ -492,9 +451,7 @@ feature {NONE} -- Implementation
 		do
 			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 
-			if a_node.is_addressable then
-				last_result.append (apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
-			end
+			last_result.append (apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
 
 			last_result.append (format_item(FMT_SPACE))
 		end
@@ -510,7 +467,7 @@ feature {NONE} -- Implementation
 
 				-- hold the comment over in `last_coded_constraint_comment'
 				create last_coded_constraint_comment.make(0)
-				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code (a_node.code_list.first)) then
+				if a_node.is_local and a_node.code_count = 1 and ontology.has_term_code (a_node.code_list.first) then
 					last_coded_constraint_comment.append (format_item (FMT_INDENT))
 					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 						safe_comment (ontology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
@@ -589,15 +546,10 @@ feature {NONE} -- Implementation
 	serialise_comment (a_node: C_OBJECT)
 			-- the valid_code() check below is to ensure we have an at-code not an archetype id,
 			-- as can occur in a template
-		local
-			s: STRING
 		do
-			if a_node.is_addressable then
-				s := a_node.node_id
-				if is_valid_code(s) and ontology.has_term_code(s) then
-					last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-						safe_comment (ontology.term_definition(language, s).text), STYLE_COMMENT))
-				end
+			if ontology.has_id_code (a_node.node_id) then
+				last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+					safe_comment (ontology.id_definition (language, a_node.node_id).text), STYLE_COMMENT))
 			end
 		end
 

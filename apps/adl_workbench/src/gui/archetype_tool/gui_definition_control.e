@@ -462,7 +462,7 @@ feature {NONE} -- Implementation
 			gui_definition_grid.ev_grid.unlock_update
 
 			-- populate rules grid, where applicable
-			if source_archetype.has_invariants then
+			if source_archetype.has_rules then
 				gui_rules_grid.ev_grid.lock_update
 				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
@@ -504,7 +504,7 @@ feature {NONE} -- Implementation
 			gui_definition_grid.ev_grid.unlock_update
 
 			-- repopulate rules grid, where applicable
-			if source_archetype.has_invariants then
+			if source_archetype.has_rules then
 				gui_rules_grid.ev_grid.lock_update
 				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)

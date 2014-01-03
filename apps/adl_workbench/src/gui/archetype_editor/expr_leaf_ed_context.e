@@ -44,7 +44,7 @@ feature -- Display
 feature {NONE} -- Implementation
 
 	meaning: STRING
-			-- generate useful string representatoin for meaning column
+			-- generate useful string representation for meaning column
 		local
 			last_node_id: STRING
 			og_path: OG_PATH
@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 					create og_path.make_from_string (a_n.item.out)
 					last_node_id := og_path.last_object_node_id
 					if not last_node_id.is_empty then
-						Result.append (ed_context.flat_terminology.term_definition (display_settings.language, last_node_id).text)
+						Result.append (ed_context.flat_terminology.id_definition (display_settings.language, last_node_id).text)
 					else
 						Result.append (a_n.item.out)
 					end

@@ -29,10 +29,10 @@ feature -- Visitor
 			-- enter an EXPR_LEAF
 		do
 			if a_node.is_archetype_definition_ref and attached {STRING} a_node.item as tgt_path then
-				if not archetype.invariants_index.has (tgt_path) then
-					archetype.invariants_index.put (create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+				if not archetype.rules_index.has (tgt_path) then
+					archetype.rules_index.put (create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
 				end
-				archetype.invariants_index.item (tgt_path).extend (a_node)
+				archetype.rules_index.item (tgt_path).extend (a_node)
 			end
 		end
 

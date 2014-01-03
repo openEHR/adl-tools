@@ -34,6 +34,7 @@ feature -- Initialisation
 			create representation_cache.make_single (a_name)
 			representation_cache.set_content (Current)
 		ensure
+			Any_allowed: any_allowed
 			Is_single: not is_multiple
 			Existence_set: existence = an_existence
 		end
@@ -48,6 +49,7 @@ feature -- Initialisation
 			create representation_cache.make_multiple (a_name)
 			representation_cache.set_content (Current)
 		ensure
+			Any_allowed: any_allowed
 			Is_multiple: is_multiple
 			Existence_set: existence = an_existence
 			Cardinality_set: cardinality = a_cardinality

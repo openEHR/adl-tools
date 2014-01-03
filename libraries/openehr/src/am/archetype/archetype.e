@@ -133,7 +133,7 @@ feature -- Initialisation
 			if attached other.annotations as other_annots then
 				other_annotations := other_annots.safe_deep_twin
 			end
-			if other.has_invariants then
+			if other.has_rules then
 				other_invariants := other.rules.deep_twin
 			end
 			if attached other.other_metadata then
@@ -338,7 +338,7 @@ feature -- Status Report
 			Result := physical_paths.has (a_path)
 		end
 
-	has_invariants: BOOLEAN
+	has_rules: BOOLEAN
 			-- true if there are invariants
 		do
 			Result := attached rules
@@ -473,7 +473,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 					local
 						key: STRING
 					do
-						if attached {C_TERMINOLOGY_CODE} a_c_node as ccp and then (not ccp.any_allowed and ccp.code_count > 0) then
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ccp and then ccp.code_count > 0 then
 							across ccp.code_list as codes_csr loop
 								if ccp.is_local then
 									key := codes_csr.item
@@ -552,14 +552,14 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				Void)
 		end
 
-	invariants_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
+	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
 		local
 			def_it: EXPR_ITERATOR
 		do
 			create Result.make (0)
-			if has_invariants then
+			if has_rules then
 				across rules as inv_csr loop
 					create def_it.make (inv_csr.item)
 					def_it.do_all (

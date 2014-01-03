@@ -350,7 +350,7 @@ feature -- Serialisation
 			definition_context.serialise (an_archetype, a_format, a_lang)
 
 			-- rules section
-			if an_archetype.has_invariants then
+			if an_archetype.has_rules then
 				invariant_context.set_tree (an_archetype.rules)
 				invariant_context.serialise (a_format)
 			end
