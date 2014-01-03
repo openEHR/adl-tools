@@ -244,6 +244,19 @@ feature -- Access
 			end
 		end
 
+	constraint_bindings_for_key (a_key: STRING): HASH_TABLE [URI, STRING]
+			-- retrieve the constraint bindings for a key (code or path) as a table of bound terms keyed by terminology_id
+		require
+			Terminology_valid: has_any_constraint_binding (a_key)
+		do
+			create Result.make (0)
+			across constraint_bindings as bindings_for_terminology_csr loop
+				if attached bindings_for_terminology_csr.item.item (a_key) as binding_for_key then
+					Result.put (binding_for_key, bindings_for_terminology_csr.key)
+				end
+			end
+		end
+
 	constraint_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [URI, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
@@ -998,10 +1011,9 @@ feature {ADL_15_ENGINE} -- Legacy
 			"Support ADL 1.4 style at-codes used as id-codes"
 		local
 			conv_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]
-			conv_bindings: HASH_TABLE [TERMINOLOGY_CODE, STRING]
+			conv_bindings: HASH_TABLE [ANY, STRING]
 			conv_term: ARCHETYPE_TERM
-			bind_term: TERMINOLOGY_CODE
-			path_strs: HASH_TABLE [STRING, STRING]
+			binding_paths: HASH_TABLE [STRING, STRING]
 			old_code, new_code, new_path: STRING
 		do
 			-- move at-code terms that are really id-codes out of term_definitions and into id_definitions
@@ -1012,30 +1024,29 @@ feature {ADL_15_ENGINE} -- Legacy
 
 				-- find the term bindings in all terminologies
 				-- first case: binding is against just the single code
+				-- Here we just record the bindings; they can only be added in after
+				-- the actual term has been fixed, below.
 				if has_any_term_binding (old_code) then
 					conv_bindings := term_bindings_for_key (old_code)
+				elseif has_any_constraint_binding (old_code) then
+					conv_bindings := constraint_bindings_for_key (old_code)
 				else
 					create conv_bindings.make (0)
 				end
 
-				-- add bindings back in keyed by new id codes
-				across conv_bindings as id_bindings_csr loop
-					put_term_binding (id_bindings_csr.item, new_code)
-				end
-
 				-- second case: binding is keyed by path containing node id code
 				across term_bindings as bindings_for_terminology_csr loop
-					create path_strs.make (0)
+					create binding_paths.make (0)
 					across bindings_for_terminology_csr.item as bindings_csr loop
 						if bindings_csr.key.has_substring (old_code) then
 							new_path := bindings_csr.key.twin
 							new_path.replace_substring_all (old_code, new_code)
-							path_strs.put (new_path, bindings_csr.key)
+							binding_paths.put (new_path, bindings_csr.key)
 						end
 					end
 
 					-- now go replace the path keys with the modified path keys
-					across path_strs as paths_csr loop
+					across binding_paths as paths_csr loop
 						bindings_for_terminology_csr.item.replace_key (paths_csr.item, paths_csr.key)
 					end
 				end
@@ -1068,6 +1079,18 @@ feature {ADL_15_ENGINE} -- Legacy
 
 					-- add it back in as an id code
 					put_definition_and_translations (conv_terms, new_code)
+
+				end
+
+				-- now add bindings back in keyed by new id codes
+				if attached {HASH_TABLE [TERMINOLOGY_CODE, STRING]} conv_bindings as conv_at_id_bindings then
+					across conv_at_id_bindings as bindings_csr loop
+						put_term_binding (bindings_csr.item, new_code)
+					end
+				elseif attached {HASH_TABLE [URI, STRING]} conv_bindings as conv_ac_bindings then
+					across conv_ac_bindings as bindings_csr loop
+						put_constraint_binding (bindings_csr.item, bindings_csr.key, new_code)
+					end
 				end
 			end
 
