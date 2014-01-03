@@ -522,12 +522,12 @@
 <div class="rhs">
 &nbsp; <span class="empty">-/-</span></div>
 <div class="rhs">
-| <span class="token">SYM_EXISTENCE </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#existence_spec">existence_spec</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+| <span class="token">SYM_EXISTENCE </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#existence">existence</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="existence_spec">existence_spec</span>: </div>
+<span class="lhs_variable" id="existence">existence</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">V_INTEGER </span></div>
 <div class="rhs">
@@ -540,28 +540,28 @@
 <div class="rhs">
 &nbsp; <span class="empty">-/-</span></div>
 <div class="rhs">
-| <span class="token">SYM_CARDINALITY </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#cardinality_range">cardinality_range</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+| <span class="token">SYM_CARDINALITY </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#cardinality">cardinality</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="cardinality_range">cardinality_range</span>: </div>
+<span class="lhs_variable" id="cardinality">cardinality</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span><span class="literal_token">&#59; </span><span class="token">SYM_ORDERED </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span></div>
+| <span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="literal_token">&#59; </span><span class="token">SYM_UNIQUE </span><span class="literal_token">&#59; </span><span class="token">SYM_UNORDERED </span></div>
 </div>
 
 <div class="rule">
@@ -570,14 +570,14 @@
 <div class="rhs">
 &nbsp; <span class="empty">-/-</span></div>
 <div class="rhs">
-| <span class="token">SYM_OCCURRENCES </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#occurrence_spec">occurrence_spec</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+| <span class="token">SYM_OCCURRENCES </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#multiplicity">multiplicity</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 <div class="rhs">
 | <span class="token">SYM_OCCURRENCES </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="occurrence_spec">occurrence_spec</span>: </div>
+<span class="lhs_variable" id="multiplicity">multiplicity</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span></div>
 <div class="rhs">

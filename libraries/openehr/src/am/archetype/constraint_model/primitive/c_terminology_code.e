@@ -102,8 +102,6 @@ feature -- Status Report
 
 	is_local: BOOLEAN
 			-- True if this terminology id = "local"
-		require
-			not any_allowed
 		do
 			Result := terminology_id.is_equal (Local_terminology_id)
 		end
@@ -175,20 +173,23 @@ feature {P_C_TERMINOLOGY_CODE} -- Modification
 			end
 		end
 
-feature -- Conversion
+--feature -- Conversion
 
-	adl_14_reformat_codes
-			-- renumber codes to support ADL 1.4 at-codes being used in ADL 1.5
-		obsolete
-			"Support for ADL 1.4 at-codes in ADL 1.5 archetypes"
-		do
-			if is_local then
-				from code_list.start until code_list.off loop
-					code_list.replace (adl_14_code_reformatted (code_list.item))
-					code_list.forth
-				end
-			end
-		end
+--	adl_14_reformat_codes
+--			-- renumber codes to support ADL 1.4 at-codes being used in ADL 1.5
+--		obsolete
+--			"Support for ADL 1.4 at-codes in ADL 1.5 archetypes"
+--		do
+--			if is_local then
+--				from code_list.start until code_list.off loop
+--					code_list.replace (adl_14_code_reformatted (code_list.item))
+--					code_list.forth
+--				end
+--				if attached assumed_value as att_av then
+--					create assumed_value.make (att_av.terminology_id, adl_14_code_reformatted (att_av.code_string))
+--				end
+--			end
+--		end
 
 feature -- Output
 

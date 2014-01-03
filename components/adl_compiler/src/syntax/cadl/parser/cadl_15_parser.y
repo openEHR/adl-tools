@@ -70,7 +70,7 @@ create
 
 %token SYM_START_CBLOCK SYM_END_CBLOCK	-- constraint block
 
-%token SYM_ANY -- used outside of parser & scanner
+%token SYM_ANY -- don't remove - used outside of parser & scanner
 
 %token SYM_INTERVAL_DELIM
 %token SYM_TRUE SYM_FALSE 
@@ -103,8 +103,12 @@ create
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
+
+%type <MULTIPLICITY_INTERVAL> multiplicity existence
+%type <CARDINALITY> cardinality
 %type <detachable MULTIPLICITY_INTERVAL> c_occurrences c_existence
-%type <MULTIPLICITY_INTERVAL> occurrence_spec existence_spec
+%type <detachable CARDINALITY> c_cardinality
+
 %type <C_COMPLEX_OBJECT> c_complex_object_id c_complex_object_head
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
@@ -154,8 +158,6 @@ create
 %type <STRING> relational_binop_symbol
 %type <STRING> boolean_binop_symbol
 
-%type <detachable CARDINALITY> c_cardinality
-%type <CARDINALITY> cardinality_range
 %type <CONSTRAINT_REF> constraint_ref
 
 %type <C_BOOLEAN> c_boolean
@@ -601,7 +603,7 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 			end
 			c_attrs.remove
 		}
-	| c_attr_head -- ok if existence is being changed in specialised archetype
+	| c_attr_head -- ok if existence or cardinality is being changed in specialised archetype
 		{
 			c_attrs.remove
 		}
@@ -1142,13 +1144,13 @@ arithmetic_binop_symbol: '/'
 ---------------- existence, occurrences, cardinality ----------------
 
 c_existence:  	-- empty is ok
-	| SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK	
+	| SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence SYM_END_CBLOCK	
 		{
 			$$ := $4
 		}
 	;
 
-existence_spec:  V_INTEGER -- can only be 0 or 1
+existence:  V_INTEGER -- can only be 0 or 1
 		{
 			if $1 = 0 then
 				create $$.make_prohibited
@@ -1181,47 +1183,47 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 	;
 
 c_cardinality: -- empty is ok
-	| SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK	
+	| SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK	
 		{
 			$$ := $4
 		}
 	;
 
-cardinality_range: occurrence_spec
+cardinality: multiplicity
 		{
 			create $$.make ($1)
 		}
-	| occurrence_spec ';' SYM_ORDERED
+	| multiplicity ';' SYM_ORDERED
 		{
 			create $$.make ($1)
 		}
-	| occurrence_spec ';' SYM_UNORDERED
+	| multiplicity ';' SYM_UNORDERED
 		{
 			create $$.make ($1)
 			$$.set_unordered
 		}
-	| occurrence_spec ';' SYM_UNIQUE
+	| multiplicity ';' SYM_UNIQUE
 		{
 			create $$.make ($1)
 			$$.set_unique
 		}
-	| occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE
+	| multiplicity ';' SYM_ORDERED ';' SYM_UNIQUE
 		{
 			create $$.make ($1)
 			$$.set_unique
 		}
-	| occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE
+	| multiplicity ';' SYM_UNORDERED ';' SYM_UNIQUE
 		{
 			create $$.make ($1)
 			$$.set_unique
 			$$.set_unordered
 		}
-	| occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED
+	| multiplicity ';' SYM_UNIQUE ';' SYM_ORDERED
 		{
 			create $$.make ($1)
 			$$.set_unique
 		}
-	| occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED
+	| multiplicity ';' SYM_UNIQUE ';' SYM_UNORDERED
 		{
 			create $$.make ($1)
 			$$.set_unique
@@ -1230,7 +1232,7 @@ cardinality_range: occurrence_spec
 	;
 
 c_occurrences:  -- empty is ok
-	| SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK	
+	| SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK	
 		{
 			$$ := $4
 		}
@@ -1240,7 +1242,7 @@ c_occurrences:  -- empty is ok
 		}
 	;
 
-occurrence_spec: integer_value
+multiplicity: integer_value
 		{
 			create $$.make_point ($1)
 		}
@@ -1543,19 +1545,27 @@ c_string: V_STRING 	-- single value, generates closed list
 		}
 	;
 
-c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
+c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at40, at41; at40]"
 		{
+			if is_adl_14_term_code_constraint ($1) then
+				$1 := adl_14_code_constraint_reformatted ($1)
+			end
 			if constraint_model_factory.valid_c_terminology_code_string ($1) then
 				$$ := constraint_model_factory.create_c_terminology_code ($1)
-				$$.adl_14_reformat_codes
 			else
 				abort_with_errors (constraint_model_factory.errors)
 			end
 		}
 	| V_QUALIFIED_TERM_CODE_REF
 		{
-			$$ := constraint_model_factory.create_c_terminology_code ($1)
-			$$.adl_14_reformat_codes
+			if is_adl_14_term_code_constraint ($1) then
+				$1 := adl_14_code_constraint_reformatted ($1)
+			end
+			if constraint_model_factory.valid_c_terminology_code_string ($1) then
+				$$ := constraint_model_factory.create_c_terminology_code ($1)
+			else
+				abort_with_errors (constraint_model_factory.errors)
+			end
 		}
 	;
 
@@ -1650,13 +1660,16 @@ string_list: V_STRING ',' V_STRING
 		}
 	;
 
-integer_value: V_INTEGER {
+integer_value: V_INTEGER 
+		{
 			$$ := $1
 		}
-	| '+' V_INTEGER {
+	| '+' V_INTEGER %prec UNARY_MINUS
+		{
 			$$ := $2
 		}
-	| '-' V_INTEGER {
+	| '-' V_INTEGER %prec UNARY_MINUS
+		{
 			$$ := - $2
 		}
 	;

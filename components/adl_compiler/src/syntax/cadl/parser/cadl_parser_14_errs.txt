@@ -151,26 +151,26 @@ rule 114 arithmetic_binop_symbol -> '+'
 rule 115 arithmetic_binop_symbol -> '-'
 rule 116 arithmetic_binop_symbol -> '^'
 rule 117 c_existence -> -- Empty
-rule 118 c_existence -> SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK
-rule 119 existence_spec -> V_INTEGER
-rule 120 existence_spec -> V_INTEGER SYM_ELLIPSIS V_INTEGER
+rule 118 c_existence -> SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence SYM_END_CBLOCK
+rule 119 existence -> V_INTEGER
+rule 120 existence -> V_INTEGER SYM_ELLIPSIS V_INTEGER
 rule 121 c_cardinality -> -- Empty
-rule 122 c_cardinality -> SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK
-rule 123 cardinality_range -> occurrence_spec
-rule 124 cardinality_range -> occurrence_spec ';' SYM_ORDERED
-rule 125 cardinality_range -> occurrence_spec ';' SYM_UNORDERED
-rule 126 cardinality_range -> occurrence_spec ';' SYM_UNIQUE
-rule 127 cardinality_range -> occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE
-rule 128 cardinality_range -> occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE
-rule 129 cardinality_range -> occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED
-rule 130 cardinality_range -> occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED
+rule 122 c_cardinality -> SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK
+rule 123 cardinality -> multiplicity
+rule 124 cardinality -> multiplicity ';' SYM_ORDERED
+rule 125 cardinality -> multiplicity ';' SYM_UNORDERED
+rule 126 cardinality -> multiplicity ';' SYM_UNIQUE
+rule 127 cardinality -> multiplicity ';' SYM_ORDERED ';' SYM_UNIQUE
+rule 128 cardinality -> multiplicity ';' SYM_UNORDERED ';' SYM_UNIQUE
+rule 129 cardinality -> multiplicity ';' SYM_UNIQUE ';' SYM_ORDERED
+rule 130 cardinality -> multiplicity ';' SYM_UNIQUE ';' SYM_UNORDERED
 rule 131 c_occurrences -> -- Empty
-rule 132 c_occurrences -> SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK
+rule 132 c_occurrences -> SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK
 rule 133 c_occurrences -> SYM_OCCURRENCES error
-rule 134 occurrence_spec -> integer_value
-rule 135 occurrence_spec -> '*'
-rule 136 occurrence_spec -> V_INTEGER SYM_ELLIPSIS integer_value
-rule 137 occurrence_spec -> V_INTEGER SYM_ELLIPSIS '*'
+rule 134 multiplicity -> integer_value
+rule 135 multiplicity -> '*'
+rule 136 multiplicity -> V_INTEGER SYM_ELLIPSIS integer_value
+rule 137 multiplicity -> V_INTEGER SYM_ELLIPSIS '*'
 rule 138 c_integer -> integer_value
 rule 139 c_integer -> integer_list
 rule 140 c_integer -> integer_interval
@@ -451,8 +451,8 @@ archetype_internal_ref (5) on left: 24 25, on right: 13
 type_identifier (6) on left: 200 201, on right: 6 7 21 22 23 25 26 27 31 32 33 34 198
 c_occurrences (7) on left: 131 132 133, on right: 5 21 22 24 30
 c_existence (8) on left: 117 118, on right: 53
-occurrence_spec (9) on left: 134 135 136 137, on right: 123 124 125 126 127 128 129 130 132
-existence_spec (10) on left: 119 120, on right: 118
+multiplicity (9) on left: 134 135 136 137, on right: 123 124 125 126 127 128 129 130 132
+existence (10) on left: 119 120, on right: 118
 c_complex_object_id (11) on left: 6 7, on right: 5
 c_complex_object_head (12) on left: 5, on right: 4
 c_primitive_object (13) on left: 36 37 38 39 40 41 42 43 44, on right: 16 63 64 83 84
@@ -506,7 +506,7 @@ arithmetic_binop_symbol (60) on left: 112 113 114 115 116, on right: 102
 relational_binop_symbol (61) on left: 106 107 108 109 110 111, on right: 97
 boolean_binop_symbol (62) on left: 91 92 93 94, on right: 90
 c_cardinality (63) on left: 121 122, on right: 53
-cardinality_range (64) on left: 123 124 125 126 127 128 129 130, on right: 122
+cardinality (64) on left: 123 124 125 126 127 128 129 130, on right: 122
 constraint_ref (65) on left: 197, on right: 15
 c_ordinal (66) on left: 192 193 194 195, on right: 17 193 194 195
 ordinal (67) on left: 196, on right: 192 193
@@ -930,7 +930,7 @@ state 19
 
 	c_complex_object_head  ->  c_complex_object_id . c_occurrences   (rule 5)
 	c_occurrences  ->  .   (rule 131)
-	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 	c_occurrences  ->  . SYM_OCCURRENCES error   (rule 133)
 
 	SYM_OCCURRENCES	shift, and go to state 53
@@ -1340,7 +1340,7 @@ state 52
 
 state 53
 
-	c_occurrences  ->  SYM_OCCURRENCES . SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  SYM_OCCURRENCES . SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 	c_occurrences  ->  SYM_OCCURRENCES . error   (rule 133)
 
 	SYM_MATCHES	shift, and go to state 80
@@ -2174,7 +2174,7 @@ state 79
 
 state 80
 
-	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES . SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES . SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 
 	SYM_START_CBLOCK	shift, and go to state 146
 
@@ -3000,11 +3000,11 @@ state 145
 
 state 146
 
-	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK . occurrence_spec SYM_END_CBLOCK   (rule 132)
-	occurrence_spec  ->  . integer_value   (rule 134)
-	occurrence_spec  ->  . '*'   (rule 135)
-	occurrence_spec  ->  . V_INTEGER SYM_ELLIPSIS integer_value   (rule 136)
-	occurrence_spec  ->  . V_INTEGER SYM_ELLIPSIS '*'   (rule 137)
+	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK . multiplicity SYM_END_CBLOCK   (rule 132)
+	multiplicity  ->  . integer_value   (rule 134)
+	multiplicity  ->  . '*'   (rule 135)
+	multiplicity  ->  . V_INTEGER SYM_ELLIPSIS integer_value   (rule 136)
+	multiplicity  ->  . V_INTEGER SYM_ELLIPSIS '*'   (rule 137)
 	integer_value  ->  . V_INTEGER   (rule 207)
 	integer_value  ->  . '+' V_INTEGER   (rule 208)
 	integer_value  ->  . '-' V_INTEGER   (rule 209)
@@ -3014,7 +3014,7 @@ state 146
 	'+'	shift, and go to state 211
 	V_INTEGER	shift, and go to state 212
 
-	occurrence_spec	go to state 213
+	multiplicity	go to state 213
 	integer_value	go to state 214
 
 
@@ -3043,7 +3043,7 @@ state 149
 
 	c_attr_head  ->  V_ATTRIBUTE_IDENTIFIER . c_existence c_cardinality   (rule 53)
 	c_existence  ->  .   (rule 117)
-	c_existence  ->  . SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK   (rule 118)
+	c_existence  ->  . SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence SYM_END_CBLOCK   (rule 118)
 
 	SYM_EXISTENCE	shift, and go to state 217
 
@@ -3991,9 +3991,9 @@ state 208
 
 state 209
 
-	occurrence_spec  ->  '*' .   (rule 135)
+	multiplicity  ->  '*' .   (rule 135)
 
-	$default	reduce using rule 135 (occurrence_spec)
+	$default	reduce using rule 135 (multiplicity)
 
 
 
@@ -4015,8 +4015,8 @@ state 211
 
 state 212
 
-	occurrence_spec  ->  V_INTEGER . SYM_ELLIPSIS integer_value   (rule 136)
-	occurrence_spec  ->  V_INTEGER . SYM_ELLIPSIS '*'   (rule 137)
+	multiplicity  ->  V_INTEGER . SYM_ELLIPSIS integer_value   (rule 136)
+	multiplicity  ->  V_INTEGER . SYM_ELLIPSIS '*'   (rule 137)
 	integer_value  ->  V_INTEGER .   (rule 207)
 
 	SYM_ELLIPSIS	shift, and go to state 329
@@ -4027,7 +4027,7 @@ state 212
 
 state 213
 
-	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec . SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity . SYM_END_CBLOCK   (rule 132)
 
 	SYM_END_CBLOCK	shift, and go to state 330
 
@@ -4035,9 +4035,9 @@ state 213
 
 state 214
 
-	occurrence_spec  ->  integer_value .   (rule 134)
+	multiplicity  ->  integer_value .   (rule 134)
 
-	$default	reduce using rule 134 (occurrence_spec)
+	$default	reduce using rule 134 (multiplicity)
 
 
 
@@ -4061,7 +4061,7 @@ state 216
 
 state 217
 
-	c_existence  ->  SYM_EXISTENCE . SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK   (rule 118)
+	c_existence  ->  SYM_EXISTENCE . SYM_MATCHES SYM_START_CBLOCK existence SYM_END_CBLOCK   (rule 118)
 
 	SYM_MATCHES	shift, and go to state 333
 
@@ -4071,7 +4071,7 @@ state 218
 
 	c_attr_head  ->  V_ATTRIBUTE_IDENTIFIER c_existence . c_cardinality   (rule 53)
 	c_cardinality  ->  .   (rule 121)
-	c_cardinality  ->  . SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK   (rule 122)
+	c_cardinality  ->  . SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK   (rule 122)
 
 	SYM_CARDINALITY	shift, and go to state 334
 
@@ -5118,8 +5118,8 @@ state 328
 
 state 329
 
-	occurrence_spec  ->  V_INTEGER SYM_ELLIPSIS . integer_value   (rule 136)
-	occurrence_spec  ->  V_INTEGER SYM_ELLIPSIS . '*'   (rule 137)
+	multiplicity  ->  V_INTEGER SYM_ELLIPSIS . integer_value   (rule 136)
+	multiplicity  ->  V_INTEGER SYM_ELLIPSIS . '*'   (rule 137)
 	integer_value  ->  . V_INTEGER   (rule 207)
 	integer_value  ->  . '+' V_INTEGER   (rule 208)
 	integer_value  ->  . '-' V_INTEGER   (rule 209)
@@ -5135,7 +5135,7 @@ state 329
 
 state 330
 
-	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK .   (rule 132)
+	c_occurrences  ->  SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK .   (rule 132)
 
 	$default	reduce using rule 132 (c_occurrences)
 
@@ -5159,7 +5159,7 @@ state 332
 
 state 333
 
-	c_existence  ->  SYM_EXISTENCE SYM_MATCHES . SYM_START_CBLOCK existence_spec SYM_END_CBLOCK   (rule 118)
+	c_existence  ->  SYM_EXISTENCE SYM_MATCHES . SYM_START_CBLOCK existence SYM_END_CBLOCK   (rule 118)
 
 	SYM_START_CBLOCK	shift, and go to state 407
 
@@ -5167,7 +5167,7 @@ state 333
 
 state 334
 
-	c_cardinality  ->  SYM_CARDINALITY . SYM_MATCHES SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK   (rule 122)
+	c_cardinality  ->  SYM_CARDINALITY . SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK   (rule 122)
 
 	SYM_MATCHES	shift, and go to state 408
 
@@ -6196,17 +6196,17 @@ state 402
 
 state 403
 
-	occurrence_spec  ->  V_INTEGER SYM_ELLIPSIS '*' .   (rule 137)
+	multiplicity  ->  V_INTEGER SYM_ELLIPSIS '*' .   (rule 137)
 
-	$default	reduce using rule 137 (occurrence_spec)
+	$default	reduce using rule 137 (multiplicity)
 
 
 
 state 404
 
-	occurrence_spec  ->  V_INTEGER SYM_ELLIPSIS integer_value .   (rule 136)
+	multiplicity  ->  V_INTEGER SYM_ELLIPSIS integer_value .   (rule 136)
 
-	$default	reduce using rule 136 (occurrence_spec)
+	$default	reduce using rule 136 (multiplicity)
 
 
 
@@ -6228,19 +6228,19 @@ state 406
 
 state 407
 
-	c_existence  ->  SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK . existence_spec SYM_END_CBLOCK   (rule 118)
-	existence_spec  ->  . V_INTEGER   (rule 119)
-	existence_spec  ->  . V_INTEGER SYM_ELLIPSIS V_INTEGER   (rule 120)
+	c_existence  ->  SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK . existence SYM_END_CBLOCK   (rule 118)
+	existence  ->  . V_INTEGER   (rule 119)
+	existence  ->  . V_INTEGER SYM_ELLIPSIS V_INTEGER   (rule 120)
 
 	V_INTEGER	shift, and go to state 457
 
-	existence_spec	go to state 458
+	existence	go to state 458
 
 
 
 state 408
 
-	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES . SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK   (rule 122)
+	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES . SYM_START_CBLOCK cardinality SYM_END_CBLOCK   (rule 122)
 
 	SYM_START_CBLOCK	shift, and go to state 459
 
@@ -6369,7 +6369,7 @@ state 420
 
 	c_archetype_slot_head  ->  c_archetype_slot_id . c_occurrences   (rule 30)
 	c_occurrences  ->  .   (rule 131)
-	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 	c_occurrences  ->  . SYM_OCCURRENCES error   (rule 133)
 
 	SYM_OCCURRENCES	shift, and go to state 53
@@ -6472,7 +6472,7 @@ state 430
 
 	archetype_internal_ref  ->  archetype_internal_ref_head . c_occurrences V_ABS_PATH   (rule 24)
 	c_occurrences  ->  .   (rule 131)
-	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 	c_occurrences  ->  . SYM_OCCURRENCES error   (rule 133)
 
 	SYM_OCCURRENCES	shift, and go to state 53
@@ -7016,18 +7016,18 @@ state 456
 
 state 457
 
-	existence_spec  ->  V_INTEGER .   (rule 119)
-	existence_spec  ->  V_INTEGER . SYM_ELLIPSIS V_INTEGER   (rule 120)
+	existence  ->  V_INTEGER .   (rule 119)
+	existence  ->  V_INTEGER . SYM_ELLIPSIS V_INTEGER   (rule 120)
 
 	SYM_ELLIPSIS	shift, and go to state 495
 
-	$default	reduce using rule 119 (existence_spec)
+	$default	reduce using rule 119 (existence)
 
 
 
 state 458
 
-	c_existence  ->  SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec . SYM_END_CBLOCK   (rule 118)
+	c_existence  ->  SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence . SYM_END_CBLOCK   (rule 118)
 
 	SYM_END_CBLOCK	shift, and go to state 496
 
@@ -7035,19 +7035,19 @@ state 458
 
 state 459
 
-	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK . cardinality_range SYM_END_CBLOCK   (rule 122)
-	cardinality_range  ->  . occurrence_spec   (rule 123)
-	cardinality_range  ->  . occurrence_spec ';' SYM_ORDERED   (rule 124)
-	cardinality_range  ->  . occurrence_spec ';' SYM_UNORDERED   (rule 125)
-	cardinality_range  ->  . occurrence_spec ';' SYM_UNIQUE   (rule 126)
-	cardinality_range  ->  . occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE   (rule 127)
-	cardinality_range  ->  . occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE   (rule 128)
-	cardinality_range  ->  . occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
-	cardinality_range  ->  . occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
-	occurrence_spec  ->  . integer_value   (rule 134)
-	occurrence_spec  ->  . '*'   (rule 135)
-	occurrence_spec  ->  . V_INTEGER SYM_ELLIPSIS integer_value   (rule 136)
-	occurrence_spec  ->  . V_INTEGER SYM_ELLIPSIS '*'   (rule 137)
+	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK . cardinality SYM_END_CBLOCK   (rule 122)
+	cardinality  ->  . multiplicity   (rule 123)
+	cardinality  ->  . multiplicity ';' SYM_ORDERED   (rule 124)
+	cardinality  ->  . multiplicity ';' SYM_UNORDERED   (rule 125)
+	cardinality  ->  . multiplicity ';' SYM_UNIQUE   (rule 126)
+	cardinality  ->  . multiplicity ';' SYM_ORDERED ';' SYM_UNIQUE   (rule 127)
+	cardinality  ->  . multiplicity ';' SYM_UNORDERED ';' SYM_UNIQUE   (rule 128)
+	cardinality  ->  . multiplicity ';' SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
+	cardinality  ->  . multiplicity ';' SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
+	multiplicity  ->  . integer_value   (rule 134)
+	multiplicity  ->  . '*'   (rule 135)
+	multiplicity  ->  . V_INTEGER SYM_ELLIPSIS integer_value   (rule 136)
+	multiplicity  ->  . V_INTEGER SYM_ELLIPSIS '*'   (rule 137)
 	integer_value  ->  . V_INTEGER   (rule 207)
 	integer_value  ->  . '+' V_INTEGER   (rule 208)
 	integer_value  ->  . '-' V_INTEGER   (rule 209)
@@ -7057,9 +7057,9 @@ state 459
 	'+'	shift, and go to state 211
 	V_INTEGER	shift, and go to state 212
 
-	occurrence_spec	go to state 497
+	multiplicity	go to state 497
 	integer_value	go to state 214
-	cardinality_range	go to state 498
+	cardinality	go to state 498
 
 
 
@@ -7388,7 +7388,7 @@ state 494
 
 state 495
 
-	existence_spec  ->  V_INTEGER SYM_ELLIPSIS . V_INTEGER   (rule 120)
+	existence  ->  V_INTEGER SYM_ELLIPSIS . V_INTEGER   (rule 120)
 
 	V_INTEGER	shift, and go to state 524
 
@@ -7396,7 +7396,7 @@ state 495
 
 state 496
 
-	c_existence  ->  SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence_spec SYM_END_CBLOCK .   (rule 118)
+	c_existence  ->  SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence SYM_END_CBLOCK .   (rule 118)
 
 	$default	reduce using rule 118 (c_existence)
 
@@ -7404,24 +7404,24 @@ state 496
 
 state 497
 
-	cardinality_range  ->  occurrence_spec .   (rule 123)
-	cardinality_range  ->  occurrence_spec . ';' SYM_ORDERED   (rule 124)
-	cardinality_range  ->  occurrence_spec . ';' SYM_UNORDERED   (rule 125)
-	cardinality_range  ->  occurrence_spec . ';' SYM_UNIQUE   (rule 126)
-	cardinality_range  ->  occurrence_spec . ';' SYM_ORDERED ';' SYM_UNIQUE   (rule 127)
-	cardinality_range  ->  occurrence_spec . ';' SYM_UNORDERED ';' SYM_UNIQUE   (rule 128)
-	cardinality_range  ->  occurrence_spec . ';' SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
-	cardinality_range  ->  occurrence_spec . ';' SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
+	cardinality  ->  multiplicity .   (rule 123)
+	cardinality  ->  multiplicity . ';' SYM_ORDERED   (rule 124)
+	cardinality  ->  multiplicity . ';' SYM_UNORDERED   (rule 125)
+	cardinality  ->  multiplicity . ';' SYM_UNIQUE   (rule 126)
+	cardinality  ->  multiplicity . ';' SYM_ORDERED ';' SYM_UNIQUE   (rule 127)
+	cardinality  ->  multiplicity . ';' SYM_UNORDERED ';' SYM_UNIQUE   (rule 128)
+	cardinality  ->  multiplicity . ';' SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
+	cardinality  ->  multiplicity . ';' SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
 
 	';'	shift, and go to state 525
 
-	$default	reduce using rule 123 (cardinality_range)
+	$default	reduce using rule 123 (cardinality)
 
 
 
 state 498
 
-	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_range . SYM_END_CBLOCK   (rule 122)
+	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality . SYM_END_CBLOCK   (rule 122)
 
 	SYM_END_CBLOCK	shift, and go to state 526
 
@@ -7874,21 +7874,21 @@ state 523
 
 state 524
 
-	existence_spec  ->  V_INTEGER SYM_ELLIPSIS V_INTEGER .   (rule 120)
+	existence  ->  V_INTEGER SYM_ELLIPSIS V_INTEGER .   (rule 120)
 
-	$default	reduce using rule 120 (existence_spec)
+	$default	reduce using rule 120 (existence)
 
 
 
 state 525
 
-	cardinality_range  ->  occurrence_spec ';' . SYM_ORDERED   (rule 124)
-	cardinality_range  ->  occurrence_spec ';' . SYM_UNORDERED   (rule 125)
-	cardinality_range  ->  occurrence_spec ';' . SYM_UNIQUE   (rule 126)
-	cardinality_range  ->  occurrence_spec ';' . SYM_ORDERED ';' SYM_UNIQUE   (rule 127)
-	cardinality_range  ->  occurrence_spec ';' . SYM_UNORDERED ';' SYM_UNIQUE   (rule 128)
-	cardinality_range  ->  occurrence_spec ';' . SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
-	cardinality_range  ->  occurrence_spec ';' . SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
+	cardinality  ->  multiplicity ';' . SYM_ORDERED   (rule 124)
+	cardinality  ->  multiplicity ';' . SYM_UNORDERED   (rule 125)
+	cardinality  ->  multiplicity ';' . SYM_UNIQUE   (rule 126)
+	cardinality  ->  multiplicity ';' . SYM_ORDERED ';' SYM_UNIQUE   (rule 127)
+	cardinality  ->  multiplicity ';' . SYM_UNORDERED ';' SYM_UNIQUE   (rule 128)
+	cardinality  ->  multiplicity ';' . SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
+	cardinality  ->  multiplicity ';' . SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
 
 	SYM_UNIQUE	shift, and go to state 536
 	SYM_ORDERED	shift, and go to state 537
@@ -7898,7 +7898,7 @@ state 525
 
 state 526
 
-	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK .   (rule 122)
+	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK .   (rule 122)
 
 	$default	reduce using rule 122 (c_cardinality)
 
@@ -8060,35 +8060,35 @@ state 535
 
 state 536
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE .   (rule 126)
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE . ';' SYM_ORDERED   (rule 129)
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE . ';' SYM_UNORDERED   (rule 130)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE .   (rule 126)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE . ';' SYM_ORDERED   (rule 129)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE . ';' SYM_UNORDERED   (rule 130)
 
 	';'	shift, and go to state 546
 
-	$default	reduce using rule 126 (cardinality_range)
+	$default	reduce using rule 126 (cardinality)
 
 
 
 state 537
 
-	cardinality_range  ->  occurrence_spec ';' SYM_ORDERED .   (rule 124)
-	cardinality_range  ->  occurrence_spec ';' SYM_ORDERED . ';' SYM_UNIQUE   (rule 127)
+	cardinality  ->  multiplicity ';' SYM_ORDERED .   (rule 124)
+	cardinality  ->  multiplicity ';' SYM_ORDERED . ';' SYM_UNIQUE   (rule 127)
 
 	';'	shift, and go to state 547
 
-	$default	reduce using rule 124 (cardinality_range)
+	$default	reduce using rule 124 (cardinality)
 
 
 
 state 538
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNORDERED .   (rule 125)
-	cardinality_range  ->  occurrence_spec ';' SYM_UNORDERED . ';' SYM_UNIQUE   (rule 128)
+	cardinality  ->  multiplicity ';' SYM_UNORDERED .   (rule 125)
+	cardinality  ->  multiplicity ';' SYM_UNORDERED . ';' SYM_UNIQUE   (rule 128)
 
 	';'	shift, and go to state 548
 
-	$default	reduce using rule 125 (cardinality_range)
+	$default	reduce using rule 125 (cardinality)
 
 
 
@@ -8104,7 +8104,7 @@ state 540
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' . c_occurrences   (rule 21)
 	c_occurrences  ->  .   (rule 131)
-	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 	c_occurrences  ->  . SYM_OCCURRENCES error   (rule 133)
 
 	SYM_OCCURRENCES	shift, and go to state 53
@@ -8538,8 +8538,8 @@ state 545
 
 state 546
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE ';' . SYM_ORDERED   (rule 129)
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE ';' . SYM_UNORDERED   (rule 130)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' . SYM_ORDERED   (rule 129)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' . SYM_UNORDERED   (rule 130)
 
 	SYM_ORDERED	shift, and go to state 554
 	SYM_UNORDERED	shift, and go to state 555
@@ -8548,7 +8548,7 @@ state 546
 
 state 547
 
-	cardinality_range  ->  occurrence_spec ';' SYM_ORDERED ';' . SYM_UNIQUE   (rule 127)
+	cardinality  ->  multiplicity ';' SYM_ORDERED ';' . SYM_UNIQUE   (rule 127)
 
 	SYM_UNIQUE	shift, and go to state 556
 
@@ -8556,7 +8556,7 @@ state 547
 
 state 548
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNORDERED ';' . SYM_UNIQUE   (rule 128)
+	cardinality  ->  multiplicity ';' SYM_UNORDERED ';' . SYM_UNIQUE   (rule 128)
 
 	SYM_UNIQUE	shift, and go to state 557
 
@@ -8680,33 +8680,33 @@ state 553
 
 state 554
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED .   (rule 129)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' SYM_ORDERED .   (rule 129)
 
-	$default	reduce using rule 129 (cardinality_range)
+	$default	reduce using rule 129 (cardinality)
 
 
 
 state 555
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED .   (rule 130)
+	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' SYM_UNORDERED .   (rule 130)
 
-	$default	reduce using rule 130 (cardinality_range)
+	$default	reduce using rule 130 (cardinality)
 
 
 
 state 556
 
-	cardinality_range  ->  occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE .   (rule 127)
+	cardinality  ->  multiplicity ';' SYM_ORDERED ';' SYM_UNIQUE .   (rule 127)
 
-	$default	reduce using rule 127 (cardinality_range)
+	$default	reduce using rule 127 (cardinality)
 
 
 
 state 557
 
-	cardinality_range  ->  occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE .   (rule 128)
+	cardinality  ->  multiplicity ';' SYM_UNORDERED ';' SYM_UNIQUE .   (rule 128)
 
-	$default	reduce using rule 128 (cardinality_range)
+	$default	reduce using rule 128 (cardinality)
 
 
 
@@ -8714,7 +8714,7 @@ state 558
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' . c_occurrences   (rule 22)
 	c_occurrences  ->  .   (rule 131)
-	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK occurrence_spec SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
 	c_occurrences  ->  . SYM_OCCURRENCES error   (rule 133)
 
 	SYM_OCCURRENCES	shift, and go to state 53

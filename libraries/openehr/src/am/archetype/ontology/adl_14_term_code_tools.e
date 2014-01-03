@@ -257,6 +257,21 @@ feature -- Comparison
 			Result := a_code.starts_with (Adl_14_term_code_leader)
 		end
 
+	is_adl_14_term_code_constraint (a_constraint_string: STRING): BOOLEAN
+			-- is `a_constraint_string' an ADL-1.4 style constraint string of the form
+			-- local::at0003, at0004?
+		local
+			pos, dot_pos: INTEGER
+		do
+			if a_constraint_string.starts_with (local_terminology_id) then
+				pos := a_constraint_string.substring_index ("at0", 1)
+				if pos > 0 then
+					dot_pos := a_constraint_string.index_of (Adl_14_specialisation_separator, pos)
+					Result := dot_pos = 0 or else dot_pos > pos + 4
+				end
+			end
+		end
+
 	is_adl_14_constraint_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "ac" code?
 		do
