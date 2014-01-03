@@ -105,12 +105,20 @@ feature -- Definitions
 	Annotated_code_text_delimiter_string: STRING = "|"
 			-- string form of above
 
+--	Terminal_node_id: STRING
+--			-- special 'id9999' code that identifies all terminal primitive objects
+--		once
+--			create Result.make_from_string (id_code_leader)
+--			Result.append ("9999")
+--		end
+
 	Terminal_node_id: STRING
-			-- special 'id9999' code that identifies all terminal primitive objects
+			-- special 'unknown' code that identifies all terminal primitive objects
 		once
-			create Result.make_from_string (id_code_leader)
-			Result.append ("9999")
+			create Result.make_from_string (Unknown_code_id)
 		end
+
+	Unknown_code_id: STRING = "unknown"
 
 feature -- Access
 
@@ -371,11 +379,9 @@ feature -- Comparison
 	codes_conformant (a_child_code, a_parent_code: STRING): BOOLEAN
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
-		require
-			Child_code_valid: is_valid_code (a_child_code)
-			Parent_code_valid: is_valid_code (a_parent_code)
 		do
-			Result := a_child_code.starts_with (a_parent_code)
+			Result := (a_child_code.is_equal (terminal_node_id) or else is_valid_code (a_child_code))
+				and then a_child_code.starts_with (a_parent_code)
 		end
 
 feature -- Factory
@@ -523,6 +529,20 @@ feature -- Conversion
 			else
 				create Result.make_from_string (an_adl_14_code)
 			end
+		end
+
+	adl_14_code_constraint_reformatted (an_adl_14_code_constraint: STRING): STRING
+			-- reformat the at-codes in `an_adl_14_code_constraint'
+		local
+			dot_pos: INTEGER
+			level_0_numeric_part: STRING
+		do
+			Result := an_adl_14_code_constraint.twin
+			Result.replace_substring_all ("at000", "at")
+			Result.replace_substring_all ("at00", "at")
+			Result.replace_substring_all ("at0.", "&!!&")
+			Result.replace_substring_all ("at0", "at")
+			Result.replace_substring_all ("&!!&", "at0.")
 		end
 
 feature {NONE} -- Implementation
