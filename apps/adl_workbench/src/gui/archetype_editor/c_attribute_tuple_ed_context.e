@@ -40,7 +40,7 @@ feature -- Display
 			end
 
 			-- rm_name col
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, c_attribute_colour,
+			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, c_attribute_colour,
 				get_icon_pixmap ("rm/generic/c_attribute"))
 
 			-- set meaning column empty
