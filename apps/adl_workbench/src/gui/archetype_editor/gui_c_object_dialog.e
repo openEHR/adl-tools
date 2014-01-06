@@ -275,7 +275,7 @@ feature {NONE} -- Implementation
 
 	arch_path_list: ARRAYED_LIST [STRING]
 		do
-			Result := archetype.matching_logical_paths (display_settings.language, new_params.rm_type)
+			Result := archetype.rm_type_paths_annotated (display_settings.language, new_params.rm_type)
 		end
 
 	ev_root_container: EV_VERTICAL_BOX

@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 			if attached source as src and attached selected_language as sel_lang then
 				if src.has_slots then
 					across src.slot_id_index as slots_csr loop
-						create eti.make_with_text (utf8_to_utf32 (src.differential_archetype.terminology.physical_to_logical_path (slots_csr.key, sel_lang, True)))
+						create eti.make_with_text (utf8_to_utf32 (src.differential_archetype.terminology.annotated_path (slots_csr.key, sel_lang, True)))
 						eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
 						ev_suppliers_tree.extend (eti)
 						append_tree (eti, slots_csr.item)

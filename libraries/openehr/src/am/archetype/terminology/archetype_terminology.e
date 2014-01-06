@@ -267,7 +267,7 @@ feature -- Access
 			end
 		end
 
-	physical_to_logical_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
+	annotated_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
 			-- generate a logical path in 'a_language' from a physical path
 			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
 		require

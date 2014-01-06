@@ -296,7 +296,7 @@ feature -- Visitor
 			end
 			last_result.append (a_node.target_path)
 			last_result.append (format_item (FMT_INDENT) + apply_style (format_item(FMT_COMMENT) +
-						safe_comment (ontology.physical_to_logical_path (a_node.target_path, language, False)), STYLE_COMMENT))
+						safe_comment (ontology.annotated_path (a_node.target_path, language, False)), STYLE_COMMENT))
 			last_result.append (format_item (FMT_NEWLINE))
 		end
 

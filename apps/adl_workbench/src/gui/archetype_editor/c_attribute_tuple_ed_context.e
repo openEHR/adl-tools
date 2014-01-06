@@ -88,7 +88,7 @@ feature {NONE} -- Implementation
 					p := c_attrs_csr.item.path
 
 					-- append the path, optionally with inheritance status
-					Result.append (ed_context.flat_terminology.physical_to_logical_path (p, display_settings.language, True))
+					Result.append (ed_context.flat_terminology.annotated_path (p, display_settings.language, True))
 					Result.append ("%N")
 					if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
 						Result.append (get_text (ec_inheritance_status_text) +  nss + "%N")

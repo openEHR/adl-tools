@@ -152,7 +152,7 @@ debug ("flatten")
 end
 				create child_paths_at_parent_level.make (0)
 				child_paths_at_parent_level.compare_objects
-				across arch_child_diff.physical_paths as child_paths_csr loop
+				across arch_child_diff.all_paths as child_paths_csr loop
 					create apa.make_from_string (child_paths_csr.item)
 					if not apa.is_phantom_path_at_level (arch_parent_flat.specialisation_depth) then
 						a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
@@ -759,7 +759,7 @@ end
 		do
 			if arch_child_diff.has_rules then
 				across arch_child_diff.rules as invs_csr loop
-					arch_output_flat.add_invariant (invs_csr.item.deep_twin)
+					arch_output_flat.add_rule (invs_csr.item.deep_twin)
 				end
 			end
 		end

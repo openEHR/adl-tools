@@ -182,7 +182,7 @@ feature -- Commands
 			found: BOOLEAN
 		do
 			if ev_nat_lang_paths_cb.is_selected and attached selected_language as sel_lang then
-				match_path := source_archetype.terminology.physical_to_logical_path (a_path, sel_lang, True)
+				match_path := source_archetype.terminology.annotated_path (a_path, sel_lang, True)
 			else
 				match_path := a_path
 			end
@@ -231,14 +231,14 @@ feature {NONE} -- Implementation
 			create l_paths.make (0)
 			check attached selected_language end
 			if ev_row_filter_combo.text.is_equal ("All") then
-				p_paths := source_archetype.physical_paths
+				p_paths := source_archetype.all_paths
 				if ev_nat_lang_paths_cb.is_selected then
-					l_paths := source_archetype.logical_paths (selected_language, False)
+					l_paths := source_archetype.all_paths_annotated (selected_language)
 				end
 			else
-				p_paths := source_archetype.physical_leaf_paths
+				p_paths := source_archetype.leaf_paths
 				if ev_nat_lang_paths_cb.is_selected then
-					l_paths := source_archetype.logical_paths (selected_language, True)
+					l_paths := source_archetype.leaf_paths_annotated (selected_language)
 				end
 			end
 

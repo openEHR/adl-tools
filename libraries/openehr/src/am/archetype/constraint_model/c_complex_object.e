@@ -92,10 +92,36 @@ feature -- Access
 			end
 		end
 
+	c_attributes_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_ATTRIBUTE]
+			-- get all C_ATTRIBUTEs whose paths match `a_path'
+		local
+			og_attrs: ARRAYED_LIST [OG_ATTRIBUTE_NODE]
+		do
+			create Result.make (0)
+			across representation.attribute_nodes_at_path (a_match_path) as og_attrs_csr loop
+				if attached {C_ATTRIBUTE} og_attrs_csr.item.content_item as ca then
+					Result.extend (ca)
+				end
+			end
+		end
+
+	c_objects_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_OBJECT]
+			-- get all C_OBJECTs whose paths match `a_path'
+		local
+			og_objs: ARRAYED_LIST [OG_OBJECT]
+		do
+			create Result.make (0)
+			across representation.attribute_nodes_at_path (a_match_path) as og_attrs_csr loop
+				if attached {C_OBJECT} og_attrs_csr.item.content_item as co then
+					Result.extend (co)
+				end
+			end
+		end
+
 	c_attribute_at_path (a_path: STRING): C_ATTRIBUTE
-			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
+			-- get C_ATTRIBUTE at a path
 		require
-			a_path_valid: has_path (a_path)
+			a_path_valid: has_attribute_path (a_path)
 		local
 			og_attrs: ARRAYED_LIST [OG_ATTRIBUTE_NODE]
 		do
@@ -106,9 +132,9 @@ feature -- Access
 		end
 
 	c_object_at_path (a_path: STRING): C_OBJECT
-			-- get C_OBJECT at a path (which terminates in '/')
+			-- get C_OBJECT at a path
 		require
-			a_path_valid: has_path (a_path)
+			a_path_valid: has_object_path (a_path)
 		local
 			og_objs: ARRAYED_LIST [OG_OBJECT]
 		do
@@ -118,40 +144,13 @@ feature -- Access
 			end
 		end
 
-	all_paths_at_path (a_path: STRING): HASH_TABLE [detachable C_OBJECT, STRING]
-			-- all paths starting at node found at a_path, including itself
-		require
-			Path_valid: has_path(a_path)
-		local
-			og_objs: ARRAYED_LIST [OG_OBJECT]
-		do
-			og_objs := representation.object_nodes_at_path (a_path)
-			create Result.make(0)
-			if not og_objs.is_empty and then attached {OG_OBJECT_NODE} og_objs.first as og_node then
-				across og_node.all_paths as paths_csr loop
-					if attached {OG_OBJECT} paths_csr.item as og_obj then
-						if attached {C_OBJECT} og_obj.content_item as c_obj then
-							Result.put (c_obj, paths_csr.key.as_string)
-						end
-					else
-						Result.put (Void, paths_csr.key.as_string)
-					end
-				end
-			end
-		end
-
-	all_paths: HASH_TABLE [detachable C_OBJECT, STRING]
-			-- All paths below this point, including this node, with C_OBJECT at each
-			-- path that is an object path, and Void at paths that are attribute paths.
+	path_map: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
+			-- All paths below this point, including this node
 		do
 			create Result.make (0)
-			across representation.all_paths as paths_csr loop
-				if attached {OG_OBJECT} paths_csr.item as og_obj then
-					if attached {C_OBJECT} og_obj.content_item as c_obj then
-						Result.put (c_obj, paths_csr.key.as_string)
-					end
-				else
-					Result.put (Void, paths_csr.key.as_string)
+			across representation.path_map as paths_csr loop
+				if attached {ARCHETYPE_CONSTRAINT} paths_csr.item.content_item as ac then
+					Result.put (ac, paths_csr.key.as_string)
 				end
 			end
 		end
@@ -187,19 +186,19 @@ feature -- Status Report
 	has_path (a_path: STRING): BOOLEAN
 			-- does a_path exist from this node?
 		do
-			Result := representation.has_path (create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_path (a_path)
 		end
 
 	has_object_path (a_path: STRING): BOOLEAN
 			-- does a_path exist to an object node from this node?
 		do
-			Result := representation.has_object_path (create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_object_path (a_path)
 		end
 
 	has_attribute_path (a_path: STRING): BOOLEAN
 			-- does a_path to an object node exist from this node?
 		do
-			Result := representation.has_attribute_path (create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_attribute_path (a_path)
 		end
 
 	has_attribute (an_attr_name: STRING): BOOLEAN

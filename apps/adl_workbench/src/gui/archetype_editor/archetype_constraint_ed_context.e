@@ -117,7 +117,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_rm then
 				p := arch_node.path
-				Result := ed_context.flat_terminology.physical_to_logical_path (p, display_settings.language, True)
+				Result := ed_context.flat_terminology.annotated_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
 					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  nss)
 				end
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 				-- figure out whether INTERNAL_REFs would be valid for this RM type (i.e. are there any other
 				-- nodes of this type in the archetype?); if so add ARCHETYPE_INTERNAL_REF
 				if not internal_ref_for_rm_type.has (rm_class_name) then
-					if not ed_context.archetype.matching_logical_paths (display_settings.language, an_rm_type.root_class).is_empty then
+					if not ed_context.archetype.rm_type_paths_annotated (display_settings.language, an_rm_type.root_class).is_empty then
 						internal_ref_for_rm_type.put (True, an_rm_type.root_class)
 					else
 						internal_ref_for_rm_type.put (False, an_rm_type.root_class)

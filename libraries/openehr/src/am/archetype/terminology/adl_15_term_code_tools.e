@@ -480,7 +480,7 @@ feature -- Conversion
 		do
 			create Result.make_from_string (an_adl_14_path)
 			lpos := an_adl_14_path.index_of ('[', 1)
-			from until lpos = 0 or lpos >= Result.count loop
+			from until lpos = 0 or lpos >= an_adl_14_path.count loop
 				rpos := an_adl_14_path.index_of (']', lpos)
 				at_code := an_adl_14_path.substring (lpos+1, rpos-1)
 				Result.replace_substring_all (at_code, adl_14_id_code_converted (at_code))

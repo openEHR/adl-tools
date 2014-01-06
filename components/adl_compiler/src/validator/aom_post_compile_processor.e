@@ -46,13 +46,13 @@ feature -- Commands
 	execute
 		do
 			if target.has_rules then
-				update_assertions
+				update_rules
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	update_assertions
+	update_rules
 			-- update ASSERTION EXPR_ITEM_LEAF object reference nodes with proper type names
 			-- obtained from the AOM objects pointed to
 		require

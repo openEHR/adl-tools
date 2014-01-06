@@ -243,7 +243,7 @@ feature -- Parsing
 							end
 
 							if attached rules_context.tree as att_rules_tree then
-								new_arch.set_invariants (att_rules_tree)
+								new_arch.set_rules (att_rules_tree)
 							end
 
 							-----------------------------------------------------------------------------------------------

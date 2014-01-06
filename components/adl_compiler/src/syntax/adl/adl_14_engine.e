@@ -231,7 +231,7 @@ feature -- Parsing
 							end
 
 							if attached invariant_context.tree as inv_tree then
-								new_arch.set_invariants (inv_tree)
+								new_arch.set_rules (inv_tree)
 							end
 
 							if attached annots as a then
