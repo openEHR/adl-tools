@@ -74,19 +74,8 @@ feature -- Visitor
 			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
 		end
 
-	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
-			-- enter an C_REFERENCE_OBJECT
-		do
-			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
-		end
-
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter an C_COMPLEX_OBJECT
-		do
-		end
-
-	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
-			-- enter an ARCHETYPE_SLOT
 		do
 		end
 
@@ -104,11 +93,19 @@ feature -- Visitor
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
+			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
 		end
 
 	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		do
+			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
+		end
+
+	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
+			-- enter an ARCHETYPE_SLOT
+		do
+			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)

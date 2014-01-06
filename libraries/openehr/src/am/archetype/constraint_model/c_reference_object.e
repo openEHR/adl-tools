@@ -14,37 +14,6 @@ deferred class C_REFERENCE_OBJECT
 
 inherit
 	C_OBJECT
-		redefine
-			representation_cache
-		end
-
-feature -- Visitor
-
-	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at start of block for this node
-		do
-			visitor.start_c_reference_object (Current, depth)
-		end
-
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at end of block for this node
-		do
-			visitor.end_c_reference_object (Current, depth)
-		end
-
-feature {NONE} -- Implementation
-
-	representation_cache: detachable OG_OBJECT_LEAF
-		note
-			option: transient
-		attribute
-		end
-
-	create_default_representation: attached like representation_cache
-			-- create a reasonable `representation' instance
-		do
-			create Result.make_anonymous
-		end
 
 end
 

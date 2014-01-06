@@ -18,9 +18,9 @@ note
 class ARCHETYPE_SLOT
 
 inherit
-	C_REFERENCE_OBJECT
+	C_OBJECT
 		redefine
-			out, enter_subtree, exit_subtree
+			out, representation_cache
 		end
 
 create
@@ -192,15 +192,27 @@ feature -- Visitor
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor (visitor, depth)
 			visitor.start_archetype_slot (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor (visitor, depth)
 			visitor.end_archetype_slot (Current, depth)
+		end
+
+feature {NONE} -- Implementation
+
+	representation_cache: detachable OG_OBJECT_LEAF
+		note
+			option: transient
+		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		do
+			create Result.make_anonymous
 		end
 
 end

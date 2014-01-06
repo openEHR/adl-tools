@@ -64,16 +64,6 @@ feature -- Visitor
 		do
 		end
 
-	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
-			-- enter a C_REFERENCE_OBJECT
-		deferred
-		end
-
-	end_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
-			-- exit a C_REFERENCE_OBJECT
-		do
-		end
-
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		deferred

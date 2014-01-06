@@ -341,11 +341,6 @@ feature -- Visitor
 			ontologies.remove
 		end
 
-	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
-			-- enter a C_REFERENCE_OBJECT
-		do
-		end
-
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do

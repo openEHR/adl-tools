@@ -22,39 +22,11 @@ feature -- Access
 		deferred
 		end
 
-    assumed_value: detachable ANY
-            -- value to be assumed if none sent in data
-
 feature -- Status Report
 
 	valid_value (a_value: like prototype_value): BOOLEAN
 		deferred
 		end
-
-	valid_assumed_value (a_value: like assumed_value): BOOLEAN
-		deferred
-		end
-
-	has_assumed_value: BOOLEAN
-			-- True if there is an assumed value
-		do
-			Result := attached assumed_value
-		end
-
-feature -- Modification
-
-	set_assumed_value (a_value: attached like assumed_value)
-			-- set `assumed_value'
-		require
-			valid_assumed_value (a_value)
-		do
-			assumed_value := a_value
-		ensure
-			assumed_value_set: assumed_value = a_value
-		end
-
-invariant
-	Assumed_value_valid: attached assumed_value as av implies valid_value (av)
 
 end
 

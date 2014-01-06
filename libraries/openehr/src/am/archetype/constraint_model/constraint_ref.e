@@ -13,9 +13,9 @@ note
 class CONSTRAINT_REF
 
 inherit
-	C_REFERENCE_OBJECT
+	C_OBJECT
 		redefine
-			enter_subtree, exit_subtree
+			representation_cache
 		end
 
 	BMM_DEFINITIONS
@@ -99,18 +99,30 @@ feature -- Modification
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor (visitor, depth)
 			visitor.start_constraint_ref (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor (visitor, depth)
 			visitor.end_constraint_ref (Current, depth)
+		end
+
+feature {NONE} -- Implementation
+
+	representation_cache: detachable OG_OBJECT_LEAF
+		note
+			option: transient
+		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		do
+			create Result.make_anonymous
 		end
 
 end

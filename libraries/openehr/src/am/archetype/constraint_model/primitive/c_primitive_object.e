@@ -32,6 +32,9 @@ feature -- Initialisaiton
 
 feature -- Access
 
+    assumed_value: detachable ANY
+            -- value to be assumed if none sent in data
+
 	list_count: INTEGER
 			-- number of tuple constraint items
 		deferred
@@ -52,6 +55,18 @@ feature -- Access
 			Result.remove_head (2)
 		end
 
+feature -- Status Report
+
+	has_assumed_value: BOOLEAN
+			-- True if there is an assumed value
+		do
+			Result := attached assumed_value
+		end
+
+	valid_assumed_value (a_value: like assumed_value): BOOLEAN
+		deferred
+		end
+
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -69,6 +84,16 @@ feature -- Comparison
 		end
 
 feature -- Modification
+
+	set_assumed_value (a_value: attached like assumed_value)
+			-- set `assumed_value'
+		require
+			valid_assumed_value (a_value)
+		do
+			assumed_value := a_value
+		ensure
+			assumed_value_set: assumed_value = a_value
+		end
 
 	merge_tuple (other: like Current)
 			-- merge the constraints of `other' into this constraint object. We just add items to
@@ -117,6 +142,9 @@ feature {NONE} -- Implementation
 			-- True if this node is a subset of, or the same as `other'
 		deferred
 		end
+
+invariant
+	Assumed_value_valid: attached assumed_value as av implies valid_value (av)
 
 end
 

@@ -10,9 +10,9 @@ note
 class ARCHETYPE_INTERNAL_REF
 
 inherit
-	C_REFERENCE_OBJECT
+	C_OBJECT
 		redefine
-			set_occurrences, enter_subtree, exit_subtree
+			set_occurrences, representation_cache
 		end
 
 create
@@ -30,7 +30,7 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			use_target_occurrences := True
-			create representation_cache.make_anonymous
+			create representation_cache.make_anonymous (a_path)
 			representation_cache.set_content (Current)
 		ensure
 			Use_target_occurrences: use_target_occurrences
@@ -47,7 +47,7 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			use_target_occurrences := True
-			create representation_cache.make (an_object_id)
+			create representation_cache.make (an_object_id, a_path)
 			representation_cache.set_content (Current)
 		ensure
 			Use_target_occurrences: use_target_occurrences
@@ -86,15 +86,27 @@ feature -- Visitor
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor (visitor, depth)
 			visitor.start_archetype_internal_ref (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor (visitor, depth)
 			visitor.end_archetype_internal_ref (Current, depth)
+		end
+
+feature {NONE} -- Implementation
+
+	representation_cache: detachable OG_OBJECT_PROXY
+		note
+			option: transient
+		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		do
+			create Result.make_anonymous ("/")
 		end
 
 end
