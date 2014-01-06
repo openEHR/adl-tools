@@ -180,7 +180,7 @@ debug ("flatten")
 	use_nodes_csr.key + " and replacing at " +
 	int_refs_csr.item.path + "%N")
 end
-								c_obj := arch_output_flat.c_object_at_path (use_nodes_csr.key).safe_deep_twin
+								c_obj := arch_output_flat.object_at_path (use_nodes_csr.key).safe_deep_twin
 								if int_refs_csr.item.is_addressable then
 									c_obj.set_node_id (int_refs_csr.item.node_id)
 								end
@@ -260,7 +260,7 @@ end
 debug ("flatten")
 	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting new sibling object " + cco_child_diff.path + "%N")
 end
-						ca_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
+						ca_output := arch_output_flat.attribute_at_path (cco_child_diff.parent.path)
 						new_cco_child := cco_child_diff.safe_deep_twin
 						new_cco_child.set_subtree_specialisation_status (ss_added)
 						new_cco_child.set_specialisation_status_redefined
@@ -268,7 +268,7 @@ end
 						child_grafted_path_list.extend (cco_child_diff.path)
 
 					-- obtain the node in the flat output to start working at
-					elseif attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (a_path) as cco_output_flat then
+					elseif attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (a_path) as cco_output_flat then
 debug ("flatten")
 	io.put_string ("%TFirst replacement in flat parent " +
 	cco_child_diff.path + "%N")
@@ -354,7 +354,7 @@ end
 									-- is given by the differential path
 									if ca_child.has_differential_path and then attached ca_child.differential_path as child_diff_path then
 										create apa.make_from_string (child_diff_path)
-										check attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
+										check attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
 											cco_output_flat_proximate := cco
 debug ("flatten")
 	io.put_string ("%T%Tchild has differential path " +
@@ -403,7 +403,7 @@ debug ("flatten")
 	io.put_string ("%T%Tmatched attr " + ca_child.rm_attribute_name +
 	" in parent object in flat archetype%N")
 end
-										ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
+										ca_output := cco_output_flat_proximate.attribute_with_name (ca_child.rm_attribute_name)
 										if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
 											ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
 										else

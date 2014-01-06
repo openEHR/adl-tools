@@ -4712,13 +4712,13 @@ end
 
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			yyval14.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
-			yyval14.attribute_tuples.first.put_member (yyval14.c_attribute ("value"))
-			yyval14.c_attribute ("value").put_child (create {C_INTEGER}.make_simple (yyvs50.item (yyvsp50).value))
+			yyval14.attribute_tuples.first.put_member (yyval14.attribute_with_name ("value"))
+			yyval14.attribute_with_name ("value").put_child (create {C_INTEGER}.make_simple (yyvs50.item (yyvsp50).value))
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			yyval14.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
-			yyval14.attribute_tuples.first.put_member (yyval14.c_attribute ("symbol"))
-			yyval14.c_attribute ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code (yyvs50.item (yyvsp50).symbol))
+			yyval14.attribute_tuples.first.put_member (yyval14.attribute_with_name ("symbol"))
+			yyval14.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code (yyvs50.item (yyvsp50).symbol))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4741,7 +4741,7 @@ end
 
 			yyval14 := yyvs14.item (yyvsp14)
 
-			if yyval14.c_attribute ("value").children.there_exists (
+			if yyval14.attribute_with_name ("value").children.there_exists (
 					agent (co: C_OBJECT; a_val: INTEGER): BOOLEAN
 						do
 							Result := attached {C_INTEGER} co as ci and then ci.valid_value (a_val)
@@ -4750,7 +4750,7 @@ end
 			then
 				abort_with_error (ec_VCOV, <<yyvs50.item (yyvsp50).value.out>>)
 
-			elseif yyval14.c_attribute ("symbol").children.there_exists (
+			elseif yyval14.attribute_with_name ("symbol").children.there_exists (
 					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
 						do
 							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.valid_value (a_sym)
@@ -4759,8 +4759,8 @@ end
 			then
 				abort_with_error (ec_VCOC, <<yyvs50.item (yyvsp50).symbol.out>>)
 
-			elseif attached {C_INTEGER} yyval14.c_attribute ("value").children.first as ci and 
-				attached {C_TERMINOLOGY_CODE} yyval14.c_attribute ("symbol").children.first as ctc 
+			elseif attached {C_INTEGER} yyval14.attribute_with_name ("value").children.first as ci and 
+				attached {C_TERMINOLOGY_CODE} yyval14.attribute_with_name ("symbol").children.first as ctc 
 			then
 				ci.add_value (yyvs50.item (yyvsp50).value)
 				ctc.add_code (yyvs50.item (yyvsp50).symbol.code_string)

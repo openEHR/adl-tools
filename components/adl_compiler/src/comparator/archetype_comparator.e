@@ -203,12 +203,7 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca_child then
 				create apa.make_from_string (a_c_node.path)
 				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-				if flat_ancestor.definition.has_attribute_path (path_in_flat) then
-					ca_in_flat_anc := flat_ancestor.definition.c_attribute_at_path (path_in_flat)
-				else -- must be due to an internal ref; look in full attr_path_map
-					ca_in_flat_anc := flat_ancestor.c_attr_at_path (path_in_flat)
-				end
-
+				ca_in_flat_anc := flat_ancestor.attribute_at_path (path_in_flat)
 				-- if existence or cardinality have changed, it's a redefinition
 				if not ca_child.c_equal (ca_in_flat_anc) then
 					ca_child.set_specialisation_status_redefined
@@ -227,7 +222,7 @@ feature {NONE} -- Implementation
 			elseif attached {C_OBJECT} a_c_node as co_child then
 				create apa.make_from_string (a_c_node.path)
 				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-				co_in_flat_anc := flat_ancestor.c_object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
 				-- if occurrences different, or node_id different, or RM type different or else primitive object constraint different
 				if not co_child.c_equal (co_in_flat_anc) then
@@ -250,7 +245,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_ARCHETYPE_ROOT} a_c_node as car_child then
 				create apa.make_from_string (car_child.slot_path)
-				Result := flat_ancestor.has_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				Result := flat_ancestor.has_object_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
 			elseif attached {C_OBJECT} a_c_node as co_child then
 				if not co_child.is_addressable then
@@ -267,7 +262,7 @@ feature {NONE} -- Implementation
 
 			elseif attached {C_ATTRIBUTE} a_c_node as ca_child then
 				create apa.make_from_string (a_c_node.path)
-				Result := flat_ancestor.has_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				Result := flat_ancestor.has_attribute_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 			end
 		end
 

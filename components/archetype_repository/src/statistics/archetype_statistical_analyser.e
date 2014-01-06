@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 							-- it is an attribute for a different RM object type
 							create apa.make_from_string (ca.rm_attribute_path)
 							flat_parent := target_descriptor.specialisation_ancestor.flat_archetype
-							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+							ca_parent_flat := flat_parent.attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 							create an_attr_stat_accum.make (ca_parent_flat.parent.rm_type_name, ca_parent_flat.parent.is_root)
 							an_attr_stat_accum.add_rm_attribute_occurrence (ca_parent_flat.rm_attribute_name)
 							stat_accums.extend (an_attr_stat_accum)

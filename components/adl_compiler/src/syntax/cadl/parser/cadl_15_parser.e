@@ -2332,7 +2332,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 870")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + yyvs20.item (yyvsp20).as_string + "]%N") 
 			end
 			yyval19 := yyvs20.item (yyvsp20)
@@ -2398,7 +2398,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 887")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + yyvs21.item (yyvsp21).as_string + "]%N") 
 			end
 			yyval19 := yyvs21.item (yyvsp21)
@@ -2456,7 +2456,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 908")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + yyvs2.item (yyvsp2) + " matches {" + yyvs16.item (yyvsp16).as_string + "}%N") 
 			end
 			create yyval21.make (create {OPERATOR_KIND}.make (op_matches),
@@ -2484,7 +2484,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 919")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs16.item (yyvsp16).as_string + "}%N") 
 			end
 			create yyval21.make (create {OPERATOR_KIND}.make (op_matches), 
@@ -2512,7 +2512,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 928")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs58.item (yyvsp58).as_string + "}%N") 
 			end
 			create yyval21.make (create {OPERATOR_KIND}.make (op_matches), 
@@ -2540,7 +2540,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 943")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_unop_expr: exists " + yyvs2.item (yyvsp2) + "%N") 
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
@@ -2565,7 +2565,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 950")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_unop_expr: not " + yyvs2.item (yyvsp2) + "%N") 
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
@@ -2590,7 +2590,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 957")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_unop_expr: not [(" + yyvs19.item (yyvsp19).as_string + ")] %N") 
 			end
 			create yyval20.make (create {OPERATOR_KIND}.make (op_not), yyvs19.item (yyvsp19))
@@ -2636,7 +2636,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 974")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_binop_expr: [" + yyvs19.item (yyvsp19 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs19.item (yyvsp19).as_string + "]%N") 
 			end
 			create yyval21.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs19.item (yyvsp19 - 1), yyvs19.item (yyvsp19))
@@ -2787,7 +2787,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 1019")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arithmetic_relop_expr: [" + yyvs19.item (yyvsp19 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs19.item (yyvsp19).as_string + "]%N") 
 			end
 			create yyval21.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs19.item (yyvsp19 - 1), yyvs19.item (yyvsp19))
@@ -2866,7 +2866,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 1046")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "(expr) %N") 
 			end
 			yyval19 := yyvs19.item (yyvsp19)
@@ -2882,7 +2882,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 1059")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arithmetic_arith_binop_expr: [" + yyvs19.item (yyvsp19 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs19.item (yyvsp19).as_string + "]%N") 
 			end
 			create yyval21.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs19.item (yyvsp19 - 1), yyvs19.item (yyvsp19))
@@ -2907,7 +2907,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 1072")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arith_leaf - integer: " + yyvs3.item (yyvsp3).out + "%N") 
 			end
 			create yyval22.make_integer (yyvs3.item (yyvsp3))
@@ -2931,7 +2931,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 1079")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arith_leaf - real: " + yyvs4.item (yyvsp4).out + "%N") 
 			end
 			create yyval22.make_real (yyvs4.item (yyvsp4))
@@ -2955,7 +2955,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 1086")
 end
 
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arith_leaf - path: " + yyvs2.item (yyvsp2) + "%N") 
 			end
 			create yyval22.make_archetype_definition_ref (yyvs2.item (yyvsp2))
@@ -8695,8 +8695,6 @@ feature {NONE} -- Parse Tree
 
 	rm_attribute_name: STRING
 	parent_path_str: STRING
-
-	invariant_expr: detachable STRING
 
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER

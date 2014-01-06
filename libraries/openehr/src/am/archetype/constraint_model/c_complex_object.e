@@ -83,7 +83,7 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
+	attribute_with_name (an_attr_name: STRING): C_ATTRIBUTE
 		require
 			an_attr_name_valid: has_attribute (an_attr_name)
 		do
@@ -92,7 +92,7 @@ feature -- Access
 			end
 		end
 
-	c_attributes_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_ATTRIBUTE]
+	attributes_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_ATTRIBUTE]
 			-- get all C_ATTRIBUTEs whose paths match `a_path'
 		local
 			og_attrs: ARRAYED_LIST [OG_ATTRIBUTE_NODE]
@@ -105,7 +105,7 @@ feature -- Access
 			end
 		end
 
-	c_objects_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_OBJECT]
+	objects_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_OBJECT]
 			-- get all C_OBJECTs whose paths match `a_path'
 		local
 			og_objs: ARRAYED_LIST [OG_OBJECT]
@@ -118,7 +118,7 @@ feature -- Access
 			end
 		end
 
-	c_attribute_at_path (a_path: STRING): C_ATTRIBUTE
+	attribute_at_path (a_path: STRING): C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path
 		require
 			a_path_valid: has_attribute_path (a_path)
@@ -131,7 +131,7 @@ feature -- Access
 			end
 		end
 
-	c_object_at_path (a_path: STRING): C_OBJECT
+	object_at_path (a_path: STRING): C_OBJECT
 			-- get C_OBJECT at a path
 		require
 			a_path_valid: has_object_path (a_path)
@@ -247,8 +247,8 @@ feature -- Modification
 		require
 			Attribute_name_valid: has_attribute (an_attr_name)
 		do
-			attributes.prune_all (c_attribute (an_attr_name))
-			representation.remove_child (c_attribute (an_attr_name).representation)
+			attributes.prune_all (attribute_with_name (an_attr_name))
+			representation.remove_child (attribute_with_name (an_attr_name).representation)
 		ensure
 			not has_attribute (an_attr_name)
 		end

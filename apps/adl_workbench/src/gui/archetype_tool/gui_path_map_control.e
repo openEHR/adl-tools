@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 				p_paths.off
 			loop
 				if source_archetype.has_object_path (p_paths.item) then
-					co := source_archetype.c_object_at_path (p_paths.item)
+					co := source_archetype.object_at_path (p_paths.item)
 					create list_row
 					if not l_paths.is_empty then
 						list_row.extend (utf8_to_utf32 (l_paths.item))

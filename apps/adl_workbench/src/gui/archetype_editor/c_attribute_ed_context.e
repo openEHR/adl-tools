@@ -551,8 +551,8 @@ feature {NONE} -- Context menu
 			if attached arch_node as a_n and attached ed_context.parent_archetype as parent_arch then
 				create apa.make_from_string (a_n.path)
 				ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
-				if parent_arch.definition.has_attribute_path (ca_path_in_flat) then
-					arch_node_in_ancestor := parent_arch.definition.c_attribute_at_path (ca_path_in_flat)
+				if parent_arch.has_attribute_path (ca_path_in_flat) then
+					arch_node_in_ancestor := parent_arch.attribute_at_path (ca_path_in_flat)
 				end
 			end
 		end

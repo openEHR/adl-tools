@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 						check attached proximal_ca.differential_path as diff_path then
 							create apa.make_from_string (diff_path)
 						end
-						check attached {C_COMPLEX_OBJECT} arch_parent_flat.object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
+						check attached {C_COMPLEX_OBJECT} arch_parent_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
 							proximal_co := cco
 						end
 					else
@@ -187,10 +187,10 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			-- make a copy of current ARCHETYPE_INTERNAL_REFs and rules lists
+			-- make a copy of current ARCHETYPE_INTERNAL_REFs and invariants lists
 			-- so that any paths can be corrected
 			use_node_index := target.use_node_index
-			rules_index := target.rules_index
+			invariants_index := target.rules_index
 
 			if is_valid_code (target.concept) then
 				-- get current highest code ids
@@ -200,62 +200,47 @@ feature {NONE} -- Implementation
 				-- now add missing codes
 				def_it.do_all (agent do_add_id_code, Void)
 
-				-- update C_ATTRIBUTE differential paths
-				if target.is_specialised and then attached arch_parent_flat as pf then
-					def_it.do_all (agent do_rewrite_diff_path (?, ?, pf), Void)
-				end
+				-- update all other paths
+				update_paths
 			end
 		end
 
-	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; parent_flat: FLAT_ARCHETYPE)
-		local
-	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
-	 		ca_in_flat: C_ATTRIBUTE
-		do
-	 		if attached {C_ATTRIBUTE} a_node as ca and then attached ca.differential_path as dp then
-	 			create apa.make_from_string (dp)
-	 			if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
-		 			path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
-		 			if parent_flat.has_attribute_path (path_in_flat) then
-		 				ca.set_differential_path (parent_flat.attribute_at_path (path_in_flat).path)
-		 			end
-		 		end
-			end
-		end
-
-	get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	 get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 	 	local
 	 		code_number, parent_code: STRING
 	 		spec_depth: INTEGER
 	 	do
-	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then is_valid_id_code (c_obj.node_id) then
-				spec_depth := specialisation_depth_from_code (c_obj.node_id)
-				code_number := index_from_code_at_level (c_obj.node_id, spec_depth)
-				if spec_depth = 0 then
-					highest_added_code := highest_added_code.max (code_number.to_integer)
-				else
-					parent_code := specialisation_parent_from_code (c_obj.node_id)
-					if not highest_refined_code_index.has (parent_code) then
-						highest_refined_code_index.put (code_number.to_integer, parent_code)
-					else
-						highest_refined_code_index.replace (highest_refined_code_index.item (parent_code).max (code_number.to_integer), parent_code)
-					end
-				end
-			end
-		end
+	 		if attached {C_OBJECT} a_node as c_obj then
+		 		co_path_map.put (c_obj, c_obj.path)
+	 			if not attached {C_PRIMITIVE_OBJECT} c_obj and then is_valid_id_code (c_obj.node_id) then
+		 			spec_depth := specialisation_depth_from_code (c_obj.node_id)
+		 			code_number := index_from_code_at_level (c_obj.node_id, spec_depth)
+		 			if spec_depth = 0 then
+		 				highest_added_code := highest_added_code.max (code_number.to_integer)
+		 			else
+		 				parent_code := specialisation_parent_from_code (c_obj.node_id)
+	 					if not highest_refined_code_index.has (parent_code) then
+	 						highest_refined_code_index.put (code_number.to_integer, parent_code)
+	 					else
+	  						highest_refined_code_index.replace (highest_refined_code_index.item (parent_code).max (code_number.to_integer), parent_code)
+	 					end
+		 			end
+		 		end
+	 		elseif attached {C_ATTRIBUTE} a_node as c_attr then
+		 		ca_path_map.put (c_attr, c_attr.path)
+	 		end
+	 	end
 
 	 do_add_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 	 	local
 	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
+	 		path_in_flat, id_code, parent_id_code: STRING
 	 		parent_flat: FLAT_ARCHETYPE
 	 		parent_ca: C_ATTRIBUTE
 	 		parent_co: C_OBJECT
 	 	do
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then not c_obj.is_addressable then
 	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
-	 			old_path := c_obj.path
  				id_code := new_added_id_code_at_level (target.specialisation_depth, highest_added_code)
  				highest_added_code := highest_added_code + 1
 	 			if target.is_specialised then
@@ -268,7 +253,7 @@ feature {NONE} -- Implementation
 		 					parent_flat := att_pf
 		 				end
 		 				if parent_flat.has_path (path_in_flat) then
-		 					parent_ca := parent_flat.attribute_at_path (path_in_flat)
+		 					parent_ca := parent_flat.c_attr_at_path (path_in_flat)
 		 					if parent_ca.has_child_with_rm_type_name (c_obj.rm_type_name) then
 		 						parent_co := parent_ca.child_with_rm_type_name (c_obj.rm_type_name)
 		 						parent_id_code := parent_co.node_id
@@ -279,9 +264,6 @@ feature {NONE} -- Implementation
 	 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
 		 						if not c_obj.c_equal (parent_co) then
 		 							-- they really are different; use a redefined code instead
-		 							if not highest_refined_code_index.has (parent_id_code) then
-		 								highest_refined_code_index.put (1, parent_id_code)
-		 							end
 				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, highest_refined_code_index.item (parent_id_code))
 				 					highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
 		 						end
@@ -290,38 +272,61 @@ feature {NONE} -- Implementation
 	 				end
 	 			end
 				c_obj.parent.replace_node_id (c_obj.node_id, id_code)
+	 		end
+	 	end
 
-				-- fix any matching use nodes with this path
-				across use_node_index as use_node_idx_csr loop
-					if use_node_idx_csr.key.starts_with (old_path) then
-						across use_node_idx_csr.item as use_nodes_csr loop
-							create new_path.make_from_string (c_obj.path)
-							if use_node_idx_csr.key.count > old_path.count then
-								new_path.append (use_node_idx_csr.key.substring (old_path.count + 1, use_node_idx_csr.key.count))
+	 update_paths
+	 	local
+	 		old_path, new_path: STRING
+	 		co_matched: C_OBJECT
+	 	do
+			-- fix any matching use nodes with this path
+			across use_node_index as use_node_idx_csr loop
+				old_path := use_node_idx_csr.key
+				if attached co_best_match (old_path) as co_matched_old_path then
+					check attached co_path_map.item (co_matched_old_path) as com then
+						co_matched := com
+					end
+					create new_path.make_from_string (co_matched.path)
+					across use_node_idx_csr.item as use_nodes_csr loop
+						if old_path.count > co_matched_old_path.count then
+							new_path.append (old_path.substring (co_matched_old_path.count + 1, old_path.count))
+						end
+						use_nodes_csr.item.set_target_path (new_path)
+					end
+				end
+			end
+
+			-- fix any matching invariant nodes with this path
+			across invariants_index as invs_idx_csr loop
+				old_path := invs_idx_csr.key
+				if attached co_best_match (old_path) as co_matched_old_path then
+					check attached co_path_map.item (co_matched_old_path) as com then
+						co_matched := com
+					end
+					create new_path.make_from_string (co_matched.path)
+					across invs_idx_csr.item as invs_csr loop
+						if invs_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
+							create new_path.make_from_string (co_matched.path)
+							if old_path.count > co_matched_old_path.count then
+								new_path.append (invs_idx_csr.key.substring (co_matched_old_path.count + 1, old_path.count))
 							end
-							use_nodes_csr.item.set_target_path (new_path)
+							invs_csr.item.make_archetype_definition_ref (new_path)
 						end
 					end
 				end
+			end
 
-				-- fix any matching invariant nodes with this path
-				across rules_index as rules_idx_csr loop
-					if rules_idx_csr.key.starts_with (old_path) then
-						across rules_idx_csr.item as rules_csr loop
-							if rules_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
-								create new_path.make_from_string (c_obj.path)
-								if rules_idx_csr.key.count > old_path.count then
-									new_path.append (rules_idx_csr.key.substring (old_path.count + 1, rules_idx_csr.key.count))
-								end
-								rules_csr.item.make_archetype_definition_ref (new_path)
-							end
+			-- fix any matching annotations nodes with this path
+			if attached target.annotations as att_ann then
+				across att_ann.items as anns_csr loop
+					old_path := anns_csr.key
+					if attached co_best_match (old_path) as co_matched_old_path then
+						check attached co_path_map.item (co_matched_old_path) as com then
+							co_matched := com
 						end
+						att_ann.update_annotation_path (old_path, co_matched.path)
 					end
-				end
-
-				-- fix any matching annotations nodes with this path
-				if attached target.annotations as att_ann then
-					att_ann.update_annotation_path (old_path, c_obj.path)
 				end
 	 		end
 	 	end
@@ -344,9 +349,42 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
-	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
+	invariants_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
 		attribute
 			create Result.make (0)
+		end
+
+	co_path_map: HASH_TABLE [C_OBJECT, STRING]
+		attribute
+			create Result.make (0)
+		end
+
+	ca_path_map: HASH_TABLE [C_ATTRIBUTE, STRING]
+		attribute
+			create Result.make (0)
+		end
+
+	co_best_match (old_path: STRING): detachable STRING
+			-- find the longest path in co_path_map that matches old_path
+		local
+			c_obj_path: STRING
+			c_obj: C_OBJECT
+			path_len: INTEGER
+		do
+			if co_path_map.has (old_path) then
+				Result := old_path
+			else
+				across co_path_map as co_paths_csr loop
+					c_obj := co_paths_csr.item
+					if not c_obj.is_root then
+						c_obj_path := co_paths_csr.key
+						if old_path.starts_with (c_obj_path) and c_obj_path.count > path_len then
+							Result := c_obj_path
+							path_len := c_obj_path.count
+						end
+					end
+				end
+			end
 		end
 
 end

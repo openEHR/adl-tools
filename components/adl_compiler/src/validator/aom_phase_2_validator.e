@@ -99,12 +99,12 @@ feature {NONE} -- Implementation
 					if attached target.matching_path (ref_path_csr.key) as p then
 						arch_path := p
 						if target.has_object_path (arch_path) then
-							object_at_matching_path := target.c_object_at_path (arch_path)
+							object_at_matching_path := target.object_at_path (arch_path)
 						end
 					elseif attached flat_ancestor and then attached flat_ancestor.matching_path (ref_path_csr.key) as p then
 						arch_path := p
 						if flat_ancestor.has_object_path (arch_path) then
-							object_at_matching_path := flat_ancestor.c_object_at_path (arch_path)
+							object_at_matching_path := flat_ancestor.object_at_path (arch_path)
 						end
 					end
 					if attached object_at_matching_path as omp and attached arch_path as ap then
@@ -212,7 +212,8 @@ feature {NONE} -- Implementation
 		end
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- validate nodes in differential specialised archetype
+			-- validate nodes in differential specialised archetype; nodes are pre-tested
+			-- and can be assumed to have a matching path in ancestor archetype
 			-- SIDE-EFFECT: sets is_path_compressible markers on child archetype nodes
 		local
 			co_in_flat_anc: C_OBJECT
@@ -224,11 +225,7 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				create apa.make_from_string (a_c_node.path)
 				ca_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-				if flat_ancestor.definition.has_attribute_path (ca_path_in_flat) then
-					ca_in_flat_anc := flat_ancestor.definition.c_attribute_at_path (ca_path_in_flat)
-				else -- must be due to an internal ref; look in full attr_path_map
-					ca_in_flat_anc := flat_ancestor.c_attr_at_path (ca_path_in_flat)
-				end
+				ca_in_flat_anc := flat_ancestor.attribute_at_path (ca_path_in_flat)
 
 				if not ca_child_diff.c_conforms_to (ca_in_flat_anc, agent rm_schema.type_conforms_to) then
 					if ca_child_diff.is_single and not ca_in_flat_anc.is_single then
@@ -291,7 +288,7 @@ end
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (car.slot_path)
 				co_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-				if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.c_object_at_path (co_path_in_flat) as a_slot then
+				if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.object_at_path (co_path_in_flat) as a_slot then
 					if ancestor_slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_ref, a_slot) then -- doesn't even match the slot definition
 							add_error (ec_VARXS, <<terminology.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_ref>>)
@@ -324,7 +321,7 @@ end
 			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
-				co_in_flat_anc := flat_ancestor.c_object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
 				-- The above won't work in the case where there are multiple alternative objects with no identifiers
 				-- in the flat ancestor - so we need to do a search based on RM type matching to find the matching C_OBJECT in the flat
@@ -380,7 +377,7 @@ end
 					-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 					-- we re-assign co_in_flat_anc to point to the target structure; unless they both are use_nodes, in which case leave them as is
 					if attached {ARCHETYPE_INTERNAL_REF} co_in_flat_anc as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
-						check attached flat_ancestor.c_object_at_path (air_p.path) as cpf then
+						check attached flat_ancestor.object_at_path (air_p.path) as cpf then
 							co_in_flat_anc := cpf
 						end
 						if dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
@@ -518,7 +515,7 @@ end
 				if attached {C_ARCHETYPE_ROOT} a_c_node as car then
 					create apa.make_from_string (car.slot_path)
 					flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-					Result := flat_ancestor.has_path (flat_anc_path)
+					Result := flat_ancestor.has_object_path (flat_anc_path)
 				else
 					if attached {C_OBJECT} a_c_node as a_c_obj then
 						-- if following check is False, it means the path is to a node that is new in the current archetype,
@@ -537,7 +534,7 @@ end
 							if not a_c_node.is_root then
 								-- if parent C_ATTR in flat ancestor has any children, they must also have ids
 								create apa.make_from_string (a_c_node.parent.path)
-								ca_in_flat_anc := flat_ancestor.definition.c_attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+								ca_in_flat_anc := flat_ancestor.definition.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 								if ca_in_flat_anc.has_unidentified_child then
 									add_error (ec_VSONIF, <<a_c_obj.rm_type_name, a_c_obj.node_id,
 										terminology.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
@@ -564,7 +561,7 @@ end
 								-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
 								elseif attached a_c_obj.sibling_order as sib_ord then
 									create apa.make_from_string (a_c_node.parent.path)
-									ca_in_flat_anc := flat_ancestor.definition.c_attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+									ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 									if not ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) then
 										add_error (ec_VSSM, <<terminology.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
 									end
@@ -612,7 +609,7 @@ end
 						check attached co.parent.differential_path as diff_path then
 							create apa.make_from_string (diff_path)
 						end
-						attr_rm_type_in_flat_anc := flat_ancestor.c_object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth)).rm_type_name
+						attr_rm_type_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth)).rm_type_name
 					else
 						attr_rm_type_in_flat_anc := co.parent.parent.rm_type_name
 					end
@@ -645,7 +642,7 @@ end
 					check attached ca.differential_path as diff_path then
 						create apa.make_from_string (diff_path)
 					end
-					attr_rm_type_in_flat_anc := flat_ancestor.c_object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth)).rm_type_name
+					attr_rm_type_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth)).rm_type_name
 				else
 					attr_rm_type_in_flat_anc := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end

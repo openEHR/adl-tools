@@ -189,7 +189,7 @@ feature {ARCH_CAT_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
 				-- these are attributes that are not congruent to any node in the parent archetype,
 				-- i.e. they don't exist in the parent.
 				if converted_def.has_attribute_path (ca.path) then
-					ca2 := converted_def.c_attribute_at_path (ca.path)
+					ca2 := converted_def.attribute_at_path (ca.path)
 					if not ca2.has_differential_path then
 						debug("compress")
 							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
@@ -204,7 +204,7 @@ feature {ARCH_CAT_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
 			elseif attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then
 					if converted_def.has_object_path (co.path) then
-						co2 := converted_def.c_object_at_path (co.path)
+						co2 := converted_def.object_at_path (co.path)
 						if not co2.parent.has_differential_path then
 debug("compress")
 	io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")

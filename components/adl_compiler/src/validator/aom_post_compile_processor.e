@@ -64,7 +64,7 @@ feature {NONE} -- Implementation
 			across target.rules_index as ref_path_csr loop
 				-- get a matching path from archetype - has to be there, either exact or partial
 				if attached target_flat.matching_path (ref_path_csr.key) as arch_path then
-					ref_rm_type_name := target_flat.c_object_at_path (arch_path).rm_type_name
+					ref_rm_type_name := target_flat.object_at_path (arch_path).rm_type_name
 					-- if it was a partial match, we have to obtain the real RM type by going into the RM
 					if arch_path.count < ref_path_csr.key.count then
 						tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)

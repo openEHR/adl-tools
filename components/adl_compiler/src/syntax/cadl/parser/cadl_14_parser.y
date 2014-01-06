@@ -1564,19 +1564,19 @@ c_ordinal: ordinal
 
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
-			$$.attribute_tuples.first.put_member ($$.c_attribute ("value"))
-			$$.c_attribute ("value").put_child (create {C_INTEGER}.make_simple ($1.value))
+			$$.attribute_tuples.first.put_member ($$.attribute_with_name ("value"))
+			$$.attribute_with_name ("value").put_child (create {C_INTEGER}.make_simple ($1.value))
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
-			$$.attribute_tuples.first.put_member ($$.c_attribute ("symbol"))
-			$$.c_attribute ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code ($1.symbol))
+			$$.attribute_tuples.first.put_member ($$.attribute_with_name ("symbol"))
+			$$.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code ($1.symbol))
 		}
 	| c_ordinal ',' ordinal
 		{
 			$$ := $1
 
-			if $$.c_attribute ("value").children.there_exists (
+			if $$.attribute_with_name ("value").children.there_exists (
 					agent (co: C_OBJECT; a_val: INTEGER): BOOLEAN
 						do
 							Result := attached {C_INTEGER} co as ci and then ci.valid_value (a_val)
@@ -1585,7 +1585,7 @@ c_ordinal: ordinal
 			then
 				abort_with_error (ec_VCOV, <<$3.value.out>>)
 
-			elseif $$.c_attribute ("symbol").children.there_exists (
+			elseif $$.attribute_with_name ("symbol").children.there_exists (
 					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
 						do
 							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.valid_value (a_sym)
@@ -1594,8 +1594,8 @@ c_ordinal: ordinal
 			then
 				abort_with_error (ec_VCOC, <<$3.symbol.out>>)
 
-			elseif attached {C_INTEGER} $$.c_attribute ("value").children.first as ci and 
-				attached {C_TERMINOLOGY_CODE} $$.c_attribute ("symbol").children.first as ctc 
+			elseif attached {C_INTEGER} $$.attribute_with_name ("value").children.first as ci and 
+				attached {C_TERMINOLOGY_CODE} $$.attribute_with_name ("symbol").children.first as ctc 
 			then
 				ci.add_value ($3.value)
 				ctc.add_code ($3.symbol.code_string)

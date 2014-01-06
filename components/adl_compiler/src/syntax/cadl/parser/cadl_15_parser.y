@@ -869,7 +869,7 @@ boolean_node: boolean_leaf
 		
 boolean_expr: boolean_unop_expr
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + $1.as_string + "]%N") 
 			end
 			$$ := $1
@@ -886,7 +886,7 @@ boolean_leaf: boolean_literal
 		}
 	| boolean_constraint
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + $1.as_string + "]%N") 
 			end
 			$$ := $1
@@ -907,7 +907,7 @@ boolean_leaf: boolean_literal
 --
 arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches),
@@ -918,7 +918,7 @@ arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_
 
 boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
@@ -927,7 +927,7 @@ boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object S
 		}
 	| V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_terminology_code SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
@@ -942,21 +942,21 @@ boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object S
 --
 boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_unop_expr: exists " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
 	| SYM_NOT V_ABS_PATH
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_unop_expr: not " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
 	| SYM_NOT '(' boolean_node ')'
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_unop_expr: not [(" + $3.as_string + ")] %N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_not), $3)
@@ -973,7 +973,7 @@ boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 --
 boolean_binop_expr: boolean_node boolean_binop_symbol boolean_leaf
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "boolean_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
@@ -1018,7 +1018,7 @@ boolean_literal: SYM_TRUE
 --
 arithmetic_relop_expr: arithmetic_node relational_binop_symbol arithmetic_node
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arithmetic_relop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
@@ -1045,7 +1045,7 @@ arithmetic_leaf: arithmetic_value
 		}
 	| '(' arithmetic_node ')'
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "(expr) %N") 
 			end
 			$$ := $2
@@ -1058,7 +1058,7 @@ arithmetic_leaf: arithmetic_value
 --
 arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_leaf
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arithmetic_arith_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
@@ -1071,21 +1071,21 @@ arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_
 --
 arithmetic_value:  integer_value
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arith_leaf - integer: " + $1.out + "%N") 
 			end
 			create $$.make_integer ($1)
 		}
 	| real_value
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arith_leaf - real: " + $1.out + "%N") 
 			end
 			create $$.make_real ($1)
 		}
 	| V_ABS_PATH
 		{
-			debug ("ADL_invariant")
+			debug ("ADL_rule")
 				io.put_string (indent + "arith_leaf - path: " + $1 + "%N") 
 			end
 			create $$.make_archetype_definition_ref ($1)
@@ -2452,8 +2452,6 @@ feature {NONE} -- Parse Tree
 
 	rm_attribute_name: STRING
 	parent_path_str: STRING
-
-	invariant_expr: detachable STRING
 
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
