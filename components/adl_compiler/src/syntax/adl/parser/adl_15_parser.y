@@ -36,24 +36,36 @@ create
 
 %token <STRING> V_IDENTIFIER
 %token <STRING> V_ARCHETYPE_ID
-%token <STRING> V_LOCAL_TERM_CODE_REF
+%token <STRING> V_CONCEPT_CODE
 %token <STRING> V_ODIN_TEXT V_CADL_TEXT V_RULES_TEXT
 %token <STRING> V_DOTTED_NUMERIC
 %token <STRING> V_VALUE
 
 %token SYM_ARCHETYPE SYM_SPECIALIZE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
+
+-------------------------------------------------------------------
+--- START legacy ADL 1.4 support
+---
+%token SYM_CONCEPT 
+---
+--- END legacy ADL 1.4 support
+-------------------------------------------------------------------
+
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_TERMINOLOGIES
 %token SYM_DESCRIPTION SYM_TERMINOLOGY SYM_RULES
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_UID
 
-%type <STRING> source_artefact_type opt_artefact_type
 %%
 
 input: archetype
 		{
 			accept
 		}
-	| specialised_archetype_or_template
+	| specialised_archetype
+		{
+			accept
+		}
+	| template
 		{
 			accept
 		}
@@ -65,13 +77,27 @@ input: archetype
 		{
 			accept
 		}
+-------------------------------------------------------------------
+--- START legacy ADL 1.4 support
+---
+	| transitional_archetype
+		{
+			accept
+		}
+	| transitional_specialised_archetype
+		{
+			accept
+		}
+---
+--- END legacy ADL 1.4 support
+-------------------------------------------------------------------
 	| error
 		{
 			abort_with_error (ec_SUNK, Void)
 		}
 	;
 
-archetype: source_identification 
+archetype: archetype_marker arch_meta_data archetype_id 
 		arch_language 
 		arch_description 
 		arch_definition 
@@ -80,7 +106,7 @@ archetype: source_identification
 		arch_annotations
 	;
 
-specialised_archetype_or_template: source_identification 
+specialised_archetype: archetype_marker arch_meta_data archetype_id 
 	   	arch_specialisation
 		arch_language 
 		arch_description 
@@ -90,14 +116,24 @@ specialised_archetype_or_template: source_identification
 		arch_annotations
 	;
 
-template_overlay: source_identification 
+template: template_marker arch_meta_data archetype_id 
+	   	arch_specialisation
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_rules
+		arch_terminology
+		arch_annotations
+	;
+
+template_overlay: template_overlay_marker arch_meta_data archetype_id 
 	   	arch_specialisation
 		arch_language 
 		arch_definition 
 		arch_terminology
 	;
 
-operational_template: opt_identification 
+operational_template: operational_template_marker arch_meta_data archetype_id 
 		arch_language 
 		arch_description 
 		arch_definition 
@@ -107,55 +143,68 @@ operational_template: opt_identification
 		arch_component_terminologies
 	;
 
-source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID 
+-------------------------------------------------------------------
+--- START legacy ADL 1.4 support
+---
+transitional_specialised_archetype: archetype_marker arch_meta_data archetype_id 
+	   	arch_specialisation
+		arch_concept 
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_rules
+		arch_terminology
+		arch_annotations
+	;
+
+transitional_archetype: archetype_marker arch_meta_data archetype_id 
+		arch_concept 
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_rules
+		arch_terminology
+		arch_annotations
+	;
+
+arch_concept: SYM_CONCEPT V_CONCEPT_CODE
 		{
-			$1.right_adjust
-			create artefact_type.make_from_type_name ($1)
-			if archetype_id_parser.valid_id ($3) then
-				create archetype_id.make_from_string ($3)
-			else
-				abort_with_error (ec_SASID, Void)
-			end
 		}
-	| source_artefact_type error
+	| SYM_CONCEPT error
 		{
-			abort_with_error (ec_SARID, Void)
+		}
+	;
+---
+--- END legacy ADL 1.4 support
+-------------------------------------------------------------------
+
+archetype_marker: SYM_ARCHETYPE 
+		{
+			set_artefact_type (text)
 		}
 	;
 
-source_artefact_type: SYM_ARCHETYPE 
+template_marker: SYM_TEMPLATE
 		{
-			$$ := text
-		}
-	| SYM_TEMPLATE
-		{
-			$$ := text
-		}
-	| SYM_TEMPLATE_OVERLAY
-		{
-			$$ := text
+			set_artefact_type (text)
 		}
 	;
 
-opt_identification: opt_artefact_type arch_meta_data V_ARCHETYPE_ID 
+template_overlay_marker: SYM_TEMPLATE_OVERLAY
 		{
-			$1.right_adjust
-			create artefact_type.make_from_type_name ($1)
-			if archetype_id_parser.valid_id ($3) then
-				create archetype_id.make_from_string ($3)
-			else
-				abort_with_error (ec_SASID, Void)
-			end
-		}
-	| opt_artefact_type error
-		{
-			abort_with_error (ec_SARID, Void)
+			set_artefact_type (text)
 		}
 	;
 
-opt_artefact_type: SYM_OPERATIONAL_TEMPLATE
+operational_template_marker: SYM_OPERATIONAL_TEMPLATE
 		{
-			$$ := text
+			set_artefact_type (text)
+		}
+	;
+
+archetype_id: V_ARCHETYPE_ID 
+		{
+			set_archetype_id (text)
 		}
 	;
 
@@ -230,7 +279,7 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 
 arch_language: SYM_LANGUAGE V_ODIN_TEXT
 		{
-			convert_odin_language($2)
+			convert_odin_language ($2)
 			language_text := $2
 			merge_errors (converter_status)
 		}
@@ -242,7 +291,7 @@ arch_language: SYM_LANGUAGE V_ODIN_TEXT
 
 arch_description: SYM_DESCRIPTION V_ODIN_TEXT 
 		{ 
-			convert_odin_language($2)
+			convert_odin_language ($2)
 			description_text := $2
 			merge_errors (converter_status)
 		}
@@ -283,7 +332,7 @@ arch_terminology: SYM_TERMINOLOGY V_ODIN_TEXT
 		}
 	;
 
-arch_annotations: -- no meta-data ok
+arch_annotations: -- no annotations ok
 	| SYM_ANNOTATIONS V_ODIN_TEXT 
 		{ 
 			annotations_text := $2
@@ -400,6 +449,21 @@ feature -- Parse Output
 	component_terminologies_text: detachable STRING
 
 feature {NONE} -- Implementation 
+
+	set_artefact_type (an_artefact_type: STRING)
+		do
+			an_artefact_type.right_adjust
+			create artefact_type.make_from_type_name (an_artefact_type)
+		end
+
+	set_archetype_id (an_arch_id: STRING)
+		do
+			if archetype_id_parser.valid_id (an_arch_id) then
+				create archetype_id.make_from_string (an_arch_id)
+			else
+				abort_with_error (ec_SASID, Void)
+			end
+		end
 
 	archetype_id_parser: ARCHETYPE_HRID_PARSER
 		once

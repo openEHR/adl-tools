@@ -45,7 +45,20 @@ VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+ADL_14_CONCEPT_CODE at0000(\.1)*
 DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
+
+DESCRIPTION	[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*
+DEFINITION	[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*
+ANNOTATIONS	[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*
+COMP_TERMS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Tt][Ee][Rr][Mm][Ii][Nn][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*
+-------------------------------------------------------------------
+--- START legacy ADL 1.4 support
+---
+ADL_14_COMP_ONTS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*
+---
+--- END legacy ADL 1.4 support
+-------------------------------------------------------------------
 
 --------------- Options --------------
 %x IN_ODIN_SECTION IN_CADL_SECTION IN_RULES_SECTION
@@ -127,28 +140,28 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 ^[Ll][Aa][Nn][Gg][Uu][Aa][Gg][Ee][ \t\r]*\n 	{
 				last_token := SYM_LANGUAGE
-				set_start_condition(IN_ODIN_SECTION)
+				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				language_text_start_line := in_lineno
 			}
 
-^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	{
+^{DESCRIPTION}\n {
 				last_token := SYM_DESCRIPTION
-				set_start_condition(IN_ODIN_SECTION)
+				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				description_text_start_line := in_lineno
 			}
 
-^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n		{
+^{DEFINITION}\n {
 				last_token := SYM_DEFINITION
-				set_start_condition(IN_CADL_SECTION)
+				set_start_condition (IN_CADL_SECTION)
 				in_lineno := in_lineno + 1
 				definition_text_start_line := in_lineno
 			}
 
 ^[Rr][Uu][Ll][Ee][Ss][ \t\r]*\n	{
 				last_token := SYM_RULES
-				set_start_condition(IN_RULES_SECTION)
+				set_start_condition (IN_RULES_SECTION)
 				in_lineno := in_lineno + 1
 				rules_text_start_line := in_lineno
 			}
@@ -160,16 +173,16 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				terminology_text_start_line := in_lineno
 			}
 
-^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n			{
+^{ANNOTATIONS}\n {
 				last_token := SYM_ANNOTATIONS
-				set_start_condition(IN_ODIN_SECTION)
+				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				annotations_text_start_line := in_lineno
 			}
 
-^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Tt][Ee][Rr][Mm][Ii][Nn][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n			{
+^{COMP_TERMS}\n {
 				last_token := SYM_COMPONENT_TERMINOLOGIES
-				set_start_condition(IN_ODIN_SECTION)
+				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				component_terminologies_text_start_line := in_lineno
 			}
@@ -177,16 +190,21 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 -------------------------------------------------------------------
 --- START legacy ADL 1.4 support
 ---
-^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n			{
+^[Cc][Oo][Nn][Cc][Ee][Pp][Tt][ \t\r]*\n 				{
+				last_token := SYM_CONCEPT
+				in_lineno := in_lineno + 1
+			}
+
+^{ADL_14_COMP_ONTS}\n {
 				last_token := SYM_COMPONENT_TERMINOLOGIES
-				set_start_condition(IN_ODIN_SECTION)
+				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				component_terminologies_text_start_line := in_lineno
 			}
 
 ^[Ii][Nn][Vv][Aa][Rr][Ii][Aa][Nn][Tt][ \t\r]*\n	{
 				last_token := SYM_RULES
-				set_start_condition(IN_RULES_SECTION)
+				set_start_condition (IN_RULES_SECTION)
 				in_lineno := in_lineno + 1
 				rules_text_start_line := in_lineno
 			}
@@ -197,16 +215,23 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				in_lineno := in_lineno + 1
 				terminology_text_start_line := in_lineno
 			}
+
+\[{ADL_14_CONCEPT_CODE}\] {
+				last_token := V_CONCEPT_CODE
+				last_string_value := text_substring (2, text_count - 1)
+			}
+
 ---
 --- END legacy ADL 1.4 support
 -------------------------------------------------------------------
 
 
 <IN_ODIN_SECTION>{
-	^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	|
-	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n |
-	^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n	| 
-	^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n	{ -- line starting with "definition" or "description" or "annotations"
+	^{DESCRIPTION}\n |
+	^{DEFINITION}\n |
+	^{ANNOTATIONS}\n |
+	^{ADL_14_COMP_ONTS}\n |
+	^{COMP_TERMS}\n { -- line starting with any keyword that can appear after an ODIN section
 				-- unread the pattern just matched
 				a_text := text
 				from i := text_count until i < 1 loop
@@ -221,7 +246,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				in_buffer.wipe_out
 				last_string_value := str_
 
-				set_start_condition(INITIAL)
+				set_start_condition (INITIAL)
 			}
 	\n 		{ -- LF
 				in_buffer.append_character('%N')
@@ -237,26 +262,26 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
-				set_start_condition(INITIAL)
+				set_start_condition (INITIAL)
 			}
 }
 
 <IN_CADL_SECTION>{
-^[ \t]+[^\n]*\n {
+	^[ \t]+[^\n]*\n {			-- match ^whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
 
-\n+				in_lineno := in_lineno + text_count
+	\n+			in_lineno := in_lineno + text_count
 
-^[^ \t] { -- non-white space at start
+	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_CADL_TEXT
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
-				set_start_condition(INITIAL)
+				set_start_condition (INITIAL)
 	}
 }
 
@@ -275,20 +300,15 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
-				set_start_condition(INITIAL)
+				set_start_condition (INITIAL)
 	}
 }
+
 
 ----------/* V_DOTTED_NUMERIC any length of n.n.n... with at least 2 segments */ -------------------------------------------------
 {DOTTED_NUMERIC_STR} {
 					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
-			}
-
-----------/* term code reference */ -------------------------------------------------
-\[a[ct][0-9.]+\] {
-					last_token := V_LOCAL_TERM_CODE_REF
-					last_string_value := text_substring (2, text_count - 1)
 			}
 
 ----------/* archetype id */ -------------------------------------------------

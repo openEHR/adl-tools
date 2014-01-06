@@ -991,33 +991,33 @@ end
 					last_string_value := text
 			
 else
---|#line 450 "cadl_15_scanner.l"
+--|#line 452 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 450")
-end
-		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[id-code]"
-			last_token := V_ABS_PATH
-			last_string_value := text
-		
-end
-else
-if yy_act = 100 then
---|#line 456 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 456")
-end
-		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[id-code]"
-			last_token := V_REL_PATH
-			last_string_value := text
-		
-else
---|#line 464 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 464")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 452")
 end
 		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[at-code]"
 			last_token := V_ABS_PATH
 			last_string_value := adl_14_path_converted (text)
+		
+end
+else
+if yy_act = 100 then
+--|#line 457 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 457")
+end
+		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[at-code]"
+			last_token := V_REL_PATH
+			last_string_value := adl_14_path_converted (text)
+		
+else
+--|#line 466 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 466")
+end
+		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[id-code]"
+			last_token := V_ABS_PATH
+			last_string_value := text
 		
 end
 end
@@ -1031,13 +1031,13 @@ if yy_act <= 106 then
 if yy_act <= 104 then
 if yy_act <= 103 then
 if yy_act = 102 then
---|#line 469 "cadl_15_scanner.l"
+--|#line 472 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 469")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 472")
 end
-		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[at-code]"
+		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[id-code]"
 			last_token := V_REL_PATH
-			last_string_value := adl_14_path_converted (text)
+			last_string_value := text
 		
 else
 --|#line 478 "cadl_15_scanner.l"
@@ -3179,7 +3179,7 @@ feature {NONE} -- Table templates
 			    0,    0,    0,    0,   66,   59,   59,   98,   60,   98,
 			   60,   98,   98,   46,   98,   98,   46,   98,   98,   98,
 			   98,   98,   98,   98,   98,   98,   98,   98,   52,   98,
-			   98,   98,   52,   98,    0,    0,    0,  101,    0,   99,
+			   98,   98,   52,   98,    0,    0,    0,   99,    0,  101,
 
 			    0,  112,    0,  115,    0,   85,    0,    0,  113,    0,
 			   95,   95,   57,   95,   45,    0,   42,   56,   34,   95,
@@ -3190,10 +3190,10 @@ feature {NONE} -- Table templates
 			   98,   98,   98,   98,    0,    0,    0,    0,    0,    0,
 			    0,  112,    0,    0,    0,    0,   82,  113,    0,   95,
 			   95,   95,   90,   95,    0,   95,   95,   53,    0,    0,
-			    0,    0,    0,   67,    0,    0,   64,    0,    0,  102,
+			    0,    0,    0,   67,    0,    0,   64,    0,    0,  100,
 
-			    0,  100,   98,  102,  100,   98,   98,   98,   98,   98,
-			   98,   98,   98,   53,   98,  101,   99,  114,    0,  114,
+			    0,  102,   98,  100,  102,   98,   98,   98,   98,   98,
+			   98,   98,   98,   53,   98,   99,  101,  114,    0,  114,
 			    0,    0,    0,    0,   82,  113,    0,   95,   95,   47,
 			   95,   89,   51,   95,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,   98,    0,    0,   98,   98,   47,

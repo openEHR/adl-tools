@@ -54,7 +54,7 @@ feature {NONE} -- Implementation
 				if a_n.is_archetype_definition_ref then
 					create og_path.make_from_string (a_n.item.out)
 					last_node_id := og_path.last_object_node_id
-					if not last_node_id.is_empty then
+					if not last_node_id.is_empty and then ed_context.flat_terminology.has_id_definition (display_settings.language, last_node_id) then
 						Result.append (ed_context.flat_terminology.id_definition (display_settings.language, last_node_id).text)
 					else
 						Result.append (a_n.item.out)

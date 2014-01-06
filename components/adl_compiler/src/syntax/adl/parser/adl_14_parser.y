@@ -36,7 +36,7 @@ create
 
 %token <STRING> V_IDENTIFIER
 %token <STRING> V_ARCHETYPE_ID
-%token <STRING> V_LOCAL_TERM_CODE_REF
+%token <STRING> V_CONCEPT_CODE
 %token <STRING> V_ODIN_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_DOTTED_NUMERIC
 %token <STRING> V_VALUE
@@ -185,7 +185,7 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 		}
 	;
 
-arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
+arch_concept: SYM_CONCEPT V_CONCEPT_CODE 
 		{
 			concept := $2
 			debug("ADL_parse")

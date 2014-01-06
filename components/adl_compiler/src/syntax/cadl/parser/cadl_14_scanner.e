@@ -1017,7 +1017,7 @@ else
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 476")
 end
-		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[code]"
+		-- matches an absolute path string with segments of form "/attr_name/attr_name/..." or "/attr_name[code]/.."
 				last_token := V_ABS_PATH
 				last_string_value := text
 			
@@ -1037,7 +1037,7 @@ if yy_act = 100 then
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 482")
 end
-		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[code]"
+		-- matches a relative path string with segments of form "attr_name/attr_name/..." or "attr_name[code]/.."
 				last_token := V_REL_PATH
 				last_string_value := text
 			

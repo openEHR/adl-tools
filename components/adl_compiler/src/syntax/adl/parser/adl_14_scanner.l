@@ -45,6 +45,7 @@ VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+ADL_14_CONCEPT_CODE at0000(\.1)*
 DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 --------------- Options --------------
@@ -163,7 +164,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 <IN_ODIN_SECTION>{
 	^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	|
 	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n |
-	^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n	{ -- line starting with "definition" or "description" or "annotations"
+	^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n	{ -- line starting with any keyword that can appear after an ODIN section
 				-- unread the pattern just matched
 				a_text := text
 				from i := text_count until i < 1 loop
@@ -199,14 +200,14 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 }
 
 <IN_CADL_SECTION>{
-^[ \t]+[^\n]*\n {
+	^[ \t]+[^\n]*\n {
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
 
-\n+				in_lineno := in_lineno + text_count
+	\n+			in_lineno := in_lineno + text_count
 
-^[^ \t] { -- non-white space at start
+	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_CADL_TEXT
 				create str_.make (in_buffer.count)
@@ -243,8 +244,8 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 			}
 
 ----------/* term code reference */ -------------------------------------------------
-\[a[ct][0-9.]+\] {
-					last_token := V_LOCAL_TERM_CODE_REF
+\[{ADL_14_CONCEPT_CODE}\] {
+					last_token := V_CONCEPT_CODE
 					last_string_value := text_substring (2, text_count - 1)
 			}
 

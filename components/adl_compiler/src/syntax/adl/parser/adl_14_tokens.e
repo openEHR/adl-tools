@@ -28,8 +28,8 @@ feature -- Access
 				Result := "V_IDENTIFIER"
 			when V_ARCHETYPE_ID then
 				Result := "V_ARCHETYPE_ID"
-			when V_LOCAL_TERM_CODE_REF then
-				Result := "V_LOCAL_TERM_CODE_REF"
+			when V_CONCEPT_CODE then
+				Result := "V_CONCEPT_CODE"
 			when V_ODIN_TEXT then
 				Result := "V_ODIN_TEXT"
 			when V_CADL_TEXT then
@@ -83,7 +83,7 @@ feature -- Token codes
 
 	V_IDENTIFIER: INTEGER = 258
 	V_ARCHETYPE_ID: INTEGER = 259
-	V_LOCAL_TERM_CODE_REF: INTEGER = 260
+	V_CONCEPT_CODE: INTEGER = 260
 	V_ODIN_TEXT: INTEGER = 261
 	V_CADL_TEXT: INTEGER = 262
 	V_ASSERTION_TEXT: INTEGER = 263

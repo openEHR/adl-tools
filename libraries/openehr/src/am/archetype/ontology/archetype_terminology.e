@@ -613,7 +613,7 @@ feature -- Modification
 			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_term_code.terminology
 		require
-			Local_code_valid: has_term_code (a_code)
+			Local_code_valid: has_term_code (a_code) or has_id_code (a_code)
 			Not_already_added: not has_term_binding (a_term_code.terminology_id, a_code)
 		do
 			if not has_term_bindings (a_term_code.terminology_id) then
@@ -758,6 +758,27 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 			Binding_removed: not has_term_binding(a_terminology, a_code)
 		end
 
+	remove_term_bindings (a_code: STRING)
+			-- remove term binding to local code in all terminologies
+		local
+			terminologies_to_remove: ARRAYED_LIST [STRING]
+		do
+			create terminologies_to_remove.make (0)
+			across term_bindings as bindings_csr loop
+				if bindings_csr.item.has (a_code) then
+					bindings_csr.item.remove (a_code)
+					if bindings_csr.item.is_empty then
+						terminologies_to_remove.extend (bindings_csr.key)
+					end
+				end
+			end
+
+			-- make any removals of entire treminologies needed
+			across terminologies_to_remove as terminologies_csr loop
+				term_bindings.remove (terminologies_csr.item)
+			end
+		end
+
 	remove_constraint_binding (a_code, a_terminology: STRING)
 			-- remove constraint binding to local code in group a_terminology
 		require
@@ -770,6 +791,27 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 			end
 		ensure
 			Binding_removed: not has_constraint_binding (a_terminology, a_code)
+		end
+
+	remove_constraint_bindings (a_code: STRING)
+			-- remove constraint binding to local code in all terminologies
+		local
+			terminologies_to_remove: ARRAYED_LIST [STRING]
+		do
+			create terminologies_to_remove.make (0)
+			across constraint_bindings as bindings_csr loop
+				if bindings_csr.item.has (a_code) then
+					bindings_csr.item.remove (a_code)
+					if bindings_csr.item.is_empty then
+						terminologies_to_remove.extend (bindings_csr.key)
+					end
+				end
+			end
+
+			-- make any removals of entire treminologies needed
+			across terminologies_to_remove as terminologies_csr loop
+				constraint_bindings.remove (terminologies_csr.item)
+			end
 		end
 
 feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
@@ -1079,7 +1121,10 @@ feature {ADL_15_ENGINE} -- Legacy
 
 					-- add it back in as an id code
 					put_definition_and_translations (conv_terms, new_code)
-
+				else
+					-- have to remove bindings for terms from other levels
+					remove_term_bindings (old_code)
+					remove_constraint_bindings (old_code)
 				end
 
 				-- now add bindings back in keyed by new id codes

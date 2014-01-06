@@ -473,13 +473,13 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 			}
 
 ----------/* V_ABS_PATH */ -------------------------------------------------
-(\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[code]"
+(\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name/attr_name/..." or "/attr_name[code]/.."
 				last_token := V_ABS_PATH
 				last_string_value := text
 			}
 
 ----------/* V_REL_PATH */ -------------------------------------------------
-{PATH_SEG}(\/{PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[code]"
+{PATH_SEG}(\/{PATH_SEG})+ {		-- matches a relative path string with segments of form "attr_name/attr_name/..." or "attr_name[code]/.."
 				last_token := V_REL_PATH
 				last_string_value := text
 			}
