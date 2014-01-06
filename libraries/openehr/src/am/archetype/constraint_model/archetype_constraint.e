@@ -30,7 +30,7 @@ feature -- Access
 			Result := representation.path.as_string
 		end
 
-	path_to_node (a_node: ARCHETYPE_CONSTRAINT): STRING
+	path_to_node (a_node: C_OBJECT): STRING
 			-- path from this node to `a_node'
 		do
 			Result := representation.path_to_node (a_node.representation).as_string

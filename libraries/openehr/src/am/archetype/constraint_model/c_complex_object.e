@@ -96,8 +96,11 @@ feature -- Access
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
 			a_path_valid: has_path (a_path)
+		local
+			og_attrs: ARRAYED_LIST [OG_ATTRIBUTE_NODE]
 		do
-			check attached {C_ATTRIBUTE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string (a_path)).content_item as ca then
+			og_attrs := representation.attribute_nodes_at_path (a_path)
+			check not og_attrs.is_empty and then attached {C_ATTRIBUTE} og_attrs.first.content_item as ca then
 				Result := ca
 			end
 		end
@@ -106,8 +109,11 @@ feature -- Access
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
 			a_path_valid: has_path (a_path)
+		local
+			og_objs: ARRAYED_LIST [OG_OBJECT]
 		do
-			check attached {C_OBJECT} representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as co then
+			og_objs := representation.object_nodes_at_path (a_path)
+			check not og_objs.is_empty and then attached {C_OBJECT} og_objs.first.content_item as co then
 				Result := co
 			end
 		end
@@ -116,9 +122,12 @@ feature -- Access
 			-- all paths starting at node found at a_path, including itself
 		require
 			Path_valid: has_path(a_path)
+		local
+			og_objs: ARRAYED_LIST [OG_OBJECT]
 		do
+			og_objs := representation.object_nodes_at_path (a_path)
 			create Result.make(0)
-			if attached {OG_OBJECT_NODE} representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)) as og_node then
+			if not og_objs.is_empty and then attached {OG_OBJECT_NODE} og_objs.first as og_node then
 				across og_node.all_paths as paths_csr loop
 					if attached {OG_OBJECT} paths_csr.item as og_obj then
 						if attached {C_OBJECT} og_obj.content_item as c_obj then
@@ -207,11 +216,6 @@ feature -- Status Report
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN
-		do
-			-- FIXME: to be implemented
-		end
-
-	valid_assumed_value (a_value: like assumed_value): BOOLEAN
 		do
 			-- FIXME: to be implemented
 		end

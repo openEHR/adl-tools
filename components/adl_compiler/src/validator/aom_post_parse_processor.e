@@ -187,17 +187,39 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			-- make a copy of current ARCHETYPE_INTERNAL_REFs and invariants lists
+			-- make a copy of current ARCHETYPE_INTERNAL_REFs and rules lists
 			-- so that any paths can be corrected
 			use_node_index := target.use_node_index
-			invariants_index := target.invariants_index
+			rules_index := target.rules_index
 
-			highest_added_code := 5000
-
-			-- fix definition; if no concept code, then don't bother
 			if is_valid_code (target.concept) then
+				-- get current highest code ids
 				create def_it.make (target.definition)
+				def_it.do_all (agent get_highest_id_codes_and_paths, Void)
+
+				-- now add missing codes
 				def_it.do_all (agent do_add_id_code, Void)
+			end
+		end
+
+	 get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	 	local
+	 		code_number, parent_code: STRING
+	 		spec_depth: INTEGER
+	 	do
+	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then is_valid_id_code (c_obj.node_id) then
+				spec_depth := specialisation_depth_from_code (c_obj.node_id)
+				code_number := index_from_code_at_level (c_obj.node_id, spec_depth)
+				if spec_depth = 0 then
+					highest_added_code := highest_added_code.max (code_number.to_integer)
+				else
+					parent_code := specialisation_parent_from_code (c_obj.node_id)
+					if not highest_refined_code_index.has (parent_code) then
+						highest_refined_code_index.put (code_number.to_integer, parent_code)
+					else
+						highest_refined_code_index.replace (highest_refined_code_index.item (parent_code).max (code_number.to_integer), parent_code)
+					end
+				end
 			end
 		end
 
@@ -261,15 +283,15 @@ feature {NONE} -- Implementation
 				end
 
 				-- fix any matching invariant nodes with this path
-				across invariants_index as invs_idx_csr loop
-					if invs_idx_csr.key.starts_with (old_path) then
-						across invs_idx_csr.item as invs_csr loop
-							if invs_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
+				across rules_index as rules_idx_csr loop
+					if rules_idx_csr.key.starts_with (old_path) then
+						across rules_idx_csr.item as rules_csr loop
+							if rules_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
 								create new_path.make_from_string (c_obj.path)
-								if invs_idx_csr.key.count > old_path.count then
-									new_path.append (invs_idx_csr.key.substring (old_path.count + 1, invs_idx_csr.key.count))
+								if rules_idx_csr.key.count > old_path.count then
+									new_path.append (rules_idx_csr.key.substring (old_path.count + 1, rules_idx_csr.key.count))
 								end
-								invs_csr.item.make_archetype_definition_ref (new_path)
+								rules_csr.item.make_archetype_definition_ref (new_path)
 							end
 						end
 					end
@@ -279,6 +301,7 @@ feature {NONE} -- Implementation
 				if attached target.annotations as att_ann then
 					att_ann.update_annotation_path (old_path, c_obj.path)
 				end
+	 		elseif attached {C_ATTRIBUTE} a_node as c_attr then
 	 		end
 	 	end
 
@@ -300,7 +323,7 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
-	invariants_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
+	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
 		attribute
 			create Result.make (0)
 		end
