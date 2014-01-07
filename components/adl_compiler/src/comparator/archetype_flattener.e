@@ -795,14 +795,14 @@ end
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
-				-- so it is set from the enclosing attribute cardinality if a container, or left Void if not.
+				-- so it is set from the enclosing attribute cardinality if a container, or set to RM existence if not a container
 				if co.occurrences = Void and not co.is_root then
 					rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
 						if cont_prop.cardinality.upper_unbounded then
 							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
 						else
-							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.cardinality.upper))
+							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded (0, cont_prop.cardinality.upper))
 						end
 					else
 						co.set_occurrences (rm_attr_desc.existence)

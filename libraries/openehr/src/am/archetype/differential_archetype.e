@@ -118,21 +118,6 @@ feature -- Access
 			Result.prune (concept)
 		end
 
-	terminology_unused_constraint_codes: ARRAYED_LIST [STRING]
-			-- list of ac codes found in terminology that are not referenced
-			-- anywhere in the archetype definition
-		local
-			accodes: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
-		do
-			create Result.make (0)
-			accodes := constraint_codes_index
-			across terminology.constraint_codes as constraint_codes_csr loop
-				if not accodes.has (constraint_codes_csr.item) then
-					Result.extend (constraint_codes_csr.item)
-				end
-			end
-		end
-
 feature -- Status Report
 
 	is_valid: BOOLEAN
@@ -249,9 +234,6 @@ feature -- Modification
 			-- remove all term and constraint codes from terminology
 		do
 			across terminology_unused_term_codes as codes_csr loop
-				terminology.remove_definition (codes_csr.item)
-			end
-			across terminology_unused_constraint_codes as codes_csr loop
 				terminology.remove_definition (codes_csr.item)
 			end
 		end

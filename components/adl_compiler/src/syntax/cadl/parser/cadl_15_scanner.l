@@ -65,14 +65,14 @@ NAMESTR [a-zA-Z][a-zA-Z0-9_]+
 ID_CODE_LEADER id
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
 ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
-ADL_14_AC_CODE ac(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
+ADL_14_AC_CODE ac[0-9]{4}(\.(0|[1-9][0-9]*))*
 PATH_SEG [a-z][a-zA-Z0-9_]*(\[id(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*\])?
 ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
 --------------- Options --------------
-%x IN_STR IN_REGEXP1 IN_TERM_CONSTRAINT
+%x IN_STR IN_REGEXP1 IN_VALUE_SET_DEF
 %option outfile="cadl_15_scanner.e"
 
 %%
@@ -194,17 +194,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			last_string_value := text
 		}
 
-----------/* V_QUALIFIED_TERM_CODE_REF: term code of form [ICD10AM(1998)::F23] */ ---------------
-\[{NAMECHAR_PAREN}+::{NAMECHAR}+\]	{
-			last_token := V_QUALIFIED_TERM_CODE_REF
-			last_string_value := text_substring (2, text_count - 1)
-		}
-
-\[{NAMECHAR_PAREN}+::{NAMECHAR_SPACE}+\]	{
-			last_token := ERR_V_QUALIFIED_TERM_CODE_REF
-			last_string_value := text_substring (2, text_count - 1)
-		}
-
 -------------------------------------------------------------------
 --- START transitional at-code identifier codes in ADL 1.5 archetypes
 ---
@@ -225,10 +214,11 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 		last_string_value := adl_14_id_code_converted (text)
 	}
 \[{ADL_14_AC_CODE}\] {
-		last_token := V_CONSTRAINT_CODE_REF
+		last_token := V_VALUE_SET_REF
 		code := text_substring (2, text_count - 1)
-		last_string_value := adl_14_code_renumbered (code)
-		converted_codes.put (last_string_value, code)
+		reformatted_code := adl_14_code_renumbered (code) 
+		last_string_value := Local_terminology_id + "::" + reformatted_code
+		converted_codes.put (reformatted_code, code)
 	}
 ---
 --- END transitional at-code identifier codes in ADL 1.5 archetypes
@@ -255,14 +245,14 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 		last_string_value := text
 	}
 
-----------/* V_CONSTRAINT_CODE_REF: term code of form [ac2], [ac0.0.2] */ ---------------
+----------/* V_VALUE_SET_REF: term code of form [ac2], [ac0.0.2] */ ---------------
 
-\[ac{CODE_STR}\] {
-		last_token := V_CONSTRAINT_CODE_REF
+\[{NAMECHAR_PAREN}+::ac{CODE_STR}\] {
+		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
 	}
 
----------/* V_TERM_CODE_CONSTRAINT of form */ ------------
+---------/* V_VALUE_SET_DEF of form */ ------------
 -- [terminology_id::code, -- comment
 --		     	  code, -- comment
 --			  code] -- comment
@@ -273,22 +263,22 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --			  code] -- an optional assumed value
 --
 
-\[[a-zA-Z0-9()._\-]+::[ \t]*	{
+\[{NAMECHAR_PAREN}+::[ \t]*	{
 		in_buffer.append_string (text_substring (2, text_count))
-		set_start_condition (IN_TERM_CONSTRAINT)
+		set_start_condition (IN_VALUE_SET_DEF)
 		term_code_count := 0
 		assumed_term_code_index := 0
 	}
 
-<IN_TERM_CONSTRAINT> {
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
+<IN_VALUE_SET_DEF> {
+	[ \t]*{NAMECHAR}+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
 		str_ := text
 		in_buffer.append(text)
 		term_code_count := term_code_count + 1
 		assumed_term_code_index := term_code_count
 	}
 
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t]* {	-- match any line, with ',' termination
+	[ \t]*{NAMECHAR}+[ \t]*,[ \t]* {	-- match any line, with ',' termination
 		str_ := text
 		in_buffer.append(text)
 		term_code_count := term_code_count + 1
@@ -300,9 +290,9 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
 
-	[ \t]*[a-zA-Z0-9._\-]*[ \t]*\] { -- match final line, terminating in ']'
+	[ \t]*{NAMECHAR}*[ \t]*\] { -- match final line, terminating in ']'
 		if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
-			last_token := ERR_TERM_CODE_CONSTRAINT
+			last_token := ERR_VALUE_SET_DEF
 		else
 			in_buffer.append (text_substring(1, text_count-1))
 			create str_.make (in_buffer.count)
@@ -312,12 +302,11 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			last_string_value.prune_all(' ')
 			last_string_value.prune_all('%T')
 			last_string_value.prune_all('%N')
-			last_token := V_TERM_CODE_CONSTRAINT
+			last_token := V_VALUE_SET_DEF
 		end
 		set_start_condition (INITIAL)
 	}
 }
-
 
 ----------/* archetype id */ -------------------------------------------------
 ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
@@ -684,6 +673,10 @@ feature -- Access
 			create Result.make_empty
 		end
 
+	reformatted_code: STRING
+		attribute
+			create Result.make_empty
+		end
 ---
 --- END transitional at-code identifier codes in ADL 1.5 archetypes
 -------------------------------------------------------------------

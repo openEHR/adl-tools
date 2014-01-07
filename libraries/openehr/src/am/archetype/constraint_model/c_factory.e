@@ -95,15 +95,6 @@ feature -- Factory
 			a_parent.put_child (Result)
 		end
 
-	create_constraint_ref (a_parent: C_ATTRIBUTE; a_code: STRING): CONSTRAINT_REF
-			-- create a "term" node from term in string form "ac0039"
-		require
-			code_valid: not a_code.is_empty
-		do
-			create Result.make (a_code)
-			a_parent.put_child (Result)
-		end
-
 	create_cardinality_make_bounded (a_lower, an_upper: INTEGER): CARDINALITY
 			-- create Result with both limits set
 		require

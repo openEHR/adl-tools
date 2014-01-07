@@ -105,20 +105,20 @@ feature -- Definitions
 	Annotated_code_text_delimiter_string: STRING = "|"
 			-- string form of above
 
---	Terminal_node_id: STRING
---			-- special 'id9999' code that identifies all terminal primitive objects
---		once
---			create Result.make_from_string (id_code_leader)
---			Result.append ("9999")
---		end
-
 	Terminal_node_id: STRING
-			-- special 'unknown' code that identifies all terminal primitive objects
+			-- special 'id9999' code that identifies all terminal primitive objects
 		once
-			create Result.make_from_string (Unknown_code_id)
+			create Result.make_from_string (id_code_leader)
+			Result.append ("9999")
 		end
 
-	Unknown_code_id: STRING = "unknown"
+--	Terminal_node_id: STRING
+--			-- special 'unknown' code that identifies all terminal primitive objects
+--		once
+--			create Result.make_from_string (Unknown_code_id)
+--		end
+
+--	Unknown_code_id: STRING = "unknown"
 
 feature -- Access
 

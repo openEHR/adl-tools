@@ -57,7 +57,7 @@ create
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
-%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_CONSTRAINT_CODE_REF V_QUALIFIED_TERM_CODE_REF V_TERM_CODE_CONSTRAINT
+%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_VALUE_SET_REF V_QUALIFIED_TERM_CODE_REF V_VALUE_SET_DEF
 
 %token <STRING> V_REGEXP
 %token <STRING> V_ABS_PATH V_REL_PATH
@@ -82,7 +82,7 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
+%token ERR_CHARACTER ERR_STRING ERR_VALUE_SET_DEF ERR_V_ISO8601_DURATION
 %token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
 
 %left SYM_IMPLIES
@@ -157,8 +157,6 @@ create
 %type <STRING> arithmetic_binop_symbol
 %type <STRING> relational_binop_symbol
 %type <STRING> boolean_binop_symbol
-
-%type <CONSTRAINT_REF> constraint_ref
 
 %type <C_BOOLEAN> c_boolean
 %type <C_STRING> c_string
@@ -322,10 +320,6 @@ c_object: c_complex_object
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| archetype_slot
-		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
-		}
-	| constraint_ref
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
@@ -1545,7 +1539,7 @@ c_string: V_STRING 	-- single value, generates closed list
 		}
 	;
 
-c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at40, at41; at40]"
+c_terminology_code: V_VALUE_SET_DEF	-- e.g. "local::at40, at41; at40"
 		{
 			if is_adl_14_term_code_constraint ($1) then
 				$1 := adl_14_code_constraint_reformatted ($1)
@@ -1556,11 +1550,8 @@ c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at40, at41; at40]"
 				abort_with_errors (constraint_model_factory.errors)
 			end
 		}
-	| V_QUALIFIED_TERM_CODE_REF
+	| V_VALUE_SET_REF	-- e.g. "local::ac3"
 		{
-			if is_adl_14_term_code_constraint ($1) then
-				$1 := adl_14_code_constraint_reformatted ($1)
-			end
 			if constraint_model_factory.valid_c_terminology_code_string ($1) then
 				$$ := constraint_model_factory.create_c_terminology_code ($1)
 			else
@@ -1593,12 +1584,6 @@ c_boolean: SYM_TRUE
 	| c_boolean ';' error
 		{
 			abort_with_error (ec_SCBAV, Void)
-		}
-	;
-
-constraint_ref: V_CONSTRAINT_CODE_REF	-- e.g. "ac3"
-		{
-			create $$.make ($1)
 		}
 	;
 

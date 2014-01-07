@@ -21,7 +21,7 @@ inherit
 			start_c_complex_object, end_c_complex_object,
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
-			start_archetype_internal_ref, start_constraint_ref,
+			start_archetype_internal_ref,
 			start_c_archetype_root, end_c_archetype_root,
 			start_c_primitive_object
 		end
@@ -344,24 +344,6 @@ feature -- Visitor
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
-		end
-
-	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- start serialising a CONSTRAINT_REF
-		do
-			-- remove last newline due to C_ATTRIBUTE
-			last_result.remove_tail (format_item (FMT_NEWLINE).count)
-
-			last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
-
-			-- add the comment
-			create last_coded_constraint_comment.make(0)
-			last_coded_constraint_comment.append (format_item (FMT_INDENT))
-			if ontology.has_constraint_code (a_node.target) then
-				last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-						safe_comment (ontology.constraint_definition (language, a_node.target).text), STYLE_COMMENT))
-			end
-			last_object_inline := True
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)

@@ -289,7 +289,7 @@ feature {NONE} -- Implementation
 			arch_depth := target.specialisation_depth
 			across target.id_codes_index as codes_csr loop
 				spec_depth := specialisation_depth_from_code (codes_csr.key)
-				
+
 				-- since id-codes are only required to be defined in the terminology if they identify
 				-- nodes under multiply-valued C_ATTRIBUTEs, we have to check their parent C_ATTRIBUTE type
 				-- to decide. There can be more than one C_OBJECT with the same id-code.
@@ -309,13 +309,13 @@ feature {NONE} -- Implementation
 			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in terminology
 			across target.term_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
-				if codes_csr.key.starts_with (Term_code_leader) then
+				if codes_csr.key.starts_with (Term_code_leader) or codes_csr.key.starts_with (Constraint_code_leader) then
 					spec_depth := specialisation_depth_from_code (codes_csr.key)
 					if spec_depth > arch_depth then
 						add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
-					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_term_code (codes_csr.key) then
+					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (codes_csr.key) then
 						add_error (ec_VATDF, <<codes_csr.key>>)
-					elseif spec_depth = arch_depth and not terminology.has_term_code (codes_csr.key) then
+					elseif spec_depth = arch_depth and not terminology.has_code (codes_csr.key) then
 						add_error (ec_VATDF, <<codes_csr.key>>)
 					end
 				else
@@ -325,18 +325,6 @@ feature {NONE} -- Implementation
 					else
 						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
 					end
-				end
-			end
-
-			-- check if all found constraint_codes are defined in constraint_definitions,
-			across target.constraint_codes_index as codes_csr loop
-				spec_depth := specialisation_depth_from_code (codes_csr.key)
-				if spec_depth > arch_depth then
-					add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
-				elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_constraint_code (codes_csr.key) then
-					add_error (ec_VACDF, <<codes_csr.key>>)
-				elseif spec_depth = arch_depth and not terminology.has_constraint_code (codes_csr.key) then
-					add_error (ec_VACDF, <<codes_csr.key>>)
 				end
 			end
 		end
@@ -355,7 +343,8 @@ feature {NONE} -- Implementation
 		do
 			across terminology.term_bindings as bindings_csr loop
 				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then terminology.has_term_code (bindings_for_lang_csr.key) or else
+					if not (is_valid_code (bindings_for_lang_csr.key) and then
+						(terminology.has_term_code (bindings_for_lang_csr.key) or terminology.has_id_code (bindings_for_lang_csr.key)) or else
 						target.has_path (bindings_for_lang_csr.key))
 					then
 						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
@@ -376,9 +365,6 @@ feature {NONE} -- Implementation
 			-- are not referenced anywhere in the archetype definition
 		do
 			across target.terminology_unused_term_codes as unused_codes_csr loop
-				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
-			end
-			across target.terminology_unused_constraint_codes as unused_codes_csr loop
 				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
 			end
 		end

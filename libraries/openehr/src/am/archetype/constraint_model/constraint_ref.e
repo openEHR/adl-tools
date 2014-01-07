@@ -29,7 +29,7 @@ create
 feature -- Initialisation
 
 	make (a_code: STRING)
-			-- make from pattern of form "[acNNNN[.NN[etc]]]"
+			-- make from pattern of form "[acN[.N[etc]]]"
 		do
 			rm_type_name := Any_type
 			target := a_code
@@ -102,13 +102,13 @@ feature -- Visitor
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			visitor.start_constraint_ref (Current, depth)
+		--	visitor.start_constraint_ref (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			visitor.end_constraint_ref (Current, depth)
+	--		visitor.end_constraint_ref (Current, depth)
 		end
 
 feature {NONE} -- Implementation

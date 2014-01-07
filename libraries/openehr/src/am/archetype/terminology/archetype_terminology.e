@@ -32,12 +32,6 @@ inherit
 			{NONE} all
 		end
 
-feature -- Definitions
-
-	Sym_term_definitions: STRING = "term_definitions"
-
-	Sym_constraint_definitions: STRING = "constraint_definitions"
-
 feature -- Initialisation
 
 	make (an_original_lang, a_concept_code: STRING)
@@ -739,6 +733,16 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 					end
 				end
 			end
+			create terminologies.make_from_array (constraint_bindings.current_keys)
+			if has_any_constraint_binding (a_code) then
+				across terminologies as terminologies_csr loop
+					if constraint_bindings.has (terminologies_csr.item) and then
+						constraint_bindings.item (terminologies_csr.item).has (a_code)
+					then
+						remove_constraint_binding (a_code, terminologies_csr.item)
+					end
+				end
+			end
 			refs.codes.prune (a_code)
 		ensure
 			not has_code (a_code)
@@ -958,38 +962,6 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 			end
 		end
 
-	valid_term_code (a_code: STRING): BOOLEAN
-			-- True if `a_code' is found in all languages
-		require
-			Code_valid: not a_code.is_empty
-		local
-			t_path: STRING
-		do
-			Result := True
-			from term_definitions.start until term_definitions.off or not Result loop
-				create t_path.make(0)
-				t_path.append ("/" + Sym_term_definitions + "[" + term_definitions.key_for_iteration + "]/items[" + a_code + "]")
-				Result := Result and has_path(t_path)
-				term_definitions.forth
-			end
-		end
-
-	valid_constraint_code (a_code: STRING): BOOLEAN
-			-- True if `a_code' is found in all languages
-		require
-			Code_valid: not a_code.is_empty
-		local
-			t_path: STRING
-		do
-			Result := True
-			from constraint_definitions.start until constraint_definitions.off or not Result loop
-				create t_path.make(0)
-				t_path.append ("/" + Sym_constraint_definitions + "[" + constraint_definitions.key_for_iteration + "]/items[" + a_code + "]")
-				Result := Result and has_path(t_path)
-				constraint_definitions.forth
-			end
-		end
-
 	sync_stored_properties
 			-- update various stored properties to correspond to primary stored properties
 		local
@@ -1064,78 +1036,93 @@ feature {ADL_15_ENGINE} -- Legacy
 				old_code := conv_codes_csr.key
 				new_code := conv_codes_csr.item
 
-				-- find the term bindings in all terminologies
-				-- first case: binding is against just the single code
-				-- Here we just record the bindings; they can only be added in after
-				-- the actual term has been fixed, below.
-				if has_any_term_binding (old_code) then
-					conv_bindings := term_bindings_for_key (old_code)
-				elseif has_any_constraint_binding (old_code) then
-					conv_bindings := constraint_bindings_for_key (old_code)
-				else
-					create conv_bindings.make (0)
-				end
+				if has_code (old_code) then
+					-- find the term bindings in all terminologies
+					-- first case: binding is against just the single code
+					-- Here we just record the bindings; they can only be added in after
+					-- the actual term has been fixed, below.
+	--				if has_any_term_binding (old_code) then
+	--					conv_bindings := term_bindings_for_key (old_code)
+	--				elseif has_any_constraint_binding (old_code) then
+	--					conv_bindings := constraint_bindings_for_key (old_code)
+	--				else
+	--					create conv_bindings.make (0)
+	--				end
 
-				-- second case: binding is keyed by path containing node id code
-				across term_bindings as bindings_for_terminology_csr loop
-					create binding_paths.make (0)
-					across bindings_for_terminology_csr.item as bindings_csr loop
-						if bindings_csr.key.has_substring (old_code) then
-							new_path := bindings_csr.key.twin
-							new_path.replace_substring_all (old_code, new_code)
-							binding_paths.put (new_path, bindings_csr.key)
-						end
-					end
-
-					-- now go replace the path keys with the modified path keys
-					across binding_paths as paths_csr loop
-						bindings_for_terminology_csr.item.replace_key (paths_csr.item, paths_csr.key)
-					end
-				end
-
-				-- now do the id codes
-				if specialisation_depth_from_code (new_code) = specialisation_depth then
-					create conv_terms.make (0)
-					if is_adl_14_term_code (old_code) then
-						-- find the term definitions in all languages
-						across term_definitions as term_defs_for_lang_csr loop
-							check attached term_defs_for_lang_csr.item.item (old_code) as att_term then
-								conv_term := att_term
+					-- second case: binding is keyed by path containing node id code
+					across term_bindings as bindings_for_terminology_csr loop
+						create binding_paths.make (0)
+						across bindings_for_terminology_csr.item as bindings_csr loop
+							if bindings_csr.key.has_substring (old_code) then
+								new_path := bindings_csr.key.twin
+								new_path.replace_substring_all (old_code, new_code)
+								binding_paths.put (new_path, bindings_csr.key)
 							end
-							conv_term.set_code (new_code)
-							conv_terms.put (conv_term, term_defs_for_lang_csr.key)
 						end
-					elseif is_adl_14_constraint_code (old_code) then
-						-- find the term definitions in all languages
-						across constraint_definitions as term_defs_for_lang_csr loop
-							check attached term_defs_for_lang_csr.item.item (old_code) as att_term then
-								conv_term := att_term
+						-- now go replace the path keys with the modified path keys
+						across binding_paths as paths_csr loop
+							bindings_for_terminology_csr.item.replace_key (paths_csr.item, paths_csr.key)
+						end
+					end
+					across constraint_bindings as bindings_for_terminology_csr loop
+						create binding_paths.make (0)
+						across bindings_for_terminology_csr.item as bindings_csr loop
+							if bindings_csr.key.has_substring (old_code) then
+								new_path := bindings_csr.key.twin
+								new_path.replace_substring_all (old_code, new_code)
+								binding_paths.put (new_path, bindings_csr.key)
 							end
-							conv_term.set_code (new_code)
-							conv_terms.put (conv_term, term_defs_for_lang_csr.key)
+						end
+						-- now go replace the path keys with the modified path keys
+						across binding_paths as paths_csr loop
+							bindings_for_terminology_csr.item.replace_key (paths_csr.item, paths_csr.key)
 						end
 					end
 
-					-- completely remove the old term code from definitions and bindings
-					remove_definition (old_code)
+					-- now do the id codes
+					if specialisation_depth_from_code (new_code) = specialisation_depth then
+						create conv_terms.make (0)
+						if is_adl_14_term_code (old_code) then
+							-- find the term definitions in all languages
+							across term_definitions as term_defs_for_lang_csr loop
+								if attached term_defs_for_lang_csr.item.item (old_code) as att_term then
+									conv_term := att_term
+									conv_term.set_code (new_code)
+									conv_terms.put (conv_term, term_defs_for_lang_csr.key)
+								end
+							end
+						elseif is_adl_14_constraint_code (old_code) then
+							-- find the constraint definitions in all languages
+							across constraint_definitions as term_defs_for_lang_csr loop
+								if attached term_defs_for_lang_csr.item.item (old_code) as att_term then
+									conv_term := att_term
+									conv_term.set_code (new_code)
+									conv_terms.put (conv_term, term_defs_for_lang_csr.key)
+								end
+							end
+						end
 
-					-- add it back in as an id code
-					put_definition_and_translations (conv_terms, new_code)
-				else
-					-- have to remove bindings for terms from other levels
-					remove_term_bindings (old_code)
-					remove_constraint_bindings (old_code)
-				end
+						-- completely remove the old term code from definitions and bindings
+						remove_definition (old_code)
 
-				-- now add bindings back in keyed by new id codes
-				if attached {HASH_TABLE [TERMINOLOGY_CODE, STRING]} conv_bindings as conv_at_id_bindings then
-					across conv_at_id_bindings as bindings_csr loop
-						put_term_binding (bindings_csr.item, new_code)
+						-- add it back in as an id code
+						put_definition_and_translations (conv_terms, new_code)
+					else
+						-- have to remove bindings for terms from other levels
+						remove_term_bindings (old_code)
+						remove_constraint_bindings (old_code)
 					end
-				elseif attached {HASH_TABLE [URI, STRING]} conv_bindings as conv_ac_bindings then
-					across conv_ac_bindings as bindings_csr loop
-						put_constraint_binding (bindings_csr.item, bindings_csr.key, new_code)
-					end
+
+					-- now add bindings back in keyed by new id codes
+	--				if attached {HASH_TABLE [TERMINOLOGY_CODE, STRING]} conv_bindings as conv_at_id_bindings then
+	--					across conv_at_id_bindings as bindings_csr loop
+	--						put_term_binding (bindings_csr.item, new_code)
+	--					end
+	--				elseif attached {HASH_TABLE [URI, STRING]} conv_bindings as conv_ac_bindings then
+	--					across conv_ac_bindings as bindings_csr loop
+	--						put_constraint_binding (bindings_csr.item, bindings_csr.key, new_code)
+	--					end
+	--				end
 				end
 			end
 

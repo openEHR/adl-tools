@@ -97,7 +97,6 @@ feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
-			-- An error message can be obtained by calling node_conformance_failure_reason
 		deferred
 		end
 

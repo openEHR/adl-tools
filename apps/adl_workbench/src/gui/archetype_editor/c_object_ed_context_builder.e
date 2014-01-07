@@ -155,15 +155,6 @@ feature -- Visitor
 			attr_node_stack.item.pre_attach_child_context (ed_node)
 		end
 
-	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- enter a CONSTRAINT_REF
-		local
-			ed_node: CONSTRAINT_REF_ED_CONTEXT
-		do
-			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
-		end
-
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		local

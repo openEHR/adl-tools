@@ -84,7 +84,6 @@ feature -- Commands
 
 	execute
 		do
-			update_constraint_refs
 			update_aom_mapped_types
 			update_lifecycle_state
 			add_id_codes
@@ -96,37 +95,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
-
-	update_constraint_refs
-			-- populate CONSTRAINT_REF rm_type_name based on RM schema
-		local
-			bmm_prop_def: BMM_PROPERTY_DEFINITION
-			proximal_ca: C_ATTRIBUTE
-			proximal_co: C_COMPLEX_OBJECT
-			apa: ARCHETYPE_PATH_ANALYSER
-		do
-			across target.constraint_codes_index as ac_codes_csr loop
-				across ac_codes_csr.item as cref_list_csr loop
-					check attached cref_list_csr.item.parent as p then
-						proximal_ca := p
-					end
-					if proximal_ca.has_differential_path then
-						check attached proximal_ca.differential_path as diff_path then
-							create apa.make_from_string (diff_path)
-						end
-						check attached {C_COMPLEX_OBJECT} arch_parent_flat.object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
-							proximal_co := cco
-						end
-					else
-						check attached proximal_ca.parent as p then
-							proximal_co := p
-						end
-					end
-					bmm_prop_def := rm_schema.property_definition (proximal_co.rm_type_name, proximal_ca.rm_attribute_name)
-					cref_list_csr.item.set_rm_type_name (bmm_prop_def.type.root_class)
-				end
-			end
-		end
 
 	update_aom_mapped_types
 			-- Find any types that have a AOM profile type mapping and write the
@@ -304,7 +272,7 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				-- fix any matching invariant nodes with this path
+				-- fix any matching rules nodes with this path
 				across rules_index as rules_idx_csr loop
 					if rules_idx_csr.key.starts_with (old_path) then
 						across rules_idx_csr.item as rules_csr loop

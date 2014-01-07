@@ -108,7 +108,6 @@ feature -- Definitions
 			Result.put ("c_type_complex_object", "C_COMPLEX_OBJECT")
 			Result.put ("c_type_primitive_object", "C_PRIMITIVE_OBJECT")
 			Result.put ("c_type_internal_reference", "ARCHETYPE_INTERNAL_REF")
-			Result.put ("c_type_external_constraint_reference", "C_CONSTRAINT_REF")
 			Result.put ("c_type_archetype_reference", "C_ARCHETYPE_ROOT")
 			Result.put ("c_type_slot", "ARCHETYPE_SLOT")
 			Result.put ("c_type_code_phrase", "C_TERMINOLOGY_CODE")
@@ -129,7 +128,6 @@ feature -- Definitions
 			Result.extend (bare_type_name(({C_DATE_TIME}).name))
 			Result.extend (bare_type_name(({C_DURATION}).name))
 			Result.extend (bare_type_name(({C_TERMINOLOGY_CODE}).name))
-			Result.extend (bare_type_name(({CONSTRAINT_REF}).name))
 		end
 
 	occurrences_default_list: HASH_TABLE [MULTIPLICITY_INTERVAL, STRING]

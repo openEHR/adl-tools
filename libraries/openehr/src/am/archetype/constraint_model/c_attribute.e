@@ -235,14 +235,6 @@ feature -- Status Report
 			Result := children.count > 0
 		end
 
-	is_relationship: BOOLEAN
-			-- (in the UML sense) - True if attribute target type is not a primitive data type
-		require
-			has_children: not any_allowed
-		do
-			Result := not attached {C_PRIMITIVE_OBJECT} children.first
-		end
-
 	is_multiple: BOOLEAN
 			-- True if this node logically represents a container attribute
 		do

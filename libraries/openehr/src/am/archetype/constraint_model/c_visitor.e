@@ -3,11 +3,9 @@ note
 	description: "Generic visitor class for C_xxx class objects"
 	keywords:    "visitor, constraint model"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "initial"
-
 
 deferred class C_VISITOR
 
@@ -81,16 +79,6 @@ feature -- Visitor
 
 	end_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- exit an ARCHETYPE_INTERNAL_REF
-		do
-		end
-
-	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- enter a CONSTRAINT_REF
-		deferred
-		end
-
-	end_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- exit a CONSTRAINT_REF
 		do
 		end
 

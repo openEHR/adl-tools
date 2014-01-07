@@ -543,7 +543,7 @@ feature {NONE} -- Tests
 	test_parse: INTEGER
 			-- parse archetype and return result
 		local
-			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
+			unused_at_codes: ARRAYED_LIST [STRING]
 			orig_fname, src_fname, diff_fname, flat_fname, serialised_source_path: STRING
 		do
 			check attached target end
@@ -557,14 +557,10 @@ feature {NONE} -- Tests
 				test_status.append (" parse succeeded%N" + target.errors.as_string)
 
 				unused_at_codes := target.differential_archetype.terminology_unused_term_codes
-				unused_ac_codes := target.differential_archetype.terminology_unused_constraint_codes
 				if not unused_at_codes.is_empty then
 					test_status.append ("Unused at-codes: " + display_arrayed_list (unused_at_codes) + "%N")
 				end
-				if not unused_ac_codes.is_empty then
-					test_status.append ("Unused ac-codes: " + display_arrayed_list (unused_ac_codes) + "%N")
-				end
-				if remove_unused_codes and (not unused_at_codes.is_empty or not unused_ac_codes.is_empty) then
+				if remove_unused_codes and not unused_at_codes.is_empty then
 					test_status.append (">>>>>>>>>> removing unused codes%N")
 					target.differential_archetype.remove_terminology_unused_codes
 				end

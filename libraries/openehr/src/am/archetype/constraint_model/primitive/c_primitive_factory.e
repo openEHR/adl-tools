@@ -362,7 +362,7 @@ feature -- Factory
 		end
 
 	valid_c_terminology_code_string (a_string: STRING): BOOLEAN
-			-- Verify that the string of form "terminology_id::[code, code, ... [; code]]" is valid
+			-- Verify that the string of form "terminology_id::code, code, ... ; code" is valid
 		require
 			String_valid: not a_string.is_empty
 		local
@@ -404,7 +404,6 @@ feature -- Factory
 			else
 				errors.add_error (ec_STCNT, Void, "valid_c_terminology_code_string")
 			end
-
 			Result := not errors.has_errors
 		end
 

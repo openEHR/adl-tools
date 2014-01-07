@@ -86,31 +86,31 @@ feature -- Comparison
 				rm_type_name.is_case_insensitive_equal (other.rm_type_name)
 		end
 
-	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses no constraints in addition to `other', other than
-			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
-			-- `other' is assumed to be in a flat archetype
-			-- Used to determine if path segments can be compressed;
-			-- Returns False if any of the following is different:
-			--	rm_type_name
-			--	occurrences
-			-- 	sibling order
-		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and not attached occurrences and
-				node_id_conforms_to (other) and not attached sibling_order
-		end
-
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
-			-- `other' is assumed to be in a flat archetype.
+			-- `other' is typically in a flat archetype.
 			-- Returns True only when the following is True:
-			--	rm_type_name is the same or a subtype of RM type of flat parent node;
+			--	rm_type_name is the same or a subtype of rm_type_name of other;
 			--	occurrences is same (= Void) or a sub-interval
 			--	node_id is the same, or redefined to a legal code at the level of the owning archetype
 		do
 			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
 				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
 				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
+		end
+
+	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses no constraints in addition to `other', other than
+			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
+			-- `other' is typically in a flat archetype
+			-- Used to determine if path segments can be compressed;
+			-- Returns True if:
+			--	rm_type_name is identical
+			--	occurrences is Void
+			-- 	sibling order is Void
+		do
+			Result := rm_type_name.is_equal (other.rm_type_name) and not attached occurrences and
+				node_id_conforms_to (other) and not attached sibling_order
 		end
 
 	occurrences_conforms_to (other: C_OBJECT): BOOLEAN

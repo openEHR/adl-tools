@@ -101,9 +101,15 @@ feature -- Access
 feature -- Status Report
 
 	is_local: BOOLEAN
-			-- True if this terminology id = "local"
+			-- True if terminology id = "local"
 		do
 			Result := terminology_id.is_equal (Local_terminology_id)
+		end
+
+	is_value_set_reference: BOOLEAN
+			-- True if there is just one 'ac' code rather than a list
+		do
+			Result := code_list.count = 1 and then is_valid_constraint_code (code_list.first)
 		end
 
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
@@ -173,24 +179,6 @@ feature {P_C_TERMINOLOGY_CODE} -- Modification
 			end
 		end
 
---feature -- Conversion
-
---	adl_14_reformat_codes
---			-- renumber codes to support ADL 1.4 at-codes being used in ADL 1.5
---		obsolete
---			"Support for ADL 1.4 at-codes in ADL 1.5 archetypes"
---		do
---			if is_local then
---				from code_list.start until code_list.off loop
---					code_list.replace (adl_14_code_reformatted (code_list.item))
---					code_list.forth
---				end
---				if attached assumed_value as att_av then
---					create assumed_value.make (att_av.terminology_id, adl_14_code_reformatted (att_av.code_string))
---				end
---			end
---		end
-
 feature -- Output
 
 	as_string: STRING
@@ -235,8 +223,12 @@ feature {NONE} -- Implementation
 
 	do_node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
+			-- If both nodes are value set refs, i.e. ac-codes, this ac-code
+			-- must be a specialisation of the other
 		do
-			if other.terminology_id.is_equal (terminology_id) then
+			if is_value_set_reference and other.is_value_set_reference then
+				Result := codes_conformant (code_list.first, other.code_list.first)
+			elseif other.terminology_id.is_equal (terminology_id) then
 				Result := is_list_subset (code_list, other.code_list)
 			end
 		end

@@ -452,7 +452,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 	term_codes_index: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- in C_TERMINOLOGY_CODE types
-			-- keys are either local codes, e.g. "at0044" or fully qualified non-local code strings
+			-- keys are either local codes, e.g. "at44" or fully qualified non-local code strings
 			-- e.g. "openehr::233", "snomedct_20100601::20000349" etc
 		local
 			def_it: C_ITERATOR
@@ -476,26 +476,6 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 								end
 								idx.item (key).extend (ccp)
 							end
-						end
-					end (?, ?, Result),
-				Void)
-		end
-
-	constraint_codes_index: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
-			-- table of {list<node>, code} for constraint codes in archetype
-		local
-			def_it: C_ITERATOR
-		do
-			create Result.make (0)
-			create def_it.make (definition)
-			def_it.do_all (
-				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING])
-					do
-						if attached {CONSTRAINT_REF} a_c_node as cref then
-							if not idx.has (cref.target) then
-								idx.put (create {ARRAYED_LIST [CONSTRAINT_REF]}.make(0), cref.target)
-							end
-							idx.item (cref.target).extend (cref)
 						end
 					end (?, ?, Result),
 				Void)
