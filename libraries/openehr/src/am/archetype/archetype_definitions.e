@@ -84,6 +84,7 @@ feature -- Definitions
 			Result.extend ("1.4")
 			Result.extend ("1.4.1")
 			Result.extend ("1.5")
+			Result.extend ("1.5.1")
 		end
 
 	Latest_adl_version: STRING

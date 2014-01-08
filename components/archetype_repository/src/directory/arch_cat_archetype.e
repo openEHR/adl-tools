@@ -98,6 +98,7 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
+			adl_version := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
@@ -139,6 +140,7 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
+			adl_version := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
 			is_differential_generated := arch_thumbnail.is_generated
 			rm_schema := rm_schema_for_archetype_id (id)
@@ -170,6 +172,7 @@ feature {NONE} -- Initialisation
 			at: ARTEFACT_TYPE
 		do
 			make_item
+			adl_version := Latest_adl_version
 			id := an_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
@@ -204,6 +207,7 @@ feature {NONE} -- Initialisation
 			at: ARTEFACT_TYPE
 		do
 			make_item
+			adl_version := Latest_adl_version
 			id := an_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
@@ -242,6 +246,9 @@ feature {NONE} -- Initialisation
 		end
 
 feature -- Access (semantic)
+
+	adl_version: STRING
+			-- ADL version of the most recently read text file (legacy or differential)
 
 	artefact_type_name: STRING
 
@@ -283,10 +290,18 @@ feature -- Access (semantic)
 			-- the text of the archetype source file, i.e. the differential form.
 		require
 			differential_file_available: has_differential_file
+		local
+			arch_text: STRING
 		do
 			file_repository.read_text_from_file (differential_path)
 			check attached file_repository.text as t then
-				Result := t
+				arch_text := t
+			end
+			if adl_version < latest_adl_version then
+				adl_14_15_rewriter.execute (arch_text)
+				Result := adl_14_15_rewriter.out_buffer
+			else
+				Result := arch_text
 			end
 			differential_text_timestamp := differential_file_timestamp
 		end
@@ -378,11 +393,21 @@ feature -- Access (semantic)
 			-- The text of the legacy archetype, if it exists
 		require
 			flat_file_available: has_legacy_flat_file
+		local
+			arch_text: STRING
 		do
 			check attached legacy_flat_path as lfp then
 				file_repository.read_text_from_file (lfp)
 			end
-			Result := file_repository.text
+			check attached file_repository.text as t then
+				arch_text := t
+			end
+			if adl_version < latest_adl_version then
+				adl_14_15_rewriter.execute (arch_text)
+				Result := adl_14_15_rewriter.out_buffer
+			else
+				Result := arch_text
+			end
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 		end
 

@@ -22,6 +22,11 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
+	adl_14_15_rewriter: ADL_14_15_REWRITER
+		once
+			create Result.make
+		end
+
 end
 
 

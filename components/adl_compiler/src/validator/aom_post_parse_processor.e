@@ -186,7 +186,7 @@ feature {NONE} -- Implementation
 	 			if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
 		 			path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
 		 			if parent_flat.has_attribute_path (path_in_flat) then
-		 				ca.set_differential_path (parent_flat.attribute_at_path (path_in_flat).path)
+		 				ca.set_differential_path (parent_flat.object_at_path (path_in_flat).path)
 		 			end
 		 		end
 			end

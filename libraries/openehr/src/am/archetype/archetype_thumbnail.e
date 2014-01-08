@@ -25,8 +25,9 @@ create
 
 feature -- Initialisation
 
-	make (an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: STRING; is_differential_flag, is_generated_flag: BOOLEAN)
+	make (an_adl_version, an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: STRING; is_differential_flag, is_generated_flag: BOOLEAN)
 		do
+			adl_version := an_adl_version
 			create archetype_id.make_from_string (an_id)
 			archetype_id_is_old_style := id_is_old_style_flag
 			artefact_type := (create {ARTEFACT_TYPE}).type_name_to_type (artefact_type_str)
@@ -38,8 +39,8 @@ feature -- Access
 
 	archetype_id: ARCHETYPE_HRID
 
---	adl_version: STRING
---			-- ADL version of this archetype
+	adl_version: STRING
+			-- ADL version of this archetype
 
 	artefact_type: INTEGER
 			-- design type of artefact, archetype, template, template-component, etc
@@ -82,15 +83,6 @@ feature -- Status Report
 		end
 
 feature -- Modification
-
---	set_adl_version(a_ver: STRING)
---			-- set adl_version with a string containing only '.' and numbers,
---			-- not commencing or finishing in '.'
---		require
---			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
---		do
---			adl_version := a_ver
---		end
 
 	set_parent_archetype_id (an_id: STRING; id_is_old_style_flag: BOOLEAN)
 		do

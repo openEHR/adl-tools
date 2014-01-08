@@ -62,11 +62,13 @@ feature -- Commands
 			artefact_types: ARTEFACT_TYPE
 			id_bad: BOOLEAN
 			arch_is_differential, arch_is_generated, arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
-			arch_artefact_type_name, archetype_id_str: STRING
+			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
 			parent_id_str: detachable STRING
+			lpos, rpos: INTEGER
 		do
 			reset
 			create artefact_types.default_create
+			create adl_ver.make_empty
 
 			-- determine from the path whether it is a differential (source form) archetype
 			arch_is_differential := file_system.has_extension (a_full_path, File_ext_archetype_source)
@@ -81,18 +83,16 @@ feature -- Commands
 				is_generated := lines[1].has_substring (Generated_flag_string)
 
 				-- extract ADL version
-				-- FIXME: uncomment the following if ADL version needed in thumbnail
---				if lines[1].has_substring(Adl_version_string) then
---					lpos := lines[1].substring_index (Adl_version_string, 1) + Adl_version_string.count
---					lpos := lines[1].index_of ('=', lpos) + 1
---					from rpos := lpos until lines[1].item (rpos) = ')' or lines[1].item (rpos) = ';' or else rpos > lines[1].count loop
---						rpos := rpos + 1
---					end
---					adl_ver := lines[1].substring (lpos, rpos-1)
---					adl_ver.left_adjust
---					adl_ver.right_adjust
---					last_archetype.set_adl_version (adl_ver)
---				end
+				if lines[1].has_substring (Adl_version_string) then
+					lpos := lines[1].substring_index (Adl_version_string, 1) + Adl_version_string.count
+					lpos := lines[1].index_of ('=', lpos) + 1
+					from rpos := lpos until lines[1].item (rpos) = ')' or lines[1].item (rpos) = ';' or else rpos > lines[1].count loop
+						rpos := rpos + 1
+					end
+					adl_ver := lines[1].substring (lpos, rpos-1)
+					adl_ver.left_adjust
+					adl_ver.right_adjust
+				end
 				lines[1].remove_substring (lines[1].index_of ('(', 1), lines[1].count)
 				lines[1].right_adjust
 			end
@@ -127,7 +127,7 @@ feature -- Commands
 						end
 					end
 
-					create last_archetype.make (archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
+					create last_archetype.make (adl_ver, archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
 					if attached parent_id_str as pid_str then
 						last_archetype.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
 					end

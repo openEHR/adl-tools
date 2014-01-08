@@ -190,7 +190,7 @@ feature -- Parsing
 							-----------------------------------------------------------------------------------------------
 							-- ADL 1.5 transitional id code support
 							-- reprocess the terminology to move id-codes into their own section from the term-codes section
-							diff_terminology.convert_at_id_codes (definition_context.parser.converted_codes)
+							-- diff_terminology.convert_at_id_codes (definition_context.parser.converted_codes)
 							--
 							-----------------------------------------------------------------------------------------------							
 
@@ -250,7 +250,7 @@ feature -- Parsing
 							-- ADL 1.5 transitional id code support
 							-- reprocess the terminology to move id-codes into their own section from the term-codes section
 							if attached annots as att_annots then
-								att_annots.convert_at_id_paths (definition_context.parser.converted_codes)
+							--	att_annots.convert_at_id_paths (definition_context.parser.converted_codes)
 								new_arch.set_annotations (att_annots)
 							end
 							--

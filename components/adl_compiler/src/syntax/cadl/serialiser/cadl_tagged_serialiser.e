@@ -19,7 +19,7 @@ inherit
 			start_c_complex_object, end_c_complex_object,
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
-			start_archetype_internal_ref, start_constraint_ref,
+			start_archetype_internal_ref,
 			start_c_archetype_root,
 			start_c_primitive_object
 		end
@@ -49,7 +49,7 @@ create
 
 feature -- Modification
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- start serialising an C_COMPLEX_OBJECT
 		local
 			attrs: HASH_TABLE [STRING, STRING]

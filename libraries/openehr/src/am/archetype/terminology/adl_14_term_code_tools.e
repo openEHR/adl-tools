@@ -67,26 +67,26 @@ feature -- Definitions
 			-- leader of all internal term codes
 
 	Adl_14_term_code_regex_pattern: STRING
-			-- a regex to match any term of any depth
+			-- a regex to match any at-code of any depth
 		once
 			create Result.make_empty
-			Result.append ("^at[0-9]+(\.[0-9]+)*$")
+			Result.append ("^at(0|[0-9]{4})(\.[0-9]+)*$")
 		end
 
 	Adl_14_constraint_code_leader: STRING = "ac"
 
 	Adl_14_constraint_code_regex_pattern: STRING
-			-- a regex to match any term of any depth
+			-- a regex to match any ac-term of any depth
 		once
 			create Result.make_empty
-			Result.append ("^ac[0-9]+(\.[0-9]+)*$")
+			Result.append ("^ac(0|[0-9]{4})(\.[0-9]+)*$")
 		end
 
 	Any_adl_14_code_regex_pattern: STRING
-			-- a regex to match any term of any depth
+			-- a regex to match any at- or ac-term of any depth
 		once
 			create Result.make_empty
-			Result.append ("^(at|ac)[0-9]+(\.[0-9]+)*$")
+			Result.append ("^(at|ac)(0|[0-9]{4})(\.[0-9]+)*$")
 		end
 
 	Adl_14_zero_filler: STRING = ".0"
