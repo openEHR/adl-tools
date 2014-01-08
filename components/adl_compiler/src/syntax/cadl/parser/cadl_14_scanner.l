@@ -23,6 +23,16 @@ inherit
 			{NONE} all
 		end
 
+	ADL_14_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
+	ADL_15_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 	INTERNAL
 		export
 			{NONE} all
@@ -56,12 +66,17 @@ NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
-PATH_SEG [a-z][a-zA-Z0-9_]*(\[(at|id)[0-9.]+\])?
+
+ID_CODE_LEADER id
+CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
+ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
+ADL_14_AC_CODE ac[0-9]{4}(\.(0|[1-9][0-9]*))*
+ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
 --------------- Options --------------
-%x IN_STR IN_REGEXP1 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
+%x IN_STR IN_REGEXP1 IN_VALUE_SET_DEF IN_C_DOMAIN_TYPE
 %option outfile="cadl_14_scanner.e"
 
 %%
@@ -177,25 +192,34 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Cc][Ll][Oo][Ss][Ee][Dd]						last_token := SYM_CLOSED
 
-----------/* V_QUALIFIED_TERM_CODE_REF: term code of form [ICD10AM(1998)::F23] */ ---------------
-\[{NAMECHAR_PAREN}+::{NAMECHAR}+\]	{
-					last_token := V_QUALIFIED_TERM_CODE_REF
-					last_string_value := text_substring (2, text_count - 1)
-			}
+----------/* V_ROOT_ID_CODE, V_ID_CODE, V_ID_CODE_STR */ ---------------
+\[at0000(\.1)*\] {
+		last_token := V_ROOT_ID_CODE
+		code := text_substring (2, text_count - 1)
+		last_string_value := adl_14_id_code_converted (code)
+		converted_codes.put (last_string_value, code)
+	}
+\[{ADL_14_AT_CODE}\] {
+		last_token := V_ID_CODE
+		code := text_substring (2, text_count - 1)
+		last_string_value := adl_14_id_code_converted (code)
+		converted_codes.put (last_string_value, code)
+	}
+{ADL_14_AT_CODE} {
+		last_token := V_ID_CODE_STR
+		last_string_value := adl_14_id_code_converted (text)
+	}
 
-\[{NAMECHAR_PAREN}+::{NAMECHAR_SPACE}+\]	{
-					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
-					last_string_value := text_substring (2, text_count - 1)
-			}
+----------/* V_VALUE_SET_REF */ ---------------
+\[{ADL_14_AC_CODE}\] {
+		last_token := V_VALUE_SET_REF
+		code := text_substring (2, text_count - 1)
+		reformatted_code := adl_14_code_renumbered (code) 
+		last_string_value := Local_terminology_id + "::" + reformatted_code
+		converted_codes.put (reformatted_code, code)
+	}
 
-----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
-
-\[(ac|at|id)[0-9]+(\.[0-9]+)*\] {
-					last_token := V_LOCAL_TERM_CODE_REF
-					last_string_value := text_substring (2, text_count - 1)
-			}
-
----------/* V_TERM_CODE_CONSTRAINT of form */ ------------
+---------/* V_VALUE_SET_DEF of form */ ------------
 -- [terminology_id::code, -- comment
 --		     	  code, -- comment
 --			  code] -- comment
@@ -206,14 +230,14 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --			  code] -- an optional assumed value
 --
 
-\[[a-zA-Z0-9()._\-]+::[ \t]*	{
+\[{NAMECHAR_PAREN}+::[ \t]*	{
 				in_buffer.append_string (text_substring (2, text_count))
-				set_start_condition (IN_TERM_CONSTRAINT)
+				set_start_condition (IN_VALUE_SET_DEF)
 				term_code_count := 0
 				assumed_term_code_index := 0
 			}
 
-<IN_TERM_CONSTRAINT> {
+<IN_VALUE_SET_DEF> {
 	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
 				str_ := text
 				in_buffer.append(text)
@@ -233,11 +257,15 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
 
-	[ \t]*[a-zA-Z0-9._\-]*[ \t]*\] { -- match final line, terminating in ']'
+	[ \t]*{NAMECHAR}*[ \t]*\] { -- match final line, terminating in ']'
 				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
-					last_token := ERR_TERM_CODE_CONSTRAINT
+					last_token := ERR_VALUE_SET_DEF
+					create str_.make (in_buffer.count)
+					str_.append (in_buffer)
+					in_buffer.wipe_out
+					last_string_value := str_
 				else
-					in_buffer.append(text_substring(1, text_count-1))
+					in_buffer.append (text_substring(1, text_count-1))
 					create str_.make (in_buffer.count)
 					str_.append (in_buffer)
 					in_buffer.wipe_out
@@ -245,19 +273,11 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value.prune_all(' ')
 					last_string_value.prune_all('%T')
 					last_string_value.prune_all('%N')
-					last_token := V_TERM_CODE_CONSTRAINT
+					last_token := V_VALUE_SET_DEF
 				end
 				set_start_condition (INITIAL)
 			}
 }
-
-
-----------/* V_LOCAL_CODE */ ----------------------------------------
-
-(ac|at|id)[0-9]+(\.[0-9]+)* {
-				last_token := V_LOCAL_CODE
-				last_string_value := text
-		}
 
 ----------/* archetype id */ -------------------------------------------------
 ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
@@ -468,21 +488,21 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 
 ----------/* V_ATTRIBUTE_IDENTIFIER */ --------------------------------------
 [a-z]{IDCHAR}*	{
-					last_token := V_ATTRIBUTE_IDENTIFIER
-					last_string_value := text
-			}
+			last_token := V_ATTRIBUTE_IDENTIFIER
+			last_string_value := text
+		}
 
 ----------/* V_ABS_PATH */ -------------------------------------------------
-(\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name/attr_name/..." or "/attr_name[code]/.."
-				last_token := V_ABS_PATH
-				last_string_value := text
-			}
+(\/{ADL_14_PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name/attr_name/..." or "/attr_name[code]/.."
+			last_token := V_ABS_PATH
+			last_string_value := adl_14_path_converted (text)
+		}
 
 ----------/* V_REL_PATH */ -------------------------------------------------
-{PATH_SEG}(\/{PATH_SEG})+ {		-- matches a relative path string with segments of form "attr_name/attr_name/..." or "attr_name[code]/.."
-				last_token := V_REL_PATH
-				last_string_value := text
-			}
+{ADL_14_PATH_SEG}(\/{ADL_14_PATH_SEG})+ {		-- matches a relative path string with segments of form "attr_name/attr_name/..." or "attr_name[code]/.."
+			last_token := V_REL_PATH
+			last_string_value := adl_14_path_converted (text)
+		}
 
 ----------/* V_REGEXP */ -------------------------------------------------
 "{/" 			{
@@ -681,9 +701,25 @@ feature -- Access
 	source_start_line: INTEGER
 			-- Offset of source in other document, else 0.
 
+	converted_codes: HASH_TABLE [STRING, STRING]
+			-- table of new codes, keyed by old code found in archetype
+		attribute
+			create Result.make (0)
+		end
+
+	code: STRING
+		attribute
+			create Result.make_empty
+		end
+
+	reformatted_code: STRING
+		attribute
+			create Result.make_empty
+		end
+
 feature {NONE} -- Implementation
 
-	Init_buffer_size: INTEGER = 256
+	Init_buffer_size: INTEGER = 1024
 				-- Initial size for `in_buffer'
 
 	odin_parser: ODIN_PARSER

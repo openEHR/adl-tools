@@ -58,6 +58,7 @@ create
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
 %token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_VALUE_SET_REF V_QUALIFIED_TERM_CODE_REF V_VALUE_SET_DEF
+%token ERR_VALUE_SET_DEF
 
 %token <STRING> V_REGEXP
 %token <STRING> V_ABS_PATH V_REL_PATH
@@ -82,8 +83,7 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_VALUE_SET_DEF ERR_V_ISO8601_DURATION
-%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
+%token ERR_CHARACTER ERR_STRING ERR_V_ISO8601_DURATION
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -1541,9 +1541,6 @@ c_string: V_STRING 	-- single value, generates closed list
 
 c_terminology_code: V_VALUE_SET_DEF	-- e.g. "local::at40, at41; at40"
 		{
-			if is_adl_14_term_code_constraint ($1) then
-				$1 := adl_14_code_constraint_reformatted ($1)
-			end
 			if constraint_model_factory.valid_c_terminology_code_string ($1) then
 				$$ := constraint_model_factory.create_c_terminology_code ($1)
 			else
@@ -1557,6 +1554,10 @@ c_terminology_code: V_VALUE_SET_DEF	-- e.g. "local::at40, at41; at40"
 			else
 				abort_with_errors (constraint_model_factory.errors)
 			end
+		}
+	| ERR_VALUE_SET_DEF
+		{
+			abort_with_error (ec_STCV, <<err_str>>)
 		}
 	;
 

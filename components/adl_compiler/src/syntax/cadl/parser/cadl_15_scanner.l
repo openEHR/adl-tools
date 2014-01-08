@@ -64,10 +64,10 @@ NAMESTR [a-zA-Z][a-zA-Z0-9_]+
 
 ID_CODE_LEADER id
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
-ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
-ADL_14_AC_CODE ac[0-9]{4}(\.(0|[1-9][0-9]*))*
+-- ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
+-- ADL_14_AC_CODE ac[0-9]{4}(\.(0|[1-9][0-9]*))*
 PATH_SEG [a-z][a-zA-Z0-9_]*(\[id(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*\])?
-ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
+-- ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -197,29 +197,29 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 -------------------------------------------------------------------
 --- START transitional at-code identifier codes in ADL 1.5 archetypes
 ---
-\[at0000(\.1)*\] {
-		last_token := V_ROOT_ID_CODE
-		code := text_substring (2, text_count - 1)
-		last_string_value := adl_14_id_code_converted (code)
-		converted_codes.put (last_string_value, code)
-	}
-\[{ADL_14_AT_CODE}\] {
-		last_token := V_ID_CODE
-		code := text_substring (2, text_count - 1)
-		last_string_value := adl_14_id_code_converted (code)
-		converted_codes.put (last_string_value, code)
-	}
-{ADL_14_AT_CODE} {
-		last_token := V_ID_CODE_STR
-		last_string_value := adl_14_id_code_converted (text)
-	}
-\[{ADL_14_AC_CODE}\] {
-		last_token := V_VALUE_SET_REF
-		code := text_substring (2, text_count - 1)
-		reformatted_code := adl_14_code_renumbered (code) 
-		last_string_value := Local_terminology_id + "::" + reformatted_code
-		converted_codes.put (reformatted_code, code)
-	}
+-- \[at0000(\.1)*\] {
+-- 		last_token := V_ROOT_ID_CODE
+-- 		code := text_substring (2, text_count - 1)
+-- 		last_string_value := adl_14_id_code_converted (code)
+-- 		converted_codes.put (last_string_value, code)
+-- 	}
+-- \[{ADL_14_AT_CODE}\] {
+-- 		last_token := V_ID_CODE
+-- 		code := text_substring (2, text_count - 1)
+-- 		last_string_value := adl_14_id_code_converted (code)
+-- 		converted_codes.put (last_string_value, code)
+-- 	}
+-- {ADL_14_AT_CODE} {
+-- 		last_token := V_ID_CODE_STR
+-- 		last_string_value := adl_14_id_code_converted (text)
+-- 	}
+-- \[{ADL_14_AC_CODE}\] {
+-- 		last_token := V_VALUE_SET_REF
+-- 		code := text_substring (2, text_count - 1)
+-- 		reformatted_code := adl_14_code_renumbered (code) 
+-- 		last_string_value := Local_terminology_id + "::" + reformatted_code
+-- 		converted_codes.put (reformatted_code, code)
+-- 	}
 ---
 --- END transitional at-code identifier codes in ADL 1.5 archetypes
 -------------------------------------------------------------------
@@ -293,6 +293,9 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	[ \t]*{NAMECHAR}*[ \t]*\] { -- match final line, terminating in ']'
 		if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
 			last_token := ERR_VALUE_SET_DEF
+			create err_str.make (in_buffer.count)
+			err_str.append (in_buffer)
+			in_buffer.wipe_out
 		else
 			in_buffer.append (text_substring(1, text_count-1))
 			create str_.make (in_buffer.count)
@@ -438,15 +441,15 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 -------------------------------------------------------------------
 --- START transitional at-code identifier codes in ADL 1.5 archetypes
 ---
-(\/{ADL_14_PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[at-code]"
-			last_token := V_ABS_PATH
-			last_string_value := adl_14_path_converted (text)
-		}
-
-{ADL_14_PATH_SEG}(\/{ADL_14_PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[at-code]"
-			last_token := V_REL_PATH
-			last_string_value := adl_14_path_converted (text)
-		}
+-- (\/{ADL_14_PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[at-code]"
+-- 			last_token := V_ABS_PATH
+-- 			last_string_value := adl_14_path_converted (text)
+-- 		}
+-- 
+-- {ADL_14_PATH_SEG}(\/{ADL_14_PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[at-code]"
+-- 			last_token := V_REL_PATH
+-- 			last_string_value := adl_14_path_converted (text)
+-- 		}
 ---
 --- END transitional at-code identifier codes in ADL 1.5 archetypes
 -------------------------------------------------------------------
@@ -642,7 +645,7 @@ feature -- Commands
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
-			converted_codes.wipe_out
+			-- converted_codes.wipe_out
 		end
 
 feature -- Access
@@ -659,31 +662,36 @@ feature -- Access
 	source_start_line: INTEGER
 			-- Offset of source in other document, else 0.
 
--------------------------------------------------------------------
---- START transitional at-code identifier codes in ADL 1.5 archetypes
----
-	converted_codes: HASH_TABLE [STRING, STRING]
-			-- table of new codes, keyed by old code found in archetype
+	err_str: STRING
 		attribute
 			create Result.make (0)
 		end
 
-	code: STRING
-		attribute
-			create Result.make_empty
-		end
-
-	reformatted_code: STRING
-		attribute
-			create Result.make_empty
-		end
+-------------------------------------------------------------------
+--- START transitional at-code identifier codes in ADL 1.5 archetypes
+---
+-- 	converted_codes: HASH_TABLE [STRING, STRING]
+-- 			-- table of new codes, keyed by old code found in archetype
+-- 		attribute
+-- 			create Result.make (0)
+-- 		end
+-- 
+-- 	code: STRING
+-- 		attribute
+-- 			create Result.make_empty
+-- 		end
+-- 
+-- 	reformatted_code: STRING
+-- 		attribute
+-- 			create Result.make_empty
+-- 		end
 ---
 --- END transitional at-code identifier codes in ADL 1.5 archetypes
 -------------------------------------------------------------------
 
 feature {NONE} -- Implementation
 
-	Init_buffer_size: INTEGER = 4096
+	Init_buffer_size: INTEGER = 1024
 				-- Initial size for `in_buffer'
 
 	term_code_count: INTEGER

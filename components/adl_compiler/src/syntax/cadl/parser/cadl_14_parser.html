@@ -84,16 +84,18 @@
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ROOT_ID_CODE </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
 <span class="lhs_variable" id="sibling_order">sibling_order</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_AFTER </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+&nbsp; <span class="token">SYM_AFTER </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
-| <span class="token">SYM_BEFORE </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+| <span class="token">SYM_BEFORE </span><span class="token">V_ID_CODE </span></div>
 </div>
 
 <div class="rule">
@@ -119,8 +121,6 @@
 <div class="rhs">
 | <span class="rhs_variable"><a href="#archetype_slot">archetype_slot</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#constraint_ref">constraint_ref</a> </span></div>
-<div class="rhs">
 | <span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_ordinal">c_ordinal</a> </span></div>
@@ -138,7 +138,7 @@
 <div class="rhs">
 &nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
 <div class="rhs">
-| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_LOCAL_CODE </span><span class="literal_token">&#44; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_ID_CODE_STR </span><span class="literal_token">&#44; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
 <div class="rhs">
 | <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
 </div>
@@ -158,7 +158,7 @@
 <div class="rhs">
 &nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
 <div class="rhs">
-| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
 </div>
 
 <div class="rule">
@@ -183,11 +183,11 @@
 <div class="rhs">
 &nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
 <div class="rhs">
-| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">SYM_CLOSED </span></div>
 <div class="rhs">
-| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_LOCAL_TERM_CODE_REF </span><span class="token">SYM_CLOSED </span></div>
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="token">SYM_CLOSED </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="token">error </span></div>
 </div>
@@ -719,9 +719,11 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_terminology_code">c_terminology_code</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_TERM_CODE_CONSTRAINT </span></div>
+&nbsp; <span class="token">V_VALUE_SET_DEF </span></div>
 <div class="rhs">
-| <span class="token">V_QUALIFIED_TERM_CODE_REF </span></div>
+| <span class="token">V_VALUE_SET_REF </span></div>
+<div class="rhs">
+| <span class="token">ERR_VALUE_SET_DEF </span></div>
 </div>
 
 <div class="rule">
@@ -757,13 +759,6 @@
 <span class="lhs_variable" id="ordinal">ordinal</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#term_code">term_code</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="constraint_ref">constraint_ref</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_LOCAL_TERM_CODE_REF </span></div>
 </div>
 
 <div class="rule">
@@ -1148,9 +1143,9 @@
 <div class="lhs">
 <span class="lhs_variable" id="term_code">term_code</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_QUALIFIED_TERM_CODE_REF </span></div>
+&nbsp; <span class="token">V_VALUE_SET_DEF </span></div>
 <div class="rhs">
-| <span class="token">ERR_V_QUALIFIED_TERM_CODE_REF </span></div>
+| <span class="token">ERR_VALUE_SET_DEF </span></div>
 </div>
 
 </body>

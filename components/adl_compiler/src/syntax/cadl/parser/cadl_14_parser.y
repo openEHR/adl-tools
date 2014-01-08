@@ -57,7 +57,7 @@ create
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
-%token <STRING> V_LOCAL_CODE V_LOCAL_TERM_CODE_REF V_QUALIFIED_TERM_CODE_REF V_TERM_CODE_CONSTRAINT
+%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_VALUE_SET_REF V_VALUE_SET_DEF
 %token <STRING> V_REGEXP
 %token <STRING> V_ABS_PATH V_REL_PATH
 %token <CHARACTER> V_CHARACTER
@@ -90,8 +90,8 @@ create
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
-%token ERR_CHARACTER ERR_STRING ERR_TERM_CODE_CONSTRAINT ERR_V_ISO8601_DURATION
-%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
+%token ERR_CHARACTER ERR_STRING ERR_V_ISO8601_DURATION
+%token <STRING> ERR_VALUE_SET_DEF
 
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
@@ -163,7 +163,6 @@ create
 
 %type <detachable CARDINALITY> c_cardinality
 %type <CARDINALITY> cardinality
-%type <CONSTRAINT_REF> constraint_ref
 
 --
 -- LEGACY ADL 1.4 Syntax
@@ -256,17 +255,21 @@ c_complex_object_id: type_identifier
 		{
 			create $$.make_anonymous ($1)
 		}
-	| type_identifier V_LOCAL_TERM_CODE_REF
+	| type_identifier V_ROOT_ID_CODE
+		{
+			create $$.make_identified ($1, $2)
+		}
+	| type_identifier V_ID_CODE
 		{
 			create $$.make_identified ($1, $2)
 		}
 	;
 
-sibling_order: SYM_AFTER V_LOCAL_TERM_CODE_REF
+sibling_order: SYM_AFTER V_ID_CODE
 		{
 			$$ := create {SIBLING_ORDER}.make_after ($2)
 		}
-	| SYM_BEFORE V_LOCAL_TERM_CODE_REF
+	| SYM_BEFORE V_ID_CODE
 		{
 			$$ := create {SIBLING_ORDER}.make_before ($2)
 		}
@@ -304,10 +307,6 @@ c_object: c_complex_object
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| archetype_slot
-		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
-		}
-	| constraint_ref
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
@@ -355,7 +354,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 				abort_with_error (ec_SUAIDI, <<$4>>)
 			end
 		}
-	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
+	| SYM_USE_ARCHETYPE type_identifier '[' V_ID_CODE_STR ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
 			if archetype_id_parser.valid_id ($6) then
 				create $$.make_slot_filler ($2, $6, $4)
@@ -423,7 +422,7 @@ archetype_internal_ref_head: SYM_USE_NODE type_identifier
 			arch_internal_ref_rm_type_name := $2
 			arch_internal_ref_node_id := Void
 		}
-	| SYM_USE_NODE type_identifier V_LOCAL_TERM_CODE_REF
+	| SYM_USE_NODE type_identifier V_ID_CODE
 		{
 			arch_internal_ref_rm_type_name := $2
 			arch_internal_ref_node_id := $3
@@ -475,7 +474,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		{
 			create $$.make_anonymous ($2)
 		}
-	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
+	| SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 		{
 			create $$.make_identified ($2, $3)
 		}
@@ -484,7 +483,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 			create $$.make_anonymous ($2)
 			$$.set_closed
 		}
-	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF SYM_CLOSED
+	| SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE SYM_CLOSED
 		{
 			create $$.make_identified ($2, $3)
 			$$.set_closed
@@ -1509,7 +1508,7 @@ c_string: V_STRING 	-- single value, generates closed list
 		}
 	;
 
-c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
+c_terminology_code: V_VALUE_SET_DEF	-- e.g. "[local::at0040, at0041; at0040]"
 		{
 			if constraint_model_factory.valid_c_terminology_code_string ($1) then
 				$$ := constraint_model_factory.create_c_terminology_code ($1)
@@ -1517,9 +1516,17 @@ c_terminology_code: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at00
 				abort_with_errors (constraint_model_factory.errors)
 			end
 		}
-	| V_QUALIFIED_TERM_CODE_REF
+	| V_VALUE_SET_REF
 		{
-			$$ := constraint_model_factory.create_c_terminology_code ($1)
+			if constraint_model_factory.valid_c_terminology_code_string ($1) then
+				$$ := constraint_model_factory.create_c_terminology_code ($1)
+			else
+				abort_with_errors (constraint_model_factory.errors)
+			end
+		}
+	| ERR_VALUE_SET_DEF
+		{
+			abort_with_error (ec_STCV, <<$1>>)
 		}
 	;
 
@@ -1625,12 +1632,6 @@ ordinal: integer_value SYM_INTERVAL_DELIM term_code
 -- END LEGACY ADL 1.4 Ordinal Syntax; converted here to C_ATTRIBUTE_TUPLE structure
 --
 ----------------------------------------------------------------------------------------
-
-constraint_ref: V_LOCAL_TERM_CODE_REF	-- e.g. "ac0003"
-		{
-			create $$.make ($1)
-		}
-	;
 
 any_identifier: type_identifier
 		{
@@ -2327,11 +2328,11 @@ duration_interval_list: duration_interval ',' duration_interval
 ------------- END TAKEN FROM ODIN_VALIDATOR.Y -------------------
 -----------------------------------------------------------------
 
-term_code: V_QUALIFIED_TERM_CODE_REF
+term_code: V_VALUE_SET_DEF
 		{
 			create $$.make_from_string ($1)
 		}
-	| ERR_V_QUALIFIED_TERM_CODE_REF
+	| ERR_VALUE_SET_DEF
 		{
 			abort_with_error (ec_STCV, <<$1>>)
 		}
