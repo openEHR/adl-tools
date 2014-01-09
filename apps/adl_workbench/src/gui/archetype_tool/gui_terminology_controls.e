@@ -220,7 +220,7 @@ feature {NONE} -- Implementation
 			-- column #1, 2, 3 - code, text, description
 			Result.extend (a_code)
 			check attached selected_language end
-			a_term := terminology.id_definition (selected_language, a_code)
+			a_term := terminology.term_definition (selected_language, a_code)
 			Result.extend (utf8_to_utf32 (a_term.text))
 			Result.extend (utf8_to_utf32 (a_term.description))
 
@@ -268,14 +268,14 @@ feature {NONE} -- Implementation
 
 			-- column #1, 2, 3 - code, text, description
 			Result.extend (a_code)
-			a_term := terminology.constraint_definition (selected_language, a_code)
+			a_term := terminology.term_definition (selected_language, a_code)
 			Result.extend (utf8_to_utf32 (a_term.text))
 			Result.extend (utf8_to_utf32 (a_term.description))
 
 			-- populate bindings
 			across terminologies as terminologies_csr loop
-				if terminology.has_constraint_binding (terminologies_csr.item, a_term.code) then
-					Result.extend (utf8_to_utf32 (terminology.constraint_binding (terminologies_csr.item, a_term.code).as_string))
+				if terminology.has_term_binding (terminologies_csr.item, a_term.code) then
+					Result.extend (utf8_to_utf32 (terminology.term_binding (terminologies_csr.item, a_term.code).as_string))
 				else
 					Result.extend ("")
 				end
@@ -287,11 +287,11 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_language end
 			if archetype_term_keys.has (a_col_name) then
-				source_archetype.terminology.replace_id_definition_item (selected_language, a_code, a_col_name, a_value)
+				source_archetype.terminology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
 			elseif source_archetype.terminology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
-				source_archetype.terminology.replace_term_binding (create {TERMINOLOGY_CODE}.make_from_string (a_value), a_code)
+				source_archetype.terminology.replace_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.put_term_binding (create {TERMINOLOGY_CODE}.make_from_string (a_value), a_code)
+				source_archetype.terminology.put_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			end
 		end
 
@@ -302,9 +302,9 @@ feature {NONE} -- Implementation
 			if archetype_term_keys.has (a_col_name) then
 				source_archetype.terminology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
 			elseif source_archetype.terminology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
-				source_archetype.terminology.replace_term_binding (create {TERMINOLOGY_CODE}.make_from_string (a_value), a_code)
+				source_archetype.terminology.replace_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.put_term_binding (create {TERMINOLOGY_CODE}.make_from_string (a_value), a_code)
+				source_archetype.terminology.put_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			end
 		end
 
@@ -313,11 +313,11 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_language end
 			if archetype_term_keys.has (a_col_name) then
-				source_archetype.terminology.replace_constraint_definition_item (selected_language, a_code, a_col_name, a_value)
-			elseif source_archetype.terminology.has_constraint_binding (a_col_name, a_code) then -- replace an existing binding
-				source_archetype.terminology.replace_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+				source_archetype.terminology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
+			elseif source_archetype.terminology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
+				source_archetype.terminology.replace_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.put_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+				source_archetype.terminology.put_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			end
 		end
 

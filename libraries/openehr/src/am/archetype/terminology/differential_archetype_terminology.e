@@ -28,7 +28,7 @@ feature -- Initialisation
 		do
 			make (an_original_lang, new_root_id_code_at_level (at_specialisation_depth))
 			add_language (an_original_lang)
-			initialise_id_definitions (create {ARCHETYPE_TERM}.make (concept_code))
+			initialise_term_definitions (create {ARCHETYPE_TERM}.make (concept_code))
 		ensure
 			Primary_language_set: original_language = an_original_lang
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
@@ -48,12 +48,8 @@ feature -- Initialisation
 			concept_code := a_flat_copy.concept_code
 			original_language := a_flat_copy.original_language
 
-			id_definitions := a_flat_copy.id_definitions
 			term_definitions := a_flat_copy.term_definitions
-			constraint_definitions := a_flat_copy.constraint_definitions
-
 			term_bindings := a_flat_copy.term_bindings
-			constraint_bindings := a_flat_copy.constraint_bindings
 
 			sync_stored_properties
 		end
@@ -66,40 +62,17 @@ feature -- Modification
 		require
 			Language_valid: not a_language.is_empty
 		local
-			id_defs_one_lang, term_defs_one_lang, constraint_defs_one_lang: detachable HASH_TABLE [ARCHETYPE_TERM, STRING]
+			term_defs_one_lang: detachable HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
-			if not id_definitions.has (a_language) then
-				create id_defs_one_lang.make (0)
-				id_definitions.put (id_defs_one_lang, a_language)
-				if not term_definitions.is_empty then
-					create term_defs_one_lang.make(0)
-					term_definitions.put (term_defs_one_lang, a_language)
-				end
-				if not constraint_definitions.is_empty then
-					create constraint_defs_one_lang.make(0)
-					constraint_definitions.put (constraint_defs_one_lang, a_language)
-				end
+			if not term_definitions.has (a_language) then
+				create term_defs_one_lang.make (0)
+				term_definitions.put (term_defs_one_lang, a_language)
 
 				-- if not the primary language, add set of translation place-holder terms in this language
 				if attached original_language and then not a_language.is_equal (original_language) then
-					-- id definitions
-					if attached id_definitions.item (original_language) as defs_for_lang then
-						across defs_for_lang as defs_csr loop
-							id_defs_one_lang.put (defs_csr.item.create_translated_term (original_language), defs_csr.item.code)
-						end
-					end
-
-					-- term definitions
 					if attached term_definitions.item (original_language) as defs_for_lang then
 						across defs_for_lang as defs_csr loop
 							term_defs_one_lang.put (defs_csr.item.create_translated_term (original_language), defs_csr.item.code)
-						end
-					end
-
-					-- constraint definitions
-					if attached constraint_defs_one_lang and then attached constraint_definitions.item (original_language) as defs_for_lang then
-						across defs_for_lang as defs_csr loop
-							constraint_defs_one_lang.put (defs_csr.item.create_translated_term (original_language), defs_csr.item.code)
 						end
 					end
 				end
@@ -108,16 +81,15 @@ feature -- Modification
 			Language_added: has_language (a_language)
 		end
 
-	initialise_id_definitions (a_term: ARCHETYPE_TERM)
+	initialise_term_definitions (a_term: ARCHETYPE_TERM)
 			-- set concept of terminology from a term
 		require
 			Valid_concept_term: is_valid_root_id_code (a_term.code)
 		do
-			id_codes.extend (a_term.code)
-			id_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make (0), original_language)
-			id_definitions.item (original_language).put (a_term, a_term.code)
+			term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make (0), original_language)
+			term_definitions.item (original_language).put (a_term, a_term.code)
 		ensure
-			Id_definitions_populated: id_definitions.item (original_language).item (concept_code) = a_term
+			Term_definitions_populated: term_definitions.item (original_language).item (concept_code) = a_term
 		end
 
 feature -- Conversion

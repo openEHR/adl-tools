@@ -172,26 +172,6 @@ feature -- Modification
 			end
 		end
 
-feature {ADL_14_ENGINE, ADL_15_ENGINE} -- Legacy
-
-	convert_at_id_paths (converted_codes: HASH_TABLE [STRING, STRING])
-			-- convert paths containing at-codes that are being used as id-codes
-		obsolete
-			"Support ADL 1.4 style at-codes used as id-codes"
-		local
-			converted_paths: HASH_TABLE [STRING, STRING]
-		do
-			across items as items_for_lang_csr loop
-				create converted_paths.make (0)
-				across items_for_lang_csr.item.items as items_at_path_csr loop
-					converted_paths.put (adl_14_path_converted (items_at_path_csr.key), items_at_path_csr.key)
-				end
-				across converted_paths as paths_csr loop
-					items_for_lang_csr.item.items.replace_key (paths_csr.item, paths_csr.key)
-				end
-			end
-		end
-
 feature {DT_OBJECT_CONVERTER} -- Serialisation
 
 	persistent_attributes: ARRAYED_LIST [STRING]

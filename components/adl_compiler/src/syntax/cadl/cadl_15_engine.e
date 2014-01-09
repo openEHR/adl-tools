@@ -85,8 +85,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature {ADL_15_ENGINE} -- Implementation
-
 	parser: CADL_15_PARSER
 
 	rm_schema: detachable BMM_SCHEMA

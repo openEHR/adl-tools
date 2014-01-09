@@ -120,6 +120,10 @@ feature -- Definitions
 
 --	Unknown_code_id: STRING = "unknown"
 
+	uri_template: STRING = "http://$terminology_id.info/id/$code_string"
+
+	uri_with_version_template: STRING = "http://$terminology_id.info/ver/$terminology_version/id/$code_string"
+
 feature -- Access
 
 	specialisation_parent_from_code (a_code: STRING): STRING
@@ -543,6 +547,21 @@ feature -- Conversion
 			Result.replace_substring_all ("at0.", "&!!&")
 			Result.replace_substring_all ("at0", "at")
 			Result.replace_substring_all ("&!!&", "at0.")
+		end
+
+	term_code_to_uri (a_term_code: TERMINOLOGY_CODE): STRING
+			-- convert to a URI string
+		local
+			uri_str: STRING
+		do
+			if attached a_term_code.terminology_version as ver then
+				create Result.make_from_string (uri_with_version_template)
+				Result.replace_substring_all ("$terminology_version", ver)
+			else
+				create Result.make_from_string (uri_template)
+			end
+			Result.replace_substring_all ("$terminology_id", a_term_code.terminology_id)
+			Result.replace_substring_all ("$code_string", a_term_code.code_string)
 		end
 
 feature {NONE} -- Implementation

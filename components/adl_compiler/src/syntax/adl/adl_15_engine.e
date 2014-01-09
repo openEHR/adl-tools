@@ -187,13 +187,6 @@ feature -- Parsing
 							terminology_tree.as_object (({DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
-							-----------------------------------------------------------------------------------------------
-							-- ADL 1.5 transitional id code support
-							-- reprocess the terminology to move id-codes into their own section from the term-codes section
-							-- diff_terminology.convert_at_id_codes (definition_context.parser.converted_codes)
-							--
-							-----------------------------------------------------------------------------------------------							
-
 							-- build the archetype
 							create Result.make (
 								adl_parser.artefact_type,
@@ -246,15 +239,9 @@ feature -- Parsing
 								new_arch.set_rules (att_rules_tree)
 							end
 
-							-----------------------------------------------------------------------------------------------
-							-- ADL 1.5 transitional id code support
-							-- reprocess the terminology to move id-codes into their own section from the term-codes section
 							if attached annots as att_annots then
-							--	att_annots.convert_at_id_paths (definition_context.parser.converted_codes)
 								new_arch.set_annotations (att_annots)
 							end
-							--
-							-----------------------------------------------------------------------------------------------							
 						end
 					end
 				end

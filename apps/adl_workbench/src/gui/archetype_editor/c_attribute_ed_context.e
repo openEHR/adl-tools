@@ -372,7 +372,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 
 			-- first figure out if a new code is needed
 			ed_context.archetype.terminology.create_added_id_definition (co_create_params.node_id_text, co_create_params.node_id_description)
-			new_code := ed_context.archetype.terminology.last_new_id_definition_code
+			new_code := ed_context.archetype.terminology.last_new_definition_code
 
 			if c_primitive_subtypes.has (co_create_params.aom_type) then
 				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
@@ -413,7 +413,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
 				ed_context.archetype.terminology.create_added_constraint_definition ("-", "-")
-				check attached ed_context.archetype.terminology.last_new_constraint_definition_code as new_ac_code then
+				check attached ed_context.archetype.terminology.last_new_definition_code as new_ac_code then
 					create cref.make (new_ac_code)
 				end
 				create {CONSTRAINT_REF_ED_CONTEXT} Result.make (cref, ed_context)

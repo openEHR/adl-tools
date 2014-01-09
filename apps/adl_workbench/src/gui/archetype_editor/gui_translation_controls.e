@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 				if is_term_code (a_code) then
 					rubric := source_archetype.terminology.term_definition (sel_lang, a_code).text
 				else
-					rubric := source_archetype.terminology.constraint_definition (sel_lang, a_code).text
+					rubric := source_archetype.terminology.term_definition (sel_lang, a_code).text
 				end
 				Result.append (annotated_code (a_code, rubric))
 			end

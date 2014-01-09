@@ -252,11 +252,11 @@ feature -- Modification
 				end
 
 				-- node id
-				if not co_create_params.node_id_text.same_string (ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text) then
-					ed_context.flat_terminology.replace_id_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
+				if not co_create_params.node_id_text.same_string (ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text) then
+					ed_context.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
 				end
-				if not co_create_params.node_id_description.same_string (ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).description) then
-					ed_context.flat_terminology.replace_id_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
+				if not co_create_params.node_id_description.same_string (ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).description) then
+					ed_context.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
 				end
 			else -- need to do a remove and add
 
@@ -293,9 +293,9 @@ feature {NONE} -- Implementation
 				if is_id_code (a_n.node_id) then
 					if ed_context.flat_terminology.has_id_code (a_n.node_id) then
 						if display_settings.show_codes then
-							Result := annotated_code (a_n.node_id, ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text)
+							Result := annotated_code (a_n.node_id, ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text)
 						else
-							Result := ed_context.flat_terminology.id_definition (display_settings.language, a_n.node_id).text
+							Result := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
 						end
 					elseif display_settings.show_codes then
 						Result := a_n.node_id

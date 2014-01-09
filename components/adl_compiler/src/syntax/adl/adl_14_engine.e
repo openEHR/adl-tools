@@ -183,12 +183,6 @@ feature -- Parsing
 							ont_tree.as_object (({FLAT_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
-							-----------------------------------------------------------------------------------------------
-							-- ADL 1.5 transitional id code support
-							-- reprocess the terminology to move id-codes into their own section from the term-codes section
-							flat_terminology.convert_at_id_codes (definition_context.parser.converted_codes)
-							--
-							-----------------------------------------------------------------------------------------------							
 							create Result.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,

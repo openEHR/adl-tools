@@ -42,6 +42,11 @@ NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 NAMESTR [a-zA-Z][a-zA-Z0-9_]+
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
+WHITESPACE_LF [ \t\r\n]+
+WHITESPACE [ \t\r]+
+WHITESPACE_LF_CHAR [ \t\r\n]
+WHITESPACE_CHAR [ \t\r]
+
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
 ADL_14_AT_CODE at0[0-9]{3}(\.(0|[1-9][0-9]*))*
 NON_ADL_14_AT_CODE [^a][^t]
@@ -56,9 +61,20 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 ----------/** Free Separators **/----------------------------------------------------
 
-[ \t\r\n]+		out_buffer.append (text)
+{WHITESPACE_LF}		out_buffer.append (text)
 
----------/* normal codes */ ------------
+
+----------/** Keywords **/----------------------------------------------------
+^[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Yy]{WHITESPACE_CHAR}*\n			{
+		out_buffer.append ("terminology%N")
+		in_terminology := True
+	}
+
+^{ALPHANUM_STR}{WHITESPACE_CHAR}*\n			{
+		out_buffer.append (text)
+	}
+
+---------/* normal codes in definition section */ ------------
 
 \[at0000(\.1)*\] {
 		out_buffer.append_character ('[')
@@ -85,7 +101,7 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 		out_buffer.append_character (']')
 	}
 
----------/* codes in ODIN strings */ ------------
+---------/* ADL codes in ODIN strings */ ------------
 
 \[\"at0000(\.1)*\"\] {
 		output_converted_code_dt_key (text_substring (3, text_count - 2))
@@ -122,13 +138,13 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 		out_buffer.append (text)
 	}
 
-	local::{ADL_14_AT_CODE}\] {						-- ADL codes
-		out_buffer.append ("local::")
-		output_new_at_ac_code (text_substring (8, text_count-1))
+	\[local::{ADL_14_AT_CODE}\] {						-- ADL codes
+		out_buffer.append ("[local::")
+		output_new_at_ac_code (text_substring (9, text_count-1))
 		out_buffer.append_character (']')
 	}
 
-	{ALPHANUM_STR}::{ALPHANUM_STR}\] {				-- other codes
+	\[{ALPHANUM_STR}::{ALPHANUM_STR}\] {				-- other codes
 		out_buffer.append (text)
 	}
 
@@ -179,7 +195,18 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 	}
 }
 
----------/* V_VALUE_SET_DEF of form */ ------------
+---------/* terminology codes in terminology bindings */ ------------
+
+\[{NAMECHAR_PAREN}+::{NAMECHAR}+\] { 
+		if in_terminology then
+			create term_code.make_from_string (text.substring (2, text_count - 1))
+			out_buffer.append (term_code_to_uri (term_code))
+		else
+			out_buffer.append (text)
+		end
+	}
+
+---------/* V_VALUE_SET_DEF of non-local codes */ ------------
 -- [terminology_id::code, -- comment
 --		     	  code, -- comment
 --			  code] -- comment
@@ -239,7 +266,7 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 		out_buffer.append (text)
 	}
 
-	[ \t\r\n]*	{
+	{WHITESPACE_LF_CHAR}	{
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	}
@@ -250,9 +277,9 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 	}
 }
 
----------/* other patterns starting with [ */ ------------
+---------/* DT key patterns starting with [" */ ------------
 
-\[\"{NAMECHAR}+\"\]		 out_buffer.append (text)
+\[\"{NAMECHAR_PAREN}+\"\]		 out_buffer.append (text)
 
 ----------/* ADL 1.5 archetype id */ -------------------------------------------------
 ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+(\.[0-9]+){2}((-rc|\+u|\+)[0-9]+) {
@@ -303,12 +330,11 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 ----------/* all other text */ -------------------------------------------------
 
-[^[ \t\r\n]+[ \t\r\n]*\[	{						-- read non '[' non-space characters followed by whitespace then '['
-		out_buffer.append (text.substring (1, text_count - 1))
-		unread_character('[')
+^{WHITESPACE}[^[" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace then '['
+		out_buffer.append (text)
 	}
 
-[^[ \t\r\n]+[ \t\r\n]*	{						-- read non '[' non-space characters followed by whitespace
+[^[" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace then '['
 		out_buffer.append (text)
 	}
 
@@ -318,11 +344,6 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 
 %%
-
-feature {NONE} -- Local variables
-
-
-	converted_codes: HASH_TABLE [STRING, STRING]
 
 feature {NONE} -- Initialization
 
@@ -347,6 +368,7 @@ feature -- Commands
 	execute (in_text:STRING)
 		do
 			reset
+			in_terminology := False
 			set_input_buffer (new_string_buffer (in_text))
 			scan
 		end
@@ -355,7 +377,16 @@ feature -- Access
 
 	out_buffer: STRING
 
+	term_code: TERMINOLOGY_CODE
+		attribute
+			create Result.default_create
+		end
+
 feature {NONE} -- Implementation
+
+	converted_codes: HASH_TABLE [STRING, STRING]
+
+	in_terminology: BOOLEAN
 
 	output_new_id_code (an_old_code: STRING)
 		local

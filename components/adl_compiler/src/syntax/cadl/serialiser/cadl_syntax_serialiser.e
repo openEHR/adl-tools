@@ -296,7 +296,7 @@ feature -- Visitor
 			end
 			last_result.append (a_node.target_path)
 			last_result.append (format_item (FMT_INDENT) + apply_style (format_item(FMT_COMMENT) +
-						safe_comment (ontology.annotated_path (a_node.target_path, language, False)), STYLE_COMMENT))
+						safe_comment (terminology.annotated_path (a_node.target_path, language, False)), STYLE_COMMENT))
 			last_result.append (format_item (FMT_NEWLINE))
 		end
 
@@ -308,7 +308,7 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			ontologies.extend (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+			terminologies.extend (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
 
 			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				start_c_complex_object (a_node, depth)
@@ -338,7 +338,7 @@ feature -- Visitor
 			if a_node.has_attributes then
 				end_c_complex_object (a_node, depth)
 			end
-			ontologies.remove
+			terminologies.remove
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
@@ -444,10 +444,10 @@ feature {NONE} -- Implementation
 
 				-- hold the comment over in `last_coded_constraint_comment'
 				create last_coded_constraint_comment.make(0)
-				if a_node.is_local and a_node.code_count = 1 and ontology.has_term_code (a_node.code_list.first) then
+				if a_node.is_local and a_node.code_count = 1 and terminology.has_term_code (a_node.code_list.first) then
 					last_coded_constraint_comment.append (format_item (FMT_INDENT))
 					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-						safe_comment (ontology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
+						safe_comment (terminology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
 				end
 				last_object_inline := True
 
@@ -477,9 +477,9 @@ feature {NONE} -- Implementation
 						last_result.append (apply_style ("]", STYLE_TERM_REF))
 					end
 
-					if a_node.is_local and ontology.has_term_code (code_list_csr.item) then
+					if a_node.is_local and terminology.has_term_code (code_list_csr.item) then
 						last_result.append (format_item(FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-							safe_comment (ontology.term_definition (language, code_list_csr.item).text), STYLE_COMMENT))
+							safe_comment (terminology.term_definition (language, code_list_csr.item).text), STYLE_COMMENT))
 					end
 					last_result.append (format_item (FMT_NEWLINE))
 				end
@@ -524,9 +524,9 @@ feature {NONE} -- Implementation
 			-- the valid_code() check below is to ensure we have an at-code not an archetype id,
 			-- as can occur in a template
 		do
-			if ontology.has_id_code (a_node.node_id) then
+			if terminology.has_id_code (a_node.node_id) then
 				last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-					safe_comment (ontology.id_definition (language, a_node.node_id).text), STYLE_COMMENT))
+					safe_comment (terminology.term_definition (language, a_node.node_id).text), STYLE_COMMENT))
 			end
 		end
 

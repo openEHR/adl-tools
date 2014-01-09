@@ -259,7 +259,7 @@ feature {NONE} -- Implementation
 			langs := terminology.languages_available
 			across langs as langs_csr loop
 				across terminology.id_codes as code_csr loop
-					if not terminology.has_id_definition (langs_csr.item, code_csr.item) then
+					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
 						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
@@ -269,7 +269,7 @@ feature {NONE} -- Implementation
 					end
 				end
 				across terminology.constraint_codes as code_csr loop
-					if not terminology.has_constraint_definition (langs_csr.item, code_csr.item) then
+					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
 						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
@@ -344,17 +344,10 @@ feature {NONE} -- Implementation
 			across terminology.term_bindings as bindings_csr loop
 				across bindings_csr.item as bindings_for_lang_csr loop
 					if not (is_valid_code (bindings_for_lang_csr.key) and then
-						(terminology.has_term_code (bindings_for_lang_csr.key) or terminology.has_id_code (bindings_for_lang_csr.key)) or else
+						terminology.has_code (bindings_for_lang_csr.key) or else
 						target.has_path (bindings_for_lang_csr.key))
 					then
 						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
-					end
-				end
-			end
-			across terminology.constraint_bindings as bindings_csr loop
-				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then terminology.has_constraint_code (bindings_for_lang_csr.key)) then
-						add_error (ec_VOCBK, <<bindings_for_lang_csr.key>>)
 					end
 				end
 			end
