@@ -56,11 +56,11 @@ feature {NONE} -- Initialisation
 				agent :LIST [STRING] do Result := terminology.id_codes end,
 				Void,
 				Void,
-				agent update_id_table_item,
+				agent update_term_table_item,
 				undo_redo_chain,
 				0, 0,
 				agent term_definition_header,
-				agent id_definition_row)
+				agent term_definition_row)
 			id_defs_frame_ctl.extend (id_defs_mlist_ctl.ev_root_container, True)
 			gui_controls.extend (id_defs_mlist_ctl)
 
@@ -90,11 +90,11 @@ feature {NONE} -- Initialisation
 				agent :LIST [STRING] do Result := terminology.constraint_codes end,
 				Void,
 				Void,
-				agent update_constraint_table_item,
+				agent update_term_table_item,
 				undo_redo_chain,
 				0, 0,
 				agent term_definition_header,
-				agent constraint_definition_row)
+				agent term_definition_row)
 			constraint_defs_frame_ctl.extend (constraint_defs_mlist_ctl.ev_root_container, True)
 			gui_controls.extend (constraint_defs_mlist_ctl)
 
@@ -210,30 +210,6 @@ feature {NONE} -- Implementation
 			Result := al.to_array
 		end
 
-	id_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
-			-- row of data items for term definitions table, as an ARRAY of UTF-32 Strings
-		local
-			a_term: ARCHETYPE_TERM
-		do
-			create Result.make(3)
-
-			-- column #1, 2, 3 - code, text, description
-			Result.extend (a_code)
-			check attached selected_language end
-			a_term := terminology.term_definition (selected_language, a_code)
-			Result.extend (utf8_to_utf32 (a_term.text))
-			Result.extend (utf8_to_utf32 (a_term.description))
-
-			-- populate bindings
-			across terminologies as terminologies_csr loop
-				if terminology.has_term_binding (terminologies_csr.item, a_term.code) then
-					Result.extend (utf8_to_utf32 (terminology.term_binding (terminologies_csr.item, a_term.code).as_string))
-				else
-					Result.extend ("")
-				end
-			end
-		end
-
 	term_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
 			-- row of data items for term definitions table, as an ARRAY of UTF-32 Strings
 		local
@@ -250,66 +226,16 @@ feature {NONE} -- Implementation
 
 			-- populate bindings
 			across terminologies as terminologies_csr loop
-				if terminology.has_term_binding (terminologies_csr.item, a_term.code) then
-					Result.extend (utf8_to_utf32 (terminology.term_binding (terminologies_csr.item, a_term.code).as_string))
+				if terminology.has_term_binding (terminologies_csr.item, a_code) then
+					Result.extend (utf8_to_utf32 (terminology.term_binding (terminologies_csr.item, a_code).as_string))
 				else
 					Result.extend ("")
 				end
-			end
-		end
-
-	constraint_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
-			-- row of data items for constraint definitions table, as an ARRAY of UTF-32 Strings
-		local
-			a_term: ARCHETYPE_TERM
-		do
-			check attached selected_language end
-			create Result.make(3)
-
-			-- column #1, 2, 3 - code, text, description
-			Result.extend (a_code)
-			a_term := terminology.term_definition (selected_language, a_code)
-			Result.extend (utf8_to_utf32 (a_term.text))
-			Result.extend (utf8_to_utf32 (a_term.description))
-
-			-- populate bindings
-			across terminologies as terminologies_csr loop
-				if terminology.has_term_binding (terminologies_csr.item, a_term.code) then
-					Result.extend (utf8_to_utf32 (terminology.term_binding (terminologies_csr.item, a_term.code).as_string))
-				else
-					Result.extend ("")
-				end
-			end
-		end
-
-	update_id_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
-			-- update either id definition or binding in terminology based on `a_col_name' column in displayed table
-		do
-			check attached selected_language end
-			if archetype_term_keys.has (a_col_name) then
-				source_archetype.terminology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
-			elseif source_archetype.terminology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
-				source_archetype.terminology.replace_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
-			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.put_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			end
 		end
 
 	update_term_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
 			-- update either term definition or binding in terminology based on `a_col_name' column in displayed table
-		do
-			check attached selected_language end
-			if archetype_term_keys.has (a_col_name) then
-				source_archetype.terminology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
-			elseif source_archetype.terminology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
-				source_archetype.terminology.replace_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
-			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.put_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
-			end
-		end
-
-	update_constraint_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
-			-- update either constraint definition or binding in terminology based on `a_col_name' column in displayed table
 		do
 			check attached selected_language end
 			if archetype_term_keys.has (a_col_name) then

@@ -675,6 +675,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 			clear_cache
 			across index_term_definitions as term_defs_csr loop
 				code := term_defs_csr.key
+				term_defs_csr.item.set_code (code)
 				-- code might not be valid if just read this terminology in from a file
 				if is_valid_code (code) then
 					update_highest_codes (code)
@@ -704,7 +705,10 @@ feature {NONE} -- Legacy
     			end
     		end
      		across constraint_bindings as cons_bindings_for_terminology_csr loop
-    			if term_bindings.has (cons_bindings_for_terminology_csr.key) and then attached term_bindings.item (cons_bindings_for_terminology_csr.key) as bindings then
+    			if not term_bindings.has (cons_bindings_for_terminology_csr.key) then
+					term_bindings.put (create {HASH_TABLE [URI, STRING]}.make(0), cons_bindings_for_terminology_csr.key)
+				end
+    			if attached term_bindings.item (cons_bindings_for_terminology_csr.key) as bindings then
     				bindings.merge (cons_bindings_for_terminology_csr.item)
     			end
     		end
