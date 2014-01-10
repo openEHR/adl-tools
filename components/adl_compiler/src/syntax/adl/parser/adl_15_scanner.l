@@ -45,7 +45,6 @@ VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
-ADL_14_CONCEPT_CODE at0000(\.1)*
 DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 DESCRIPTION	[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*
@@ -56,6 +55,7 @@ COMP_TERMS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Tt][Ee][Rr][Mm][Ii][Nn][Oo][Ll]
 --- START legacy ADL 1.4 support
 ---
 ADL_14_COMP_ONTS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*
+ADL_CONCEPT_CODE (at|id)(0000|[0-9]+)(\.1)*
 ---
 --- END legacy ADL 1.4 support
 -------------------------------------------------------------------
@@ -216,7 +216,7 @@ ADL_14_COMP_ONTS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][G
 				terminology_text_start_line := in_lineno
 			}
 
-\[{ADL_14_CONCEPT_CODE}\] {
+\[{ADL_CONCEPT_CODE}\] {
 				last_token := V_CONCEPT_CODE
 				last_string_value := text_substring (2, text_count - 1)
 			}

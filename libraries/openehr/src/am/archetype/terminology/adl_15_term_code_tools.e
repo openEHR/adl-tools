@@ -479,7 +479,7 @@ feature -- Conversion
 	adl_14_id_code_converted (an_adl_14_code: STRING): STRING
 			-- convert the lead numeric part of an ADL 1.4 at-code that has a level 0 part,
 			-- and is being used as an id-code. Convert via `adl_14_code_renumbered' and then
-			-- change leader from `at' to `id'
+			-- change leader from `at' to `id'; this adds 1 to the top part of the code
 		do
 			Result := adl_14_code_renumbered (an_adl_14_code)
 			Result.replace_substring (Id_code_leader, 1, 2)
@@ -524,41 +524,6 @@ feature -- Conversion
 			else
 				create Result.make_from_string (an_adl_14_code)
 			end
-		end
-
-	adl_14_code_reformatted (an_adl_14_code: STRING): STRING
-			-- convert the lead numeric part of an ADL 1.4 code that has a level 0 part, by:
-			--
-			-- removing leading '0's in top level code part ('0001' in at0001.3.1), if applicable
-		local
-			dot_pos: INTEGER
-			level_0_numeric_part: STRING
-		do
-			dot_pos := an_adl_14_code.index_of ('.', 3)
-			if dot_pos = 0 or dot_pos > 6 then
-				level_0_numeric_part := (an_adl_14_code.substring (3, 6).to_integer_32).out
-				create Result.make_from_string (an_adl_14_code.substring (1,2))
-				Result.append (level_0_numeric_part)
-				if an_adl_14_code.count > 6 then
-					Result.append (an_adl_14_code.substring (7, an_adl_14_code.count))
-				end
-			else
-				create Result.make_from_string (an_adl_14_code)
-			end
-		end
-
-	adl_14_code_constraint_reformatted (an_adl_14_code_constraint: STRING): STRING
-			-- reformat the at-codes in `an_adl_14_code_constraint'
-		local
-			dot_pos: INTEGER
-			level_0_numeric_part: STRING
-		do
-			Result := an_adl_14_code_constraint.twin
-			Result.replace_substring_all ("at000", "at")
-			Result.replace_substring_all ("at00", "at")
-			Result.replace_substring_all ("at0.", "&!!&")
-			Result.replace_substring_all ("at0", "at")
-			Result.replace_substring_all ("&!!&", "at0.")
 		end
 
 	term_code_to_uri (a_term_code: TERMINOLOGY_CODE): STRING

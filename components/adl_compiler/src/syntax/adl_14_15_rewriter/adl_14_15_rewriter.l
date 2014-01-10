@@ -64,6 +64,8 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 {WHITESPACE_LF}		out_buffer.append (text)
 
+[ \t]*\-\-[^\n]*\n	out_buffer.append (text)			-- pass separate comment line endings
+
 
 ----------/** Keywords **/----------------------------------------------------
 ^[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Yy]{WHITESPACE_CHAR}*\n			{
