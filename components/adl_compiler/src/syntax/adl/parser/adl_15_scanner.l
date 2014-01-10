@@ -55,7 +55,10 @@ COMP_TERMS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Tt][Ee][Rr][Mm][Ii][Nn][Oo][Ll]
 --- START legacy ADL 1.4 support
 ---
 ADL_14_COMP_ONTS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*
-ADL_CONCEPT_CODE (at|id)(0000|[0-9]+)(\.1)*
+
+-- although the below is a modern ADL 1.5 code, it's only there for legacy 
+-- archetypes that still have a 'concept' section
+ID_CODE_LEADER id
 ---
 --- END legacy ADL 1.4 support
 -------------------------------------------------------------------
@@ -215,8 +218,7 @@ ADL_CONCEPT_CODE (at|id)(0000|[0-9]+)(\.1)*
 				in_lineno := in_lineno + 1
 				terminology_text_start_line := in_lineno
 			}
-
-\[{ADL_CONCEPT_CODE}\] {
+\[{ID_CODE_LEADER}1(\.1)*\] {
 				last_token := V_CONCEPT_CODE
 				last_string_value := text_substring (2, text_count - 1)
 			}

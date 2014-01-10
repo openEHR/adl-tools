@@ -40,7 +40,11 @@ feature -- Initialisation
 			Original_language_valid: not an_original_lang.is_empty
 			root_code_valid: is_valid_root_id_code (a_concept_code)
 		do
-			concept_code := a_concept_code
+			if is_valid_root_id_code (a_concept_code) then
+				concept_code := a_concept_code
+			else
+				concept_code := Root_id_code_top_level
+			end
 			original_language := an_original_lang
 		ensure
 			concept_code_set: concept_code.is_equal (a_concept_code)
@@ -53,8 +57,10 @@ feature -- Initialisation
 			if attached {STRING} make_args[1] as str then
 				original_language := str
 			end
-			if attached {STRING} make_args[2] as str then
-				concept_code := str
+			if attached {STRING} make_args[2] as a_concept_code and then is_valid_root_id_code (a_concept_code) then
+				concept_code := a_concept_code
+			else
+				concept_code := Root_id_code_top_level
 			end
 		end
 
@@ -791,8 +797,8 @@ feature {NONE} -- Implementation
 
 invariant
 	Original_language_valid: not original_language.is_empty
-	root_code_valid: is_valid_root_id_code (concept_code)
-	concept_code_defined: id_codes.has (concept_code)
+	Root_code_valid: is_valid_root_id_code (concept_code)
+	Concept_code_defined: id_codes.has (concept_code)
 	Highest_term_code_index_valid: highest_term_code >= 0
 	Highest_constraint_code_valid: highest_constraint_code >= 0
 

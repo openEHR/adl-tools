@@ -50,7 +50,7 @@ feature -- Initialisation
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Not_specialised: not is_specialised
-			Definition_root_node_id: definition.node_id.is_equal (concept)
+			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
 			Is_valid: is_valid
@@ -79,7 +79,7 @@ feature -- Initialisation
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Specialisation_depth_valid: specialisation_depth = a_parent.specialisation_depth + 1
 			Parent_set: parent_archetype_id.as_string.same_string (a_parent.archetype_id.as_string)
-			Definition_root_node_id: definition.node_id.is_equal (concept)
+			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
 			Is_valid: is_valid
@@ -108,14 +108,27 @@ feature -- Access
 			id_codes: like id_codes_index
 		do
 			create Result.make (0)
-			term_codes := term_codes_index
+
 			id_codes := id_codes_index
-			across terminology.term_codes as term_codes_csr loop
-				if not id_codes.has (term_codes_csr.item) and not term_codes.has (term_codes_csr.item) then
+			across terminology.id_codes as term_codes_csr loop
+				if not id_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)
 				end
 			end
-			Result.prune (concept)
+
+			term_codes := term_codes_index
+			across terminology.term_codes as term_codes_csr loop
+				if not term_codes.has (term_codes_csr.item) then
+					Result.extend (term_codes_csr.item)
+				end
+			end
+			across terminology.constraint_codes as term_codes_csr loop
+				if not term_codes.has (term_codes_csr.item) then
+					Result.extend (term_codes_csr.item)
+				end
+			end
+
+			Result.prune (concept_id)
 		end
 
 feature -- Status Report

@@ -72,11 +72,11 @@ templates = <
 		["VARDT"] = <"archetype id type $1 does not match type $2 in definition section">
 		["VACSD"] = <"specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
 		["VACSDtop"] = <"specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
-		["VACCD"] = <"archetype concept code $1 not used in definition">
+		["VACCD"] = <"archetype definition has no id-code">
 		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
 		["VATID"] = <"node id-code $1 not defined in flat terminology">
-		["VATDF"] = <"node id at-code $1 not defined in flat terminology">
+		["VATDF"] = <"term code $1 not defined in flat terminology">
 		["VATDC"] = <"at-code $1 used in constraint not defined in flat terminology">
 		["VACDF"] = <"constraint code $1 not defined in flat terminology">
 		["VOTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
@@ -158,7 +158,7 @@ templates = <
 		["VARXV"] = <"slot filler at $1 does not have matching slot node in flat parent">
 
 		-- C_PRIMITIVE_OBJECT
-		["VVST"] = <"Value term code $1 invalid; must either be an archetype local term or a qualified external term">
+		["VVST"] = <"term code $1 invalid; must either be an archetype local term or a qualified external term">
 		["VPOV"] = <"$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6">
 
 		-- terminology-related validity

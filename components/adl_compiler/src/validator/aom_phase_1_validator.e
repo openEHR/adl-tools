@@ -59,7 +59,9 @@ feature -- Validation
 
 			-- basic validation
 			validate_basics
-			validate_structure
+			if passed then
+				validate_structure
+			end
 
 			-- rebuilding might not work earlier because there might be invalid
 			-- node ids
@@ -101,14 +103,16 @@ feature {NONE} -- Implementation
 				add_warning (ec_validate_e3, <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_class) then
 				add_error (ec_VARDT, <<target.archetype_id.rm_class, target.definition.rm_type_name>>)
-			elseif not is_valid_root_id_code (target.concept) then
-				add_error (ec_VARCN, <<target.concept, root_id_code_regex_pattern>>)
+			elseif not target.definition.is_addressable then
+				add_error (ec_VACCD, Void)
+			elseif not is_valid_root_id_code (target.concept_id) then
+				add_error (ec_VARCN, <<target.concept_id, root_id_code_regex_pattern>>)
 			elseif target_descriptor.is_specialised then
 				if target.specialisation_depth /= target_descriptor.specialisation_ancestor.flat_archetype.specialisation_depth + 1 then
-					add_error (ec_VACSD, <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
+					add_error (ec_VACSD, <<specialisation_depth_from_code (target.concept_id).out, target.specialisation_depth.out>>)
 				end
- 			elseif specialisation_depth_from_code (target.concept) /= 0 then
- 				add_error (ec_VACSDtop, <<specialisation_depth_from_code (target.concept).out>>)
+ 			elseif specialisation_depth_from_code (target.concept_id) /= 0 then
+ 				add_error (ec_VACSDtop, <<specialisation_depth_from_code (target.concept_id).out>>)
 			end
 		end
 
@@ -151,9 +155,11 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
-			elseif attached {C_OBJECT} a_c_node as co and then not co.is_addressable and not attached {C_PRIMITIVE_OBJECT} a_c_node then
-				check attached co.parent as parent_ca then
+			elseif attached {C_OBJECT} a_c_node as co and then not co.is_addressable then
+				if attached co.parent as parent_ca then
 					add_error (ec_VSONID, <<parent_ca.path, co.rm_type_name>>)
+				else
+					add_error (ec_VSONID, <<co.path, co.rm_type_name>>)
 				end
 			end
 		end
@@ -286,7 +292,6 @@ feature {NONE} -- Implementation
 			arch_depth := target.specialisation_depth
 			across target.id_codes_index as codes_csr loop
 				spec_depth := specialisation_depth_from_code (codes_csr.key)
-
 				-- since id-codes are only required to be defined in the terminology if they identify
 				-- nodes under multiply-valued C_ATTRIBUTEs, we have to check their parent C_ATTRIBUTE type
 				-- to decide. There can be more than one C_OBJECT with the same id-code.
@@ -310,11 +315,7 @@ feature {NONE} -- Implementation
 				if is_valid_code (code) then
 					spec_depth := specialisation_depth_from_code (code)
 					if spec_depth > arch_depth then
-						if is_term_code (code) then
-							add_error (ec_VATCD, <<code, arch_depth.out>>)
-						else
-							add_error (ec_VACCD, <<code, arch_depth.out>>)
-						end
+						add_error (ec_VATCD, <<code, arch_depth.out>>)
 					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
 						spec_depth = arch_depth and not terminology.has_code (code)
 					then

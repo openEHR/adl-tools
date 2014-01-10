@@ -69,7 +69,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 ----------/** Keywords **/----------------------------------------------------
 ^[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Yy]{WHITESPACE_CHAR}*\n			{
-		out_buffer.append ("terminology%N")
+		out_buffer.append (text)
 		in_terminology := True
 	}
 
@@ -311,6 +311,12 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 	}
 
 ----------/* strings */ -------------------------------------------------
+\"{ADL_14_AT_CODE}\" {			-- can occur in some string data
+		out_buffer.append_character ('"')
+		output_new_at_ac_code (text_substring (2, text_count - 1))
+		out_buffer.append_character ('"')
+	}
+
 \"[^\\\n"]*\" 	{
 		out_buffer.append (text)
 	}

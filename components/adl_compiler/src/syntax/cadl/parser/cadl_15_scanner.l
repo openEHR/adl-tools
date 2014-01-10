@@ -194,37 +194,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			last_string_value := text
 		}
 
--------------------------------------------------------------------
---- START transitional at-code identifier codes in ADL 1.5 archetypes
----
--- \[at0000(\.1)*\] {
--- 		last_token := V_ROOT_ID_CODE
--- 		code := text_substring (2, text_count - 1)
--- 		last_string_value := adl_14_id_code_converted (code)
--- 		converted_codes.put (last_string_value, code)
--- 	}
--- \[{ADL_14_AT_CODE}\] {
--- 		last_token := V_ID_CODE
--- 		code := text_substring (2, text_count - 1)
--- 		last_string_value := adl_14_id_code_converted (code)
--- 		converted_codes.put (last_string_value, code)
--- 	}
--- {ADL_14_AT_CODE} {
--- 		last_token := V_ID_CODE_STR
--- 		last_string_value := adl_14_id_code_converted (text)
--- 	}
--- \[{ADL_14_AC_CODE}\] {
--- 		last_token := V_VALUE_SET_REF
--- 		code := text_substring (2, text_count - 1)
--- 		reformatted_code := adl_14_code_renumbered (code) 
--- 		last_string_value := Local_terminology_id + "::" + reformatted_code
--- 		converted_codes.put (reformatted_code, code)
--- 	}
----
---- END transitional at-code identifier codes in ADL 1.5 archetypes
--------------------------------------------------------------------
-
-
 ----------/* V_ROOT_ID_CODE: id code of form [at0], [at0.1] etc */ ---------------
 
 \[{ID_CODE_LEADER}1(\.1)*\] {
@@ -438,22 +407,6 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 					last_string_value := text
 			}
 
--------------------------------------------------------------------
---- START transitional at-code identifier codes in ADL 1.5 archetypes
----
--- (\/{ADL_14_PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[at-code]"
--- 			last_token := V_ABS_PATH
--- 			last_string_value := adl_14_path_converted (text)
--- 		}
--- 
--- {ADL_14_PATH_SEG}(\/{ADL_14_PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[at-code]"
--- 			last_token := V_REL_PATH
--- 			last_string_value := adl_14_path_converted (text)
--- 		}
----
---- END transitional at-code identifier codes in ADL 1.5 archetypes
--------------------------------------------------------------------
-
 ----------/* V_ABS_PATH */ -------------------------------------------------
 (\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[id-code]"
 			last_token := V_ABS_PATH
@@ -666,28 +619,6 @@ feature -- Access
 		attribute
 			create Result.make (0)
 		end
-
--------------------------------------------------------------------
---- START transitional at-code identifier codes in ADL 1.5 archetypes
----
--- 	converted_codes: HASH_TABLE [STRING, STRING]
--- 			-- table of new codes, keyed by old code found in archetype
--- 		attribute
--- 			create Result.make (0)
--- 		end
--- 
--- 	code: STRING
--- 		attribute
--- 			create Result.make_empty
--- 		end
--- 
--- 	reformatted_code: STRING
--- 		attribute
--- 			create Result.make_empty
--- 		end
----
---- END transitional at-code identifier codes in ADL 1.5 archetypes
--------------------------------------------------------------------
 
 feature {NONE} -- Implementation
 

@@ -98,7 +98,6 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
-			adl_version_in_text_file := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
@@ -140,7 +139,7 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
-			adl_version_in_text_file := arch_thumbnail.adl_version
+			differential_text_adl_version := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
 			is_differential_generated := arch_thumbnail.is_generated
 			rm_schema := rm_schema_for_archetype_id (id)
@@ -172,7 +171,6 @@ feature {NONE} -- Initialisation
 			at: ARTEFACT_TYPE
 		do
 			make_item
-			adl_version_in_text_file := Latest_adl_version
 			id := an_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
@@ -207,7 +205,6 @@ feature {NONE} -- Initialisation
 			at: ARTEFACT_TYPE
 		do
 			make_item
-			adl_version_in_text_file := Latest_adl_version
 			id := an_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
@@ -245,10 +242,30 @@ feature {NONE} -- Initialisation
 			end
 		end
 
+feature -- Initialisation
+
+	add_legacy_archetype (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+			-- add legacy details to a descriptor already created for a differential archteype for which
+			-- a legacy archetype has been found
+		require
+			Path_valid: not a_path.is_empty
+		local
+			amp: ARCHETYPE_MINI_PARSER
+		do
+			legacy_flat_path := a_path
+			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+			invalid_differential_path := extension_replaced (a_path, File_ext_archetype_adl_diff)
+		ensure
+			is_legacy: is_legacy
+		end
+
 feature -- Access (semantic)
 
-	adl_version_in_text_file: STRING
+	differential_text_adl_version: STRING
 			-- ADL version of the most recently read text file (legacy or differential)
+		attribute
+			create Result.make_empty
+		end
 
 	artefact_type_name: STRING
 
@@ -297,7 +314,7 @@ feature -- Access (semantic)
 			check attached file_repository.text as t then
 				arch_text := t
 			end
-			if adl_version_in_text_file < Id_conversion_version then
+			if differential_text_adl_version < Id_conversion_version then
 				adl_14_15_rewriter.execute (arch_text)
 				Result := adl_14_15_rewriter.out_buffer
 			else
@@ -402,12 +419,8 @@ feature -- Access (semantic)
 			check attached file_repository.text as t then
 				arch_text := t
 			end
-			if adl_version_in_text_file < Id_conversion_version then
-				adl_14_15_rewriter.execute (arch_text)
-				Result := adl_14_15_rewriter.out_buffer
-			else
-				Result := arch_text
-			end
+			adl_14_15_rewriter.execute (arch_text)
+			Result := adl_14_15_rewriter.out_buffer
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 		end
 
@@ -1065,7 +1078,8 @@ feature {NONE} -- Compilation
 			end
 
 			-- pick up all errors & warnings
-			status.prepend (errors.as_string_filtered (False, False, True))
+			merge_errors (adl_14_engine.errors)
+			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed, Cs_convert_legacy_failed, Cs_lineage_invalid>>).has (compilation_state)
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
@@ -1120,7 +1134,7 @@ feature {NONE} -- Compilation
 
 			-- pick up all errors & warnings
 			merge_errors (adl_15_engine.errors)
-			status.copy (errors.as_string_filtered (False, False, True))
+			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure
 			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
 			Archetype_state: compilation_state /= Cs_parse_failed implies attached differential_archetype
@@ -1151,7 +1165,7 @@ feature {NONE} -- Compilation
 			else
 				compilation_state := Cs_validate_failed
 			end
-			status.copy (errors.as_string_filtered (False, False, True))
+			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure then
 			Compilation_state: (<<Cs_validated_phase_1, Cs_validated_phase_2, Cs_validate_failed>>).has (compilation_state)
 		end
@@ -1177,7 +1191,7 @@ feature {NONE} -- Compilation
 			else
 				compilation_state := Cs_validate_failed
 			end
-			status.copy (errors.as_string_filtered (False, False, True))
+			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)
 		end

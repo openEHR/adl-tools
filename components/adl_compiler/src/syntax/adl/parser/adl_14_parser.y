@@ -185,7 +185,8 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 		}
 	;
 
-arch_concept: SYM_CONCEPT V_CONCEPT_CODE 
+arch_concept: -- no concept ok
+	| SYM_CONCEPT V_CONCEPT_CODE 
 		{
 			concept := $2
 			debug("ADL_parse")

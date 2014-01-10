@@ -262,14 +262,14 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 			end
 		}
 ----------------------------------------------------------------------------
--- START Support transitional ADL 1.5 archetypes containing ADL 1.4 codes
+-- START Support transitional ADL 1.5 archetypes containing nodes with no codes
 --
 	| type_identifier
 		{
 			create $$.make_anonymous ($1)
 		}
 --
--- END Support transitional ADL 1.5 archetypes containing ADL 1.4 codes
+-- END Support transitional ADL 1.5 archetypes containing nodes with no codes
 ----------------------------------------------------------------------------
 	| sibling_order type_identifier V_ID_CODE
 		{
@@ -418,7 +418,7 @@ archetype_internal_ref_head: SYM_USE_NODE type_identifier V_ID_CODE
 			arch_internal_ref_node_id := $3
 		}
 ----------------------------------------------------------------------------
--- START Support transitional ADL 1.5 archetypes containing ADL 1.4 codes
+-- START Support transitional ADL 1.5 archetypes containing nodes with no codes
 --
 	| SYM_USE_NODE type_identifier
 		{
@@ -426,7 +426,7 @@ archetype_internal_ref_head: SYM_USE_NODE type_identifier V_ID_CODE
 			arch_internal_ref_node_id := Void
 		}
 --
--- END Support transitional ADL 1.5 archetypes containing ADL 1.4 codes
+-- END Support transitional ADL 1.5 archetypes containing nodes with no codes
 ----------------------------------------------------------------------------
 	;
 
@@ -486,14 +486,14 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 			$$.set_closed
 		}
 ----------------------------------------------------------------------------
--- START Support transitional ADL 1.5 archetypes containing ADL 1.4 codes
+-- START Support transitional ADL 1.5 archetypes containing nodes with no id-codes
 --
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
 			create $$.make_anonymous ($2)
 		}
 --
--- END Support transitional ADL 1.5 archetypes containing ADL 1.4 codes
+-- END Support transitional ADL 1.5 archetypes containing nodes with no id-codes
 ----------------------------------------------------------------------------
 	| SYM_ALLOW_ARCHETYPE error
 		{

@@ -48,6 +48,8 @@ feature -- Definitions
 	Root_id_code_regex_pattern: STRING = "^id1(\.1)*$"
 			-- a regex to match a concept (root id) code of any depth
 
+	Root_id_code_top_level: STRING = "id1"
+
 	Id_code_regex_pattern: STRING
 			-- a regex to match any id code of any depth
 		once
@@ -111,14 +113,6 @@ feature -- Definitions
 			create Result.make_from_string (id_code_leader)
 			Result.append ("9999")
 		end
-
---	Terminal_node_id: STRING
---			-- special 'unknown' code that identifies all terminal primitive objects
---		once
---			create Result.make_from_string (Unknown_code_id)
---		end
-
---	Unknown_code_id: STRING = "unknown"
 
 	uri_template: STRING = "http://$terminology_id.info/id/$code_string"
 

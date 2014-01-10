@@ -45,7 +45,7 @@ VALUE_STR [a-zA-Z0-9._\-]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
-ADL_14_CONCEPT_CODE at0000(\.1)*
+ID_CODE_LEADER id
 DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 
 --------------- Options --------------
@@ -244,7 +244,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 			}
 
 ----------/* term code reference */ -------------------------------------------------
-\[{ADL_14_CONCEPT_CODE}\] {
+\[{ID_CODE_LEADER}1(\.1)*\] {
 					last_token := V_CONCEPT_CODE
 					last_string_value := text_substring (2, text_count - 1)
 			}

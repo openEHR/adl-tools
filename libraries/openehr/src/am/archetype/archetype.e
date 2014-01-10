@@ -188,12 +188,12 @@ feature -- Access
 	specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
 		do
-			Result := specialisation_depth_from_code (concept)
+			Result := specialisation_depth_from_code (concept_id)
 		ensure
 			non_negative: Result >= 0
 		end
 
-	concept: STRING
+	concept_id: STRING
 			-- at-code of concept of the archetype as a whole and the code of its root node
 		do
 			Result := definition.node_id
@@ -707,7 +707,7 @@ feature {NONE} -- Implementation
 
 invariant
 	Description_valid: not artefact_type.is_overlay implies attached description
-	Concept_valid: concept.is_equal (terminology.concept_code)
+	Concept_valid: concept_id.is_equal (terminology.concept_code)
 	Invariants_valid: attached rules implies not rules.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_class.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and attached parent_archetype_id)
