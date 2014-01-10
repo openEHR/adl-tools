@@ -93,6 +93,9 @@ feature -- Definitions
 			Result := Adl_versions.last
 		end
 
+	Id_conversion_version: STRING = "1.5.1"
+			-- version in which converted ids are present
+
 	archetype_term_keys: ARRAYED_LIST [STRING]
 			-- set of 'key's of an ARCHETYPE_TERM, currently 'text' and 'description'
 		once

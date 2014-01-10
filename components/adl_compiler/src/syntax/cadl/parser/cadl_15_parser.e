@@ -824,7 +824,7 @@ end
 			if not object_nodes.is_empty then
 				create yyval15.make_identified (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 			else
-				abort_with_error (ec_VARND, <<yyvs2.item (yyvsp2)>>)
+				abort_with_error (ec_VARCN, <<yyvs2.item (yyvsp2), Root_id_code_regex_pattern>>)
 			end
 		
 if yy_parsing_status >= yyContinue then

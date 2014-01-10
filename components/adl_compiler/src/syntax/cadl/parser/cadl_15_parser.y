@@ -258,7 +258,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 			if not object_nodes.is_empty then
 				create $$.make_identified ($1, $2)
 			else
-				abort_with_error (ec_VARND, <<$2>>)
+				abort_with_error (ec_VARCN, <<$2, Root_id_code_regex_pattern>>)
 			end
 		}
 ----------------------------------------------------------------------------

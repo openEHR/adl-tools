@@ -98,7 +98,7 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
-			adl_version := arch_thumbnail.adl_version
+			adl_version_in_text_file := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
@@ -140,7 +140,7 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
-			adl_version := arch_thumbnail.adl_version
+			adl_version_in_text_file := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
 			is_differential_generated := arch_thumbnail.is_generated
 			rm_schema := rm_schema_for_archetype_id (id)
@@ -172,7 +172,7 @@ feature {NONE} -- Initialisation
 			at: ARTEFACT_TYPE
 		do
 			make_item
-			adl_version := Latest_adl_version
+			adl_version_in_text_file := Latest_adl_version
 			id := an_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
@@ -207,7 +207,7 @@ feature {NONE} -- Initialisation
 			at: ARTEFACT_TYPE
 		do
 			make_item
-			adl_version := Latest_adl_version
+			adl_version_in_text_file := Latest_adl_version
 			id := an_id
 			rm_schema := rm_schema_for_archetype_id (id)
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
@@ -247,7 +247,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access (semantic)
 
-	adl_version: STRING
+	adl_version_in_text_file: STRING
 			-- ADL version of the most recently read text file (legacy or differential)
 
 	artefact_type_name: STRING
@@ -297,7 +297,7 @@ feature -- Access (semantic)
 			check attached file_repository.text as t then
 				arch_text := t
 			end
-			if adl_version < latest_adl_version then
+			if adl_version_in_text_file < Id_conversion_version then
 				adl_14_15_rewriter.execute (arch_text)
 				Result := adl_14_15_rewriter.out_buffer
 			else
@@ -402,7 +402,7 @@ feature -- Access (semantic)
 			check attached file_repository.text as t then
 				arch_text := t
 			end
-			if adl_version < latest_adl_version then
+			if adl_version_in_text_file < Id_conversion_version then
 				adl_14_15_rewriter.execute (arch_text)
 				Result := adl_14_15_rewriter.out_buffer
 			else

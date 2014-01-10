@@ -284,6 +284,12 @@ feature -- Access
 
 feature -- Comparison
 
+	is_adl_code (a_code: STRING): BOOLEAN
+			-- Is `a_code' an "id" code?
+		do
+			Result := is_id_code (a_code) or else is_term_code (a_code) or else is_constraint_code (a_code)
+		end
+
 	is_id_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "id" code?
 		do
@@ -347,6 +353,12 @@ feature -- Comparison
 				idx_str.prune_all (Specialisation_separator)
 				Result := idx_str.to_integer > 0
 			end
+		end
+
+	is_qualified_codestring (a_code: STRING): BOOLEAN
+			-- True if `a_code' is of form terminology_id::code
+		do
+			Result := a_code.has_substring ({TERMINOLOGY_CODE}.separator)
 		end
 
 	code_exists_at_level (a_code: STRING; a_level: INTEGER): BOOLEAN

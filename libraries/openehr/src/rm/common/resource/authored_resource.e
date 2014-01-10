@@ -208,7 +208,7 @@ feature -- Modification
 			translations.put (a_trans, a_trans.language.code_string)
 			languages_available_cache.wipe_out
 		ensure
-			languages_available.has(a_trans.language.code_string)
+			languages_available.has (a_trans.language.code_string)
 		end
 
 	add_language_tag (a_lang_tag: STRING)

@@ -58,7 +58,7 @@ feature -- Initialisation
 			end
 		end
 
-feature -- Access
+feature -- Access (Stored)
 
 	original_language:  STRING
 			-- original language of the terminology, as set at archetype creation or parsing time; must
@@ -66,6 +66,23 @@ feature -- Access
 
 	concept_code: STRING
 			-- term code of the concept of the terminology as a whole
+
+	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+			-- table of term definitions, keyed by code, keyed by language
+        attribute
+            create Result.make (0)
+        end
+
+	term_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING]
+			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
+        attribute
+            create Result.make (0)
+        end
+
+	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
+
+feature -- Access (computed)
 
 	languages_available: ARRAYED_SET [STRING]
 		do
@@ -123,21 +140,6 @@ feature -- Access
             	end
             end
         end
-
-	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
-			-- table of term definitions, keyed by code, keyed by language
-        attribute
-            create Result.make (0)
-        end
-
-	term_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING]
-			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
-        attribute
-            create Result.make (0)
-        end
-
-	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
-			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
 	specialisation_depth: INTEGER
 			-- depth of this terminology with relation to ontologies in other archetypes
@@ -764,11 +766,12 @@ feature {NONE} -- Implementation
 		do
 			if attached index_term_definitions_cache as att_cache then
 				Result := att_cache
+			elseif attached term_definitions.item (original_language) as att_terms then
+				Result := att_terms
+				index_term_definitions_cache := Result
 			else
-				check attached term_definitions.item (original_language) as att_terms then
-					Result := att_terms
-					index_term_definitions_cache := Result
-				end
+				create Result.make (0)
+				index_term_definitions_cache := Result
 			end
 		end
 

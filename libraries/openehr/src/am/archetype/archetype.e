@@ -430,17 +430,18 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 						if attached {C_ATTRIBUTE} a_c_node as ca and then attached ca.differential_path as diff_path then
 							create og_path.make_from_string (diff_path)
 							across og_path as path_csr loop
-								if path_csr.item.is_addressable and is_valid_id_code (path_csr.item.object_id) then
+								if path_csr.item.is_addressable and is_id_code (path_csr.item.object_id) then
 									if not idx.has (path_csr.item.object_id) then
-										idx.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
+										idx.put (create {ARRAYED_LIST [ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
 									end
 									idx.item (path_csr.item.object_id).extend (ca)
 								end
 							end
+						-- note this will include all C_PRIMITIVE_OBJECTs under same id
 						elseif attached {C_OBJECT} a_c_node as co then
-							if co.is_addressable and is_valid_id_code (co.node_id) then
+							if co.is_addressable and is_id_code (co.node_id) then
 								if not idx.has (co.node_id) then
-									idx.put (create {ARRAYED_LIST [C_OBJECT]}.make(0), co.node_id)
+									idx.put (create {ARRAYED_LIST [ARCHETYPE_CONSTRAINT]}.make(0), co.node_id)
 								end
 								idx.item (co.node_id).extend (co)
 							end
@@ -472,7 +473,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 									key := (create {TERMINOLOGY_CODE}.make (ccp.terminology_id, codes_csr.item)).as_string
 								end
 								if not idx.has (key) then
-									idx.put (create {ARRAYED_LIST[C_TERMINOLOGY_CODE]}.make(0), key)
+									idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), key)
 								end
 								idx.item (key).extend (ccp)
 							end

@@ -81,11 +81,11 @@ feature -- Validation
 
 			-- basic validation terminology
 			if passed then
-				validate_definition_codes
+				validate_terminology_code_formats
 				validate_terminology_languages
+				validate_definition_codes
 				validate_terminology_bindings
 				report_unused_terminology_codes
-				validate_terminology_code_spec_levels
 			end
 		end
 
@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_class) then
 				add_error (ec_VARDT, <<target.archetype_id.rm_class, target.definition.rm_type_name>>)
 			elseif not is_valid_root_id_code (target.concept) then
-				add_error (ec_VARCN, <<target.concept>>)
+				add_error (ec_VARCN, <<target.concept, root_id_code_regex_pattern>>)
 			elseif target_descriptor.is_specialised then
 				if target.specialisation_depth /= target_descriptor.specialisation_ancestor.flat_archetype.specialisation_depth + 1 then
 					add_error (ec_VACSD, <<specialisation_depth_from_code (target.concept).out, target.specialisation_depth.out>>)
@@ -118,11 +118,11 @@ feature {NONE} -- Implementation
 			def_it: C_ITERATOR
 		do
 			create def_it.make (target.definition)
-			def_it.do_until_surface (agent structure_validate_node,
+			def_it.do_until_surface (agent do_validate_structure_node,
 				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := True end)
 		end
 
-	structure_validate_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	do_validate_structure_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model.
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
@@ -229,23 +229,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_terminology_code_spec_levels
-			-- See if there are any codes in the terminology that should not be there - either or lower or higher
-			-- level of specialisation.
+	validate_terminology_code_formats
+			-- check syntax of codes in terminology.
+		local
+			code: STRING
 		do
-			across terminology.id_codes as terms_csr loop
-				if specialisation_depth_from_code (terms_csr.item) /= terminology.specialisation_depth then
-					add_error (ec_VONSD, <<terms_csr.item>>)
-				end
-			end
-			across terminology.term_codes as terms_csr loop
-				if specialisation_depth_from_code (terms_csr.item) /= terminology.specialisation_depth then
-					add_error (ec_VONSD, <<terms_csr.item>>)
-				end
-			end
-			across terminology.constraint_codes as terms_csr loop
-				if specialisation_depth_from_code (terms_csr.item) /= terminology.specialisation_depth then
-					add_error (ec_VONSD, <<terms_csr.item>>)
+			across terminology.term_definitions as terms_for_lang_csr loop
+				across terms_for_lang_csr.item as term_defs_csr loop
+					code := term_defs_csr.key
+					if not is_valid_code (code) then
+						add_error (ec_VATCV, <<code, any_code_regex_pattern>>)
+					elseif specialisation_depth_from_code (code) /= terminology.specialisation_depth then
+						add_error (ec_VONSD, <<code>>)
+					end
 				end
 			end
 		end
@@ -285,6 +281,7 @@ feature {NONE} -- Implementation
 			arch_depth: INTEGER
 			cp: TERMINOLOGY_CODE
 			spec_depth: INTEGER
+			code: STRING
 		do
 			arch_depth := target.specialisation_depth
 			across target.id_codes_index as codes_csr loop
@@ -297,10 +294,10 @@ feature {NONE} -- Implementation
 					if spec_depth > arch_depth then
 						add_error (ec_VONSD, <<codes_csr.key>>)
 					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
-						if spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) then
-							add_error (ec_VATDF, <<codes_csr.key>>)
-						elseif spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key) then
-							add_error (ec_VATDF, <<codes_csr.key>>)
+						if spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) or else
+							spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
+						then
+							add_error (ec_VATID, <<codes_csr.key>>)
 						end
 					end
 				end
@@ -309,19 +306,30 @@ feature {NONE} -- Implementation
 			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in terminology
 			across target.term_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
-				if codes_csr.key.starts_with (Term_code_leader) or codes_csr.key.starts_with (Constraint_code_leader) then
-					spec_depth := specialisation_depth_from_code (codes_csr.key)
+				code := codes_csr.key
+				if is_valid_code (code) then
+					spec_depth := specialisation_depth_from_code (code)
 					if spec_depth > arch_depth then
-						add_error (ec_VATCD, <<codes_csr.key, arch_depth.out>>)
-					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (codes_csr.key) then
-						add_error (ec_VATDF, <<codes_csr.key>>)
-					elseif spec_depth = arch_depth and not terminology.has_code (codes_csr.key) then
-						add_error (ec_VATDF, <<codes_csr.key>>)
+						if is_term_code (code) then
+							add_error (ec_VATCD, <<code, arch_depth.out>>)
+						else
+							add_error (ec_VACCD, <<code, arch_depth.out>>)
+						end
+					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
+						spec_depth = arch_depth and not terminology.has_code (code)
+					then
+						if is_term_code (code) then
+							add_error (ec_VATDF, <<code>>)
+						else
+							add_error (ec_VACDF, <<code>>)
+						end
 					end
+				elseif not is_qualified_codestring (code) then
+					add_error (ec_VVST, <<code>>)
 				else
-					create cp.make_from_string (codes_csr.key)
+					create cp.make_from_string (code)
 					if ts.has_terminology (cp.terminology_id) and not ts.terminology (cp.terminology_id).has_concept_id (cp.code_string) then
-						add_error (ec_VETDF, <<codes_csr.key, cp.terminology_id>>)
+						add_error (ec_VETDF, <<code, cp.terminology_id>>)
 					else
 						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
 					end

@@ -47,11 +47,12 @@ WHITESPACE [ \t\r]+
 WHITESPACE_LF_CHAR [ \t\r\n]
 WHITESPACE_CHAR [ \t\r]
 
-CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
-ADL_14_AT_CODE at0[0-9]{3}(\.(0|[1-9][0-9]*))*
+ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
 NON_ADL_14_AT_CODE [^a][^t]
-ADL_14_AC_CODE ac0[0-9]{3}(\.(0|[1-9][0-9]*))*
+ADL_14_AC_CODE ac(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
 ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
+
+ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){2}((-rc|\+u|\+)[0-9]+))?
 
 --------------- Options --------------
 %x IN_ADL_VALUE_SET_DEF IN_VALUE_SET_DEF IN_STR IN_TUPLE IN_PATH
@@ -101,6 +102,10 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 		out_buffer.append_character (']')
 	}
 
+\[{ARCHETYPE_ID}\] {
+		out_buffer.append (text)
+	}
+
 ---------/* ADL codes in ODIN strings */ ------------
 
 \[\"at0000(\.1)*\"\] {
@@ -130,11 +135,11 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 		out_buffer.append (text)
 	}
 
-	\}[ \t]*,[ \t]*\{		{ 						-- interior }, { pattern
+	\}[ \t]*,[ \t]*\{		{ 							-- interior }, { pattern
 		out_buffer.append (text)
 	}
 
-	[0-9.=|<>]+([ \t]*,[ \t]*[0-9.=|<>]+)*	{		-- numbers and lists of numbers and symbols (e.g. in intervals)
+	[0-9.=|<>]+([ \t]*,[ \t]*[0-9.=|<>]+)*	{			-- numbers and lists of numbers and symbols (e.g. in intervals)
 		out_buffer.append (text)
 	}
 
@@ -148,16 +153,18 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 		out_buffer.append (text)
 	}
 
-	\[[ \t]*\{	{									-- match [{
+	\-\-[^\n]*\n	out_buffer.append (text)			-- pass separate comment lines
+
+	\[[ \t]*\{	{										-- match [{
 		out_buffer.append (text)
 	}
 
-	\}[ \t]*\],[ \t]*\n[ \t]* {		-- termination of interior tuple line }],\n
+	\}[ \t]*\],[ \t]*(\-\-[^\n]*)?\n {						-- termination of interior tuple line }],\n with optional comment
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	}
 
-	\}[ \t]*\][ \t]*\n[ \t]* {		-- termination of final tuple line }]\n
+	\}[ \t]*\][ \t]*(\-\-[^\n]*)?\n {						-- termination of final tuple line }]\n with optional comment
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	}
@@ -173,6 +180,13 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 --			  code; -- comment
 --			  code] -- an optional assumed value
 --
+
+-- single line version
+\[local::{ADL_14_AT_CODE}\] {						-- ADL codes
+	out_buffer.append ("[local::")
+	output_new_at_ac_code (text_substring (9, text_count-1))
+	out_buffer.append_character (']')
+}
 
 \[local::[ \t]*	{
 		out_buffer.append (text)
@@ -216,6 +230,12 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 --			  code; -- comment
 --			  code] -- an optional assumed value
 --
+
+-- single line version
+\[{NAMECHAR_PAREN}+::{NAMECHAR}+\]*	{
+		out_buffer.append (text)
+		set_start_condition (IN_VALUE_SET_DEF)
+	}
 
 \[{NAMECHAR_PAREN}+::[ \t]*	{
 		out_buffer.append (text)
@@ -281,15 +301,11 @@ ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 \[\"{NAMECHAR_PAREN}+\"\]		 out_buffer.append (text)
 
-----------/* ADL 1.5 archetype id */ -------------------------------------------------
-({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+(\.[0-9]+){2}((-rc|\+u|\+)[0-9]+) {
-		out_buffer.append (text)
-	}
+\[\"[^\]\r\t\n"]+\"\]		 out_buffer.append (text)
 
-----------/* ADL 1.4 archetype id */ -------------------------------------------------
-({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+ {
+----------/* ADL 1.5 archetype id */ -------------------------------------------------
+{ARCHETYPE_ID} {
 		out_buffer.append (text)
-		out_buffer.append (".0.0")
 	}
 
 ----------/* strings */ -------------------------------------------------
@@ -415,14 +431,18 @@ feature {NONE} -- Implementation
 		end
 
 	output_converted_code_dt_key (an_old_code: STRING)
+		local
+			new_code: STRING
 		do
 			out_buffer.append_character ('[')
 			out_buffer.append_character ('"')
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
-				out_buffer.append (nc)
+				new_code := nc
 			else
-				out_buffer.append (an_old_code)
+				new_code := adl_14_code_renumbered (an_old_code)
+				converted_codes.put (new_code, an_old_code)
 			end
+			out_buffer.append (new_code)
 			out_buffer.append_character ('"')
 			out_buffer.append_character (']')
 		end
