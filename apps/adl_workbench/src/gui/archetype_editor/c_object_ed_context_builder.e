@@ -146,10 +146,10 @@ feature -- Visitor
 			ed_context_stack.remove
 		end
 
-	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		local
-			ed_node: ARCHETYPE_INTERNAL_REF_ED_CONTEXT
+			ed_node: C_COMPLEX_OBJECT_PROXY_ED_CONTEXT
 		do
 			create ed_node.make (a_node, ed_context)
 			attr_node_stack.item.pre_attach_child_context (ed_node)

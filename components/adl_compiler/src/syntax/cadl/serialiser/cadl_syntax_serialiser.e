@@ -21,7 +21,7 @@ inherit
 			start_c_complex_object, end_c_complex_object,
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
-			start_archetype_internal_ref,
+			start_c_complex_object_proxy,
 			start_c_archetype_root, end_c_archetype_root,
 			start_c_primitive_object
 		end
@@ -286,7 +286,7 @@ feature -- Visitor
 			last_result.append (format_item (FMT_NEWLINE))
 		end
 
-	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
 			last_result.append (create_indent(depth) + apply_style (symbol (SYM_USE_NODE), STYLE_KEYWORD) + format_item(FMT_SPACE))

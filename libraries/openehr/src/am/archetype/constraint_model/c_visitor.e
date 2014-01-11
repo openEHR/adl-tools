@@ -72,13 +72,13 @@ feature -- Visitor
 		do
 		end
 
-	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- enter an ARCHETYPE_INTERNAL_REF
+	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
+			-- enter an C_COMPLEX_OBJECT_PROXY
 		deferred
 		end
 
-	end_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- exit an ARCHETYPE_INTERNAL_REF
+	end_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
+			-- exit an C_COMPLEX_OBJECT_PROXY
 		do
 		end
 

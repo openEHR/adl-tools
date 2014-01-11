@@ -146,7 +146,7 @@ feature {NONE} -- Initialization
 				0, 0)
 			ev_root_container.extend (arch_path_list_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (arch_path_list_ctl.ev_root_container)
-			if not new_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name)) then
+			if not new_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name)) then
 				arch_path_list_ctl.hide
 			end
 			gui_controls.extend (arch_path_list_ctl)
@@ -227,7 +227,7 @@ feature -- Modification
 			if new_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) and not arch_ext_ref_list.is_empty then
 				arch_id_list_ctl.show
 				arch_path_list_ctl.hide
-			elseif new_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name)) and not arch_path_list.is_empty then
+			elseif new_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name)) and not arch_path_list.is_empty then
 				arch_path_list_ctl.show
 				arch_id_list_ctl.hide
 			else

@@ -94,8 +94,6 @@ feature -- Access
 
 	attributes_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_ATTRIBUTE]
 			-- get all C_ATTRIBUTEs whose paths match `a_path'
-		local
-			og_attrs: ARRAYED_LIST [OG_ATTRIBUTE_NODE]
 		do
 			create Result.make (0)
 			across representation.attribute_nodes_at_path (a_match_path) as og_attrs_csr loop
@@ -107,8 +105,6 @@ feature -- Access
 
 	objects_at_match_path (a_match_path: STRING): ARRAYED_LIST [C_OBJECT]
 			-- get all C_OBJECTs whose paths match `a_path'
-		local
-			og_objs: ARRAYED_LIST [OG_OBJECT]
 		do
 			create Result.make (0)
 			across representation.attribute_nodes_at_path (a_match_path) as og_attrs_csr loop

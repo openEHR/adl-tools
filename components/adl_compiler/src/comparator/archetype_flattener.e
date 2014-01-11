@@ -99,10 +99,10 @@ end
 				else
 					create arch_output_flat.make_specialised (arch_child_diff, arch_parent_flat)
 				end
-				expand_definition_use_nodes
+				expand_c_proxy_objects
 				flatten_other_metadata
 				flatten_definition
-				flatten_invariants
+				flatten_rules
 				flatten_terminology
 				flatten_annotations
 				arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 	rm_schema: BMM_SCHEMA
 			-- utility reference to RM schema used for validation & flattening
 
-	expand_definition_use_nodes
+	expand_c_proxy_objects
 			-- if there are overrides in the specialised child that are located at use_node positions, we
 			-- have to expand out a copy of the structures pointed to by the use_nodes in the parent, so that
 			-- the override can be correctly applied.
@@ -143,12 +143,12 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 			clone_performed: BOOLEAN
-			use_nodes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
+			use_nodes: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
 		do
 			use_nodes := arch_output_flat.use_node_index
 			if not use_nodes.is_empty then
 debug ("flatten")
-	io.put_string ("--> expand_definition_use_nodes%N")
+	io.put_string ("--> expand_c_proxy_objects%N")
 end
 				create child_paths_at_parent_level.make (0)
 				child_paths_at_parent_level.compare_objects
@@ -196,7 +196,7 @@ end
 				end
 				arch_output_flat.rebuild
 debug ("flatten")
-	io.put_string ("<-- expand_definition_use_nodes%N")
+	io.put_string ("<-- expand_c_proxy_objects%N")
 end
 			end
 		end
@@ -352,7 +352,7 @@ end
 									-- the differential child with we started this routine, or if the current attribute
 									-- has a differential path, its true object parent in the flat parent archetype
 									-- is given by the differential path
-									if ca_child.has_differential_path and then attached ca_child.differential_path as child_diff_path then
+									if attached ca_child.differential_path as child_diff_path then
 										create apa.make_from_string (child_diff_path)
 										check attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
 											cco_output_flat_proximate := cco
@@ -373,7 +373,7 @@ end
 											check attached cco_csr.parent as p then
 												cco_csr_parent := p
 											end
-											if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
+											if c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
 													c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
 											then
 debug ("flatten")
@@ -754,12 +754,12 @@ end
 			Result.compare_objects
 		end
 
-	flatten_invariants
+	flatten_rules
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
 			if arch_child_diff.has_rules then
-				across arch_child_diff.rules as invs_csr loop
-					arch_output_flat.add_rule (invs_csr.item.deep_twin)
+				across arch_child_diff.rules as rules_csr loop
+					arch_output_flat.add_rule (rules_csr.item.deep_twin)
 				end
 			end
 		end

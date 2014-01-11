@@ -107,11 +107,13 @@ feature -- Definitions
 	Annotated_code_text_delimiter_string: STRING = "|"
 			-- string form of above
 
-	Terminal_node_id: STRING
+	Primitive_node_code_number: STRING = "9999"
+
+	Primitive_node_id: STRING
 			-- special 'id9999' code that identifies all terminal primitive objects
 		once
 			create Result.make_from_string (id_code_leader)
-			Result.append ("9999")
+			Result.append (Primitive_node_code_number)
 		end
 
 	uri_template: STRING = "http://$terminology_id.info/id/$code_string"
@@ -390,7 +392,7 @@ feature -- Comparison
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
 		do
-			Result := (a_child_code.is_equal (terminal_node_id) or else is_valid_code (a_child_code))
+			Result := (a_child_code.is_equal (Primitive_node_id) or else is_valid_code (a_child_code))
 				and then a_child_code.starts_with (a_parent_code)
 		end
 

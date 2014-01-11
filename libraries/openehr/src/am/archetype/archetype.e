@@ -208,6 +208,8 @@ feature -- Access
 feature -- Paths
 
 	path_map: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
+			-- get the full path map of the archetype, including paths created by
+			-- proxy objects
 		do
 			if attached path_map_cache as pmc then
 				Result := pmc
@@ -482,7 +484,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				Void)
 		end
 
-	use_node_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
+	use_node_index: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 		local
@@ -491,11 +493,11 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 			create Result.make (0)
 			create def_it.make (definition)
 			def_it.do_all (
-				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING])
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING])
 					do
-						if attached {ARCHETYPE_INTERNAL_REF} a_c_node as air then
+						if attached {C_COMPLEX_OBJECT_PROXY} a_c_node as air then
 							if not idx.has (air.target_path) then
-								idx.put (create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), air.target_path)
+								idx.put (create {ARRAYED_LIST[C_COMPLEX_OBJECT_PROXY]}.make(0), air.target_path)
 							end
 							idx.item (air.target_path).extend (air)
 						end

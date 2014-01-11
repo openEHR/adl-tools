@@ -220,7 +220,6 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_flat, co_path_in_flat: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
-			cref_conformance_ok: BOOLEAN
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				create apa.make_from_string (a_c_node.path)
@@ -346,7 +345,7 @@ end
 
 				-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 				-- we re-assign co_in_flat_anc to point to the target structure; unless they both are use_nodes, in which case leave them as is
-				if attached {ARCHETYPE_INTERNAL_REF} co_in_flat_anc as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
+				if attached {C_COMPLEX_OBJECT_PROXY} co_in_flat_anc as air_p and not attached {C_COMPLEX_OBJECT_PROXY} co_child_diff as air_c then
 					check attached flat_ancestor.object_at_path (air_p.path) as cpf then
 						co_in_flat_anc := cpf
 					end

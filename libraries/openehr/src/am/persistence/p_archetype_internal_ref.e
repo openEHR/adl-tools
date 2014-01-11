@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make (a_air: ARCHETYPE_INTERNAL_REF)
+	make (a_air: C_COMPLEX_OBJECT_PROXY)
 		do
 			precursor (a_air)
 			target_path := a_air.target_path
@@ -33,7 +33,7 @@ feature -- Access
 
 feature -- Factory
 
-	create_archetype_internal_ref: ARCHETYPE_INTERNAL_REF
+	create_archetype_internal_ref: C_COMPLEX_OBJECT_PROXY
 		do
 			create Result.make (rm_type_name, target_path)
 			if attached node_id as nid then

@@ -64,9 +64,10 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			if ara.is_specialised then
 				arch_parent_flat := ara.specialisation_ancestor.flat_archetype
 				arch_parent_flat.rebuild
+			else
+				highest_added_code := 0
+				highest_refined_code_index.wipe_out
 			end
-			create id_codes.make
-			id_codes.compare_objects
 		end
 
 feature -- Access
@@ -163,7 +164,7 @@ feature {NONE} -- Implementation
 			if is_valid_code (target.concept_id) then
 				-- get current highest code ids
 				create def_it.make (target.definition)
-				def_it.do_all (agent get_highest_id_codes_and_paths, Void)
+				def_it.do_all (agent do_get_highest_id_codes_and_paths, Void)
 
 				-- now add missing codes
 				def_it.do_all (agent do_add_id_code, Void)
@@ -192,7 +193,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	do_get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 	 	local
 	 		code_number, parent_code: STRING
 	 		spec_depth: INTEGER
@@ -305,9 +306,7 @@ feature {NONE} -- Implementation
             create Result.make (0)
         end
 
-	id_codes: TWO_WAY_SORTED_SET [STRING]
-
-	use_node_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
+	use_node_index: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
 		attribute
 			create Result.make (0)
 		end

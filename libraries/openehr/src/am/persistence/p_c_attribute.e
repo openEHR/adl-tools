@@ -38,7 +38,7 @@ feature -- Initialisation
 						children.extend (create {P_C_COMPLEX_OBJECT}.make(c_co))
 					elseif attached {ARCHETYPE_SLOT} c_objs_csr.item as a_s then
 						children.extend (create {P_ARCHETYPE_SLOT}.make(a_s))
-					elseif attached {ARCHETYPE_INTERNAL_REF} c_objs_csr.item as a_ir then
+					elseif attached {C_COMPLEX_OBJECT_PROXY} c_objs_csr.item as a_ir then
 						children.extend (create {P_ARCHETYPE_INTERNAL_REF}.make(a_ir))
 					elseif attached {CONSTRAINT_REF} c_objs_csr.item as cr then
 						children.extend (create {P_CONSTRAINT_REF}.make(cr))

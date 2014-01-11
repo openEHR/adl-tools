@@ -621,7 +621,7 @@ feature {NONE} -- Semantic actions
 			yyval1: detachable ANY
 			yyval14: C_COMPLEX_OBJECT
 			yyval9: C_ARCHETYPE_ROOT
-			yyval10: ARCHETYPE_INTERNAL_REF
+			yyval10: C_COMPLEX_OBJECT_PROXY
 			yyval16: ARCHETYPE_SLOT
 			yyval15: C_PRIMITIVE_OBJECT
 			yyval17: C_ATTRIBUTE
@@ -7998,7 +7998,7 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines9: KL_SPECIAL_ROUTINES [C_ARCHETYPE_ROOT]
 			-- Routines that ought to be in SPECIAL [C_ARCHETYPE_ROOT]
 
-	yyvs10: SPECIAL [ARCHETYPE_INTERNAL_REF]
+	yyvs10: SPECIAL [C_COMPLEX_OBJECT_PROXY]
 			-- Stack for semantic values of type ARCHETYPE_INTERNAL_REF
 
 	yyvsc10: INTEGER
@@ -8007,7 +8007,7 @@ feature {NONE} -- Semantic value stacks
 	yyvsp10: INTEGER
 			-- Top of semantic value stack `yyvs10'
 
-	yyspecial_routines10: KL_SPECIAL_ROUTINES [ARCHETYPE_INTERNAL_REF]
+	yyspecial_routines10: KL_SPECIAL_ROUTINES [C_COMPLEX_OBJECT_PROXY]
 			-- Routines that ought to be in SPECIAL [ARCHETYPE_INTERNAL_REF]
 
 	yyvs11: SPECIAL [SIBLING_ORDER]

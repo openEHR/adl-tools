@@ -19,7 +19,7 @@ inherit
 			start_c_complex_object, end_c_complex_object,
 			start_c_attribute, end_c_attribute,
 			start_archetype_slot, end_archetype_slot,
-			start_archetype_internal_ref,
+			start_c_complex_object_proxy,
 			start_c_archetype_root,
 			start_c_primitive_object
 		end
@@ -260,8 +260,8 @@ feature -- Modification
 			last_object_simple := True
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- start serialising an ARCHETYPE_INTERNAL_REF
+	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
+			-- start serialising an C_COMPLEX_OBJECT_PROXY
 		do
 --			last_result.append(create_indent(depth) + symbol(SYM_USE_NODE) + format_item(FMT_SPACE))
 --			last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + a_node.ref_path.as_string + format_item(FMT_NEWLINE))

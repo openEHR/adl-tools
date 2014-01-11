@@ -86,7 +86,7 @@ feature -- Factory
 			a_parent.put_attribute(Result)
 		end
 
-	create_archetype_internal_ref (a_parent: C_ATTRIBUTE; a_type_name:STRING; a_path: STRING): ARCHETYPE_INTERNAL_REF
+	create_archetype_internal_ref (a_parent: C_ATTRIBUTE; a_type_name:STRING; a_path: STRING): C_COMPLEX_OBJECT_PROXY
 			-- create a "use" node
 		require
 			a_type_name_valid: not a_type_name.is_empty

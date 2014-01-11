@@ -1,8 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "[
-			 Serialise CADL archetype to OWL abstract syntax
-	             ]"
+	description: "Serialise CADL archetype to OWL abstract syntax"
 	keywords:    "serialiser, OWL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -163,18 +161,18 @@ feature -- Modification
 			end
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- start serialising an ARCHETYPE_INTERNAL_REF
+	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
+			-- start serialising an C_COMPLEX_OBJECT_PROXY
 		do
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
+	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- start serialising a CONSTRAINT_REF
 		do
 			last_object_simple := True
 		end
 
-	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising an C_PRIMITIVE_OBJECT
 		local
 			l_object_pattern_key: STRING
@@ -186,7 +184,7 @@ feature -- Modification
 			end
 		end
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
+	serialise_occurrences (a_node: C_OBJECT; depth: INTEGER)
 			-- any positive range
 		do
 			if not a_node.occurrences.is_equal(default_occurrences) then

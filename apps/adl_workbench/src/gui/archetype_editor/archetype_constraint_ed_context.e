@@ -197,7 +197,7 @@ feature {NONE} -- Implementation
 					end
 				end
 				if internal_ref_for_rm_type.item (rm_class_name) then
-					Result.extend (bare_type_name(({ARCHETYPE_INTERNAL_REF}).name))
+					Result.extend (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name))
 				end
 			end
 		end

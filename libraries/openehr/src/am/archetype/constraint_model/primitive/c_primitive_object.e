@@ -27,7 +27,7 @@ feature -- Initialisaiton
 			-- it is not true.
 		do
 			rm_type_name := aom_builtin_type
-			set_node_id (Terminal_node_id)
+			set_node_id (Primitive_node_id)
 		end
 
 feature -- Access

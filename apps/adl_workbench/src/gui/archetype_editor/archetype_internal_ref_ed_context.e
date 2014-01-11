@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_INTERNAL_REF_ED_CONTEXT
+class C_COMPLEX_OBJECT_PROXY_ED_CONTEXT
 
 inherit
 	C_OBJECT_ED_CONTEXT
@@ -20,7 +20,7 @@ create
 
 feature -- Access
 
-	arch_node: detachable ARCHETYPE_INTERNAL_REF
+	arch_node: detachable C_COMPLEX_OBJECT_PROXY
 			-- archetype node being edited
 
 feature -- Display

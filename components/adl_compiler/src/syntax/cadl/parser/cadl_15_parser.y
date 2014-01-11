@@ -99,7 +99,7 @@ create
 %type <ASSERTION> assertion
 
 %type <C_ARCHETYPE_ROOT> c_archetype_root
-%type <ARCHETYPE_INTERNAL_REF> archetype_internal_ref
+%type <C_COMPLEX_OBJECT_PROXY> archetype_internal_ref
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
@@ -390,7 +390,7 @@ archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 			end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "create ARCHETYPE_INTERNAL_REF ")
+				io.put_string (indent + "create C_COMPLEX_OBJECT_PROXY ")
 				io.put_string ($$.rm_type_name) 
 				if $$.is_addressable then
 					io.put_string ("[" + $$.node_id + "] ")
@@ -403,7 +403,7 @@ archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 					io.put_string ("occurrences=" + $$.occurrences.as_string + " ")
 				end
 				io.put_string (" => " + $$.target_path + "%N") 
-				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (ARCHETYPE_INTERNAL_REF)%N") 
+				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (C_COMPLEX_OBJECT_PROXY)%N") 
 			end
 		}
 	| SYM_USE_NODE type_identifier error 

@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_INTERNAL_REF
+class C_COMPLEX_OBJECT_PROXY
 
 inherit
 	C_OBJECT
@@ -86,13 +86,13 @@ feature -- Visitor
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			visitor.start_archetype_internal_ref (Current, depth)
+			visitor.start_c_complex_object_proxy (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			visitor.end_archetype_internal_ref (Current, depth)
+			visitor.end_c_complex_object_proxy (Current, depth)
 		end
 
 feature {NONE} -- Implementation

@@ -90,7 +90,7 @@ feature -- Visitor
 			a_node.set_rolled_up_specialisation_status (ss_added)
 		end
 
-	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
 			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)

@@ -64,10 +64,7 @@ NAMESTR [a-zA-Z][a-zA-Z0-9_]+
 
 ID_CODE_LEADER id
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
--- ADL_14_AT_CODE at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*
--- ADL_14_AC_CODE ac[0-9]{4}(\.(0|[1-9][0-9]*))*
 PATH_SEG [a-z][a-zA-Z0-9_]*(\[id(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*\])?
--- ADL_14_PATH_SEG [a-z][a-zA-Z0-9_]*(\[at(0|[0-9]{4})(\.(0|[1-9][0-9]*))*\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
