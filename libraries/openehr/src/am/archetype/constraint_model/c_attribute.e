@@ -266,6 +266,12 @@ feature -- Status Report
 			Result := attached existence and existence.is_mandatory
 		end
 
+	is_leaf_parent: BOOLEAN
+			-- True if single-valued and has a leaf child
+		do
+			Result := is_single and has_children and children.first.is_leaf
+		end
+
 	has_differential_path: BOOLEAN
 			-- True if this node has a contracted path
 		do

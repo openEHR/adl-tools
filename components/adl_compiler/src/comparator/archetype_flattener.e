@@ -143,10 +143,10 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 			clone_performed: BOOLEAN
-			use_nodes: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
+			flat_use_node_paths: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
 		do
-			use_nodes := arch_output_flat.use_node_index
-			if not use_nodes.is_empty then
+			flat_use_node_paths := arch_output_flat.use_node_index
+			if not flat_use_node_paths.is_empty then
 debug ("flatten")
 	io.put_string ("--> expand_c_proxy_objects%N")
 end
@@ -166,28 +166,27 @@ end
 				-- within the child archetype (i.e. that the child archetype wants to override); clone the
 				-- structure at the target location and replace the use_node in the flattened structure with it,
 				-- so that the override will work properly.
-				across use_nodes as use_nodes_csr loop
-					across use_nodes_csr.item as int_refs_csr loop
+				across flat_use_node_paths as flat_use_node_path_csr loop
+					across flat_use_node_path_csr.item as flat_use_nodes_for_path_csr loop
 debug ("flatten")
 	io.put_string ("%T...checking flat parent use_node path " +
-	int_refs_csr.item.path + " against child path map%N")
+	flat_use_nodes_for_path_csr.item.path + " against child path map%N")
 end
 						clone_performed := False
 						from child_paths_at_parent_level.start until child_paths_at_parent_level.off or clone_performed loop
-							if child_paths_at_parent_level.item.starts_with (int_refs_csr.item.path) then
+							if child_paths_at_parent_level.item.starts_with (flat_use_nodes_for_path_csr.item.path) then
 debug ("flatten")
 	io.put_string ("%T...cloning node at " +
-	use_nodes_csr.key + " and replacing at " +
-	int_refs_csr.item.path + "%N")
+	flat_use_node_path_csr.key + " and replacing at " +
+	flat_use_nodes_for_path_csr.item.path + "%N")
 end
-								c_obj := arch_output_flat.object_at_path (use_nodes_csr.key).safe_deep_twin
-								if int_refs_csr.item.is_addressable then
-									c_obj.set_node_id (int_refs_csr.item.node_id)
+								c_obj := arch_output_flat.object_at_path (flat_use_node_path_csr.key).safe_deep_twin
+
+								-- override occurrences of the ref target object with object proxy occs, if set
+								if attached flat_use_nodes_for_path_csr.item.occurrences then
+									c_obj.set_occurrences (flat_use_nodes_for_path_csr.item.occurrences.deep_twin)
 								end
-								if attached int_refs_csr.item.occurrences then
-									c_obj.set_occurrences (int_refs_csr.item.occurrences.deep_twin)
-								end
-								int_refs_csr.item.parent.replace_child_by_id (c_obj, int_refs_csr.item.node_id)
+								flat_use_nodes_for_path_csr.item.parent.replace_child_by_id (c_obj, flat_use_nodes_for_path_csr.item.node_id)
 								clone_performed := True
 							end
 							child_paths_at_parent_level.forth

@@ -248,18 +248,16 @@ feature {NONE} -- Implementation
 			until
 				p_paths.off
 			loop
-				if source_archetype.has_object_path (p_paths.item) then
-					co := source_archetype.object_at_path (p_paths.item)
-					create list_row
-					if not l_paths.is_empty then
-						list_row.extend (utf8_to_utf32 (l_paths.item))
-					else
-						list_row.extend (utf8_to_utf32 (p_paths.item))
-					end
-					list_row.extend (utf8_to_utf32 (co.rm_type_name))
-					list_row.extend (utf8_to_utf32 (co.generating_type))
-					ev_path_list.extend (list_row)
+				co := source_archetype.object_at_path (p_paths.item)
+				create list_row
+				if not l_paths.is_empty then
+					list_row.extend (utf8_to_utf32 (l_paths.item))
+				else
+					list_row.extend (utf8_to_utf32 (p_paths.item))
 				end
+				list_row.extend (utf8_to_utf32 (co.rm_type_name))
+				list_row.extend (utf8_to_utf32 (co.generating_type))
+				ev_path_list.extend (list_row)
 
 				p_paths.forth
 				if not l_paths.is_empty then

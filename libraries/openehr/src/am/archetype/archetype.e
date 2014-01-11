@@ -222,8 +222,29 @@ feature -- Paths
 	all_paths: ARRAYED_LIST [STRING]
 			-- all paths from definition structure
 		do
-			create Result.make_from_array (path_map.current_keys)
+			-- filter out paths that key C_PRIMITIVE_OBJECTs, since their immediate attribute parent  paths are the
+			-- same, minus the useless terminal node id id9999
+			Result := all_paths_filtered (agent (ac: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := not attached {C_PRIMITIVE_OBJECT} ac end)
+		ensure
+			Result.object_comparison
+		end
+
+	leaf_paths: ARRAYED_LIST [STRING]
+			-- paths from definition structure C_PRIMITIVE_OBJECTs only
+		do
+			Result := all_paths_filtered (agent (ac: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := attached {C_ATTRIBUTE} ac as ca and then ca.is_leaf_parent end)
+		ensure
+			Result.object_comparison
+		end
+
+	leaf_paths_annotated (a_lang: STRING): ARRAYED_LIST [STRING]
+			-- paths from definition structure C_PRIMITIVE_OBJECTs only; annotated from terminology
+		do
+			create Result.make (0)
 			Result.compare_objects
+			across leaf_paths as paths_csr loop
+				Result.extend (terminology.annotated_path (paths_csr.item, a_lang, True))
+			end
 		ensure
 			Result.object_comparison
 		end
@@ -238,26 +259,6 @@ feature -- Paths
 				if a_filter.item ([all_paths_csr.item]) then
 					Result.extend (all_paths_csr.key)
 				end
-			end
-		ensure
-			Result.object_comparison
-		end
-
-	leaf_paths: ARRAYED_LIST [STRING]
-			-- paths from definition structure C_PRIMITIVE_OBJECTs only
-		do
-			Result := all_paths_filtered (agent (ac: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := attached {C_PRIMITIVE_OBJECT} ac end)
-		ensure
-			Result.object_comparison
-		end
-
-	leaf_paths_annotated (a_lang: STRING): ARRAYED_LIST [STRING]
-			-- paths from definition structure C_PRIMITIVE_OBJECTs only; annotated from terminology
-		do
-			create Result.make (0)
-			Result.compare_objects
-			across leaf_paths as paths_csr loop
-				Result.extend (terminology.annotated_path (paths_csr.item, a_lang, True))
 			end
 		ensure
 			Result.object_comparison
