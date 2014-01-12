@@ -12,29 +12,13 @@ class C_COMPLEX_OBJECT_PROXY
 inherit
 	C_OBJECT
 		redefine
-			set_occurrences, representation_cache
+			representation_cache
 		end
 
 create
-	make, make_identified
+	make_identified
 
 feature -- Initialisation
-
-	make (a_rm_type_name, a_path: STRING)
-			-- make assuming target object id
-		require
-			a_rm_type_name_valid: not a_rm_type_name.is_empty
-			a_path_exists: not a_path.is_empty
-		do
-			default_create
-			rm_type_name := a_rm_type_name
-			set_target_path (a_path)
-			use_target_occurrences := True
-			create representation_cache.make_anonymous (a_path)
-			representation_cache.set_content (Current)
-		ensure
-			Use_target_occurrences: use_target_occurrences
-		end
 
 	make_identified (a_rm_type_name, an_object_id, a_path: STRING)
 			-- make with id
@@ -46,7 +30,6 @@ feature -- Initialisation
 			default_create
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
-			use_target_occurrences := True
 			create representation_cache.make (an_object_id, a_path)
 			representation_cache.set_content (Current)
 		ensure
@@ -54,6 +37,11 @@ feature -- Initialisation
 		end
 
 feature -- Access
+
+	has_sibling_target: BOOLEAN
+		do
+			Result := representation.has_sibling_target
+		end
 
 	target_path: STRING
 			-- path to the referenced node
@@ -63,6 +51,9 @@ feature -- Status Report
 	use_target_occurrences: BOOLEAN
 			-- True if target occurrences are to be used as the value of occurrences in this object;
 			-- by the time of runtime use, the target occurrences value has to be set into this object
+		do
+			Result := not attached occurrences
+		end
 
 feature -- Modification
 
@@ -70,15 +61,6 @@ feature -- Modification
 			-- set reference path with a valid ADL path string
 		do
 			target_path := a_path
-		end
-
-	set_occurrences (ivl: MULTIPLICITY_INTERVAL)
-			--
-		do
-			precursor (ivl)
-			use_target_occurrences := False
-		ensure then
-			Dont_use_target_occurrences: not use_target_occurrences
 		end
 
 feature -- Visitor
@@ -106,7 +88,7 @@ feature {NONE} -- Implementation
 	create_default_representation: attached like representation_cache
 			-- create a reasonable `representation' instance
 		do
-			create Result.make_anonymous ("/")
+			create Result.make ("id1", "/")
 		end
 
 end

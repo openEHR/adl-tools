@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (667)
+			create message_table.make (668)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -169,6 +169,7 @@ feature -- Initialisation
 			message_table.put ("differential path $1 not allowed in non-specialised archetype", ec_VDIFV)
 			message_table.put ("attribute at path $1 is single-valued but is defined as multiply-valued in flat parent", ec_VSAM1)
 			message_table.put ("attribute at path $1 is multiply-valued but is defined as single-valued in flat parent", ec_VSAM2)
+			message_table.put ("object with RM type $1 under attribute $2 does not have a node identifier (id-code)", ec_VCOID)
 			message_table.put ("cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1", ec_VACSO)
 			message_table.put ("cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id", ec_VACSI)
 			message_table.put ("cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type", ec_VACSIT)

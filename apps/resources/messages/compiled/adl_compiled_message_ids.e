@@ -154,6 +154,7 @@ feature -- Definitions
 		ec_VDIFV: STRING = "VDIFV"
 		ec_VSAM1: STRING = "VSAM1"
 		ec_VSAM2: STRING = "VSAM2"
+		ec_VCOID: STRING = "VCOID"
 		ec_VACSO: STRING = "VACSO"
 		ec_VACSI: STRING = "VACSI"
 		ec_VACSIT: STRING = "VACSIT"

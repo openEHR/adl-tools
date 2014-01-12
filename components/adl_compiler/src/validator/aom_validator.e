@@ -44,9 +44,14 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
 				aom_profile := aom_p
 			end
+
+			-- set flat_ancestor
+			if target_descriptor.is_specialised then
+				flat_ancestor := target_descriptor.specialisation_ancestor.flat_archetype
+ 			end
 		ensure
 			target_descriptor_set: target_descriptor = ara
-			target_set: attached target
+			flat_ancestor_set: ara.is_specialised implies attached flat_ancestor
 		end
 
 feature -- Status Report
@@ -57,10 +62,13 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	target_descriptor: ARCH_CAT_ARCHETYPE
+	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
 
-	target: ARCHETYPE
+	flat_ancestor: detachable FLAT_ARCHETYPE
+			-- flat version of ancestor archetype, if target is specialised
+
+	target_descriptor: ARCH_CAT_ARCHETYPE
 			-- differential archetype being validated
 
 	terminology: ARCHETYPE_TERMINOLOGY

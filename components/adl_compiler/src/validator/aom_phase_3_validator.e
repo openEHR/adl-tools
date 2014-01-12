@@ -12,7 +12,7 @@ class AOM_PHASE_3_VALIDATOR
 inherit
 	AOM_VALIDATOR
 		redefine
-			validate, target, initialise
+			validate, initialise
 		end
 
 create
@@ -24,14 +24,13 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			-- set target_descriptor
 			-- initialise reporting variables
 		do
-			rm_schema := an_rm_schema
-			target_descriptor := a_target_desc
-			initialise_authored_resource (target_descriptor.flat_archetype)
+			precursor (a_target_desc, an_rm_schema)
+			target_flat := target_descriptor.flat_archetype
 		end
 
 feature -- Access
 
-	target: FLAT_ARCHETYPE
+	target_flat: FLAT_ARCHETYPE
 			-- flat archetype being validated
 
 feature -- Status Report
@@ -46,30 +45,30 @@ feature -- Validation
 	validate
 		do
 			reset
+			validate_c_object_proxy_references
 			validate_occurrences
-			validate_internal_references
 		end
 
 feature {NONE} -- Implementation
+
+	validate_c_object_proxy_references
+			-- Validate items in `found_internal_references'.
+			-- For specialised archetypes, requires flat ancestor to be available
+		do
+			across target_flat.use_node_index as use_refs_csr loop
+				if not target.definition.has_path (use_refs_csr.key) then
+					add_error (ec_VUNP, <<use_refs_csr.key>>)
+				end
+			end
+		end
 
 	validate_occurrences
 			-- validate occurrences under container attributes, in flat definition
 		local
 			def_it: C_ITERATOR
 		do
-			create def_it.make (target.definition)
+			create def_it.make (target_flat.definition)
 			def_it.do_all (agent do_validate_occ_enter, agent do_validate_occ_exit)
-		end
-
-	validate_internal_references
-			-- Validate items in `found_internal_references'.
-			-- For specialised archetypes, requires flat ancestor to be available
-		do
-			across target.use_node_index as use_refs_csr loop
-				if not target.definition.has_path (use_refs_csr.key) then
-					add_error (ec_VUNP, <<use_refs_csr.key>>)
-				end
-			end
 		end
 
 feature {NONE} -- Implementation

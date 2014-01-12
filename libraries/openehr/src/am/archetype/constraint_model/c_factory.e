@@ -86,12 +86,12 @@ feature -- Factory
 			a_parent.put_attribute(Result)
 		end
 
-	create_archetype_internal_ref (a_parent: C_ATTRIBUTE; a_type_name:STRING; a_path: STRING): C_COMPLEX_OBJECT_PROXY
+	create_c_complex_object_proxy (a_parent: C_ATTRIBUTE; a_type_name, a_node_id, a_path: STRING): C_COMPLEX_OBJECT_PROXY
 			-- create a "use" node
 		require
 			a_type_name_valid: not a_type_name.is_empty
 		do
-			create Result.make(a_type_name, a_path)
+			create Result.make_identified (a_type_name, a_node_id, a_path)
 			a_parent.put_child (Result)
 		end
 

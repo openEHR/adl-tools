@@ -182,6 +182,11 @@ debug ("flatten")
 end
 								c_obj := arch_output_flat.object_at_path (flat_use_node_path_csr.key).safe_deep_twin
 
+								-- override target object's node_id in copy if it's a sibling target
+								if flat_use_nodes_for_path_csr.item.has_sibling_target then
+									c_obj.set_node_id (flat_use_nodes_for_path_csr.item.node_id)
+								end
+
 								-- override occurrences of the ref target object with object proxy occs, if set
 								if attached flat_use_nodes_for_path_csr.item.occurrences then
 									c_obj.set_occurrences (flat_use_nodes_for_path_csr.item.occurrences.deep_twin)

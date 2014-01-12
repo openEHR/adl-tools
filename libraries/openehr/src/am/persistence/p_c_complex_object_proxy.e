@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class P_ARCHETYPE_INTERNAL_REF
+class P_C_COMPLEX_OBJECT_PROXY
 
 inherit
 	P_C_OBJECT
@@ -33,12 +33,9 @@ feature -- Access
 
 feature -- Factory
 
-	create_archetype_internal_ref: C_COMPLEX_OBJECT_PROXY
+	create_c_complex_object_proxy: C_COMPLEX_OBJECT_PROXY
 		do
-			create Result.make (rm_type_name, target_path)
-			if attached node_id as nid then
-				Result.set_node_id (nid)
-			end
+			create Result.make_identified (rm_type_name, node_id, target_path)
 			populate_c_instance (Result)
 		end
 

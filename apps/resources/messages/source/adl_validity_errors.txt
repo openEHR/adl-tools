@@ -100,6 +100,7 @@ templates = <
 		["VSAM2"] = <"attribute at path $1 is multiply-valued but is defined as single-valued in flat parent">
 
 		-- C_OBJECT
+		["VCOID"] = <"object with RM type $1 under attribute $2 does not have a node identifier (id-code)">
 		["VACSO"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
 		["VACSI"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
 		["VACSIT"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">

@@ -15,7 +15,7 @@ class AOM_PHASE_1_VALIDATOR
 inherit
 	AOM_VALIDATOR
 		redefine
-			validate, target
+			validate
 		end
 
 	ADL_SYNTAX_CONVERTER
@@ -31,14 +31,6 @@ inherit
 create
 	initialise
 
-feature -- Access
-
-	target: DIFFERENTIAL_ARCHETYPE
-			-- differential archetype being validated
-
-	flat_ancestor: detachable FLAT_ARCHETYPE
-			-- flat version of ancestor archetype, if target is specialised
-
 feature -- Status Report
 
 	is_validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
@@ -51,11 +43,6 @@ feature -- Validation
 	validate
 		do
 			reset
-
-			-- set flat_ancestor
-			if target_descriptor.is_specialised then
-				flat_ancestor := target_descriptor.specialisation_ancestor.flat_archetype
- 			end
 
 			-- basic validation
 			validate_basics
@@ -87,6 +74,7 @@ feature -- Validation
 				validate_terminology_languages
 				validate_definition_codes
 				validate_terminology_bindings
+				validate_annotations
 				report_unused_terminology_codes
 			end
 		end
@@ -279,7 +267,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_definition_codes
-			-- Check if all at- and ac-codes found in the definition node tree are in the terminology (including inherited items).
+			-- Check if all id-, at- and ac-codes found in the definition node tree are in the terminology (including inherited items).
 			-- Note that id-codes are optional in the terminology for objects under single-valued C_ATTRIBUTEs.
 			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
 			-- For specialised archetypes, requires flat ancestor to be available
@@ -357,6 +345,34 @@ feature {NONE} -- Implementation
 						target.has_path (bindings_for_lang_csr.key))
 					then
 						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
+					end
+				end
+			end
+		end
+
+	validate_annotations
+			-- for each language, ensure that annotations are proper translations of each other (if present)
+			-- For specialised archetypes, requires flat ancestor to be available
+		local
+			ann_path: STRING
+			apa: ARCHETYPE_PATH_ANALYSER
+		do
+			if target.has_annotations then
+				across target.annotations.items as annots_csr loop
+					across annots_csr.item.items as annots_for_lang_csr loop
+						ann_path := annots_for_lang_csr.key
+						create apa.make_from_string (ann_path)
+
+						-- firstly see if annotation path is valid
+						if apa.is_archetype_path then
+							if not (target.has_path (ann_path) or else (target.is_specialised and then flat_ancestor.has_path (ann_path))) then
+								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
+							end
+						elseif not rm_schema.has_property_path (target.definition.rm_type_name, ann_path) then
+							add_error (ec_VRANP2, <<annots_csr.key, ann_path>>)
+						end
+
+						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
 					end
 				end
 			end

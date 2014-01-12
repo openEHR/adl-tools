@@ -39,9 +39,7 @@ feature -- Initialisation
 					elseif attached {ARCHETYPE_SLOT} c_objs_csr.item as a_s then
 						children.extend (create {P_ARCHETYPE_SLOT}.make(a_s))
 					elseif attached {C_COMPLEX_OBJECT_PROXY} c_objs_csr.item as a_ir then
-						children.extend (create {P_ARCHETYPE_INTERNAL_REF}.make(a_ir))
-					elseif attached {CONSTRAINT_REF} c_objs_csr.item as cr then
-						children.extend (create {P_CONSTRAINT_REF}.make(cr))
+						children.extend (create {P_C_COMPLEX_OBJECT_PROXY}.make(a_ir))
 					elseif attached {C_INTEGER} c_objs_csr.item as c_po then
 						children.extend (create {P_C_INTEGER}.make(c_po))
 					elseif attached {C_REAL} c_objs_csr.item as c_po then
@@ -113,10 +111,8 @@ feature -- Factory
 						Result.put_child (p_c_co.create_c_complex_object)
 					elseif attached {P_ARCHETYPE_SLOT} p_c_objs_csr.item as p_a_s then
 						Result.put_child (p_a_s.create_archetype_slot)
-					elseif attached {P_ARCHETYPE_INTERNAL_REF} p_c_objs_csr.item as p_a_ir then
-						Result.put_child (p_a_ir.create_archetype_internal_ref)
-					elseif attached {P_CONSTRAINT_REF} p_c_objs_csr.item as p_cr then
-						Result.put_child (p_cr.create_constraint_ref)
+					elseif attached {P_C_COMPLEX_OBJECT_PROXY} p_c_objs_csr.item as p_a_ir then
+						Result.put_child (p_a_ir.create_c_complex_object_proxy)
 					elseif attached {P_C_PRIMITIVE_OBJECT} p_c_objs_csr.item as p_c_po then
 						Result.put_child (p_c_po.create_c_primitive_object)
 					end

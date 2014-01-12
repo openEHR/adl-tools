@@ -121,7 +121,7 @@
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_archetype_root">c_archetype_root</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#archetype_internal_ref">archetype_internal_ref</a> </span></div>
+| <span class="rhs_variable"><a href="#c_complex_object_proxy">c_complex_object_proxy</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#archetype_slot">archetype_slot</a> </span></div>
 <div class="rhs">
@@ -143,20 +143,13 @@
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="archetype_internal_ref">archetype_internal_ref</span>: </div>
+<span class="lhs_variable" id="c_complex_object_proxy">c_complex_object_proxy</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#archetype_internal_ref_head">archetype_internal_ref_head</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
-<div class="rhs">
-| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="archetype_internal_ref_head">archetype_internal_ref_head</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
+&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
 <div class="rhs">
 | <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+<div class="rhs">
+| <span class="token">SYM_USE_NODE </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">

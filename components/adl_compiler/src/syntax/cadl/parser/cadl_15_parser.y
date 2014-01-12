@@ -99,7 +99,7 @@ create
 %type <ASSERTION> assertion
 
 %type <C_ARCHETYPE_ROOT> c_archetype_root
-%type <C_COMPLEX_OBJECT_PROXY> archetype_internal_ref
+%type <C_COMPLEX_OBJECT_PROXY> c_complex_object_proxy
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
@@ -315,7 +315,7 @@ c_object: c_complex_object
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
-	| archetype_internal_ref 
+	| c_complex_object_proxy 
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
@@ -366,68 +366,35 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 		}
 	;
 
-archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
+c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
 		{
 			create og_path.make_from_string ($3)
-			if attached arch_internal_ref_node_id as air_node_id then
-				create $$.make_identified (arch_internal_ref_rm_type_name, air_node_id, $3)
-			else
-				create $$.make (arch_internal_ref_rm_type_name, $3)
-
-				-- if the C_ATTRIBUTE above this node requires that this node has an identifier, then take it from the target path
-				if c_attrs.item.candidate_child_requires_id ($$.rm_type_name) then
-					-- default to the id from the target path
-					if not og_path.last.object_id.is_empty then
-						$$.set_node_id (og_path.last.object_id)
-					else
-						-- error will be generated when attempt is made to add this object to C_ATTRIBUTE
-					end
-				end
-
-			end
-			if attached $2 as att_occ then
+			create $$.make_identified ($2, $3, $5)
+			if attached $4 as att_occ then
 				$$.set_occurrences (att_occ)
 			end
 
 			debug ("ADL_parse")
 				io.put_string (indent + "create C_COMPLEX_OBJECT_PROXY ")
 				io.put_string ($$.rm_type_name) 
-				if $$.is_addressable then
-					io.put_string ("[" + $$.node_id + "] ")
-				else
-					io.put_string (" ")
-				end
+				io.put_string ("[" + $$.node_id + "] ")
 				if $$.use_target_occurrences then
 					io.put_string ("occurrences=(use target) ")
-				elseif $2 /= Void then
+				elseif $4 /= Void then
 					io.put_string ("occurrences=" + $$.occurrences.as_string + " ")
 				end
 				io.put_string (" => " + $$.target_path + "%N") 
 				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (C_COMPLEX_OBJECT_PROXY)%N") 
 			end
 		}
-	| SYM_USE_NODE type_identifier error 
+	| SYM_USE_NODE type_identifier
+		{
+			abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)
+		}
+	| SYM_USE_NODE error 
 		{
 			abort_with_error (ec_SUNPA, Void)
 		}
-	;
-
-archetype_internal_ref_head: SYM_USE_NODE type_identifier V_ID_CODE
-		{
-			arch_internal_ref_rm_type_name := $2
-			arch_internal_ref_node_id := $3
-		}
-----------------------------------------------------------------------------
--- START Support transitional ADL 1.5 archetypes containing nodes with no codes
---
-	| SYM_USE_NODE type_identifier
-		{
-			arch_internal_ref_rm_type_name := $2
-			arch_internal_ref_node_id := Void
-		}
---
--- END Support transitional ADL 1.5 archetypes containing nodes with no codes
-----------------------------------------------------------------------------
 	;
 
 archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK
@@ -2312,7 +2279,6 @@ feature -- Initialization
 			create str.make_empty
 			create indent.make_empty
 			create rm_attribute_name.make_empty
-			create arch_internal_ref_rm_type_name.make_empty
 			create parent_path_str.make_empty
 		end
 
@@ -2455,9 +2421,6 @@ feature {NONE} -- Parse Tree
 
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
-
-	arch_internal_ref_rm_type_name: STRING
-	arch_internal_ref_node_id: detachable STRING
 
 	indent: STRING
 

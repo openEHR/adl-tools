@@ -162,8 +162,6 @@ feature -- Modification
 
 	set_sibling_order (a_sibling_order: SIBLING_ORDER)
 			-- set sibling order
---		require
---			specialisation_depth > 0
 		do
 			sibling_order := a_sibling_order
 		ensure
@@ -182,21 +180,11 @@ feature -- Modification
 
 	set_sibling_order_after (a_node_id: STRING)
 			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
---		require
---			specialisation_depth_from_code (a_node_id) < specialisation_depth
 		do
 			create sibling_order.make_after (a_node_id)
 		ensure
 			sibling_order_set: attached sibling_order as sib_ord and then (sib_ord.is_after and sib_ord.sibling_node_id.is_equal (a_node_id))
 		end
-
---	clear_sibling_order
---			-- remove sibling order
---		do
---			sibling_order := Void
---		ensure
---			not attached sibling_order
---		end
 
 	set_node_id (an_object_id: STRING)
 		require

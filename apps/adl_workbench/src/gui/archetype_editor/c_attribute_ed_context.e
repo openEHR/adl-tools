@@ -362,7 +362,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			air: C_COMPLEX_OBJECT_PROXY
 			arch_slot: ARCHETYPE_SLOT
 			cref: CONSTRAINT_REF
-			new_code: detachable STRING
+			new_code: STRING
 			rm_type_name: STRING
 			occ: MULTIPLICITY_INTERVAL
 			rm_type_spec: BMM_TYPE_SPECIFIER
@@ -380,11 +380,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
-				if attached new_code as nc then
-					create cco.make_identified (rm_type_name, nc)
-				else
-					create cco.make_anonymous (rm_type_name)
-				end
+				create cco.make_identified (rm_type_name, new_code)
 				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make (cco, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
@@ -394,30 +390,14 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
-				if attached new_code as nc then
-					create arch_slot.make_identified (rm_type_name, nc)
-				else
-					create arch_slot.make_anonymous (rm_type_name)
-				end
+				create arch_slot.make_identified (rm_type_name, new_code)
 				create {ARCHETYPE_SLOT_ED_CONTEXT} Result.make (arch_slot, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name)) then
 				check attached co_create_params.path_ref as pr then
-					if attached new_code as nc then
-						create air.make_identified (rm_type_name, nc, pr)
-					else
-						create air.make (rm_type_name, pr)
-					end
+					create air.make_identified (rm_type_name, new_code, pr)
 					create {C_COMPLEX_OBJECT_PROXY_ED_CONTEXT} Result.make (air, ed_context)
 				end
-
-			elseif co_create_params.aom_type.is_equal (bare_type_name(({CONSTRAINT_REF}).name)) then
-				ed_context.archetype.terminology.create_added_constraint_definition ("-", "-")
-				check attached ed_context.archetype.terminology.last_new_definition_code as new_ac_code then
-					create cref.make (new_ac_code)
-				end
-				create {CONSTRAINT_REF_ED_CONTEXT} Result.make (cref, ed_context)
-
 			else
 				-- Should never get here
 				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_open, ed_context)
