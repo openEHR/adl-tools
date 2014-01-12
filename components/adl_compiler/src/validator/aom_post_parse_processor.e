@@ -179,8 +179,7 @@ feature {NONE} -- Implementation
 	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; parent_flat: FLAT_ARCHETYPE)
 		local
 	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
-	 		ca_in_flat: C_ATTRIBUTE
+	 		path_in_flat: STRING
 		do
 	 		if attached {C_ATTRIBUTE} a_node as ca and then attached ca.differential_path as dp then
 	 			create apa.make_from_string (dp)
@@ -198,7 +197,9 @@ feature {NONE} -- Implementation
 	 		code_number, parent_code: STRING
 	 		spec_depth: INTEGER
 	 	do
-	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then is_valid_id_code (c_obj.node_id) then
+	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then
+	 			is_valid_id_code (c_obj.node_id) and then not c_obj.node_id.is_equal (fake_adl_14_node_id)
+	 		then
 				spec_depth := specialisation_depth_from_code (c_obj.node_id)
 				code_number := index_from_code_at_level (c_obj.node_id, spec_depth)
 				if spec_depth = 0 then
@@ -221,16 +222,19 @@ feature {NONE} -- Implementation
 	 		parent_flat: FLAT_ARCHETYPE
 	 		parent_ca: C_ATTRIBUTE
 	 		parent_co: C_OBJECT
+	 		og_path: OG_PATH
 	 	do
-	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then not c_obj.is_addressable then
+	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then c_obj.node_id.is_equal (fake_adl_14_node_id) then
 	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
-	 			old_path := c_obj.path
+	 			create og_path.make_from_string (c_obj.path)
+	 			og_path.last.set_object_id ("")
+	 			old_path := og_path.as_string
  				id_code := new_added_id_code_at_level (target.specialisation_depth, highest_added_code)
  				highest_added_code := highest_added_code + 1
 	 			if target.is_specialised then
 	 				-- generate a path; since the terminal object doesn't currently have any node_id,
 	 				-- the path will actually just point to the parent C_ATTRIBUTE
-	 				create apa.make_from_string (c_obj.path)
+	 				create apa.make_from_string (old_path)
 	 				if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
 		 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
 		 				check attached arch_parent_flat as att_pf then

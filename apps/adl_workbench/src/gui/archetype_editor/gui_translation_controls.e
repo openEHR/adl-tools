@@ -175,7 +175,7 @@ feature {NONE} -- Implementation
 			if depth < last_depth then
 				attr_buffer.wipe_out
 			end
-			if attached {C_OBJECT} a_c_node as co and then co.is_addressable then
+			if attached {C_OBJECT} a_c_node as co then
 				original_text.append (attr_buffer)
 				original_text.append (tab_string.substring (1, depth*2))
 				original_text.append (local_term_string (co.node_id))

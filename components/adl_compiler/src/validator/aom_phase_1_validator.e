@@ -91,8 +91,6 @@ feature {NONE} -- Implementation
 				add_warning (ec_validate_e3, <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_class) then
 				add_error (ec_VARDT, <<target.archetype_id.rm_class, target.definition.rm_type_name>>)
-			elseif not target.definition.is_addressable then
-				add_error (ec_VACCD, Void)
 			elseif not is_valid_root_id_code (target.concept_id) then
 				add_error (ec_VARCN, <<target.concept_id, root_id_code_regex_pattern>>)
 			elseif target_descriptor.is_specialised then
@@ -133,21 +131,16 @@ feature {NONE} -- Implementation
 						if not apa.is_phantom_path_at_level (flat_ancestor.specialisation_depth) then
 							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
 							if not flat_ancestor.has_path (flat_anc_path) then
-								create og_path.make_from_string (flat_anc_path)
-								if not flat_ancestor.has_path (og_path.parent_path.as_string) then
+								-- allow for a terminal attribute under a parent object
+							--	create og_path.make_from_string (flat_anc_path)
+							--	if not flat_ancestor.has_path (og_path.parent_path.as_string) then
 									add_error (ec_VDIFP1, <<ca.path, flat_anc_path>>)
-								end
+							--	end
 							end
 						else
 							add_error (ec_VDIFP3, <<ca.path>>)
 						end
 					end
-				end
-			elseif attached {C_OBJECT} a_c_node as co and then not co.is_addressable then
-				if attached co.parent as parent_ca then
-					add_error (ec_VSONID, <<parent_ca.path, co.rm_type_name>>)
-				else
-					add_error (ec_VSONID, <<co.path, co.rm_type_name>>)
 				end
 			end
 		end

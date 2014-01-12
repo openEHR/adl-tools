@@ -82,11 +82,11 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_complex_object_id">c_complex_object_id</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ROOT_ID_CODE </span></div>
+&nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ROOT_ID_CODE </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
 </div>
 
 <div class="rule">
@@ -136,9 +136,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_archetype_root">c_archetype_root</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
-<div class="rhs">
-| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="literal_token">&#91; </span><span class="token">V_ID_CODE_STR </span><span class="literal_token">&#44; </span><span class="token">V_ARCHETYPE_ID </span><span class="literal_token">&#93; </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+&nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
 <div class="rhs">
 | <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
 </div>
@@ -174,13 +172,11 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_archetype_slot_id">c_archetype_slot_id</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
-<div class="rhs">
-| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
-<div class="rhs">
-| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">SYM_CLOSED </span></div>
+&nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="token">SYM_CLOSED </span></div>
+<div class="rhs">
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="token">error </span></div>
 </div>

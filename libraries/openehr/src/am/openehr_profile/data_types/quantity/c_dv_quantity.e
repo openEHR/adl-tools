@@ -66,7 +66,7 @@ feature -- Status Report
 
 feature -- Conversion
 
-	standard_equivalent: C_COMPLEX_OBJECT
+	standard_equivalent (a_node_id: STRING): C_COMPLEX_OBJECT
 			-- if there is no `list' or a list with only one member, create a normal structure
 			-- for the type DV_QUANTITY
 			-- if there are two or more `list' items, create a 2nd order structure
@@ -81,7 +81,7 @@ feature -- Conversion
 			new_prec: INTERVAL[INTEGER]
 		do
 			-- DV_QUANTITY root
-			create Result.make_anonymous (rm_type_name)
+			create Result.make_identified (rm_type_name, a_node_id)
 
 			-- CA: property
 			if attached property as prop then

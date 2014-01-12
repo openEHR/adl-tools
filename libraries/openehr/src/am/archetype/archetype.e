@@ -442,7 +442,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 							end
 						-- note this will include all C_PRIMITIVE_OBJECTs under same id
 						elseif attached {C_OBJECT} a_c_node as co then
-							if co.is_addressable and is_id_code (co.node_id) then
+							if is_id_code (co.node_id) then
 								if not idx.has (co.node_id) then
 									idx.put (create {ARRAYED_LIST [ARCHETYPE_CONSTRAINT]}.make(0), co.node_id)
 								end

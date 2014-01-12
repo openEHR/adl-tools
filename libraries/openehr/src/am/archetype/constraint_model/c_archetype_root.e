@@ -19,61 +19,33 @@ class C_ARCHETYPE_ROOT
 inherit
 	C_COMPLEX_OBJECT
 		rename
-			make_anonymous as cco_make_anonymous,
 			make_identified as cco_make_identified
 		redefine
 			out, enter_subtree, exit_subtree
 		end
 
 create
-	make_external_ref, make_slot_filler
+	make
 
 feature -- Initialisation
 
-	make_external_ref (a_rm_type_name, an_archetype_id: STRING)
+	make (a_rm_type_name, a_node_id, an_archetype_id: STRING)
 			-- make as an archetype external reference
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
+			Node_id_valid: is_valid_id_code (a_node_id)
 			Archetype_id_valid: valid_archetype_id (an_archetype_id)
 		do
-			cco_make_identified (a_rm_type_name, an_archetype_id)
-		end
-
-	make_slot_filler (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
-			-- make as a slot filler, specialising a slot
-		require
-			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Archetype_id_valid: valid_archetype_id (an_archetype_id)
-			Slot_id_valid: not a_slot_node_id.is_empty
-		do
-			cco_make_identified (a_rm_type_name, an_archetype_id)
-			slot_node_id := a_slot_node_id
+			cco_make_identified (a_rm_type_name, a_node_id)
+			archetype_ref := an_archetype_id
 		end
 
 feature -- Access
 
-	slot_node_id: detachable STRING
-			-- record node id of slot in parent archetype that this object fills, in the case a slot exists;
-			-- only set in flat form of archetype
-
 	archetype_ref: STRING
 			-- id of filler archetype
-		do
-			Result := node_id
-		end
-
-	slot_path: STRING
-			-- generate path of slot that this node would replace, by using slot_node_id
-		local
-			og_path: OG_PATH
-		do
-			if attached slot_node_id as snid then
-				og_path := representation.path
-				og_path.last.set_object_id (snid)
-				Result := og_path.as_string
-			else
-				Result := path
-			end
+		attribute
+			create Result.make_empty
 		end
 
 feature -- Output
@@ -82,16 +54,11 @@ feature -- Output
 			-- stringify for GUI use
 		do
 			create Result.make(0)
-			Result.append (rm_type_name + "[")
-			if attached slot_node_id as snid then
-				Result.append (snid + ", ")
-			end
-			if is_addressable then
-				Result.append (archetype_ref + ", ")
-			end
+			Result.append (rm_type_name + "[" + node_id + "] ")
 			if attached occurrences as occ then
 				Result.append (occ.as_string)
 			end
+			Result.append (" " + archetype_ref)
 		end
 
 feature -- Visitor
@@ -107,9 +74,6 @@ feature -- Visitor
 		do
 			visitor.end_c_archetype_root (Current, depth)
 		end
-
-invariant
-	is_addressable: is_addressable
 
 end
 

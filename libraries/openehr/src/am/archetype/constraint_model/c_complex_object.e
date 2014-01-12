@@ -24,7 +24,7 @@ inherit
 		end
 
 create
-	make_identified, make_anonymous
+	make_identified
 
 feature -- Initialisation
 
@@ -32,22 +32,10 @@ feature -- Initialisation
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Object_id_valid: not an_object_id.is_empty
+			Object_id_valid: is_valid_id_code (an_object_id)
 		do
 			rm_type_name := a_rm_type_name
 			create representation_cache.make (an_object_id)
-			representation_cache.set_content (Current)
-		ensure
-			Any_allowed: any_allowed
-		end
-
-	make_anonymous (a_rm_type_name: STRING)
-			-- set type name
-		require
-			Rm_type_name_valid: not a_rm_type_name.is_empty
-		do
-			rm_type_name := a_rm_type_name
-			create representation_cache.make_anonymous
 			representation_cache.set_content (Current)
 		ensure
 			Any_allowed: any_allowed

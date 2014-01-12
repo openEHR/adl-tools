@@ -42,6 +42,9 @@ feature {NONE}-- Initialization
 			create ev_line_numbers_cb
 			ev_line_numbers_cb.set_text (get_msg (ec_add_line_numbers_text, Void))
 			ev_line_numbers_cb.set_tooltip (get_msg (ec_add_line_numbers_tooltip, Void))
+			if show_line_numbers then
+				ev_line_numbers_cb.enable_select
+			end
 			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
 			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
 			ev_source_controls_vbox.extend (ev_line_numbers_cb)

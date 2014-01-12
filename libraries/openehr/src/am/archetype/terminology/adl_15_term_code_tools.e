@@ -120,6 +120,8 @@ feature -- Definitions
 
 	uri_with_version_template: STRING = "http://$terminology_id.info/ver/$terminology_version/id/$code_string"
 
+	Fake_adl_14_node_id: STRING = "id110011"
+
 feature -- Access
 
 	specialisation_parent_from_code (a_code: STRING): STRING

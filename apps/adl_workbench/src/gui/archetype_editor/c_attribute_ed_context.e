@@ -385,7 +385,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
 				check attached co_create_params.ext_ref as arch_id then
-					create car.make_external_ref (rm_type_name, arch_id)
+					create car.make (rm_type_name, new_code, arch_id)
 				end
 				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
 

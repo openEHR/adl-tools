@@ -31,8 +31,8 @@ feature -- Initialisation
 
 feature -- Factory
 
-	create_c_complex_object_identified (a_parent: C_ATTRIBUTE; a_type_name, a_node_id: STRING): C_COMPLEX_OBJECT
-			-- create a new identified object node
+	create_c_complex_object (a_parent: C_ATTRIBUTE; a_type_name, a_node_id: STRING): C_COMPLEX_OBJECT
+			-- create a new object node
 		require
 			type_name_valid: not a_type_name.is_empty
 			node_id_valid: not a_parent.has_child_with_id (a_node_id)
@@ -41,26 +41,8 @@ feature -- Factory
 			a_parent.put_child (Result)
 		end
 
-	create_c_complex_object_anonymous (a_parent: C_ATTRIBUTE; a_type_name: STRING): C_COMPLEX_OBJECT
-			-- create a new non-identified object node
-		require
-			type_name_valid: not a_type_name.is_empty
-		do
-			create Result.make_anonymous(a_type_name)
-			a_parent.put_child (Result)
-		end
-
-	create_archetype_slot_anonymous (a_parent: C_ATTRIBUTE; a_type_name: STRING): ARCHETYPE_SLOT
-			-- create a new non-identified archetype slot
-		require
-			type_name_valid: not a_type_name.is_empty
-		do
-			create Result.make_anonymous(a_type_name)
-			a_parent.put_child (Result)
-		end
-
-	create_archetype_slot_identified (a_parent: C_ATTRIBUTE; a_type_name, a_node_id: STRING): ARCHETYPE_SLOT
-			-- create a new non-identified archetype slot
+	create_archetype_slot (a_parent: C_ATTRIBUTE; a_type_name, a_node_id: STRING): ARCHETYPE_SLOT
+			-- create a new archetype slot
 		require
 			type_name_valid: not a_type_name.is_empty
 		do

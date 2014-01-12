@@ -266,7 +266,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 --
 	| type_identifier
 		{
-			create $$.make_anonymous ($1)
+			create $$.make_identified ($1, Fake_adl_14_node_id)
 		}
 --
 -- END Support transitional ADL 1.5 archetypes containing nodes with no codes
@@ -338,26 +338,15 @@ c_object: c_complex_object
 -- The first two forms below correspond to source archetypes, which have no body under a C_ARCHETYPE_ROOT
 -- A c_complex_object-like variant would be needed to parse fully flattened templates.
 --
-c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occurrences 
+c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID 
 		{
-			if archetype_id_parser.valid_id ($4) then
-				create $$.make_external_ref ($2, $4)
-				if attached $6 as occ then
+			if archetype_id_parser.valid_id ($5) then
+				create $$.make ($2, $3, $5)
+				if attached $4 as occ then
 					$$.set_occurrences (occ)
 				end
 			else
-				abort_with_error (ec_SUAIDI, <<$4>>)
-			end
-		}
-	| SYM_USE_ARCHETYPE type_identifier '[' V_ID_CODE_STR ',' V_ARCHETYPE_ID ']' c_occurrences
-		{
-			if archetype_id_parser.valid_id ($6) then
-				create $$.make_slot_filler ($2, $6, $4)
-				if attached $8 as occ then
-					$$.set_occurrences (occ)
-				end
-			else
-				abort_with_error (ec_SUAIDI, <<$4>>)
+				abort_with_error (ec_SUAIDI, <<$3>>)
 			end
 		}
 	| SYM_USE_ARCHETYPE type_identifier error
@@ -457,7 +446,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 --
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			create $$.make_anonymous ($2)
+			create $$.make_identified ($2, Fake_adl_14_node_id)
 		}
 --
 -- END Support transitional ADL 1.5 archetypes containing nodes with no id-codes
@@ -2348,27 +2337,19 @@ feature {NONE} -- Implementation
 			create ar.make (0)
 			create err_code.make_empty
 			ar.extend (an_obj.generating_type) -- $1
-			if an_obj.is_addressable then
-				ar.extend ("node_id=" + an_obj.node_id) -- $2
-			else
-				ar.extend ("rm_type_name=" + an_obj.rm_type_name) -- $2
-			end
+			ar.extend ("node_id=" + an_obj.node_id) -- $2
 			ar.extend (an_attr.rm_attribute_name) -- $3
 
 			if an_attr.is_single then
 				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
 					err_code := ec_VACSO
-				elseif an_obj.is_addressable and an_attr.has_child_with_id (an_obj.node_id) then
+				elseif an_attr.has_child_with_id (an_obj.node_id) then
 					err_code := ec_VACSI
-				elseif not an_obj.is_addressable and an_attr.has_child_with_rm_type_name (an_obj.rm_type_name) then
-					err_code := ec_VACSIT
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if not an_obj.is_addressable then
-					err_code := ec_VACMI
-				elseif an_attr.has_child_with_id (an_obj.node_id) then
+				if an_attr.has_child_with_id (an_obj.node_id) then
 					err_code := ec_VACMM
 				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
 						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and

@@ -242,7 +242,7 @@ end
 
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
-				create apa.make_from_string (car.slot_path)
+				create apa.make_from_string (car.path)
 				co_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
 				if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.object_at_path (co_path_in_flat) as a_slot then
 					if ancestor_slot_id_index.has (a_slot.path) then
@@ -278,24 +278,7 @@ end
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
 				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-
-				-- The above won't work in the case where there are multiple alternative objects with no identifiers
-				-- in the flat ancestor - so we need to do a search based on RM type matching to find the matching C_OBJECT in the flat
-				-- NOTE: ADL wil be changed to disallow this case anyway, so now it needs to be detected and banned
-				if not co_in_flat_anc.is_root and not co_child_diff.is_addressable and then co_in_flat_anc.parent.has_non_identified_alternatives then
-					if co_in_flat_anc.parent.has_child_with_rm_type_name (co_child_diff.rm_type_name) then
-						check attached co_in_flat_anc.parent.child_with_rm_type_name (co_child_diff.rm_type_name) as cpfc then
-							co_in_flat_anc := cpfc
-						end
-					else
-						-- TODO: (12930) find the closest ancestor node
-						io.put_string ("ARCHETYPE_PHASE_2_VALIDATOR.specialised_node_validate: %
-							%currently unhandled case - co_child_diff.rm_type_name needs to be matched with child at path " + co_in_flat_anc.parent.path + "%N")
-
-						-- TODO: generate error in case where no type match can be found
-					end
-				end
-
+				
 debug ("validate")
 	io.put_string (">>>>> validate: C_OBJECT in child at " + terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True))
 end
@@ -437,76 +420,46 @@ end
 			-- only have been RM-validated. Either way, we need to use the slot path it replaces rather than its literal path,
 			-- to determine if it has a corresponding node in the flat ancestor.
 			if passed then
-				if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-					create apa.make_from_string (car.slot_path)
-					flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-					Result := flat_ancestor.has_object_path (flat_anc_path)
-				else
-					if attached {C_OBJECT} a_c_node as a_c_obj then
-						-- if following check is False, it means the path is to a node that is new in the current archetype,
-						-- and therefore there is nothing in the ancestor to validate it against. Invalid codes, i.e. the 'unknown' code
-						-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the ancestor flat,
-						-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
-
-						-- node with no id, treat it as a redefine if same path exists in flat ancestor
-						if not is_valid_code (a_c_obj.node_id) then
+				if attached {C_OBJECT} a_c_node as a_c_obj then
+					-- is it an overlay or new node; if overlay, then check it
+					if passed then
+						if specialisation_depth_from_code (a_c_obj.node_id)
+							<= flat_ancestor.specialisation_depth or else 			-- node with node_id from previous level OR
+							is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
+						then
 							create apa.make_from_string (a_c_node.path)
 							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
 							Result := flat_ancestor.has_object_path (flat_anc_path)
-
-						-- node has an id
-						else
-							if not a_c_node.is_root then
-								-- if parent C_ATTR in flat ancestor has any children, they must also have ids
-								create apa.make_from_string (a_c_node.parent.path)
-								ca_in_flat_anc := flat_ancestor.definition.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-								if ca_in_flat_anc.has_unidentified_child then
-									add_error (ec_VSONIF, <<a_c_obj.rm_type_name, a_c_obj.node_id,
-										terminology.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
-								end
+							if not Result then -- it should have a matching node in flat ancestor
+								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
+									terminology.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
+									terminology.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
 							end
 
-							-- if we survived that, then we want to know if it is an overlay or new node; if overlay, then check it
-							if passed then
-								if specialisation_depth_from_code (a_c_obj.node_id)
-									<= flat_ancestor.specialisation_depth or else 			-- node with node_id from previous level OR
-									is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
-								then
-									create apa.make_from_string (a_c_node.path)
-									flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-									Result := flat_ancestor.has_object_path (flat_anc_path)
-									if not Result then -- it should have a matching node in flat ancestor
-										add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
-											terminology.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
-											terminology.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
-									end
-
-								-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
-								-- sibling order refers to a valid node in the flat ancestor. Arguably this should be done in the main
-								-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-								elseif attached a_c_obj.sibling_order as sib_ord then
-									create apa.make_from_string (a_c_node.parent.path)
-									ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-									if not ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) then
-										add_error (ec_VSSM, <<terminology.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
-									end
-								else
+						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
+						-- sibling order refers to a valid node in the flat ancestor. Arguably this should be done in the main
+						-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
+						elseif attached a_c_obj.sibling_order as sib_ord then
+							create apa.make_from_string (a_c_node.parent.path)
+							ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+							if not ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) then
+								add_error (ec_VSSM, <<terminology.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+							end
+						else
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
 		terminology.annotated_path (a_c_node.path,
 		target_descriptor.archetype_view_language, True) + " ignored %N")
 end
-								end
-							end
 						end
-
-					elseif attached {C_ATTRIBUTE} a_c_node as ca then
-						-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
-						-- or its C_OBJECT parent path exists in flat ancestor
-						create apa.make_from_string (a_c_node.path)
-						flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-						Result := flat_ancestor.has_path (flat_anc_path)
 					end
+
+				elseif attached {C_ATTRIBUTE} a_c_node as ca then
+					-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
+					-- or its C_OBJECT parent path exists in flat ancestor
+					create apa.make_from_string (a_c_node.path)
+					flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
+					Result := flat_ancestor.has_path (flat_anc_path)
 				end
 			end
 		end

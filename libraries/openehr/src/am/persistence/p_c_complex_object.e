@@ -51,11 +51,7 @@ feature -- Factory
 
 	create_c_complex_object: C_COMPLEX_OBJECT
 		do
-			if attached node_id as nid then
-				create Result.make_identified (rm_type_name, nid)
-			else
-				create Result.make_anonymous (rm_type_name)
-			end
+			create Result.make_identified (rm_type_name, node_id)
 			populate_c_instance (Result)
 		end
 

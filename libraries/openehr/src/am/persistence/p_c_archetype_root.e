@@ -23,12 +23,12 @@ feature -- Initialisation
 	make (a_car: C_ARCHETYPE_ROOT)
 		do
 			precursor (a_car)
-			slot_node_id := a_car.slot_node_id
+			archetype_ref := a_car.archetype_ref
 		end
 
 feature -- Access
 
-	slot_node_id: detachable STRING
+	archetype_ref: STRING
 			-- record node id of slot in parent archetype that this object fills, in the case a slot exists;
 			-- only set in flat form of archetype
 
@@ -36,11 +36,7 @@ feature -- Factory
 
 	create_c_archetype_root: C_ARCHETYPE_ROOT
 		do
-			if attached slot_node_id as sni then
-				create Result.make_slot_filler (rm_type_name, node_id, sni)
-			else
-				create Result.make_external_ref (rm_type_name, node_id)
-			end
+			create Result.make (rm_type_name, node_id, archetype_ref)
 			populate_c_instance (Result)
 		end
 

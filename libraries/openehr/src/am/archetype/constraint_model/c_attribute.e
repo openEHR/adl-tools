@@ -311,36 +311,6 @@ feature -- Status Report
 			Result := children.has (a_node)
 		end
 
-	has_non_identified_alternatives: BOOLEAN
-			-- return True if there are multiple alternative children (for a single-valued attribute)
-			-- with no identifiers
-		obsolete
-			"to support LEGACY ADL 1.4"
-		do
-			if is_single and child_count > 1 then
-				Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
-			end
-		end
-
-	has_unidentified_child: BOOLEAN
-			-- return True if there are any children with no identifier
-		obsolete
-			"to support LEGACY ADL 1.4"
-		do
-			Result := children.there_exists (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
-		end
-
-	candidate_child_requires_id (a_type_name: STRING): BOOLEAN
-			-- True if a candidate child node with rm_type_name = `a_type_name' needs a node id;
-			-- i.e. if is_multiple or else `has_child_with_rm_type_name'
-		obsolete
-			"to support LEGACY ADL 1.4"
-		require
-			Type_name_valid: not a_type_name.is_empty
-		do
-			Result := is_multiple or else has_child_with_rm_type_name (a_type_name)
-		end
-
 feature -- Comparison
 
 	c_equal (other: like Current): BOOLEAN
@@ -470,7 +440,7 @@ feature -- Modification
 			Object_valid: valid_new_child (an_obj)
 			Before_obj_valid: has_child (before_obj)
 		do
-			representation.put_child_left(an_obj.representation, before_obj.representation)
+			representation.put_child_left (an_obj.representation, before_obj.representation)
 			children.go_i_th (children.index_of (before_obj, 1))
 			children.put_left (an_obj)
 			an_obj.set_parent(Current)
@@ -482,7 +452,7 @@ feature -- Modification
 			Object_valid: valid_new_child (an_obj)
 			After_obj_valid: has_child (after_obj)
 		do
-			representation.put_child_right(an_obj.representation, after_obj.representation)
+			representation.put_child_right (an_obj.representation, after_obj.representation)
 			children.go_i_th (children.index_of (after_obj, 1))
 			children.put_right(an_obj)
 			an_obj.set_parent(Current)
@@ -602,12 +572,9 @@ feature -- Validation
 	valid_new_child (an_obj: C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
 		do
-			Result := valid_child (an_obj)
-			if Result then
+			if valid_child_object (an_obj) then
 				if is_single then
-					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.node_id)) or
-						not has_child_with_rm_type_name (an_obj.rm_type_name) or
-						(attached {C_PRIMITIVE_OBJECT} an_obj) -- and then an_obj.is_second_order_constrained)
+					Result := not has_child_with_id (an_obj.node_id) or else attached {C_PRIMITIVE_OBJECT} an_obj -- and then an_obj.is_second_order_constrained)
 				else
 					Result := not has_child_with_id (an_obj.node_id)
 				end
@@ -617,28 +584,19 @@ feature -- Validation
 	valid_replacement_child (an_obj: C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
 		do
-			Result := valid_child (an_obj)
-			if Result then
-				if is_single then
-					Result := not an_obj.is_addressable or has_child_with_id (an_obj.node_id)
-				else
-					Result := has_child_with_id (an_obj.node_id)
-				end
-			end
+			Result := valid_child_object (an_obj) and has_child_with_id (an_obj.node_id)
 		end
 
-	valid_child (an_obj: C_OBJECT): BOOLEAN
+	valid_child_object (an_obj: C_OBJECT): BOOLEAN
 			-- test an_obj for validity as a child node
 		do
-			Result := not has_child (an_obj)
-			if Result then
+			if not has_child (an_obj) then
 				if is_single then
 					Result := an_obj.occurrences = Void or else (not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1)
 				else
-					Result := an_obj.is_addressable and
-						(an_obj.occurrences = Void or cardinality = Void or else
+					Result := (an_obj.occurrences = Void or cardinality = Void or else
 							(cardinality.interval.upper_unbounded or else
-								(an_obj.occurrences.upper_unbounded or else cardinality.interval.upper >= an_obj.occurrences.upper)))
+							(an_obj.occurrences.upper_unbounded or else cardinality.interval.upper >= an_obj.occurrences.upper)))
 				end
 			end
 		end

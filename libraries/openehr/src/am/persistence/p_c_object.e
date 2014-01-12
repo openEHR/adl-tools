@@ -17,14 +17,17 @@ inherit
 			{NONE} all;
 		end
 
+	ADL_15_TERM_CODE_TOOLS
+		export
+			{NONE} all;
+		end
+
 feature -- Initialisation
 
 	make (a_co: C_OBJECT)
 		do
 			rm_type_name := a_co.rm_type_name
-			if a_co.is_addressable then
-				node_id := a_co.node_id
-			end
+			node_id := a_co.node_id
 			if attached a_co.occurrences then
 				occurrences := a_co.occurrences.as_string
 			end
@@ -38,7 +41,7 @@ feature -- Access
 
 	node_id: STRING
 		attribute
-			create Result.make_from_string (Anonymous_node_id)
+			create Result.make_from_string (Primitive_node_id)
 		end
 
 	occurrences: detachable STRING

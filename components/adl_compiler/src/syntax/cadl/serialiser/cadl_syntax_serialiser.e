@@ -314,20 +314,15 @@ feature -- Visitor
 				start_c_complex_object (a_node, depth)
 
 			else -- it is in source mode, there are no children, only slot fillers
-				-- output '%Tuse_archetype TYPE[at_code, archetype_id] <occurrences>%N'
-				-- or '%Tuse_archetype TYPE[archetype_id] <occurrences>%N'
-				last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-				id := "["
-				if attached a_node.slot_node_id then
-					id.append (a_node.slot_node_id + ", ")
-				end
-				id.append (a_node.archetype_ref + "]")
-				last_result.append (apply_style(id, STYLE_TERM_REF))
+				-- output '%Tuse_archetype TYPE[node_id] <occurrences> archetype_id%N'
+				serialise_type_node_id (a_node, depth)
 
 				last_result.append (format_item(FMT_SPACE))
-
 				serialise_occurrences(a_node, depth)
+
+				last_result.append (format_item(FMT_SPACE))
+				last_result.append (a_node.archetype_ref)
+
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end

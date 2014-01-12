@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 				end
 
 				-- node-based bindings
-				if attached {C_OBJECT} arch_node as co and then co.is_addressable and then ed_context.flat_terminology.has_any_term_binding (co.node_id) then
+				if attached {C_OBJECT} arch_node as co and then ed_context.flat_terminology.has_any_term_binding (co.node_id) then
 					Result.append ("%N%N" + get_text (ec_node_term_bindings_tooltip_text) + "%N")
 					bindings := ed_context.flat_terminology.term_bindings_for_key (co.node_id)
 					across bindings as bindings_csr loop

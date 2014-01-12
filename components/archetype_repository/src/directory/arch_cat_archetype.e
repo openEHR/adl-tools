@@ -646,7 +646,8 @@ feature -- Status Report - Compilation
 	is_source_modified: BOOLEAN
 			-- Should this archetype be recompiled due to changes on the file system?
 		do
-			Result := has_differential_file and is_differential_file_modified or has_legacy_flat_file and is_legacy_file_modified
+			Result := has_differential_file and is_differential_file_modified or
+				 has_legacy_flat_file and is_legacy_file_modified
 		end
 
 	is_differential_file_modified: BOOLEAN
@@ -674,14 +675,14 @@ feature -- Status Report - Compilation
 
 	is_in_terminal_compilation_state: BOOLEAN
 		do
-			Result := Cs_terminal_states.has(compilation_state)
+			Result := Cs_terminal_states.has (compilation_state)
 		end
 
 	ontology_location_changed: BOOLEAN
 			-- True if changed due to external editing require a move of this archetype in ontology
 			-- cleared by calling `clear_old_ontological_parent_name'
 		do
-			Result := old_ontological_parent_name /= Void
+			Result := attached old_ontological_parent_name
 		end
 
 	generate_differential: DIFFERENTIAL_ARCHETYPE
@@ -990,7 +991,10 @@ feature {NONE} -- Compilation
 		do
 			reset
 			if compilation_state /= Cs_rm_class_unknown then
-				if has_legacy_flat_file and (is_legacy_file_modified or is_legacy_newer_than_differential) then
+				if has_legacy_flat_file and then (is_legacy_file_modified or
+					is_legacy_newer_than_differential or
+					has_differential_file and differential_file_timestamp < application_file_time_stamp)
+				then
 					compilation_state := Cs_ready_to_parse_legacy
 				elseif has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
 					if is_specialised then
@@ -1231,9 +1235,13 @@ feature -- File Operations
 			-- Save archetype to its file in its source form
 		require
 			is_valid_differential
+		local
+			serialised_diff: STRING
 		do
-			check attached serialised_differential_archetype as sda then
-				file_repository.save_text_to_file (differential_path, sda)
+			if attached differential_archetype as da then
+				serialised_diff := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+				file_repository.save_text_to_file (differential_path, serialised_diff)
+				differential_text_adl_version := differential_archetype.adl_version
 			end
 			differential_text_timestamp := differential_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)

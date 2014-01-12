@@ -114,28 +114,12 @@ feature -- Display
 
 			if attached arch_node as a_n then
 				-- RM name & meaning columns
-				if a_n.is_addressable then
-					if display_settings.show_technical_view then
-						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
-						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
-			 		else
-						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
-						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
-					end
-				else
--- FIXME: obsolete code
-io.put_string ("Entered C_OBJECT_ED_CONTEXT.display_in_grid - should be obsolete with all nodes being addresable%N")
-					if display_settings.show_technical_view then
-						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
-						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
-					else -- in non-technical view, display a friendly type name
-						create s.make_empty
---						s.append_character ('[')
---						s.append (a_n.rm_type_name)
---						s.append_character (']')
---						s.to_lower
-						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
-					end
+				if display_settings.show_technical_view then
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
+		 		else
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				end
 
 				-- card/occ column
@@ -155,17 +139,15 @@ io.put_string ("Entered C_OBJECT_ED_CONTEXT.display_in_grid - should be obsolete
 				end
 
 				-- sibling order column
-				if ed_context.in_differential_view then
-					if a_n.is_addressable and then attached a_n.sibling_order then
-						create s.make_empty
-						if a_n.sibling_order.is_after then
-							s.append ("after")
-						else
-							s.append ("before")
-						end
-						s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
-						evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, c_constraint_colour, Void)
+				if ed_context.in_differential_view and then attached a_n.sibling_order then
+					create s.make_empty
+					if a_n.sibling_order.is_after then
+						s.append ("after")
+					else
+						s.append ("before")
 					end
+					s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
+					evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, c_constraint_colour, Void)
 				end
 			end
 		end
@@ -381,15 +363,13 @@ feature {NONE} -- Context menu
 
 			if attached arch_node as a_n then
 				-- if this node is addressable, add menu item to show node_id in ontology
-				if a_n.is_addressable then
-					create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code),
-						agent (node_id_str: STRING)
-							do
-								tool_agents.code_select_action_agent.call ([node_id_str])
-							end (a_n.node_id)
-					)
-					context_menu.extend (an_mi)
-				end
+				create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code),
+					agent (node_id_str: STRING)
+						do
+							tool_agents.code_select_action_agent.call ([node_id_str])
+						end (a_n.node_id)
+				)
+				context_menu.extend (an_mi)
 			end
 
 			if not ed_context.editing_enabled then

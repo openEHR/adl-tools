@@ -312,7 +312,7 @@ end
 							-- an override; if it wasn't, it will be treated as an alternative) then replace it
 							-- with a complete clone of the child attributes of the current C_OBJECT in the
 							-- differential
-							if cco_output_flat.any_allowed and cco_output_flat.is_addressable then
+							if cco_output_flat.any_allowed then
 debug ("flatten")
 	io.put_string ("%T** parent matches ANY - REPLACING node [" +
 		cco_output_flat.node_id +
