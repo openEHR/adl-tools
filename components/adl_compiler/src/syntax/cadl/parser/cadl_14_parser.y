@@ -253,16 +253,39 @@ end
 
 c_complex_object_id: type_identifier V_ROOT_ID_CODE
 		{
-			create $$.make_identified ($1, $2)
+			if object_nodes.is_empty then
+				create $$.make ($1, $2)
+			else
+				abort_with_error (ec_VARND, <<$2, Id_code_regex_pattern>>)
+			end
 		}
 	| type_identifier V_ID_CODE
 		{
-			create $$.make_identified ($1, $2)
+			if not object_nodes.is_empty then
+				create $$.make ($1, $2)
+			else
+				abort_with_error (ec_VARCN, <<$2, Root_id_code_regex_pattern>>)
+			end
 		}
+	| sibling_order type_identifier V_ID_CODE
+		{
+			create $$.make ($2, $3)
+			$$.set_sibling_order ($1)
+		}
+----------------------------------------------------------------------------
+-- START Support transitional ADL 1.5 archetypes containing nodes with no codes
+--
 	| type_identifier
 		{
-			create $$.make_identified ($1, Fake_adl_14_node_id)
+			if object_nodes.is_empty then
+				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
+			else
+				create $$.make ($1, Fake_adl_14_node_id)
+			end
 		}
+--
+-- END Support transitional ADL 1.5 archetypes containing nodes with no codes
+----------------------------------------------------------------------------
 	;
 
 sibling_order: SYM_AFTER V_ID_CODE
@@ -362,8 +385,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_AR
 
 c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
 		{
-			create og_path.make_from_string ($3)
-			create $$.make_identified ($2, $3, $5)
+			create $$.make ($2, $3, $5)
 			if attached $4 as att_occ then
 				$$.set_occurrences (att_occ)
 			end
@@ -381,9 +403,12 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (C_COMPLEX_OBJECT_PROXY)%N") 
 			end
 		}
-	| SYM_USE_NODE type_identifier
+	| SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
 		{
-			abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)
+			create $$.make ($2, Fake_adl_14_node_id, $4)
+			if attached $3 as att_occ then
+				$$.set_occurrences (att_occ)
+			end
 		}
 	| SYM_USE_NODE error 
 		{
@@ -434,16 +459,16 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 
 c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 		{
-			create $$.make_identified ($2, $3)
+			create $$.make ($2, $3)
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE SYM_CLOSED
 		{
-			create $$.make_identified ($2, $3)
+			create $$.make ($2, $3)
 			$$.set_closed
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			create $$.make_identified ($2, Fake_adl_14_node_id)
+			create $$.make ($2, Fake_adl_14_node_id)
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
@@ -1521,7 +1546,7 @@ c_boolean: SYM_TRUE
 
 c_ordinal: ordinal
 		{
-			create $$.make_identified ("DV_ORDINAL", Fake_adl_14_node_id)
+			create $$.make ("DV_ORDINAL", Fake_adl_14_node_id)
 
 			-- create a C_ATTR_TUPLE and connect the received C_OBJ_TUPLE to it
 			$$.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)

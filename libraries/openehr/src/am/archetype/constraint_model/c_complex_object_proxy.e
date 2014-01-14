@@ -16,18 +16,17 @@ inherit
 		end
 
 create
-	make_identified
+	make
 
 feature -- Initialisation
 
-	make_identified (a_rm_type_name, an_object_id, a_path: STRING)
+	make (a_rm_type_name, an_object_id, a_path: STRING)
 			-- make with id
 		require
 			rm_type_name_valid: not a_rm_type_name.is_empty
 			object_id_valid: not an_object_id.is_empty
 			path_valid: not a_path.is_empty
 		do
-			default_create
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			create representation_cache.make (an_object_id, a_path)

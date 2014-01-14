@@ -45,7 +45,7 @@ feature -- Factory
 
 	create_archetype_slot: ARCHETYPE_SLOT
 		do
-			create Result.make_identified (rm_type_name, node_id)
+			create Result.make (rm_type_name, node_id)
 			populate_c_instance (Result)
 			if attached includes as incls then
 				Result.set_includes (incls)

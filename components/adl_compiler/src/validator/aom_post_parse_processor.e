@@ -161,7 +161,7 @@ feature {NONE} -- Implementation
 			use_node_index := target.use_node_index
 			rules_index := target.rules_index
 
-			if is_valid_code (target.concept_id) then
+			if is_valid_code (target.definition.node_id) then
 				-- get current highest code ids
 				create def_it.make (target.definition)
 				def_it.do_all (agent do_get_highest_id_codes_and_paths, Void)

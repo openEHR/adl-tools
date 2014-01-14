@@ -19,7 +19,7 @@ class C_ARCHETYPE_ROOT
 inherit
 	C_COMPLEX_OBJECT
 		rename
-			make_identified as cco_make_identified
+			make as cco_make
 		redefine
 			out, enter_subtree, exit_subtree
 		end
@@ -36,7 +36,7 @@ feature -- Initialisation
 			Node_id_valid: is_valid_id_code (a_node_id)
 			Archetype_id_valid: valid_archetype_id (an_archetype_id)
 		do
-			cco_make_identified (a_rm_type_name, a_node_id)
+			cco_make (a_rm_type_name, a_node_id)
 			archetype_ref := an_archetype_id
 		end
 

@@ -37,7 +37,7 @@ feature -- Factory
 			type_name_valid: not a_type_name.is_empty
 			node_id_valid: not a_parent.has_child_with_id (a_node_id)
 		do
-			create Result.make_identified (a_type_name, a_node_id)
+			create Result.make (a_type_name, a_node_id)
 			a_parent.put_child (Result)
 		end
 
@@ -46,7 +46,7 @@ feature -- Factory
 		require
 			type_name_valid: not a_type_name.is_empty
 		do
-			create Result.make_identified (a_type_name, a_node_id)
+			create Result.make (a_type_name, a_node_id)
 			a_parent.put_child (Result)
 		end
 
@@ -73,7 +73,7 @@ feature -- Factory
 		require
 			a_type_name_valid: not a_type_name.is_empty
 		do
-			create Result.make_identified (a_type_name, a_node_id, a_path)
+			create Result.make (a_type_name, a_node_id, a_path)
 			a_parent.put_child (Result)
 		end
 

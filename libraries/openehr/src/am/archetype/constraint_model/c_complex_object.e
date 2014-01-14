@@ -24,11 +24,11 @@ inherit
 		end
 
 create
-	make_identified
+	make
 
 feature -- Initialisation
 
-	make_identified (a_rm_type_name, an_object_id: STRING)
+	make (a_rm_type_name, an_object_id: STRING)
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty

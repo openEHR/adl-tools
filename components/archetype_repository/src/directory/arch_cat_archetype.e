@@ -1076,6 +1076,8 @@ feature {NONE} -- Compilation
 				 	else
 				 		save_invalid_differential
 					end
+			 	else
+			 		save_invalid_differential
 				end
 			else
 			 	compilation_state := Cs_convert_legacy_failed

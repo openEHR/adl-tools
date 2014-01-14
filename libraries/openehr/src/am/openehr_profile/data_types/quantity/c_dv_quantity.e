@@ -81,7 +81,7 @@ feature -- Conversion
 			new_prec: INTERVAL[INTEGER]
 		do
 			-- DV_QUANTITY root
-			create Result.make_identified (rm_type_name, a_node_id)
+			create Result.make (rm_type_name, a_node_id)
 
 			-- CA: property
 			if attached property as prop then

@@ -35,7 +35,7 @@ feature -- Factory
 
 	create_c_complex_object_proxy: C_COMPLEX_OBJECT_PROXY
 		do
-			create Result.make_identified (rm_type_name, node_id, target_path)
+			create Result.make (rm_type_name, node_id, target_path)
 			populate_c_instance (Result)
 		end
 

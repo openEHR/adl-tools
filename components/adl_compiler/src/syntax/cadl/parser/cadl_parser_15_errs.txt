@@ -38,8 +38,8 @@ rule 5 c_complex_object -> c_complex_object_head
 rule 6 c_complex_object_head -> c_complex_object_id c_occurrences
 rule 7 c_complex_object_id -> type_identifier V_ROOT_ID_CODE
 rule 8 c_complex_object_id -> type_identifier V_ID_CODE
-rule 9 c_complex_object_id -> type_identifier
-rule 10 c_complex_object_id -> sibling_order type_identifier V_ID_CODE
+rule 9 c_complex_object_id -> sibling_order type_identifier V_ID_CODE
+rule 10 c_complex_object_id -> type_identifier
 rule 11 sibling_order -> SYM_AFTER V_ID_CODE
 rule 12 sibling_order -> SYM_BEFORE V_ID_CODE
 rule 13 c_complex_object_body -> c_any
@@ -54,7 +54,7 @@ rule 21 c_object -> error
 rule 22 c_archetype_root -> SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID
 rule 23 c_archetype_root -> SYM_USE_ARCHETYPE type_identifier error
 rule 24 c_complex_object_proxy -> SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
-rule 25 c_complex_object_proxy -> SYM_USE_NODE type_identifier
+rule 25 c_complex_object_proxy -> SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
 rule 26 c_complex_object_proxy -> SYM_USE_NODE error
 rule 27 archetype_slot -> c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK
 rule 28 archetype_slot -> c_archetype_slot_head
@@ -351,14 +351,14 @@ V_ATTRIBUTE_IDENTIFIER (token 263) 52 58 59 194
 V_FEATURE_CALL_IDENTIFIER (token 264)
 V_STRING (token 265) 180 197 198 199 201
 V_ROOT_ID_CODE (token 266) 7
-V_ID_CODE (token 267) 8 10 11 12 22 24 30 31 32
+V_ID_CODE (token 267) 8 9 11 12 22 24 30 31 32
 V_ID_CODE_STR (token 268)
 V_VALUE_SET_REF (token 269) 186
 V_QUALIFIED_TERM_CODE_REF (token 270)
 V_VALUE_SET_DEF (token 271) 185
 ERR_VALUE_SET_DEF (token 272) 187
 V_REGEXP (token 273) 182
-V_ABS_PATH (token 274) 24 53 84 85 86 87 105
+V_ABS_PATH (token 274) 24 25 53 84 85 86 87 105
 V_REL_PATH (token 275) 83
 V_CHARACTER (token 276)
 V_URI (token 277)
@@ -437,11 +437,11 @@ assertion (3) on left: 71 72 73 74, on right: 69 70
 c_archetype_root (4) on left: 22 23, on right: 17
 c_complex_object_proxy (5) on left: 24 25 26, on right: 18
 type_identifier (6) on left: 195 196, on right: 7 8 9 10 22 23 24 25 30 31 32 33 193
-sibling_order (7) on left: 11 12, on right: 10 31
+sibling_order (7) on left: 11 12, on right: 9 31
 multiplicity (8) on left: 134 135 136 137, on right: 123 124 125 126 127 128 129 130 132
 existence (9) on left: 119 120, on right: 118
 cardinality (10) on left: 123 124 125 126 127 128 129 130, on right: 122
-c_occurrences (11) on left: 131 132 133, on right: 6 22 24 29
+c_occurrences (11) on left: 131 132 133, on right: 6 22 24 25 29
 c_existence (12) on left: 117 118, on right: 52 53
 c_cardinality (13) on left: 121 122, on right: 52 53
 c_complex_object_id (14) on left: 7 8 9 10, on right: 6
@@ -531,8 +531,8 @@ state 0
 	c_complex_object_head  ->  . c_complex_object_id c_occurrences   (rule 6)
 	c_complex_object_id  ->  . type_identifier V_ROOT_ID_CODE   (rule 7)
 	c_complex_object_id  ->  . type_identifier V_ID_CODE   (rule 8)
-	c_complex_object_id  ->  . type_identifier   (rule 9)
-	c_complex_object_id  ->  . sibling_order type_identifier V_ID_CODE   (rule 10)
+	c_complex_object_id  ->  . sibling_order type_identifier V_ID_CODE   (rule 9)
+	c_complex_object_id  ->  . type_identifier   (rule 10)
 	sibling_order  ->  . SYM_AFTER V_ID_CODE   (rule 11)
 	sibling_order  ->  . SYM_BEFORE V_ID_CODE   (rule 12)
 	assertions  ->  . assertion   (rule 69)
@@ -620,7 +620,7 @@ state 0
 	real_value	go to state 38
 	any_identifier	go to state 39
 	c_complex_object	go to state 40
-	input	go to state 552
+	input	go to state 554
 
 
 
@@ -925,20 +925,20 @@ state 20
 
 	c_complex_object_id  ->  type_identifier . V_ROOT_ID_CODE   (rule 7)
 	c_complex_object_id  ->  type_identifier . V_ID_CODE   (rule 8)
-	c_complex_object_id  ->  type_identifier .   (rule 9)
+	c_complex_object_id  ->  type_identifier .   (rule 10)
 	any_identifier  ->  type_identifier .   (rule 193)
 
 	V_ID_CODE	shift, and go to state 57
 	V_ROOT_ID_CODE	shift, and go to state 58
 
 	':'	reduce using rule 193 (any_identifier)
-	$default	reduce using rule 9 (c_complex_object_id)
+	$default	reduce using rule 10 (c_complex_object_id)
 
 
 
 state 21
 
-	c_complex_object_id  ->  sibling_order . type_identifier V_ID_CODE   (rule 10)
+	c_complex_object_id  ->  sibling_order . type_identifier V_ID_CODE   (rule 9)
 	type_identifier  ->  . V_TYPE_IDENTIFIER   (rule 195)
 	type_identifier  ->  . V_GENERIC_TYPE_IDENTIFIER   (rule 196)
 
@@ -1390,7 +1390,7 @@ state 58
 
 state 59
 
-	c_complex_object_id  ->  sibling_order type_identifier . V_ID_CODE   (rule 10)
+	c_complex_object_id  ->  sibling_order type_identifier . V_ID_CODE   (rule 9)
 
 	V_ID_CODE	shift, and go to state 87
 
@@ -2236,9 +2236,9 @@ state 86
 
 state 87
 
-	c_complex_object_id  ->  sibling_order type_identifier V_ID_CODE .   (rule 10)
+	c_complex_object_id  ->  sibling_order type_identifier V_ID_CODE .   (rule 9)
 
-	$default	reduce using rule 10 (c_complex_object_id)
+	$default	reduce using rule 9 (c_complex_object_id)
 
 
 
@@ -5306,8 +5306,8 @@ state 348
 	c_complex_object_head  ->  . c_complex_object_id c_occurrences   (rule 6)
 	c_complex_object_id  ->  . type_identifier V_ROOT_ID_CODE   (rule 7)
 	c_complex_object_id  ->  . type_identifier V_ID_CODE   (rule 8)
-	c_complex_object_id  ->  . type_identifier   (rule 9)
-	c_complex_object_id  ->  . sibling_order type_identifier V_ID_CODE   (rule 10)
+	c_complex_object_id  ->  . sibling_order type_identifier V_ID_CODE   (rule 9)
+	c_complex_object_id  ->  . type_identifier   (rule 10)
 	sibling_order  ->  . SYM_AFTER V_ID_CODE   (rule 11)
 	sibling_order  ->  . SYM_BEFORE V_ID_CODE   (rule 12)
 	c_object  ->  . c_complex_object   (rule 16)
@@ -5319,7 +5319,7 @@ state 348
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID   (rule 22)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier error   (rule 23)
 	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH   (rule 24)
-	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier   (rule 25)
+	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH   (rule 25)
 	c_complex_object_proxy  ->  . SYM_USE_NODE error   (rule 26)
 	archetype_slot  ->  . c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK   (rule 27)
 	archetype_slot  ->  . c_archetype_slot_head   (rule 28)
@@ -6358,7 +6358,7 @@ state 420
 state 421
 
 	c_complex_object_proxy  ->  SYM_USE_NODE . type_identifier V_ID_CODE c_occurrences V_ABS_PATH   (rule 24)
-	c_complex_object_proxy  ->  SYM_USE_NODE . type_identifier   (rule 25)
+	c_complex_object_proxy  ->  SYM_USE_NODE . type_identifier c_occurrences V_ABS_PATH   (rule 25)
 	c_complex_object_proxy  ->  SYM_USE_NODE . error   (rule 26)
 	type_identifier  ->  . V_TYPE_IDENTIFIER   (rule 195)
 	type_identifier  ->  . V_GENERIC_TYPE_IDENTIFIER   (rule 196)
@@ -6434,18 +6434,18 @@ state 427
 
 	c_complex_object_id  ->  type_identifier . V_ROOT_ID_CODE   (rule 7)
 	c_complex_object_id  ->  type_identifier . V_ID_CODE   (rule 8)
-	c_complex_object_id  ->  type_identifier .   (rule 9)
+	c_complex_object_id  ->  type_identifier .   (rule 10)
 
 	V_ID_CODE	shift, and go to state 57
 	V_ROOT_ID_CODE	shift, and go to state 58
 
-	$default	reduce using rule 9 (c_complex_object_id)
+	$default	reduce using rule 10 (c_complex_object_id)
 
 
 
 state 428
 
-	c_complex_object_id  ->  sibling_order . type_identifier V_ID_CODE   (rule 10)
+	c_complex_object_id  ->  sibling_order . type_identifier V_ID_CODE   (rule 9)
 	c_archetype_slot_id  ->  sibling_order . SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE   (rule 31)
 	type_identifier  ->  . V_TYPE_IDENTIFIER   (rule 195)
 	type_identifier  ->  . V_GENERIC_TYPE_IDENTIFIER   (rule 196)
@@ -6531,8 +6531,8 @@ state 436
 	c_complex_object_head  ->  . c_complex_object_id c_occurrences   (rule 6)
 	c_complex_object_id  ->  . type_identifier V_ROOT_ID_CODE   (rule 7)
 	c_complex_object_id  ->  . type_identifier V_ID_CODE   (rule 8)
-	c_complex_object_id  ->  . type_identifier   (rule 9)
-	c_complex_object_id  ->  . sibling_order type_identifier V_ID_CODE   (rule 10)
+	c_complex_object_id  ->  . sibling_order type_identifier V_ID_CODE   (rule 9)
+	c_complex_object_id  ->  . type_identifier   (rule 10)
 	sibling_order  ->  . SYM_AFTER V_ID_CODE   (rule 11)
 	sibling_order  ->  . SYM_BEFORE V_ID_CODE   (rule 12)
 	c_object  ->  . c_complex_object   (rule 16)
@@ -6544,7 +6544,7 @@ state 436
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID   (rule 22)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier error   (rule 23)
 	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH   (rule 24)
-	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier   (rule 25)
+	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH   (rule 25)
 	c_complex_object_proxy  ->  . SYM_USE_NODE error   (rule 26)
 	archetype_slot  ->  . c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK   (rule 27)
 	archetype_slot  ->  . c_archetype_slot_head   (rule 28)
@@ -7106,11 +7106,17 @@ state 465
 state 466
 
 	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier . V_ID_CODE c_occurrences V_ABS_PATH   (rule 24)
-	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier .   (rule 25)
+	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier . c_occurrences V_ABS_PATH   (rule 25)
+	c_occurrences  ->  .   (rule 131)
+	c_occurrences  ->  . SYM_OCCURRENCES SYM_MATCHES SYM_START_CBLOCK multiplicity SYM_END_CBLOCK   (rule 132)
+	c_occurrences  ->  . SYM_OCCURRENCES error   (rule 133)
 
+	SYM_OCCURRENCES	shift, and go to state 60
 	V_ID_CODE	shift, and go to state 502
 
-	$default	reduce using rule 25 (c_complex_object_proxy)
+	$default	reduce using rule 131 (c_occurrences)
+
+	c_occurrences	go to state 503
 
 
 
@@ -7128,7 +7134,7 @@ state 468
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE type_identifier . V_ID_CODE SYM_CLOSED   (rule 32)
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE type_identifier .   (rule 33)
 
-	V_ID_CODE	shift, and go to state 503
+	V_ID_CODE	shift, and go to state 504
 
 	$default	reduce using rule 33 (c_archetype_slot_id)
 
@@ -7139,8 +7145,8 @@ state 469
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier . V_ID_CODE c_occurrences V_ARCHETYPE_ID   (rule 22)
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier . error   (rule 23)
 
-	V_ID_CODE	shift, and go to state 504
-	error	shift, and go to state 505
+	V_ID_CODE	shift, and go to state 505
+	error	shift, and go to state 506
 
 
 
@@ -7161,7 +7167,7 @@ state 471
 	V_GENERIC_TYPE_IDENTIFIER	shift, and go to state 13
 	V_TYPE_IDENTIFIER	shift, and go to state 14
 
-	type_identifier	go to state 506
+	type_identifier	go to state 507
 
 
 
@@ -7177,7 +7183,7 @@ state 473
 
 	archetype_slot  ->  c_archetype_slot_head SYM_MATCHES . SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK   (rule 27)
 
-	SYM_START_CBLOCK	shift, and go to state 507
+	SYM_START_CBLOCK	shift, and go to state 508
 
 
 
@@ -7209,7 +7215,7 @@ state 477
 
 	integer_interval  ->  SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value . SYM_INTERVAL_DELIM   (rule 211)
 
-	SYM_INTERVAL_DELIM	shift, and go to state 508
+	SYM_INTERVAL_DELIM	shift, and go to state 509
 
 
 
@@ -7225,7 +7231,7 @@ state 479
 
 	real_interval  ->  SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value . SYM_INTERVAL_DELIM   (rule 229)
 
-	SYM_INTERVAL_DELIM	shift, and go to state 509
+	SYM_INTERVAL_DELIM	shift, and go to state 510
 
 
 
@@ -7241,7 +7247,7 @@ state 481
 
 	date_interval  ->  SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value . SYM_INTERVAL_DELIM   (rule 250)
 
-	SYM_INTERVAL_DELIM	shift, and go to state 510
+	SYM_INTERVAL_DELIM	shift, and go to state 511
 
 
 
@@ -7257,7 +7263,7 @@ state 483
 
 	date_time_interval  ->  SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value . SYM_INTERVAL_DELIM   (rule 282)
 
-	SYM_INTERVAL_DELIM	shift, and go to state 511
+	SYM_INTERVAL_DELIM	shift, and go to state 512
 
 
 
@@ -7273,7 +7279,7 @@ state 485
 
 	time_interval  ->  SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value . SYM_INTERVAL_DELIM   (rule 266)
 
-	SYM_INTERVAL_DELIM	shift, and go to state 512
+	SYM_INTERVAL_DELIM	shift, and go to state 513
 
 
 
@@ -7289,7 +7295,7 @@ state 487
 
 	duration_interval  ->  SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value . SYM_INTERVAL_DELIM   (rule 298)
 
-	SYM_INTERVAL_DELIM	shift, and go to state 513
+	SYM_INTERVAL_DELIM	shift, and go to state 514
 
 
 
@@ -7355,9 +7361,9 @@ state 495
 	c_tuple_values  ->  . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 63)
 	c_tuple_values  ->  . c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
 
-	SYM_START_CBLOCK	shift, and go to state 514
+	SYM_START_CBLOCK	shift, and go to state 515
 
-	c_tuple_values	go to state 515
+	c_tuple_values	go to state 516
 
 
 
@@ -7366,8 +7372,8 @@ state 496
 	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values . SYM_END_CBLOCK   (rule 57)
 	c_attr_tuple_values  ->  c_attr_tuple_values . ',' c_attr_tuple_value   (rule 61)
 
-	','	shift, and go to state 516
-	SYM_END_CBLOCK	shift, and go to state 517
+	','	shift, and go to state 517
+	SYM_END_CBLOCK	shift, and go to state 518
 
 
 
@@ -7383,7 +7389,7 @@ state 498
 
 	existence  ->  V_INTEGER SYM_ELLIPSIS . V_INTEGER   (rule 120)
 
-	V_INTEGER	shift, and go to state 518
+	V_INTEGER	shift, and go to state 519
 
 
 
@@ -7406,7 +7412,7 @@ state 500
 	cardinality  ->  multiplicity . ';' SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
 	cardinality  ->  multiplicity . ';' SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
 
-	';'	shift, and go to state 519
+	';'	shift, and go to state 520
 
 	$default	reduce using rule 123 (cardinality)
 
@@ -7416,7 +7422,7 @@ state 501
 
 	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality . SYM_END_CBLOCK   (rule 122)
 
-	SYM_END_CBLOCK	shift, and go to state 520
+	SYM_END_CBLOCK	shift, and go to state 521
 
 
 
@@ -7431,22 +7437,30 @@ state 502
 
 	$default	reduce using rule 131 (c_occurrences)
 
-	c_occurrences	go to state 521
+	c_occurrences	go to state 522
 
 
 
 state 503
 
+	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier c_occurrences . V_ABS_PATH   (rule 25)
+
+	V_ABS_PATH	shift, and go to state 523
+
+
+
+state 504
+
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE .   (rule 30)
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE . SYM_CLOSED   (rule 32)
 
-	SYM_CLOSED	shift, and go to state 522
+	SYM_CLOSED	shift, and go to state 524
 
 	$default	reduce using rule 30 (c_archetype_slot_id)
 
 
 
-state 504
+state 505
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier V_ID_CODE . c_occurrences V_ARCHETYPE_ID   (rule 22)
 	c_occurrences  ->  .   (rule 131)
@@ -7457,11 +7471,11 @@ state 504
 
 	$default	reduce using rule 131 (c_occurrences)
 
-	c_occurrences	go to state 523
+	c_occurrences	go to state 525
 
 
 
-state 505
+state 506
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier error .   (rule 23)
 
@@ -7469,29 +7483,29 @@ state 505
 
 
 
-state 506
+state 507
 
 	c_archetype_slot_id  ->  sibling_order SYM_ALLOW_ARCHETYPE type_identifier . V_ID_CODE   (rule 31)
 
-	V_ID_CODE	shift, and go to state 524
+	V_ID_CODE	shift, and go to state 526
 
 
 
-state 507
+state 508
 
 	archetype_slot  ->  c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK . c_includes c_excludes SYM_END_CBLOCK   (rule 27)
 	c_includes  ->  .   (rule 65)
 	c_includes  ->  . SYM_INCLUDE assertions   (rule 66)
 
-	SYM_INCLUDE	shift, and go to state 525
+	SYM_INCLUDE	shift, and go to state 527
 
 	$default	reduce using rule 65 (c_includes)
 
-	c_includes	go to state 526
+	c_includes	go to state 528
 
 
 
-state 508
+state 509
 
 	integer_interval  ->  SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM .   (rule 211)
 
@@ -7499,7 +7513,7 @@ state 508
 
 
 
-state 509
+state 510
 
 	real_interval  ->  SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM .   (rule 229)
 
@@ -7507,7 +7521,7 @@ state 509
 
 
 
-state 510
+state 511
 
 	date_interval  ->  SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM .   (rule 250)
 
@@ -7515,7 +7529,7 @@ state 510
 
 
 
-state 511
+state 512
 
 	date_time_interval  ->  SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM .   (rule 282)
 
@@ -7523,7 +7537,7 @@ state 511
 
 
 
-state 512
+state 513
 
 	time_interval  ->  SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM .   (rule 266)
 
@@ -7531,7 +7545,7 @@ state 512
 
 
 
-state 513
+state 514
 
 	duration_interval  ->  SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM .   (rule 298)
 
@@ -7539,7 +7553,7 @@ state 513
 
 
 
-state 514
+state 515
 
 	c_primitive_object  ->  . c_integer   (rule 35)
 	c_primitive_object  ->  . c_real   (rule 36)
@@ -7738,7 +7752,7 @@ state 514
 	V_REAL	shift, and go to state 15
 	V_INTEGER	shift, and go to state 16
 
-	c_primitive_object	go to state 527
+	c_primitive_object	go to state 529
 	integer_value	go to state 117
 	real_value	go to state 118
 	boolean_value	go to state 119
@@ -7778,28 +7792,28 @@ state 514
 
 
 
-state 515
+state 516
 
 	c_attr_tuple_value  ->  '[' c_tuple_values . ']'   (rule 62)
 	c_tuple_values  ->  c_tuple_values . ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
 
-	','	shift, and go to state 528
-	']'	shift, and go to state 529
+	','	shift, and go to state 530
+	']'	shift, and go to state 531
 
 
 
-state 516
+state 517
 
 	c_attr_tuple_values  ->  c_attr_tuple_values ',' . c_attr_tuple_value   (rule 61)
 	c_attr_tuple_value  ->  . '[' c_tuple_values ']'   (rule 62)
 
 	'['	shift, and go to state 495
 
-	c_attr_tuple_value	go to state 530
+	c_attr_tuple_value	go to state 532
 
 
 
-state 517
+state 518
 
 	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK .   (rule 57)
 
@@ -7807,7 +7821,7 @@ state 517
 
 
 
-state 518
+state 519
 
 	existence  ->  V_INTEGER SYM_ELLIPSIS V_INTEGER .   (rule 120)
 
@@ -7815,7 +7829,7 @@ state 518
 
 
 
-state 519
+state 520
 
 	cardinality  ->  multiplicity ';' . SYM_ORDERED   (rule 124)
 	cardinality  ->  multiplicity ';' . SYM_UNORDERED   (rule 125)
@@ -7825,13 +7839,13 @@ state 519
 	cardinality  ->  multiplicity ';' . SYM_UNIQUE ';' SYM_ORDERED   (rule 129)
 	cardinality  ->  multiplicity ';' . SYM_UNIQUE ';' SYM_UNORDERED   (rule 130)
 
-	SYM_UNIQUE	shift, and go to state 531
-	SYM_ORDERED	shift, and go to state 532
-	SYM_UNORDERED	shift, and go to state 533
+	SYM_UNIQUE	shift, and go to state 533
+	SYM_ORDERED	shift, and go to state 534
+	SYM_UNORDERED	shift, and go to state 535
 
 
 
-state 520
+state 521
 
 	c_cardinality  ->  SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK .   (rule 122)
 
@@ -7839,15 +7853,23 @@ state 520
 
 
 
-state 521
+state 522
 
 	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier V_ID_CODE c_occurrences . V_ABS_PATH   (rule 24)
 
-	V_ABS_PATH	shift, and go to state 534
+	V_ABS_PATH	shift, and go to state 536
 
 
 
-state 522
+state 523
+
+	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH .   (rule 25)
+
+	$default	reduce using rule 25 (c_complex_object_proxy)
+
+
+
+state 524
 
 	c_archetype_slot_id  ->  SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE SYM_CLOSED .   (rule 32)
 
@@ -7855,15 +7877,15 @@ state 522
 
 
 
-state 523
+state 525
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences . V_ARCHETYPE_ID   (rule 22)
 
-	V_ARCHETYPE_ID	shift, and go to state 535
+	V_ARCHETYPE_ID	shift, and go to state 537
 
 
 
-state 524
+state 526
 
 	c_archetype_slot_id  ->  sibling_order SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE .   (rule 31)
 
@@ -7871,7 +7893,7 @@ state 524
 
 
 
-state 525
+state 527
 
 	c_includes  ->  SYM_INCLUDE . assertions   (rule 66)
 	assertions  ->  . assertion   (rule 69)
@@ -7933,7 +7955,7 @@ state 525
 	V_REAL	shift, and go to state 15
 	V_INTEGER	shift, and go to state 16
 
-	assertions	go to state 536
+	assertions	go to state 538
 	assertion	go to state 19
 	type_identifier	go to state 56
 	boolean_node	go to state 24
@@ -7955,37 +7977,37 @@ state 525
 
 
 
-state 526
+state 528
 
 	archetype_slot  ->  c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes . c_excludes SYM_END_CBLOCK   (rule 27)
 	c_excludes  ->  .   (rule 67)
 	c_excludes  ->  . SYM_EXCLUDE assertions   (rule 68)
 
-	SYM_EXCLUDE	shift, and go to state 537
+	SYM_EXCLUDE	shift, and go to state 539
 
 	$default	reduce using rule 67 (c_excludes)
 
-	c_excludes	go to state 538
-
-
-
-state 527
-
-	c_tuple_values  ->  SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 63)
-
-	SYM_END_CBLOCK	shift, and go to state 539
-
-
-
-state 528
-
-	c_tuple_values  ->  c_tuple_values ',' . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
-
-	SYM_START_CBLOCK	shift, and go to state 540
+	c_excludes	go to state 540
 
 
 
 state 529
+
+	c_tuple_values  ->  SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 63)
+
+	SYM_END_CBLOCK	shift, and go to state 541
+
+
+
+state 530
+
+	c_tuple_values  ->  c_tuple_values ',' . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
+
+	SYM_START_CBLOCK	shift, and go to state 542
+
+
+
+state 531
 
 	c_attr_tuple_value  ->  '[' c_tuple_values ']' .   (rule 62)
 
@@ -7993,7 +8015,7 @@ state 529
 
 
 
-state 530
+state 532
 
 	c_attr_tuple_values  ->  c_attr_tuple_values ',' c_attr_tuple_value .   (rule 61)
 
@@ -8001,41 +8023,41 @@ state 530
 
 
 
-state 531
+state 533
 
 	cardinality  ->  multiplicity ';' SYM_UNIQUE .   (rule 126)
 	cardinality  ->  multiplicity ';' SYM_UNIQUE . ';' SYM_ORDERED   (rule 129)
 	cardinality  ->  multiplicity ';' SYM_UNIQUE . ';' SYM_UNORDERED   (rule 130)
 
-	';'	shift, and go to state 541
+	';'	shift, and go to state 543
 
 	$default	reduce using rule 126 (cardinality)
 
 
 
-state 532
+state 534
 
 	cardinality  ->  multiplicity ';' SYM_ORDERED .   (rule 124)
 	cardinality  ->  multiplicity ';' SYM_ORDERED . ';' SYM_UNIQUE   (rule 127)
 
-	';'	shift, and go to state 542
+	';'	shift, and go to state 544
 
 	$default	reduce using rule 124 (cardinality)
 
 
 
-state 533
+state 535
 
 	cardinality  ->  multiplicity ';' SYM_UNORDERED .   (rule 125)
 	cardinality  ->  multiplicity ';' SYM_UNORDERED . ';' SYM_UNIQUE   (rule 128)
 
-	';'	shift, and go to state 543
+	';'	shift, and go to state 545
 
 	$default	reduce using rule 125 (cardinality)
 
 
 
-state 534
+state 536
 
 	c_complex_object_proxy  ->  SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH .   (rule 24)
 
@@ -8043,7 +8065,7 @@ state 534
 
 
 
-state 535
+state 537
 
 	c_archetype_root  ->  SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID .   (rule 22)
 
@@ -8051,7 +8073,7 @@ state 535
 
 
 
-state 536
+state 538
 
 	c_includes  ->  SYM_INCLUDE assertions .   (rule 66)
 	assertions  ->  assertions . assertion   (rule 70)
@@ -8135,7 +8157,7 @@ state 536
 
 
 
-state 537
+state 539
 
 	c_excludes  ->  SYM_EXCLUDE . assertions   (rule 68)
 	assertions  ->  . assertion   (rule 69)
@@ -8197,7 +8219,7 @@ state 537
 	V_REAL	shift, and go to state 15
 	V_INTEGER	shift, and go to state 16
 
-	assertions	go to state 544
+	assertions	go to state 546
 	assertion	go to state 19
 	type_identifier	go to state 56
 	boolean_node	go to state 24
@@ -8219,15 +8241,15 @@ state 537
 
 
 
-state 538
+state 540
 
 	archetype_slot  ->  c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes . SYM_END_CBLOCK   (rule 27)
 
-	SYM_END_CBLOCK	shift, and go to state 545
+	SYM_END_CBLOCK	shift, and go to state 547
 
 
 
-state 539
+state 541
 
 	c_tuple_values  ->  SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK .   (rule 63)
 
@@ -8235,7 +8257,7 @@ state 539
 
 
 
-state 540
+state 542
 
 	c_primitive_object  ->  . c_integer   (rule 35)
 	c_primitive_object  ->  . c_real   (rule 36)
@@ -8434,7 +8456,7 @@ state 540
 	V_REAL	shift, and go to state 15
 	V_INTEGER	shift, and go to state 16
 
-	c_primitive_object	go to state 546
+	c_primitive_object	go to state 548
 	integer_value	go to state 117
 	real_value	go to state 118
 	boolean_value	go to state 119
@@ -8474,33 +8496,33 @@ state 540
 
 
 
-state 541
+state 543
 
 	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' . SYM_ORDERED   (rule 129)
 	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' . SYM_UNORDERED   (rule 130)
 
-	SYM_ORDERED	shift, and go to state 547
-	SYM_UNORDERED	shift, and go to state 548
-
-
-
-state 542
-
-	cardinality  ->  multiplicity ';' SYM_ORDERED ';' . SYM_UNIQUE   (rule 127)
-
-	SYM_UNIQUE	shift, and go to state 549
-
-
-
-state 543
-
-	cardinality  ->  multiplicity ';' SYM_UNORDERED ';' . SYM_UNIQUE   (rule 128)
-
-	SYM_UNIQUE	shift, and go to state 550
+	SYM_ORDERED	shift, and go to state 549
+	SYM_UNORDERED	shift, and go to state 550
 
 
 
 state 544
+
+	cardinality  ->  multiplicity ';' SYM_ORDERED ';' . SYM_UNIQUE   (rule 127)
+
+	SYM_UNIQUE	shift, and go to state 551
+
+
+
+state 545
+
+	cardinality  ->  multiplicity ';' SYM_UNORDERED ';' . SYM_UNIQUE   (rule 128)
+
+	SYM_UNIQUE	shift, and go to state 552
+
+
+
+state 546
 
 	c_excludes  ->  SYM_EXCLUDE assertions .   (rule 68)
 	assertions  ->  assertions . assertion   (rule 70)
@@ -8584,7 +8606,7 @@ state 544
 
 
 
-state 545
+state 547
 
 	archetype_slot  ->  c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK .   (rule 27)
 
@@ -8592,15 +8614,15 @@ state 545
 
 
 
-state 546
+state 548
 
 	c_tuple_values  ->  c_tuple_values ',' SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 64)
 
-	SYM_END_CBLOCK	shift, and go to state 551
+	SYM_END_CBLOCK	shift, and go to state 553
 
 
 
-state 547
+state 549
 
 	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' SYM_ORDERED .   (rule 129)
 
@@ -8608,7 +8630,7 @@ state 547
 
 
 
-state 548
+state 550
 
 	cardinality  ->  multiplicity ';' SYM_UNIQUE ';' SYM_UNORDERED .   (rule 130)
 
@@ -8616,7 +8638,7 @@ state 548
 
 
 
-state 549
+state 551
 
 	cardinality  ->  multiplicity ';' SYM_ORDERED ';' SYM_UNIQUE .   (rule 127)
 
@@ -8624,7 +8646,7 @@ state 549
 
 
 
-state 550
+state 552
 
 	cardinality  ->  multiplicity ';' SYM_UNORDERED ';' SYM_UNIQUE .   (rule 128)
 
@@ -8632,7 +8654,7 @@ state 550
 
 
 
-state 551
+state 553
 
 	c_tuple_values  ->  c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK .   (rule 64)
 
@@ -8640,21 +8662,21 @@ state 551
 
 
 
-state 552
-
-
-	$	go to state 553
-
-
-
-state 553
-
-
-	$	go to state 554
-
-
-
 state 554
+
+
+	$	go to state 555
+
+
+
+state 555
+
+
+	$	go to state 556
+
+
+
+state 556
 
 
 	$default	accept

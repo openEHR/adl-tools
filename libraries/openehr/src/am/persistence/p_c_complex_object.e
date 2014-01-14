@@ -51,7 +51,7 @@ feature -- Factory
 
 	create_c_complex_object: C_COMPLEX_OBJECT
 		do
-			create Result.make_identified (rm_type_name, node_id)
+			create Result.make (rm_type_name, node_id)
 			populate_c_instance (Result)
 		end
 
