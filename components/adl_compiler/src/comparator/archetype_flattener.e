@@ -567,12 +567,7 @@ end
 					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
 
 						-- this is where we figure out which nodes from the source are 'new' with respect to the flat output.
-						-- They are nodes that are identified nodes (all children of multiply-valued attributes are identified)
-						-- AND that have been added OR ELSE are C_ARCHETYPE_ROOTs
-						if is_valid_code (ca_child.children.i_th(i).node_id)
-							and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added
-							or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i)
-						then
+						if specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added then
 							child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
 
 							-- now we either merge the object, or deal with the special case of occurrences = 0,
@@ -832,9 +827,14 @@ end
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
 				arch_root_cco := current_arch_cat.matching_archetype (xref_idx_csr.key).flat_archetype.definition
 
-				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier archetype id xref_idx.key_for_iteration
-				-- into each one of these C_ARCHETYPE_ROOT nodes, clone the flat definition structure from the supplier archetype
+				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
+				-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
+				-- flat definition structure from the supplier archetype
 				across xref_idx_csr.item as xref_list_csr loop
+
+					-- set the node id to be the target archetype id
+					xref_list_csr.item.set_node_id (xref_list_csr.item.archetype_ref)
+					
 					if not xref_list_csr.item.has_attributes then -- it is empty and needs to be filled
 debug ("flatten")
 	io.put_string ("%T node at " + xref_list_csr.item.path +
