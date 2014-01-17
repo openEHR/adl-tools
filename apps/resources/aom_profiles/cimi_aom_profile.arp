@@ -15,7 +15,7 @@ profile_name = <"CIMI">
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_pattern = <"cimi_full.*">
+rm_schema_pattern = <"cimi_full.*|cimi_test.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
@@ -37,7 +37,7 @@ archetype_visualise_descendants_of = <"ITEM">
 aom_rm_type_mappings = <
 	["TERMINOLOGY_CODE"] = <
 		source_class_name = <"TERMINOLOGY_CODE">
-		target_class_name = <"CODED_TERM">
+		target_class_name = <"CODED_TEXT">
 		property_mappings = <
 			["terminology_id"] = <
 				source_property_name = <"terminology_id">
@@ -45,7 +45,7 @@ aom_rm_type_mappings = <
 			>
 			["code_string"] = <
 				source_property_name = <"code_string">
-				target_property_name = <"code_string">
+				target_property_name = <"code">
 			>
 		>
 	>
