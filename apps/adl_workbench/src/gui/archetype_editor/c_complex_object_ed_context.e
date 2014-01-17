@@ -12,7 +12,7 @@ class C_COMPLEX_OBJECT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make, make_rm, prepare_display_in_grid, display_in_grid
+			arch_node, make, make_rm, prepare_display_in_grid, display_in_grid, display_constraint
 		end
 
 create
@@ -176,6 +176,13 @@ feature {C_ATTRIBUTE_ED_CONTEXT} -- Modification
 		end
 
 feature {NONE} -- Implementation
+
+	display_constraint
+		do
+			if attached arch_node as cco and then cco.any_allowed then
+				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+			end
+		end
 
 	put_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node

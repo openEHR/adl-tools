@@ -134,9 +134,7 @@ feature -- Display
 				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour, Void)
 
 				-- constraint column
-				if attached {C_COMPLEX_OBJECT} a_n as cco and then cco.any_allowed then
-					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
-				end
+				display_constraint
 
 				-- sibling order column
 				if ed_context.in_differential_view and then attached a_n.sibling_order then
@@ -268,16 +266,23 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
+	display_constraint
+		do
+		end
+
 	node_id_text: STRING
 			-- show node_id text either as just rubric, or as node_id|rubric|, depending on `show_codes' setting
+		local
+			node_id_str: STRING
 		do
 			if attached arch_node as a_n then
 				if is_id_code (a_n.node_id) then
 					if ed_context.flat_terminology.has_id_code (a_n.node_id) then
+						node_id_str := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
 						if display_settings.show_codes then
-							Result := annotated_code (a_n.node_id, ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text)
+							Result := annotated_code (a_n.node_id, node_id_str)
 						else
-							Result := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
+							Result := node_id_str
 						end
 					elseif display_settings.show_codes then
 						Result := a_n.node_id

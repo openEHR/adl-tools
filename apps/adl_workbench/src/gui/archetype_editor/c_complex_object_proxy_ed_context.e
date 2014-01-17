@@ -51,9 +51,6 @@ feature -- Display
 			end
 		end
 
-feature -- Modification
-
 
 end
-
 

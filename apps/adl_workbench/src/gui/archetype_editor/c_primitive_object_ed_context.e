@@ -12,7 +12,7 @@ class C_PRIMITIVE_OBJECT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, prepare_display_in_grid, is_prepared, display_in_grid, rm_type_text
+			arch_node, prepare_display_in_grid, is_prepared, display_in_grid, rm_type_text, display_constraint
 		end
 
 create
@@ -55,12 +55,7 @@ feature -- Display
 				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_name, Void, Void, Void)
 
 				-- constraint value
-				if attached {C_TERMINOLOGY_CODE} a_n as ctc then
-					s := c_terminology_code_str (ctc)
-				else
-					s := a_n.as_string
-				end
-				evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, c_constraint_colour, Void)
+				display_constraint
 			end
 		end
 
@@ -75,6 +70,20 @@ feature -- _status Report
 		end
 
 feature {NONE} -- Implementation
+
+	display_constraint
+		local
+			s: STRING
+		do
+			if attached arch_node as a_n then
+				if attached {C_TERMINOLOGY_CODE} a_n as ctc then
+					s := c_terminology_code_str (ctc)
+				else
+					s := a_n.as_string
+				end
+				evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, c_constraint_colour, Void)
+			end
+		end
 
 	rm_type_text: STRING
 		do

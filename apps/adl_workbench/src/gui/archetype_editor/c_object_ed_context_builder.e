@@ -81,6 +81,31 @@ feature -- Visitor
 			obj_node_stack.remove
 		end
 
+	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
+		local
+			ed_node: C_ARCHETYPE_ROOT_ED_CONTEXT
+			new_ed_context: ARCH_ED_CONTEXT_STATE
+		do
+			if attached ed_context.archetype as arch and then arch.is_template then
+				new_ed_context := ed_context.twin
+				new_ed_context.set_flat_terminology (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+				ed_context_stack.extend (new_ed_context)
+			end
+			create ed_node.make (a_node, ed_context)
+			obj_node_stack.extend (ed_node)
+			attr_node_stack.item.pre_attach_child_context (ed_node)
+		end
+
+	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- exit a C_ARCHETYPE_ROOT
+		do
+			obj_node_stack.remove
+			if attached ed_context.archetype as arch and then arch.is_template then
+				ed_context_stack.remove
+			end
+		end
+
 	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		local
@@ -123,27 +148,6 @@ feature -- Visitor
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
-		end
-
-	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
-			-- enter a C_ARCHETYPE_ROOT
-		local
-			ed_node: C_ARCHETYPE_ROOT_ED_CONTEXT
-			new_ed_context: ARCH_ED_CONTEXT_STATE
-		do
-			new_ed_context := ed_context.twin
-			new_ed_context.set_flat_ontology (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
-			ed_context_stack.extend (new_ed_context)
-			create ed_node.make (a_node, ed_context)
-			obj_node_stack.extend (ed_node)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
-		end
-
-	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
-			-- exit a C_ARCHETYPE_ROOT
-		do
-			obj_node_stack.remove
-			ed_context_stack.remove
 		end
 
 	start_c_complex_object_proxy (a_node: C_COMPLEX_OBJECT_PROXY; depth: INTEGER)

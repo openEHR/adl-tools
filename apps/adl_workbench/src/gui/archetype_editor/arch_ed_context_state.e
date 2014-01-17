@@ -69,7 +69,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_flat_ontology (a_flat_ontology: FLAT_ARCHETYPE_TERMINOLOGY)
+	set_flat_terminology (a_flat_ontology: FLAT_ARCHETYPE_TERMINOLOGY)
 		do
 			flat_terminology := a_flat_ontology
 		end
