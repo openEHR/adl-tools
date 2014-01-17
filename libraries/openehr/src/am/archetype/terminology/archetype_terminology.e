@@ -484,7 +484,7 @@ feature -- Modification
 			Binding_added: has_term_binding (a_terminology_id, a_code)
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_PROCESSOR} -- Modification
 
 	remove_definition (a_code: STRING)
 			-- completely remove the term from the terminology

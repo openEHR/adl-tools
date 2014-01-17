@@ -120,7 +120,9 @@ feature -- Definitions
 
 	uri_with_version_template: STRING = "http://$terminology_id.info/ver/$terminology_version/id/$code_string"
 
-	Fake_adl_14_node_id: STRING = "id110011"
+	Fake_adl_14_node_id_base: STRING = "id1000000"
+			-- used to create new node ids by appending integer strings to create e.g. id10000001, id10000002, etc.
+			-- These can easily be detected in code in order to rewrite them to normal ids
 
 feature -- Access
 

@@ -871,7 +871,7 @@ end
 			if object_nodes.is_empty then
 				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
 			else
-				create yyval14.make (yyvs2.item (yyvsp2), Fake_adl_14_node_id)
+				create yyval14.make (yyvs2.item (yyvsp2), new_fake_node_id)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -1091,7 +1091,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 347")
 end
 
-			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent (Fake_adl_14_node_id))
+			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent (new_fake_node_id))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1227,7 +1227,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 406")
 end
 
-			create yyval10.make (yyvs2.item (yyvsp2 - 1), Fake_adl_14_node_id, yyvs2.item (yyvsp2))
+			create yyval10.make (yyvs2.item (yyvsp2 - 1), new_fake_node_id, yyvs2.item (yyvsp2))
 			if attached yyvs12.item (yyvsp12) as att_occ then
 				yyval10.set_occurrences (att_occ)
 			end
@@ -1383,7 +1383,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 469")
 end
 
-			create yyval16.make (yyvs2.item (yyvsp2), Fake_adl_14_node_id)
+			create yyval16.make (yyvs2.item (yyvsp2), new_fake_node_id)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -4726,7 +4726,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1547")
 end
 
-			create yyval14.make ("DV_ORDINAL", Fake_adl_14_node_id)
+			create yyval14.make ("DV_ORDINAL", new_fake_node_id)
 
 			-- create a C_ATTR_TUPLE and connect the received C_OBJ_TUPLE to it
 			yyval14.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)
@@ -8647,7 +8647,6 @@ feature -- Initialization
 			create str.make_empty
 			create indent.make_empty
 			create rm_attribute_name.make_empty
-			create arch_internal_ref_rm_type_name.make_empty
 			create parent_path_str.make_empty
 		end
 
@@ -8667,6 +8666,8 @@ feature -- Initialization
 
 			object_nodes.wipe_out
 			c_attrs.wipe_out
+
+			fake_node_id_count := 0
 
 			create time_vc
 			create date_vc
@@ -8784,7 +8785,14 @@ feature {NONE} -- Parse Tree
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
-	arch_internal_ref_rm_type_name: STRING
+	new_fake_node_id: STRING
+		do
+			Result := Fake_adl_14_node_id_base + fake_node_id_count.out
+			fake_node_id_count := fake_node_id_count + 1
+		end
+
+	fake_node_id_count: INTEGER
+
 	arch_internal_ref_node_id: detachable STRING
 
 	indent: STRING

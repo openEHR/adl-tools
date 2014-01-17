@@ -81,11 +81,13 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend ("1.4")
-			Result.extend ("1.4.1")
+			Result.extend (Adl_14_version)
+			Result.extend (Adl_14_version + ".1")
 			Result.extend ("1.5")
 			Result.extend ("1.5.1")
 		end
+
+	Adl_14_version: STRING = "1.4"
 
 	Latest_adl_version: STRING
 			-- return current latest known ADL version in this tool

@@ -34,6 +34,10 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Adl_14_legacy_fake_code_text: STRING = "@ internal @"
+
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
@@ -88,6 +92,9 @@ feature -- Commands
 			update_aom_mapped_types
 			update_lifecycle_state
 			add_id_codes
+			if target.adl_version.starts_with (Adl_14_version) then
+				remove_fake_id_codes
+			end
 		end
 
 	clear
@@ -115,7 +122,6 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
 				ctc.set_rm_type_name (att_c_terminology_code_type_mapping.target_class_name)
-	--			ctc.set_rm_type_mapping (att_c_terminology_code_type_mapping)
 			end
 		end
 
@@ -198,7 +204,7 @@ feature {NONE} -- Implementation
 	 		spec_depth: INTEGER
 	 	do
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then
-	 			is_valid_id_code (c_obj.node_id) and then not c_obj.node_id.is_equal (fake_adl_14_node_id)
+	 			is_valid_id_code (c_obj.node_id) and then not c_obj.node_id.starts_with (fake_adl_14_node_id_base)
 	 		then
 				spec_depth := specialisation_depth_from_code (c_obj.node_id)
 				code_number := index_from_code_at_level (c_obj.node_id, spec_depth)
@@ -224,7 +230,7 @@ feature {NONE} -- Implementation
 	 		parent_co: C_OBJECT
 	 		og_path: OG_PATH
 	 	do
-	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then c_obj.node_id.is_equal (fake_adl_14_node_id) then
+	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then c_obj.node_id.starts_with (fake_adl_14_node_id_base) then
 	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
 	 			create og_path.make_from_string (c_obj.path)
 	 			og_path.last.set_object_id ("")
@@ -318,6 +324,18 @@ feature {NONE} -- Implementation
 	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
 		attribute
 			create Result.make (0)
+		end
+
+	remove_fake_id_codes
+			-- remove term code definitions with text = "@ internal @"
+		do
+			if target.terminology.term_definitions.has_key ("en") then
+				across target.terminology.id_codes as id_code_csr loop
+					if target.terminology.term_definition ("en", id_code_csr.item).description.is_equal (Adl_14_legacy_fake_code_text) then
+						target.terminology.remove_definition (id_code_csr.item)
+					end
+				end
+			end
 		end
 
 end

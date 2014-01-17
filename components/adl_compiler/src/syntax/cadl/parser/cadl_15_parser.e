@@ -872,7 +872,7 @@ end
 			if object_nodes.is_empty then
 				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
 			else
-				create yyval15.make (yyvs2.item (yyvsp2), Fake_adl_14_node_id)
+				create yyval15.make (yyvs2.item (yyvsp2), new_fake_node_id)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -1174,7 +1174,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 385")
 end
 
-			create yyval9.make (yyvs2.item (yyvsp2 - 1), Fake_adl_14_node_id, yyvs2.item (yyvsp2))
+			create yyval9.make (yyvs2.item (yyvsp2 - 1), new_fake_node_id, yyvs2.item (yyvsp2))
 			if attached yyvs13.item (yyvsp13) as att_occ then
 				yyval9.set_occurrences (att_occ)
 			end
@@ -1354,7 +1354,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 463")
 end
 
-			create yyval17.make (yyvs2.item (yyvsp2), Fake_adl_14_node_id)
+			create yyval17.make (yyvs2.item (yyvsp2), new_fake_node_id)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -8486,7 +8486,9 @@ feature -- Initialization
 
 			create time_vc
 			create date_vc
-	
+
+			fake_node_id_count := 0
+
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -8597,6 +8599,14 @@ feature {NONE} -- Parse Tree
 
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
+
+	new_fake_node_id: STRING
+		do
+			Result := Fake_adl_14_node_id_base + fake_node_id_count.out
+			fake_node_id_count := fake_node_id_count + 1
+		end
+
+	fake_node_id_count: INTEGER
 
 	indent: STRING
 

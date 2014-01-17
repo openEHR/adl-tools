@@ -274,7 +274,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 			if object_nodes.is_empty then
 				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
 			else
-				create $$.make ($1, Fake_adl_14_node_id)
+				create $$.make ($1, new_fake_node_id)
 			end
 		}
 --
@@ -384,7 +384,7 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 ---
 	| SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
 		{
-			create $$.make ($2, Fake_adl_14_node_id, $4)
+			create $$.make ($2, new_fake_node_id, $4)
 			if attached $3 as att_occ then
 				$$.set_occurrences (att_occ)
 			end
@@ -462,7 +462,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 --
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			create $$.make ($2, Fake_adl_14_node_id)
+			create $$.make ($2, new_fake_node_id)
 		}
 --
 -- END Support transitional ADL 1.5 archetypes containing nodes with no id-codes
@@ -2307,7 +2307,9 @@ feature -- Initialization
 
 			create time_vc
 			create date_vc
-	
+
+			fake_node_id_count := 0
+
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -2418,6 +2420,14 @@ feature {NONE} -- Parse Tree
 
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
+
+	new_fake_node_id: STRING
+		do
+			Result := Fake_adl_14_node_id_base + fake_node_id_count.out
+			fake_node_id_count := fake_node_id_count + 1
+		end
+
+	fake_node_id_count: INTEGER
 
 	indent: STRING
 
