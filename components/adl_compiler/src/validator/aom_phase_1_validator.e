@@ -127,15 +127,15 @@ feature {NONE} -- Implementation
 					else
 						-- if path doesn't exist in ancestor and path of immediate parent node doesn't exist in ancestor either
 						-- then it's an error
-						create apa.make_from_string (a_c_node.path)
+						create apa.make_from_string (ca.path)
 						if not apa.is_phantom_path_at_level (flat_ancestor.specialisation_depth) then
 							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
 							if not flat_ancestor.has_path (flat_anc_path) then
 								-- allow for a terminal attribute under a parent object
-							--	create og_path.make_from_string (flat_anc_path)
-							--	if not flat_ancestor.has_path (og_path.parent_path.as_string) then
+								create og_path.make_from_string (flat_anc_path)
+								if not flat_ancestor.has_path (og_path.parent_path.as_string) then
 									add_error (ec_VDIFP1, <<ca.path, flat_anc_path>>)
-							--	end
+								end
 							end
 						else
 							add_error (ec_VDIFP3, <<ca.path>>)
