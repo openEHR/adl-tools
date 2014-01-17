@@ -1025,7 +1025,7 @@ feature {NONE} -- Compilation
 			remove_invalid_differential
 			flat_archetype_cache := Void
 
-			-- perform the parse; this can fail, i.e. not result generated
+			-- perform the parse; this can fail, i.e. no result generated
 			check attached legacy_flat_text as lft then
 				legacy_flat_archetype := adl_14_engine.parse (lft, rm_schema)
 			end
