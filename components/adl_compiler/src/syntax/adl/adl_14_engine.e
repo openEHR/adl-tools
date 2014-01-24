@@ -183,6 +183,11 @@ feature -- Parsing
 							ont_tree.as_object (({FLAT_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
+							-- add value-sets extracted from definition
+							if attached definition_context.value_sets as att_vs then
+								flat_terminology.set_value_sets (att_vs)
+							end
+
 							create Result.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,

@@ -349,7 +349,7 @@ feature -- Factory
 			Result.put (agent create_c_time_make_lower_unbounded ("12:00:00"), bare_type_name (({C_TIME}).name))
 			Result.put (agent create_c_date_make_lower_unbounded ("2000-01-01"), bare_type_name (({C_DATE}).name))
 
-			Result.put (agent create_c_terminology_code ("local::at0001"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
+			Result.put (agent create_c_terminology_code_ref ("local::ac1"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
 		end
 
 	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE_OBJECT
@@ -407,7 +407,7 @@ feature -- Factory
 			Result := not errors.has_errors
 		end
 
-	create_c_terminology_code (a_string: STRING): C_TERMINOLOGY_CODE
+	create_c_terminology_code_inline (a_string: STRING): C_TERMINOLOGY_CODE
 			-- Make from string of form "terminology_id::code, code, ... [; code]".
 			-- String "terminology_id::" is legal.
 		require
@@ -442,6 +442,38 @@ feature -- Factory
 			else
 				create Result.make (terminology_id)
 			end
+			if attached assumed_value then
+				Result.set_assumed_value_from_code (assumed_value)
+			end
+		end
+
+	create_c_terminology_code_ref (a_string: STRING): C_TERMINOLOGY_CODE
+			-- Make from string of form "terminology_id::acN [; atN]".
+		require
+			valid_c_terminology_code_string (a_string)
+		local
+			sep_pos, end_pos: INTEGER
+			str: STRING
+			code_ref: STRING
+			assumed_value: detachable STRING
+		do
+			str := a_string.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (Terminology_separator, 1)
+
+			end_pos := str.index_of (';', sep_pos)-1
+			if end_pos < 0 then
+				end_pos := str.count
+			else
+				assumed_value := str.substring (end_pos+2, str.count)
+			end
+			create code_ref.make_empty
+			if end_pos > sep_pos + Terminology_separator.count then
+				code_ref.append (str.substring (sep_pos + Terminology_separator.count, end_pos))
+			end
+
+			create Result.make_value_set_code (code_ref)
 			if attached assumed_value then
 				Result.set_assumed_value_from_code (assumed_value)
 			end

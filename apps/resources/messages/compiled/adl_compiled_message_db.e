@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (668)
+			create message_table.make (673)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -200,7 +200,7 @@ feature -- Initialisation
 			message_table.put ("C_DOMAIN_TYPE descendant type $1 unknown or not visible in type system", ec_VDTTU)
 			message_table.put ("C_DOMAIN_TYPE descendant type does not include type", ec_VDTNT)
 			message_table.put ("C_DV_ORDINAL assumed value not supported", ec_WDTOAV)
-			message_table.put ("ARCHETYPE_INTERNAL_REF path $1 not found in archetype", ec_VUNP)
+			message_table.put ("C_COMPLEX_OBJECT_PROXY path $1 not found in archetype", ec_VUNP)
 			message_table.put ("node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4", ec_VSUNT)
 			message_table.put ("definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed' or prohibited (occurrences matches {0})", ec_VASMD)
 			message_table.put ("'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'", ec_VDSEV1)
@@ -692,6 +692,11 @@ feature -- Initialisation
 			message_table.put ("Id definitions and bindings", ec_id_defs_frame_text)
 			message_table.put ("Term definitions and bindings", ec_term_defs_frame_text)
 			message_table.put ("Constraint definitions and bindings", ec_constraint_defs_frame_text)
+			message_table.put ("Definitions", ec_term_defs_tab_text)
+			message_table.put ("Value sets", ec_value_sets_tab_text)
+			message_table.put ("Value set", ec_value_sets_grid_col_code_text)
+			message_table.put ("Member", ec_value_sets_grid_col_member_code_text)
+			message_table.put ("Text", ec_value_sets_grid_col_code_text_text)
 			message_table.put ("Convert to subtype", ec_context_menu_convert_node_to_subtype)
 end	
 end

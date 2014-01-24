@@ -303,8 +303,6 @@ feature -- Visitor
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 			-- if there are no children, it must be in differential mode, else it is in flat mode
-		local
-			id: STRING
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
@@ -433,13 +431,26 @@ feature {NONE} -- Implementation
 			-- first case is inline output of the form "[terminology::code]"
 			-- A comment containing the original language rubric of the code is held in a buffer, since the
 			-- main visiting traversal still has to append a terminating '}' before the comment can be added
-			if a_node.code_count = 1 or a_node.code_count = 0 then
+			if a_node.is_value_set_reference then
 				-- output the actual constraint value
 				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
 
 				-- hold the comment over in `last_coded_constraint_comment'
 				create last_coded_constraint_comment.make(0)
-				if a_node.is_local and a_node.code_count = 1 and terminology.has_term_code (a_node.code_list.first) then
+				if terminology.has_constraint_code (a_node.value_set_code) then
+					last_coded_constraint_comment.append (format_item (FMT_INDENT))
+					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+						safe_comment (terminology.term_definition (language, a_node.value_set_code).text), STYLE_COMMENT))
+				end
+				last_object_inline := True
+
+			elseif a_node.code_count = 1 or a_node.code_count = 0 then
+				-- output the actual constraint value
+				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
+
+				-- hold the comment over in `last_coded_constraint_comment'
+				create last_coded_constraint_comment.make(0)
+				if a_node.is_local and a_node.code_count = 1 and terminology.has_value_code (a_node.code_list.first) then
 					last_coded_constraint_comment.append (format_item (FMT_INDENT))
 					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 						safe_comment (terminology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
@@ -472,7 +483,7 @@ feature {NONE} -- Implementation
 						last_result.append (apply_style ("]", STYLE_TERM_REF))
 					end
 
-					if a_node.is_local and terminology.has_term_code (code_list_csr.item) then
+					if a_node.is_local and terminology.has_value_code (code_list_csr.item) then
 						last_result.append (format_item(FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 							safe_comment (terminology.term_definition (language, code_list_csr.item).text), STYLE_COMMENT))
 					end

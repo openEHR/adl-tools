@@ -79,6 +79,20 @@ feature -- Definitions
 			Result.put (get_text (ec_rules_grid_col_expr_value_text), Rules_grid_col_expr_value)
 		end
 
+	Value_sets_grid_col_names: HASH_TABLE [STRING, INTEGER]
+		once
+			create Result.make (0)
+			Result.put (get_text (ec_value_sets_grid_col_code_text), Value_sets_grid_col_code)
+			Result.put (get_text (ec_value_sets_grid_col_member_code_text), Value_sets_grid_col_member_code)
+		end
+
+	Value_sets_grid_col_code: INTEGER = 1
+	Value_sets_grid_col_member_code: INTEGER = 2
+	Value_sets_grid_col_max: INTEGER
+		once
+			Result := Value_sets_grid_col_member_code
+		end
+
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT BLUE

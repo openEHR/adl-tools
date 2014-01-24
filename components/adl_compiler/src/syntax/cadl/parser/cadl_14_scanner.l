@@ -212,7 +212,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 ----------/* V_VALUE_SET_REF: term code of form [ac2], [ac0.0.2] */ ---------------
 
-\[{NAMECHAR_PAREN}+::ac{CODE_STR}\] {
+\[local::ac{CODE_STR}\] {
+-- \[ac{CODE_STR}\] {
 		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
 	}
@@ -258,8 +259,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	[ \t]*{NAMECHAR}*[ \t]*\] { -- match final line, terminating in ']'
 				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
 					last_token := ERR_VALUE_SET_DEF
-					create str_.make (in_buffer.count)
-					str_.append (in_buffer)
+					create err_str.make (in_buffer.count)
+					err_str.append (in_buffer)
 					in_buffer.wipe_out
 					last_string_value := str_
 				else
@@ -698,6 +699,11 @@ feature -- Access
 
 	source_start_line: INTEGER
 			-- Offset of source in other document, else 0.
+
+	err_str: STRING
+		attribute
+			create Result.make (0)
+		end
 
 feature {NONE} -- Implementation
 

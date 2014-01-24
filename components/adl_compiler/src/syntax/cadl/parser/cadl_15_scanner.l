@@ -58,6 +58,7 @@ ALPHANUM [a-zA-Z0-9]
 ALPHANUM_STR [a-zA-Z0-9_]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
+EXTERNAL_CODECHAR [a-zA-Z0-9._\-|*^+?$]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 NAMESTR [a-zA-Z][a-zA-Z0-9_]+
@@ -213,7 +214,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 ----------/* V_VALUE_SET_REF: term code of form [ac2], [ac0.0.2] */ ---------------
 
-\[{NAMECHAR_PAREN}+::ac{CODE_STR}\] {
+-- \[local::ac{CODE_STR}\] {
+\[ac{CODE_STR}\] {
 		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
 	}

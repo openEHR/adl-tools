@@ -21,7 +21,7 @@ inherit
 		end
 
 create
-	make, make_from_codes, make_from_code, make_from_terminology_code, default_create
+	make, make_from_codes, make_from_code, make_from_terminology_code, make_value_set_code, default_create
 
 feature -- Initialisation
 
@@ -54,6 +54,15 @@ feature -- Initialisation
 			code_list.extend (a_terminology_code.code_string)
 		end
 
+	make_value_set_code (a_value_set_code: STRING)
+			-- create with ac-code, and assumed 'local' terminology
+		require
+			is_valid_constraint_code (a_value_set_code)
+		do
+			default_create
+			value_set_code := a_value_set_code
+		end
+
 feature -- Access
 
 	terminology_id: STRING
@@ -63,7 +72,14 @@ feature -- Access
 
 	terminology_version: detachable STRING
 
+	value_set_code: STRING
+			-- ac-code of value set
+		attribute
+			create Result.make_from_string (Default_constraint_code)
+		end
+
 	code_list: ARRAYED_LIST [STRING]
+			-- code list of value set
 		attribute
 			create Result.make (0)
 			Result.compare_objects
@@ -109,7 +125,7 @@ feature -- Status Report
 	is_value_set_reference: BOOLEAN
 			-- True if there is just one 'ac' code rather than a list
 		do
-			Result := code_list.count = 1 and then is_valid_constraint_code (code_list.first)
+			Result := not value_set_code.is_equal (Default_constraint_code)
 		end
 
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
@@ -168,6 +184,14 @@ feature -- Modification
 			create assumed_value.make (terminology_id, a_code)
 		end
 
+	set_value_set_code (a_value_set_code: STRING)
+			-- create with ac-code, and assumed 'local' terminology
+		require
+			is_valid_constraint_code (a_value_set_code)
+		do
+			value_set_code := a_value_set_code
+		end
+
 feature {P_C_TERMINOLOGY_CODE} -- Modification
 
 	set_constraint (a_terminology_id: STRING; a_terminology_version: detachable STRING; a_code_list: detachable ARRAYED_LIST [STRING])
@@ -184,24 +208,28 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make(0)
-			Result.append ("[" + terminology_id)
+			Result.append ("[")
 
-			if attached terminology_version as tv then
-				Result.append (tv)
-			end
-			Result.append (Terminology_separator)
-
-			across code_list as code_list_csr loop
-				if not code_list_csr.is_first then
-					Result.append (", ")
+			if is_value_set_reference then
+				Result.append (value_set_code)
+			else
+				Result.append (terminology_id)
+				if attached terminology_version as tv then
+					Result.append (tv)
 				end
-				Result.append (code_list_csr.item)
-			end
+				Result.append (Terminology_separator)
 
-			if attached assumed_value as av then
-				Result.append ("; " + av.code_string)
-			end
+				across code_list as code_list_csr loop
+					if not code_list_csr.is_first then
+						Result.append (", ")
+					end
+					Result.append (code_list_csr.item)
+				end
 
+				if attached assumed_value as av then
+					Result.append ("; " + av.code_string)
+				end
+			end
 			Result.append ("]")
 		end
 

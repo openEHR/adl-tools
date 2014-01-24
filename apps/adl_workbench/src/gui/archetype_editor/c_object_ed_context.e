@@ -280,7 +280,7 @@ feature {NONE} -- Implementation
 					if ed_context.flat_terminology.has_id_code (a_n.node_id) then
 						node_id_str := ed_context.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
 						if display_settings.show_codes then
-							Result := annotated_code (a_n.node_id, node_id_str)
+							Result := annotated_code (a_n.node_id, node_id_str, " ")
 						else
 							Result := node_id_str
 						end

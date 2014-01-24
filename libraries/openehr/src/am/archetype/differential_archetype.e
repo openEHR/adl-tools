@@ -104,7 +104,7 @@ feature -- Access
 	terminology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in terminology that are not referenced anywhere in the archetype definition
 		local
-			term_codes: like term_codes_index
+			term_codes: like value_codes_index
 			id_codes: like id_codes_index
 		do
 			create Result.make (0)
@@ -116,8 +116,8 @@ feature -- Access
 				end
 			end
 
-			term_codes := term_codes_index
-			across terminology.term_codes as term_codes_csr loop
+			term_codes := value_codes_index
+			across terminology.value_codes as term_codes_csr loop
 				if not term_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)
 				end
@@ -220,12 +220,12 @@ end
 
 feature -- Modification
 
-	set_definition_node_id (a_term_code: STRING)
-			-- set the node_id of the archetype root node to a_term_id
+	set_definition_node_id (an_id_code: STRING)
+			-- set the node_id of the archetype root node to `an_id_code'
 		require
-			Valid_term_code: terminology.has_term_code (a_term_code)
+			Valid_term_code: terminology.has_id_code (an_id_code)
 		do
-			definition.set_node_id (a_term_code)
+			definition.set_node_id (an_id_code)
 		end
 
 	reset_definition

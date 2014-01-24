@@ -75,10 +75,10 @@ feature -- Initialisation
 			gui_controls.extend (view_detail_radio_ctl)
 
 			-- include codes checkbox
-			create add_codes_checkbox_ctl.make_linked (get_text (ec_domain_view_add_codes_text), Void,
+			create show_codes_checkbox_ctl.make_linked (get_text (ec_domain_view_add_codes_text), Void,
 				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
-			view_detail_frame_ctl.extend (add_codes_checkbox_ctl.ev_data_control, False)
-			gui_controls.extend (add_codes_checkbox_ctl)
+			view_detail_frame_ctl.extend (show_codes_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (show_codes_checkbox_ctl)
 
 
 			-- ========= RM view options =========
@@ -386,7 +386,7 @@ feature {NONE} -- Implementation
 
 	view_detail_radio_ctl: EVX_BOOLEAN_RADIO_CONTROL
 
-	view_rm_display_inheritance_checkbox_ctl, add_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
+	view_rm_display_inheritance_checkbox_ctl, show_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
 	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 

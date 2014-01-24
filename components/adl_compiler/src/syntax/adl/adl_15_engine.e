@@ -187,6 +187,11 @@ feature -- Parsing
 							terminology_tree.as_object (({DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
+							-- add value-sets extracted from definition
+							if attached definition_context.value_sets as att_vs then
+								diff_terminology.set_value_sets (att_vs)
+							end
+
 							-- build the archetype
 							create Result.make (
 								adl_parser.artefact_type,

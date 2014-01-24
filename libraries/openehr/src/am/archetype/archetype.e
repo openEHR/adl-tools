@@ -453,7 +453,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				Void)
 		end
 
-	term_codes_index: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
+	value_codes_index: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- in C_TERMINOLOGY_CODE types
 			-- keys are either local codes, e.g. "at44" or fully qualified non-local code strings
@@ -480,6 +480,23 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 								end
 								idx.item (key).extend (ccp)
 							end
+						end
+					end (?, ?, Result),
+				Void)
+		end
+
+	term_constraints_index: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
+			-- table of {c_terminology_node, code} keyed by ac-codes
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
+					do
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ccp and then ccp.is_value_set_reference then
+							idx.put (ccp, ccp.value_set_code)
 						end
 					end (?, ?, Result),
 				Void)

@@ -33,7 +33,7 @@ feature -- Initialisation
 			Primary_language_set: original_language = an_original_lang
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
 			Concept_code_set: is_valid_root_id_code (concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
-			Concept_code_in_terms: has_term_code (concept_code)
+			Concept_code_in_terms: has_id_code (concept_code)
 			Concept_items_not_empty: not term_definition (original_language, concept_code).text.is_empty
 		end
 
@@ -50,6 +50,8 @@ feature -- Initialisation
 
 			term_definitions := a_flat_copy.term_definitions
 			term_bindings := a_flat_copy.term_bindings
+
+			value_sets := a_flat_copy.value_sets
 
 			sync_stored_properties
 		end

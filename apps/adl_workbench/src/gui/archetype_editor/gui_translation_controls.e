@@ -211,12 +211,12 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if is_valid_code (a_code) and attached selected_language as sel_lang then
-				if is_term_code (a_code) then
+				if is_value_code (a_code) then
 					rubric := source_archetype.terminology.term_definition (sel_lang, a_code).text
 				else
 					rubric := source_archetype.terminology.term_definition (sel_lang, a_code).text
 				end
-				Result.append (annotated_code (a_code, rubric))
+				Result.append (annotated_code (a_code, rubric, " "))
 			end
 		end
 
@@ -230,11 +230,11 @@ feature {NONE} -- Implementation
 			until
 				i > translated_text.count
 			loop
-				at_code_pos := translated_text.substring_index (term_code_leader, i)
+				at_code_pos := translated_text.substring_index (Value_code_leader, i)
 				lbar_pos := translated_text.substring_index (Annotated_code_text_delimiter_string, at_code_pos)
 				rbar_pos := translated_text.substring_index (Annotated_code_text_delimiter_string, lbar_pos + 1)
 				if lbar_pos > 0 and rbar_pos > lbar_pos then
-					if term_code_regex_matcher.recognizes (translated_text.substring (at_code_pos, lbar_pos - 1)) then
+					if value_code_regex_matcher.recognizes (translated_text.substring (at_code_pos, lbar_pos - 1)) then
 						translated_terms.put (translated_text.substring (lbar_pos + 1, rbar_pos - 1), translated_text.substring (at_code_pos, lbar_pos - 1))
 						i := rbar_pos + 1
 					else

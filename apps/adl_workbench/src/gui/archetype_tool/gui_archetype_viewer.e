@@ -158,7 +158,7 @@ feature {NONE} -- Implementation
 		do
 			create description_controls.make
 			create definition_control.make
-			create ontology_controls.make
+			create terminology_controls.make
 			create annotations_control.make
 			create serialisation_control.make
 		end

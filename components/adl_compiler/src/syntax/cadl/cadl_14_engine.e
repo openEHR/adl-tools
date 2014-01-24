@@ -38,6 +38,9 @@ feature -- Access
 	tree: detachable C_COMPLEX_OBJECT
 			-- Set if parse succeeded.
 
+    value_sets: detachable HASH_TABLE [VALUE_SET_RELATION, STRING]
+    		-- value sets parsed in legacy parse
+
 feature -- Commands
 
 	set_source (in_text: STRING; a_source_start_line: INTEGER; an_rm_schema: BMM_SCHEMA)
@@ -45,6 +48,7 @@ feature -- Commands
 		do
 			parser_set_source (in_text, a_source_start_line)
 			rm_schema := an_rm_schema
+			value_sets := Void
 		end
 
 	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING)
@@ -74,6 +78,10 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_COMPLEX_OBJECT} parser.output as cco then
 				tree := cco
+
+				if not parser.value_sets.is_empty then
+					value_sets := parser.value_sets
+				end
 			end
 		end
 

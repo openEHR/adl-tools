@@ -18,7 +18,7 @@ inherit
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_root_id_code, is_valid_id_code, is_valid_term_code, is_valid_constraint_code,
+			{ANY} is_valid_root_id_code, is_valid_id_code, is_valid_value_code, is_valid_constraint_code,
 				is_valid_code, specialisation_depth_from_code
 		end
 
@@ -85,6 +85,12 @@ feature -- Access (Stored)
             create Result.make (0)
         end
 
+    value_sets: HASH_TABLE [VALUE_SET_RELATION, STRING]
+    		-- table of value sets - keyed by ac-code
+        attribute
+            create Result.make (0)
+        end
+
 	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
@@ -123,13 +129,13 @@ feature -- Access (computed)
             end
         end
 
-	term_codes: TWO_WAY_SORTED_SET [STRING]
+	value_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of term codes
         do
             create Result.make
             Result.compare_objects
             across index_term_definitions as defs loop
-            	if is_term_code (defs.key) then
+            	if is_value_code (defs.key) then
             		Result.extend (defs.key)
             	end
             end
@@ -252,10 +258,10 @@ feature -- Status Report
 			Result := id_codes.has (an_id_code)
 		end
 
-	has_term_code (a_code: STRING): BOOLEAN
-			-- is `a_code' known in the terms list of this terminology
+	has_value_code (a_code: STRING): BOOLEAN
+			-- is `a_code' known in the at-terms list of this terminology
 		do
-			Result := term_codes.has (a_code)
+			Result := value_codes.has (a_code)
 		end
 
 	has_constraint_code (a_code: STRING): BOOLEAN
@@ -319,7 +325,7 @@ feature -- Comparison
 
 feature -- Conversion
 
-	substitute_codes (str, lang: STRING): STRING
+	substitute_id_codes (str, lang: STRING): STRING
 			-- substitute all occurrences of archetype codes in 'str'
 			-- with their term texts from this terminology, in 'lang'
 		require
@@ -332,16 +338,16 @@ feature -- Conversion
 			create Result.make(0)
 			Result.append (str)
 			from
-				start_pos := str.substring_index ("[" + Term_code_leader, 1)
+				start_pos := str.substring_index ("[" + Id_code_leader, 1)
 			until
 				start_pos <= 0
 			loop
 				end_pos := str.index_of (']', start_pos)
 				code := str.substring (start_pos+1, end_pos-1)
-				if has_term_code (code) then
+				if has_code (code) then
 					Result.replace_substring_all (code, term_definition (lang, code).text)
 				end
-				start_pos := str.substring_index ("[" + Term_code_leader, end_pos)
+				start_pos := str.substring_index ("[" + Id_code_leader, end_pos)
 			end
 		end
 
@@ -366,7 +372,7 @@ feature -- Conversion
 					id_code := og_phys_path.item.object_id
 					if is_valid_id_code (id_code) and then has_id_code (id_code) then
 						if with_codes then
-							log_str := annotated_code (id_code, term_definition (a_language, id_code).text)
+							log_str := annotated_code (id_code, term_definition (a_language, id_code).text, "")
 						else
 							log_str := term_definition (a_language, id_code).text
 						end
@@ -392,12 +398,12 @@ feature -- Modification
 		local
 			new_term: ARCHETYPE_TERM
 		do
-			create new_term.make_all (new_added_id_code_at_level (specialisation_depth, highest_term_code), a_text, a_description)
+			create new_term.make_all (new_added_id_code_at_level (specialisation_depth, highest_id_code), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
 
-	create_added_term_definition (a_text, a_description: STRING)
+	create_added_value_definition (a_text, a_description: STRING)
 			-- add a new term definition with 'text' = `a_text', 'description = `a_description',
 			-- assumed to be in the original language;
 			-- automatically add translation placeholders in all other languages
@@ -405,7 +411,7 @@ feature -- Modification
 		local
 			new_term: ARCHETYPE_TERM
 		do
-			create new_term.make_all (new_added_term_code_at_level (specialisation_depth, highest_term_code), a_text, a_description)
+			create new_term.make_all (new_added_value_code_at_level (specialisation_depth, highest_value_code), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
@@ -417,7 +423,7 @@ feature -- Modification
 		local
 			new_term: ARCHETYPE_TERM
 		do
-			create new_term.make_all (new_added_term_code_at_level (specialisation_depth, highest_constraint_code), a_text, a_description)
+			create new_term.make_all (new_added_value_code_at_level (specialisation_depth, highest_constraint_code), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
@@ -473,15 +479,36 @@ feature -- Modification
 			end
 		end
 
-	replace_term_binding (a_term_code: URI; a_terminology_id, a_code: STRING)
+	replace_term_binding (a_binding: URI; a_terminology_id, a_code: STRING)
 			-- replaces existing a term binding to local code a_code, in group a_terminology
 		require
-			Local_code_valid: has_term_code (a_code)
+			Local_code_valid: has_code (a_code)
 			Already_added: has_term_binding (a_terminology_id, a_code)
 		do
-			term_bindings.item (a_terminology_id).replace (a_term_code, a_code)
+			term_bindings.item (a_terminology_id).replace (a_binding, a_code)
 		ensure
 			Binding_added: has_term_binding (a_terminology_id, a_code)
+		end
+
+	replicate_term_definition (an_old_code, a_new_code: STRING)
+			-- make a copy of the term with code `an_old_code' in all languages, and add as a new term with code `a_new_code'
+		require
+			Old_code_valid: has_code (an_old_code)
+			New_code_valid: not has_code (a_new_code)
+		local
+			new_term: ARCHETYPE_TERM
+		do
+			across term_definitions as term_defs_for_lang_csr loop
+				check attached term_defs_for_lang_csr.item.item (an_old_code) as att_term then
+					new_term := att_term.deep_twin
+				end
+				new_term.set_code (a_new_code)
+				term_defs_for_lang_csr.item.put (new_term, a_new_code)
+			end
+			update_highest_codes (a_new_code)
+			clear_cache
+		ensure
+			has_code (a_new_code)
 		end
 
 feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_PROCESSOR} -- Modification
@@ -636,7 +663,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 	highest_id_code: INTEGER
 			-- highest added id code at the level of this terminology; 0 if none so far
 
-	highest_term_code: INTEGER
+	highest_value_code: INTEGER
 			-- highest added term code at the level of this terminology; 0 if none so far
 
 	highest_constraint_code: INTEGER
@@ -665,8 +692,8 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 					idx := idx_string.to_integer
 					if is_id_code (a_code) then
 						highest_id_code := highest_id_code.max (idx)
-					elseif is_term_code (a_code) then
-						highest_term_code := highest_term_code.max (idx)
+					elseif is_value_code (a_code) then
+						highest_value_code := highest_value_code.max (idx)
 					elseif is_constraint_code (a_code) then
 						highest_constraint_code := highest_constraint_code.max (idx)
 					end
@@ -722,21 +749,26 @@ feature {NONE} -- Legacy
     		end
     	end
 
-feature {P_ARCHETYPE_TERMINOLOGY} -- Implementation
+feature {P_ARCHETYPE_TERMINOLOGY, ADL_14_ENGINE, ADL_15_ENGINE} -- Implementation
 
-	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+	set_term_definitions (a_term_defs: like term_definitions)
 		do
 			term_definitions := a_term_defs
 		end
 
-	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING])
+	set_term_bindings (a_term_bindings: like term_bindings)
 		do
 			term_bindings := a_term_bindings
 		end
 
-	set_terminology_extracts (a_term_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+	set_terminology_extracts (a_term_extracts: like terminology_extracts)
 		do
 			terminology_extracts := a_term_extracts
+		end
+
+	set_value_sets (a_value_sets: like value_sets)
+		do
+			value_sets := a_value_sets
 		end
 
 feature -- Finalisation
@@ -758,6 +790,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.compare_objects
 			Result.extend ("term_definitions")
 			Result.extend ("term_bindings")
+			Result.extend ("value_sets")
 		end
 
 feature {NONE} -- Implementation
@@ -799,7 +832,7 @@ invariant
 	Original_language_valid: not original_language.is_empty
 	Root_code_valid: is_valid_root_id_code (concept_code)
 	Concept_code_defined: id_codes.has (concept_code)
-	Highest_term_code_index_valid: highest_term_code >= 0
+	Highest_term_code_index_valid: highest_value_code >= 0
 	Highest_constraint_code_valid: highest_constraint_code >= 0
 
 end

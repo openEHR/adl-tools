@@ -677,6 +677,11 @@ feature -- Definitions
 		ec_id_defs_frame_text: STRING = "id_defs_frame_text"
 		ec_term_defs_frame_text: STRING = "term_defs_frame_text"
 		ec_constraint_defs_frame_text: STRING = "constraint_defs_frame_text"
+		ec_term_defs_tab_text: STRING = "term_defs_tab_text"
+		ec_value_sets_tab_text: STRING = "value_sets_tab_text"
+		ec_value_sets_grid_col_code_text: STRING = "value_sets_grid_col_code_text"
+		ec_value_sets_grid_col_member_code_text: STRING = "value_sets_grid_col_member_code_text"
+		ec_value_sets_grid_col_code_text_text: STRING = "value_sets_grid_col_code_text_text"
 		ec_context_menu_convert_node_to_subtype: STRING = "context_menu_convert_node_to_subtype"
 	
 end

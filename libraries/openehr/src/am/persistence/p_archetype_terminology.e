@@ -33,6 +33,10 @@ feature -- Initialisation
 				end
 			end
 
+			if not a_terminology.value_sets.is_empty then
+				value_sets := a_terminology.value_sets
+			end
+
 			terminology_extracts := a_terminology.terminology_extracts
 		end
 
@@ -49,6 +53,9 @@ feature -- Access
 		attribute
 			create Result.make (0)
 		end
+
+	value_sets: detachable HASH_TABLE [VALUE_SET_RELATION, STRING]
+			-- table of value set relationships keyed by ac-code
 
 	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
@@ -78,6 +85,10 @@ feature -- Factory
 
 			if attached terminology_extracts as t_ext then
 				a_terminology.set_terminology_extracts (t_ext)
+			end
+
+			if attached value_sets as att_vs then
+				a_terminology.set_value_sets (att_vs)
 			end
 		end
 

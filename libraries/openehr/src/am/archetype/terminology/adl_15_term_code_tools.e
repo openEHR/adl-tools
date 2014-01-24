@@ -37,7 +37,7 @@ feature -- Definitions
 	Id_code_leader: STRING = "id"
 			-- leader of all id codes
 
-	Term_code_leader: STRING = "at"
+	Value_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
 	Constraint_code_leader: STRING = "ac"
@@ -50,6 +50,8 @@ feature -- Definitions
 
 	Root_id_code_top_level: STRING = "id1"
 
+	Default_constraint_code: STRING = "ac1"
+
 	Id_code_regex_pattern: STRING
 			-- a regex to match any id code of any depth
 		once
@@ -60,12 +62,12 @@ feature -- Definitions
 			Result.append_character ('$')
 		end
 
-	Term_code_regex_pattern: STRING
+	Value_code_regex_pattern: STRING
 			-- a regex to match any term of any depth
 		once
 			create Result.make_empty
 			Result.append_character ('^')
-			Result.append (Term_code_leader)
+			Result.append (Value_code_leader)
 			Result.append (Code_regex_pattern)
 			Result.append_character ('$')
 		end
@@ -88,13 +90,15 @@ feature -- Definitions
 			Result.append_character ('(')
 			Result.append (Id_code_leader)
 			Result.append_character ('|')
-			Result.append (Term_code_leader)
+			Result.append (Value_code_leader)
 			Result.append_character ('|')
 			Result.append (Constraint_code_leader)
 			Result.append_character (')')
 			Result.append (Code_regex_pattern)
 			Result.append_character ('$')
 		end
+
+	Qualified_code_string_regex_pattern: STRING = "[a-zA-Z0-9._\-()]+::[a-zA-Z0-9._\-|*^+?$]+"
 
 	Zero_filler: STRING = ".0"
 
@@ -122,6 +126,10 @@ feature -- Definitions
 
 	Fake_adl_14_node_id_base: STRING = "id1000000"
 			-- used to create new node ids by appending integer strings to create e.g. id10000001, id10000002, etc.
+			-- These can easily be detected in code in order to rewrite them to normal ids
+
+	Fake_adl_14_ac_code_base: STRING = "ac1000000"
+			-- used to create new ac-codes by appending integer strings to create e.g. ac10000001, ac10000002, etc.
 			-- These can easily be detected in code in order to rewrite them to normal ids
 
 feature -- Access
@@ -285,9 +293,9 @@ feature -- Access
 feature -- Comparison
 
 	is_adl_code (a_code: STRING): BOOLEAN
-			-- Is `a_code' an "id" code?
+			-- Is `a_code' any kind of ADL archetype local code?
 		do
-			Result := is_id_code (a_code) or else is_term_code (a_code) or else is_constraint_code (a_code)
+			Result := is_id_code (a_code) or else is_value_code (a_code) or else is_constraint_code (a_code)
 		end
 
 	is_id_code (a_code: STRING): BOOLEAN
@@ -296,10 +304,10 @@ feature -- Comparison
 			Result := a_code.starts_with (Id_code_leader)
 		end
 
-	is_term_code (a_code: STRING): BOOLEAN
+	is_value_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "at" code?
 		do
-			Result := a_code.starts_with (Term_code_leader)
+			Result := a_code.starts_with (Value_code_leader)
 		end
 
 	is_constraint_code (a_code: STRING): BOOLEAN
@@ -321,10 +329,10 @@ feature -- Comparison
 			Result := Id_code_regex_matcher.recognizes (a_code)
 		end
 
-	is_valid_term_code (a_code: STRING): BOOLEAN
+	is_valid_value_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' a valid "at" code?
 		do
-			Result := Term_code_regex_matcher.recognizes (a_code)
+			Result := Value_code_regex_matcher.recognizes (a_code)
 		end
 
 	is_valid_constraint_code (a_code: STRING): BOOLEAN
@@ -358,7 +366,7 @@ feature -- Comparison
 	is_qualified_codestring (a_code: STRING): BOOLEAN
 			-- True if `a_code' is of form terminology_id::code
 		do
-			Result := a_code.has_substring ({TERMINOLOGY_CODE}.separator)
+			Result := Qualified_code_string_regex_matcher.recognizes (a_code)
 		end
 
 	code_exists_at_level (a_code: STRING; a_level: INTEGER): BOOLEAN
@@ -386,7 +394,7 @@ feature -- Comparison
 					idx := a_code.last_index_of (Specialisation_separator, idx) - 1
 					i := i - 1
 				end
-				s := a_code.substring (Term_code_leader.count + 1, idx)
+				s := a_code.substring (leader_length (a_code) + 1, idx)
 				s.prune_all (Specialisation_separator)
 				Result := s.to_integer > 0
 			end
@@ -432,11 +440,11 @@ feature -- Factory
 			Result := new_added_code_at_level (Id_code_leader, at_level, a_highest_code)
 		end
 
-	new_added_term_code_at_level (at_level: INTEGER; a_highest_code: INTEGER): STRING
+	new_added_value_code_at_level (at_level: INTEGER; a_highest_code: INTEGER): STRING
 			-- generate a new code of the form 'idN'. a_highest_code contains highest id code already in use in the
 			-- calling context; the returned code will be unique with respect to this set.
 		do
-			Result := new_added_code_at_level (Term_code_leader, at_level, a_highest_code)
+			Result := new_added_code_at_level (Value_code_leader, at_level, a_highest_code)
 		end
 
 	new_added_constraint_code_at_level (at_level: INTEGER; a_highest_code: INTEGER): STRING
@@ -466,11 +474,13 @@ feature -- Factory
 
 feature -- Conversion
 
-	annotated_code (a_code, a_text: STRING): STRING
-			-- create annotated term of form 'nnnn|term text|' as commonly used in SNOMED CT
+	annotated_code (a_code, a_text, a_separator: STRING): STRING
+			-- create annotated term of form 'a_code a_separator|term text|' as commonly used in SNOMED CT
+			-- a_separator is typically a single space or an empty string
 		do
 			create Result.make_empty
 			Result.append (a_code)
+			Result.append (a_separator)
 			Result.append_character (Annotated_code_text_delimiter)
 			Result.append (a_text)
 			Result.append_character (Annotated_code_text_delimiter)
@@ -528,8 +538,6 @@ feature -- Conversion
 
 	term_code_to_uri (a_term_code: TERMINOLOGY_CODE): STRING
 			-- convert to a URI string
-		local
-			uri_str: STRING
 		do
 			if attached a_term_code.terminology_version as ver then
 				create Result.make_from_string (uri_with_version_template)
@@ -564,11 +572,11 @@ feature {NONE} -- Implementation
 			Result.compile (Id_code_regex_pattern)
 		end
 
-	Term_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
-			-- match any term code
+	Value_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+			-- match any value (at) code
 		once
 			create Result.make
-			Result.compile (Term_code_regex_pattern)
+			Result.compile (Value_code_regex_pattern)
 		end
 
 	Constraint_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
@@ -578,13 +586,20 @@ feature {NONE} -- Implementation
 			Result.compile (Constraint_code_regex_pattern)
 		end
 
+	Qualified_code_string_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+			-- match any term code
+		once
+			create Result.make
+			Result.compile (Qualified_code_string_regex_pattern)
+		end
+
 	leader_length (a_code: STRING): INTEGER
 			-- obtain length of non-numeric leader part of code
 		do
 			if is_id_code (a_code) then
 				Result := Id_code_leader.count
-			elseif is_term_code (a_code) then
-				Result := Term_code_leader.count
+			elseif is_value_code (a_code) then
+				Result := Value_code_leader.count
 			elseif is_constraint_code (a_code) then
 				Result := Constraint_code_leader.count
 			end

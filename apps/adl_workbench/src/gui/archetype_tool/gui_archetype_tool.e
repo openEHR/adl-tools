@@ -20,11 +20,6 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 feature {NONE}-- Initialization
 
 	make
@@ -32,7 +27,7 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- set up shared agents
-			tool_agents.set_code_select_action_agent (agent select_ontology_item_from_code)
+			tool_agents.set_code_select_action_agent (agent select_terminology_item_from_code)
 
 			-- core tool creation
 			make_core_tools
@@ -47,10 +42,10 @@ feature {NONE}-- Initialization
 			ev_notebook.set_item_text (definition_control.ev_root_container, get_text (ec_definition_tab_text))
 			ev_notebook.item_tab (definition_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
 
-			-- ontology control
-			ev_notebook.extend (ontology_controls.ev_root_container)
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_text (ec_terminology_tab_text))
-			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
+			-- terminology control
+			ev_notebook.extend (terminology_controls.ev_root_container)
+			ev_notebook.set_item_text (terminology_controls.ev_root_container, get_text (ec_terminology_tab_text))
+			ev_notebook.item_tab (terminology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
 			-- annotation control
 			ev_notebook.extend (annotations_control.ev_root_container)
@@ -60,20 +55,16 @@ feature {NONE}-- Initialization
 
 feature -- UI Feedback
 
-	select_ontology_item_from_code (a_code: STRING)
-			-- select `a_code' in the ontology tab of this tool
+	select_terminology_item_from_code (a_code: STRING)
+			-- select `a_code' in the terminology tab of this tool
 		do
 			if attached source as src then
 				check attached selected_language end
-				if not ontology_controls.is_populated then
-					ontology_controls.populate (src, differential_view, selected_language)
+				if not terminology_controls.is_populated then
+					terminology_controls.populate (src, differential_view, selected_language)
 				end
-				ev_notebook.select_item (ontology_controls.ev_root_container)
-				if is_term_code (a_code) then
-					ontology_controls.select_term (a_code)
-				elseif is_constraint_code (a_code) then
-					ontology_controls.select_constraint (a_code)
-				end
+				ev_notebook.select_item (terminology_controls.ev_root_container)
+				terminology_controls.select_code (a_code)
 			end
 		end
 
@@ -104,7 +95,7 @@ feature {NONE} -- Implementation
 			precursor
 			description_controls.clear
 			definition_control.clear
-			ontology_controls.clear
+			terminology_controls.clear
 			annotations_control.clear
 		end
 
@@ -112,7 +103,7 @@ feature {NONE} -- Implementation
 
 	definition_control: GUI_DEFINITION_CONTROL
 
-	ontology_controls: GUI_TERMINOLOGY_CONTROLS
+	terminology_controls: GUI_TERMINOLOGY_CONTROLS
 
 	annotations_control: GUI_ANNOTATIONS_CONTROL
 

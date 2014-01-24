@@ -37,7 +37,7 @@ feature -- Display
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
-			s, attr_name: STRING
+			attr_name: STRING
 		do
 			display_settings := ui_settings
 			check attached ev_grid_row as gr then

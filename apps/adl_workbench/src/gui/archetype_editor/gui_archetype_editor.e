@@ -61,7 +61,7 @@ feature -- Commands
 			precursor
 			description_controls.enable_edit
 			definition_control.enable_edit
-			ontology_controls.enable_edit
+			terminology_controls.enable_edit
 			annotations_control.enable_edit
 			translation_control.enable_edit
 		end
@@ -71,7 +71,7 @@ feature -- Commands
 			precursor
 			description_controls.disable_edit
 			definition_control.disable_edit
-			ontology_controls.disable_edit
+			terminology_controls.disable_edit
 			annotations_control.disable_edit
 			translation_control.disable_edit
 		end
@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 			check attached undo_redo_chain end
 			create description_controls.make_editable (undo_redo_chain)
 			create definition_control.make_editable (undo_redo_chain)
-			create ontology_controls.make_editable (undo_redo_chain)
+			create terminology_controls.make_editable (undo_redo_chain)
 			create annotations_control.make
 			create translation_control.make
 		end

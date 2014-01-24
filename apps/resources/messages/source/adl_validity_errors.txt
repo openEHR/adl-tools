@@ -140,8 +140,8 @@ templates = <
 		["WDTOAV"] = <"C_DV_ORDINAL assumed value not supported">
 
 
-		-- ARCHETYPE_INTERNAL_REF
-		["VUNP"] = <"ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
+		-- C_COMPLEX_OBJECT_PROXY
+		["VUNP"] = <"C_COMPLEX_OBJECT_PROXY path $1 not found in archetype">
 		["VSUNT"] = <"node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 		-- C_ARCHETYPE_SLOT

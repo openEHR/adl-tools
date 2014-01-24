@@ -524,10 +524,16 @@ templates = <
 		["rm_types_nb_tab_text"] = <"$1 types">
 		["rm_primitive_types_nb_tab_text"] = <"Primitive types">
 
-		-- GUI_ONTOLOGY_CONTROLS
+		-- GUI_TERMINOLOGY
 		["id_defs_frame_text"] = <"Id definitions and bindings">
 		["term_defs_frame_text"] = <"Term definitions and bindings">
 		["constraint_defs_frame_text"] = <"Constraint definitions and bindings">
+		["term_defs_tab_text"] = <"Definitions">
+		["value_sets_tab_text"] = <"Value sets">
+
+		["value_sets_grid_col_code_text"] = <"Value set">
+		["value_sets_grid_col_member_code_text"] = <"Member">
+		["value_sets_grid_col_code_text_text"] = <"Text">
 
 		-- GUI_CLASS_TOOL_CLOSURE_VIEW
 		["context_menu_convert_node_to_subtype"] = <"Convert to subtype">

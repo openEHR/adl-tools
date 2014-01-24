@@ -234,7 +234,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_terminology_languages
-			-- Are all `term_codes' and `constraint_codes' found in all languages?
+			-- Are all `value_codes' and `constraint_codes' found in all languages?
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
 			langs: ARRAYED_SET [STRING]
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
-				across terminology.term_codes as code_csr loop
+				across terminology.value_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
 						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
 					end
@@ -290,7 +290,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in terminology
-			across target.term_codes_index as codes_csr loop
+			across target.value_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
 				code := codes_csr.key
 				if is_valid_code (code) then
@@ -300,7 +300,7 @@ feature {NONE} -- Implementation
 					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
 						spec_depth = arch_depth and not terminology.has_code (code)
 					then
-						if is_term_code (code) then
+						if is_value_code (code) then
 							add_error (ec_VATDF, <<code>>)
 						else
 							add_error (ec_VACDF, <<code>>)

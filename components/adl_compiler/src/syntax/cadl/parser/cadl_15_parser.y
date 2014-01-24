@@ -1511,22 +1511,30 @@ c_string: V_STRING 	-- single value, generates closed list
 		}
 	;
 
-c_terminology_code: V_VALUE_SET_DEF	-- e.g. "local::at40, at41; at40"
+c_terminology_code: V_VALUE_SET_REF	-- e.g. "local::ac3"
 		{
 			if constraint_model_factory.valid_c_terminology_code_string ($1) then
-				$$ := constraint_model_factory.create_c_terminology_code ($1)
+				$$ := constraint_model_factory.create_c_terminology_code_ref ($1)
 			else
 				abort_with_errors (constraint_model_factory.errors)
 			end
 		}
-	| V_VALUE_SET_REF	-- e.g. "local::ac3"
+-------------------------------------------------------------------------------------------------------------
+--- START Legacy ADL 1.4 inline term set; replace by ac-code ref and store value set for addition to terminology
+---
+	| V_VALUE_SET_DEF	-- e.g. "local::at40, at41; at40"
 		{
 			if constraint_model_factory.valid_c_terminology_code_string ($1) then
-				$$ := constraint_model_factory.create_c_terminology_code ($1)
+				$$ := constraint_model_factory.create_c_terminology_code_inline ($1)
+				$$.set_value_set_code (new_fake_ac_code)
+				value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, $$.code_list), $$.value_set_code)
 			else
 				abort_with_errors (constraint_model_factory.errors)
 			end
 		}
+---
+--- END Legacy ADL 1.4 inline term set
+-------------------------------------------------------------------------------------------------------------
 	| ERR_VALUE_SET_DEF
 		{
 			abort_with_error (ec_STCV, <<err_str>>)
@@ -2285,6 +2293,7 @@ feature -- Initialization
 			create indent.make_empty
 			create rm_attribute_name.make_empty
 			create parent_path_str.make_empty
+			create value_sets.make (0)
 		end
 
 	reset
@@ -2308,9 +2317,11 @@ feature -- Initialization
 			create time_vc
 			create date_vc
 
-			fake_node_id_count := 0
+			fake_code_number := 0
 
 			set_input_buffer (new_string_buffer (in_text))
+
+			value_sets.wipe_out
 			parse
 		end
 
@@ -2323,6 +2334,8 @@ feature -- Initialization
 			Result.append ("line " + (in_lineno + source_start_line).out)
 			Result.append (" [last token = " + token_name (last_token) + "]")
 		end
+
+    value_sets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 
 feature {NONE} -- Implementation
 
@@ -2421,13 +2434,19 @@ feature {NONE} -- Parse Tree
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
-	new_fake_node_id: STRING
+	new_fake_ac_code: STRING
 		do
-			Result := Fake_adl_14_node_id_base + fake_node_id_count.out
-			fake_node_id_count := fake_node_id_count + 1
+			Result := Fake_adl_14_ac_code_base + fake_code_number.out
+			fake_code_number := fake_code_number + 1
 		end
 
-	fake_node_id_count: INTEGER
+	new_fake_node_id: STRING
+		do
+			Result := Fake_adl_14_node_id_base + fake_code_number.out
+			fake_code_number := fake_code_number + 1
+		end
+
+	fake_code_number: INTEGER
 
 	indent: STRING
 

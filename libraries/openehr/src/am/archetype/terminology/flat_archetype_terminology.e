@@ -56,7 +56,7 @@ feature -- Modification
 						term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
 					end
 					across term_defs_csr.item as lang_terms_csr loop
-						if has_term_code (lang_terms_csr.key) then
+						if has_code (lang_terms_csr.key) then
 							replace_definition (a_lang, lang_terms_csr.item.deep_twin, False)
 						else
 							put_new_definition (a_lang, lang_terms_csr.item.deep_twin)
@@ -99,7 +99,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Implementation
 					rm_id_codes.extend (id_codes_csr.item)
 				end
 			end
-			across term_codes as term_codes_csr loop
+			across value_codes as term_codes_csr loop
 				if specialisation_depth_from_code (term_codes_csr.item) /= specialisation_depth then
 					rm_term_codes.extend (term_codes_csr.item)
 				end

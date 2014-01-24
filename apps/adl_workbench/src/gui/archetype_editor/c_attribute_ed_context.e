@@ -361,7 +361,6 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			car: C_ARCHETYPE_ROOT
 			air: C_COMPLEX_OBJECT_PROXY
 			arch_slot: ARCHETYPE_SLOT
-			cref: CONSTRAINT_REF
 			new_code: STRING
 			rm_type_name: STRING
 			occ: MULTIPLICITY_INTERVAL

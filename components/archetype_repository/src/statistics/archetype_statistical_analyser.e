@@ -55,7 +55,7 @@ feature -- Commands
 		do
 			-- add archetype-level counts
 			stats.increment_archetype_metric (target.terminology.id_codes.count, Id_code_count)
-			stats.increment_archetype_metric (target.terminology.term_codes.count, At_code_count)
+			stats.increment_archetype_metric (target.terminology.value_codes.count, At_code_count)
 			stats.increment_archetype_metric (target.terminology.constraint_codes.count, Ac_code_count)
 			if not target.terminology.term_bindings.is_empty then
 				across target.terminology.term_bindings as bindings_for_terminology_csr loop
