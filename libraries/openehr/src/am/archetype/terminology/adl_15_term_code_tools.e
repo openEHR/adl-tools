@@ -50,7 +50,7 @@ feature -- Definitions
 
 	Root_id_code_top_level: STRING = "id1"
 
-	Default_constraint_code: STRING = "ac1"
+	Default_constraint_code: STRING = "ac0"
 
 	Id_code_regex_pattern: STRING
 			-- a regex to match any id code of any depth
@@ -128,9 +128,13 @@ feature -- Definitions
 			-- used to create new node ids by appending integer strings to create e.g. id10000001, id10000002, etc.
 			-- These can easily be detected in code in order to rewrite them to normal ids
 
+	Fake_adl_14_at_code_base: STRING = "at1000000"
+			-- used to create new node ids by appending integer strings to create e.g. at10000001, at10000002, etc.
+			-- These can easily be detected in code in order to rewrite them to normal codes
+
 	Fake_adl_14_ac_code_base: STRING = "ac1000000"
 			-- used to create new ac-codes by appending integer strings to create e.g. ac10000001, ac10000002, etc.
-			-- These can easily be detected in code in order to rewrite them to normal ids
+			-- These can easily be detected in code in order to rewrite them to normal codes
 
 feature -- Access
 

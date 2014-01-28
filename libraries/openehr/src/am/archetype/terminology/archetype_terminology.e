@@ -423,7 +423,7 @@ feature -- Modification
 		local
 			new_term: ARCHETYPE_TERM
 		do
-			create new_term.make_all (new_added_value_code_at_level (specialisation_depth, highest_constraint_code), a_text, a_description)
+			create new_term.make_all (new_added_constraint_code_at_level (specialisation_depth, highest_constraint_code), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
@@ -749,7 +749,7 @@ feature {NONE} -- Legacy
     		end
     	end
 
-feature {P_ARCHETYPE_TERMINOLOGY, ADL_14_ENGINE, ADL_15_ENGINE} -- Implementation
+feature {P_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_PROCESSOR} -- Implementation
 
 	set_term_definitions (a_term_defs: like term_definitions)
 		do

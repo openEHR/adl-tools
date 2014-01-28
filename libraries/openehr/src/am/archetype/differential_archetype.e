@@ -104,8 +104,9 @@ feature -- Access
 	terminology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in terminology that are not referenced anywhere in the archetype definition
 		local
-			term_codes: like value_codes_index
 			id_codes: like id_codes_index
+			constraint_codes: like term_constraints_index
+			value_codes: ARRAYED_SET[STRING]
 		do
 			create Result.make (0)
 
@@ -116,14 +117,21 @@ feature -- Access
 				end
 			end
 
-			term_codes := value_codes_index
+			create value_codes.make (0)
+			value_codes.compare_objects
+			across terminology.value_sets as vs_csr loop
+				value_codes.merge (vs_csr.item.members)
+			end
+			value_codes.merge (value_codes_index.current_keys)
 			across terminology.value_codes as term_codes_csr loop
-				if not term_codes.has (term_codes_csr.item) then
+				if not value_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)
 				end
 			end
+
+			constraint_codes := term_constraints_index
 			across terminology.constraint_codes as term_codes_csr loop
-				if not term_codes.has (term_codes_csr.item) then
+				if not constraint_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)
 				end
 			end

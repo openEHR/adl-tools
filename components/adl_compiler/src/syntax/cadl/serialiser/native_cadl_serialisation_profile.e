@@ -31,6 +31,7 @@ feature -- Initialisation
 		do
 			precursor (an_output_format)
 			create last_string_value.make_empty
+			create last_term_constraint_parse_structure_value.make
 		end
 
 feature {NONE} -- Implementation

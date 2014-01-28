@@ -279,7 +279,7 @@ feature {NONE} -- Implementation
 				evx_vsets_grid.set_last_row_label_col (Value_sets_grid_col_member_code, "", Void, Void, Void)
 
 				-- member code rows
-				across vsets_csr.item.targets as vset_members_csr loop
+				across vsets_csr.item.members as vset_members_csr loop
 					evx_vsets_grid.add_sub_row (ev_last_row, vset_members_csr.item)
 					vmem_code_text := terminology.term_definition (selected_language, vset_members_csr.item).text
 					if show_codes then

@@ -56,7 +56,7 @@ feature -- Status report
 	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
-			Result := (INITIAL <= sc and sc <= IN_VALUE_SET_DEF)
+			Result := (INITIAL <= sc and sc <= IN_EXTERNAL_VALUE_SET_DEF)
 		end
 
 feature {NONE} -- Implementation
@@ -76,507 +76,508 @@ feature {NONE} -- Implementation
 	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
-if yy_act <= 63 then
-if yy_act <= 32 then
-if yy_act <= 16 then
-if yy_act <= 8 then
-if yy_act <= 4 then
+if yy_act <= 67 then
+if yy_act <= 34 then
+if yy_act <= 17 then
+if yy_act <= 9 then
+if yy_act <= 5 then
+if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
---|#line 80 "cadl_15_scanner.l"
+--|#line 83 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 80")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 83")
 end
 -- Ignore separators
 else
---|#line 81 "cadl_15_scanner.l"
+--|#line 84 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 81")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 84")
 end
 in_lineno := in_lineno + text_count
 end
 else
-if yy_act = 3 then
---|#line 86 "cadl_15_scanner.l"
+--|#line 89 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 86")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 89")
 end
 -- Ignore comments
+end
 else
---|#line 87 "cadl_15_scanner.l"
+if yy_act = 4 then
+--|#line 90 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 87")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 90")
 end
 in_lineno := in_lineno + 1
-end
-end
-else
-if yy_act <= 6 then
-if yy_act = 5 then
---|#line 91 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 91")
-end
-last_token := Minus_code
-else
---|#line 92 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 92")
-end
-last_token := Plus_code
-end
-else
-if yy_act = 7 then
---|#line 93 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 93")
-end
-last_token := Star_code
 else
 --|#line 94 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 94")
 end
-last_token := Slash_code
-end
+last_token := Minus_code
 end
 end
 else
-if yy_act <= 12 then
-if yy_act <= 10 then
-if yy_act = 9 then
+if yy_act <= 7 then
+if yy_act = 6 then
 --|#line 95 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 95")
 end
-last_token := Caret_code
+last_token := Plus_code
 else
 --|#line 96 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 96")
 end
-last_token := Equal_code
+last_token := Star_code
 end
 else
-if yy_act = 11 then
+if yy_act = 8 then
 --|#line 97 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 97")
 end
-last_token := Dot_code
+last_token := Slash_code
 else
 --|#line 98 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 98")
 end
-last_token := Semicolon_code
+last_token := Caret_code
+end
 end
 end
 else
-if yy_act <= 14 then
-if yy_act = 13 then
+if yy_act <= 13 then
+if yy_act <= 11 then
+if yy_act = 10 then
 --|#line 99 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 99")
 end
-last_token := Comma_code
+last_token := Equal_code
 else
 --|#line 100 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 100")
 end
-last_token := Colon_code
+last_token := Dot_code
 end
 else
-if yy_act = 15 then
+if yy_act = 12 then
 --|#line 101 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 101")
 end
-last_token := Exclamation_code
+last_token := Semicolon_code
 else
 --|#line 102 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 102")
 end
-last_token := Left_parenthesis_code
-end
-end
+last_token := Comma_code
 end
 end
 else
-if yy_act <= 24 then
-if yy_act <= 20 then
-if yy_act <= 18 then
-if yy_act = 17 then
+if yy_act <= 15 then
+if yy_act = 14 then
 --|#line 103 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 103")
 end
-last_token := Right_parenthesis_code
+last_token := Colon_code
 else
 --|#line 104 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 104")
 end
-last_token := Dollar_code
+last_token := Exclamation_code
 end
 else
-if yy_act = 19 then
+if yy_act = 16 then
+--|#line 105 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 105")
+end
+last_token := Left_parenthesis_code
+else
 --|#line 106 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 106")
 end
-last_token := Question_mark_code
-else
---|#line 108 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 108")
+last_token := Right_parenthesis_code
 end
-last_token := SYM_INTERVAL_DELIM
+end
 end
 end
 else
+if yy_act <= 26 then
 if yy_act <= 22 then
-if yy_act = 21 then
---|#line 110 "cadl_15_scanner.l"
+if yy_act <= 20 then
+if yy_act <= 19 then
+if yy_act = 18 then
+--|#line 107 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 110")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 107")
 end
-last_token := Left_bracket_code
+last_token := Dollar_code
+else
+--|#line 109 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 109")
+end
+last_token := Question_mark_code
+end
 else
 --|#line 111 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 111")
 end
-last_token := Right_bracket_code
+last_token := SYM_INTERVAL_DELIM
 end
 else
-if yy_act = 23 then
+if yy_act = 21 then
 --|#line 113 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 113")
 end
-last_token := SYM_START_CBLOCK
+last_token := Left_bracket_code
 else
 --|#line 114 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 114")
 end
-last_token := SYM_END_CBLOCK
-end
+last_token := Right_bracket_code
 end
 end
 else
-if yy_act <= 28 then
-if yy_act <= 26 then
-if yy_act = 25 then
+if yy_act <= 24 then
+if yy_act = 23 then
 --|#line 116 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 116")
 end
-last_token := SYM_GE
+last_token := SYM_START_CBLOCK
 else
 --|#line 117 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 117")
 end
-last_token := SYM_LE
+last_token := SYM_END_CBLOCK
 end
 else
-if yy_act = 27 then
---|#line 118 "cadl_15_scanner.l"
+if yy_act = 25 then
+--|#line 119 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 118")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 119")
 end
-last_token := SYM_NE
+last_token := SYM_GE
 else
 --|#line 120 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 120")
 end
-last_token := SYM_LT
+last_token := SYM_LE
+end
 end
 end
 else
 if yy_act <= 30 then
-if yy_act = 29 then
+if yy_act <= 28 then
+if yy_act = 27 then
 --|#line 121 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 121")
 end
-last_token := SYM_GT
+last_token := SYM_NE
 else
 --|#line 123 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 123")
 end
-last_token := SYM_MODULO
+last_token := SYM_LT
 end
 else
-if yy_act = 31 then
+if yy_act = 29 then
 --|#line 124 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 124")
 end
-last_token := SYM_DIV
+last_token := SYM_GT
 else
 --|#line 126 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 126")
 end
-last_token := SYM_ELLIPSIS
-end
-end
-end
+last_token := SYM_MODULO
 end
 end
 else
-if yy_act <= 48 then
-if yy_act <= 40 then
-if yy_act <= 36 then
-if yy_act <= 34 then
-if yy_act = 33 then
+if yy_act <= 32 then
+if yy_act = 31 then
 --|#line 127 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 127")
 end
+last_token := SYM_DIV
+else
+--|#line 129 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 129")
+end
+last_token := SYM_ELLIPSIS
+end
+else
+if yy_act = 33 then
+--|#line 130 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 130")
+end
 last_token := SYM_LIST_CONTINUE
 else
---|#line 131 "cadl_15_scanner.l"
+--|#line 134 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 131")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 134")
 end
 last_token := SYM_MATCHES
 end
+end
+end
+end
+end
 else
+if yy_act <= 51 then
+if yy_act <= 43 then
+if yy_act <= 39 then
+if yy_act <= 37 then
+if yy_act <= 36 then
 if yy_act = 35 then
---|#line 133 "cadl_15_scanner.l"
+--|#line 136 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 133")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 136")
 end
 last_token := SYM_MATCHES
 else
---|#line 137 "cadl_15_scanner.l"
+--|#line 140 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 137")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 140")
 end
 last_token := SYM_THEN
 end
-end
 else
-if yy_act <= 38 then
-if yy_act = 37 then
---|#line 139 "cadl_15_scanner.l"
+--|#line 142 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 139")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 142")
 end
 last_token := SYM_ELSE
+end
 else
---|#line 141 "cadl_15_scanner.l"
+if yy_act = 38 then
+--|#line 144 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 141")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 144")
 end
 last_token := SYM_AND
-end
 else
-if yy_act = 39 then
---|#line 143 "cadl_15_scanner.l"
+--|#line 146 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 143")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 146")
 end
 last_token := SYM_OR
+end
+end
 else
---|#line 145 "cadl_15_scanner.l"
+if yy_act <= 41 then
+if yy_act = 40 then
+--|#line 148 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 145")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 148")
 end
 last_token := SYM_XOR
-end
-end
-end
 else
-if yy_act <= 44 then
-if yy_act <= 42 then
-if yy_act = 41 then
---|#line 147 "cadl_15_scanner.l"
+--|#line 150 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 147")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 150")
 end
 last_token := SYM_NOT
+end
 else
---|#line 149 "cadl_15_scanner.l"
+if yy_act = 42 then
+--|#line 152 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 149")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 152")
 end
 last_token := SYM_IMPLIES
-end
 else
-if yy_act = 43 then
---|#line 151 "cadl_15_scanner.l"
+--|#line 154 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 151")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 154")
 end
 last_token := SYM_TRUE
+end
+end
+end
 else
---|#line 153 "cadl_15_scanner.l"
+if yy_act <= 47 then
+if yy_act <= 45 then
+if yy_act = 44 then
+--|#line 156 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 153")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 156")
 end
 last_token := SYM_FALSE
-end
-end
 else
-if yy_act <= 46 then
-if yy_act = 45 then
---|#line 155 "cadl_15_scanner.l"
+--|#line 158 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 155")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 158")
 end
 last_token := SYM_FORALL
+end
 else
---|#line 157 "cadl_15_scanner.l"
+if yy_act = 46 then
+--|#line 160 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 157")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 160")
 end
 last_token := SYM_EXISTS
-end
 else
-if yy_act = 47 then
---|#line 161 "cadl_15_scanner.l"
+--|#line 164 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 161")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 164")
 end
 last_token := SYM_EXISTENCE
+end
+end
 else
---|#line 163 "cadl_15_scanner.l"
+if yy_act <= 49 then
+if yy_act = 48 then
+--|#line 166 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 163")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 166")
 end
 last_token := SYM_OCCURRENCES
-end
-end
-end
-end
 else
-if yy_act <= 56 then
-if yy_act <= 52 then
-if yy_act <= 50 then
-if yy_act = 49 then
---|#line 165 "cadl_15_scanner.l"
+--|#line 168 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 165")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 168")
 end
 last_token := SYM_CARDINALITY
+end
 else
---|#line 167 "cadl_15_scanner.l"
+if yy_act = 50 then
+--|#line 170 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 167")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 170")
 end
 last_token := SYM_ORDERED
-end
 else
-if yy_act = 51 then
---|#line 169 "cadl_15_scanner.l"
+--|#line 172 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 169")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 172")
 end
 last_token := SYM_UNORDERED
+end
+end
+end
+end
 else
---|#line 171 "cadl_15_scanner.l"
+if yy_act <= 59 then
+if yy_act <= 55 then
+if yy_act <= 53 then
+if yy_act = 52 then
+--|#line 174 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 171")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 174")
 end
 last_token := SYM_UNIQUE
-end
-end
 else
-if yy_act <= 54 then
-if yy_act = 53 then
---|#line 173 "cadl_15_scanner.l"
+--|#line 176 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 173")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 176")
 end
 last_token := SYM_USE_NODE
+end
 else
---|#line 175 "cadl_15_scanner.l"
+if yy_act = 54 then
+--|#line 178 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 175")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 178")
 end
 last_token := SYM_USE_ARCHETYPE
-end
 else
-if yy_act = 55 then
---|#line 177 "cadl_15_scanner.l"
+--|#line 180 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 177")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 180")
 end
 last_token := SYM_ALLOW_ARCHETYPE
+end
+end
 else
---|#line 179 "cadl_15_scanner.l"
+if yy_act <= 57 then
+if yy_act = 56 then
+--|#line 182 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 179")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 182")
 end
 last_token := SYM_INCLUDE
-end
-end
-end
 else
-if yy_act <= 60 then
-if yy_act <= 58 then
-if yy_act = 57 then
---|#line 181 "cadl_15_scanner.l"
+--|#line 184 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 181")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 184")
 end
 last_token := SYM_EXCLUDE
+end
 else
---|#line 183 "cadl_15_scanner.l"
+if yy_act = 58 then
+--|#line 186 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 183")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 186")
 end
 last_token := SYM_AFTER
-end
 else
-if yy_act = 59 then
---|#line 185 "cadl_15_scanner.l"
+--|#line 188 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 185")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 188")
 end
 last_token := SYM_BEFORE
-else
---|#line 187 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 187")
 end
-last_token := SYM_CLOSED
 end
 end
 else
-if yy_act <= 62 then
-if yy_act = 61 then
+if yy_act <= 63 then
+if yy_act <= 61 then
+if yy_act = 60 then
 --|#line 190 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 190")
+end
+last_token := SYM_CLOSED
+else
+--|#line 193 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 193")
 end
 
 			last_token := V_URI
 			last_string_value := text
 		
+end
 else
---|#line 197 "cadl_15_scanner.l"
+if yy_act = 62 then
+--|#line 200 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 197")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 200")
 end
 
 		last_token := V_ROOT_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
 	
-end
 else
---|#line 203 "cadl_15_scanner.l"
+--|#line 206 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 203")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 206")
 end
 
 		last_token := V_ID_CODE
@@ -584,28 +585,21 @@ end
 	
 end
 end
-end
-end
-end
 else
-if yy_act <= 95 then
-if yy_act <= 79 then
-if yy_act <= 71 then
-if yy_act <= 67 then
 if yy_act <= 65 then
 if yy_act = 64 then
---|#line 210 "cadl_15_scanner.l"
+--|#line 213 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 210")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 213")
 end
 
 		last_token := V_ID_CODE_STR
 		last_string_value := text
 	
 else
---|#line 218 "cadl_15_scanner.l"
+--|#line 220 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 218")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 220")
 end
 
 		last_token := V_VALUE_SET_REF
@@ -614,98 +608,255 @@ end
 end
 else
 if yy_act = 66 then
---|#line 234 "cadl_15_scanner.l"
+--|#line 236 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 234")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 236")
 end
 
-		in_buffer.append_string (text_substring (2, text_count))
-		set_start_condition (IN_VALUE_SET_DEF)
-		term_code_count := 0
-		assumed_term_code_index := 0
+		set_start_condition (IN_EXPANDED_VALUE_SET_DEF)
+		create last_term_constraint_parse_structure_value.make
+		str_ := text_substring (2, text_count)
+		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
+		is_assumed_code := False
 	
 else
---|#line 242 "cadl_15_scanner.l"
+--|#line 245 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 242")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 245")
 end
  -- match second last line with ';' termination (assumed value)
 		str_ := text
-		in_buffer.append(text)
-		term_code_count := term_code_count + 1
-		assumed_term_code_index := term_code_count
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(';')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			is_assumed_code := True -- for next code, not the one just parsed
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
 	
 end
 end
+end
+end
+end
+end
 else
+if yy_act <= 101 then
+if yy_act <= 84 then
+if yy_act <= 76 then
+if yy_act <= 72 then
+if yy_act <= 70 then
 if yy_act <= 69 then
 if yy_act = 68 then
---|#line 249 "cadl_15_scanner.l"
+--|#line 260 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 249")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 260")
 end
 	-- match any line, with ',' termination
 		str_ := text
-		in_buffer.append(text)
-		term_code_count := term_code_count + 1
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(',')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
 	
 else
---|#line 256 "cadl_15_scanner.l"
+--|#line 275 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 256")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 275")
 end
 in_lineno := in_lineno + text_count
 end
 else
-if yy_act = 70 then
---|#line 259 "cadl_15_scanner.l"
+--|#line 278 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 259")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 278")
+end
+in_lineno := in_lineno + 1
+end
+else
+if yy_act = 71 then
+--|#line 280 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 280")
+end
+ -- match final line, terminating in ']'
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(']')
+		if is_assumed_code then
+			if last_term_constraint_parse_structure_value.has_code (str_) and not last_term_constraint_parse_structure_value.is_single then
+				last_term_constraint_parse_structure_value.set_assumed_code (str_)
+				last_token := V_EXPANDED_VALUE_SET_DEF
+			else
+				last_token := ERR_VALUE_SET_DEF_ASSUMED
+				err_str.append (str_)
+			end
+		elseif not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			last_token := V_EXPANDED_VALUE_SET_DEF
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+		end
+		set_start_condition (INITIAL)
+	
+else
+--|#line 303 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 303")
+end
+	-- Catch-all rules (no backing up)
+			last_token := ERR_VALUE_SET_DEF
+			set_start_condition (INITIAL)
+	
+end
+end
+else
+if yy_act <= 74 then
+if yy_act = 73 then
+--|#line 321 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 321")
+end
+
+		set_start_condition (IN_EXTERNAL_VALUE_SET_DEF)
+		create last_term_constraint_parse_structure_value.make
+		str_ := text_substring (2, text_count)
+		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
+		is_assumed_code := False
+	
+else
+--|#line 330 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 330")
+end
+ -- match second last line with ';' termination (assumed value)
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(';')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			is_assumed_code := True -- for next code, not the one just parsed
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
+	
+end
+else
+if yy_act = 75 then
+--|#line 345 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 345")
+end
+	-- match any line, with ',' termination
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(',')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
+	
+else
+--|#line 360 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 360")
+end
+in_lineno := in_lineno + text_count
+end
+end
+end
+else
+if yy_act <= 80 then
+if yy_act <= 78 then
+if yy_act = 77 then
+--|#line 363 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 363")
 end
 in_lineno := in_lineno + 1
 else
---|#line 261 "cadl_15_scanner.l"
+--|#line 365 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 261")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 365")
 end
  -- match final line, terminating in ']'
-		if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
-			last_token := ERR_VALUE_SET_DEF
-			create err_str.make (in_buffer.count)
-			err_str.append (in_buffer)
-			in_buffer.wipe_out
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(']')
+		if is_assumed_code then
+			if last_term_constraint_parse_structure_value.has_code (str_) and not last_term_constraint_parse_structure_value.is_single then
+				last_term_constraint_parse_structure_value.set_assumed_code (str_)
+				last_token := V_EXTERNAL_VALUE_SET_DEF
+			else
+				last_token := ERR_VALUE_SET_DEF_ASSUMED
+				err_str.append (str_)
+			end
+		elseif not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			last_token := V_EXTERNAL_VALUE_SET_DEF
 		else
-			in_buffer.append (text_substring(1, text_count-1))
-			create str_.make (in_buffer.count)
-			str_.append (in_buffer)
-			in_buffer.wipe_out
-			last_string_value := str_
-			last_string_value.prune_all(' ')
-			last_string_value.prune_all('%T')
-			last_string_value.prune_all('%N')
-			last_token := V_VALUE_SET_DEF
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
 		end
 		set_start_condition (INITIAL)
 	
 end
-end
-end
 else
-if yy_act <= 75 then
-if yy_act <= 73 then
-if yy_act = 72 then
---|#line 283 "cadl_15_scanner.l"
+if yy_act = 79 then
+--|#line 388 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 283")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 388")
+end
+	-- Catch-all rules (no backing up)
+			last_token := ERR_VALUE_SET_DEF
+			set_start_condition (INITIAL)
+	
+else
+--|#line 396 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 396")
 end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			
+end
+end
 else
---|#line 290 "cadl_15_scanner.l"
+if yy_act <= 82 then
+if yy_act = 81 then
+--|#line 403 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 290")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 403")
+end
+
+				last_token := V_ISO8601_EXTENDED_DATE_TIME
+				last_string_value := text
+		
+else
+--|#line 404 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 404")
 end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
@@ -713,129 +864,118 @@ end
 		
 end
 else
-if yy_act = 74 then
---|#line 291 "cadl_15_scanner.l"
+if yy_act = 83 then
+--|#line 405 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 291")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 405")
 end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
 		
 else
---|#line 292 "cadl_15_scanner.l"
+--|#line 412 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 292")
-end
-
-				last_token := V_ISO8601_EXTENDED_DATE_TIME
-				last_string_value := text
-		
-end
-end
-else
-if yy_act <= 77 then
-if yy_act = 76 then
---|#line 299 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 299")
-end
-
-				last_token := V_ISO8601_EXTENDED_TIME
-				last_string_value := text
-		
-else
---|#line 300 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 300")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 412")
 end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
 		
 end
-else
-if yy_act = 78 then
---|#line 307 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 307")
-end
-
-				last_token := V_ISO8601_EXTENDED_DATE
-				last_string_value := text
-		
-else
---|#line 308 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 308")
-end
-
-				last_token := V_ISO8601_EXTENDED_DATE
-				last_string_value := text
-		
-end
 end
 end
 end
 else
+if yy_act <= 93 then
+if yy_act <= 89 then
 if yy_act <= 87 then
-if yy_act <= 83 then
-if yy_act <= 81 then
-if yy_act = 80 then
---|#line 315 "cadl_15_scanner.l"
+if yy_act <= 86 then
+if yy_act = 85 then
+--|#line 413 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 315")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 413")
+end
+
+				last_token := V_ISO8601_EXTENDED_TIME
+				last_string_value := text
+		
+else
+--|#line 420 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 420")
+end
+
+				last_token := V_ISO8601_EXTENDED_DATE
+				last_string_value := text
+		
+end
+else
+--|#line 421 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 421")
+end
+
+				last_token := V_ISO8601_EXTENDED_DATE
+				last_string_value := text
+		
+end
+else
+if yy_act = 88 then
+--|#line 428 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 428")
 end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			
 else
---|#line 316 "cadl_15_scanner.l"
+--|#line 429 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 316")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 429")
 end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			
 end
+end
 else
-if yy_act = 82 then
---|#line 328 "cadl_15_scanner.l"
+if yy_act <= 91 then
+if yy_act = 90 then
+--|#line 441 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 328")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 441")
 end
 
 				last_token := V_ISO8601_DATE_CONSTRAINT_PATTERN
 				last_string_value := text
 			
 else
---|#line 338 "cadl_15_scanner.l"
+--|#line 451 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 338")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 451")
 end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text_substring(2, text_count)
 			
 end
-end
 else
-if yy_act <= 85 then
-if yy_act = 84 then
---|#line 343 "cadl_15_scanner.l"
+if yy_act = 92 then
+--|#line 456 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 343")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 456")
 end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			
 else
---|#line 353 "cadl_15_scanner.l"
+--|#line 466 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 353")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 466")
 end
 
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
@@ -843,20 +983,24 @@ end
 				last_string_value.put('T', last_string_value.index_of(' ', 1))
 			
 end
+end
+end
 else
-if yy_act = 86 then
---|#line 359 "cadl_15_scanner.l"
+if yy_act <= 97 then
+if yy_act <= 95 then
+if yy_act = 94 then
+--|#line 472 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 359")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 472")
 end
 
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			
 else
---|#line 370 "cadl_15_scanner.l"
+--|#line 483 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 370")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 483")
 end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
@@ -864,44 +1008,42 @@ end
 				last_string_value := text
 			
 end
-end
-end
 else
-if yy_act <= 91 then
-if yy_act <= 89 then
-if yy_act = 88 then
---|#line 379 "cadl_15_scanner.l"
+if yy_act = 96 then
+--|#line 492 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 379")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 492")
 end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
 			
 else
---|#line 385 "cadl_15_scanner.l"
+--|#line 498 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 385")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 498")
 end
 
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
 			
 end
+end
 else
-if yy_act = 90 then
---|#line 391 "cadl_15_scanner.l"
+if yy_act <= 99 then
+if yy_act = 98 then
+--|#line 504 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 391")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 504")
 end
 
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 397 "cadl_15_scanner.l"
+--|#line 510 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 397")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 510")
 end
 
 					last_token := V_FEATURE_CALL_IDENTIFIER
@@ -909,42 +1051,49 @@ end
 					last_string_value.right_adjust
 			
 end
-end
 else
-if yy_act <= 93 then
-if yy_act = 92 then
---|#line 404 "cadl_15_scanner.l"
+if yy_act = 100 then
+--|#line 517 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 404")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 517")
 end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 410 "cadl_15_scanner.l"
+--|#line 523 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 410")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 523")
 end
 		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[id-code]"
 			last_token := V_ABS_PATH
 			last_string_value := text
 		
 end
+end
+end
+end
+end
 else
-if yy_act = 94 then
---|#line 416 "cadl_15_scanner.l"
+if yy_act <= 118 then
+if yy_act <= 110 then
+if yy_act <= 106 then
+if yy_act <= 104 then
+if yy_act <= 103 then
+if yy_act = 102 then
+--|#line 529 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 416")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 529")
 end
 		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[id-code]"
 			last_token := V_REL_PATH
 			last_string_value := text
 		
 else
---|#line 422 "cadl_15_scanner.l"
+--|#line 535 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 422")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 535")
 end
 
 			last_token := SYM_START_CBLOCK
@@ -952,45 +1101,40 @@ end
 			in_buffer.append_character ('/')
 		
 end
-end
-end
-end
-end
 else
-if yy_act <= 111 then
-if yy_act <= 103 then
-if yy_act <= 99 then
-if yy_act <= 97 then
-if yy_act = 96 then
---|#line 429 "cadl_15_scanner.l"
+--|#line 542 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 429")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 542")
 end
  		-- match segment consisting of non / or [
 				in_buffer.append_string (text)
 	
+end
 else
---|#line 433 "cadl_15_scanner.l"
+if yy_act = 105 then
+--|#line 546 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 433")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 546")
 end
  		-- match [] segment
 				in_buffer.append_string (text)
 	
-end
 else
-if yy_act = 98 then
---|#line 437 "cadl_15_scanner.l"
+--|#line 550 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 437")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 550")
 end
  		-- match segment ending in quoted slashes '\/'
 				in_buffer.append_string (text)
 	
+end
+end
 else
---|#line 441 "cadl_15_scanner.l"
+if yy_act <= 108 then
+if yy_act = 107 then
+--|#line 554 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 441")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 554")
 end
  		-- match final segment
 				in_buffer.append_string (text)
@@ -1002,34 +1146,30 @@ end
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
 	
-end
-end
 else
-if yy_act <= 101 then
-if yy_act = 100 then
---|#line 453 "cadl_15_scanner.l"
+--|#line 566 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 453")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 566")
 end
 	-- regexp formed using '^' delimiters
  				last_token := V_REGEXP
  				last_string_value := text
 			
+end
 else
---|#line 460 "cadl_15_scanner.l"
+if yy_act = 109 then
+--|#line 573 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 460")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 573")
 end
 
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
 			
-end
 else
-if yy_act = 102 then
---|#line 465 "cadl_15_scanner.l"
+--|#line 578 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 465")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 578")
 end
 
 					last_token := V_INTEGER
@@ -1043,55 +1183,36 @@ end
 					last_integer_value := in_buffer.to_integer
 					in_buffer.wipe_out
 			
-else
---|#line 480 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 480")
-end
-
-						last_token := V_REAL
-						last_real_value := text.to_real
-			
 end
 end
 end
 else
-if yy_act <= 107 then
-if yy_act <= 105 then
-if yy_act = 104 then
---|#line 481 "cadl_15_scanner.l"
+if yy_act <= 114 then
+if yy_act <= 112 then
+if yy_act = 111 then
+--|#line 593 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 481")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 593")
 end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
 			
 else
---|#line 485 "cadl_15_scanner.l"
+--|#line 594 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 485")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 594")
 end
 
 						last_token := V_REAL
-						str_ := text
-						nb_ := text_count
-						from i_ := 1 until i_ > nb_ loop
-							char_ := str_.item (i_)
-							if char_ /= '_' then
-								in_buffer.append_character (char_)
-							end
-							i_ := i_ + 1
-						end
-						last_real_value := in_buffer.to_real
-						in_buffer.wipe_out
+						last_real_value := text.to_real
 			
 end
 else
-if yy_act = 106 then
---|#line 486 "cadl_15_scanner.l"
+if yy_act = 113 then
+--|#line 598 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 486")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 598")
 end
 
 						last_token := V_REAL
@@ -1108,9 +1229,9 @@ end
 						in_buffer.wipe_out
 			
 else
---|#line 487 "cadl_15_scanner.l"
+--|#line 599 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 487")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 599")
 end
 
 						last_token := V_REAL
@@ -1129,20 +1250,41 @@ end
 end
 end
 else
-if yy_act <= 109 then
-if yy_act = 108 then
---|#line 507 "cadl_15_scanner.l"
+if yy_act <= 116 then
+if yy_act = 115 then
+--|#line 600 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 507")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 600")
+end
+
+						last_token := V_REAL
+						str_ := text
+						nb_ := text_count
+						from i_ := 1 until i_ > nb_ loop
+							char_ := str_.item (i_)
+							if char_ /= '_' then
+								in_buffer.append_character (char_)
+							end
+							i_ := i_ + 1
+						end
+						last_real_value := in_buffer.to_real
+						in_buffer.wipe_out
+			
+else
+--|#line 620 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 620")
 end
 
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
 			
+end
 else
---|#line 512 "cadl_15_scanner.l"
+if yy_act = 117 then
+--|#line 625 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 512")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 625")
 end
 				-- beginning of a string
 				if text_count > 1 then
@@ -1150,57 +1292,59 @@ end
 				end
 				set_start_condition (IN_STR)
 			
-end
 else
-if yy_act = 110 then
---|#line 520 "cadl_15_scanner.l"
+--|#line 633 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 520")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 633")
 end
 in_buffer.append_character ('\')
+end
+end
+end
+end
 else
---|#line 522 "cadl_15_scanner.l"
+if yy_act <= 126 then
+if yy_act <= 122 then
+if yy_act <= 120 then
+if yy_act = 119 then
+--|#line 635 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 522")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 635")
 end
 in_buffer.append_character ('"')
-end
-end
-end
-end
 else
-if yy_act <= 119 then
-if yy_act <= 115 then
-if yy_act <= 113 then
-if yy_act = 112 then
---|#line 524 "cadl_15_scanner.l"
+--|#line 637 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 524")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 637")
 end
 
 				in_buffer.append_string (text)
 	
+end
 else
---|#line 528 "cadl_15_scanner.l"
+if yy_act = 121 then
+--|#line 641 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 528")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 641")
 end
 in_buffer.append_string (text)
-end
 else
-if yy_act = 114 then
---|#line 530 "cadl_15_scanner.l"
+--|#line 643 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 530")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 643")
 end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			
+end
+end
 else
---|#line 535 "cadl_15_scanner.l"
+if yy_act <= 124 then
+if yy_act = 123 then
+--|#line 648 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 535")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 648")
 end
 						-- match final end of string
 				last_token := V_STRING
@@ -1213,88 +1357,85 @@ end
 				last_string_value := str_
 				set_start_condition (INITIAL)
 			
-end
-end
 else
-if yy_act <= 117 then
-if yy_act = 116 then
---|#line 546 "cadl_15_scanner.l"
+--|#line 659 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 546")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 659")
 end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			
+end
 else
---|#line 555 "cadl_15_scanner.l"
+if yy_act = 125 then
+--|#line 667 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 555")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 667")
 end
 last_token := V_CHARACTER; last_character_value := text_item (2)
-end
 else
-if yy_act = 118 then
---|#line 557 "cadl_15_scanner.l"
+--|#line 669 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 557")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 669")
 end
 last_token := V_CHARACTER; last_character_value := '%N'
+end
+end
+end
 else
---|#line 558 "cadl_15_scanner.l"
+if yy_act <= 130 then
+if yy_act <= 128 then
+if yy_act = 127 then
+--|#line 670 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 558")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 670")
 end
 last_token := V_CHARACTER; last_character_value := '%R'
-end
-end
-end
 else
-if yy_act <= 123 then
-if yy_act <= 121 then
-if yy_act = 120 then
---|#line 559 "cadl_15_scanner.l"
+--|#line 671 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 559")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 671")
 end
 last_token := V_CHARACTER; last_character_value := '%T'
+end
 else
---|#line 560 "cadl_15_scanner.l"
+if yy_act = 129 then
+--|#line 672 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 560")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 672")
 end
 last_token := V_CHARACTER; last_character_value := '%''
-end
 else
-if yy_act = 122 then
---|#line 561 "cadl_15_scanner.l"
+--|#line 673 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 561")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 673")
 end
 last_token := V_CHARACTER; last_character_value := '%H'
-else
---|#line 563 "cadl_15_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 563")
-end
-last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
 end
 end
 else
-if yy_act <= 125 then
-if yy_act = 124 then
---|#line 564 "cadl_15_scanner.l"
+if yy_act <= 132 then
+if yy_act = 131 then
+--|#line 675 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 564")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 675")
 end
 last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
 else
---|#line 568 "cadl_15_scanner.l"
+--|#line 676 "cadl_15_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 568")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 676")
+end
+last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
+end
+else
+if yy_act = 133 then
+--|#line 680 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 680")
 end
 ;
-end
 else
 --|#line 0 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1307,13 +1448,14 @@ end
 end
 end
 end
+end
 		end
 
 	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
-when 0, 2, 3 then
+when 0, 2 then
 --|#line 0 "cadl_15_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 0")
@@ -1328,6 +1470,24 @@ end
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			
+when 3 then
+--|#line 0 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 0")
+end
+	-- Catch-all rules (no backing up)
+			last_token := ERR_VALUE_SET_DEF
+			set_start_condition (INITIAL)
+	
+when 4 then
+--|#line 0 "cadl_15_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'cadl_15_scanner.l' at line 0")
+end
+	-- Catch-all rules (no backing up)
+			last_token := ERR_VALUE_SET_DEF
+			set_start_condition (INITIAL)
+	
 			else
 				terminate
 			end
@@ -1340,7 +1500,7 @@ feature {NONE} -- Table templates
 		local
 			an_array: ARRAY [INTEGER]
 		once
-			create an_array.make_filled (0, 0, 5131)
+			create an_array.make_filled (0, 0, 5180)
 			yy_nxt_template_1 (an_array)
 			yy_nxt_template_2 (an_array)
 			yy_nxt_template_3 (an_array)
@@ -1353,597 +1513,602 @@ feature {NONE} -- Table templates
 	yy_nxt_template_1 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			    0,   10,   11,   12,   11,   11,   13,   14,   15,   16,
-			   17,   18,   19,   20,   21,   22,   23,   24,   25,   25,
-			   25,   26,   26,   26,   27,   28,   29,   30,   31,   32,
-			   33,   34,   35,   36,   37,   38,   36,   39,   40,   36,
-			   41,   42,   43,   44,   36,   36,   36,   45,   46,   36,
-			   47,   48,   36,   49,   50,   51,   52,   10,   53,   54,
-			   55,   56,   57,   58,   56,   59,   60,   56,   61,   62,
-			   63,   56,   56,   56,   56,   64,   65,   56,   56,   66,
-			   67,   68,   69,   70,   10,   10,   10,   10,   10,   10,
-			   10,   10,   10,   72,   81,   96,   81,   73,   72,  579,
+			    0,   12,   13,   14,   13,   13,   15,   16,   17,   18,
+			   19,   20,   21,   22,   23,   24,   25,   26,   27,   27,
+			   27,   28,   28,   28,   29,   30,   31,   32,   33,   34,
+			   35,   36,   37,   38,   39,   40,   38,   41,   42,   38,
+			   43,   44,   45,   46,   38,   38,   38,   47,   48,   38,
+			   49,   50,   38,   51,   52,   53,   54,   12,   55,   56,
+			   57,   58,   59,   60,   58,   61,   62,   58,   63,   64,
+			   65,   58,   58,   58,   58,   66,   67,   58,   58,   68,
+			   69,   70,   71,   72,   12,   12,   12,   12,   12,   12,
+			   12,   12,   12,   74,   83,  102,   83,   75,   74,  117,
 
-			  579,   90,   73,   90,   90,   99,  208,  100,  100,  100,
-			  100,  100,  100,  103,  111,  104,  111,  105,  105,  105,
-			  105,  105,  105,  112,  115,  111,  111,  113,  111,  114,
-			   82,   83,   82,   83,  111,  111,  122,  137,  116,  126,
-			   97,  175,  123,  124,   74,  138,  144,  117,  125,   74,
-			  859,  112,  115,  209,  145,  113,  106,  114,  207,  229,
-			  207,  207,  229,  858,  122,  137,  116,  126,  841,  176,
-			  123,  124,  842,  138,  231,  117,  125,  231,   75,   76,
-			   77,   78,   79,   75,   76,   77,   78,   79,   84,   85,
-			   86,   84,   85,   84,   84,   84,   84,   84,   84,   84,
+			   87,   88,   75,   87,   87,   88,   96,   87,   96,   96,
+			  128,  117,  117,   89,  215,  122,  105,   89,  106,  106,
+			  106,  106,  106,  106,  123,  117,  117,  117,  117,  132,
+			   84,   85,   84,   85,  178,  118,  121,  148,  128,  119,
+			  103,  120,  145,  122,   76,  150,  179,  146,  182,   76,
+			  886,  306,  123,  151,  152,  236,   90,  132,  236,  307,
+			   90,  216,  180,  118,  121,  155,  148,  119,  155,  120,
+			  145,  603,  603,  156,  181,  146,  183,  885,   77,   78,
+			   79,   80,   81,   77,   78,   79,   80,   81,   91,   92,
+			   93,   91,   92,   91,   91,   91,   91,   91,   91,   91,
 
-			   84,   84,   87,   88,   84,   88,   88,   88,   88,   88,
-			   88,   84,   84,   84,   84,   84,   84,   88,   88,   88,
-			   88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
-			   88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
-			   84,   84,   89,   84,   88,   88,   88,   88,   88,   88,
-			   88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
-			   88,   88,   88,   88,   88,   88,   88,   88,   84,   84,
-			   84,   84,   84,   84,   84,   84,   84,   84,   84,   84,
-			  103,  111,  104,  111,  107,  107,  107,  107,  107,  107,
-			  167,  111,  111,  111,  118,  299,  120,  128,  836,  127,
+			   91,   91,   94,   95,   91,   95,   95,   95,   95,   95,
+			   95,   91,   91,   91,   91,   91,   91,   95,   95,   95,
+			   95,   95,   95,   95,   95,   95,   95,   95,   95,   95,
+			   95,   95,   95,   95,   95,   95,   95,   95,   95,   95,
+			   91,   91,   91,   91,   95,   95,   95,   95,   95,   95,
+			   95,   95,   95,   95,   95,   95,   95,   95,   95,   95,
+			   95,   95,   95,   95,   95,   95,   95,   95,   91,   91,
+			   91,   91,   91,   91,   91,   91,   91,   91,   91,   91,
+			  109,  868,  110,  306,  111,  111,  111,  111,  111,  111,
+			  109,  117,  110,  117,  113,  113,  113,  113,  113,  113,
 
-			  202,  168,  393,  111,  184,  119,  111,  186,  121,  141,
-			  129,   90,  428,   90,   90,  428,  206,  224,  169,  206,
-			  224,  139,  118,  106,  120,  128,  140,  127,  142,  203,
-			  170,  200,  185,  835,  119,  187,  121,  141,  129,  130,
-			  131,  131,  131,  131,  131,  131,  161,  151,  111,  139,
-			  188,  151,  171,  151,  140,  132,  163,  142,  192,  201,
-			  300,  151,  133,  189,  172,  164,  193,  151,  615,  134,
-			  226,  135,  294,  136,  162,  157,  177,  178,  190,  157,
-			  173,  157,  179,  132,  165,  352,  194,  301,  300,  157,
-			  133,  191,  174,  166,  195,  157,  211,  180,  213,  213,
+			  117,  117,  117,  117,  124,  117,  126,  129,  130,  134,
+			  191,  143,  193,  131,  207,  125,  869,  133,  127,  144,
+			  308,  147,  135,  112,  214,  213,  214,  214,   96,  213,
+			   96,   96,  124,  112,  126,  129,  130,  134,  192,  143,
+			  194,  131,  208,  863,  125,  133,  127,  144,  209,  147,
+			  135,  136,  137,  137,  137,  137,  137,  137,  168,  158,
+			  117,  170,  213,  158,  174,  158,  158,  138,  203,  195,
+			  171,  199,  158,  204,  139,  175,  496,  210,  313,  200,
+			  223,  140,  196,  141,  227,  142,  169,  164,  257,  172,
+			  230,  164,  176,  164,  164,  138,  205,  197,  173,  201,
 
-			  135,  302,  136,  148,  181,  182,  148,  616,  206,  296,
-			  183,  149,  811,  206,  352,  301,  206,  712,  150,  151,
-			  151,  151,  151,  151,  151,  152,  206,  308,  310,  302,
-			  791,  151,  151,  151,  151,  151,  153,  151,  151,  151,
-			  154,  151,  155,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  151,  156,  308,  310,  575,  151,  157,
-			  157,  157,  157,  157,  158,  157,  157,  157,  159,  157,
-			  160,  157,  157,  157,  157,  157,  157,  157,  157,  157,
-			  157,  157,  148,  793,  794,  148,  210,  210,  210,  150,
-			  149,  212,  212,  212,  214,  214,  214,  150,  151,  151,
+			  164,  206,  139,  862,  177,  218,  313,  202,  220,  220,
+			  198,  314,  141,  374,  142,  155,  224,  225,  155,  838,
+			  213,  228,  229,  156,  258,  213,  224,  225,  213,  738,
+			  157,  158,  158,  158,  158,  158,  158,  159,  818,  314,
+			  217,  217,  217,  158,  158,  158,  158,  158,  160,  158,
+			  158,  158,  161,  158,  162,  158,  158,  158,  158,  158,
+			  158,  158,  158,  158,  158,  158,  163,  315,  321,  599,
+			  158,  164,  164,  164,  164,  164,  165,  164,  164,  164,
+			  166,  164,  167,  164,  164,  164,  164,  164,  164,  164,
+			  164,  164,  164,  164,  155,  315,  321,  155,  219,  219,
 
-			  151,  151,  151,  151,  152,  725,  211,  724,  311,  723,
-			  151,  151,  151,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  156,  216,  220,  311,  151,  157,  157,
-			  157,  157,  157,  157,  157,  157,  157,  157,  157,  157,
-			  157,  157,  157,  157,  157,  157,  157,  157,  157,  157,
-			  157,  196,  223,  477,  228,  722,  197,  228,  712,  314,
-			  217,  218,  221,  222,  253,  254,  229,  230,  228,  245,
-			  294,  228,  708,  255,  245,  111,  320,  231,  148,  198,
-			  229,  148,  477,  234,  199,  150,  149,  314,  217,  218,
+			  219,  306,  156,  221,  221,  221,  217,  217,  217,  157,
+			  158,  158,  158,  158,  158,  158,  159,  157,  323,  752,
+			  324,  751,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  158,  158,  158,  163,  323,  309,  324,  158,
+			  164,  164,  164,  164,  164,  164,  164,  164,  164,  164,
+			  164,  164,  164,  164,  164,  164,  164,  164,  164,  164,
+			  164,  164,  164,  184,  185,  231,  750,  239,  231,  186,
+			  239,  239,  265,  266,  239,  231,  265,  266,  231,  240,
+			  241,  317,  749,  240,  187,  267,  312,  117,  748,  246,
 
-			  670,  231,  235,  235,  235,  235,  235,  235,  242,  242,
-			  242,  242,  242,  242,  320,  246,  295,  226,  247,  247,
-			  247,  247,  247,  247,  243,  248,  248,  248,  248,  248,
-			  248,  226,  252,  252,  252,  252,  252,  252,  236,  253,
-			  254,  249,  253,  254,  150,  253,  254,  244,  268,  253,
-			  111,  304,  243,  237,  324,  321,  103,  238,  104,  239,
-			  250,  250,  250,  250,  250,  250,  251,  490,  103,  249,
-			  104,  481,  250,  250,  250,  250,  250,  250,  253,  254,
-			  434,  253,  254,  321,  253,  254,  325,  255,  254,  111,
-			  255,  532,  111,  255,  315,  111,  255,  253,  254,  106,
+			  242,  188,  189,  409,  242,  265,  266,  190,  247,  247,
+			  247,  247,  247,  247,  317,  327,  254,  254,  254,  254,
+			  254,  254,  259,  259,  259,  259,  259,  259,  333,  314,
+			  243,  232,  255,  334,  243,  260,  260,  260,  260,  260,
+			  260,  232,  738,  327,  248,  264,  264,  264,  264,  264,
+			  264,  261,  640,  306,  734,  256,  333,  319,  257,  249,
+			  255,  334,  109,  250,  110,  251,  262,  262,  262,  262,
+			  262,  262,  263,  306,  338,  157,  109,  703,  110,  261,
+			  262,  262,  262,  262,  262,  262,  265,  266,  328,  265,
+			  266,  641,  265,  266,  329,  267,  637,  117,  267,  339,
 
-			  316,  614,  259,  326,  332,  258,  255,  334,  111,  336,
-			  257,  106,  253,  254,  325,  253,  254,  260,  253,  254,
-			  532,  255,  315,  111,  304,  253,  254,  255,  316,  111,
-			  259,  326,  332,  258,  255,  334,  111,  336,  257,  253,
-			  254,  207,  261,  207,  207,  260,  337,  300,  255,  263,
-			  111,  340,  262,  803,  253,  254,  264,  253,  254,  613,
-			  253,  254,  265,  255,  807,  111,  255,  341,  111,  255,
-			  261,  111,  253,  254,  337,  305,  479,  263,  266,  340,
-			  262,  255,  803,  111,  264,  253,  254,  267,  269,  270,
-			  265,  253,  254,  807,  255,  341,  111,  344,  253,  254,
+			  117,  267,  338,  117,  345,  112,  265,  266,  157,  450,
+			  271,  347,  349,  270,  350,  267,  328,  117,  269,  112,
+			  265,  266,  329,  695,  265,  266,  272,  339,  826,  267,
+			  353,  117,  345,  267,  354,  117,  265,  266,  271,  347,
+			  349,  270,  350,  213,  451,  267,  269,  117,  265,  266,
+			  273,  274,  265,  266,  272,  265,  266,  267,  353,  117,
+			  365,  267,  354,  117,  267,  276,  117,  275,  265,  266,
+			  827,  277,  265,  266,  265,  359,  278,  337,  273,  274,
+			  672,  280,  213,  117,  363,  279,  512,  265,  266,  365,
+			  223,  265,  266,  276,  236,  275,  267,  236,  117,  277,
 
-			  255,  345,  111,  253,  254,  220,  266,  255,  594,  111,
-			  253,  254,  255,  361,  111,  267,  269,  270,  459,  255,
-			  274,  111,  103,  272,  583,  344,  255,  271,  275,  345,
-			  273,  346,  253,  254,  876,  253,  254,  130,  253,  254,
-			  216,  255,  221,  222,  255,  350,  111,  255,  274,  111,
-			  277,  272,  253,  254,  130,  363,  275,  278,  273,  346,
-			  523,  255,  436,  111,  110,  106,  279,  281,  280,  530,
-			  132,  288,  240,  350,  240,  240,  217,  218,  277,  394,
-			  253,  254,  253,  254,  281,  278,  135,  253,  254,  304,
-			  436,  304,  221,  222,  496,  279,  304,  280,  132,  288,
+			  267,  503,  117,  359,  278,  265,  266,  639,  282,  265,
+			  266,  494,  363,  279,  267,  281,  117,  638,  267,  673,
+			  117,  265,  266,  218,  265,  266,  224,  225,  265,  266,
+			  267,  240,  117,  267,  240,  117,  282,  267,  555,  117,
+			  494,  284,  287,  281,  306,  286,  214,  283,  214,  214,
+			  265,  266,  903,  285,  830,  265,  266,  136,  230,  267,
+			  217,  217,  217,  618,  267,  109,  117,  555,  289,  284,
+			  287,  265,  266,  286,  227,  290,  265,  266,  552,  545,
+			  317,  285,  116,  830,  291,  317,  292,  293,  265,  266,
+			  136,  265,  266,  136,  224,  225,  289,  267,  453,  117,
 
-			  253,  254,  253,  254,  253,  254,  301,  308,  325,  304,
-			  799,  304,  483,  304,  366,  135,  253,  254,  130,  282,
-			  282,  282,  282,  282,  282,  255,  320,  111,  253,  254,
-			  130,  253,  254,  130,  306,  309,  330,  255,  283,  111,
-			  255,  284,  111,  647,  253,  254,  132,  285,  437,  132,
-			  253,  254,  800,  255,  322,  111,  133,  366,  441,  304,
-			  281,  253,  254,  281,  826,  135,  283,  289,  302,  284,
-			  255,  290,  111,  223,  132,  285,  437,  132,  253,  254,
-			  286,  206,  648,  287,  133,  224,  441,  255,  224,  111,
-			  254,  253,  254,  826,  135,  289,  307,  291,  255,  290, yy_Dummy>>,
+			  267,  323,  117,  290,  338,  607,  138,  265,  266,  138,
+			  376,  228,  229,  291,  553,  292,  267,  357,  117,  410,
+			  293,  358,  141,  293,  265,  266,  453,  265,  266,  325,
+			  265,  266,  343,  267,  138,  117,  267,  138,  117,  317,
+			  300,  265,  266,  303,  518,  357,  112,  228,  229,  358,
+			  317,  141,  265,  266,  136,  294,  294,  294,  294,  294,
+			  294,  267,  313,  117,  265,  266,  136,  505,  300,  265,
+			  266,  303,  327,  267,  295,  117,  242,  296,  267,  242,
+			  117,  382,  138,  297,  454,  834,  265,  266,  298,  139,
+			  318,  299,  265,  266,  853,  267,  293,  117,  141,  382, yy_Dummy>>,
 			1, 1000, 0)
 		end
 
 	yy_nxt_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  255,  206,  111,  253,  254,  712,  253,  254,  286,  217,
-			  218,  287,  255,  836,  111,  304,  362,  253,  254,  793,
-			  794,  292,  253,  254,  443,  291,  304,  206,  253,  254,
-			  474,  304,  253,  254,  253,  254,  310,  304,  226,  293,
-			  459,  304,  454,  304,  311,  315,  438,  253,  254,  292,
-			  435,  316,  443,  314,  253,  254,  304,  253,  254,  210,
-			  210,  210,  321,  304,  312,  428,  304,  394,  293,  253,
-			  254,  326,  313,  318,  336,  444,  327,  393,  255,  319,
-			  341,  317,  354,  355,  356,  357,  358,  381,  253,  254,
-			  323,  328,  329,  329,  329,  329,  329,  304,  876,  331,
+			  330,  267,  295,  117,  375,  296,  265,  266,  491,  301,
+			  138,  297,  454,  302,  834,  317,  298,  139,  458,  299,
+			  265,  266,  304,  853,  315,  265,  266,  141,  476,  267,
+			  252,  117,  252,  252,  317,  265,  266,  301,  265,  266,
+			  213,  302,  265,  266,  317,  321,  458,  317,  265,  266,
+			  304,  317,  320,  460,  461,  328,  305,  317,  820,  821,
+			  471,  329,  324,  265,  266,  464,  333,  265,  266,  455,
+			  265,  266,  317,  322,  383,  382,  317,  383,  334,  317,
+			  339,  460,  461,  331,  266,  305,  265,  266,  350,  332,
+			  326,  465,  267,  464,  335,  267,  265,  266,  466,  341,
 
-			  253,  254,  338,  444,  206,  210,  210,  210,  343,  255,
-			  726,  111,  151,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  151,  151,  253,  254,  253,  254,  253,
-			  254,  253,  254,  206,  304,  376,  304,  375,  304,  727,
-			  304,  374,  253,  254,  253,  254,  373,  337,  370,  447,
-			  340,  304,  448,  304,  227,  253,  254,  332,  361,  334,
-			  449,  453,  456,  346,  255,  344,  111,  253,  254,  345,
-			  253,  254,  359,  359,  359,  339,  304,  447,  342,  304,
-			  448,  457,  396,  228,  362,  333,  228,  335,  449,  453,
+			  342,  342,  342,  342,  342,  317,  336,  444,  344,  340,
+			  444,  265,  266,  452,  498,  213,  352,  498,  213,  465,
+			  317,  367,  368,  369,  370,  371,  466,  444,  349,  158,
+			  158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  265,  266,  265,  266,  351,  265,  266,  265,
+			  266,  317,  410,  317,  265,  266,  317,  409,  317,  265,
+			  266,  265,  266,  317,  265,  266,  353,  476,  317,  470,
+			  317,  265,  266,  317,  345,  267,  347,  357,  359,  397,
+			  317,  358,  354,  372,  372,  372,  373,  373,  373,  473,
 
-			  456,  349,  361,  347,  206,  229,  228,  348,  327,  228,
-			  350,  458,  462,  352,  367,  366,  231,  367,  229,  457,
-			  396,  360,  360,  360,  389,  389,  389,  389,  389,  231,
-			  371,  372,  372,  372,  372,  372,  372,  268,  351,  458,
-			  462,  303,  353,  378,  299,  378,  226,  297,  379,  379,
-			  379,  379,  379,  379,  368,  366,  147,  368,  294,  226,
-			  364,  365,  366,  364,  365,  364,  364,  364,  364,  364,
-			  364,  364,  364,  367,  230,  230,  364,  230,  230,  230,
-			  230,  230,  230,  364,  368,  364,  364,  364,  364,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
+			  903,  363,  265,  266,  355,  239,  500,  470,  239,  500,
+			  365,  267,  346,  117,  348,  360,  362,  240,  753,  361,
+			  356,  378,  379,  379,  379,  379,  379,  473,  242,  364,
+			  239,  265,  266,  239,  405,  405,  405,  405,  405,  366,
+			  317,  392,  240,  387,  388,  388,  388,  388,  388,  388,
+			  820,  821,  752,  242,  394,  752,  394,  754,  243,  395,
+			  395,  395,  395,  395,  395,  396,  396,  396,  396,  396,
+			  396,  398,  398,  398,  398,  398,  398,  406,  406,  406,
+			  406,  406,  406,  243,  380,  381,  382,  380,  381,  380,
+			  380,  380,  380,  380,  380,  380,  380,  383,  241,  241,
 
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  364,  364,  369,  364,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  364,  364,  364,  364,  364,  364,  364,  364,  364,  364,
-			  364,  364,  377,  377,  377,  377,  377,  377,  380,  380,
-			  380,  380,  380,  380,  276,  241,  253,  254,  243,  382,
-			  382,  382,  382,  382,  382,  304,  383,  383,  383,  383,
-			  383,  383,  390,  390,  390,  390,  390,  390,  253,  254,
-			  448,  244,  384,  386,  799,  386,  243,  304,  387,  387,
+			  380,  241,  241,  241,  241,  241,  241,  380,  384,  380,
+			  380,  380,  380,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  380,  380,  385,  380,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  380,  380,  380,  380,  380,  380,
+			  380,  380,  380,  380,  380,  380,  393,  393,  393,  393,
+			  393,  393,  399,  399,  399,  399,  399,  399,  265,  266,
+			  474,  475,  255,  391,  402,  390,  402,  317,  400,  403,
 
-			  387,  387,  387,  387,  103,  712,  104,  240,  388,  388,
-			  388,  388,  388,  388,  233,  385,  253,  254,  451,   94,
-			  384,  253,  254,   91,  464,  255,  465,  111,  253,  254,
-			  255,  227,  111,  253,  254,  395,  801,  255,  468,  111,
-			  253,  254,  255,  206,  111,  204,  398,  106,  397,  255,
-			  469,  111,  464,  147,  465,  111,  253,  254,  109,  400,
-			  253,  254,  472,  395,  399,  255,  468,  111,  108,  255,
-			  393,  111,  253,  254,  398,  405,  397,  101,  469,  473,
-			  401,  255,  531,  111,  253,  254,  405,  400,  253,  254,
-			  472,  402,  399,  255,   98,  111,  405,  255,   94,  111,
+			  403,  403,  403,  403,  403,  109,  460,  110,  479,  404,
+			  404,  404,  404,  404,  404,  256,  265,  266,  474,  475,
+			  255,  401,  265,  266,  266,  267,  400,  117,  265,  266,
+			  738,  267,  267,  117,  462,  411,  479,  267,  863,  117,
+			  389,  265,  266,  546,  481,  265,  266,  386,  112,  412,
+			  267,  306,  117,  238,  267,  413,  117,  265,  266,  414,
+			  265,  266,  482,  411,  265,  266,  267,  377,  117,  267,
+			  233,  117,  481,  267,  235,  117,  415,  412,  485,  416,
+			  486,  417,  547,  413,  489,  265,  266,  414,  265,  266,
+			  482,  265,  266,  374,  267,  418,  117,  267,  409,  117,
 
-			  253,  254,  206,  403,  253,  254,   92,  473,  401,  255,
-			  531,  111,  406,  255,  405,  111,  253,  254,  243,  402,
-			   91,  253,  254,  537,  407,  304,  404,  408,  253,  254,
-			  255,  403,  111,  462,  253,  254,  876,  255,  409,  111,
-			  406,  244,  876,  255,  876,  111,  243,  253,  254,  253,
-			  254,  537,  407,  253,  254,  408,  304,  876,  255,  876,
-			  111,  463,  255,  876,  111,  443,  409,  410,  411,  253,
-			  254,  876,  413,  413,  413,  413,  413,  413,  255,  876,
-			  111,  213,  213,  253,  254,  412,  414,  414,  414,  414,
-			  414,  414,  255,  445,  111,  410,  411,  876,  876,  253,
+			  267,  490,  117,  421,  415,  375,  485,  416,  486,  417,
+			  265,  266,  489,  374,  421,  422,  419,  265,  266,  267,
+			  554,  117,  213,  418,  421,  340,  267,  280,  117,  490,
+			  420,  316,  265,  266,  423,  312,  265,  266,  310,  154,
+			  424,  317,  421,  422,  419,  267,  560,  117,  554,  265,
+			  266,  453,  306,  425,  265,  266,  384,  382,  267,  384,
+			  117,  288,  423,  267,  253,  117,  265,  266,  424,  265,
+			  266,  136,  252,  427,  560,  267,  245,  117,  267,  456,
+			  117,  425,  426,  265,  266,  826,  429,  429,  429,  429,
+			  429,  429,  267,  100,  117,  562,  738,   97,  428,  265,
 
-			  254,  412,  415,  415,  415,  415,  415,  415,  255,  416,
-			  111,  417,  876,  253,  254,  412,  110,  110,  110,  110,
-			  110,  110,  304,  110,  110,  110,  110,  110,  110,  876,
-			  876,  412,  418,  539,  876,  419,  253,  254,  130,  876,
-			  437,  420,  110,  253,  254,  255,  876,  111,  253,  254,
-			  130,  876,  304,  253,  254,  876,  876,  255,  206,  111,
-			  418,  539,  255,  419,  111,  253,  254,  285,  440,  420,
-			  110,  253,  254,  876,  422,  876,  111,  253,  254,  421,
-			  255,  524,  111,  253,  254,  454,  255,  876,  111,  294,
-			  423,  540,  255,  543,  111,  285,  253,  254,  876,  876,
+			  266,  427,  116,  116,  116,  116,  116,  116,  317,  238,
+			  426,  563,  566,  265,  266,  428,  430,  430,  430,  430,
+			  430,  430,  267,  562,  117,  265,  266,  828,  431,  431,
+			  431,  431,  431,  431,  267,  432,  117,  433,  903,  563,
+			  566,  471,  235,  265,  266,  428,  116,  116,  116,  116,
+			  116,  116,  317,  265,  266,  136,  234,  428,  434,  265,
+			  266,  435,  267,  233,  117,  116,  567,  436,  267,  485,
+			  117,  265,  266,  445,  446,  446,  446,  446,  446,  306,
+			  438,  255,  117,  213,  297,  437,  434,  265,  266,  435,
+			  265,  266,  211,  116,  567,  436,  267,  487,  117,  267,
 
-			  253,  254,  876,  253,  254,  304,  424,  421,  876,  255,
-			  876,  111,  255,  425,  111,  253,  254,  876,  423,  540,
-			  525,  543,  468,  876,  255,  876,  111,  429,  430,  430,
-			  430,  430,  430,  294,  424,  876,  210,  210,  210,  876,
-			  544,  425,  426,  431,  432,  433,  433,  433,  433,  294,
-			  470,  427,  253,  254,  253,  254,  253,  254,  253,  254,
-			  547,  304,  876,  304,  507,  304,  876,  304,  544,  253,
-			  254,  436,  876,  253,  254,  507,  876,  447,  304,  299,
-			  427,  441,  304,  876,  876,  507,  393,  444,  547,  876,
-			  459,  405,  329,  329,  329,  329,  329,  329,  206,  439,
+			  154,  117,  265,  266,  256,  117,  439,  265,  266,  255,
+			  115,  317,  297,  437,  265,  266,  267,  114,  117,  440,
+			  265,  266,  107,  267,  570,  117,  104,  265,  266,  267,
+			  571,  117,  573,  461,  439,  100,  267,  441,  117,  447,
+			  448,  449,  449,  449,  449,  306,   98,  440,  265,  266,
+			  265,  266,  570,  265,  266,   97,  442,  317,  571,  317,
+			  573,  463,  317,  443,  903,  441,  574,  265,  266,  903,
+			  265,  266,  464,  265,  266,  454,  317,  458,  903,  317,
+			  265,  266,  317,  312,  265,  266,  213,  265,  266,  317,
+			  409,  465,  443,  317,  574,  421,  317,  479,  213,  903,
 
-			  449,  876,  405,  507,  453,  450,  876,  253,  254,  442,
-			  253,  254,  405,  253,  254,  446,  304,  253,  254,  304,
-			  253,  254,  304,  206,  253,  254,  304,  206,  452,  304,
-			  405,  456,  455,  304,  457,  206,  465,  876,  548,  469,
-			  253,  254,  253,  254,  550,  551,  464,  253,  254,  304,
-			  876,  304,  876,  472,  253,  254,  304,  365,  366,  460,
-			  365,  876,  461,  255,  467,  111,  548,  471,  876,  367,
-			  473,  876,  550,  551,  466,  876,  212,  212,  212,  876,
-			  368,  475,  876,  477,  474,  371,  372,  372,  372,  372,
-			  372,  372,  379,  379,  379,  379,  379,  379,  476,  253,
+			  467,  466,  213,  457,  470,  459,  421,  476,  473,  342,
+			  342,  342,  342,  342,  342,  213,  421,  265,  266,  468,
+			  481,  265,  266,  903,  575,  480,  317,  213,  903,  469,
+			  317,  213,  472,  903,  421,  903,  477,  265,  266,  903,
+			  482,  474,  265,  266,  265,  266,  317,  903,  483,  265,
+			  266,  317,  575,  317,  265,  266,  486,  580,  317,  548,
+			  903,  265,  266,  317,  217,  217,  217,  306,  484,  478,
+			  317,  489,  582,  903,  490,  529,  219,  219,  219,  265,
+			  266,  220,  220,  903,  488,  580,  529,  583,  267,  497,
+			  117,  491,  497,  221,  221,  221,  529,  494,  549,  492,
 
-			  254,  214,  214,  214,  876,  210,  210,  210,  304,  876,
-			  369,  876,  478,  210,  210,  210,  480,  480,  480,  480,
-			  480,  480,  482,  482,  482,  482,  482,  482,  484,  484,
-			  484,  484,  484,  484,  485,  485,  485,  485,  485,  485,
-			  488,  488,  488,  488,  488,  488,  552,  557,  559,  876,
-			  384,  486,  876,  486,  876,  481,  487,  487,  487,  487,
-			  487,  487,  387,  387,  387,  387,  387,  387,  876,  526,
-			  808,  808,  808,  385,  552,  557,  559,  294,  384,  489,
-			  489,  489,  489,  489,  489,  491,  492,  876,  493,  493,
-			  493,  493,  493,  493,  494,  494,  494,  494,  494,  494, yy_Dummy>>,
+			  582,  498,  493,  499,  903,  217,  217,  217,  903,  217,
+			  217,  217,  500,  497,  529,  583,  497,  387,  388,  388,
+			  388,  388,  388,  388,  903,  498,  495,  499,  903,  379,
+			  379,  379,  379,  379,  379,  586,  500,  381,  382,  903,
+			  381,  903,  501,  395,  395,  395,  395,  395,  395,  383,
+			  502,  502,  502,  502,  502,  502,  265,  266,  903,  587,
+			  384,  903,  903,  586,  642,  317,  501,  504,  504,  504,
+			  504,  504,  504,  506,  506,  506,  506,  506,  506,  507,
+			  507,  507,  507,  507,  507,  903,  554,  587,  644,  503,
+			  385,  508,  642,  508,  645,  400,  509,  509,  509,  509, yy_Dummy>>,
 			1, 1000, 1000)
 		end
 
 	yy_nxt_template_3 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  495,  495,  495,  495,  495,  495,  253,  254,  527,  876,
-			  253,  254,  876,  253,  254,  255,  876,  111,  490,  255,
-			  876,  111,  255,  560,  111,  563,  253,  254,  564,  253,
-			  254,  876,  617,  876,  876,  255,  498,  111,  255,  876,
-			  111,  253,  254,  500,  499,  876,  253,  254,  502,  501,
-			  255,  560,  111,  563,  876,  255,  564,  111,  253,  254,
-			  617,  253,  254,  876,  498,  876,  619,  255,  876,  111,
-			  255,  500,  111,  499,  503,  876,  502,  501,  504,  876,
-			  505,  253,  254,  876,  253,  254,  876,  876,  253,  254,
-			  255,  509,  111,  255,  619,  111,  506,  255,  876,  111,
+			  509,  509,  510,  510,  510,  510,  510,  510,  403,  403,
+			  403,  403,  403,  403,  558,  903,  644,  903,  401,  835,
+			  835,  835,  645,  400,  511,  511,  511,  511,  511,  511,
+			  513,  514,  903,  515,  515,  515,  515,  515,  515,  516,
+			  516,  516,  516,  516,  516,  517,  517,  517,  517,  517,
+			  517,  265,  266,  903,  903,  265,  266,  626,  265,  266,
+			  267,  903,  117,  512,  267,  903,  117,  267,  626,  117,
+			  648,  265,  266,  654,  265,  266,  903,  655,  626,  903,
+			  267,  520,  117,  267,  903,  117,  265,  266,  522,  521,
+			  903,  265,  266,  524,  523,  267,  626,  117,  648,  903,
 
-			  253,  254,  503,  876,  253,  254,  504,  508,  505,  255,
-			  876,  111,  876,  255,  510,  111,  253,  254,  876,  509,
-			  253,  254,  511,  110,  506,  255,  110,  111,  620,  255,
-			  876,  111,  110,  623,  512,  508,  413,  413,  413,  413,
-			  413,  413,  510,  629,  253,  254,  513,  876,  253,  254,
-			  511,  110,  876,  255,  110,  111,  620,  255,  110,  111,
-			  110,  623,  512,  414,  414,  414,  414,  414,  414,  110,
-			  876,  629,  523,  254,  513,  415,  415,  415,  415,  415,
-			  415,  255,  565,  111,  876,  110,  110,  514,  514,  514,
-			  514,  514,  514,  566,  110,  876,  110,  876,  110,  515,
+			  267,  654,  117,  265,  266,  655,  265,  266,  903,  520,
+			  903,  656,  267,  903,  117,  267,  522,  117,  521,  525,
+			  903,  524,  523,  526,  903,  527,  265,  266,  903,  265,
+			  266,  903,  903,  265,  266,  267,  531,  117,  267,  656,
+			  117,  528,  267,  903,  117,  265,  266,  525,  903,  265,
+			  266,  526,  530,  527,  267,  903,  117,  903,  267,  532,
+			  117,  265,  266,  903,  531,  265,  266,  533,  116,  528,
+			  267,  116,  117,  659,  267,  903,  117,  116,  661,  534,
+			  530,  429,  429,  429,  429,  429,  429,  532,  662,  265,
+			  266,  535,  903,  265,  266,  533,  116,  903,  267,  116,
 
-			  515,  515,  515,  515,  515,  876,  876,  876,  110,  876,
-			  565,  253,  254,  110,  516,  516,  516,  516,  516,  516,
-			  304,  566,  393,  110,  876,  110,  876,  518,  630,  110,
-			  517,  517,  517,  517,  517,  517,  876,  110,  518,  876,
-			  876,  253,  254,  876,  543,  110,  253,  254,  518,  631,
-			  255,  634,  111,  253,  254,  304,  630,  110,  876,  580,
-			  876,  580,  255,  876,  111,  876,  518,  253,  254,  539,
-			  581,  520,  545,  110,  519,  876,  255,  631,  111,  634,
-			  876,  524,  521,  430,  430,  430,  430,  430,  430,  294,
-			  876,  253,  254,  522,  876,  876,  876,  541,  582,  520,
+			  117,  659,  267,  116,  117,  116,  661,  534,  430,  430,
+			  430,  430,  430,  430,  116,  903,  662,  545,  266,  535,
+			  431,  431,  431,  431,  431,  431,  267,  588,  117,  903,
+			  116,  116,  536,  536,  536,  536,  536,  536,  589,  116,
+			  903,  116,  903,  116,  537,  537,  537,  537,  537,  537,
+			  903,  903,  903,  116,  903,  588,  265,  266,  116,  538,
+			  538,  538,  538,  538,  538,  317,  589,  409,  116,  903,
+			  116,  903,  540,  665,  116,  539,  539,  539,  539,  539,
+			  539,  903,  116,  540,  903,  903,  265,  266,  903,  666,
+			  116,  265,  266,  540,  667,  267,  668,  117,  265,  266,
 
-			  304,  528,  519,  433,  433,  433,  433,  433,  433,  294,
-			  521,  526,  876,  433,  433,  433,  433,  433,  433,  294,
-			  525,  522,  533,  534,  534,  534,  534,  534,  253,  254,
-			  253,  254,  253,  254,  253,  254,  876,  304,  876,  304,
-			  529,  304,  876,  304,  876,  253,  254,  253,  254,  876,
-			  527,  253,  254,  540,  304,  876,  304,  876,  531,  876,
-			  304,  876,  537,  876,  532,  876,  547,  553,  554,  554,
-			  554,  554,  554,  624,  550,  253,  254,  544,  253,  254,
-			  876,  542,  253,  254,  304,  625,  535,  304,  253,  254,
-			  538,  304,  876,  536,  549,  253,  254,  304,  253,  254,
+			  317,  665,  116,  903,  604,  903,  604,  267,  903,  117,
+			  903,  540,  265,  266,  562,  605,  542,  666,  116,  541,
+			  903,  267,  667,  117,  668,  903,  546,  543,  446,  446,
+			  446,  446,  446,  446,  306,  903,  265,  266,  544,  903,
+			  903,  903,  564,  606,  542,  317,  550,  541,  449,  449,
+			  449,  449,  449,  449,  306,  543,  548,  903,  449,  449,
+			  449,  449,  449,  449,  306,  547,  544,  556,  557,  557,
+			  557,  557,  557,  265,  266,  265,  266,  265,  266,  265,
+			  266,  706,  317,  903,  317,  551,  317,  689,  317,  265,
+			  266,  265,  266,  903,  903,  549,  563,  903,  317,  903,
 
-			  557,  624,  555,  876,  304,  546,  876,  304,  551,  636,
-			  523,  254,  559,  625,  253,  254,  253,  254,  560,  304,
-			  253,  254,  876,  304,  876,  255,  876,  111,  558,  304,
-			  876,  563,  564,  253,  254,  876,  556,  636,  876,  876,
-			  561,  876,  255,  876,  111,  876,  562,  569,  569,  569,
-			  569,  569,  569,  570,  570,  570,  570,  570,  570,  567,
-			  568,  377,  377,  377,  377,  377,  377,  571,  572,  572,
-			  572,  572,  572,  573,  573,  573,  573,  573,  573,  487,
-			  487,  487,  487,  487,  487,  637,  481,  876,  876,  384,
-			  574,  574,  574,  574,  574,  574,  576,  576,  576,  576,
+			  317,  708,  265,  266,  689,  560,  710,  555,  689,  706,
+			  570,  317,  566,  576,  577,  577,  577,  577,  577,  265,
+			  266,  567,  265,  266,  565,  573,  265,  266,  317,  708,
+			  903,  317,  689,  561,  710,  317,  559,  711,  572,  903,
+			  568,  265,  266,  903,  580,  265,  266,  903,  903,  569,
+			  317,  714,  574,  578,  317,  903,  582,  265,  266,  265,
+			  266,  545,  266,  903,  497,  711,  317,  497,  317,  903,
+			  317,  583,  581,  715,  265,  266,  498,  587,  903,  714,
+			  579,  903,  903,  267,  584,  117,  903,  500,  265,  266,
+			  586,  378,  592,  592,  592,  592,  592,  317,  903,  585,
 
-			  576,  576,  577,  577,  577,  577,  577,  577,  876,  640,
-			  876,  641,  385,  637,  876,  253,  254,  384,  578,  578,
-			  578,  578,  578,  578,  255,  876,  111,  253,  254,  575,
-			  573,  573,  573,  573,  573,  573,  255,  640,  111,  641,
-			  492,  490,  493,  493,  493,  493,  493,  493,  642,  253,
-			  254,  876,  876,  588,  253,  254,  876,  586,  255,  602,
-			  111,  876,  643,  255,  680,  111,  253,  254,  587,  876,
-			  602,  682,  589,  684,  685,  255,  642,  111,  253,  254,
-			  602,  588,  253,  254,  590,  876,  688,  255,  876,  111,
-			  643,  255,  680,  111,  253,  254,  587,  591,  602,  682,
+			  903,  715,  903,  265,  266,  591,  593,  593,  593,  593,
+			  593,  593,  267,  903,  117,  903,  903,  501,  590,  594,
+			  594,  594,  594,  594,  594,  393,  393,  393,  393,  393,
+			  393,  595,  596,  596,  596,  596,  596,  597,  597,  597,
+			  597,  597,  597,  265,  266,  503,  509,  509,  509,  509,
+			  509,  509,  317,  400,  598,  598,  598,  598,  598,  598,
+			  600,  600,  600,  600,  600,  600,  601,  601,  601,  601,
+			  601,  601,  903,  716,  903,  719,  401,  903,  903,  265,
+			  266,  400,  602,  602,  602,  602,  602,  602,  267,  903,
+			  117,  265,  266,  599,  597,  597,  597,  597,  597,  597,
 
-			  589,  684,  685,  255,  689,  111,  593,  253,  254,  592,
-			  253,  254,  590,  595,  688,  876,  255,  690,  111,  255,
-			  876,  111,  253,  254,  876,  591,  876,  693,  596,  253,
-			  254,  255,  689,  111,  593,  253,  254,  592,  255,  876,
-			  111,  595,  253,  254,  255,  690,  111,  695,  597,  696,
-			  699,  255,  598,  111,  599,  693,  596,  514,  514,  514,
-			  514,  514,  514,  254,  876,  515,  515,  515,  515,  515,
-			  515,  255,  605,  700,  876,  695,  597,  696,  699,  876,
-			  598,  876,  599,  253,  254,  600,  517,  517,  517,  517,
-			  517,  517,  255,  601,  111,  253,  254,  701,  253,  254,
+			  267,  716,  117,  719,  514,  512,  515,  515,  515,  515,
+			  515,  515,  721,  265,  266,  903,  903,  612,  265,  266,
+			  903,  610,  267,  631,  117,  903,  649,  267,  722,  117,
+			  265,  266,  611,  903,  632,  725,  613,  726,  650,  267,
+			  721,  117,  265,  266,  633,  612,  265,  266,  614,  903,
+			  727,  267,  903,  117,  649,  267,  722,  117,  265,  266,
+			  611,  615,  632,  725,  613,  726,  650,  267,  733,  117,
+			  617,  265,  266,  616,  265,  266,  614,  619,  727,  903,
+			  267,  755,  117,  267,  903,  117,  265,  266,  903,  615,
+			  903,  401,  620,  265,  266,  267,  733,  117,  617,  265,
 
-			  605,  700,  253,  254,  255,  876,  111,  255,  110,  111,
-			  606,  304,  607,  600,  603,  876,  876,  604,  728,  729,
-			  876,  601,  416,  608,  417,  701,  516,  516,  516,  516,
-			  516,  516,  876,  609,  253,  254,  110,  876,  606,  876,
-			  876,  110,  603,  304,  614,  604,  728,  729,  419,  707,
-			  731,  608,  733,  617,  420,  429,  610,  610,  610,  610,
-			  610,  294,  431,  611,  611,  611,  611,  611,  294,  110,
-			  253,  254,  385,  876,  876,  876,  419,  707,  731,  304,
-			  733,  618,  420,  431,  612,  611,  611,  611,  611,  294,
-			  615,  735,  534,  534,  534,  534,  534,  534,  253,  254,
+			  266,  616,  267,  903,  117,  619,  265,  266,  267,  755,
+			  117,  756,  621,  758,  760,  267,  622,  117,  623,  903,
+			  620,  536,  536,  536,  536,  536,  536,  266,  903,  537,
+			  537,  537,  537,  537,  537,  267,  629,  762,  903,  756,
+			  621,  758,  760,  903,  622,  903,  623,  265,  266,  624,
+			  539,  539,  539,  539,  539,  539,  267,  625,  117,  265,
+			  266,  763,  265,  266,  629,  762,  265,  266,  267,  903,
+			  117,  267,  116,  117,  630,  317,  699,  624,  627,  903,
+			  903,  628,  764,  788,  903,  625,  432,  699,  433,  763,
+			  538,  538,  538,  538,  538,  538,  903,  700,  265,  266,
 
-			  253,  254,  253,  254,  253,  254,  876,  304,  876,  304,
-			  876,  304,  876,  304,  876,  876,  253,  254,  620,  735,
-			  623,  253,  254,  624,  619,  255,  664,  111,  876,  616,
-			  255,  659,  111,  736,  459,  625,  554,  554,  554,  554,
-			  554,  554,  255,  664,  253,  254,  622,  664,  626,  253,
-			  254,  627,  621,  304,  737,  253,  254,  876,  304,  659,
-			  876,  736,  631,  628,  304,  761,  253,  254,  630,  253,
-			  254,  664,  253,  254,  634,  304,  876,  876,  304,  253,
-			  254,  304,  737,  253,  254,  637,  253,  254,  304,  762,
-			  633,  640,  255,  761,  111,  255,  632,  111,  641,  636,
+			  116,  903,  630,  903,  903,  116,  627,  317,  639,  628,
+			  764,  788,  435,  903,  903,  699,  903,  642,  436,  445,
+			  634,  634,  634,  634,  634,  306,  447,  635,  635,  635,
+			  635,  635,  306,  116,  671,  671,  671,  671,  671,  671,
+			  435,  769,  769,  769,  769,  643,  436,  447,  636,  635,
+			  635,  635,  635,  306,  640,  789,  557,  557,  557,  557,
+			  557,  557,  265,  266,  265,  266,  265,  266,  265,  266,
+			  903,  317,  903,  317,  903,  317,  903,  317,  903,  903,
+			  265,  266,  645,  789,  648,  265,  266,  649,  644,  267,
+			  742,  117,  903,  641,  267,  684,  117,  903,  476,  650,
 
-			  253,  254,  635,  646,  646,  646,  646,  646,  646,  255,
-			  876,  111,  662,  639,  764,  660,  876,  762,  647,  644,
-			  572,  572,  572,  572,  572,  572,  645,  638,  573,  573,
-			  573,  573,  573,  573,  650,  650,  650,  650,  650,  650,
-			  662,  876,  764,  660,  649,  651,  651,  651,  651,  651,
-			  651,  652,  652,  652,  652,  652,  652,  648,  653,  653,
-			  653,  653,  653,  653,  654,  654,  654,  654,  654,  654,
-			  876,  766,  649,  575,  655,  655,  655,  655,  655,  655,
-			  656,  656,  656,  656,  656,  657,  657,  657,  657,  657,
-			  657,  253,  254,  876,  253,  254,  768,  253,  254,  766, yy_Dummy>>,
+			  577,  577,  577,  577,  577,  577,  267,  742,  265,  266,
+			  647,  742,  651,  265,  266,  652,  646,  317,  903,  265,
+			  266,  903,  317,  684,  903,  783,  656,  653,  317,  783,
+			  265,  266,  655,  265,  266,  742,  265,  266,  659,  317,
+			  791,  903,  317,  265,  266,  317,  783,  793,  903,  662,
+			  265,  266,  317,  497,  658,  665,  497,  783,  903,  267,
+			  657,  117,  666,  661,  903,  498,  660,  499,  791,  592,
+			  592,  592,  592,  592,  592,  793,  500,  664,  903,  795,
+			  903,  903,  672,  669,  596,  596,  596,  596,  596,  596,
+			  670,  663,  597,  597,  597,  597,  597,  597,  675,  675, yy_Dummy>>,
 			1, 1000, 2000)
 		end
 
 	yy_nxt_template_4 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  255,  249,  111,  255,  769,  111,  255,  876,  111,  785,
-			  661,  253,  254,  876,  253,  254,  786,  253,  254,  876,
-			  255,  663,  111,  255,  768,  111,  255,  876,  111,  249,
-			  253,  254,  769,  666,  253,  254,  876,  785,  661,  255,
-			  876,  111,  665,  255,  786,  111,  253,  254,  667,  663,
-			  788,  253,  254,  668,  674,  255,  790,  111,  253,  254,
-			  255,  666,  111,  876,  669,  674,  876,  255,  672,  111,
-			  665,  253,  254,  496,  876,  675,  667,  496,  788,  876,
-			  255,  668,  111,  802,  790,  253,  254,  674,  671,  673,
-			  876,  675,  669,  674,  304,  876,  672,  805,  676,  817,
+			  675,  675,  675,  675,  903,  903,  501,  795,  674,  676,
+			  676,  676,  676,  676,  676,  677,  677,  677,  677,  677,
+			  677,  673,  678,  678,  678,  678,  678,  678,  679,  679,
+			  679,  679,  679,  679,  903,  903,  674,  599,  680,  680,
+			  680,  680,  680,  680,  681,  681,  681,  681,  681,  682,
+			  682,  682,  682,  682,  682,  265,  266,  903,  265,  266,
+			  903,  903,  265,  266,  267,  261,  117,  267,  903,  117,
+			  685,  267,  518,  117,  265,  266,  903,  686,  265,  266,
+			  903,  265,  266,  267,  903,  117,  699,  267,  687,  117,
+			  267,  903,  117,  261,  518,  265,  266,  701,  685,  796,
 
-			  253,  254,  677,  876,  253,  254,  253,  254,  677,  304,
-			  876,  802,  677,  304,  876,  304,  671,  673,  678,  679,
-			  679,  679,  679,  679,  876,  805,  676,  817,  876,  524,
-			  677,  610,  610,  610,  610,  610,  610,  294,  526,  818,
-			  611,  611,  611,  611,  611,  611,  294,  528,  876,  611,
-			  611,  611,  611,  611,  611,  294,  533,  681,  681,  681,
-			  681,  681,  827,  253,  254,  253,  254,  818,  525,  876,
-			  253,  254,  304,  876,  304,  876,  716,  527,  682,  304,
-			  253,  254,  253,  254,  684,  876,  529,  876,  837,  304,
-			  827,  304,  876,  716,  253,  254,  685,  716,  253,  254,
+			  265,  266,  688,  903,  267,  686,  117,  702,  700,  267,
+			  903,  117,  690,  903,  691,  903,  687,  265,  266,  702,
+			  903,  903,  903,  265,  266,  701,  267,  796,  117,  702,
+			  688,  692,  267,  903,  117,  812,  693,  265,  266,  903,
+			  690,  694,  691,  265,  266,  903,  267,  702,  117,  265,
+			  266,  903,  267,  903,  117,  903,  265,  266,  267,  692,
+			  117,  265,  266,  812,  693,  267,  697,  117,  903,  694,
+			  317,  903,  784,  696,  698,  546,  784,  634,  634,  634,
+			  634,  634,  634,  306,  548,  903,  635,  635,  635,  635,
+			  635,  635,  306,  784,  697,  704,  705,  705,  705,  705,
 
-			  876,  690,  876,  304,  253,  254,  683,  304,  876,  253,
-			  254,  689,  686,  304,  253,  254,  837,  695,  255,  876,
-			  111,  716,  696,  304,  687,  693,  718,  253,  254,  692,
-			  569,  569,  569,  569,  569,  569,  255,  876,  111,  691,
-			  253,  254,  876,  718,  699,  697,  876,  718,  876,  255,
-			  698,  111,  876,  694,  571,  703,  703,  703,  703,  703,
-			  704,  876,  704,  876,  876,  705,  705,  705,  705,  705,
-			  705,  718,  702,  705,  705,  705,  705,  705,  705,  706,
-			  706,  706,  706,  706,  706,  577,  577,  577,  577,  577,
-			  577,  709,  709,  709,  709,  709,  709,  710,  710,  710,
+			  705,  696,  698,  550,  784,  635,  635,  635,  635,  635,
+			  635,  306,  265,  266,  547,  556,  707,  707,  707,  707,
+			  707,  317,  903,  549,  265,  266,  813,  708,  265,  266,
+			  265,  266,  903,  317,  265,  266,  903,  317,  903,  317,
+			  265,  266,  551,  317,  265,  266,  815,  710,  903,  317,
+			  265,  266,  903,  317,  813,  709,  711,  265,  266,  317,
+			  265,  266,  903,  716,  265,  266,  317,  817,  783,  317,
+			  829,  715,  785,  317,  815,  712,  721,  903,  722,  265,
+			  266,  719,  903,  832,  713,  265,  266,  903,  267,  785,
+			  117,  718,  903,  903,  317,  817,  265,  266,  829,  717,
 
-			  710,  710,  710,  711,  711,  711,  711,  711,  711,  253,
-			  254,  753,  575,  253,  254,  876,  253,  254,  255,  707,
-			  111,  876,  255,  876,  111,  255,  876,  111,  753,  253,
-			  254,  876,  753,  715,  253,  254,  847,  714,  255,  713,
-			  111,  876,  385,  255,  876,  111,  876,  707,  253,  254,
-			  876,  253,  254,  876,  253,  254,  753,  255,  876,  111,
-			  255,  715,  111,  304,  847,  714,  876,  713,  253,  254,
-			  876,  253,  254,  876,  717,  253,  254,  255,  876,  111,
-			  255,  876,  111,  876,  255,  876,  111,  719,  876,  253,
-			  254,  253,  254,  720,  721,  876,  876,  876,  304,  876,
+			  785,  265,  266,  740,  723,  267,  724,  117,  903,  720,
+			  267,  832,  117,  844,  845,  725,  593,  593,  593,  593,
+			  593,  593,  595,  729,  729,  729,  729,  729,  730,  903,
+			  730,  740,  903,  731,  731,  731,  731,  731,  731,  903,
+			  903,  844,  845,  728,  731,  731,  731,  731,  731,  731,
+			  732,  732,  732,  732,  732,  732,  601,  601,  601,  601,
+			  601,  601,  735,  735,  735,  735,  735,  735,  736,  736,
+			  736,  736,  736,  736,  737,  737,  737,  737,  737,  737,
+			  265,  266,  903,  599,  265,  266,  903,  265,  266,  267,
+			  733,  117,  903,  267,  903,  117,  267,  903,  117,  265,
 
-			  304,  726,  717,  679,  679,  679,  679,  679,  679,  253,
-			  254,  253,  254,  729,  876,  719,  876,  876,  304,  876,
-			  304,  720,  721,  615,  814,  681,  681,  681,  681,  681,
-			  681,  876,  814,  253,  254,  253,  254,  253,  254,  876,
-			  727,  730,  304,  876,  304,  814,  304,  253,  254,  876,
-			  731,  742,  742,  742,  742,  876,  304,  876,  876,  876,
-			  814,  733,  616,  876,  876,  647,  735,  703,  703,  703,
-			  703,  703,  703,  744,  745,  744,  745,  876,  732,  705,
-			  705,  705,  705,  705,  705,  876,  876,  876,  876,  734,
-			  876,  876,  253,  254,  738,  705,  705,  705,  705,  705,
+			  266,  741,  903,  265,  266,  903,  265,  266,  317,  854,
+			  739,  903,  267,  401,  117,  267,  903,  117,  733,  265,
+			  266,  864,  265,  266,  903,  744,  265,  266,  267,  741,
+			  117,  267,  903,  117,  903,  317,  903,  854,  739,  265,
+			  266,  874,  744,  265,  266,  743,  744,  903,  267,  864,
+			  117,  903,  267,  903,  117,  265,  266,  903,  745,  265,
+			  266,  903,  265,  266,  267,  746,  117,  903,  317,  874,
+			  744,  317,  903,  743,  747,  753,  903,  705,  705,  705,
+			  705,  705,  705,  756,  903,  640,  745,  707,  707,  707,
+			  707,  707,  707,  746,  903,  265,  266,  265,  266,  265,
 
-			  705,  255,  876,  111,  648,  739,  739,  739,  739,  739,
-			  739,  740,  746,  740,  876,  876,  741,  741,  741,  741,
-			  741,  741,  743,  743,  743,  743,  743,  743,  747,  747,
-			  747,  747,  747,  747,  253,  254,  876,  253,  254,  876,
-			  253,  254,  876,  255,  707,  111,  255,  876,  111,  304,
-			  876,  749,  253,  254,  876,  876,  876,  253,  254,  876,
-			  750,  255,  876,  111,  253,  254,  255,  385,  111,  253,
-			  254,  751,  707,  255,  752,  111,  253,  254,  304,  749,
-			  756,  876,  754,  845,  756,  255,  757,  111,  750,  876,
-			  757,  876,  756,  757,  845,  755,  758,  759,  876,  751,
+			  266,  903,  747,  903,  317,  903,  317,  903,  317,  265,
+			  266,  757,  758,  903,  754,  903,  903,  903,  317,  265,
+			  266,  265,  266,  903,  641,  760,  903,  903,  317,  672,
+			  317,  729,  729,  729,  729,  729,  729,  903,  762,  903,
+			  759,  731,  731,  731,  731,  731,  731,  731,  731,  731,
+			  731,  731,  731,  761,  766,  766,  766,  766,  766,  766,
+			  771,  772,  771,  772,  903,  767,  765,  767,  673,  903,
+			  768,  768,  768,  768,  768,  768,  770,  770,  770,  770,
+			  770,  770,  774,  774,  774,  774,  774,  774,  265,  266,
+			  780,  265,  266,  903,  265,  266,  903,  317,  733,  773,
 
-			  876,  756,  752,  876,  845,  876,  876,  757,  253,  254,
-			  754,  876,  756,  758,  759,  876,  876,  255,  757,  111,
-			  876,  876,  845,  755,  758,  759,  678,  760,  760,  760,
-			  760,  760,  253,  254,  253,  254,  876,  253,  254,  253,
-			  254,  304,  876,  304,  876,  828,  304,  828,  304,  876,
-			  876,  876,  876,  764,  766,  762,  829,  768,  741,  741,
-			  741,  741,  741,  741,  771,  771,  771,  771,  771,  771,
-			  772,  772,  772,  772,  772,  772,  839,  839,  839,  839,
-			  839,  765,  767,  763,  830,  770,  582,  582,  582,  582,
-			  582,  582,  773,  773,  773,  773,  773,  773,  861,  861,
+			  267,  903,  117,  267,  903,  117,  795,  780,  776,  265,
+			  266,  780,  903,  265,  266,  903,  903,  777,  267,  903,
+			  117,  401,  267,  903,  117,  903,  733,  903,  778,  784,
+			  779,  265,  266,  786,  797,  780,  776,  265,  266,  841,
+			  267,  903,  117,  265,  266,  777,  267,  841,  117,  781,
+			  786,  903,  267,  903,  117,  903,  778,  903,  779,  903,
+			  841,  786,  782,  704,  787,  787,  787,  787,  787,  265,
+			  266,  903,  265,  266,  903,  841,  903,  781,  317,  265,
+			  266,  317,  768,  768,  768,  768,  768,  768,  317,  903,
+			  782,  791,  789,  903,  903,  903,  793,  798,  798,  798,
 
-			  861,  861,  861,  575,  774,  774,  774,  774,  774,  774,
-			  775,  775,  775,  775,  775,  775,  253,  254,  876,  253,
-			  254,  876,  253,  254,  876,  255,  707,  111,  255,  876,
-			  111,  255,  781,  111,  253,  254,  781,  876,  777,  253,
-			  254,  779,  782,  255,  876,  111,  782,  876,  255,  385,
-			  111,  778,  781,  781,  707,  782,  783,  876,  876,  784,
-			  876,  253,  254,  782,  781,  876,  777,  876,  876,  779,
-			  304,  780,  876,  783,  782,  876,  784,  876,  876,  778,
-			  788,  876,  876,  876,  783,  876,  726,  784,  760,  760,
-			  760,  760,  760,  760,  253,  254,  253,  254,  876,  780,
+			  798,  798,  798,  799,  799,  799,  799,  799,  799,  606,
+			  606,  606,  606,  606,  606,  896,  897,  896,  897,  792,
+			  790,  903,  265,  266,  794,  800,  800,  800,  800,  800,
+			  800,  267,  903,  117,  903,  903,  599,  801,  801,  801,
+			  801,  801,  801,  802,  802,  802,  802,  802,  802,  265,
+			  266,  903,  265,  266,  898,  265,  266,  903,  267,  733,
+			  117,  267,  903,  117,  267,  808,  117,  265,  266,  808,
+			  903,  804,  265,  266,  806,  809,  267,  903,  117,  809,
+			  903,  267,  401,  117,  805,  808,  808,  733,  809,  810,
+			  903,  903,  811,  903,  265,  266,  809,  808,  903,  804,
 
-			  876,  876,  876,  304,  876,  255,  876,  111,  789,  739,
-			  739,  739,  739,  739,  739,  792,  792,  792,  792,  792,
-			  792,  876,  744,  876,  744,  727,  786,  774,  774,  774,
-			  774,  774,  774,  775,  775,  775,  775,  775,  775,  815,
-			  253,  254,  876,  876,  253,  254,  876,  815,  575,  255,
-			  876,  111,  876,  255,  787,  111,  876,  253,  254,  795,
-			  815,  746,  253,  254,  876,  876,  255,  876,  111,  253,
-			  254,  255,  876,  111,  876,  815,  253,  254,  304,  876,
-			  796,  869,  870,  869,  870,  304,  876,  795,  797,  809,
-			  809,  809,  809,  809,  809,  253,  254,  876,  798,  253,
+			  903,  903,  806,  317,  807,  903,  810,  809,  903,  811,
+			  903,  903,  805,  815,  903,  903,  903,  810,  903,  753,
+			  811,  787,  787,  787,  787,  787,  787,  265,  266,  265,
+			  266,  903,  807,  903,  903,  903,  317,  903,  317,  903,
+			  903,  816,  766,  766,  766,  766,  766,  766,  819,  819,
+			  819,  819,  819,  819,  903,  771,  903,  771,  754,  813,
+			  801,  801,  801,  801,  801,  801,  802,  802,  802,  802,
+			  802,  802,  842,  265,  266,  903,  903,  265,  266,  903,
+			  842,  599,  267,  903,  117,  903,  267,  814,  117,  903,
+			  265,  266,  822,  842,  773,  265,  266,  903,  903,  267,
 
-			  254,  876,  253,  254,  255,  803,  111,  805,  255,  796,
-			  111,  255,  712,  111,  253,  254,  797,  253,  254,  876,
-			  871,  823,  876,  304,  876,  815,  304,  798,  876,  823,
-			  813,  812,  876,  816,  804,  806,  819,  819,  819,  819,
-			  819,  819,  823,  876,  253,  254,  816,  746,  746,  746,
-			  746,  746,  746,  255,  876,  111,  876,  823,  813,  812,
-			  876,  816,  820,  820,  820,  820,  820,  820,  253,  254,
-			  824,  712,  253,  254,  854,  876,  854,  255,  824,  111,
-			  821,  255,  876,  111,  824,  855,  876,  822,  876,  876,
-			  876,  824,  825,  831,  876,  832,  833,  876,  820,  820, yy_Dummy>>,
+			  903,  117,  265,  266,  267,  903,  117,  903,  842,  265,
+			  266,  317,  903,  823,  903,  903,  903,  903,  317,  903,
+			  822,  824,  836,  836,  836,  836,  836,  836,  265,  266,
+			  903,  825,  265,  266,  872,  265,  266,  267,  830,  117,
+			  832,  267,  823,  117,  267,  872,  117,  265,  266,  824,
+			  738,  903,  265,  266,  903,  872,  267,  903,  117,  903,
+			  825,  317,  903,  842,  839,  265,  266,  831,  833,  903,
+			  903,  843,  903,  872,  317,  840,  846,  846,  846,  846,
+			  846,  846,  903,  903,  843,  773,  773,  773,  773,  773,
+			  773,  903,  839,  847,  847,  847,  847,  847,  847,  843, yy_Dummy>>,
 			1, 1000, 3000)
 		end
 
 	yy_nxt_template_5 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  820,  820,  820,  820,  876,  825,  824,  253,  254,  821,
-			  876,  876,  876,  856,  876,  822,  255,  876,  111,  876,
-			  825,  838,  838,  838,  838,  838,  838,  840,  840,  840,
-			  840,  840,  840,  253,  254,  834,  843,  843,  843,  843,
-			  843,  843,  255,  846,  111,  848,  848,  848,  848,  848,
-			  848,  876,  844,  876,  846,  849,  849,  849,  849,  849,
-			  849,  876,  876,  834,  846,  840,  840,  840,  840,  840,
-			  840,  840,  840,  840,  840,  840,  840,  876,  876,  876,
-			  844,  831,  846,  832,  850,  841,  843,  843,  843,  843,
-			  843,  843,  253,  254,  851,  852,  876,  876,  876,  876,
+			  265,  266,  903,  840,  265,  266,  850,  738,  851,  267,
+			  855,  117,  855,  267,  850,  117,  851,  903,  903,  903,
+			  851,  856,  903,  849,  265,  266,  903,  850,  852,  851,
+			  903,  903,  903,  267,  903,  117,  848,  903,  903,  265,
+			  266,  852,  850,  903,  851,  903,  903,  903,  267,  857,
+			  117,  849,  858,  903,  859,  860,  852,  847,  847,  847,
+			  847,  847,  847,  903,  903,  848,  903,  861,  865,  865,
+			  865,  865,  865,  865,  866,  866,  866,  866,  866,  867,
+			  867,  867,  867,  867,  867,  870,  870,  870,  870,  870,
+			  870,  265,  266,  873,  903,  861,  265,  266,  903,  903,
 
-			  876,  255,  876,  111,  876,  851,  852,  853,  853,  853,
-			  853,  853,  853,  876,  876,  851,  852,  857,  857,  857,
-			  857,  857,  857,  830,  830,  830,  830,  830,  830,  876,
-			  876,  876,  876,  851,  852,  860,  860,  860,  860,  860,
-			  860,  831,  862,  832,  863,  876,  857,  857,  857,  857,
-			  857,  857,  864,  864,  864,  864,  864,  864,  866,  862,
-			  867,  863,  876,  862,  876,  863,  865,  865,  865,  865,
-			  865,  865,  876,  876,  876,  866,  876,  867,  876,  866,
-			  876,  867,  876,  876,  876,  876,  876,  862,  876,  863,
-			  868,  868,  868,  868,  868,  868,  856,  856,  856,  856,
+			  267,  903,  117,  903,  873,  267,  903,  117,  903,  903,
+			  871,  903,  903,  903,  873,  875,  875,  875,  875,  875,
+			  875,  876,  876,  876,  876,  876,  876,  888,  888,  888,
+			  888,  888,  873,  903,  903,  903,  903,  868,  871,  867,
+			  867,  867,  867,  867,  867,  867,  867,  867,  867,  867,
+			  867,  858,  878,  859,  877,  879,  870,  870,  870,  870,
+			  870,  870,  903,  878,  903,  903,  879,  880,  880,  880,
+			  880,  880,  880,  878,  903,  881,  879,  881,  884,  884,
+			  884,  884,  884,  884,  903,  903,  882,  903,  903,  903,
+			  889,  878,  890,  903,  879,  857,  857,  857,  857,  857,
 
-			  856,  856,  876,  866,  876,  867,  872,  872,  872,  872,
-			  872,  872,  873,  873,  873,  873,  873,  873,  874,  874,
-			  874,  874,  874,  874,  869,  876,  869,  876,  876,  873,
-			  873,  873,  873,  873,  873,  875,  875,  875,  875,  875,
-			  875,  871,  871,  871,  871,  871,  871,  298,  298,  298,
-			  298,  298,  298,  298,  298,  298,  876,  876,  876,  876,
-			  876,  876,  876,  871,   71,   71,   71,   71,   71,   71,
-			   71,   71,   71,   71,   71,   71,   71,   71,   71,   71,
-			   71,   71,   71,   71,   71,   71,   71,   71,   71,   71,
-			   71,   71,   71,   71,   71,   80,   80,   80,   80,   80,
+			  857,  887,  887,  887,  887,  887,  887,  889,  903,  890,
+			  858,  889,  859,  890,  883,  884,  884,  884,  884,  884,
+			  884,  891,  891,  891,  891,  891,  891,  892,  892,  892,
+			  892,  892,  892,  893,  894,  889,  903,  890,  895,  895,
+			  895,  895,  895,  895,  883,  883,  883,  883,  883,  883,
+			  893,  894,  903,  903,  893,  894,  899,  899,  899,  899,
+			  899,  899,  900,  900,  900,  900,  900,  900,  901,  901,
+			  901,  901,  901,  901,  903,  896,  903,  896,  893,  894,
+			  900,  900,  900,  900,  900,  900,  902,  902,  902,  902,
+			  902,  902,  898,  898,  898,  898,  898,  898,  311,  311,
 
-			   80,   80,   80,   80,   80,   80,   80,   80,   80,   80,
-			   80,   80,   80,   80,   80,   80,   80,   80,   80,   80,
-			   80,   80,   80,   80,   80,   80,   93,   93,  876,   93,
-			   93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
-			   93,   93,   93,   93,   93,   93,  876,   93,   93,   93,
-			   93,   93,   93,   93,   93,   93,   93,   95,   95,  876,
-			   95,   95,   95,   95,   95,   95,   95,   95,   95,   95,
-			   95,   95,   95,   95,   95,   95,   95,   95,   95,   95,
-			   95,   95,   95,   95,   95,   95,   95,   95,  102,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
+			  311,  311,  311,  311,  311,  311,  311,  903,  903,  903,
+			  903,  903,  903,  903,  898,   73,   73,   73,   73,   73,
+			   73,   73,   73,   73,   73,   73,   73,   73,   73,   73,
+			   73,   73,   73,   73,   73,   73,   73,   73,   73,   73,
+			   73,   73,   73,   73,   82,   82,   82,   82,   82,   82,
+			   82,   82,   82,   82,   82,   82,   82,   82,   82,   82,
+			   82,   82,   82,   82,   82,   82,   82,   82,   82,   82,
+			   82,   82,   82,   86,   86,   86,   86,   86,   86,   86,
+			   86,   86,   86,   86,   86,   86,   86,   86,   86,   86,
+			   86,   86,   86,   86,   86,   86,   86,   86,   86,   86,
 
-			  876,  102,  102,  102,  102,  102,  102,  102,  102,  102,
-			  110,  110,  110,  110,  876,  110,  110,  110,  110,  876,
-			  876,  876,  110,  110,  110,  110,  110,  110,  110,  110,
-			  110,  143,  143,  876,  143,  876,  143,  143,  143,  876,
-			  876,  143,  143,  143,  143,  876,  876,  876,  143,  143,
-			  143,  143,  143,  143,  143,  143,  143,  146,  146,  876,
-			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-			  146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-			  146,  146,  146,  146,  146,  146,  146,  146,  205,  205,
-			  876,  205,  205,  205,  205,  205,  205,  205,  205,  205,
+			   86,   86,   99,   99,  903,   99,   99,   99,   99,   99,
+			   99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+			   99,  903,   99,   99,   99,   99,   99,   99,   99,   99,
+			   99,  101,  101,  903,  101,  101,  101,  101,  101,  101,
+			  101,  101,  101,  101,  101,  101,  101,  101,  101,  101,
+			  101,  101,  101,  101,  101,  101,  101,  101,  101,  101,
+			  108,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  108,  108,  108,  108,  108,  108,  108,  108,  108,
+			  116,  116,  116,  116,  903,  116,  116,  116,  903,  903,
+			  116,  116,  116,  116,  116,  116,  116,  116,  116,  149,
 
-			  205,  205,  205,  205,  205,  205,  205,  205,  876,  205,
-			  205,  205,  205,  205,  205,  205,  205,  205,  205,  215,
-			  215,  215,  215,  215,  215,  215,  215,  215,  215,  215,
-			  215,  215,  215,  215,  215,  215,  215,  215,  215,  215,
-			  215,  215,  215,  215,  215,  215,  215,  215,  215,  215,
-			  219,  219,  219,  219,  219,  219,  219,  219,  219,  219,
-			  219,  219,  219,  219,  219,  219,  219,  219,  219,  219,
-			  219,  219,  219,  219,  219,  219,  219,  219,  219,  219,
-			  219,  225,  876,  225,  876,  876,  876,  876,  225,  876,
-			  225,  225,  225,  876,  876,  225,  225,  225,  225,  876,
+			  149,  903,  149,  903,  149,  149,  149,  903,  903,  149,
+			  149,  149,  903,  903,  149,  149,  149,  149,  149,  149,
+			  149,  149,  149,  153,  153,  903,  153,  153,  153,  153,
+			  153,  153,  153,  153,  153,  153,  153,  153,  153,  153,
+			  153,  153,  153,  153,  153,  153,  153,  153,  153,  153,
+			  153,  153,  212,  212,  903,  212,  212,  212,  212,  212,
+			  212,  212,  212,  212,  212,  212,  212,  212,  212,  212,
+			  212,  903,  212,  212,  212,  212,  212,  212,  212,  212,
+			  212,  222,  222,  222,  222,  222,  222,  222,  222,  222,
+			  222,  222,  222,  222,  222,  222,  222,  222,  222,  222,
 
-			  876,  225,  225,  225,  225,  225,  225,  225,  225,  225,
-			  225,  232,  232,  876,  232,  232,  232,  232,  232,  232,
-			  232,  232,  232,  232,  232,  232,  232,  232,  232,  232,
-			  232,  232,  232,  232,  232,  232,  232,  232,  232,  232,
-			  232,  232,   98,   98,   98,   98,   98,   98,   98,   98,
-			   98,   98,   98,   98,   98,   98,   98,   98,   98,   98,
-			   98,   98,   98,   98,   98,   98,   98,   98,   98,   98,
-			   98,   98,   98,  102,  102,  102,  102,  876,  876,  102,
-			  102,  102,  102,  102,  876,  876,  102,  102,  102,  102,
-			  102,  102,  102,  102,  102,  256,  876,  876,  256,  256,
+			  222,  222,  222,  222,  222,  222,  222,  222,  222,  222,
+			  226,  226,  226,  226,  226,  226,  226,  226,  226,  226,
+			  226,  226,  226,  226,  226,  226,  226,  226,  226,  226,
+			  226,  226,  226,  226,  226,  226,  226,  226,  226,  237,
+			  903,  237,  903,  903,  903,  903,  237,  903,  237,  237,
+			  237,  903,  903,  237,  237,  237,  903,  903,  237,  237,
+			  237,  237,  237,  237,  237,  237,  237,  244,  244,  903,
+			  244,  244,  244,  244,  244,  244,  244,  244,  244,  244,
+			  244,  244,  244,  244,  244,  244,  244,  244,  244,  244,
+			  244,  244,  244,  244,  244,  244,  104,  104,  104,  104,
 
-			  256,  256,  256,  256,  256,  256,  256,  876,  876,  876,
-			  256,  256,  256,  256,  256,  256,  256,  256,  256,  217,
-			  217,  217,  217,  217,  217,  217,  217,  217,  876,  217,
-			  217,  217,  217,  217,  217,  217,  217,  217,  217,  217,
-			  217,  217,  217,  217,  217,  217,  217,  217,  217,  217,
-			  220,  220,  220,  220,  220,  220,  220,  220,  220,  220,
-			  220,  220,  220,  220,  220,  220,  220,  220,  220,  220,
-			  220,  220,  220,  220,  220,  220,  220,  220,  220,  220,
-			  220,  391,  391,  391,  876,  876,  391,  391,  391,  391,
-			  876,  876,  876,  391,  391,  391,  391,  391,  391,  391,
+			  104,  104,  104,  104,  104,  104,  104,  104,  104,  104,
+			  104,  104,  104,  104,  104,  104,  104,  104,  104,  104,
+			  104,  104,  104,  104,  104,  108,  108,  108,  108,  903,
+			  903,  108,  108,  108,  108,  903,  108,  108,  108,  108,
+			  108,  108,  108,  108,  108,  268,  903,  903,  268,  268,
+			  268,  268,  268,  268,  268,  268,  903,  903,  268,  268,
+			  268,  268,  268,  268,  268,  268,  268,  224,  224,  224,
+			  224,  224,  224,  224,  224,  224,  903,  224,  224,  224,
+			  224,  224,  224,  224,  224,  224,  224,  224,  224,  224,
+			  224,  224,  224,  224,  224,  224,  227,  227,  227,  227,
 
-			  391,  391,  392,  392,  392,  876,  876,  392,  392,  392,
-			  392,  876,  876,  876,  392,  392,  392,  392,  392,  392,
-			  392,  392,  392,  298,  298,  298,  298,  876,  876,  298,
-			  298,  298,  298,  298,  876,  876,  298,  298,  298,  298,
-			  298,  298,  298,  298,  298,  364,  364,  364,  364,  364,
-			  364,  364,  364,  364,  364,  364,  364,  364,  364,  364,
-			  364,  364,  364,  364,  364,  364,  364,  364,  364,  364,
-			  364,  364,  364,  364,  364,  364,  497,  497,  497,  497,
-			  876,  876,  876,  497,  497,  497,  497,  497,  497,  497,
-			  497,  497,  435,  435,  435,  876,  876,  435,  435,  435,
+			  227,  227,  227,  227,  227,  227,  227,  227,  227,  227,
+			  227,  227,  227,  227,  227,  227,  227,  227,  227,  227,
+			  227,  227,  227,  227,  227,  234,  234,  234,  234,  234,
+			  234,  234,  234,  234,  234,  234,  234,  234,  234,  234,
+			  234,  234,  234,  234,  234,  234,  234,  234,  234,  234,
+			  234,  234,  234,  234,  407,  407,  407,  903,  903,  407,
+			  407,  407,  903,  903,  407,  407,  407,  407,  407,  407,
+			  407,  407,  407,  408,  408,  408,  903,  903,  408,  408,
+			  408,  903,  903,  408,  408,  408,  408,  408,  408,  408,
+			  408,  408,  311,  311,  311,  311,  903,  903,  311,  311,
 
-			  435,  435,  435,  435,  435,  876,  876,  435,  435,  435,
-			  435,  876,  876,  876,  435,  435,  435,  435,  435,  435,
-			  435,  435,  435,  584,  584,  584,  584,  876,  876,  876,
-			  584,  584,  584,  584,  584,  584,  584,  584,  584,  585,
-			  585,  585,  876,  876,  585,  585,  585,  585,  876,  876,
-			  876,  585,  585,  585,  585,  585,  585,  585,  585,  585,
-			  658,  658,  658,  876,  876,  658,  658,  658,  658,  876,
-			  876,  876,  658,  658,  658,  658,  658,  658,  658,  658,
-			  658,  748,  748,  748,  748,  876,  876,  876,  748,  748,
-			  748,  748,  748,  748,  748,  748,  748,  776,  776,  776, yy_Dummy>>,
+			  311,  311,  903,  311,  311,  311,  311,  311,  311,  311,
+			  311,  311,  380,  380,  380,  380,  380,  380,  380,  380,
+			  380,  380,  380,  380,  380,  380,  380,  380,  380,  380,
+			  380,  380,  380,  380,  380,  380,  380,  380,  380,  380,
+			  380,  519,  519,  519,  903,  903,  519,  519,  519,  519,
+			  519,  519,  519,  519,  519,  452,  452,  452,  903,  903,
+			  452,  452,  452,  452,  452,  452,  452,  452,  903,  903,
+			  452,  452,  452,  903,  903,  452,  452,  452,  452,  452,
+			  452,  452,  452,  452,  608,  608,  608,  903,  903,  608,
+			  608,  608,  608,  608,  608,  608,  608,  608,  609,  609, yy_Dummy>>,
 			1, 1000, 4000)
 		end
 
 	yy_nxt_template_6 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  876,  876,  776,  776,  776,  776,  876,  876,  876,  776,
-			  776,  776,  776,  776,  776,  776,  776,  776,  810,  810,
-			  810,  876,  876,  810,  810,  810,  810,  876,  876,  876,
-			  810,  810,  810,  810,  810,  810,  810,  810,  810,    9,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
+			  609,  903,  903,  609,  609,  609,  903,  903,  609,  609,
+			  609,  609,  609,  609,  609,  609,  609,  683,  683,  683,
+			  903,  903,  683,  683,  683,  903,  903,  683,  683,  683,
+			  683,  683,  683,  683,  683,  683,  775,  775,  775,  903,
+			  903,  775,  775,  775,  775,  775,  775,  775,  775,  775,
+			  803,  803,  803,  903,  903,  803,  803,  803,  903,  903,
+			  803,  803,  803,  803,  803,  803,  803,  803,  803,  837,
+			  837,  837,  903,  903,  837,  837,  837,  903,  903,  837,
+			  837,  837,  837,  837,  837,  837,  837,  837,   11,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
 
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876, yy_Dummy>>,
-			1, 132, 5000)
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903, yy_Dummy>>,
+			1, 181, 5000)
 		end
 
 	yy_chk_template: SPECIAL [INTEGER]
@@ -1951,7 +2116,7 @@ feature {NONE} -- Table templates
 		local
 			an_array: ARRAY [INTEGER]
 		once
-			create an_array.make_filled (0, 0, 5131)
+			create an_array.make_filled (0, 0, 5180)
 			yy_chk_template_1 (an_array)
 			yy_chk_template_2 (an_array)
 			yy_chk_template_3 (an_array)
@@ -1973,800 +2138,811 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    3,    5,   16,    6,    3,    4,  491,
+			    1,    1,    1,    3,    5,   18,    6,    3,    4,   41,
 
-			  491,   11,    4,   11,   11,   23,   74,   23,   23,   23,
-			   23,   23,   23,   25,   33,   25,   34,   25,   25,   25,
-			   25,   25,   25,   33,   34,   39,   45,   33,   40,   33,
-			    5,    5,    6,    6,   35,   41,   39,   45,   35,   41,
-			   16,   59,   40,   40,    3,   45,   49,   35,   40,    4,
-			  852,   33,   34,   74,   49,   33,   25,   33,   72,  229,
-			   72,   72,  229,  851,   39,   45,   35,   41,  842,   59,
-			   40,   40,  832,   45,  231,   35,   40,  231,    3,    3,
-			    3,    3,    3,    4,    4,    4,    4,    4,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
+			    7,    7,    4,    7,    8,    8,   13,    8,   13,   13,
+			   41,   37,   50,    7,   76,   37,   25,    8,   25,   25,
+			   25,   25,   25,   25,   37,   43,   35,   48,   36,   43,
+			    5,    5,    6,    6,   60,   35,   36,   50,   41,   35,
+			   18,   35,   48,   37,    3,   51,   60,   48,   61,    4,
+			  879,  150,   37,   51,   51,   92,    7,   43,   92,  150,
+			    8,   76,   60,   35,   36,  155,   50,   35,  155,   35,
+			   48,  513,  513,  155,   60,   48,   61,  878,    3,    3,
+			    3,    3,    3,    4,    4,    4,    4,    4,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
 
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			    7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-			   26,   37,   26,   42,   26,   26,   26,   26,   26,   26,
-			   57,   43,   38,   47,   37,  304,   38,   43,  824,   42,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			    9,    9,    9,    9,    9,    9,    9,    9,    9,    9,
+			   27,  869,   27,  151,   27,   27,   27,   27,   27,   27,
+			   28,   39,   28,   42,   28,   28,   28,   28,   28,   28,
 
-			   67,   57,  304,   48,   61,   37,   46,   62,   38,   47,
-			   43,   90,  428,   90,   90,  428,   76,   85,   57,   78,
-			   85,   46,   37,   26,   38,   43,   46,   42,   48,   67,
-			   57,   66,   61,  823,   37,   62,   38,   47,   43,   44,
-			   44,   44,   44,   44,   44,   44,   54,   54,   44,   46,
-			   63,   54,   58,   54,   46,   44,   55,   48,   64,   66,
-			  153,   55,   44,   63,   58,   55,   64,   55,  533,   44,
-			   85,   44,  145,   44,   54,   54,   60,   60,   63,   54,
-			   58,   54,   60,   44,   55,  202,   64,  154,  153,   55,
-			   44,   63,   58,   55,   64,   55,   76,   60,   78,   78,
+			   47,   44,   40,   45,   39,   49,   40,   42,   42,   45,
+			   63,   47,   64,   42,   68,   39,  859,   44,   40,   47,
+			  151,   49,   45,   27,   74,   78,   74,   74,   96,   80,
+			   96,   96,   39,   28,   40,   42,   42,   45,   63,   47,
+			   64,   42,   68,  851,   39,   44,   40,   47,   69,   49,
+			   45,   46,   46,   46,   46,   46,   46,   46,   56,   56,
+			   46,   57,   77,   56,   59,   56,   57,   46,   67,   65,
+			   57,   66,   57,   67,   46,   59,  374,   69,  160,   66,
+			   82,   46,   65,   46,   84,   46,   56,   56,  108,   57,
+			   85,   56,   59,   56,   57,   46,   67,   65,   57,   66,
 
-			   44,  155,   44,   53,   60,   60,   53,  533,   75,  145,
-			   60,   53,  794,   77,  202,  154,   79,  784,   53,   53,
-			   53,   53,   53,   53,   53,   53,  355,  161,  163,  155,
-			  772,   53,   53,   53,   53,   53,   53,   53,   53,   53,
-			   53,   53,   53,   53,   53,   53,   53,   53,   53,   53,
-			   53,   53,   53,   53,   53,  161,  163,  739,   53,   53,
-			   53,   53,   53,   53,   53,   53,   53,   53,   53,   53,
-			   53,   53,   53,   53,   53,   53,   53,   53,   53,   53,
-			   53,   53,   56,  776,  776,   56,   75,   75,   75,  727,
-			   56,   77,   77,   77,   79,   79,   79,   56,   56,   56,
+			   57,   67,   46,  850,   59,   78,  160,   66,   80,   80,
+			   65,  161,   46,  374,   46,   55,   82,   82,   55,  821,
+			   79,   84,   84,   55,  108,   81,   85,   85,  218,  811,
+			   55,   55,   55,   55,   55,   55,   55,   55,  799,  161,
+			   77,   77,   77,   55,   55,   55,   55,   55,   55,   55,
+			   55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
+			   55,   55,   55,   55,   55,   55,   55,  162,  168,  766,
+			   55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
+			   55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
+			   55,   55,   55,   55,   58,  162,  168,   58,   79,   79,
 
-			   56,   56,   56,   56,   56,  677,  355,  676,  164,  675,
-			   56,   56,   56,   56,   56,   56,   56,   56,   56,   56,
-			   56,   56,   56,   56,   56,   56,   56,   56,   56,   56,
-			   56,   56,   56,   56,   80,   82,  164,   56,   56,   56,
-			   56,   56,   56,   56,   56,   56,   56,   56,   56,   56,
-			   56,   56,   56,   56,   56,   56,   56,   56,   56,   56,
-			   56,   65,   83,  352,   87,  674,   65,   87,  658,  167,
-			   80,   80,   82,   82,  110,  110,   87,   87,   88,  102,
-			  144,   88,  654,  110,  648,  110,  171,   87,  148,   65,
-			   88,  148,  352,   97,   65,  616,  148,  167,   83,   83,
+			   79,  152,   58,   81,   81,   81,  218,  218,  218,   58,
+			   58,   58,   58,   58,   58,   58,   58,  754,  170,  703,
+			  171,  702,   58,   58,   58,   58,   58,   58,   58,   58,
+			   58,   58,   58,   58,   58,   58,   58,   58,   58,   58,
+			   58,   58,   58,   58,   58,   58,  170,  152,  171,   58,
+			   58,   58,   58,   58,   58,   58,   58,   58,   58,   58,
+			   58,   58,   58,   58,   58,   58,   58,   58,   58,   58,
+			   58,   58,   58,   62,   62,   87,  701,   94,   87,   62,
+			   94,   95,  164,  164,   95,  231,  116,  116,  231,   94,
+			   94,  164,  700,   95,   62,  116,  317,  116,  699,  103,
 
-			  602,   88,   97,   97,   97,   97,   97,   97,  100,  100,
-			  100,  100,  100,  100,  171,  102,  144,   87,  103,  103,
-			  103,  103,  103,  103,  100,  104,  104,  104,  104,  104,
-			  104,   88,  106,  106,  106,  106,  106,  106,   97,  122,
-			  122,  104,  157,  157,  298,  176,  176,  100,  122,  585,
-			  122,  157,  100,   97,  176,  172,  105,   97,  105,   97,
-			  105,  105,  105,  105,  105,  105,  105,  577,  107,  104,
-			  107,  569,  107,  107,  107,  107,  107,  107,  112,  112,
-			  298,  113,  113,  172,  114,  114,  177,  112,  392,  112,
-			  113,  437,  113,  114,  168,  114,  392,  115,  115,  105,
+			   94,   62,   62,  317,   95,  166,  166,   62,  103,  103,
+			  103,  103,  103,  103,  166,  174,  106,  106,  106,  106,
+			  106,  106,  109,  109,  109,  109,  109,  109,  178,  166,
+			   94,   87,  106,  179,   95,  110,  110,  110,  110,  110,
+			  110,  231,  683,  174,  103,  112,  112,  112,  112,  112,
+			  112,  110,  556,  552,  679,  106,  178,  166,  673,  103,
+			  106,  179,  111,  103,  111,  103,  111,  111,  111,  111,
+			  111,  111,  111,  309,  184,  641,  113,  637,  113,  110,
+			  113,  113,  113,  113,  113,  113,  118,  118,  175,  119,
+			  119,  556,  120,  120,  175,  118,  552,  118,  119,  185,
 
-			  168,  532,  114,  178,  184,  113,  115,  186,  115,  188,
-			  112,  107,  116,  116,  177,  158,  158,  115,  118,  118,
-			  437,  116,  168,  116,  158,  117,  117,  118,  168,  118,
-			  114,  178,  184,  113,  117,  186,  117,  188,  112,  119,
-			  119,  207,  116,  207,  207,  115,  189,  158,  119,  118,
-			  119,  192,  117,  786,  120,  120,  119,  121,  121,  530,
-			  123,  123,  119,  120,  790,  120,  121,  193,  121,  123,
-			  116,  123,  124,  124,  189,  158,  361,  118,  120,  192,
-			  117,  124,  786,  124,  119,  125,  125,  121,  123,  124,
-			  119,  126,  126,  790,  125,  193,  125,  196,  127,  127,
+			  119,  120,  184,  120,  191,  111,  121,  121,  311,  309,
+			  120,  193,  195,  119,  196,  121,  175,  121,  118,  113,
+			  122,  122,  175,  626,  123,  123,  121,  185,  808,  122,
+			  199,  122,  191,  123,  200,  123,  124,  124,  120,  193,
+			  195,  119,  196,  368,  311,  124,  118,  124,  125,  125,
+			  122,  123,  126,  126,  121,  127,  127,  125,  199,  125,
+			  209,  126,  200,  126,  127,  125,  127,  124,  183,  183,
+			  808,  125,  128,  128,  609,  204,  126,  183,  122,  123,
+			  595,  128,  219,  128,  207,  127,  601,  129,  129,  209,
+			  222,  130,  130,  125,  236,  124,  129,  236,  129,  125,
 
-			  126,  196,  126,  128,  128,  219,  120,  127,  507,  127,
-			  129,  129,  128,  361,  128,  121,  123,  124,  553,  129,
-			  128,  129,  484,  126,  495,  196,  553,  125,  129,  196,
-			  127,  197,  131,  131,  131,  132,  132,  132,  138,  138,
-			  215,  131,  219,  219,  132,  200,  132,  138,  128,  138,
-			  131,  126,  133,  133,  133,  221,  129,  131,  127,  197,
-			  477,  133,  300,  133,  131,  495,  131,  132,  131,  434,
-			  133,  138,  240,  200,  240,  240,  215,  215,  131,  394,
-			  181,  181,  159,  159,  133,  131,  133,  162,  162,  181,
-			  300,  159,  221,  221,  391,  131,  162,  131,  133,  138,
+			  130,  593,  130,  204,  126,  131,  131,  555,  130,  132,
+			  132,  365,  207,  127,  131,  129,  131,  553,  132,  595,
+			  132,  133,  133,  368,  135,  135,  222,  222,  134,  134,
+			  133,  240,  133,  135,  240,  135,  130,  134,  454,  134,
+			  365,  132,  135,  129,  450,  134,  214,  131,  214,  214,
+			  137,  137,  137,  133,  813,  138,  138,  138,  225,  137,
+			  219,  219,  219,  529,  138,  506,  138,  454,  137,  132,
+			  135,  172,  172,  134,  226,  137,  188,  188,  450,  494,
+			  172,  133,  137,  813,  137,  188,  137,  138,  139,  139,
+			  139,  141,  141,  141,  225,  225,  137,  139,  313,  139,
 
-			  307,  307,  173,  173,  335,  335,  159,  162,  181,  307,
-			  781,  173,  381,  335,  369,  133,  134,  134,  134,  134,
-			  134,  134,  134,  134,  134,  134,  173,  134,  135,  135,
-			  135,  136,  136,  136,  159,  162,  181,  135,  134,  135,
-			  136,  134,  136,  571,  139,  139,  135,  134,  301,  136,
-			  160,  160,  781,  139,  173,  139,  136,  364,  308,  160,
-			  135,  137,  137,  136,  817,  136,  134,  139,  160,  134,
-			  137,  139,  137,  218,  135,  134,  301,  136,  140,  140,
-			  137,  211,  571,  137,  136,  224,  308,  140,  224,  140,
-			  601,  141,  141,  817,  136,  139,  160,  140,  601,  139, yy_Dummy>>,
+			  141,  172,  141,  137,  188,  517,  139,  144,  144,  141,
+			  228,  226,  226,  137,  451,  137,  144,  203,  144,  410,
+			  139,  203,  139,  141,  146,  146,  313,  271,  271,  172,
+			  165,  165,  188,  146,  139,  146,  271,  141,  271,  165,
+			  144,  176,  176,  146,  407,  203,  517,  228,  228,  203,
+			  176,  139,  140,  140,  140,  140,  140,  140,  140,  140,
+			  140,  140,  165,  140,  142,  142,  142,  397,  144,  143,
+			  143,  146,  176,  142,  140,  142,  242,  140,  143,  242,
+			  143,  385,  142,  140,  314,  817,  145,  145,  143,  142,
+			  165,  143,  147,  147,  844,  145,  142,  145,  142,  380, yy_Dummy>>,
 			1, 1000, 0)
 		end
 
 	yy_chk_template_2 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  141,  210,  141,  142,  142,  825,  165,  165,  137,  218,
-			  218,  137,  142,  825,  142,  165,  363,  166,  166,  810,
-			  810,  141,  169,  169,  310,  140,  166,  212,  170,  170,
-			  346,  169,  174,  174,  183,  183,  165,  170,  224,  142,
-			  328,  174,  321,  183,  166,  170,  303,  195,  195,  141,
-			  299,  170,  310,  169,  182,  182,  195,  190,  190,  211,
-			  211,  211,  174,  182,  165,  294,  190,  256,  142,  151,
-			  151,  182,  166,  170,  190,  311,  183,  255,  151,  170,
-			  195,  169,  210,  210,  210,  210,  210,  246,  180,  180,
-			  174,  180,  180,  180,  180,  180,  180,  180,  245,  182,
+			  176,  147,  140,  147,  376,  140,  167,  167,  359,  145,
+			  142,  140,  314,  145,  817,  167,  143,  142,  321,  143,
+			  148,  148,  147,  844,  167,  169,  169,  142,  341,  148,
+			  252,  148,  252,  252,  169,  173,  173,  145,  177,  177,
+			  217,  145,  180,  180,  173,  169,  321,  177,  181,  181,
+			  147,  180,  167,  323,  324,  177,  148,  181,  803,  803,
+			  334,  177,  173,  189,  189,  327,  180,  190,  190,  316,
+			  198,  198,  189,  169,  383,  383,  190,  383,  181,  198,
+			  189,  323,  324,  177,  408,  148,  158,  158,  198,  177,
+			  173,  328,  408,  327,  180,  158,  187,  187,  329,  187,
 
-			  259,  259,  190,  311,  213,  212,  212,  212,  195,  259,
-			  678,  259,  151,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  151,  151,  151,  151,  151,  151,  151,
-			  151,  151,  151,  151,  151,  185,  185,  187,  187,  191,
-			  191,  194,  194,  214,  185,  239,  187,  238,  191,  678,
-			  194,  237,  198,  198,  199,  199,  236,  191,  234,  314,
-			  194,  198,  315,  199,  227,  258,  258,  185,  222,  187,
-			  316,  320,  325,  199,  258,  198,  258,  203,  203,  198,
-			  201,  201,  213,  213,  213,  191,  203,  314,  194,  201,
-			  315,  326,  258,  225,  220,  185,  225,  187,  316,  320,
+			  187,  187,  187,  187,  187,  187,  181,  444,  189,  190,
+			  444,  197,  197,  312,  498,  220,  198,  498,  221,  328,
+			  197,  217,  217,  217,  217,  217,  329,  306,  197,  158,
+			  158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
+			  158,  158,  192,  192,  194,  194,  197,  201,  201,  202,
+			  202,  192,  268,  194,  205,  205,  201,  267,  202,  206,
+			  206,  208,  208,  205,  210,  210,  201,  576,  206,  333,
+			  208,  320,  320,  210,  192,  576,  194,  205,  206,  258,
+			  320,  205,  202,  220,  220,  220,  221,  221,  221,  338,
 
-			  325,  199,  217,  198,  205,  225,  228,  198,  179,  228,
-			  201,  327,  332,  203,  367,  367,  225,  367,  228,  326,
-			  258,  214,  214,  214,  251,  251,  251,  251,  251,  228,
-			  235,  235,  235,  235,  235,  235,  235,  175,  201,  327,
-			  332,  156,  203,  243,  152,  243,  225,  149,  243,  243,
-			  243,  243,  243,  243,  368,  368,  146,  368,  143,  228,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
+			  257,  208,  285,  285,  201,  237,  500,  333,  237,  500,
+			  210,  285,  192,  285,  194,  205,  206,  237,  704,  205,
+			  202,  235,  235,  235,  235,  235,  235,  338,  237,  208,
+			  239,  348,  348,  239,  263,  263,  263,  263,  263,  210,
+			  348,  251,  239,  247,  247,  247,  247,  247,  247,  247,
+			  837,  837,  752,  239,  255,  752,  255,  704,  237,  255,
+			  255,  255,  255,  255,  255,  256,  256,  256,  256,  256,
+			  256,  259,  259,  259,  259,  259,  259,  264,  264,  264,
+			  264,  264,  264,  239,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
 
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  230,  230,  230,  230,  230,  230,  230,  230,
-			  230,  230,  242,  242,  242,  242,  242,  242,  244,  244,
-			  244,  244,  244,  244,  130,   99,  318,  318,  242,  247,
-			  247,  247,  247,  247,  247,  318,  248,  248,  248,  248,
-			  248,  248,  252,  252,  252,  252,  252,  252,  351,  351,
-			  318,  242,  248,  249,  783,  249,  242,  351,  249,  249,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  241,  241,  241,  241,
+			  241,  241,  241,  241,  241,  241,  254,  254,  254,  254,
+			  254,  254,  260,  260,  260,  260,  260,  260,  325,  325,
+			  339,  340,  254,  250,  261,  249,  261,  325,  260,  261,
 
-			  249,  249,  249,  249,  250,  783,  250,   98,  250,  250,
-			  250,  250,  250,  250,   95,  248,  257,  257,  318,   93,
-			  248,  260,  260,   91,  336,  257,  337,  257,  261,  261,
-			  260,   86,  260,  262,  262,  257,  783,  261,  340,  261,
-			  263,  263,  262,   71,  262,   68,  261,  250,  260,  263,
-			  341,  263,  336,   52,  337,   36,  264,  264,   31,  263,
-			  265,  265,  344,  257,  262,  264,  340,  264,   29,  265,
-			  268,  265,  266,  266,  261,  268,  260,   24,  341,  345,
-			  264,  266,  436,  266,  267,  267,  268,  263,  269,  269,
-			  344,  265,  262,  267,   22,  267,  268,  269,   14,  269,
+			  261,  261,  261,  261,  261,  262,  325,  262,  345,  262,
+			  262,  262,  262,  262,  262,  254,  269,  269,  339,  340,
+			  254,  260,  270,  270,  625,  269,  260,  269,  272,  272,
+			  852,  270,  625,  270,  325,  269,  345,  272,  852,  272,
+			  248,  273,  273,  445,  349,  274,  274,  246,  262,  270,
+			  273,  445,  273,  238,  274,  272,  274,  276,  276,  273,
+			  275,  275,  350,  269,  277,  277,  276,  234,  276,  275,
+			  233,  275,  349,  277,  232,  277,  274,  270,  353,  275,
+			  354,  276,  445,  272,  357,  278,  278,  273,  279,  279,
+			  350,  281,  281,  229,  278,  277,  278,  279,  280,  279,
 
-			  270,  270,  357,  266,  271,  271,   13,  345,  264,  270,
-			  436,  270,  269,  271,  268,  271,  333,  333,  377,  265,
-			   12,  272,  272,  441,  270,  333,  267,  271,  273,  273,
-			  272,  266,  272,  333,  274,  274,    9,  273,  272,  273,
-			  269,  377,    0,  274,    0,  274,  377,  312,  312,  275,
-			  275,  441,  270,  277,  277,  271,  312,    0,  275,    0,
-			  275,  333,  277,    0,  277,  312,  272,  274,  275,  278,
-			  278,    0,  278,  278,  278,  278,  278,  278,  278,    0,
-			  278,  357,  357,  279,  279,  277,  279,  279,  279,  279,
-			  279,  279,  279,  312,  279,  274,  275,    0,    0,  280,
+			  281,  358,  281,  280,  274,  227,  353,  275,  354,  276,
+			  282,  282,  357,  224,  280,  281,  278,  283,  283,  282,
+			  453,  282,  212,  277,  280,  186,  283,  182,  283,  358,
+			  279,  163,  318,  318,  282,  159,  284,  284,  156,  153,
+			  283,  318,  280,  281,  278,  284,  458,  284,  453,  286,
+			  286,  318,  149,  284,  287,  287,  384,  384,  286,  384,
+			  286,  136,  282,  287,  105,  287,  289,  289,  283,  297,
+			  297,  297,  104,  287,  458,  289,  101,  289,  297,  318,
+			  297,  284,  286,  290,  290,  810,  290,  290,  290,  290,
+			  290,  290,  290,   99,  290,  460,  810,   97,  289,  336,
 
-			  280,  278,  280,  280,  280,  280,  280,  280,  280,  282,
-			  280,  282,  282,  306,  306,  279,  281,  281,  281,  281,
-			  281,  281,  306,  283,  283,  283,  283,  283,  283,    0,
-			    0,  280,  282,  443,    0,  282,  284,  284,  284,    0,
-			  306,  282,  283,  323,  323,  284,    0,  284,  285,  285,
-			  285,    0,  323,  286,  286,    0,    0,  285,  354,  285,
-			  282,  443,  286,  282,  286,  287,  287,  284,  306,  282,
-			  283,  288,  288,    0,  287,    0,  287,  289,  289,  286,
-			  288,  429,  288,  290,  290,  323,  289,    0,  289,  429,
-			  288,  444,  290,  448,  290,  284,  342,  342,    0,    0,
+			  336,  287,  293,  293,  293,  293,  293,  293,  336,   93,
+			  286,  461,  465,  291,  291,  290,  291,  291,  291,  291,
+			  291,  291,  291,  460,  291,  292,  292,  810,  292,  292,
+			  292,  292,  292,  292,  292,  294,  292,  294,  294,  461,
+			  465,  336,   90,  355,  355,  291,  295,  295,  295,  295,
+			  295,  295,  355,  296,  296,  296,   89,  292,  294,  298,
+			  298,  294,  296,   88,  296,  295,  466,  294,  298,  355,
+			  298,  299,  299,  307,  307,  307,  307,  307,  307,  307,
+			  299,  393,  299,   73,  296,  298,  294,  300,  300,  294,
+			  301,  301,   70,  295,  466,  294,  300,  355,  300,  301,
 
-			  291,  291,    0,  292,  292,  342,  289,  286,    0,  291,
-			    0,  291,  292,  290,  292,  293,  293,    0,  288,  444,
-			  429,  448,  342,    0,  293,    0,  293,  295,  295,  295,
-			  295,  295,  295,  295,  289,    0,  354,  354,  354,    0,
-			  449,  290,  291,  296,  296,  296,  296,  296,  296,  296,
-			  342,  293,  305,  305,  309,  309,  313,  313,  317,  317,
-			  453,  305,    0,  309,  405,  313,    0,  317,  449,  319,
-			  319,  305,    0,  322,  322,  405,    0,  317,  319,  324,
-			  293,  309,  322,    0,    0,  405,  324,  313,  453,    0,
-			  329,  324,  329,  329,  329,  329,  329,  329,  356,  305,
+			   54,  301,  326,  326,  393,   38,  300,  302,  302,  393,
+			   33,  326,  296,  298,  303,  303,  302,   31,  302,  301,
+			  304,  304,   26,  303,  470,  303,   24,  305,  305,  304,
+			  471,  304,  473,  326,  300,   16,  305,  302,  305,  308,
+			  308,  308,  308,  308,  308,  308,   15,  301,  319,  319,
+			  322,  322,  470,  330,  330,   14,  303,  319,  471,  322,
+			  473,  326,  330,  305,   11,  302,  474,  331,  331,    0,
+			  332,  332,  330,  335,  335,  319,  331,  322,    0,  332,
+			  346,  346,  335,  337,  343,  343,  367,  351,  351,  346,
+			  337,  331,  305,  343,  474,  337,  351,  346,  369,    0,
 
-			  319,    0,  324,  405,  322,  317,    0,  330,  330,  309,
-			  331,  331,  324,  338,  338,  313,  330,  339,  339,  331,
-			  343,  343,  338,  358,  347,  347,  339,  359,  319,  343,
-			  324,  330,  322,  347,  331,  360,  339,    0,  454,  343,
-			  348,  348,  349,  349,  456,  457,  338,  353,  353,  348,
-			    0,  349,    0,  347,  400,  400,  353,  365,  365,  330,
-			  365,    0,  331,  400,  339,  400,  454,  343,    0,  365,
-			  348,    0,  456,  457,  338,    0,  356,  356,  356,    0,
-			  365,  347,    0,  353,  349,  372,  372,  372,  372,  372,
-			  372,  372,  378,  378,  378,  378,  378,  378,  348,  450,
+			  330,  332,  370,  319,  335,  322,  337,  342,  343,  342,
+			  342,  342,  342,  342,  342,  371,  337,  344,  344,  331,
+			  351,  352,  352,    0,  475,  346,  344,  372,    0,  332,
+			  352,  373,  335,    0,  337,    0,  343,  356,  356,    0,
+			  352,  344,  360,  360,  361,  361,  356,    0,  351,  362,
+			  362,  360,  475,  361,  364,  364,  356,  479,  362,  447,
+			    0,  366,  366,  364,  367,  367,  367,  447,  352,  344,
+			  366,  360,  481,    0,  361,  421,  369,  369,  369,  416,
+			  416,  370,  370,    0,  356,  479,  421,  482,  416,  378,
+			  416,  362,  378,  371,  371,  371,  421,  366,  447,  360,
 
-			  450,  358,  358,  358,    0,  359,  359,  359,  450,    0,
-			  365,    0,  353,  360,  360,  360,  379,  379,  379,  379,
-			  379,  379,  380,  380,  380,  380,  380,  380,  382,  382,
-			  382,  382,  382,  382,  383,  383,  383,  383,  383,  383,
-			  385,  385,  385,  385,  385,  385,  458,  462,  464,    0,
-			  383,  384,    0,  384,    0,  379,  384,  384,  384,  384,
-			  384,  384,  386,  386,  386,  386,  386,  386,    0,  431,
-			  791,  791,  791,  383,  458,  462,  464,  431,  383,  387,
-			  387,  387,  387,  387,  387,  388,  388,    0,  388,  388,
-			  388,  388,  388,  388,  389,  389,  389,  389,  389,  389, yy_Dummy>>,
+			  481,  378,  361,  378,    0,  372,  372,  372,    0,  373,
+			  373,  373,  378,  379,  421,  482,  379,  388,  388,  388,
+			  388,  388,  388,  388,    0,  379,  366,  379,    0,  379,
+			  379,  379,  379,  379,  379,  489,  379,  381,  381,    0,
+			  381,    0,  378,  394,  394,  394,  394,  394,  394,  381,
+			  395,  395,  395,  395,  395,  395,  456,  456,    0,  490,
+			  381,    0,    0,  489,  560,  456,  379,  396,  396,  396,
+			  396,  396,  396,  398,  398,  398,  398,  398,  398,  399,
+			  399,  399,  399,  399,  399,    0,  456,  490,  562,  395,
+			  381,  400,  560,  400,  563,  399,  400,  400,  400,  400, yy_Dummy>>,
 			1, 1000, 1000)
 		end
 
 	yy_chk_template_3 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  390,  390,  390,  390,  390,  390,  395,  395,  431,    0,
-			  396,  396,    0,  397,  397,  395,    0,  395,  387,  396,
-			    0,  396,  397,  465,  397,  472,  398,  398,  473,  399,
-			  399,    0,  537,    0,    0,  398,  395,  398,  399,    0,
-			  399,  401,  401,  397,  396,    0,  402,  402,  399,  398,
-			  401,  465,  401,  472,    0,  402,  473,  402,  407,  407,
-			  537,  403,  403,    0,  395,    0,  539,  407,    0,  407,
-			  403,  397,  403,  396,  401,    0,  399,  398,  402,    0,
-			  403,  404,  404,    0,  406,  406,    0,    0,  408,  408,
-			  404,  407,  404,  406,  539,  406,  404,  408,    0,  408,
+			  400,  400,  401,  401,  401,  401,  401,  401,  402,  402,
+			  402,  402,  402,  402,  456,    0,  562,    0,  399,  818,
+			  818,  818,  563,  399,  403,  403,  403,  403,  403,  403,
+			  404,  404,    0,  404,  404,  404,  404,  404,  404,  405,
+			  405,  405,  405,  405,  405,  406,  406,  406,  406,  406,
+			  406,  411,  411,    0,    0,  412,  412,  540,  413,  413,
+			  411,    0,  411,  403,  412,    0,  412,  413,  540,  413,
+			  566,  414,  414,  571,  415,  415,    0,  573,  540,    0,
+			  414,  411,  414,  415,    0,  415,  417,  417,  413,  412,
+			    0,  418,  418,  415,  414,  417,  540,  417,  566,    0,
 
-			  409,  409,  401,  412,  410,  410,  402,  406,  403,  409,
-			    0,  409,    0,  410,  408,  410,  411,  411,    0,  407,
-			  420,  420,  409,  412,  404,  411,  412,  411,  540,  420,
-			    0,  420,  412,  543,  410,  406,  413,  413,  413,  413,
-			  413,  413,  408,  548,  421,  421,  411,    0,  423,  423,
-			  409,  412,    0,  421,  412,  421,  540,  423,  413,  423,
-			  412,  543,  410,  414,  414,  414,  414,  414,  414,  413,
-			    0,  548,  427,  427,  411,  415,  415,  415,  415,  415,
-			  415,  427,  474,  427,    0,  414,  413,  416,  416,  416,
-			  416,  416,  416,  474,  414,    0,  414,    0,  413,  417,
+			  418,  571,  418,  423,  423,  573,  419,  419,    0,  411,
+			    0,  574,  423,    0,  423,  419,  413,  419,  412,  417,
+			    0,  415,  414,  418,    0,  419,  420,  420,    0,  422,
+			  422,    0,    0,  424,  424,  420,  423,  420,  422,  574,
+			  422,  420,  424,    0,  424,  425,  425,  417,  428,  426,
+			  426,  418,  422,  419,  425,    0,  425,    0,  426,  424,
+			  426,  427,  427,    0,  423,  436,  436,  425,  428,  420,
+			  427,  428,  427,  580,  436,    0,  436,  428,  582,  426,
+			  422,  429,  429,  429,  429,  429,  429,  424,  583,  437,
+			  437,  427,    0,  439,  439,  425,  428,    0,  437,  428,
 
-			  417,  417,  417,  417,  417,    0,    0,    0,  415,    0,
-			  474,  451,  451,  414,  418,  418,  418,  418,  418,  418,
-			  451,  474,  422,  414,    0,  414,    0,  422,  550,  418,
-			  419,  419,  419,  419,  419,  419,    0,  415,  422,    0,
-			    0,  424,  424,    0,  451,  419,  445,  445,  422,  551,
-			  424,  557,  424,  425,  425,  445,  550,  418,    0,  494,
-			    0,  494,  425,    0,  425,    0,  422,  426,  426,  445,
-			  494,  425,  451,  419,  424,    0,  426,  551,  426,  557,
-			    0,  430,  426,  430,  430,  430,  430,  430,  430,  430,
-			    0,  470,  470,  426,    0,    0,    0,  445,  494,  425,
+			  437,  580,  439,  429,  439,  428,  582,  426,  430,  430,
+			  430,  430,  430,  430,  429,    0,  583,  443,  443,  427,
+			  431,  431,  431,  431,  431,  431,  443,  491,  443,    0,
+			  430,  429,  432,  432,  432,  432,  432,  432,  491,  430,
+			    0,  430,    0,  429,  433,  433,  433,  433,  433,  433,
+			    0,    0,    0,  431,    0,  491,  467,  467,  430,  434,
+			  434,  434,  434,  434,  434,  467,  491,  438,  430,    0,
+			  430,    0,  438,  586,  434,  435,  435,  435,  435,  435,
+			  435,    0,  431,  438,    0,    0,  440,  440,    0,  587,
+			  435,  462,  462,  438,  588,  440,  589,  440,  441,  441,
 
-			  470,  432,  424,  432,  432,  432,  432,  432,  432,  432,
-			  426,  433,    0,  433,  433,  433,  433,  433,  433,  433,
-			  430,  426,  438,  438,  438,  438,  438,  438,  439,  439,
-			  440,  440,  442,  442,  446,  446,    0,  439,    0,  440,
-			  432,  442,    0,  446,    0,  452,  452,  455,  455,    0,
-			  433,  460,  460,  446,  452,    0,  455,    0,  439,    0,
-			  460,    0,  442,    0,  440,    0,  455,  459,  459,  459,
-			  459,  459,  459,  544,  460,  461,  461,  452,  463,  463,
-			    0,  446,  466,  466,  461,  544,  439,  463,  467,  467,
-			  442,  466,    0,  440,  455,  471,  471,  467,  475,  475,
+			  462,  586,  434,    0,  516,    0,  516,  441,    0,  441,
+			    0,  438,  442,  442,  462,  516,  441,  587,  435,  440,
+			    0,  442,  588,  442,  589,    0,  446,  442,  446,  446,
+			  446,  446,  446,  446,  446,    0,  487,  487,  442,    0,
+			    0,    0,  462,  516,  441,  487,  448,  440,  448,  448,
+			  448,  448,  448,  448,  448,  442,  449,    0,  449,  449,
+			  449,  449,  449,  449,  449,  446,  442,  455,  455,  455,
+			  455,  455,  455,  457,  457,  459,  459,  463,  463,  468,
+			  468,  639,  457,    0,  459,  448,  463,  618,  468,  469,
+			  469,  472,  472,    0,    0,  449,  463,    0,  469,    0,
 
-			  463,  544,  460,    0,  471,  452,    0,  475,  461,  559,
-			  478,  478,  466,  544,  476,  476,  498,  498,  467,  478,
-			  535,  535,    0,  476,    0,  498,    0,  498,  463,  535,
-			    0,  475,  476,  505,  505,    0,  461,  559,    0,    0,
-			  466,    0,  505,    0,  505,    0,  467,  480,  480,  480,
-			  480,  480,  480,  481,  481,  481,  481,  481,  481,  475,
-			  476,  482,  482,  482,  482,  482,  482,  483,  483,  483,
-			  483,  483,  483,  485,  485,  485,  485,  485,  485,  486,
-			  486,  486,  486,  486,  486,  560,  480,    0,    0,  485,
-			  487,  487,  487,  487,  487,  487,  488,  488,  488,  488,
+			  472,  644,  477,  477,  618,  459,  648,  457,  618,  639,
+			  472,  477,  468,  476,  476,  476,  476,  476,  476,  478,
+			  478,  469,  480,  480,  463,  477,  483,  483,  478,  644,
+			    0,  480,  618,  459,  648,  483,  457,  649,  472,    0,
+			  468,  484,  484,    0,  480,  488,  488,    0,    0,  469,
+			  484,  654,  478,  477,  488,    0,  483,  492,  492,  493,
+			  493,  495,  495,    0,  497,  649,  492,  497,  493,    0,
+			  495,  484,  480,  655,  520,  520,  497,  493,    0,  654,
+			  478,    0,    0,  520,  483,  520,    0,  497,  558,  558,
+			  492,  499,  499,  499,  499,  499,  499,  558,    0,  484,
 
-			  488,  488,  489,  489,  489,  489,  489,  489,    0,  563,
-			    0,  564,  485,  560,    0,  499,  499,  485,  490,  490,
-			  490,  490,  490,  490,  499,    0,  499,  501,  501,  487,
-			  492,  492,  492,  492,  492,  492,  501,  563,  501,  564,
-			  493,  489,  493,  493,  493,  493,  493,  493,  565,  500,
-			  500,    0,    0,  501,  502,  502,    0,  499,  500,  518,
-			  500,    0,  566,  502,  614,  502,  503,  503,  500,    0,
-			  518,  619,  502,  623,  624,  503,  565,  503,  504,  504,
-			  518,  501,  506,  506,  503,    0,  629,  504,    0,  504,
-			  566,  506,  614,  506,  508,  508,  500,  504,  518,  619,
+			    0,  655,    0,  527,  527,  493,  502,  502,  502,  502,
+			  502,  502,  527,    0,  527,    0,    0,  497,  492,  503,
+			  503,  503,  503,  503,  503,  504,  504,  504,  504,  504,
+			  504,  505,  505,  505,  505,  505,  505,  507,  507,  507,
+			  507,  507,  507,  572,  572,  502,  508,  508,  508,  508,
+			  508,  508,  572,  507,  509,  509,  509,  509,  509,  509,
+			  510,  510,  510,  510,  510,  510,  511,  511,  511,  511,
+			  511,  511,    0,  656,    0,  659,  507,    0,    0,  521,
+			  521,  507,  512,  512,  512,  512,  512,  512,  521,    0,
+			  521,  523,  523,  509,  514,  514,  514,  514,  514,  514,
 
-			  502,  623,  624,  508,  630,  508,  506,  510,  510,  504,
-			  509,  509,  503,  508,  629,    0,  510,  631,  510,  509,
-			    0,  509,  512,  512,    0,  504,    0,  634,  509,  511,
-			  511,  512,  630,  512,  506,  513,  513,  504,  511,    0,
-			  511,  508,  521,  521,  513,  631,  513,  636,  511,  637,
-			  641,  521,  512,  521,  513,  634,  509,  514,  514,  514,
-			  514,  514,  514,  515,    0,  515,  515,  515,  515,  515,
-			  515,  515,  521,  642,    0,  636,  511,  637,  641,    0,
-			  512,    0,  513,  522,  522,  514,  517,  517,  517,  517,
-			  517,  517,  522,  515,  522,  519,  519,  643,  520,  520,
+			  523,  656,  523,  659,  515,  511,  515,  515,  515,  515,
+			  515,  515,  661,  522,  522,    0,    0,  523,  524,  524,
+			    0,  521,  522,  545,  522,    0,  567,  524,  662,  524,
+			  525,  525,  522,    0,  545,  666,  524,  667,  567,  525,
+			  661,  525,  526,  526,  545,  523,  528,  528,  525,    0,
+			  668,  526,    0,  526,  567,  528,  662,  528,  530,  530,
+			  522,  526,  545,  666,  524,  667,  567,  530,  677,  530,
+			  528,  532,  532,  526,  531,  531,  525,  530,  668,    0,
+			  532,  706,  532,  531,    0,  531,  534,  534,    0,  526,
+			    0,  677,  531,  533,  533,  534,  677,  534,  528,  535,
 
-			  521,  642,  536,  536,  519,    0,  519,  520,  517,  520,
-			  522,  536,  523,  514,  519,    0,    0,  520,  680,  682,
-			    0,  515,  516,  523,  516,  643,  516,  516,  516,  516,
-			  516,  516,    0,  523,  538,  538,  517,    0,  522,    0,
-			    0,  516,  519,  538,  536,  520,  680,  682,  516,  652,
-			  685,  523,  695,  538,  516,  524,  524,  524,  524,  524,
-			  524,  524,  526,  526,  526,  526,  526,  526,  526,  516,
-			  549,  549,  652,    0,    0,    0,  516,  652,  685,  549,
-			  695,  538,  516,  528,  528,  528,  528,  528,  528,  528,
-			  534,  699,  534,  534,  534,  534,  534,  534,  541,  541,
+			  535,  526,  533,    0,  533,  530,  543,  543,  535,  706,
+			  535,  708,  533,  711,  721,  543,  534,  543,  535,    0,
+			  531,  536,  536,  536,  536,  536,  536,  537,    0,  537,
+			  537,  537,  537,  537,  537,  537,  543,  725,    0,  708,
+			  533,  711,  721,    0,  534,    0,  535,  544,  544,  536,
+			  539,  539,  539,  539,  539,  539,  544,  537,  544,  541,
+			  541,  726,  542,  542,  543,  725,  559,  559,  541,    0,
+			  541,  542,  539,  542,  544,  559,  631,  536,  541,    0,
+			    0,  542,  727,  755,    0,  537,  538,  631,  538,  726,
+			  538,  538,  538,  538,  538,  538,    0,  631,  561,  561,
 
-			  542,  542,  545,  545,  546,  546,    0,  541,    0,  542,
-			    0,  545,    0,  546,    0,    0,  586,  586,  542,  699,
-			  545,  587,  587,  546,  541,  586,  594,  586,    0,  534,
-			  587,  586,  587,  700,  554,  546,  554,  554,  554,  554,
-			  554,  554,  554,  594,  556,  556,  542,  594,  545,  555,
-			  555,  546,  541,  556,  701,  558,  558,    0,  555,  586,
-			    0,  700,  556,  546,  558,  728,  562,  562,  555,  561,
-			  561,  594,  567,  567,  558,  562,    0,    0,  561,  568,
-			  568,  567,  701,  589,  589,  562,  591,  591,  568,  729,
-			  556,  567,  589,  728,  589,  591,  555,  591,  568,  561,
+			  539,    0,  544,    0,    0,  538,  541,  561,  559,  542,
+			  727,  755,  538,    0,    0,  631,    0,  561,  538,  546,
+			  546,  546,  546,  546,  546,  546,  548,  548,  548,  548,
+			  548,  548,  548,  538,  594,  594,  594,  594,  594,  594,
+			  538,  734,  734,  734,  734,  561,  538,  550,  550,  550,
+			  550,  550,  550,  550,  557,  756,  557,  557,  557,  557,
+			  557,  557,  564,  564,  565,  565,  568,  568,  569,  569,
+			    0,  564,    0,  565,    0,  568,    0,  569,    0,    0,
+			  610,  610,  565,  756,  568,  611,  611,  569,  564,  610,
+			  689,  610,    0,  557,  611,  610,  611,    0,  577,  569,
 
-			  588,  588,  558,  570,  570,  570,  570,  570,  570,  588,
-			    0,  588,  591,  562,  731,  588,    0,  729,  572,  567,
-			  572,  572,  572,  572,  572,  572,  568,  561,  573,  573,
-			  573,  573,  573,  573,  574,  574,  574,  574,  574,  574,
-			  591,    0,  731,  588,  573,  575,  575,  575,  575,  575,
-			  575,  576,  576,  576,  576,  576,  576,  572,  578,  578,
-			  578,  578,  578,  578,  579,  579,  579,  579,  579,  579,
-			    0,  733,  573,  574,  580,  580,  580,  580,  580,  580,
-			  581,  581,  581,  581,  581,  583,  583,  583,  583,  583,
-			  583,  590,  590,    0,  592,  592,  735,  593,  593,  733, yy_Dummy>>,
+			  577,  577,  577,  577,  577,  577,  577,  689,  579,  579,
+			  565,  689,  568,  578,  578,  569,  564,  579,    0,  581,
+			  581,    0,  578,  610,    0,  748,  579,  569,  581,  748,
+			  585,  585,  578,  584,  584,  689,  590,  590,  581,  585,
+			  758,    0,  584,  591,  591,  590,  748,  760,    0,  585,
+			  613,  613,  591,  592,  579,  590,  592,  748,    0,  613,
+			  578,  613,  591,  584,    0,  592,  581,  592,  758,  592,
+			  592,  592,  592,  592,  592,  760,  592,  585,    0,  762,
+			    0,    0,  596,  590,  596,  596,  596,  596,  596,  596,
+			  591,  584,  597,  597,  597,  597,  597,  597,  598,  598, yy_Dummy>>,
 			1, 1000, 2000)
 		end
 
 	yy_chk_template_4 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  590,  583,  590,  592,  736,  592,  593,    0,  593,  761,
-			  590,  595,  595,    0,  596,  596,  762,  597,  597,    0,
-			  595,  593,  595,  596,  735,  596,  597,    0,  597,  583,
-			  603,  603,  736,  596,  598,  598,    0,  761,  590,  603,
-			    0,  603,  595,  598,  762,  598,  599,  599,  597,  593,
-			  766,  605,  605,  598,  607,  599,  769,  599,  604,  604,
-			  605,  596,  605,    0,  599,  607,    0,  604,  605,  604,
-			  595,  606,  606,  608,    0,  607,  597,  609,  766,    0,
-			  606,  598,  606,  785,  769,  618,  618,  608,  604,  606,
-			    0,  609,  599,  607,  618,    0,  605,  788,  608,  802,
+			  598,  598,  598,  598,    0,    0,  592,  762,  597,  599,
+			  599,  599,  599,  599,  599,  600,  600,  600,  600,  600,
+			  600,  596,  602,  602,  602,  602,  602,  602,  603,  603,
+			  603,  603,  603,  603,    0,    0,  597,  598,  604,  604,
+			  604,  604,  604,  604,  605,  605,  605,  605,  605,  607,
+			  607,  607,  607,  607,  607,  612,  612,    0,  614,  614,
+			    0,    0,  615,  615,  612,  607,  612,  614,    0,  614,
+			  612,  615,  632,  615,  616,  616,    0,  614,  617,  617,
+			    0,  619,  619,  616,    0,  616,  632,  617,  615,  617,
+			  619,    0,  619,  607,  633,  620,  620,  632,  612,  763,
 
-			  622,  622,  609,    0,  628,  628,  644,  644,  608,  622,
-			    0,  785,  609,  628,    0,  644,  604,  606,  613,  613,
-			  613,  613,  613,  613,    0,  788,  608,  802,    0,  610,
-			  609,  610,  610,  610,  610,  610,  610,  610,  611,  807,
-			  611,  611,  611,  611,  611,  611,  611,  612,    0,  612,
-			  612,  612,  612,  612,  612,  612,  615,  615,  615,  615,
-			  615,  615,  818,  621,  621,  626,  626,  807,  610,    0,
-			  627,  627,  621,    0,  626,    0,  664,  611,  621,  627,
-			  632,  632,  633,  633,  626,    0,  612,    0,  826,  632,
-			  818,  633,    0,  664,  635,  635,  627,  664,  638,  638,
+			  621,  621,  617,    0,  620,  614,  620,  632,  633,  621,
+			    0,  621,  619,    0,  620,    0,  615,  622,  622,  633,
+			    0,    0,    0,  623,  623,  632,  622,  763,  622,  633,
+			  617,  621,  623,    0,  623,  788,  622,  627,  627,    0,
+			  619,  623,  620,  628,  628,    0,  627,  633,  627,  629,
+			  629,    0,  628,    0,  628,    0,  630,  630,  629,  621,
+			  629,  643,  643,  788,  622,  630,  629,  630,    0,  623,
+			  643,    0,  749,  628,  630,  634,  749,  634,  634,  634,
+			  634,  634,  634,  634,  635,    0,  635,  635,  635,  635,
+			  635,  635,  635,  749,  629,  638,  638,  638,  638,  638,
 
-			    0,  633,    0,  635,  639,  639,  621,  638,    0,  661,
-			  661,  632,  626,  639,  645,  645,  826,  638,  661,    0,
-			  661,  664,  639,  645,  627,  635,  670,  663,  663,  633,
-			  646,  646,  646,  646,  646,  646,  663,    0,  663,  632,
-			  665,  665,    0,  670,  645,  638,    0,  670,    0,  665,
-			  639,  665,    0,  635,  647,  647,  647,  647,  647,  647,
-			  649,    0,  649,    0,    0,  649,  649,  649,  649,  649,
-			  649,  670,  645,  650,  650,  650,  650,  650,  650,  651,
-			  651,  651,  651,  651,  651,  653,  653,  653,  653,  653,
-			  653,  655,  655,  655,  655,  655,  655,  656,  656,  656,
+			  638,  628,  630,  636,  749,  636,  636,  636,  636,  636,
+			  636,  636,  646,  646,  634,  640,  640,  640,  640,  640,
+			  640,  646,    0,  635,  647,  647,  789,  646,  651,  651,
+			  652,  652,    0,  647,  653,  653,    0,  651,    0,  652,
+			  657,  657,  636,  653,  658,  658,  793,  651,    0,  657,
+			  660,  660,    0,  658,  789,  646,  652,  663,  663,  660,
+			  664,  664,    0,  658,  669,  669,  663,  796,  750,  664,
+			  812,  657,  750,  669,  793,  651,  663,    0,  664,  685,
+			  685,  660,    0,  815,  652,  670,  670,    0,  685,  750,
+			  685,  658,    0,    0,  670,  796,  686,  686,  812,  657,
 
-			  656,  656,  656,  657,  657,  657,  657,  657,  657,  659,
-			  659,  718,  650,  660,  660,    0,  662,  662,  659,  657,
-			  659,    0,  660,    0,  660,  662,    0,  662,  718,  666,
-			  666,    0,  718,  662,  667,  667,  837,  660,  666,  659,
-			  666,    0,  657,  667,    0,  667,    0,  657,  668,  668,
-			    0,  669,  669,    0,  686,  686,  718,  668,    0,  668,
-			  669,  662,  669,  686,  837,  660,    0,  659,  671,  671,
-			    0,  672,  672,    0,  668,  673,  673,  671,    0,  671,
-			  672,    0,  672,    0,  673,    0,  673,  671,    0,  683,
-			  683,  691,  691,  672,  673,    0,    0,    0,  683,    0,
+			  750,  688,  688,  685,  663,  686,  664,  686,    0,  660,
+			  688,  815,  688,  829,  834,  670,  671,  671,  671,  671,
+			  671,  671,  672,  672,  672,  672,  672,  672,  674,    0,
+			  674,  685,    0,  674,  674,  674,  674,  674,  674,    0,
+			    0,  829,  834,  670,  675,  675,  675,  675,  675,  675,
+			  676,  676,  676,  676,  676,  676,  678,  678,  678,  678,
+			  678,  678,  680,  680,  680,  680,  680,  680,  681,  681,
+			  681,  681,  681,  681,  682,  682,  682,  682,  682,  682,
+			  684,  684,    0,  675,  687,  687,    0,  690,  690,  684,
+			  682,  684,    0,  687,    0,  687,  690,    0,  690,  712,
 
-			  691,  679,  668,  679,  679,  679,  679,  679,  679,  692,
-			  692,  694,  694,  683,    0,  671,    0,    0,  692,    0,
-			  694,  672,  673,  681,  799,  681,  681,  681,  681,  681,
-			  681,    0,  799,  687,  687,  697,  697,  698,  698,    0,
-			  679,  683,  687,    0,  697,  799,  698,  702,  702,    0,
-			  687,  708,  708,  708,  708,    0,  702,    0,    0,    0,
-			  799,  697,  681,    0,    0,  703,  702,  703,  703,  703,
-			  703,  703,  703,  710,  710,  710,  710,    0,  687,  704,
-			  704,  704,  704,  704,  704,    0,    0,    0,    0,  697,
-			    0,    0,  721,  721,  702,  705,  705,  705,  705,  705,
+			  712,  687,    0,  691,  691,    0,  692,  692,  712,  845,
+			  684,    0,  691,  682,  691,  692,    0,  692,  682,  693,
+			  693,  853,  694,  694,    0,  695,  717,  717,  693,  687,
+			  693,  694,    0,  694,    0,  717,    0,  845,  684,  696,
+			  696,  864,  695,  697,  697,  693,  695,    0,  696,  853,
+			  696,    0,  697,    0,  697,  698,  698,    0,  696,  709,
+			  709,    0,  718,  718,  698,  697,  698,    0,  709,  864,
+			  695,  718,    0,  693,  698,  705,    0,  705,  705,  705,
+			  705,  705,  705,  709,    0,  707,  696,  707,  707,  707,
+			  707,  707,  707,  697,    0,  713,  713,  720,  720,  723,
 
-			  705,  721,    0,  721,  703,  706,  706,  706,  706,  706,
-			  706,  707,  710,  707,    0,    0,  707,  707,  707,  707,
-			  707,  707,  709,  709,  709,  709,  709,  709,  711,  711,
-			  711,  711,  711,  711,  713,  713,    0,  714,  714,    0,
-			  765,  765,    0,  713,  711,  713,  714,    0,  714,  765,
-			    0,  713,  715,  715,    0,    0,    0,  717,  717,    0,
-			  714,  715,    0,  715,  719,  719,  717,  711,  717,  770,
-			  770,  715,  711,  719,  717,  719,  720,  720,  770,  713,
-			  722,    0,  719,  835,  722,  720,  723,  720,  714,    0,
-			  723,    0,  724,  725,  835,  720,  724,  725,    0,  715,
+			  723,    0,  698,    0,  713,    0,  720,    0,  723,  724,
+			  724,  709,  713,    0,  705,    0,    0,    0,  724,  728,
+			  728,  792,  792,    0,  707,  723,    0,    0,  728,  729,
+			  792,  729,  729,  729,  729,  729,  729,    0,  728,    0,
+			  713,  730,  730,  730,  730,  730,  730,  731,  731,  731,
+			  731,  731,  731,  723,  732,  732,  732,  732,  732,  732,
+			  736,  736,  736,  736,    0,  733,  728,  733,  729,    0,
+			  733,  733,  733,  733,  733,  733,  735,  735,  735,  735,
+			  735,  735,  737,  737,  737,  737,  737,  737,  765,  765,
+			  744,  739,  739,    0,  740,  740,    0,  765,  737,  736,
 
-			    0,  722,  717,    0,  835,    0,    0,  723,  751,  751,
-			  719,    0,  722,  724,  725,    0,    0,  751,  723,  751,
-			    0,    0,  835,  720,  724,  725,  726,  726,  726,  726,
-			  726,  726,  730,  730,  732,  732,    0,  734,  734,  738,
-			  738,  730,    0,  732,    0,  819,  734,  819,  738,    0,
-			    0,    0,    0,  732,  734,  730,  819,  738,  740,  740,
-			  740,  740,  740,  740,  741,  741,  741,  741,  741,  741,
-			  742,  742,  742,  742,  742,  742,  829,  829,  829,  829,
-			  829,  732,  734,  730,  819,  738,  743,  743,  743,  743,
-			  743,  743,  744,  744,  744,  744,  744,  744,  855,  855,
+			  739,    0,  739,  740,    0,  740,  765,  744,  739,  741,
+			  741,  744,    0,  743,  743,    0,    0,  740,  741,    0,
+			  741,  737,  743,    0,  743,    0,  737,    0,  741,  751,
+			  743,  745,  745,  751,  765,  744,  739,  747,  747,  826,
+			  745,    0,  745,  746,  746,  740,  747,  826,  747,  745,
+			  751,    0,  746,    0,  746,    0,  741,    0,  743,    0,
+			  826,  751,  746,  753,  753,  753,  753,  753,  753,  757,
+			  757,    0,  759,  759,    0,  826,    0,  745,  757,  761,
+			  761,  759,  767,  767,  767,  767,  767,  767,  761,    0,
+			  746,  759,  757,    0,    0,    0,  761,  768,  768,  768,
 
-			  855,  855,  855,  741,  745,  745,  745,  745,  745,  745,
-			  747,  747,  747,  747,  747,  747,  749,  749,    0,  750,
-			  750,    0,  752,  752,    0,  749,  747,  749,  750,    0,
-			  750,  752,  756,  752,  754,  754,  756,    0,  749,  755,
-			  755,  752,  757,  754,    0,  754,  757,    0,  755,  747,
-			  755,  750,  758,  756,  747,  759,  758,    0,    0,  759,
-			    0,  767,  767,  757,  756,    0,  749,    0,    0,  752,
-			  767,  755,    0,  758,  757,    0,  759,    0,    0,  750,
-			  767,    0,    0,    0,  758,    0,  760,  759,  760,  760,
-			  760,  760,  760,  760,  763,  763,  796,  796,    0,  755,
+			  768,  768,  768,  769,  769,  769,  769,  769,  769,  770,
+			  770,  770,  770,  770,  770,  892,  892,  892,  892,  759,
+			  757,    0,  778,  778,  761,  771,  771,  771,  771,  771,
+			  771,  778,    0,  778,    0,    0,  768,  772,  772,  772,
+			  772,  772,  772,  774,  774,  774,  774,  774,  774,  776,
+			  776,    0,  777,  777,  892,  779,  779,    0,  776,  774,
+			  776,  777,    0,  777,  779,  783,  779,  781,  781,  783,
+			    0,  776,  782,  782,  779,  784,  781,    0,  781,  784,
+			    0,  782,  774,  782,  777,  785,  783,  774,  786,  785,
+			    0,    0,  786,    0,  794,  794,  784,  783,    0,  776,
 
-			    0,    0,    0,  763,    0,  796,    0,  796,  767,  771,
-			  771,  771,  771,  771,  771,  773,  773,  773,  773,  773,
-			  773,    0,  774,    0,  774,  760,  763,  774,  774,  774,
-			  774,  774,  774,  775,  775,  775,  775,  775,  775,  800,
-			  777,  777,    0,    0,  778,  778,    0,  800,  771,  777,
-			    0,  777,    0,  778,  763,  778,    0,  779,  779,  777,
-			  800,  774,  780,  780,    0,    0,  779,    0,  779,  787,
-			  787,  780,    0,  780,    0,  800,  789,  789,  787,    0,
-			  778,  865,  865,  865,  865,  789,    0,  777,  779,  792,
-			  792,  792,  792,  792,  792,  797,  797,    0,  780,  795,
+			    0,    0,  779,  794,  782,    0,  785,  784,    0,  786,
+			    0,    0,  777,  794,    0,    0,    0,  785,    0,  787,
+			  786,  787,  787,  787,  787,  787,  787,  790,  790,  797,
+			  797,    0,  782,    0,    0,    0,  790,    0,  797,    0,
+			    0,  794,  798,  798,  798,  798,  798,  798,  800,  800,
+			  800,  800,  800,  800,    0,  801,    0,  801,  787,  790,
+			  801,  801,  801,  801,  801,  801,  802,  802,  802,  802,
+			  802,  802,  827,  804,  804,    0,    0,  805,  805,    0,
+			  827,  798,  804,    0,  804,    0,  805,  790,  805,    0,
+			  806,  806,  804,  827,  801,  807,  807,    0,    0,  806,
 
-			  795,    0,  798,  798,  797,  787,  797,  789,  795,  778,
-			  795,  798,  801,  798,  804,  804,  779,  806,  806,    0,
-			  865,  814,    0,  804,    0,  801,  806,  780,    0,  814,
-			  798,  795,    0,  801,  787,  789,  808,  808,  808,  808,
-			  808,  808,  814,    0,  812,  812,  801,  809,  809,  809,
-			  809,  809,  809,  812,    0,  812,    0,  814,  798,  795,
-			    0,  801,  811,  811,  811,  811,  811,  811,  813,  813,
-			  815,  816,  822,  822,  849,    0,  849,  813,  815,  813,
-			  812,  822,    0,  822,  816,  849,    0,  813,    0,    0,
-			    0,  815,  816,  820,    0,  820,  820,    0,  820,  820, yy_Dummy>>,
+			    0,  806,  814,  814,  807,    0,  807,    0,  827,  816,
+			  816,  814,    0,  805,    0,    0,    0,    0,  816,    0,
+			  804,  806,  819,  819,  819,  819,  819,  819,  823,  823,
+			    0,  807,  822,  822,  862,  824,  824,  823,  814,  823,
+			  816,  822,  805,  822,  824,  862,  824,  825,  825,  806,
+			  828,    0,  831,  831,    0,  862,  825,    0,  825,    0,
+			  807,  831,    0,  828,  822,  833,  833,  814,  816,    0,
+			    0,  828,    0,  862,  833,  825,  835,  835,  835,  835,
+			  835,  835,    0,    0,  828,  836,  836,  836,  836,  836,
+			  836,    0,  822,  838,  838,  838,  838,  838,  838,  828, yy_Dummy>>,
 			1, 1000, 3000)
 		end
 
 	yy_chk_template_5 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			  820,  820,  820,  820,    0,  816,  815,  821,  821,  812,
-			    0,    0,    0,  849,    0,  813,  821,    0,  821,    0,
-			  816,  828,  828,  828,  828,  828,  828,  831,  831,  831,
-			  831,  831,  831,  834,  834,  821,  833,  833,  833,  833,
-			  833,  833,  834,  836,  834,  838,  838,  838,  838,  838,
-			  838,    0,  834,    0,  836,  839,  839,  839,  839,  839,
-			  839,    0,    0,  821,  836,  840,  840,  840,  840,  840,
-			  840,  841,  841,  841,  841,  841,  841,    0,    0,    0,
-			  834,  843,  836,  843,  843,  831,  843,  843,  843,  843,
-			  843,  843,  844,  844,  845,  846,    0,    0,    0,    0,
+			  839,  839,    0,  825,  840,  840,  841,  843,  842,  839,
+			  846,  839,  846,  840,  841,  840,  842,    0,    0,    0,
+			  843,  846,    0,  840,  849,  849,    0,  841,  843,  842,
+			    0,    0,    0,  849,    0,  849,  839,    0,    0,  848,
+			  848,  843,  841,    0,  842,    0,    0,    0,  848,  846,
+			  848,  840,  847,    0,  847,  847,  843,  847,  847,  847,
+			  847,  847,  847,    0,    0,  839,    0,  848,  855,  855,
+			  855,  855,  855,  855,  856,  856,  856,  856,  856,  858,
+			  858,  858,  858,  858,  858,  860,  860,  860,  860,  860,
+			  860,  861,  861,  863,    0,  848,  871,  871,    0,    0,
 
-			    0,  844,    0,  844,    0,  845,  846,  848,  848,  848,
-			  848,  848,  848,    0,    0,  845,  846,  850,  850,  850,
-			  850,  850,  850,  853,  853,  853,  853,  853,  853,    0,
-			    0,    0,    0,  845,  846,  854,  854,  854,  854,  854,
-			  854,  857,  858,  857,  859,    0,  857,  857,  857,  857,
-			  857,  857,  860,  860,  860,  860,  860,  860,  862,  858,
-			  863,  859,    0,  858,    0,  859,  861,  861,  861,  861,
-			  861,  861,    0,    0,    0,  862,    0,  863,    0,  862,
-			    0,  863,    0,    0,    0,    0,    0,  858,    0,  859,
-			  864,  864,  864,  864,  864,  864,  868,  868,  868,  868,
+			  861,    0,  861,    0,  863,  871,    0,  871,    0,    0,
+			  861,    0,    0,    0,  863,  865,  865,  865,  865,  865,
+			  865,  866,  866,  866,  866,  866,  866,  882,  882,  882,
+			  882,  882,  863,    0,    0,    0,    0,  858,  861,  867,
+			  867,  867,  867,  867,  867,  868,  868,  868,  868,  868,
+			  868,  870,  872,  870,  870,  873,  870,  870,  870,  870,
+			  870,  870,    0,  872,    0,    0,  873,  875,  875,  875,
+			  875,  875,  875,  872,    0,  876,  873,  876,  877,  877,
+			  877,  877,  877,  877,    0,    0,  876,    0,    0,    0,
+			  885,  872,  886,    0,  873,  880,  880,  880,  880,  880,
 
-			  868,  868,    0,  862,    0,  863,  869,  869,  869,  869,
-			  869,  869,  870,  870,  870,  870,  870,  870,  872,  872,
-			  872,  872,  872,  872,  873,    0,  873,    0,    0,  873,
-			  873,  873,  873,  873,  873,  874,  874,  874,  874,  874,
-			  874,  875,  875,  875,  875,  875,  875,  893,  893,  893,
-			  893,  893,  893,  893,  893,  893,    0,    0,    0,    0,
-			    0,    0,    0,  873,  877,  877,  877,  877,  877,  877,
-			  877,  877,  877,  877,  877,  877,  877,  877,  877,  877,
-			  877,  877,  877,  877,  877,  877,  877,  877,  877,  877,
-			  877,  877,  877,  877,  877,  878,  878,  878,  878,  878,
+			  880,  881,  881,  881,  881,  881,  881,  885,    0,  886,
+			  884,  885,  884,  886,  876,  884,  884,  884,  884,  884,
+			  884,  887,  887,  887,  887,  887,  887,  888,  888,  888,
+			  888,  888,  888,  889,  890,  885,    0,  886,  891,  891,
+			  891,  891,  891,  891,  895,  895,  895,  895,  895,  895,
+			  889,  890,    0,    0,  889,  890,  896,  896,  896,  896,
+			  896,  896,  897,  897,  897,  897,  897,  897,  899,  899,
+			  899,  899,  899,  899,    0,  900,    0,  900,  889,  890,
+			  900,  900,  900,  900,  900,  900,  901,  901,  901,  901,
+			  901,  901,  902,  902,  902,  902,  902,  902,  921,  921,
 
-			  878,  878,  878,  878,  878,  878,  878,  878,  878,  878,
-			  878,  878,  878,  878,  878,  878,  878,  878,  878,  878,
-			  878,  878,  878,  878,  878,  878,  879,  879,    0,  879,
-			  879,  879,  879,  879,  879,  879,  879,  879,  879,  879,
-			  879,  879,  879,  879,  879,  879,    0,  879,  879,  879,
-			  879,  879,  879,  879,  879,  879,  879,  880,  880,    0,
-			  880,  880,  880,  880,  880,  880,  880,  880,  880,  880,
-			  880,  880,  880,  880,  880,  880,  880,  880,  880,  880,
-			  880,  880,  880,  880,  880,  880,  880,  880,  881,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			  921,  921,  921,  921,  921,  921,  921,    0,    0,    0,
+			    0,    0,    0,    0,  900,  904,  904,  904,  904,  904,
+			  904,  904,  904,  904,  904,  904,  904,  904,  904,  904,
+			  904,  904,  904,  904,  904,  904,  904,  904,  904,  904,
+			  904,  904,  904,  904,  905,  905,  905,  905,  905,  905,
+			  905,  905,  905,  905,  905,  905,  905,  905,  905,  905,
+			  905,  905,  905,  905,  905,  905,  905,  905,  905,  905,
+			  905,  905,  905,  906,  906,  906,  906,  906,  906,  906,
+			  906,  906,  906,  906,  906,  906,  906,  906,  906,  906,
+			  906,  906,  906,  906,  906,  906,  906,  906,  906,  906,
 
-			    0,  881,  881,  881,  881,  881,  881,  881,  881,  881,
-			  882,  882,  882,  882,    0,  882,  882,  882,  882,    0,
-			    0,    0,  882,  882,  882,  882,  882,  882,  882,  882,
-			  882,  883,  883,    0,  883,    0,  883,  883,  883,    0,
-			    0,  883,  883,  883,  883,    0,    0,    0,  883,  883,
-			  883,  883,  883,  883,  883,  883,  883,  884,  884,    0,
-			  884,  884,  884,  884,  884,  884,  884,  884,  884,  884,
-			  884,  884,  884,  884,  884,  884,  884,  884,  884,  884,
-			  884,  884,  884,  884,  884,  884,  884,  884,  885,  885,
-			    0,  885,  885,  885,  885,  885,  885,  885,  885,  885,
+			  906,  906,  907,  907,    0,  907,  907,  907,  907,  907,
+			  907,  907,  907,  907,  907,  907,  907,  907,  907,  907,
+			  907,    0,  907,  907,  907,  907,  907,  907,  907,  907,
+			  907,  908,  908,    0,  908,  908,  908,  908,  908,  908,
+			  908,  908,  908,  908,  908,  908,  908,  908,  908,  908,
+			  908,  908,  908,  908,  908,  908,  908,  908,  908,  908,
+			  909,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,  909,  909,  909,  909,  909,  909,  909,  909,  909,
+			  910,  910,  910,  910,    0,  910,  910,  910,    0,    0,
+			  910,  910,  910,  910,  910,  910,  910,  910,  910,  911,
 
-			  885,  885,  885,  885,  885,  885,  885,  885,    0,  885,
-			  885,  885,  885,  885,  885,  885,  885,  885,  885,  886,
-			  886,  886,  886,  886,  886,  886,  886,  886,  886,  886,
-			  886,  886,  886,  886,  886,  886,  886,  886,  886,  886,
-			  886,  886,  886,  886,  886,  886,  886,  886,  886,  886,
-			  887,  887,  887,  887,  887,  887,  887,  887,  887,  887,
-			  887,  887,  887,  887,  887,  887,  887,  887,  887,  887,
-			  887,  887,  887,  887,  887,  887,  887,  887,  887,  887,
-			  887,  888,    0,  888,    0,    0,    0,    0,  888,    0,
-			  888,  888,  888,    0,    0,  888,  888,  888,  888,    0,
+			  911,    0,  911,    0,  911,  911,  911,    0,    0,  911,
+			  911,  911,    0,    0,  911,  911,  911,  911,  911,  911,
+			  911,  911,  911,  912,  912,    0,  912,  912,  912,  912,
+			  912,  912,  912,  912,  912,  912,  912,  912,  912,  912,
+			  912,  912,  912,  912,  912,  912,  912,  912,  912,  912,
+			  912,  912,  913,  913,    0,  913,  913,  913,  913,  913,
+			  913,  913,  913,  913,  913,  913,  913,  913,  913,  913,
+			  913,    0,  913,  913,  913,  913,  913,  913,  913,  913,
+			  913,  914,  914,  914,  914,  914,  914,  914,  914,  914,
+			  914,  914,  914,  914,  914,  914,  914,  914,  914,  914,
 
-			    0,  888,  888,  888,  888,  888,  888,  888,  888,  888,
-			  888,  889,  889,    0,  889,  889,  889,  889,  889,  889,
-			  889,  889,  889,  889,  889,  889,  889,  889,  889,  889,
-			  889,  889,  889,  889,  889,  889,  889,  889,  889,  889,
-			  889,  889,  890,  890,  890,  890,  890,  890,  890,  890,
-			  890,  890,  890,  890,  890,  890,  890,  890,  890,  890,
-			  890,  890,  890,  890,  890,  890,  890,  890,  890,  890,
-			  890,  890,  890,  891,  891,  891,  891,    0,    0,  891,
-			  891,  891,  891,  891,    0,    0,  891,  891,  891,  891,
-			  891,  891,  891,  891,  891,  892,    0,    0,  892,  892,
+			  914,  914,  914,  914,  914,  914,  914,  914,  914,  914,
+			  915,  915,  915,  915,  915,  915,  915,  915,  915,  915,
+			  915,  915,  915,  915,  915,  915,  915,  915,  915,  915,
+			  915,  915,  915,  915,  915,  915,  915,  915,  915,  916,
+			    0,  916,    0,    0,    0,    0,  916,    0,  916,  916,
+			  916,    0,    0,  916,  916,  916,    0,    0,  916,  916,
+			  916,  916,  916,  916,  916,  916,  916,  917,  917,    0,
+			  917,  917,  917,  917,  917,  917,  917,  917,  917,  917,
+			  917,  917,  917,  917,  917,  917,  917,  917,  917,  917,
+			  917,  917,  917,  917,  917,  917,  918,  918,  918,  918,
 
-			  892,  892,  892,  892,  892,  892,  892,    0,    0,    0,
-			  892,  892,  892,  892,  892,  892,  892,  892,  892,  894,
-			  894,  894,  894,  894,  894,  894,  894,  894,    0,  894,
-			  894,  894,  894,  894,  894,  894,  894,  894,  894,  894,
-			  894,  894,  894,  894,  894,  894,  894,  894,  894,  894,
-			  895,  895,  895,  895,  895,  895,  895,  895,  895,  895,
-			  895,  895,  895,  895,  895,  895,  895,  895,  895,  895,
-			  895,  895,  895,  895,  895,  895,  895,  895,  895,  895,
-			  895,  896,  896,  896,    0,    0,  896,  896,  896,  896,
-			    0,    0,    0,  896,  896,  896,  896,  896,  896,  896,
+			  918,  918,  918,  918,  918,  918,  918,  918,  918,  918,
+			  918,  918,  918,  918,  918,  918,  918,  918,  918,  918,
+			  918,  918,  918,  918,  918,  919,  919,  919,  919,    0,
+			    0,  919,  919,  919,  919,    0,  919,  919,  919,  919,
+			  919,  919,  919,  919,  919,  920,    0,    0,  920,  920,
+			  920,  920,  920,  920,  920,  920,    0,    0,  920,  920,
+			  920,  920,  920,  920,  920,  920,  920,  922,  922,  922,
+			  922,  922,  922,  922,  922,  922,    0,  922,  922,  922,
+			  922,  922,  922,  922,  922,  922,  922,  922,  922,  922,
+			  922,  922,  922,  922,  922,  922,  923,  923,  923,  923,
 
-			  896,  896,  897,  897,  897,    0,    0,  897,  897,  897,
-			  897,    0,    0,    0,  897,  897,  897,  897,  897,  897,
-			  897,  897,  897,  898,  898,  898,  898,    0,    0,  898,
-			  898,  898,  898,  898,    0,    0,  898,  898,  898,  898,
-			  898,  898,  898,  898,  898,  899,  899,  899,  899,  899,
-			  899,  899,  899,  899,  899,  899,  899,  899,  899,  899,
-			  899,  899,  899,  899,  899,  899,  899,  899,  899,  899,
-			  899,  899,  899,  899,  899,  899,  900,  900,  900,  900,
-			    0,    0,    0,  900,  900,  900,  900,  900,  900,  900,
-			  900,  900,  901,  901,  901,    0,    0,  901,  901,  901,
+			  923,  923,  923,  923,  923,  923,  923,  923,  923,  923,
+			  923,  923,  923,  923,  923,  923,  923,  923,  923,  923,
+			  923,  923,  923,  923,  923,  924,  924,  924,  924,  924,
+			  924,  924,  924,  924,  924,  924,  924,  924,  924,  924,
+			  924,  924,  924,  924,  924,  924,  924,  924,  924,  924,
+			  924,  924,  924,  924,  925,  925,  925,    0,    0,  925,
+			  925,  925,    0,    0,  925,  925,  925,  925,  925,  925,
+			  925,  925,  925,  926,  926,  926,    0,    0,  926,  926,
+			  926,    0,    0,  926,  926,  926,  926,  926,  926,  926,
+			  926,  926,  927,  927,  927,  927,    0,    0,  927,  927,
 
-			  901,  901,  901,  901,  901,    0,    0,  901,  901,  901,
-			  901,    0,    0,    0,  901,  901,  901,  901,  901,  901,
-			  901,  901,  901,  902,  902,  902,  902,    0,    0,    0,
-			  902,  902,  902,  902,  902,  902,  902,  902,  902,  903,
-			  903,  903,    0,    0,  903,  903,  903,  903,    0,    0,
-			    0,  903,  903,  903,  903,  903,  903,  903,  903,  903,
-			  904,  904,  904,    0,    0,  904,  904,  904,  904,    0,
-			    0,    0,  904,  904,  904,  904,  904,  904,  904,  904,
-			  904,  905,  905,  905,  905,    0,    0,    0,  905,  905,
-			  905,  905,  905,  905,  905,  905,  905,  906,  906,  906, yy_Dummy>>,
+			  927,  927,    0,  927,  927,  927,  927,  927,  927,  927,
+			  927,  927,  928,  928,  928,  928,  928,  928,  928,  928,
+			  928,  928,  928,  928,  928,  928,  928,  928,  928,  928,
+			  928,  928,  928,  928,  928,  928,  928,  928,  928,  928,
+			  928,  929,  929,  929,    0,    0,  929,  929,  929,  929,
+			  929,  929,  929,  929,  929,  930,  930,  930,    0,    0,
+			  930,  930,  930,  930,  930,  930,  930,  930,    0,    0,
+			  930,  930,  930,    0,    0,  930,  930,  930,  930,  930,
+			  930,  930,  930,  930,  931,  931,  931,    0,    0,  931,
+			  931,  931,  931,  931,  931,  931,  931,  931,  932,  932, yy_Dummy>>,
 			1, 1000, 4000)
 		end
 
 	yy_chk_template_6 (an_array: ARRAY [INTEGER])
 		do
 			yy_array_subcopy (an_array, <<
-			    0,    0,  906,  906,  906,  906,    0,    0,    0,  906,
-			  906,  906,  906,  906,  906,  906,  906,  906,  907,  907,
-			  907,    0,    0,  907,  907,  907,  907,    0,    0,    0,
-			  907,  907,  907,  907,  907,  907,  907,  907,  907,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
+			  932,    0,    0,  932,  932,  932,    0,    0,  932,  932,
+			  932,  932,  932,  932,  932,  932,  932,  933,  933,  933,
+			    0,    0,  933,  933,  933,    0,    0,  933,  933,  933,
+			  933,  933,  933,  933,  933,  933,  934,  934,  934,    0,
+			    0,  934,  934,  934,  934,  934,  934,  934,  934,  934,
+			  935,  935,  935,    0,    0,  935,  935,  935,    0,    0,
+			  935,  935,  935,  935,  935,  935,  935,  935,  935,  936,
+			  936,  936,    0,    0,  936,  936,  936,    0,    0,  936,
+			  936,  936,  936,  936,  936,  936,  936,  936,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
 
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876, yy_Dummy>>,
-			1, 132, 5000)
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903, yy_Dummy>>,
+			1, 181, 5000)
 		end
 
 	yy_base_template: SPECIAL [INTEGER]
 			-- Template for `yy_base'
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,   90,   95,   77,   79,  187,    0, 1536,
-			 5039,   99, 1517, 1479, 1491, 5039,   86, 5039, 5039, 5039,
-			 5039, 5039, 1479,   89, 1460,   99,  266, 5039, 5039, 1441,
-			 5039, 1431, 5039,   88,   90,  108, 1429,  255,  266,   99,
-			  102,  109,  257,  265,  322,  100,  280,  267,  277,   88,
-			 5039, 5039, 1397,  401,  312,  326,  480,  251,  322,  104,
-			  336,  274,  265,  318,  321,  520,  289,  249, 1428, 5039,
-			 5039, 1436,  156, 5039,   99,  401,  309,  406,  312,  409,
-			  517, 5039,  518,  545, 5039,  315, 1428,  562,  576, 5039,
-			  309, 1420, 5039, 1412, 5039, 1405,    0,  584, 1404, 1349,
+			    0,    0,    0,   90,   95,   77,   79,   98,  102,  187,
+			    0, 1764, 5088,  104, 1752, 1719, 1728, 5088,   86, 5088,
+			 5088, 5088, 5088, 5088, 1711,  100, 1705,  266,  276, 5088,
+			 5088, 1690, 5088, 1683, 5088,  100,  102,   85, 1679,  265,
+			  276,   73,  267,   99,  275,  277,  334,  274,  101,  279,
+			   86,   87, 5088, 5088, 1644,  413,  324,  331,  492,  325,
+			  104,  111,  533,  280,  270,  337,  334,  327,  272,  297,
+			 1675, 5088, 5088, 1676,  322, 5088,  107,  355,  318,  413,
+			  322,  418,  363, 5088,  367,  373, 5088,  573, 1660, 1641,
+			 1567, 5088,  153, 1606,  575,  579,  326, 1594, 5088, 1586,
 
-			  590, 5039,  562,  600,  607,  642,  614,  654, 5039, 5039,
-			  559,    0,  663,  666,  669,  682,  697,  710,  703,  724,
-			  739,  742,  624,  745,  757,  770,  776,  783,  788,  795,
-			 1281,  817,  820,  837,  901,  913,  916,  946,  823,  929,
-			  963,  976,  988, 1234,  556,  348, 1200, 5039,  586, 1236,
-			    0, 1054, 1227,  313,  348,  368, 1175,  627,  700,  867,
-			  935,  392,  872,  383,  466,  991, 1002,  523,  662, 1007,
-			 1013,  547,  610,  887, 1017, 1213,  630,  643,  671, 1151,
-			 1073,  865, 1039, 1019,  657, 1120,  660, 1122,  677,  713,
-			 1042, 1124,  717,  719, 1126, 1032,  759,  797, 1137, 1139,
+			 5088, 1567,    0,  590, 1569, 1548,  598, 5088,  371,  604,
+			  617,  648,  627,  662, 5088, 5088,  571,    0,  671,  674,
+			  677,  691,  705,  709,  721,  733,  737,  740,  757,  772,
+			  776,  790,  794,  806,  813,  809, 1478,  835,  840,  873,
+			  937,  876,  949,  954,  892,  971,  909,  977, 1005, 1528,
+			  127,  259,  477, 1483, 5088,  163, 1527,    0, 1071, 1518,
+			  331,  372,  434, 1465,  567,  915,  590,  991,  433, 1010,
+			  473,  478,  856, 1020,  569,  656,  926, 1023,  589,  588,
+			 1027, 1033, 1503,  753,  631,  667, 1468, 1081,  861, 1048,
+			 1052,  657, 1137,  664, 1139,  680,  681, 1096, 1055,  696,
 
-			  800, 1165,  334, 1162, 5039, 1197, 5039,  739, 5039, 5039,
-			  994,  974, 1020, 1097, 1136,  823, 5039, 1148,  956,  788,
-			 1139,  838, 1114, 5039,  983, 1191, 5039, 1161, 1204,  157,
-			 1259,  172, 5039, 5039, 1149, 1213, 1147, 1142, 1138, 1136,
-			  870, 5039, 1334, 1230, 1340, 1081, 1021, 1351, 1358, 1380,
-			 1390, 1206, 1364,    0,    0, 1053, 1039, 1401, 1150, 1085,
-			 1406, 1413, 1418, 1425, 1441, 1445, 1457, 1469, 1446, 1473,
-			 1485, 1489, 1506, 1513, 1519, 1534, 5039, 1538, 1554, 1568,
-			 1584, 1598, 1595, 1605, 1621, 1633, 1638, 1650, 1656, 1662,
-			 1668, 1685, 1688, 1700, 1041, 1709, 1725, 5039,  627, 1033,
+			  686, 1142, 1144,  879,  741, 1149, 1154,  739, 1156,  709,
+			 1159, 5088, 1515, 5088,  844, 5088, 5088, 1033,  421,  775,
+			 1108, 1111,  773, 5088, 1459,  841,  857, 1450,  893, 1439,
+			 5088,  583, 1399, 1467, 1464, 1203,  792, 1203, 1450, 1228,
+			  829, 1283,  974, 5088, 5088, 5088, 1438, 1226, 1431, 1386,
+			 1384, 1232, 1028, 5088, 1358, 1241, 1247, 1183, 1123, 1253,
+			 1364, 1381, 1391, 1216, 1259,    0,    0, 1143, 1134, 1401,
+			 1407,  912, 1413, 1426, 1430, 1445, 1442, 1449, 1470, 1473,
+			 1474, 1476, 1495, 1502, 1521, 1187, 1534, 1539, 5088, 1551,
+			 1568, 1598, 1610, 1584, 1621, 1628, 1638, 1554, 1644, 1656,
 
-			  828,  906,    0,  985,  278, 1737, 1598,  885,  916, 1739,
-			  991, 1029, 1532, 1741, 1125, 1123, 1124, 1743, 1351, 1754,
-			 1125,  985, 1758, 1628, 1762, 1133, 1152, 1173, 1024, 1774,
-			 1792, 1795, 1180, 1501,    0,  889, 1376, 1392, 1798, 1802,
-			 1397, 1416, 1681, 1805, 1418, 1434,  973, 1809, 1825, 1827,
-			    0, 1373,  512, 1832, 1651,  419, 1791, 1495, 1816, 1820,
-			 1828,  759, 5039,  961,  954, 1855, 5039, 1212, 1252,  911,
-			 5039, 5039, 1868, 5039, 5039, 5039, 5039, 1484, 1874, 1898,
-			 1904,  851, 1910, 1916, 1938, 1922, 1944, 1961, 1970, 1976,
-			 1982,  879,  672,    0,  851, 1991, 1995, 1998, 2011, 2014,
+			 1672, 1675, 1692, 1699, 1705, 1712, 1103, 1655, 1721,  649,
+			 5088,  691, 1096,  864,  942,    0, 1008,  579, 1517, 1733,
+			 1166,  976, 1735, 1020, 1008, 1373, 1687, 1031, 1052, 1052,
+			 1738, 1752, 1755, 1133, 1003, 1758, 1584, 1766, 1160, 1351,
+			 1353, 1012, 1791, 1769, 1802, 1376, 1765,    0, 1216, 1396,
+			 1428, 1772, 1806, 1437, 1446, 1628, 1822, 1440, 1456,  951,
+			 1827, 1829, 1834,    0, 1839,  760, 1846, 1779,  736, 1791,
+			 1795, 1808, 1820, 1824,  359, 5088,  949, 5088, 1887, 1911,
+			  996, 1935, 5088, 1072, 1554,  978, 5088, 5088, 1900, 5088,
+			 5088, 5088, 5088, 1647, 1925, 1932, 1949,  906, 1955, 1961,
 
-			 1839, 2026, 2031, 2046, 2066, 1735, 2069, 2043, 2073, 2085,
-			 2089, 2101, 2086, 2118, 2145, 2157, 2169, 2181, 2196, 2212,
-			 2105, 2129, 2198, 2133, 2226, 2238, 2252, 2157,  310, 1665,
-			 2265, 1953, 2285, 2295,  803,    0, 1437,  642, 2304, 2313,
-			 2315, 1478, 2317, 1595, 1657, 2231, 2319,    0, 1645, 1693,
-			 1884, 2196, 2330, 1726, 1808, 2332, 1806, 1797, 1905, 2349,
-			 2336, 2360, 1910, 2363, 1903, 1978, 2367, 2373,    0,    0,
-			 2276, 2380, 1977, 1995, 2152, 2383, 2399,  845, 2395, 5039,
-			 2429, 2435, 2443, 2449,  808, 2455, 2461, 2472, 2478, 2484,
-			 2500,   81, 2512, 2524, 2246,  808,    0,    0, 2401, 2500,
+			 1978, 1984, 1990, 2006, 2015, 2021, 2027,  929, 1068,    0,
+			  891, 2036, 2040, 2043, 2056, 2059, 1864, 2071, 2076, 2091,
+			 2111, 1846, 2114, 2088, 2118, 2130, 2134, 2146, 2131, 2163,
+			 2190, 2202, 2214, 2226, 2241, 2257, 2150, 2174, 2243, 2178,
+			 2271, 2283, 2297, 2202, 1105, 1427, 2310, 1843, 2330, 2340,
+			  820,  848,    0, 1475,  789, 2349, 1941, 2358, 1501, 2360,
+			 1557, 1577, 2276, 2362,    0, 1564, 1619, 2241, 2364, 2374,
+			 1690, 1700, 2376, 1694, 1718, 1783, 2395, 2387, 2404, 1820,
+			 2407, 1827, 1842, 2411, 2426,    0,    0, 2321, 2430, 1887,
+			 1926, 2197, 2442, 2444,  864, 2446, 5088, 2462, 1112, 2473,
 
-			 2534, 2512, 2539, 2551, 2563, 2418, 2567,  784, 2579, 2595,
-			 2592, 2614, 2607, 2620, 2639, 2647, 2708, 2668, 2530, 2680,
-			 2683, 2627, 2668, 2683, 2737, 5039, 2744, 5039, 2765, 5039,
-			  698,    0,  644,  352, 2774, 2405, 2687, 1998, 2719, 2025,
-			 2095, 2783, 2785, 2100, 2339, 2787, 2789,    0, 2104, 2755,
-			 2194, 2216,    0,  802, 2818, 2834, 2829, 2217, 2840, 2364,
-			 2451, 2854, 2851, 2475, 2477, 2503, 2520, 2857, 2864,  614,
-			 2885,  927, 2902, 2910, 2916, 2927, 2933,  610, 2940, 2946,
-			 2956, 2962, 5039, 2967,    0,  634, 2801, 2806, 2885, 2868,
-			 2976, 2871, 2979, 2982, 2797, 2996, 2999, 3002, 3019, 3031,
+			 1204, 5088, 2488, 2501, 2507, 2513,  851, 2519, 2528, 2536,
+			 2542, 2548, 2564,  153, 2576, 2588, 2291,  889,    0,    0,
+			 2459, 2564, 2598, 2576, 2603, 2615, 2627, 2488, 2631,  839,
+			 2643, 2659, 2656, 2678, 2671, 2684, 2703, 2711, 2772, 2732,
+			 2028, 2744, 2747, 2691, 2732, 2594, 2801, 5088, 2808, 5088,
+			 2829, 5088,  629,  756,    0,  750,  636, 2838, 2473, 2751,
+			 1930, 2783, 1947, 1961, 2847, 2849, 2037, 2592, 2851, 2853,
+			    0, 2034, 2528, 2043, 2078,    0, 1161, 2882, 2898, 2893,
+			 2139, 2904, 2133, 2154, 2918, 2915, 2239, 2255, 2249, 2254,
+			 2921, 2928, 2951,  744, 2816,  764, 2966, 2974, 2980, 2991,
 
-			 5039,  974,  576, 3015, 3043, 3036, 3056, 3025, 3058, 3062,
-			 3113, 3122, 3131, 3100, 2534, 3138,  578,    0, 3070, 2541,
-			    0, 3148, 3085, 2539, 2533,    0, 3150, 3155, 3089, 2547,
-			 2558, 2583, 3165, 3167, 2581, 3179, 2613, 2616, 3183, 3189,
-			    0, 2605, 2641, 2664, 3091, 3199, 3212, 3236,  567, 3247,
-			 3255, 3261, 2715, 3267,  567, 3273, 3279, 3285,  552, 3294,
-			 3298, 3194, 3301, 3212, 3147, 3225, 3314, 3319, 3333, 3336,
-			 3197, 3353, 3356, 3360,  550,  494,  492,  490, 1094, 3385,
-			 2673, 3407, 2680, 3374,    0, 2718, 3339, 3418,    0,    0,
-			    0, 3376, 3394,    0, 3396, 2711,    0, 3420, 3422, 2757,
+			 2997,  729, 3004, 3010, 3020, 3026, 5088, 3031,    0,  759,
+			 2865, 2870, 3040, 2935, 3043, 3047, 3059, 3063, 2358, 3066,
+			 3080, 3085, 3102, 3108, 5088, 1408,  699, 3122, 3128, 3134,
+			 3141, 2747, 3057, 3079, 3159, 3168, 3187,  653, 3177, 2351,
+			 3197,  658,    0, 3146, 2371,    0, 3197, 3209, 2372, 2396,
+			    0, 3213, 3215, 3219, 2412, 2427, 2539, 3225, 3229, 2529,
+			 3235, 2578, 2595, 3242, 3245,    0, 2590, 2605, 2617, 3249,
+			 3270, 3298, 3304,  641, 3315, 3326, 3332, 2634, 3338,  639,
+			 3344, 3350, 3356,  626, 3365, 3264, 3281, 3369, 3286, 2861,
+			 3372, 3388, 3391, 3404, 3407, 3396, 3424, 3428, 3440,  583,
 
-			 2796, 2820, 3432, 3449, 3461, 3477, 3487, 3498, 3433, 3504,
-			 3460, 3510,    0, 3519, 3522, 3537, 5039, 3542, 3282, 3549,
-			 3561, 3477, 3551, 3557, 3563, 3564, 3608,  472, 2833, 2851,
-			 3617, 2880, 3619, 2939, 3622, 2963, 2970,    0, 3624,  400,
-			 3640, 3646, 3652, 3668, 3674, 3686, 5039, 3692,    0, 3701,
-			 3704, 3593, 3707, 5039, 3719, 3724, 3703, 3713, 3723, 3726,
-			 3770, 2972, 2969, 3779,    0, 3525, 3016, 3746,    0, 3009,
-			 3554, 3791,  383, 3797, 3809, 3815,  468, 3825, 3829, 3842,
-			 3847,  905, 5039, 1389,  401, 3049,  702, 3854, 3051, 3861,
-			  713, 1952, 3871,    0,  335, 3884, 3781, 3880, 3887, 3395,
+			  577,  561,  506,  495, 1202, 3459, 2636, 3469, 2672, 3444,
+			    0, 2681, 3384, 3480,    0,    0,    0, 3411, 3447,    0,
+			 3482, 2673,    0, 3484, 3494, 2703, 2724, 2748, 3504, 3513,
+			 3523, 3529, 3536, 3552, 2823, 3558, 3547, 3564,    0, 3576,
+			 3579, 3594, 5088, 3598, 3561, 3616, 3628, 3622, 2896, 3143,
+			 3239, 3600, 1250, 3645,  500, 2751, 2817, 3654, 2906, 3657,
+			 2915, 3664, 2946, 3065,    0, 3573,  412, 3664, 3679, 3685,
+			 3691, 3707, 3719, 5088, 3725,    0, 3734, 3737, 3707, 3740,
+			 5088, 3752, 3757, 3736, 3746, 3756, 3759, 3803, 3098, 3179,
+			 3812,    0, 3506, 3212, 3779,    0, 3220, 3814, 3824,  391,
 
-			 3810, 3896, 3052,    0, 3899,    0, 3902, 3096, 3918, 3929,
-			 1004, 3944, 3929, 3953, 3892, 3941, 3955,  913, 3128, 3632,
-			 3980, 3992, 3957,  309,  274,  989, 3145,    0, 4003, 3658,
-			 5039, 4009,   99, 4018, 4018, 3554, 4014, 3302, 4027, 4037,
-			 4047, 4053,  108, 4068, 4077, 4065, 4066,    0, 4089, 3961,
-			 4099,  139,  126, 4105, 4117, 3680, 5039, 4128, 4113, 4115,
-			 4134, 4148, 4129, 4131, 4172, 3868, 5039, 5039, 4178, 4188,
-			 4194, 5039, 4200, 4211, 4217, 4223, 5039, 4263, 4294, 4325,
-			 4356, 4378, 4399, 4425, 4456, 4487, 4518, 4549, 4579, 4610,
-			 4641, 4663, 4687, 4224, 4718, 4749, 4770, 4791, 4813, 4844,
+			 3830, 3842, 3848, 1043, 3858, 3862, 3875, 3880,  723, 5088,
+			 1580,  413, 3236,  803, 3887, 3237, 3894,  934, 2001, 3904,
+			    0,  342, 3917, 3913, 3920, 3932, 3610, 3843, 3934, 3266,
+			    0, 3937,    0, 3950, 3271, 3958, 3967, 1235, 3975, 3985,
+			 3989, 3977, 3979, 3991,  943, 3375, 3997, 4039, 4024, 4009,
+			  379,  319, 1414, 3378,    0, 4050, 4056, 5088, 4061,  243,
+			 4067, 4076, 3905, 4064, 3407, 4097, 4103, 4121, 4127,  221,
+			 4138, 4081, 4123, 4126,    0, 4149, 4162, 4160,  153,  126,
+			 4177, 4183, 4109, 5088, 4197, 4161, 4163, 4203, 4209, 4204,
+			 4205, 4220, 3702, 5088, 5088, 4226, 4238, 4244, 5088, 4250,
 
-			 4860, 4891, 4907, 4928, 4949, 4965, 4986, 5007, yy_Dummy>>)
+			 4262, 4268, 4274, 5088, 4314, 4343, 4372, 4401, 4430, 4450,
+			 4469, 4493, 4522, 4551, 4580, 4609, 4637, 4666, 4695, 4715,
+			 4737, 4277, 4766, 4795, 4824, 4843, 4862, 4882, 4911, 4925,
+			 4954, 4968, 4987, 5006, 5020, 5039, 5058, yy_Dummy>>)
 		end
 
 	yy_def_template: SPECIAL [INTEGER]
 			-- Template for `yy_def'
 		once
 			Result := yy_fixed_array (<<
-			    0,  876,    1,  877,  877,  878,  878,  876,    7,  876,
-			  876,  876,  876,  876,  879,  876,  880,  876,  876,  876,
-			  876,  876,  876,  876,  881,  876,  876,  876,  876,  876,
-			  876,  876,  876,  882,  882,  882,  882,  882,  882,  882,
-			  882,  882,  882,  882,  882,  882,  882,  882,  882,  883,
-			  876,  876,  884,  876,   53,   53,  876,   56,   56,   56,
-			   56,   56,   56,   56,   56,   56,   56,   56,  876,  876,
-			  876,  885,  876,  876,  876,  885,  885,  885,  885,  885,
-			  886,  876,  887,  886,  876,  888,  876,  888,  888,  876,
-			  876,  876,  876,  879,  876,  889,  889,  889,  890,  876,
+			    0,  903,    1,  904,  904,  905,  905,  906,  906,  903,
+			    9,  903,  903,  903,  903,  903,  907,  903,  908,  903,
+			  903,  903,  903,  903,  903,  903,  909,  903,  903,  903,
+			  903,  903,  903,  903,  903,  910,  910,  910,  910,  910,
+			  910,  910,  910,  910,  910,  910,  910,  910,  910,  910,
+			  910,  911,  903,  903,  912,  903,   55,   55,  903,   58,
+			   58,   58,   58,   58,   58,   58,   58,   58,   58,   58,
+			  903,  903,  903,  913,  903,  903,  903,  913,  913,  913,
+			  913,  913,  914,  903,  915,  914,  903,  903,  903,  903,
+			  903,  903,  916,  903,  916,  916,  903,  903,  903,  907,
 
-			  876,  876,  891,  876,  876,  876,  876,  876,  876,  876,
-			  882,  892,  882,  882,  882,  882,  882,  882,  882,  882,
-			  882,  882,  882,  882,  882,  882,  882,  882,  882,  882,
-			  876,   44,  882,  882,  882,  882,  882,  882,  882,  882,
-			  882,  882,  882,  883,  883,  883,  884,  876,  876,  876,
-			  893,   56,  876,  151,  151,  151,  876,   56,   56,   56,
-			   56,  151,   56,  151,  151,   56,   56,  151,  151,   56,
-			   56,  151,  151,   56,   56,  151,   56,  151,  151,  151,
-			   56,   56,   56,   56,  151,   56,  151,   56,  151,  151,
-			   56,   56,  151,  151,   56,   56,  151,  151,   56,   56,
+			  903,  917,  917,  917,  918,  903,  903,  903,  919,  903,
+			  903,  903,  903,  903,  903,  903,  910,  920,  910,  910,
+			  910,  910,  910,  910,  910,  910,  910,  910,  910,  910,
+			  910,  910,  910,  910,  910,  910,  903,   46,  910,  910,
+			  910,  910,  910,  910,  910,  910,  910,  910,  910,  911,
+			  911,  911,  911,  912,  903,  903,  903,  921,   58,  903,
+			  158,  158,  158,  903,   58,   58,   58,   58,  158,   58,
+			  158,  158,   58,   58,  158,  158,   58,   58,  158,  158,
+			   58,   58,  158,   58,  158,  158,  158,   58,   58,   58,
+			   58,  158,   58,  158,   58,  158,  158,   58,   58,  158,
 
-			  151,   56,  151,   56,  876,  885,  876,  876,  876,  876,
-			  885,  885,  885,  885,  885,  886,  876,  894,  886,  887,
-			  895,  887,  894,  876,  888,  888,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  881,  876,  876,  876,  876,
-			  876,  876,  876,  896,  897,  876,  892,  882,  882,  882,
-			  882,  882,  882,  882,  882,  882,  882,  882,  876,  882,
-			  882,  882,  882,  882,  882,  882,  876,  882,  882,  882,
-			  882,  134,  134,  134,  882,  882,  882,  882,  882,  882,
-			  882,  882,  882,  882,  876,  883,  883,  876,  898,  876,
+			  158,   58,   58,  158,  158,   58,   58,  158,   58,  158,
+			   58,  903,  913,  903,  903,  903,  903,  913,  913,  913,
+			  913,  913,  914,  903,  922,  914,  915,  923,  915,  922,
+			  903,  903,  903,  903,  924,  903,  916,  916,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  909,  903,  903,
+			  903,  903,  903,  903,  903,  925,  926,  903,  920,  910,
+			  910,  910,  910,  910,  910,  910,  910,  910,  910,  910,
+			  903,  910,  910,  910,  910,  910,  910,  910,  903,  910,
+			  910,  910,  910,  140,  140,  140,  910,  910,  910,  910,
 
-			  151,  151,  151,  876,  876,   56,   56,   56,  151,   56,
-			  151,  151,   56,   56,  151,  151,  151,   56,   56,   56,
-			  151,  151,   56,   56,  876,  151,  151,  151,  151,  151,
-			   56,   56,  151,   56,  151,   56,  151,  151,   56,   56,
-			  151,  151,   56,   56,  151,  151,  151,   56,   56,   56,
-			  151,   56,  151,   56,  885,  885,  885,  885,  885,  885,
-			  885,  894,  876,  895,  899,  899,  876,  899,  899,  899,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  896,  897,  900,  892,  882,  882,  882,  882,  882,
+			  910,  910,  910,  910,  910,  910,  903,  911,  911,  911,
+			  903,  927,  903,  158,  158,  158,  903,  903,   58,   58,
+			   58,  158,   58,  158,  158,   58,   58,  158,  158,  158,
+			   58,   58,   58,  158,  158,   58,   58,  903,  158,  158,
+			  158,  158,  158,   58,   58,  158,   58,  158,   58,  158,
+			  158,   58,   58,  158,  158,   58,   58,  158,  158,  158,
+			   58,   58,   58,  158,   58,  158,   58,  913,  913,  913,
+			  913,  913,  913,  913,  922,  903,  923,  903,  903,  903,
+			  928,  928,  903,  928,  928,  928,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
 
-			  882,  882,  882,  882,  882,  876,  882,  882,  882,  882,
-			  882,  882,  134,  131,  131,  131,  876,  897,  414,  414,
-			  882,  882,  876,  882,  882,  882,  882,  882,  876,  883,
-			  883,  883,  883,  883,  876,  901,  151,  151,  876,   56,
-			   56,  151,   56,  151,  151,   56,   56,  151,  151,  151,
-			   56,   56,   56,  151,  151,   56,  151,  151,  151,  897,
-			   56,   56,  151,   56,  151,  151,   56,   56,  151,  151,
-			   56,   56,  151,  151,  151,   56,   56,  151,   56,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  902,  903,  882,  882,
+			  903,  903,  903,  903,  903,  903,  903,  925,  926,  929,
+			  920,  910,  910,  910,  910,  910,  910,  910,  910,  910,
+			  910,  903,  910,  910,  910,  910,  910,  910,  140,  137,
+			  137,  137,  903,  926,  430,  430,  910,  910,  903,  910,
+			  910,  910,  910,  910,  903,  911,  911,  911,  911,  911,
+			  911,  903,  930,  158,  158,  903,   58,   58,  158,   58,
+			  158,  158,   58,   58,  158,  158,  158,   58,   58,   58,
+			  158,  158,   58,  158,  158,  158,  926,   58,   58,  158,
+			   58,  158,  158,   58,   58,  158,  158,   58,   58,  158,
+			  158,  158,   58,   58,  158,   58,  903,  903,  903,  903,
 
-			  882,  882,  882,  882,  882,  882,  882,  876,  882,  882,
-			  882,  882,  882,  882,  876,  897,  414,  516,  876,  882,
-			  882,  882,  882,  896,  883,  876,  883,  876,  883,  876,
-			  876,  151,  151,  876,  876,   56,   56,  151,   56,  151,
-			  151,   56,   56,  151,  151,   56,   56,  151,  151,   56,
-			  151,  151,  151,  897,  897,   56,   56,  151,   56,  151,
-			  151,   56,   56,  151,  151,  151,  151,   56,   56,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  904,  903,  882,  882,  882,  882,
-			  882,  882,  882,  882,  876,  882,  882,  882,  882,  882,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  931,  932,
+			  910,  910,  910,  910,  910,  910,  910,  910,  910,  903,
+			  910,  910,  910,  910,  910,  910,  903,  926,  430,  538,
+			  903,  910,  910,  910,  910,  925,  911,  903,  911,  903,
+			  911,  903,  911,  903,  158,  158,  903,  903,   58,   58,
+			  158,   58,  158,  158,   58,   58,  158,  158,   58,   58,
+			  158,  158,   58,  158,  158,  158,  926,  926,   58,   58,
+			  158,   58,  158,  158,   58,   58,  158,  158,  158,  158,
+			   58,   58,  903,  903,  903,  903,  903,  903,  903,  903,
 
-			  876,  897,  876,  882,  882,  882,  882,  876,  896,  896,
-			  883,  883,  883,  876,  151,  876,  876,  151,   56,  151,
-			  151,   56,   56,  151,  151,  151,   56,   56,   56,  151,
-			  151,  151,   56,   56,  151,   56,  151,  151,   56,   56,
-			  151,  151,  151,  151,   56,   56,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  904,  882,
-			  882,  882,  882,  882,  876,  882,  882,  882,  882,  882,
-			  876,  882,  882,  882,  876,  876,  896,  896,  876,  876,
-			  151,  876,  151,   56,  151,  151,   56,   56,  151,  151,
-			  151,   56,   56,  151,   56,  151,  151,   56,   56,  151,
+			  903,  903,  903,  903,  903,  903,  903,  903,  933,  932,
+			  910,  910,  910,  910,  910,  910,  910,  910,  903,  910,
+			  910,  910,  910,  910,  903,  926,  903,  910,  910,  910,
+			  910,  903,  925,  925,  911,  911,  911,  911,  903,  158,
+			  903,  903,  158,   58,  158,  158,   58,   58,  158,  158,
+			  158,   58,   58,   58,  158,  158,  158,   58,   58,  158,
+			   58,  158,  158,   58,   58,  158,  158,  158,  158,   58,
+			   58,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  933,  910,  910,  910,  910,  910,  903,
+			  910,  910,  910,  910,  910,  903,  910,  910,  910,  903,
 
-			  151,  151,   56,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  905,  882,  882,  882,  876,  882,  876,  882,
-			  882,  882,  876,  876,  902,  902,  876,  876,  151,  151,
-			   56,  151,   56,  151,   56,  151,  151,  151,   56,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  906,  882,
-			  882,  882,  882,  876,  882,  882,  876,  876,  904,  904,
-			  876,  151,  151,   56,  151,   56,  151,   56,  151,  151,
-			   56,  876,  876,  876,  876,  876,  906,  882,  882,  882,
-			  882,  876,  876,  904,  904,  151,  151,   56,  151,   56,
-			  151,  876,  876,  907,  876,  882,  882,  882,  882,  876,
+			  903,  925,  925,  903,  903,  903,  158,  903,  158,   58,
+			  158,  158,   58,   58,  158,  158,  158,   58,   58,  158,
+			   58,  158,  158,   58,   58,  158,  158,  158,   58,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  934,  910,
+			  910,  910,  903,  910,  903,  910,  910,  910,  903,  903,
+			  931,  931,  903,  903,  903,  158,  158,   58,  158,   58,
+			  158,   58,  158,  158,  158,   58,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  935,  910,  910,  910,  910,
+			  903,  910,  910,  903,  903,  933,  933,  903,  158,  158,
+			   58,  158,   58,  158,   58,  158,  158,   58,  903,  903,
 
-			  876,  904,  151,  151,   56,  151,   56,  151,  876,  876,
-			  907,  876,  882,  882,  876,  876,  904,  151,  151,  876,
-			  876,  882,  882,  876,  876,  904,  151,  151,  876,  876,
-			  876,  876,  876,  876,  882,  876,  876,  151,  876,  876,
-			  876,  876,  876,  876,  882,  876,  876,  151,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,    0,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
-			  876,  876,  876,  876,  876,  876,  876,  876,  876,  876,
+			  903,  903,  903,  935,  910,  910,  910,  910,  903,  903,
+			  933,  933,  158,  158,   58,  158,   58,  158,  903,  903,
+			  936,  903,  910,  910,  910,  910,  903,  903,  933,  158,
+			  158,   58,  158,   58,  158,  903,  903,  936,  903,  910,
+			  910,  903,  903,  933,  158,  158,  903,  903,  910,  910,
+			  903,  903,  933,  158,  158,  903,  903,  903,  903,  903,
+			  903,  910,  903,  903,  158,  903,  903,  903,  903,  903,
+			  903,  910,  903,  903,  158,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
 
-			  876,  876,  876,  876,  876,  876,  876,  876, yy_Dummy>>)
+			  903,  903,  903,    0,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903,  903,  903,  903,
+			  903,  903,  903,  903,  903,  903,  903, yy_Dummy>>)
 		end
 
 	yy_ec_template: SPECIAL [INTEGER]
@@ -2810,12 +2986,12 @@ feature {NONE} -- Table templates
 			    0,    1,    2,    3,    1,    4,    1,    5,    1,    1,
 			    6,    7,    1,    1,    8,    9,    9,   10,   11,   11,
 			   11,   11,   12,   13,    1,    1,   14,    1,   15,    1,
-			   16,   16,   16,   16,   17,   16,   16,   16,   16,   16,
-			   16,   16,   16,   16,   16,   16,   16,   16,   16,   18,
-			   16,   16,   19,   20,   21,   22,    5,   11,   23,   23,
-			   23,   23,   23,   23,   23,   23,   23,   23,   23,   23,
-			   23,   23,   23,   24,   25,   26,   27,   28,   29,   30,
-			   31,    5,    5,    5,    5,    1,    1,    1,    1,    1,
+			   16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
+			   16,   16,   16,   16,   16,   16,   16,   16,   16,   17,
+			   16,   16,   18,   19,   20,    5,    5,   11,   21,   21,
+			   21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+			   21,   21,   21,   22,   23,   24,   25,   26,   27,   28,
+			   29,    5,    5,    5,    5,    1,    1,    1,    1,    1,
 			    1,    1,    1, yy_Dummy>>)
 		end
 
@@ -2823,114 +2999,118 @@ feature {NONE} -- Table templates
 			-- Template for `yy_accept'
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,    0,    0,   96,   96,    0,    0,  127,
-			  125,    1,    2,   15,  109,   18,  125,   16,   17,    7,
-			    6,   13,    5,   11,    8,  101,  101,   14,   12,   28,
-			   10,   29,   19,   89,   89,   89,   89,   89,   89,   89,
-			   89,   89,   89,   89,   81,   89,   89,   89,   89,   21,
-			   30,   22,    9,   92,   92,   92,   92,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   23,   20,
-			   24,  113,  114,  115,  116,  113,  113,  113,  113,  113,
-			   96,   99,  126,   96,  126,  126,   69,  126,  126,   71,
-			    1,    2,   27,  109,  108,  123,  123,  123,    3,   32,
+			    0,    0,    0,    0,    0,  104,  104,    0,    0,    0,
+			    0,  135,  133,    1,    2,   15,  117,   18,  133,   16,
+			   17,    7,    6,   13,    5,   11,    8,  109,  109,   14,
+			   12,   28,   10,   29,   19,   97,   97,   97,   97,   97,
+			   97,   97,   97,   97,   97,   97,   89,   97,   97,   97,
+			   97,   21,   30,   22,    9,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			   23,   20,   24,  121,  122,  123,  124,  121,  121,  121,
+			  121,  121,  104,  107,  134,  104,   72,   72,   69,   72,
+			   72,   79,   79,   76,   79,   79,    1,    2,   27,  117,
 
-			  107,   31,   93,    0,    0,  101,    0,  101,   26,   25,
-			   89,    0,   89,   89,   89,   89,   89,   89,   89,   89,
-			   89,   89,   89,   89,   89,   89,   89,   89,   89,   39,
-			    0,   89,   88,   88,   80,   88,   88,   89,   89,   89,
-			   89,   89,   89,    0,    0,    0,    0,  100,    0,    0,
-			    0,   92,    0,   92,   92,   92,    0,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,   39,
-			   92,   39,   92,   92,   92,   92,   92,   92,   92,   92,
+			  116,  131,  131,  131,    3,   32,  115,   31,  101,    0,
+			    0,  109,    0,  109,   26,   25,   97,    0,   97,   97,
+			   97,   97,   97,   97,   97,   97,   97,   97,   97,   97,
+			   97,   97,   97,   97,   97,   39,    0,   97,   96,   96,
+			   88,   96,   96,   97,   97,   97,   97,   97,   97,    0,
+			    0,    0,    0,    0,  108,    0,    0,    0,  100,    0,
+			  100,  100,  100,    0,  100,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,  100,   39,  100,   39,  100,
 
-			   92,   92,   92,   92,   95,  113,  115,  114,  111,  110,
-			  112,  113,  113,  113,  113,   96,   99,    0,   96,    0,
-			    0,    0,   97,   98,    0,    0,   71,   69,    0,   68,
-			    0,   67,  123,  117,  123,  123,  123,  123,  123,  123,
-			    4,   33,  107,    0,    0,    0,    0,    0,  103,    0,
-			  101,    0,    0,    0,    0,    0,    0,   89,   89,   38,
-			   89,   89,   89,   89,   89,   89,   89,   89,    0,   89,
-			   89,   89,   89,   41,   89,   89,   87,   81,   81,   81,
-			   81,   88,   89,   88,   88,   88,   89,   89,   89,   89,
-			   89,   89,   40,   89,    0,    0,    0,   91,   94,    0,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			  100,  103,  121,  123,  122,  119,  118,  120,  121,  121,
+			  121,  121,  104,  107,    0,  104,    0,    0,    0,  105,
+			  106,    0,    0,   69,    0,    0,    0,    0,   76,    0,
+			   75,    0,   74,   78,  131,  125,  131,  131,  131,  131,
+			  131,  131,    4,   33,  115,    0,    0,    0,    0,    0,
+			  111,    0,  109,    0,    0,    0,    0,    0,    0,   97,
+			   97,   38,   97,   97,   97,   97,   97,   97,   97,   97,
+			    0,   97,   97,   97,   97,   41,   97,   97,   95,   89,
+			   89,   89,   89,   96,   97,   96,   96,   96,   97,   97,
 
-			   92,   92,   38,    0,    0,   92,   92,   38,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,   92,
-			   92,   92,   92,   92,    0,   92,   92,   92,   64,   64,
-			   92,   92,   92,   92,   41,   41,   92,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,   92,
-			   40,   40,   92,   92,  113,  113,  113,  113,  113,  113,
-			  113,    0,   97,   98,    0,    0,   70,   68,   67,   71,
-			  121,  124,  124,  122,  118,  119,  120,  107,    0,  107,
-			    0,    0,    0,  103,    0,    0,    0,  106,  101,    0,
-			    0,    0,    0,    0,   90,   89,   89,   89,   89,   89,
+			   97,   97,   97,   97,   40,   97,    0,    0,    0,    0,
+			   99,  102,    0,  100,  100,   38,    0,    0,  100,  100,
+			   38,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,  100,  100,    0,  100,  100,
+			  100,   64,   64,  100,  100,  100,  100,   41,   41,  100,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			  100,  100,  100,   40,   40,  100,  100,  121,  121,  121,
+			  121,  121,  121,  121,    0,  105,  106,   70,    0,    0,
+			    0,    0,   77,   75,   74,   78,  129,  132,  132,  130,
+			  126,  127,  128,  115,    0,  115,    0,    0,    0,  111,
 
-			   37,   89,   89,   89,   89,    0,   89,   89,   89,   89,
-			   89,   89,   80,   89,   89,   89,    0,    0,   80,   80,
-			   80,   36,    0,   43,   89,   89,   89,   89,   66,    0,
-			    0,    0,    0,    0,    0,   61,   92,   92,    0,   92,
-			   92,   92,   92,   92,   92,   92,   92,   37,   92,   92,
-			   37,   92,   92,   92,   92,   92,   92,   92,   92,    0,
-			   92,   92,   92,   92,   92,   92,   92,   92,   36,   43,
-			   36,   43,   92,   92,   92,   92,   92,   92,   92,   98,
-			  107,    0,    0,    0,  102,  103,    0,  104,    0,  106,
-			    0,    0,    0,  101,   77,    0,    0,    0,   58,   89,
+			    0,    0,    0,  114,  109,    0,    0,    0,    0,    0,
+			   98,   97,   97,   97,   97,   97,   37,   97,   97,   97,
+			   97,    0,   97,   97,   97,   97,   97,   97,   88,   97,
+			   97,   97,    0,    0,   88,   88,   88,   36,    0,   43,
+			   97,   97,   97,   97,   73,    0,    0,    0,    0,    0,
+			    0,    0,   61,  100,  100,    0,  100,  100,  100,  100,
+			  100,  100,  100,  100,   37,  100,  100,   37,  100,  100,
+			  100,  100,  100,  100,  100,  100,    0,  100,  100,  100,
+			  100,  100,  100,  100,  100,   36,   43,   36,   43,  100,
+			  100,  100,  100,  100,  100,  100,  106,    0,   68,    0,
 
-			   89,   89,   89,   89,   89,   44,   89,    0,   89,   89,
-			   35,   89,   89,   89,    0,    0,   89,   89,    0,   89,
-			   89,   89,   89,    0,    0,   65,    0,   63,    0,   62,
-			    0,   58,   92,    0,    0,   58,   92,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   44,   92,   44,
-			   92,   92,   35,   64,   64,   92,   92,   92,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,  107,
-			    0,    0,    0,  103,  104,    0,    0,  106,    0,    0,
-			    0,    0,   77,    0,    0,    0,   89,   59,   89,   60,
-			   89,   89,   46,   89,    0,   89,   89,   89,   89,   89,
+			   67,   71,  115,    0,    0,    0,  110,  111,    0,  112,
+			    0,  114,    0,    0,    0,  109,   85,    0,    0,    0,
+			   58,   97,   97,   97,   97,   97,   97,   44,   97,    0,
+			   97,   97,   35,   97,   97,   97,    0,    0,   97,   97,
+			    0,   97,   97,   97,   97,    0,    0,   65,    0,   63,
+			    0,   62,    0,    0,   58,  100,    0,    0,   58,  100,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			   44,  100,   44,  100,  100,   35,   64,   64,  100,  100,
+			  100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+			  100,  100,    0,  115,    0,    0,    0,  111,  112,    0,
 
-			   80,   80,    0,   52,   89,   89,   89,    0,    0,    0,
-			    0,    0,    0,    0,   92,    0,    0,   59,   59,   92,
-			   60,   92,   60,   92,   92,   46,   92,   92,   46,   92,
-			   92,   92,   92,   92,   92,   92,   92,   92,   92,   92,
-			   52,   92,   92,   92,   52,   92,    0,    0,   93,    0,
-			  104,    0,  107,    0,   79,    0,    0,  105,    0,   89,
-			   89,   57,   89,   45,    0,   42,   56,   34,   89,   50,
-			    0,   89,   89,   89,    0,    0,    0,    0,    0,    0,
-			   92,    0,   92,   92,   57,   92,   57,   92,   45,   42,
-			   56,   42,   56,   34,   34,   92,   50,   92,   50,   92,
+			    0,  114,    0,    0,    0,    0,   85,    0,    0,    0,
+			   97,   59,   97,   60,   97,   97,   46,   97,    0,   97,
+			   97,   97,   97,   97,   88,   88,    0,   52,   97,   97,
+			   97,    0,    0,    0,    0,    0,    0,    0,    0,  100,
+			    0,    0,   59,   59,  100,   60,  100,   60,  100,  100,
+			   46,  100,  100,   46,  100,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,  100,   52,  100,  100,  100,   52,
+			  100,    0,    0,  101,    0,  112,    0,  115,    0,   87,
+			    0,    0,  113,    0,   97,   97,   57,   97,   45,    0,
+			   42,   56,   34,   97,   50,    0,   97,   97,   97,    0,
 
-			   92,   92,   92,    0,    0,  104,    0,    0,    0,    0,
-			   76,  105,    0,   89,   89,   89,   84,   89,    0,   89,
-			   89,   53,    0,    0,    0,    0,    0,   94,   92,   92,
-			   92,   92,   92,   92,   92,   92,   92,   53,   92,  106,
-			    0,  106,    0,    0,    0,    0,   76,  105,    0,   89,
-			   89,   47,   89,   83,   51,   89,    0,    0,    0,    0,
-			    0,   92,   92,   92,   47,   47,   92,   92,   51,   92,
-			   51,  106,   78,    0,   76,  105,    0,   89,   89,   89,
-			   89,   82,   82,   82,   82,   92,   92,   92,   92,   92,
-			   92,    0,    0,    0,    0,   89,   49,   48,   89,    0,
+			    0,    0,    0,    0,    0,    0,  100,    0,  100,  100,
+			   57,  100,   57,  100,   45,   42,   56,   42,   56,   34,
+			   34,  100,   50,  100,   50,  100,  100,  100,  100,    0,
+			    0,  112,    0,    0,    0,    0,   84,  113,    0,   97,
+			   97,   97,   92,   97,    0,   97,   97,   53,    0,    0,
+			    0,    0,   66,    0,  102,  100,  100,  100,  100,  100,
+			  100,  100,  100,  100,   53,  100,  114,    0,  114,    0,
+			    0,    0,    0,   84,  113,    0,   97,   97,   47,   97,
+			   91,   51,   97,    0,    0,    0,    0,    0,  100,  100,
+			  100,   47,   47,  100,  100,   51,  100,   51,  114,   86,
 
-			    0,    0,   92,   49,   49,   48,   48,   92,    0,    0,
-			    0,    0,   89,   89,    0,    0,    0,   92,   92,   75,
-			   72,   89,   54,    0,    0,    0,   92,   54,    0,    0,
-			   75,    0,    0,    0,   89,    0,    0,   92,    0,    0,
-			   72,    0,    0,   72,   55,    0,    0,   55,    0,   74,
-			    0,    0,    0,    0,    0,    0,   74,   72,    0,    0,
-			    0,    0,    0,    0,    0,   73,   85,   86,    0,    0,
-			    0,   73,    0,   73,    0,    0,    0, yy_Dummy>>)
+			    0,   84,  113,    0,   97,   97,   97,   97,   90,   90,
+			   90,   90,  100,  100,  100,  100,  100,  100,    0,    0,
+			    0,    0,   97,   49,   48,   97,    0,    0,    0,  100,
+			   49,   49,   48,   48,  100,    0,    0,    0,    0,   97,
+			   97,    0,    0,    0,  100,  100,   83,   80,   97,   54,
+			    0,    0,    0,  100,   54,    0,    0,   83,    0,    0,
+			    0,   97,    0,    0,  100,    0,    0,   80,    0,    0,
+			   80,   55,    0,    0,   55,    0,   82,    0,    0,    0,
+			    0,    0,    0,   82,   80,    0,    0,    0,    0,    0,
+			    0,    0,   81,   93,   94,    0,    0,    0,   81,    0,
+
+			   81,    0,    0,    0, yy_Dummy>>)
 		end
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER = 5039
+	yyJam_base: INTEGER = 5088
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER = 876
+	yyJam_state: INTEGER = 903
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER = 877
+	yyTemplate_mark: INTEGER = 904
 			-- Mark between normal states and templates
 
 	yyNull_equiv_class: INTEGER = 1
@@ -2949,10 +3129,10 @@ feature {NONE} -- Constants
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER = 126
+	yyNb_rules: INTEGER = 134
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER = 127
+	yyEnd_of_buffer: INTEGER = 135
 			-- End of buffer rule code
 
 	yyLine_used: BOOLEAN = false
@@ -2964,7 +3144,8 @@ feature {NONE} -- Constants
 	INITIAL: INTEGER = 0
 	IN_STR: INTEGER = 1
 	IN_REGEXP1: INTEGER = 2
-	IN_VALUE_SET_DEF: INTEGER = 3
+	IN_EXPANDED_VALUE_SET_DEF: INTEGER = 3
+	IN_EXTERNAL_VALUE_SET_DEF: INTEGER = 4
 			-- Start condition codes
 
 feature -- User-defined features
@@ -2988,6 +3169,7 @@ feature {NONE} -- Initialization
 			in_lineno := 1
 			create str_.make_empty
 			create last_string_value.make_empty
+			create last_term_constraint_parse_structure_value.make
 		end
 
 feature -- Commands
@@ -2998,7 +3180,6 @@ feature -- Commands
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
-			-- converted_codes.wipe_out
 		end
 
 feature -- Access
@@ -3025,10 +3206,7 @@ feature {NONE} -- Implementation
 	Init_buffer_size: INTEGER = 1024
 				-- Initial size for `in_buffer'
 
-	term_code_count: INTEGER
-			-- Number of term codes found so far parsing a TERM_CONSTRAINT.
-
-	assumed_term_code_index: INTEGER
-			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
+	is_assumed_code: BOOLEAN
+			-- True if next code parsed is assumed code
 
 end

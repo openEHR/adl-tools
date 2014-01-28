@@ -36,6 +36,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_COMPILER_BILLBOARD
+		export
+			{NONE} all
+		end
+
 	SHARED_C_FACTORY
 		export
 			{NONE} all
@@ -57,8 +62,10 @@ create
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
-%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_VALUE_SET_REF V_QUALIFIED_TERM_CODE_REF V_VALUE_SET_DEF
-%token ERR_VALUE_SET_DEF
+%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR 
+%token <STRING> V_VALUE_SET_REF
+%token <TERM_CONSTRAINT_PARSE_STRUCTURE> V_EXPANDED_VALUE_SET_DEF V_EXTERNAL_VALUE_SET_DEF
+%token ERR_VALUE_SET_DEF_ASSUMED ERR_VALUE_SET_DEF_DUP_CODE ERR_VALUE_SET_DEF
 
 %token <STRING> V_REGEXP
 %token <STRING> V_ABS_PATH V_REL_PATH
@@ -1511,33 +1518,90 @@ c_string: V_STRING 	-- single value, generates closed list
 		}
 	;
 
-c_terminology_code: V_VALUE_SET_REF	-- e.g. "local::ac3"
+c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		{
-			if constraint_model_factory.valid_c_terminology_code_string ($1) then
-				$$ := constraint_model_factory.create_c_terminology_code_ref ($1)
-			else
-				abort_with_errors (constraint_model_factory.errors)
-			end
+			create $$.make_value_set_code ($1)
 		}
 -------------------------------------------------------------------------------------------------------------
---- START Legacy ADL 1.4 inline term set; replace by ac-code ref and store value set for addition to terminology
+--- START Legacy ADL 1.4 inline term set
 ---
-	| V_VALUE_SET_DEF	-- e.g. "local::at40, at41; at40"
+	| V_EXPANDED_VALUE_SET_DEF	
 		{
-			if constraint_model_factory.valid_c_terminology_code_string ($1) then
-				$$ := constraint_model_factory.create_c_terminology_code_inline ($1)
-				$$.set_value_set_code (new_fake_ac_code)
-				value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, $$.code_list), $$.value_set_code)
+			-- e.g. "local::at40"
+			if $1.is_single then
+				create $$.make_from_structure ($1)
+
+			-- e.g. "local::at40, at41; at40"; we have to synthesise an ac-code and convert the inline 
+			-- definition to a separate value set
 			else
-				abort_with_errors (constraint_model_factory.errors)
+				-- replace by ac-code ref and store value set for addition to terminology
+				create $$.make_value_set_code (new_fake_ac_code)
+				if attached $1.assumed_code as att_ac then
+					$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+				end
+				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, $1.codes), $$.value_set_code)
+			end
+		}
+	| V_EXTERNAL_VALUE_SET_DEF	
+		{
+			-- the following statement generates an at-coded equivalent of the value-set just scanned, 
+			-- and also the appropriate term_binding structure for it
+			$1.convert_to_local (agent new_fake_at_code, uri_template)
+
+			-- e.g. "openehr::250"; here we have to synthesise an at-code and binding
+			-- the at-code definition is synthesised later when the proper at-code is substituted
+			if $1.is_single then
+				check attached $1.last_converted_local as att_tcps then
+					create $$.make_from_structure (att_tcps)
+				end
+
+				-- add term binding
+				if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
+					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
+				end
+				check attached compiler_billboard.term_bindings.item ($1.terminology_id.as_lower) as att_bindings_for_terminology and then
+					attached $1.last_converted_local_bindings as att_b
+				then
+					att_bindings_for_terminology.merge (att_b)
+				end
+
+			-- e.g. "openehr::250, 251, 249"; here we have to synthesise at-codes and bindings and value set
+			-- the at-code definitions are synthesised later when the proper at-codes are substituted
+			else
+				create $$.make_value_set_code (new_fake_ac_code)
+
+				if attached $1.last_converted_local as att_tcps then
+					if attached att_tcps.assumed_code as att_ac then
+						$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+					end
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, att_tcps.codes), $$.value_set_code)
+				end
+
+				-- add term bindings
+				if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
+					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
+				end
+				check attached compiler_billboard.term_bindings.item ($1.terminology_id.as_lower) as att_bindings_for_terminology and then
+					attached $1.last_converted_local_bindings as att_b
+				then
+					att_bindings_for_terminology.merge (att_b)
+				end
 			end
 		}
 ---
 --- END Legacy ADL 1.4 inline term set
 -------------------------------------------------------------------------------------------------------------
+	| ERR_VALUE_SET_DEF_DUP_CODE
+		{
+			abort_with_error (ec_STCDC, <<err_str, c_attrs.item.path>>)
+		}
+	| ERR_VALUE_SET_DEF_ASSUMED
+		{
+			abort_with_error (ec_STCAC, <<err_str, c_attrs.item.path>>)
+		}
 	| ERR_VALUE_SET_DEF
 		{
-			abort_with_error (ec_STCV, <<err_str>>)
+			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
 		}
 	;
 
@@ -2293,7 +2357,6 @@ feature -- Initialization
 			create indent.make_empty
 			create rm_attribute_name.make_empty
 			create parent_path_str.make_empty
-			create value_sets.make (0)
 		end
 
 	reset
@@ -2321,7 +2384,8 @@ feature -- Initialization
 
 			set_input_buffer (new_string_buffer (in_text))
 
-			value_sets.wipe_out
+			compiler_billboard.initialise
+
 			parse
 		end
 
@@ -2334,8 +2398,6 @@ feature -- Initialization
 			Result.append ("line " + (in_lineno + source_start_line).out)
 			Result.append (" [last token = " + token_name (last_token) + "]")
 		end
-
-    value_sets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 
 feature {NONE} -- Implementation
 
@@ -2437,6 +2499,12 @@ feature {NONE} -- Implementation
 	new_fake_ac_code: STRING
 		do
 			Result := Fake_adl_14_ac_code_base + fake_code_number.out
+			fake_code_number := fake_code_number + 1
+		end
+
+	new_fake_at_code: STRING
+		do
+			Result := Fake_adl_14_at_code_base + fake_code_number.out
 			fake_code_number := fake_code_number + 1
 		end
 

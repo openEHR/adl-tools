@@ -51,6 +51,7 @@ feature -- Initialisation
 		do
 			precursor (a_profile)
 			create last_string_value.make_empty
+			create last_term_constraint_parse_structure_value.make
 		end
 
 feature -- Visitor

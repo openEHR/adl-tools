@@ -31,6 +31,11 @@ inherit
 			{NONE} all;
 		end
 
+	SHARED_COMPILER_BILLBOARD
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -38,11 +43,14 @@ feature -- Definitions
 
 	Adl_14_legacy_fake_code_text: STRING = "@ internal @"
 
+	Synthesised_string: STRING = "(added by post-parse processor)"
+
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
+			-- a_parser_context may contain unhandled structures needed in this stage
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
@@ -92,10 +100,32 @@ feature -- Commands
 		do
 			update_aom_mapped_types
 			update_lifecycle_state
-			extract_value_sets
-			add_id_codes
-			if target.adl_version.starts_with (Adl_14_version) then
-				remove_fake_id_codes
+
+			-- FIXME: temporary for 1 release
+			if target.adl_version.starts_with (Adl_14_version) or target.adl_version.is_equal ("1.5") then
+				-- add value-sets extracted from definition; these value sets originally consisted of a synthesised
+				-- ac-code and synthesised at-codes which need to be converted
+				if not compiler_billboard.value_sets.is_empty then
+					target.terminology.set_value_sets (compiler_billboard.value_sets)
+				end
+
+				-- value sets have already been added to the terminology at this point by the parser
+				-- however they contain fake ac-codes; also the inline C_TERMINOLOGY_CODE objects have
+				-- the fake ac-code; these codes have to be rewritten to normal ac-codes
+				convert_fake_ac_codes
+
+				-- term bindings have already been created for inline external codes and value sets
+				-- However, these contain fake at-codes, as do some C_TERMINOLOGY_CODE objects
+				-- the fake at-codes have to be rewritten to normal at-codes
+				convert_external_term_constraints
+
+				-- add new id-codes on nodes with no codes
+				add_id_codes
+
+				-- for ADL 1.4 archetypes, remove terminology definitions for "@ internal @"
+				if target.adl_version.starts_with (Adl_14_version) then
+					remove_fake_id_codes
+				end
 			end
 		end
 
@@ -140,16 +170,85 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extract_value_sets
-			-- when this is called, the value sets are already in the terminology, but with fake ac-codes
-			-- A real ac-code needs to be created, written into each value set, and also into the main
-			-- terminology term_definitions. The definition text/description is copied from the proximate
-			-- id-code going up the tree from the C_TERMINOLOGY_CODE.
+	convert_external_term_constraints
+			-- Here we convert synthesised at-codes created due to conversion of single external
+			-- codes (i.e. not archetype-local at-codes) and also inline value-sets.
+			-- For single codes, conversions needed:
+			--   * add new at-term to terminology and get its code
+			--   * rewrite synthesised at-code in  C_TERMINOLOGY_CODE object
+			--   * add parser-synthesised term binding to terminology with new code
+			-- For value-sets, conversions needed:
+			--   * traverse synthesised value set, creating new at-term def for each
+			--   * rewrite code in value set
+			--   * add parser-synthesised term binding to terminology with new code
+		local
+			arch_c_terms: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
+			at_code, old_at_code: STRING
+	 		vset_members: ARRAYED_LIST [STRING]
+		do
+			arch_c_terms := target.value_codes_index
+
+			if not arch_c_terms.is_empty then
+				-- First take care of single-code external code conversions
+				-- for each synthesised at-code in a C_TERMINOLOGY_CODE object, generate a new
+				-- term definition, get its code, and write that into the C_TERMINOLOGY_CODE
+				across arch_c_terms as arch_c_terms_csr loop
+					if arch_c_terms_csr.key.starts_with (Fake_adl_14_at_code_base) then
+						old_at_code := arch_c_terms_csr.key
+						target.terminology.create_added_value_definition (Synthesised_string, Synthesised_string)
+						at_code := target.terminology.last_new_definition_code
+
+						-- traverse the C_TERMINOLOGY_CODE object(s) having this code
+						across arch_c_terms_csr.item as ctc_csr loop
+							ctc_csr.item.replace_code (old_at_code, at_code)
+						end
+
+						-- write the parser's term bindings in to the terminology
+						across compiler_billboard.term_bindings as bindings_csr loop
+							across bindings_csr.item as bindings_list_csr loop
+								if bindings_list_csr.key.is_equal (old_at_code) then
+									target.terminology.put_term_binding (bindings_list_csr.item, bindings_csr.key, at_code)
+								end
+							end
+						end
+					end
+				end
+			end
+
+			-- Now take care of value-set at-codes - rewrite value set synthesised codes & do bindings
+			across target.terminology.value_sets as vsets_csr loop
+				vset_members := vsets_csr.item.members
+				from vset_members.start until vset_members.off or not vset_members.item.starts_with (Fake_adl_14_at_code_base) loop
+					old_at_code := vset_members.item
+					target.terminology.create_added_value_definition (Synthesised_string, Synthesised_string)
+					at_code := target.terminology.last_new_definition_code
+					vset_members.replace (at_code)
+
+					-- write the parser's term bindings in to the terminology
+					across compiler_billboard.term_bindings as bindings_csr loop
+						across bindings_csr.item as bindings_list_csr loop
+							if bindings_list_csr.key.is_equal (old_at_code) then
+								target.terminology.put_term_binding (bindings_list_csr.item, bindings_csr.key, at_code)
+							end
+						end
+					end
+					vset_members.forth
+				end
+			end
+		end
+
+	convert_fake_ac_codes
+			-- when this is called, synthesised value sets are in the archetype terminology, but containing
+			-- synthesised ac-codes, which are also in the originating C_TERMINOLOGY_CODE objects in the
+			-- main definition. A real ac-code is created, written into each value set, into the
+			-- C_TERMINOLOGY_CODE and a new ac-term definition synthesised for the terminology, based on the
+			-- text/description copied from the proximate id-code backing up the tree from the
+			-- C_TERMINOLOGY_CODE.
 		local
 			term_vsets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 			arch_c_terms: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
 			ac_code, parent_code, parent_ac_code, old_path, path_in_flat, code_number: STRING
-			old_ac_code: STRING
+			old_ac_code, new_code_text, new_code_description: STRING
 			spec_depth: INTEGER
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		parent_ca: C_ATTRIBUTE
@@ -162,35 +261,18 @@ feature {NONE} -- Implementation
 			arch_c_terms := target.term_constraints_index
 
 			if not arch_c_terms.is_empty then
-				-- first find highest non-fake ac-code in archetype
-				across arch_c_terms as arch_c_terms_csr loop
-					if not arch_c_terms_csr.key.starts_with (Fake_adl_14_ac_code_base) then
-						spec_depth := specialisation_depth_from_code (arch_c_terms_csr.key)
-						code_number := index_from_code_at_level (arch_c_terms_csr.key, spec_depth)
-						if spec_depth = 0 then
-							highest_added_ac_code := highest_added_ac_code.max (code_number.to_integer)
-						else
-							parent_code := specialisation_parent_from_code (arch_c_terms_csr.key)
-							if not highest_refined_code_index.has (parent_code) then
-								highest_refined_code_index.put (code_number.to_integer, parent_code)
-							else
-								highest_refined_code_index.replace (highest_refined_code_index.item (parent_code).max (code_number.to_integer), parent_code)
-							end
-						end
-					end
-				end
-
-				-- update fake ac-codes to real codes and create a new ac-term and add it to terminology
 				across arch_c_terms as arch_c_terms_csr loop
 					old_ac_code := arch_c_terms_csr.key
 					ctc := arch_c_terms_csr.item
 					if old_ac_code.starts_with (Fake_adl_14_ac_code_base) then
-						-- now determine the new ac-code
+
+						-- now determine the new ac-code. If it's a specialised archetype, we need to figure out
+						-- if it's a redefinition of an existing node, in which case we use either the parent
+						-- node code or a redefinition code; otherwise, we stick with the new code generated just
+						-- below.
 			 			create og_path.make_from_string (ctc.path)
 			 			og_path.last.set_object_id ("")
 			 			old_path := og_path.as_string
-		 				ac_code := new_added_constraint_code_at_level (target.specialisation_depth, highest_added_ac_code)
-		 				highest_added_ac_code := highest_added_ac_code + 1
 			 			if target.is_specialised then
 			 				-- generate a path; since the terminal object doesn't currently have any node_id,
 			 				-- the path will actually just point to the parent C_ATTRIBUTE
@@ -202,43 +284,65 @@ feature {NONE} -- Implementation
 				 				end
 				 				if parent_flat.has_path (path_in_flat) then
 				 					parent_ca := parent_flat.attribute_at_path (path_in_flat)
+
+				 					-- since we can be dealing with ADL 1.4 archetypes without reliable node ids here
+				 					-- we need to find matching node in parent via its RM type, which is a surrogate
+				 					-- for the AOM type C_TERMINOLOGY_CODE
 				 					if parent_ca.has_child_with_rm_type_name (ctc.rm_type_name) and then
 				 						attached {C_TERMINOLOGY_CODE} parent_ca.child_with_rm_type_name (ctc.rm_type_name) as parent_ctc
 				 					then
 					 					parent_ac_code := parent_ctc.value_set_code
 				 						ac_code := parent_ac_code
 
-				 						-- check if any overrides
+				 						-- check if any overrides; if so, a refined code & definition is needed
 					 					if not ctc.c_equal (parent_ctc) then
-					 						-- they really are different; use a redefined code instead
-					 						if not highest_refined_code_index.has (parent_ac_code) then
-					 							highest_refined_code_index.put (1, parent_ac_code)
-					 						end
-							 				ac_code := new_refined_code_at_level (parent_ac_code, target.specialisation_depth, highest_refined_code_index.item (parent_ac_code))
-							 				highest_refined_code_index.replace (highest_refined_code_index.item (parent_ac_code) + 1, parent_ac_code)
+					 						target.terminology.create_refined_definition (parent_ac_code, Synthesised_string, Synthesised_string)
+							 				ac_code := target.terminology.last_new_definition_code
 					 					end
+					 				else
+						 				-- create a new definition at the specialisation level of this archteype
+						 				target.terminology.create_added_constraint_definition (Synthesised_string, Synthesised_string)
+								 		ac_code := target.terminology.last_new_definition_code
 					 				end
+					 			else
+					 				-- create a new definition at the specialisation level of this archteype
+					 				target.terminology.create_added_constraint_definition (Synthesised_string, Synthesised_string)
+							 		ac_code := target.terminology.last_new_definition_code
 				 				end
+				 			else
+				 				-- create a new definition at the specialisation level of this archteype
+				 				target.terminology.create_added_constraint_definition (Synthesised_string, Synthesised_string)
+						 		ac_code := target.terminology.last_new_definition_code
 			 				end
+			 			else
+			 				-- create a definition for the new code; here we obtain an approximate definition for it from
+							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
+							from co_csr := ctc until not co_csr.node_id.is_equal (Primitive_node_id) and not co_csr.node_id.starts_with (fake_adl_14_node_id_base) loop
+								if attached co_csr.parent as ca_csr and then attached ca_csr.parent as co then
+									co_csr := co
+								end
+							end
+							if target.terminology.has_code (co_csr.node_id) then
+								new_code_text := target.terminology.term_definition (target.terminology.original_language, co_csr.node_id).text
+								new_code_description := target.terminology.term_definition (target.terminology.original_language, co_csr.node_id).description
+			 				else
+								new_code_text := Synthesised_string
+								new_code_description := Synthesised_string
+			 				end
+			 				target.terminology.create_added_constraint_definition (new_code_text, new_code_description)
+			 				ac_code := target.terminology.last_new_definition_code
 			 			end
+
+			 			-- update the originating C_TERMINOLOGY_CODE object with the new ac-code
 						ctc.set_value_set_code (ac_code)
 
-						-- update value set in terminology
+						-- now we update value set in terminology
 						if term_vsets.has (old_ac_code) then
 							term_vsets.replace_key (ac_code, old_ac_code)
 							check attached term_vsets.item (ac_code) as vsd then
 								vsd.set_origin (ac_code)
 							end
 						end
-
-						-- obtain the nearest id-code that is defined in the terminology, to use in creating
-						-- a new ac-code
-						from co_csr := ctc until not co_csr.node_id.is_equal (Primitive_node_id) and not co_csr.node_id.starts_with (fake_adl_14_node_id_base) loop
-							if attached co_csr.parent as ca_csr and then attached ca_csr.parent as co then
-								co_csr := co
-							end
-						end
-						target.terminology.replicate_term_definition (co_csr.node_id, ac_code)
 					end
 				end
 			end
@@ -268,7 +372,7 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			-- make a copy of current ARCHETYPE_INTERNAL_REFs and rules lists
+			-- make a copy of current C_COMPLEX_OBJECT_PROXYs and rules lists
 			-- so that any paths can be corrected
 			use_node_index := target.use_node_index
 			rules_index := target.rules_index
@@ -328,6 +432,8 @@ feature {NONE} -- Implementation
 		end
 
 	 do_add_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	 		-- add id-codes to nodes that have no id-code. For specialised archetypes, make sure the id-code is
+	 		-- correct with respect to the parent, if it's on an existing path
 	 	local
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
@@ -362,14 +468,14 @@ feature {NONE} -- Implementation
 	 							-- initially assume straight inheritance, so that different node_id is not
 	 							-- used as a reason for c_equal() to fail
 	 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
-		 						if not c_obj.c_equal (parent_co) then
-		 							-- they really are different; use a redefined code instead
-		 							if not highest_refined_code_index.has (parent_id_code) then
-		 								highest_refined_code_index.put (1, parent_id_code)
-		 							end
-				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, highest_refined_code_index.item (parent_id_code))
-				 					highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
-		 						end
+--		 						if not c_obj.c_equal (parent_co) then
+--		 							-- they really are different; use a redefined code instead
+--		 							if not highest_refined_code_index.has (parent_id_code) then
+--		 								highest_refined_code_index.put (1, parent_id_code)
+--		 							end
+--				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, highest_refined_code_index.item (parent_id_code))
+--				 					highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
+--		 						end
 			 				end
 		 				end
 	 				end

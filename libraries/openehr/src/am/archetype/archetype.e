@@ -468,17 +468,23 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 					local
 						key: STRING
 					do
-						if attached {C_TERMINOLOGY_CODE} a_c_node as ccp and then ccp.code_count > 0 then
-							across ccp.code_list as codes_csr loop
-								if ccp.is_local then
-									key := codes_csr.item
-								else
-									key := (create {TERMINOLOGY_CODE}.make (ccp.terminology_id, codes_csr.item)).as_string
-								end
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
+							across ctc.code_list as codes_csr loop
+								key := codes_csr.item
 								if not idx.has (key) then
 									idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), key)
 								end
-								idx.item (key).extend (ccp)
+								idx.item (key).extend (ctc)
+							end
+
+							-- check assumed value code - which is an at-code that can occur with an ac-code
+							if attached ctc.assumed_value as att_av then
+								if not idx.has (att_av.code_string) then
+									idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), att_av.code_string)
+								end
+								if attached idx.item (att_av.code_string) as att_list and then not att_list.has (ctc) then
+									att_list.extend (ctc)
+								end
 							end
 						end
 					end (?, ?, Result),

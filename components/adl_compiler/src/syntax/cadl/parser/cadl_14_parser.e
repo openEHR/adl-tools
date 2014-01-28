@@ -35,6 +35,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_COMPILER_BILLBOARD
+		export
+			{NONE} all
+		end
+
 	SHARED_C_FACTORY
 		export
 			{NONE} all
@@ -248,6 +253,9 @@ feature {NONE} -- Implementation
 			create yyspecial_routines59
 			yyvsc59 := yyInitial_yyvs_size
 			yyvs59 := yyspecial_routines59.make (yyvsc59)
+			create yyspecial_routines60
+			yyvsc60 := yyInitial_yyvs_size
+			yyvs60 := yyspecial_routines60.make (yyvsc60)
 		end
 
 	yy_init_value_stacks
@@ -312,6 +320,7 @@ feature {NONE} -- Implementation
 			yyvsp57 := -1
 			yyvsp58 := -1
 			yyvsp59 := -1
+			yyvsp60 := -1
 		end
 
 	yy_clear_value_stacks
@@ -377,6 +386,7 @@ feature {NONE} -- Implementation
 			yyvs57.keep_head (0)
 			yyvs58.keep_head (0)
 			yyvs59.keep_head (0)
+			yyvs60.keep_head (0)
 		end
 
 	yy_push_last_value (yychar1: INTEGER)
@@ -434,7 +444,7 @@ feature {NONE} -- Implementation
 					yyvsc5 := yyvsc5 + yyInitial_yyvs_size
 					yyvs5 := yyspecial_routines5.aliased_resized_area (yyvs5, yyvsc5)
 				end
-				yyspecial_routines5.force (yyvs5, last_character_value, yyvsp5)
+				yyspecial_routines5.force (yyvs5, last_term_constraint_parse_structure_value, yyvsp5)
 			when 6 then
 				yyvsp6 := yyvsp6 + 1
 				if yyvsp6 >= yyvsc6 then
@@ -444,7 +454,17 @@ feature {NONE} -- Implementation
 					yyvsc6 := yyvsc6 + yyInitial_yyvs_size
 					yyvs6 := yyspecial_routines6.aliased_resized_area (yyvs6, yyvsc6)
 				end
-				yyspecial_routines6.force (yyvs6, last_c_dv_quantity_value, yyvsp6)
+				yyspecial_routines6.force (yyvs6, last_character_value, yyvsp6)
+			when 7 then
+				yyvsp7 := yyvsp7 + 1
+				if yyvsp7 >= yyvsc7 then
+					debug ("GEYACC")
+						std.error.put_line ("Resize yyvs7")
+					end
+					yyvsc7 := yyvsc7 + yyInitial_yyvs_size
+					yyvs7 := yyspecial_routines7.aliased_resized_area (yyvs7, yyvsc7)
+				end
+				yyspecial_routines7.force (yyvs7, last_c_dv_quantity_value, yyvsp7)
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: not a token type: ")
@@ -597,6 +617,8 @@ feature {NONE} -- Implementation
 				yyvsp58 := yyvsp58 - 1
 			when 59 then
 				yyvsp59 := yyvsp59 - 1
+			when 60 then
+				yyvsp60 := yyvsp60 - 1
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: unknown type id: ")
@@ -619,69 +641,69 @@ feature {NONE} -- Semantic actions
 		local
 			yy_retried: BOOLEAN
 			yyval1: detachable ANY
-			yyval14: C_COMPLEX_OBJECT
-			yyval11: SIBLING_ORDER
-			yyval9: C_ARCHETYPE_ROOT
-			yyval10: C_COMPLEX_OBJECT_PROXY
-			yyval16: ARCHETYPE_SLOT
-			yyval15: C_PRIMITIVE_OBJECT
-			yyval17: C_ATTRIBUTE
-			yyval7: detachable ARRAYED_LIST [ASSERTION]
-			yyval8: ASSERTION
-			yyval18: EXPR_ITEM
-			yyval20: EXPR_BINARY_OPERATOR
-			yyval19: EXPR_UNARY_OPERATOR
+			yyval15: C_COMPLEX_OBJECT
+			yyval12: SIBLING_ORDER
+			yyval10: C_ARCHETYPE_ROOT
+			yyval11: C_COMPLEX_OBJECT_PROXY
+			yyval17: ARCHETYPE_SLOT
+			yyval16: C_PRIMITIVE_OBJECT
+			yyval18: C_ATTRIBUTE
+			yyval8: detachable ARRAYED_LIST [ASSERTION]
+			yyval9: ASSERTION
+			yyval19: EXPR_ITEM
+			yyval21: EXPR_BINARY_OPERATOR
+			yyval20: EXPR_UNARY_OPERATOR
 			yyval2: STRING
-			yyval21: EXPR_LEAF
-			yyval12: detachable MULTIPLICITY_INTERVAL
-			yyval13: MULTIPLICITY_INTERVAL
-			yyval47: detachable CARDINALITY
-			yyval48: CARDINALITY
-			yyval57: C_INTEGER
-			yyval56: C_REAL
-			yyval54: C_DATE
-			yyval55: C_TIME
-			yyval52: C_DATE_TIME
-			yyval53: C_DURATION
-			yyval51: C_STRING
-			yyval58: C_TERMINOLOGY_CODE
-			yyval50: C_BOOLEAN
-			yyval49: ORDINAL
-			yyval27: ARRAYED_LIST [STRING]
+			yyval22: EXPR_LEAF
+			yyval13: detachable MULTIPLICITY_INTERVAL
+			yyval14: MULTIPLICITY_INTERVAL
+			yyval48: detachable CARDINALITY
+			yyval49: CARDINALITY
+			yyval58: C_INTEGER
+			yyval57: C_REAL
+			yyval55: C_DATE
+			yyval56: C_TIME
+			yyval53: C_DATE_TIME
+			yyval54: C_DURATION
+			yyval52: C_STRING
+			yyval59: C_TERMINOLOGY_CODE
+			yyval51: C_BOOLEAN
+			yyval50: ORDINAL
+			yyval28: ARRAYED_LIST [STRING]
 			yyval3: INTEGER
-			yyval28: ARRAYED_LIST [INTEGER]
-			yyval35: INTERVAL [INTEGER]
-			yyval41: ARRAYED_LIST [INTERVAL [INTEGER]]
+			yyval29: ARRAYED_LIST [INTEGER]
+			yyval36: INTERVAL [INTEGER]
+			yyval42: ARRAYED_LIST [INTERVAL [INTEGER]]
 			yyval4: REAL
-			yyval29: ARRAYED_LIST [REAL]
-			yyval36: INTERVAL [REAL]
-			yyval42: ARRAYED_LIST [INTERVAL [REAL]]
-			yyval22: BOOLEAN
-			yyval30: ARRAYED_LIST [BOOLEAN]
-			yyval23: ISO8601_DATE
-			yyval31: ARRAYED_LIST [ISO8601_DATE]
-			yyval38: INTERVAL [ISO8601_DATE]
-			yyval44: ARRAYED_LIST [INTERVAL [ISO8601_DATE]]
-			yyval25: ISO8601_TIME
-			yyval32: ARRAYED_LIST [ISO8601_TIME]
-			yyval37: INTERVAL [ISO8601_TIME]
-			yyval43: ARRAYED_LIST [INTERVAL [ISO8601_TIME]]
-			yyval24: ISO8601_DATE_TIME
-			yyval33: ARRAYED_LIST [ISO8601_DATE_TIME]
-			yyval39: INTERVAL [ISO8601_DATE_TIME]
-			yyval45: ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]
-			yyval26: ISO8601_DURATION
-			yyval34: ARRAYED_LIST [ISO8601_DURATION]
-			yyval40: INTERVAL [ISO8601_DURATION]
-			yyval46: ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]
-			yyval59: TERMINOLOGY_CODE
+			yyval30: ARRAYED_LIST [REAL]
+			yyval37: INTERVAL [REAL]
+			yyval43: ARRAYED_LIST [INTERVAL [REAL]]
+			yyval23: BOOLEAN
+			yyval31: ARRAYED_LIST [BOOLEAN]
+			yyval24: ISO8601_DATE
+			yyval32: ARRAYED_LIST [ISO8601_DATE]
+			yyval39: INTERVAL [ISO8601_DATE]
+			yyval45: ARRAYED_LIST [INTERVAL [ISO8601_DATE]]
+			yyval26: ISO8601_TIME
+			yyval33: ARRAYED_LIST [ISO8601_TIME]
+			yyval38: INTERVAL [ISO8601_TIME]
+			yyval44: ARRAYED_LIST [INTERVAL [ISO8601_TIME]]
+			yyval25: ISO8601_DATE_TIME
+			yyval34: ARRAYED_LIST [ISO8601_DATE_TIME]
+			yyval40: INTERVAL [ISO8601_DATE_TIME]
+			yyval46: ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]
+			yyval27: ISO8601_DURATION
+			yyval35: ARRAYED_LIST [ISO8601_DURATION]
+			yyval41: INTERVAL [ISO8601_DURATION]
+			yyval47: ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]
+			yyval60: TERMINOLOGY_CODE
 		do
 			if not yy_retried then
 				inspect yy_act
 when 1 then
---|#line 189 "cadl_14_parser.y"
+--|#line 198 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 189")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 198")
 end
 
 			debug ("ADL_parse")
@@ -695,21 +717,21 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
---|#line 197 "cadl_14_parser.y"
+--|#line 206 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 197")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 206")
 end
 
 			debug ("ADL_parse")
 				io.put_string ("assertion definition parsed%N")
 			end
-			output := yyvs7.item (yyvsp7)
+			output := yyvs8.item (yyvsp8)
 			accept
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
-	yyvsp7 := yyvsp7 -1
+	yyvsp8 := yyvsp8 -1
 	if yyvsp1 >= yyvsc1 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs1")
@@ -720,9 +742,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
---|#line 205 "cadl_14_parser.y"
+--|#line 214 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 205")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 214")
 end
 
 			debug ("ADL_parse")
@@ -735,9 +757,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
---|#line 214 "cadl_14_parser.y"
+--|#line 223 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 214")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 223")
 end
 
 			debug ("ADL_parse")
@@ -750,26 +772,26 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
-	yyvsp14 := yyvsp14 -1
+	yyvsp15 := yyvsp15 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
---|#line 225 "cadl_14_parser.y"
+--|#line 234 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 225")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 234")
 end
 
-			yyval14 := yyvs14.item (yyvsp14)
-			if attached yyvs12.item (yyvsp12) as att_occ then
-				yyvs14.item (yyvsp14).set_occurrences (att_occ)
+			yyval15 := yyvs15.item (yyvsp15)
+			if attached yyvs13.item (yyvsp13) as att_occ then
+				yyvs15.item (yyvsp15).set_occurrences (att_occ)
 			end
 
-			if rm_schema.has_class_definition (yyvs14.item (yyvsp14).rm_type_name) then
-				object_nodes.extend (yyvs14.item (yyvsp14))
+			if rm_schema.has_class_definition (yyvs15.item (yyvsp15).rm_type_name) then
+				object_nodes.extend (yyvs15.item (yyvsp15))
 debug ("ADL_parse")
-	io.put_string (indent + "PUSH create OBJECT_NODE " + yyvs14.item (yyvsp14).rm_type_name + " [id=" + yyvs14.item (yyvsp14).node_id + "] ")
-	if yyvs12.item (yyvsp12) /= Void then
-		io.put_string ("; occurrences=(" + yyvs12.item (yyvsp12).as_string + ")") 
+	io.put_string (indent + "PUSH create OBJECT_NODE " + yyvs15.item (yyvsp15).rm_type_name + " [id=" + yyvs15.item (yyvsp15).node_id + "] ")
+	if yyvs13.item (yyvsp13) /= Void then
+		io.put_string ("; occurrences=(" + yyvs13.item (yyvsp13).as_string + ")") 
 	end
 	io.new_line
 	indent.append ("%T")
@@ -778,163 +800,163 @@ end
 				-- put it under current attribute, unless it is the root object, in which case it will be returned
 				-- via the 'output' attribute of this parser
 				if not c_attrs.is_empty then
-					safe_put_c_attribute_child (c_attrs.item, yyvs14.item (yyvsp14))
+					safe_put_c_attribute_child (c_attrs.item, yyvs15.item (yyvsp15))
 				end
 			else
-				abort_with_error (ec_VCORM, <<yyvs14.item (yyvsp14).rm_type_name, yyvs14.item (yyvsp14).path>>)
+				abort_with_error (ec_VCORM, <<yyvs15.item (yyvsp15).rm_type_name, yyvs15.item (yyvsp15).path>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp12 := yyvsp12 -1
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyvsp13 := yyvsp13 -1
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
 when 6 then
---|#line 254 "cadl_14_parser.y"
+--|#line 263 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 254")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 263")
 end
 
 			if object_nodes.is_empty then
-				create yyval14.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+				create yyval15.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 			else
 				abort_with_error (ec_VARND, <<yyvs2.item (yyvsp2), Id_code_regex_pattern>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp14 := yyvsp14 + 1
+	yyvsp15 := yyvsp15 + 1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp14 >= yyvsc14 then
+	if yyvsp15 >= yyvsc15 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs14")
+			std.error.put_line ("Resize yyvs15")
 		end
-		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
-		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
+		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
 	end
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
 when 7 then
---|#line 262 "cadl_14_parser.y"
+--|#line 271 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 262")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 271")
 end
 
 			if not object_nodes.is_empty then
-				create yyval14.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+				create yyval15.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 			else
 				abort_with_error (ec_VARCN, <<yyvs2.item (yyvsp2), Root_id_code_regex_pattern>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp14 := yyvsp14 + 1
+	yyvsp15 := yyvsp15 + 1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp14 >= yyvsc14 then
+	if yyvsp15 >= yyvsc15 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs14")
+			std.error.put_line ("Resize yyvs15")
 		end
-		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
-		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
+		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
 	end
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
 when 8 then
---|#line 270 "cadl_14_parser.y"
+--|#line 279 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 270")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 279")
 end
 
-			create yyval14.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-			yyval14.set_sibling_order (yyvs11.item (yyvsp11))
+			create yyval15.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+			yyval15.set_sibling_order (yyvs12.item (yyvsp12))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp14 := yyvsp14 + 1
-	yyvsp11 := yyvsp11 -1
+	yyvsp15 := yyvsp15 + 1
+	yyvsp12 := yyvsp12 -1
 	yyvsp2 := yyvsp2 -2
-	if yyvsp14 >= yyvsc14 then
+	if yyvsp15 >= yyvsc15 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs14")
+			std.error.put_line ("Resize yyvs15")
 		end
-		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
-		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
+		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
 	end
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
 when 9 then
---|#line 278 "cadl_14_parser.y"
+--|#line 287 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 278")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 287")
 end
 
 			if object_nodes.is_empty then
 				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
 			else
-				create yyval14.make (yyvs2.item (yyvsp2), new_fake_node_id)
+				create yyval15.make (yyvs2.item (yyvsp2), new_fake_node_id)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp14 := yyvsp14 + 1
+	yyvsp15 := yyvsp15 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp14 >= yyvsc14 then
+	if yyvsp15 >= yyvsc15 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs14")
+			std.error.put_line ("Resize yyvs15")
 		end
-		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
-		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
+		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
 	end
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
 when 10 then
---|#line 291 "cadl_14_parser.y"
+--|#line 300 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 291")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 300")
 end
 
-			yyval11 := create {SIBLING_ORDER}.make_after (yyvs2.item (yyvsp2))
+			yyval12 := create {SIBLING_ORDER}.make_after (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp11 := yyvsp11 + 1
+	yyvsp12 := yyvsp12 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp11 >= yyvsc11 then
+	if yyvsp12 >= yyvsc12 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs11")
+			std.error.put_line ("Resize yyvs12")
 		end
-		yyvsc11 := yyvsc11 + yyInitial_yyvs_size
-		yyvs11 := yyspecial_routines11.aliased_resized_area (yyvs11, yyvsc11)
+		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
+		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
 	end
-	yyspecial_routines11.force (yyvs11, yyval11, yyvsp11)
+	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
 end
 when 11 then
---|#line 295 "cadl_14_parser.y"
+--|#line 304 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 295")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 304")
 end
 
-			yyval11 := create {SIBLING_ORDER}.make_before (yyvs2.item (yyvsp2))
+			yyval12 := create {SIBLING_ORDER}.make_before (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp11 := yyvsp11 + 1
+	yyvsp12 := yyvsp12 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp11 >= yyvsc11 then
+	if yyvsp12 >= yyvsc12 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs11")
+			std.error.put_line ("Resize yyvs12")
 		end
-		yyvsc11 := yyvsc11 + yyInitial_yyvs_size
-		yyvs11 := yyspecial_routines11.aliased_resized_area (yyvs11, yyvsc11)
+		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
+		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
 	end
-	yyspecial_routines11.force (yyvs11, yyval11, yyvsp11)
+	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
 end
 when 12 then
---|#line 301 "cadl_14_parser.y"
+--|#line 310 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 301")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 310")
 end
 
 			debug ("ADL_parse")
@@ -947,9 +969,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 13 then
---|#line 308 "cadl_14_parser.y"
+--|#line 317 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 308")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 317")
 end
 
 		
@@ -958,9 +980,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 14 then
---|#line 311 "cadl_14_parser.y"
+--|#line 320 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 311")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 320")
 end
 
 			abort_with_error (ec_SCOAT, Void)
@@ -970,9 +992,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 15 then
---|#line 321 "cadl_14_parser.y"
+--|#line 330 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 321")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 330")
 end
 
 		
@@ -981,30 +1003,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 16 then
---|#line 324 "cadl_14_parser.y"
+--|#line 333 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 324")
-end
-
-			safe_put_c_attribute_child (c_attrs.item, yyvs9.item (yyvsp9))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp1 := yyvsp1 + 1
-	yyvsp9 := yyvsp9 -1
-	if yyvsp1 >= yyvsc1 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs1")
-		end
-		yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-		yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
-	end
-	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
-end
-when 17 then
---|#line 328 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 328")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 333")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs10.item (yyvsp10))
@@ -1022,10 +1023,52 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 18 then
---|#line 332 "cadl_14_parser.y"
+when 17 then
+--|#line 337 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 332")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 337")
+end
+
+			safe_put_c_attribute_child (c_attrs.item, yyvs11.item (yyvsp11))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp1 := yyvsp1 + 1
+	yyvsp11 := yyvsp11 -1
+	if yyvsp1 >= yyvsc1 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs1")
+		end
+		yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+		yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
+	end
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
+end
+when 18 then
+--|#line 341 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 341")
+end
+
+			safe_put_c_attribute_child (c_attrs.item, yyvs17.item (yyvsp17))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp1 := yyvsp1 + 1
+	yyvsp17 := yyvsp17 -1
+	if yyvsp1 >= yyvsc1 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs1")
+		end
+		yyvsc1 := yyvsc1 + yyInitial_yyvs_size
+		yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
+	end
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
+end
+when 19 then
+--|#line 345 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 345")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs16.item (yyvsp16))
@@ -1043,10 +1086,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 19 then
---|#line 336 "cadl_14_parser.y"
+when 20 then
+--|#line 352 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 336")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 352")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, yyvs15.item (yyvsp15))
@@ -1064,31 +1107,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
-when 20 then
---|#line 343 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 343")
-end
-
-			safe_put_c_attribute_child (c_attrs.item, yyvs14.item (yyvsp14))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp1 := yyvsp1 + 1
-	yyvsp14 := yyvsp14 -1
-	if yyvsp1 >= yyvsc1 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs1")
-		end
-		yyvsc1 := yyvsc1 + yyInitial_yyvs_size
-		yyvs1 := yyspecial_routines1.aliased_resized_area (yyvs1, yyvsc1)
-	end
-	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
-end
 when 21 then
---|#line 347 "cadl_14_parser.y"
+--|#line 356 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 347")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 356")
 end
 
 			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent (new_fake_node_id))
@@ -1096,7 +1118,7 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
-	yyvsp6 := yyvsp6 -1
+	yyvsp7 := yyvsp7 -1
 	if yyvsp1 >= yyvsc1 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs1")
@@ -1107,9 +1129,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 22 then
---|#line 351 "cadl_14_parser.y"
+--|#line 360 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 351")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 360")
 end
 
 			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
@@ -1119,9 +1141,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 23 then
---|#line 358 "cadl_14_parser.y"
+--|#line 367 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 358")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 367")
 end
 
 			abort_with_error (ec_SCCOG, Void)
@@ -1131,15 +1153,15 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 24 then
---|#line 369 "cadl_14_parser.y"
+--|#line 378 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 369")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 378")
 end
 
 			if archetype_id_parser.valid_id (yyvs2.item (yyvsp2)) then
-				create yyval9.make (yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-				if attached yyvs12.item (yyvsp12) as occ then
-					yyval9.set_occurrences (occ)
+				create yyval10.make (yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+				if attached yyvs13.item (yyvsp13) as occ then
+					yyval10.set_occurrences (occ)
 				end
 			else
 				abort_with_error (ec_SUAIDI, <<yyvs2.item (yyvsp2 - 1)>>)
@@ -1147,270 +1169,294 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
-	yyvsp9 := yyvsp9 + 1
+	yyvsp10 := yyvsp10 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -3
-	yyvsp12 := yyvsp12 -1
-	if yyvsp9 >= yyvsc9 then
+	yyvsp13 := yyvsp13 -1
+	if yyvsp10 >= yyvsc10 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs9")
+			std.error.put_line ("Resize yyvs10")
 		end
-		yyvsc9 := yyvsc9 + yyInitial_yyvs_size
-		yyvs9 := yyspecial_routines9.aliased_resized_area (yyvs9, yyvsc9)
+		yyvsc10 := yyvsc10 + yyInitial_yyvs_size
+		yyvs10 := yyspecial_routines10.aliased_resized_area (yyvs10, yyvsc10)
 	end
-	yyspecial_routines9.force (yyvs9, yyval9, yyvsp9)
+	yyspecial_routines10.force (yyvs10, yyval10, yyvsp10)
 end
 when 25 then
---|#line 380 "cadl_14_parser.y"
+--|#line 389 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 380")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 389")
 end
 
 			abort_with_error (ec_SUAID, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp9 := yyvsp9 + 1
+	yyvsp10 := yyvsp10 + 1
 	yyvsp1 := yyvsp1 -2
 	yyvsp2 := yyvsp2 -1
-	if yyvsp9 >= yyvsc9 then
+	if yyvsp10 >= yyvsc10 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs9")
+			std.error.put_line ("Resize yyvs10")
 		end
-		yyvsc9 := yyvsc9 + yyInitial_yyvs_size
-		yyvs9 := yyspecial_routines9.aliased_resized_area (yyvs9, yyvsc9)
+		yyvsc10 := yyvsc10 + yyInitial_yyvs_size
+		yyvs10 := yyspecial_routines10.aliased_resized_area (yyvs10, yyvsc10)
 	end
-	yyspecial_routines9.force (yyvs9, yyval9, yyvsp9)
+	yyspecial_routines10.force (yyvs10, yyval10, yyvsp10)
 end
 when 26 then
---|#line 386 "cadl_14_parser.y"
+--|#line 395 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 386")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 395")
 end
 
-			create yyval10.make (yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-			if attached yyvs12.item (yyvsp12) as att_occ then
-				yyval10.set_occurrences (att_occ)
+			create yyval11.make (yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+			if attached yyvs13.item (yyvsp13) as att_occ then
+				yyval11.set_occurrences (att_occ)
 			end
 
 			debug ("ADL_parse")
 				io.put_string (indent + "create C_COMPLEX_OBJECT_PROXY ")
-				io.put_string (yyval10.rm_type_name) 
-				io.put_string ("[" + yyval10.node_id + "] ")
-				if yyval10.use_target_occurrences then
+				io.put_string (yyval11.rm_type_name) 
+				io.put_string ("[" + yyval11.node_id + "] ")
+				if yyval11.use_target_occurrences then
 					io.put_string ("occurrences=(use target) ")
-				elseif yyvs12.item (yyvsp12) /= Void then
-					io.put_string ("occurrences=" + yyval10.occurrences.as_string + " ")
+				elseif yyvs13.item (yyvsp13) /= Void then
+					io.put_string ("occurrences=" + yyval11.occurrences.as_string + " ")
 				end
-				io.put_string (" => " + yyval10.target_path + "%N") 
+				io.put_string (" => " + yyval11.target_path + "%N") 
 				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child (C_COMPLEX_OBJECT_PROXY)%N") 
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
-	yyvsp10 := yyvsp10 + 1
+	yyvsp11 := yyvsp11 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -3
-	yyvsp12 := yyvsp12 -1
-	if yyvsp10 >= yyvsc10 then
+	yyvsp13 := yyvsp13 -1
+	if yyvsp11 >= yyvsc11 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs10")
+			std.error.put_line ("Resize yyvs11")
 		end
-		yyvsc10 := yyvsc10 + yyInitial_yyvs_size
-		yyvs10 := yyspecial_routines10.aliased_resized_area (yyvs10, yyvsc10)
+		yyvsc11 := yyvsc11 + yyInitial_yyvs_size
+		yyvs11 := yyspecial_routines11.aliased_resized_area (yyvs11, yyvsc11)
 	end
-	yyspecial_routines10.force (yyvs10, yyval10, yyvsp10)
+	yyspecial_routines11.force (yyvs11, yyval11, yyvsp11)
 end
 when 27 then
---|#line 406 "cadl_14_parser.y"
+--|#line 415 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 406")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 415")
 end
 
-			create yyval10.make (yyvs2.item (yyvsp2 - 1), new_fake_node_id, yyvs2.item (yyvsp2))
-			if attached yyvs12.item (yyvsp12) as att_occ then
-				yyval10.set_occurrences (att_occ)
+			create yyval11.make (yyvs2.item (yyvsp2 - 1), new_fake_node_id, yyvs2.item (yyvsp2))
+			if attached yyvs13.item (yyvsp13) as att_occ then
+				yyval11.set_occurrences (att_occ)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
-	yyvsp10 := yyvsp10 + 1
+	yyvsp11 := yyvsp11 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -2
-	yyvsp12 := yyvsp12 -1
-	if yyvsp10 >= yyvsc10 then
+	yyvsp13 := yyvsp13 -1
+	if yyvsp11 >= yyvsc11 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs10")
+			std.error.put_line ("Resize yyvs11")
 		end
-		yyvsc10 := yyvsc10 + yyInitial_yyvs_size
-		yyvs10 := yyspecial_routines10.aliased_resized_area (yyvs10, yyvsc10)
+		yyvsc11 := yyvsc11 + yyInitial_yyvs_size
+		yyvs11 := yyspecial_routines11.aliased_resized_area (yyvs11, yyvsc11)
 	end
-	yyspecial_routines10.force (yyvs10, yyval10, yyvsp10)
+	yyspecial_routines11.force (yyvs11, yyval11, yyvsp11)
 end
 when 28 then
---|#line 413 "cadl_14_parser.y"
+--|#line 422 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 413")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 422")
 end
 
 			abort_with_error (ec_SUNPA, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp10 := yyvsp10 + 1
+	yyvsp11 := yyvsp11 + 1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp10 >= yyvsc10 then
+	if yyvsp11 >= yyvsc11 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs10")
+			std.error.put_line ("Resize yyvs11")
 		end
-		yyvsc10 := yyvsc10 + yyInitial_yyvs_size
-		yyvs10 := yyspecial_routines10.aliased_resized_area (yyvs10, yyvsc10)
+		yyvsc11 := yyvsc11 + yyInitial_yyvs_size
+		yyvs11 := yyspecial_routines11.aliased_resized_area (yyvs11, yyvsc11)
 	end
-	yyspecial_routines10.force (yyvs10, yyval10, yyvsp10)
+	yyspecial_routines11.force (yyvs11, yyval11, yyvsp11)
 end
 when 29 then
---|#line 419 "cadl_14_parser.y"
+--|#line 428 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 419")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 428")
 end
 
-			if attached yyvs7.item (yyvsp7 - 1) as att_c_incs then
-				yyvs16.item (yyvsp16).set_includes (att_c_incs)
+			if attached yyvs8.item (yyvsp8 - 1) as att_c_incs then
+				yyvs17.item (yyvsp17).set_includes (att_c_incs)
 			end
-			if attached yyvs7.item (yyvsp7) as att_c_excs then
-				yyvs16.item (yyvsp16).set_excludes (att_c_excs)
+			if attached yyvs8.item (yyvsp8) as att_c_excs then
+				yyvs17.item (yyvsp17).set_excludes (att_c_excs)
 			end
 
 			debug ("ADL_parse")
 				indent.remove_tail (1)
 			end
-			yyval16 := yyvs16.item (yyvsp16)
+			yyval17 := yyvs17.item (yyvsp17)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp1 := yyvsp1 -3
-	yyvsp7 := yyvsp7 -2
-	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
+	yyvsp8 := yyvsp8 -2
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
 end
 when 30 then
---|#line 433 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 433")
-end
-
-			if not (yyvs16.item (yyvsp16).is_closed or yyvs16.item (yyvsp16).is_prohibited) then
-				abort_with_error (ec_VASMD, <<yyvs16.item (yyvsp16).rm_type_name, c_attrs.item.path>>)
-			end
-			yyval16 := yyvs16.item (yyvsp16)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
-end
-when 31 then
 --|#line 442 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 442")
 end
 
-			if attached yyvs12.item (yyvsp12) as att_occ then
-				yyvs16.item (yyvsp16).set_occurrences (att_occ)
+			if not (yyvs17.item (yyvsp17).is_closed or yyvs17.item (yyvsp17).is_prohibited) then
+				abort_with_error (ec_VASMD, <<yyvs17.item (yyvsp17).rm_type_name, c_attrs.item.path>>)
+			end
+			yyval17 := yyvs17.item (yyvsp17)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
+end
+when 31 then
+--|#line 451 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 451")
+end
+
+			if attached yyvs13.item (yyvsp13) as att_occ then
+				yyvs17.item (yyvsp17).set_occurrences (att_occ)
 			end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "create ARCHETYPE_SLOT " + yyvs16.item (yyvsp16).rm_type_name + " [id=" + yyvs16.item (yyvsp16).node_id + "]")
-				if attached yyvs12.item (yyvsp12) then
-					io.put_string ("; occurrences=(" + yyvs12.item (yyvsp12).as_string + ")") 
+				io.put_string (indent + "create ARCHETYPE_SLOT " + yyvs17.item (yyvsp17).rm_type_name + " [id=" + yyvs17.item (yyvsp17).node_id + "]")
+				if attached yyvs13.item (yyvsp13) then
+					io.put_string ("; occurrences=(" + yyvs13.item (yyvsp13).as_string + ")") 
 				end
 				io.new_line
 				indent.append ("%T")
 			end
-			yyval16 := yyvs16.item (yyvsp16)
+			yyval17 := yyvs17.item (yyvsp17)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp12 := yyvsp12 -1
-	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
+	yyvsp13 := yyvsp13 -1
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
 end
 when 32 then
---|#line 460 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 460")
-end
-
-			create yyval16.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp16 := yyvsp16 + 1
-	yyvsp1 := yyvsp1 -1
-	yyvsp2 := yyvsp2 -2
-	if yyvsp16 >= yyvsc16 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs16")
-		end
-		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
-		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
-	end
-	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
-end
-when 33 then
---|#line 464 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 464")
-end
-
-			create yyval16.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
-			yyval16.set_closed
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp16 := yyvsp16 + 1
-	yyvsp1 := yyvsp1 -2
-	yyvsp2 := yyvsp2 -2
-	if yyvsp16 >= yyvsc16 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs16")
-		end
-		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
-		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
-	end
-	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
-end
-when 34 then
 --|#line 469 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 469")
 end
 
-			create yyval16.make (yyvs2.item (yyvsp2), new_fake_node_id)
+			create yyval17.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp16 := yyvsp16 + 1
+	yyssp := yyssp - 3
+	yyvsp17 := yyvsp17 + 1
 	yyvsp1 := yyvsp1 -1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp16 >= yyvsc16 then
+	yyvsp2 := yyvsp2 -2
+	if yyvsp17 >= yyvsc17 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs16")
+			std.error.put_line ("Resize yyvs17")
 		end
-		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
-		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
+		yyvsc17 := yyvsc17 + yyInitial_yyvs_size
+		yyvs17 := yyspecial_routines17.aliased_resized_area (yyvs17, yyvsc17)
 	end
-	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
 end
-when 35 then
+when 33 then
 --|#line 473 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 473")
+end
+
+			create yyval17.make (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+			yyval17.set_closed
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp17 := yyvsp17 + 1
+	yyvsp1 := yyvsp1 -2
+	yyvsp2 := yyvsp2 -2
+	if yyvsp17 >= yyvsc17 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs17")
+		end
+		yyvsc17 := yyvsc17 + yyInitial_yyvs_size
+		yyvs17 := yyspecial_routines17.aliased_resized_area (yyvs17, yyvsc17)
+	end
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
+end
+when 34 then
+--|#line 478 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 478")
+end
+
+			create yyval17.make (yyvs2.item (yyvsp2), new_fake_node_id)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp17 := yyvsp17 + 1
+	yyvsp1 := yyvsp1 -1
+	yyvsp2 := yyvsp2 -1
+	if yyvsp17 >= yyvsc17 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs17")
+		end
+		yyvsc17 := yyvsc17 + yyInitial_yyvs_size
+		yyvs17 := yyspecial_routines17.aliased_resized_area (yyvs17, yyvsc17)
+	end
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
+end
+when 35 then
+--|#line 482 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 482")
 end
 
 			abort_with_error (ec_SUAS, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp16 := yyvsp16 + 1
+	yyvsp17 := yyvsp17 + 1
 	yyvsp1 := yyvsp1 -2
+	if yyvsp17 >= yyvsc17 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs17")
+		end
+		yyvsc17 := yyvsc17 + yyInitial_yyvs_size
+		yyvs17 := yyspecial_routines17.aliased_resized_area (yyvs17, yyvsc17)
+	end
+	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
+end
+when 36 then
+--|#line 488 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 488")
+end
+
+			debug ("ADL_parse")
+				io.put_string (indent + "C_INTEGER: " +  yyvs58.item (yyvsp58).as_string + "%N")
+			end
+			yyval16 := yyvs58.item (yyvsp58)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp16 := yyvsp16 + 1
+	yyvsp58 := yyvsp58 -1
 	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs16")
@@ -1420,226 +1466,202 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
-when 36 then
---|#line 479 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 479")
-end
-
-			debug ("ADL_parse")
-				io.put_string (indent + "C_INTEGER: " +  yyvs57.item (yyvsp57).as_string + "%N")
-			end
-			yyval15 := yyvs57.item (yyvsp57)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp57 := yyvsp57 -1
-	if yyvsp15 >= yyvsc15 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
-		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
-	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
-end
 when 37 then
---|#line 486 "cadl_14_parser.y"
+--|#line 495 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 486")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 495")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_REAL: " +  yyvs56.item (yyvsp56).as_string + "%N")
+				io.put_string (indent + "C_REAL: " +  yyvs57.item (yyvsp57).as_string + "%N")
 			end
-			yyval15 := yyvs56.item (yyvsp56)
+			yyval16 := yyvs57.item (yyvsp57)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp56 := yyvsp56 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp57 := yyvsp57 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 38 then
---|#line 493 "cadl_14_parser.y"
+--|#line 502 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 493")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 502")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_DATE: " +  yyvs54.item (yyvsp54).as_string + "%N")
+				io.put_string (indent + "C_DATE: " +  yyvs55.item (yyvsp55).as_string + "%N")
 			end
-			yyval15 := yyvs54.item (yyvsp54)
+			yyval16 := yyvs55.item (yyvsp55)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp54 := yyvsp54 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp55 := yyvsp55 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 39 then
---|#line 500 "cadl_14_parser.y"
+--|#line 509 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 500")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 509")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_TIME: " +  yyvs55.item (yyvsp55).as_string + "%N")
+				io.put_string (indent + "C_TIME: " +  yyvs56.item (yyvsp56).as_string + "%N")
 			end
-			yyval15 := yyvs55.item (yyvsp55)
+			yyval16 := yyvs56.item (yyvsp56)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp55 := yyvsp55 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp56 := yyvsp56 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 40 then
---|#line 507 "cadl_14_parser.y"
+--|#line 516 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 507")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 516")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_DATE_TIME: " +  yyvs52.item (yyvsp52).as_string + "%N")
+				io.put_string (indent + "C_DATE_TIME: " +  yyvs53.item (yyvsp53).as_string + "%N")
 			end
-			yyval15 := yyvs52.item (yyvsp52)
+			yyval16 := yyvs53.item (yyvsp53)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp52 := yyvsp52 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp53 := yyvsp53 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 41 then
---|#line 514 "cadl_14_parser.y"
+--|#line 523 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 514")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 523")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_DURATION: " +  yyvs53.item (yyvsp53).as_string + "%N")
+				io.put_string (indent + "C_DURATION: " +  yyvs54.item (yyvsp54).as_string + "%N")
 			end
-			yyval15 := yyvs53.item (yyvsp53)
+			yyval16 := yyvs54.item (yyvsp54)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp53 := yyvsp53 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp54 := yyvsp54 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 42 then
---|#line 521 "cadl_14_parser.y"
+--|#line 530 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 521")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 530")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_STRING: " +  yyvs51.item (yyvsp51).as_string + "%N")
+				io.put_string (indent + "C_STRING: " +  yyvs52.item (yyvsp52).as_string + "%N")
 			end
-			yyval15 := yyvs51.item (yyvsp51)
+			yyval16 := yyvs52.item (yyvsp52)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp51 := yyvsp51 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp52 := yyvsp52 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 43 then
---|#line 528 "cadl_14_parser.y"
+--|#line 537 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 528")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 537")
 end
 
 			debug ("ADL_parse")
-				io.put_string (indent + "C_TERMINOLOGY_CODE: " +  yyvs58.item (yyvsp58).as_string + "%N")
+				io.put_string (indent + "C_TERMINOLOGY_CODE: " +  yyvs59.item (yyvsp59).as_string + "%N")
 			end
-			yyval15 := yyvs58.item (yyvsp58)
+			yyval16 := yyvs59.item (yyvsp59)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp58 := yyvsp58 -1
-	if yyvsp15 >= yyvsc15 then
+	yyvsp16 := yyvsp16 + 1
+	yyvsp59 := yyvsp59 -1
+	if yyvsp16 >= yyvsc16 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
+			std.error.put_line ("Resize yyvs16")
 		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
 	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
 end
 when 44 then
---|#line 535 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 535")
-end
-
-			debug ("ADL_parse")
-				io.put_string (indent + "C_BOOLEAN: " +  yyvs50.item (yyvsp50).as_string + "%N")
-			end
-			yyval15 := yyvs50.item (yyvsp50)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp15 := yyvsp15 + 1
-	yyvsp50 := yyvsp50 -1
-	if yyvsp15 >= yyvsc15 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs15")
-		end
-		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
-		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
-	end
-	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
-end
-when 45 then
 --|#line 544 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 544")
+end
+
+			debug ("ADL_parse")
+				io.put_string (indent + "C_BOOLEAN: " +  yyvs51.item (yyvsp51).as_string + "%N")
+			end
+			yyval16 := yyvs51.item (yyvsp51)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp16 := yyvsp16 + 1
+	yyvsp51 := yyvsp51 -1
+	if yyvsp16 >= yyvsc16 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs16")
+		end
+		yyvsc16 := yyvsc16 + yyInitial_yyvs_size
+		yyvs16 := yyspecial_routines16.aliased_resized_area (yyvs16, yyvsc16)
+	end
+	yyspecial_routines16.force (yyvs16, yyval16, yyvsp16)
+end
+when 45 then
+--|#line 553 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 553")
 end
 
 		
@@ -1648,9 +1670,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 46 then
---|#line 551 "cadl_14_parser.y"
+--|#line 560 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 551")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 560")
 end
 
 		
@@ -1659,9 +1681,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 47 then
---|#line 554 "cadl_14_parser.y"
+--|#line 563 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 554")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 563")
 end
 
 		
@@ -1671,9 +1693,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 48 then
---|#line 559 "cadl_14_parser.y"
+--|#line 568 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 559")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 568")
 end
 
 		
@@ -1682,9 +1704,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 49 then
---|#line 562 "cadl_14_parser.y"
+--|#line 571 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 562")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 571")
 end
 
 		
@@ -1693,9 +1715,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 50 then
---|#line 567 "cadl_14_parser.y"
+--|#line 576 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 567")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 576")
 end
 
 			debug ("ADL_parse")
@@ -1707,13 +1729,13 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
-	yyvsp17 := yyvsp17 -1
+	yyvsp18 := yyvsp18 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 51 then
---|#line 575 "cadl_14_parser.y"
+--|#line 584 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 575")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 584")
 end
 
 			abort_with_error (ec_SCAS, Void)
@@ -1721,7 +1743,7 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
-	yyvsp17 := yyvsp17 -1
+	yyvsp18 := yyvsp18 -1
 	if yyvsp1 >= yyvsc1 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs1")
@@ -1732,9 +1754,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 52 then
---|#line 579 "cadl_14_parser.y"
+--|#line 588 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 579")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 588")
 end
 
 			abort_with_error (ec_SCAS, Void)
@@ -1742,13 +1764,13 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
-	yyvsp17 := yyvsp17 -1
+	yyvsp18 := yyvsp18 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 53 then
---|#line 585 "cadl_14_parser.y"
+--|#line 594 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 585")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 594")
 end
 
 			rm_attribute_name := yyvs2.item (yyvsp2)
@@ -1758,49 +1780,49 @@ end
 					if rm_prop_def.is_container then
 
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
-						if attached yyvs12.item (yyvsp12) as ivl and then ivl.is_equal (rm_prop_def.existence) then
+						if attached yyvs13.item (yyvsp13) as ivl and then ivl.is_equal (rm_prop_def.existence) then
 							add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
-							yyvs12.item (yyvsp12) := Void
+							yyvs13.item (yyvsp13) := Void
 						end
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def and then
-							attached yyvs47.item (yyvsp47) as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
+							attached yyvs48.item (yyvsp48) as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
 							ivl.interval.contains (rm_cont_prop_def.cardinality))
 						then
 							add_warning (ec_WCACA14, <<rm_attribute_name, parent_path_str, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
-							yyvs47.item (yyvsp47) := Void
+							yyvs48.item (yyvsp48) := Void
 						end
 
 						-- make the node
-						create yyval17.make_multiple (rm_attribute_name, yyvs12.item (yyvsp12), yyvs47.item (yyvsp47))
-						c_attrs.put (yyval17)
+						create yyval18.make_multiple (rm_attribute_name, yyvs13.item (yyvsp13), yyvs48.item (yyvsp48))
+						c_attrs.put (yyval18)
 debug ("ADL_parse")
-	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + yyval17.is_multiple.out)
-	if attached yyvs12.item (yyvsp12) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
-	if attached yyvs47.item (yyvsp47) as att_card then io.put_string ("; cardinality=(" + att_card.as_string + ")") end
+	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + yyval18.is_multiple.out)
+	if attached yyvs13.item (yyvsp13) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
+	if attached yyvs48.item (yyvsp48) as att_card then io.put_string ("; cardinality=(" + att_card.as_string + ")") end
 	io.new_line
 	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
 	indent.append ("%T")
 end
-						object_nodes.item.put_attribute (yyval17)
+						object_nodes.item.put_attribute (yyval18)
 
-					elseif not attached yyvs47.item (yyvsp47) then
+					elseif not attached yyvs48.item (yyvsp48) then
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
-						if attached yyvs12.item (yyvsp12) as ivl and then ivl.is_equal (rm_prop_def.existence) then
+						if attached yyvs13.item (yyvsp13) as ivl and then ivl.is_equal (rm_prop_def.existence) then
 							add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
-							yyvs12.item (yyvsp12) := Void
+							yyvs13.item (yyvsp13) := Void
 						end
 
 						-- make the node
-						create yyval17.make_single (rm_attribute_name, yyvs12.item (yyvsp12))
-						c_attrs.put (yyval17)
+						create yyval18.make_single (rm_attribute_name, yyvs13.item (yyvsp13))
+						c_attrs.put (yyval18)
 debug ("ADL_parse")
-	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + yyval17.is_multiple.out) 
-	if attached yyvs12.item (yyvsp12) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
+	io.put_string (indent + "PUSH create ATTR_NODE " + rm_attribute_name + "; container = " + yyval18.is_multiple.out) 
+	if attached yyvs13.item (yyvsp13) as att_ex then io.put_string (" existence={" + att_ex.as_string + "}") end
 	io.new_line
 	io.put_string (indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute (REL)%N") 
 	indent.append ("%T")
 end
-						object_nodes.item.put_attribute (yyval17)
+						object_nodes.item.put_attribute (yyval18)
 					else -- error - cardinality stated, but on a non-container attribute
 						abort_with_error (ec_VSAM2, <<rm_attribute_name>>)
 					end
@@ -1813,23 +1835,23 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp17 := yyvsp17 + 1
+	yyvsp18 := yyvsp18 + 1
 	yyvsp2 := yyvsp2 -1
-	yyvsp12 := yyvsp12 -1
-	yyvsp47 := yyvsp47 -1
-	if yyvsp17 >= yyvsc17 then
+	yyvsp13 := yyvsp13 -1
+	yyvsp48 := yyvsp48 -1
+	if yyvsp18 >= yyvsc18 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs17")
+			std.error.put_line ("Resize yyvs18")
 		end
-		yyvsc17 := yyvsc17 + yyInitial_yyvs_size
-		yyvs17 := yyspecial_routines17.aliased_resized_area (yyvs17, yyvsc17)
+		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
+		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
 	end
-	yyspecial_routines17.force (yyvs17, yyval17, yyvsp17)
+	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
 end
 when 54 then
---|#line 649 "cadl_14_parser.y"
+--|#line 658 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 649")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 658")
 end
 
 		
@@ -1838,9 +1860,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 55 then
---|#line 652 "cadl_14_parser.y"
+--|#line 661 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 652")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 661")
 end
 
 		
@@ -1850,9 +1872,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 56 then
---|#line 655 "cadl_14_parser.y"
+--|#line 664 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 655")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 664")
 end
 
 		
@@ -1861,9 +1883,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 57 then
---|#line 660 "cadl_14_parser.y"
+--|#line 669 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 660")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 669")
 end
 
 			-- add the tuple's C_ATTRIBUTEs to the current object node's children
@@ -1891,9 +1913,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 58 then
---|#line 683 "cadl_14_parser.y"
+--|#line 692 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 683")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 692")
 end
 
 			create c_attr_tuple.make
@@ -1918,9 +1940,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 59 then
---|#line 693 "cadl_14_parser.y"
+--|#line 702 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 693")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 702")
 end
 
 			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs2.item (yyvsp2), Void))
@@ -1935,9 +1957,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 60 then
---|#line 702 "cadl_14_parser.y"
+--|#line 711 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 702")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 711")
 end
 
 		
@@ -1946,9 +1968,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 61 then
---|#line 705 "cadl_14_parser.y"
+--|#line 714 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 705")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 714")
 end
 
 		
@@ -1958,9 +1980,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 62 then
---|#line 710 "cadl_14_parser.y"
+--|#line 719 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 710")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 719")
 end
 
 			debug ("ADL_parse")
@@ -1974,16 +1996,16 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 63 then
---|#line 719 "cadl_14_parser.y"
+--|#line 728 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 719")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 728")
 end
 
 			c_attr_tuple_item := 1
 			if c_attr_tuple_count = 0 then
-				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child (yyvs15.item (yyvsp15))
+				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child (yyvs16.item (yyvsp16))
 			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
-				cpo.merge_tuple (yyvs15.item (yyvsp15))
+				cpo.merge_tuple (yyvs16.item (yyvsp16))
 			end
 			debug ("ADL_parse")
 				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (1).rm_attribute_name + " %N")
@@ -1992,20 +2014,20 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp15 := yyvsp15 -1
+	yyvsp16 := yyvsp16 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 64 then
---|#line 731 "cadl_14_parser.y"
+--|#line 740 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 731")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 740")
 end
 
 			c_attr_tuple_item := c_attr_tuple_item + 1
 			if c_attr_tuple_count = 0 then
-				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child (yyvs15.item (yyvsp15))
+				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child (yyvs16.item (yyvsp16))
 			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
-				cpo.merge_tuple (yyvs15.item (yyvsp15))
+				cpo.merge_tuple (yyvs16.item (yyvsp16))
 			end
 			debug ("ADL_parse")
 				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
@@ -2014,425 +2036,450 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp1 := yyvsp1 -3
-	yyvsp15 := yyvsp15 -1
+	yyvsp16 := yyvsp16 -1
 	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 65 then
---|#line 745 "cadl_14_parser.y"
+--|#line 754 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 745")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 754")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
-	yyvsp7 := yyvsp7 + 1
-	if yyvsp7 >= yyvsc7 then
+	yyvsp8 := yyvsp8 + 1
+	if yyvsp8 >= yyvsc8 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs7")
+			std.error.put_line ("Resize yyvs8")
 		end
-		yyvsc7 := yyvsc7 + yyInitial_yyvs_size
-		yyvs7 := yyspecial_routines7.aliased_resized_area (yyvs7, yyvsc7)
+		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
+		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
 	end
-	yyspecial_routines7.force (yyvs7, yyval7, yyvsp7)
+	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
 end
 when 66 then
---|#line 746 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 746")
-end
-
-			debug ("include list")
-				io.put_string (indent + "[---assertion expression---] %N")
-			end
-			yyval7 := yyvs7.item (yyvsp7)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp1 := yyvsp1 -1
-	yyspecial_routines7.force (yyvs7, yyval7, yyvsp7)
-end
-when 67 then
 --|#line 755 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 755")
 end
 
+			debug ("include list")
+				io.put_string (indent + "[---assertion expression---] %N")
+			end
+			yyval8 := yyvs8.item (yyvsp8)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
+end
+when 67 then
+--|#line 764 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 764")
+end
+
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
-	yyvsp7 := yyvsp7 + 1
-	if yyvsp7 >= yyvsc7 then
+	yyvsp8 := yyvsp8 + 1
+	if yyvsp8 >= yyvsc8 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs7")
+			std.error.put_line ("Resize yyvs8")
 		end
-		yyvsc7 := yyvsc7 + yyInitial_yyvs_size
-		yyvs7 := yyspecial_routines7.aliased_resized_area (yyvs7, yyvsc7)
+		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
+		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
 	end
-	yyspecial_routines7.force (yyvs7, yyval7, yyvsp7)
+	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
 end
 when 68 then
---|#line 756 "cadl_14_parser.y"
+--|#line 765 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 756")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 765")
 end
 
 			debug ("exclude list")
 				io.put_string (indent + "[---assertion expression---] %N")
 			end
-			yyval7 := yyvs7.item (yyvsp7)
+			yyval8 := yyvs8.item (yyvsp8)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyspecial_routines7.force (yyvs7, yyval7, yyvsp7)
+	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
 end
 when 69 then
---|#line 769 "cadl_14_parser.y"
+--|#line 778 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 769")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 778")
 end
 
-			create yyval7.make (0)
-			yyval7.extend (yyvs8.item (yyvsp8))
+			create yyval8.make (0)
+			yyval8.extend (yyvs9.item (yyvsp9))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp7 := yyvsp7 + 1
-	yyvsp8 := yyvsp8 -1
-	if yyvsp7 >= yyvsc7 then
+	yyvsp8 := yyvsp8 + 1
+	yyvsp9 := yyvsp9 -1
+	if yyvsp8 >= yyvsc8 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs7")
+			std.error.put_line ("Resize yyvs8")
 		end
-		yyvsc7 := yyvsc7 + yyInitial_yyvs_size
-		yyvs7 := yyspecial_routines7.aliased_resized_area (yyvs7, yyvsc7)
+		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
+		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
 	end
-	yyspecial_routines7.force (yyvs7, yyval7, yyvsp7)
+	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
 end
 when 70 then
---|#line 774 "cadl_14_parser.y"
+--|#line 783 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 774")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 783")
 end
 
-			yyvs7.item (yyvsp7).extend (yyvs8.item (yyvsp8))
-			yyval7 := yyvs7.item (yyvsp7)
+			yyvs8.item (yyvsp8).extend (yyvs9.item (yyvsp9))
+			yyval8 := yyvs8.item (yyvsp8)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp8 := yyvsp8 -1
-	yyspecial_routines7.force (yyvs7, yyval7, yyvsp7)
+	yyvsp9 := yyvsp9 -1
+	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
 end
 when 71 then
---|#line 781 "cadl_14_parser.y"
+--|#line 790 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 781")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 790")
 end
 
-			create yyval8.make (yyvs18.item (yyvsp18), yyvs2.item (yyvsp2))
+			create yyval9.make (yyvs19.item (yyvsp19), yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp8 := yyvsp8 + 1
+	yyvsp9 := yyvsp9 + 1
 	yyvsp2 := yyvsp2 -1
 	yyvsp1 := yyvsp1 -1
-	yyvsp18 := yyvsp18 -1
-	if yyvsp8 >= yyvsc8 then
+	yyvsp19 := yyvsp19 -1
+	if yyvsp9 >= yyvsc9 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs8")
+			std.error.put_line ("Resize yyvs9")
 		end
-		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
-		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
+		yyvsc9 := yyvsc9 + yyInitial_yyvs_size
+		yyvs9 := yyspecial_routines9.aliased_resized_area (yyvs9, yyvsc9)
 	end
-	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
+	yyspecial_routines9.force (yyvs9, yyval9, yyvsp9)
 end
 when 72 then
---|#line 785 "cadl_14_parser.y"
+--|#line 794 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 785")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 794")
 end
 
-			create yyval8.make (yyvs18.item (yyvsp18), Void)
+			create yyval9.make (yyvs19.item (yyvsp19), Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp8 := yyvsp8 + 1
-	yyvsp18 := yyvsp18 -1
-	if yyvsp8 >= yyvsc8 then
+	yyvsp9 := yyvsp9 + 1
+	yyvsp19 := yyvsp19 -1
+	if yyvsp9 >= yyvsc9 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs8")
+			std.error.put_line ("Resize yyvs9")
 		end
-		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
-		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
+		yyvsc9 := yyvsc9 + yyInitial_yyvs_size
+		yyvs9 := yyspecial_routines9.aliased_resized_area (yyvs9, yyvsc9)
 	end
-	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
+	yyspecial_routines9.force (yyvs9, yyval9, yyvsp9)
 end
 when 73 then
---|#line 793 "cadl_14_parser.y"
+--|#line 802 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 793")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 802")
 end
 
-			create yyval8.make (yyvs20.item (yyvsp20), Void)
+			create yyval9.make (yyvs21.item (yyvsp21), Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp8 := yyvsp8 + 1
-	yyvsp20 := yyvsp20 -1
-	if yyvsp8 >= yyvsc8 then
+	yyvsp9 := yyvsp9 + 1
+	yyvsp21 := yyvsp21 -1
+	if yyvsp9 >= yyvsc9 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs8")
+			std.error.put_line ("Resize yyvs9")
 		end
-		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
-		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
+		yyvsc9 := yyvsc9 + yyInitial_yyvs_size
+		yyvs9 := yyspecial_routines9.aliased_resized_area (yyvs9, yyvsc9)
 	end
-	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
+	yyspecial_routines9.force (yyvs9, yyval9, yyvsp9)
 end
 when 74 then
---|#line 797 "cadl_14_parser.y"
+--|#line 806 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 797")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 806")
 end
 
 			abort_with_error (ec_SINVS, <<yyvs2.item (yyvsp2)>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp8 := yyvsp8 + 1
+	yyvsp9 := yyvsp9 + 1
 	yyvsp2 := yyvsp2 -1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp8 >= yyvsc8 then
+	if yyvsp9 >= yyvsc9 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs8")
+			std.error.put_line ("Resize yyvs9")
 		end
-		yyvsc8 := yyvsc8 + yyInitial_yyvs_size
-		yyvs8 := yyspecial_routines8.aliased_resized_area (yyvs8, yyvsc8)
+		yyvsc9 := yyvsc9 + yyInitial_yyvs_size
+		yyvs9 := yyspecial_routines9.aliased_resized_area (yyvs9, yyvsc9)
 	end
-	yyspecial_routines8.force (yyvs8, yyval8, yyvsp8)
+	yyspecial_routines9.force (yyvs9, yyval9, yyvsp9)
 end
 when 75 then
---|#line 805 "cadl_14_parser.y"
+--|#line 814 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 805")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 814")
 end
 
-			yyval18 := yyvs18.item (yyvsp18)
+			yyval19 := yyvs19.item (yyvsp19)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 76 then
---|#line 809 "cadl_14_parser.y"
+--|#line 818 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 809")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 818")
 end
 
-			yyval18 := yyvs18.item (yyvsp18)
+			yyval19 := yyvs19.item (yyvsp19)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 77 then
---|#line 815 "cadl_14_parser.y"
+--|#line 824 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 815")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 824")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + yyvs19.item (yyvsp19).as_string + "]%N") 
+				io.put_string (indent + "boolean_expr: REDUCE from boolean_unop_expr: [" + yyvs20.item (yyvsp20).as_string + "]%N") 
 			end
-			yyval18 := yyvs19.item (yyvsp19)
+			yyval19 := yyvs20.item (yyvsp20)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp19 := yyvsp19 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp20 := yyvsp20 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 78 then
---|#line 822 "cadl_14_parser.y"
+--|#line 831 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 822")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 831")
 end
 
-			yyval18 := yyvs20.item (yyvsp20)
+			yyval19 := yyvs21.item (yyvsp21)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp20 := yyvsp20 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp21 := yyvsp21 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 79 then
---|#line 828 "cadl_14_parser.y"
+--|#line 837 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 828")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 837")
 end
 
-			yyval18 := yyvs21.item (yyvsp21)
+			yyval19 := yyvs22.item (yyvsp22)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp21 := yyvsp21 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp22 := yyvsp22 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 80 then
---|#line 832 "cadl_14_parser.y"
+--|#line 841 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 832")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 841")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + yyvs20.item (yyvsp20).as_string + "]%N") 
+				io.put_string (indent + "boolean_leaf: REDUCE from boolean_constraint: [" + yyvs21.item (yyvsp21).as_string + "]%N") 
 			end
-			yyval18 := yyvs20.item (yyvsp20)
+			yyval19 := yyvs21.item (yyvsp21)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp20 := yyvsp20 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp21 := yyvsp21 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 81 then
---|#line 839 "cadl_14_parser.y"
+--|#line 848 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 839")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 848")
 end
 
-			yyval18 := yyvs18.item (yyvsp18)
+			yyval19 := yyvs19.item (yyvsp19)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 82 then
---|#line 843 "cadl_14_parser.y"
+--|#line 852 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 843")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 852")
 end
 
-			yyval18 := yyvs20.item (yyvsp20)
+			yyval19 := yyvs21.item (yyvsp21)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp20 := yyvsp20 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp21 := yyvsp21 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 83 then
---|#line 853 "cadl_14_parser.y"
+--|#line 862 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 853")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 862")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + yyvs2.item (yyvsp2) + " matches {" + yyvs15.item (yyvsp15).as_string + "}%N") 
+				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + yyvs2.item (yyvsp2) + " matches {" + yyvs16.item (yyvsp16).as_string + "}%N") 
 			end
-			create yyval20.make (create {OPERATOR_KIND}.make (op_matches),
+			create yyval21.make (create {OPERATOR_KIND}.make (op_matches),
 				create {EXPR_LEAF}.make_archetype_ref (yyvs2.item (yyvsp2)),
-				create {EXPR_LEAF}.make_constraint (yyvs15.item (yyvsp15)))
+				create {EXPR_LEAF}.make_constraint (yyvs16.item (yyvsp16)))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
-	yyvsp20 := yyvsp20 + 1
+	yyvsp21 := yyvsp21 + 1
 	yyvsp2 := yyvsp2 -1
 	yyvsp1 := yyvsp1 -3
-	yyvsp15 := yyvsp15 -1
-	if yyvsp20 >= yyvsc20 then
+	yyvsp16 := yyvsp16 -1
+	if yyvsp21 >= yyvsc21 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs20")
+			std.error.put_line ("Resize yyvs21")
 		end
-		yyvsc20 := yyvsc20 + yyInitial_yyvs_size
-		yyvs20 := yyspecial_routines20.aliased_resized_area (yyvs20, yyvsc20)
+		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
+		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
 	end
-	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
+	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
 end
 when 84 then
---|#line 864 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 864")
-end
-
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs15.item (yyvsp15).as_string + "}%N") 
-			end
-			create yyval20.make (create {OPERATOR_KIND}.make (op_matches), 
-				create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)),
-				create {EXPR_LEAF}.make_constraint (yyvs15.item (yyvsp15)))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp20 := yyvsp20 + 1
-	yyvsp2 := yyvsp2 -1
-	yyvsp1 := yyvsp1 -3
-	yyvsp15 := yyvsp15 -1
-	if yyvsp20 >= yyvsc20 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs20")
-		end
-		yyvsc20 := yyvsc20 + yyInitial_yyvs_size
-		yyvs20 := yyspecial_routines20.aliased_resized_area (yyvs20, yyvsc20)
-	end
-	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
-end
-when 85 then
 --|#line 873 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 873")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs58.item (yyvsp58).as_string + "}%N") 
+				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs16.item (yyvsp16).as_string + "}%N") 
 			end
-			create yyval20.make (create {OPERATOR_KIND}.make (op_matches), 
+			create yyval21.make (create {OPERATOR_KIND}.make (op_matches), 
 				create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)),
-				create {EXPR_LEAF}.make_coded_term (yyvs58.item (yyvsp58)))
+				create {EXPR_LEAF}.make_constraint (yyvs16.item (yyvsp16)))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
-	yyvsp20 := yyvsp20 + 1
+	yyvsp21 := yyvsp21 + 1
 	yyvsp2 := yyvsp2 -1
 	yyvsp1 := yyvsp1 -3
-	yyvsp58 := yyvsp58 -1
+	yyvsp16 := yyvsp16 -1
+	if yyvsp21 >= yyvsc21 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs21")
+		end
+		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
+		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+	end
+	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+end
+when 85 then
+--|#line 882 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 882")
+end
+
+			debug ("ADL_invariant")
+				io.put_string (indent + "boolean_constraint:" + yyvs2.item (yyvsp2) + " matches {" + yyvs59.item (yyvsp59).as_string + "}%N") 
+			end
+			create yyval21.make (create {OPERATOR_KIND}.make (op_matches), 
+				create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)),
+				create {EXPR_LEAF}.make_coded_term (yyvs59.item (yyvsp59)))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp21 := yyvsp21 + 1
+	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -3
+	yyvsp59 := yyvsp59 -1
+	if yyvsp21 >= yyvsc21 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs21")
+		end
+		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
+		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+	end
+	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+end
+when 86 then
+--|#line 897 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 897")
+end
+
+			debug ("ADL_invariant")
+				io.put_string (indent + "boolean_unop_expr: exists " + yyvs2.item (yyvsp2) + "%N") 
+			end
+			create yyval20.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp20 := yyvsp20 + 1
+	yyvsp1 := yyvsp1 -1
+	yyvsp2 := yyvsp2 -1
 	if yyvsp20 >= yyvsc20 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs20")
@@ -2442,118 +2489,68 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
 end
-when 86 then
---|#line 888 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 888")
-end
-
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: exists " + yyvs2.item (yyvsp2) + "%N") 
-			end
-			create yyval19.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp19 := yyvsp19 + 1
-	yyvsp1 := yyvsp1 -1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp19 >= yyvsc19 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs19")
-		end
-		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
-		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
-	end
-	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
-end
 when 87 then
---|#line 895 "cadl_14_parser.y"
+--|#line 904 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 895")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 904")
 end
 
 			debug ("ADL_invariant")
 				io.put_string (indent + "boolean_unop_expr: not " + yyvs2.item (yyvsp2) + "%N") 
 			end
-			create yyval19.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
+			create yyval20.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref (yyvs2.item (yyvsp2)))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp19 := yyvsp19 + 1
+	yyvsp20 := yyvsp20 + 1
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp19 >= yyvsc19 then
+	if yyvsp20 >= yyvsc20 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs19")
+			std.error.put_line ("Resize yyvs20")
 		end
-		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
-		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
+		yyvsc20 := yyvsc20 + yyInitial_yyvs_size
+		yyvs20 := yyspecial_routines20.aliased_resized_area (yyvs20, yyvsc20)
 	end
-	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
+	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
 end
 when 88 then
---|#line 902 "cadl_14_parser.y"
+--|#line 911 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 902")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 911")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_unop_expr: not [(" + yyvs18.item (yyvsp18).as_string + ")] %N") 
+				io.put_string (indent + "boolean_unop_expr: not [(" + yyvs19.item (yyvsp19).as_string + ")] %N") 
 			end
-			create yyval19.make (create {OPERATOR_KIND}.make (op_not), yyvs18.item (yyvsp18))
+			create yyval20.make (create {OPERATOR_KIND}.make (op_not), yyvs19.item (yyvsp19))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
-	yyvsp19 := yyvsp19 + 1
+	yyvsp20 := yyvsp20 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp18 := yyvsp18 -1
-	if yyvsp19 >= yyvsc19 then
+	yyvsp19 := yyvsp19 -1
+	if yyvsp20 >= yyvsc20 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs19")
+			std.error.put_line ("Resize yyvs20")
 		end
-		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
-		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
+		yyvsc20 := yyvsc20 + yyInitial_yyvs_size
+		yyvs20 := yyspecial_routines20.aliased_resized_area (yyvs20, yyvsc20)
 	end
-	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
+	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
 end
 when 89 then
---|#line 909 "cadl_14_parser.y"
+--|#line 918 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 909")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 918")
 end
 
 			abort_with_error (ec_SEXPT, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp19 := yyvsp19 + 1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp19 >= yyvsc19 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs19")
-		end
-		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
-		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
-	end
-	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
-end
-when 90 then
---|#line 919 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 919")
-end
-
-			debug ("ADL_invariant")
-				io.put_string (indent + "boolean_binop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N") 
-			end
-			create yyval20.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs18.item (yyvsp18 - 1), yyvs18.item (yyvsp18))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
 	yyvsp20 := yyvsp20 + 1
-	yyvsp18 := yyvsp18 -2
-	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -2
 	if yyvsp20 >= yyvsc20 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs20")
@@ -2563,10 +2560,35 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
 end
-when 91 then
+when 90 then
 --|#line 928 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 928")
+end
+
+			debug ("ADL_invariant")
+				io.put_string (indent + "boolean_binop_expr: [" + yyvs19.item (yyvsp19 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs19.item (yyvsp19).as_string + "]%N") 
+			end
+			create yyval21.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs19.item (yyvsp19 - 1), yyvs19.item (yyvsp19))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp21 := yyvsp21 + 1
+	yyvsp19 := yyvsp19 -2
+	yyvsp2 := yyvsp2 -1
+	if yyvsp21 >= yyvsc21 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs21")
+		end
+		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
+		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+	end
+	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+end
+when 91 then
+--|#line 937 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 937")
 end
 
 			yyval2 := operator_symbol (op_or)
@@ -2585,9 +2607,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 92 then
---|#line 932 "cadl_14_parser.y"
+--|#line 941 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 932")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 941")
 end
 
 			yyval2 := operator_symbol (op_and)
@@ -2606,9 +2628,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 93 then
---|#line 936 "cadl_14_parser.y"
+--|#line 945 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 936")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 945")
 end
 
 			yyval2 := operator_symbol (op_xor)
@@ -2627,9 +2649,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 94 then
---|#line 940 "cadl_14_parser.y"
+--|#line 949 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 940")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 949")
 end
 
 			yyval2 := operator_symbol (op_implies)
@@ -2648,243 +2670,243 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 95 then
---|#line 950 "cadl_14_parser.y"
+--|#line 959 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 950")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 959")
 end
 
-			create yyval21.make_boolean (True)
+			create yyval22.make_boolean (True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp21 := yyvsp21 + 1
+	yyvsp22 := yyvsp22 + 1
 	yyvsp1 := yyvsp1 -1
-	if yyvsp21 >= yyvsc21 then
+	if yyvsp22 >= yyvsc22 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs21")
+			std.error.put_line ("Resize yyvs22")
 		end
-		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
-		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
+		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
 	end
-	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
 end
 when 96 then
---|#line 954 "cadl_14_parser.y"
+--|#line 963 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 954")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 963")
 end
 
-			create yyval21.make_boolean (False)
+			create yyval22.make_boolean (False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp21 := yyvsp21 + 1
+	yyvsp22 := yyvsp22 + 1
 	yyvsp1 := yyvsp1 -1
-	if yyvsp21 >= yyvsc21 then
+	if yyvsp22 >= yyvsc22 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs21")
+			std.error.put_line ("Resize yyvs22")
 		end
-		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
-		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
+		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
 	end
-	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
 end
 when 97 then
---|#line 964 "cadl_14_parser.y"
+--|#line 973 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 964")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 973")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arithmetic_relop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N") 
+				io.put_string (indent + "arithmetic_relop_expr: [" + yyvs19.item (yyvsp19 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs19.item (yyvsp19).as_string + "]%N") 
 			end
-			create yyval20.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs18.item (yyvsp18 - 1), yyvs18.item (yyvsp18))
+			create yyval21.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs19.item (yyvsp19 - 1), yyvs19.item (yyvsp19))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp20 := yyvsp20 + 1
-	yyvsp18 := yyvsp18 -2
+	yyvsp21 := yyvsp21 + 1
+	yyvsp19 := yyvsp19 -2
 	yyvsp2 := yyvsp2 -1
-	if yyvsp20 >= yyvsc20 then
+	if yyvsp21 >= yyvsc21 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs20")
+			std.error.put_line ("Resize yyvs21")
 		end
-		yyvsc20 := yyvsc20 + yyInitial_yyvs_size
-		yyvs20 := yyspecial_routines20.aliased_resized_area (yyvs20, yyvsc20)
+		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
+		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
 	end
-	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
+	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
 end
 when 98 then
---|#line 977 "cadl_14_parser.y"
+--|#line 986 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 977")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 986")
 end
 
-			yyval18 := yyvs18.item (yyvsp18)
+			yyval19 := yyvs19.item (yyvsp19)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 99 then
---|#line 981 "cadl_14_parser.y"
+--|#line 990 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 981")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 990")
 end
 
-			yyval18 := yyvs20.item (yyvsp20)
+			yyval19 := yyvs21.item (yyvsp21)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp20 := yyvsp20 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp21 := yyvsp21 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 100 then
---|#line 987 "cadl_14_parser.y"
+--|#line 996 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 987")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 996")
 end
 
-			yyval18 := yyvs21.item (yyvsp21)
+			yyval19 := yyvs22.item (yyvsp22)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp18 := yyvsp18 + 1
-	yyvsp21 := yyvsp21 -1
-	if yyvsp18 >= yyvsc18 then
+	yyvsp19 := yyvsp19 + 1
+	yyvsp22 := yyvsp22 -1
+	if yyvsp19 >= yyvsc19 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs18")
+			std.error.put_line ("Resize yyvs19")
 		end
-		yyvsc18 := yyvsc18 + yyInitial_yyvs_size
-		yyvs18 := yyspecial_routines18.aliased_resized_area (yyvs18, yyvsc18)
+		yyvsc19 := yyvsc19 + yyInitial_yyvs_size
+		yyvs19 := yyspecial_routines19.aliased_resized_area (yyvs19, yyvsc19)
 	end
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 101 then
---|#line 991 "cadl_14_parser.y"
+--|#line 1000 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 991")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1000")
 end
 
 			debug ("ADL_invariant")
 				io.put_string (indent + "(expr) %N") 
 			end
-			yyval18 := yyvs18.item (yyvsp18)
+			yyval19 := yyvs19.item (yyvsp19)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines18.force (yyvs18, yyval18, yyvsp18)
+	yyspecial_routines19.force (yyvs19, yyval19, yyvsp19)
 end
 when 102 then
---|#line 1004 "cadl_14_parser.y"
+--|#line 1013 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1004")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1013")
 end
 
 			debug ("ADL_invariant")
-				io.put_string (indent + "arithmetic_arith_binop_expr: [" + yyvs18.item (yyvsp18 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs18.item (yyvsp18).as_string + "]%N") 
+				io.put_string (indent + "arithmetic_arith_binop_expr: [" + yyvs19.item (yyvsp19 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs19.item (yyvsp19).as_string + "]%N") 
 			end
-			create yyval20.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs18.item (yyvsp18 - 1), yyvs18.item (yyvsp18))
+			create yyval21.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs19.item (yyvsp19 - 1), yyvs19.item (yyvsp19))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp20 := yyvsp20 + 1
-	yyvsp18 := yyvsp18 -2
+	yyvsp21 := yyvsp21 + 1
+	yyvsp19 := yyvsp19 -2
 	yyvsp2 := yyvsp2 -1
-	if yyvsp20 >= yyvsc20 then
+	if yyvsp21 >= yyvsc21 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs20")
+			std.error.put_line ("Resize yyvs21")
 		end
-		yyvsc20 := yyvsc20 + yyInitial_yyvs_size
-		yyvs20 := yyspecial_routines20.aliased_resized_area (yyvs20, yyvsc20)
+		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
+		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
 	end
-	yyspecial_routines20.force (yyvs20, yyval20, yyvsp20)
+	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
 end
 when 103 then
---|#line 1017 "cadl_14_parser.y"
+--|#line 1026 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1017")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1026")
 end
 
 			debug ("ADL_invariant")
 				io.put_string (indent + "arith_leaf - integer: " + yyvs3.item (yyvsp3).out + "%N") 
 			end
-			create yyval21.make_integer (yyvs3.item (yyvsp3))
+			create yyval22.make_integer (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp21 := yyvsp21 + 1
+	yyvsp22 := yyvsp22 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp21 >= yyvsc21 then
+	if yyvsp22 >= yyvsc22 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs21")
+			std.error.put_line ("Resize yyvs22")
 		end
-		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
-		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
+		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
 	end
-	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
 end
 when 104 then
---|#line 1024 "cadl_14_parser.y"
+--|#line 1033 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1024")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1033")
 end
 
 			debug ("ADL_invariant")
 				io.put_string (indent + "arith_leaf - real: " + yyvs4.item (yyvsp4).out + "%N") 
 			end
-			create yyval21.make_real (yyvs4.item (yyvsp4))
+			create yyval22.make_real (yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp21 := yyvsp21 + 1
+	yyvsp22 := yyvsp22 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp21 >= yyvsc21 then
+	if yyvsp22 >= yyvsc22 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs21")
+			std.error.put_line ("Resize yyvs22")
 		end
-		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
-		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
+		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
 	end
-	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
 end
 when 105 then
---|#line 1031 "cadl_14_parser.y"
+--|#line 1040 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1031")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1040")
 end
 
 			debug ("ADL_invariant")
 				io.put_string (indent + "arith_leaf - path: " + yyvs2.item (yyvsp2) + "%N") 
 			end
-			create yyval21.make_archetype_definition_ref (yyvs2.item (yyvsp2))
+			create yyval22.make_archetype_definition_ref (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp21 := yyvsp21 + 1
+	yyvsp22 := yyvsp22 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp21 >= yyvsc21 then
+	if yyvsp22 >= yyvsc22 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs21")
+			std.error.put_line ("Resize yyvs22")
 		end
-		yyvsc21 := yyvsc21 + yyInitial_yyvs_size
-		yyvs21 := yyspecial_routines21.aliased_resized_area (yyvs21, yyvsc21)
+		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
+		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
 	end
-	yyspecial_routines21.force (yyvs21, yyval21, yyvsp21)
+	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
 end
 when 106 then
---|#line 1040 "cadl_14_parser.y"
+--|#line 1049 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1040")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1049")
 end
 
 			yyval2 := operator_symbol (op_eq)
@@ -2903,9 +2925,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 107 then
---|#line 1044 "cadl_14_parser.y"
+--|#line 1053 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1044")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1053")
 end
 
 			yyval2 := operator_symbol (op_ne)
@@ -2924,9 +2946,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 108 then
---|#line 1048 "cadl_14_parser.y"
+--|#line 1057 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1048")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1057")
 end
 
 			yyval2 := operator_symbol (op_le)
@@ -2945,9 +2967,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 109 then
---|#line 1052 "cadl_14_parser.y"
+--|#line 1061 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1052")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1061")
 end
 
 			yyval2 := operator_symbol (op_lt)
@@ -2966,9 +2988,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 110 then
---|#line 1056 "cadl_14_parser.y"
+--|#line 1065 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1056")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1065")
 end
 
 			yyval2 := operator_symbol (op_ge)
@@ -2987,9 +3009,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 111 then
---|#line 1060 "cadl_14_parser.y"
+--|#line 1069 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1060")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1069")
 end
 
 			yyval2 := operator_symbol (op_gt)
@@ -3008,9 +3030,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 112 then
---|#line 1066 "cadl_14_parser.y"
+--|#line 1075 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1066")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1075")
 end
 
 			yyval2 := operator_symbol (op_divide)
@@ -3029,9 +3051,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 113 then
---|#line 1070 "cadl_14_parser.y"
+--|#line 1079 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1070")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1079")
 end
 
 			yyval2 := operator_symbol (op_multiply)
@@ -3050,9 +3072,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 114 then
---|#line 1074 "cadl_14_parser.y"
+--|#line 1083 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1074")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1083")
 end
 
 			yyval2 := operator_symbol (op_plus)
@@ -3071,9 +3093,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 115 then
---|#line 1078 "cadl_14_parser.y"
+--|#line 1087 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1078")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1087")
 end
 
 			yyval2 := operator_symbol (op_minus)
@@ -3092,9 +3114,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 116 then
---|#line 1082 "cadl_14_parser.y"
+--|#line 1091 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1082")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1091")
 end
 
 			yyval2 := operator_symbol (op_exp)
@@ -3113,64 +3135,15 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 117 then
---|#line 1091 "cadl_14_parser.y"
+--|#line 1100 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1091")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1100")
 end
 
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 0
-	yyvsp12 := yyvsp12 + 1
-	if yyvsp12 >= yyvsc12 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs12")
-		end
-		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
-		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
-	end
-	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
-end
-when 118 then
---|#line 1092 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1092")
-end
-
-			yyval12 := yyvs13.item (yyvsp13)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp12 := yyvsp12 + 1
-	yyvsp1 := yyvsp1 -4
-	yyvsp13 := yyvsp13 -1
-	if yyvsp12 >= yyvsc12 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs12")
-		end
-		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
-		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
-	end
-	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
-end
-when 119 then
---|#line 1098 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1098")
-end
-
-			if yyvs3.item (yyvsp3) = 0 then
-				create yyval13.make_prohibited
-			elseif yyvs3.item (yyvsp3) = 1 then
-				create yyval13.make_mandatory
-			else
-				abort_with_error (ec_SEXLSG, Void)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
 	yyvsp13 := yyvsp13 + 1
-	yyvsp3 := yyvsp3 -1
 	if yyvsp13 >= yyvsc13 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs13")
@@ -3180,23 +3153,72 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
 end
-when 120 then
---|#line 1108 "cadl_14_parser.y"
+when 118 then
+--|#line 1101 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1108")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1101")
+end
+
+			yyval13 := yyvs14.item (yyvsp14)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp13 := yyvsp13 + 1
+	yyvsp1 := yyvsp1 -4
+	yyvsp14 := yyvsp14 -1
+	if yyvsp13 >= yyvsc13 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs13")
+		end
+		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
+		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
+	end
+	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
+end
+when 119 then
+--|#line 1107 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1107")
+end
+
+			if yyvs3.item (yyvsp3) = 0 then
+				create yyval14.make_prohibited
+			elseif yyvs3.item (yyvsp3) = 1 then
+				create yyval14.make_mandatory
+			else
+				abort_with_error (ec_SEXLSG, Void)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp14 := yyvsp14 + 1
+	yyvsp3 := yyvsp3 -1
+	if yyvsp14 >= yyvsc14 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs14")
+		end
+		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
+		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+	end
+	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+end
+when 120 then
+--|#line 1117 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1117")
 end
 
 			if yyvs3.item (yyvsp3 - 1) = 0 then
 				if yyvs3.item (yyvsp3) = 0 then
-					create yyval13.make_point (0)
+					create yyval14.make_point (0)
 				elseif yyvs3.item (yyvsp3) = 1 then
-					create yyval13.make_bounded (0, 1)
+					create yyval14.make_bounded (0, 1)
 				else
 					abort_with_error (ec_SEXLU1, Void)
 				end
 			elseif yyvs3.item (yyvsp3 - 1) = 1 then
 				if yyvs3.item (yyvsp3) = 1 then
-					create yyval13.make_point (1)
+					create yyval14.make_point (1)
 				else
 					abort_with_error (ec_SEXLU2, Void)
 				end
@@ -3206,9 +3228,252 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp13 := yyvsp13 + 1
+	yyvsp14 := yyvsp14 + 1
 	yyvsp3 := yyvsp3 -2
 	yyvsp1 := yyvsp1 -1
+	if yyvsp14 >= yyvsc14 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs14")
+		end
+		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
+		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+	end
+	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+end
+when 121 then
+--|#line 1139 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1139")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 0
+	yyvsp48 := yyvsp48 + 1
+	if yyvsp48 >= yyvsc48 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs48")
+		end
+		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
+		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
+	end
+	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
+end
+when 122 then
+--|#line 1140 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1140")
+end
+
+			yyval48 := yyvs49.item (yyvsp49)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp48 := yyvsp48 + 1
+	yyvsp1 := yyvsp1 -4
+	yyvsp49 := yyvsp49 -1
+	if yyvsp48 >= yyvsc48 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs48")
+		end
+		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
+		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
+	end
+	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
+end
+when 123 then
+--|#line 1146 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1146")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 124 then
+--|#line 1150 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1150")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 125 then
+--|#line 1154 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1154")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+			yyval49.set_unordered
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 126 then
+--|#line 1159 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1159")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+			yyval49.set_unique
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 127 then
+--|#line 1164 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1164")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+			yyval49.set_unique
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -4
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 128 then
+--|#line 1169 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1169")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+			yyval49.set_unique
+			yyval49.set_unordered
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -4
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 129 then
+--|#line 1175 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1175")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+			yyval49.set_unique
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -4
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 130 then
+--|#line 1180 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1180")
+end
+
+			create yyval49.make (yyvs14.item (yyvsp14))
+			yyval49.set_unique
+			yyval49.set_unordered
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp49 := yyvsp49 + 1
+	yyvsp14 := yyvsp14 -1
+	yyvsp1 := yyvsp1 -4
+	if yyvsp49 >= yyvsc49 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs49")
+		end
+		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
+		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+	end
+	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
+end
+when 131 then
+--|#line 1188 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1188")
+end
+
+
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 0
+	yyvsp13 := yyvsp13 + 1
 	if yyvsp13 >= yyvsc13 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs13")
@@ -3218,471 +3483,228 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
 end
-when 121 then
---|#line 1130 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1130")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp47 := yyvsp47 + 1
-	if yyvsp47 >= yyvsc47 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs47")
-		end
-		yyvsc47 := yyvsc47 + yyInitial_yyvs_size
-		yyvs47 := yyspecial_routines47.aliased_resized_area (yyvs47, yyvsc47)
-	end
-	yyspecial_routines47.force (yyvs47, yyval47, yyvsp47)
-end
-when 122 then
---|#line 1131 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1131")
-end
-
-			yyval47 := yyvs48.item (yyvsp48)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp47 := yyvsp47 + 1
-	yyvsp1 := yyvsp1 -4
-	yyvsp48 := yyvsp48 -1
-	if yyvsp47 >= yyvsc47 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs47")
-		end
-		yyvsc47 := yyvsc47 + yyInitial_yyvs_size
-		yyvs47 := yyspecial_routines47.aliased_resized_area (yyvs47, yyvsc47)
-	end
-	yyspecial_routines47.force (yyvs47, yyval47, yyvsp47)
-end
-when 123 then
---|#line 1137 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1137")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 124 then
---|#line 1141 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1141")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 125 then
---|#line 1145 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1145")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-			yyval48.set_unordered
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 126 then
---|#line 1150 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1150")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-			yyval48.set_unique
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 127 then
---|#line 1155 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1155")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-			yyval48.set_unique
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -4
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 128 then
---|#line 1160 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1160")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-			yyval48.set_unique
-			yyval48.set_unordered
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -4
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 129 then
---|#line 1166 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1166")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-			yyval48.set_unique
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -4
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 130 then
---|#line 1171 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1171")
-end
-
-			create yyval48.make (yyvs13.item (yyvsp13))
-			yyval48.set_unique
-			yyval48.set_unordered
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp48 := yyvsp48 + 1
-	yyvsp13 := yyvsp13 -1
-	yyvsp1 := yyvsp1 -4
-	if yyvsp48 >= yyvsc48 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs48")
-		end
-		yyvsc48 := yyvsc48 + yyInitial_yyvs_size
-		yyvs48 := yyspecial_routines48.aliased_resized_area (yyvs48, yyvsc48)
-	end
-	yyspecial_routines48.force (yyvs48, yyval48, yyvsp48)
-end
-when 131 then
---|#line 1179 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1179")
-end
-
-
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 0
-	yyvsp12 := yyvsp12 + 1
-	if yyvsp12 >= yyvsc12 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs12")
-		end
-		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
-		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
-	end
-	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
-end
 when 132 then
---|#line 1180 "cadl_14_parser.y"
+--|#line 1189 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1180")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1189")
 end
 
-			yyval12 := yyvs13.item (yyvsp13)
+			yyval13 := yyvs14.item (yyvsp14)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
-	yyvsp12 := yyvsp12 + 1
+	yyvsp13 := yyvsp13 + 1
 	yyvsp1 := yyvsp1 -4
-	yyvsp13 := yyvsp13 -1
-	if yyvsp12 >= yyvsc12 then
+	yyvsp14 := yyvsp14 -1
+	if yyvsp13 >= yyvsc13 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs12")
+			std.error.put_line ("Resize yyvs13")
 		end
-		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
-		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
+		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
+		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
 	end
-	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
+	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
 end
 when 133 then
---|#line 1184 "cadl_14_parser.y"
+--|#line 1193 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1184")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1193")
 end
 
 			abort_with_error (ec_SOCCF, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
-	yyvsp12 := yyvsp12 + 1
+	yyvsp13 := yyvsp13 + 1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp12 >= yyvsc12 then
+	if yyvsp13 >= yyvsc13 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs12")
+			std.error.put_line ("Resize yyvs13")
 		end
-		yyvsc12 := yyvsc12 + yyInitial_yyvs_size
-		yyvs12 := yyspecial_routines12.aliased_resized_area (yyvs12, yyvsc12)
+		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
+		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
 	end
-	yyspecial_routines12.force (yyvs12, yyval12, yyvsp12)
+	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
 end
 when 134 then
---|#line 1190 "cadl_14_parser.y"
+--|#line 1199 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1190")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1199")
 end
 
-			create yyval13.make_point (yyvs3.item (yyvsp3))
+			create yyval14.make_point (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp13 := yyvsp13 + 1
+	yyvsp14 := yyvsp14 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp13 >= yyvsc13 then
+	if yyvsp14 >= yyvsc14 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs13")
+			std.error.put_line ("Resize yyvs14")
 		end
-		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
-		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
+		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
+		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
 	end
-	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
+	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
 end
 when 135 then
---|#line 1194 "cadl_14_parser.y"
+--|#line 1203 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1194")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1203")
 end
 
-			create yyval13.make_upper_unbounded (0)
+			create yyval14.make_upper_unbounded (0)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp13 := yyvsp13 + 1
+	yyvsp14 := yyvsp14 + 1
 	yyvsp1 := yyvsp1 -1
-	if yyvsp13 >= yyvsc13 then
+	if yyvsp14 >= yyvsc14 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs13")
+			std.error.put_line ("Resize yyvs14")
 		end
-		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
-		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
+		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
+		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
 	end
-	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
+	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
 end
 when 136 then
---|#line 1198 "cadl_14_parser.y"
+--|#line 1207 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1198")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1207")
 end
 
-			create yyval13.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3))
+			create yyval14.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp13 := yyvsp13 + 1
+	yyvsp14 := yyvsp14 + 1
 	yyvsp3 := yyvsp3 -2
 	yyvsp1 := yyvsp1 -1
-	if yyvsp13 >= yyvsc13 then
+	if yyvsp14 >= yyvsc14 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs13")
+			std.error.put_line ("Resize yyvs14")
 		end
-		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
-		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
+		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
+		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
 	end
-	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
+	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
 end
 when 137 then
---|#line 1202 "cadl_14_parser.y"
+--|#line 1211 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1202")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1211")
 end
 
-			create yyval13.make_upper_unbounded (yyvs3.item (yyvsp3))
+			create yyval14.make_upper_unbounded (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp13 := yyvsp13 + 1
+	yyvsp14 := yyvsp14 + 1
 	yyvsp3 := yyvsp3 -1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp13 >= yyvsc13 then
+	if yyvsp14 >= yyvsc14 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs13")
+			std.error.put_line ("Resize yyvs14")
 		end
-		yyvsc13 := yyvsc13 + yyInitial_yyvs_size
-		yyvs13 := yyspecial_routines13.aliased_resized_area (yyvs13, yyvsc13)
+		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
+		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
 	end
-	yyspecial_routines13.force (yyvs13, yyval13, yyvsp13)
+	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
 end
 when 138 then
---|#line 1210 "cadl_14_parser.y"
+--|#line 1219 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1210")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1219")
 end
 
-			create yyval57.make_simple (yyvs3.item (yyvsp3))
+			create yyval58.make_simple (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp57 := yyvsp57 + 1
+	yyvsp58 := yyvsp58 + 1
 	yyvsp3 := yyvsp3 -1
-	if yyvsp57 >= yyvsc57 then
+	if yyvsp58 >= yyvsc58 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs57")
+			std.error.put_line ("Resize yyvs58")
 		end
-		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
-		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
+		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
+		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
 	end
-	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
+	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
 end
 when 139 then
---|#line 1214 "cadl_14_parser.y"
+--|#line 1223 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1214")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1223")
 end
 
-			create yyval57.make_list_simple (yyvs28.item (yyvsp28))
+			create yyval58.make_list_simple (yyvs29.item (yyvsp29))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp57 := yyvsp57 + 1
-	yyvsp28 := yyvsp28 -1
-	if yyvsp57 >= yyvsc57 then
+	yyvsp58 := yyvsp58 + 1
+	yyvsp29 := yyvsp29 -1
+	if yyvsp58 >= yyvsc58 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs57")
+			std.error.put_line ("Resize yyvs58")
 		end
-		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
-		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
+		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
+		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
 	end
-	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
+	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
 end
 when 140 then
---|#line 1218 "cadl_14_parser.y"
+--|#line 1227 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1218")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1227")
 end
 
-			create yyval57.make_interval (yyvs35.item (yyvsp35))
+			create yyval58.make_interval (yyvs36.item (yyvsp36))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp57 := yyvsp57 + 1
-	yyvsp35 := yyvsp35 -1
-	if yyvsp57 >= yyvsc57 then
+	yyvsp58 := yyvsp58 + 1
+	yyvsp36 := yyvsp36 -1
+	if yyvsp58 >= yyvsc58 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs57")
+			std.error.put_line ("Resize yyvs58")
 		end
-		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
-		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
+		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
+		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
 	end
-	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
+	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
 end
 when 141 then
---|#line 1222 "cadl_14_parser.y"
+--|#line 1231 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1222")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1231")
 end
 
-			create yyval57.make_list (yyvs41.item (yyvsp41))
+			create yyval58.make_list (yyvs42.item (yyvsp42))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp57 := yyvsp57 + 1
-	yyvsp41 := yyvsp41 -1
-	if yyvsp57 >= yyvsc57 then
+	yyvsp58 := yyvsp58 + 1
+	yyvsp42 := yyvsp42 -1
+	if yyvsp58 >= yyvsc58 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs57")
+			std.error.put_line ("Resize yyvs58")
 		end
-		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
-		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
+		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
+		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
 	end
-	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
+	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
 end
 when 142 then
---|#line 1226 "cadl_14_parser.y"
+--|#line 1235 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1226")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1235")
 end
 
-			if yyvs57.item (yyvsp57).valid_value (yyvs3.item (yyvsp3)) then
-				yyvs57.item (yyvsp57).set_assumed_value (yyvs3.item (yyvsp3))
-				yyval57 := yyvs57.item (yyvsp57)
+			if yyvs58.item (yyvsp58).valid_value (yyvs3.item (yyvsp3)) then
+				yyvs58.item (yyvsp58).set_assumed_value (yyvs3.item (yyvsp3))
+				yyval58 := yyvs58.item (yyvsp58)
 			else
 				abort_with_error (ec_VOBAV, <<yyvs3.item (yyvsp3).out>>)
 			end
@@ -3691,12 +3713,12 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
+	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
 end
 when 143 then
---|#line 1235 "cadl_14_parser.y"
+--|#line 1244 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1235")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1244")
 end
 
 			abort_with_error (ec_SCIAV, Void)
@@ -3704,101 +3726,101 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
+	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
 end
 when 144 then
---|#line 1241 "cadl_14_parser.y"
+--|#line 1250 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1241")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1250")
 end
 
-			create yyval56.make_simple (yyvs4.item (yyvsp4))
+			create yyval57.make_simple (yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp56 := yyvsp56 + 1
+	yyvsp57 := yyvsp57 + 1
 	yyvsp4 := yyvsp4 -1
-	if yyvsp56 >= yyvsc56 then
+	if yyvsp57 >= yyvsc57 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs56")
+			std.error.put_line ("Resize yyvs57")
 		end
-		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
-		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
+		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
 	end
-	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
 end
 when 145 then
---|#line 1245 "cadl_14_parser.y"
+--|#line 1254 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1245")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1254")
 end
 
-			create yyval56.make_list_simple (yyvs29.item (yyvsp29))
+			create yyval57.make_list_simple (yyvs30.item (yyvsp30))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp56 := yyvsp56 + 1
-	yyvsp29 := yyvsp29 -1
-	if yyvsp56 >= yyvsc56 then
+	yyvsp57 := yyvsp57 + 1
+	yyvsp30 := yyvsp30 -1
+	if yyvsp57 >= yyvsc57 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs56")
+			std.error.put_line ("Resize yyvs57")
 		end
-		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
-		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
+		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
 	end
-	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
 end
 when 146 then
---|#line 1249 "cadl_14_parser.y"
+--|#line 1258 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1249")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1258")
 end
 
-			create yyval56.make_interval (yyvs36.item (yyvsp36))
+			create yyval57.make_interval (yyvs37.item (yyvsp37))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp56 := yyvsp56 + 1
-	yyvsp36 := yyvsp36 -1
-	if yyvsp56 >= yyvsc56 then
+	yyvsp57 := yyvsp57 + 1
+	yyvsp37 := yyvsp37 -1
+	if yyvsp57 >= yyvsc57 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs56")
+			std.error.put_line ("Resize yyvs57")
 		end
-		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
-		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
+		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
 	end
-	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
 end
 when 147 then
---|#line 1253 "cadl_14_parser.y"
+--|#line 1262 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1253")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1262")
 end
 
-			create yyval56.make_list (yyvs42.item (yyvsp42))
+			create yyval57.make_list (yyvs43.item (yyvsp43))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp56 := yyvsp56 + 1
-	yyvsp42 := yyvsp42 -1
-	if yyvsp56 >= yyvsc56 then
+	yyvsp57 := yyvsp57 + 1
+	yyvsp43 := yyvsp43 -1
+	if yyvsp57 >= yyvsc57 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs56")
+			std.error.put_line ("Resize yyvs57")
 		end
-		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
-		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+		yyvsc57 := yyvsc57 + yyInitial_yyvs_size
+		yyvs57 := yyspecial_routines57.aliased_resized_area (yyvs57, yyvsc57)
 	end
-	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
 end
 when 148 then
---|#line 1257 "cadl_14_parser.y"
+--|#line 1266 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1257")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1266")
 end
 
-			if yyvs56.item (yyvsp56).valid_value (yyvs4.item (yyvsp4)) then
-				yyvs56.item (yyvsp56).set_assumed_value (yyvs4.item (yyvsp4))
-				yyval56 := yyvs56.item (yyvsp56)
+			if yyvs57.item (yyvsp57).valid_value (yyvs4.item (yyvsp4)) then
+				yyvs57.item (yyvsp57).set_assumed_value (yyvs4.item (yyvsp4))
+				yyval57 := yyvs57.item (yyvsp57)
 			else
 				abort_with_error (ec_VOBAV, <<yyvs4.item (yyvsp4).out>>)
 			end
@@ -3807,12 +3829,12 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp4 := yyvsp4 -1
-	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
 end
 when 149 then
---|#line 1266 "cadl_14_parser.y"
+--|#line 1275 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1266")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1275")
 end
 
 			abort_with_error (ec_SCRAV, Void)
@@ -3820,16 +3842,16 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+	yyspecial_routines57.force (yyvs57, yyval57, yyvsp57)
 end
 when 150 then
---|#line 1272 "cadl_14_parser.y"
+--|#line 1281 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1272")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1281")
 end
 
 			if valid_iso8601_date_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval54.make_from_pattern (yyvs2.item (yyvsp2))
+				create yyval55.make_from_pattern (yyvs2.item (yyvsp2))
 			else
 				create str.make (0)
 				from valid_date_constraint_patterns.start until valid_date_constraint_patterns.off loop
@@ -3844,190 +3866,42 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp54 := yyvsp54 + 1
+	yyvsp55 := yyvsp55 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp54 >= yyvsc54 then
+	if yyvsp55 >= yyvsc55 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs54")
+			std.error.put_line ("Resize yyvs55")
 		end
-		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
-		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+		yyvsc55 := yyvsc55 + yyInitial_yyvs_size
+		yyvs55 := yyspecial_routines55.aliased_resized_area (yyvs55, yyvsc55)
 	end
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
 end
 when 151 then
---|#line 1288 "cadl_14_parser.y"
+--|#line 1297 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1288")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1297")
 end
 
-			create yyval54.make_simple (yyvs23.item (yyvsp23))
+			create yyval55.make_simple (yyvs24.item (yyvsp24))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp54 := yyvsp54 + 1
-	yyvsp23 := yyvsp23 -1
-	if yyvsp54 >= yyvsc54 then
+	yyvsp55 := yyvsp55 + 1
+	yyvsp24 := yyvsp24 -1
+	if yyvsp55 >= yyvsc55 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs54")
+			std.error.put_line ("Resize yyvs55")
 		end
-		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
-		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+		yyvsc55 := yyvsc55 + yyInitial_yyvs_size
+		yyvs55 := yyspecial_routines55.aliased_resized_area (yyvs55, yyvsc55)
 	end
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
 end
 when 152 then
---|#line 1292 "cadl_14_parser.y"
+--|#line 1301 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1292")
-end
-
-			create yyval54.make_list_simple (yyvs31.item (yyvsp31))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp54 := yyvsp54 + 1
-	yyvsp31 := yyvsp31 -1
-	if yyvsp54 >= yyvsc54 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs54")
-		end
-		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
-		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
-	end
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
-end
-when 153 then
---|#line 1296 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1296")
-end
-
-			create yyval54.make_interval (yyvs38.item (yyvsp38))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp54 := yyvsp54 + 1
-	yyvsp38 := yyvsp38 -1
-	if yyvsp54 >= yyvsc54 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs54")
-		end
-		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
-		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
-	end
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
-end
-when 154 then
---|#line 1300 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1300")
-end
-
-			create yyval54.make_list (yyvs44.item (yyvsp44))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp54 := yyvsp54 + 1
-	yyvsp44 := yyvsp44 -1
-	if yyvsp54 >= yyvsc54 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs54")
-		end
-		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
-		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
-	end
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
-end
-when 155 then
---|#line 1304 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1304")
-end
-
-			if yyvs54.item (yyvsp54).valid_value (yyvs23.item (yyvsp23)) then
-				yyvs54.item (yyvsp54).set_assumed_value (yyvs23.item (yyvsp23))
-				yyval54 := yyvs54.item (yyvsp54)
-			else
-				abort_with_error (ec_VOBAV, <<yyvs23.item (yyvsp23).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp23 := yyvsp23 -1
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
-end
-when 156 then
---|#line 1313 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1313")
-end
-
-			abort_with_error (ec_SCDAV, Void)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -2
-	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
-end
-when 157 then
---|#line 1319 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1319")
-end
-
-			if valid_iso8601_time_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval55.make_from_pattern (yyvs2.item (yyvsp2))
-			else
-				create str.make (0)
-				across valid_time_constraint_patterns as patterns_csr loop
-					if patterns_csr.cursor_index > 1 then
-						str.append (", ")
-					end
-					str.append (patterns_csr.item)
-				end
-				abort_with_error (ec_SCTPT, <<yyvs2.item (yyvsp2), str>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp55 := yyvsp55 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp55 >= yyvsc55 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs55")
-		end
-		yyvsc55 := yyvsc55 + yyInitial_yyvs_size
-		yyvs55 := yyspecial_routines55.aliased_resized_area (yyvs55, yyvsc55)
-	end
-	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
-end
-when 158 then
---|#line 1334 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1334")
-end
-
-			create yyval55.make_simple (yyvs25.item (yyvsp25))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp55 := yyvsp55 + 1
-	yyvsp25 := yyvsp25 -1
-	if yyvsp55 >= yyvsc55 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs55")
-		end
-		yyvsc55 := yyvsc55 + yyInitial_yyvs_size
-		yyvs55 := yyspecial_routines55.aliased_resized_area (yyvs55, yyvsc55)
-	end
-	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
-end
-when 159 then
---|#line 1338 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1338")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1301")
 end
 
 			create yyval55.make_list_simple (yyvs32.item (yyvsp32))
@@ -4045,18 +3919,18 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
 end
-when 160 then
---|#line 1342 "cadl_14_parser.y"
+when 153 then
+--|#line 1305 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1342")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1305")
 end
 
-			create yyval55.make_interval (yyvs37.item (yyvsp37))
+			create yyval55.make_interval (yyvs39.item (yyvsp39))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
-	yyvsp37 := yyvsp37 -1
+	yyvsp39 := yyvsp39 -1
 	if yyvsp55 >= yyvsc55 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs55")
@@ -4066,18 +3940,18 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
 end
-when 161 then
---|#line 1346 "cadl_14_parser.y"
+when 154 then
+--|#line 1309 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1346")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1309")
 end
 
-			create yyval55.make_list (yyvs43.item (yyvsp43))
+			create yyval55.make_list (yyvs45.item (yyvsp45))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp55 := yyvsp55 + 1
-	yyvsp43 := yyvsp43 -1
+	yyvsp45 := yyvsp45 -1
 	if yyvsp55 >= yyvsc55 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs55")
@@ -4087,29 +3961,177 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
 end
-when 162 then
---|#line 1350 "cadl_14_parser.y"
+when 155 then
+--|#line 1313 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1350")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1313")
 end
 
-			if yyvs55.item (yyvsp55).valid_value (yyvs25.item (yyvsp25)) then
-				yyvs55.item (yyvsp55).set_assumed_value (yyvs25.item (yyvsp25))
+			if yyvs55.item (yyvsp55).valid_value (yyvs24.item (yyvsp24)) then
+				yyvs55.item (yyvsp55).set_assumed_value (yyvs24.item (yyvsp24))
 				yyval55 := yyvs55.item (yyvsp55)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs25.item (yyvsp25).out>>)
+				abort_with_error (ec_VOBAV, <<yyvs24.item (yyvsp24).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp25 := yyvsp25 -1
+	yyvsp24 := yyvsp24 -1
 	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
 end
-when 163 then
+when 156 then
+--|#line 1322 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1322")
+end
+
+			abort_with_error (ec_SCDAV, Void)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -2
+	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
+end
+when 157 then
+--|#line 1328 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1328")
+end
+
+			if valid_iso8601_time_constraint_pattern (yyvs2.item (yyvsp2)) then
+				create yyval56.make_from_pattern (yyvs2.item (yyvsp2))
+			else
+				create str.make (0)
+				across valid_time_constraint_patterns as patterns_csr loop
+					if patterns_csr.cursor_index > 1 then
+						str.append (", ")
+					end
+					str.append (patterns_csr.item)
+				end
+				abort_with_error (ec_SCTPT, <<yyvs2.item (yyvsp2), str>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp56 := yyvsp56 + 1
+	yyvsp2 := yyvsp2 -1
+	if yyvsp56 >= yyvsc56 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs56")
+		end
+		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
+		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+	end
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+end
+when 158 then
+--|#line 1343 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1343")
+end
+
+			create yyval56.make_simple (yyvs26.item (yyvsp26))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp56 := yyvsp56 + 1
+	yyvsp26 := yyvsp26 -1
+	if yyvsp56 >= yyvsc56 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs56")
+		end
+		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
+		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+	end
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+end
+when 159 then
+--|#line 1347 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1347")
+end
+
+			create yyval56.make_list_simple (yyvs33.item (yyvsp33))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp56 := yyvsp56 + 1
+	yyvsp33 := yyvsp33 -1
+	if yyvsp56 >= yyvsc56 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs56")
+		end
+		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
+		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+	end
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+end
+when 160 then
+--|#line 1351 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1351")
+end
+
+			create yyval56.make_interval (yyvs38.item (yyvsp38))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp56 := yyvsp56 + 1
+	yyvsp38 := yyvsp38 -1
+	if yyvsp56 >= yyvsc56 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs56")
+		end
+		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
+		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+	end
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+end
+when 161 then
+--|#line 1355 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1355")
+end
+
+			create yyval56.make_list (yyvs44.item (yyvsp44))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp56 := yyvsp56 + 1
+	yyvsp44 := yyvsp44 -1
+	if yyvsp56 >= yyvsc56 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs56")
+		end
+		yyvsc56 := yyvsc56 + yyInitial_yyvs_size
+		yyvs56 := yyspecial_routines56.aliased_resized_area (yyvs56, yyvsc56)
+	end
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+end
+when 162 then
 --|#line 1359 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1359")
+end
+
+			if yyvs56.item (yyvsp56).valid_value (yyvs26.item (yyvsp26)) then
+				yyvs56.item (yyvsp56).set_assumed_value (yyvs26.item (yyvsp26))
+				yyval56 := yyvs56.item (yyvsp56)
+			else
+				abort_with_error (ec_VOBAV, <<yyvs26.item (yyvsp26).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp26 := yyvsp26 -1
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
+end
+when 163 then
+--|#line 1368 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1368")
 end
 
 			abort_with_error (ec_SCTAV, Void)
@@ -4117,16 +4139,16 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines55.force (yyvs55, yyval55, yyvsp55)
+	yyspecial_routines56.force (yyvs56, yyval56, yyvsp56)
 end
 when 164 then
---|#line 1365 "cadl_14_parser.y"
+--|#line 1374 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1365")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1374")
 end
 
 			if valid_iso8601_date_time_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval52.make_from_pattern (yyvs2.item (yyvsp2))
+				create yyval53.make_from_pattern (yyvs2.item (yyvsp2))
 			else
 				create str.make (0)
 				across valid_date_time_constraint_patterns as patterns_csr loop
@@ -4140,210 +4162,42 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp52 := yyvsp52 + 1
+	yyvsp53 := yyvsp53 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp52 >= yyvsc52 then
+	if yyvsp53 >= yyvsc53 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs52")
+			std.error.put_line ("Resize yyvs53")
 		end
-		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
-		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
+		yyvsc53 := yyvsc53 + yyInitial_yyvs_size
+		yyvs53 := yyspecial_routines53.aliased_resized_area (yyvs53, yyvsc53)
 	end
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
+	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
 end
 when 165 then
---|#line 1380 "cadl_14_parser.y"
+--|#line 1389 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1380")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1389")
 end
 
-			create yyval52.make_simple (yyvs24.item (yyvsp24))
+			create yyval53.make_simple (yyvs25.item (yyvsp25))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp52 := yyvsp52 + 1
-	yyvsp24 := yyvsp24 -1
-	if yyvsp52 >= yyvsc52 then
+	yyvsp53 := yyvsp53 + 1
+	yyvsp25 := yyvsp25 -1
+	if yyvsp53 >= yyvsc53 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs52")
+			std.error.put_line ("Resize yyvs53")
 		end
-		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
-		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
+		yyvsc53 := yyvsc53 + yyInitial_yyvs_size
+		yyvs53 := yyspecial_routines53.aliased_resized_area (yyvs53, yyvsc53)
 	end
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
+	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
 end
 when 166 then
---|#line 1384 "cadl_14_parser.y"
+--|#line 1393 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1384")
-end
-
-			create yyval52.make_list_simple (yyvs33.item (yyvsp33))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp52 := yyvsp52 + 1
-	yyvsp33 := yyvsp33 -1
-	if yyvsp52 >= yyvsc52 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs52")
-		end
-		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
-		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
-	end
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
-end
-when 167 then
---|#line 1388 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1388")
-end
-
-			create yyval52.make_interval (yyvs39.item (yyvsp39))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp52 := yyvsp52 + 1
-	yyvsp39 := yyvsp39 -1
-	if yyvsp52 >= yyvsc52 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs52")
-		end
-		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
-		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
-	end
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
-end
-when 168 then
---|#line 1392 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1392")
-end
-
-			create yyval52.make_list (yyvs45.item (yyvsp45))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp52 := yyvsp52 + 1
-	yyvsp45 := yyvsp45 -1
-	if yyvsp52 >= yyvsc52 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs52")
-		end
-		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
-		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
-	end
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
-end
-when 169 then
---|#line 1396 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1396")
-end
-
-			if yyvs52.item (yyvsp52).valid_value (yyvs24.item (yyvsp24)) then
-				yyvs52.item (yyvsp52).set_assumed_value (yyvs24.item (yyvsp24))
-				yyval52 := yyvs52.item (yyvsp52)
-			else
-				abort_with_error (ec_VOBAV, <<yyvs24.item (yyvsp24).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp24 := yyvsp24 -1
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
-end
-when 170 then
---|#line 1405 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1405")
-end
-
-			abort_with_error (ec_SCDTAV, Void)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -2
-	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
-end
-when 171 then
---|#line 1411 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1411")
-end
-
-			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval53.make_pattern_with_range (yyvs2.item (yyvsp2), yyvs40.item (yyvsp40))
-			else
-				abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2)>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp53 := yyvsp53 + 1
-	yyvsp2 := yyvsp2 -1
-	yyvsp1 := yyvsp1 -1
-	yyvsp40 := yyvsp40 -1
-	if yyvsp53 >= yyvsc53 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs53")
-		end
-		yyvsc53 := yyvsc53 + yyInitial_yyvs_size
-		yyvs53 := yyspecial_routines53.aliased_resized_area (yyvs53, yyvsc53)
-	end
-	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
-end
-when 172 then
---|#line 1419 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1419")
-end
-
-			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
-				create yyval53.make_from_pattern (yyvs2.item (yyvsp2))
-			else
-				abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2)>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp53 := yyvsp53 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp53 >= yyvsc53 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs53")
-		end
-		yyvsc53 := yyvsc53 + yyInitial_yyvs_size
-		yyvs53 := yyspecial_routines53.aliased_resized_area (yyvs53, yyvsc53)
-	end
-	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
-end
-when 173 then
---|#line 1427 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1427")
-end
-
-			create yyval53.make_simple (yyvs26.item (yyvsp26))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp53 := yyvsp53 + 1
-	yyvsp26 := yyvsp26 -1
-	if yyvsp53 >= yyvsc53 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs53")
-		end
-		yyvsc53 := yyvsc53 + yyInitial_yyvs_size
-		yyvs53 := yyspecial_routines53.aliased_resized_area (yyvs53, yyvsc53)
-	end
-	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
-end
-when 174 then
---|#line 1431 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1431")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1393")
 end
 
 			create yyval53.make_list_simple (yyvs34.item (yyvsp34))
@@ -4361,10 +4215,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
 end
-when 175 then
---|#line 1435 "cadl_14_parser.y"
+when 167 then
+--|#line 1397 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1435")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1397")
 end
 
 			create yyval53.make_interval (yyvs40.item (yyvsp40))
@@ -4382,10 +4236,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
 end
-when 176 then
---|#line 1439 "cadl_14_parser.y"
+when 168 then
+--|#line 1401 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1439")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1401")
 end
 
 			create yyval53.make_list (yyvs46.item (yyvsp46))
@@ -4403,29 +4257,197 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
 end
-when 177 then
---|#line 1443 "cadl_14_parser.y"
+when 169 then
+--|#line 1405 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1443")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1405")
 end
 
-			if yyvs53.item (yyvsp53).valid_value (yyvs26.item (yyvsp26)) then
-				yyvs53.item (yyvsp53).set_assumed_value (yyvs26.item (yyvsp26))
+			if yyvs53.item (yyvsp53).valid_value (yyvs25.item (yyvsp25)) then
+				yyvs53.item (yyvsp53).set_assumed_value (yyvs25.item (yyvsp25))
 				yyval53 := yyvs53.item (yyvsp53)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs26.item (yyvsp26).out>>)
+				abort_with_error (ec_VOBAV, <<yyvs25.item (yyvsp25).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp26 := yyvsp26 -1
+	yyvsp25 := yyvsp25 -1
 	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
 end
-when 178 then
+when 170 then
+--|#line 1414 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1414")
+end
+
+			abort_with_error (ec_SCDTAV, Void)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -2
+	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
+end
+when 171 then
+--|#line 1420 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1420")
+end
+
+			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
+				create yyval54.make_pattern_with_range (yyvs2.item (yyvsp2), yyvs41.item (yyvsp41))
+			else
+				abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2)>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp54 := yyvsp54 + 1
+	yyvsp2 := yyvsp2 -1
+	yyvsp1 := yyvsp1 -1
+	yyvsp41 := yyvsp41 -1
+	if yyvsp54 >= yyvsc54 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs54")
+		end
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+	end
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 172 then
+--|#line 1428 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1428")
+end
+
+			if valid_iso8601_duration_constraint_pattern (yyvs2.item (yyvsp2)) then
+				create yyval54.make_from_pattern (yyvs2.item (yyvsp2))
+			else
+				abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2)>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp54 := yyvsp54 + 1
+	yyvsp2 := yyvsp2 -1
+	if yyvsp54 >= yyvsc54 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs54")
+		end
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+	end
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 173 then
+--|#line 1436 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1436")
+end
+
+			create yyval54.make_simple (yyvs27.item (yyvsp27))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp54 := yyvsp54 + 1
+	yyvsp27 := yyvsp27 -1
+	if yyvsp54 >= yyvsc54 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs54")
+		end
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+	end
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 174 then
+--|#line 1440 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1440")
+end
+
+			create yyval54.make_list_simple (yyvs35.item (yyvsp35))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp54 := yyvsp54 + 1
+	yyvsp35 := yyvsp35 -1
+	if yyvsp54 >= yyvsc54 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs54")
+		end
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+	end
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 175 then
+--|#line 1444 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1444")
+end
+
+			create yyval54.make_interval (yyvs41.item (yyvsp41))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp54 := yyvsp54 + 1
+	yyvsp41 := yyvsp41 -1
+	if yyvsp54 >= yyvsc54 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs54")
+		end
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+	end
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 176 then
+--|#line 1448 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1448")
+end
+
+			create yyval54.make_list (yyvs47.item (yyvsp47))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp54 := yyvsp54 + 1
+	yyvsp47 := yyvsp47 -1
+	if yyvsp54 >= yyvsc54 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs54")
+		end
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
+	end
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 177 then
 --|#line 1452 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1452")
+end
+
+			if yyvs54.item (yyvsp54).valid_value (yyvs27.item (yyvsp27)) then
+				yyvs54.item (yyvsp54).set_assumed_value (yyvs27.item (yyvsp27))
+				yyval54 := yyvs54.item (yyvsp54)
+			else
+				abort_with_error (ec_VOBAV, <<yyvs27.item (yyvsp27).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp27 := yyvsp27 -1
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
+end
+when 178 then
+--|#line 1461 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1461")
 end
 
 			abort_with_error (ec_SCDUAV, Void)
@@ -4433,104 +4455,104 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
 end
 when 179 then
---|#line 1457 "cadl_14_parser.y"
+--|#line 1466 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1457")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1466")
 end
 
 			abort_with_error (ec_SCDUPT, <<yyvs2.item (yyvsp2).out>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp53 := yyvsp53 + 1
+	yyvsp54 := yyvsp54 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp53 >= yyvsc53 then
+	if yyvsp54 >= yyvsc54 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs53")
+			std.error.put_line ("Resize yyvs54")
 		end
-		yyvsc53 := yyvsc53 + yyInitial_yyvs_size
-		yyvs53 := yyspecial_routines53.aliased_resized_area (yyvs53, yyvsc53)
+		yyvsc54 := yyvsc54 + yyInitial_yyvs_size
+		yyvs54 := yyspecial_routines54.aliased_resized_area (yyvs54, yyvsc54)
 	end
-	yyspecial_routines53.force (yyvs53, yyval53, yyvsp53)
+	yyspecial_routines54.force (yyvs54, yyval54, yyvsp54)
 end
 when 180 then
---|#line 1463 "cadl_14_parser.y"
+--|#line 1472 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1463")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1472")
 end
 
-			create yyval51.make_simple (yyvs2.item (yyvsp2))
+			create yyval52.make_simple (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp51 := yyvsp51 + 1
+	yyvsp52 := yyvsp52 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp51 >= yyvsc51 then
+	if yyvsp52 >= yyvsc52 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs51")
+			std.error.put_line ("Resize yyvs52")
 		end
-		yyvsc51 := yyvsc51 + yyInitial_yyvs_size
-		yyvs51 := yyspecial_routines51.aliased_resized_area (yyvs51, yyvsc51)
+		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
+		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
 	end
-	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
 end
 when 181 then
---|#line 1467 "cadl_14_parser.y"
+--|#line 1476 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1467")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1476")
 end
 
-			create yyval51.make_list (yyvs27.item (yyvsp27))
+			create yyval52.make_list (yyvs28.item (yyvsp28))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp51 := yyvsp51 + 1
-	yyvsp27 := yyvsp27 -1
-	if yyvsp51 >= yyvsc51 then
+	yyvsp52 := yyvsp52 + 1
+	yyvsp28 := yyvsp28 -1
+	if yyvsp52 >= yyvsc52 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs51")
+			std.error.put_line ("Resize yyvs52")
 		end
-		yyvsc51 := yyvsc51 + yyInitial_yyvs_size
-		yyvs51 := yyspecial_routines51.aliased_resized_area (yyvs51, yyvsc51)
+		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
+		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
 	end
-	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
 end
 when 182 then
---|#line 1471 "cadl_14_parser.y"
+--|#line 1480 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1471")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1480")
 end
 
-			create yyval51.make_from_regexp (yyvs2.item (yyvsp2).substring (2, yyvs2.item (yyvsp2).count - 1), yyvs2.item (yyvsp2).item (1) = '/')
-			if yyval51.regexp.is_equal ({C_STRING}.Invalid_regex_message) then
+			create yyval52.make_from_regexp (yyvs2.item (yyvsp2).substring (2, yyvs2.item (yyvsp2).count - 1), yyvs2.item (yyvsp2).item (1) = '/')
+			if yyval52.regexp.is_equal ({C_STRING}.Invalid_regex_message) then
 				abort_with_error (ec_SCSRE, <<yyvs2.item (yyvsp2)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp51 := yyvsp51 + 1
+	yyvsp52 := yyvsp52 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp51 >= yyvsc51 then
+	if yyvsp52 >= yyvsc52 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs51")
+			std.error.put_line ("Resize yyvs52")
 		end
-		yyvsc51 := yyvsc51 + yyInitial_yyvs_size
-		yyvs51 := yyspecial_routines51.aliased_resized_area (yyvs51, yyvsc51)
+		yyvsc52 := yyvsc52 + yyInitial_yyvs_size
+		yyvs52 := yyspecial_routines52.aliased_resized_area (yyvs52, yyvsc52)
 	end
-	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
 end
 when 183 then
---|#line 1478 "cadl_14_parser.y"
+--|#line 1487 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1478")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1487")
 end
 
-			if yyvs51.item (yyvsp51).valid_value (yyvs2.item (yyvsp2)) then
-				yyvs51.item (yyvsp51).set_assumed_value (yyvs2.item (yyvsp2))
-				yyval51 := yyvs51.item (yyvsp51)
+			if yyvs52.item (yyvsp52).valid_value (yyvs2.item (yyvsp2)) then
+				yyvs52.item (yyvsp52).set_assumed_value (yyvs2.item (yyvsp2))
+				yyval52 := yyvs52.item (yyvsp52)
 			else
 				abort_with_error (ec_VOBAV, <<yyvs2.item (yyvsp2).out>>)
 			end
@@ -4539,12 +4561,12 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
-	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
 end
 when 184 then
---|#line 1487 "cadl_14_parser.y"
+--|#line 1496 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1487")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1496")
 end
 
 			abort_with_error (ec_SCSAV, Void)
@@ -4552,167 +4574,274 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+	yyspecial_routines52.force (yyvs52, yyval52, yyvsp52)
 end
 when 185 then
---|#line 1493 "cadl_14_parser.y"
+--|#line 1502 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1493")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1502")
 end
 
-			if constraint_model_factory.valid_c_terminology_code_string (yyvs2.item (yyvsp2)) then
-				yyval58 := constraint_model_factory.create_c_terminology_code_inline (yyvs2.item (yyvsp2))
-				yyval58.set_value_set_code (new_fake_ac_code)
-				value_sets.put (create {VALUE_SET_RELATION}.make (yyval58.value_set_code, yyval58.code_list), yyval58.value_set_code)
-			else
-				abort_with_errors (constraint_model_factory.errors)
-			end
+			create yyval59.make_value_set_code (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp58 := yyvsp58 + 1
+	yyvsp59 := yyvsp59 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp58 >= yyvsc58 then
+	if yyvsp59 >= yyvsc59 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs58")
+			std.error.put_line ("Resize yyvs59")
 		end
-		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
-		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
+		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
+		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
 	end
-	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
+	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
 end
 when 186 then
---|#line 1503 "cadl_14_parser.y"
+--|#line 1509 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1503")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1509")
 end
 
-			if constraint_model_factory.valid_c_terminology_code_string (yyvs2.item (yyvsp2)) then
-				yyval58 := constraint_model_factory.create_c_terminology_code_ref (yyvs2.item (yyvsp2))
+			-- e.g. "local::at40"
+			if yyvs5.item (yyvsp5).is_single then
+				create yyval59.make_from_structure (yyvs5.item (yyvsp5))
+
+			-- e.g. "local::at40, at41; at40"; we have to synthesise an ac-code and convert the inline to a separate value set
 			else
-				abort_with_errors (constraint_model_factory.errors)
+				-- replace by ac-code ref and store value set for addition to terminology
+				create yyval59.make_value_set_code (new_fake_ac_code)
+				if attached yyvs5.item (yyvsp5).assumed_code as att_ac then
+					yyval59.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+				end
+				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.value_set_code, yyvs5.item (yyvsp5).codes), yyval59.value_set_code)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp58 := yyvsp58 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp58 >= yyvsc58 then
+	yyvsp59 := yyvsp59 + 1
+	yyvsp5 := yyvsp5 -1
+	if yyvsp59 >= yyvsc59 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs58")
+			std.error.put_line ("Resize yyvs59")
 		end
-		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
-		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
+		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
+		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
 	end
-	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
+	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
 end
 when 187 then
---|#line 1511 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1511")
-end
-
-			abort_with_error (ec_STCV, <<err_str>>)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp58 := yyvsp58 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp58 >= yyvsc58 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs58")
-		end
-		yyvsc58 := yyvsc58 + yyInitial_yyvs_size
-		yyvs58 := yyspecial_routines58.aliased_resized_area (yyvs58, yyvsc58)
-	end
-	yyspecial_routines58.force (yyvs58, yyval58, yyvsp58)
-end
-when 188 then
---|#line 1517 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1517")
-end
-
-			create yyval50.make_true
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp50 := yyvsp50 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp50 >= yyvsc50 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs50")
-		end
-		yyvsc50 := yyvsc50 + yyInitial_yyvs_size
-		yyvs50 := yyspecial_routines50.aliased_resized_area (yyvs50, yyvsc50)
-	end
-	yyspecial_routines50.force (yyvs50, yyval50, yyvsp50)
-end
-when 189 then
---|#line 1521 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1521")
-end
-
-			create yyval50.make_false
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp50 := yyvsp50 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp50 >= yyvsc50 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs50")
-		end
-		yyvsc50 := yyvsc50 + yyInitial_yyvs_size
-		yyvs50 := yyspecial_routines50.aliased_resized_area (yyvs50, yyvsc50)
-	end
-	yyspecial_routines50.force (yyvs50, yyval50, yyvsp50)
-end
-when 190 then
 --|#line 1525 "cadl_14_parser.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1525")
 end
 
-			create yyval50.make_list (yyvs30.item (yyvsp30))
+			-- the following statement generates an at-coded equivalent of the value-set just scanned, 
+			-- and also the appropriate term_binding structure for it
+			yyvs5.item (yyvsp5).convert_to_local (agent new_fake_at_code, uri_template)
+
+			-- e.g. "openehr::250"; here we have to synthesise an at-code and binding
+			-- the at-code definition is synthesised later when the proper at-code is substituted
+			if yyvs5.item (yyvsp5).is_single then
+				check attached yyvs5.item (yyvsp5).last_converted_local as att_tcps then
+					create yyval59.make_from_structure (att_tcps)
+				end
+
+				-- add term binding
+				if not compiler_billboard.term_bindings.has (yyvs5.item (yyvsp5).terminology_id.as_lower) then
+					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), yyvs5.item (yyvsp5).terminology_id.as_lower)
+				end
+				check attached compiler_billboard.term_bindings.item (yyvs5.item (yyvsp5).terminology_id.as_lower) as att_bindings_for_terminology and then
+					attached yyvs5.item (yyvsp5).last_converted_local_bindings as att_b
+				then
+					att_bindings_for_terminology.merge (att_b)
+				end
+
+			-- e.g. "openehr::250, 251, 249"; here we have to synthesise at-codes and bindings and value set
+			-- the at-code definitions are synthesised later when the proper at-codes are substituted
+			else
+				create yyval59.make_value_set_code (new_fake_ac_code)
+
+				if attached yyvs5.item (yyvsp5).last_converted_local as att_tcps then
+					if attached att_tcps.assumed_code as att_ac then
+						yyval59.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+					end
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.value_set_code, att_tcps.codes), yyval59.value_set_code)
+				end
+
+				-- add term bindings
+				if not compiler_billboard.term_bindings.has (yyvs5.item (yyvsp5).terminology_id.as_lower) then
+					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), yyvs5.item (yyvsp5).terminology_id.as_lower)
+				end
+				check attached compiler_billboard.term_bindings.item (yyvs5.item (yyvsp5).terminology_id.as_lower) as att_bindings_for_terminology and then
+					attached yyvs5.item (yyvsp5).last_converted_local_bindings as att_b
+				then
+					att_bindings_for_terminology.merge (att_b)
+				end
+			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp50 := yyvsp50 + 1
-	yyvsp30 := yyvsp30 -1
-	if yyvsp50 >= yyvsc50 then
+	yyvsp59 := yyvsp59 + 1
+	yyvsp5 := yyvsp5 -1
+	if yyvsp59 >= yyvsc59 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs50")
+			std.error.put_line ("Resize yyvs59")
 		end
-		yyvsc50 := yyvsc50 + yyInitial_yyvs_size
-		yyvs50 := yyspecial_routines50.aliased_resized_area (yyvs50, yyvsc50)
+		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
+		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
 	end
-	yyspecial_routines50.force (yyvs50, yyval50, yyvsp50)
+	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
 end
-when 191 then
---|#line 1529 "cadl_14_parser.y"
+when 188 then
+--|#line 1574 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1529")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1574")
 end
 
-			if yyvs50.item (yyvsp50).valid_value (yyvs22.item (yyvsp22)) then
-				yyvs50.item (yyvsp50).set_assumed_value (yyvs22.item (yyvsp22))
+			abort_with_error (ec_STCDC, <<err_str, c_attrs.item.path>>)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp59 := yyvsp59 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp59 >= yyvsc59 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs59")
+		end
+		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
+		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
+	end
+	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
+end
+when 189 then
+--|#line 1578 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1578")
+end
+
+			abort_with_error (ec_STCAC, <<err_str, c_attrs.item.path>>)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp59 := yyvsp59 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp59 >= yyvsc59 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs59")
+		end
+		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
+		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
+	end
+	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
+end
+when 190 then
+--|#line 1582 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1582")
+end
+
+			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp59 := yyvsp59 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp59 >= yyvsc59 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs59")
+		end
+		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
+		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
+	end
+	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
+end
+when 191 then
+--|#line 1588 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1588")
+end
+
+			create yyval51.make_true
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp51 := yyvsp51 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp51 >= yyvsc51 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs51")
+		end
+		yyvsc51 := yyvsc51 + yyInitial_yyvs_size
+		yyvs51 := yyspecial_routines51.aliased_resized_area (yyvs51, yyvsc51)
+	end
+	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+end
+when 192 then
+--|#line 1592 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1592")
+end
+
+			create yyval51.make_false
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp51 := yyvsp51 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp51 >= yyvsc51 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs51")
+		end
+		yyvsc51 := yyvsc51 + yyInitial_yyvs_size
+		yyvs51 := yyspecial_routines51.aliased_resized_area (yyvs51, yyvsc51)
+	end
+	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+end
+when 193 then
+--|#line 1596 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1596")
+end
+
+			create yyval51.make_list (yyvs31.item (yyvsp31))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp51 := yyvsp51 + 1
+	yyvsp31 := yyvsp31 -1
+	if yyvsp51 >= yyvsc51 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs51")
+		end
+		yyvsc51 := yyvsc51 + yyInitial_yyvs_size
+		yyvs51 := yyspecial_routines51.aliased_resized_area (yyvs51, yyvsc51)
+	end
+	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
+end
+when 194 then
+--|#line 1600 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1600")
+end
+
+			if yyvs51.item (yyvsp51).valid_value (yyvs23.item (yyvsp23)) then
+				yyvs51.item (yyvsp51).set_assumed_value (yyvs23.item (yyvsp23))
 			else
-				abort_with_error (ec_VOBAV, <<yyvs22.item (yyvsp22).out>>)
+				abort_with_error (ec_VOBAV, <<yyvs23.item (yyvsp23).out>>)
 			end
-			yyval50 := yyvs50.item (yyvsp50)
+			yyval51 := yyvs51.item (yyvsp51)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp22 := yyvsp22 -1
-	yyspecial_routines50.force (yyvs50, yyval50, yyvsp50)
+	yyvsp23 := yyvsp23 -1
+	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
 end
-when 192 then
---|#line 1538 "cadl_14_parser.y"
+when 195 then
+--|#line 1609 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1538")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1609")
 end
 
 			abort_with_error (ec_SCBAV, Void)
@@ -4720,88 +4849,88 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines50.force (yyvs50, yyval50, yyvsp50)
+	yyspecial_routines51.force (yyvs51, yyval51, yyvsp51)
 end
-when 193 then
---|#line 1549 "cadl_14_parser.y"
+when 196 then
+--|#line 1620 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1549")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1620")
 end
 
-			create yyval14.make ("DV_ORDINAL", new_fake_node_id)
+			create yyval15.make ("DV_ORDINAL", new_fake_node_id)
 
 			-- create a C_ATTR_TUPLE and connect the received C_OBJ_TUPLE to it
-			yyval14.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)
+			yyval15.put_attribute_tuple (create {C_ATTRIBUTE_TUPLE}.make)
 
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
-			yyval14.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
-			yyval14.attribute_tuples.first.put_member (yyval14.attribute_with_name ("value"))
-			yyval14.attribute_with_name ("value").put_child (create {C_INTEGER}.make_simple (yyvs49.item (yyvsp49).value))
+			yyval15.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
+			yyval15.attribute_tuples.first.put_member (yyval15.attribute_with_name ("value"))
+			yyval15.attribute_with_name ("value").put_child (create {C_INTEGER}.make_simple (yyvs50.item (yyvsp50).value))
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
-			yyval14.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
-			yyval14.attribute_tuples.first.put_member (yyval14.attribute_with_name ("symbol"))
-			yyval14.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code (yyvs49.item (yyvsp49).symbol))
+			yyval15.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
+			yyval15.attribute_tuples.first.put_member (yyval15.attribute_with_name ("symbol"))
+			yyval15.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code (yyvs50.item (yyvsp50).symbol))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp14 := yyvsp14 + 1
-	yyvsp49 := yyvsp49 -1
-	if yyvsp14 >= yyvsc14 then
+	yyvsp15 := yyvsp15 + 1
+	yyvsp50 := yyvsp50 -1
+	if yyvsp15 >= yyvsc15 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs14")
+			std.error.put_line ("Resize yyvs15")
 		end
-		yyvsc14 := yyvsc14 + yyInitial_yyvs_size
-		yyvs14 := yyspecial_routines14.aliased_resized_area (yyvs14, yyvsc14)
+		yyvsc15 := yyvsc15 + yyInitial_yyvs_size
+		yyvs15 := yyspecial_routines15.aliased_resized_area (yyvs15, yyvsc15)
 	end
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
-when 194 then
---|#line 1566 "cadl_14_parser.y"
+when 197 then
+--|#line 1637 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1566")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1637")
 end
 
-			yyval14 := yyvs14.item (yyvsp14)
+			yyval15 := yyvs15.item (yyvsp15)
 
-			if yyval14.attribute_with_name ("value").children.there_exists (
+			if yyval15.attribute_with_name ("value").children.there_exists (
 					agent (co: C_OBJECT; a_val: INTEGER): BOOLEAN
 						do
 							Result := attached {C_INTEGER} co as ci and then ci.valid_value (a_val)
-						end (?, yyvs49.item (yyvsp49).value)
+						end (?, yyvs50.item (yyvsp50).value)
 				)
 			then
-				abort_with_error (ec_VCOV, <<yyvs49.item (yyvsp49).value.out>>)
+				abort_with_error (ec_VCOV, <<yyvs50.item (yyvsp50).value.out>>)
 
-			elseif yyval14.attribute_with_name ("symbol").children.there_exists (
+			elseif yyval15.attribute_with_name ("symbol").children.there_exists (
 					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
 						do
 							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.valid_value (a_sym)
-						end (?, yyvs49.item (yyvsp49).symbol)
+						end (?, yyvs50.item (yyvsp50).symbol)
 				)
 			then
-				abort_with_error (ec_VCOC, <<yyvs49.item (yyvsp49).symbol.out>>)
+				abort_with_error (ec_VCOC, <<yyvs50.item (yyvsp50).symbol.out>>)
 
-			elseif attached {C_INTEGER} yyval14.attribute_with_name ("value").children.first as ci and 
-				attached {C_TERMINOLOGY_CODE} yyval14.attribute_with_name ("symbol").children.first as ctc 
+			elseif attached {C_INTEGER} yyval15.attribute_with_name ("value").children.first as ci and 
+				attached {C_TERMINOLOGY_CODE} yyval15.attribute_with_name ("symbol").children.first as ctc 
 			then
-				ci.add_value (yyvs49.item (yyvsp49).value)
-				ctc.add_code (yyvs49.item (yyvsp49).symbol.code_string)
+				ci.add_value (yyvs50.item (yyvsp50).value)
+				ctc.add_code (yyvs50.item (yyvsp50).symbol.code_string)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp49 := yyvsp49 -1
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyvsp50 := yyvsp50 -1
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
-when 195 then
---|#line 1595 "cadl_14_parser.y"
+when 198 then
+--|#line 1666 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1595")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1666")
 end
 
-			yyval14 := yyvs14.item (yyvsp14)
+			yyval15 := yyvs15.item (yyvsp15)
 
 			-- assumed value for C_DV_ORDINAL not supported
 			add_warning (ec_WDTOAV, Void)
@@ -4810,12 +4939,12 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
-when 196 then
---|#line 1602 "cadl_14_parser.y"
+when 199 then
+--|#line 1673 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1602")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1673")
 end
 
 			abort_with_error (ec_SCOAV, Void)
@@ -4823,72 +4952,36 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines14.force (yyvs14, yyval14, yyvsp14)
+	yyspecial_routines15.force (yyvs15, yyval15, yyvsp15)
 end
-when 197 then
---|#line 1608 "cadl_14_parser.y"
+when 200 then
+--|#line 1679 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1608")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1679")
 end
 
 			-- create ORDINAL
-			create yyval49.make (yyvs3.item (yyvsp3), yyvs59.item (yyvsp59))
+			create yyval50.make (yyvs3.item (yyvsp3), yyvs60.item (yyvsp60))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp49 := yyvsp49 + 1
+	yyvsp50 := yyvsp50 + 1
 	yyvsp3 := yyvsp3 -1
 	yyvsp1 := yyvsp1 -1
-	yyvsp59 := yyvsp59 -1
-	if yyvsp49 >= yyvsc49 then
+	yyvsp60 := yyvsp60 -1
+	if yyvsp50 >= yyvsc50 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs49")
+			std.error.put_line ("Resize yyvs50")
 		end
-		yyvsc49 := yyvsc49 + yyInitial_yyvs_size
-		yyvs49 := yyspecial_routines49.aliased_resized_area (yyvs49, yyvsc49)
+		yyvsc50 := yyvsc50 + yyInitial_yyvs_size
+		yyvs50 := yyspecial_routines50.aliased_resized_area (yyvs50, yyvsc50)
 	end
-	yyspecial_routines49.force (yyvs49, yyval49, yyvsp49)
-end
-when 198 then
---|#line 1620 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1620")
-end
-
-			yyval2 := yyvs2.item (yyvsp2)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
-end
-when 199 then
---|#line 1624 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1624")
-end
-
-			yyval2 := yyvs2.item (yyvsp2)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
-end
-when 200 then
---|#line 1630 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1630")
-end
-
-			yyval2 := yyvs2.item (yyvsp2)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
+	yyspecial_routines50.force (yyvs50, yyval50, yyvsp50)
 end
 when 201 then
---|#line 1634 "cadl_14_parser.y"
+--|#line 1691 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1634")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1691")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4898,9 +4991,9 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 202 then
---|#line 1647 "cadl_14_parser.y"
+--|#line 1695 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1647")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1695")
 end
 
 			yyval2 := yyvs2.item (yyvsp2)
@@ -4910,84 +5003,120 @@ if yy_parsing_status >= yyContinue then
 	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 203 then
---|#line 1653 "cadl_14_parser.y"
+--|#line 1701 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1653")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1701")
 end
 
-			create yyval27.make(0)
-			yyval27.extend(yyvs2.item (yyvsp2 - 1))
-			yyval27.extend(yyvs2.item (yyvsp2))
+			yyval2 := yyvs2.item (yyvsp2)
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp27 := yyvsp27 + 1
-	yyvsp2 := yyvsp2 -2
-	yyvsp1 := yyvsp1 -1
-	if yyvsp27 >= yyvsc27 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs27")
-		end
-		yyvsc27 := yyvsc27 + yyInitial_yyvs_size
-		yyvs27 := yyspecial_routines27.aliased_resized_area (yyvs27, yyvsc27)
-	end
-	yyspecial_routines27.force (yyvs27, yyval27, yyvsp27)
+	yyssp := yyssp - 1
+	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
 end
 when 204 then
---|#line 1659 "cadl_14_parser.y"
+--|#line 1705 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1659")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1705")
 end
 
-			yyvs27.item (yyvsp27).extend(yyvs2.item (yyvsp2))
-			yyval27 := yyvs27.item (yyvsp27)
+			yyval2 := yyvs2.item (yyvsp2)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
+end
+when 205 then
+--|#line 1718 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1718")
+end
+
+			yyval2 := yyvs2.item (yyvsp2)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyspecial_routines2.force (yyvs2, yyval2, yyvsp2)
+end
+when 206 then
+--|#line 1724 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1724")
+end
+
+			create yyval28.make(0)
+			yyval28.extend(yyvs2.item (yyvsp2 - 1))
+			yyval28.extend(yyvs2.item (yyvsp2))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp28 := yyvsp28 + 1
+	yyvsp2 := yyvsp2 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp28 >= yyvsc28 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs28")
+		end
+		yyvsc28 := yyvsc28 + yyInitial_yyvs_size
+		yyvs28 := yyspecial_routines28.aliased_resized_area (yyvs28, yyvsc28)
+	end
+	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
+end
+when 207 then
+--|#line 1730 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1730")
+end
+
+			yyvs28.item (yyvsp28).extend(yyvs2.item (yyvsp2))
+			yyval28 := yyvs28.item (yyvsp28)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp2 := yyvsp2 -1
-	yyspecial_routines27.force (yyvs27, yyval27, yyvsp27)
+	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
 end
-when 205 then
---|#line 1667 "cadl_14_parser.y"
+when 208 then
+--|#line 1738 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1667")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1738")
 end
 
-			yyval27 := yyvs27.item (yyvsp27)
+			yyval28 := yyvs28.item (yyvsp28)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyspecial_routines27.force (yyvs27, yyval27, yyvsp27)
+	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
 end
-when 206 then
---|#line 1671 "cadl_14_parser.y"
+when 209 then
+--|#line 1742 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1671")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1742")
 end
 
-			create yyval27.make (0)
-			yyval27.extend (yyvs2.item (yyvsp2))
+			create yyval28.make (0)
+			yyval28.extend (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp27 := yyvsp27 + 1
+	yyvsp28 := yyvsp28 + 1
 	yyvsp2 := yyvsp2 -1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp27 >= yyvsc27 then
+	if yyvsp28 >= yyvsc28 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs27")
+			std.error.put_line ("Resize yyvs28")
 		end
-		yyvsc27 := yyvsc27 + yyInitial_yyvs_size
-		yyvs27 := yyspecial_routines27.aliased_resized_area (yyvs27, yyvsc27)
+		yyvsc28 := yyvsc28 + yyInitial_yyvs_size
+		yyvs28 := yyspecial_routines28.aliased_resized_area (yyvs28, yyvsc28)
 	end
-	yyspecial_routines27.force (yyvs27, yyval27, yyvsp27)
+	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
 end
-when 207 then
---|#line 1678 "cadl_14_parser.y"
+when 210 then
+--|#line 1749 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1678")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1749")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
@@ -4996,10 +5125,10 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
-when 208 then
---|#line 1681 "cadl_14_parser.y"
+when 211 then
+--|#line 1752 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1681")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1752")
 end
 
 			yyval3 := yyvs3.item (yyvsp3)
@@ -5009,10 +5138,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
-when 209 then
---|#line 1684 "cadl_14_parser.y"
+when 212 then
+--|#line 1755 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1684")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1755")
 end
 
 			yyval3 := - yyvs3.item (yyvsp3)
@@ -5022,396 +5151,20 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -1
 	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
-when 210 then
---|#line 1689 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1689")
-end
-
-			create yyval28.make(0)
-			yyval28.extend(yyvs3.item (yyvsp3 - 1))
-			yyval28.extend(yyvs3.item (yyvsp3))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp28 := yyvsp28 + 1
-	yyvsp3 := yyvsp3 -2
-	yyvsp1 := yyvsp1 -1
-	if yyvsp28 >= yyvsc28 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs28")
-		end
-		yyvsc28 := yyvsc28 + yyInitial_yyvs_size
-		yyvs28 := yyspecial_routines28.aliased_resized_area (yyvs28, yyvsc28)
-	end
-	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
-end
-when 211 then
---|#line 1695 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1695")
-end
-
-			yyvs28.item (yyvsp28).extend(yyvs3.item (yyvsp3))
-			yyval28 := yyvs28.item (yyvsp28)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp3 := yyvsp3 -1
-	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
-end
-when 212 then
---|#line 1700 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1700")
-end
-
-			create yyval28.make(0)
-			yyval28.extend(yyvs3.item (yyvsp3))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp28 := yyvsp28 + 1
-	yyvsp3 := yyvsp3 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp28 >= yyvsc28 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs28")
-		end
-		yyvsc28 := yyvsc28 + yyInitial_yyvs_size
-		yyvs28 := yyspecial_routines28.aliased_resized_area (yyvs28, yyvsc28)
-	end
-	yyspecial_routines28.force (yyvs28, yyval28, yyvsp28)
-end
 when 213 then
---|#line 1707 "cadl_14_parser.y"
+--|#line 1760 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1707")
-end
-
-			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create {PROPER_INTERVAL [INTEGER]} yyval35.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, True)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp3 := yyvsp3 -2
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 214 then
---|#line 1715 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1715")
-end
-
-			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create {PROPER_INTERVAL [INTEGER]} yyval35.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, True)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 6
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -4
-	yyvsp3 := yyvsp3 -2
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 215 then
---|#line 1723 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1723")
-end
-
-			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create {PROPER_INTERVAL [INTEGER]} yyval35.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, False)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 6
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -4
-	yyvsp3 := yyvsp3 -2
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 216 then
---|#line 1731 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1731")
-end
-
-			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
-				create {PROPER_INTERVAL [INTEGER]} yyval35.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, False)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 7
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -5
-	yyvsp3 := yyvsp3 -2
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 217 then
---|#line 1739 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1739")
-end
-
-			create {PROPER_INTERVAL [INTEGER]} yyval35.make_lower_unbounded (yyvs3.item (yyvsp3), False)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp3 := yyvsp3 -1
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 218 then
---|#line 1743 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1743")
-end
-
-			create {PROPER_INTERVAL [INTEGER]} yyval35.make_lower_unbounded (yyvs3.item (yyvsp3), True)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp3 := yyvsp3 -1
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 219 then
---|#line 1747 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1747")
-end
-
-			create {PROPER_INTERVAL [INTEGER]} yyval35.make_upper_unbounded (yyvs3.item (yyvsp3), False)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp3 := yyvsp3 -1
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 220 then
---|#line 1751 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1751")
-end
-
-			create {PROPER_INTERVAL [INTEGER]} yyval35.make_upper_unbounded (yyvs3.item (yyvsp3), True)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp3 := yyvsp3 -1
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 221 then
---|#line 1755 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1755")
-end
-
-			create {POINT_INTERVAL [INTEGER]} yyval35.make (yyvs3.item (yyvsp3))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp35 := yyvsp35 + 1
-	yyvsp1 := yyvsp1 -2
-	yyvsp3 := yyvsp3 -1
-	if yyvsp35 >= yyvsc35 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs35")
-		end
-		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
-		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
-	end
-	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
-end
-when 222 then
---|#line 1761 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1761")
-end
-
-			create yyval41.make(0)
-			yyval41.extend(yyvs35.item (yyvsp35 - 1))
-			yyval41.extend(yyvs35.item (yyvsp35))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp41 := yyvsp41 + 1
-	yyvsp35 := yyvsp35 -2
-	yyvsp1 := yyvsp1 -1
-	if yyvsp41 >= yyvsc41 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs41")
-		end
-		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
-		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
-	end
-	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
-end
-when 223 then
---|#line 1767 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1767")
-end
-
-			yyvs41.item (yyvsp41).extend(yyvs35.item (yyvsp35))
-			yyval41 := yyvs41.item (yyvsp41)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp35 := yyvsp35 -1
-	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
-end
-when 224 then
---|#line 1772 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1772")
-end
-
-			create yyval41.make(0)
-			yyval41.extend(yyvs35.item (yyvsp35))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp41 := yyvsp41 + 1
-	yyvsp35 := yyvsp35 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp41 >= yyvsc41 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs41")
-		end
-		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
-		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
-	end
-	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
-end
-when 225 then
---|#line 1779 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1779")
-end
-
-			yyval4 := yyvs4.item (yyvsp4)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
-end
-when 226 then
---|#line 1783 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1783")
-end
-
-			yyval4 := yyvs4.item (yyvsp4)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp1 := yyvsp1 -1
-	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
-end
-when 227 then
---|#line 1787 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1787")
-end
-
-			yyval4 := - yyvs4.item (yyvsp4)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp1 := yyvsp1 -1
-	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
-end
-when 228 then
---|#line 1793 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1793")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1760")
 end
 
 			create yyval29.make(0)
-			yyval29.extend(yyvs4.item (yyvsp4 - 1))
-			yyval29.extend(yyvs4.item (yyvsp4))
+			yyval29.extend(yyvs3.item (yyvsp3 - 1))
+			yyval29.extend(yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
-	yyvsp4 := yyvsp4 -2
+	yyvsp3 := yyvsp3 -2
 	yyvsp1 := yyvsp1 -1
 	if yyvsp29 >= yyvsc29 then
 		debug ("GEYACC")
@@ -5422,34 +5175,34 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines29.force (yyvs29, yyval29, yyvsp29)
 end
-when 229 then
---|#line 1799 "cadl_14_parser.y"
+when 214 then
+--|#line 1766 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1799")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1766")
 end
 
-			yyvs29.item (yyvsp29).extend(yyvs4.item (yyvsp4))
+			yyvs29.item (yyvsp29).extend(yyvs3.item (yyvsp3))
 			yyval29 := yyvs29.item (yyvsp29)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	yyspecial_routines29.force (yyvs29, yyval29, yyvsp29)
 end
-when 230 then
---|#line 1804 "cadl_14_parser.y"
+when 215 then
+--|#line 1771 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1804")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1771")
 end
 
 			create yyval29.make(0)
-			yyval29.extend(yyvs4.item (yyvsp4))
+			yyval29.extend(yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp29 := yyvsp29 + 1
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	yyvsp1 := yyvsp1 -2
 	if yyvsp29 >= yyvsc29 then
 		debug ("GEYACC")
@@ -5460,23 +5213,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines29.force (yyvs29, yyval29, yyvsp29)
 end
-when 231 then
---|#line 1811 "cadl_14_parser.y"
+when 216 then
+--|#line 1778 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1811")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1778")
 end
 
-			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create {PROPER_INTERVAL [REAL]} yyval36.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, True)
+			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
+				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp4 := yyvsp4 -2
+	yyvsp3 := yyvsp3 -2
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5486,23 +5239,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 232 then
---|#line 1819 "cadl_14_parser.y"
+when 217 then
+--|#line 1786 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1819")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1786")
 end
 
-			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create {PROPER_INTERVAL [REAL]} yyval36.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, True)
+			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
+				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -4
-	yyvsp4 := yyvsp4 -2
+	yyvsp3 := yyvsp3 -2
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5512,23 +5265,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 233 then
---|#line 1827 "cadl_14_parser.y"
+when 218 then
+--|#line 1794 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1827")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1794")
 end
 
-			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create {PROPER_INTERVAL [REAL]} yyval36.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, False)
+			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
+				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -4
-	yyvsp4 := yyvsp4 -2
+	yyvsp3 := yyvsp3 -2
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5538,23 +5291,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 234 then
---|#line 1835 "cadl_14_parser.y"
+when 219 then
+--|#line 1802 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1835")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1802")
 end
 
-			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
-				create {PROPER_INTERVAL [REAL]} yyval36.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, False)
+			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
+				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded (yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -5
-	yyvsp4 := yyvsp4 -2
+	yyvsp3 := yyvsp3 -2
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5564,19 +5317,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 235 then
---|#line 1843 "cadl_14_parser.y"
+when 220 then
+--|#line 1810 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1843")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1810")
 end
 
-			create {PROPER_INTERVAL [REAL]} yyval36.make_lower_unbounded(yyvs4.item (yyvsp4), False)
+			create {PROPER_INTERVAL [INTEGER]} yyval36.make_lower_unbounded (yyvs3.item (yyvsp3), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5586,19 +5339,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 236 then
---|#line 1847 "cadl_14_parser.y"
+when 221 then
+--|#line 1814 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1847")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1814")
 end
 
-			create {PROPER_INTERVAL [REAL]} yyval36.make_lower_unbounded(yyvs4.item (yyvsp4), True)
+			create {PROPER_INTERVAL [INTEGER]} yyval36.make_lower_unbounded (yyvs3.item (yyvsp3), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5608,19 +5361,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 237 then
---|#line 1851 "cadl_14_parser.y"
+when 222 then
+--|#line 1818 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1851")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1818")
 end
 
-			create {PROPER_INTERVAL [REAL]} yyval36.make_upper_unbounded(yyvs4.item (yyvsp4), False)
+			create {PROPER_INTERVAL [INTEGER]} yyval36.make_upper_unbounded (yyvs3.item (yyvsp3), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5630,19 +5383,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 238 then
---|#line 1855 "cadl_14_parser.y"
+when 223 then
+--|#line 1822 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1855")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1822")
 end
 
-			create {PROPER_INTERVAL [REAL]} yyval36.make_upper_unbounded(yyvs4.item (yyvsp4), True)
+			create {PROPER_INTERVAL [INTEGER]} yyval36.make_upper_unbounded (yyvs3.item (yyvsp3), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5652,19 +5405,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 239 then
---|#line 1859 "cadl_14_parser.y"
+when 224 then
+--|#line 1826 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1859")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1826")
 end
 
-			create {POINT_INTERVAL [REAL]} yyval36.make(yyvs4.item (yyvsp4))
+			create {POINT_INTERVAL [INTEGER]} yyval36.make (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp36 := yyvsp36 + 1
 	yyvsp1 := yyvsp1 -2
-	yyvsp4 := yyvsp4 -1
+	yyvsp3 := yyvsp3 -1
 	if yyvsp36 >= yyvsc36 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs36")
@@ -5674,10 +5427,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines36.force (yyvs36, yyval36, yyvsp36)
 end
-when 240 then
---|#line 1865 "cadl_14_parser.y"
+when 225 then
+--|#line 1832 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1865")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1832")
 end
 
 			create yyval42.make(0)
@@ -5698,10 +5451,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines42.force (yyvs42, yyval42, yyvsp42)
 end
-when 241 then
---|#line 1871 "cadl_14_parser.y"
+when 226 then
+--|#line 1838 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1871")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1838")
 end
 
 			yyvs42.item (yyvsp42).extend(yyvs36.item (yyvsp36))
@@ -5713,10 +5466,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp36 := yyvsp36 -1
 	yyspecial_routines42.force (yyvs42, yyval42, yyvsp42)
 end
-when 242 then
---|#line 1876 "cadl_14_parser.y"
+when 227 then
+--|#line 1843 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1876")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1843")
 end
 
 			create yyval42.make(0)
@@ -5736,62 +5489,58 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines42.force (yyvs42, yyval42, yyvsp42)
 end
-when 243 then
---|#line 1883 "cadl_14_parser.y"
+when 228 then
+--|#line 1850 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1883")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1850")
 end
 
-			yyval22 := True
+			yyval4 := yyvs4.item (yyvsp4)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp22 := yyvsp22 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp22 >= yyvsc22 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs22")
-		end
-		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
-		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
-	end
-	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
-when 244 then
---|#line 1887 "cadl_14_parser.y"
+when 229 then
+--|#line 1854 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1887")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1854")
 end
 
-			yyval22 := False
+			yyval4 := yyvs4.item (yyvsp4)
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp22 := yyvsp22 + 1
+	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	if yyvsp22 >= yyvsc22 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs22")
-		end
-		yyvsc22 := yyvsc22 + yyInitial_yyvs_size
-		yyvs22 := yyspecial_routines22.aliased_resized_area (yyvs22, yyvsc22)
-	end
-	yyspecial_routines22.force (yyvs22, yyval22, yyvsp22)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
-when 245 then
---|#line 1893 "cadl_14_parser.y"
+when 230 then
+--|#line 1858 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1893")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1858")
+end
+
+			yyval4 := - yyvs4.item (yyvsp4)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
+end
+when 231 then
+--|#line 1864 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1864")
 end
 
 			create yyval30.make(0)
-			yyval30.extend(yyvs22.item (yyvsp22 - 1))
-			yyval30.extend(yyvs22.item (yyvsp22))
+			yyval30.extend(yyvs4.item (yyvsp4 - 1))
+			yyval30.extend(yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
-	yyvsp22 := yyvsp22 -2
+	yyvsp4 := yyvsp4 -2
 	yyvsp1 := yyvsp1 -1
 	if yyvsp30 >= yyvsc30 then
 		debug ("GEYACC")
@@ -5802,34 +5551,34 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines30.force (yyvs30, yyval30, yyvsp30)
 end
-when 246 then
---|#line 1899 "cadl_14_parser.y"
+when 232 then
+--|#line 1870 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1899")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1870")
 end
 
-			yyvs30.item (yyvsp30).extend(yyvs22.item (yyvsp22))
+			yyvs30.item (yyvsp30).extend(yyvs4.item (yyvsp4))
 			yyval30 := yyvs30.item (yyvsp30)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
-	yyvsp22 := yyvsp22 -1
+	yyvsp4 := yyvsp4 -1
 	yyspecial_routines30.force (yyvs30, yyval30, yyvsp30)
 end
-when 247 then
---|#line 1904 "cadl_14_parser.y"
+when 233 then
+--|#line 1875 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1904")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1875")
 end
 
 			create yyval30.make(0)
-			yyval30.extend(yyvs22.item (yyvsp22))
+			yyval30.extend(yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp30 := yyvsp30 + 1
-	yyvsp22 := yyvsp22 -1
+	yyvsp4 := yyvsp4 -1
 	yyvsp1 := yyvsp1 -2
 	if yyvsp30 >= yyvsc30 then
 		debug ("GEYACC")
@@ -5840,473 +5589,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines30.force (yyvs30, yyval30, yyvsp30)
 end
-when 248 then
---|#line 1911 "cadl_14_parser.y"
+when 234 then
+--|#line 1882 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1911")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1882")
 end
 
-			if valid_iso8601_date(yyvs2.item (yyvsp2)) then
-				create yyval23.make_from_string(yyvs2.item (yyvsp2))
+			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
+				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, True)
 			else
-				abort_with_error (ec_VIDV, <<yyvs2.item (yyvsp2)>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp23 := yyvsp23 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp23 >= yyvsc23 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs23")
-		end
-		yyvsc23 := yyvsc23 + yyInitial_yyvs_size
-		yyvs23 := yyspecial_routines23.aliased_resized_area (yyvs23, yyvsc23)
-	end
-	yyspecial_routines23.force (yyvs23, yyval23, yyvsp23)
-end
-when 249 then
---|#line 1921 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1921")
-end
-
-			create yyval31.make(0)
-			yyval31.extend (yyvs23.item (yyvsp23 - 1))
-			yyval31.extend (yyvs23.item (yyvsp23))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp31 := yyvsp31 + 1
-	yyvsp23 := yyvsp23 -2
-	yyvsp1 := yyvsp1 -1
-	if yyvsp31 >= yyvsc31 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs31")
-		end
-		yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-		yyvs31 := yyspecial_routines31.aliased_resized_area (yyvs31, yyvsc31)
-	end
-	yyspecial_routines31.force (yyvs31, yyval31, yyvsp31)
-end
-when 250 then
---|#line 1927 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1927")
-end
-
-			yyvs31.item (yyvsp31).extend (yyvs23.item (yyvsp23))
-			yyval31 := yyvs31.item (yyvsp31)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp23 := yyvsp23 -1
-	yyspecial_routines31.force (yyvs31, yyval31, yyvsp31)
-end
-when 251 then
---|#line 1932 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1932")
-end
-
-			create yyval31.make(0)
-			yyval31.extend (yyvs23.item (yyvsp23))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp31 := yyvsp31 + 1
-	yyvsp23 := yyvsp23 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp31 >= yyvsc31 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs31")
-		end
-		yyvsc31 := yyvsc31 + yyInitial_yyvs_size
-		yyvs31 := yyspecial_routines31.aliased_resized_area (yyvs31, yyvsc31)
-	end
-	yyspecial_routines31.force (yyvs31, yyval31, yyvsp31)
-end
-when 252 then
---|#line 1939 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1939")
-end
-
-			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), True, True)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 5
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp23 := yyvsp23 -2
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 253 then
---|#line 1947 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1947")
-end
-
-			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), False, True)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 6
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -4
-	yyvsp23 := yyvsp23 -2
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 254 then
---|#line 1955 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1955")
-end
-
-			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), True, False)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 6
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -4
-	yyvsp23 := yyvsp23 -2
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 255 then
---|#line 1963 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1963")
-end
-
-			if yyvs23.item (yyvsp23 - 1) <= yyvs23.item (yyvsp23) then
-				create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_bounded(yyvs23.item (yyvsp23 - 1), yyvs23.item (yyvsp23), False, False)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs23.item (yyvsp23 - 1).out, yyvs23.item (yyvsp23).out>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 7
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -5
-	yyvsp23 := yyvsp23 -2
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 256 then
---|#line 1971 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1971")
-end
-
-			create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_lower_unbounded(yyvs23.item (yyvsp23), False)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp23 := yyvsp23 -1
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 257 then
---|#line 1975 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1975")
-end
-
-			create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_lower_unbounded(yyvs23.item (yyvsp23), True)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp23 := yyvsp23 -1
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 258 then
---|#line 1979 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1979")
-end
-
-			create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_upper_unbounded(yyvs23.item (yyvsp23), False)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp23 := yyvsp23 -1
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 259 then
---|#line 1983 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1983")
-end
-
-			create {PROPER_INTERVAL [ISO8601_DATE]} yyval38.make_upper_unbounded(yyvs23.item (yyvsp23), True)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 4
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -3
-	yyvsp23 := yyvsp23 -1
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 260 then
---|#line 1987 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1987")
-end
-
-			create {POINT_INTERVAL [ISO8601_DATE]} yyval38.make (yyvs23.item (yyvsp23))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp38 := yyvsp38 + 1
-	yyvsp1 := yyvsp1 -2
-	yyvsp23 := yyvsp23 -1
-	if yyvsp38 >= yyvsc38 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs38")
-		end
-		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
-		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
-	end
-	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
-end
-when 261 then
---|#line 1993 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1993")
-end
-
-			create yyval44.make(0)
-			yyval44.extend(yyvs38.item (yyvsp38 - 1))
-			yyval44.extend(yyvs38.item (yyvsp38))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp44 := yyvsp44 + 1
-	yyvsp38 := yyvsp38 -2
-	yyvsp1 := yyvsp1 -1
-	if yyvsp44 >= yyvsc44 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs44")
-		end
-		yyvsc44 := yyvsc44 + yyInitial_yyvs_size
-		yyvs44 := yyspecial_routines44.aliased_resized_area (yyvs44, yyvsc44)
-	end
-	yyspecial_routines44.force (yyvs44, yyval44, yyvsp44)
-end
-when 262 then
---|#line 1999 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1999")
-end
-
-			yyvs44.item (yyvsp44).extend(yyvs38.item (yyvsp38))
-			yyval44 := yyvs44.item (yyvsp44)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp38 := yyvsp38 -1
-	yyspecial_routines44.force (yyvs44, yyval44, yyvsp44)
-end
-when 263 then
---|#line 2004 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2004")
-end
-
-			create yyval44.make(0)
-			yyval44.extend(yyvs38.item (yyvsp38))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp44 := yyvsp44 + 1
-	yyvsp38 := yyvsp38 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp44 >= yyvsc44 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs44")
-		end
-		yyvsc44 := yyvsc44 + yyInitial_yyvs_size
-		yyvs44 := yyspecial_routines44.aliased_resized_area (yyvs44, yyvsc44)
-	end
-	yyspecial_routines44.force (yyvs44, yyval44, yyvsp44)
-end
-when 264 then
---|#line 2011 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2011")
-end
-
-			if valid_iso8601_time(yyvs2.item (yyvsp2)) then
-				create yyval25.make_from_string(yyvs2.item (yyvsp2))
-			else
-				abort_with_error (ec_VITV, <<yyvs2.item (yyvsp2)>>)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp25 := yyvsp25 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp25 >= yyvsc25 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs25")
-		end
-		yyvsc25 := yyvsc25 + yyInitial_yyvs_size
-		yyvs25 := yyspecial_routines25.aliased_resized_area (yyvs25, yyvsc25)
-	end
-	yyspecial_routines25.force (yyvs25, yyval25, yyvsp25)
-end
-when 265 then
---|#line 2021 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2021")
-end
-
-			create yyval32.make(0)
-			yyval32.extend(yyvs25.item (yyvsp25 - 1))
-			yyval32.extend(yyvs25.item (yyvsp25))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp32 := yyvsp32 + 1
-	yyvsp25 := yyvsp25 -2
-	yyvsp1 := yyvsp1 -1
-	if yyvsp32 >= yyvsc32 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs32")
-		end
-		yyvsc32 := yyvsc32 + yyInitial_yyvs_size
-		yyvs32 := yyspecial_routines32.aliased_resized_area (yyvs32, yyvsc32)
-	end
-	yyspecial_routines32.force (yyvs32, yyval32, yyvsp32)
-end
-when 266 then
---|#line 2027 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2027")
-end
-
-			yyvs32.item (yyvsp32).extend(yyvs25.item (yyvsp25))
-			yyval32 := yyvs32.item (yyvsp32)
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp1 := yyvsp1 -1
-	yyvsp25 := yyvsp25 -1
-	yyspecial_routines32.force (yyvs32, yyval32, yyvsp32)
-end
-when 267 then
---|#line 2032 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2032")
-end
-
-			create yyval32.make(0)
-			yyval32.extend(yyvs25.item (yyvsp25))
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 3
-	yyvsp32 := yyvsp32 + 1
-	yyvsp25 := yyvsp25 -1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp32 >= yyvsc32 then
-		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs32")
-		end
-		yyvsc32 := yyvsc32 + yyInitial_yyvs_size
-		yyvs32 := yyspecial_routines32.aliased_resized_area (yyvs32, yyvsc32)
-	end
-	yyspecial_routines32.force (yyvs32, yyval32, yyvsp32)
-end
-when 268 then
---|#line 2039 "cadl_14_parser.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2039")
-end
-
-			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
-				create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), True, True)
-			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp25 := yyvsp25 -2
+	yyvsp4 := yyvsp4 -2
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6316,23 +5615,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 269 then
---|#line 2047 "cadl_14_parser.y"
+when 235 then
+--|#line 1890 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2047")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1890")
 end
 
-			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
-				create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), False, True)
+			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
+				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -4
-	yyvsp25 := yyvsp25 -2
+	yyvsp4 := yyvsp4 -2
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6342,23 +5641,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 270 then
---|#line 2055 "cadl_14_parser.y"
+when 236 then
+--|#line 1898 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2055")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1898")
 end
 
-			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
-				create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), True, False)
+			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
+				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -4
-	yyvsp25 := yyvsp25 -2
+	yyvsp4 := yyvsp4 -2
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6368,23 +5667,23 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 271 then
---|#line 2063 "cadl_14_parser.y"
+when 237 then
+--|#line 1906 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2063")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1906")
 end
 
-			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
-				create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), False, False)
+			if yyvs4.item (yyvsp4 - 1) <= yyvs4.item (yyvsp4) then
+				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error (ec_VIVLO, <<yyvs4.item (yyvsp4 - 1).out, yyvs4.item (yyvsp4).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -5
-	yyvsp25 := yyvsp25 -2
+	yyvsp4 := yyvsp4 -2
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6394,19 +5693,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 272 then
---|#line 2071 "cadl_14_parser.y"
+when 238 then
+--|#line 1914 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2071")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1914")
 end
 
-			create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_lower_unbounded(yyvs25.item (yyvsp25), False)
+			create {PROPER_INTERVAL [REAL]} yyval37.make_lower_unbounded(yyvs4.item (yyvsp4), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp25 := yyvsp25 -1
+	yyvsp4 := yyvsp4 -1
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6416,19 +5715,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 273 then
---|#line 2075 "cadl_14_parser.y"
+when 239 then
+--|#line 1918 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2075")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1918")
 end
 
-			create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_lower_unbounded(yyvs25.item (yyvsp25), True)
+			create {PROPER_INTERVAL [REAL]} yyval37.make_lower_unbounded(yyvs4.item (yyvsp4), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp25 := yyvsp25 -1
+	yyvsp4 := yyvsp4 -1
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6438,19 +5737,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 274 then
---|#line 2079 "cadl_14_parser.y"
+when 240 then
+--|#line 1922 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2079")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1922")
 end
 
-			create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_upper_unbounded(yyvs25.item (yyvsp25), False)
+			create {PROPER_INTERVAL [REAL]} yyval37.make_upper_unbounded(yyvs4.item (yyvsp4), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp25 := yyvsp25 -1
+	yyvsp4 := yyvsp4 -1
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6460,19 +5759,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 275 then
---|#line 2083 "cadl_14_parser.y"
+when 241 then
+--|#line 1926 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2083")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1926")
 end
 
-			create {PROPER_INTERVAL [ISO8601_TIME]} yyval37.make_upper_unbounded(yyvs25.item (yyvsp25), True)
+			create {PROPER_INTERVAL [REAL]} yyval37.make_upper_unbounded(yyvs4.item (yyvsp4), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp25 := yyvsp25 -1
+	yyvsp4 := yyvsp4 -1
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6482,19 +5781,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 276 then
---|#line 2087 "cadl_14_parser.y"
+when 242 then
+--|#line 1930 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2087")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1930")
 end
 
-			create {POINT_INTERVAL [ISO8601_TIME]} yyval37.make (yyvs25.item (yyvsp25))
+			create {POINT_INTERVAL [REAL]} yyval37.make(yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp37 := yyvsp37 + 1
 	yyvsp1 := yyvsp1 -2
-	yyvsp25 := yyvsp25 -1
+	yyvsp4 := yyvsp4 -1
 	if yyvsp37 >= yyvsc37 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs37")
@@ -6504,10 +5803,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines37.force (yyvs37, yyval37, yyvsp37)
 end
-when 277 then
---|#line 2093 "cadl_14_parser.y"
+when 243 then
+--|#line 1936 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2093")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1936")
 end
 
 			create yyval43.make(0)
@@ -6528,10 +5827,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines43.force (yyvs43, yyval43, yyvsp43)
 end
-when 278 then
---|#line 2099 "cadl_14_parser.y"
+when 244 then
+--|#line 1942 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2099")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1942")
 end
 
 			yyvs43.item (yyvsp43).extend(yyvs37.item (yyvsp37))
@@ -6543,10 +5842,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp37 := yyvsp37 -1
 	yyspecial_routines43.force (yyvs43, yyval43, yyvsp43)
 end
-when 279 then
---|#line 2104 "cadl_14_parser.y"
+when 245 then
+--|#line 1947 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2104")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1947")
 end
 
 			create yyval43.make(0)
@@ -6566,16 +5865,120 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines43.force (yyvs43, yyval43, yyvsp43)
 end
-when 280 then
---|#line 2111 "cadl_14_parser.y"
+when 246 then
+--|#line 1954 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2111")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1954")
 end
 
-			if valid_iso8601_date_time(yyvs2.item (yyvsp2)) then
+			yyval23 := True
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp23 := yyvsp23 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp23 >= yyvsc23 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs23")
+		end
+		yyvsc23 := yyvsc23 + yyInitial_yyvs_size
+		yyvs23 := yyspecial_routines23.aliased_resized_area (yyvs23, yyvsc23)
+	end
+	yyspecial_routines23.force (yyvs23, yyval23, yyvsp23)
+end
+when 247 then
+--|#line 1958 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1958")
+end
+
+			yyval23 := False
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp23 := yyvsp23 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp23 >= yyvsc23 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs23")
+		end
+		yyvsc23 := yyvsc23 + yyInitial_yyvs_size
+		yyvs23 := yyspecial_routines23.aliased_resized_area (yyvs23, yyvsc23)
+	end
+	yyspecial_routines23.force (yyvs23, yyval23, yyvsp23)
+end
+when 248 then
+--|#line 1964 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1964")
+end
+
+			create yyval31.make(0)
+			yyval31.extend(yyvs23.item (yyvsp23 - 1))
+			yyval31.extend(yyvs23.item (yyvsp23))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp31 := yyvsp31 + 1
+	yyvsp23 := yyvsp23 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp31 >= yyvsc31 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs31")
+		end
+		yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+		yyvs31 := yyspecial_routines31.aliased_resized_area (yyvs31, yyvsc31)
+	end
+	yyspecial_routines31.force (yyvs31, yyval31, yyvsp31)
+end
+when 249 then
+--|#line 1970 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1970")
+end
+
+			yyvs31.item (yyvsp31).extend(yyvs23.item (yyvsp23))
+			yyval31 := yyvs31.item (yyvsp31)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp23 := yyvsp23 -1
+	yyspecial_routines31.force (yyvs31, yyval31, yyvsp31)
+end
+when 250 then
+--|#line 1975 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1975")
+end
+
+			create yyval31.make(0)
+			yyval31.extend(yyvs23.item (yyvsp23))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp31 := yyvsp31 + 1
+	yyvsp23 := yyvsp23 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp31 >= yyvsc31 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs31")
+		end
+		yyvsc31 := yyvsc31 + yyInitial_yyvs_size
+		yyvs31 := yyspecial_routines31.aliased_resized_area (yyvs31, yyvsc31)
+	end
+	yyspecial_routines31.force (yyvs31, yyval31, yyvsp31)
+end
+when 251 then
+--|#line 1982 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1982")
+end
+
+			if valid_iso8601_date(yyvs2.item (yyvsp2)) then
 				create yyval24.make_from_string(yyvs2.item (yyvsp2))
 			else
-				abort_with_error (ec_VIDTV, <<yyvs2.item (yyvsp2)>>)
+				abort_with_error (ec_VIDV, <<yyvs2.item (yyvsp2)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6591,76 +5994,76 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines24.force (yyvs24, yyval24, yyvsp24)
 end
-when 281 then
---|#line 2121 "cadl_14_parser.y"
+when 252 then
+--|#line 1992 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2121")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1992")
 end
 
-			create yyval33.make(0)
-			yyval33.extend(yyvs24.item (yyvsp24 - 1))
-			yyval33.extend(yyvs24.item (yyvsp24))
+			create yyval32.make(0)
+			yyval32.extend (yyvs24.item (yyvsp24 - 1))
+			yyval32.extend (yyvs24.item (yyvsp24))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp33 := yyvsp33 + 1
+	yyvsp32 := yyvsp32 + 1
 	yyvsp24 := yyvsp24 -2
 	yyvsp1 := yyvsp1 -1
-	if yyvsp33 >= yyvsc33 then
+	if yyvsp32 >= yyvsc32 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs33")
+			std.error.put_line ("Resize yyvs32")
 		end
-		yyvsc33 := yyvsc33 + yyInitial_yyvs_size
-		yyvs33 := yyspecial_routines33.aliased_resized_area (yyvs33, yyvsc33)
+		yyvsc32 := yyvsc32 + yyInitial_yyvs_size
+		yyvs32 := yyspecial_routines32.aliased_resized_area (yyvs32, yyvsc32)
 	end
-	yyspecial_routines33.force (yyvs33, yyval33, yyvsp33)
+	yyspecial_routines32.force (yyvs32, yyval32, yyvsp32)
 end
-when 282 then
---|#line 2127 "cadl_14_parser.y"
+when 253 then
+--|#line 1998 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2127")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1998")
 end
 
-			yyvs33.item (yyvsp33).extend(yyvs24.item (yyvsp24))
-			yyval33 := yyvs33.item (yyvsp33)
+			yyvs32.item (yyvsp32).extend (yyvs24.item (yyvsp24))
+			yyval32 := yyvs32.item (yyvsp32)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp24 := yyvsp24 -1
-	yyspecial_routines33.force (yyvs33, yyval33, yyvsp33)
+	yyspecial_routines32.force (yyvs32, yyval32, yyvsp32)
 end
-when 283 then
---|#line 2132 "cadl_14_parser.y"
+when 254 then
+--|#line 2003 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2132")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2003")
 end
 
-			create yyval33.make(0)
-			yyval33.extend(yyvs24.item (yyvsp24))
+			create yyval32.make(0)
+			yyval32.extend (yyvs24.item (yyvsp24))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp33 := yyvsp33 + 1
+	yyvsp32 := yyvsp32 + 1
 	yyvsp24 := yyvsp24 -1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp33 >= yyvsc33 then
+	if yyvsp32 >= yyvsc32 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs33")
+			std.error.put_line ("Resize yyvs32")
 		end
-		yyvsc33 := yyvsc33 + yyInitial_yyvs_size
-		yyvs33 := yyspecial_routines33.aliased_resized_area (yyvs33, yyvsc33)
+		yyvsc32 := yyvsc32 + yyInitial_yyvs_size
+		yyvs32 := yyspecial_routines32.aliased_resized_area (yyvs32, yyvsc32)
 	end
-	yyspecial_routines33.force (yyvs33, yyval33, yyvsp33)
+	yyspecial_routines32.force (yyvs32, yyval32, yyvsp32)
 end
-when 284 then
---|#line 2139 "cadl_14_parser.y"
+when 255 then
+--|#line 2010 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2139")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2010")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, True)
+				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, True)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -6679,14 +6082,14 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 285 then
---|#line 2147 "cadl_14_parser.y"
+when 256 then
+--|#line 2018 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2147")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2018")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, True)
+				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, True)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -6705,14 +6108,14 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 286 then
---|#line 2155 "cadl_14_parser.y"
+when 257 then
+--|#line 2026 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2155")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2026")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, False)
+				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, False)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -6731,14 +6134,14 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 287 then
---|#line 2163 "cadl_14_parser.y"
+when 258 then
+--|#line 2034 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2163")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2034")
 end
 
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
-				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, False)
+				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, False)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
@@ -6757,13 +6160,13 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 288 then
---|#line 2171 "cadl_14_parser.y"
+when 259 then
+--|#line 2042 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2171")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2042")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_lower_unbounded(yyvs24.item (yyvsp24), False)
+			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_lower_unbounded(yyvs24.item (yyvsp24), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6779,13 +6182,13 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 289 then
---|#line 2175 "cadl_14_parser.y"
+when 260 then
+--|#line 2046 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2175")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2046")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_lower_unbounded(yyvs24.item (yyvsp24), True)
+			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_lower_unbounded(yyvs24.item (yyvsp24), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6801,13 +6204,13 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 290 then
---|#line 2179 "cadl_14_parser.y"
+when 261 then
+--|#line 2050 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2179")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2050")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_upper_unbounded(yyvs24.item (yyvsp24), False)
+			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_upper_unbounded(yyvs24.item (yyvsp24), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6823,13 +6226,13 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 291 then
---|#line 2183 "cadl_14_parser.y"
+when 262 then
+--|#line 2054 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2183")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2054")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval39.make_upper_unbounded(yyvs24.item (yyvsp24), True)
+			create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_upper_unbounded(yyvs24.item (yyvsp24), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -6845,13 +6248,13 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 292 then
---|#line 2187 "cadl_14_parser.y"
+when 263 then
+--|#line 2058 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2187")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2058")
 end
 
-			create {POINT_INTERVAL [ISO8601_DATE_TIME]} yyval39.make (yyvs24.item (yyvsp24))
+			create {POINT_INTERVAL [ISO8601_DATE]} yyval39.make (yyvs24.item (yyvsp24))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -6867,10 +6270,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines39.force (yyvs39, yyval39, yyvsp39)
 end
-when 293 then
---|#line 2193 "cadl_14_parser.y"
+when 264 then
+--|#line 2064 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2193")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2064")
 end
 
 			create yyval45.make(0)
@@ -6891,10 +6294,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines45.force (yyvs45, yyval45, yyvsp45)
 end
-when 294 then
---|#line 2199 "cadl_14_parser.y"
+when 265 then
+--|#line 2070 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2199")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2070")
 end
 
 			yyvs45.item (yyvsp45).extend(yyvs39.item (yyvsp39))
@@ -6906,10 +6309,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp39 := yyvsp39 -1
 	yyspecial_routines45.force (yyvs45, yyval45, yyvsp45)
 end
-when 295 then
---|#line 2204 "cadl_14_parser.y"
+when 266 then
+--|#line 2075 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2204")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2075")
 end
 
 			create yyval45.make(0)
@@ -6929,16 +6332,16 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines45.force (yyvs45, yyval45, yyvsp45)
 end
-when 296 then
---|#line 2211 "cadl_14_parser.y"
+when 267 then
+--|#line 2082 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2211")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2082")
 end
 
-			if valid_iso8601_duration(yyvs2.item (yyvsp2)) then
+			if valid_iso8601_time(yyvs2.item (yyvsp2)) then
 				create yyval26.make_from_string(yyvs2.item (yyvsp2))
 			else
-				abort_with_error (ec_VIDUV, <<yyvs2.item (yyvsp2)>>)
+				abort_with_error (ec_VITV, <<yyvs2.item (yyvsp2)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6954,163 +6357,448 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines26.force (yyvs26, yyval26, yyvsp26)
 end
-when 297 then
---|#line 2221 "cadl_14_parser.y"
+when 268 then
+--|#line 2092 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2221")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2092")
 end
 
-			create yyval34.make(0)
-			yyval34.extend(yyvs26.item (yyvsp26 - 1))
-			yyval34.extend(yyvs26.item (yyvsp26))
+			create yyval33.make(0)
+			yyval33.extend(yyvs26.item (yyvsp26 - 1))
+			yyval33.extend(yyvs26.item (yyvsp26))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp34 := yyvsp34 + 1
+	yyvsp33 := yyvsp33 + 1
 	yyvsp26 := yyvsp26 -2
 	yyvsp1 := yyvsp1 -1
-	if yyvsp34 >= yyvsc34 then
+	if yyvsp33 >= yyvsc33 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs34")
+			std.error.put_line ("Resize yyvs33")
 		end
-		yyvsc34 := yyvsc34 + yyInitial_yyvs_size
-		yyvs34 := yyspecial_routines34.aliased_resized_area (yyvs34, yyvsc34)
+		yyvsc33 := yyvsc33 + yyInitial_yyvs_size
+		yyvs33 := yyspecial_routines33.aliased_resized_area (yyvs33, yyvsc33)
 	end
-	yyspecial_routines34.force (yyvs34, yyval34, yyvsp34)
+	yyspecial_routines33.force (yyvs33, yyval33, yyvsp33)
 end
-when 298 then
---|#line 2227 "cadl_14_parser.y"
+when 269 then
+--|#line 2098 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2227")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2098")
 end
 
-			yyvs34.item (yyvsp34).extend(yyvs26.item (yyvsp26))
-			yyval34 := yyvs34.item (yyvsp34)
+			yyvs33.item (yyvsp33).extend(yyvs26.item (yyvsp26))
+			yyval33 := yyvs33.item (yyvsp33)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp26 := yyvsp26 -1
-	yyspecial_routines34.force (yyvs34, yyval34, yyvsp34)
+	yyspecial_routines33.force (yyvs33, yyval33, yyvsp33)
 end
-when 299 then
---|#line 2232 "cadl_14_parser.y"
+when 270 then
+--|#line 2103 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2232")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2103")
 end
 
-			create yyval34.make(0)
-			yyval34.extend(yyvs26.item (yyvsp26))
+			create yyval33.make(0)
+			yyval33.extend(yyvs26.item (yyvsp26))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
-	yyvsp34 := yyvsp34 + 1
+	yyvsp33 := yyvsp33 + 1
 	yyvsp26 := yyvsp26 -1
 	yyvsp1 := yyvsp1 -2
-	if yyvsp34 >= yyvsc34 then
+	if yyvsp33 >= yyvsc33 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs34")
+			std.error.put_line ("Resize yyvs33")
 		end
-		yyvsc34 := yyvsc34 + yyInitial_yyvs_size
-		yyvs34 := yyspecial_routines34.aliased_resized_area (yyvs34, yyvsc34)
+		yyvsc33 := yyvsc33 + yyInitial_yyvs_size
+		yyvs33 := yyspecial_routines33.aliased_resized_area (yyvs33, yyvsc33)
 	end
-	yyspecial_routines34.force (yyvs34, yyval34, yyvsp34)
+	yyspecial_routines33.force (yyvs33, yyval33, yyvsp33)
 end
-when 300 then
---|#line 2239 "cadl_14_parser.y"
+when 271 then
+--|#line 2110 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2239")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2110")
 end
 
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
-				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), True, True)
+				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), True, True)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
-	yyvsp40 := yyvsp40 + 1
+	yyvsp38 := yyvsp38 + 1
 	yyvsp1 := yyvsp1 -3
 	yyvsp26 := yyvsp26 -2
-	if yyvsp40 >= yyvsc40 then
+	if yyvsp38 >= yyvsc38 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs40")
+			std.error.put_line ("Resize yyvs38")
 		end
-		yyvsc40 := yyvsc40 + yyInitial_yyvs_size
-		yyvs40 := yyspecial_routines40.aliased_resized_area (yyvs40, yyvsc40)
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
 	end
-	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
 end
-when 301 then
---|#line 2247 "cadl_14_parser.y"
+when 272 then
+--|#line 2118 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2247")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2118")
 end
 
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
-				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), False, True)
+				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), False, True)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
-	yyvsp40 := yyvsp40 + 1
+	yyvsp38 := yyvsp38 + 1
 	yyvsp1 := yyvsp1 -4
 	yyvsp26 := yyvsp26 -2
-	if yyvsp40 >= yyvsc40 then
+	if yyvsp38 >= yyvsc38 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs40")
+			std.error.put_line ("Resize yyvs38")
 		end
-		yyvsc40 := yyvsc40 + yyInitial_yyvs_size
-		yyvs40 := yyspecial_routines40.aliased_resized_area (yyvs40, yyvsc40)
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
 	end
-	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
 end
-when 302 then
---|#line 2255 "cadl_14_parser.y"
+when 273 then
+--|#line 2126 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2255")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2126")
 end
 
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
-				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), True, False)
+				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), True, False)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 6
-	yyvsp40 := yyvsp40 + 1
+	yyvsp38 := yyvsp38 + 1
 	yyvsp1 := yyvsp1 -4
 	yyvsp26 := yyvsp26 -2
-	if yyvsp40 >= yyvsc40 then
+	if yyvsp38 >= yyvsc38 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs40")
+			std.error.put_line ("Resize yyvs38")
 		end
-		yyvsc40 := yyvsc40 + yyInitial_yyvs_size
-		yyvs40 := yyspecial_routines40.aliased_resized_area (yyvs40, yyvsc40)
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
 	end
-	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
 end
-when 303 then
---|#line 2263 "cadl_14_parser.y"
+when 274 then
+--|#line 2134 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2263")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2134")
 end
 
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
-				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), False, False)
+				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), False, False)
 			else
 				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 7
-	yyvsp40 := yyvsp40 + 1
+	yyvsp38 := yyvsp38 + 1
 	yyvsp1 := yyvsp1 -5
 	yyvsp26 := yyvsp26 -2
+	if yyvsp38 >= yyvsc38 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs38")
+		end
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
+	end
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
+end
+when 275 then
+--|#line 2142 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2142")
+end
+
+			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_lower_unbounded(yyvs26.item (yyvsp26), False)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp38 := yyvsp38 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp26 := yyvsp26 -1
+	if yyvsp38 >= yyvsc38 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs38")
+		end
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
+	end
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
+end
+when 276 then
+--|#line 2146 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2146")
+end
+
+			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_lower_unbounded(yyvs26.item (yyvsp26), True)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp38 := yyvsp38 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp26 := yyvsp26 -1
+	if yyvsp38 >= yyvsc38 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs38")
+		end
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
+	end
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
+end
+when 277 then
+--|#line 2150 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2150")
+end
+
+			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_upper_unbounded(yyvs26.item (yyvsp26), False)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp38 := yyvsp38 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp26 := yyvsp26 -1
+	if yyvsp38 >= yyvsc38 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs38")
+		end
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
+	end
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
+end
+when 278 then
+--|#line 2154 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2154")
+end
+
+			create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_upper_unbounded(yyvs26.item (yyvsp26), True)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp38 := yyvsp38 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp26 := yyvsp26 -1
+	if yyvsp38 >= yyvsc38 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs38")
+		end
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
+	end
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
+end
+when 279 then
+--|#line 2158 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2158")
+end
+
+			create {POINT_INTERVAL [ISO8601_TIME]} yyval38.make (yyvs26.item (yyvsp26))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp38 := yyvsp38 + 1
+	yyvsp1 := yyvsp1 -2
+	yyvsp26 := yyvsp26 -1
+	if yyvsp38 >= yyvsc38 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs38")
+		end
+		yyvsc38 := yyvsc38 + yyInitial_yyvs_size
+		yyvs38 := yyspecial_routines38.aliased_resized_area (yyvs38, yyvsc38)
+	end
+	yyspecial_routines38.force (yyvs38, yyval38, yyvsp38)
+end
+when 280 then
+--|#line 2164 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2164")
+end
+
+			create yyval44.make(0)
+			yyval44.extend(yyvs38.item (yyvsp38 - 1))
+			yyval44.extend(yyvs38.item (yyvsp38))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp44 := yyvsp44 + 1
+	yyvsp38 := yyvsp38 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp44 >= yyvsc44 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs44")
+		end
+		yyvsc44 := yyvsc44 + yyInitial_yyvs_size
+		yyvs44 := yyspecial_routines44.aliased_resized_area (yyvs44, yyvsc44)
+	end
+	yyspecial_routines44.force (yyvs44, yyval44, yyvsp44)
+end
+when 281 then
+--|#line 2170 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2170")
+end
+
+			yyvs44.item (yyvsp44).extend(yyvs38.item (yyvsp38))
+			yyval44 := yyvs44.item (yyvsp44)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp38 := yyvsp38 -1
+	yyspecial_routines44.force (yyvs44, yyval44, yyvsp44)
+end
+when 282 then
+--|#line 2175 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2175")
+end
+
+			create yyval44.make(0)
+			yyval44.extend(yyvs38.item (yyvsp38))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp44 := yyvsp44 + 1
+	yyvsp38 := yyvsp38 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp44 >= yyvsc44 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs44")
+		end
+		yyvsc44 := yyvsc44 + yyInitial_yyvs_size
+		yyvs44 := yyspecial_routines44.aliased_resized_area (yyvs44, yyvsc44)
+	end
+	yyspecial_routines44.force (yyvs44, yyval44, yyvsp44)
+end
+when 283 then
+--|#line 2182 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2182")
+end
+
+			if valid_iso8601_date_time(yyvs2.item (yyvsp2)) then
+				create yyval25.make_from_string(yyvs2.item (yyvsp2))
+			else
+				abort_with_error (ec_VIDTV, <<yyvs2.item (yyvsp2)>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp25 := yyvsp25 + 1
+	yyvsp2 := yyvsp2 -1
+	if yyvsp25 >= yyvsc25 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs25")
+		end
+		yyvsc25 := yyvsc25 + yyInitial_yyvs_size
+		yyvs25 := yyspecial_routines25.aliased_resized_area (yyvs25, yyvsc25)
+	end
+	yyspecial_routines25.force (yyvs25, yyval25, yyvsp25)
+end
+when 284 then
+--|#line 2192 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2192")
+end
+
+			create yyval34.make(0)
+			yyval34.extend(yyvs25.item (yyvsp25 - 1))
+			yyval34.extend(yyvs25.item (yyvsp25))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp34 := yyvsp34 + 1
+	yyvsp25 := yyvsp25 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp34 >= yyvsc34 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs34")
+		end
+		yyvsc34 := yyvsc34 + yyInitial_yyvs_size
+		yyvs34 := yyspecial_routines34.aliased_resized_area (yyvs34, yyvsc34)
+	end
+	yyspecial_routines34.force (yyvs34, yyval34, yyvsp34)
+end
+when 285 then
+--|#line 2198 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2198")
+end
+
+			yyvs34.item (yyvsp34).extend(yyvs25.item (yyvsp25))
+			yyval34 := yyvs34.item (yyvsp34)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp25 := yyvsp25 -1
+	yyspecial_routines34.force (yyvs34, yyval34, yyvsp34)
+end
+when 286 then
+--|#line 2203 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2203")
+end
+
+			create yyval34.make(0)
+			yyval34.extend(yyvs25.item (yyvsp25))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp34 := yyvsp34 + 1
+	yyvsp25 := yyvsp25 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp34 >= yyvsc34 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs34")
+		end
+		yyvsc34 := yyvsc34 + yyInitial_yyvs_size
+		yyvs34 := yyspecial_routines34.aliased_resized_area (yyvs34, yyvsc34)
+	end
+	yyspecial_routines34.force (yyvs34, yyval34, yyvsp34)
+end
+when 287 then
+--|#line 2210 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2210")
+end
+
+			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), True, True)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp40 := yyvsp40 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp25 := yyvsp25 -2
 	if yyvsp40 >= yyvsc40 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs40")
@@ -7120,19 +6808,97 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
 end
-when 304 then
---|#line 2271 "cadl_14_parser.y"
+when 288 then
+--|#line 2218 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2271")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2218")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_lower_unbounded(yyvs26.item (yyvsp26), False)
+			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), False, True)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 6
+	yyvsp40 := yyvsp40 + 1
+	yyvsp1 := yyvsp1 -4
+	yyvsp25 := yyvsp25 -2
+	if yyvsp40 >= yyvsc40 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs40")
+		end
+		yyvsc40 := yyvsc40 + yyInitial_yyvs_size
+		yyvs40 := yyspecial_routines40.aliased_resized_area (yyvs40, yyvsc40)
+	end
+	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
+end
+when 289 then
+--|#line 2226 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2226")
+end
+
+			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), True, False)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 6
+	yyvsp40 := yyvsp40 + 1
+	yyvsp1 := yyvsp1 -4
+	yyvsp25 := yyvsp25 -2
+	if yyvsp40 >= yyvsc40 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs40")
+		end
+		yyvsc40 := yyvsc40 + yyInitial_yyvs_size
+		yyvs40 := yyspecial_routines40.aliased_resized_area (yyvs40, yyvsc40)
+	end
+	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
+end
+when 290 then
+--|#line 2234 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2234")
+end
+
+			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
+				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), False, False)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 7
+	yyvsp40 := yyvsp40 + 1
+	yyvsp1 := yyvsp1 -5
+	yyvsp25 := yyvsp25 -2
+	if yyvsp40 >= yyvsc40 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs40")
+		end
+		yyvsc40 := yyvsc40 + yyInitial_yyvs_size
+		yyvs40 := yyspecial_routines40.aliased_resized_area (yyvs40, yyvsc40)
+	end
+	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
+end
+when 291 then
+--|#line 2242 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2242")
+end
+
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_lower_unbounded(yyvs25.item (yyvsp25), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp26 := yyvsp26 -1
+	yyvsp25 := yyvsp25 -1
 	if yyvsp40 >= yyvsc40 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs40")
@@ -7142,19 +6908,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
 end
-when 305 then
---|#line 2275 "cadl_14_parser.y"
+when 292 then
+--|#line 2246 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2275")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2246")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_lower_unbounded(yyvs26.item (yyvsp26), True)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_lower_unbounded(yyvs25.item (yyvsp25), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp26 := yyvsp26 -1
+	yyvsp25 := yyvsp25 -1
 	if yyvsp40 >= yyvsc40 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs40")
@@ -7164,19 +6930,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
 end
-when 306 then
---|#line 2279 "cadl_14_parser.y"
+when 293 then
+--|#line 2250 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2279")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2250")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_upper_unbounded(yyvs26.item (yyvsp26), False)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_upper_unbounded(yyvs25.item (yyvsp25), False)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp26 := yyvsp26 -1
+	yyvsp25 := yyvsp25 -1
 	if yyvsp40 >= yyvsc40 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs40")
@@ -7186,19 +6952,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
 end
-when 307 then
---|#line 2283 "cadl_14_parser.y"
+when 294 then
+--|#line 2254 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2283")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2254")
 end
 
-			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval40.make_upper_unbounded(yyvs26.item (yyvsp26), True)
+			create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_upper_unbounded(yyvs25.item (yyvsp25), True)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
 	yyvsp40 := yyvsp40 + 1
 	yyvsp1 := yyvsp1 -3
-	yyvsp26 := yyvsp26 -1
+	yyvsp25 := yyvsp25 -1
 	if yyvsp40 >= yyvsc40 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs40")
@@ -7208,19 +6974,19 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
 end
-when 308 then
---|#line 2287 "cadl_14_parser.y"
+when 295 then
+--|#line 2258 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2287")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2258")
 end
 
-			create {POINT_INTERVAL [ISO8601_DURATION]} yyval40.make (yyvs26.item (yyvsp26))
+			create {POINT_INTERVAL [ISO8601_DATE_TIME]} yyval40.make (yyvs25.item (yyvsp25))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp40 := yyvsp40 + 1
 	yyvsp1 := yyvsp1 -2
-	yyvsp26 := yyvsp26 -1
+	yyvsp25 := yyvsp25 -1
 	if yyvsp40 >= yyvsc40 then
 		debug ("GEYACC")
 			std.error.put_line ("Resize yyvs40")
@@ -7230,10 +6996,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines40.force (yyvs40, yyval40, yyvsp40)
 end
-when 309 then
---|#line 2293 "cadl_14_parser.y"
+when 296 then
+--|#line 2264 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2293")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2264")
 end
 
 			create yyval46.make(0)
@@ -7254,10 +7020,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines46.force (yyvs46, yyval46, yyvsp46)
 end
-when 310 then
---|#line 2299 "cadl_14_parser.y"
+when 297 then
+--|#line 2270 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2299")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2270")
 end
 
 			yyvs46.item (yyvsp46).extend(yyvs40.item (yyvsp40))
@@ -7269,10 +7035,10 @@ if yy_parsing_status >= yyContinue then
 	yyvsp40 := yyvsp40 -1
 	yyspecial_routines46.force (yyvs46, yyval46, yyvsp46)
 end
-when 311 then
---|#line 2304 "cadl_14_parser.y"
+when 298 then
+--|#line 2275 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2304")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2275")
 end
 
 			create yyval46.make(0)
@@ -7292,47 +7058,414 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyspecial_routines46.force (yyvs46, yyval46, yyvsp46)
 end
-when 312 then
---|#line 2315 "cadl_14_parser.y"
+when 299 then
+--|#line 2282 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2315")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2282")
 end
 
-			create yyval59.make_from_string (yyvs2.item (yyvsp2))
+			if valid_iso8601_duration(yyvs2.item (yyvsp2)) then
+				create yyval27.make_from_string(yyvs2.item (yyvsp2))
+			else
+				abort_with_error (ec_VIDUV, <<yyvs2.item (yyvsp2)>>)
+			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp59 := yyvsp59 + 1
+	yyvsp27 := yyvsp27 + 1
 	yyvsp2 := yyvsp2 -1
-	if yyvsp59 >= yyvsc59 then
+	if yyvsp27 >= yyvsc27 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs59")
+			std.error.put_line ("Resize yyvs27")
 		end
-		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
-		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
+		yyvsc27 := yyvsc27 + yyInitial_yyvs_size
+		yyvs27 := yyspecial_routines27.aliased_resized_area (yyvs27, yyvsc27)
 	end
-	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
+	yyspecial_routines27.force (yyvs27, yyval27, yyvsp27)
+end
+when 300 then
+--|#line 2292 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2292")
+end
+
+			create yyval35.make(0)
+			yyval35.extend(yyvs27.item (yyvsp27 - 1))
+			yyval35.extend(yyvs27.item (yyvsp27))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp35 := yyvsp35 + 1
+	yyvsp27 := yyvsp27 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp35 >= yyvsc35 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs35")
+		end
+		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
+		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
+	end
+	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
+end
+when 301 then
+--|#line 2298 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2298")
+end
+
+			yyvs35.item (yyvsp35).extend(yyvs27.item (yyvsp27))
+			yyval35 := yyvs35.item (yyvsp35)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp27 := yyvsp27 -1
+	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
+end
+when 302 then
+--|#line 2303 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2303")
+end
+
+			create yyval35.make(0)
+			yyval35.extend(yyvs27.item (yyvsp27))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp35 := yyvsp35 + 1
+	yyvsp27 := yyvsp27 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp35 >= yyvsc35 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs35")
+		end
+		yyvsc35 := yyvsc35 + yyInitial_yyvs_size
+		yyvs35 := yyspecial_routines35.aliased_resized_area (yyvs35, yyvsc35)
+	end
+	yyspecial_routines35.force (yyvs35, yyval35, yyvsp35)
+end
+when 303 then
+--|#line 2310 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2310")
+end
+
+			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
+				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), True, True)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 5
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp27 := yyvsp27 -2
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 304 then
+--|#line 2318 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2318")
+end
+
+			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
+				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), False, True)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 6
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -4
+	yyvsp27 := yyvsp27 -2
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 305 then
+--|#line 2326 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2326")
+end
+
+			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
+				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), True, False)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 6
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -4
+	yyvsp27 := yyvsp27 -2
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 306 then
+--|#line 2334 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2334")
+end
+
+			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
+				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), False, False)
+			else
+				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 7
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -5
+	yyvsp27 := yyvsp27 -2
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 307 then
+--|#line 2342 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2342")
+end
+
+			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_lower_unbounded(yyvs27.item (yyvsp27), False)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp27 := yyvsp27 -1
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 308 then
+--|#line 2346 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2346")
+end
+
+			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_lower_unbounded(yyvs27.item (yyvsp27), True)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp27 := yyvsp27 -1
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 309 then
+--|#line 2350 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2350")
+end
+
+			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_upper_unbounded(yyvs27.item (yyvsp27), False)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp27 := yyvsp27 -1
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 310 then
+--|#line 2354 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2354")
+end
+
+			create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_upper_unbounded(yyvs27.item (yyvsp27), True)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 4
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -3
+	yyvsp27 := yyvsp27 -1
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 311 then
+--|#line 2358 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2358")
+end
+
+			create {POINT_INTERVAL [ISO8601_DURATION]} yyval41.make (yyvs27.item (yyvsp27))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp41 := yyvsp41 + 1
+	yyvsp1 := yyvsp1 -2
+	yyvsp27 := yyvsp27 -1
+	if yyvsp41 >= yyvsc41 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs41")
+		end
+		yyvsc41 := yyvsc41 + yyInitial_yyvs_size
+		yyvs41 := yyspecial_routines41.aliased_resized_area (yyvs41, yyvsc41)
+	end
+	yyspecial_routines41.force (yyvs41, yyval41, yyvsp41)
+end
+when 312 then
+--|#line 2364 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2364")
+end
+
+			create yyval47.make(0)
+			yyval47.extend(yyvs41.item (yyvsp41 - 1))
+			yyval47.extend(yyvs41.item (yyvsp41))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp47 := yyvsp47 + 1
+	yyvsp41 := yyvsp41 -2
+	yyvsp1 := yyvsp1 -1
+	if yyvsp47 >= yyvsc47 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs47")
+		end
+		yyvsc47 := yyvsc47 + yyInitial_yyvs_size
+		yyvs47 := yyspecial_routines47.aliased_resized_area (yyvs47, yyvsc47)
+	end
+	yyspecial_routines47.force (yyvs47, yyval47, yyvsp47)
 end
 when 313 then
---|#line 2319 "cadl_14_parser.y"
+--|#line 2370 "cadl_14_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2319")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2370")
 end
 
-			abort_with_error (ec_STCV, <<yyvs2.item (yyvsp2)>>)
+			yyvs47.item (yyvsp47).extend(yyvs41.item (yyvsp41))
+			yyval47 := yyvs47.item (yyvsp47)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp1 := yyvsp1 -1
+	yyvsp41 := yyvsp41 -1
+	yyspecial_routines47.force (yyvs47, yyval47, yyvsp47)
+end
+when 314 then
+--|#line 2375 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2375")
+end
+
+			create yyval47.make(0)
+			yyval47.extend(yyvs41.item (yyvsp41))
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 3
+	yyvsp47 := yyvsp47 + 1
+	yyvsp41 := yyvsp41 -1
+	yyvsp1 := yyvsp1 -2
+	if yyvsp47 >= yyvsc47 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs47")
+		end
+		yyvsc47 := yyvsc47 + yyInitial_yyvs_size
+		yyvs47 := yyspecial_routines47.aliased_resized_area (yyvs47, yyvsc47)
+	end
+	yyspecial_routines47.force (yyvs47, yyval47, yyvsp47)
+end
+when 315 then
+--|#line 2386 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2386")
+end
+
+			if yyvs5.item (yyvsp5).codes.count = 1 and yyvs5.item (yyvsp5).is_local then
+				create yyval60.make (yyvs5.item (yyvsp5).terminology_id, yyvs5.item (yyvsp5).first_code)
+			else
+				abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+			end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvsp59 := yyvsp59 + 1
-	yyvsp2 := yyvsp2 -1
-	if yyvsp59 >= yyvsc59 then
+	yyvsp60 := yyvsp60 + 1
+	yyvsp5 := yyvsp5 -1
+	if yyvsp60 >= yyvsc60 then
 		debug ("GEYACC")
-			std.error.put_line ("Resize yyvs59")
+			std.error.put_line ("Resize yyvs60")
 		end
-		yyvsc59 := yyvsc59 + yyInitial_yyvs_size
-		yyvs59 := yyspecial_routines59.aliased_resized_area (yyvs59, yyvsc59)
+		yyvsc60 := yyvsc60 + yyInitial_yyvs_size
+		yyvs60 := yyspecial_routines60.aliased_resized_area (yyvs60, yyvsc60)
 	end
-	yyspecial_routines59.force (yyvs59, yyval59, yyvsp59)
+	yyspecial_routines60.force (yyvs60, yyval60, yyvsp60)
+end
+when 316 then
+--|#line 2394 "cadl_14_parser.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 2394")
+end
+
+			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp60 := yyvsp60 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp60 >= yyvsc60 then
+		debug ("GEYACC")
+			std.error.put_line ("Resize yyvs60")
+		end
+		yyvsc60 := yyvsc60 + yyInitial_yyvs_size
+		yyvs60 := yyspecial_routines60.aliased_resized_area (yyvs60, yyvsc60)
+	end
+	yyspecial_routines60.force (yyvs60, yyval60, yyvsp60)
 end
 				else
 					debug ("GEYACC")
@@ -7354,7 +7487,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 562 then
+			when 565 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -7373,12 +7506,12 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			   86,   87,   76,   74,   84,   75,    2,   77,    2,    2,
-			    2,    2,    2,    2,    2,    2,    2,    2,   85,   88,
-			    2,   68,    2,    2,    2,    2,    2,    2,    2,    2,
+			   89,   90,   79,   77,   87,   78,    2,   80,    2,    2,
+			    2,    2,    2,    2,    2,    2,    2,    2,   88,   91,
+			    2,   71,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			    2,   82,    2,   83,   81,    2,    2,    2,    2,    2,
+			    2,   85,    2,   86,   84,    2,    2,    2,    2,    2,
 
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -7404,49 +7537,49 @@ feature {NONE} -- Table templates
 
 			   45,   46,   47,   48,   49,   50,   51,   52,   53,   54,
 			   55,   56,   57,   58,   59,   60,   61,   62,   63,   64,
-			   65,   66,   67,   69,   70,   71,   72,   73,   78,   79,
-			   80, yyDummy>>)
+			   65,   66,   67,   68,   69,   70,   72,   73,   74,   75,
+			   76,   81,   82,   83, yyDummy>>)
 		end
 
 	yyr1_template: SPECIAL [INTEGER]
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
-			    0,  167,  167,  167,  168,  102,  101,  101,  101,  101,
-			   96,   96,  169,  169,  169,  172,  172,  172,  172,  172,
-			  172,  172,  172,  172,   93,   93,   94,   94,   94,  106,
-			  106,  105,  104,  104,  104,  104,  103,  103,  103,  103,
-			  103,  103,  103,  103,  103,  170,  171,  171,  173,  173,
-			  174,  174,  174,  107,  176,  176,  176,  175,  177,  177,
-			  178,  178,  179,  180,  180,   90,   90,   91,   91,   89,
-			   89,   92,   92,   92,   92,  108,  108,  109,  109,  110,
-			  110,  110,  110,  116,  117,  117,  112,  112,  112,  112,
-			  113,  152,  152,  152,  152,  119,  119,  114,  120,  120,
+			    0,  170,  170,  170,  171,  105,  104,  104,  104,  104,
+			   99,   99,  172,  172,  172,  175,  175,  175,  175,  175,
+			  175,  175,  175,  175,   96,   96,   97,   97,   97,  109,
+			  109,  108,  107,  107,  107,  107,  106,  106,  106,  106,
+			  106,  106,  106,  106,  106,  173,  174,  174,  176,  176,
+			  177,  177,  177,  110,  179,  179,  179,  178,  180,  180,
+			  181,  181,  182,  183,  183,   93,   93,   94,   94,   92,
+			   92,   95,   95,   95,   95,  111,  111,  112,  112,  113,
+			  113,  113,  113,  119,  120,  120,  115,  115,  115,  115,
+			  116,  155,  155,  155,  155,  122,  122,  117,  123,  123,
 
-			  111,  111,  115,  118,  118,  118,  151,  151,  151,  151,
-			  151,  151,  150,  150,  150,  150,  150,   98,   98,  100,
-			  100,  153,  153,  154,  154,  154,  154,  154,  154,  154,
-			  154,   97,   97,   97,   99,   99,   99,   99,  164,  164,
-			  164,  164,  164,  164,  163,  163,  163,  163,  163,  163,
-			  161,  161,  161,  161,  161,  161,  161,  162,  162,  162,
-			  162,  162,  162,  162,  159,  159,  159,  159,  159,  159,
-			  159,  160,  160,  160,  160,  160,  160,  160,  160,  160,
-			  158,  158,  158,  158,  158,  165,  165,  165,  157,  157,
-			  157,  157,  157,  155,  155,  155,  155,  156,  128,  128,
+			  114,  114,  118,  121,  121,  121,  154,  154,  154,  154,
+			  154,  154,  153,  153,  153,  153,  153,  101,  101,  103,
+			  103,  156,  156,  157,  157,  157,  157,  157,  157,  157,
+			  157,  100,  100,  100,  102,  102,  102,  102,  167,  167,
+			  167,  167,  167,  167,  166,  166,  166,  166,  166,  166,
+			  164,  164,  164,  164,  164,  164,  164,  165,  165,  165,
+			  165,  165,  165,  165,  162,  162,  162,  162,  162,  162,
+			  162,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+			  161,  161,  161,  161,  161,  168,  168,  168,  168,  168,
+			  168,  160,  160,  160,  160,  160,  158,  158,  158,  158,
 
-			   95,   95,  129,  130,  130,  130,  130,  121,  121,  121,
-			  131,  131,  131,  138,  138,  138,  138,  138,  138,  138,
-			  138,  138,  144,  144,  144,  122,  122,  122,  132,  132,
-			  132,  139,  139,  139,  139,  139,  139,  139,  139,  139,
-			  145,  145,  145,  123,  123,  133,  133,  133,  124,  134,
-			  134,  134,  141,  141,  141,  141,  141,  141,  141,  141,
-			  141,  147,  147,  147,  126,  135,  135,  135,  140,  140,
-			  140,  140,  140,  140,  140,  140,  140,  146,  146,  146,
-			  125,  136,  136,  136,  142,  142,  142,  142,  142,  142,
-			  142,  142,  142,  148,  148,  148,  127,  137,  137,  137,
+			  159,  131,  131,   98,   98,  132,  133,  133,  133,  133,
+			  124,  124,  124,  134,  134,  134,  141,  141,  141,  141,
+			  141,  141,  141,  141,  141,  147,  147,  147,  125,  125,
+			  125,  135,  135,  135,  142,  142,  142,  142,  142,  142,
+			  142,  142,  142,  148,  148,  148,  126,  126,  136,  136,
+			  136,  127,  137,  137,  137,  144,  144,  144,  144,  144,
+			  144,  144,  144,  144,  150,  150,  150,  129,  138,  138,
+			  138,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+			  149,  149,  149,  128,  139,  139,  139,  145,  145,  145,
+			  145,  145,  145,  145,  145,  145,  151,  151,  151,  130,
 
-			  143,  143,  143,  143,  143,  143,  143,  143,  143,  149,
-			  149,  149,  166,  166, yyDummy>>)
+			  140,  140,  140,  146,  146,  146,  146,  146,  146,  146,
+			  146,  146,  152,  152,  152,  169,  169, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER]
@@ -7454,67 +7587,67 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    2,    2,    2,    2,    2,    4,    3,    1,    7,    8,
-			    2,   11,   14,   14,   18,   18,   18,   18,   19,   20,
-			   20,   20,   20,   20,   21,   21,   18,    3,    4,    2,
-			    1,   18,   18,    4,    3,    4,    3,    1,    2,    2,
-			    1,    2,    2,    1,    1,    8,    2,    2,    2,    2,
-			    1,   12,    1,    1,    1,    1,    1,    2,    1,    1,
+			    2,    2,    2,    2,    2,    4,    3,    1,    8,    9,
+			    2,   12,   15,   15,   19,   19,   19,   19,   20,   21,
+			   21,   21,   21,   21,   22,   22,   19,    3,    4,    2,
+			    1,   19,   19,    4,    3,    4,    3,    1,    2,    2,
+			    1,    2,    2,    1,    1,    9,    2,    2,    2,    2,
+			    1,   13,    1,    1,    1,    1,    1,    2,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
-			    2,    1,    1,    1,   18,    1,    1,    2,    1,    1,
-			    1,   18,    1,    2,   18,   18,    1,   18,    1,    2,
+			    2,    1,    1,    1,   19,    1,    1,    2,    1,    1,
+			    1,   19,    1,    2,   19,   19,    1,   19,    1,    1,
 
-			    1,    1,    1,    2,    2,    2,    2,    2,    2,    2,
-			    2,    2,    2,    2,    2,    2,   15,    3,    4,   22,
-			   23,   24,   25,   26,   27,   28,   29,   30,   31,   32,
-			   33,   34,   35,   36,   37,   38,   39,   40,   41,   42,
-			   43,   44,   45,   46,   50,   51,   52,   53,   54,   55,
-			   56,   57,   58,   15,   58,    1,    1,    1,    2,    1,
-			   17,    1,    1,    1,    1,    1,    1,   18,    1,    1,
-			    1,    1,    3,    4,   23,   24,   25,   26,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    3,   13,    3,    2,    1,    1,   12,    1,    1,
-			    1,    3,    4,   23,   24,   25,   26,    3,    4,   23,
-			   24,   25,   26,    3,    4,   23,   24,   25,   26,    3,
-			    4,   23,   24,   25,   26,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,   40,    1,
-			    2,    1,    3,    1,    1,    1,    4,    1,    1,    1,
-			   22,    1,   23,    1,   24,    1,   25,    1,   26,    1,
-			    2,    3,    4,   22,   23,   25,   24,   26,    1,    1,
-
-			   35,    1,    1,   36,    1,    1,   37,    1,    1,   38,
-			    1,    1,   39,    1,   40,   35,   36,   37,   38,   39,
-			   40,    1,   22,    2,    1,    2,    1,   24,    1,   26,
-			    1,   23,    1,   25,    1,    4,    1,    3,    1,    1,
-			    1,    1,    1,    1,   47,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    3,    1,    4,
-			    1,   23,    1,   24,    1,   25,    1,   26,    1,    1,
+			    1,    1,    2,    2,    2,    2,    2,    2,    2,    2,
+			    2,    2,    1,    1,    1,    5,    5,    2,    2,   16,
+			    3,    4,   23,   24,   25,   26,   27,   28,   29,   30,
+			   31,   32,   33,   34,   35,   36,   37,   38,   39,   40,
+			   41,   42,   43,   44,   45,   46,   47,   51,   52,   53,
+			   54,   55,   56,   57,   58,   59,   16,   59,    1,    1,
+			    1,    2,    1,   18,    1,    1,    1,    1,    1,    1,
+			   19,    1,    1,    1,    1,    3,    4,   24,   25,   26,
+			   27,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    3,    2,    1,    1,    1,    1,    1,
-			    1,    1,    6,    1,    9,   10,    2,   15,   16,   16,
-			   16,    3,   14,   49,    1,    1,    1,    1,    1,    3,
-			    1,    4,    1,   23,    1,   24,    1,   25,    1,   26,
-			    3,    1,    4,    1,   23,    1,   24,    1,   25,    1,
-			   26,    1,    1,    3,   13,    1,    1,    2,    1,    2,
-			    2,    1,   12,    1,    1,    1,    1,    1,    1,    1,
-			    3,    1,    4,    1,   23,    1,   24,    1,   25,    1,
-			   26,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    3,   14,    3,    2,    1,    1,
+			   13,    1,    1,    1,    3,    4,   24,   25,   26,   27,
+			    3,    4,   24,   25,   26,   27,    3,    4,   24,   25,
+			   26,   27,    3,    4,   24,   25,   26,   27,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,   41,    1,    2,    1,    3,    1,    1,    1,    4,
+			    1,    1,    1,   23,    1,   24,    1,   25,    1,   26,
+			    1,   27,    1,    2,    3,    4,   23,   24,   26,   25,
 
-			    1,    1,    1,   13,   48,    2,   12,    2,    2,    1,
-			    1,    2,    2,   59,    1,    3,    3,   49,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    3,    1,
-			    1,   12,    2,    1,   12,    1,    7,   15,    1,    1,
-			    1,    1,    1,    1,    2,    2,    7,    1,    7,    1,
-			    1,    1,    1,    1,    7,    1,   15,    1,    1,    1,
-			    1,    1,    1,    1,    1, yyDummy>>)
+			   27,    1,    1,   36,    1,    1,   37,    1,    1,   38,
+			    1,    1,   39,    1,    1,   40,    1,   41,   36,   37,
+			   38,   39,   40,   41,    1,   23,    2,    1,    2,    1,
+			   25,    1,   27,    1,   24,    1,   26,    1,    4,    1,
+			    3,    1,    1,    1,    1,    1,    1,   48,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    3,    1,    4,    1,   24,    1,   25,    1,   26,    1,
+			   27,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    3,    2,    1,    1,
+			    1,    1,    1,    1,    1,    7,    1,   10,   11,    2,
+			   16,   17,   17,   17,    3,   15,   50,    1,    1,    1,
+			    1,    1,    3,    1,    4,    1,   24,    1,   25,    1,
+			   26,    1,   27,    3,    1,    4,    1,   24,    1,   25,
+			    1,   26,    1,   27,    1,    1,    3,   14,    1,    1,
+			    2,    1,    2,    2,    1,   13,    1,    1,    1,    1,
+			    1,    1,    1,    3,    1,    4,    1,   24,    1,   25,
+			    1,   26,    1,   27,    1,    1,    1,    1,    1,    1,
+
+			    1,    1,    1,    1,    1,    1,   14,   49,    2,   13,
+			    2,    2,    1,    1,    1,    5,   60,    1,    3,    3,
+			   50,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    3,    1,    1,   13,    2,    1,   13,    1,    8,
+			   16,    1,    1,    1,    1,    1,    1,    2,    2,    8,
+			    1,    8,    1,    1,    1,    1,    1,    8,    1,   16,
+			    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER]
@@ -7522,14 +7655,15 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    3,    4,    2,    2,    2,    2,
-			    2,    2,    2,    2,    2,    2,    2,    2,    2,    5,
-			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			    6,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    2,    2,    2,    2,    2,    5,    5,    1,    1,    1,
+			    2,    2,    2,    6,    2,    2,    2,    2,    2,    2,
+			    2,    2,    2,    2,    7,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    2,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+			    1,    1, yyDummy>>)
 		end
 
 	yydefact_template: SPECIAL [INTEGER]
@@ -7537,363 +7671,367 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,    0,   96,   95,
-			    0,  105,  199,  201,  200,  225,  207,    3,    2,   69,
-			  198,    0,  131,    0,   72,   76,   75,   98,   77,   78,
+			    0,  105,  202,  204,  203,  228,  210,    3,    2,   69,
+			  201,    0,  131,    0,   72,   76,   75,   98,   77,   78,
 			   82,   99,   73,   80,  100,   79,    0,  103,  104,    0,
-			    1,    0,    0,  227,  209,  226,  208,    0,   87,   86,
-			   89,   11,   10,    0,    0,   70,  198,    7,    6,    0,
+			    1,    0,    0,  230,  212,  229,  211,    0,   87,   86,
+			   89,   11,   10,    0,    0,   70,  201,    7,    6,    0,
 			    0,    5,    0,   92,   93,   91,   94,    0,  116,  112,
 			  113,  115,  114,  110,  108,  111,  109,  107,  106,    0,
 			    0,    0,   81,  101,    0,    0,    0,    8,    0,  133,
-			    0,   90,    0,  105,  102,   97,   74,   71,   88,  187,
+			    0,   90,    0,  105,  102,   97,   74,   71,   88,  247,
 
-			  244,  243,    0,  179,  172,  150,  157,  164,  296,  280,
-			  264,  248,  182,  185,  186,  180,    0,  138,  144,    0,
-			  151,  165,  158,  173,  181,  139,  145,  190,  152,  159,
-			  166,  174,  140,  146,  160,  153,  167,  175,  141,  147,
-			  161,  154,  168,  176,   44,   42,   40,   41,   38,   39,
-			   37,   36,   43,    0,    0,    0,    0,   45,  117,   14,
-			   51,    0,   12,   13,   46,   48,   49,    0,    0,    0,
+			  246,    0,  179,  172,  150,  157,  164,  299,  283,  267,
+			  251,  182,  190,  188,  189,  187,  186,  185,  180,    0,
+			  138,  144,    0,  151,  165,  158,  173,  181,  139,  145,
+			  193,  152,  159,  166,  174,  140,  146,  160,  153,  167,
+			  175,  141,  147,  161,  154,  168,  176,   44,   42,   40,
+			   41,   38,   39,   37,   36,   43,    0,    0,    0,    0,
+			   45,  117,   14,   51,    0,   12,   13,   46,   48,   49,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			   83,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,   84,   85,  135,    0,
-			    0,  207,    0,  134,   58,    0,    0,  121,    0,    4,
-			   47,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,  221,    0,  239,    0,
-			  260,    0,  292,    0,  276,    0,  308,    0,  171,  206,
-			  203,  212,  210,    0,    0,  230,  228,  247,  244,  243,
-			  245,  251,  249,  283,  281,  267,  265,  299,  297,  205,
-			  204,  211,  229,  246,  250,  266,  282,  298,  224,    0,
-
-			  222,  242,    0,  240,  279,    0,  277,  263,    0,  261,
-			  295,    0,  293,  311,  309,  223,  241,  278,  262,  294,
-			  310,  192,  191,  202,  184,  183,  170,  169,  178,  177,
-			  156,  155,  163,  162,  149,  148,  143,  142,    0,  132,
-			    0,    0,    0,    0,   53,    0,  220,  238,  259,  291,
-			  275,  307,  218,  236,  257,  289,  273,  305,    0,  219,
-			    0,  237,    0,  258,    0,  290,    0,  274,    0,  306,
-			  217,  235,  256,  288,  272,  304,    0,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,   83,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,  137,  136,   59,    0,    0,    0,    0,    0,
-			    0,   22,   21,   23,   16,   17,    9,   19,  131,   30,
-			   18,  138,   20,  193,   15,   56,   54,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,   84,
+			   85,  135,    0,    0,  210,    0,  134,   58,    0,    0,
+			  121,    0,    4,   47,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,  213,    0,  231,    0,  252,    0,  284,    0,  268,
-			    0,  300,    0,  119,    0,    0,   28,  131,   35,   34,
-			    0,   52,   31,    0,    0,    0,    0,   50,   23,   55,
-			    0,  214,    0,  232,    0,  253,    0,  285,    0,  269,
-			    0,  301,  215,  233,  254,  286,  270,  302,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,  224,
+			    0,  242,    0,  263,    0,  295,    0,  279,    0,  311,
+			    0,  171,  209,  206,  215,  213,    0,    0,  233,  231,
+			  250,  247,  246,  248,  254,  252,  286,  284,  270,  268,
+			  302,  300,  208,  207,  214,  232,  249,  253,  269,  285,
 
-			   60,    0,  118,  123,    0,  131,    0,   32,  131,   25,
-			   65,  313,  312,  197,  196,  195,    0,  194,  216,  234,
-			  255,  287,  271,  303,    0,    0,    0,   57,  120,    0,
-			  122,    0,   27,   33,    0,    0,   67,    0,    0,   62,
-			   61,  126,  124,  125,   26,   24,   66,    0,    0,   63,
-			    0,    0,    0,    0,   68,   29,    0,  129,  130,  127,
-			  128,   64,    0,    0,    0, yyDummy>>)
+			  301,  227,    0,  225,  245,    0,  243,  282,    0,  280,
+			  266,    0,  264,  298,    0,  296,  314,  312,  226,  244,
+			  281,  265,  297,  313,  195,  194,  205,  184,  183,  170,
+			  169,  178,  177,  156,  155,  163,  162,  149,  148,  143,
+			  142,    0,  132,    0,    0,    0,    0,   53,    0,  223,
+			  241,  262,  294,  278,  310,  221,  239,  260,  292,  276,
+			  308,    0,  222,    0,  240,    0,  261,    0,  293,    0,
+			  277,    0,  309,  220,  238,  259,  291,  275,  307,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,  137,  136,   59,    0,    0,
+			    0,    0,    0,    0,   22,   21,   23,   16,   17,    9,
+			   19,  131,   30,   18,  138,   20,  196,   15,   56,   54,
+			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,    0,    0,  216,    0,  234,    0,  255,    0,
+			  287,    0,  271,    0,  303,    0,  119,    0,    0,   28,
+			  131,   35,   34,    0,   52,   31,    0,    0,    0,    0,
+			   50,   23,   55,    0,  217,    0,  235,    0,  256,    0,
+			  288,    0,  272,    0,  304,  218,  236,  257,  289,  273,
+
+			  305,    0,    0,   60,    0,  118,  123,    0,  131,    0,
+			   32,  131,   25,   65,  316,  315,  200,  199,  198,    0,
+			  197,  219,  237,  258,  290,  274,  306,    0,    0,    0,
+			   57,  120,    0,  122,    0,   27,   33,    0,    0,   67,
+			    0,    0,   62,   61,  126,  124,  125,   26,   24,   66,
+			    0,    0,   63,    0,    0,    0,    0,   68,   29,    0,
+			  129,  130,  127,  128,   64,    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER]
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
-			   18,  536,  548,   19,  424,  425,   56,   21,   61,  227,
-			  222,  464,   22,   23,  427,  428,  429,  430,  160,   24,
+			   18,  539,  551,   19,  427,  428,   56,   21,   61,  230,
+			  225,  467,   22,   23,  430,  431,  432,  433,  163,   24,
 			   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
-			   35,   36,   37,   38,  119,  120,  121,  122,  123,   39,
-			  325,  124,  125,  126,  127,  128,  129,  130,  131,  132,
-			  133,  134,  135,  136,  137,  138,  139,  140,  141,  142,
-			  143,   79,   80,   67,  344,  504,  432,  433,  144,  145,
-			  146,  147,  148,  149,  150,  151,  152,  513,  562,  434,
-			  161,  162,  163,  436,  164,  165,  166,  437,  225,  499,
-			  500,  525, yyDummy>>)
+			   35,   36,   37,   38,  122,  123,  124,  125,  126,   39,
+			  328,  127,  128,  129,  130,  131,  132,  133,  134,  135,
+			  136,  137,  138,  139,  140,  141,  142,  143,  144,  145,
+			  146,   79,   80,   67,  347,  507,  435,  436,  147,  148,
+			  149,  150,  151,  152,  153,  154,  155,  516,  565,  437,
+			  164,  165,  166,  439,  167,  168,  169,  440,  228,  502,
+			  503,  528, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			  138,  371,  599,  597,   -9,   35,  778,  759, -32768, -32768,
-			  753,  748, -32768, -32768, -32768, -32768, -32768, -32768,  182, -32768,
-			  273,  470,  322,  746,  534, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  504, -32768, -32768,  744,
-			 -32768,  352,  428, -32768, -32768, -32768, -32768,  371, -32768, -32768,
-			 -32768, -32768, -32768,  757,  756, -32768, -32768, -32768, -32768,  752,
-			   64, -32768,  755, -32768, -32768, -32768, -32768,   25, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,   34,
-			   34,  197, -32768, -32768,  348,  707,  707, -32768,  754, -32768,
-			   47, -32768,   34, -32768, -32768,  320, -32768,  534, -32768, -32768,
+			  183,  507,  530,  502,  -12,  156,  773,  772, -32768, -32768,
+			  761,  758, -32768, -32768, -32768, -32768, -32768, -32768,  371, -32768,
+			  198,  367,  409,  757,  496, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768,  580, -32768, -32768,  756,
+			 -32768,  354,  636, -32768, -32768, -32768, -32768,  507, -32768, -32768,
+			 -32768, -32768, -32768,  771,  770, -32768, -32768, -32768, -32768,  769,
+			   12, -32768,  767, -32768, -32768, -32768, -32768,   18, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,   25,
+			   25,  258, -32768, -32768,  350,  720,  720, -32768,  766, -32768,
+			   27, -32768,   25, -32768, -32768,  425, -32768,  496, -32768,  539,
 
-			  533,  457,  347, -32768,  750, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768,  742,  743,  741,  740,  739,
-			  738,  737,  736,  735,  734,  733,  732,  731,  730,  727,
-			  726,  724,  716,  714,  713,  709,  708,  701,  700,  699,
-			  696,  695,  694,  693,  687,  686,  685,  684,  682,  681,
-			  680,  677, -32768,  729,  728,  153,  751, -32768,  723, -32768,
-			  712,  725, -32768,    1, -32768, -32768, -32768,  350,  221,  221,
-			  221,  221,  506,  500,  487,  484,  483,  481,  717,  111,
-			 -32768,   29,  201,  396,    6,  112,  106,  192,   22,  157,
-			  248,  563,  627,  619,  623,  604,  343,  342,  327,  299,
+			  460,  171, -32768,  703, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  755,  764,
+			  754,  753,  752,  751,  750,  749,  748,  747,  746,  745,
+			  744,  743,  742,  739,  738,  736,  728,  727,  725,  724,
+			  721,  713,  712,  709,  708,  707,  706,  701,  700,  699,
+			  698,  697,  696,  695,  691, -32768,  741,  740,   45,  768,
+			 -32768,  735, -32768,  723,  737, -32768,   30, -32768, -32768, -32768,
+			  378,  203,  203,  203,  203,  433,  413,  403,  396,  388,
+			  387,  729,  242, -32768,  134,  214,  314,    1,  141,  135,
+			  243,  205,   69,  149,  441,  581,  575,  576,  571,  293,
 
-			  247,  231,  722,  721,  720,  719,  718,  717,  336,   36,
-			   24,  206,   33,  151,   18,   74, -32768, -32768, -32768,  747,
-			  745,  704,  715, -32768, -32768,  507,  659,  705,  676, -32768,
-			 -32768,  711,  710,  706,  703,  702,  692,  691,  689,  683,
-			  678,  675,  674,  479,  478,  475,  419,  414,  413,  671,
-			  670,  669,  668,  664,  662,  134, -32768,  265, -32768,    0,
-			 -32768,    3, -32768,    2, -32768,  199, -32768,  312, -32768, -32768,
-			 -32768, -32768, -32768,  673,  672, -32768, -32768, -32768, -32768, -32768,
+			  279,  276,  245,  215,  155,  734,  733,  732,  731,  730,
+			  729,  266,  307,   15,   26,  158,   49,   55,   39, -32768,
+			 -32768, -32768,  763,  762,  714,  726, -32768, -32768,  303,  710,
+			  719,  722, -32768, -32768,  718,  717,  716,  715,  705,  704,
+			  694,  693,  692,  690,  689,  688,  386,  374,  341,  333,
+			  332,  292,  682,  667,  663,  661,  649,  638,  196, -32768,
+			   94, -32768,   -1, -32768,    5, -32768,  129, -32768,  130, -32768,
+			  331, -32768, -32768, -32768, -32768, -32768,  671,  670, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  216,
-
-			 -32768, -32768,  254, -32768, -32768,  233, -32768, -32768,  272, -32768,
-			 -32768,  124, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  161, -32768,
-			  647,  637,  642,  628, -32768,  608, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  110, -32768,
-			  176, -32768,   -6, -32768,   -3, -32768,  -11, -32768,   26, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  157,  638,  248,  632,
-			  627,  630,  623,  629,  619,  626,  604,  625,  604,  604,
-			  604,  604,  157,  157,  157,  157,  248,  248,  248,  248,
 
-			  619,  619,  619,  619,  627,  627,  627,  627,  623,  623,
-			  623,  623, -32768, -32768, -32768,  624,  648,  622,  468,  449,
-			  470, -32768, -32768,  620, -32768, -32768,  229, -32768,  322,  603,
-			 -32768,  -28,  189, -32768, -32768, -32768, -32768,  665,  157,  615,
-			  248,  614,  627,  612,  623,  607,  619,  605,  604,  592,
-			  591, -32768,  590, -32768,  585, -32768,  584, -32768,  582, -32768,
-			  581, -32768,  250,  565,  577,  153, -32768,   16, -32768,  594,
-			  422, -32768, -32768,  510,  104,   62,  157, -32768, -32768, -32768,
-			  570, -32768,  559, -32768,  554, -32768,  532, -32768,  518, -32768,
-			  516, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  459,  -16,
+			 -32768, -32768,  160, -32768, -32768,  324, -32768, -32768,  264, -32768,
+			 -32768,   -6, -32768, -32768,  212, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768,   62, -32768,  665,  620,  614,  594, -32768,  608, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768,  144, -32768,    3, -32768,  -10, -32768,   -2, -32768,  109,
+			 -32768,  128, -32768, -32768, -32768, -32768, -32768, -32768, -32768,   69,
+			  606,  149,  605,  581,  593,  576,  592,  575,  590,  571,
+			  582,  571,  571,  571,  571,   69,   69,   69,   69,  149,
 
-			 -32768,  519, -32768,  314,  366,  322,  370,  324,  322, -32768,
-			  304, -32768, -32768, -32768, -32768, -32768,  295, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  707,  -40,  250, -32768, -32768,  408,
-			 -32768,  298, -32768, -32768,  309,  182,  210,  205,  249, -32768,
-			 -32768,  172,  133,   94, -32768, -32768,  182,  182,  146, -32768,
-			  707,  119,  127,   87,  182, -32768,   97, -32768, -32768, -32768,
-			 -32768, -32768,   45,   40, -32768, yyDummy>>)
+			  149,  149,  149,  575,  575,  575,  575,  581,  581,  581,
+			  581,  576,  576,  576,  576, -32768, -32768, -32768,  584,  615,
+			  572,  519,  515,  367, -32768, -32768,  574, -32768, -32768,  313,
+			 -32768,  409,  558, -32768,  -25,  343, -32768, -32768, -32768, -32768,
+			  664,   69,  568,  149,  566,  581,  565,  576,  563,  575,
+			  561,  571,  556,  552, -32768,  551, -32768,  550, -32768,  549,
+			 -32768,  548, -32768,  547, -32768,  344,  533,  545,   45, -32768,
+			    8, -32768,  569,   43, -32768, -32768,  505,  330,   33,   69,
+			 -32768, -32768, -32768,  513, -32768,  511, -32768,  503, -32768,  497,
+			 -32768,  493, -32768,  490, -32768, -32768, -32768, -32768, -32768, -32768,
+
+			 -32768,  474,  -26, -32768,  504, -32768,  407,  459,  409,  463,
+			  399,  409, -32768,  308, -32768, -32768, -32768, -32768, -32768,  412,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  720,  223,  344,
+			 -32768, -32768,  361, -32768,  360, -32768, -32768,  363,  371,  291,
+			  296,  222, -32768, -32768,  255,  206,  187, -32768, -32768,  371,
+			  371,  195, -32768,  720,  228,  167,  165,  371, -32768,  125,
+			 -32768, -32768, -32768, -32768, -32768,  126,   36, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			 -149, -32768, -32768,  -18, -32768, -32768,   10, -32768, -354, -32768,
-			  338, -32768, -32768, -32768,  -82, -32768, -32768, -32768, -32768,   13,
-			 -32768,  761,  758, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768,   15,  -84,  -80,  150,   -1,  -44,  -53,  -89, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  390,
-			  368,  346,  321,  289, -166, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  328, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768,  749, -32768, -32768,  802,
-			 -32768,  450, -32768,  354,  636, -32768, -32768, -32768, -32768, -32768,
-			  240, -32768, yyDummy>>)
+			 -505, -32768, -32768,  -18, -32768, -32768,   10, -32768, -366, -32768,
+			  351, -32768, -32768, -32768,  -82, -32768, -32768, -32768, -32768,   50,
+			 -32768,  760,  774, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
+			 -32768,    6,  -84,  -80,  -16,  -22,  -44,  -53,  -89, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  325,
+			  327,  316,  220,  -43, -163, -32768, -32768, -32768, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  339, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768,  759, -32768, -32768,  817,
+			 -32768,  468, -32768,  364,  639, -32768, -32768, -32768, -32768, -32768,
+			  251, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			   55,  117,  117,  116,  153,  118,  118,  474,   48,  158,
-			   20,  110,  268,  177,   41,  111,   42,  527,  172,  334,
-			  109,  111,  173,   15,  110,  326,  109,  111,  505,   16,
-			   15,   59,  290,   16,  330,  314,   50,  324,   16,   15,
-			  564,  320,   11,  539,  538,  563,  323,  109,  159,  176,
-			  108,   93,   49,  281,  111,  158,  181,   60,  175,  446,
-			   84,    9,    8,  514,  442,   89,   16,  444,  526,  289,
-			  380,  223,  384,  382,  472,  336,  271,   47,   16,  236,
-			  242,  248,  254,  156,  231,  237,  243,  249,  232,  238,
-			  244,  250,  274,  273,   97,   95,  448,  272,  288,    3,
+			   55,  120,  120,  119,  156,  121,  121,   42,   15,   48,
+			   20,  530,  180,   89,  477,  110,  329,  175,  271,  110,
+			  508,  176,   16,   15,  110,  108,  110,  331,  162,   16,
+			   15,   59,  108,  549,  517,  161,  567,   16,  161,   11,
+			  339,  317,  108,   16,  512,  557,   93,  323,  179,  224,
+			  335,   41,  284,   60,  107,  511,  337,  178,    9,    8,
+			   15,  529,  184,  445,   88,  475,   16,  410,  409,  408,
+			  407,  447,  383,   16,  226,  109,  443,   47,  385,  177,
+			  277,  276,  239,  245,  251,  257,   95,  234,  240,  246,
+			  252,  235,  241,  247,  253,    3,    2,   84,  170,   15,
 
-			    2,  174,  276,  220,  219,  291,  297,  167,    3,    2,
-			  292,    1,   88,  506,   16,  235,  241,  247,  253,  512,
-			   92,  270,  329,  157,  234,  240,  246,  252,  110,  156,
-			  561,  337,  560,  286,  335,  109,  220,  219,   16,   17,
-			  295,  284,   16,   15,   14,   13,   12,  109,  220,  219,
-			  296,  531,  332,  285,  534,   11,   10,  221,  269,  283,
-			  333,   16,  558,  557,  511,   16,  327,  233,  239,  245,
-			  251,  377,  559,  110,    9,    8,  387,  379,  177,  555,
-			  438,   15,  553,  282,  220,  219,   16,   15,   14,   13,
-			   12,  294,    7,    6,  411,  410,  409,  408,   96,   11,
+			  275,  291,    3,    2,  509,  279,  160,    1,  294,  300,
+			  223,  222,  159,  295,   92,  159,  223,  222,  238,  244,
+			  250,  256,  223,  222,  221,  332,  566,  237,  243,  249,
+			  255,   97,  277,  276,  340,  109,  289,  338,   16,  223,
+			  222,  415,  534,  298,  287,  537,  223,  222,   16,  236,
+			  242,  248,  254,  299,   15,  109,  107,   50,  107,  333,
+			  315,  109,  564,  336,   16,  285,  322,  381,  108,  330,
+			  283,  277,  276,  297,  380,   16,   15,   49,  296,  390,
+			  382,  180,  449,  110,   17,  274,  288,   16,   15,   14,
+			   13,   12,  286,  334,  270,  325,  110,  109,  108,  107,
 
-			   10,   16,   15,    5,  376,    4,   15,  328,  220,  219,
-			  385,  331,    3,    2,   11,  172,  108,  383,    9,    8,
-			   16,  552,  173,  108,    1,   16,   15,  220,  219,  218,
-			  108,  220,  219,    9,    8,  220,  219,  412,  549,  287,
-			   58,   57,  111,  110,  109,  108,  440,    5,  275,    4,
-			  274,  273,  176,   15,  413,  110,    3,    2,  381,   15,
-			  551,  431,    5,  547,    4,  118,  267,  175,    1,  386,
-			   15,    3,    2,  476,  439,  274,  273,  475,  313,  449,
-			  441,  550,  311,    1,   58,   57,  395,  394,  393,  392,
-			  220,  219,  450,  111,  310,    3,    2,  460,  452,  236,
+			   16,  451,  387,  389,   11,   10,  316,   16,   15,   58,
+			   57,  223,  222,  388,  563,  293,  562,  441,  175,   15,
+			  386,  223,  222,    9,    8,  176,  277,  276,  110,  109,
+			  108,  107,  558,  398,  397,  396,  395,  223,  222,  108,
+			  384,    7,    6,   -9,  174,  173,  172,  171,    3,    2,
+			   -9,    5,  273,    4,  314,  179,  292,  416,  553,   96,
+			    3,    2,   16,   15,  434,  278,  313,  324,  121,  379,
+			  178,  107,    1,  223,  222,  561,  560,  442,  556,   11,
+			    3,    2,  452,  444,  311,  414,  413,  412,  411,  177,
+			  109,  277,  276,  272,  290,  453,  310,  555,    9,    8,
 
-			  242,  248,  254,  403,  402,  401,  400,  174,  231,  237,
-			  243,  249,  545,  447,   -9,  544,  232,  238,  244,  250,
-			  445,   -9,  274,  273,  399,  398,  397,  396,  274,  273,
-			  474,  458,  498,  280,  308,  378,  108,  321,  456,  274,
-			  273,  293,  407,  406,  405,  404,  307,  235,  241,  247,
-			  253,   16,   15,  431,  480,  426,  535,  118,  322,  490,
-			  482,  443,  305,   60,  234,  240,  246,  252,  111,  110,
-			  109,  108,  279,  278,  304,   16,   15,  302,  299,  454,
-			  533,  223,  391,  390,  389,  388,  546,  532,   11,  301,
-			  298,  515,  516,  488,   72,   71,   70,   69,  554,  530,
+			  463,  455,  239,  245,  251,  257,  282,  281,  327,  542,
+			  541,  234,  240,  246,  252,  308,  450,  326,  305,  235,
+			  241,  247,  253,  448,   58,   57,    5,  307,    4,   15,
+			  304,  372,  302,  552,  461,    3,    2,  406,  405,  404,
+			  403,  459,  371,  446,  301,  515,  554,    1,  550,  514,
+			  238,  244,  250,  256,  282,  281,  434,  483,  429,  107,
+			  121,  457,  493,  485,  538,  280,  548,  237,  243,  249,
+			  255,  370,  368,   14,   13,   16,   15,   14,   13,   12,
+			  366,  547,  369,  367,  226,  236,  242,  248,  254,  344,
+			  343,  365,   11,   10,  518,  519,  491,  402,  401,  400,
 
-			  486,   68,  529,  233,  239,  245,  251,    9,    8,   66,
-			   65,   64,   63,   66,   65,   64,   63,  171,  170,  169,
-			  168,    3,    2,  509,   72,   71,   70,   69,  467,  469,
-			  470,   68,  279,  278,  508,   98,    5,   83,    4,   82,
-			  117,  484,  537,  277,  118,    3,    2,  426,  369,  367,
-			  468,  543,  542,  541,  365,   14,   13,    1, -188,  368,
-			  366, -188, -188, -188, -188,  364,  117, -188,  556,  466,
-			  118, -188, -188, -188,   14,   13,   14,   13, -188, -188,
-			 -188, -188, -188, -188, -188, -188, -188, -188, -188,  312,
-			 -188,  524, -188, -188, -188,  319,   78,   77,   76,   75,
+			  399,  277,  276,  489,  394,  393,  392,  391,  546,  545,
+			  544,    9,    8,  364,   66,   65,   64,   63,   66,   65,
+			   64,   63,  312,  487,  363,  362,  269,  267,  321,  501,
+			  479,  470,  472,  473,  478,  265,  361,  268,  266,    5,
+			   98,    4,  263,  120,   82,  540,  264,  121,    3,    2,
+			  429,  477,  261,  262,   60,   72,   71,   70,   69,  536,
+			    1, -191,   68,  260, -191, -191, -191, -191,   83,  120,
+			 -191,  559,  259,  121, -191, -191, -191, -191, -191, -191,
+			 -191,  282,  281,  258,  535, -191, -191, -191, -191, -191,
+			 -191, -191, -191, -191, -191, -191,  533, -191,  532, -191,
 
-			   74,   73,   72,   71,   70,   69, -188, -188, -188,   68,
-			  363, -188, -188,  361,  359,   83,  266, -188,  264,  262,
-			  309,  362,  260,  528,  360,  358,  318,  265,   55,  263,
-			  261, -188, -188,  259, -189,  258,   55, -189, -189, -189,
-			 -189,  256,  510, -189,  306, -188,  257, -189, -189, -189,
-			  317,  523,  255,  522, -189, -189, -189, -189, -189, -189,
-			 -189, -189, -189, -189, -189,  303, -189,  521, -189, -189,
-			 -189,  316,   78,   77,   76,   75,   74,   73,   72,   71,
-			   70,   69, -189, -189, -189,   68,  300, -189, -189,  520,
-			  341,  340,  315, -189,  519,   66,   65,   64,   63,  279,
+			 -191, -191,   72,   71,   70,   69,   46,   45,  531,   68,
+			  527,   16,   15, -191, -191, -191,  471,  309, -191, -191,
+			  469,   14,   13,  320,  303,   14,   13,  306,   11,  526,
+			  318,   55,  525,  319,   44,   43,  524, -191, -191,   55,
+			 -192,  513,  523, -192, -192, -192, -192,    9,    8, -192,
+			  522, -191,  521, -192, -192, -192, -192, -192, -192, -192,
+			   66,   65,   64,   63, -192, -192, -192, -192, -192, -192,
+			 -192, -192, -192, -192, -192,    5, -192,    4, -192, -192,
+			 -192,  510,  505,  504,    3,    2,  500,  499,  498,  497,
+			  496,  495, -192, -192, -192,  494,    1, -192, -192,  107,
 
-			  278,   46,   45,   44,   43,  518,  507, -189, -189,  423,
-			  502,  501,   16,   15,   14,   13,  497,  496,  115,  495,
-			  494, -189,  114,  113,  112,  493,  492,  491,  108,  111,
-			  110,  109,  108,  107,  106,  105,  104,  103,  422,  421,
-			  489,  110,  487,  102,  101,  100,  109,  485,  111,  483,
-			  481,  473,  463,  471,  465,  414,  462,  420,  419,  418,
-			  461,  459,    7,    6,  457,  455,  478,  453,   99,   16,
-			   15,   14,   13,  451,  416,  115,  417,   45,   43,  114,
-			  113,  112,    3,    2,  157,  415,  111,  110,  109,  108,
-			  107,  106,  105,  104,  103,  422,  421,  375,  477,  374,
+			  492,  109,  490,  108,  488,  486,  110,  484,  468,  426,
+			  476,  474,   16,   15,   14,   13, -192, -192,  118,  466,
+			  465,  464,  117,  116,  115,  114,  113,  112,  111,  462,
+			 -192,  460,  458,  110,  109,  108,  107,  106,  105,  104,
+			  103,  102,  425,  424,  456,  454,  420,  101,  100,   99,
+			  419,   78,   77,   76,   75,   74,   73,   72,   71,   70,
+			   69,  423,  422,  421,   68,  481,    7,    6,   16,   15,
+			   14,   13,  418,  417,  118,   45,   43,  378,  117,  116,
+			  115,  114,  113,  112,  111,    3,    2,  160,  377,  110,
+			  109,  108,  107,  106,  105,  104,  103,  102,  425,  424,
 
-			  102,  101,  100,  373,  372,  371,  370,  342,  345,  357,
-			  356,   16,   15,  355,  420,  419,  418,  115,  354,    7,
-			    6,  114,  113,  112,  353,   99,  352,  351,  111,  110,
-			  109,  108,  107,  106,  105,  104,  103,  350,  349,    3,
-			    2,  348,  102,  101,  100,  347,  346,  343,  339,   46,
-			  338,   44,  267,  311,  308,  305,  302,  299,  229,  224,
-			  228,  217,  216,  226,   87,  215,  540,   99,  214,  213,
-			  212,   52,  211,  210,  209,  208,  180,  207,  206,  205,
-			  204,    3,    2,  203,  202,  201,  155,   90,   86,   85,
-			   51,  479,  200,  199,   62,  435,   54,  198,  197,  230,
+			  376,  480,  375,  101,  100,   99,  374,   78,   77,   76,
+			   75,   74,   73,   72,   71,   70,   69,  423,  422,  421,
+			   68,  373,    7,    6,   16,   15,   83,  360,  359,  358,
+			  118,  357,  356,  355,  117,  116,  115,  114,  113,  112,
+			  111,    3,    2,  354,  353,  110,  109,  108,  107,  106,
+			  105,  104,  103,  102,  352,  351,  350,  349,  348,  101,
+			  100,   99,  345,  342,  341,  346,   46,   44,  270,  314,
+			  311,  308,  305,  302,  232,  231,  227,  220,  219,  229,
+			  543,   87,  218,  181,   52,   51,  217,  216,  215,  214,
+			  213,  212,  211,  210,  209,  208,  207,    3,    2,  206,
 
-			  196,   53,   40,  503,  517,    0,    0,    0,  195,    0,
-			  194,  193,    0,    0,  192,  191,  190,  189,  188,  187,
-			  186,  185,  184,  183,  182,  181,  179,  178,   91,   81,
-			    0,    0,    0,    0,    0,  154,    0,   94, yyDummy>>)
+			  205,  183,  158,   90,  482,  233,   86,   85,  204,   62,
+			   54,  203,  202,   53,  201,  200,  438,   40,  520,  506,
+			    0,    0,    0,  199,    0,  198,  197,   91,    0,  196,
+			  195,  194,  193,  192,  191,  190,  189,  188,  187,  186,
+			  185,  184,  182,    0,   81,  157,    0,    0,    0,    0,
+			    0,    0,    0,   94, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			   18,   85,   86,   85,   86,   85,   86,   35,   17,    8,
-			    0,   22,  178,  102,    1,   21,    1,   33,  102,    1,
-			   23,   21,  102,    5,   22,    1,   23,   21,   12,    4,
-			    5,   21,   10,    4,    1,  201,    1,    1,    4,    5,
-			    0,  207,   17,   83,   84,    0,   10,   23,    1,  102,
-			   24,   17,   17,   47,   21,    8,   84,   41,  102,   70,
-			   47,   36,   37,    1,   70,    1,    4,   70,   84,   47,
-			   70,  155,   70,   70,  428,    1,   47,   86,    4,  168,
-			  169,  170,  171,   82,  168,  169,  170,  171,  168,  169,
-			  170,  171,   74,   75,   81,   80,   70,  181,  187,   74,
+			   18,   85,   86,   85,   86,   85,   86,    1,    5,   21,
+			    0,   37,  101,    1,   39,   25,    1,  101,  181,   25,
+			   12,  101,    4,    5,   25,   27,   25,    1,    1,    4,
+			    5,   21,   27,  538,    1,    8,    0,    4,    8,   21,
+			    1,  204,   27,    4,    1,  550,   21,  210,  101,    4,
+			    1,    1,   51,   45,   28,   12,    1,  101,   40,   41,
+			    5,   87,   87,   73,   52,  431,    4,   73,   74,   75,
+			   76,   73,   73,    4,  158,   26,   73,   89,   73,  101,
+			   77,   78,  171,  172,  173,  174,   80,  171,  172,  173,
+			  174,  171,  172,  173,  174,   77,   78,   47,   92,    5,
 
-			   75,  102,  182,   74,   75,  189,  195,   92,   74,   75,
-			  190,   86,   48,  467,    4,  168,  169,  170,  171,   15,
-			   86,   10,  211,   76,  168,  169,  170,  171,   22,   82,
-			   33,  215,   45,  186,  214,   23,   74,   75,    4,    1,
-			  193,  185,    4,    5,    6,    7,    8,   23,   74,   75,
-			  194,  505,    1,   47,  508,   17,   18,    4,   47,   47,
-			  213,    4,   43,   44,   60,    4,  210,  168,  169,  170,
-			  171,  255,   45,   22,   36,   37,  265,  257,  267,   33,
-			   70,    5,   88,  184,   74,   75,    4,    5,    6,    7,
-			    8,  192,   54,   55,   70,   71,   72,   73,    1,   17,
+			  184,  190,   77,   78,  470,  185,   79,   89,  192,  198,
+			   77,   78,   85,  193,   89,   85,   77,   78,  171,  172,
+			  173,  174,   77,   78,   79,  214,    0,  171,  172,  173,
+			  174,   81,   77,   78,  218,   26,  189,  217,    4,   77,
+			   78,   79,  508,  196,  188,  511,   77,   78,    4,  171,
+			  172,  173,  174,  197,    5,   26,   28,    1,   28,    1,
+			  203,   26,   37,  216,    4,  187,  209,   73,   27,  213,
+			  186,   77,   78,  195,  258,    4,    5,   21,  194,  268,
+			  260,  270,   73,   25,    1,   51,   51,    4,    5,    6,
+			    7,    8,   51,  215,   39,  211,   25,   26,   27,   28,
 
-			   18,    4,    5,   65,   70,   67,    5,    1,   74,   75,
-			  263,  212,   74,   75,   17,  299,   24,  261,   36,   37,
-			    4,   88,  302,   24,   86,    4,    5,   74,   75,   76,
-			   24,   74,   75,   36,   37,   74,   75,   76,   33,   47,
-			   11,   12,   21,   22,   23,   24,   70,   65,   47,   67,
-			   74,   75,  305,    5,  338,   22,   74,   75,  259,    5,
-			   88,  345,   65,   53,   67,  345,   35,  311,   86,   70,
-			    5,   74,   75,   84,  358,   74,   75,   88,   47,  368,
-			  360,   32,   35,   86,   11,   12,   70,   71,   72,   73,
-			   74,   75,  376,   21,   47,   74,   75,  386,  378,  388,
+			    4,   73,   73,   73,   21,   22,   51,    4,    5,   11,
+			   12,   77,   78,  266,   49,   10,   49,   73,  302,    5,
+			  264,   77,   78,   40,   41,  305,   77,   78,   25,   26,
+			   27,   28,   37,   73,   74,   75,   76,   77,   78,   27,
+			  262,   58,   59,   45,   73,   74,   75,   76,   77,   78,
+			   52,   68,   10,   70,   39,  308,   51,  341,   36,    1,
+			   77,   78,    4,    5,  348,   51,   51,    1,  348,   73,
+			  314,   28,   89,   77,   78,   47,   48,  361,   91,   21,
+			   77,   78,  371,  363,   39,   73,   74,   75,   76,  311,
+			   26,   77,   78,   51,   51,  379,   51,   91,   40,   41,
 
-			  389,  390,  391,   70,   71,   72,   73,  308,  392,  393,
-			  394,  395,    3,  366,   41,   17,  396,  397,  398,  399,
-			  364,   48,   74,   75,   70,   71,   72,   73,   74,   75,
-			   35,  384,   82,  183,   35,   70,   24,    1,  382,   74,
-			   75,  191,   70,   71,   72,   73,   47,  400,  401,  402,
-			  403,    4,    5,  437,  438,  345,   52,  437,  208,  448,
-			  440,  362,   35,   41,  408,  409,  410,  411,   21,   22,
-			   23,   24,   36,   37,   47,    4,    5,   35,   35,  380,
-			   56,  465,   70,   71,   72,   73,  535,   17,   17,   47,
-			   47,  475,  476,  446,   74,   75,   76,   77,  547,   33,
+			  389,  381,  391,  392,  393,  394,   40,   41,    1,   86,
+			   87,  395,  396,  397,  398,   39,  369,   10,   39,  399,
+			  400,  401,  402,  367,   11,   12,   68,   51,   70,    5,
+			   51,   39,   39,   37,  387,   77,   78,   73,   74,   75,
+			   76,  385,   50,  365,   51,   15,   91,   89,   57,   19,
+			  403,  404,  405,  406,   40,   41,  440,  441,  348,   28,
+			  440,  383,  451,  443,   56,   51,    3,  411,  412,  413,
+			  414,   39,   39,    6,    7,    4,    5,    6,    7,    8,
+			   39,   21,   50,   50,  468,  407,  408,  409,  410,   86,
+			   87,   50,   21,   22,  478,  479,  449,   73,   74,   75,
 
-			  444,   81,   88,  404,  405,  406,  407,   36,   37,   61,
-			   62,   63,   64,   61,   62,   63,   64,   70,   71,   72,
-			   73,   74,   75,    1,   74,   75,   76,   77,  418,  419,
-			  420,   81,   36,   37,   12,   87,   65,   87,   67,   87,
-			  524,  442,  524,   47,  524,   74,   75,  437,   35,   35,
-			    1,   43,   44,   45,   35,    6,    7,   86,    1,   46,
-			   46,    4,    5,    6,    7,   46,  550,   10,  550,    1,
-			  550,   14,   15,   16,    6,    7,    6,    7,   21,   22,
-			   23,   24,   25,   26,   27,   28,   29,   30,   31,  200,
-			   33,   32,   35,   36,   37,  206,   68,   69,   70,   71,
+			   76,   77,   78,  447,   73,   74,   75,   76,   47,   48,
+			   49,   40,   41,   39,   64,   65,   66,   67,   64,   65,
+			   66,   67,  202,  445,   50,   39,   39,   39,  208,   85,
+			   87,  421,  422,  423,   91,   39,   50,   50,   50,   68,
+			   90,   70,   39,  527,   90,  527,   50,  527,   77,   78,
+			  440,   39,   39,   50,   45,   77,   78,   79,   80,   60,
+			   89,    1,   84,   50,    4,    5,    6,    7,   90,  553,
+			   10,  553,   39,  553,   14,   15,   16,   17,   18,   19,
+			   20,   40,   41,   50,   21,   25,   26,   27,   28,   29,
+			   30,   31,   32,   33,   34,   35,   37,   37,   91,   39,
 
-			   72,   73,   74,   75,   76,   77,   49,   50,   51,   81,
-			   35,   54,   55,   35,   35,   87,   35,   60,   35,   35,
-			  199,   46,   35,    4,   46,   46,  205,   46,  546,   46,
-			   46,   74,   75,   46,    1,   35,  554,    4,    5,    6,
-			    7,   35,   32,   10,  198,   88,   46,   14,   15,   16,
-			  204,   35,   46,   35,   21,   22,   23,   24,   25,   26,
-			   27,   28,   29,   30,   31,  197,   33,   35,   35,   36,
-			   37,  203,   68,   69,   70,   71,   72,   73,   74,   75,
-			   76,   77,   49,   50,   51,   81,  196,   54,   55,   35,
-			   83,   84,  202,   60,   35,   61,   62,   63,   64,   36,
+			   40,   41,   77,   78,   79,   80,    4,    5,    4,   84,
+			   36,    4,    5,   53,   54,   55,    1,  201,   58,   59,
+			    1,    6,    7,  207,  199,    6,    7,  200,   21,   39,
+			  205,  549,   39,  206,    4,    5,   39,   77,   78,  557,
+			    1,   36,   39,    4,    5,    6,    7,   40,   41,   10,
+			   39,   91,   39,   14,   15,   16,   17,   18,   19,   20,
+			   64,   65,   66,   67,   25,   26,   27,   28,   29,   30,
+			   31,   32,   33,   34,   35,   68,   37,   70,   39,   40,
+			   41,   12,   37,   50,   77,   78,   39,   39,   39,   39,
+			   39,   39,   53,   54,   55,   39,   89,   58,   59,   28,
 
-			   37,    4,    5,    4,    5,   35,   12,   74,   75,    1,
-			   33,   46,    4,    5,    6,    7,   35,   35,   10,   35,
-			   35,   88,   14,   15,   16,   35,   35,   35,   24,   21,
-			   22,   23,   24,   25,   26,   27,   28,   29,   30,   31,
-			   35,   22,   35,   35,   36,   37,   23,   35,   21,   35,
-			   35,   48,    4,   33,   32,    8,   32,   49,   50,   51,
-			   35,   35,   54,   55,   35,   35,    1,   35,   60,    4,
-			    5,    6,    7,   35,   32,   10,   48,    5,    5,   14,
-			   15,   16,   74,   75,   76,   48,   21,   22,   23,   24,
-			   25,   26,   27,   28,   29,   30,   31,   35,   33,   35,
+			   39,   26,   39,   27,   39,   39,   25,   39,   36,    1,
+			   52,   37,    4,    5,    6,    7,   77,   78,   10,    4,
+			   36,   39,   14,   15,   16,   17,   18,   19,   20,   39,
+			   91,   39,   39,   25,   26,   27,   28,   29,   30,   31,
+			   32,   33,   34,   35,   39,   39,   52,   39,   40,   41,
+			   36,   71,   72,   73,   74,   75,   76,   77,   78,   79,
+			   80,   53,   54,   55,   84,    1,   58,   59,    4,    5,
+			    6,    7,   52,    8,   10,    5,    5,   39,   14,   15,
+			   16,   17,   18,   19,   20,   77,   78,   79,   39,   25,
+			   26,   27,   28,   29,   30,   31,   32,   33,   34,   35,
 
-			   35,   36,   37,   35,   35,   35,   35,   48,   32,   35,
-			   35,    4,    5,   35,   49,   50,   51,   10,   35,   54,
-			   55,   14,   15,   16,   35,   60,   35,   35,   21,   22,
-			   23,   24,   25,   26,   27,   28,   29,   35,   35,   74,
-			   75,   35,   35,   36,   37,   35,   35,   42,   33,    4,
-			   46,    4,   35,   35,   35,   35,   35,   35,   33,    8,
-			   48,   33,   33,   40,   12,   88,  526,   60,   88,   88,
-			   88,   12,   88,   88,   88,   88,   33,   84,   84,   84,
-			   84,   74,   75,   84,   84,   84,   32,   32,   32,   32,
-			   12,  437,   84,   84,   48,  345,   48,   84,   84,  163,
+			   39,   37,   39,   39,   40,   41,   39,   71,   72,   73,
+			   74,   75,   76,   77,   78,   79,   80,   53,   54,   55,
+			   84,   39,   58,   59,    4,    5,   90,   39,   39,   39,
+			   10,   39,   39,   39,   14,   15,   16,   17,   18,   19,
+			   20,   77,   78,   39,   39,   25,   26,   27,   28,   29,
+			   30,   31,   32,   33,   39,   39,   39,   39,   36,   39,
+			   40,   41,   52,   37,   50,   46,    4,    4,   39,   39,
+			   39,   39,   39,   39,   37,   52,    8,   37,   37,   44,
+			  529,   12,   91,   80,   12,   12,   91,   91,   91,   91,
+			   91,   91,   91,   87,   87,   87,   87,   77,   78,   87,
 
-			   84,   48,    0,  465,  476,   -1,   -1,   -1,   84,   -1,
-			   84,   84,   -1,   -1,   84,   84,   84,   84,   84,   84,
-			   84,   84,   84,   84,   84,   84,   84,   77,   67,   85,
-			   -1,   -1,   -1,   -1,   -1,   86,   -1,   79, yyDummy>>)
+			   87,   37,   36,   36,  440,  166,   36,   36,   87,   52,
+			   52,   87,   87,   52,   87,   87,  348,    0,  479,  468,
+			   -1,   -1,   -1,   87,   -1,   87,   87,   67,   -1,   87,
+			   87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
+			   87,   87,   87,   -1,   88,   86,   -1,   -1,   -1,   -1,
+			   -1,   -1,   -1,   79, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -7946,8 +8084,8 @@ feature {NONE} -- Semantic value stacks
 	yyspecial_routines4: KL_SPECIAL_ROUTINES [REAL]
 			-- Routines that ought to be in SPECIAL [REAL]
 
-	yyvs5: SPECIAL [CHARACTER]
-			-- Stack for semantic values of type CHARACTER
+	yyvs5: SPECIAL [TERM_CONSTRAINT_PARSE_STRUCTURE]
+			-- Stack for semantic values of type TERM_CONSTRAINT_PARSE_STRUCTURE
 
 	yyvsc5: INTEGER
 			-- Capacity of semantic value stack `yyvs5'
@@ -7955,11 +8093,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp5: INTEGER
 			-- Top of semantic value stack `yyvs5'
 
-	yyspecial_routines5: KL_SPECIAL_ROUTINES [CHARACTER]
-			-- Routines that ought to be in SPECIAL [CHARACTER]
+	yyspecial_routines5: KL_SPECIAL_ROUTINES [TERM_CONSTRAINT_PARSE_STRUCTURE]
+			-- Routines that ought to be in SPECIAL [TERM_CONSTRAINT_PARSE_STRUCTURE]
 
-	yyvs6: SPECIAL [C_DV_QUANTITY]
-			-- Stack for semantic values of type C_DV_QUANTITY
+	yyvs6: SPECIAL [CHARACTER]
+			-- Stack for semantic values of type CHARACTER
 
 	yyvsc6: INTEGER
 			-- Capacity of semantic value stack `yyvs6'
@@ -7967,11 +8105,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp6: INTEGER
 			-- Top of semantic value stack `yyvs6'
 
-	yyspecial_routines6: KL_SPECIAL_ROUTINES [C_DV_QUANTITY]
-			-- Routines that ought to be in SPECIAL [C_DV_QUANTITY]
+	yyspecial_routines6: KL_SPECIAL_ROUTINES [CHARACTER]
+			-- Routines that ought to be in SPECIAL [CHARACTER]
 
-	yyvs7: SPECIAL [detachable ARRAYED_LIST [ASSERTION]]
-			-- Stack for semantic values of type detachable ARRAYED_LIST [ASSERTION]
+	yyvs7: SPECIAL [C_DV_QUANTITY]
+			-- Stack for semantic values of type C_DV_QUANTITY
 
 	yyvsc7: INTEGER
 			-- Capacity of semantic value stack `yyvs7'
@@ -7979,11 +8117,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp7: INTEGER
 			-- Top of semantic value stack `yyvs7'
 
-	yyspecial_routines7: KL_SPECIAL_ROUTINES [detachable ARRAYED_LIST [ASSERTION]]
-			-- Routines that ought to be in SPECIAL [detachable ARRAYED_LIST [ASSERTION]]
+	yyspecial_routines7: KL_SPECIAL_ROUTINES [C_DV_QUANTITY]
+			-- Routines that ought to be in SPECIAL [C_DV_QUANTITY]
 
-	yyvs8: SPECIAL [ASSERTION]
-			-- Stack for semantic values of type ASSERTION
+	yyvs8: SPECIAL [detachable ARRAYED_LIST [ASSERTION]]
+			-- Stack for semantic values of type detachable ARRAYED_LIST [ASSERTION]
 
 	yyvsc8: INTEGER
 			-- Capacity of semantic value stack `yyvs8'
@@ -7991,11 +8129,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp8: INTEGER
 			-- Top of semantic value stack `yyvs8'
 
-	yyspecial_routines8: KL_SPECIAL_ROUTINES [ASSERTION]
-			-- Routines that ought to be in SPECIAL [ASSERTION]
+	yyspecial_routines8: KL_SPECIAL_ROUTINES [detachable ARRAYED_LIST [ASSERTION]]
+			-- Routines that ought to be in SPECIAL [detachable ARRAYED_LIST [ASSERTION]]
 
-	yyvs9: SPECIAL [C_ARCHETYPE_ROOT]
-			-- Stack for semantic values of type C_ARCHETYPE_ROOT
+	yyvs9: SPECIAL [ASSERTION]
+			-- Stack for semantic values of type ASSERTION
 
 	yyvsc9: INTEGER
 			-- Capacity of semantic value stack `yyvs9'
@@ -8003,11 +8141,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp9: INTEGER
 			-- Top of semantic value stack `yyvs9'
 
-	yyspecial_routines9: KL_SPECIAL_ROUTINES [C_ARCHETYPE_ROOT]
-			-- Routines that ought to be in SPECIAL [C_ARCHETYPE_ROOT]
+	yyspecial_routines9: KL_SPECIAL_ROUTINES [ASSERTION]
+			-- Routines that ought to be in SPECIAL [ASSERTION]
 
-	yyvs10: SPECIAL [C_COMPLEX_OBJECT_PROXY]
-			-- Stack for semantic values of type C_COMPLEX_OBJECT_PROXY
+	yyvs10: SPECIAL [C_ARCHETYPE_ROOT]
+			-- Stack for semantic values of type C_ARCHETYPE_ROOT
 
 	yyvsc10: INTEGER
 			-- Capacity of semantic value stack `yyvs10'
@@ -8015,11 +8153,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp10: INTEGER
 			-- Top of semantic value stack `yyvs10'
 
-	yyspecial_routines10: KL_SPECIAL_ROUTINES [C_COMPLEX_OBJECT_PROXY]
-			-- Routines that ought to be in SPECIAL [C_COMPLEX_OBJECT_PROXY]
+	yyspecial_routines10: KL_SPECIAL_ROUTINES [C_ARCHETYPE_ROOT]
+			-- Routines that ought to be in SPECIAL [C_ARCHETYPE_ROOT]
 
-	yyvs11: SPECIAL [SIBLING_ORDER]
-			-- Stack for semantic values of type SIBLING_ORDER
+	yyvs11: SPECIAL [C_COMPLEX_OBJECT_PROXY]
+			-- Stack for semantic values of type C_COMPLEX_OBJECT_PROXY
 
 	yyvsc11: INTEGER
 			-- Capacity of semantic value stack `yyvs11'
@@ -8027,11 +8165,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp11: INTEGER
 			-- Top of semantic value stack `yyvs11'
 
-	yyspecial_routines11: KL_SPECIAL_ROUTINES [SIBLING_ORDER]
-			-- Routines that ought to be in SPECIAL [SIBLING_ORDER]
+	yyspecial_routines11: KL_SPECIAL_ROUTINES [C_COMPLEX_OBJECT_PROXY]
+			-- Routines that ought to be in SPECIAL [C_COMPLEX_OBJECT_PROXY]
 
-	yyvs12: SPECIAL [detachable MULTIPLICITY_INTERVAL]
-			-- Stack for semantic values of type detachable MULTIPLICITY_INTERVAL
+	yyvs12: SPECIAL [SIBLING_ORDER]
+			-- Stack for semantic values of type SIBLING_ORDER
 
 	yyvsc12: INTEGER
 			-- Capacity of semantic value stack `yyvs12'
@@ -8039,11 +8177,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp12: INTEGER
 			-- Top of semantic value stack `yyvs12'
 
-	yyspecial_routines12: KL_SPECIAL_ROUTINES [detachable MULTIPLICITY_INTERVAL]
-			-- Routines that ought to be in SPECIAL [detachable MULTIPLICITY_INTERVAL]
+	yyspecial_routines12: KL_SPECIAL_ROUTINES [SIBLING_ORDER]
+			-- Routines that ought to be in SPECIAL [SIBLING_ORDER]
 
-	yyvs13: SPECIAL [MULTIPLICITY_INTERVAL]
-			-- Stack for semantic values of type MULTIPLICITY_INTERVAL
+	yyvs13: SPECIAL [detachable MULTIPLICITY_INTERVAL]
+			-- Stack for semantic values of type detachable MULTIPLICITY_INTERVAL
 
 	yyvsc13: INTEGER
 			-- Capacity of semantic value stack `yyvs13'
@@ -8051,11 +8189,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp13: INTEGER
 			-- Top of semantic value stack `yyvs13'
 
-	yyspecial_routines13: KL_SPECIAL_ROUTINES [MULTIPLICITY_INTERVAL]
-			-- Routines that ought to be in SPECIAL [MULTIPLICITY_INTERVAL]
+	yyspecial_routines13: KL_SPECIAL_ROUTINES [detachable MULTIPLICITY_INTERVAL]
+			-- Routines that ought to be in SPECIAL [detachable MULTIPLICITY_INTERVAL]
 
-	yyvs14: SPECIAL [C_COMPLEX_OBJECT]
-			-- Stack for semantic values of type C_COMPLEX_OBJECT
+	yyvs14: SPECIAL [MULTIPLICITY_INTERVAL]
+			-- Stack for semantic values of type MULTIPLICITY_INTERVAL
 
 	yyvsc14: INTEGER
 			-- Capacity of semantic value stack `yyvs14'
@@ -8063,11 +8201,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp14: INTEGER
 			-- Top of semantic value stack `yyvs14'
 
-	yyspecial_routines14: KL_SPECIAL_ROUTINES [C_COMPLEX_OBJECT]
-			-- Routines that ought to be in SPECIAL [C_COMPLEX_OBJECT]
+	yyspecial_routines14: KL_SPECIAL_ROUTINES [MULTIPLICITY_INTERVAL]
+			-- Routines that ought to be in SPECIAL [MULTIPLICITY_INTERVAL]
 
-	yyvs15: SPECIAL [C_PRIMITIVE_OBJECT]
-			-- Stack for semantic values of type C_PRIMITIVE_OBJECT
+	yyvs15: SPECIAL [C_COMPLEX_OBJECT]
+			-- Stack for semantic values of type C_COMPLEX_OBJECT
 
 	yyvsc15: INTEGER
 			-- Capacity of semantic value stack `yyvs15'
@@ -8075,11 +8213,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp15: INTEGER
 			-- Top of semantic value stack `yyvs15'
 
-	yyspecial_routines15: KL_SPECIAL_ROUTINES [C_PRIMITIVE_OBJECT]
-			-- Routines that ought to be in SPECIAL [C_PRIMITIVE_OBJECT]
+	yyspecial_routines15: KL_SPECIAL_ROUTINES [C_COMPLEX_OBJECT]
+			-- Routines that ought to be in SPECIAL [C_COMPLEX_OBJECT]
 
-	yyvs16: SPECIAL [ARCHETYPE_SLOT]
-			-- Stack for semantic values of type ARCHETYPE_SLOT
+	yyvs16: SPECIAL [C_PRIMITIVE_OBJECT]
+			-- Stack for semantic values of type C_PRIMITIVE_OBJECT
 
 	yyvsc16: INTEGER
 			-- Capacity of semantic value stack `yyvs16'
@@ -8087,11 +8225,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp16: INTEGER
 			-- Top of semantic value stack `yyvs16'
 
-	yyspecial_routines16: KL_SPECIAL_ROUTINES [ARCHETYPE_SLOT]
-			-- Routines that ought to be in SPECIAL [ARCHETYPE_SLOT]
+	yyspecial_routines16: KL_SPECIAL_ROUTINES [C_PRIMITIVE_OBJECT]
+			-- Routines that ought to be in SPECIAL [C_PRIMITIVE_OBJECT]
 
-	yyvs17: SPECIAL [C_ATTRIBUTE]
-			-- Stack for semantic values of type C_ATTRIBUTE
+	yyvs17: SPECIAL [ARCHETYPE_SLOT]
+			-- Stack for semantic values of type ARCHETYPE_SLOT
 
 	yyvsc17: INTEGER
 			-- Capacity of semantic value stack `yyvs17'
@@ -8099,11 +8237,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp17: INTEGER
 			-- Top of semantic value stack `yyvs17'
 
-	yyspecial_routines17: KL_SPECIAL_ROUTINES [C_ATTRIBUTE]
-			-- Routines that ought to be in SPECIAL [C_ATTRIBUTE]
+	yyspecial_routines17: KL_SPECIAL_ROUTINES [ARCHETYPE_SLOT]
+			-- Routines that ought to be in SPECIAL [ARCHETYPE_SLOT]
 
-	yyvs18: SPECIAL [EXPR_ITEM]
-			-- Stack for semantic values of type EXPR_ITEM
+	yyvs18: SPECIAL [C_ATTRIBUTE]
+			-- Stack for semantic values of type C_ATTRIBUTE
 
 	yyvsc18: INTEGER
 			-- Capacity of semantic value stack `yyvs18'
@@ -8111,11 +8249,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp18: INTEGER
 			-- Top of semantic value stack `yyvs18'
 
-	yyspecial_routines18: KL_SPECIAL_ROUTINES [EXPR_ITEM]
-			-- Routines that ought to be in SPECIAL [EXPR_ITEM]
+	yyspecial_routines18: KL_SPECIAL_ROUTINES [C_ATTRIBUTE]
+			-- Routines that ought to be in SPECIAL [C_ATTRIBUTE]
 
-	yyvs19: SPECIAL [EXPR_UNARY_OPERATOR]
-			-- Stack for semantic values of type EXPR_UNARY_OPERATOR
+	yyvs19: SPECIAL [EXPR_ITEM]
+			-- Stack for semantic values of type EXPR_ITEM
 
 	yyvsc19: INTEGER
 			-- Capacity of semantic value stack `yyvs19'
@@ -8123,11 +8261,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp19: INTEGER
 			-- Top of semantic value stack `yyvs19'
 
-	yyspecial_routines19: KL_SPECIAL_ROUTINES [EXPR_UNARY_OPERATOR]
-			-- Routines that ought to be in SPECIAL [EXPR_UNARY_OPERATOR]
+	yyspecial_routines19: KL_SPECIAL_ROUTINES [EXPR_ITEM]
+			-- Routines that ought to be in SPECIAL [EXPR_ITEM]
 
-	yyvs20: SPECIAL [EXPR_BINARY_OPERATOR]
-			-- Stack for semantic values of type EXPR_BINARY_OPERATOR
+	yyvs20: SPECIAL [EXPR_UNARY_OPERATOR]
+			-- Stack for semantic values of type EXPR_UNARY_OPERATOR
 
 	yyvsc20: INTEGER
 			-- Capacity of semantic value stack `yyvs20'
@@ -8135,11 +8273,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp20: INTEGER
 			-- Top of semantic value stack `yyvs20'
 
-	yyspecial_routines20: KL_SPECIAL_ROUTINES [EXPR_BINARY_OPERATOR]
-			-- Routines that ought to be in SPECIAL [EXPR_BINARY_OPERATOR]
+	yyspecial_routines20: KL_SPECIAL_ROUTINES [EXPR_UNARY_OPERATOR]
+			-- Routines that ought to be in SPECIAL [EXPR_UNARY_OPERATOR]
 
-	yyvs21: SPECIAL [EXPR_LEAF]
-			-- Stack for semantic values of type EXPR_LEAF
+	yyvs21: SPECIAL [EXPR_BINARY_OPERATOR]
+			-- Stack for semantic values of type EXPR_BINARY_OPERATOR
 
 	yyvsc21: INTEGER
 			-- Capacity of semantic value stack `yyvs21'
@@ -8147,11 +8285,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp21: INTEGER
 			-- Top of semantic value stack `yyvs21'
 
-	yyspecial_routines21: KL_SPECIAL_ROUTINES [EXPR_LEAF]
-			-- Routines that ought to be in SPECIAL [EXPR_LEAF]
+	yyspecial_routines21: KL_SPECIAL_ROUTINES [EXPR_BINARY_OPERATOR]
+			-- Routines that ought to be in SPECIAL [EXPR_BINARY_OPERATOR]
 
-	yyvs22: SPECIAL [BOOLEAN]
-			-- Stack for semantic values of type BOOLEAN
+	yyvs22: SPECIAL [EXPR_LEAF]
+			-- Stack for semantic values of type EXPR_LEAF
 
 	yyvsc22: INTEGER
 			-- Capacity of semantic value stack `yyvs22'
@@ -8159,11 +8297,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp22: INTEGER
 			-- Top of semantic value stack `yyvs22'
 
-	yyspecial_routines22: KL_SPECIAL_ROUTINES [BOOLEAN]
-			-- Routines that ought to be in SPECIAL [BOOLEAN]
+	yyspecial_routines22: KL_SPECIAL_ROUTINES [EXPR_LEAF]
+			-- Routines that ought to be in SPECIAL [EXPR_LEAF]
 
-	yyvs23: SPECIAL [ISO8601_DATE]
-			-- Stack for semantic values of type ISO8601_DATE
+	yyvs23: SPECIAL [BOOLEAN]
+			-- Stack for semantic values of type BOOLEAN
 
 	yyvsc23: INTEGER
 			-- Capacity of semantic value stack `yyvs23'
@@ -8171,11 +8309,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp23: INTEGER
 			-- Top of semantic value stack `yyvs23'
 
-	yyspecial_routines23: KL_SPECIAL_ROUTINES [ISO8601_DATE]
-			-- Routines that ought to be in SPECIAL [ISO8601_DATE]
+	yyspecial_routines23: KL_SPECIAL_ROUTINES [BOOLEAN]
+			-- Routines that ought to be in SPECIAL [BOOLEAN]
 
-	yyvs24: SPECIAL [ISO8601_DATE_TIME]
-			-- Stack for semantic values of type ISO8601_DATE_TIME
+	yyvs24: SPECIAL [ISO8601_DATE]
+			-- Stack for semantic values of type ISO8601_DATE
 
 	yyvsc24: INTEGER
 			-- Capacity of semantic value stack `yyvs24'
@@ -8183,11 +8321,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp24: INTEGER
 			-- Top of semantic value stack `yyvs24'
 
-	yyspecial_routines24: KL_SPECIAL_ROUTINES [ISO8601_DATE_TIME]
-			-- Routines that ought to be in SPECIAL [ISO8601_DATE_TIME]
+	yyspecial_routines24: KL_SPECIAL_ROUTINES [ISO8601_DATE]
+			-- Routines that ought to be in SPECIAL [ISO8601_DATE]
 
-	yyvs25: SPECIAL [ISO8601_TIME]
-			-- Stack for semantic values of type ISO8601_TIME
+	yyvs25: SPECIAL [ISO8601_DATE_TIME]
+			-- Stack for semantic values of type ISO8601_DATE_TIME
 
 	yyvsc25: INTEGER
 			-- Capacity of semantic value stack `yyvs25'
@@ -8195,11 +8333,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp25: INTEGER
 			-- Top of semantic value stack `yyvs25'
 
-	yyspecial_routines25: KL_SPECIAL_ROUTINES [ISO8601_TIME]
-			-- Routines that ought to be in SPECIAL [ISO8601_TIME]
+	yyspecial_routines25: KL_SPECIAL_ROUTINES [ISO8601_DATE_TIME]
+			-- Routines that ought to be in SPECIAL [ISO8601_DATE_TIME]
 
-	yyvs26: SPECIAL [ISO8601_DURATION]
-			-- Stack for semantic values of type ISO8601_DURATION
+	yyvs26: SPECIAL [ISO8601_TIME]
+			-- Stack for semantic values of type ISO8601_TIME
 
 	yyvsc26: INTEGER
 			-- Capacity of semantic value stack `yyvs26'
@@ -8207,11 +8345,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp26: INTEGER
 			-- Top of semantic value stack `yyvs26'
 
-	yyspecial_routines26: KL_SPECIAL_ROUTINES [ISO8601_DURATION]
-			-- Routines that ought to be in SPECIAL [ISO8601_DURATION]
+	yyspecial_routines26: KL_SPECIAL_ROUTINES [ISO8601_TIME]
+			-- Routines that ought to be in SPECIAL [ISO8601_TIME]
 
-	yyvs27: SPECIAL [ARRAYED_LIST [STRING]]
-			-- Stack for semantic values of type ARRAYED_LIST [STRING]
+	yyvs27: SPECIAL [ISO8601_DURATION]
+			-- Stack for semantic values of type ISO8601_DURATION
 
 	yyvsc27: INTEGER
 			-- Capacity of semantic value stack `yyvs27'
@@ -8219,11 +8357,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp27: INTEGER
 			-- Top of semantic value stack `yyvs27'
 
-	yyspecial_routines27: KL_SPECIAL_ROUTINES [ARRAYED_LIST [STRING]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [STRING]]
+	yyspecial_routines27: KL_SPECIAL_ROUTINES [ISO8601_DURATION]
+			-- Routines that ought to be in SPECIAL [ISO8601_DURATION]
 
-	yyvs28: SPECIAL [ARRAYED_LIST [INTEGER]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTEGER]
+	yyvs28: SPECIAL [ARRAYED_LIST [STRING]]
+			-- Stack for semantic values of type ARRAYED_LIST [STRING]
 
 	yyvsc28: INTEGER
 			-- Capacity of semantic value stack `yyvs28'
@@ -8231,11 +8369,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp28: INTEGER
 			-- Top of semantic value stack `yyvs28'
 
-	yyspecial_routines28: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTEGER]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTEGER]]
+	yyspecial_routines28: KL_SPECIAL_ROUTINES [ARRAYED_LIST [STRING]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [STRING]]
 
-	yyvs29: SPECIAL [ARRAYED_LIST [REAL]]
-			-- Stack for semantic values of type ARRAYED_LIST [REAL]
+	yyvs29: SPECIAL [ARRAYED_LIST [INTEGER]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTEGER]
 
 	yyvsc29: INTEGER
 			-- Capacity of semantic value stack `yyvs29'
@@ -8243,11 +8381,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp29: INTEGER
 			-- Top of semantic value stack `yyvs29'
 
-	yyspecial_routines29: KL_SPECIAL_ROUTINES [ARRAYED_LIST [REAL]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [REAL]]
+	yyspecial_routines29: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTEGER]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTEGER]]
 
-	yyvs30: SPECIAL [ARRAYED_LIST [BOOLEAN]]
-			-- Stack for semantic values of type ARRAYED_LIST [BOOLEAN]
+	yyvs30: SPECIAL [ARRAYED_LIST [REAL]]
+			-- Stack for semantic values of type ARRAYED_LIST [REAL]
 
 	yyvsc30: INTEGER
 			-- Capacity of semantic value stack `yyvs30'
@@ -8255,11 +8393,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp30: INTEGER
 			-- Top of semantic value stack `yyvs30'
 
-	yyspecial_routines30: KL_SPECIAL_ROUTINES [ARRAYED_LIST [BOOLEAN]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [BOOLEAN]]
+	yyspecial_routines30: KL_SPECIAL_ROUTINES [ARRAYED_LIST [REAL]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [REAL]]
 
-	yyvs31: SPECIAL [ARRAYED_LIST [ISO8601_DATE]]
-			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_DATE]
+	yyvs31: SPECIAL [ARRAYED_LIST [BOOLEAN]]
+			-- Stack for semantic values of type ARRAYED_LIST [BOOLEAN]
 
 	yyvsc31: INTEGER
 			-- Capacity of semantic value stack `yyvs31'
@@ -8267,11 +8405,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp31: INTEGER
 			-- Top of semantic value stack `yyvs31'
 
-	yyspecial_routines31: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DATE]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DATE]]
+	yyspecial_routines31: KL_SPECIAL_ROUTINES [ARRAYED_LIST [BOOLEAN]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [BOOLEAN]]
 
-	yyvs32: SPECIAL [ARRAYED_LIST [ISO8601_TIME]]
-			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_TIME]
+	yyvs32: SPECIAL [ARRAYED_LIST [ISO8601_DATE]]
+			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_DATE]
 
 	yyvsc32: INTEGER
 			-- Capacity of semantic value stack `yyvs32'
@@ -8279,11 +8417,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp32: INTEGER
 			-- Top of semantic value stack `yyvs32'
 
-	yyspecial_routines32: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_TIME]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_TIME]]
+	yyspecial_routines32: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DATE]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DATE]]
 
-	yyvs33: SPECIAL [ARRAYED_LIST [ISO8601_DATE_TIME]]
-			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_DATE_TIME]
+	yyvs33: SPECIAL [ARRAYED_LIST [ISO8601_TIME]]
+			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_TIME]
 
 	yyvsc33: INTEGER
 			-- Capacity of semantic value stack `yyvs33'
@@ -8291,11 +8429,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp33: INTEGER
 			-- Top of semantic value stack `yyvs33'
 
-	yyspecial_routines33: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DATE_TIME]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DATE_TIME]]
+	yyspecial_routines33: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_TIME]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_TIME]]
 
-	yyvs34: SPECIAL [ARRAYED_LIST [ISO8601_DURATION]]
-			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_DURATION]
+	yyvs34: SPECIAL [ARRAYED_LIST [ISO8601_DATE_TIME]]
+			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_DATE_TIME]
 
 	yyvsc34: INTEGER
 			-- Capacity of semantic value stack `yyvs34'
@@ -8303,11 +8441,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp34: INTEGER
 			-- Top of semantic value stack `yyvs34'
 
-	yyspecial_routines34: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DURATION]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DURATION]]
+	yyspecial_routines34: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DATE_TIME]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DATE_TIME]]
 
-	yyvs35: SPECIAL [INTERVAL [INTEGER]]
-			-- Stack for semantic values of type INTERVAL [INTEGER]
+	yyvs35: SPECIAL [ARRAYED_LIST [ISO8601_DURATION]]
+			-- Stack for semantic values of type ARRAYED_LIST [ISO8601_DURATION]
 
 	yyvsc35: INTEGER
 			-- Capacity of semantic value stack `yyvs35'
@@ -8315,11 +8453,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp35: INTEGER
 			-- Top of semantic value stack `yyvs35'
 
-	yyspecial_routines35: KL_SPECIAL_ROUTINES [INTERVAL [INTEGER]]
-			-- Routines that ought to be in SPECIAL [INTERVAL [INTEGER]]
+	yyspecial_routines35: KL_SPECIAL_ROUTINES [ARRAYED_LIST [ISO8601_DURATION]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [ISO8601_DURATION]]
 
-	yyvs36: SPECIAL [INTERVAL [REAL]]
-			-- Stack for semantic values of type INTERVAL [REAL]
+	yyvs36: SPECIAL [INTERVAL [INTEGER]]
+			-- Stack for semantic values of type INTERVAL [INTEGER]
 
 	yyvsc36: INTEGER
 			-- Capacity of semantic value stack `yyvs36'
@@ -8327,11 +8465,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp36: INTEGER
 			-- Top of semantic value stack `yyvs36'
 
-	yyspecial_routines36: KL_SPECIAL_ROUTINES [INTERVAL [REAL]]
-			-- Routines that ought to be in SPECIAL [INTERVAL [REAL]]
+	yyspecial_routines36: KL_SPECIAL_ROUTINES [INTERVAL [INTEGER]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [INTEGER]]
 
-	yyvs37: SPECIAL [INTERVAL [ISO8601_TIME]]
-			-- Stack for semantic values of type INTERVAL [ISO8601_TIME]
+	yyvs37: SPECIAL [INTERVAL [REAL]]
+			-- Stack for semantic values of type INTERVAL [REAL]
 
 	yyvsc37: INTEGER
 			-- Capacity of semantic value stack `yyvs37'
@@ -8339,11 +8477,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp37: INTEGER
 			-- Top of semantic value stack `yyvs37'
 
-	yyspecial_routines37: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_TIME]]
-			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_TIME]]
+	yyspecial_routines37: KL_SPECIAL_ROUTINES [INTERVAL [REAL]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [REAL]]
 
-	yyvs38: SPECIAL [INTERVAL [ISO8601_DATE]]
-			-- Stack for semantic values of type INTERVAL [ISO8601_DATE]
+	yyvs38: SPECIAL [INTERVAL [ISO8601_TIME]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_TIME]
 
 	yyvsc38: INTEGER
 			-- Capacity of semantic value stack `yyvs38'
@@ -8351,11 +8489,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp38: INTEGER
 			-- Top of semantic value stack `yyvs38'
 
-	yyspecial_routines38: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DATE]]
-			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DATE]]
+	yyspecial_routines38: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_TIME]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_TIME]]
 
-	yyvs39: SPECIAL [INTERVAL [ISO8601_DATE_TIME]]
-			-- Stack for semantic values of type INTERVAL [ISO8601_DATE_TIME]
+	yyvs39: SPECIAL [INTERVAL [ISO8601_DATE]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_DATE]
 
 	yyvsc39: INTEGER
 			-- Capacity of semantic value stack `yyvs39'
@@ -8363,11 +8501,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp39: INTEGER
 			-- Top of semantic value stack `yyvs39'
 
-	yyspecial_routines39: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DATE_TIME]]
-			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DATE_TIME]]
+	yyspecial_routines39: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DATE]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DATE]]
 
-	yyvs40: SPECIAL [INTERVAL [ISO8601_DURATION]]
-			-- Stack for semantic values of type INTERVAL [ISO8601_DURATION]
+	yyvs40: SPECIAL [INTERVAL [ISO8601_DATE_TIME]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_DATE_TIME]
 
 	yyvsc40: INTEGER
 			-- Capacity of semantic value stack `yyvs40'
@@ -8375,11 +8513,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp40: INTEGER
 			-- Top of semantic value stack `yyvs40'
 
-	yyspecial_routines40: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DURATION]]
-			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DURATION]]
+	yyspecial_routines40: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DATE_TIME]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DATE_TIME]]
 
-	yyvs41: SPECIAL [ARRAYED_LIST [INTERVAL [INTEGER]]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [INTEGER]]
+	yyvs41: SPECIAL [INTERVAL [ISO8601_DURATION]]
+			-- Stack for semantic values of type INTERVAL [ISO8601_DURATION]
 
 	yyvsc41: INTEGER
 			-- Capacity of semantic value stack `yyvs41'
@@ -8387,11 +8525,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp41: INTEGER
 			-- Top of semantic value stack `yyvs41'
 
-	yyspecial_routines41: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [INTEGER]]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [INTEGER]]]
+	yyspecial_routines41: KL_SPECIAL_ROUTINES [INTERVAL [ISO8601_DURATION]]
+			-- Routines that ought to be in SPECIAL [INTERVAL [ISO8601_DURATION]]
 
-	yyvs42: SPECIAL [ARRAYED_LIST [INTERVAL [REAL]]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [REAL]]
+	yyvs42: SPECIAL [ARRAYED_LIST [INTERVAL [INTEGER]]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [INTEGER]]
 
 	yyvsc42: INTEGER
 			-- Capacity of semantic value stack `yyvs42'
@@ -8399,11 +8537,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp42: INTEGER
 			-- Top of semantic value stack `yyvs42'
 
-	yyspecial_routines42: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [REAL]]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [REAL]]]
+	yyspecial_routines42: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [INTEGER]]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [INTEGER]]]
 
-	yyvs43: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_TIME]]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_TIME]]
+	yyvs43: SPECIAL [ARRAYED_LIST [INTERVAL [REAL]]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [REAL]]
 
 	yyvsc43: INTEGER
 			-- Capacity of semantic value stack `yyvs43'
@@ -8411,11 +8549,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp43: INTEGER
 			-- Top of semantic value stack `yyvs43'
 
-	yyspecial_routines43: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_TIME]]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_TIME]]]
+	yyspecial_routines43: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [REAL]]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [REAL]]]
 
-	yyvs44: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE]]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_DATE]]
+	yyvs44: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_TIME]]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_TIME]]
 
 	yyvsc44: INTEGER
 			-- Capacity of semantic value stack `yyvs44'
@@ -8423,11 +8561,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp44: INTEGER
 			-- Top of semantic value stack `yyvs44'
 
-	yyspecial_routines44: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_DATE]]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE]]]
+	yyspecial_routines44: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_TIME]]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_TIME]]]
 
-	yyvs45: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]
+	yyvs45: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE]]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_DATE]]
 
 	yyvsc45: INTEGER
 			-- Capacity of semantic value stack `yyvs45'
@@ -8435,11 +8573,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp45: INTEGER
 			-- Top of semantic value stack `yyvs45'
 
-	yyspecial_routines45: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]]
+	yyspecial_routines45: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_DATE]]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE]]]
 
-	yyvs46: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]]
-			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]
+	yyvs46: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]
 
 	yyvsc46: INTEGER
 			-- Capacity of semantic value stack `yyvs46'
@@ -8447,11 +8585,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp46: INTEGER
 			-- Top of semantic value stack `yyvs46'
 
-	yyspecial_routines46: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]]
-			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]]
+	yyspecial_routines46: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DATE_TIME]]]
 
-	yyvs47: SPECIAL [detachable CARDINALITY]
-			-- Stack for semantic values of type detachable CARDINALITY
+	yyvs47: SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]]
+			-- Stack for semantic values of type ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]
 
 	yyvsc47: INTEGER
 			-- Capacity of semantic value stack `yyvs47'
@@ -8459,11 +8597,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp47: INTEGER
 			-- Top of semantic value stack `yyvs47'
 
-	yyspecial_routines47: KL_SPECIAL_ROUTINES [detachable CARDINALITY]
-			-- Routines that ought to be in SPECIAL [detachable CARDINALITY]
+	yyspecial_routines47: KL_SPECIAL_ROUTINES [ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]]
+			-- Routines that ought to be in SPECIAL [ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]]
 
-	yyvs48: SPECIAL [CARDINALITY]
-			-- Stack for semantic values of type CARDINALITY
+	yyvs48: SPECIAL [detachable CARDINALITY]
+			-- Stack for semantic values of type detachable CARDINALITY
 
 	yyvsc48: INTEGER
 			-- Capacity of semantic value stack `yyvs48'
@@ -8471,11 +8609,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp48: INTEGER
 			-- Top of semantic value stack `yyvs48'
 
-	yyspecial_routines48: KL_SPECIAL_ROUTINES [CARDINALITY]
-			-- Routines that ought to be in SPECIAL [CARDINALITY]
+	yyspecial_routines48: KL_SPECIAL_ROUTINES [detachable CARDINALITY]
+			-- Routines that ought to be in SPECIAL [detachable CARDINALITY]
 
-	yyvs49: SPECIAL [ORDINAL]
-			-- Stack for semantic values of type ORDINAL
+	yyvs49: SPECIAL [CARDINALITY]
+			-- Stack for semantic values of type CARDINALITY
 
 	yyvsc49: INTEGER
 			-- Capacity of semantic value stack `yyvs49'
@@ -8483,11 +8621,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp49: INTEGER
 			-- Top of semantic value stack `yyvs49'
 
-	yyspecial_routines49: KL_SPECIAL_ROUTINES [ORDINAL]
-			-- Routines that ought to be in SPECIAL [ORDINAL]
+	yyspecial_routines49: KL_SPECIAL_ROUTINES [CARDINALITY]
+			-- Routines that ought to be in SPECIAL [CARDINALITY]
 
-	yyvs50: SPECIAL [C_BOOLEAN]
-			-- Stack for semantic values of type C_BOOLEAN
+	yyvs50: SPECIAL [ORDINAL]
+			-- Stack for semantic values of type ORDINAL
 
 	yyvsc50: INTEGER
 			-- Capacity of semantic value stack `yyvs50'
@@ -8495,11 +8633,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp50: INTEGER
 			-- Top of semantic value stack `yyvs50'
 
-	yyspecial_routines50: KL_SPECIAL_ROUTINES [C_BOOLEAN]
-			-- Routines that ought to be in SPECIAL [C_BOOLEAN]
+	yyspecial_routines50: KL_SPECIAL_ROUTINES [ORDINAL]
+			-- Routines that ought to be in SPECIAL [ORDINAL]
 
-	yyvs51: SPECIAL [C_STRING]
-			-- Stack for semantic values of type C_STRING
+	yyvs51: SPECIAL [C_BOOLEAN]
+			-- Stack for semantic values of type C_BOOLEAN
 
 	yyvsc51: INTEGER
 			-- Capacity of semantic value stack `yyvs51'
@@ -8507,11 +8645,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp51: INTEGER
 			-- Top of semantic value stack `yyvs51'
 
-	yyspecial_routines51: KL_SPECIAL_ROUTINES [C_STRING]
-			-- Routines that ought to be in SPECIAL [C_STRING]
+	yyspecial_routines51: KL_SPECIAL_ROUTINES [C_BOOLEAN]
+			-- Routines that ought to be in SPECIAL [C_BOOLEAN]
 
-	yyvs52: SPECIAL [C_DATE_TIME]
-			-- Stack for semantic values of type C_DATE_TIME
+	yyvs52: SPECIAL [C_STRING]
+			-- Stack for semantic values of type C_STRING
 
 	yyvsc52: INTEGER
 			-- Capacity of semantic value stack `yyvs52'
@@ -8519,11 +8657,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp52: INTEGER
 			-- Top of semantic value stack `yyvs52'
 
-	yyspecial_routines52: KL_SPECIAL_ROUTINES [C_DATE_TIME]
-			-- Routines that ought to be in SPECIAL [C_DATE_TIME]
+	yyspecial_routines52: KL_SPECIAL_ROUTINES [C_STRING]
+			-- Routines that ought to be in SPECIAL [C_STRING]
 
-	yyvs53: SPECIAL [C_DURATION]
-			-- Stack for semantic values of type C_DURATION
+	yyvs53: SPECIAL [C_DATE_TIME]
+			-- Stack for semantic values of type C_DATE_TIME
 
 	yyvsc53: INTEGER
 			-- Capacity of semantic value stack `yyvs53'
@@ -8531,11 +8669,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp53: INTEGER
 			-- Top of semantic value stack `yyvs53'
 
-	yyspecial_routines53: KL_SPECIAL_ROUTINES [C_DURATION]
-			-- Routines that ought to be in SPECIAL [C_DURATION]
+	yyspecial_routines53: KL_SPECIAL_ROUTINES [C_DATE_TIME]
+			-- Routines that ought to be in SPECIAL [C_DATE_TIME]
 
-	yyvs54: SPECIAL [C_DATE]
-			-- Stack for semantic values of type C_DATE
+	yyvs54: SPECIAL [C_DURATION]
+			-- Stack for semantic values of type C_DURATION
 
 	yyvsc54: INTEGER
 			-- Capacity of semantic value stack `yyvs54'
@@ -8543,11 +8681,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp54: INTEGER
 			-- Top of semantic value stack `yyvs54'
 
-	yyspecial_routines54: KL_SPECIAL_ROUTINES [C_DATE]
-			-- Routines that ought to be in SPECIAL [C_DATE]
+	yyspecial_routines54: KL_SPECIAL_ROUTINES [C_DURATION]
+			-- Routines that ought to be in SPECIAL [C_DURATION]
 
-	yyvs55: SPECIAL [C_TIME]
-			-- Stack for semantic values of type C_TIME
+	yyvs55: SPECIAL [C_DATE]
+			-- Stack for semantic values of type C_DATE
 
 	yyvsc55: INTEGER
 			-- Capacity of semantic value stack `yyvs55'
@@ -8555,11 +8693,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp55: INTEGER
 			-- Top of semantic value stack `yyvs55'
 
-	yyspecial_routines55: KL_SPECIAL_ROUTINES [C_TIME]
-			-- Routines that ought to be in SPECIAL [C_TIME]
+	yyspecial_routines55: KL_SPECIAL_ROUTINES [C_DATE]
+			-- Routines that ought to be in SPECIAL [C_DATE]
 
-	yyvs56: SPECIAL [C_REAL]
-			-- Stack for semantic values of type C_REAL
+	yyvs56: SPECIAL [C_TIME]
+			-- Stack for semantic values of type C_TIME
 
 	yyvsc56: INTEGER
 			-- Capacity of semantic value stack `yyvs56'
@@ -8567,11 +8705,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp56: INTEGER
 			-- Top of semantic value stack `yyvs56'
 
-	yyspecial_routines56: KL_SPECIAL_ROUTINES [C_REAL]
-			-- Routines that ought to be in SPECIAL [C_REAL]
+	yyspecial_routines56: KL_SPECIAL_ROUTINES [C_TIME]
+			-- Routines that ought to be in SPECIAL [C_TIME]
 
-	yyvs57: SPECIAL [C_INTEGER]
-			-- Stack for semantic values of type C_INTEGER
+	yyvs57: SPECIAL [C_REAL]
+			-- Stack for semantic values of type C_REAL
 
 	yyvsc57: INTEGER
 			-- Capacity of semantic value stack `yyvs57'
@@ -8579,11 +8717,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp57: INTEGER
 			-- Top of semantic value stack `yyvs57'
 
-	yyspecial_routines57: KL_SPECIAL_ROUTINES [C_INTEGER]
-			-- Routines that ought to be in SPECIAL [C_INTEGER]
+	yyspecial_routines57: KL_SPECIAL_ROUTINES [C_REAL]
+			-- Routines that ought to be in SPECIAL [C_REAL]
 
-	yyvs58: SPECIAL [C_TERMINOLOGY_CODE]
-			-- Stack for semantic values of type C_TERMINOLOGY_CODE
+	yyvs58: SPECIAL [C_INTEGER]
+			-- Stack for semantic values of type C_INTEGER
 
 	yyvsc58: INTEGER
 			-- Capacity of semantic value stack `yyvs58'
@@ -8591,11 +8729,11 @@ feature {NONE} -- Semantic value stacks
 	yyvsp58: INTEGER
 			-- Top of semantic value stack `yyvs58'
 
-	yyspecial_routines58: KL_SPECIAL_ROUTINES [C_TERMINOLOGY_CODE]
-			-- Routines that ought to be in SPECIAL [C_TERMINOLOGY_CODE]
+	yyspecial_routines58: KL_SPECIAL_ROUTINES [C_INTEGER]
+			-- Routines that ought to be in SPECIAL [C_INTEGER]
 
-	yyvs59: SPECIAL [TERMINOLOGY_CODE]
-			-- Stack for semantic values of type TERMINOLOGY_CODE
+	yyvs59: SPECIAL [C_TERMINOLOGY_CODE]
+			-- Stack for semantic values of type C_TERMINOLOGY_CODE
 
 	yyvsc59: INTEGER
 			-- Capacity of semantic value stack `yyvs59'
@@ -8603,28 +8741,40 @@ feature {NONE} -- Semantic value stacks
 	yyvsp59: INTEGER
 			-- Top of semantic value stack `yyvs59'
 
-	yyspecial_routines59: KL_SPECIAL_ROUTINES [TERMINOLOGY_CODE]
+	yyspecial_routines59: KL_SPECIAL_ROUTINES [C_TERMINOLOGY_CODE]
+			-- Routines that ought to be in SPECIAL [C_TERMINOLOGY_CODE]
+
+	yyvs60: SPECIAL [TERMINOLOGY_CODE]
+			-- Stack for semantic values of type TERMINOLOGY_CODE
+
+	yyvsc60: INTEGER
+			-- Capacity of semantic value stack `yyvs60'
+
+	yyvsp60: INTEGER
+			-- Top of semantic value stack `yyvs60'
+
+	yyspecial_routines60: KL_SPECIAL_ROUTINES [TERMINOLOGY_CODE]
 			-- Routines that ought to be in SPECIAL [TERMINOLOGY_CODE]
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER = 564
+	yyFinal: INTEGER = 567
 			-- Termination state id
 
 	yyFlag: INTEGER = -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER = 89
+	yyNtbase: INTEGER = 92
 			-- Number of tokens
 
-	yyLast: INTEGER = 837
+	yyLast: INTEGER = 853
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER = 330
+	yyMax_token: INTEGER = 333
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER = 181
+	yyNsyms: INTEGER = 184
 			-- Number of symbols
 			-- (terminal and nonterminal)
 
@@ -8650,7 +8800,6 @@ feature -- Initialization
 			create indent.make_empty
 			create rm_attribute_name.make_empty
 			create parent_path_str.make_empty
-			create value_sets.make (0)
 		end
 
 	reset
@@ -8676,7 +8825,7 @@ feature -- Initialization
 			create date_vc
 	
 			set_input_buffer (new_string_buffer (in_text))
-			value_sets.wipe_out
+			compiler_billboard.initialise
 			
 			parse
 		end
@@ -8690,8 +8839,6 @@ feature -- Initialization
 			Result.append ("line " + (in_lineno + source_start_line).out)
 			Result.append (" [last token = " + token_name (last_token) + "]")
 		end
-
-    value_sets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 
 feature {NONE} -- Implementation
 
@@ -8795,6 +8942,12 @@ feature {NONE} -- Implementation
 	new_fake_ac_code: STRING
 		do
 			Result := Fake_adl_14_ac_code_base + fake_code_number.out
+			fake_code_number := fake_code_number + 1
+		end
+
+	new_fake_at_code: STRING
+		do
+			Result := Fake_adl_14_at_code_base + fake_code_number.out
 			fake_code_number := fake_code_number + 1
 		end
 

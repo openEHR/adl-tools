@@ -59,8 +59,8 @@ create
 %}
 
 --------------- Definitions --------------
-ALPHANUM [a-zA-Z0-9]
-ALPHANUM_STR [a-zA-Z0-9_]+
+ALPHANUM_CHAR [a-zA-Z0-9_]
+ALPHANUM_STR {ALPHANUM_CHAR}+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
@@ -69,12 +69,15 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 
 ID_CODE_LEADER id
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
-PATH_SEG [a-z][a-zA-Z0-9_]*(\[id(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*\])?
+ID_CODE {ID_CODE_LEADER}{CODE_STR}
+AT_CODE at{CODE_STR}
+AC_CODE aC{CODE_STR}
+PATH_SEG [a-z]{ALPHANUM_STR}*(\[{ID_CODE}\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
 --------------- Options --------------
-%x IN_STR IN_REGEXP1 IN_VALUE_SET_DEF IN_C_DOMAIN_TYPE
+%x IN_STR IN_REGEXP1 IN_C_DOMAIN_TYPE IN_EXPANDED_VALUE_SET_DEF IN_EXTERNAL_VALUE_SET_DEF
 %option outfile="cadl_14_scanner.e"
 
 %%
@@ -212,43 +215,59 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 ----------/* V_VALUE_SET_REF: term code of form [ac2], [ac0.0.2] */ ---------------
 
-\[local::ac{CODE_STR}\] {
--- \[ac{CODE_STR}\] {
+\[{AC_CODE}\] {
 		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
 	}
 
----------/* V_VALUE_SET_DEF of form */ ------------
--- [terminology_id::code, -- comment
---		     	  code, -- comment
---			  code] -- comment
+---------/* V_EXPANDED_VALUE_SET_DEF of form: */ ------------
+-- [local::atN, -- comment
+--		  atN, -- comment
+--		  atN] -- comment
 --
--- Form with assumed value
--- [terminology_id::code, -- comment
---			  code; -- comment
---			  code] -- an optional assumed value
+-- Form with assumed value:
+-- [local::atN -- comment
+--		atN; -- comment
+--		atN] -- an optional assumed value
 --
 
-\[{NAMECHAR_PAREN}+::[ \t]*	{
-				in_buffer.append_string (text_substring (2, text_count))
-				set_start_condition (IN_VALUE_SET_DEF)
-				term_code_count := 0
-				assumed_term_code_index := 0
-			}
+\[local::[ \t]*	{
+		set_start_condition (IN_EXPANDED_VALUE_SET_DEF)
+		create last_term_constraint_parse_structure_value.make
+		str_ := text_substring (2, text_count)
+		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
+		is_assumed_code := False
+	}
 
-<IN_VALUE_SET_DEF> {
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
-				str_ := text
-				in_buffer.append(text)
-				term_code_count := term_code_count + 1
-				assumed_term_code_index := term_code_count
-			}
+<IN_EXPANDED_VALUE_SET_DEF> {
+	[ \t]*{AT_CODE}[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(';')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			is_assumed_code := True -- for next code, not the one just parsed
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
+	}
 
-	[ \t]*[a-zA-Z0-9._\-]+[ \t]*,[ \t]* {	-- match any line, with ',' termination
-				str_ := text
-				in_buffer.append(text)
-				term_code_count := term_code_count + 1
-			}
+	[ \t]*{AT_CODE}[ \t]*,[ \t]* {	-- match any line, with ',' termination
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(',')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
+	}
 
 	-- count line endings
 	\n+			in_lineno := in_lineno + text_count
@@ -256,26 +275,119 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
 
-	[ \t]*{NAMECHAR}*[ \t]*\] { -- match final line, terminating in ']'
-				if assumed_term_code_index > 0 and assumed_term_code_index /= term_code_count then
-					last_token := ERR_VALUE_SET_DEF
-					create err_str.make (in_buffer.count)
-					err_str.append (in_buffer)
-					in_buffer.wipe_out
-					last_string_value := str_
-				else
-					in_buffer.append (text_substring(1, text_count-1))
-					create str_.make (in_buffer.count)
-					str_.append (in_buffer)
-					in_buffer.wipe_out
-					last_string_value := str_
-					last_string_value.prune_all(' ')
-					last_string_value.prune_all('%T')
-					last_string_value.prune_all('%N')
-					last_token := V_VALUE_SET_DEF
-				end
-				set_start_condition (INITIAL)
-			}
+	[ \t]*{AT_CODE}[ \t]*\] { -- match final line, terminating in ']'
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(']')
+		if is_assumed_code then
+			if last_term_constraint_parse_structure_value.has_code (str_) and not last_term_constraint_parse_structure_value.is_single then
+				last_term_constraint_parse_structure_value.set_assumed_code (str_)
+				last_token := V_EXPANDED_VALUE_SET_DEF
+			else
+				last_token := ERR_VALUE_SET_DEF_ASSUMED
+				err_str.append (str_)
+			end
+		elseif not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			last_token := V_EXPANDED_VALUE_SET_DEF
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+		end
+		set_start_condition (INITIAL)
+	}
+
+	.|\n		|
+	<<EOF>>	{	-- Catch-all rules (no backing up)
+			last_token := ERR_VALUE_SET_DEF
+			set_start_condition (INITIAL)
+	}
+}
+
+---------/* V_EXTERNAL_VALUE_SET_DEF of form */ ------------
+-- [terminology_id::code, -- comment
+--		     	  code, -- comment
+--			  code] -- comment
+--
+-- Form with assumed value
+-- [terminology_id:: -- comment
+--			  code; -- comment
+--			  code] -- an optional assumed value
+--
+
+\[{NAMECHAR_PAREN}+::[ \t]*	{
+		set_start_condition (IN_EXTERNAL_VALUE_SET_DEF)
+		create last_term_constraint_parse_structure_value.make
+		str_ := text_substring (2, text_count)
+		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
+		is_assumed_code := False
+	}
+
+<IN_EXTERNAL_VALUE_SET_DEF> {
+	[ \t]*{NAMECHAR}+[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(';')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			is_assumed_code := True -- for next code, not the one just parsed
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
+	}
+
+	[ \t]*{NAMECHAR}+[ \t]*,[ \t]* {	-- match any line, with ',' termination
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(',')
+		if not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+			set_start_condition (INITIAL)
+		end
+	}
+
+	-- count line endings
+	\n+			in_lineno := in_lineno + text_count
+
+	-- count line endings with comments
+	\-\-[^\n]*\n	in_lineno := in_lineno + 1
+
+	[ \t]*{NAMECHAR}+[ \t]*\] { -- match final line, terminating in ']'
+		str_ := text
+		str_.prune_all(' ')
+		str_.prune_all('%T')
+		str_.prune_all(']')
+		if is_assumed_code then
+			if last_term_constraint_parse_structure_value.has_code (str_) and not last_term_constraint_parse_structure_value.is_single then
+				last_term_constraint_parse_structure_value.set_assumed_code (str_)
+				last_token := V_EXTERNAL_VALUE_SET_DEF
+			else
+				last_token := ERR_VALUE_SET_DEF_ASSUMED
+				err_str.append (str_)
+			end
+		elseif not last_term_constraint_parse_structure_value.has_code (str_) then
+			last_term_constraint_parse_structure_value.add_code (str_)
+			last_token := V_EXTERNAL_VALUE_SET_DEF
+		else
+			last_token := ERR_VALUE_SET_DEF_DUP_CODE
+			err_str.append (str_)
+		end
+		set_start_condition (INITIAL)
+	}
+
+	.|\n		|
+	<<EOF>>	{	-- Catch-all rules (no backing up)
+			last_token := ERR_VALUE_SET_DEF
+			set_start_condition (INITIAL)
+	}
 }
 
 ----------/* archetype id */ -------------------------------------------------
@@ -387,7 +499,9 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 				last_string_value := text
 			}
 
-----------/* V_C_DOMAIN_TYPE - sections of ODIN syntax */ -------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
+------ START LEGACY ADL 1.4 - V_C_DOMAIN_TYPE - sections of ODIN syntax 
+------
 
 -- this is an attempt to match a ODIN section inside cADL. It will probably never work properly since 
 -- there can be '>' inside "||" ranges, and also strings containing any character, e.g. units string
@@ -465,6 +579,10 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
  				in_buffer.append_string (text)
   			}
 }
+
+------
+------ END LEGACY ADL 1.4
+-----------------------------------------------------------------------------------------------------------
 
 ----------/* V_TYPE_IDENTIFIER */ --------------------------------------
 [A-Z]{IDCHAR}*	{
@@ -673,6 +791,7 @@ feature {NONE} -- Initialization
 			create odin_parser_error.make
 			create str_.make_empty
 			create last_string_value.make_empty
+			create last_term_constraint_parse_structure_value.make
 			create last_c_dv_quantity_value.default_create
 		end
 
@@ -717,12 +836,10 @@ feature {NONE} -- Implementation
 
 	odin_parser_error: ERROR_ACCUMULATOR
 
-	term_code_count: INTEGER
-			-- Number of term codes found so far parsing a TERM_CONSTRAINT.
-
-	assumed_term_code_index: INTEGER
-			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
-
 	tid: INTEGER
+
+	is_assumed_code: BOOLEAN
+			-- True if next code parsed is assumed code
+
 
 end

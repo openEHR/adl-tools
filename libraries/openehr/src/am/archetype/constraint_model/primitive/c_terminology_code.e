@@ -21,23 +21,20 @@ inherit
 		end
 
 create
-	make, make_from_codes, make_from_code, make_from_terminology_code, make_value_set_code, default_create
+	make_from_structure, make_from_code, make_from_terminology_code, make_value_set_code, default_create
 
 feature -- Initialisation
 
-	make (a_terminology_id: STRING)
+	make_from_structure (a_term_constraint: TERM_CONSTRAINT_PARSE_STRUCTURE)
 		do
 			default_create
-			terminology_id := a_terminology_id
-		end
-
-	make_from_codes (a_terminology_id: STRING; codes: LIST [STRING])
-		require
-			Codes_valid: codes.object_comparison and not codes.is_empty
-		do
-			default_create
-			terminology_id := a_terminology_id
-			code_list.append (codes)
+			terminology_id := a_term_constraint.terminology_id
+			if a_term_constraint.has_codes then
+				code_list.append (a_term_constraint.codes)
+			end
+			if attached a_term_constraint.assumed_code as att_ac then
+				create assumed_value.make (terminology_id, att_ac)
+			end
 		end
 
 	make_from_code (a_terminology_id: STRING; code: STRING)
@@ -75,7 +72,7 @@ feature -- Access
 	value_set_code: STRING
 			-- ac-code of value set
 		attribute
-			create Result.make_from_string (Default_constraint_code)
+			create Result.make_empty
 		end
 
 	code_list: ARRAYED_LIST [STRING]
@@ -192,12 +189,40 @@ feature -- Modification
 			value_set_code := a_value_set_code
 		end
 
+feature {AOM_POST_PARSE_PROCESSOR} -- Modification
+
+	replace_code (old_code, new_code: STRING)
+		require
+			code_list.has (old_code)
+		local
+			i: INTEGER
+		do
+			-- due to tuple constraints, there could be more than
+			-- one occurrence of the old_code in the list
+			from code_list.start until code_list.off loop
+				if code_list.item.is_equal (old_code) then
+					code_list.replace (new_code)
+				end
+				code_list.forth
+			end
+
+			-- check the assumed code
+			if attached assumed_value as att_av then
+				if att_av.code_string.is_equal (old_code) then
+					att_av.set_code_string (new_code)
+				end
+			end
+		end
+
 feature {P_C_TERMINOLOGY_CODE} -- Modification
 
-	set_constraint (a_terminology_id: STRING; a_terminology_version: detachable STRING; a_code_list: detachable ARRAYED_LIST [STRING])
+	set_constraint (a_terminology_id: STRING; a_terminology_version, a_value_set_code: detachable STRING; a_code_list: detachable ARRAYED_LIST [STRING])
 		do
 			terminology_id := a_terminology_id
 			terminology_version := a_terminology_version
+			if attached a_value_set_code as att_vs_code then
+				value_set_code := att_vs_code
+			end
 			if attached a_code_list as att_cl then
 				code_list := att_cl
 			end
@@ -225,10 +250,10 @@ feature -- Output
 					end
 					Result.append (code_list_csr.item)
 				end
+			end
 
-				if attached assumed_value as av then
-					Result.append ("; " + av.code_string)
-				end
+			if attached assumed_value as av then
+				Result.append ("; " + av.code_string)
 			end
 			Result.append ("]")
 		end
