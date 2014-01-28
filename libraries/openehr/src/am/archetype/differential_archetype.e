@@ -122,7 +122,9 @@ feature -- Access
 			across terminology.value_sets as vs_csr loop
 				value_codes.merge (vs_csr.item.members)
 			end
-			value_codes.merge (value_codes_index.current_keys)
+			across value_codes_index.current_keys as keys_csr loop
+				value_codes.extend (keys_csr.item)
+			end
 			across terminology.value_codes as term_codes_csr loop
 				if not value_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)

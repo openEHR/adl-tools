@@ -141,6 +141,12 @@ feature -- Status Report
 			Result := valid_value (a_value)
 		end
 
+	has_value_code (a_value_code: STRING): BOOLEAN
+			-- True if this constraint object knows about the at-code `a_value_code'
+		do
+			Result := code_list.has (a_value_code) or else (attached assumed_value as att_av and then att_av.code_string.is_equal (a_value_code))
+		end
+
 feature -- Comparison
 
 	c_equal (other: like Current): BOOLEAN
@@ -193,7 +199,7 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 
 	replace_code (old_code, new_code: STRING)
 		require
-			code_list.has (old_code)
+			has_value_code (old_code)
 		local
 			i: INTEGER
 		do
