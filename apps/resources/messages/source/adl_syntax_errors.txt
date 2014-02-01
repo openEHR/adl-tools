@@ -59,7 +59,6 @@ templates = <
 		["STCCP"] = <"Syntax error: invalid term code constraint pattern '$1': $2">
 		["STCDC"] = <"Syntax error: duplicate code $1 found in code list of terminology constraint at path $2">
 		["STCAC"] = <"Syntax error: assumed value code $1 not found in code list of terminology constraint at path $2">
-		["STCV"] = <"Syntax error in coded value at path $1">
 		["STCNT"] = <"Syntax error: terminology not specified">
 	>
 >

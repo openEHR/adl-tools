@@ -97,6 +97,12 @@ templates = <
 		["options_auth_org_label"] = <"Organisation: ">
 		["options_auth_copyright_label"] = <"Copyright: ">
 
+		["options_namespaces_tab_text"] = <"Namespaces">
+		["options_namespace_table_col_1_text"] = <"Namespace">
+		["options_namespace_table_col_2_text"] = <"URI">
+
+		["options_terminology_uris_tab_text"] = <"Terminology URIs">
+
 		-- AOM_PROFILE_DIAPLOG
 		["aom_profile_dialog_title"] = <"ADL Workbench AOM profile Configuration">
 		["aom_profile_dialog_header_label"] = <"Archetype Object Model (AOM) profiles loaded shown below.%NCheck or uncheck to load as required.">

@@ -281,7 +281,7 @@ feature {NONE} -- Implementation
 				-- member code rows
 				across vsets_csr.item.members as vset_members_csr loop
 					evx_vsets_grid.add_sub_row (ev_last_row, vset_members_csr.item)
-					vmem_code_text := terminology.term_definition (selected_language, vset_members_csr.item).text
+					vmem_code_text := source.flat_archetype.terminology.term_definition (selected_language, vset_members_csr.item).text
 					if show_codes then
 						vmem_code_string := annotated_code (vset_members_csr.item, vmem_code_text, " ")
 					else
@@ -401,14 +401,14 @@ feature {NONE} -- Implementation
 			check attached selected_language end
 			create code.make_empty
 			if attached {VALUE_SET_RELATION} a_grid_row.data as vset then
-				code := vset.origin
+				code := vset.id
 				col := Value_sets_grid_col_code
 			elseif attached {STRING} a_grid_row.data as str then
 				code := str
 				col := Value_sets_grid_col_member_code
 			end
 
-			term_def := terminology.term_definition (selected_language, code)
+			term_def := source.flat_archetype.terminology.term_definition (selected_language, code)
 			if show_codes then
 				row_str := annotated_code (code, term_def.text, " ")
 			else

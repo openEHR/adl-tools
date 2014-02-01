@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (673)
+			create message_table.make (675)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -358,6 +358,8 @@ feature -- Initialisation
 			message_table.put ("Name: ", ec_options_auth_name_label)
 			message_table.put ("Organisation: ", ec_options_auth_org_label)
 			message_table.put ("Copyright: ", ec_options_auth_copyright_label)
+			message_table.put ("Namespaces", ec_options_namespaces_tab_text)
+			message_table.put ("Terminology URIs", ec_options_terminology_uris_tab_text)
 			message_table.put ("ADL Workbench AOM profile Configuration", ec_aom_profile_dialog_title)
 			message_table.put ("Archetype Object Model (AOM) profiles loaded shown below.%NCheck or uncheck to load as required.", ec_aom_profile_dialog_header_label)
 			message_table.put ("Directory $1 not found; please specify a valid directory", ec_aom_profile_dir_not_found)

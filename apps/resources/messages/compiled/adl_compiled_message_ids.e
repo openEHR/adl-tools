@@ -343,6 +343,8 @@ feature -- Definitions
 		ec_options_auth_name_label: STRING = "options_auth_name_label"
 		ec_options_auth_org_label: STRING = "options_auth_org_label"
 		ec_options_auth_copyright_label: STRING = "options_auth_copyright_label"
+		ec_options_namespaces_tab_text: STRING = "options_namespaces_tab_text"
+		ec_options_terminology_uris_tab_text: STRING = "options_terminology_uris_tab_text"
 		ec_aom_profile_dialog_title: STRING = "aom_profile_dialog_title"
 		ec_aom_profile_dialog_header_label: STRING = "aom_profile_dialog_header_label"
 		ec_aom_profile_dir_not_found: STRING = "aom_profile_dir_not_found"
