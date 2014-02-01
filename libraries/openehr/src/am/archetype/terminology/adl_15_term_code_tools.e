@@ -120,10 +120,6 @@ feature -- Definitions
 			Result.append (Primitive_node_code_number)
 		end
 
-	uri_template: STRING = "http://$terminology_id.info/id/$code_string"
-
-	uri_with_version_template: STRING = "http://$terminology_id.info/ver/$terminology_version/id/$code_string"
-
 	Fake_adl_14_node_id_base: STRING = "id1000000"
 			-- used to create new node ids by appending integer strings to create e.g. id10000001, id10000002, etc.
 			-- These can easily be detected in code in order to rewrite them to normal ids
@@ -538,19 +534,6 @@ feature -- Conversion
 			else
 				create Result.make_from_string (an_adl_14_code)
 			end
-		end
-
-	term_code_to_uri (a_term_code: TERMINOLOGY_CODE): STRING
-			-- convert to a URI string
-		do
-			if attached a_term_code.terminology_version as ver then
-				create Result.make_from_string (uri_with_version_template)
-				Result.replace_substring_all ("$terminology_version", ver)
-			else
-				create Result.make_from_string (uri_template)
-			end
-			Result.replace_substring_all ("$terminology_id", a_term_code.terminology_id)
-			Result.replace_substring_all ("$code_string", a_term_code.code_string)
 		end
 
 feature {NONE} -- Implementation

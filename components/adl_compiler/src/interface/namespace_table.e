@@ -9,7 +9,7 @@ note
 						 ["nhs"] = <"uk.gov.nhs">
 					 >
 				 ]"
-	keywords:    "test, dADL"
+	keywords:    "ODIN"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -76,6 +76,9 @@ feature -- Access
 			Result := namespaces.count
 		end
 
+	namespaces: HASH_TABLE [STRING, STRING]
+			-- Hash table of namespacereferences, keyed by their namespace.
+
 feature -- Status Report
 
 	has_namespace (a_namespace: STRING): BOOLEAN
@@ -135,11 +138,6 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		do
 		end
-
-feature {NONE} -- Implementation
-
-	namespaces: HASH_TABLE [STRING, STRING]
-			-- Hash table of namespacereferences, keyed by their namespace.
 
 end
 

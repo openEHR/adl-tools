@@ -755,7 +755,9 @@
 <div class="lhs">
 <span class="lhs_variable" id="ordinal">ordinal</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="rhs_variable"><a href="#term_code">term_code</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="token">V_EXPANDED_VALUE_SET_DEF </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#integer_value">integer_value</a> </span><span class="token">SYM_INTERVAL_DELIM </span><span class="token">ERR_VALUE_SET_DEF </span></div>
 </div>
 
 <div class="rule">
@@ -1134,15 +1136,6 @@
 | <span class="rhs_variable"><a href="#duration_interval_list">duration_interval_list</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#duration_interval">duration_interval</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_LIST_CONTINUE </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="term_code">term_code</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_EXPANDED_VALUE_SET_DEF </span></div>
-<div class="rhs">
-| <span class="token">ERR_VALUE_SET_DEF </span></div>
 </div>
 
 </body>

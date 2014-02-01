@@ -191,7 +191,6 @@ create
 %type <C_REAL> c_real
 %type <C_INTEGER> c_integer
 %type <C_TERMINOLOGY_CODE> c_terminology_code
-%type <TERMINOLOGY_CODE> term_code
 
 %%
 
@@ -355,6 +354,18 @@ c_object: c_complex_object
 		}
 	| V_C_DV_QUANTITY
 		{
+			if attached last_c_dv_quantity_value.property as att_prop then
+				last_c_dv_quantity_value.set_property (create {TERMINOLOGY_CODE}.make (Local_terminology_id, new_fake_at_code))
+
+				-- add term binding
+				if not compiler_billboard.term_bindings.has (att_prop.terminology_id) then
+					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), att_prop.terminology_id)
+				end
+				check attached compiler_billboard.term_bindings.item (att_prop.terminology_id) as att_bindings_for_terminology then
+					str := uri_for_code (att_prop.terminology_id, att_prop.code_string)
+					att_bindings_for_terminology.put (create {URI}.make_from_string (str), last_fake_at_code)
+				end
+			end
 			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent (new_fake_node_id))
 		}
 	| ERR_C_DV_QUANTITY
@@ -1501,7 +1512,7 @@ c_string: V_STRING 	-- single value, generates closed list
 
 c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		{
-			create $$.make_value_set_code ($1)
+			create $$.make ($1)
 		}
 -------------------------------------------------------------------------------------------------------------
 --- START Legacy ADL 1.4 inline term set
@@ -1510,29 +1521,29 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		{
 			-- e.g. "local::at40"
 			if $1.is_single then
-				create $$.make_from_structure ($1)
+				create $$.make ($1.codes.first)
 
 			-- e.g. "local::at40, at41; at40"; we have to synthesise an ac-code and convert the inline to a separate value set
 			else
 				-- replace by ac-code ref and store value set for addition to terminology
-				create $$.make_value_set_code (new_fake_ac_code)
+				create $$.make (new_fake_ac_code)
 				if attached $1.assumed_code as att_ac then
 					$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 				end
-				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, $1.codes), $$.value_set_code)
+				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, $1.codes), $$.code)
 			end
 		}
 	| V_EXTERNAL_VALUE_SET_DEF	
 		{
 			-- the following statement generates an at-coded equivalent of the value-set just scanned, 
 			-- and also the appropriate term_binding structure for it
-			$1.convert_to_local (agent new_fake_at_code, uri_template)
+			$1.convert_to_local (agent new_fake_at_code)
 
 			-- e.g. "openehr::250"; here we have to synthesise an at-code and binding
 			-- the at-code definition is synthesised later when the proper at-code is substituted
 			if $1.is_single then
 				check attached $1.last_converted_local as att_tcps then
-					create $$.make_from_structure (att_tcps)
+					create $$.make (att_tcps.codes.first)
 				end
 
 				-- add term binding
@@ -1548,13 +1559,13 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 			-- e.g. "openehr::250, 251, 249"; here we have to synthesise at-codes and bindings and value set
 			-- the at-code definitions are synthesised later when the proper at-codes are substituted
 			else
-				create $$.make_value_set_code (new_fake_ac_code)
+				create $$.make (new_fake_ac_code)
 
 				if attached $1.last_converted_local as att_tcps then
 					if attached att_tcps.assumed_code as att_ac then
 						$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, att_tcps.codes), $$.value_set_code)
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, att_tcps.codes), $$.code)
 				end
 
 				-- add term bindings
@@ -1632,7 +1643,7 @@ c_ordinal: ordinal
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
 			$$.attribute_tuples.first.put_member ($$.attribute_with_name ("symbol"))
-			$$.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make_from_terminology_code ($1.symbol))
+			$$.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make ($1.symbol))
 		}
 	| c_ordinal ',' ordinal
 		{
@@ -1650,17 +1661,17 @@ c_ordinal: ordinal
 			elseif $$.attribute_with_name ("symbol").children.there_exists (
 					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
 						do
-							Result := attached {C_TERMINOLOGY_CODE} co as ci and then ci.valid_value (a_sym)
-						end (?, $3.symbol)
+							Result := attached {C_TERMINOLOGY_CODE} co as ctc and then ctc.valid_value (a_sym)
+						end (?, create {TERMINOLOGY_CODE}.make (Local_terminology_id, $3.symbol))
 				)
 			then
-				abort_with_error (ec_VCOC, <<$3.symbol.out>>)
+				abort_with_error (ec_VCOC, <<$3.symbol>>)
 
 			elseif attached {C_INTEGER} $$.attribute_with_name ("value").children.first as ci and 
 				attached {C_TERMINOLOGY_CODE} $$.attribute_with_name ("symbol").children.first as ctc 
 			then
 				ci.add_value ($3.value)
-				ctc.add_code ($3.symbol.code_string)
+				ctc.add_tuple_code ($3.symbol)
 			end
 		}
  	| c_ordinal ';' integer_value
@@ -1676,10 +1687,13 @@ c_ordinal: ordinal
  		}
 	;
 
-ordinal: integer_value SYM_INTERVAL_DELIM term_code
+ordinal: integer_value SYM_INTERVAL_DELIM V_EXPANDED_VALUE_SET_DEF
 		{
-			-- create ORDINAL
-			create $$.make ($1, $3)
+			create $$.make ($1, $3.first_code)
+		}
+	| integer_value SYM_INTERVAL_DELIM ERR_VALUE_SET_DEF
+		{
+			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
 		}
 	;
 
@@ -2383,20 +2397,6 @@ duration_interval_list: duration_interval ',' duration_interval
 ------------- END TAKEN FROM ODIN_VALIDATOR.Y -------------------
 -----------------------------------------------------------------
 
-term_code: V_EXPANDED_VALUE_SET_DEF
-		{
-			if $1.codes.count = 1 and $1.is_local then
-				create $$.make ($1.terminology_id, $1.first_code)
-			else
-				abort_with_error (ec_STCV, <<c_attrs.item.path>>)
-			end
-		}
-	| ERR_VALUE_SET_DEF
-		{
-			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
-		}
-	;
-
 %%
 
 feature -- Definitions
@@ -2565,7 +2565,13 @@ feature {NONE} -- Implementation
 	new_fake_at_code: STRING
 		do
 			Result := Fake_adl_14_at_code_base + fake_code_number.out
+			last_fake_at_code := Result
 			fake_code_number := fake_code_number + 1
+		end
+
+	last_fake_at_code: STRING
+		attribute
+			create Result.make_empty
 		end
 
 	new_fake_node_id: STRING

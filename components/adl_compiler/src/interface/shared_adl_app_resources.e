@@ -104,6 +104,10 @@ feature -- Definitions
 			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 		end
 
+	Default_uri_template: STRING = "http://$terminology_id.org/id/$code_string"
+
+	Default_uri_with_version_template: STRING = "http://$terminology_id.org/ver/$terminology_version/id/$code_string"
+
 feature -- Initialisation
 
 	app_cfg_initialise
@@ -192,6 +196,12 @@ feature -- Application Switches
 			current_repo_set: repository_config_table.current_repository_name.same_string (a_repo_name)
 		end
 
+	default_namespaces: HASH_TABLE [STRING, STRING]
+		once
+			create Result.make(0)
+			Result.put ("org.openehr", "oe")
+		end
+
 	namespace_table_path: STRING
 			-- path of the NAMESPACE_TABLE within the parent object representing the whole .cfg file
 		once
@@ -215,7 +225,7 @@ feature -- Application Switches
 				if attached {NAMESPACE_TABLE} app_cfg.object_value (namespace_table_path, ({NAMESPACE_TABLE}).name) as p then
 					Result := p
 				else
-					create Result.default_create
+					create Result.make (default_namespaces)
 				end
 				namespace_table_cache.put (Result)
 			end
@@ -226,6 +236,73 @@ feature -- Application Switches
 		do
 			namespace_table_cache.put (a_namespace_table)
 			app_cfg.put_object (namespace_table_path, a_namespace_table)
+		end
+
+	default_terminology_uri_templates: HASH_TABLE [STRING, STRING]
+		once
+			create Result.make(0)
+			Result.put ("http://snomedct.info/id/$code_string", "snomedct")
+			Result.put ("http://openehr.org/id/$code_string", "openehr")
+			Result.put ("http://loinc.org/id/$code_string", "loinc")
+		end
+
+	terminology_settings_path: STRING
+			-- path of the TERMINOLOGY_SETTINGS within the parent object representing the whole .cfg file
+		once
+			Result := "/" + {TERMINOLOGY_SETTINGS}.root_attribute_name
+		end
+
+	terminology_settings: TERMINOLOGY_SETTINGS
+			-- hash of terminology template URIs keyed by terminology name. The data are stored in the following way:
+			--
+			--		 uri_templates = <
+			--			 ["snomedct"] = <"http://snomedct.info/id/$code_string">
+			--			 ["loinc"] = <"http://loinc.org/id/$code_string">
+			--			 ["openehr"] = <"http://openehr.org/id/$code_string">
+			--		 >
+			--
+		do
+			if attached terminology_settings_cache.item as nsi then
+				Result := nsi
+			else
+				if attached {TERMINOLOGY_SETTINGS} app_cfg.object_value (terminology_settings_path, ({TERMINOLOGY_SETTINGS}).name) as p then
+					Result := p
+				else
+					create Result.make (default_terminology_uri_templates)
+				end
+				terminology_settings_cache.put (Result)
+			end
+		end
+
+	set_terminology_settings (a_terminology_settings: TERMINOLOGY_SETTINGS)
+			-- set terminology settings.
+		do
+			terminology_settings_cache.put (a_terminology_settings)
+			app_cfg.put_object (terminology_settings_path, a_terminology_settings)
+		end
+
+	term_code_to_uri (a_term_code: TERMINOLOGY_CODE): STRING
+			-- convert to a URI string
+		do
+			if terminology_settings.uri_templates.has (a_term_code.terminology_id.as_lower) then
+				create Result.make_from_string (terminology_settings.uri (a_term_code.terminology_id.as_lower))
+			else
+				create Result.make_from_string (Default_uri_template)
+				Result.replace_substring_all ("$terminology_id", a_term_code.terminology_id)
+			end
+			Result.replace_substring_all ("$code_string", a_term_code.code_string)
+		end
+
+	uri_for_code (a_terminology_id, a_code: STRING): STRING
+			-- convert to a URI string
+		do
+			if terminology_settings.uri_templates.has (a_terminology_id.as_lower) then
+				create Result.make_from_string (terminology_settings.uri (a_terminology_id.as_lower))
+			else
+				create Result.make_from_string (Default_uri_template)
+				Result.replace_substring_all ("$terminology_id", a_terminology_id)
+			end
+			Result.replace_substring_all ("$code_string", a_code)
 		end
 
 	init_gen_dirs_from_current_repository
@@ -497,6 +574,11 @@ feature {NONE} -- Cached Settings
 		end
 
 	namespace_table_cache: CELL [detachable NAMESPACE_TABLE]
+		once
+			create Result.put (Void)
+		end
+
+	terminology_settings_cache: CELL [detachable TERMINOLOGY_SETTINGS]
 		once
 			create Result.put (Void)
 		end

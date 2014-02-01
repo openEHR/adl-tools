@@ -1520,7 +1520,7 @@ c_string: V_STRING 	-- single value, generates closed list
 
 c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		{
-			create $$.make_value_set_code ($1)
+			create $$.make ($1)
 		}
 -------------------------------------------------------------------------------------------------------------
 --- START Legacy ADL 1.4 inline term set
@@ -1529,33 +1529,33 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		{
 			-- e.g. "local::at40"
 			if $1.is_single then
-				create $$.make_from_structure ($1)
+				create $$.make ($1.codes.first)
 
 			-- e.g. "local::at40, at41; at40"; we have to synthesise an ac-code and convert the inline 
 			-- definition to a separate value set
 			else
 				-- replace by ac-code ref and store value set for addition to terminology
-				create $$.make_value_set_code (new_fake_ac_code)
+				create $$.make (new_fake_ac_code)
 				if attached $1.assumed_code as att_ac then
 					$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 				end
-				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, $1.codes), $$.value_set_code)
+				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, $1.codes), $$.code)
 			end
 		}
-	| V_EXTERNAL_VALUE_SET_DEF	
+	| V_EXTERNAL_VALUE_SET_DEF
 		{
 			-- the following statement generates an at-coded equivalent of the value-set just scanned, 
 			-- and also the appropriate term_binding structure for it
-			$1.convert_to_local (agent new_fake_at_code, uri_template)
+			$1.convert_to_local (agent new_fake_at_code)
 
 			-- e.g. "openehr::250"; here we have to synthesise an at-code and binding
 			-- the at-code definition is synthesised later when the proper at-code is substituted
 			if $1.is_single then
 				check attached $1.last_converted_local as att_tcps then
-					create $$.make_from_structure (att_tcps)
+					create $$.make (att_tcps.codes.first)
 				end
 
-				-- add term binding
+				-- add term binding if not already added in 
 				if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
 					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
 				end
@@ -1563,18 +1563,21 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 					attached $1.last_converted_local_bindings as att_b
 				then
 					att_bindings_for_terminology.merge (att_b)
+					if attached $1.last_converted_binding_map as att_bmap then
+						compiler_billboard.binding_code_map.merge (att_bmap)
+					end
 				end
 
 			-- e.g. "openehr::250, 251, 249"; here we have to synthesise at-codes and bindings and value set
 			-- the at-code definitions are synthesised later when the proper at-codes are substituted
 			else
-				create $$.make_value_set_code (new_fake_ac_code)
+				create $$.make (new_fake_ac_code)
 
 				if attached $1.last_converted_local as att_tcps then
 					if attached att_tcps.assumed_code as att_ac then
 						$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.value_set_code, att_tcps.codes), $$.value_set_code)
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, att_tcps.codes), $$.code)
 				end
 
 				-- add term bindings

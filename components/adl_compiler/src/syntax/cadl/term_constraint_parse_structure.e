@@ -16,6 +16,12 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
+		end
+
 create
 	make, make_local
 
@@ -39,7 +45,7 @@ feature -- Access
 
 	terminology_id: STRING
 
-	codes: ARRAYED_SET [STRING]
+	codes: ARRAYED_LIST [STRING]
 
 	assumed_code: detachable STRING
 
@@ -105,7 +111,7 @@ feature -- Modification
 
 feature -- Factory
 
-	convert_to_local (at_code_generator: FUNCTION [ANY, TUPLE, STRING]; binding_uri_template: STRING)
+	convert_to_local (at_code_generator: FUNCTION [ANY, TUPLE, STRING])
 			-- create an at-coded equivalent structure in `last_converted_local' and bindings from the
 			-- at-codes in the new structure to the current codes in `last_converted_local_bindings',
 			-- using the URI template `binding_uri_template', which must have $terminology_id and
@@ -117,6 +123,7 @@ feature -- Factory
 		do
 			create last_converted_local.make_local
 			create last_converted_local_bindings.make (0)
+			create last_converted_binding_map.make (0)
 			across codes as codes_csr loop
 				-- generate at-code in new structure
 				new_at_code := at_code_generator.item ([])
@@ -128,16 +135,17 @@ feature -- Factory
 				end
 
 				-- create a binding entry
-				create uri_str.make_from_string (binding_uri_template)
-				uri_str.replace_substring_all ("$terminology_id", terminology_id)
-				uri_str.replace_substring_all ("$code_string", codes_csr.item)
+				uri_str := uri_for_code (terminology_id, codes_csr.item)
 				last_converted_local_bindings.put (create {URI}.make_from_string (uri_str), new_at_code)
+				last_converted_binding_map.put (new_at_code, codes_csr.item)
 			end
 		end
 
 	last_converted_local: detachable TERM_CONSTRAINT_PARSE_STRUCTURE
 
 	last_converted_local_bindings: detachable HASH_TABLE [URI, STRING]
+
+	last_converted_binding_map: detachable HASH_TABLE [STRING, STRING]
 
 end
 

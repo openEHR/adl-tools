@@ -28,6 +28,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all
+		end
+
 create
 	make
 %}
@@ -99,7 +104,6 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 \[{ADL_14_AC_CODE}\] {
 		out_buffer.append_character ('[')
-		out_buffer.append (Local_terminology_id + "::")
 		output_new_at_ac_code (text_substring (2, text_count - 1))
 		out_buffer.append_character (']')
 	}

@@ -213,6 +213,38 @@ feature {NONE} -- Initialization
 			ev_notebook_authoring_vb.disable_item_expand (auth_copyright_text_ctl.ev_root_container)
 			gui_controls.extend (auth_copyright_text_ctl)
 
+			-- ========== Tab 5 - Namespace settings ==========
+
+			create ev_notebook_namespaces_vb
+			ev_notebook.extend (ev_notebook_namespaces_vb)
+			ev_notebook.set_item_text (ev_notebook_namespaces_vb, get_text (ec_options_namespaces_tab_text))
+
+			create namespaces_ctl.make_linked (get_text (ec_options_namespaces_tab_text),
+				agent :HASH_TABLE [STRING, STRING] do Result := namespace_table.namespaces end,
+				agent (a_key, a_val: STRING) do namespace_table.put_namespace (a_key, a_val) end,
+				agent (a_key: STRING) do namespace_table.remove_namespace (a_key) end,
+				Void,
+				0, 150, False, Void)
+
+			ev_notebook_namespaces_vb.extend (namespaces_ctl.ev_root_container)
+			gui_controls.extend (namespaces_ctl)
+
+
+			-- ========== Tab6 - Namespace settings ==========
+
+			create ev_notebook_terminology_settings_vb
+			ev_notebook.extend (ev_notebook_terminology_settings_vb)
+			ev_notebook.set_item_text (ev_notebook_terminology_settings_vb, get_text (ec_options_terminology_uris_tab_text))
+
+			create terminology_settings_ctl.make_linked (get_text (ec_options_terminology_uris_tab_text),
+				agent :HASH_TABLE [STRING, STRING] do Result := terminology_settings.uri_templates end,
+				agent (a_key, a_val: STRING) do terminology_settings.put_uri (a_key, a_val) end,
+				agent (a_key: STRING) do terminology_settings.remove_uri (a_key) end,
+				Void,
+				0, 150, False, Void)
+
+			ev_notebook_terminology_settings_vb.extend (terminology_settings_ctl.ev_root_container)
+			gui_controls.extend (terminology_settings_ctl)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
@@ -224,7 +256,7 @@ feature {NONE} -- Initialization
 		do
 			precursor
 
-			set_minimum_width (400)
+			set_minimum_width (700)
 			set_title (get_text (ec_option_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
@@ -289,6 +321,12 @@ feature -- Events
 				else
 					has_changed_navigator_options := False
 				end
+
+				-- namespaces
+				set_namespace_table (namespace_table)
+
+				-- terminology template URIs
+				set_terminology_settings (terminology_settings)
 			end
 		end
 
@@ -332,7 +370,9 @@ feature {NONE} -- Implementation
 
 	ev_notebook: EV_NOTEBOOK
 
-	ev_notebook_paths_vb, ev_notebook_compiler_settings_vb, ev_notebook_ui_settings_vb, ev_notebook_authoring_vb: EV_VERTICAL_BOX
+	ev_notebook_paths_vb, ev_notebook_compiler_settings_vb, ev_notebook_ui_settings_vb: EV_VERTICAL_BOX
+
+	ev_notebook_authoring_vb, ev_notebook_namespaces_vb, ev_notebook_terminology_settings_vb: EV_VERTICAL_BOX
 
 	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
@@ -341,6 +381,8 @@ feature {NONE} -- Implementation
 	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl: EVX_CHECK_BOX_CONTROL
 
 	auth_name_text_ctl, auth_org_text_ctl, auth_copyright_text_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
+
+	namespaces_ctl, terminology_settings_ctl: EVX_HASH_TABLE_CONTROL
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
