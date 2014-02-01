@@ -1,6 +1,14 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Constrainer type for instances of TERMINOLOGY_CODE"
+	description: "[
+					Constrainer type for instances of TERMINOLOGY_CODE. The primary expression of the
+					constraint is in the property `code_list', and comes in 3 variations:
+						* a single at-code
+						* a single ac-code, representing a value-set that is defined in the archetype terminology
+						* a list of at- and/or ac-codes, representing the possibilities of a tuple constraint
+					The last possibility above is enabled by the merge_tuple routine, which enables the constraint
+					of another single-valued C_TERMINOLOGY_CODE to be merged with the current one.
+				 ]"
 	keywords:    "archetype, terminology"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -21,65 +29,49 @@ inherit
 		end
 
 create
-	make_from_structure, make_from_code, make_from_terminology_code, make_value_set_code, default_create
+	make, default_create
 
 feature -- Initialisation
 
-	make_from_structure (a_term_constraint: TERM_CONSTRAINT_PARSE_STRUCTURE)
-		do
-			default_create
-			terminology_id := a_term_constraint.terminology_id
-			if a_term_constraint.has_codes then
-				code_list.append (a_term_constraint.codes)
-			end
-			if attached a_term_constraint.assumed_code as att_ac then
-				create assumed_value.make (terminology_id, att_ac)
-			end
-		end
-
-	make_from_code (a_terminology_id: STRING; code: STRING)
-		do
-			default_create
-			terminology_id := a_terminology_id
-			code_list.extend (code)
-		end
-
-	make_from_terminology_code (a_terminology_code: TERMINOLOGY_CODE)
-		do
-			default_create
-			terminology_id := a_terminology_code.terminology_id
-			code_list.extend (a_terminology_code.code_string)
-		end
-
-	make_value_set_code (a_value_set_code: STRING)
-			-- create with ac-code, and assumed 'local' terminology
+	make (a_code: STRING)
+			-- create with at-code or ac-code `a_code'
 		require
-			is_valid_constraint_code (a_value_set_code)
+			is_valid_value_code (a_code) or is_valid_constraint_code (a_code)
 		do
 			default_create
-			value_set_code := a_value_set_code
+			code_list.extend (a_code)
 		end
 
 feature -- Access
 
-	terminology_id: STRING
-		attribute
-			create Result.make_from_string (Local_terminology_id)
-		end
-
-	terminology_version: detachable STRING
-
-	value_set_code: STRING
-			-- ac-code of value set
-		attribute
-			create Result.make_empty
-		end
-
 	code_list: ARRAYED_LIST [STRING]
-			-- code list of value set
+			-- at-code list of single value or tuple of single values
 		attribute
 			create Result.make (0)
 			Result.compare_objects
+		end
+
+	code: STRING
+			-- single at- or ac-code
+		require
+			not is_tuple
+		do
+			Result := code_list.first
+		end
+
+	expanded_value_set: ARRAYED_LIST [STRING]
+			-- effective value or value set of single constraint in code_list, mediated by terminology
+			-- to expand an ac-code
+		require
+			not is_tuple
+		do
+			if is_value_set_code then
+				Result := value_set_extractor.item ([code])
+			else
+				create Result.make (0)
+				Result.compare_objects
+				Result.extend (code)
+			end
 		end
 
 	list_count: INTEGER
@@ -90,61 +82,46 @@ feature -- Access
 
 	prototype_value: TERMINOLOGY_CODE
 		do
-			if not code_list.is_empty then
-				create Result.make (terminology_id, code_list.first)
-			else
-				create Result.make (terminology_id, "01")
-			end
+			create Result.make (Local_terminology_id, code)
 		end
 
 	assumed_value: detachable TERMINOLOGY_CODE
 
-	code_count: INTEGER
-			-- number of codes in code_list
-		do
-			Result := code_list.count
-		end
-
 	i_th_constraint (i: INTEGER): C_TERMINOLOGY_CODE
-			-- extract i-th code from list and make a TERMINOLOGY_CODE from that
+			-- extract i-th code from list and make a C_TERMINOLOGY_CODE from that
 		do
-			create Result.make_from_code (terminology_id, code_list.i_th (i))
+			create Result.make (code_list.i_th (i))
 		end
 
 feature -- Status Report
 
-	is_local: BOOLEAN
-			-- True if terminology id = "local"
+	is_value_set_code: BOOLEAN
+			-- True if there is just one 'ac' code
 		do
-			Result := terminology_id.is_equal (Local_terminology_id)
-		end
-
-	is_value_set_reference: BOOLEAN
-			-- True if there is just one 'ac' code rather than a list
-		do
-			Result := not value_set_code.is_equal (Default_constraint_code)
+			Result := code_list.count = 1 and then is_valid_constraint_code (code_list.first)
 		end
 
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
+			-- see if `a_value', which must be an at-code, is one of the allowed codes in the
+			-- value set(s) of this constraint
 		do
-			if a_value.terminology_id.is_equal (terminology_id) then
-				if not code_list.is_empty then
-					Result := code_list.has (a_value.code_string)
-				else
-					Result := True
+			if a_value.terminology_id.is_equal (Local_terminology_id) and is_valid_value_code (a_value.code_string) then
+				Result := code_list.has (a_value.code_string)
+				if not Result then
+					Result := across code_list as code_list_csr some
+						is_valid_constraint_code (code_list_csr.item) and then value_set_extractor.item ([code_list_csr.item]).has (a_value.code_string)
+					end
 				end
 			end
 		end
 
 	valid_assumed_value (a_value: TERMINOLOGY_CODE): BOOLEAN
+			-- is `a_value' valid to be set as an assumed value for this object?
+			-- True if `code' is an ac-code and `a_value' is an at-code. We don't check against
+			-- `expanded_value_set' because it may not be constructed yet.
 		do
-			Result := valid_value (a_value)
-		end
-
-	has_value_code (a_value_code: STRING): BOOLEAN
-			-- True if this constraint object knows about the at-code `a_value_code'
-		do
-			Result := code_list.has (a_value_code) or else (attached assumed_value as att_av and then att_av.code_string.is_equal (a_value_code))
+			Result := a_value.terminology_id.is_equal (Local_terminology_id)
+				and is_valid_constraint_code (code) and is_valid_value_code (a_value.code_string)
 		end
 
 feature -- Comparison
@@ -153,8 +130,6 @@ feature -- Comparison
 			-- True if this node is the same as `other'
 		do
 			Result := precursor (other) and list_count = other.list_count and then
-				terminology_id.is_equal (other.terminology_id) and then
-				terminology_version ~ other.terminology_version and then
 				across code_list as list_csr all other.code_list.has (list_csr.item) end
 		end
 
@@ -165,37 +140,45 @@ feature -- Modification
 			-- the end of lists of constraints in the subtypes, since the constraints may represent
 			-- a tuple vector, in which case duplicates are allowed
 		do
-			code_list.append (other.code_list)
+			code_list.extend (other.code_list.first)
 		end
 
-	add_code (a_code: STRING)
+	add_tuple_code (a_code: STRING)
 		require
-			not attached code_list or else attached code_list as cl and then not cl.has (a_code)
+			is_valid_value_code (a_code) or is_valid_constraint_code (a_code)
 		do
 			code_list.extend (a_code)
-		end
-
-	set_terminology_version (a_version: STRING)
-		do
-			terminology_version := a_version
 		end
 
 	set_assumed_value_from_code (a_code: STRING)
 		require
 			code_list.has (a_code)
 		do
-			create assumed_value.make (terminology_id, a_code)
+			create assumed_value.make (Local_terminology_id, a_code)
 		end
 
-	set_value_set_code (a_value_set_code: STRING)
-			-- create with ac-code, and assumed 'local' terminology
-		require
-			is_valid_constraint_code (a_value_set_code)
+feature {ARCHETYPE} -- Modification
+
+	set_value_set_extractor (an_agent: attached like value_set_extractor)
 		do
-			value_set_code := a_value_set_code
+			value_set_extractor := an_agent
 		end
 
 feature {AOM_POST_PARSE_PROCESSOR} -- Modification
+
+	has_value_code (a_value_code: STRING): BOOLEAN
+			-- True if this constraint object knows about the at-code `a_value_code'
+		do
+			Result := code_list.has (a_value_code) or else (attached assumed_value as att_av and then att_av.code_string.is_equal (a_value_code))
+		end
+
+	set_code (a_code: STRING)
+			-- create with ac-code, and assumed 'local' terminology
+		require
+			not is_tuple and is_valid_value_code (a_code) or is_valid_constraint_code (a_code)
+		do
+			code_list.put_i_th (a_code, 1)
+		end
 
 	replace_code (old_code, new_code: STRING)
 		require
@@ -222,16 +205,11 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 
 feature {P_C_TERMINOLOGY_CODE} -- Modification
 
-	set_constraint (a_terminology_id: STRING; a_terminology_version, a_value_set_code: detachable STRING; a_code_list: detachable ARRAYED_LIST [STRING])
+	set_constraint (a_code_list: ARRAYED_LIST [STRING])
 		do
-			terminology_id := a_terminology_id
-			terminology_version := a_terminology_version
-			if attached a_value_set_code as att_vs_code then
-				value_set_code := att_vs_code
-			end
-			if attached a_code_list as att_cl then
-				code_list := att_cl
-			end
+			create code_list.make (0)
+			code_list.compare_objects
+			code_list.append (a_code_list)
 		end
 
 feature -- Output
@@ -240,17 +218,26 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append ("[")
+			Result.append (code)
+			if attached assumed_value as av then
+				Result.append ("; " + av.code_string)
+			end
+			Result.append ("]")
+		end
 
-			if is_value_set_reference then
-				Result.append (value_set_code)
+	as_expanded_string: STRING
+		require
+			not is_tuple
+		do
+			create Result.make(0)
+			Result.append ("[")
+
+			Result.append (Local_terminology_id)
+			Result.append (Terminology_separator)
+			if not is_value_set_code then
+				Result.append (code)
 			else
-				Result.append (terminology_id)
-				if attached terminology_version as tv then
-					Result.append (tv)
-				end
-				Result.append (Terminology_separator)
-
-				across code_list as code_list_csr loop
+				across expanded_value_set as code_list_csr loop
 					if not code_list_csr.is_first then
 						Result.append (", ")
 					end
@@ -269,11 +256,6 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append_character ('[')
-			Result.append (terminology_id)
-			if attached terminology_version as tv then
-				Result.append (tv)
-			end
-			Result.append (Terminology_separator)
 			Result.append (code_list.i_th (i))
 			Result.append_character (']')
 		end
@@ -285,10 +267,11 @@ feature {NONE} -- Implementation
 			-- If both nodes are value set refs, i.e. ac-codes, this ac-code
 			-- must be a specialisation of the other
 		do
-			if is_value_set_reference and other.is_value_set_reference then
+			if is_value_set_code and other.is_value_set_code then
+				Result := codes_conformant (code_list.first, other.code_list.first) and then
+					is_list_subset (expanded_value_set, other.expanded_value_set)
+			else
 				Result := codes_conformant (code_list.first, other.code_list.first)
-			elseif other.terminology_id.is_equal (terminology_id) then
-				Result := is_list_subset (code_list, other.code_list)
 			end
 		end
 
@@ -307,6 +290,12 @@ feature {NONE} -- Implementation
 			set2.fill (list2)
 
 			Result := set1.is_subset (set2)
+		end
+
+	value_set_extractor: detachable FUNCTION [ANY, TUPLE [ac_code: STRING], ARRAYED_LIST [STRING]]
+		note
+			option: stable
+		attribute
 		end
 
 end

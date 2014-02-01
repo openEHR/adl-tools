@@ -57,6 +57,12 @@ feature -- Access
 
 feature -- Status Report
 
+	is_tuple: BOOLEAN
+			-- True if there is more than one constraint
+		do
+			Result := list_count > 1
+		end
+
 	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
@@ -99,12 +105,16 @@ feature -- Modification
 			-- merge the constraints of `other' into this constraint object. We just add items to
 			-- the end of lists of constraints in the subtypes, since the constraints may represent
 			-- a tuple vector, in which case duplicates are allowed
+		require
+			not other.is_tuple
 		deferred
 		end
 
 feature -- Output
 
 	as_string: STRING
+		require
+			not is_tuple
 		deferred
 		end
 

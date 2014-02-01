@@ -120,7 +120,7 @@ feature -- Commands
 				convert_external_term_constraints
 
 				-- add new id-codes on nodes with no codes
-				add_id_codes
+				convert_fake_id_codes
 
 				-- for ADL 1.4 archetypes, remove terminology definitions for "@ internal @"
 				if target.adl_version.starts_with (Adl_14_version) then
@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 				 					if parent_ca.has_child_with_rm_type_name (ctc.rm_type_name) and then
 				 						attached {C_TERMINOLOGY_CODE} parent_ca.child_with_rm_type_name (ctc.rm_type_name) as parent_ctc
 				 					then
-					 					parent_ac_code := parent_ctc.value_set_code
+					 					parent_ac_code := parent_ctc.code
 				 						ac_code := parent_ac_code
 
 				 						-- check if any overrides; if so, a refined code & definition is needed
@@ -334,13 +334,13 @@ feature {NONE} -- Implementation
 			 			end
 
 			 			-- update the originating C_TERMINOLOGY_CODE object with the new ac-code
-						ctc.set_value_set_code (ac_code)
+						ctc.set_code (ac_code)
 
 						-- now we update value set in terminology
 						if term_vsets.has (old_ac_code) then
 							term_vsets.replace_key (ac_code, old_ac_code)
 							check attached term_vsets.item (ac_code) as vsd then
-								vsd.set_origin (ac_code)
+								vsd.set_id (ac_code)
 							end
 						end
 					end
@@ -367,7 +367,7 @@ feature {NONE} -- Implementation
 	att_c_terminology_code_type_mapping: AOM_TYPE_MAPPING
 			-- logically attached version of c_terminology_code_type_mapping
 
-	add_id_codes
+	convert_fake_id_codes
 			-- add id-codes on nodes with no code
 		local
 			def_it: C_ITERATOR
@@ -383,7 +383,7 @@ feature {NONE} -- Implementation
 				def_it.do_all (agent do_get_highest_id_codes_and_paths, Void)
 
 				-- now add missing codes
-				def_it.do_all (agent do_add_id_code, Void)
+				def_it.do_all (agent do_replace_fake_id_code, Void)
 
 				-- update C_ATTRIBUTE differential paths
 				if target.is_specialised and then attached arch_parent_flat as pf then
@@ -431,7 +431,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	 do_add_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	 do_replace_fake_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 	 		-- add id-codes to nodes that have no id-code. For specialised archetypes, make sure the id-code is
 	 		-- correct with respect to the parent, if it's on an existing path
 	 	local

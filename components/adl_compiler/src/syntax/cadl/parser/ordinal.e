@@ -14,21 +14,21 @@ create
 
 feature -- Initialisation
 
-	make (a_value: INTEGER; a_symbol: TERMINOLOGY_CODE)
+	make (a_value: INTEGER; a_symbol_code: STRING)
 			-- set value & symbol
 		do
 			value := a_value
-			symbol := a_symbol
+			symbol := a_symbol_code
 		ensure
 			Value_set: value = a_value
-			Symbol_set: symbol = a_symbol
+			Symbol_set: symbol = a_symbol_code
 		end
 
 feature -- Access
 
 	value: INTEGER
 
-	symbol: TERMINOLOGY_CODE
+	symbol: STRING
 
 end
 

@@ -54,6 +54,8 @@ feature -- Initialisation
 			terminology := a_terminology
 			is_dirty := True
 			uid := a_uid
+
+			set_terminology_agents
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
@@ -471,10 +473,12 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
 							across ctc.code_list as codes_csr loop
 								key := codes_csr.item
-								if not idx.has (key) then
-									idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), key)
+								if is_valid_value_code (key) then
+									if not idx.has (key) then
+										idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), key)
+									end
+									idx.item (key).extend (ctc)
 								end
-								idx.item (key).extend (ctc)
 							end
 
 							-- check assumed value code - which is an at-code that can occur with an ac-code
@@ -501,8 +505,12 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 			def_it.do_all (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
-						if attached {C_TERMINOLOGY_CODE} a_c_node as ccp and then ccp.is_value_set_reference then
-							idx.put (ccp, ccp.value_set_code)
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
+							across ctc.code_list as codes_csr loop
+								if is_valid_constraint_code (codes_csr.item) then
+									idx.put (ctc, codes_csr.item)
+								end
+							end
 						end
 					end (?, ?, Result),
 				Void)
@@ -730,6 +738,35 @@ feature {NONE} -- Implementation
 	path_map_cache: detachable HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 			-- complete map of paths available in this archetype, including paths implied by
 			-- use_nodes in definition structure; paths to C_OBJECTs have the C_OBJECT reference
+
+	set_terminology_agents
+			-- set a terminology extractor agent into every C_TERMINOLOGY_CODE object so
+			-- it can evaluate value sets
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					local
+						key: STRING
+					do
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
+							ctc.set_value_set_extractor (agent get_value_set)
+						end
+					end,
+				Void)
+		end
+
+	get_value_set (ac_code: STRING): ARRAYED_LIST [STRING]
+		do
+			if terminology.value_sets.has (ac_code) then
+				Result := terminology.value_sets.item (ac_code).members
+			else
+				create Result.make (0)
+				Result.compare_objects
+			end
+		end
 
 invariant
 	Description_valid: not artefact_type.is_overlay implies attached description

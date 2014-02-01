@@ -64,6 +64,13 @@ feature -- Status Report
 				across cq_item_list as list_csr some attached list_csr.item.precision end
 		end
 
+feature -- Modification
+
+	set_property (a_property: TERMINOLOGY_CODE)
+		do
+			property := a_property
+		end
+
 feature -- Conversion
 
 	standard_equivalent (a_node_id: STRING): C_COMPLEX_OBJECT
@@ -86,7 +93,7 @@ feature -- Conversion
 			-- CA: property
 			if attached property as prop then
 				create ca_property.make_single ("property", Void)
-				create ccp_property.make_from_terminology_code (prop)
+				create ccp_property.make (prop.code_string)
 				ca_property.put_child (ccp_property)
 				Result.put_attribute (ca_property)
 			end

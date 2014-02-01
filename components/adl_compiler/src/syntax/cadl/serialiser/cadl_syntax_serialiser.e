@@ -432,75 +432,75 @@ feature {NONE} -- Implementation
 			-- first case is inline output of the form "[terminology::code]"
 			-- A comment containing the original language rubric of the code is held in a buffer, since the
 			-- main visiting traversal still has to append a terminating '}' before the comment can be added
-			if a_node.is_value_set_reference then
+	--		if a_node.is_value_set_code then
 				-- output the actual constraint value
 				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
 
 				-- hold the comment over in `last_coded_constraint_comment'
 				create last_coded_constraint_comment.make(0)
-				if terminology.has_constraint_code (a_node.value_set_code) then
+				if terminology.has_constraint_code (a_node.code) then
 					last_coded_constraint_comment.append (format_item (FMT_INDENT))
 					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-						safe_comment (terminology.term_definition (language, a_node.value_set_code).text), STYLE_COMMENT))
+						safe_comment (terminology.term_definition (language, a_node.code).text), STYLE_COMMENT))
 				end
 				last_object_inline := True
 
-			elseif a_node.code_count = 1 or a_node.code_count = 0 then
-				-- output the actual constraint value
-				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
+--			elseif a_node.code_count = 1 or a_node.code_count = 0 then
+--				-- output the actual constraint value
+--				last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
 
-				-- hold the comment over in `last_coded_constraint_comment'
-				create last_coded_constraint_comment.make(0)
-				if a_node.is_local and a_node.code_count = 1 and terminology.has_value_code (a_node.code_list.first) then
-					last_coded_constraint_comment.append (format_item (FMT_INDENT))
-					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-						safe_comment (terminology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
-				end
-				last_object_inline := True
+--				-- hold the comment over in `last_coded_constraint_comment'
+--				create last_coded_constraint_comment.make(0)
+--				if a_node.is_local and a_node.code_count = 1 and terminology.has_value_code (a_node.code_list.first) then
+--					last_coded_constraint_comment.append (format_item (FMT_INDENT))
+--					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+--						safe_comment (terminology.term_definition (language, a_node.code_list.first).text), STYLE_COMMENT))
+--				end
+--				last_object_inline := True
 
-			-- this case is for multi-line output of the form:
-			-- [terminology::
-			--	code1,			-- rubric 1
-			--	code2,			-- rubric 2
-			--	codeN;			-- rubric N
-			--	assumed_code]	-- assumed value
-			else
-				-- add a newline, because for all other C_PRIMITIVE_OBJECTs the existing one will be stripped, but this
-				-- is a multi-line output and needs to start on a new line
-				last_result.append (format_item (FMT_NEWLINE))
-				last_result.append (create_indent (depth) + apply_style("[" +
-					a_node.terminology_id + Terminology_separator, STYLE_TERM_REF) +
-					format_item (FMT_NEWLINE))
+--			-- this case is for multi-line output of the form:
+--			-- [terminology::
+--			--	code1,			-- rubric 1
+--			--	code2,			-- rubric 2
+--			--	codeN;			-- rubric N
+--			--	assumed_code]	-- assumed value
+--			else
+--				-- add a newline, because for all other C_PRIMITIVE_OBJECTs the existing one will be stripped, but this
+--				-- is a multi-line output and needs to start on a new line
+--				last_result.append (format_item (FMT_NEWLINE))
+--				last_result.append (create_indent (depth) + apply_style("[" +
+--					a_node.terminology_id + Terminology_separator, STYLE_TERM_REF) +
+--					format_item (FMT_NEWLINE))
 
-				-- the following loop puts out lines of the form
-				--	code1,			-- rubric 1			
-				across a_node.code_list as code_list_csr loop
-					last_result.append (create_indent(depth) + apply_style (code_list_csr.item, STYLE_TERM_REF))
-					if not code_list_csr.is_last then
-						last_result.append (format_item (FMT_LIST_ITEM_SEPARATOR))
-					elseif attached a_node.assumed_value then
-						last_result.append (format_item (FMT_ASSUMED_VALUE_SEPARATOR))
-					else -- this will get done if there is no assumed value
-						last_result.append (apply_style ("]", STYLE_TERM_REF))
-					end
+--				-- the following loop puts out lines of the form
+--				--	code1,			-- rubric 1			
+--				across a_node.code_list as code_list_csr loop
+--					last_result.append (create_indent(depth) + apply_style (code_list_csr.item, STYLE_TERM_REF))
+--					if not code_list_csr.is_last then
+--						last_result.append (format_item (FMT_LIST_ITEM_SEPARATOR))
+--					elseif attached a_node.assumed_value then
+--						last_result.append (format_item (FMT_ASSUMED_VALUE_SEPARATOR))
+--					else -- this will get done if there is no assumed value
+--						last_result.append (apply_style ("]", STYLE_TERM_REF))
+--					end
 
-					if a_node.is_local and terminology.has_value_code (code_list_csr.item) then
-						last_result.append (format_item(FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-							safe_comment (terminology.term_definition (language, code_list_csr.item).text), STYLE_COMMENT))
-					end
-					last_result.append (format_item (FMT_NEWLINE))
-				end
+--					if a_node.is_local and terminology.has_value_code (code_list_csr.item) then
+--						last_result.append (format_item(FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+--							safe_comment (terminology.term_definition (language, code_list_csr.item).text), STYLE_COMMENT))
+--					end
+--					last_result.append (format_item (FMT_NEWLINE))
+--				end
 
-				-- The following puts out a line like the following, for the case where there is an assumed value
-				--	assumed_code]	-- assumed value
-				if attached a_node.assumed_value as av then
-					last_result.append (create_indent(depth) + apply_style(av.code_string, STYLE_TERM_REF))
-					last_result.append (apply_style ("]", STYLE_TERM_REF))
-					last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-							get_text (ec_assumed_text), STYLE_COMMENT))
-					last_result.append (format_item (FMT_NEWLINE))
-				end
-			end
+--				-- The following puts out a line like the following, for the case where there is an assumed value
+--				--	assumed_code]	-- assumed value
+--				if attached a_node.assumed_value as av then
+--					last_result.append (create_indent(depth) + apply_style(av.code_string, STYLE_TERM_REF))
+--					last_result.append (apply_style ("]", STYLE_TERM_REF))
+--					last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+--							get_text (ec_assumed_text), STYLE_COMMENT))
+--					last_result.append (format_item (FMT_NEWLINE))
+--				end
+--			end
 		end
 
 	last_object_inline: BOOLEAN

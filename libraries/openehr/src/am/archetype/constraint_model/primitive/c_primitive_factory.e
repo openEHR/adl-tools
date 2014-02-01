@@ -349,7 +349,7 @@ feature -- Factory
 			Result.put (agent create_c_time_make_lower_unbounded ("12:00:00"), bare_type_name (({C_TIME}).name))
 			Result.put (agent create_c_date_make_lower_unbounded ("2000-01-01"), bare_type_name (({C_DATE}).name))
 
-			Result.put (agent create_c_terminology_code ("local", "ac1"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
+			Result.put (agent create_c_terminology_code ("ac1"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
 		end
 
 	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE_OBJECT
@@ -361,18 +361,11 @@ feature -- Factory
 			end
 		end
 
-	create_c_terminology_code (a_terminology_id, a_code: STRING): C_TERMINOLOGY_CODE
+	create_c_terminology_code (a_code: STRING): C_TERMINOLOGY_CODE
 			-- Make from string of form "terminology_id::code, code, ... [; code]".
 			-- String "terminology_id::" is legal.
 		do
-			create Result.make_from_code (a_terminology_id, a_code)
-		end
-
-	create_c_terminology_code_from_structure (a_term_constraint: TERM_CONSTRAINT_PARSE_STRUCTURE): C_TERMINOLOGY_CODE
-			-- Make from string of form "terminology_id::code, code, ... [; code]".
-			-- String "terminology_id::" is legal.
-		do
-			create Result.make_from_structure (a_term_constraint)
+			create Result.make (a_code)
 		end
 
 end
