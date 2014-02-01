@@ -37,7 +37,7 @@ feature -- Display
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
-			attr_name: STRING
+			attr_str: STRING
 		do
 			display_settings := ui_settings
 			check attached ev_grid_row as gr then
@@ -46,13 +46,22 @@ feature -- Display
 			is_displayed := True
 
 			if attached arch_node as a_n and then attached a_n.parent as parent_ca then
-				-- if in technical mode, show primitive data type
-				if display_settings.show_technical_view then
-					attr_name := parent_ca.rm_attribute_name + ": " + a_n.rm_type_name
+				create attr_str.make_empty
+				if parent_ca.has_differential_path then
+					if display_settings.show_technical_view then
+						attr_str.append (parent_ca.rm_attribute_path)
+					else
+						attr_str.append (ed_context.flat_terminology.annotated_path (parent_ca.rm_attribute_path, display_settings.language, True))
+					end
+					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+					attr_str.remove_head (1)
 				else
-					attr_name := parent_ca.rm_attribute_name
+					attr_str.append (parent_ca.rm_attribute_name)
 				end
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_name, Void, Void, Void)
+				if display_settings.show_technical_view then
+					attr_str.append (": " + a_n.rm_type_name)
+				end
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, Void, Void)
 
 				-- constraint value
 				display_constraint
@@ -81,7 +90,7 @@ feature {NONE} -- Implementation
 				else
 					s := a_n.as_string
 				end
-				evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, c_constraint_colour, Void)
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, c_constraint_colour, Void)
 			end
 		end
 
