@@ -67,7 +67,7 @@ ID_CODE_LEADER id
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
 ID_CODE {ID_CODE_LEADER}{CODE_STR}
 AT_CODE at{CODE_STR}
-AC_CODE aC{CODE_STR}
+AC_CODE ac{CODE_STR}
 PATH_SEG [a-z]{ALPHANUM_CHAR}*(\[{ID_CODE}\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
