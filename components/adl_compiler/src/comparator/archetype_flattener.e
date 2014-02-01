@@ -766,7 +766,7 @@ end
 	flatten_terminology
 			-- build the flat archetype ontology as the sum of parent and source ontologies
 		do
-			arch_output_flat.terminology.merge (arch_parent_flat.terminology)
+			arch_output_flat.terminology.merge (arch_child_diff.terminology)
 		end
 
 	flatten_annotations
@@ -834,7 +834,7 @@ end
 
 					-- set the node id to be the target archetype id
 					xref_list_csr.item.set_node_id (xref_list_csr.item.archetype_ref)
-					
+
 					if not xref_list_csr.item.has_attributes then -- it is empty and needs to be filled
 debug ("flatten")
 	io.put_string ("%T node at " + xref_list_csr.item.path +

@@ -117,8 +117,18 @@ feature -- Access (computed)
 			Result.merge (terminologies)
 		end
 
+	term_codes: TWO_WAY_SORTED_SET [STRING]
+			-- list of all term codes
+        do
+            create Result.make
+            Result.compare_objects
+            across index_term_definitions as defs loop
+           		Result.extend (defs.key)
+            end
+        end
+
 	id_codes: TWO_WAY_SORTED_SET [STRING]
-			-- list of term codes
+			-- list of id codes
         do
             create Result.make
             Result.compare_objects
@@ -130,7 +140,7 @@ feature -- Access (computed)
         end
 
 	value_codes: TWO_WAY_SORTED_SET [STRING]
-			-- list of term codes
+			-- list of value codes
         do
             create Result.make
             Result.compare_objects
@@ -168,6 +178,19 @@ feature -- Access (computed)
 		do
 			check attached term_definitions.item (a_language) as tl and then attached tl.item (a_code) as term then
 				Result := term
+			end
+		end
+
+	term_definitions_for_code (a_code: STRING): HASH_TABLE [ARCHETYPE_TERM, STRING]
+			-- extract the term definitions for code `a_code' in all languages as a Hash keyed by language
+		require
+			Term_definition_exists: has_code (a_code)
+		do
+			create Result.make (0)
+			across term_definitions as term_defs_for_lang_csr loop
+				check attached term_defs_for_lang_csr.item.item (a_code) as att_term then
+					Result.put (att_term, term_defs_for_lang_csr.key)
+				end
 			end
 		end
 
@@ -315,9 +338,15 @@ feature -- Status Report
 			Result := term_bindings.has (a_terminology)
 		end
 
+	has_value_set (a_code: STRING): BOOLEAN
+			-- true if there is a value set defined with id ac-code `a_code'
+		do
+			Result := value_sets.has (a_code)
+		end
+
 feature -- Comparison
 
-	semantically_conforms_to (other: FLAT_ARCHETYPE_TERMINOLOGY): BOOLEAN
+	semantically_conforms_to (other: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY): BOOLEAN
 			-- True if this terminology conforms to `other' by having the same or subset of languages
 		do
 			Result := languages_available.is_subset (other.languages_available)
@@ -441,15 +470,13 @@ feature -- Modification
 		do
 			if highest_refined_code_index.has (a_parent_code) then
 				high_code := highest_refined_code_index [a_parent_code]
-			else
-				high_code := 1
 			end
 			create new_term.make_all (new_refined_code_at_level (a_parent_code, specialisation_depth, high_code), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
 
-	put_term_binding (a_term_code: URI; a_terminology_id, a_code: STRING)
+	put_term_binding (a_binding: URI; a_terminology_id, a_code: STRING)
 			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_term_code.terminology
 		require
@@ -460,7 +487,7 @@ feature -- Modification
 				term_bindings.put (create {HASH_TABLE [URI, STRING]}.make(0), a_terminology_id)
 			end
 			if attached term_bindings.item (a_terminology_id) as bindings then
-				bindings.put (a_term_code, a_code)
+				bindings.put (a_binding, a_code)
 			end
 		ensure
 			Binding_added: has_term_binding (a_terminology_id, a_code)
@@ -509,6 +536,15 @@ feature -- Modification
 			clear_cache
 		ensure
 			has_code (a_new_code)
+		end
+
+	put_value_set (a_value_set: VALUE_SET_RELATION)
+			-- add `a_value_set' to value sets of this terminology
+		require
+			Not_already_prsent: not has_value_set (a_value_set.id)
+			Valid_id: has_constraint_code (a_value_set.id)
+		do
+			value_sets.put (a_value_set, a_value_set.id)
 		end
 
 feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_PROCESSOR} -- Modification
@@ -776,8 +812,8 @@ feature -- Finalisation
 	finalise_dt
 			-- finalisation routine to guarantee validity on creation
 		do
-			sync_stored_properties
 			merge_constraint_definitions_and_bindings
+			sync_stored_properties
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

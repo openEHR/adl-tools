@@ -15,7 +15,7 @@ inherit
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_id_code, is_valid_constraint_code, valid_specialisation_status
+			{ANY} is_valid_id_code, is_valid_value_code, is_valid_constraint_code, valid_specialisation_status
 		end
 
 	HASHABLE

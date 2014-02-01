@@ -21,12 +21,12 @@ create
 
 feature -- Initialisation
 
-	make (an_origin: STRING; a_members: ARRAYED_LIST [STRING])
+	make (an_id: STRING; a_members: ARRAYED_LIST [STRING])
 		require
-			Origin_valid: not an_origin.is_empty
+			Id_valid: not an_id.is_empty
 			Members_valid: a_members.for_all (agent (a_tc: STRING): BOOLEAN do Result := not a_tc.is_empty end)
 		do
-			create origin.make_from_string (an_origin)
+			create id.make_from_string (an_id)
 			create members.make (0)
 			members.compare_objects
 			members.append (a_members)
@@ -36,7 +36,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	origin: STRING
+	id: STRING
 
 	members: ARRAYED_LIST [STRING]
 
@@ -50,11 +50,11 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_origin (an_origin: STRING)
+	set_id (an_id: STRING)
 		require
-			Origin_valid: not an_origin.is_empty
+			Id_valid: not an_id.is_empty
 		do
-			create origin.make_from_string (an_origin)
+			create id.make_from_string (an_id)
 		end
 
 feature {AOM_POST_PARSE_PROCESSOR} -- Modification

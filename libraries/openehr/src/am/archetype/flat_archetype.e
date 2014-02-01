@@ -49,11 +49,19 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 
 	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
-			-- for generating a flat archetype. The items from the differential are used
-			-- except for the definition, invariants and annotations, which are the flat
-			-- parent versions, so that the differential definition can be overlaid on
-			-- it by a merging process. The ontology is converted to a form ready for
-			-- overlaying as well.
+			-- for generating a flat archetype. The following items from the differential are used:
+			-- 	* artefact_type
+			--	* archetype_id
+			--	* uid
+			--	* original_language
+			--	* translations
+			--
+			-- The following items from the flat:
+			-- 	* definition (with root node id from differential definition)
+			--  * terminology
+			-- 	* rules
+			--	* annotations
+			-- 
 		local
 			desc: like description
 		do
@@ -66,7 +74,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin, a_diff.uid, desc,
 					a_flat_parent.definition.deep_twin,
-					a_diff.terminology.to_flat)
+					a_flat_parent.terminology.deep_twin)
 			definition.set_node_id (a_diff.definition.node_id.twin)
 
 			-- other metadata is created from parent, with child meta-data
