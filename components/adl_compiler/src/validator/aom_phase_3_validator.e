@@ -20,11 +20,11 @@ create
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (a_target_desc: like target_descriptor; an_rm_schema: BMM_SCHEMA)
+	initialise (a_target_desc: like target_descriptor)
 			-- set target_descriptor
 			-- initialise reporting variables
 		do
-			precursor (a_target_desc, an_rm_schema)
+			precursor (a_target_desc)
 			target_flat := target_descriptor.flat_archetype
 		end
 

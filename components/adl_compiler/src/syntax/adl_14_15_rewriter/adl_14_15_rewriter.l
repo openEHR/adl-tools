@@ -220,7 +220,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 \[{NAMECHAR_PAREN}+::{NAMECHAR}+\] { 
 		if in_terminology then
 			create term_code.make_from_string (text.substring (2, text_count - 1))
-			out_buffer.append (term_code_to_uri (term_code))
+			out_buffer.append (uri_for_terminology_code (term_code))
 		else
 			out_buffer.append (text)
 		end

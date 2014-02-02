@@ -108,6 +108,9 @@ feature -- Definitions
 
 	Default_uri_with_version_template: STRING = "http://$terminology_id.org/ver/$terminology_version/id/$code_string"
 
+	Uri_code_extractor_search_pattern: STRING = "/id/"
+			-- pattern that can be searched for in a coded term URI that precedes the code
+
 feature -- Initialisation
 
 	app_cfg_initialise
@@ -281,19 +284,13 @@ feature -- Application Switches
 			app_cfg.put_object (terminology_settings_path, a_terminology_settings)
 		end
 
-	term_code_to_uri (a_term_code: TERMINOLOGY_CODE): STRING
+	uri_for_terminology_code (a_term_code: TERMINOLOGY_CODE): STRING
 			-- convert to a URI string
 		do
-			if terminology_settings.uri_templates.has (a_term_code.terminology_id.as_lower) then
-				create Result.make_from_string (terminology_settings.uri (a_term_code.terminology_id.as_lower))
-			else
-				create Result.make_from_string (Default_uri_template)
-				Result.replace_substring_all ("$terminology_id", a_term_code.terminology_id)
-			end
-			Result.replace_substring_all ("$code_string", a_term_code.code_string)
+			Result := uri_for_terminology_code_string (a_term_code.terminology_id, a_term_code.code_string)
 		end
 
-	uri_for_code (a_terminology_id, a_code: STRING): STRING
+	uri_for_terminology_code_string (a_terminology_id, a_code: STRING): STRING
 			-- convert to a URI string
 		do
 			if terminology_settings.uri_templates.has (a_terminology_id.as_lower) then
@@ -303,6 +300,33 @@ feature -- Application Switches
 				Result.replace_substring_all ("$terminology_id", a_terminology_id)
 			end
 			Result.replace_substring_all ("$code_string", a_code)
+		end
+
+	terminology_code_from_uri (a_uri: STRING): STRING
+			-- extract terminology code from a URI string that is of the IHTSDO form
+			-- "http://domain/id/$code_string" or
+			-- "http://domain/id/$code_string/...."
+		local
+			id_pat_idx, slash_idx, start_idx, end_idx: INTEGER
+		do
+			create Result.make_empty
+			id_pat_idx := a_uri.substring_index (Uri_code_extractor_search_pattern, 1)
+			if id_pat_idx > 0 then
+				start_idx := id_pat_idx  + Uri_code_extractor_search_pattern.count
+				slash_idx := a_uri.index_of ('/', start_idx)
+				if slash_idx > 0 then
+					end_idx := slash_idx
+				else
+					end_idx := a_uri.count
+				end
+				Result.append (a_uri.substring (start_idx, end_idx))
+			end
+		end
+
+	is_terminology_uri (a_string: STRING): BOOLEAN
+			-- True if `a_string' starts with "http://" and contains "/id/"
+		do
+			Result := a_string.starts_with ("http://") and a_string.has_substring (Uri_code_extractor_search_pattern)
 		end
 
 	init_gen_dirs_from_current_repository

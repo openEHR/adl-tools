@@ -249,8 +249,6 @@ feature -- Initialisation
 			-- a legacy archetype has been found
 		require
 			Path_valid: not a_path.is_empty
-		local
-			amp: ARCHETYPE_MINI_PARSER
 		do
 			legacy_flat_path := a_path
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
@@ -1029,7 +1027,7 @@ feature {NONE} -- Compilation
 
 			-- perform the parse; this can fail, i.e. no result generated
 			check attached legacy_flat_text as lft then
-				legacy_flat_archetype := adl_14_engine.parse (lft, rm_schema)
+				legacy_flat_archetype := adl_14_engine.parse (lft, Current)
 			end
 			if attached legacy_flat_archetype as flat_arch then
 			 	compilation_state := Cs_parsed
@@ -1040,7 +1038,7 @@ feature {NONE} -- Compilation
 					-- run the comparator over the legacy flat archetype if specialised; it will mark all
 					-- nodes with a local and also rolled up inheritance status
 					if specialisation_ancestor.is_valid and attached specialisation_ancestor as att_sp then
-						adl_14_engine.post_parse_process (flat_arch, Current, rm_schema)
+						adl_14_engine.post_parse_process (flat_arch, Current)
 						create archetype_comparator.make (att_sp, flat_arch)
 						archetype_comparator.compare
 						archetype_comparator.generate_diff
@@ -1051,7 +1049,7 @@ feature {NONE} -- Compilation
 						add_error (ec_compile_e1, <<parent_id.as_string>>)
 					end
 				else
-					adl_14_engine.post_parse_process (flat_arch, Current, rm_schema)
+					adl_14_engine.post_parse_process (flat_arch, Current)
 					create differential_archetype.make_from_flat (flat_arch)
 				end
 
@@ -1105,7 +1103,7 @@ feature {NONE} -- Compilation
 		do
 			add_info (ec_parse_i2, Void)
 			flat_archetype_cache := Void
-			differential_archetype := adl_15_engine.parse (differential_text, rm_schema)
+			differential_archetype := adl_15_engine.parse (differential_text, Current)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
@@ -1115,7 +1113,7 @@ feature {NONE} -- Compilation
 				end
 
 				-- perform post-parse object structure finalisation
-				adl_15_engine.post_parse_process (diff_arch, Current, rm_schema)
+				adl_15_engine.post_parse_process (diff_arch, Current)
 
 				-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
@@ -1156,14 +1154,14 @@ feature {NONE} -- Compilation
 			--	validate failed: Cs_ready_to_validate --> Cs_validate_failed
 		do
 			-- phase 1: validate archetype stand-alone
-			adl_15_engine.phase_1_validate (Current, rm_schema)
+			adl_15_engine.phase_1_validate (Current)
 			merge_errors (adl_15_engine.errors)
 
 			if adl_15_engine.validation_passed then
 				compilation_state := Cs_validated_phase_1
 
 	 			-- phase 2: validate archetype against flat parent
-				adl_15_engine.phase_2_validate (Current, rm_schema)
+				adl_15_engine.phase_2_validate (Current)
 				merge_errors (adl_15_engine.errors)
 
 				if adl_15_engine.validation_passed then
@@ -1191,13 +1189,13 @@ feature {NONE} -- Compilation
 			flat_archetype_cache := Void
 
 			-- phase 3: validate flattened archetype
-			adl_15_engine.phase_3_validate (Current, rm_schema)
+			adl_15_engine.phase_3_validate (Current)
 			merge_errors (adl_15_engine.errors)
 			if adl_15_engine.validation_passed then
 				add_info (ec_parse_archetype_i2, <<id.as_string>>)
 				compilation_state := Cs_validated
 				-- not yet in use
-				--	adl_15_engine.post_compile_process (Current, rm_schema)
+				--	adl_15_engine.post_compile_process (Current)
 			else
 				compilation_state := Cs_validate_failed
 			end

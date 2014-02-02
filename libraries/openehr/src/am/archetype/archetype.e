@@ -477,7 +477,9 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 									if not idx.has (key) then
 										idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), key)
 									end
-									idx.item (key).extend (ctc)
+									if attached idx.item (key) as att_list and then not att_list.has (ctc) then
+										att_list.extend (ctc)
+									end
 								end
 							end
 
@@ -748,8 +750,6 @@ feature {NONE} -- Implementation
 			create def_it.make (definition)
 			def_it.do_all (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-					local
-						key: STRING
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
 							ctc.set_value_set_extractor (agent get_value_set)

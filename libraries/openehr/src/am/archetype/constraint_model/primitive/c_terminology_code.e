@@ -183,8 +183,6 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 	replace_code (old_code, new_code: STRING)
 		require
 			has_value_code (old_code)
-		local
-			i: INTEGER
 		do
 			-- due to tuple constraints, there could be more than
 			-- one occurrence of the old_code in the list
@@ -196,10 +194,8 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 			end
 
 			-- check the assumed code
-			if attached assumed_value as att_av then
-				if att_av.code_string.is_equal (old_code) then
-					att_av.set_code_string (new_code)
-				end
+			if attached assumed_value as att_av and then att_av.code_string.is_equal (old_code) then
+				att_av.set_code_string (new_code)
 			end
 		end
 

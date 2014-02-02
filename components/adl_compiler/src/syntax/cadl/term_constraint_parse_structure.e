@@ -92,7 +92,7 @@ feature -- Modification
 		require
 			not a_terminology_id.is_empty
 		do
-			terminology_id := a_terminology_id
+			terminology_id := a_terminology_id.as_lower
 		end
 
 	add_code (a_code: STRING)
@@ -135,7 +135,7 @@ feature -- Factory
 				end
 
 				-- create a binding entry
-				uri_str := uri_for_code (terminology_id, codes_csr.item)
+				uri_str := uri_for_terminology_code_string (terminology_id, codes_csr.item)
 				last_converted_local_bindings.put (create {URI}.make_from_string (uri_str), new_at_code)
 				last_converted_binding_map.put (new_at_code, codes_csr.item)
 			end

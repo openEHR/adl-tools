@@ -47,9 +47,10 @@ feature -- Modification
 			-- 	* add new term definitions, bindings and value sets if they are new in other
 		require
 			Other_valid: semantically_conforms_to (other)
-		local
-			a_lang, code_in_parent: STRING
 		do
+			-- concept code
+			concept_code := other.concept_code.twin
+
 			-- term definitions
 			across other.term_codes as other_codes_csr loop
 				merge_specialised_term_definition (other.term_definitions_for_code (other_codes_csr.item).deep_twin, other_codes_csr.item)
@@ -84,8 +85,8 @@ feature -- Modification
 			if is_refined_code (a_child_code) then
 				code_in_parent := a_child_code
 				from spec_depth := specialisation_depth until spec_depth = 0 or has_code (code_in_parent) loop
-					code_in_parent := code_at_level (a_child_code, spec_depth)
 					spec_depth := spec_depth - 1
+					code_in_parent := code_at_level (a_child_code, spec_depth)
 				end
 
 				if has_code (code_in_parent) then
@@ -107,9 +108,9 @@ feature -- Modification
 			-- determine for parent code that might exist in this flat terminology
 			if is_refined_code (a_child_code) then
 				code_in_parent := a_child_code
-				from spec_depth := specialisation_depth until spec_depth = 0 or has_code (code_in_parent) loop
-					code_in_parent := code_at_level (a_child_code, spec_depth)
+				from spec_depth := specialisation_depth until spec_depth = 0 or has_term_binding (a_terminology_id, code_in_parent) loop
 					spec_depth := spec_depth - 1
+					code_in_parent := code_at_level (a_child_code, spec_depth)
 				end
 
 				if has_term_binding (a_terminology_id, code_in_parent) then
@@ -129,9 +130,9 @@ feature -- Modification
 			-- determine for parent code that might exist in this flat terminology
 			if is_refined_code (a_value_set.id) then
 				code_in_parent := a_value_set.id
-				from spec_depth := specialisation_depth until spec_depth = 0 or has_code (code_in_parent) loop
-					code_in_parent := code_at_level (a_value_set.id, spec_depth)
+				from spec_depth := specialisation_depth until spec_depth = 0 or value_sets.has (code_in_parent) loop
 					spec_depth := spec_depth - 1
+					code_in_parent := code_at_level (a_value_set.id, spec_depth)
 				end
 
 				if value_sets.has (code_in_parent) then

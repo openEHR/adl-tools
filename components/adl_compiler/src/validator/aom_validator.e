@@ -30,13 +30,13 @@ inherit
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (ara: ARCH_CAT_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
 			valid_candidate: is_validation_candidate (ara)
 		do
-			rm_schema := an_rm_schema
+			rm_schema := ara.rm_schema
 			target_descriptor := ara
 			check attached target_descriptor.differential_archetype as da then
 				initialise_authored_resource (da)

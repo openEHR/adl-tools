@@ -47,7 +47,7 @@ feature -- Definitions
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
@@ -56,17 +56,17 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 		do
 			create rm_schema.make ("test", "test", "1.0")
 			create att_c_terminology_code_type_mapping
-			initialise (a_target, ara, an_rm_schema)
+			initialise (a_target, ara)
 		end
 
-	initialise (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			if rm_schema /= an_rm_schema then
-				rm_schema := an_rm_schema
+			if rm_schema /= ara.rm_schema then
+				rm_schema := ara.rm_schema
 				if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
 					aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
 				end
@@ -185,16 +185,21 @@ feature {NONE} -- Implementation
 			arch_c_terms: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			at_code, old_at_code: STRING
 	 		vset_members: ARRAYED_LIST [STRING]
+	 		orig_lang: STRING
+	 		replaced_at_codes: HASH_TABLE [STRING, STRING]
 		do
 			arch_c_terms := target.value_codes_index
+			orig_lang := target.terminology.original_language
+			create replaced_at_codes.make (0)
 
 			if not arch_c_terms.is_empty then
+
 				-- First take care of single-code external code conversions
 				-- for each synthesised at-code in a C_TERMINOLOGY_CODE object, generate a new
 				-- term definition, get its code, and write that into the C_TERMINOLOGY_CODE
 				across arch_c_terms as arch_c_terms_csr loop
-					if arch_c_terms_csr.key.starts_with (Fake_adl_14_at_code_base) then
-						old_at_code := arch_c_terms_csr.key
+					old_at_code := arch_c_terms_csr.key
+					if old_at_code.starts_with (Fake_adl_14_at_code_base) then
 						target.terminology.create_added_value_definition (Synthesised_string, Synthesised_string)
 						at_code := target.terminology.last_new_definition_code
 
@@ -211,6 +216,7 @@ feature {NONE} -- Implementation
 								end
 							end
 						end
+						replaced_at_codes.put (at_code, old_at_code)
 					end
 				end
 			end
@@ -220,15 +226,29 @@ feature {NONE} -- Implementation
 				vset_members := vsets_csr.item.members
 				from vset_members.start until vset_members.off or not vset_members.item.starts_with (Fake_adl_14_at_code_base) loop
 					old_at_code := vset_members.item
-					target.terminology.create_added_value_definition (Synthesised_string, Synthesised_string)
-					at_code := target.terminology.last_new_definition_code
+					if replaced_at_codes.has (old_at_code) and then attached replaced_at_codes.item (old_at_code) as att_code then
+						at_code := att_code
+					else
+						target.terminology.create_added_value_definition (Synthesised_string, Synthesised_string)
+						at_code := target.terminology.last_new_definition_code
+					end
 					vset_members.replace (at_code)
 
 					-- write the parser's term bindings in to the terminology
 					across compiler_billboard.term_bindings as bindings_csr loop
 						across bindings_csr.item as bindings_list_csr loop
 							if bindings_list_csr.key.is_equal (old_at_code) then
-								target.terminology.put_term_binding (bindings_list_csr.item, bindings_csr.key, at_code)
+								if not target.terminology.has_term_binding (bindings_csr.key, at_code) then
+									target.terminology.put_term_binding (bindings_list_csr.item, bindings_csr.key, at_code)
+								end
+
+								-- update term_definition meaning if possible
+								if ts.has_terminology (bindings_csr.key) and ts.terminology (bindings_csr.key).has_concept_id_for_language (bindings_list_csr.item.value, orig_lang) then
+									target.terminology.replace_term_definition_item (orig_lang, at_code, {ARCHETYPE_TERM}.text_key,
+										ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value)
+									target.terminology.replace_term_definition_item (orig_lang, at_code, {ARCHETYPE_TERM}.description_key,
+										ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value)
+								end
 							end
 						end
 					end
@@ -247,9 +267,8 @@ feature {NONE} -- Implementation
 		local
 			term_vsets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 			arch_c_terms: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
-			ac_code, parent_code, parent_ac_code, old_path, path_in_flat, code_number: STRING
+			ac_code, parent_ac_code, old_path, path_in_flat: STRING
 			old_ac_code, new_code_text, new_code_description: STRING
-			spec_depth: INTEGER
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		parent_ca: C_ATTRIBUTE
 	 		og_path: OG_PATH

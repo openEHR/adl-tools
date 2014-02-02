@@ -14,13 +14,13 @@ create
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (aca: ARCH_CAT_ARCHETYPE)
 			-- set target
 		require
 			aca.is_valid
 		do
 			target_descriptor := aca
-			rm_schema := an_rm_schema
+			rm_schema := aca.rm_schema
 			check attached aca.differential_archetype as da then
 				target := da
 			end

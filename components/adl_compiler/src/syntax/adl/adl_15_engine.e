@@ -57,15 +57,13 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; an_rm_schema: BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_CAT_ARCHETYPE): detachable DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
 		do
-			rm_schema := an_rm_schema
-
 			adl_parser.execute (a_text)
 
 			create errors.make
@@ -117,7 +115,7 @@ feature -- Parsing
 				-- parse ARCHETYPE.definition
 				if not errors.has_errors then
 					check attached adl_parser.definition_text as def_text then
-						definition_context.set_source (def_text, adl_parser.definition_text_start_line, rm_schema)
+						definition_context.set_source (def_text, adl_parser.definition_text_start_line, aca)
 					end
 					definition_context.parse
 					if not definition_context.parse_succeeded then
@@ -129,7 +127,7 @@ feature -- Parsing
 				-- parse ARCHETYPE.rules
 				if not errors.has_errors then
 					if attached adl_parser.rules_text as att_rules_text and then not att_rules_text.is_empty then
-						rules_context.set_source (att_rules_text, adl_parser.rules_text_start_line, rm_schema)
+						rules_context.set_source (att_rules_text, adl_parser.rules_text_start_line, aca)
 						rules_context.parse
 						if not rules_context.parse_succeeded then
 							errors.append (rules_context.errors)
@@ -250,30 +248,30 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_CAT_ARCHETYPE)
 		local
 			proc: AOM_POST_PARSE_PROCESSOR
 		do
 			if attached post_parse_processor as pcp then
 				proc := pcp
-				proc.initialise (an_arch, aca, an_rm_schema)
+				proc.initialise (an_arch, aca)
 			else
-				create proc.make (an_arch, aca, an_rm_schema)
+				create proc.make (an_arch, aca)
 				post_parse_processor := proc
 			end
 			proc.execute
 		end
 
-	phase_1_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	phase_1_validate (aca: ARCH_CAT_ARCHETYPE)
 		local
 			proc: AOM_PHASE_1_VALIDATOR
 		do
 			validation_passed := False
 			if attached phase_1_validator as pv then
 				proc := pv
-				proc.initialise (aca, an_rm_schema)
+				proc.initialise (aca)
 			else
-				create proc.initialise (aca, an_rm_schema)
+				create proc.initialise (aca)
 				phase_1_validator := proc
 			end
 			proc.validate
@@ -281,16 +279,16 @@ feature -- Validation
 			errors := proc.errors
 		end
 
-	phase_2_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	phase_2_validate (aca: ARCH_CAT_ARCHETYPE)
 		local
 			proc: AOM_PHASE_2_VALIDATOR
 		do
 			validation_passed := False
 			if attached phase_2_validator as pv then
 				proc := pv
-				proc.initialise (aca, an_rm_schema)
+				proc.initialise (aca)
 			else
-				create proc.initialise (aca, an_rm_schema)
+				create proc.initialise (aca)
 				phase_2_validator := proc
 			end
 			proc.validate
@@ -298,16 +296,16 @@ feature -- Validation
 			errors := proc.errors
 		end
 
-	phase_3_validate (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	phase_3_validate (aca: ARCH_CAT_ARCHETYPE)
 		local
 			proc: AOM_PHASE_3_VALIDATOR
 		do
 			validation_passed := False
 			if attached phase_3_validator as pv then
 				proc := pv
-				proc.initialise (aca, an_rm_schema)
+				proc.initialise (aca)
 			else
-				create proc.initialise (aca, an_rm_schema)
+				create proc.initialise (aca)
 				phase_3_validator := proc
 			end
 			proc.validate
@@ -315,15 +313,15 @@ feature -- Validation
 			errors := proc.errors
 		end
 
-	post_compile_process (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	post_compile_process (aca: ARCH_CAT_ARCHETYPE)
 		local
 			proc: AOM_POST_COMPILE_PROCESSOR
 		do
 			if attached post_compile_processor as pcp then
 				proc := pcp
-				proc.initialise (aca, an_rm_schema)
+				proc.initialise (aca)
 			else
-				create proc.initialise (aca, an_rm_schema)
+				create proc.initialise (aca)
 				post_compile_processor := proc
 			end
 			proc.execute
@@ -445,11 +443,6 @@ feature {NONE} -- Implementation
 		note
 			option: stable
 		attribute
-		end
-
-	rm_schema: BMM_SCHEMA
-		attribute
-			create Result.make (unknown_value, unknown_value, unknown_value)
 		end
 
 	original_language_and_translations_from_ontology (ontology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS

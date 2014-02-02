@@ -40,11 +40,11 @@ feature -- Access
 
 feature -- Commands
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; an_rm_schema: BMM_SCHEMA)
+	set_source (in_text: STRING; a_source_start_line: INTEGER; aca: ARCH_CAT_ARCHETYPE)
 			-- Set `in_text' as working artifact.
 		do
 			parser_set_source (in_text, a_source_start_line)
-			rm_schema := an_rm_schema
+			target_desc := aca
 		end
 
 	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING)
@@ -80,14 +80,18 @@ feature {NONE} -- Implementation
 	parser_execute
 			-- call the parser.execute with specific args
 		do
-			if attached source as att_source and attached rm_schema as rms then
-				parser.execute (att_source, source_start_line, rms)
+			if attached source as att_source and attached target_desc as att_aca then
+				parser.execute (att_source, source_start_line, att_aca)
 			end
 		end
 
 	parser: CADL_15_PARSER
 
-	rm_schema: detachable BMM_SCHEMA
+	target_desc: detachable ARCH_CAT_ARCHETYPE
+		note
+			option: stable
+		attribute
+		end
 
 end
 

@@ -10,6 +10,13 @@ note
 
 class TERMINOLOGY_ACCESS
 
+inherit
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all;
+			{ANY} deep_copy, is_deep_equal, deep_twin, standard_is_equal
+		end
+
 create
 	make
 
@@ -50,32 +57,61 @@ feature -- Access
 		end
 
 	term (a_concept_id, a_lang: STRING): detachable DV_CODED_TEXT
+			-- `a_concept_id' may be a plain code, or a standard http:// based terminology URI
 		require
 			has_concept_id_for_language (a_concept_id, a_lang)
+		local
+			code: STRING
 		do
-			Result := term_index.item (a_lang).item (a_concept_id)
+			-- the concept_id may be in URI form; preprocess into a code
+			if is_terminology_uri (a_concept_id) then
+				code := terminology_code_from_uri (a_concept_id)
+			else
+				code := a_concept_id
+			end
+
+			Result := term_index.item (a_lang).item (code)
 		end
 
 feature -- Status Report
 
 	has_concept_id (a_concept_id: STRING): BOOLEAN
-			-- 	True if a_code exists in this code set
+			-- True if a_concept_id exists in this code set; `a_concept_id' may be
+			-- a plain code, or a standard http:// based terminology URI
 		require
 			Concept_id_valid: not a_concept_id.is_empty
+		local
+			code: STRING
 		do
 			if not term_index.is_empty then
+				-- the concept_id may be in URI form; preprocess into a code
+				if is_terminology_uri (a_concept_id) then
+					code := terminology_code_from_uri (a_concept_id)
+				else
+					code := a_concept_id
+				end
+
 				term_index.start
-				Result := term_index.item_for_iteration.has (a_concept_id)
+				Result := term_index.item_for_iteration.has (code)
 			end
 		end
 
 	has_concept_id_for_language (a_concept_id, a_lang: STRING): BOOLEAN
 			-- 	True if a_code exists in this code set
+			-- `a_concept_id' may be a plain code, or a standard http:// based terminology URI
 		require
 			Concept_id_valid: not a_concept_id.is_empty
 			Lang_valid: not a_lang.is_empty
+		local
+			code: STRING
 		do
-			Result := term_index.has (a_lang) and then term_index.item (a_lang).has (a_concept_id)
+			-- the concept_id may be in URI form; preprocess into a code
+			if is_terminology_uri (a_concept_id) then
+				code := terminology_code_from_uri (a_concept_id)
+			else
+				code := a_concept_id
+			end
+			Result := term_index.has (a_lang) and then term_index.item (a_lang).has (code)
 		end
 
 	has_language (a_lang: STRING): BOOLEAN

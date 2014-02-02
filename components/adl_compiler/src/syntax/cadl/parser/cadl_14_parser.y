@@ -362,7 +362,7 @@ c_object: c_complex_object
 					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), att_prop.terminology_id)
 				end
 				check attached compiler_billboard.term_bindings.item (att_prop.terminology_id) as att_bindings_for_terminology then
-					str := uri_for_code (att_prop.terminology_id, att_prop.code_string)
+					str := uri_for_terminology_code (att_prop)
 					att_bindings_for_terminology.put (create {URI}.make_from_string (str), last_fake_at_code)
 				end
 			end
@@ -1542,40 +1542,66 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 			-- e.g. "openehr::250"; here we have to synthesise an at-code and binding
 			-- the at-code definition is synthesised later when the proper at-code is substituted
 			if $1.is_single then
-				check attached $1.last_converted_local as att_tcps then
-					create $$.make (att_tcps.codes.first)
-				end
-
-				-- add term binding
-				if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
-					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
-				end
-				check attached compiler_billboard.term_bindings.item ($1.terminology_id.as_lower) as att_bindings_for_terminology and then
-					attached $1.last_converted_local_bindings as att_b
+				-- first of all, if this is a specialised archetype, see if this external code has been seen in the parent, 
+				-- and if there is an at-code and binding we can use
+				if target_descriptor.is_specialised and then attached flat_ancestor as flat_anc and then
+					flat_anc.terminology.has_term_binding_for_external_code ($1.terminology_id, $1.first_code) 
 				then
-					att_bindings_for_terminology.merge (att_b)
-				end
+					create $$.make (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, $1.first_code))
+				else
+					-- otherwise we use the synthesised code
+					check attached $1.last_converted_local as att_tcps then
+						create $$.make (att_tcps.first_code)
+					end
 
+					-- add a binding to be processed by the parse post-processor
+					if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
+						compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
+					end
+					check attached compiler_billboard.term_bindings.item ($1.terminology_id) as att_bindings_for_terminology and then
+						attached $1.last_converted_local_bindings as att_b
+					then
+						att_bindings_for_terminology.merge (att_b)
+						if attached $1.last_converted_binding_map as att_bmap then
+							compiler_billboard.binding_code_map.merge (att_bmap)
+						end
+					end
+				end
+				
 			-- e.g. "openehr::250, 251, 249"; here we have to synthesise at-codes and bindings and value set
 			-- the at-code definitions are synthesised later when the proper at-codes are substituted
 			else
 				create $$.make (new_fake_ac_code)
 
-				if attached $1.last_converted_local as att_tcps then
-					if attached att_tcps.assumed_code as att_ac then
-						$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
-					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, att_tcps.codes), $$.code)
-				end
-
-				-- add term bindings
-				if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
-					compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
-				end
-				check attached compiler_billboard.term_bindings.item ($1.terminology_id.as_lower) as att_bindings_for_terminology and then
-					attached $1.last_converted_local_bindings as att_b
+				-- if this is a specialised archetype, see if this external code has been seen in the parent, 
+				-- if so, the at-codes and bindings are inherited, we only have to re-construct the value set def
+				if target_descriptor.is_specialised and then attached flat_ancestor as flat_anc and then
+					flat_anc.terminology.has_term_binding_for_external_code ($1.terminology_id, $1.first_code) 
 				then
-					att_bindings_for_terminology.merge (att_b)
+					create at_codes.make (0)
+					across $1.codes as ext_code_csr loop
+						if flat_anc.terminology.has_term_binding_for_external_code ($1.terminology_id, ext_code_csr.item) then
+							at_codes.extend (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, ext_code_csr.item))
+						end
+					end
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, at_codes), $$.code)
+				else
+					if attached $1.last_converted_local as att_tcps then
+						if attached att_tcps.assumed_code as att_ac then
+							$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+						end
+						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, att_tcps.codes), $$.code)
+					end
+
+					-- add term bindings
+					if not compiler_billboard.term_bindings.has ($1.terminology_id.as_lower) then
+						compiler_billboard.term_bindings.put (create {HASH_TABLE [URI, STRING]}.make (0), $1.terminology_id.as_lower)
+					end
+					check attached compiler_billboard.term_bindings.item ($1.terminology_id.as_lower) as att_bindings_for_terminology and then
+						attached $1.last_converted_local_bindings as att_b
+					then
+						att_bindings_for_terminology.merge (att_b)
+					end
 				end
 			end
 		}
@@ -2426,10 +2452,16 @@ feature -- Initialization
 			accept
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; an_rm_schema: BMM_SCHEMA)
+	execute (in_text:STRING; a_source_start_line: INTEGER; aca: ARCH_CAT_ARCHETYPE)
 		do
 			reset
-			rm_schema := an_rm_schema
+
+			target_descriptor := aca
+			rm_schema := aca.rm_schema
+			if target_descriptor.is_specialised then
+				flat_ancestor := target_descriptor.specialisation_ancestor.flat_archetype
+ 			end
+
 			source_start_line := a_source_start_line
 			create indent.make_empty
 
@@ -2458,6 +2490,15 @@ feature -- Initialization
 		end
 
 feature {NONE} -- Implementation
+
+	target_descriptor: detachable ARCH_CAT_ARCHETYPE
+		note
+			option: stable
+		attribute
+		end
+
+	flat_ancestor: detachable FLAT_ARCHETYPE
+			-- flat version of ancestor archetype, if target is specialised
 
 	rm_schema: BMM_SCHEMA
 		attribute
@@ -2581,6 +2622,11 @@ feature {NONE} -- Implementation
 		end
 
 	fake_code_number: INTEGER
+
+	at_codes: ARRAYED_LIST [STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	indent: STRING
 

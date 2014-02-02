@@ -27,6 +27,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all
+		end
+
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -238,6 +243,16 @@ feature -- Access (computed)
 			end
 		end
 
+	term_binding_key_for_external_code (a_terminology, a_code: STRING): STRING
+			-- return the at-code to which is bound the code `a_code' in external terminology `a_terminology'
+		require
+			has_term_binding_for_external_code (a_terminology, a_code)
+		do
+			check attached term_binding_map.item (a_terminology.as_lower) as att_map and then attached att_map.item (a_code) as att_code then
+				Result := att_code
+			end
+		end
+
 	definition_for_code (a_lang, a_code: STRING): detachable ARCHETYPE_TERM
 			-- extract the term or constraint definition for `a_code'; Void if no
 			-- code for `a_lang' and 'a_code'
@@ -304,13 +319,13 @@ feature -- Status Report
 		end
 
 	has_any_term_binding (a_key: STRING): BOOLEAN
-			-- true if there is any term binding for code or path `a_key' for any terminology
+			-- true if there is any term binding for internal code or path `a_key' for any terminology
 		do
 			Result := across term_bindings as bindings_csr some bindings_csr.item.has (a_key) end
 		end
 
 	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
-			-- true if there is a term binding for key `a_key' in `a_terminology'
+			-- true if there is a term binding for internal code or archetype path `a_key' in `a_terminology'
 		do
 			Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key)
 		end
@@ -342,6 +357,12 @@ feature -- Status Report
 			-- true if there is a value set defined with id ac-code `a_code'
 		do
 			Result := value_sets.has (a_code)
+		end
+
+	has_term_binding_for_external_code (a_terminology, a_code: STRING): BOOLEAN
+			-- True if there the at-code to which is bound the code `a_code' in external terminology `a_terminology'
+		do
+			Result := term_binding_map.has (a_terminology.as_lower) and then attached term_binding_map.item (a_terminology.as_lower) as att_map and then att_map.has (a_code)
 		end
 
 feature -- Comparison
@@ -489,6 +510,7 @@ feature -- Modification
 			if attached term_bindings.item (a_terminology_id) as bindings then
 				bindings.put (a_binding, a_code)
 			end
+			term_binding_map_cache := Void
 		ensure
 			Binding_added: has_term_binding (a_terminology_id, a_code)
 		end
@@ -513,6 +535,7 @@ feature -- Modification
 			Already_added: has_term_binding (a_terminology_id, a_code)
 		do
 			term_bindings.item (a_terminology_id).replace (a_binding, a_code)
+			term_binding_map_cache := Void
 		ensure
 			Binding_added: has_term_binding (a_terminology_id, a_code)
 		end
@@ -594,6 +617,7 @@ feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_PROCESSOR} -- Modification
 			if term_bindings.item (a_terminology).count = 0 then
 				term_bindings.remove (a_terminology)
 			end
+			term_binding_map_cache := Void
 		ensure
 			Binding_removed: not has_term_binding (a_terminology, a_code)
 		end
@@ -617,6 +641,8 @@ feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_PROCESSOR} -- Modification
 			across terminologies_to_remove as terminologies_csr loop
 				term_bindings.remove (terminologies_csr.item)
 			end
+
+			term_binding_map_cache := Void
 		end
 
 feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
@@ -855,6 +881,35 @@ feature {NONE} -- Implementation
 			option: transient
 		attribute
 		end
+
+	term_binding_map: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
+			-- each internal table is of at-codes, keyed by external code in the terminology of the outer key
+		local
+			terminology_id: STRING
+        do
+            if attached term_binding_map_cache as att_map then
+            	Result := att_map
+            else
+            	create Result.make (0)
+            	across term_bindings as bindings_for_terminology_csr loop
+            		terminology_id := bindings_for_terminology_csr.key
+            		across bindings_for_terminology_csr.item as bindings_csr loop
+            			-- put external code, at-code
+            			if not Result.has (terminology_id) then
+            				Result.put (create {HASH_TABLE [STRING, STRING]}.make (0), terminology_id)
+            			end
+            			check attached Result.item (terminology_id) as att_map then
+            				att_map.put (bindings_csr.key, terminology_code_from_uri (bindings_csr.item.as_string))
+            			end
+            		end
+            	end
+            	term_binding_map_cache := Result
+            end
+        end
+
+	term_binding_map_cache: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+			-- cache for `term_binding_map'
 
 	has_path (a_path: STRING): BOOLEAN
 			-- True if path `a_path' exists in structure
