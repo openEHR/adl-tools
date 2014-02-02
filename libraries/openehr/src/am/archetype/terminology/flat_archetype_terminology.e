@@ -37,6 +37,8 @@ feature -- Initialisation
 			value_sets := a_diff_copy.value_sets
 
 			sync_stored_properties
+		ensure
+			Specialisation_depth_set: specialisation_depth = a_diff.specialisation_depth
 		end
 
 feature -- Modification
@@ -68,8 +70,10 @@ feature -- Modification
 			across other.value_sets as value_sets_csr loop
 				merge_specialised_value_set (value_sets_csr.item.deep_twin)
 			end
+
+			sync_stored_properties
 		ensure
-			-- Terminologies_merged: terminologies_available.is_superset (other.terminologies_available)
+			Specialisation_depth_set: specialisation_depth = other.specialisation_depth
 		end
 
 	merge_specialised_term_definition (a_child_term_defs: HASH_TABLE [ARCHETYPE_TERM, STRING]; a_child_code: STRING)
