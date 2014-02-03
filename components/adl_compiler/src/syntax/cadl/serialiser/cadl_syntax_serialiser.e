@@ -252,9 +252,9 @@ feature -- Visitor
 						att_cpo := cpo
 					end
 					if attached {C_STRING} att_cpo as c_str then
-						last_result.append (apply_style (c_str.i_th_constraint_as_string_clean (tuple_idx, agent clean), STYLE_VALUE))
+						last_result.append (apply_style (c_str.i_th_tuple_constraint_as_string_clean (tuple_idx, agent clean), STYLE_VALUE))
 					else
-						last_result.append (apply_style (att_cpo.i_th_constraint_as_string (tuple_idx), STYLE_VALUE))
+						last_result.append (apply_style (att_cpo.i_th_tuple_constraint_as_string (tuple_idx), STYLE_VALUE))
 					end
 					last_result.append (symbol (SYM_END_CBLOCK))
 					if not c_attrs_csr.is_last then
@@ -346,7 +346,7 @@ feature -- Visitor
 			-- ignore objs which are under c_attribute_tuples
 			if not a_node.is_second_order_constrained then
 				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
-				if attached {C_STRING} a_node as c_str and then attached c_str.list then
+				if attached {C_STRING} a_node as c_str and then attached c_str.constraint then
 					last_result.append (apply_style (c_str.as_string_clean (agent clean), STYLE_VALUE))
 					last_object_inline := True
 				elseif attached {C_TERMINOLOGY_CODE} a_node as ctc then
@@ -438,10 +438,10 @@ feature {NONE} -- Implementation
 
 				-- hold the comment over in `last_coded_constraint_comment'
 				create last_coded_constraint_comment.make(0)
-				if terminology.has_constraint_code (a_node.code) then
+				if terminology.has_constraint_code (a_node.constraint) then
 					last_coded_constraint_comment.append (format_item (FMT_INDENT))
 					last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
-						safe_comment (terminology.term_definition (language, a_node.code).text), STYLE_COMMENT))
+						safe_comment (terminology.term_definition (language, a_node.constraint).text), STYLE_COMMENT))
 				end
 				last_object_inline := True
 

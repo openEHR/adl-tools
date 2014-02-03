@@ -399,7 +399,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 			else
 				-- Should never get here
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_open, ed_context)
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_any, ed_context)
 
 			end
 

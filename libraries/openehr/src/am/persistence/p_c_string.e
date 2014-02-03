@@ -23,21 +23,12 @@ feature -- Initialisation
 	make (a_cpo: C_STRING)
 		do
 			precursor (a_cpo)
-			list := a_cpo.list
-			regexp := a_cpo.regexp
-			is_open := a_cpo.is_open
-			regexp_default_delimiter := a_cpo.regexp_default_delimiter
+			tuple_constraint := a_cpo.tuple_constraint
 		end
 
 feature -- Access
 
-	list: detachable ARRAYED_LIST [STRING]
-
-	regexp: detachable STRING
-
-	is_open: BOOLEAN
-
-	regexp_default_delimiter: BOOLEAN
+	tuple_constraint: ARRAYED_LIST [ARRAYED_LIST [STRING]]
 
 feature -- Factory
 
@@ -51,7 +42,7 @@ feature {NONE} -- Implementation
 
 	populate_c_instance (a_c_o: C_STRING)
 		do
-			a_c_o.set_constraint (list, regexp, is_open, regexp_default_delimiter)
+			a_c_o.set_constraint (tuple_constraint)
 			precursor (a_c_o)
 		end
 

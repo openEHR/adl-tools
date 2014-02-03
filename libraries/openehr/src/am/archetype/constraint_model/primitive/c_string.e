@@ -1,6 +1,14 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Constrainer type for instances of STRING"
+	description: "[
+				 Constrainer type for instances of STRING. Multiple constraints in a tuple can be
+				 accommodated. Each tuple member is a list of STRINGs, where each of those strings can be:
+				 	* a normal string, e.g. 'abbsndf'
+				 	* a regex string using // delimiters, e.g. '/[0-9]+/'
+				 	* a literal regex string, delimited using \/\/, e.g. '\/[0-9]\/'
+				 The last option allows regex strings to be normal values rather than constraint specifications,
+				 in case the intention is to constraint some data item to be a regex string.
+				 ]"
 	keywords:    "archetype, string, data"
 	design:      "openEHR Common Archetype Model 0.2"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -13,155 +21,124 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, assumed_value, c_equal
+			default_create, constraint, assumed_value, as_string, i_th_tuple_constraint_as_string
 		end
 
 create
-	make_open, make_simple, make_from_regexp, make_list, make_any, default_create
+	make, make_value, make_value_list, make_any, default_create
 
 feature -- Definitions
 
-	Regex_any_string: STRING = ".*"
+	Regex_any_string: STRING = "/.*/"
 
-	default_delimiter: CHARACTER = '/'
+	Regex_delimiter: CHARACTER = '/'
 
-	alternative_delimiter: CHARACTER = '^'
+	Regex_literal_delimiter: STRING = "\/"
 
 	Invalid_regex_message: STRING = "invalid regex"
 
 feature -- Initialization
 
 	default_create
+			-- set `rm_type_name'
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
 		do
 			precursor
-			create list.make(0)
-			list.compare_objects
+			tuple_constraint.extend (create {like constraint}.make (0))
+			constraint.compare_objects
 		end
 
-	make_open
-			-- make completely open
-		do
-			default_create
-			is_open := True
-		end
-
-	make_simple (str: STRING)
+	make_value (str: STRING)
 			-- make from a single string
-		do
-			default_create
-			list.extend (str)
-		ensure
-			not_open: not is_open
-			str_valid: valid_value (str)
-		end
-
-	make_from_regexp (str: STRING; using_default_delimiter: BOOLEAN)
-			-- make from a regular expression contained in 'str' (not including delimiters);
-			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
-			-- else the '^' delimiter is being used
 		local
-			s: STRING
+			regexp_parser: RX_PCRE_REGULAR_EXPRESSION
 		do
 			default_create
-			s := str.twin
-			regexp := s
-			regexp_default_delimiter := using_default_delimiter
-			create regexp_parser.make
-			regexp_parser.set_case_insensitive (True)
-			regexp_parser.compile (s)
-			if not regexp_parser.is_compiled then
-				regexp := Invalid_regex_message
+			if is_regex_string (str) then
+				create regexp_parser.make
+				regexp_parser.set_case_insensitive (True)
+				regexp_parser.compile (str.substring (2, str.count - 1))
+				if not regexp_parser.is_compiled then
+					constraint.extend (Invalid_regex_message)
+				else
+					constraint.extend (str)
+				end
+			else
+				constraint.extend (str)
 			end
-		ensure
-			not_open: not is_open
 		end
 
-	make_list (lst: LIST[STRING])
+	make_value_list (list: LIST[STRING])
 		require
-			not lst.is_empty
+			not list.is_empty
 		do
 			default_create
-			list.fill (lst)
-		ensure
-			not_open: not is_open
+			constraint.fill (list)
 		end
 
 	make_any
 			-- make using an open regex, i.e. ".*"
 		do
-			default_create
-			regexp := Regex_any_string
+			make_value (Regex_any_string)
 		end
 
 feature -- Access
 
-	list: ARRAYED_LIST [STRING]
-			-- representation of constraint as allowed values for the constrained string
-		attribute
-			create Result.make (0)
+	i_th_tuple_constraint (i: INTEGER): like Current
+			-- obtain i-th tuple constraint item
+		do
+			create Result.make (tuple_constraint.i_th (i).deep_twin)
 		end
 
-	regexp: detachable STRING
-			-- representation of constraint as PERL-compliant regexp pattern
-
-	list_count: INTEGER
-			-- number of individual constraint items
+	constraint: ARRAYED_LIST [STRING]
+			-- <precursor>
 		do
-			Result := list.count
-		end
-
-	i_th_constraint (i: INTEGER): STRING
-			-- obtain i-th constraint item
-		do
-			Result := list.i_th (i)
+			Result := tuple_constraint.first
 		end
 
 	prototype_value: STRING
 			-- 	generate a default value from this constraint object
 		do
-			if is_open then
-				Result := "*"
-			elseif not list.is_empty then
-				Result := list.first
-			elseif attached regexp then
+			if is_regex_string (constraint.first) then
 				create Result.make_empty
 				-- FIXME - what is default from regexp?
 			else
-				create Result.make_empty
+				create Result.make_from_string (constraint.first)
 			end
 		end
 
 	assumed_value: detachable STRING
 
-	regexp_delimiter: CHARACTER
-			-- return correct delimiter according to `regexp_default_delimiter'
-		do
-			if regexp_default_delimiter then
-				Result := default_delimiter
-			else
-				Result := alternative_delimiter
-			end
-		end
-
 feature -- Status Report
 
-	is_open: BOOLEAN
-			-- values other than those in 'items' are allowed
-
-	is_regexp: BOOLEAN
-			-- True if this constraint is a regular expression
+	is_regex_string (a_str: STRING): BOOLEAN
+			-- True if this constraint is a regular expression, i.e. starts and ends with '/'
 		do
-			Result := attached regexp
+			Result := a_str.item(1) = Regex_delimiter and a_str.item(a_str.count) = Regex_delimiter
 		end
 
 	valid_value (a_value: STRING): BOOLEAN
+		local
+			a_constraint: like constraint
+			regexp_parser: RX_PCRE_REGULAR_EXPRESSION
 		do
-			if is_open then
-				Result := True
-			elseif not list.is_empty then
-				Result := list.has (a_value)
-			elseif attached regexp_parser as rep then
-				Result := rep.recognizes (a_value)
+			from tuple_constraint.start until tuple_constraint.off or Result loop
+				a_constraint := tuple_constraint.item
+				from a_constraint.start until a_constraint.off or Result loop
+					if is_regex_string (a_constraint.item) then
+						create regexp_parser.make
+						regexp_parser.set_case_insensitive (True)
+						regexp_parser.compile (a_constraint.item.substring (2, a_constraint.item.count - 1))
+						if regexp_parser.is_compiled then
+							Result := regexp_parser.recognizes (a_value)
+						end
+					else
+						Result := a_constraint.item.is_equal (a_value)
+					end
+					a_constraint.forth
+				end
+				tuple_constraint.forth
 			end
 		end
 
@@ -170,57 +147,13 @@ feature -- Status Report
 			Result := valid_value (a_value)
 		end
 
-	regexp_default_delimiter: BOOLEAN
-			-- if True, the '/' delimiter is being used,
-			-- else the '^' delimiter is being used		
-
-feature -- Comparison
-
-	c_equal (other: like Current): BOOLEAN
-			-- True if this node is the same as `other'
-		do
-			Result := precursor (other) and list_count = other.list_count and then
-				across list as list_csr all other.list.has (list_csr.item) end
-				and then regexp ~ other.regexp
-		end
-
 feature -- Modification
-
-	merge_tuple (other: like Current)
-			-- merge the constraints of `other' into this constraint object. We just add items to
-			-- the end of lists of constraints in the subtypes, since the constraints may represent
-			-- a tuple vector, in which case duplicates are allowed
-		do
-			list.append (other.list)
-		end
-
-	set_open
-		do
-			is_open := True
-		end
 
 	add_string (str: STRING)
 		do
-			list.extend (str)
+			constraint.extend (str)
 		ensure
-			extended: list.count = old list.count + 1
-			str_valid: valid_value (str)
-		end
-
-feature {P_C_STRING} -- Modification
-
-	set_constraint (a_strings: detachable ARRAYED_LIST [STRING];
-			a_regexp: detachable STRING;
-			a_is_open: BOOLEAN;
-			a_regexp_default_delimiter: BOOLEAN)
-		do
-			default_create
-			if attached a_strings as strs then
-				list.fill (strs)
-			end
-			regexp := a_regexp
-			is_open := a_is_open
-			regexp_default_delimiter := a_regexp_default_delimiter
+			extended: constraint.count = old constraint.count + 1
 		end
 
 feature -- Output
@@ -229,24 +162,7 @@ feature -- Output
 			-- seriaised form of this object, with no modifications; use `as_string_clean' to
 			-- apply a cleaner function
 		do
-			create Result.make_empty
-			if not list.is_empty then
-				across list as strings_csr loop
-					if not strings_csr.is_first then
-						Result.append (", ")
-					end
-					Result.append_character ('%"')
-					Result.append (strings_csr.item)
-					Result.append_character ('%"')
-				end
-				if is_open then
-					Result.append(", ...")
-				end
-			elseif attached regexp as rexp then
-				Result.append_character (regexp_delimiter)
-				Result.append (rexp)
-				Result.append_character (regexp_delimiter)
-			end
+			Result := constraint_as_string (constraint)
 			if attached assumed_value then
 				Result.append("; %"" + assumed_value.out + "%"")
 			end
@@ -255,67 +171,71 @@ feature -- Output
 	as_string_clean (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
-			create Result.make(0)
-			if not list.is_empty then
-				across list as strings_csr loop
-					if not strings_csr.is_first then
-						Result.append(", ")
-					end
-					Result.append_character ('%"')
-					Result.append (cleaner.item ([strings_csr.item]))
-					Result.append_character ('%"')
-				end
-				if is_open then
-					Result.append (", ...")
-				end
-			elseif attached regexp as rexp then
-				Result.append_character (regexp_delimiter)
-				Result.append (rexp)
-				Result.append_character (regexp_delimiter)
-			end
+			Result := constraint_as_string_clean (constraint, cleaner)
 			if attached assumed_value then
 				Result.append ("; %"" + cleaner.item ([assumed_value.out]) + "%"")
 			end
 		end
 
-	i_th_constraint_as_string (i: INTEGER): STRING
+	i_th_tuple_constraint_as_string (i: INTEGER): STRING
 			-- serialised form of i-th tuple constraint of this object
 		do
 			create Result.make(0)
 			Result.append_character ('%"')
-			Result.append (list.i_th (i))
+			Result.append (constraint_as_string (constraint))
 			Result.append_character ('%"')
 		end
 
-	i_th_constraint_as_string_clean (i: INTEGER; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	i_th_tuple_constraint_as_string_clean (i: INTEGER; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
 			Result.append_character ('%"')
-			Result.append (cleaner.item ([list.i_th (i)]))
+			Result.append (constraint_as_string_clean (tuple_constraint.i_th (i), cleaner))
 			Result.append_character ('%"')
 		end
 
 feature {NONE} -- Implementation
 
-	do_node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
+			-- <precursor>
 		do
-			if is_regexp and other.is_regexp then
-				-- FIXME: TO BE IMPLEMENTED
-			elseif not list.is_empty and not other.list.is_empty then
-				Result := across list as list_csr all other.list.has (list_csr.item) end
+			Result := across a_constraint as constraint_csr all other_constraint.has (constraint_csr.item) end
+		end
+
+	constraint_as_string (a_constraint: like constraint): STRING
+			-- generate `constraint' as string
+		do
+			create Result.make(0)
+			across a_constraint as strings_csr loop
+				if not strings_csr.is_first then
+					Result.append (", ")
+				end
+				Result.append_character ('%"')
+				Result.append (strings_csr.item)
+				Result.append_character ('%"')
 			end
 		end
 
-	regexp_parser: detachable RX_PCRE_REGULAR_EXPRESSION
-		note
-			option: transient
-		attribute
+	constraint_as_string_clean (a_constraint: like constraint; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			create Result.make(0)
+			across a_constraint as strings_csr loop
+				if not strings_csr.is_first then
+					Result.append(", ")
+				end
+				Result.append_character ('%"')
+				Result.append (cleaner.item ([strings_csr.item]))
+				Result.append_character ('%"')
+			end
 		end
 
-invariant
-	strings_regexp_mutex: not list.is_empty xor regexp /= Void
+	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			Result := across a_constraint as constraint_csr all other_constraint.has (constraint_csr.item) end
+		end
 
 end
 

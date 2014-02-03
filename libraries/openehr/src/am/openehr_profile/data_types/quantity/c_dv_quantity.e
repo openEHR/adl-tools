@@ -140,7 +140,7 @@ feature -- Conversion
 				Result.put_attribute (ca_units)
 				across cq_item_list as cq_items_csr loop
 					if cq_items_csr.is_first then
-						create cpo_units.make_simple (cq_items_csr.item.units)
+						create cpo_units.make_value (cq_items_csr.item.units)
 						ca_units.put_child (cpo_units)
 					elseif attached {C_STRING} ca_units.children.first as c_string then
 						c_string.add_string (cq_items_csr.item.units)

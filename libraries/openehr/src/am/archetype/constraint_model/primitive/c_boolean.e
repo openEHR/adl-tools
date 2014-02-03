@@ -13,56 +13,54 @@ class C_BOOLEAN
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			assumed_value, c_equal
+			default_create, constraint, assumed_value
 		end
 
 create
-	make_true, make_false, make_true_false, make_list, default_create
+	make, make_true, make_false, make_true_false, default_create
 
 feature -- Initialisation
+
+	default_create
+			-- set `rm_type_name'
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		do
+			precursor
+			tuple_constraint.extend (create {like constraint}.make (0))
+		end
 
 	make_true
 		do
 			default_create
-			list.extend (True)
+			constraint.extend (True)
 		end
 
 	make_false
 		do
 			default_create
-			list.extend (False)
+			constraint.extend (False)
 		end
 
 	make_true_false
 		do
 			default_create
-			list.extend (True)
-			list.extend (False)
-		end
-
-	make_list (a_list: like list)
-		do
-			default_create
-			list := a_list
+			constraint.extend (False)
+			constraint.extend (True)
 		end
 
 feature -- Access
 
-	list: ARRAYED_LIST [BOOLEAN]
-		attribute
-			create Result.make (0)
+	i_th_tuple_constraint (i: INTEGER): like Current
+			-- obtain i-th tuple constraint item
+		do
+			create Result.make (tuple_constraint.i_th (i).deep_twin)
 		end
 
-	list_count: INTEGER
-			-- number of individual constraint items
+	constraint: ARRAYED_LIST [BOOLEAN]
+			-- <precursor>
 		do
-			Result := list.count
-		end
-
-	i_th_constraint (i: INTEGER): BOOLEAN
-			-- obtain i-th constraint item
-		do
-			Result := list.i_th (i)
+			Result := tuple_constraint.first
 		end
 
     assumed_value: detachable BOOLEAN_REF
@@ -70,8 +68,7 @@ feature -- Access
 
 	prototype_value: BOOLEAN
 		do
-			create Result
-			Result.set_item (list.first)
+			 Result := constraint.first
 		end
 
 feature -- Status Report
@@ -79,18 +76,18 @@ feature -- Status Report
 	true_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "True"
 		do
-			Result := across list as list_csr some list_csr.item = True end
+			Result := across tuple_constraint as tuple_csr some tuple_csr.item.has (True) end
 		end
 
 	false_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "False"
 		do
-			Result := across list as list_csr some list_csr.item = False end
+			Result := across tuple_constraint as tuple_csr some tuple_csr.item.has (False) end
 		end
 
 	valid_value (a_value: BOOLEAN): BOOLEAN
 		do
-			Result := (a_value and true_valid) or else (not a_value and false_valid)
+			Result := across tuple_constraint as tuple_csr some tuple_csr.item.has (a_value) end
 		end
 
 	valid_assumed_value (a_value: BOOLEAN_REF): BOOLEAN
@@ -98,61 +95,31 @@ feature -- Status Report
 			Result := valid_value (a_value.item)
 		end
 
-feature -- Comparison
+feature {NONE} -- Implementation
 
-	c_equal (other: like Current): BOOLEAN
-			-- True if this node is the same as `other'
+	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
+			-- <precursor>
 		do
-			Result := precursor (other) and list_count = other.list_count and then
-				across list as list_csr all other.list.has (list_csr.item) end
+			Result := across a_constraint as constraint_csr all other_constraint.has (constraint_csr.item) end
 		end
 
-feature -- Modification
-
-	merge_tuple (other: like Current)
-			-- merge the constraints of `other' into this constraint object. We just add items to
-			-- the end of lists of constraints in the subtypes, since the constraints may represent
-			-- a tuple vector, in which case duplicates are allowed
-		do
-			list.merge_right (other.list)
-		end
-
-feature -- Output
-
-	as_string: STRING
+	constraint_as_string (a_constraint: like constraint): STRING
+			-- generate `constraint' as string
 		do
 			create Result.make(0)
-			across list as list_csr loop
-				Result.append_boolean (list_csr.item)
-				if not list_csr.is_last then
+			across a_constraint as constraint_csr loop
+				Result.append_boolean (constraint_csr.item)
+				if not constraint_csr.is_last then
 					Result.append(", ")
 				end
 			end
-			if attached assumed_value then
-				Result.append ("; " + assumed_value.out)
-			end
 		end
 
-	i_th_constraint_as_string (i: INTEGER): STRING
-			-- serialised form of i-th tuple constraint of this object
-		do
-			create Result.make(0)
-			Result.append_boolean (list.i_th (i))
-		end
-
-feature {P_C_BOOLEAN} -- Modification
-
-	set_constraint (a_list: like list)
-		do
-			list := a_list
-		end
-
-feature {NONE} -- Implementation
-
-	do_node_conforms_to (other: like Current): BOOLEAN
+	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			Result := (true_valid implies other.true_valid) and (false_valid implies other.false_valid)
+			Result := (a_constraint.has (True) implies other_constraint.has (True)) and
+				(a_constraint.has (False) implies other_constraint.has (False))
 		end
 
 invariant

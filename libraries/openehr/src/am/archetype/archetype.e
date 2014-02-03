@@ -471,7 +471,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 						key: STRING
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							across ctc.code_list as codes_csr loop
+							across ctc.tuple_constraint as codes_csr loop
 								key := codes_csr.item
 								if is_valid_value_code (key) then
 									if not idx.has (key) then
@@ -508,7 +508,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							across ctc.code_list as codes_csr loop
+							across ctc.tuple_constraint as codes_csr loop
 								if is_valid_constraint_code (codes_csr.item) then
 									idx.put (ctc, codes_csr.item)
 								end

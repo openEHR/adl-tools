@@ -3622,7 +3622,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1230")
 end
 
-			create yyval58.make_simple (yyvs3.item (yyvsp3))
+			create yyval58.make_value (yyvs3.item (yyvsp3))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3643,7 +3643,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1234")
 end
 
-			create yyval58.make_list_simple (yyvs29.item (yyvsp29))
+			create yyval58.make_value_list (yyvs29.item (yyvsp29))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3685,7 +3685,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1242")
 end
 
-			create yyval58.make_list (yyvs42.item (yyvsp42))
+			create yyval58.make (yyvs42.item (yyvsp42))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3738,7 +3738,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1261")
 end
 
-			create yyval57.make_simple (yyvs4.item (yyvsp4))
+			create yyval57.make_value (yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3759,7 +3759,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1265")
 end
 
-			create yyval57.make_list_simple (yyvs30.item (yyvsp30))
+			create yyval57.make_value_list (yyvs30.item (yyvsp30))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3801,7 +3801,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1273")
 end
 
-			create yyval57.make_list (yyvs43.item (yyvsp43))
+			create yyval57.make (yyvs43.item (yyvsp43))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3887,7 +3887,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1308")
 end
 
-			create yyval55.make_simple (yyvs24.item (yyvsp24))
+			create yyval55.make_value (yyvs24.item (yyvsp24))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3908,7 +3908,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1312")
 end
 
-			create yyval55.make_list_simple (yyvs32.item (yyvsp32))
+			create yyval55.make_value_list (yyvs32.item (yyvsp32))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -3950,7 +3950,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1320")
 end
 
-			create yyval55.make_list (yyvs45.item (yyvsp45))
+			create yyval55.make (yyvs45.item (yyvsp45))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4035,7 +4035,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1354")
 end
 
-			create yyval56.make_simple (yyvs26.item (yyvsp26))
+			create yyval56.make_value (yyvs26.item (yyvsp26))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4056,7 +4056,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1358")
 end
 
-			create yyval56.make_list_simple (yyvs33.item (yyvsp33))
+			create yyval56.make_value_list (yyvs33.item (yyvsp33))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4098,7 +4098,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1366")
 end
 
-			create yyval56.make_list (yyvs44.item (yyvsp44))
+			create yyval56.make (yyvs44.item (yyvsp44))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4183,7 +4183,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1400")
 end
 
-			create yyval53.make_simple (yyvs25.item (yyvsp25))
+			create yyval53.make_value (yyvs25.item (yyvsp25))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4204,7 +4204,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1404")
 end
 
-			create yyval53.make_list_simple (yyvs34.item (yyvsp34))
+			create yyval53.make_value_list (yyvs34.item (yyvsp34))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4246,7 +4246,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1412")
 end
 
-			create yyval53.make_list (yyvs46.item (yyvsp46))
+			create yyval53.make (yyvs46.item (yyvsp46))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4351,7 +4351,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1447")
 end
 
-			create yyval54.make_simple (yyvs27.item (yyvsp27))
+			create yyval54.make_value (yyvs27.item (yyvsp27))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4372,7 +4372,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1451")
 end
 
-			create yyval54.make_list_simple (yyvs35.item (yyvsp35))
+			create yyval54.make_value_list (yyvs35.item (yyvsp35))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4414,7 +4414,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1459")
 end
 
-			create yyval54.make_list (yyvs47.item (yyvsp47))
+			create yyval54.make (yyvs47.item (yyvsp47))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4488,7 +4488,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1483")
 end
 
-			create yyval52.make_simple (yyvs2.item (yyvsp2))
+			create yyval52.make_value (yyvs2.item (yyvsp2))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4509,7 +4509,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1487")
 end
 
-			create yyval52.make_list (yyvs28.item (yyvsp28))
+			create yyval52.make (yyvs28.item (yyvsp28))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4530,8 +4530,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1491")
 end
 
-			create yyval52.make_from_regexp (yyvs2.item (yyvsp2).substring (2, yyvs2.item (yyvsp2).count - 1), yyvs2.item (yyvsp2).item (1) = '/')
-			if yyval52.regexp.is_equal ({C_STRING}.Invalid_regex_message) then
+			create yyval52.make_value (yyvs2.item (yyvsp2))
+			if yyval52.constraint.first.is_equal ({C_STRING}.Invalid_regex_message) then
 				abort_with_error (ec_SCSRE, <<yyvs2.item (yyvsp2)>>)
 			end
 		
@@ -4618,7 +4618,7 @@ end
 				if attached yyvs5.item (yyvsp5).assumed_code as att_ac then
 					yyval59.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 				end
-				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.code, yyvs5.item (yyvsp5).codes), yyval59.code)
+				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.constraint, yyvs5.item (yyvsp5).codes), yyval59.constraint)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4689,13 +4689,13 @@ end
 							at_codes.extend (flat_anc.terminology.term_binding_key_for_external_code (yyvs5.item (yyvsp5).terminology_id, ext_code_csr.item))
 						end
 					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.code, at_codes), yyval59.code)
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.constraint, at_codes), yyval59.constraint)
 				else
 					if attached yyvs5.item (yyvsp5).last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
 							yyval59.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 						end
-						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.code, att_tcps.codes), yyval59.code)
+						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.constraint, att_tcps.codes), yyval59.constraint)
 					end
 
 					-- add term bindings
@@ -4834,7 +4834,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1633")
 end
 
-			create yyval51.make_list (yyvs31.item (yyvsp31))
+			create yyval51.make (yyvs31.item (yyvsp31))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4895,7 +4895,7 @@ end
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			yyval15.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
 			yyval15.attribute_tuples.first.put_member (yyval15.attribute_with_name ("value"))
-			yyval15.attribute_with_name ("value").put_child (create {C_INTEGER}.make_simple (yyvs50.item (yyvsp50).value))
+			yyval15.attribute_with_name ("value").put_child (create {C_INTEGER}.make_value (yyvs50.item (yyvsp50).value))
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			yyval15.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))

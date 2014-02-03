@@ -23,12 +23,12 @@ feature -- Initialisation
 	make (a_cpo: C_TERMINOLOGY_CODE)
 		do
 			precursor (a_cpo)
-			code_list := a_cpo.code_list
+			tuple_constraint := a_cpo.tuple_constraint
 		end
 
 feature -- Access
 
-	code_list: ARRAYED_LIST [STRING]
+	tuple_constraint: ARRAYED_LIST [STRING]
 
 feature -- Factory
 
@@ -41,7 +41,7 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_TERMINOLOGY_CODE)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (code_list)
+			a_c_o.set_constraint (tuple_constraint)
 		end
 
 end

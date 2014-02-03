@@ -11,9 +11,6 @@ class P_C_DURATION
 
 inherit
 	P_C_TEMPORAL [ISO8601_DURATION]
-		redefine
-			populate_c_instance
-		end
 
 create
 	make
@@ -23,13 +20,8 @@ feature -- Factory
 	create_c_primitive_object: C_DURATION
 		do
 			create Result.default_create
+			Result.set_constraint (tuple_constraint, tuple_pattern_constraint)
 			populate_c_instance (Result)
-		end
-
-	populate_c_instance (a_c_o: C_DURATION)
-		do
-			a_c_o.set_constraint (list, pattern)
-			precursor (a_c_o)
 		end
 
 end

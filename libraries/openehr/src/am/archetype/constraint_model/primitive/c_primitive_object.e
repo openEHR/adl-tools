@@ -30,20 +30,41 @@ feature -- Initialisaiton
 			set_node_id (Primitive_node_id)
 		end
 
-feature -- Access
-
-    assumed_value: detachable ANY
-            -- value to be assumed if none sent in data
-
-	list_count: INTEGER
-			-- number of tuple constraint items
-		deferred
+	make (a_constraint: like constraint)
+		do
+			default_create
+			if tuple_constraint.is_empty then
+				tuple_constraint.extend (a_constraint)
+			else
+				tuple_constraint.put_i_th (a_constraint, 1)
+			end
 		end
 
-	i_th_constraint (i: INTEGER): ANY
+feature -- Access
+
+	constraint: ANY
+			-- single constraint represented by this object
+		do
+			Result := tuple_constraint.first
+		end
+
+	tuple_constraint: ARRAYED_LIST [like constraint]
+			-- tuple constraint represented by this object
+		attribute
+			create Result.make (0)
+		end
+
+	tuple_count: INTEGER
+			-- number of tuple constraint items
+		do
+			Result := tuple_constraint.count
+		end
+
+	i_th_tuple_constraint (i: INTEGER): like Current
 			-- obtain i-th tuple constraint item
 		require
-			i > 0 and i <= list_count
+			Is_tuple: is_tuple
+			valid_index: i > 0 and i <= tuple_count
 		deferred
 		end
 
@@ -55,12 +76,15 @@ feature -- Access
 			Result.remove_head (2)
 		end
 
+    assumed_value: detachable ANY
+            -- value to be assumed if none sent in data
+
 feature -- Status Report
 
 	is_tuple: BOOLEAN
 			-- True if there is more than one constraint
 		do
-			Result := list_count > 1
+			Result := tuple_count > 1
 		end
 
 	has_assumed_value: BOOLEAN
@@ -78,7 +102,11 @@ feature -- Comparison
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			Result := precursor (other, rm_type_conformance_checker) and do_node_conforms_to (other)
+			Result := precursor (other, rm_type_conformance_checker) and
+				tuple_count <= other.tuple_count and then
+				across tuple_constraint as tuple_csr all
+					do_constraint_conforms_to (tuple_csr.item, other.tuple_constraint.i_th (tuple_csr.target_index))
+				end
 		end
 
 	c_equal (other: like Current): BOOLEAN
@@ -86,7 +114,11 @@ feature -- Comparison
 		do
 			Result := occurrences ~ other.occurrences and
 				node_id.is_equal (other.node_id) and
-				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
+				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type) and
+				tuple_count = other.tuple_count and
+				across tuple_constraint as tuple_csr all
+					c_equal_constraint (tuple_csr.item, other.tuple_constraint.i_th (tuple_csr.target_index))
+				end
 		end
 
 feature -- Modification
@@ -107,22 +139,40 @@ feature -- Modification
 			-- a tuple vector, in which case duplicates are allowed
 		require
 			not other.is_tuple
-		deferred
+		do
+			tuple_constraint.extend (other.constraint)
+		end
+
+feature {P_C_PRIMITIVE_OBJECT} -- Modification
+
+	set_constraint (a_tuple_constraint: like tuple_constraint)
+		do
+			tuple_constraint := a_tuple_constraint
 		end
 
 feature -- Output
 
 	as_string: STRING
-		require
-			not is_tuple
-		deferred
+			-- generate `constraint' as string
+--		require
+--			not is_tuple
+		do
+			create Result.make (0)
+			Result.append (constraint_as_string (constraint))
+			if attached assumed_value then
+				Result.append ("; " + assumed_value.out)
+			end
 		end
 
-	i_th_constraint_as_string (i: INTEGER): STRING
-			-- serialised form of i-th constraint in a tuple
+	i_th_tuple_constraint_as_string (i: INTEGER): STRING
+			-- serialised form of i-th tuple constraint of this object
+			-- assumed value is omitted
 		require
-			i > 0 and i <= list_count
-		deferred
+			i > 0 and i <= tuple_count
+		local
+			a_constraint: like constraint
+		do
+			Result := constraint_as_string (tuple_constraint.i_th (i))
 		end
 
 	out: STRING
@@ -148,8 +198,18 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	do_node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
+			-- True if `a_constraint' is the same as `other_constraint'
+		deferred
+		end
+
+	constraint_as_string (a_constraint: like constraint): STRING
+			-- generate `constraint' as string
+		deferred
+		end
+
+	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
+			-- True if `a_constraint' is a subset of, or the same as `other_constraint'
 		deferred
 		end
 

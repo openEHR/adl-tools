@@ -169,9 +169,9 @@ feature {NONE} -- Implementation
 							att_cpo := cpo
 						end
 						if attached {C_TERMINOLOGY_CODE} att_cpo as ctc then
-							Result.append (c_terminology_code_str (ctc.i_th_constraint (tuple_idx)))
+							Result.append (c_terminology_code_str (ctc.i_th_tuple_constraint (tuple_idx)))
 						else
-							Result.append (att_cpo.i_th_constraint (tuple_idx).out)
+							Result.append (att_cpo.i_th_tuple_constraint (tuple_idx).out)
 						end
 						if not ca_csr.is_last then
 							Result.append (", ")

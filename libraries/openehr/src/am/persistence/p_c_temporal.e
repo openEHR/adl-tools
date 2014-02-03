@@ -20,12 +20,14 @@ feature -- Initialisation
 	make (a_cpo: C_TEMPORAL[G])
 		do
 			precursor (a_cpo)
-			pattern := a_cpo.pattern
+			if not a_cpo.tuple_pattern_constraint.is_empty then
+				tuple_pattern_constraint := a_cpo.tuple_pattern_constraint
+			end
 		end
 
 feature -- Access
 
-	pattern: detachable STRING
+	tuple_pattern_constraint: detachable ARRAYED_LIST [STRING]
 
 end
 

@@ -1229,11 +1229,11 @@ multiplicity: integer_value
 
 c_integer: integer_value
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| integer_list
 		{
-			create $$.make_list_simple ($1)
+			create $$.make_value_list ($1)
 		}
 	| integer_interval
 		{
@@ -1241,7 +1241,7 @@ c_integer: integer_value
 		}
 	| integer_interval_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_integer ';' integer_value
 		{
@@ -1260,11 +1260,11 @@ c_integer: integer_value
 
 c_real: real_value
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| real_list
 		{
-			create $$.make_list_simple ($1)
+			create $$.make_value_list ($1)
 		}
 	| real_interval
 		{
@@ -1272,7 +1272,7 @@ c_real: real_value
 		}
 	| real_interval_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_real ';' real_value
 		{
@@ -1307,11 +1307,11 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		}
 	| date_value
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| date_list
 		{
-			create $$.make_list_simple ($1)
+			create $$.make_value_list ($1)
 		}
 	| date_interval
 		{
@@ -1319,7 +1319,7 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		}
 	| date_interval_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_date ';' date_value
 		{
@@ -1353,11 +1353,11 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		}
 	| time_value
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| time_list
 		{
-			create $$.make_list_simple ($1)
+			create $$.make_value_list ($1)
 		}
 	| time_interval
 		{
@@ -1365,7 +1365,7 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		}
 	| time_interval_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_time ';' time_value
 		{
@@ -1399,11 +1399,11 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	| date_time_value
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| date_time_list
 		{
-			create $$.make_list_simple ($1)
+			create $$.make_value_list ($1)
 		}
 	| date_time_interval
 		{
@@ -1411,7 +1411,7 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 		}
 	| date_time_interval_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_date_time ';' date_time_value
 		{
@@ -1446,11 +1446,11 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 		}
 	| duration_value
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| duration_list
 		{
-			create $$.make_list_simple ($1)
+			create $$.make_value_list ($1)
 		}
 	| duration_interval
 		{
@@ -1458,7 +1458,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 		}
 	| duration_interval_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_duration ';' duration_value
 		{
@@ -1482,16 +1482,16 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 
 c_string: V_STRING 	-- single value, generates closed list
 		{
-			create $$.make_simple ($1)
+			create $$.make_value ($1)
 		}
 	| string_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| V_REGEXP -- regular expression with "//" or "^^" delimiters
 		{
-			create $$.make_from_regexp ($1.substring (2, $1.count - 1), $1.item (1) = '/')
-			if $$.regexp.is_equal ({C_STRING}.Invalid_regex_message) then
+			create $$.make_value ($1)
+			if $$.constraint.first.is_equal ({C_STRING}.Invalid_regex_message) then
 				abort_with_error (ec_SCSRE, <<$1>>)
 			end
 		}
@@ -1530,7 +1530,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				if attached $1.assumed_code as att_ac then
 					$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 				end
-				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, $1.codes), $$.code)
+				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, $1.codes), $$.constraint)
 			end
 		}
 	| V_EXTERNAL_VALUE_SET_DEF	
@@ -1584,13 +1584,13 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 							at_codes.extend (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, ext_code_csr.item))
 						end
 					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, at_codes), $$.code)
+					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, at_codes), $$.constraint)
 				else
 					if attached $1.last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
 							$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
 						end
-						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.code, att_tcps.codes), $$.code)
+						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, att_tcps.codes), $$.constraint)
 					end
 
 					-- add term bindings
@@ -1632,7 +1632,7 @@ c_boolean: SYM_TRUE
 		}
 	| boolean_list
 		{
-			create $$.make_list ($1)
+			create $$.make ($1)
 		}
 	| c_boolean ';' boolean_value
 		{
@@ -1664,7 +1664,7 @@ c_ordinal: ordinal
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
 			$$.attribute_tuples.first.put_member ($$.attribute_with_name ("value"))
-			$$.attribute_with_name ("value").put_child (create {C_INTEGER}.make_simple ($1.value))
+			$$.attribute_with_name ("value").put_child (create {C_INTEGER}.make_value ($1.value))
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))

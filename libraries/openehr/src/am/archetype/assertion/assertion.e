@@ -52,7 +52,7 @@ feature -- Access
 				attached {EXPR_LEAF} bin_op.right_operand as rhs and then
 				attached {C_STRING} rhs.item as c_str
 			then
-				Result := c_str.regexp
+				Result := c_str.constraint.first
 			end
 		end
 

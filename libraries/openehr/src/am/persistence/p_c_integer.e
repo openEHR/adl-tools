@@ -12,7 +12,7 @@ class P_C_INTEGER
 inherit
 	P_C_ORDERED [INTEGER]
 		redefine
-			assumed_value, list
+			assumed_value, tuple_constraint
 		end
 
 create
@@ -22,13 +22,16 @@ feature -- Access
 
     assumed_value: INTEGER_REF
 
-	list: ARRAYED_LIST [INTERVAL [INTEGER]]
+	tuple_constraint: detachable ARRAYED_LIST [ARRAYED_LIST [INTERVAL [INTEGER]]]
 
 feature -- Factory
 
 	create_c_primitive_object: C_INTEGER
 		do
-			create Result.make_list (list)
+			create Result.default_create
+			if attached tuple_constraint as att_tc then
+				Result.set_constraint (att_tc)
+			end
 			populate_c_instance (Result)
 		end
 

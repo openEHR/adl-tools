@@ -310,7 +310,7 @@ feature {NONE} -- Implementation
 				 					if parent_ca.has_child_with_rm_type_name (ctc.rm_type_name) and then
 				 						attached {C_TERMINOLOGY_CODE} parent_ca.child_with_rm_type_name (ctc.rm_type_name) as parent_ctc
 				 					then
-					 					parent_ac_code := parent_ctc.code
+					 					parent_ac_code := parent_ctc.constraint
 				 						ac_code := parent_ac_code
 
 				 						-- check if any overrides; if so, a refined code & definition is needed
