@@ -45,17 +45,12 @@ feature {NONE} -- Implementation
 
 	meaning: STRING
 			-- generate useful string representation for meaning column
-		local
-			last_node_id: STRING
-			og_path: OG_PATH
 		do
 			create Result.make_empty
 			if attached arch_node as a_n then
 				if a_n.is_archetype_definition_ref then
-					create og_path.make_from_string (a_n.item.out)
-					last_node_id := og_path.last_object_node_id
-					if not last_node_id.is_empty and then ed_context.flat_terminology.has_term_definition (display_settings.language, last_node_id) then
-						Result.append (ed_context.flat_terminology.term_definition (display_settings.language, last_node_id).text)
+					if attached ed_context.flat_terminology.deepest_definition_for_path (a_n.item.out, display_settings.language) as att_term_def then
+						Result.append (att_term_def.text)
 					else
 						Result.append (a_n.item.out)
 					end
