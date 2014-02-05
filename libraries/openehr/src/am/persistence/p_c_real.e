@@ -12,7 +12,7 @@ class P_C_REAL
 inherit
 	P_C_ORDERED [REAL]
 		redefine
-			assumed_value, tuple_constraint
+			assumed_value, constraint
 		end
 
 create
@@ -22,14 +22,14 @@ feature -- Access
 
     assumed_value: REAL_REF
 
-	tuple_constraint: detachable ARRAYED_LIST [ARRAYED_LIST [INTERVAL [REAL]]]
+	constraint: detachable ARRAYED_LIST [INTERVAL [REAL]]
 
 feature -- Factory
 
 	create_c_primitive_object: C_REAL
 		do
 			create Result.default_create
-			if attached tuple_constraint as att_tc then
+			if attached constraint as att_tc then
 				Result.set_constraint (att_tc)
 			end
 			populate_c_instance (Result)

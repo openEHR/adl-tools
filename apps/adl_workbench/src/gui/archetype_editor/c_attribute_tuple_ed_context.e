@@ -156,31 +156,23 @@ feature {NONE} -- Implementation
 		end
 
 	constraint_str: STRING
-		local
-			tuple_count, tuple_idx: INTEGER
-			att_cpo: C_PRIMITIVE_OBJECT
 		do
 			create Result.make_empty
 			if attached arch_node as c_attr_tuple then
-				tuple_count := c_attr_tuple.tuple_count
-				from tuple_idx := 1 until tuple_idx > tuple_count loop
-					across c_attr_tuple.members as ca_csr loop
-						check attached {C_PRIMITIVE_OBJECT} ca_csr.item.children.first as cpo then
-							att_cpo := cpo
-						end
-						if attached {C_TERMINOLOGY_CODE} att_cpo as ctc then
-							Result.append (c_terminology_code_str (ctc.i_th_tuple_constraint (tuple_idx)))
+				across c_attr_tuple.tuples as c_prim_tuples_csr loop
+					across c_prim_tuples_csr.item.members as cpo_csr loop
+						if attached {C_TERMINOLOGY_CODE} cpo_csr.item as ctc then
+							Result.append (c_terminology_code_str (ctc))
 						else
-							Result.append (att_cpo.i_th_tuple_constraint (tuple_idx).out)
+							Result.append (cpo_csr.item.out)
 						end
-						if not ca_csr.is_last then
+						if not cpo_csr.is_last then
 							Result.append (", ")
 						end
 					end
-					if tuple_idx < tuple_count then
+					if not c_prim_tuples_csr.is_last then
 						Result.append ("%N")
 					end
-					tuple_idx := tuple_idx + 1
 				end
 			end
 		end

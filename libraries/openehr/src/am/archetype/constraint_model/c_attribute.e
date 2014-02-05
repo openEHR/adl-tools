@@ -454,8 +454,8 @@ feature -- Modification
 		do
 			representation.put_child_right (an_obj.representation, after_obj.representation)
 			children.go_i_th (children.index_of (after_obj, 1))
-			children.put_right(an_obj)
-			an_obj.set_parent(Current)
+			children.put_right (an_obj)
+			an_obj.set_parent (Current)
 		end
 
 	put_sibling_child (an_obj: C_OBJECT)
@@ -472,7 +472,7 @@ feature -- Modification
 			parent_id := specialisation_parent_from_code (an_obj.node_id)
 			siblings := children_matching_id (parent_id)
 			if not siblings.is_empty then
-				put_child_right(an_obj, siblings.last)
+				put_child_right (an_obj, siblings.last)
 			else
 				put_child (an_obj)
 			end
@@ -572,13 +572,7 @@ feature -- Validation
 	valid_new_child (an_obj: C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
 		do
-			if valid_child_object (an_obj) then
-				if is_single then
-					Result := not has_child_with_id (an_obj.node_id) or else attached {C_PRIMITIVE_OBJECT} an_obj -- and then an_obj.is_second_order_constrained)
-				else
-					Result := not has_child_with_id (an_obj.node_id)
-				end
-			end
+			Result := valid_child_object (an_obj) and not has_child_with_id (an_obj.node_id) or else attached {C_PRIMITIVE_OBJECT} an_obj
 		end
 
 	valid_replacement_child (an_obj: C_OBJECT): BOOLEAN

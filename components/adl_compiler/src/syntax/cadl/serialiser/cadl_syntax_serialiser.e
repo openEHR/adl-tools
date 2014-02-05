@@ -218,9 +218,6 @@ feature -- Visitor
 
 	start_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE_TUPLE
-		local
-			tuple_idx, tuple_count: INTEGER
-			att_cpo: C_PRIMITIVE_OBJECT
 		do
 			-- output:
 			--	[attr1, attr2, ...]
@@ -242,28 +239,24 @@ feature -- Visitor
 			last_result.append (format_item(FMT_NEWLINE))
 
 			-- loop across the tuples
-			tuple_count := a_node.tuple_count
-			from tuple_idx := 1 until tuple_idx > tuple_count loop
+			across a_node.tuples as c_prim_tuples_csr loop
 				-- loop across the attributes contributing to the tuple
-				last_result.append (create_indent (depth+1) + "[")
-				across a_node.members as c_attrs_csr loop
+				last_result.append (create_indent (depth + 1) + "[")
+				across c_prim_tuples_csr.item.members as cpo_csr loop
 					last_result.append (symbol (SYM_START_CBLOCK))
-					check attached {C_PRIMITIVE_OBJECT} c_attrs_csr.item.children.first as cpo then
-						att_cpo := cpo
-					end
-					if attached {C_STRING} att_cpo as c_str then
-						last_result.append (apply_style (c_str.i_th_tuple_constraint_as_string_clean (tuple_idx, agent clean), STYLE_VALUE))
+					if attached {C_STRING} cpo_csr.item as c_str then
+						last_result.append (apply_style (c_str.as_string_clean (agent clean), STYLE_VALUE))
 					else
-						last_result.append (apply_style (att_cpo.i_th_tuple_constraint_as_string (tuple_idx), STYLE_VALUE))
+						last_result.append (apply_style (cpo_csr.item.as_string, STYLE_VALUE))
 					end
 					last_result.append (symbol (SYM_END_CBLOCK))
-					if not c_attrs_csr.is_last then
+					if not cpo_csr.is_last then
 						last_result.append (", ")
 					end
 				end
 				last_result.append ("]")
 
-				if tuple_idx < tuple_count then
+				if not c_prim_tuples_csr.is_last then
 					last_result.append (",")
 				end
 
@@ -275,8 +268,6 @@ feature -- Visitor
 				last_object_inline := False
 
 				last_result.append (format_item (FMT_NEWLINE))
-
-				tuple_idx := tuple_idx + 1
 			end
 		end
 

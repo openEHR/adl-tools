@@ -28,16 +28,6 @@ create
 
 feature -- Access
 
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		do
-			if not tuple_pattern_constraint.i_th (i).is_empty then
-				create Result.make_from_pattern (tuple_pattern_constraint.i_th (i).deep_twin)
-			else
-				create Result.make (tuple_constraint.i_th (i).deep_twin)
-			end
-		end
-
 	string_to_item (a_str: STRING): ISO8601_TIME
 			-- convert `a_str' to an object of type ISO8601_TIME
 		do

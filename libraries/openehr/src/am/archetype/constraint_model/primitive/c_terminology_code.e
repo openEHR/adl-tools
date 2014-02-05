@@ -20,8 +20,8 @@ class C_TERMINOLOGY_CODE
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			constraint, i_th_tuple_constraint, assumed_value, c_conforms_to, set_constraint,
-			as_string, i_th_tuple_constraint_as_string
+			default_create, constraint, assumed_value, c_equal, c_conforms_to, set_constraint,
+			as_string
 		end
 
 	OPENEHR_DEFINITIONS
@@ -32,28 +32,22 @@ inherit
 create
 	make, default_create
 
+feature -- Initialisation
+
+	default_create
+		do
+			precursor {C_PRIMITIVE_OBJECT}
+			create constraint.make_empty
+		end
+
 feature -- Access
 
 	constraint: STRING
 			-- single at- or ac-code
-		do
-			Result := tuple_constraint.first
-		end
 
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		do
-			create Result.make (tuple_constraint.i_th (i).deep_twin)
-			if attached value_set_extractor as att_vse then
-				Result.set_value_set_extractor (att_vse)
-			end
-		end
-
-	expanded_value_set: ARRAYED_LIST [STRING]
+	value_set_expanded: ARRAYED_LIST [STRING]
 			-- effective value or value set of single constraint in tuple_constraint, mediated by terminology
 			-- to expand an ac-code
-		require
-			not is_tuple
 		do
 			if is_valid_constraint_code (constraint) then
 				Result := value_set_extractor.item ([constraint])
@@ -64,24 +58,9 @@ feature -- Access
 			end
 		end
 
-	i_th_expanded_value_set (i: INTEGER): ARRAYED_LIST [STRING]
-			-- effective value or value set of i-th tuple constraint in tuple_constraint, mediated by terminology
-			-- to expand an ac-code
-		require
-			i > 0 and i <= tuple_count
-		do
-			if is_valid_constraint_code (tuple_constraint.i_th (i)) then
-				Result := value_set_extractor.item ([tuple_constraint.i_th (i)])
-			else
-				create Result.make (0)
-				Result.compare_objects
-				Result.extend (tuple_constraint.i_th (i))
-			end
-		end
-
 	prototype_value: TERMINOLOGY_CODE
 		do
-			create Result.make (Local_terminology_id, expanded_value_set.first)
+			create Result.make (Local_terminology_id, value_set_expanded.first)
 		end
 
 	assumed_value: detachable TERMINOLOGY_CODE
@@ -93,19 +72,14 @@ feature -- Status Report
 			-- value set(s) of this constraint
 		do
 			if a_value.terminology_id.is_equal (Local_terminology_id) and is_valid_value_code (a_value.code_string) then
-				Result := tuple_constraint.has (a_value.code_string)
-				if not Result then
-					Result := across tuple_constraint as tuple_csr some
-						is_valid_constraint_code (tuple_csr.item) and then value_set_extractor.item ([tuple_csr.item]).has (a_value.code_string)
-					end
-				end
+				Result := value_set_expanded.has (a_value.code_string)
 			end
 		end
 
 	valid_assumed_value (a_value: TERMINOLOGY_CODE): BOOLEAN
 			-- is `a_value' valid to be set as an assumed value for this object?
 			-- True if `code' is an ac-code and `a_value' is an at-code. We don't check against
-			-- `expanded_value_set' because it may not be constructed yet.
+			-- `value_set_expanded' because it may not be constructed yet.
 		do
 			Result := a_value.terminology_id.is_equal (Local_terminology_id)
 				and is_valid_constraint_code (constraint) and is_valid_value_code (a_value.code_string)
@@ -113,45 +87,30 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+	c_equal (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		local
-			this_code, other_code: STRING
+			this_vset, other_vset: like value_set_expanded
 		do
-			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
-				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
-				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
-
-			if Result and tuple_count = other.tuple_count then
-				from tuple_constraint.start until tuple_constraint.off or not Result loop
-					this_code := tuple_constraint.item
-					other_code := other.tuple_constraint.i_th (tuple_constraint.index)
-
-					if is_valid_constraint_code (this_code) and is_valid_constraint_code (other_code) then
-						Result := codes_conformant (this_code, other_code) and then
-							is_list_subset (expanded_value_set, other.i_th_expanded_value_set (tuple_constraint.index))
-					else
-						Result := codes_conformant (this_code, other_code)
-					end
-					tuple_constraint.forth
-				end
+			if precursor (other) then
+				this_vset := value_set_expanded
+				other_vset := other.value_set_expanded
+				Result := this_vset.count = other_vset.count and then
+					across value_set_expanded as vset_csr all other_vset.has (vset_csr.item) end
 			end
 		end
 
-feature -- Modification
-
-	add_tuple_code (a_code: STRING)
-		require
-			is_valid_value_code (a_code) or is_valid_constraint_code (a_code)
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
 		do
-			tuple_constraint.extend (a_code)
-		end
-
-	set_assumed_value_from_code (a_code: STRING)
-		require
-			tuple_constraint.has (a_code)
-		do
-			create assumed_value.make (Local_terminology_id, a_code)
+			if precursor (other, rm_type_conformance_checker) then
+				if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+					Result := codes_conformant (constraint, other.constraint) and then
+						is_list_subset (value_set_expanded, other.value_set_expanded)
+				else
+					Result := codes_conformant (constraint, other.constraint)
+				end
+			end
 		end
 
 feature {C_TERMINOLOGY_CODE, ARCHETYPE} -- Modification
@@ -163,18 +122,15 @@ feature {C_TERMINOLOGY_CODE, ARCHETYPE} -- Modification
 
 feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 
+	set_code (a_code: STRING)
+		do
+			constraint := a_code
+		end
+
 	has_value_code (a_value_code: STRING): BOOLEAN
 			-- True if this constraint object knows about the at-code `a_value_code'
 		do
-			Result := tuple_constraint.has (a_value_code) or else (attached assumed_value as att_av and then att_av.code_string.is_equal (a_value_code))
-		end
-
-	set_code (a_code: STRING)
-			-- create with ac-code, and assumed 'local' terminology
-		require
-			not is_tuple and is_valid_value_code (a_code) or is_valid_constraint_code (a_code)
-		do
-			tuple_constraint.put_i_th (a_code, 1)
+			Result := constraint.is_equal (a_value_code) or else (attached assumed_value as att_av and then att_av.code_string.is_equal (a_value_code))
 		end
 
 	replace_code (old_code, new_code: STRING)
@@ -183,11 +139,8 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 		do
 			-- due to tuple constraints, there could be more than
 			-- one occurrence of the old_code in the list
-			from tuple_constraint.start until tuple_constraint.off loop
-				if tuple_constraint.item.is_equal (old_code) then
-					tuple_constraint.replace (new_code)
-				end
-				tuple_constraint.forth
+			if constraint.is_equal (old_code) then
+				constraint := new_code
 			end
 
 			-- check the assumed code
@@ -198,11 +151,9 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 
 feature {P_C_TERMINOLOGY_CODE} -- Modification
 
-	set_constraint (a_tuple_constraint: ARRAYED_LIST [STRING])
+	set_constraint (a_constraint: STRING)
 		do
-			create tuple_constraint.make (0)
-			tuple_constraint.compare_objects
-			tuple_constraint.append (a_tuple_constraint)
+			constraint := a_constraint
 		end
 
 feature -- Output
@@ -217,9 +168,7 @@ feature -- Output
 		end
 
 	as_expanded_string: STRING
-			-- output in form with "local::" prepended to `expanded_value_set'
-		require
-			not is_tuple
+			-- output in form with "local::" prepended to `value_set_expanded'
 		do
 			create Result.make(0)
 			Result.append ("[")
@@ -229,7 +178,7 @@ feature -- Output
 			if not is_valid_constraint_code (constraint) then
 				Result.append (constraint)
 			else
-				across expanded_value_set as vset_csr loop
+				across value_set_expanded as vset_csr loop
 					if not vset_csr.is_first then
 						Result.append (", ")
 					end
@@ -243,37 +192,15 @@ feature -- Output
 			Result.append ("]")
 		end
 
-	i_th_tuple_constraint_as_string (i: INTEGER): STRING
-			-- <precursor>
-		do
-			create Result.make(0)
-			Result.append_character ('[')
-			Result.append (precursor (i))
-			Result.append_character (']')
-		end
-
 feature {NONE} -- Implementation
 
-	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if `a_constraint' is the same as `other_constraint'
-		do
-			Result := a_constraint.is_equal (other_constraint)
-		end
-
-	constraint_as_string (a_constraint: like constraint): STRING
+	constraint_as_string: STRING
 			-- generate `constraint' as string
 		do
-			Result := a_constraint
+			Result := constraint
 		end
 
-	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-			-- If both nodes are value set refs, i.e. ac-codes, this ac-code
-			-- must be a specialisation of the other
-		do
-		end
-
-	is_list_subset (list1, list2: like tuple_constraint): BOOLEAN
+	is_list_subset (list1, list2: ARRAYED_LIST [STRING]): BOOLEAN
 			-- determine if list1 is a subset of list 2, even though they
 			-- might contain duplicates
 		local

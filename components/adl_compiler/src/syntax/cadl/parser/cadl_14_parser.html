@@ -217,18 +217,9 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_attribute_defs">c_attribute_defs</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_attribute_def">c_attribute_def</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#c_attribute_defs">c_attribute_defs</a> </span><span class="rhs_variable"><a href="#c_attribute_def">c_attribute_def</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_attribute_def">c_attribute_def</span>: </div>
-<div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_attribute">c_attribute</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_attribute_tuple">c_attribute_tuple</a> </span></div>
+| <span class="rhs_variable"><a href="#c_attribute_defs">c_attribute_defs</a> </span><span class="rhs_variable"><a href="#c_attribute">c_attribute</a> </span></div>
 </div>
 
 <div class="rule">
@@ -258,47 +249,6 @@
 | <span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_any">c_any</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_attribute_tuple">c_attribute_tuple</span>: </div>
-<div class="rhs">
-&nbsp; <span class="literal_token">&#91; </span><span class="rhs_variable"><a href="#c_tuple_attr_ids">c_tuple_attr_ids</a> </span><span class="literal_token">&#93; </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attr_tuple_values">c_attr_tuple_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_tuple_attr_ids">c_tuple_attr_ids</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#c_tuple_attr_ids">c_tuple_attr_ids</a> </span><span class="literal_token">&#44; </span><span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_attr_tuple_values">c_attr_tuple_values</span>: </div>
-<div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_attr_tuple_value">c_attr_tuple_value</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#c_attr_tuple_values">c_attr_tuple_values</a> </span><span class="literal_token">&#44; </span><span class="rhs_variable"><a href="#c_attr_tuple_value">c_attr_tuple_value</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_attr_tuple_value">c_attr_tuple_value</span>: </div>
-<div class="rhs">
-&nbsp; <span class="literal_token">&#91; </span><span class="rhs_variable"><a href="#c_tuple_values">c_tuple_values</a> </span><span class="literal_token">&#93; </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="c_tuple_values">c_tuple_values</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#c_tuple_values">c_tuple_values</a> </span><span class="literal_token">&#44; </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
 
 <div class="rule">

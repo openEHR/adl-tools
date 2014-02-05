@@ -685,7 +685,7 @@ c_attr_values: c_object
 		}
 	;
 
-c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK	
+c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK	
 		{
 			-- add the tuple's C_ATTRIBUTEs to the current object node's children
 			across c_attr_tuple.members as c_attrs_csr loop
@@ -698,8 +698,6 @@ c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_
 
 			-- add the tuple to the current object node
 			object_nodes.item.put_attribute_tuple (c_attr_tuple)
-
-			c_attr_tuple_count := 0
 
 			debug ("ADL_parse")
 				indent.remove_tail (1)
@@ -727,45 +725,42 @@ c_tuple_attr_ids: V_ATTRIBUTE_IDENTIFIER
 		}
 	;
 		  
-c_attr_tuple_values: c_attr_tuple_value
+c_object_tuples: c_object_tuple
 		{
 		} 
-	| c_attr_tuple_values ',' c_attr_tuple_value
+	| c_object_tuples ',' c_object_tuple
 		{
 		} 
 	;
 
-c_attr_tuple_value: '[' c_tuple_values ']'
+c_object_tuple: '[' c_object_tuple_items ']'
 		{
 			debug ("ADL_parse")
-				io.put_string (indent + "c_attr_tuple_value - received one tuple %N") 
+				io.put_string (indent + "c_object_tuple - received one tuple %N") 
 			end
-			c_attr_tuple_count := c_attr_tuple_count + 1
 		}
 	;
 
-c_tuple_values: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK	
+c_object_tuple_items: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK	
 		{
-			c_attr_tuple_item := 1
-			if c_attr_tuple_count = 0 then
-				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child ($2)
-			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
-				cpo.merge_tuple ($2)
-			end
+			c_attr_tuple.add_tuple
+
+			-- attach the C_PRIMITIVE_OBJECT under the C_ATTRIBUTE
+			c_attr_tuple.i_th_member (c_attr_tuple.tuples.last.count + 1).put_child ($2)
+
+			-- attach the C_PRIMITIVE_OBJECT under the new C_PRIMITIVE_TUPLE
+			c_attr_tuple.tuples.last.put_member ($2)
 			debug ("ADL_parse")
 				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (1).rm_attribute_name + " %N")
 			end
 		} 
-	| c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+	| c_object_tuple_items ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{
-			c_attr_tuple_item := c_attr_tuple_item + 1
-			if c_attr_tuple_count = 0 then
-				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child ($4)
-			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
-				cpo.merge_tuple ($4)
-			end
+			-- attach the C_PRIMITIVE_OBJECT under the C_ATTRIBUTE
+			c_attr_tuple.i_th_member (c_attr_tuple.tuples.last.count + 1).put_child ($4)
+			c_attr_tuple.tuples.last.put_member ($4)
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple.tuples.last.count + 1).rm_attribute_name + " %N")
 			end
 		} 
 	;
@@ -2529,9 +2524,10 @@ feature {NONE} -- Parse Tree
 			create Result.make
 		end
 
-	c_attr_tuple_item: INTEGER
-
-	c_attr_tuple_count: INTEGER
+	c_object_tuple: C_PRIMITIVE_TUPLE
+		attribute
+			create Result.make
+		end
 
 -------------- FOLLOWING TAKEN FROM ODIN_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 

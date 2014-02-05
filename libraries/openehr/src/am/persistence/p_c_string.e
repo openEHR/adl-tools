@@ -23,12 +23,12 @@ feature -- Initialisation
 	make (a_cpo: C_STRING)
 		do
 			precursor (a_cpo)
-			tuple_constraint := a_cpo.tuple_constraint
+			constraint := a_cpo.constraint
 		end
 
 feature -- Access
 
-	tuple_constraint: ARRAYED_LIST [ARRAYED_LIST [STRING]]
+	constraint: ARRAYED_LIST [STRING]
 
 feature -- Factory
 
@@ -42,7 +42,7 @@ feature {NONE} -- Implementation
 
 	populate_c_instance (a_c_o: C_STRING)
 		do
-			a_c_o.set_constraint (tuple_constraint)
+			a_c_o.set_constraint (constraint)
 			precursor (a_c_o)
 		end
 

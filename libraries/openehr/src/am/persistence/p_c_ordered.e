@@ -20,13 +20,13 @@ feature -- Initialisation
 	make (a_cc: C_ORDERED [G])
 		do
 			precursor (a_cc)
-			if not a_cc.tuple_constraint.is_empty then
-				tuple_constraint := a_cc.tuple_constraint
+			if not a_cc.constraint.is_empty then
+				constraint := a_cc.constraint
 			end
 		end
 
 feature -- Access
 
-	tuple_constraint: detachable ARRAYED_LIST [ARRAYED_LIST [INTERVAL [G]]]
+	constraint: detachable ARRAYED_LIST [INTERVAL [G]]
 
 end

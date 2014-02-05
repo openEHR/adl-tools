@@ -568,21 +568,13 @@ c_any: '*'
 
 ---------------- BODY - relationships ----------------
 
-c_attribute_defs: c_attribute_def
+c_attribute_defs: c_attribute
 		{
 		}
-	| c_attribute_defs c_attribute_def
+	| c_attribute_defs c_attribute
 		{
 		}
 	;
-
-c_attribute_def: c_attribute
-		{
-		}
-	| c_attribute_tuple
-		{
-		}
-		;
 
 c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK	
 		{
@@ -675,91 +667,6 @@ c_attr_values: c_object
 	| c_any	-- to allow a property to have any value
 		{
 		}
-	;
-
-c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK	
-		{
-			-- add the tuple's C_ATTRIBUTEs to the current object node's children
-			across c_attr_tuple.members as c_attrs_csr loop
-				if not object_nodes.item.has_attribute (c_attrs_csr.item.rm_attribute_name) then
-					object_nodes.item.put_attribute (c_attrs_csr.item)
-				else
-					abort_with_error (ec_VCATU, <<c_attrs_csr.item.rm_attribute_name>>)
-				end
-			end
-
-			-- add the tuple to the current object node
-			object_nodes.item.put_attribute_tuple (c_attr_tuple)
-
-			c_attr_tuple_count := 0
-
-			debug ("ADL_parse")
-				indent.remove_tail (1)
-				io.put_string (indent + "C_ATTR_TUPLE (complete)%N") 
-			end
-		}
-	;
-
-c_tuple_attr_ids: V_ATTRIBUTE_IDENTIFIER
-		{
-			create c_attr_tuple.make
-			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single ($1, Void))
-			debug ("ADL_parse")
-				io.put_string (indent + "enter C_ATTR_TUPLE%N") 
-				indent.append ("%T")
-				io.put_string (indent + "add C_ATTR_TUPLE id " + $1 + "%N") 
-			end
-		}
-	| c_tuple_attr_ids ',' V_ATTRIBUTE_IDENTIFIER
-		{
-			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single ($3, Void))
-			debug ("ADL_parse")
-				io.put_string (indent + "add C_ATTR_TUPLE id " + $3 + "%N") 
-			end
-		}
-	;
-		  
-c_attr_tuple_values: c_attr_tuple_value
-		{
-		} 
-	| c_attr_tuple_values ',' c_attr_tuple_value
-		{
-		} 
-	;
-
-c_attr_tuple_value: '[' c_tuple_values ']'
-		{
-			debug ("ADL_parse")
-				io.put_string (indent + "c_attr_tuple_value - received one tuple %N") 
-			end
-			c_attr_tuple_count := c_attr_tuple_count + 1
-		}
-	;
-
-c_tuple_values: SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK	
-		{
-			c_attr_tuple_item := 1
-			if c_attr_tuple_count = 0 then
-				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child ($2)
-			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
-				cpo.merge_tuple ($2)
-			end
-			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (1).rm_attribute_name + " %N")
-			end
-		} 
-	| c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
-		{
-			c_attr_tuple_item := c_attr_tuple_item + 1
-			if c_attr_tuple_count = 0 then
-				c_attr_tuple.i_th_member (c_attr_tuple_item).put_child ($4)
-			elseif attached {C_PRIMITIVE_OBJECT} c_attr_tuple.i_th_member (c_attr_tuple_item).children.first as cpo then
-				cpo.merge_tuple ($4)
-			end
-			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple_item).rm_attribute_name + " %N")
-			end
-		} 
 	;
 
 c_includes: -- Empty
@@ -1664,12 +1571,19 @@ c_ordinal: ordinal
 			-- create 'value' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("value", Void))
 			$$.attribute_tuples.first.put_member ($$.attribute_with_name ("value"))
-			$$.attribute_with_name ("value").put_child (create {C_INTEGER}.make_value ($1.value))
+			create ordinal_integer.make_value ($1.value)
+			$$.attribute_with_name ("value").put_child (ordinal_integer)
 
 			-- create 'symbol' C_ATTRIBUTE and attach both to C_C_O and to C_ATTR_TUPLE
 			$$.put_attribute (create {C_ATTRIBUTE}.make_single ("symbol", Void))
 			$$.attribute_tuples.first.put_member ($$.attribute_with_name ("symbol"))
-			$$.attribute_with_name ("symbol").put_child (create {C_TERMINOLOGY_CODE}.make ($1.symbol))
+			create ordinal_symbol.make ($1.symbol)
+			$$.attribute_with_name ("symbol").put_child (ordinal_symbol)
+
+			-- add object tuple and connect between C_ATTRIBUTE_TUPLE and C_P_Os
+			$$.attribute_tuples.first.add_tuple
+			$$.attribute_tuples.first.tuples.last.put_member (ordinal_integer)
+			$$.attribute_tuples.first.tuples.last.put_member (ordinal_symbol)
 		}
 	| c_ordinal ',' ordinal
 		{
@@ -1693,11 +1607,17 @@ c_ordinal: ordinal
 			then
 				abort_with_error (ec_VCOC, <<$3.symbol>>)
 
-			elseif attached {C_INTEGER} $$.attribute_with_name ("value").children.first as ci and 
-				attached {C_TERMINOLOGY_CODE} $$.attribute_with_name ("symbol").children.first as ctc 
-			then
-				ci.add_value ($3.value)
-				ctc.add_tuple_code ($3.symbol)
+			else
+				create ordinal_integer.make_value ($3.value)
+				$$.attribute_with_name ("value").put_child (ordinal_integer)
+				create ordinal_symbol.make ($3.symbol)
+				$$.attribute_with_name ("symbol").put_child (ordinal_symbol)
+
+				-- add object tuple and connect between C_ATTRIBUTE_TUPLE and C_P_Os
+				$$.attribute_tuples.first.add_tuple
+				$$.attribute_tuples.first.tuples.last.put_member (ordinal_integer)
+				$$.attribute_tuples.first.tuples.last.put_member (ordinal_symbol)
+
 			end
 		}
  	| c_ordinal ';' integer_value
@@ -2640,6 +2560,16 @@ feature {NONE} -- Implementation
 	archetype_id_parser: ARCHETYPE_HRID_PARSER
 		once
 			create Result.make
+		end
+
+	ordinal_integer: C_INTEGER
+		attribute
+			create Result.default_create
+		end
+
+	ordinal_symbol: C_TERMINOLOGY_CODE
+		attribute
+			create Result.default_create
 		end
 
 end

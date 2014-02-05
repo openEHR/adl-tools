@@ -1,8 +1,8 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Constrainer type for instances of STRING. Multiple constraints in a tuple can be
-				 accommodated. Each tuple member is a list of STRINGs, where each of those strings can be:
+				 Constrainer type for instances of STRING in the form of a list of STRINGs, where each of those 
+				 strings can be:
 				 	* a normal string, e.g. 'abbsndf'
 				 	* a regex string using // delimiters, e.g. '/[0-9]+/'
 				 	* a literal regex string, delimited using \/\/, e.g. '\/[0-9]\/'
@@ -21,7 +21,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, as_string, i_th_tuple_constraint_as_string
+			default_create, constraint, c_equal, c_conforms_to, assumed_value, as_string
 		end
 
 create
@@ -45,7 +45,7 @@ feature -- Initialization
 			-- it is not true.
 		do
 			precursor
-			tuple_constraint.extend (create {like constraint}.make (0))
+			create constraint.make (0)
 			constraint.compare_objects
 		end
 
@@ -85,17 +85,8 @@ feature -- Initialization
 
 feature -- Access
 
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		do
-			create Result.make (tuple_constraint.i_th (i).deep_twin)
-		end
-
 	constraint: ARRAYED_LIST [STRING]
 			-- <precursor>
-		do
-			Result := tuple_constraint.first
-		end
 
 	prototype_value: STRING
 			-- 	generate a default value from this constraint object
@@ -120,31 +111,45 @@ feature -- Status Report
 
 	valid_value (a_value: STRING): BOOLEAN
 		local
-			a_constraint: like constraint
 			regexp_parser: RX_PCRE_REGULAR_EXPRESSION
 		do
-			from tuple_constraint.start until tuple_constraint.off or Result loop
-				a_constraint := tuple_constraint.item
-				from a_constraint.start until a_constraint.off or Result loop
-					if is_regex_string (a_constraint.item) then
-						create regexp_parser.make
-						regexp_parser.set_case_insensitive (True)
-						regexp_parser.compile (a_constraint.item.substring (2, a_constraint.item.count - 1))
-						if regexp_parser.is_compiled then
-							Result := regexp_parser.recognizes (a_value)
-						end
-					else
-						Result := a_constraint.item.is_equal (a_value)
+			from constraint.start until constraint.off or Result loop
+				if is_regex_string (constraint.item) then
+					create regexp_parser.make
+					regexp_parser.set_case_insensitive (True)
+					regexp_parser.compile (constraint.item.substring (2, constraint.item.count - 1))
+					if regexp_parser.is_compiled then
+						Result := regexp_parser.recognizes (a_value)
 					end
-					a_constraint.forth
+				else
+					Result := constraint.item.is_equal (a_value)
 				end
-				tuple_constraint.forth
+				constraint.forth
 			end
 		end
 
 	valid_assumed_value (a_value: STRING): BOOLEAN
 		do
 			Result := valid_value (a_value)
+		end
+
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- <precursor>
+			-- Lists have to be identical, only the order may be different
+		do
+			Result := precursor (other) and
+				constraint.count = other.constraint.count and then
+				across constraint as constraint_csr all other.constraint.has (constraint_csr.item) end
+		end
+
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- <precursor>
+			-- `constraint' has to be a subset of other.constraint
+		do
+			Result := precursor (other, rm_type_conformance_checker) and
+				across constraint as constraint_csr all other.constraint.has (constraint_csr.item) end
 		end
 
 feature -- Modification
@@ -162,7 +167,7 @@ feature -- Output
 			-- seriaised form of this object, with no modifications; use `as_string_clean' to
 			-- apply a cleaner function
 		do
-			Result := constraint_as_string (constraint)
+			Result := constraint_as_string
 			if attached assumed_value then
 				Result.append("; %"" + assumed_value.out + "%"")
 			end
@@ -171,43 +176,19 @@ feature -- Output
 	as_string_clean (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
-			Result := constraint_as_string_clean (constraint, cleaner)
+			Result := constraint_as_string_clean (cleaner)
 			if attached assumed_value then
 				Result.append ("; %"" + cleaner.item ([assumed_value.out]) + "%"")
 			end
 		end
 
-	i_th_tuple_constraint_as_string (i: INTEGER): STRING
-			-- serialised form of i-th tuple constraint of this object
-		do
-			create Result.make(0)
-			Result.append_character ('%"')
-			Result.append (constraint_as_string (constraint))
-			Result.append_character ('%"')
-		end
-
-	i_th_tuple_constraint_as_string_clean (i: INTEGER; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
-			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
-		do
-			create Result.make(0)
-			Result.append_character ('%"')
-			Result.append (constraint_as_string_clean (tuple_constraint.i_th (i), cleaner))
-			Result.append_character ('%"')
-		end
-
 feature {NONE} -- Implementation
 
-	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- <precursor>
-		do
-			Result := across a_constraint as constraint_csr all other_constraint.has (constraint_csr.item) end
-		end
-
-	constraint_as_string (a_constraint: like constraint): STRING
+	constraint_as_string: STRING
 			-- generate `constraint' as string
 		do
 			create Result.make(0)
-			across a_constraint as strings_csr loop
+			across constraint as strings_csr loop
 				if not strings_csr.is_first then
 					Result.append (", ")
 				end
@@ -217,11 +198,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	constraint_as_string_clean (a_constraint: like constraint; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	constraint_as_string_clean (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
-			across a_constraint as strings_csr loop
+			across constraint as strings_csr loop
 				if not strings_csr.is_first then
 					Result.append(", ")
 				end
@@ -229,12 +210,6 @@ feature {NONE} -- Implementation
 				Result.append (cleaner.item ([strings_csr.item]))
 				Result.append_character ('%"')
 			end
-		end
-
-	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			Result := across a_constraint as constraint_csr all other_constraint.has (constraint_csr.item) end
 		end
 
 end

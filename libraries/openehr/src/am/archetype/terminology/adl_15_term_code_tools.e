@@ -50,8 +50,6 @@ feature -- Definitions
 
 	Root_id_code_top_level: STRING = "id1"
 
-	Default_constraint_code: STRING = "ac0"
-
 	Id_code_regex_pattern: STRING
 			-- a regex to match any id code of any depth
 		once
@@ -404,8 +402,7 @@ feature -- Comparison
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
 		do
-			Result := (a_child_code.is_equal (Primitive_node_id) or else is_valid_code (a_child_code))
-				and then a_child_code.starts_with (a_parent_code)
+			Result := is_valid_code (a_child_code) and then a_child_code.starts_with (a_parent_code)
 		end
 
 feature -- Factory

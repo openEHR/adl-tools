@@ -12,7 +12,7 @@ deferred class C_ORDERED [G -> COMPARABLE create default_create end]
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, as_string
+			default_create, constraint, c_equal, c_conforms_to, assumed_value, as_string
 		end
 
 feature -- Initialisation
@@ -20,7 +20,7 @@ feature -- Initialisation
 	default_create
 		do
 			precursor
-			tuple_constraint.extend (create {like constraint}.make (0))
+			create constraint.make (0)
 		end
 
 	make_interval (an_interval: INTERVAL [G])
@@ -54,9 +54,6 @@ feature -- Access
 	constraint: ARRAYED_LIST [INTERVAL [G]]
 			-- single constraint represented by this object; accommodates
 			-- single interval, multiple interval, list of single values, mixed values / intervals
-		do
-			Result := tuple_constraint.first
-		end
 
 	prototype_value: G
 		do
@@ -79,23 +76,45 @@ feature -- Status Report
 
 	valid_value (a_value: G): BOOLEAN
 		do
-			Result := across tuple_constraint as list_ivl_csr some
-				(across list_ivl_csr.item as ivl_csr some ivl_csr.item.has (a_value) end)
+			Result := across constraint as ivl_csr some ivl_csr.item.has (a_value) end
+		end
+
+feature -- Comparison
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			Result := precursor (other) and constraint.count = other.constraint.count
+			if Result and constraint.count = other.constraint.count then
+				from constraint.start until constraint.off or not Result loop
+					Result := across other.constraint as other_constraint_csr some other_constraint_csr.item.is_equal (constraint.item) end
+					constraint.forth
+				end
+			end
+		end
+
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		local
+			this_code, other_code: STRING
+		do
+			Result := precursor (other, rm_type_conformance_checker)
+			if Result then
+				from constraint.start until constraint.off or not Result loop
+					Result := across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (constraint.item) end
+					constraint.forth
+				end
 			end
 		end
 
 feature -- Modification
 
 	add_value (a_val: G)
-		require
-			not is_tuple
 		do
 			constraint.extend (create {POINT_INTERVAL [G]}.make (a_val))
 		end
 
 	add_interval (an_interval: INTERVAL [G])
-		require
-			not is_tuple
 		do
 			constraint.extend (an_interval)
 		end
@@ -105,7 +124,7 @@ feature -- Output
 	as_string: STRING
 			-- generate `constraint' as string
 		do
-			Result := constraint_as_string (constraint)
+			Result := constraint_as_string
 			if attached {G} assumed_value as av then
 				Result.append ("; " + format_value (av))
 			end
@@ -113,20 +132,11 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if `a_constraint' is the same as `other_constraint'
-		do
-			from a_constraint.start until a_constraint.off or not Result loop
-				Result := across other_constraint as other_constraint_csr some other_constraint_csr.item.is_equal (a_constraint.item) end
-				a_constraint.forth
-			end
-		end
-
-	constraint_as_string (a_constraint: like constraint): STRING
+	constraint_as_string: STRING
 			-- <precursor>
 		do
 			create Result.make_empty
-			across a_constraint as ivl_csr loop
+			across constraint as ivl_csr loop
 				if not ivl_csr.item.is_point then
 					Result.append_character ('|')
 				end
@@ -137,14 +147,6 @@ feature {NONE} -- Implementation
 				if not ivl_csr.is_last then
 					Result.append (", ")
 				end
-			end
-		end
-
-	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			across a_constraint as ivl_csr loop
-				Result := across other_constraint as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
 			end
 		end
 

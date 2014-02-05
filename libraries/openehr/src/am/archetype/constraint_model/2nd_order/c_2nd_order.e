@@ -34,6 +34,18 @@ feature -- Access
 			Result := members.count
 		end
 
+feature -- Comparison
+
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		deferred
+		end
+
+	c_equal (other: like Current): BOOLEAN
+			-- True if Current and `other' are semantically the same locally (child objects may differ)
+		deferred
+		end
+
 feature -- Modification
 
 	put_member (a_member: attached like member_type)

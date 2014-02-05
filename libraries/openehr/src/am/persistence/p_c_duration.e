@@ -20,7 +20,7 @@ feature -- Factory
 	create_c_primitive_object: C_DURATION
 		do
 			create Result.default_create
-			Result.set_constraint (tuple_constraint, tuple_pattern_constraint)
+			Result.set_constraint (constraint, pattern_constraint)
 			populate_c_instance (Result)
 		end
 

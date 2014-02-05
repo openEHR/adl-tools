@@ -467,19 +467,14 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 			create def_it.make (definition)
 			def_it.do_all (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING])
-					local
-						key: STRING
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							across ctc.tuple_constraint as codes_csr loop
-								key := codes_csr.item
-								if is_valid_value_code (key) then
-									if not idx.has (key) then
-										idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), key)
-									end
-									if attached idx.item (key) as att_list and then not att_list.has (ctc) then
-										att_list.extend (ctc)
-									end
+							if is_valid_value_code (ctc.constraint) then
+								if not idx.has (ctc.constraint) then
+									idx.put (create {ARRAYED_LIST [C_TERMINOLOGY_CODE]}.make(0), ctc.constraint)
+								end
+								if attached idx.item (ctc.constraint) as att_list and then not att_list.has (ctc) then
+									att_list.extend (ctc)
 								end
 							end
 
@@ -508,10 +503,8 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							across ctc.tuple_constraint as codes_csr loop
-								if is_valid_constraint_code (codes_csr.item) then
-									idx.put (ctc, codes_csr.item)
-								end
+							if is_valid_constraint_code (ctc.constraint) then
+								idx.put (ctc, ctc.constraint)
 							end
 						end
 					end (?, ?, Result),

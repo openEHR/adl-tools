@@ -57,6 +57,8 @@ feature -- Factory
 
 	populate_c_instance (a_c_o: C_COMPLEX_OBJECT)
 			-- populate fields not already populated from creation of a C_XXX instance
+		local
+			ca_tuple: C_ATTRIBUTE_TUPLE
 		do
 			precursor (a_c_o)
 			if attached attributes as attrs then
@@ -66,7 +68,9 @@ feature -- Factory
 
 				if attached attribute_tuples as attr_tuples then
 					across attr_tuples as ca_tuples_csr loop
-						a_c_o.put_attribute_tuple (ca_tuples_csr.item.create_c_attribute_tuple (a_c_o.attributes))
+						ca_tuple := ca_tuples_csr.item.create_c_attribute_tuple (a_c_o.attributes)
+						a_c_o.put_attribute_tuple (ca_tuple)
+						ca_tuple.rebuild
 					end
 				end
 			end

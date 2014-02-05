@@ -263,7 +263,7 @@ feature {NONE} -- Implementation
 			--	term3
 		do
 			create Result.make_empty
-			if attached a_ccp.expanded_value_set as cl then
+			if attached a_ccp.value_set_expanded as cl then
 				across cl as codes_csr loop
 					Result.append_string (term_string (Local_terminology_id, codes_csr.item))
 					if a_ccp.has_assumed_value and then a_ccp.assumed_value.code_string.is_equal (codes_csr.item) then

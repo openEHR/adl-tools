@@ -336,7 +336,7 @@ feature {NONE} -- Implementation
 			 			else
 			 				-- create a definition for the new code; here we obtain an approximate definition for it from
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
-							from co_csr := ctc until not co_csr.node_id.is_equal (Primitive_node_id) and not co_csr.node_id.starts_with (fake_adl_14_node_id_base) loop
+							from co_csr := ctc until not co_csr.node_id.starts_with (Primitive_node_id) and not co_csr.node_id.starts_with (fake_adl_14_node_id_base) loop
 								if attached co_csr.parent as ca_csr and then attached ca_csr.parent as co then
 									co_csr := co
 								end

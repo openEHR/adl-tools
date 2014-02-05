@@ -1,9 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Node of simple type in an ADL parse tree. Simple
-				 types include: STRING, INTEGER, REAL, CHARACTER,
-				 BOOLEAN.
+				 Abstract parent type for primitive types in Archetype Object Model.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -16,7 +14,7 @@ deferred class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			default_create, out, enter_subtree, exit_subtree, c_conforms_to, c_equal
+			default_create, out, enter_subtree, exit_subtree
 		end
 
 feature -- Initialisaiton
@@ -33,40 +31,13 @@ feature -- Initialisaiton
 	make (a_constraint: like constraint)
 		do
 			default_create
-			if tuple_constraint.is_empty then
-				tuple_constraint.extend (a_constraint)
-			else
-				tuple_constraint.put_i_th (a_constraint, 1)
-			end
+			constraint := a_constraint
 		end
 
 feature -- Access
 
 	constraint: ANY
 			-- single constraint represented by this object
-		do
-			Result := tuple_constraint.first
-		end
-
-	tuple_constraint: ARRAYED_LIST [like constraint]
-			-- tuple constraint represented by this object
-		attribute
-			create Result.make (0)
-		end
-
-	tuple_count: INTEGER
-			-- number of tuple constraint items
-		do
-			Result := tuple_constraint.count
-		end
-
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		require
-			Is_tuple: is_tuple
-			valid_index: i > 0 and i <= tuple_count
-		deferred
-		end
 
 	aom_builtin_type: STRING
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
@@ -81,12 +52,6 @@ feature -- Access
 
 feature -- Status Report
 
-	is_tuple: BOOLEAN
-			-- True if there is more than one constraint
-		do
-			Result := tuple_count > 1
-		end
-
 	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
@@ -95,30 +60,6 @@ feature -- Status Report
 
 	valid_assumed_value (a_value: like assumed_value): BOOLEAN
 		deferred
-		end
-
-feature -- Comparison
-
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			Result := precursor (other, rm_type_conformance_checker) and
-				tuple_count <= other.tuple_count and then
-				across tuple_constraint as tuple_csr all
-					do_constraint_conforms_to (tuple_csr.item, other.tuple_constraint.i_th (tuple_csr.target_index))
-				end
-		end
-
-	c_equal (other: like Current): BOOLEAN
-			-- True if Current and `other' are semantically the same locally (child objects may differ)
-		do
-			Result := occurrences ~ other.occurrences and
-				node_id.is_equal (other.node_id) and
-				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type) and
-				tuple_count = other.tuple_count and
-				across tuple_constraint as tuple_csr all
-					c_equal_constraint (tuple_csr.item, other.tuple_constraint.i_th (tuple_csr.target_index))
-				end
 		end
 
 feature -- Modification
@@ -133,46 +74,23 @@ feature -- Modification
 			assumed_value_set: assumed_value = a_value
 		end
 
-	merge_tuple (other: like Current)
-			-- merge the constraints of `other' into this constraint object. We just add items to
-			-- the end of lists of constraints in the subtypes, since the constraints may represent
-			-- a tuple vector, in which case duplicates are allowed
-		require
-			not other.is_tuple
-		do
-			tuple_constraint.extend (other.constraint)
-		end
-
 feature {P_C_PRIMITIVE_OBJECT} -- Modification
 
-	set_constraint (a_tuple_constraint: like tuple_constraint)
+	set_constraint (a_constraint: like constraint)
 		do
-			tuple_constraint := a_tuple_constraint
+			constraint := a_constraint
 		end
 
 feature -- Output
 
 	as_string: STRING
 			-- generate `constraint' as string
---		require
---			not is_tuple
 		do
 			create Result.make (0)
-			Result.append (constraint_as_string (constraint))
+			Result.append (constraint_as_string)
 			if attached assumed_value then
 				Result.append ("; " + assumed_value.out)
 			end
-		end
-
-	i_th_tuple_constraint_as_string (i: INTEGER): STRING
-			-- serialised form of i-th tuple constraint of this object
-			-- assumed value is omitted
-		require
-			i > 0 and i <= tuple_count
-		local
-			a_constraint: like constraint
-		do
-			Result := constraint_as_string (tuple_constraint.i_th (i))
 		end
 
 	out: STRING
@@ -198,18 +116,8 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if `a_constraint' is the same as `other_constraint'
-		deferred
-		end
-
-	constraint_as_string (a_constraint: like constraint): STRING
+	constraint_as_string: STRING
 			-- generate `constraint' as string
-		deferred
-		end
-
-	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if `a_constraint' is a subset of, or the same as `other_constraint'
 		deferred
 		end
 

@@ -1,17 +1,8 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Abstract constrainer type for instances of temporal types; adds a parallel tuple of 
-				 string pattern constraints called `tuple_pattern_constraint' that together with 
-				 `tuple_constraint' makes up the whole representation. If there is an item in 
-				 `tuple_pattern_constraint' at index i, then the entry in `tuple_constraint' is
-				 ignored. 
-				 
-				 An empty string is considered a blank entry in `tuple_pattern_constraint'.
-				 
-				 An open interval is considered a blank entry in `tuple_constraint'
-				 
-				 The two tuple arrays are maintained at the same length through all modifications.
+				 Abstract constrainer type for instances of temporal types; adds a second string
+				 pattern constraint
 				 ]"
 	keywords:    "archetype, temporal"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -26,9 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			default_create, make, make_value, make_value_list, make_interval, c_equal,
-			aom_builtin_type, prototype_value, valid_value, as_string, c_conforms_to,
-			i_th_tuple_constraint, merge_tuple
+			c_equal, aom_builtin_type, prototype_value, valid_value, as_string, c_conforms_to
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -39,37 +28,6 @@ inherit
 		end
 
 feature -- Initialisation
-
-	default_create
-		do
-			precursor {C_ORDERED}
-		end
-
-	make (a_constraint: like constraint)
-		do
-			precursor (a_constraint)
-			tuple_pattern_constraint.extend ("")
-		end
-
-	make_interval (an_interval: INTERVAL [G])
-			-- make single constraint with `an_interval'
-		do
-			precursor (an_interval)
-			tuple_pattern_constraint.extend ("")
-		end
-
-	make_value_list (a_values: LIST [G])
-			-- make from a list of values
-		do
-			precursor (a_values)
-			tuple_pattern_constraint.extend ("")
-		end
-
-	make_value (v: G)
-		do
-			precursor (v)
-			tuple_pattern_constraint.extend ("")
-		end
 
 	make_string_interval (a_lower_str, an_upper_str: detachable STRING)
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
@@ -108,9 +66,6 @@ feature -- Initialisation
 			check attached ivl as att_ivl then
 				constraint.extend (att_ivl)
 			end
-			tuple_pattern_constraint.extend ("")
-		ensure
-			Lists_synced: tuple_count = tuple_pattern_count
 		end
 
 	make_from_pattern (a_pattern: STRING)
@@ -119,31 +74,17 @@ feature -- Initialisation
 			a_pattern_valid: valid_pattern_constraint (a_pattern)
 		do
 			default_create
-			tuple_pattern_constraint.extend (a_pattern)
-			constraint.extend (create {PROPER_INTERVAL [G]}.make_unbounded)
+			pattern_constraint := a_pattern
 		ensure
 			pattern_set: pattern_constraint = a_pattern
-			Lists_synced: tuple_count = tuple_pattern_count
 		end
 
 feature -- Access
 
-	tuple_pattern_constraint: ARRAYED_LIST [STRING]
-			-- parallel constraint structure containing one or more ISO8601-based pattern based on
-			-- concrete types, e.g. "yyyy-mm-??" for date
-		attribute
-			create Result.make (0)
-		end
-
-	tuple_pattern_count: INTEGER
-		do
-			Result := tuple_pattern_constraint.count
-		end
-
 	pattern_constraint: STRING
 			-- extract the first item in `tuple_pattern_constraint'
-		do
-			Result := tuple_pattern_constraint.first
+		attribute
+			create Result.make_empty
 		end
 
 	prototype_value: G
@@ -210,26 +151,17 @@ feature -- Comparison
 			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
 				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
 				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
-
-			if Result and tuple_count = other.tuple_count then
-				from
-					tuple_constraint.start
-					tuple_pattern_constraint.start
-					other.tuple_constraint.start
-					other.tuple_pattern_constraint.start
-				until
-					tuple_constraint.off or not Result
-				loop
-					if not tuple_pattern_constraint.item.is_empty and not other.tuple_pattern_constraint.item.is_empty then
-						Result := valid_pattern_constraint_replacement (tuple_pattern_constraint.item, other.tuple_pattern_constraint.item)
-					else
-						Result := do_constraint_conforms_to (tuple_constraint.item, other.tuple_constraint.item)
+			if Result then
+				if not pattern_constraint.is_empty and not other.pattern_constraint.is_empty then
+					Result := valid_pattern_constraint_replacement (pattern_constraint, other.pattern_constraint)
+				elseif pattern_constraint.is_empty and other.pattern_constraint.is_empty then
+					Result := True
+				end
+				if Result then
+					from constraint.start until constraint.off or not Result loop
+						Result := across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (constraint.item) end
+						constraint.forth
 					end
-
-					tuple_constraint.forth
-					tuple_pattern_constraint.forth
-					other.tuple_constraint.forth
-					other.tuple_pattern_constraint.forth
 				end
 			end
 		end
@@ -240,25 +172,17 @@ feature -- Comparison
 			Result := occurrences ~ other.occurrences and
 				node_id.is_equal (other.node_id) and
 				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
-			if Result and tuple_count = other.tuple_count then
-				from
-					tuple_constraint.start
-					tuple_pattern_constraint.start
-					other.tuple_constraint.start
-					other.tuple_pattern_constraint.start
-				until
-					tuple_constraint.off or not Result
-				loop
-					if not tuple_pattern_constraint.item.is_empty and not other.tuple_pattern_constraint.item.is_empty then
-						Result := tuple_pattern_constraint.item.is_equal (other.tuple_pattern_constraint.item)
-					else
-						Result := c_equal_constraint (tuple_constraint.item, other.tuple_constraint.item)
+			if Result then
+				if not pattern_constraint.is_empty and not other.pattern_constraint.is_empty then
+					Result := pattern_constraint.is_equal (other.pattern_constraint)
+				elseif pattern_constraint.is_empty and other.pattern_constraint.is_empty then
+					Result := True
+				end
+				if Result and constraint.count = other.constraint.count then
+					from constraint.start until constraint.off or not Result loop
+						Result := across other.constraint as other_ivl_csr some other_ivl_csr.item.is_equal (constraint.item) end
+						constraint.forth
 					end
-
-					tuple_constraint.forth
-					tuple_pattern_constraint.forth
-					other.tuple_constraint.forth
-					other.tuple_pattern_constraint.forth
 				end
 			end
 		end
@@ -270,37 +194,24 @@ feature -- Output
 			create Result.make_empty
 			if not pattern_constraint.is_empty then
 				Result.append (pattern_constraint)
-			else
-				Result := precursor
 			end
-		end
-
-feature -- Modification
-
-	merge_tuple (other: like Current)
-			-- merge the constraints of `other' into this constraint object. We just add items to
-			-- the end of lists of constraints in the subtypes, since the constraints may represent
-			-- a tuple vector, in which case duplicates are allowed
-		do
-			if not other.pattern_constraint.is_empty then
-				tuple_pattern_constraint.extend (other.pattern_constraint)
-				tuple_constraint.extend (create {like constraint}.make (0))
-				tuple_constraint.last.extend (create {PROPER_INTERVAL [G]}.make_unbounded)
-			else
-				tuple_constraint.extend (other.constraint)
-				tuple_pattern_constraint.extend ("")
+			if not constraint.first.unbounded then
+				if not Result.is_empty then
+					Result.append_character ('/')
+				end
+				Result.append (constraint_as_string)
 			end
 		end
 
 feature {P_C_TEMPORAL} -- Modification
 
-	set_constraint (a_tuple_constraint: detachable like tuple_constraint; a_tuple_pattern_constraint: detachable like tuple_pattern_constraint)
+	set_constraint (a_constraint: detachable like constraint; a_pattern_constraint: detachable like pattern_constraint)
 		do
-			if attached a_tuple_constraint as att_tpl then
-				tuple_constraint := att_tpl
+			if attached a_constraint as att_tpl then
+				constraint := att_tpl
 			end
-			if attached a_tuple_pattern_constraint as att_tpl then
-				tuple_pattern_constraint := att_tpl
+			if attached a_pattern_constraint as att_tpl then
+				pattern_constraint := att_tpl
 			end
 		end
 

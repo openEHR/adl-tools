@@ -20,12 +20,6 @@ create
 
 feature -- Access
 
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		do
-			create Result.make (tuple_constraint.i_th (i).deep_twin)
-		end
-
     assumed_value: detachable REAL_REF
             -- value to be assumed if none sent in data
 

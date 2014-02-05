@@ -85,14 +85,14 @@ rule 53 c_attr_head -> V_ABS_PATH c_existence c_cardinality
 rule 54 c_attr_values -> c_object
 rule 55 c_attr_values -> c_attr_values c_object
 rule 56 c_attr_values -> c_any
-rule 57 c_attribute_tuple -> '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK
+rule 57 c_attribute_tuple -> '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK
 rule 58 c_tuple_attr_ids -> V_ATTRIBUTE_IDENTIFIER
 rule 59 c_tuple_attr_ids -> c_tuple_attr_ids ',' V_ATTRIBUTE_IDENTIFIER
-rule 60 c_attr_tuple_values -> c_attr_tuple_value
-rule 61 c_attr_tuple_values -> c_attr_tuple_values ',' c_attr_tuple_value
-rule 62 c_attr_tuple_value -> '[' c_tuple_values ']'
-rule 63 c_tuple_values -> SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
-rule 64 c_tuple_values -> c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+rule 60 c_object_tuples -> c_object_tuple
+rule 61 c_object_tuples -> c_object_tuples ',' c_object_tuple
+rule 62 c_object_tuple -> '[' c_object_tuple_items ']'
+rule 63 c_object_tuple_items -> SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+rule 64 c_object_tuple_items -> c_object_tuple_items ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 rule 65 c_includes -> -- Empty
 rule 66 c_includes -> SYM_INCLUDE assertions
 rule 67 c_excludes -> -- Empty
@@ -520,9 +520,9 @@ c_attribute (82) on left: 49 50 51, on right: 47
 c_attribute_tuple (83) on left: 57, on right: 48
 c_attr_values (84) on left: 54 55 56, on right: 49 55
 c_tuple_attr_ids (85) on left: 58 59, on right: 57 59
-c_attr_tuple_values (86) on left: 60 61, on right: 57 61
-c_attr_tuple_value (87) on left: 62, on right: 60 61
-c_tuple_values (88) on left: 63 64, on right: 62 64
+c_object_tuples (86) on left: 60 61, on right: 57 61
+c_object_tuple (87) on left: 62, on right: 60 61
+c_object_tuple_items (88) on left: 63 64, on right: 62 64
 
 
 state 0
@@ -2290,7 +2290,7 @@ state 90
 	c_attribute  ->  . c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 51)
 	c_attr_head  ->  . V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality   (rule 52)
 	c_attr_head  ->  . V_ABS_PATH c_existence c_cardinality   (rule 53)
-	c_attribute_tuple  ->  . '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
+	c_attribute_tuple  ->  . '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK   (rule 57)
 
 	'['	shift, and go to state 159
 	'*'	shift, and go to state 160
@@ -3141,7 +3141,7 @@ state 158
 
 state 159
 
-	c_attribute_tuple  ->  '[' . c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
+	c_attribute_tuple  ->  '[' . c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK   (rule 57)
 	c_tuple_attr_ids  ->  . V_ATTRIBUTE_IDENTIFIER   (rule 58)
 	c_tuple_attr_ids  ->  . c_tuple_attr_ids ',' V_ATTRIBUTE_IDENTIFIER   (rule 59)
 
@@ -3234,7 +3234,7 @@ state 167
 	c_attribute  ->  . c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 51)
 	c_attr_head  ->  . V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality   (rule 52)
 	c_attr_head  ->  . V_ABS_PATH c_existence c_cardinality   (rule 53)
-	c_attribute_tuple  ->  . '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
+	c_attribute_tuple  ->  . '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK   (rule 57)
 
 	'['	shift, and go to state 159
 	V_ABS_PATH	shift, and go to state 161
@@ -4187,7 +4187,7 @@ state 228
 
 state 229
 
-	c_attribute_tuple  ->  '[' c_tuple_attr_ids . ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
+	c_attribute_tuple  ->  '[' c_tuple_attr_ids . ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK   (rule 57)
 	c_tuple_attr_ids  ->  c_tuple_attr_ids . ',' V_ATTRIBUTE_IDENTIFIER   (rule 59)
 
 	','	shift, and go to state 345
@@ -5301,7 +5301,7 @@ state 345
 
 state 346
 
-	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' . SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
+	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' . SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK   (rule 57)
 
 	SYM_MATCHES	shift, and go to state 421
 
@@ -6375,7 +6375,7 @@ state 420
 
 state 421
 
-	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES . SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
+	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES . SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK   (rule 57)
 
 	SYM_START_CBLOCK	shift, and go to state 464
 
@@ -7086,15 +7086,15 @@ state 463
 
 state 464
 
-	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK . c_attr_tuple_values SYM_END_CBLOCK   (rule 57)
-	c_attr_tuple_values  ->  . c_attr_tuple_value   (rule 60)
-	c_attr_tuple_values  ->  . c_attr_tuple_values ',' c_attr_tuple_value   (rule 61)
-	c_attr_tuple_value  ->  . '[' c_tuple_values ']'   (rule 62)
+	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK . c_object_tuples SYM_END_CBLOCK   (rule 57)
+	c_object_tuples  ->  . c_object_tuple   (rule 60)
+	c_object_tuples  ->  . c_object_tuples ',' c_object_tuple   (rule 61)
+	c_object_tuple  ->  . '[' c_object_tuple_items ']'   (rule 62)
 
 	'['	shift, and go to state 498
 
-	c_attr_tuple_values	go to state 499
-	c_attr_tuple_value	go to state 500
+	c_object_tuples	go to state 499
+	c_object_tuple	go to state 500
 
 
 
@@ -7409,20 +7409,20 @@ state 497
 
 state 498
 
-	c_attr_tuple_value  ->  '[' . c_tuple_values ']'   (rule 62)
-	c_tuple_values  ->  . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 63)
-	c_tuple_values  ->  . c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
+	c_object_tuple  ->  '[' . c_object_tuple_items ']'   (rule 62)
+	c_object_tuple_items  ->  . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 63)
+	c_object_tuple_items  ->  . c_object_tuple_items ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
 
 	SYM_START_CBLOCK	shift, and go to state 518
 
-	c_tuple_values	go to state 519
+	c_object_tuple_items	go to state 519
 
 
 
 state 499
 
-	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values . SYM_END_CBLOCK   (rule 57)
-	c_attr_tuple_values  ->  c_attr_tuple_values . ',' c_attr_tuple_value   (rule 61)
+	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples . SYM_END_CBLOCK   (rule 57)
+	c_object_tuples  ->  c_object_tuples . ',' c_object_tuple   (rule 61)
 
 	','	shift, and go to state 520
 	SYM_END_CBLOCK	shift, and go to state 521
@@ -7431,9 +7431,9 @@ state 499
 
 state 500
 
-	c_attr_tuple_values  ->  c_attr_tuple_value .   (rule 60)
+	c_object_tuples  ->  c_object_tuple .   (rule 60)
 
-	$default	reduce using rule 60 (c_attr_tuple_values)
+	$default	reduce using rule 60 (c_object_tuples)
 
 
 
@@ -7616,7 +7616,7 @@ state 518
 	c_primitive_object  ->  . c_string   (rule 41)
 	c_primitive_object  ->  . c_terminology_code   (rule 42)
 	c_primitive_object  ->  . c_boolean   (rule 43)
-	c_tuple_values  ->  SYM_START_CBLOCK . c_primitive_object SYM_END_CBLOCK   (rule 63)
+	c_object_tuple_items  ->  SYM_START_CBLOCK . c_primitive_object SYM_END_CBLOCK   (rule 63)
 	c_integer  ->  . integer_value   (rule 138)
 	c_integer  ->  . integer_list   (rule 139)
 	c_integer  ->  . integer_interval   (rule 140)
@@ -7852,8 +7852,8 @@ state 518
 
 state 519
 
-	c_attr_tuple_value  ->  '[' c_tuple_values . ']'   (rule 62)
-	c_tuple_values  ->  c_tuple_values . ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
+	c_object_tuple  ->  '[' c_object_tuple_items . ']'   (rule 62)
+	c_object_tuple_items  ->  c_object_tuple_items . ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
 
 	','	shift, and go to state 533
 	']'	shift, and go to state 534
@@ -7862,18 +7862,18 @@ state 519
 
 state 520
 
-	c_attr_tuple_values  ->  c_attr_tuple_values ',' . c_attr_tuple_value   (rule 61)
-	c_attr_tuple_value  ->  . '[' c_tuple_values ']'   (rule 62)
+	c_object_tuples  ->  c_object_tuples ',' . c_object_tuple   (rule 61)
+	c_object_tuple  ->  . '[' c_object_tuple_items ']'   (rule 62)
 
 	'['	shift, and go to state 498
 
-	c_attr_tuple_value	go to state 535
+	c_object_tuple	go to state 535
 
 
 
 state 521
 
-	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_attr_tuple_values SYM_END_CBLOCK .   (rule 57)
+	c_attribute_tuple  ->  '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_object_tuples SYM_END_CBLOCK .   (rule 57)
 
 	$default	reduce using rule 57 (c_attribute_tuple)
 
@@ -8051,7 +8051,7 @@ state 531
 
 state 532
 
-	c_tuple_values  ->  SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 63)
+	c_object_tuple_items  ->  SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 63)
 
 	SYM_END_CBLOCK	shift, and go to state 544
 
@@ -8059,7 +8059,7 @@ state 532
 
 state 533
 
-	c_tuple_values  ->  c_tuple_values ',' . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
+	c_object_tuple_items  ->  c_object_tuple_items ',' . SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK   (rule 64)
 
 	SYM_START_CBLOCK	shift, and go to state 545
 
@@ -8067,17 +8067,17 @@ state 533
 
 state 534
 
-	c_attr_tuple_value  ->  '[' c_tuple_values ']' .   (rule 62)
+	c_object_tuple  ->  '[' c_object_tuple_items ']' .   (rule 62)
 
-	$default	reduce using rule 62 (c_attr_tuple_value)
+	$default	reduce using rule 62 (c_object_tuple)
 
 
 
 state 535
 
-	c_attr_tuple_values  ->  c_attr_tuple_values ',' c_attr_tuple_value .   (rule 61)
+	c_object_tuples  ->  c_object_tuples ',' c_object_tuple .   (rule 61)
 
-	$default	reduce using rule 61 (c_attr_tuple_values)
+	$default	reduce using rule 61 (c_object_tuples)
 
 
 
@@ -8309,9 +8309,9 @@ state 543
 
 state 544
 
-	c_tuple_values  ->  SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK .   (rule 63)
+	c_object_tuple_items  ->  SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK .   (rule 63)
 
-	$default	reduce using rule 63 (c_tuple_values)
+	$default	reduce using rule 63 (c_object_tuple_items)
 
 
 
@@ -8326,7 +8326,7 @@ state 545
 	c_primitive_object  ->  . c_string   (rule 41)
 	c_primitive_object  ->  . c_terminology_code   (rule 42)
 	c_primitive_object  ->  . c_boolean   (rule 43)
-	c_tuple_values  ->  c_tuple_values ',' SYM_START_CBLOCK . c_primitive_object SYM_END_CBLOCK   (rule 64)
+	c_object_tuple_items  ->  c_object_tuple_items ',' SYM_START_CBLOCK . c_primitive_object SYM_END_CBLOCK   (rule 64)
 	c_integer  ->  . integer_value   (rule 138)
 	c_integer  ->  . integer_list   (rule 139)
 	c_integer  ->  . integer_interval   (rule 140)
@@ -8680,7 +8680,7 @@ state 550
 
 state 551
 
-	c_tuple_values  ->  c_tuple_values ',' SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 64)
+	c_object_tuple_items  ->  c_object_tuple_items ',' SYM_START_CBLOCK c_primitive_object . SYM_END_CBLOCK   (rule 64)
 
 	SYM_END_CBLOCK	shift, and go to state 556
 
@@ -8720,9 +8720,9 @@ state 555
 
 state 556
 
-	c_tuple_values  ->  c_tuple_values ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK .   (rule 64)
+	c_object_tuple_items  ->  c_object_tuple_items ',' SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK .   (rule 64)
 
-	$default	reduce using rule 64 (c_tuple_values)
+	$default	reduce using rule 64 (c_object_tuple_items)
 
 
 

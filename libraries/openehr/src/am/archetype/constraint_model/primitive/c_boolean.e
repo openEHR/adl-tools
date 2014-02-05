@@ -13,7 +13,7 @@ class C_BOOLEAN
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value
+			default_create, constraint, assumed_value, c_equal, c_conforms_to
 		end
 
 create
@@ -27,7 +27,7 @@ feature -- Initialisation
 			-- it is not true.
 		do
 			precursor
-			tuple_constraint.extend (create {like constraint}.make (0))
+			create constraint.make (0)
 		end
 
 	make_true
@@ -51,17 +51,8 @@ feature -- Initialisation
 
 feature -- Access
 
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		do
-			create Result.make (tuple_constraint.i_th (i).deep_twin)
-		end
-
 	constraint: ARRAYED_LIST [BOOLEAN]
 			-- <precursor>
-		do
-			Result := tuple_constraint.first
-		end
 
     assumed_value: detachable BOOLEAN_REF
             -- value to be assumed if none sent in data
@@ -76,18 +67,18 @@ feature -- Status Report
 	true_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "True"
 		do
-			Result := across tuple_constraint as tuple_csr some tuple_csr.item.has (True) end
+			Result := constraint.has (True)
 		end
 
 	false_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "False"
 		do
-			Result := across tuple_constraint as tuple_csr some tuple_csr.item.has (False) end
+			Result := constraint.has (False)
 		end
 
 	valid_value (a_value: BOOLEAN): BOOLEAN
 		do
-			Result := across tuple_constraint as tuple_csr some tuple_csr.item.has (a_value) end
+			Result := constraint.has (a_value)
 		end
 
 	valid_assumed_value (a_value: BOOLEAN_REF): BOOLEAN
@@ -95,36 +86,38 @@ feature -- Status Report
 			Result := valid_value (a_value.item)
 		end
 
-feature {NONE} -- Implementation
+feature -- Comparison
 
-	c_equal_constraint (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- <precursor>
+	c_equal (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
 		do
-			Result := across a_constraint as constraint_csr all other_constraint.has (constraint_csr.item) end
+			Result := precursor (other) and
+				constraint.count = other.constraint.count and
+				across constraint as val_csr all other.constraint.has (val_csr.item) end
 		end
 
-	constraint_as_string (a_constraint: like constraint): STRING
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		local
+			this_code, other_code: STRING
+		do
+			Result := precursor (other, rm_type_conformance_checker) and
+				across constraint as val_csr all other.constraint.has (val_csr.item) end
+		end
+
+feature {NONE} -- Implementation
+
+	constraint_as_string: STRING
 			-- generate `constraint' as string
 		do
 			create Result.make(0)
-			across a_constraint as constraint_csr loop
+			across constraint as constraint_csr loop
 				Result.append_boolean (constraint_csr.item)
 				if not constraint_csr.is_last then
 					Result.append(", ")
 				end
 			end
 		end
-
-	do_constraint_conforms_to (a_constraint, other_constraint: like constraint): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			Result := (a_constraint.has (True) implies other_constraint.has (True)) and
-				(a_constraint.has (False) implies other_constraint.has (False))
-		end
-
-invariant
-	Binary_consistency: true_valid or false_valid
-	Default_value_consistency: prototype_value and true_valid or else (not prototype_value and false_valid)
 
 end
 

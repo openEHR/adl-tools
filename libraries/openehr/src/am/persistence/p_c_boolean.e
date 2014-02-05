@@ -23,7 +23,7 @@ feature -- Initialisation
 	make (a_cpo: C_BOOLEAN)
 		do
 			precursor (a_cpo)
-			tuple_constraint := a_cpo.tuple_constraint
+			constraint := a_cpo.constraint
 		end
 
 feature -- Access
@@ -42,12 +42,12 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_BOOLEAN)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (tuple_constraint)
+			a_c_o.set_constraint (constraint)
 		end
 
 feature -- Access
 
-	tuple_constraint: ARRAYED_LIST [ARRAYED_LIST [BOOLEAN]]
+	constraint: ARRAYED_LIST [BOOLEAN]
 
 end
 

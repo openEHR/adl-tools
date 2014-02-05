@@ -12,7 +12,7 @@ class C_DURATION
 inherit
 	C_TEMPORAL [ISO8601_DURATION]
 		redefine
-			valid_value, as_string, assumed_value, c_equal, c_conforms_to
+			valid_value, assumed_value
 		end
 
 create
@@ -41,9 +41,7 @@ feature {NONE} -- Initialisation
 		do
 			default_create
 			if attached a_pattern as att_pat then
-				tuple_pattern_constraint.extend (att_pat)
-			else
-				tuple_pattern_constraint.extend ("")
+				pattern_constraint := att_pat
 			end
 
 			if attached a_lower_str as lower_dur then
@@ -68,9 +66,6 @@ feature {NONE} -- Initialisation
 			check attached ivl as att_ivl then
 				constraint.extend (att_ivl)
 			end
-		ensure
-			pattern_set: pattern_constraint = a_pattern
-			interval_if_lower_or_upper: (a_lower_str /= Void or an_upper_str /= Void) xor constraint.is_empty
 		end
 
 	make_pattern_with_range (a_pattern: STRING; an_interval: INTERVAL [ISO8601_DURATION])
@@ -80,23 +75,13 @@ feature {NONE} -- Initialisation
 		do
 			default_create
 			constraint.extend (an_interval)
-			tuple_pattern_constraint.extend (a_pattern)
+			pattern_constraint := a_pattern
 		ensure
 			pattern_set: pattern_constraint = a_pattern
 			interval_set: constraint.has (an_interval)
 		end
 
 feature -- Access
-
-	i_th_tuple_constraint (i: INTEGER): like Current
-			-- obtain i-th tuple constraint item
-		do
-			if not tuple_pattern_constraint.i_th (i).is_empty then
-				create Result.make_from_pattern (tuple_pattern_constraint.i_th (i).deep_twin)
-			else
-				create Result.make (tuple_constraint.i_th (i).deep_twin)
-			end
-		end
 
 	string_to_item (a_str: STRING): ISO8601_DURATION
 			-- convert `a_str' to an object of type G
@@ -137,94 +122,6 @@ feature -- Status Report
 	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
 		do
 			Result := valid_duration_constraint_replacement (a_pattern, an_other_pattern)
-		end
-
-feature -- Comparison
-
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
-		do
-			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
-				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
-				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
-
-			if Result and tuple_count = other.tuple_count then
-				from
-					tuple_constraint.start
-					tuple_pattern_constraint.start
-					other.tuple_constraint.start
-					other.tuple_pattern_constraint.start
-				until
-					tuple_constraint.off or not Result
-				loop
-					if not tuple_pattern_constraint.item.is_empty and not other.tuple_pattern_constraint.item.is_empty then
-						Result := valid_pattern_constraint_replacement (tuple_pattern_constraint.item, other.tuple_pattern_constraint.item)
-					end
-					if Result and not tuple_constraint.item.first.unbounded then
-						Result := do_constraint_conforms_to (tuple_constraint.item, other.tuple_constraint.item)
-					end
-
-					tuple_constraint.forth
-					tuple_pattern_constraint.forth
-					other.tuple_constraint.forth
-					other.tuple_pattern_constraint.forth
-				end
-			end
-		end
-
-	c_equal (other: like Current): BOOLEAN
-			-- True if Current and `other' are semantically the same locally (child objects may differ)
-		do
-			Result := occurrences ~ other.occurrences and
-				node_id.is_equal (other.node_id) and
-				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
-			if Result and tuple_count = other.tuple_count then
-				from
-					tuple_constraint.start
-					tuple_pattern_constraint.start
-					other.tuple_constraint.start
-					other.tuple_pattern_constraint.start
-				until
-					tuple_constraint.off or not Result
-				loop
-					if not tuple_pattern_constraint.item.is_empty and not other.tuple_pattern_constraint.item.is_empty then
-						Result := tuple_pattern_constraint.item.is_equal (other.tuple_pattern_constraint.item)
-					end
-					if Result and not tuple_constraint.item.first.unbounded then
-						Result := c_equal_constraint (tuple_constraint.item, other.tuple_constraint.item)
-					end
-
-					tuple_constraint.forth
-					tuple_pattern_constraint.forth
-					other.tuple_constraint.forth
-					other.tuple_pattern_constraint.forth
-				end
-			end
-		end
-
-feature -- Output
-
-	as_string: STRING
-			-- Textual representation.
-		do
-			create Result.make_empty
-			if not pattern_constraint.is_empty then
-				Result.append (pattern_constraint)
-			end
-			if not constraint.first.unbounded then
-				if not Result.is_empty then
-					Result.append_character ('/')
-				end
-				across constraint as ivl_csr loop
-					Result.append ("|" + ivl_csr.item.as_string + "|")
-					if not ivl_csr.is_last then
-						Result.append (", ")
-					end
-				end
-			end
-			if attached assumed_value as av then
-				Result.append ("; " + av.as_string)
-			end
 		end
 
 end
