@@ -266,7 +266,7 @@ feature {NONE} -- Implementation
 			if attached a_ccp.value_set_expanded as cl then
 				across cl as codes_csr loop
 					Result.append_string (term_string (Local_terminology_id, codes_csr.item))
-					if a_ccp.has_assumed_value and then a_ccp.assumed_value.code_string.is_equal (codes_csr.item) then
+					if a_ccp.has_assumed_value and then a_ccp.assumed_value.is_equal (codes_csr.item) then
 						Result.append (" (" + get_text (ec_assumed_text) + ")")
 					end
 					if not codes_csr.is_last then

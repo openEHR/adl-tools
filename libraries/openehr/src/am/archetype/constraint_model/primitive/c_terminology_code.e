@@ -63,7 +63,7 @@ feature -- Access
 			create Result.make (Local_terminology_id, value_set_expanded.first)
 		end
 
-	assumed_value: detachable TERMINOLOGY_CODE
+	assumed_value: detachable STRING
 
 feature -- Status Report
 
@@ -76,13 +76,12 @@ feature -- Status Report
 			end
 		end
 
-	valid_assumed_value (a_value: TERMINOLOGY_CODE): BOOLEAN
+	valid_assumed_value (a_value: STRING): BOOLEAN
 			-- is `a_value' valid to be set as an assumed value for this object?
 			-- True if `code' is an ac-code and `a_value' is an at-code. We don't check against
 			-- `value_set_expanded' because it may not be constructed yet.
 		do
-			Result := a_value.terminology_id.is_equal (Local_terminology_id)
-				and is_valid_constraint_code (constraint) and is_valid_value_code (a_value.code_string)
+			Result := is_valid_constraint_code (constraint) and is_valid_value_code (a_value)
 		end
 
 feature -- Comparison
@@ -130,7 +129,7 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 	has_value_code (a_value_code: STRING): BOOLEAN
 			-- True if this constraint object knows about the at-code `a_value_code'
 		do
-			Result := constraint.is_equal (a_value_code) or else (attached assumed_value as att_av and then att_av.code_string.is_equal (a_value_code))
+			Result := constraint.is_equal (a_value_code) or else (attached assumed_value as att_av and then att_av.is_equal (a_value_code))
 		end
 
 	replace_code (old_code, new_code: STRING)
@@ -144,8 +143,8 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 			end
 
 			-- check the assumed code
-			if attached assumed_value as att_av and then att_av.code_string.is_equal (old_code) then
-				att_av.set_code_string (new_code)
+			if attached assumed_value as att_av and then att_av.is_equal (old_code) then
+				assumed_value := new_code
 			end
 		end
 
@@ -187,7 +186,7 @@ feature -- Output
 			end
 
 			if attached assumed_value as av then
-				Result.append ("; " + av.code_string)
+				Result.append ("; " + av)
 			end
 			Result.append ("]")
 		end

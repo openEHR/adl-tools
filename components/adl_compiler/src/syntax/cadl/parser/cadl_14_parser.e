@@ -4437,7 +4437,7 @@ end
 				-- replace by ac-code ref and store value set for addition to terminology
 				create yyval59.make (new_fake_ac_code)
 				if attached yyvs5.item (yyvsp5).assumed_code as att_ac then
-					yyval59.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+					yyval59.set_assumed_value (att_ac)
 				end
 				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.constraint, yyvs5.item (yyvsp5).codes), yyval59.constraint)
 			end
@@ -4514,7 +4514,7 @@ end
 				else
 					if attached yyvs5.item (yyvsp5).last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
-							yyval59.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+							yyval59.set_assumed_value (att_ac)
 						end
 						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make (yyval59.constraint, att_tcps.codes), yyval59.constraint)
 					end

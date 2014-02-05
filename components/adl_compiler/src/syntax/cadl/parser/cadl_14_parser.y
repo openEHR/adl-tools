@@ -1435,7 +1435,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				-- replace by ac-code ref and store value set for addition to terminology
 				create $$.make (new_fake_ac_code)
 				if attached $1.assumed_code as att_ac then
-					$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+					$$.set_assumed_value (att_ac)
 				end
 				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, $1.codes), $$.constraint)
 			end
@@ -1495,7 +1495,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				else
 					if attached $1.last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
-							$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+							$$.set_assumed_value (att_ac)
 						end
 						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, att_tcps.codes), $$.constraint)
 					end

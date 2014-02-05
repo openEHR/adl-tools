@@ -63,7 +63,7 @@ create
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
 %token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR 
-%token <STRING> V_VALUE_SET_REF
+%token <STRING> V_VALUE_SET_REF V_VALUE_DEF V_VALUE_SET_REF_ASSUMED
 %token <TERM_CONSTRAINT_PARSE_STRUCTURE> V_EXPANDED_VALUE_SET_DEF V_EXTERNAL_VALUE_SET_DEF
 %token ERR_VALUE_SET_DEF_ASSUMED ERR_VALUE_SET_DEF_DUP_CODE ERR_VALUE_SET_DEF
 
@@ -1517,6 +1517,16 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		{
 			create $$.make ($1)
 		}
+	| V_VALUE_SET_REF_ASSUMED	-- e.g. "at3; at1"
+		{
+			-- note - whitespace is stripped in scanner
+			create $$.make ($1.substring (1, $1.index_of (';', 1) - 1))
+			$$.set_assumed_value ($1.substring ($1.index_of (';', 1) + 1, $1.count))
+		}
+	| V_VALUE_DEF	-- e.g. "at3"
+		{
+			create $$.make ($1)
+		}
 -------------------------------------------------------------------------------------------------------------
 --- START Legacy ADL 1.4 inline term set
 ---
@@ -1532,7 +1542,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				-- replace by ac-code ref and store value set for addition to terminology
 				create $$.make (new_fake_ac_code)
 				if attached $1.assumed_code as att_ac then
-					$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+					$$.set_assumed_value (att_ac)
 				end
 				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, $1.codes), $$.constraint)
 			end
@@ -1592,7 +1602,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				else
 					if attached $1.last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
-							$$.set_assumed_value (create {TERMINOLOGY_CODE}.make (Local_terminology_id, att_ac))
+							$$.set_assumed_value (att_ac)
 						end
 						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, att_tcps.codes), $$.constraint)
 					end

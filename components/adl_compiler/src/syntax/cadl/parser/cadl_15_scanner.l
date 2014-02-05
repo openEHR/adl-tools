@@ -222,6 +222,26 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 		last_string_value := text_substring (2, text_count - 1)
 	}
 
+----------/* V_VALUE_DEF: term code of form [at2], [at0.0.2] */ ---------------
+
+\[{AT_CODE}\] {
+		last_token := V_VALUE_DEF
+		last_string_value := text_substring (2, text_count - 1)
+	}
+
+----------/* V_VALUE_SET_REF_ASSUMED: term code of form [ac2; at4] */ ---------------
+
+\[{AC_CODE}[ \t]*;[ \t]*{AT_CODE}\] {
+		last_token := V_VALUE_SET_REF_ASSUMED
+		last_string_value := text_substring (2, text_count - 1)
+		last_string_value.prune_all(' ')
+		last_string_value.prune_all('%T')
+	}
+
+-------------------------------------------------------------------------------------------------------------
+--- START Legacy ADL 1.4 inline term set
+---
+
 ---------/* V_EXPANDED_VALUE_SET_DEF of form: */ ------------
 -- [local::atN, -- comment
 --		  atN, -- comment
@@ -391,6 +411,10 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			set_start_condition (INITIAL)
 	}
 }
+
+---
+--- END Legacy ADL 1.4 inline term set
+-------------------------------------------------------------------------------------------------------------
 
 ----------/* archetype id */ -------------------------------------------------
 ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
