@@ -267,6 +267,24 @@ feature -- Access (computed)
 			create Result.make_empty
 		end
 
+	deepest_definition_for_path (a_path, a_lang: STRING): detachable ARCHETYPE_TERM
+			-- for a path containing id-codes, obtain the deepest term_definition
+			-- for an id-code in the path. If none (i.e. no id-code in the path has
+			-- a definition), return Void
+		local
+			og_path: OG_PATH
+			id_codes_lst: like id_codes
+		do
+			id_codes_lst := id_codes
+			create og_path.make_from_string (a_path)
+			from og_path.finish until og_path.off or attached Result loop
+				if id_codes_lst.has (og_path.item.object_id) then
+					Result := term_definition (a_lang, og_path.item.object_id)
+				end
+				og_path.back
+			end
+		end
+
 feature -- Status Report
 
 	has_language (a_language: STRING): BOOLEAN
@@ -839,6 +857,11 @@ feature -- Finalisation
 			-- finalisation routine to guarantee validity on creation
 		do
 			merge_constraint_definitions_and_bindings
+			across value_sets as vset_csr loop
+				if not vset_csr.item.members.object_comparison then
+					vset_csr.item.correct_members
+				end
+			end
 			sync_stored_properties
 		end
 

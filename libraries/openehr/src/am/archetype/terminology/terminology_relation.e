@@ -27,8 +27,6 @@ feature -- Initialisation
 			Members_valid: a_members.for_all (agent (a_tc: STRING): BOOLEAN do Result := not a_tc.is_empty end)
 		do
 			create id.make_from_string (an_id)
-			create members.make (0)
-			members.compare_objects
 			members.append (a_members)
 		ensure
 			Members_comparable: members.object_comparison
@@ -39,6 +37,10 @@ feature -- Access
 	id: STRING
 
 	members: ARRAYED_LIST [STRING]
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
 feature -- Status Report
 
@@ -65,6 +67,14 @@ feature {AOM_POST_PARSE_PROCESSOR} -- Modification
 		do
 			members.go_i_th (members.index_of (old_code, 1))
 			members.replace (new_code)
+		end
+
+feature {ARCHETYPE_TERMINOLOGY} -- Modification
+
+	correct_members
+			-- correct object_comparison on members
+		do
+			members.compare_objects
 		end
 
 end
