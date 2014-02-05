@@ -106,7 +106,7 @@ feature -- Status Report
 	is_regex_string (a_str: STRING): BOOLEAN
 			-- True if this constraint is a regular expression, i.e. starts and ends with '/'
 		do
-			Result := a_str.item(1) = Regex_delimiter and a_str.item(a_str.count) = Regex_delimiter
+			Result := a_str.count >= 2 and then (a_str.item(1) = Regex_delimiter and a_str.item(a_str.count) = Regex_delimiter)
 		end
 
 	valid_value (a_value: STRING): BOOLEAN
