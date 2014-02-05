@@ -113,22 +113,13 @@ feature -- Conversion
 					create ca_magnitude.make_single ("magnitude", Void)
 					Result.put_attribute (ca_magnitude)
 					across cq_item_list as cq_items_csr loop
-						if cq_items_csr.is_first then
-							if attached cq_items_csr.item.magnitude as mag then
-								new_mag := mag
-							else
-								create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
-							end
-							create cpo_magnitude.make_interval (new_mag)
-							ca_magnitude.put_child (cpo_magnitude)
-						elseif attached cpo_magnitude as c_real then
-							if attached cq_items_csr.item.magnitude as mag then
-								new_mag := mag
-							else
-								create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
-							end
-							c_real.add_interval (new_mag)
+						if attached cq_items_csr.item.magnitude as mag then
+							new_mag := mag
+						else
+							create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
 						end
+						create cpo_magnitude.make_interval (new_mag)
+						ca_magnitude.put_child (cpo_magnitude)
 					end
 					if attached ca_tuple as ca_t then
 						ca_t.put_member (ca_magnitude)
@@ -139,12 +130,8 @@ feature -- Conversion
 				create ca_units.make_single ("units", Void)
 				Result.put_attribute (ca_units)
 				across cq_item_list as cq_items_csr loop
-					if cq_items_csr.is_first then
-						create cpo_units.make_value (cq_items_csr.item.units)
-						ca_units.put_child (cpo_units)
-					elseif attached {C_STRING} ca_units.children.first as c_string then
-						c_string.add_string (cq_items_csr.item.units)
-					end
+					create cpo_units.make_value (cq_items_csr.item.units)
+					ca_units.put_child (cpo_units)
 				end
 				if attached ca_tuple as ca_t then
 					ca_t.put_member (ca_units)
@@ -157,26 +144,21 @@ feature -- Conversion
 					create ca_precision.make_single ("precision", Void)
 					Result.put_attribute (ca_precision)
 					across cq_item_list as cq_items_csr loop
-						if cq_items_csr.is_first then
-							if attached cq_items_csr.item.precision as prec then
-								new_prec := prec
-							else
-								create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
-							end
-							create cpo_precision.make_interval (new_prec)
-							ca_precision.put_child (cpo_precision)
-						elseif attached cpo_precision as c_real then
-							if attached cq_items_csr.item.precision as prec then
-								new_prec := prec
-							else
-								create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
-							end
-							c_real.add_interval (new_prec)
+						if attached cq_items_csr.item.precision as prec then
+							new_prec := prec
+						else
+							create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
 						end
+						create cpo_precision.make_interval (new_prec)
+						ca_precision.put_child (cpo_precision)
 					end
 					if attached ca_tuple as ca_t then
 						ca_t.put_member (ca_precision)
 					end
+				end
+
+				if attached ca_tuple as att_cat then
+					att_cat.rebuild
 				end
 			end
 		end

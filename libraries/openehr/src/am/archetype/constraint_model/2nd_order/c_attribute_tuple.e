@@ -101,6 +101,7 @@ feature -- Commands
 						tuples.last.put_member (cpo)
 					end
 				end
+				i := i + 1
 			end
 		end
 
