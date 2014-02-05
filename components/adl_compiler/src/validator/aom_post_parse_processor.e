@@ -233,26 +233,36 @@ feature {NONE} -- Implementation
 						at_code := target.terminology.last_new_definition_code
 					end
 					vset_members.replace (at_code)
+					convert_bindings (old_at_code, at_code, orig_lang)
+					replaced_at_codes.remove (old_at_code)
+					vset_members.forth
+				end
+			end
 
-					-- write the parser's term bindings in to the terminology
-					across compiler_billboard.term_bindings as bindings_csr loop
-						across bindings_csr.item as bindings_list_csr loop
-							if bindings_list_csr.key.is_equal (old_at_code) then
-								if not target.terminology.has_term_binding (bindings_csr.key, at_code) then
-									target.terminology.put_term_binding (bindings_list_csr.item, bindings_csr.key, at_code)
-								end
+			-- Rewrite codes for remaining single terms
+			across replaced_at_codes as old_at_codes_csr loop
+				convert_bindings (old_at_codes_csr.key, old_at_codes_csr.item, orig_lang)
+			end
+		end
 
-								-- update term_definition meaning if possible
-								if ts.has_terminology (bindings_csr.key) and ts.terminology (bindings_csr.key).has_concept_id_for_language (bindings_list_csr.item.value, orig_lang) then
-									target.terminology.replace_term_definition_item (orig_lang, at_code, {ARCHETYPE_TERM}.text_key,
-										ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value)
-									target.terminology.replace_term_definition_item (orig_lang, at_code, {ARCHETYPE_TERM}.description_key,
-										ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value)
-								end
-							end
+	convert_bindings (old_at_code, new_at_code, orig_lang: STRING)
+		do
+			-- write the parser's term bindings in to the terminology
+			across compiler_billboard.term_bindings as bindings_csr loop
+				across bindings_csr.item as bindings_list_csr loop
+					if bindings_list_csr.key.is_equal (old_at_code) then
+						if not target.terminology.has_term_binding (bindings_csr.key, new_at_code) then
+							target.terminology.put_term_binding (bindings_list_csr.item, bindings_csr.key, new_at_code)
+						end
+
+						-- update term_definition meaning if possible
+						if ts.has_terminology (bindings_csr.key) and ts.terminology (bindings_csr.key).has_concept_id_for_language (bindings_list_csr.item.value, orig_lang) then
+							target.terminology.replace_term_definition_item (orig_lang, new_at_code, {ARCHETYPE_TERM}.text_key,
+								ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value)
+							target.terminology.replace_term_definition_item (orig_lang, new_at_code, {ARCHETYPE_TERM}.description_key,
+								ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value)
 						end
 					end
-					vset_members.forth
 				end
 			end
 		end
