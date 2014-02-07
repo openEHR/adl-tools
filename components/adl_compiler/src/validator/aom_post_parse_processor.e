@@ -414,7 +414,8 @@ feature {NONE} -- Implementation
 				-- now add missing codes
 				def_it.do_all (agent do_replace_fake_id_code, Void)
 
-				-- update C_ATTRIBUTE differential paths
+				-- update C_ATTRIBUTE differential paths. This has the effect of interpolating
+				-- nodes ids on path segments that previously had none
 				if target.is_specialised and then attached arch_parent_flat as pf then
 					def_it.do_all (agent do_rewrite_diff_path (?, ?, pf), Void)
 				end
@@ -422,17 +423,23 @@ feature {NONE} -- Implementation
 		end
 
 	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; parent_flat: FLAT_ARCHETYPE)
+			-- update path so that missing node_ids are added
 		local
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		path_in_flat: STRING
+	 		og_path_in_flat: OG_PATH
 		do
 	 		if attached {C_ATTRIBUTE} a_node as ca and then attached ca.differential_path as dp then
 	 			create apa.make_from_string (dp)
 	 			if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
 		 			path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
-		 			if parent_flat.has_attribute_path (path_in_flat) then
-		 				ca.set_differential_path (parent_flat.object_at_path (path_in_flat).path)
+		 			create og_path_in_flat.make_from_string (path_in_flat)
+		 			across apa.target as path_csr loop
+		 				if not path_csr.item.is_addressable then
+							path_csr.item.set_object_id (og_path_in_flat.i_th (path_csr.cursor_index).object_id)
+		 				end
 		 			end
+		 			ca.set_differential_path (apa.target.as_string)
 		 		end
 			end
 		end
