@@ -58,7 +58,6 @@ create
 	make
 %}
 
-%token <STRING> V_ARCHETYPE_ID
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
@@ -96,7 +95,7 @@ create
 
 %token SYM_EXISTENCE SYM_OCCURRENCES SYM_CARDINALITY 
 %token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_LIST_CONTINUE
-%token SYM_MATCHES SYM_USE_ARCHETYPE SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
+%token SYM_MATCHES SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
 
@@ -115,7 +114,6 @@ create
 %type <detachable ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 %type <ASSERTION> assertion
 
-%type <C_ARCHETYPE_ROOT> c_archetype_root
 %type <C_COMPLEX_OBJECT_PROXY> c_complex_object_proxy
 
 %type <STRING> type_identifier
@@ -329,10 +327,6 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 c_object: c_complex_object 
 		{
 		}
-	| c_archetype_root 
-		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
-		}
 	| c_complex_object_proxy 
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
@@ -381,27 +375,6 @@ c_object: c_complex_object
 		}
 	;
 
-
---
--- The first two forms below correspond to source archetypes, which have no body under a C_ARCHETYPE_ROOT
--- A c_complex_object-like variant would be needed to parse fully flattened templates.
---
-c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID 
-		{
-			if archetype_id_parser.valid_id ($5) then
-				create $$.make ($2, $3, $5)
-				if attached $4 as occ then
-					$$.set_occurrences (occ)
-				end
-			else
-				abort_with_error (ec_SUAIDI, <<$3>>)
-			end
-		}
-	| SYM_USE_ARCHETYPE type_identifier error
-		{
-			abort_with_error (ec_SUAID, Void)
-		}
-	;
 
 c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
 		{

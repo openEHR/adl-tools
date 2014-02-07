@@ -69,6 +69,7 @@ ID_CODE {ID_CODE_LEADER}{CODE_STR}
 AT_CODE at{CODE_STR}
 AC_CODE ac{CODE_STR}
 PATH_SEG [a-z]{ALPHANUM_CHAR}*(\[{ID_CODE}\])?
+ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -196,7 +197,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 		}
 
 ----------/* V_ROOT_ID_CODE: id code of form [at0], [at0.1] etc */ ---------------
-
 \[{ID_CODE_LEADER}1(\.1)*\] {
 		last_token := V_ROOT_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
@@ -209,28 +209,24 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	}
 
 ----------/* V_ID_CODE_STR */ ----------------------------------------
-
 {ID_CODE} {
 		last_token := V_ID_CODE_STR
 		last_string_value := text
 	}
 
 ----------/* V_VALUE_SET_REF: term code of form [ac2], [ac0.0.2] */ ---------------
-
 \[{AC_CODE}\] {
 		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
 	}
 
 ----------/* V_VALUE_DEF: term code of form [at2], [at0.0.2] */ ---------------
-
 \[{AT_CODE}\] {
 		last_token := V_VALUE_DEF
 		last_string_value := text_substring (2, text_count - 1)
 	}
 
 ----------/* V_VALUE_SET_REF_ASSUMED: term code of form [ac2; at4] */ ---------------
-
 \[{AC_CODE}[ \t]*;[ \t]*{AT_CODE}\] {
 		last_token := V_VALUE_SET_REF_ASSUMED
 		last_string_value := text_substring (2, text_count - 1)
@@ -416,11 +412,21 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --- END Legacy ADL 1.4 inline term set
 -------------------------------------------------------------------------------------------------------------
 
-----------/* archetype id */ -------------------------------------------------
-({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
-					last_token := V_ARCHETYPE_ID
-					last_string_value := text
-			}
+----------/* slot filler */ -------------------------------------------------
+\[{ID_CODE}[ \t]*,[ \t]*{ARCHETYPE_ID}\] {
+		last_token := V_SLOT_FILLER
+		last_string_value := text_substring (2, text_count - 1)
+		last_string_value.prune_all(' ')
+		last_string_value.prune_all('%T')
+	}
+
+----------/* external reference */ -------------------------------------------------
+\[{ARCHETYPE_ID}\] {
+		last_token := V_EXT_REF
+		last_string_value := text_substring (2, text_count - 1)
+		last_string_value.prune_all(' ')
+		last_string_value.prune_all('%T')
+	}
 
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 

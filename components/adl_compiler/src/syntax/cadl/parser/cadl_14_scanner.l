@@ -179,8 +179,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]				last_token := SYM_USE_NODE
 
-[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_USE_ARCHETYPE
-
 [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
 
 [Ii][Nn][Cc][Ll][Uu][Dd][Ee]					last_token := SYM_INCLUDE
@@ -201,14 +199,14 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	}
 
 ----------/* V_ID_CODE: id code of form [id1], [id1.4] */ ---------------
-\[{ID_CODE_LEADER}{CODE_STR}\] {
+\[{ID_CODE}\] {
 		last_token := V_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
 	}
 
 ----------/* V_ID_CODE_STR */ ----------------------------------------
 
-{ID_CODE_LEADER}{CODE_STR} {
+{ID_CODE} {
 		last_token := V_ID_CODE_STR
 		last_string_value := text
 	}
@@ -389,12 +387,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			set_start_condition (INITIAL)
 	}
 }
-
-----------/* archetype id */ -------------------------------------------------
-({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
-					last_token := V_ARCHETYPE_ID
-					last_string_value := text
-			}
 
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 

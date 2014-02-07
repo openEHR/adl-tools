@@ -544,10 +544,10 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
 					do
 						if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-							if not idx.has (car.archetype_ref) then
-								idx.put (create {ARRAYED_LIST [C_ARCHETYPE_ROOT]}.make(0), car.archetype_ref)
+							if not idx.has (car.node_id) then
+								idx.put (create {ARRAYED_LIST [C_ARCHETYPE_ROOT]}.make(0), car.node_id)
 							end
-							idx.item (car.archetype_ref).extend (car)
+							idx.item (car.node_id).extend (car)
 						end
 					end (?, ?, Result),
 				Void)

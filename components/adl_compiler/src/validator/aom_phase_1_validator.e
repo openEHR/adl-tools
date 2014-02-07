@@ -207,10 +207,10 @@ feature {NONE} -- Implementation
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
 				c_ar_list := supp_csr.item
 				across c_ar_list as arch_root_csr loop
-					create filler_id.make_from_string (arch_root_csr.item.archetype_ref)
+					create filler_id.make_from_string (arch_root_csr.item.node_id)
 					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
 						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_class)) then
-						add_error (ec_VARXTV, <<arch_root_csr.item.archetype_ref, arch_root_csr.item.rm_type_name>>)
+						add_error (ec_VARXTV, <<arch_root_csr.item.node_id, arch_root_csr.item.rm_type_name>>)
 					end
 				end
 			end

@@ -298,20 +298,29 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			terminologies.extend (current_arch_cat.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+			terminologies.extend (current_arch_cat.matching_archetype (a_node.node_id).flat_archetype.terminology)
 
 			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				start_c_complex_object (a_node, depth)
 
 			else -- it is in source mode, there are no children, only slot fillers
-				-- output '%Tuse_archetype TYPE[node_id] <occurrences> archetype_id%N'
-				serialise_type_node_id (a_node, depth)
+				-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences> archetype_id%N'
+				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+
+				last_result.append (apply_style ("[", STYLE_TERM_REF))
+				if attached a_node.slot_node_id as att_snid then
+					last_result.append (apply_style ("[" + att_snid + ", ", STYLE_TERM_REF))
+				end
+				last_result.append (apply_style (a_node.node_id + "]", STYLE_TERM_REF))
+
+				last_result.append (format_item (FMT_SPACE))
 
 				last_result.append (format_item(FMT_SPACE))
+
 				serialise_occurrences(a_node, depth)
 
 				last_result.append (format_item(FMT_SPACE))
-				last_result.append (a_node.archetype_ref)
+				last_result.append (a_node.node_id)
 
 				last_result.append (format_item(FMT_NEWLINE))
 			end
@@ -413,9 +422,9 @@ feature {NONE} -- Implementation
 		do
 			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 
-			last_result.append (apply_style("[" + a_node.node_id + "]", STYLE_TERM_REF))
+			last_result.append (apply_style ("[" + a_node.node_id + "]", STYLE_TERM_REF))
 
-			last_result.append (format_item(FMT_SPACE))
+			last_result.append (format_item (FMT_SPACE))
 		end
 
 	serialise_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)

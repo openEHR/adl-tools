@@ -121,7 +121,7 @@ end
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
 				template_overlay_supplier_definitions
-				template_overlay_supplier_ontologies
+				template_overlay_supplier_terminologies
 			end
 
 		ensure
@@ -493,6 +493,7 @@ end
 			Non_empty_attribute: ca_output.has_children
 		local
 			insert_obj, merge_obj: C_OBJECT
+			merge_car: C_ARCHETYPE_ROOT
 			i: INTEGER
 			after_pending: BOOLEAN
 			start_pos, end_pos: INTEGER
@@ -567,7 +568,13 @@ end
 					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
 
 						-- this is where we figure out which nodes from the source are 'new' with respect to the flat output.
-						if specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added then
+						if attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then
+							merge_car := car.safe_deep_twin
+							merge_car.set_subtree_specialisation_status (ss_added)
+							ca_output.put_child_right (merge_car, insert_obj)
+							child_grafted_path_list.extend (car.path) -- remember the path, so we don't try to do it again later on
+
+						elseif specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added then
 							child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
 
 							-- now we either merge the object, or deal with the special case of occurrences = 0,
@@ -576,7 +583,6 @@ end
 								ca_output.remove_child (insert_obj)
 							else
 								merge_obj := ca_child.children.i_th(i).safe_deep_twin
-						--		merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
 								if merge_list_csr.item.before_flag then -- True = insert before
 									ca_output.put_child_left (merge_obj, insert_obj)
 								else
@@ -586,11 +592,7 @@ end
 										insert_obj := ch
 									end
 								end
-								if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
-									merge_car.set_subtree_specialisation_status (ss_added)
-								else
-									merge_obj.set_specialisation_status (ss_added)
-								end
+								merge_obj.set_specialisation_status (ss_added)
 							end
 
 						-- ARCHETYPE_SLOT override
@@ -831,10 +833,6 @@ end
 				-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
 				-- flat definition structure from the supplier archetype
 				across xref_idx_csr.item as xref_list_csr loop
-
-					-- set the node id to be the target archetype id
-					xref_list_csr.item.set_node_id (xref_list_csr.item.archetype_ref)
-
 					if not xref_list_csr.item.has_attributes then -- it is empty and needs to be filled
 debug ("flatten")
 	io.put_string ("%T node at " + xref_list_csr.item.path +
@@ -853,13 +851,13 @@ end
 			end
 		end
 
-	template_overlay_supplier_ontologies
-			-- process `template_ontology_overlay_list' to overlay target ontologies.
+	template_overlay_supplier_terminologies
+			-- process `template_ontology_overlay_list' to overlay target terminologies.
 		local
 			ont: FLAT_ARCHETYPE_TERMINOLOGY
 		do
 debug ("flatten")
-	io.put_string ("&&&&&& flattening template ontologies &&&&&&%N")
+	io.put_string ("&&&&&& flattening template terminologies &&&&&&%N")
 end
 			if attached {OPERATIONAL_TEMPLATE} arch_output_flat as opt then
 				across child_desc.suppliers_index as supp_idx_csr loop

@@ -58,11 +58,10 @@ create
 	make
 %}
 
-%token <STRING> V_ARCHETYPE_ID
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
-%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR 
+%token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_SLOT_FILLER V_EXT_REF
 %token <STRING> V_VALUE_SET_REF V_VALUE_DEF V_VALUE_SET_REF_ASSUMED
 %token <TERM_CONSTRAINT_PARSE_STRUCTURE> V_EXPANDED_VALUE_SET_DEF V_EXTERNAL_VALUE_SET_DEF
 %token ERR_VALUE_SET_DEF_ASSUMED ERR_VALUE_SET_DEF_DUP_CODE ERR_VALUE_SET_DEF
@@ -349,10 +348,27 @@ c_object: c_complex_object
 -- The first two forms below correspond to source archetypes, which have no body under a C_ARCHETYPE_ROOT
 -- A c_complex_object-like variant would be needed to parse fully flattened templates.
 --
-c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_ID_CODE c_occurrences V_ARCHETYPE_ID 
+-- V_SLOT_FILLER looks like the following, no whitespace
+-- {ID_CODE},{ARCHETYPE_ID}
+--
+c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_SLOT_FILLER c_occurrences 
 		{
-			if archetype_id_parser.valid_id ($5) then
-				create $$.make ($2, $3, $5)
+			slot_id_code := $3.substring (1, $3.index_of (',', 1) - 1)
+			archetype_id := $3.substring ($3.index_of (',', 1) + 1, $3.count)
+			if archetype_id_parser.valid_id (archetype_id) then
+				create $$.make_slot_filler ($2, archetype_id, slot_id_code)
+				if attached $4 as occ then
+					$$.set_occurrences (occ)
+				end
+			else
+				abort_with_error (ec_SUAIDI, <<$3>>)
+			end
+		}
+	| SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences 
+		{
+			archetype_id := $3.substring ($3.index_of (',', 1) + 1, $3.count)
+			if archetype_id_parser.valid_id (archetype_id) then
+				create $$.make ($2, archetype_id)
 				if attached $4 as occ then
 					$$.set_occurrences (occ)
 				end
@@ -2561,6 +2577,16 @@ feature {NONE} -- Implementation
 		end
 
 	fake_code_number: INTEGER
+
+	archetype_id: STRING
+		attribute
+			create Result.make (0)
+		end
+
+	slot_id_code: STRING
+		attribute
+			create Result.make (0)
+		end
 
 	at_codes: ARRAYED_LIST [STRING]
 		attribute

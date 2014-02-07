@@ -242,15 +242,17 @@ end
 
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
-				create apa.make_from_string (car.path)
+				check attached car.slot_path as att_slot_path then
+					create apa.make_from_string (att_slot_path)
+				end
 				co_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
 				if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.object_at_path (co_path_in_flat) as a_slot then
 					if ancestor_slot_id_index.has (a_slot.path) then
-						if not archetype_id_matches_slot (car.archetype_ref, a_slot) then -- doesn't even match the slot definition
-							add_error (ec_VARXS, <<terminology.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_ref>>)
+						if not archetype_id_matches_slot (car.node_id, a_slot) then -- doesn't even match the slot definition
+							add_error (ec_VARXS, <<terminology.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
 
-						elseif not slot_filler_archetype_id_exists (a_slot.path, car.archetype_ref) then -- matches def, but not found in actual list from current repo
-							add_error (ec_VARXR, <<terminology.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_ref>>)
+						elseif not slot_filler_archetype_id_exists (a_slot.path, car.node_id) then -- matches def, but not found in actual list from current repo
+							add_error (ec_VARXR, <<terminology.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
 							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.is_equal (par_flat_occ) then
@@ -278,7 +280,7 @@ end
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
 				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-				
+
 debug ("validate")
 	io.put_string (">>>>> validate: C_OBJECT in child at " + terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True))
 end
@@ -412,7 +414,7 @@ end
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			flat_anc_path: STRING
+			flat_anc_path, slot_path: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
 		do
 			-- if it is a C_ARCHETYPE_ROOT, it is either a slot filler or an external reference. If the former, it is
@@ -423,8 +425,20 @@ end
 				if attached {C_OBJECT} a_c_node as a_c_obj then
 					-- is it an overlay or new node; if overlay, then check it
 					if passed then
-						if specialisation_depth_from_code (a_c_obj.node_id)
-							<= flat_ancestor.specialisation_depth or else 			-- node with node_id from previous level OR
+						if attached {C_ARCHETYPE_ROOT} a_c_node as car and then attached car.slot_node_id then			-- slot filler
+							check attached car.slot_path as att_slot_path then
+								slot_path := att_slot_path
+							end
+							create apa.make_from_string (slot_path)
+							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
+							Result := flat_ancestor.has_object_path (flat_anc_path)
+							if not Result then -- it should have a matching node in flat ancestor
+								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
+									terminology.annotated_path (slot_path, target_descriptor.archetype_view_language, True),
+									terminology.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
+							end
+
+						elseif specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
 							is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
 						then
 							create apa.make_from_string (a_c_node.path)

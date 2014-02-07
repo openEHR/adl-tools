@@ -25,27 +25,46 @@ inherit
 		end
 
 create
-	make
+	make, make_slot_filler
 
 feature -- Initialisation
 
-	make (a_rm_type_name, a_node_id, an_archetype_id: STRING)
+	make (a_rm_type_name, an_archetype_id: STRING)
 			-- make as an archetype external reference
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Node_id_valid: is_valid_id_code (a_node_id)
 			Archetype_id_valid: valid_archetype_id (an_archetype_id)
 		do
-			cco_make (a_rm_type_name, a_node_id)
-			archetype_ref := an_archetype_id
+			rm_type_name := a_rm_type_name
+			create representation_cache.make (an_archetype_id)
+			representation_cache.set_content (Current)
+		end
+
+	make_slot_filler (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
+			-- make as an archetype external reference
+		require
+			Rm_type_name_valid: not a_rm_type_name.is_empty
+			Archetype_id_valid: valid_archetype_id (an_archetype_id)
+			Valid_slot_node_id: is_valid_id_code (a_slot_node_id)
+		do
+			make (a_rm_type_name, an_archetype_id)
+			slot_node_id := a_slot_node_id
 		end
 
 feature -- Access
 
-	archetype_ref: STRING
-			-- id of filler archetype
-		attribute
-			create Result.make_empty
+	slot_node_id: detachable STRING
+
+	slot_path: detachable STRING
+			-- generate the path to the slot this object fills, if applicable
+		local
+			og_path: OG_PATH
+		do
+			if attached slot_node_id as att_snid then
+				create og_path.make_from_string (path)
+				og_path.last.set_object_id (att_snid)
+				Result := og_path.as_string
+			end
 		end
 
 feature -- Output
@@ -58,7 +77,6 @@ feature -- Output
 			if attached occurrences as occ then
 				Result.append (occ.as_string)
 			end
-			Result.append (" " + archetype_ref)
 		end
 
 feature -- Visitor
