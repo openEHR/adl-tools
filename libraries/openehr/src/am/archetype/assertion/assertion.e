@@ -47,12 +47,15 @@ feature -- Access
 	extract_regex: detachable STRING
 			-- extract regex from assertion of form:
 			-- 'id matches {/regex/}'
+		local
+			regex_str: STRING
 		do
 			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then bin_op.operator.value = op_matches and then
 				attached {EXPR_LEAF} bin_op.right_operand as rhs and then
 				attached {C_STRING} rhs.item as c_str
 			then
-				Result := c_str.constraint.first
+				regex_str := c_str.constraint.first
+				Result := regex_str.substring (2, regex_str.count - 1)
 			end
 		end
 

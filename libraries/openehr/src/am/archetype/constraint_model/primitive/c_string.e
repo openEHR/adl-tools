@@ -168,8 +168,15 @@ feature -- Output
 			-- apply a cleaner function
 		do
 			Result := constraint_as_string
-			if attached assumed_value then
-				Result.append("; %"" + assumed_value.out + "%"")
+			if attached assumed_value as av then
+				Result.append("; ")
+				if not is_regex_string (av) then
+					Result.append_character ('%"')
+				end
+				Result.append (av)
+				if not is_regex_string (av) then
+					Result.append_character ('%"')
+				end
 			end
 		end
 
@@ -177,8 +184,15 @@ feature -- Output
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			Result := constraint_as_string_clean (cleaner)
-			if attached assumed_value then
-				Result.append ("; %"" + cleaner.item ([assumed_value.out]) + "%"")
+			if attached assumed_value as av then
+				Result.append("; ")
+				if not is_regex_string (av) then
+					Result.append_character ('%"')
+				end
+				Result.append (cleaner.item ([av]))
+				if not is_regex_string (av) then
+					Result.append_character ('%"')
+				end
 			end
 		end
 
@@ -192,9 +206,13 @@ feature {NONE} -- Implementation
 				if not strings_csr.is_first then
 					Result.append (", ")
 				end
-				Result.append_character ('%"')
+				if not is_regex_string (strings_csr.item) then
+					Result.append_character ('%"')
+				end
 				Result.append (strings_csr.item)
-				Result.append_character ('%"')
+				if not is_regex_string (strings_csr.item) then
+					Result.append_character ('%"')
+				end
 			end
 		end
 
@@ -206,9 +224,13 @@ feature {NONE} -- Implementation
 				if not strings_csr.is_first then
 					Result.append(", ")
 				end
-				Result.append_character ('%"')
+				if not is_regex_string (strings_csr.item) then
+					Result.append_character ('%"')
+				end
 				Result.append (cleaner.item ([strings_csr.item]))
-				Result.append_character ('%"')
+				if not is_regex_string (strings_csr.item) then
+					Result.append_character ('%"')
+				end
 			end
 		end
 
