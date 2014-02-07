@@ -4,7 +4,7 @@ note
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ICON_RESOURCES_COMPILED
 
@@ -260,6 +260,8 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CLUSTER}.make).to_pixmap end, "rm/cimi/cluster")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CLUSTER_SLOT}.make).to_pixmap end, "rm/cimi/cluster_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CODED_TEXT}.make).to_pixmap end, "rm/cimi/coded_text")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_COMPOUND_ENTRY}.make).to_pixmap end, "rm/cimi/compound_entry")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_COMPOUND_ENTRY_SLOT}.make).to_pixmap end, "rm/cimi/compound_entry_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CONTENT_ITEM}.make).to_pixmap end, "rm/cimi/content_item")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_COUNT}.make).to_pixmap end, "rm/cimi/count")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_DATE}.make).to_pixmap end, "rm/cimi/date")
@@ -271,6 +273,8 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_ENTRY_SLOT}.make).to_pixmap end, "rm/cimi/entry_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_FOLDER}.make).to_pixmap end, "rm/cimi/folder")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_IDENTIFIER}.make).to_pixmap end, "rm/cimi/identifier")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INDIVISIBLE_ENTRY}.make).to_pixmap end, "rm/cimi/indivisible_entry")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INDIVISIBLE_ENTRY_SLOT}.make).to_pixmap end, "rm/cimi/indivisible_entry_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_ITEM}.make).to_pixmap end, "rm/cimi/item")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_LINK}.make).to_pixmap end, "rm/cimi/link")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_ORDINAL}.make).to_pixmap end, "rm/cimi/ordinal")
