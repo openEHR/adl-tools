@@ -12,10 +12,8 @@ class
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-
-	STRING_UTILITIES
-		export
-			{NONE} all
+		redefine
+			enable_edit, disable_edit
 		end
 
 create
@@ -25,33 +23,24 @@ feature {NONE}-- Initialization
 
 	make
 		do
-			-- create root widget
+			-- create root Notebook
 			create ev_root_container
+			create gui_controls.make (0)
 
-			create ev_source_rich_text
-			ev_source_rich_text.disable_edit
-			ev_source_rich_text.set_tab_width ((ev_source_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
-			ev_root_container.extend (ev_source_rich_text)
+			create ev_adl_14_editor.make (agent adl_14_source_text)
+			ev_root_container.extend (ev_adl_14_editor.ev_root_container)
+			ev_root_container.set_item_text (ev_adl_14_editor.ev_root_container, get_text (ec_adl_14_source_tab_text))
+			gui_controls.extend (ev_adl_14_editor)
 
-			create ev_source_controls_vbox
-			ev_source_controls_vbox.set_border_width (Default_border_width)
-			ev_source_controls_vbox.set_padding_width (Default_padding_width)
-			ev_root_container.extend (ev_source_controls_vbox)
-			ev_root_container.disable_item_expand (ev_source_controls_vbox)
+			create ev_adl_14_converted_editor.make (agent adl_14_converted_text)
+			ev_root_container.extend (ev_adl_14_converted_editor.ev_root_container)
+			ev_root_container.set_item_text (ev_adl_14_converted_editor.ev_root_container, get_text (ec_adl_14_converted_tab_text))
+			gui_controls.extend (ev_adl_14_converted_editor)
 
-			create ev_line_numbers_cb
-			ev_line_numbers_cb.set_text (get_msg (ec_add_line_numbers_text, Void))
-			ev_line_numbers_cb.set_tooltip (get_msg (ec_add_line_numbers_tooltip, Void))
-			if show_line_numbers then
-				ev_line_numbers_cb.enable_select
-			end
-			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
-			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
-			ev_source_controls_vbox.extend (ev_line_numbers_cb)
-			ev_source_controls_vbox.disable_item_expand (ev_line_numbers_cb)
-
-			create ev_source_padding_cell
-			ev_source_controls_vbox.extend (ev_source_padding_cell)
+			create ev_adl_15_editor.make (agent adl_15_source_text)
+			ev_root_container.extend (ev_adl_15_editor.ev_root_container)
+			ev_root_container.set_item_text (ev_adl_15_editor.ev_root_container, get_text (ec_adl_15_source_tab_text))
+			gui_controls.extend (ev_adl_15_editor)
 
 			differential_view := True
 
@@ -60,45 +49,78 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	ev_root_container: EV_HORIZONTAL_BOX
+	ev_root_container: EV_NOTEBOOK
+
+feature -- Commands
+
+	enable_edit
+			-- enable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
+		end
+
+	disable_edit
+			-- disable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_editable end)
+		end
 
 feature {NONE} -- Implementation
 
-	ev_source_rich_text: EV_RICH_TEXT
+	update_line_numbers (flag: BOOLEAN)
+		do
+			set_show_line_numbers (flag)
+			try_repopulate
+		end
 
-	ev_source_controls_vbox: EV_VERTICAL_BOX
+	gui_controls: ARRAYED_LIST [EVX_CONTROL_SHELL]
 
-	ev_source_padding_cell: EV_CELL
+	ev_adl_14_editor: EVX_TEXT_EDITOR_CONTROL
 
-	ev_line_numbers_cb: EV_CHECK_BUTTON
+	adl_14_source_text: detachable STRING
+		do
+			if source.has_legacy_flat_file and then attached source.legacy_flat_text as ft then
+				Result := ft
+			end
+		end
+
+	ev_adl_14_converted_editor: EVX_TEXT_EDITOR_CONTROL
+
+	adl_14_converted_text: detachable STRING
+		do
+			if source.has_invalid_differential_file and then attached source.invalid_differential_text as inv_diff_text then
+				Result := inv_diff_text
+			end
+		end
+
+	ev_adl_15_editor: EVX_TEXT_EDITOR_CONTROL
+
+	adl_15_source_text: detachable STRING
+		do
+			if source.has_differential_file then
+				 Result := source.differential_text
+			end
+		end
 
 	do_clear
 		do
-			ev_source_rich_text.remove_text
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.clear end)
 		end
 
 	do_populate
 		do
-			if source.has_differential_file then
-				populate_source_text (source.differential_text)
-			elseif source.has_invalid_differential_file and then attached source.invalid_differential_text as inv_diff_text then
-				populate_source_text (inv_diff_text)
-			elseif source.has_legacy_flat_file and then attached source.legacy_flat_text as ft then
-				populate_source_text (ft)
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.populate end)
+			across ev_root_container as ev_nb_tabs loop
+				if attached {EVX_TEXT_EDITOR_CONTROL} ev_nb_tabs.item.data as text_ed then
+					if attached text_ed.source_text.item ([]) then
+						ev_root_container.item_tab (ev_nb_tabs.item).set_pixmap (get_icon_pixmap ("tool/test_passed"))
+					else
+						ev_root_container.item_tab (ev_nb_tabs.item).remove_pixmap
+					end
+				end
 			end
-		end
-
-	populate_source_text (text: STRING)
-			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
-		local
-			s: STRING
-		do
-			if show_line_numbers then
-				s := add_line_numbers (text, 4, " ")
-			else
-				s := text
-			end
-			ev_source_rich_text.set_text (utf8_to_utf32 (s))
 		end
 
 end

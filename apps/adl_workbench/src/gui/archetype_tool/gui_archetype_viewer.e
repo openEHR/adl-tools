@@ -223,12 +223,6 @@ feature {NONE} -- Implementation
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg (ec_serialised_flat_tab_text, Void))
 		end
 
-	selected_path_filter: STRING
-			-- currently selected filter in path map, for saving across sessions
-		do
-			Result := path_map_control.selected_filter
-		end
-
 	set_tab_appearance
 			-- set visual appearance of validity tab according to whether there are errors or not
 		do

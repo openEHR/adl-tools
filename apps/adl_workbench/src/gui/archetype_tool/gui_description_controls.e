@@ -95,7 +95,7 @@ feature {NONE} -- Initialisation
 						if source_archetype.has_translations then
 							Result := create {ARRAYED_LIST [STRING]}.make_from_array (source_archetype.translations.current_keys)
 						end
-					end,
+					end, Void,
 				0, 100, True)
 			lang_original_trans_hbox.extend (trans_languages_ctl.ev_root_container)
 			gui_controls.extend (trans_languages_ctl)
@@ -322,7 +322,7 @@ feature {NONE} -- Implementation
 	translation_details: detachable TRANSLATION_DETAILS
 		do
 			if source_archetype.has_translations then
-				Result := source_archetype.translation_for_language (trans_languages_ctl.ev_data_control.text)
+				Result := source_archetype.translation_for_language (trans_languages_ctl.selected_text)
 			end
 		end
 

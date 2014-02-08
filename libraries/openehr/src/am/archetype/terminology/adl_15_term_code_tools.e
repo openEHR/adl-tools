@@ -511,6 +511,25 @@ feature -- Conversion
 			end
 		end
 
+	adl_15_path_converted (an_adl_15_path: STRING): STRING
+			-- convert `an_adl_15_path' containing ADL 1.5 id-codes to a path containing,
+			-- ADL 1.4 at-codes, using `adl_15_code_renumbered'
+			-- `an_adl_15_path' should be a well-formed path as recognised by a regex,
+			-- of the form /aaaa/bbbb[idN]/cccc[idN]/dddd
+		local
+			lpos, rpos: INTEGER
+			at_code: STRING
+		do
+			create Result.make_from_string (an_adl_15_path)
+			lpos := an_adl_15_path.index_of ('[', 1)
+			from until lpos = 0 or lpos >= an_adl_15_path.count loop
+				rpos := an_adl_15_path.index_of (']', lpos)
+				at_code := an_adl_15_path.substring (lpos+1, rpos-1)
+				Result.replace_substring_all (at_code, adl_15_id_code_converted (at_code))
+				lpos := an_adl_15_path.index_of ('[', rpos)
+			end
+		end
+
 	adl_14_code_renumbered (an_adl_14_code: STRING): STRING
 			-- convert the lead numeric part of an ADL 1.4 code that has a level 0 part, by:
 			--
@@ -530,6 +549,31 @@ feature -- Conversion
 				end
 			else
 				create Result.make_from_string (an_adl_14_code)
+			end
+		end
+
+	adl_15_id_code_converted (an_adl_15_code: STRING): STRING
+			-- convert the lead numeric part of an ADL 1.5 code to an ADL 1.4 at-code
+		local
+			end_pos, dot_pos: INTEGER
+			packed_level_0_numeric, level_0_numeric_part: STRING
+		do
+			if an_adl_15_code.item (3) = '0' then
+				create Result.make_from_string (an_adl_15_code)
+				Result.replace_substring (value_code_leader, 1, 2)
+			else
+				dot_pos := an_adl_15_code.index_of ('.', 3)
+				end_pos := if dot_pos = 0 then an_adl_15_code.count else dot_pos - 1 end
+				level_0_numeric_part := (an_adl_15_code.substring (3, end_pos).to_integer_32).out
+				create packed_level_0_numeric.make_filled ('0', 4 - level_0_numeric_part.count)
+				packed_level_0_numeric.append (level_0_numeric_part)
+
+				create Result.make_from_string (value_code_leader)
+				Result.append (packed_level_0_numeric)
+
+				if dot_pos > 0 then
+					Result.append (an_adl_15_code.substring (dot_pos + 1, an_adl_15_code.count))
+				end
 			end
 		end
 

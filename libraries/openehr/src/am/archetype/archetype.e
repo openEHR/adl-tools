@@ -278,6 +278,50 @@ feature -- Paths
 			Result.object_comparison
 		end
 
+	interface_tags (a_language: STRING): HASH_TABLE [STRING, STRING]
+			-- generate a table of tags suitable for use in XSD, programming languages,
+			-- keyed by physical path
+		require
+			a_lang_valid: not a_language.is_empty
+		local
+			og_phys_path, og_log_path: OG_PATH
+			tag_path, id_code: STRING
+		do
+			create Result.make (0)
+			across leaf_paths as path_csr loop
+				create og_phys_path.make_from_string (path_csr.item)
+				create og_log_path.make_from_other (og_phys_path)
+				from
+					og_phys_path.start
+					og_log_path.start
+				until
+					og_phys_path.off
+				loop
+					if og_phys_path.item.is_addressable then
+						id_code := og_phys_path.item.object_id
+						if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
+							og_log_path.item.set_object_id (terminology.term_definition (a_language, id_code).text)
+						end
+					end
+					og_phys_path.forth
+					og_log_path.forth
+				end
+				tag_path := og_log_path.as_string
+				tag_path.remove_head (1)
+				Result.put (interface_tag_from_path (tag_path), og_phys_path.as_string)
+			end
+		end
+
+	interface_tag_from_path (a_path: STRING): STRING
+			-- generate a tag suuitable for use in XSD, programming languages
+		do
+			Result := a_path.twin
+			Result.replace_substring_all (" ", "_")
+			Result.replace_substring_all ("/", "_")
+			Result.replace_substring_all ("[", "_")
+			Result.prune_all (']')
+		end
+
 	rm_type_paths_annotated (a_lang, rm_type: STRING): ARRAYED_LIST [STRING]
 			-- paths to C_OBJECT nodes which have type `rm_type', with human readable terms substituted
 		require
