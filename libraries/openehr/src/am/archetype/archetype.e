@@ -301,25 +301,29 @@ feature -- Paths
 						id_code := og_phys_path.item.object_id
 						if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
 							og_log_path.item.set_object_id (terminology.term_definition (a_language, id_code).text)
+						else
+							og_log_path.item.set_object_id ("")
 						end
 					end
 					og_phys_path.forth
 					og_log_path.forth
 				end
-				tag_path := og_log_path.as_string
-				tag_path.remove_head (1)
-				Result.put (interface_tag_from_path (tag_path), og_phys_path.as_string)
-			end
-		end
 
-	interface_tag_from_path (a_path: STRING): STRING
-			-- generate a tag suuitable for use in XSD, programming languages
-		do
-			Result := a_path.twin
-			Result.replace_substring_all (" ", "_")
-			Result.replace_substring_all ("/", "_")
-			Result.replace_substring_all ("[", "_")
-			Result.prune_all (']')
+				-- create the string
+				create tag_path.make (50)
+				across og_log_path as path_seg_csr loop
+					if path_seg_csr.item.is_addressable then
+						tag_path.append (path_seg_csr.item.object_id)
+					else
+						tag_path.append (path_seg_csr.item.attr_name)
+					end
+					if not path_seg_csr.is_last then
+						tag_path.append_character ('_')
+					end
+				end
+				tag_path.replace_substring_all (" ", "_")
+				Result.put (tag_path, og_phys_path.as_string)
+			end
 		end
 
 	rm_type_paths_annotated (a_lang, rm_type: STRING): ARRAYED_LIST [STRING]
