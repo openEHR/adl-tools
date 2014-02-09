@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (681)
+			create message_table.make (678)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -508,9 +508,6 @@ feature -- Initialisation
 			message_table.put ("Export Archetype", ec_export_archetype_title)
 			message_table.put ("Cycle through available views of artefacts", ec_catalogue_mini_toolbar_view_rotate)
 			message_table.put ("Error adding archetype to repository: $1", ec_catalogue_add_new_archetype_error)
-			message_table.put ("Row Filter", ec_row_filter_frame_text)
-			message_table.put ("Filter which rows are shown in the Path Analysis", ec_row_filter_combo_tooltip)
-			message_table.put ("Column View", ec_column_frame_text)
 			message_table.put ("Include code meanings in paths", ec_nat_lang_paths_tooltip)
 			message_table.put ("Natural lang", ec_nat_lang_checkbox_text)
 			message_table.put ("ADL 1.5 paths", ec_adl_15_paths_tab_text)
@@ -614,7 +611,7 @@ feature -- Initialisation
 			message_table.put ("Select display language", ec_language_combo_tooltip)
 			message_table.put ("Description", ec_description_tab_text)
 			message_table.put ("Definition", ec_definition_tab_text)
-			message_table.put ("Paths", ec_paths_tab_text)
+			message_table.put ("Interface", ec_interface_tab_text)
 			message_table.put ("Slots", ec_slots_tab_text)
 			message_table.put ("Terminology", ec_terminology_tab_text)
 			message_table.put ("Annotations", ec_annotations_tab_text)

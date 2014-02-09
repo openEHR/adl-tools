@@ -7,12 +7,12 @@ note
 	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_PATH_MAP_CONTROL
+class GUI_INTERFACE_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate
+			can_populate, can_repopulate, do_display
 		end
 
 	SHARED_ARCHETYPE_CATALOGUES
@@ -36,7 +36,7 @@ create
 
 feature -- Definitions
 
-	path_control_filter_names: ARRAYED_LIST [STRING]
+	row_filter_names: ARRAYED_LIST [STRING]
 			-- names of row filters of path control
 		once
 			create Result.make (0)
@@ -44,10 +44,16 @@ feature -- Definitions
 			Result.fill (<<"All", "Leaf">>)
 		end
 
-	path_control_column_names: ARRAY [STRING]
+	path_column_names: ARRAY [STRING]
 			-- names of columns of path view control
 		once
 			Result := <<"Path", "RM Type", "AOM Type">>
+		end
+
+	interface_column_names: ARRAY [STRING]
+			-- names of columns of path view control
+		once
+			Result := <<"API Tag", "Path">>
 		end
 
 feature {NONE} -- Initialisation
@@ -59,125 +65,28 @@ feature {NONE} -- Initialisation
 			create gui_controls.make (0)
 
 			-- ================================== ADL 1.5 paths =======================================
-			create ev_15_paths_hbox
-			ev_root_container.extend (ev_15_paths_hbox)
-			ev_root_container.set_item_text (ev_15_paths_hbox, get_text (ec_adl_15_paths_tab_text))
-
-			-- ================ main path list table ==============
-			create evx_15_paths_mlist.make (agent path_list, 0, 0, agent path_column_titles, agent adl_15_path_row)
-			evx_15_paths_mlist.ev_data_control.enable_multiple_selection
-			ev_15_paths_hbox.extend (evx_15_paths_mlist.ev_data_control)
-			gui_controls.extend (evx_15_paths_mlist)
-
-			-- ========== view controls control panel ===========
-			create evx_15_paths_control_panel.make
-			ev_15_paths_hbox.extend (evx_15_paths_control_panel.ev_root_container)
-			ev_15_paths_hbox.disable_item_expand (evx_15_paths_control_panel.ev_root_container)
-
-			-- -------- Row view frame --------
-			evx_15_paths_control_panel.create_new_frame (get_text (ec_row_filter_frame_text), False)
-
-			-- -------- Row view combo --------
-			create evx_15_row_filter_combo.make ("", agent path_control_filter_names,
-				agent set_path_row_filter, 0, 80, False)
-			if attached evx_15_paths_control_panel.last_added_frame as evx_frame then
-				evx_frame.extend (evx_15_row_filter_combo.ev_root_container, False)
-				gui_controls.extend (evx_15_row_filter_combo)
-			end
-
-			-- -------- Col view frame --------
-			evx_15_paths_control_panel.create_new_frame (get_text (ec_column_frame_text), False)
-
-			-- -------- Col view checkbox --------
-			create evx_15_nat_lang_paths_cb.make_linked (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
+			create evx_adl_15_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_15_path_row)
+			evx_adl_15_tab.add_boolean_filter (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
-			if attached evx_15_paths_control_panel.last_added_frame as evx_frame then
-				evx_frame.extend (evx_15_nat_lang_paths_cb.ev_data_control, False)
-				gui_controls.extend (evx_15_nat_lang_paths_cb)
-			end
+			ev_root_container.extend (evx_adl_15_tab.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_15_tab.ev_root_container, get_text (ec_adl_15_paths_tab_text))
+			gui_controls.extend (evx_adl_15_tab)
 
 			-- ================================== ADL 1.4 paths =======================================
-			create ev_14_paths_hbox
-			ev_root_container.extend (ev_14_paths_hbox)
-			ev_root_container.set_item_text (ev_14_paths_hbox, get_text (ec_adl_14_paths_tab_text))
-
-			-- ================ main path list table ==============
-			create evx_14_paths_mlist.make (agent path_list, 0, 0, agent path_column_titles, agent adl_14_path_row)
-			evx_14_paths_mlist.ev_data_control.enable_multiple_selection
-			ev_14_paths_hbox.extend (evx_14_paths_mlist.ev_data_control)
-			gui_controls.extend (evx_14_paths_mlist)
-
-			-- ========== view controls control panel ===========
-			create evx_14_paths_control_panel.make
-			ev_14_paths_hbox.extend (evx_14_paths_control_panel.ev_root_container)
-			ev_14_paths_hbox.disable_item_expand (evx_14_paths_control_panel.ev_root_container)
-
-			-- -------- Row view frame --------
-			evx_14_paths_control_panel.create_new_frame (get_text (ec_row_filter_frame_text), False)
-
-			-- -------- Row view combo --------
-			create evx_14_row_filter_combo.make ("", agent path_control_filter_names,
-				agent set_path_row_filter, 0, 80, False)
-			if attached evx_14_paths_control_panel.last_added_frame as evx_frame then
-				evx_frame.extend (evx_14_row_filter_combo.ev_root_container, False)
-				gui_controls.extend (evx_14_row_filter_combo)
-			end
-
-			-- -------- Col view frame --------
-			evx_14_paths_control_panel.create_new_frame (get_text (ec_column_frame_text), False)
-
-			-- -------- Col view checkbox --------
-			create evx_14_nat_lang_paths_cb.make_linked (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
+			create evx_adl_14_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_14_path_row)
+			evx_adl_14_tab.add_boolean_filter (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
-			if attached evx_14_paths_control_panel.last_added_frame as evx_frame then
-				evx_frame.extend (evx_14_nat_lang_paths_cb.ev_data_control, False)
-				gui_controls.extend (evx_14_nat_lang_paths_cb)
-			end
-
+			ev_root_container.extend (evx_adl_14_tab.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_14_tab.ev_root_container, get_text (ec_adl_14_paths_tab_text))
+			gui_controls.extend (evx_adl_14_tab)
 
 			-- ================================== ADL interface tags =======================================
-			create ev_interface_paths_hbox
-			ev_root_container.extend (ev_interface_paths_hbox)
-			ev_root_container.set_item_text (ev_interface_paths_hbox, get_text (ec_adl_interface_tab_text))
+			create evx_interface_tab.make (on_path_map_key_press_agent, agent interface_column_names, agent path_list, agent row_filter_names, agent interface_row)
+			ev_root_container.extend (evx_interface_tab.ev_root_container)
+			ev_root_container.set_item_text (evx_interface_tab.ev_root_container, get_text (ec_adl_interface_tab_text))
+			gui_controls.extend (evx_interface_tab)
 
-			-- ================ main path list table ==============
-			create evx_interface_paths_mlist.make (agent path_list, 0, 0, agent path_column_titles, agent adl_interface_row)
-			evx_interface_paths_mlist.ev_data_control.enable_multiple_selection
-			ev_interface_paths_hbox.extend (evx_interface_paths_mlist.ev_data_control)
-			gui_controls.extend (evx_interface_paths_mlist)
-
-			-- ========== view controls control panel ===========
-			create evx_interface_paths_control_panel.make
-			ev_interface_paths_hbox.extend (evx_interface_paths_control_panel.ev_root_container)
-			ev_interface_paths_hbox.disable_item_expand (evx_interface_paths_control_panel.ev_root_container)
-
-			-- -------- Row view frame --------
-			evx_interface_paths_control_panel.create_new_frame (get_text (ec_row_filter_frame_text), False)
-
-			-- -------- Row view combo --------
-			create evx_interface_row_filter_combo.make ("", agent path_control_filter_names,
-				agent set_path_row_filter, 0, 80, False)
-			if attached evx_interface_paths_control_panel.last_added_frame as evx_frame then
-				evx_frame.extend (evx_interface_row_filter_combo.ev_root_container, False)
-				gui_controls.extend (evx_interface_row_filter_combo)
-			end
-
-			-- -------- Col view frame --------
-			evx_interface_paths_control_panel.create_new_frame (get_text (ec_column_frame_text), False)
-
-			-- -------- Col view checkbox --------
-			create evx_interface_nat_lang_paths_cb.make_linked (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
-				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
-			if attached evx_interface_paths_control_panel.last_added_frame as evx_frame then
-				evx_frame.extend (evx_interface_nat_lang_paths_cb.ev_data_control, False)
-				gui_controls.extend (evx_interface_nat_lang_paths_cb)
-			end
-
-
-
-			-- set events: path map
-			evx_15_paths_mlist.ev_data_control.key_press_actions.extend (on_path_map_key_press_agent)
-
+			ev_root_container.selection_actions.extend (agent on_select_notebook)
 			ev_root_container.set_data (Current)
 		end
 
@@ -185,13 +94,21 @@ feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
 
-	evx_15_nat_lang_paths_cb: EVX_CHECK_BOX_CONTROL
-
-	evx_14_nat_lang_paths_cb: EVX_CHECK_BOX_CONTROL
-
-	evx_interface_nat_lang_paths_cb: EVX_CHECK_BOX_CONTROL
-
 	show_natural_language: BOOLEAN
+
+	selected_row: STRING
+			-- return selected row text from currently visible tab
+		do
+			if evx_adl_15_tab.is_displayed then
+				Result := evx_adl_15_tab.row_selected_text
+			elseif evx_adl_14_tab.is_displayed then
+				Result := evx_adl_14_tab.row_selected_text
+			elseif evx_interface_tab.is_displayed then
+				Result := evx_interface_tab.row_selected_text
+			else
+				create Result.make_empty
+			end
+		end
 
 feature -- Status Report
 
@@ -207,118 +124,40 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_path_row_filter
-		do
-			if ev_adl_15_path_list.is_displayed then
-				path_row_filter_selected := evx_15_row_filter_combo.ev_data_control.selected_text
-				repopulate
-			end
-		end
-
-	selected_text: STRING
-			-- copy a selected path row from the paths control to the OS clipboard
-		local
-			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
-			ev_col: EV_MULTI_COLUMN_LIST_ROW
-		do
-			ev_rows := ev_adl_15_path_list.selected_items
-			create Result.make (0)
-
-			if not ev_rows.is_empty then
-				from ev_rows.start until ev_rows.off loop
-					ev_col := ev_rows.item
-					from ev_col.start until ev_col.off loop
-						Result.append (ev_col.item.string + "%N")
-						ev_col.forth
-					end
-					ev_rows.forth
-				end
-			end
-		end
-
 	select_path (a_path: STRING)
-		require
-			not a_path.is_empty
-		local
-			match_path, l_path: STRING
-			found: BOOLEAN
+			-- select path `a_path' in ADL 1.5 control
 		do
-			if show_natural_language and attached selected_language as sel_lang then
-				match_path := source_archetype.terminology.annotated_path (a_path, sel_lang, True)
-			else
-				match_path := a_path
-			end
+			evx_adl_15_tab.select_row (a_path)
+			evx_adl_15_tab.show
+		end
 
-			-- use length comparison for more efficient matching
-			from ev_adl_15_path_list.start until ev_adl_15_path_list.off or found loop
-				l_path := ev_adl_15_path_list.item.i_th (1).to_string_8
-				if l_path.same_string (match_path) then
-					ev_adl_15_path_list.item.enable_select
-					ev_adl_15_path_list.ensure_item_visible (ev_adl_15_path_list.item)
-					found := True
-				end
-				ev_adl_15_path_list.forth
-			end
+feature -- Events
+
+	on_select_notebook
+			-- Called by `selection_actions' of `archetype_notebook'.
+		do
+			do_display
 		end
 
 feature {NONE} -- Implementation
 
-	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_CONTROL_SHELL]
 
-	ev_15_paths_hbox: EV_HORIZONTAL_BOX
+	evx_adl_15_tab: EVX_TABLE_CONTROL
 
-	evx_15_paths_mlist: EVX_MULTI_COLUMN_TABLE_CONTROL
+	evx_adl_14_tab: EVX_TABLE_CONTROL
 
-	ev_adl_15_path_list: EV_MULTI_COLUMN_LIST
-		do
-			Result := evx_15_paths_mlist.ev_data_control
-		end
-
-	evx_15_paths_control_panel: EVX_CONTROL_PANEL
-
-	evx_15_row_filter_combo: EVX_COMBO_CONTROL
-
-	path_row_filter_selected: STRING
-		attribute
-			create Result.make_from_string (path_control_filter_names.i_th (1))
-		end
+	evx_interface_tab: EVX_TABLE_CONTROL
 
 	update_show_natural_language (a_flag: BOOLEAN)
 		do
 			show_natural_language := a_flag
-			repopulate
 		end
 
-	ev_14_paths_hbox: EV_HORIZONTAL_BOX
-
-	evx_14_paths_mlist: EVX_MULTI_COLUMN_TABLE_CONTROL
-
-	ev_adl_14_path_list: EV_MULTI_COLUMN_LIST
+	do_display
+			-- refresh visual controls
 		do
-			Result := evx_14_paths_mlist.ev_data_control
-		end
-
-	evx_14_paths_control_panel: EVX_CONTROL_PANEL
-
-	evx_14_row_filter_combo: EVX_COMBO_CONTROL
-
-	ev_interface_paths_hbox: EV_HORIZONTAL_BOX
-
-	evx_interface_paths_mlist: EVX_MULTI_COLUMN_TABLE_CONTROL
-
-	ev_adl_interface_path_list: EV_MULTI_COLUMN_LIST
-		do
-			Result := evx_interface_paths_mlist.ev_data_control
-		end
-
-	evx_interface_paths_control_panel: EVX_CONTROL_PANEL
-
-	evx_interface_row_filter_combo: EVX_COMBO_CONTROL
-
-	path_column_titles: ARRAY [STRING]
-		do
-			create Result.make_filled ("", 1, path_control_column_names.count + 1)
-			Result.fill (path_control_column_names)
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.refresh end end)
 		end
 
 	do_clear
@@ -327,12 +166,12 @@ feature {NONE} -- Implementation
 			all_paths_cache := Void
 			leaf_paths_cache := Void
 			interface_paths_cache := Void
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.clear end)
 		end
 
 	do_populate
 		do
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.populate end end)
 		end
 
 	adl_15_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
@@ -395,7 +234,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	adl_interface_row (a_path: STRING): ARRAYED_LIST [STRING_32]
+	interface_row (a_path: STRING): ARRAYED_LIST [STRING_32]
 		local
 			tag_str: STRING
 		do
@@ -415,9 +254,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	path_list: ARRAYED_LIST [STRING]
+	path_list (a_row_filter: STRING): ARRAYED_LIST [STRING]
 		do
-			if path_row_filter_selected.is_equal (path_control_filter_names.i_th (1)) then
+			if a_row_filter.is_equal (row_filter_names.i_th (1)) then
 				Result := all_paths
 			else
 				Result := leaf_paths
@@ -450,7 +289,7 @@ feature {NONE} -- Implementation
 				Result := att_cache
 			else
 				check attached selected_language end
-				Result := source_archetype.interface_paths (selected_language)
+				Result := source_archetype.interface_tags (selected_language)
 				interface_paths_cache := Result
 			end
 		end

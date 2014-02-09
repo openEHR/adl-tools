@@ -283,9 +283,6 @@ templates = <
 		["catalogue_add_new_archetype_error"] = <"Error adding archetype to repository: $1">
 
 		-- GUI_PATH_MAP_CONTROL
-		["row_filter_frame_text"] = <"Row Filter">
-		["row_filter_combo_tooltip"] = <"Filter which rows are shown in the Path Analysis">
-		["column_frame_text"] = <"Column View">		
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">
 		["nat_lang_checkbox_text"] = <"Natural lang">
 		["adl_15_paths_tab_text"] = <"ADL 1.5 paths">
@@ -422,7 +419,7 @@ templates = <
 		-- GUI_ARCHETYPE_TOOL
 		["description_tab_text"] = <"Description">
 		["definition_tab_text"] = <"Definition">
-		["paths_tab_text"] = <"Paths">
+		["interface_tab_text"] = <"Interface">
 		["slots_tab_text"] = <"Slots">
 		["terminology_tab_text"] = <"Terminology">
 		["annotations_tab_text"] = <"Annotations">

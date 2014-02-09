@@ -32,11 +32,11 @@ feature {NONE}-- Initialization
 
 			precursor
 
-			-- path map control
-			create path_map_control.make (agent on_path_map_key_press)
-			ev_notebook.extend (path_map_control.ev_root_container)
-			ev_notebook.set_item_text (path_map_control.ev_root_container, get_text (ec_paths_tab_text))
-			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
+			-- interface map control
+			create interface_map_control.make (agent on_path_map_key_press)
+			ev_notebook.extend (interface_map_control.ev_root_container)
+			ev_notebook.set_item_text (interface_map_control.ev_root_container, get_text (ec_interface_tab_text))
+			ev_notebook.item_tab (interface_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
 
 			-- slot map control
 			create slot_map_control.make (agent update_slots_tab_label)
@@ -88,11 +88,11 @@ feature -- UI Feedback
 			-- select the `a_path' in the paths tab of this tool
 		do
 			if attached source as src and attached selected_language as sel_lang then
-				if not path_map_control.is_populated then
-					path_map_control.populate (src, differential_view, sel_lang)
+				if not interface_map_control.is_populated then
+					interface_map_control.populate (src, differential_view, sel_lang)
 				end
-				ev_notebook.select_item (path_map_control.ev_root_container)
-				path_map_control.select_path (a_path)
+				ev_notebook.select_item (interface_map_control.ev_root_container)
+				interface_map_control.select_path (a_path)
 			end
 		end
 
@@ -148,7 +148,7 @@ feature {NONE} -- Events
 			-- When the user presses ctrl-C on row in path map, copy it to clipboard
 		do
 			if ev_application.ctrl_pressed and attached key and then key.code = key_c then
-				ev_application.clipboard.set_text (path_map_control.selected_text)
+				ev_application.clipboard.set_text (interface_map_control.selected_row)
 			end
 		end
 
@@ -167,7 +167,7 @@ feature {NONE} -- Implementation
 			-- Wipe out content from visual controls.
 		do
 			precursor
-			path_map_control.clear
+			interface_map_control.clear
 			slot_map_control.clear
 			validity_report_control.clear
 			statistical_information_control.clear
@@ -199,7 +199,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	path_map_control: GUI_PATH_MAP_CONTROL
+	interface_map_control: GUI_INTERFACE_CONTROL
 
 	slot_map_control: GUI_SLOT_MAP_CONTROL
 
