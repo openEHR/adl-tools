@@ -83,14 +83,28 @@ feature -- Definitions
 		once
 			create Result.make (0)
 			Result.put (get_text (ec_value_sets_grid_col_code_text), Value_sets_grid_col_code)
-			Result.put (get_text (ec_value_sets_grid_col_member_code_text), Value_sets_grid_col_member_code)
+			Result.put (get_text (ec_value_sets_grid_col_description_text), Value_sets_grid_col_definition)
 		end
 
 	Value_sets_grid_col_code: INTEGER = 1
-	Value_sets_grid_col_member_code: INTEGER = 2
+	Value_sets_grid_col_definition: INTEGER = 2
 	Value_sets_grid_col_max: INTEGER
 		once
-			Result := Value_sets_grid_col_member_code
+			Result := Value_sets_grid_col_definition
+		end
+
+	Id_terms_grid_col_names: HASH_TABLE [STRING, INTEGER]
+		once
+			create Result.make (0)
+			Result.put (get_text (ec_id_terms_grid_col_code_text), Id_terms_grid_col_text)
+			Result.put (get_text (ec_id_terms_grid_col_member_code_text), Id_terms_grid_col_description)
+		end
+
+	Id_terms_grid_col_text: INTEGER = 1
+	Id_terms_grid_col_description: INTEGER = 2
+	Id_terms_grid_col_max: INTEGER
+		once
+			Result := Id_terms_grid_col_description
 		end
 
 	archetype_rm_type_inherited_color: EV_COLOR

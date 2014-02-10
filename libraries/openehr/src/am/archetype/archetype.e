@@ -278,9 +278,15 @@ feature -- Paths
 			Result.object_comparison
 		end
 
-	interface_tags (a_language: STRING): HASH_TABLE [STRING, STRING]
+	all_interface_tags (a_language: STRING): HASH_TABLE [STRING, STRING]
 			-- generate a table of tags suitable for use in XSD, programming languages,
 			-- keyed by physical path
+		do
+			Result := interface_tags (a_language, all_paths)
+		end
+
+	interface_tags (a_language: STRING; path_set: ARRAYED_LIST [STRING]): HASH_TABLE [STRING, STRING]
+			-- convert `path_set' to a hash of interface tags, keyed by path
 		require
 			a_lang_valid: not a_language.is_empty
 		local
@@ -288,7 +294,7 @@ feature -- Paths
 			tag_path, id_code: STRING
 		do
 			create Result.make (0)
-			across leaf_paths as path_csr loop
+			across path_set as path_csr loop
 				create og_phys_path.make_from_string (path_csr.item)
 				create og_log_path.make_from_other (og_phys_path)
 				from
@@ -474,7 +480,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING])
 					local
 						og_path: OG_PATH
@@ -490,7 +496,6 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 									idx.item (path_csr.item.object_id).extend (ca)
 								end
 							end
-						-- note this will include all C_PRIMITIVE_OBJECTs under same id
 						elseif attached {C_OBJECT} a_c_node as co then
 							if is_id_code (co.node_id) then
 								if not idx.has (co.node_id) then
@@ -499,8 +504,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 								idx.item (co.node_id).extend (co)
 							end
 						end
-					end (?, ?, Result),
-				Void)
+					end (?, ?, Result))
 		end
 
 	value_codes_index: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
@@ -513,7 +517,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
@@ -536,8 +540,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 								end
 							end
 						end
-					end (?, ?, Result),
-				Void)
+					end (?, ?, Result))
 		end
 
 	term_constraints_index: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
@@ -547,7 +550,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
@@ -555,8 +558,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 								idx.put (ctc, ctc.constraint)
 							end
 						end
-					end (?, ?, Result),
-				Void)
+					end (?, ?, Result))
 		end
 
 	use_node_index: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
@@ -567,7 +569,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING])
 					do
 						if attached {C_COMPLEX_OBJECT_PROXY} a_c_node as air then
@@ -576,8 +578,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 							end
 							idx.item (air.target_path).extend (air)
 						end
-					end (?, ?, Result),
-				Void)
+					end (?, ?, Result))
 		end
 
 	suppliers_index: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
@@ -588,7 +589,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
 					do
 						if attached {C_ARCHETYPE_ROOT} a_c_node as car then
@@ -597,8 +598,7 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 							end
 							idx.item (car.node_id).extend (car)
 						end
-					end (?, ?, Result),
-				Void)
+					end (?, ?, Result))
 		end
 
 	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
@@ -635,12 +635,11 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: ARRAYED_LIST [ARCHETYPE_SLOT])
 					do
 						if attached {ARCHETYPE_SLOT} a_c_node as a_slot then idx.extend (a_slot) end
-					end (?, ?, Result),
-				Void)
+					end (?, ?, Result))
 		end
 
 feature -- Modification
@@ -789,14 +788,13 @@ feature {NONE} -- Implementation
 			def_it: C_ITERATOR
 		do
 			create def_it.make (definition)
-			def_it.do_all (
+			def_it.do_all_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
 							ctc.set_value_set_extractor (agent get_value_set)
 						end
-					end,
-				Void)
+					end)
 		end
 
 	get_value_set (ac_code: STRING): ARRAYED_LIST [STRING]

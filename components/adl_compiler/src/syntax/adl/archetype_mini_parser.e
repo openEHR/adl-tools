@@ -61,7 +61,7 @@ feature -- Commands
 			lines: LIST [STRING]
 			artefact_types: ARTEFACT_TYPE
 			id_bad: BOOLEAN
-			arch_is_differential, arch_is_generated, arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
+			arch_is_differential, arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
 			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
 			parent_id_str: detachable STRING
 			lpos, rpos: INTEGER

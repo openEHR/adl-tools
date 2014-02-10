@@ -289,7 +289,7 @@ feature {NONE} -- Implementation
 				Result := att_cache
 			else
 				check attached selected_language end
-				Result := source_archetype.interface_tags (selected_language)
+				Result := source_archetype.all_interface_tags (selected_language)
 				interface_paths_cache := Result
 			end
 		end

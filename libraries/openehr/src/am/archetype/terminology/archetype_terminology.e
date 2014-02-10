@@ -308,22 +308,22 @@ feature -- Status Report
 			Result := term_definitions.item_for_iteration.has (a_code)
 		end
 
-	has_id_code (an_id_code: STRING): BOOLEAN
-			-- is `a_code' known in this terminology
+	has_id_code (a_code: STRING): BOOLEAN
+			-- is `a_code' known in the terms list of this terminology
 		do
-			Result := id_codes.has (an_id_code)
-		end
-
-	has_value_code (a_code: STRING): BOOLEAN
-			-- is `a_code' known in the at-terms list of this terminology
-		do
-			Result := value_codes.has (a_code)
+			Result := is_id_code (a_code) and has_code (a_code)
 		end
 
 	has_constraint_code (a_code: STRING): BOOLEAN
 			-- is `a_code' known in the terms list of this terminology
 		do
-			Result := constraint_codes.has (a_code)
+			Result := is_constraint_code (a_code) and has_code (a_code)
+		end
+
+	has_value_code (a_code: STRING): BOOLEAN
+			-- is `a_code' known in the terms list of this terminology
+		do
+			Result := is_value_code (a_code) and has_code (a_code)
 		end
 
 	has_term_definition (a_language, a_code: STRING): BOOLEAN
@@ -381,6 +381,14 @@ feature -- Status Report
 			-- True if there the at-code to which is bound the code `a_code' in external terminology `a_terminology'
 		do
 			Result := term_binding_map.has (a_terminology.as_lower) and then attached term_binding_map.item (a_terminology.as_lower) as att_map and then att_map.has (a_code)
+		end
+
+	is_value_set_value_code (a_value_code: STRING): BOOLEAN
+			-- True if the at-code `a_value_code' is found in any value set
+		require
+			Valid_code: is_valid_value_code (a_value_code)
+		do
+			Result := across value_sets as vsets_csr some vsets_csr.item.has_member_code (a_value_code) end
 		end
 
 feature -- Comparison
@@ -895,7 +903,6 @@ feature {NONE} -- Implementation
 				index_term_definitions_cache := Result
 			else
 				create Result.make (0)
-				index_term_definitions_cache := Result
 			end
 		end
 

@@ -145,7 +145,7 @@ feature {NONE} -- Implementation
 			if attached c_terminology_code_type_mapping as ctc_tm then
 				att_c_terminology_code_type_mapping := ctc_tm
 				create def_it.make (target.definition)
-				def_it.do_all (agent update_aom_mapped_type, Void)
+				def_it.do_all_entry (agent update_aom_mapped_type)
 			end
 		end
 
@@ -409,15 +409,15 @@ feature {NONE} -- Implementation
 			if is_valid_code (target.definition.node_id) then
 				-- get current highest code ids
 				create def_it.make (target.definition)
-				def_it.do_all (agent do_get_highest_id_codes_and_paths, Void)
+				def_it.do_all_entry (agent do_get_highest_id_codes_and_paths)
 
 				-- now add missing codes
-				def_it.do_all (agent do_replace_fake_id_code, Void)
+				def_it.do_all_entry (agent do_replace_fake_id_code)
 
 				-- update C_ATTRIBUTE differential paths. This has the effect of interpolating
 				-- nodes ids on path segments that previously had none
 				if target.is_specialised and then attached arch_parent_flat as pf then
-					def_it.do_all (agent do_rewrite_diff_path (?, ?, pf), Void)
+					def_it.do_all_entry (agent do_rewrite_diff_path (?, ?, pf))
 				end
 			end
 		end

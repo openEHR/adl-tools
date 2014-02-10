@@ -226,6 +226,7 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_TEMPLATE_WARNING_1}.make).to_pixmap end, "archetype/template_warning_1")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_TEMPLATE_WARNING_2}.make).to_pixmap end, "archetype/template_warning_2")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_TEMPLATE_WARNING_3}.make).to_pixmap end, "archetype/template_warning_3")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_TERM_REL_PART_OF}.make).to_pixmap end, "archetype/term_rel_part_of")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ELEMENTS_ARCHETYPE_GREEN_DISC}.make).to_pixmap end, "elements/archetype_green_disc")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ELEMENTS_ARCHETYPE_GREY_DISC}.make).to_pixmap end, "elements/archetype_grey_disc")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ELEMENTS_TEMPLATE_DISC}.make).to_pixmap end, "elements/template_disc")

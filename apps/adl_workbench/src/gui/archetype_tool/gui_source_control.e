@@ -42,6 +42,11 @@ feature {NONE}-- Initialization
 			ev_root_container.set_item_text (ev_adl_15_editor.ev_root_container, get_text (ec_adl_15_source_tab_text))
 			gui_controls.extend (ev_adl_15_editor)
 
+			create ev_adl_15_serialised_editor.make (agent adl_15_serialised_text)
+			ev_root_container.extend (ev_adl_15_serialised_editor.ev_root_container)
+			ev_root_container.set_item_text (ev_adl_15_serialised_editor.ev_root_container, get_text (ec_adl_15_serialised_tab_text))
+			gui_controls.extend (ev_adl_15_serialised_editor)
+
 			differential_view := True
 
 			ev_root_container.set_data (Current)
@@ -101,6 +106,15 @@ feature {NONE} -- Implementation
 		do
 			if source.has_differential_file then
 				 Result := source.differential_text
+			end
+		end
+
+	ev_adl_15_serialised_editor: EVX_TEXT_EDITOR_CONTROL
+
+	adl_15_serialised_text: detachable STRING
+		do
+			if attached source.serialised_differential_archetype as sda then
+				 Result := sda
 			end
 		end
 
