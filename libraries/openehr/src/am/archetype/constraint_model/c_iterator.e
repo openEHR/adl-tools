@@ -29,9 +29,6 @@ feature -- Initialisation
 		do
 			target := a_target
 			create tree_iterator.make (a_target.representation)
-
-			-- this assignment to ensure void-safety of arch_node; it will be re-assigned during exeuction of the iterator
-			arch_node := target
 		end
 
 feature -- Access
@@ -40,14 +37,17 @@ feature -- Access
 
 	c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
 		attribute
-			Result := agent no_op
+			Result := agent c_no_op
 		end
 
-	c_node_exit_action: detachable PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
+	c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
+		attribute
+			Result := agent c_no_op
+		end
 
 	c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]
 		attribute
-			Result := agent no_op_test
+			Result := agent c_no_op_test
 		end
 
 feature -- Command
@@ -56,6 +56,13 @@ feature -- Command
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_exit_action := a_c_node_exit_action
+			tree_iterator.do_all (agent node_enter_action, agent node_exit_action)
+		end
+
+	do_all_entry (a_c_node_enter_action: like c_node_enter_action)
+		do
+			c_node_enter_action := a_c_node_enter_action
+			c_node_exit_action := agent c_no_op
 			tree_iterator.do_all (agent node_enter_action, agent node_exit_action)
 		end
 
@@ -82,38 +89,36 @@ feature {NONE} -- Implementation
 	node_enter_action (a_node: OG_ITEM; depth: INTEGER)
 		do
 			if attached {ARCHETYPE_CONSTRAINT} a_node.content_item as ac then
-				arch_node := ac
-				c_node_enter_action.call ([arch_node, depth])
+				c_node_enter_action.call ([ac, depth])
 			end
 		end
 
 	node_exit_action (a_node: OG_ITEM; depth: INTEGER)
 		do
-			if attached c_node_exit_action as ea then
-				ea.call ([arch_node, depth])
+			if attached {ARCHETYPE_CONSTRAINT} a_node.content_item as ac then
+				c_node_exit_action.call ([ac, depth])
 			end
 		end
 
 	node_is_included (a_node: OG_ITEM): BOOLEAN
 		do
 			if attached {ARCHETYPE_CONSTRAINT} a_node.content_item as ac then
-				arch_node := ac
-				Result := c_node_test.item ([arch_node])
+				Result := c_node_test.item ([ac])
 			end
 		end
 
 	node_action (a_node: OG_ITEM; depth: INTEGER)
 		do
-			c_node_enter_action.call ([arch_node, depth])
+			if attached {ARCHETYPE_CONSTRAINT} a_node.content_item as ac then
+				c_node_enter_action.call ([ac, depth])
+			end
 		end
 
-	arch_node: ARCHETYPE_CONSTRAINT
-
-	no_op (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	c_no_op (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		do
 		end
 
-	no_op_test (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER): BOOLEAN
+	c_no_op_test (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER): BOOLEAN
 		do
 		end
 
