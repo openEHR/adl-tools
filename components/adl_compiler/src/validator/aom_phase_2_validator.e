@@ -287,122 +287,136 @@ end
 
 				-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 				-- we re-assign co_in_flat_anc to point to the target structure; unless they both are use_nodes, in which case leave them as is
-				if attached {C_COMPLEX_OBJECT_PROXY} co_in_flat_anc as air_p and not attached {C_COMPLEX_OBJECT_PROXY} co_child_diff as air_c then
-					check attached flat_ancestor.object_at_path (air_p.path) as cpf then
+				if attached {C_COMPLEX_OBJECT_PROXY} co_in_flat_anc as air_p and attached {C_COMPLEX_OBJECT} co_child_diff then
+					if attached flat_ancestor.object_at_path (air_p.path) as cpf then
 						co_in_flat_anc := cpf
-					end
-					if dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
+					else
 						add_error (ec_VSUNT, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 							co_child_diff.generating_type, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
 							co_in_flat_anc.generating_type>>)
 					end
-				end
 
+				-- allow the case where a C_COMPLEX_OBJECT is redefined into objects including C_COMPLEX_OBJECT_PROXY, as long as parent object
+				-- has no children
+				elseif attached {C_COMPLEX_OBJECT_PROXY} co_child_diff as air_c and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat then
+					if not cco_flat.any_allowed then
+						add_error (ec_VSUNC, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							co_child_diff.generating_type, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+							co_in_flat_anc.generating_type>>)
+					end
 
-				-- by here the AOM meta-types must be the same
-				if dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
+				elseif attached {ARCHETYPE_SLOT} co_child_diff as air_c and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat then
+					if not cco_flat.any_allowed then
+						add_error (ec_VDSSR, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+					end
+
+				-- else the AOM meta-types must be the same
+				elseif dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
 					add_error (ec_VSONT, <<co_child_diff.rm_type_name, terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 						co_child_diff.generating_type, co_in_flat_anc.rm_type_name,
 						terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
 						co_in_flat_anc.generating_type>>)
+				end
 
-				-- they should also be conformant as defined by the node_conforms_to() function
-				elseif not co_child_diff.c_conforms_to (co_in_flat_anc, agent rm_schema.type_conforms_to) then
+				if passed then
+					-- Now evaluate c_conforms_to() function
+					if not co_child_diff.c_conforms_to (co_in_flat_anc, agent rm_schema.type_conforms_to) then
 
-					-- RM type non-conformance was the reason
-					if not rm_schema.type_conforms_to (co_child_diff.rm_type_name, co_in_flat_anc.rm_type_name) then
-						add_error (ec_VSONCT, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_child_diff.rm_type_name,
-							terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-							co_in_flat_anc.rm_type_name>>)
+						-- RM type non-conformance was the reason
+						if not rm_schema.type_conforms_to (co_child_diff.rm_type_name, co_in_flat_anc.rm_type_name) then
+							add_error (ec_VSONCT, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_child_diff.rm_type_name,
+								terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+								co_in_flat_anc.rm_type_name>>)
 
-					-- occurrences non-conformance was the reason
-					elseif not co_child_diff.occurrences_conforms_to (co_in_flat_anc) then
-						-- if the occurrences interval is just a copy of the one in the flat, treat it as an error only if
-						-- compiling strict, else remove the duplicate and just warn
-						if attached co_child_diff.occurrences as child_occ and then attached co_in_flat_anc.occurrences as par_flat_occ and then child_occ.is_equal (par_flat_occ) then
-							if validation_strict then
-								add_error (ec_VSONCO, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-									child_occ.as_string, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-									par_flat_occ.as_string>>)
-							else
-								add_warning (ec_VSONCO, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-									child_occ.as_string, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-									par_flat_occ.as_string>>)
-								co_child_diff.remove_occurrences
-								if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
+						-- occurrences non-conformance was the reason
+						elseif not co_child_diff.occurrences_conforms_to (co_in_flat_anc) then
+							-- if the occurrences interval is just a copy of the one in the flat, treat it as an error only if
+							-- compiling strict, else remove the duplicate and just warn
+							if attached co_child_diff.occurrences as child_occ and then attached co_in_flat_anc.occurrences as par_flat_occ and then child_occ.is_equal (par_flat_occ) then
+								if validation_strict then
+									add_error (ec_VSONCO, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+										child_occ.as_string, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+										par_flat_occ.as_string>>)
+								else
+									add_warning (ec_VSONCO, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+										child_occ.as_string, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+										par_flat_occ.as_string>>)
+									co_child_diff.remove_occurrences
+									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
 debug ("validate")
 io.put_string (" (setting is_path_compressible) %N")
 end
-									co_child_diff.set_is_path_compressible
+										co_child_diff.set_is_path_compressible
+									end
 								end
+							else
+								add_error (ec_VSONCO, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+									co_child_diff.occurrences_as_string,
+									terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+									co_in_flat_anc.occurrences.as_string>>)
 							end
-						else
-							add_error (ec_VSONCO, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_child_diff.occurrences_as_string,
+
+						-- node id non-conformance value mismatch was the reason
+						elseif not co_child_diff.node_id_conforms_to (co_in_flat_anc) then
+							add_error (ec_VSONI, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_child_diff.node_id,
 								terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-								co_in_flat_anc.occurrences.as_string>>)
+								co_in_flat_anc.node_id>>)
+
+						-- leaf object value redefinition
+						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_in_flat_anc as cpo_flat then
+							add_error (ec_VPOV, <<cpo_child.rm_type_name, terminology.annotated_path (cpo_child.path, target_descriptor.archetype_view_language, True),
+								cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
+								terminology.annotated_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
+
+						else
+							add_error (ec_VUNK, <<co_child_diff.rm_type_name, terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_in_flat_anc.rm_type_name, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
+
 						end
-
-					-- node id non-conformance value mismatch was the reason
-					elseif not co_child_diff.node_id_conforms_to (co_in_flat_anc) then
-						add_error (ec_VSONI, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_child_diff.node_id,
-							terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-							co_in_flat_anc.node_id>>)
-
-					-- leaf object value redefinition
-					elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_in_flat_anc as cpo_flat then
-						add_error (ec_VPOV, <<cpo_child.rm_type_name, terminology.annotated_path (cpo_child.path, target_descriptor.archetype_view_language, True),
-							cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
-							terminology.annotated_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
-
 					else
-						add_error (ec_VUNK, <<co_child_diff.rm_type_name, terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_in_flat_anc.rm_type_name, terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
-
-					end
-				else
-					-- nodes are at least conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
-					-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
-					-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
-					-- diff-tools taking legacy archetypes as input.
-					if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.c_congruent_to (co_in_flat_anc, agent rm_schema.type_conforms_to) and
-						(co_child_diff.is_root or else co_child_diff.parent.is_path_compressible)
-					then
+						-- nodes are at c_conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
+						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
+						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
+						-- diff-tools taking legacy archetypes as input.
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.c_congruent_to (co_in_flat_anc, agent rm_schema.type_conforms_to) and
+							(co_child_diff.is_root or else co_child_diff.parent.is_path_compressible)
+						then
 debug ("validate")
 io.put_string (">>>>> validate: C_OBJECT in child at " +
 terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True) + " CONGRUENT to ancestor node " +
 terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True))
 end
-						if attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf then
-							-- if this node in the diff archetype is the root, or else if the corresponding node in the flat ancestor has attributes,
-							-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat ancestor node attributes
-							-- need to be preserved)
-							if co_child_diff.is_root or cco_pf.has_attributes then
-								co_child_diff.set_is_path_compressible
+							if attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf then
+								-- if this node in the diff archetype is the root, or else if the corresponding node in the flat ancestor has attributes,
+								-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat ancestor node attributes
+								-- need to be preserved)
+								if co_child_diff.is_root or cco_pf.has_attributes then
+									co_child_diff.set_is_path_compressible
 debug ("validate")
 io.put_string (" (setting is_path_compressible) %N")
 end
-							else
+								else
 debug ("validate")
 io.put_string ("(not setting is_path_compressible, due to being overlay node)%N")
 end
+								end
+							else
+								add_error (ec_compiler_unexpected_error, <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
 							end
 						else
-							add_error (ec_compiler_unexpected_error, <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
-						end
-					else
 debug ("validate")
 io.put_string (">>>>> validate: C_OBJECT in child at " +
 terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True) + " CONFORMANT to ancestor node " +
 terminology.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True) + " %N")
 end
-					end
+						end
 
-					if attached co_child_diff.sibling_order and then not co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
-						add_error (ec_VSSM, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_child_diff.sibling_order.sibling_node_id>>)
+						if attached co_child_diff.sibling_order and then not co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
+							add_error (ec_VSSM, <<terminology.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_child_diff.sibling_order.sibling_node_id>>)
+						end
 					end
 				end
 			end

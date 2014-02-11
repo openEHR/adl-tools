@@ -92,6 +92,7 @@ templates = <
 		-- C_COMPLEX_OBJECT_PROXY
 		["VUNP"] = <"C_COMPLEX_OBJECT_PROXY path $1 not found in archetype">
 		["VSUNT"] = <"node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
+		["VSUNC"] = <"node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 		-- C_ARCHETYPE_SLOT
 		["VASMD"] = <"definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed' or prohibited (occurrences matches {0})">
@@ -99,6 +100,7 @@ templates = <
 		["VDSEV2"] = <"'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or match 'any' when 'include' matches non-'any'">
 		["VDSIV1"] = <"'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or not match 'any' when 'exclude' matches 'any'">
 		["VDSIV2"] = <"'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
+		["VDSSR"] = <"Slot node at path $1 may only redefine parent C_COMPLEX_OBJECT in parent if the latter has no child attributes.">
 
 		-- C_ARCHETYPE_ROOT
 		["VARXR"] = <"slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor">
