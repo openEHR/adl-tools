@@ -45,6 +45,8 @@ feature {NONE}-- Initialization
 			create ev_adl_15_serialised_editor.make (agent adl_15_serialised_text)
 			ev_root_container.extend (ev_adl_15_serialised_editor.ev_root_container)
 			ev_root_container.set_item_text (ev_adl_15_serialised_editor.ev_root_container, get_text (ec_adl_15_serialised_tab_text))
+			ev_adl_15_serialised_editor.add_button (Void, Void, get_text (ec_save_15_button_text), get_text (ec_save_15_button_tooltip), agent save_15_source, Void)
+
 			gui_controls.extend (ev_adl_15_serialised_editor)
 
 			differential_view := True
@@ -86,7 +88,7 @@ feature {NONE} -- Implementation
 
 	adl_14_source_text: detachable STRING
 		do
-			if source.has_legacy_flat_file and then attached source.legacy_flat_text as ft then
+			if source.has_legacy_flat_file and then attached source.legacy_flat_text_original as ft then
 				Result := ft
 			end
 		end
@@ -95,8 +97,8 @@ feature {NONE} -- Implementation
 
 	adl_14_converted_text: detachable STRING
 		do
-			if source.has_invalid_differential_file and then attached source.invalid_differential_text as inv_diff_text then
-				Result := inv_diff_text
+			if source.has_legacy_flat_file and then attached source.legacy_flat_text_converted as legacy_conv_text then
+				Result := legacy_conv_text
 			end
 		end
 
@@ -113,7 +115,7 @@ feature {NONE} -- Implementation
 
 	adl_15_serialised_text: detachable STRING
 		do
-			if attached source.serialised_differential_archetype as sda then
+			if source.is_valid_differential and then attached source.serialised_differential_archetype as sda then
 				 Result := sda
 			end
 		end
@@ -124,17 +126,29 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
+		local
+			sel_tab: detachable EV_NOTEBOOK_TAB
 		do
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.populate end)
 			across ev_root_container as ev_nb_tabs loop
 				if attached {EVX_TEXT_EDITOR_CONTROL} ev_nb_tabs.item.data as text_ed then
 					if attached text_ed.source_text.item ([]) then
 						ev_root_container.item_tab (ev_nb_tabs.item).set_pixmap (get_icon_pixmap ("tool/test_passed"))
+						sel_tab := ev_root_container.item_tab (ev_nb_tabs.item)
 					else
 						ev_root_container.item_tab (ev_nb_tabs.item).remove_pixmap
 					end
 				end
 			end
+			if attached sel_tab as att_sel_tab then
+				att_sel_tab.enable_select
+			end
+		end
+
+	save_15_source
+		do
+			source.save_differential
+			ev_adl_15_editor.populate
 		end
 
 end

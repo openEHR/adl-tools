@@ -612,7 +612,7 @@ feature {NONE} -- Tests
 				-- even if the archetype doesn't compile. Probably this should become part of the first pass load
 				create amp
 				if target.has_legacy_flat_file then
-					check attached target.legacy_flat_text as lft then
+					check attached target.legacy_flat_text_converted as lft then
 						other_details := amp.extract_other_details (lft)
 					end
 				else
