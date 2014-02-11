@@ -499,6 +499,8 @@ templates = <
 		["adl_14_converted_tab_text"] = <"ADL 1.4 converted">
 		["adl_15_source_tab_text"] = <"ADL 1.5 source">
 		["adl_15_serialised_tab_text"] = <"ADL 1.5.1 serialised">
+		["save_15_button_text"] = <"Save as ADL 1.5 source">
+		["save_15_button_tooltip"] = <"Save ADL 1.5.1 serialised output into ADL 1.5 source file (overwrites current file)">
 		
 		-- GUI_SERIALISATION_CONTROL
 		["flatten_with_rm_cb_text"] = <"Include RM">
@@ -541,7 +543,7 @@ templates = <
 		["term_defs_tab_text"] = <"Ids">
 		["value_sets_tab_text"] = <"Values">
 
-		["value_sets_grid_col_code_text"] = <"Value set">
+		["value_sets_grid_col_code_text"] = <"Values/ Value sets">
 		["value_sets_grid_col_description_text"] = <"Description">
 		["id_terms_grid_col_code_text"] = <"Text">
 		["id_terms_grid_col_member_code_text"] = <"Description">

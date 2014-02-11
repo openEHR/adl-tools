@@ -350,7 +350,7 @@ feature {NONE} -- Implementation
 			else
 				evx_id_terms_grid.add_sub_row (ev_parent_rows.item, id_term)
 			end
-			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_text, annotated_code (a_node_id, id_term.text, " "), Void, Void, get_icon_pixmap ("archetype/term_rel_part_of"))
+			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_text, annotated_code (a_node_id, id_term.text, " "), Void, Id_code_color, get_icon_pixmap ("archetype/term_rel_part_of"))
 			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_description, id_term.description, Void, Void, Void)
 
 			-- populate bindings
@@ -360,7 +360,7 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_id_terms_grid.set_last_row_label_col (id_terms_grid_col_max + terminologies_csr.cursor_index, binding_str, Void, Void, Void)
+				evx_id_terms_grid.set_last_row_label_col (id_terms_grid_col_max + terminologies_csr.cursor_index, binding_str, Void, Binding_color, Void)
 			end
 		end
 
@@ -394,12 +394,12 @@ feature {NONE} -- Implementation
 				end
 
 				-- value set ac-code row
-				populate_vset_row (vsets_csr.key)
+				populate_value_row (vsets_csr.key, Ac_code_color)
 
 				-- member code rows
 				across vsets_csr.item.members as vset_members_csr loop
 					evx_values_grid.add_sub_row (ev_last_row, vset_members_csr.item)
-					populate_vset_row (vset_members_csr.item)
+					populate_value_row (vset_members_csr.item, At_code_color)
 				end
 			end
 
@@ -407,7 +407,7 @@ feature {NONE} -- Implementation
 			across terminology.constraint_codes as ac_codes_csr loop
 				if not terminology.has_value_set (ac_codes_csr.item) then
 					evx_values_grid.add_row (ac_codes_csr.item)
-					populate_vset_row (ac_codes_csr.item)
+					populate_value_row (ac_codes_csr.item, Ac_code_color)
 				end
 			end
 
@@ -415,7 +415,7 @@ feature {NONE} -- Implementation
 			across terminology.value_codes as at_codes_csr loop
 				if not terminology.is_value_set_value_code (at_codes_csr.item) then
 					evx_values_grid.add_row (at_codes_csr.item)
-					populate_vset_row (at_codes_csr.item)
+					populate_value_row (at_codes_csr.item, At_code_color)
 				end
 			end
 
@@ -429,7 +429,7 @@ feature {NONE} -- Implementation
 			evx_values_grid.resize_columns_to_content
 		end
 
-	populate_vset_row (a_code: STRING)
+	populate_value_row (a_code: STRING; key_item_colour: EV_COLOR)
 		local
 			vset_code_text, vset_code_string, binding_str: STRING
 			term_def: ARCHETYPE_TERM
@@ -443,17 +443,17 @@ feature {NONE} -- Implementation
 			else
 				vset_code_string := vset_code_text
 			end
-			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, vset_code_string, Void, Void, Void)
+			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, vset_code_string, Void, key_item_colour, Void)
 			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_definition, term_def.description, Void, Void, Void)
 
 			-- populate bindings
 			across terminologies as terminologies_csr loop
-				if terminology.has_term_binding (terminologies_csr.item, vset_code_text) then
-					binding_str := terminology.term_binding (terminologies_csr.item, vset_code_text).as_string
+				if terminology.has_term_binding (terminologies_csr.item, a_code) then
+					binding_str := terminology.term_binding (terminologies_csr.item, a_code).as_string
 				else
 					create binding_str.make_empty
 				end
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_definition + terminologies_csr.cursor_index, binding_str, Void, Void, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_definition + terminologies_csr.cursor_index, binding_str, Void, Binding_color, Void)
 			end
 		end
 

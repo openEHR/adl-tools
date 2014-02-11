@@ -173,6 +173,35 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
+	Binding_color: EV_COLOR
+			-- foreground colour for rm_attributes in the UI
+			-- MEDIUM GREY
+		once
+			-- create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
+			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
+		end
+
+	At_code_color: EV_COLOR
+			-- foreground colour for rm_attributes in the UI
+			-- RED
+		once
+			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
+		end
+
+	Ac_code_color: EV_COLOR
+			-- foreground colour for rm_attributes in the UI
+			-- FOREST GREEN
+		once
+			create Result.make_with_8_bit_rgb (0, 0x66, 0)
+		end
+
+	Id_code_color: EV_COLOR
+			-- foreground colour for rm_attributes in the UI
+			-- DARK BLUE
+		once
+			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
+		end
+
 	rm_type_pixmap (a_type_spec: BMM_TYPE_SPECIFIER; an_rm_publisher: STRING): EV_PIXMAP
 		local
 			pixmap_name: STRING
