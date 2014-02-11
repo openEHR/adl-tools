@@ -291,12 +291,19 @@ feature -- Status Report
 		require
 			Type_name_valid: not a_type_name.is_empty
 		do
-			Result := children.there_exists (
-				agent (a_child: C_OBJECT; a_rm_type: STRING): BOOLEAN
-					do
-						Result := a_child.rm_type_name.is_equal (a_rm_type)
-					end (?, a_type_name)
-			)
+			Result := across children as child_csr some child_csr.item.rm_type_name.is_equal (a_type_name) end
+		end
+
+	children_with_rm_type_name_count (a_type_name: STRING): INTEGER
+			-- number of child nodes with rm_type_name = `a_type_name'
+		require
+			Type_name_valid: not a_type_name.is_empty
+		do
+			across children as child_csr loop
+				if child_csr.item.rm_type_name.is_equal (a_type_name) then
+					Result := Result + 1
+				end
+			end
 		end
 
 	has_child_matching (match_agt: FUNCTION [ANY, TUPLE [C_OBJECT], BOOLEAN]): BOOLEAN

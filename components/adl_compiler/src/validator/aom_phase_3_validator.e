@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 			-- For specialised archetypes, requires flat ancestor to be available
 		do
 			across target_flat.use_node_index as use_refs_csr loop
-				if not target.definition.has_path (use_refs_csr.key) then
+				if not target_flat.definition.has_path (use_refs_csr.key) then
 					add_error (ec_VUNP, <<use_refs_csr.key>>)
 				end
 			end

@@ -74,8 +74,8 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			end
 			target := a_target
 			if ara.is_specialised then
-				arch_parent_flat := ara.specialisation_ancestor.flat_archetype
-				arch_parent_flat.rebuild
+				arch_anc_flat := ara.specialisation_ancestor.flat_archetype
+				arch_anc_flat.rebuild
 			else
 				highest_added_id_code := 0
 				highest_added_ac_code := 0
@@ -88,7 +88,7 @@ feature -- Access
 	target: ARCHETYPE
 			-- differential archetype being processed
 
-	arch_parent_flat: detachable FLAT_ARCHETYPE
+	arch_anc_flat: detachable FLAT_ARCHETYPE
 
 	rm_schema: BMM_SCHEMA
 
@@ -280,9 +280,8 @@ feature {NONE} -- Implementation
 			ac_code, parent_ac_code, old_path, path_in_flat: STRING
 			old_ac_code, new_code_text, new_code_description: STRING
 	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		parent_ca: C_ATTRIBUTE
+	 		parent_ca_in_anc_flat: C_ATTRIBUTE
 	 		og_path: OG_PATH
-	 		parent_flat: FLAT_ARCHETYPE
 	 		co_csr: C_OBJECT
 	 		ctc: C_TERMINOLOGY_CODE
 		do
@@ -308,17 +307,15 @@ feature {NONE} -- Implementation
 			 				create apa.make_from_string (old_path)
 			 				if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
 				 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
-				 				check attached arch_parent_flat as att_pf then
-				 					parent_flat := att_pf
-				 				end
-				 				if parent_flat.has_path (path_in_flat) then
-				 					parent_ca := parent_flat.attribute_at_path (path_in_flat)
+				 				check attached arch_anc_flat end
+				 				if arch_anc_flat.has_path (path_in_flat) then
+				 					parent_ca_in_anc_flat := arch_anc_flat.attribute_at_path (path_in_flat)
 
 				 					-- since we can be dealing with ADL 1.4 archetypes without reliable node ids here
 				 					-- we need to find matching node in parent via its RM type, which is a surrogate
 				 					-- for the AOM type C_TERMINOLOGY_CODE
-				 					if parent_ca.has_child_with_rm_type_name (ctc.rm_type_name) and then
-				 						attached {C_TERMINOLOGY_CODE} parent_ca.child_with_rm_type_name (ctc.rm_type_name) as parent_ctc
+				 					if parent_ca_in_anc_flat.has_child_with_rm_type_name (ctc.rm_type_name) and then
+				 						attached {C_TERMINOLOGY_CODE} parent_ca_in_anc_flat.child_with_rm_type_name (ctc.rm_type_name) as parent_ctc
 				 					then
 					 					parent_ac_code := parent_ctc.constraint
 				 						ac_code := parent_ac_code
@@ -416,13 +413,13 @@ feature {NONE} -- Implementation
 
 				-- update C_ATTRIBUTE differential paths. This has the effect of interpolating
 				-- nodes ids on path segments that previously had none
-				if target.is_specialised and then attached arch_parent_flat as pf then
+				if target.is_specialised and then attached arch_anc_flat as pf then
 					def_it.do_all_entry (agent do_rewrite_diff_path (?, ?, pf))
 				end
 			end
 		end
 
-	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; parent_flat: FLAT_ARCHETYPE)
+	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; anc_flat: FLAT_ARCHETYPE)
 			-- update path so that missing node_ids are added
 		local
 	 		apa: ARCHETYPE_PATH_ANALYSER
@@ -473,10 +470,10 @@ feature {NONE} -- Implementation
 	 	local
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
-	 		parent_flat: FLAT_ARCHETYPE
-	 		parent_ca: C_ATTRIBUTE
+	 		parent_ca_in_anc_flat: C_ATTRIBUTE
 	 		parent_co: C_OBJECT
 	 		og_path: OG_PATH
+	 		children_with_rm_type_name_count: INTEGER
 	 	do
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then c_obj.node_id.starts_with (fake_adl_14_node_id_base) then
 	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
@@ -491,28 +488,27 @@ feature {NONE} -- Implementation
 	 				create apa.make_from_string (old_path)
 	 				if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
 		 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
-		 				check attached arch_parent_flat as att_pf then
-		 					parent_flat := att_pf
-		 				end
-		 				if parent_flat.has_path (path_in_flat) then
-		 					parent_ca := parent_flat.attribute_at_path (path_in_flat)
-		 					if parent_ca.has_child_with_rm_type_name (c_obj.rm_type_name) then
-		 						parent_co := parent_ca.child_with_rm_type_name (c_obj.rm_type_name)
-		 						parent_id_code := parent_co.node_id
-	 							id_code := parent_id_code
+		 				check attached arch_anc_flat end
+		 				if arch_anc_flat.has_path (path_in_flat) then
+		 					parent_ca_in_anc_flat := arch_anc_flat.attribute_at_path (path_in_flat)
 
-	 							-- initially assume straight inheritance, so that different node_id is not
-	 							-- used as a reason for c_equal() to fail
-	 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
---		 						if not c_obj.c_equal (parent_co) then
---		 							-- they really are different; use a redefined code instead
---		 							if not highest_refined_code_index.has (parent_id_code) then
---		 								highest_refined_code_index.put (1, parent_id_code)
---		 							end
---				 					id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, highest_refined_code_index.item (parent_id_code))
---				 					highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
---		 						end
-			 				end
+		 					-- we look for a single child of same RM type as in parent, typically something
+		 					-- like DV_CODED_TEXT with an internal redefinition. However, there are some other
+		 					-- odd cases like redefinition into multiple ELEMENTs where some are use_nodes,
+		 					-- and therefore have no id-codes in ADL 1.4, and thus will have synthesised codes here.
+		 					children_with_rm_type_name_count := parent_ca_in_anc_flat.children_with_rm_type_name_count (c_obj.rm_type_name)
+		 					if children_with_rm_type_name_count > 0 then
+		 						parent_co := parent_ca_in_anc_flat.child_with_rm_type_name (c_obj.rm_type_name)
+			 					parent_id_code := parent_co.node_id
+
+			 					if children_with_rm_type_name_count = 1 then
+			 						id_code := parent_id_code
+		 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
+								elseif children_with_rm_type_name_count > 1 then
+				 					target.terminology.create_refined_definition (parent_id_code, Synthesised_string, Synthesised_string)
+				 					id_code := target.terminology.last_new_definition_code
+				 				end
+				 			end
 		 				end
 	 				end
 	 			end
