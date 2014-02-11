@@ -64,7 +64,7 @@ create
 %token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_SLOT_FILLER V_EXT_REF
 %token <STRING> V_VALUE_SET_REF V_VALUE_DEF V_VALUE_SET_REF_ASSUMED
 %token <TERM_CONSTRAINT_PARSE_STRUCTURE> V_EXPANDED_VALUE_SET_DEF V_EXTERNAL_VALUE_SET_DEF
-%token ERR_VALUE_SET_DEF_ASSUMED ERR_VALUE_SET_DEF_DUP_CODE ERR_VALUE_SET_DEF
+%token ERR_VALUE_SET_DEF_ASSUMED ERR_VALUE_SET_MISSING_CODES ERR_VALUE_SET_DEF_DUP_CODE ERR_VALUE_SET_DEF
 
 %token <STRING> V_REGEXP
 %token <STRING> V_ABS_PATH V_REL_PATH
@@ -1638,6 +1638,10 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 ---
 --- END Legacy ADL 1.4 inline term set
 -------------------------------------------------------------------------------------------------------------
+	| ERR_VALUE_SET_MISSING_CODES
+		{
+			abort_with_error (ec_STVSI, <<err_str, c_attrs.item.path>>)
+		}
 	| ERR_VALUE_SET_DEF_DUP_CODE
 		{
 			abort_with_error (ec_STCDC, <<err_str, c_attrs.item.path>>)

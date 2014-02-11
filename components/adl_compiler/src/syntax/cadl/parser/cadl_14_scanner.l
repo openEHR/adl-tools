@@ -303,6 +303,14 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	}
 }
 
+---------/* error condition with terminology id but no codes */ ------------
+-- [terminology_id::code, -- comment
+--
+\[{NAMECHAR_PAREN}+::[ \t]*\] {
+		last_token := ERR_VALUE_SET_MISSING_CODES
+		err_str := text
+	}
+
 ---------/* V_EXTERNAL_VALUE_SET_DEF of form */ ------------
 -- [terminology_id::code, -- comment
 --		     	  code, -- comment
