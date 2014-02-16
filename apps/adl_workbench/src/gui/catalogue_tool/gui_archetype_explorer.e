@@ -217,6 +217,8 @@ feature {NONE} -- Implementation
 					-- text
 					if aca.has_legacy_flat_file and display_archetype_source then
 						text.append ("(lf) ")
+					elseif not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.differential_text_file_adl_version + ") ")
 					end
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)
@@ -307,6 +309,8 @@ feature {NONE} -- Implementation
 					-- text
 					if aca.has_legacy_flat_file and display_archetype_source then
 						text.append ("(lf) ")
+					elseif not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.differential_text_file_adl_version + ") ")
 					end
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)

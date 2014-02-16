@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 		do
 			create def_it.make (target.definition)
 			def_it.do_until_surface (agent do_validate_structure_node,
-				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := True end)
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := passed end)
 		end
 
 	do_validate_structure_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -132,9 +132,10 @@ feature {NONE} -- Implementation
 						if not apa.is_phantom_path_at_level (flat_ancestor.specialisation_depth) then
 							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
 							if not flat_ancestor.has_path (flat_anc_path) then
-								-- allow for a terminal attribute under a parent object
+								-- allow for a terminal attribute under a parent object, but not if parent is the root ie. '/'
+								-- (since parent archetype is guaranteed to have that)
 								create og_path.make_from_string (flat_anc_path)
-								if not flat_ancestor.has_path (og_path.parent_path.as_string) then
+								if og_path.parent_path.is_root or else not flat_ancestor.has_path (og_path.parent_path.as_string) then
 									add_error (ec_VDIFP1, <<ca.path, flat_anc_path>>)
 								end
 							end

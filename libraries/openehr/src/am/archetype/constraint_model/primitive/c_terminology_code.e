@@ -87,7 +87,7 @@ feature -- Status Report
 			-- True if `code' is an ac-code and `a_value' is an at-code. We don't check against
 			-- `value_set_expanded' because it may not be constructed yet.
 		do
-			Result := is_valid_constraint_code (constraint) and is_valid_value_code (a_value)
+			Result := is_valid_constraint_code (constraint) or is_valid_value_code (a_value)
 		end
 
 feature -- Comparison
