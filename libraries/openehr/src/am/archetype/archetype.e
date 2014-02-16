@@ -581,7 +581,8 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_151_CONVERTER, AOM_VALIDATOR
 		end
 
 	term_constraints_index: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
-			-- table of {c_terminology_node, code} keyed by ac-codes
+			-- table of {C_TERMINOLOGY_CODE, code} keyed by ac-codes
+			-- (doesn't include C_TERMINOLOGY_CODEs containg only an at-code; use `value_codes_index' for that)
 		local
 			def_it: C_ITERATOR
 		do

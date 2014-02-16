@@ -304,8 +304,10 @@ feature -- Status Report
 	has_code (a_code: STRING): BOOLEAN
 			-- is `a_code' known in this terminology
 		do
-			term_definitions.start
-			Result := term_definitions.item_for_iteration.has (a_code)
+			if not term_definitions.is_empty then
+				term_definitions.start
+				Result := term_definitions.item_for_iteration.has (a_code)
+			end
 		end
 
 	has_id_code (a_code: STRING): BOOLEAN

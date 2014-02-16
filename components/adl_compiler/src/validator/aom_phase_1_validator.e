@@ -290,7 +290,11 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			-- see if every term code used in any C_COMPLEX_OBJECT or TERMINOLOGY_CODE is in terminology
+			-- Are all C_TERMINOLOGY_CODE constraints in definition valid?
+			-- A C_TERMINOLOGY_CODE can only be one of the following:
+			--	* a single at-code => check if at-code in term definitions
+			--	* a single ac-code => check if ac-code in term definitions
+			--	* a single ac-code and at-code assumed value pair => both checks above
 			across target.value_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
 				code := codes_csr.key
@@ -301,11 +305,7 @@ feature {NONE} -- Implementation
 					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
 						spec_depth = arch_depth and not terminology.has_code (code)
 					then
-						if is_value_code (code) then
-							add_error (ec_VATDF, <<code>>)
-						else
-							add_error (ec_VACDF, <<code>>)
-						end
+						add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
 					end
 				elseif not is_qualified_codestring (code) then
 					add_error (ec_VVST, <<code>>)
@@ -315,6 +315,27 @@ feature {NONE} -- Implementation
 						add_error (ec_VETDF, <<code, cp.terminology_id>>)
 					else
 						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
+					end
+				end
+			end
+
+			across target.term_constraints_index as term_constraints_csr loop
+				if not (terminology.has_constraint_code (term_constraints_csr.key)) then
+					add_error (ec_VACDF, <<term_constraints_csr.key, term_constraints_csr.item.path>>)
+				end
+			end
+		end
+
+	validate_value_sets
+			-- see if every code in value set definitions is in the terminology
+		do
+			across terminology.value_sets as vsets_csr loop
+				if not terminology.has_constraint_code (vsets_csr.item.id) then
+					add_error (ec_VTVSID, <<vsets_csr.item.id>>)
+				end
+				across vsets_csr.item.members as vset_at_codes_csr loop
+					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached flat_ancestor as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
+						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
 					end
 				end
 			end
@@ -339,21 +360,6 @@ feature {NONE} -- Implementation
 						target.has_path (bindings_csr.key))
 					then
 						add_error (ec_VTBK, <<bindings_csr.key>>)
-					end
-				end
-			end
-		end
-
-	validate_value_sets
-			-- see if every code in value set definitions is in the terminology
-		do
-			across terminology.value_sets as vsets_csr loop
-				if not terminology.has_constraint_code (vsets_csr.item.id) then
-					add_error (ec_VTVSID, <<vsets_csr.item.id>>)
-				end
-				across vsets_csr.item.members as vset_at_codes_csr loop
-					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached flat_ancestor as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
-						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
 					end
 				end
 			end

@@ -45,6 +45,8 @@ feature -- Definitions
 
 	Synthesised_string: STRING = "(added by post-parse processor)"
 
+	Empty_string_found: STRING = "(empty string found in original archetype)"
+
 	Synthesised_specialised_string: STRING = " (specialised)"
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
@@ -310,8 +312,16 @@ feature {NONE} -- Implementation
 			 				-- create a definition for the new code; here we obtain an approximate definition for it from
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
 							if attached proximal_term_definition (ctc) as arch_term then
-								new_code_text := arch_term.text
-								new_code_description := arch_term.description
+								if not arch_term.text.is_empty then
+									new_code_text := arch_term.text
+								else
+									create new_code_text.make_from_string (Empty_string_found)
+								end
+								if not arch_term.description.is_empty then
+									new_code_description := arch_term.description
+								else
+									create new_code_description.make_from_string (Empty_string_found)
+								end
 			 				else
 								new_code_text := Synthesised_string
 								new_code_description := Synthesised_string
@@ -574,8 +584,16 @@ feature {NONE} -- Implementation
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
 							if not vset.is_empty then
 								if attached proximal_term_definition (tuples_cco_csr.item) as arch_term then
-									new_code_text := arch_term.text
-									new_code_description := arch_term.description
+									if not arch_term.text.is_empty then
+										new_code_text := arch_term.text
+									else
+										create new_code_text.make_from_string (Empty_string_found)
+									end
+									if not arch_term.description.is_empty then
+										new_code_description := arch_term.description
+									else
+										create new_code_description.make_from_string (Empty_string_found)
+									end
 				 				else
 									new_code_text := Synthesised_string
 									new_code_description := Synthesised_string
