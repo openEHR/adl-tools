@@ -24,12 +24,12 @@ templates = <
 		["VACCD"] = <"archetype definition has no id-code">
 		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
-		["VATID"] = <"node id-code $1 not defined in flat terminology">
-		["VATDF"] = <"term code $1 not defined in flat terminology">
+		["VATID"] = <"node id-code $1 at path $2 not defined in flat terminology">
+		["VATDF"] = <"term code $1 referenced in definition not defined in flat terminology">
+		["VACDF"] = <"value-set id code $1 referenced in definition not defined in flat terminology">
 		["VATDC"] = <"at-code $1 used in constraint not defined in flat terminology">
-		["VACDF"] = <"constraint code $1 not defined in flat terminology">
-		["VOTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
-		["VOCBK"] = <"constraint binding key $1 must be a valid constraint code">
+		["VTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
+		["VCBK"] = <"term binding key $1 must be a valid value-set id code">
 		["VETDF"] = <"External code $1 not found in terminology $2">
 		["WETDF"] = <"External term $1 not verified; terminology $2 unavailable">
 		["VATCV"] = <"Invalid id-code $1 found in terminology definitions; code format must follow regex $2">
@@ -50,16 +50,12 @@ templates = <
 
 		-- C_OBJECT
 		["VCOID"] = <"object with RM type $1 under attribute $2 does not have a node identifier (id-code)">
+		["VCOSU"] = <"cannot add $1 object with $2 to attribute $3 because attribute already has child with same node id">
 		["VACSO"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
-		["VACSI"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
-		["VACSIT"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
 		["VACMCU"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because occurrences upper bound $4 is greater than cardinality upper bound $5">
 		["VACMCL"] = <"for multiply-valued attribute $1 sum of occurrences lower bounds $2 must be less than cardinality upper limit $3">
 		["VACMCO"] = <"for multiply-valued attribute $1, minimum object count $2 must be less than cardinality upper limit $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)">
-
-		["VACMI"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
-		["VACMM"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
 		["VARCN"] = <"invalid root object node_id (concept code) $1; should follow regex pattern $2">
 		["VARND"] = <"invalid object node_id $1; should follow regex pattern $2">
@@ -114,11 +110,11 @@ templates = <
 		["VPOV"] = <"$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6">
 
 		-- terminology-related validity
-		["VONSD"] = <"code $1 in terminology more specialised than archetype">
-		["VONLC"] = <"code $1 in terminology not present in language $2">
-		["VONCBU"] = <"expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1">
-		["VONTBC"] = <"expecting TERMINOLOGY_CODE, e.g. [terminology_id::code]">
-		["VONG"] = <"expecting primitive object node at path $1">
+		["VTSD"] = <"code $1 in terminology more specialised than archetype">
+		["VTLC"] = <"code $1 in terminology not present in language $2">
+		["VTCBU"] = <"expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1">
+		["VTTBC"] = <"expecting TERMINOLOGY_CODE, e.g. [terminology_id::code]">
+		["VTG"] = <"expecting primitive object node at path $1">
 
 		-- rules section
 		["VRRLPAR"] = <"Path $1 in rule not matched by any path in archetype">
@@ -146,6 +142,10 @@ templates = <
 
 		-- validation warnings: in addition to spec, used to help archetype authors
 		["WOUC"] = <"code $1 in terminology not used in archetype definition">
+
+		-- ARCHETYPE_TERMINOLOGY
+		["VTVSID"] = <"value set identifier code $1 referenced in value-sets section not defined in terminology">
+		["VTVSMD"] = <"value set member code $1 referenced in value-sets section not defined in flat terminology">
 	>
 >
 

@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 				anns_by_path := source_archetype.annotations.node_table_for_language (lang_key).items
 				from anns_by_path.start until anns_by_path.off loop
 					-- put the path in the first column
-					create gli.make_with_text (source_archetype.terminology.annotated_path (anns_by_path.key_for_iteration, selected_language, True))
+					create gli.make_with_text (source_archetype.annotated_path (anns_by_path.key_for_iteration, selected_language, True))
 					ev_root_container.set_item (Grid_path_col, ev_root_container.row_count + 1, gli)
 					path_row := gli.row
 

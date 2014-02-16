@@ -109,7 +109,7 @@ feature {NONE} -- Implementation
 			excludes := a_slot.excludes
 			if not includes.is_empty and not includes.first.matches_any and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
-					if attached {STRING} includes.item.extract_regex as a_regex then
+					if attached {STRING} includes.item.regex_constraint.constraint_regex as a_regex then
 						create regex_matcher.make
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)
@@ -121,7 +121,7 @@ feature {NONE} -- Implementation
 				end
 			elseif not excludes.is_empty and not excludes.first.matches_any and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
-					if attached {STRING} excludes.item.extract_regex as a_regex then
+					if attached {STRING} excludes.item.regex_constraint.constraint_regex as a_regex then
 						create regex_matcher.make
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)

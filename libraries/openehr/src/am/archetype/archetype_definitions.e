@@ -76,6 +76,14 @@ feature -- Definitions
 
 	Default_aom_profile_name: STRING = "unknown"
 
+	Adl_version_regex: STRING = "adl_version[ \t]*=[ \t]*[0-9]+(\.[0-9]+)*"
+
+	Adl_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+		once
+			create Result.make
+			Result.compile (Adl_version_regex)
+		end
+
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once

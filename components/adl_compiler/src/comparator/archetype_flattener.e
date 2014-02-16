@@ -122,6 +122,7 @@ end
 			if arch_child_diff.is_template then
 				template_overlay_supplier_definitions
 				template_overlay_supplier_terminologies
+				arch_output_flat.rebuild
 			end
 
 		ensure

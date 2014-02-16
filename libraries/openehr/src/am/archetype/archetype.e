@@ -245,7 +245,7 @@ feature -- Paths
 			create Result.make (0)
 			Result.compare_objects
 			across leaf_paths as paths_csr loop
-				Result.extend (terminology.annotated_path (paths_csr.item, a_lang, True))
+				Result.extend (annotated_path (paths_csr.item, a_lang, True))
 			end
 		ensure
 			Result.object_comparison
@@ -272,7 +272,7 @@ feature -- Paths
 			create Result.make (0)
 			Result.compare_objects
 			across all_paths as paths_csr loop
-				Result.extend (terminology.annotated_path (paths_csr.item, a_lang, True))
+				Result.extend (annotated_path (paths_csr.item, a_lang, True))
 			end
 		ensure
 			Result.object_comparison
@@ -348,7 +348,7 @@ feature -- Paths
 			create Result.make (0)
 			Result.compare_objects
 			across filt_paths as paths_csr loop
-				Result.extend (terminology.annotated_path (paths_csr.item, a_lang, True))
+				Result.extend (annotated_path (paths_csr.item, a_lang, True))
 			end
 		end
 
@@ -387,6 +387,43 @@ feature -- Paths
 					match_len := Result.count
 				end
 			end
+		end
+
+	annotated_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
+			-- generate a logical path in 'a_language' from a physical path
+			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
+		require
+			a_lang_valid: not a_language.is_empty
+		local
+			id_code, log_str: STRING
+			og_phys_path, og_log_path: OG_PATH
+		do
+			create og_phys_path.make_from_string (a_phys_path)
+			create og_log_path.make_from_other (og_phys_path)
+			from
+				og_phys_path.start
+				og_log_path.start
+			until
+				og_phys_path.off
+			loop
+				if og_phys_path.item.is_addressable then
+					id_code := og_phys_path.item.object_id
+					if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
+						if with_codes then
+							log_str := annotated_code (id_code, terminology.term_definition (a_language, id_code).text, "")
+						else
+							log_str := terminology.term_definition (a_language, id_code).text
+						end
+						og_log_path.item.set_object_id (log_str)
+					else
+						og_log_path.item.set_object_id (id_code)
+					end
+				end
+				og_phys_path.forth
+				og_log_path.forth
+			end
+
+			Result := og_log_path.as_string
 		end
 
 feature -- Status Report
@@ -468,7 +505,7 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
-feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, ARCHETYPE_FLATTENER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
+feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_151_CONVERTER, AOM_VALIDATOR, ARCHETYPE_FLATTENER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
 	id_codes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for at-codes that identify nodes in archetype
@@ -639,6 +676,22 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, AOM_VALIDATOR, AR
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: ARRAYED_LIST [ARCHETYPE_SLOT])
 					do
 						if attached {ARCHETYPE_SLOT} a_c_node as a_slot then idx.extend (a_slot) end
+					end (?, ?, Result))
+		end
+
+	tuple_parent_index: ARRAYED_LIST [C_COMPLEX_OBJECT]
+			-- list of C_COMPLEX_OBJECT that have C_ATTRIBUTE_TUPLEs in this archetype
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all_entry (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: ARRAYED_LIST [C_COMPLEX_OBJECT])
+					do
+						if attached {C_COMPLEX_OBJECT} a_c_node as cco and then cco.has_attribute_tuples then
+							idx.extend (cco)
+						end
 					end (?, ?, Result))
 		end
 

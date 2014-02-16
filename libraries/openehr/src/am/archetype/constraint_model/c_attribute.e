@@ -153,6 +153,14 @@ feature -- Access
 			Result := children.count
 		end
 
+	first_child: detachable C_OBJECT
+			-- obtain first child if there are children
+		do
+			if child_count > 1 then
+				Result := children.first
+			end
+		end
+
 	child_before (an_obj: C_OBJECT): detachable C_OBJECT
 			-- return child node before `an_obj' if there is one, else Void
 		require

@@ -497,10 +497,17 @@ templates = <
 		-- GUI_SOURCE_CONTROL
 		["adl_14_source_tab_text"] = <"ADL 1.4 source">
 		["adl_14_converted_tab_text"] = <"ADL 1.4 converted">
+		["adl_15_converted_tab_text"] = <"ADL 1.5 converted">
 		["adl_15_source_tab_text"] = <"ADL 1.5 source">
-		["adl_15_serialised_tab_text"] = <"ADL 1.5.1 serialised">
-		["save_15_button_text"] = <"Save as ADL 1.5 source">
-		["save_15_button_tooltip"] = <"Save ADL 1.5.1 serialised output into ADL 1.5 source file (overwrites current file)">
+		["adl_151_source_tab_text"] = <"ADL 1.5.1 source">
+		["adl_ver_source_tab_text"] = <"ADL $1 source">
+		["adl_151_serialised_tab_text"] = <"ADL 1.5.1 serialised">
+		["save_15_converted_button_text"] = <"Save as ADL 1.5 source">
+		["save_15_converted_button_tooltip"] = <"Save ADL 1.5.1 converted output into ADL 1.5 source file (overwrites current file)">
+		["save_151_serialised_button_text"] = <"Save as ADL 1.5 source">
+		["save_151_serialised_button_tooltip"] = <"Save ADL 1.5.1 serialised output into ADL 1.5 source file (overwrites current file)">
+		["saved_serialised_msg"] = <"Saved ADL 1.5.1 serialised output into $1">
+		["saved_converted_msg"] = <"Saved ADL 1.5.1 converted output into $1">
 		
 		-- GUI_SERIALISATION_CONTROL
 		["flatten_with_rm_cb_text"] = <"Include RM">

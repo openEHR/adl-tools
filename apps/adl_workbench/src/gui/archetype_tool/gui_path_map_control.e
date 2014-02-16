@@ -171,6 +171,9 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
+			all_paths_cache := Void
+			leaf_paths_cache := Void
+			interface_paths_cache := Void
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.populate end end)
 		end
 
@@ -185,7 +188,7 @@ feature {NONE} -- Implementation
 
 				-- first column: path
 				if show_natural_language then
-					Result.extend (utf8_to_utf32 (source.flat_archetype.terminology.annotated_path (a_path, selected_language, True)))
+					Result.extend (utf8_to_utf32 (source.flat_archetype.annotated_path (a_path, selected_language, True)))
 				else
 					Result.extend (utf8_to_utf32 (a_path))
 				end
@@ -215,7 +218,7 @@ feature {NONE} -- Implementation
 
 				-- first column: path
 				if show_natural_language then
-					path_str := source.flat_archetype.terminology.annotated_path (a_path, selected_language, True)
+					path_str := source.flat_archetype.annotated_path (a_path, selected_language, True)
 				else
 					path_str := a_path
 				end

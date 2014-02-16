@@ -12,7 +12,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	FLAT_ARCHETYPE
 		redefine
-			make_specialised, synchronise_adl15
+			make_specialised, synchronise_adl15, annotated_path
 		end
 
 create
@@ -42,6 +42,48 @@ feature -- Modification
 			Archetype_id_attached: not an_archetype_id.is_empty
 		do
 			component_terminologies.put (a_terminology, an_archetype_id)
+		end
+
+feature -- Modification
+
+	annotated_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
+			-- generate a logical path in 'a_language' from a physical path
+			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
+		local
+			id_code, log_str: STRING
+			og_phys_path, og_log_path: OG_PATH
+			ref_terminology: ARCHETYPE_TERMINOLOGY
+		do
+			ref_terminology := terminology
+			create og_phys_path.make_from_string (a_phys_path)
+			create og_log_path.make_from_other (og_phys_path)
+			from
+				og_phys_path.start
+				og_log_path.start
+			until
+				og_phys_path.off
+			loop
+				if og_phys_path.item.is_addressable then
+					id_code := og_phys_path.item.object_id
+					if is_valid_id_code (id_code) and then ref_terminology.has_id_code (id_code) then
+						if with_codes then
+							log_str := annotated_code (id_code, ref_terminology.term_definition (a_language, id_code).text, "")
+						else
+							log_str := ref_terminology.term_definition (a_language, id_code).text
+						end
+						og_log_path.item.set_object_id (log_str)
+					else
+						og_log_path.item.set_object_id (id_code)
+						if component_terminologies.has (og_phys_path.item.object_id) and then attached component_terminologies.item (og_phys_path.item.object_id) as att_ct then
+							ref_terminology := att_ct
+						end
+					end
+				end
+				og_phys_path.forth
+				og_log_path.forth
+			end
+
+			Result := og_log_path.as_string
 		end
 
 feature -- Serialisation

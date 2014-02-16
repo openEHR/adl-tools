@@ -67,6 +67,12 @@ feature -- Access
 
 feature -- Status Report
 
+	is_constraint_value_code: BOOLEAN
+			-- True if this constraint is a single value code, i.e. not a value-set
+		do
+			Result := is_value_code (constraint)
+		end
+
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
 			-- see if `a_value', which must be an at-code, is one of the allowed codes in the
 			-- value set(s) of this constraint
@@ -119,7 +125,7 @@ feature {C_TERMINOLOGY_CODE, ARCHETYPE} -- Modification
 			value_set_extractor := an_agent
 		end
 
-feature {AOM_POST_PARSE_PROCESSOR} -- Modification
+feature {AOM_POST_PARSE_151_CONVERTER} -- Modification
 
 	set_code (a_code: STRING)
 		do

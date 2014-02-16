@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 			slot_match_ids.compare_objects
 			if attached arch_node as a_n and then a_n.has_substantive_includes then
 				across a_n.includes as slot_includes_csr loop
-					if attached {STRING} slot_includes_csr.item.extract_regex as a_regex then
+					if attached {STRING} slot_includes_csr.item.regex_constraint.constraint_regex as a_regex then
 						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, a_n.rm_type_name, Void))
 					end
 				end

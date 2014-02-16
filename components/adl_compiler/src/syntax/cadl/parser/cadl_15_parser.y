@@ -277,10 +277,14 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 --
 	| type_identifier
 		{
-			if object_nodes.is_empty then
-				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
-			else
+			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create $$.make ($1, new_fake_node_id)
+			else
+				if not object_nodes.is_empty then
+					abort_with_error (ec_VCOID, <<$1, c_attrs.item.path>>)
+				else
+					abort_with_error (ec_VCOID, <<$1, "/">>)
+				end
 			end
 		}
 --
@@ -407,9 +411,13 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 ---
 	| SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
 		{
-			create $$.make ($2, new_fake_node_id, $4)
-			if attached $3 as att_occ then
-				$$.set_occurrences (att_occ)
+			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+				create $$.make ($2, new_fake_node_id, $4)
+				if attached $3 as att_occ then
+					$$.set_occurrences (att_occ)
+				end
+			else
+				abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)
 			end
 		}
 ---
@@ -485,7 +493,11 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 --
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			create $$.make ($2, new_fake_node_id)
+			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+				create $$.make ($2, new_fake_node_id)
+			else
+				abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)
+			end
 		}
 --
 -- END Support transitional ADL 1.5 archetypes containing nodes with no id-codes
@@ -2498,18 +2510,16 @@ feature {NONE} -- Implementation
 			ar.extend ("node_id=" + an_obj.node_id) -- $2
 			ar.extend (an_attr.rm_attribute_name) -- $3
 
-			if an_attr.is_single then
+			if an_attr.has_child_with_id (an_obj.node_id) then
+				err_code := ec_VCOSU
+			elseif an_attr.is_single then
 				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
 					err_code := ec_VACSO
-				elseif an_attr.has_child_with_id (an_obj.node_id) then
-					err_code := ec_VACSI
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if an_attr.has_child_with_id (an_obj.node_id) then
-					err_code := ec_VACMM
-				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
+				if (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
 						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and
 						an_obj.occurrences.upper > an_attr.cardinality.interval.upper then
 					err_code := ec_VACMCU

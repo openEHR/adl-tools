@@ -69,13 +69,13 @@ feature -- Status Report
 	has_any_includes: BOOLEAN
 			-- true if there are any includes at all
 		do
-			Result := not includes.is_empty and then not includes.first.matches_any
+			Result := not includes.is_empty
 		end
 
 	has_any_excludes: BOOLEAN
 			-- true if there are any excludes at all
 		do
-			Result := not excludes.is_empty and then not excludes.first.matches_any
+			Result := not excludes.is_empty
 		end
 
 	has_substantive_includes: BOOLEAN

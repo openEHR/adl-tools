@@ -195,7 +195,7 @@ feature -- Output
 			if not pattern_constraint.is_empty then
 				Result.append (pattern_constraint)
 			end
-			if not constraint.is_empty and then constraint.first.unbounded then
+			if not constraint.is_empty then
 				if not Result.is_empty then
 					Result.append_character ('/')
 				end

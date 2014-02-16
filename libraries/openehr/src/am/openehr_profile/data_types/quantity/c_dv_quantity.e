@@ -64,6 +64,12 @@ feature -- Status Report
 				across cq_item_list as list_csr some attached list_csr.item.precision end
 		end
 
+	has_tuple_constraint: BOOLEAN
+		do
+			Result := attached list as cq_item_list and then
+				across cq_item_list as list_csr some list_csr.item.is_tuple end
+		end
+
 feature -- Modification
 
 	set_property (a_property: TERMINOLOGY_CODE)
@@ -79,7 +85,7 @@ feature -- Conversion
 			-- if there are two or more `list' items, create a 2nd order structure
 		local
 			ca_property, ca_units, ca_magnitude, ca_precision: C_ATTRIBUTE
-			cpo_units: C_STRING
+			cpo_units: detachable C_STRING
 			cpo_magnitude: detachable C_REAL
 			cpo_precision: detachable C_INTEGER
 			ccp_property: C_TERMINOLOGY_CODE
@@ -101,64 +107,108 @@ feature -- Conversion
 			if attached list as cq_item_list then
 
 				-- CA_TUPLE: units, magnitude, precision
-				if cq_item_list.count > 1 and (has_magnitude_constraint or has_precision_constraint) then
+				if cq_item_list.count > 1 and has_tuple_constraint then
 					create ca_tuple.make
 					Result.put_attribute_tuple (ca_tuple)
-				end
 
-				-- CA: magnitude
-				-- it might be that not every tuple branch constraint has a magnitude constraint,
-				-- so we have to deal with 'any' constraints in there as well
-				if has_magnitude_constraint then
+					-- CA: magnitude
+					-- it might be that not every tuple branch constraint has a magnitude constraint,
+					-- so we have to deal with 'any' constraints in there as well
+					if has_magnitude_constraint then
+						create ca_magnitude.make_single ("magnitude", Void)
+						Result.put_attribute (ca_magnitude)
+						across cq_item_list as cq_items_csr loop
+							if attached cq_items_csr.item.magnitude as mag then
+								new_mag := mag
+							else
+								create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
+							end
+							create cpo_magnitude.make_interval (new_mag)
+							ca_magnitude.put_child (cpo_magnitude)
+						end
+						ca_tuple.put_member (ca_magnitude)
+					end
+
+					-- CA: units
+					create ca_units.make_single ("units", Void)
+					Result.put_attribute (ca_units)
+					across cq_item_list as cq_items_csr loop
+						create cpo_units.make_value (cq_items_csr.item.units)
+						ca_units.put_child (cpo_units)
+					end
+					ca_tuple.put_member (ca_units)
+
+					-- CA: precision
+					-- it might be that not every tuple branch constraint has a precision constraint,
+					-- so we have to deal with 'any' constraints in there as well
+					if has_precision_constraint then
+						create ca_precision.make_single ("precision", Void)
+						Result.put_attribute (ca_precision)
+						across cq_item_list as cq_items_csr loop
+							if attached cq_items_csr.item.precision as prec then
+								new_prec := prec
+							else
+								create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
+							end
+							create cpo_precision.make_interval (new_prec)
+							ca_precision.put_child (cpo_precision)
+						end
+						ca_tuple.put_member (ca_precision)
+					end
+
+					ca_tuple.rebuild
+
+				-- create single non-tuple constrainer for just magnitudes
+				elseif has_magnitude_constraint then
 					create ca_magnitude.make_single ("magnitude", Void)
 					Result.put_attribute (ca_magnitude)
 					across cq_item_list as cq_items_csr loop
 						if attached cq_items_csr.item.magnitude as mag then
-							new_mag := mag
-						else
-							create {PROPER_INTERVAL[REAL]} new_mag.make_upper_unbounded (0, True)
+							if attached cpo_magnitude as att_cpo_magnitude then
+								att_cpo_magnitude.add_interval (mag)
+							else
+								create cpo_magnitude.make_interval (mag)
+							end
 						end
-						create cpo_magnitude.make_interval (new_mag)
-						ca_magnitude.put_child (cpo_magnitude)
 					end
-					if attached ca_tuple as ca_t then
-						ca_t.put_member (ca_magnitude)
+					check attached cpo_magnitude as att_cpo_magnitude then
+						ca_magnitude.put_child (att_cpo_magnitude)
 					end
-				end
 
-				-- CA: units
-				create ca_units.make_single ("units", Void)
-				Result.put_attribute (ca_units)
-				across cq_item_list as cq_items_csr loop
-					create cpo_units.make_value (cq_items_csr.item.units)
-					ca_units.put_child (cpo_units)
-				end
-				if attached ca_tuple as ca_t then
-					ca_t.put_member (ca_units)
-				end
-
-				-- CA: precision
-				-- it might be that not every tuple branch constraint has a precision constraint,
-				-- so we have to deal with 'any' constraints in there as well
-				if has_precision_constraint then
+				-- create single non-tuple constrainer for just precisions
+				elseif has_precision_constraint then
 					create ca_precision.make_single ("precision", Void)
 					Result.put_attribute (ca_precision)
 					across cq_item_list as cq_items_csr loop
 						if attached cq_items_csr.item.precision as prec then
-							new_prec := prec
-						else
-							create {PROPER_INTERVAL[INTEGER]} new_prec.make_upper_unbounded (0, True)
+							if attached cpo_precision as att_cpo_precision then
+								att_cpo_precision.add_interval (prec)
+							else
+								create cpo_precision.make_interval (prec)
+							end
 						end
-						create cpo_precision.make_interval (new_prec)
-						ca_precision.put_child (cpo_precision)
 					end
-					if attached ca_tuple as ca_t then
-						ca_t.put_member (ca_precision)
+					check attached cpo_precision as att_cpo_precision then
+						ca_precision.put_child (att_cpo_precision)
 					end
-				end
 
-				if attached ca_tuple as att_cat then
-					att_cat.rebuild
+				-- create single non-tuple constrainer for just units
+				else
+					create ca_units.make_single ("units", Void)
+					Result.put_attribute (ca_units)
+					across cq_item_list as cq_items_csr loop
+						if not cq_items_csr.item.units.is_empty then
+							if attached cpo_units as att_cpo_units then
+								att_cpo_units.add_string (cq_items_csr.item.units)
+							else
+								create cpo_units.make_value (cq_items_csr.item.units)
+							end
+						end
+					end
+					check attached cpo_units as att_cpo_units then
+						ca_units.put_child (att_cpo_units)
+					end
+
 				end
 			end
 		end

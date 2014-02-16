@@ -566,7 +566,7 @@ feature {NONE} -- Tests
 				end
 
 				-- save source as read in (not serialised) for in-memory compare test
-				original_differential_text := target.differential_text
+				original_differential_text := target.differential_text_converted
 
 				-- save source as serialised to $repository/source/new area
 				if diff_dirs_available then
@@ -616,7 +616,7 @@ feature {NONE} -- Tests
 						other_details := amp.extract_other_details (lft)
 					end
 				else
-					other_details := amp.extract_other_details (target.differential_text)
+					other_details := amp.extract_other_details (target.differential_text_converted)
 				end
 				if other_details.has (Regression_test_key) then
 					check attached other_details.item (Regression_test_key) as rtk then
@@ -696,14 +696,14 @@ feature {NONE} -- Tests
 		do
 			Result := Test_failed
 			if target.is_valid then
-				if original_differential_text.count = target.differential_text.count then
-					if original_differential_text.same_string (target.differential_text) then
+				if original_differential_text.count = target.differential_text_converted.count then
+					if original_differential_text.same_string (target.differential_text_converted) then
 						Result := Test_passed
 					else
 						test_status.append (get_msg_line ("Test_arch_compare_i1", <<>>))
 					end
 				else
-					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text.count.out>>))
+					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text_converted.count.out>>))
 				end
 			else
 				Result := test_not_applicable

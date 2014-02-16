@@ -138,7 +138,7 @@ feature -- Display
 					if display_settings.show_technical_view then
 						attr_str.append (a_n.rm_attribute_path)
 					else
-						attr_str.append (ed_context.flat_terminology.annotated_path (a_n.rm_attribute_path, display_settings.language, True))
+						attr_str.append (ed_context.flat_archetype.annotated_path (a_n.rm_attribute_path, display_settings.language, True))
 					end
 					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 					attr_str.remove_head (1)
@@ -399,7 +399,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				end
 			else
 				-- Should never get here
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_any, ed_context)
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_regex_any, ed_context)
 
 			end
 

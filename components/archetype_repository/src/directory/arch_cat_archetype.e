@@ -138,8 +138,8 @@ feature {NONE} -- Initialisation
 
 			file_repository := a_repository
 
-			differential_text_adl_version := arch_thumbnail.adl_version
 			id := arch_thumbnail.archetype_id
+			differential_text_file_adl_version := arch_thumbnail.adl_version
 			is_differential_generated := arch_thumbnail.is_generated
 			rm_schema := rm_schema_for_archetype_id (id)
 			if arch_thumbnail.is_specialised then
@@ -259,8 +259,15 @@ feature -- Access (semantic)
 
 	artefact_type_name: STRING
 
-	differential_text_adl_version: STRING
-			-- ADL version of the most recently read text file (legacy or differential)
+	differential_text_file_adl_version: STRING
+			-- ADL version of the most recently read differential text file
+			-- if this version = 1.5.1, it means the file is already 1.5.1
+		attribute
+			create Result.make_empty
+		end
+
+	differential_text_converted_adl_version: STRING
+			-- ADL version of the most recently converted text file (legacy or differential)
 		attribute
 			create Result.make_empty
 		end
@@ -291,22 +298,50 @@ feature -- Access (semantic)
 			end
 		end
 
-	differential_text: STRING
-			-- Read `differential_text' and `text_timestamp' from `differential_path', returning
+	differential_text_original: STRING
+			-- original form of differential file text, with no conversions
+		require
+			differential_file_available: has_differential_file
+		do
+			file_repository.read_text_from_file (differential_path)
+			check attached file_repository.text as t then
+				Result := t
+			end
+		end
+
+	differential_text_converted: STRING
+			-- Read `differential_text_converted' and `text_timestamp' from `differential_path', returning
 			-- the text of the archetype source file, i.e. the differential form.
 		require
 			differential_file_available: has_differential_file
 		local
-			arch_text: STRING
+			arch_text, line_1, adl_var_ver_text: STRING
+			i: INTEGER
 		do
 			file_repository.read_text_from_file (differential_path)
 			check attached file_repository.text as t then
 				arch_text := t
 			end
-			if differential_text_adl_version < Id_conversion_version then
+
+			-- obtain the first line of text
+			create line_1.make_empty
+			from i := 1 until arch_text.item (i) = '%N' or i > arch_text.count loop
+				line_1.append_character (arch_text.item (i))
+				i := i + 1
+			end
+
+			-- extract the adl_version
+			Adl_version_regex_matcher.match (line_1)
+			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
+			differential_text_converted_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
+			differential_text_converted_adl_version.left_adjust
+
+			if differential_text_converted_adl_version < Id_conversion_version then
 				adl_14_15_rewriter.execute (arch_text)
 				Result := adl_14_15_rewriter.out_buffer
+				is_text_converted := True
 			else
+				is_text_converted := False
 				Result := arch_text
 			end
 			differential_text_timestamp := differential_file_timestamp
@@ -695,6 +730,9 @@ feature -- Status Report - Compilation
 			end
 		end
 
+	is_text_converted: BOOLEAN
+			-- was last text converted from original form?
+
 feature -- Status Report - Semantic
 
 	is_specialised: BOOLEAN
@@ -1020,17 +1058,26 @@ feature {NONE} -- Compilation
 					-- run the comparator over the legacy flat archetype if specialised; it will mark all
 					-- nodes with a local and also rolled up inheritance status
 					if specialisation_ancestor.is_valid and attached specialisation_ancestor as att_sp then
+
+						-- perform post-parse object structure finalisation
+						adl_15_engine.post_parse_151_convert (flat_arch, Current)
+
+						-- perform standard post-parse processing
 						adl_14_engine.post_parse_process (flat_arch, Current)
+
 						create archetype_comparator.make (att_sp, flat_arch)
 						archetype_comparator.compare
 						archetype_comparator.generate_diff
-				--		archetype_comparator.compress_differential_child
 						differential_archetype := archetype_comparator.differential_output
 					else
 						compilation_state := cs_lineage_invalid
 						add_error (ec_compile_e1, <<parent_id.as_string>>)
 					end
 				else
+					-- perform post-parse object structure finalisation
+					adl_15_engine.post_parse_151_convert (flat_arch, Current)
+
+					-- perform standard post-parse processing
 					adl_14_engine.post_parse_process (flat_arch, Current)
 					create differential_archetype.make_from_flat (flat_arch)
 				end
@@ -1081,13 +1128,18 @@ feature {NONE} -- Compilation
 		do
 			add_info (ec_parse_i2, Void)
 			flat_archetype_cache := Void
-			differential_archetype := adl_15_engine.parse (differential_text, Current)
+			differential_archetype := adl_15_engine.parse (differential_text_converted, Current)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
 					add_warning (ec_parse_w1, <<id.as_string, pid.as_string, da_pid.as_string>>)
 				else
 					add_info (ec_parse_i1, <<id.as_string>>)
+				end
+
+				-- perform post-parse object structure finalisation
+				if not diff_arch.adl_version.is_equal (latest_adl_version) then
+					adl_15_engine.post_parse_151_convert (diff_arch, Current)
 				end
 
 				-- perform post-parse object structure finalisation
@@ -1211,6 +1263,42 @@ feature {ARCH_CAT_ARCHETYPE} -- Modification
 			clients_index.extend (an_archetype_id)
 		end
 
+feature -- File Operations (1.5.1 format upgrade)
+
+	differential_converted_serialised: detachable STRING
+			-- serialise differential archetype to its file in its source form, even if not compiling
+			-- this might fail because the serialiser might try to do something that an invalid archetype
+			-- can't support
+		local
+			exception_occurred: BOOLEAN
+		do
+			if not exception_occurred then
+				if attached differential_archetype as da then
+					Result := adl_15_engine.serialise (da, Syntax_type_adl, da.original_language.code_string)
+				end
+			end
+		rescue
+			exception_occurred := True
+		end
+
+	save_differential_converted
+			-- Save converted differential archetype to its file in its source form, even if not compiling
+		local
+			ftext: STRING
+		do
+			if attached differential_converted_serialised as txt then
+				ftext := txt
+				differential_text_file_adl_version := differential_archetype.adl_version
+			else
+				ftext := differential_text_converted
+			end
+			file_repository.save_text_to_file (differential_path, ftext)
+			differential_text_timestamp := differential_file_timestamp
+			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)
+		ensure
+			differential_text_timestamp = differential_file_timestamp
+		end
+
 feature -- File Operations
 
 	save_differential
@@ -1220,10 +1308,10 @@ feature -- File Operations
 		local
 			serialised_diff: STRING
 		do
-			if attached differential_archetype as da then
+			check attached differential_archetype as da then
 				serialised_diff := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
 				file_repository.save_text_to_file (differential_path, serialised_diff)
-				differential_text_adl_version := differential_archetype.adl_version
+				differential_text_file_adl_version := da.adl_version
 			end
 			differential_text_timestamp := differential_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)
@@ -1238,10 +1326,8 @@ feature -- File Operations
 			path_valid: not a_full_path.is_empty
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
-			if has_archetype_native_serialiser_format (a_format) then
-				check attached differential_archetype as da then
-					file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (da, a_format, current_archetype_language))
-				end
+			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
+				file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (da, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
 			end
@@ -1342,7 +1428,7 @@ feature -- Output
 				if flat_flag then
 					Result := flat_text (False)
 				else
-					Result := differential_text
+					Result := differential_text_converted
 				end
 			elseif has_archetype_native_serialiser_format (a_format) then
 				if flat_flag then
@@ -1519,7 +1605,7 @@ feature {NONE} -- Implementation
 				if not includes.is_empty and not includes.first.matches_any then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						across includes as includes_csr loop
-							if attached {STRING} includes_csr.item.extract_regex as a_regex then
+							if attached {STRING} includes_csr.item.regex_constraint.constraint_regex as a_regex then
 								add_slot_ids (slot_idx, current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
 						end
@@ -1530,7 +1616,7 @@ feature {NONE} -- Implementation
 					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
-							if attached {STRING} excludes_csr.item.extract_regex as a_regex then
+							if attached {STRING} excludes_csr.item.regex_constraint.constraint_regex as a_regex then
 								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
 									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
 								end

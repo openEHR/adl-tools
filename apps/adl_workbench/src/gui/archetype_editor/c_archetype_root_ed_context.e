@@ -26,7 +26,11 @@ feature -- Access
 	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- don't produce any RM properties, since node is another archetype
 		do
-			create Result.make (0)
+			if ed_context.in_differential_view and not ed_context.editing_enabled then
+				create Result.make (0)
+			else
+				Result := rm_type.semantic_class.flat_properties
+			end
 		end
 
 feature {NONE} -- Implementation

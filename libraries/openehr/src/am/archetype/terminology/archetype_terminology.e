@@ -427,43 +427,6 @@ feature -- Conversion
 			end
 		end
 
-	annotated_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
-			-- generate a logical path in 'a_language' from a physical path
-			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
-		require
-			a_lang_valid: not a_language.is_empty
-		local
-			id_code, log_str: STRING
-			og_phys_path, og_log_path: OG_PATH
-		do
-			create og_phys_path.make_from_string (a_phys_path)
-			create og_log_path.make_from_other (og_phys_path)
-			from
-				og_phys_path.start
-				og_log_path.start
-			until
-				og_phys_path.off
-			loop
-				if og_phys_path.item.is_addressable then
-					id_code := og_phys_path.item.object_id
-					if is_valid_id_code (id_code) and then has_id_code (id_code) then
-						if with_codes then
-							log_str := annotated_code (id_code, term_definition (a_language, id_code).text, "")
-						else
-							log_str := term_definition (a_language, id_code).text
-						end
-						og_log_path.item.set_object_id (log_str)
-					else
-						og_log_path.item.set_object_id (id_code)
-					end
-				end
-				og_phys_path.forth
-				og_log_path.forth
-			end
-
-			Result := og_log_path.as_string
-		end
-
 feature -- Modification
 
 	create_added_id_definition (a_text, a_description: STRING)
@@ -596,7 +559,7 @@ feature -- Modification
 			value_sets.put (a_value_set, a_value_set.id)
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_PROCESSOR} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_151_CONVERTER} -- Modification
 
 	remove_definition (a_code: STRING)
 			-- completely remove the term from the terminology
@@ -837,7 +800,7 @@ feature {NONE} -- Legacy
     		end
     	end
 
-feature {P_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_PROCESSOR} -- Implementation
+feature {P_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_151_CONVERTER} -- Implementation
 
 	set_term_definitions (a_term_defs: like term_definitions)
 		do

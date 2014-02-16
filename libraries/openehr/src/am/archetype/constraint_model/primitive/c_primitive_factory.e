@@ -155,7 +155,7 @@ feature -- Factory
 	create_c_string_make_any: C_STRING
 			-- create Result completely open
 		do
-			create Result.make_any
+			create Result.make_regex_any
 		end
 
 	create_c_string_make_from_string (str: STRING): C_STRING

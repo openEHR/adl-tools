@@ -28,6 +28,7 @@ feature -- Initialisation
 					archetype := fa
 				end
 			end
+			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype.terminology
 		end
 
@@ -37,6 +38,7 @@ feature -- Initialisation
 			in_differential_view := False
 			rm_schema := an_rm_schema
 			archetype := source.flat_archetype_clone
+			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype_clone.terminology
 			undo_redo_chain := an_undo_redo_chain
 			if attached aca.specialisation_ancestor as par_aca then
@@ -49,6 +51,8 @@ feature -- Access
 	source: ARCH_CAT_ARCHETYPE_EDITABLE
 
 	archetype: ARCHETYPE
+
+	flat_archetype: FLAT_ARCHETYPE
 
 	parent_archetype: detachable ARCHETYPE
 

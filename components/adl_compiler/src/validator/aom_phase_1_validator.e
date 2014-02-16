@@ -74,6 +74,7 @@ feature -- Validation
 				validate_terminology_languages
 				validate_definition_codes
 				validate_terminology_bindings
+				validate_value_sets
 				validate_annotations
 				report_unused_terminology_codes
 			end
@@ -227,7 +228,7 @@ feature {NONE} -- Implementation
 					if not is_valid_code (code) then
 						add_error (ec_VATCV, <<code, any_code_regex_pattern>>)
 					elseif specialisation_depth_from_code (code) /= terminology.specialisation_depth then
-						add_error (ec_VONSD, <<code>>)
+						add_error (ec_VTSD, <<code>>)
 					end
 				end
 			end
@@ -243,17 +244,17 @@ feature {NONE} -- Implementation
 			across langs as langs_csr loop
 				across terminology.id_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
-						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
+						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 				across terminology.value_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
-						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
+						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 				across terminology.constraint_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
-						add_error (ec_VONLC, <<code_csr.item, langs_csr.item>>)
+						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 			end
@@ -278,12 +279,12 @@ feature {NONE} -- Implementation
 				-- to decide. There can be more than one C_OBJECT with the same id-code.
 				across codes_csr.item as ac_csr loop
 					if spec_depth > arch_depth then
-						add_error (ec_VONSD, <<codes_csr.key>>)
+						add_error (ec_VTSD, <<codes_csr.key>>)
 					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
 						if spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) or else
 							spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
 						then
-							add_error (ec_VATID, <<codes_csr.key>>)
+							add_error (ec_VATID, <<codes_csr.key, co.path>>)
 						end
 					end
 				end
@@ -331,13 +332,28 @@ feature {NONE} -- Implementation
 			-- 		is every term mentioned in the constraint_definitions?
 			--
 		do
-			across terminology.term_bindings as bindings_csr loop
-				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then
-						terminology.has_code (bindings_for_lang_csr.key) or else
-						target.has_path (bindings_for_lang_csr.key))
+			across terminology.term_bindings as bindings_for_terminology_csr loop
+				across bindings_for_terminology_csr.item as bindings_csr loop
+					if not (is_valid_code (bindings_csr.key) and then
+						(terminology.has_code (bindings_csr.key) or attached flat_ancestor as att_fa and then att_fa.terminology.has_code (bindings_csr.key)) or else
+						target.has_path (bindings_csr.key))
 					then
-						add_error (ec_VOTBK, <<bindings_for_lang_csr.key>>)
+						add_error (ec_VTBK, <<bindings_csr.key>>)
+					end
+				end
+			end
+		end
+
+	validate_value_sets
+			-- see if every code in value set definitions is in the terminology
+		do
+			across terminology.value_sets as vsets_csr loop
+				if not terminology.has_constraint_code (vsets_csr.item.id) then
+					add_error (ec_VTVSID, <<vsets_csr.item.id>>)
+				end
+				across vsets_csr.item.members as vset_at_codes_csr loop
+					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached flat_ancestor as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
+						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
 					end
 				end
 			end
@@ -358,7 +374,7 @@ feature {NONE} -- Implementation
 
 						-- firstly see if annotation path is valid
 						if apa.is_archetype_path then
-							if not (target.has_path (ann_path) or else (target.is_specialised and then flat_ancestor.has_path (ann_path))) then
+							if not (target.has_path (ann_path) or else attached flat_ancestor as att_fa and then att_fa.has_path (ann_path)) then
 								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
 							end
 						elseif not rm_schema.has_property_path (target.definition.rm_type_name, ann_path) then

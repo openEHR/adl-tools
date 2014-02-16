@@ -8623,18 +8623,16 @@ feature {NONE} -- Implementation
 			ar.extend ("node_id=" + an_obj.node_id) -- $2
 			ar.extend (an_attr.rm_attribute_name) -- $3
 
-			if an_attr.is_single then
+			if an_attr.has_child_with_id (an_obj.node_id) then
+				err_code := ec_VCOSU
+			elseif an_attr.is_single then
 				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
 					err_code := ec_VACSO
-				elseif an_attr.has_child_with_id (an_obj.node_id) then
-					err_code := ec_VACSI
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if an_attr.has_child_with_id (an_obj.node_id) then
-					err_code := ec_VACMM
-				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
+				if (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
 						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and
 						an_obj.occurrences.upper > an_attr.cardinality.interval.upper then
 					err_code := ec_VACMCU

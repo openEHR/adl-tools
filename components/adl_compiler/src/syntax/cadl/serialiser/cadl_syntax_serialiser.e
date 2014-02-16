@@ -288,7 +288,7 @@ feature -- Visitor
 			end
 			last_result.append (a_node.target_path)
 			last_result.append (format_item (FMT_INDENT) + apply_style (format_item(FMT_COMMENT) +
-						safe_comment (terminology.annotated_path (a_node.target_path, language, False)), STYLE_COMMENT))
+						safe_comment (archetype.annotated_path (a_node.target_path, language, False)), STYLE_COMMENT))
 			last_result.append (format_item (FMT_NEWLINE))
 		end
 
@@ -305,22 +305,19 @@ feature -- Visitor
 
 			else -- it is in source mode, there are no children, only slot fillers
 				-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences> archetype_id%N'
+				last_result.append (create_indent (depth))
+				last_result.append (apply_style (symbol (SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item (FMT_SPACE))
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 
 				last_result.append (apply_style ("[", STYLE_TERM_REF))
 				if attached a_node.slot_node_id as att_snid then
-					last_result.append (apply_style ("[" + att_snid + ", ", STYLE_TERM_REF))
+					last_result.append (apply_style (att_snid + ", ", STYLE_TERM_REF))
 				end
 				last_result.append (apply_style (a_node.node_id + "]", STYLE_TERM_REF))
 
 				last_result.append (format_item (FMT_SPACE))
 
-				last_result.append (format_item(FMT_SPACE))
-
 				serialise_occurrences(a_node, depth)
-
-				last_result.append (format_item(FMT_SPACE))
-				last_result.append (a_node.node_id)
 
 				last_result.append (format_item(FMT_NEWLINE))
 			end

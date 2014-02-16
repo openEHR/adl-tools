@@ -322,7 +322,6 @@ feature {NONE} -- Initialization
 			evx_menu_bar.set_accelerators (evx_accelerators)
 
 			evx_menu_bar.add_menu_shortcut ("File>Open", key_o, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("File>Save As", key_s, True, False, False)
 			evx_menu_bar.add_menu_shortcut_for_action ("Edit>Copy", agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
 			evx_menu_bar.add_menu_shortcut ("Edit>Select All", key_a, True, False, False)
 

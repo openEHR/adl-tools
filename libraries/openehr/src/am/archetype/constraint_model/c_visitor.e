@@ -114,6 +114,10 @@ feature {NONE} -- Implementation
 
 	archetype: detachable ARCHETYPE
 			-- archetype containing definition section being serialised
+		note
+			option: stable
+		attribute
+		end
 
 	archetype_specialisation_level: INTEGER
 			-- specialisation level of the archetype whose definition structure

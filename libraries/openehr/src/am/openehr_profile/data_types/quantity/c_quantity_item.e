@@ -53,6 +53,23 @@ feature -- Status Report
 			Result := not attached precision
 		end
 
+	is_tuple: BOOLEAN
+			-- True if this item constrains more than one property
+		local
+			constraint_count: INTEGER
+		do
+			if not units.is_empty then
+				constraint_count := constraint_count + 1
+			end
+			if attached magnitude then
+				constraint_count := constraint_count + 1
+			end
+			if attached precision then
+				constraint_count := constraint_count + 1
+			end
+			Result := constraint_count > 1
+		end
+
 feature -- Comparison
 
 	node_conforms_to (other: like Current): BOOLEAN

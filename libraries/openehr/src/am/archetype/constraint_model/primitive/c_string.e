@@ -25,7 +25,7 @@ inherit
 		end
 
 create
-	make, make_value, make_value_list, make_any, default_create
+	make, make_value, make_value_list, make_regex_any, default_create
 
 feature -- Definitions
 
@@ -77,8 +77,8 @@ feature -- Initialization
 			constraint.fill (list)
 		end
 
-	make_any
-			-- make using an open regex, i.e. ".*"
+	make_regex_any
+			-- make using an open regex, i.e. ".*" enclosed in "//"
 		do
 			make_value (Regex_any_string)
 		end
@@ -101,12 +101,39 @@ feature -- Access
 
 	assumed_value: detachable STRING
 
+	constraint_regex: detachable STRING
+			-- return the regex string value in the first constraint,
+			-- minus any enclosing //
+		do
+			if is_single and is_regex_string (constraint_single) then
+				Result := constraint_single.substring (2, constraint_single.count - 1)
+			end
+		end
+
+	constraint_single: STRING
+			-- return the first and only constrain value
+		do
+			Result := constraint.first
+		end
+
 feature -- Status Report
+
+	is_single: BOOLEAN
+			-- True if this constraint has only a single string
+		do
+			Result := constraint.count = 1
+		end
+
+	is_matches_any_regex: BOOLEAN
+			-- True if this constraint contains a single regex constraint matching any (i.e. /.*/)
+		do
+			Result := attached constraint_regex as att_regex and then att_regex.is_equal (regex_any_pattern)
+		end
 
 	is_regex_string (a_str: STRING): BOOLEAN
 			-- True if this constraint is a regular expression, i.e. starts and ends with '/'
 		do
-			Result := a_str.count >= 2 and then (a_str.item(1) = Regex_delimiter and a_str.item(a_str.count) = Regex_delimiter)
+			Result := a_str.count >= 2 and then (a_str.item(1) = Regex_delimiter and a_str.item (a_str.count) = Regex_delimiter)
 		end
 
 	valid_value (a_value: STRING): BOOLEAN
