@@ -298,30 +298,23 @@ feature {NONE} -- Implementation
 			across target.value_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
 				code := codes_csr.key
-				if is_valid_code (code) then
-					spec_depth := specialisation_depth_from_code (code)
-					if spec_depth > arch_depth then
-						add_error (ec_VATCD, <<code, arch_depth.out>>)
-					elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
-						spec_depth = arch_depth and not terminology.has_code (code)
-					then
-						add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
-					end
-				elseif not is_qualified_codestring (code) then
-					add_error (ec_VVST, <<code>>)
-				else
-					create cp.make_from_string (code)
-					if ts.has_terminology (cp.terminology_id) and not ts.terminology (cp.terminology_id).has_concept_id (cp.code_string) then
-						add_error (ec_VETDF, <<code, cp.terminology_id>>)
-					else
-						add_warning (ec_WETDF, <<cp.as_string, cp.terminology_id>>)
-					end
+				spec_depth := specialisation_depth_from_code (code)
+				if spec_depth > arch_depth then
+					add_error (ec_VATCD, <<code, arch_depth.out>>)
+				elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
+					spec_depth = arch_depth and not terminology.has_code (code)
+				then
+					add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
 				end
 			end
 
 			across target.term_constraints_index as term_constraints_csr loop
 				if not (terminology.has_constraint_code (term_constraints_csr.key)) then
 					add_error (ec_VACDF, <<term_constraints_csr.key, term_constraints_csr.item.path>>)
+				elseif attached term_constraints_csr.item.assumed_value as att_av then
+					if attached terminology.value_sets.item (term_constraints_csr.key) as vset and then not vset.has_member_code (att_av) then
+						add_error (ec_VATDA, <<att_av, term_constraints_csr.item.path, term_constraints_csr.key>>)
+					end
 				end
 			end
 		end
@@ -334,8 +327,13 @@ feature {NONE} -- Implementation
 					add_error (ec_VTVSID, <<vsets_csr.item.id>>)
 				end
 				across vsets_csr.item.members as vset_at_codes_csr loop
+					-- check if at-code exists
 					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached flat_ancestor as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
 						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
+
+					-- check if at-code duplicated
+					elseif vsets_csr.item.members.occurrences (vset_at_codes_csr.item) > 1 then
+						add_error (ec_VTVSUQ, <<vset_at_codes_csr.item, vsets_csr.item.id>>)
 					end
 				end
 			end
@@ -352,14 +350,25 @@ feature {NONE} -- Implementation
 			-- for atomic bindings:
 			-- 		is every term mentioned in the constraint_definitions?
 			--
+		local
+			binding_target_code, arch_code, terminology_id: STRING
 		do
 			across terminology.term_bindings as bindings_for_terminology_csr loop
+				terminology_id := bindings_for_terminology_csr.key
 				across bindings_for_terminology_csr.item as bindings_csr loop
-					if not (is_valid_code (bindings_csr.key) and then
-						(terminology.has_code (bindings_csr.key) or attached flat_ancestor as att_fa and then att_fa.terminology.has_code (bindings_csr.key)) or else
-						target.has_path (bindings_csr.key))
+					arch_code := bindings_csr.key
+					if not (is_valid_code (arch_code) and then
+						(terminology.has_code (arch_code) or attached flat_ancestor as att_fa and then att_fa.terminology.has_code (arch_code)) or else
+						target.has_path (arch_code))
 					then
-						add_error (ec_VTBK, <<bindings_csr.key>>)
+						add_error (ec_VTBK, <<arch_code>>)
+					else
+						binding_target_code := terminology_code_from_uri (bindings_csr.item.as_string)
+						if ts.has_terminology (terminology_id) and not ts.terminology (terminology_id).has_concept_id (binding_target_code) then
+							add_error (ec_VETDF, <<binding_target_code, terminology_id>>)
+						else
+							add_warning (ec_WETDF, <<binding_target_code, terminology_id>>)
+						end
 					end
 				end
 			end

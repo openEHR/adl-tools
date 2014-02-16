@@ -1,8 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "[
-				 Abstract parent type for primitive types in Archetype Object Model.
-				 ]"
+	description: "Abstract parent type for primitive types in Archetype Object Model."
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -49,6 +47,16 @@ feature -- Access
 
     assumed_value: detachable ANY
             -- value to be assumed if none sent in data
+
+	match_path: STRING
+			-- same as path but with final object_id removed
+		local
+			og_path: OG_PATH
+		do
+			og_path := representation.path
+			og_path.last.clear_object_id
+			Result := og_path.as_string
+		end
 
 feature -- Status Report
 

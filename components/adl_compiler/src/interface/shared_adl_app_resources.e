@@ -35,6 +35,11 @@ inherit
 			{NONE} all
 		end
 
+	ADL_15_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
@@ -103,13 +108,6 @@ feature -- Definitions
 		--	Result := "Copyright " + UTF8_copyright_char.out + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 		end
-
-	Default_uri_template: STRING = "http://$terminology_id.org/id/$code_string"
-
-	Default_uri_with_version_template: STRING = "http://$terminology_id.org/ver/$terminology_version/id/$code_string"
-
-	Uri_code_extractor_search_pattern: STRING = "/id/"
-			-- pattern that can be searched for in a coded term URI that precedes the code
 
 feature -- Initialisation
 
@@ -300,33 +298,6 @@ feature -- Application Switches
 				Result.replace_substring_all ("$terminology_id", a_terminology_id)
 			end
 			Result.replace_substring_all ("$code_string", a_code)
-		end
-
-	terminology_code_from_uri (a_uri: STRING): STRING
-			-- extract terminology code from a URI string that is of the IHTSDO form
-			-- "http://domain/id/$code_string" or
-			-- "http://domain/id/$code_string/...."
-		local
-			id_pat_idx, slash_idx, start_idx, end_idx: INTEGER
-		do
-			create Result.make_empty
-			id_pat_idx := a_uri.substring_index (Uri_code_extractor_search_pattern, 1)
-			if id_pat_idx > 0 then
-				start_idx := id_pat_idx  + Uri_code_extractor_search_pattern.count
-				slash_idx := a_uri.index_of ('/', start_idx)
-				if slash_idx > 0 then
-					end_idx := slash_idx
-				else
-					end_idx := a_uri.count
-				end
-				Result.append (a_uri.substring (start_idx, end_idx))
-			end
-		end
-
-	is_terminology_uri (a_string: STRING): BOOLEAN
-			-- True if `a_string' starts with "http://" and contains "/id/"
-		do
-			Result := a_string.starts_with ("http://") and a_string.has_substring (Uri_code_extractor_search_pattern)
 		end
 
 	init_gen_dirs_from_current_repository

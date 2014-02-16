@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (691)
+			create message_table.make (693)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -152,7 +152,8 @@ feature -- Initialisation
 			message_table.put ("translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections", ec_VOTM)
 			message_table.put ("code $1 specialisation depth greater than that of archetype $2", ec_VATCD)
 			message_table.put ("node id-code $1 at path $2 not defined in flat terminology", ec_VATID)
-			message_table.put ("term code $1 referenced in definition at path $2 not defined in flat terminology", ec_VATDF)
+			message_table.put ("value code $1 referenced in definition at path $2 not defined in flat terminology", ec_VATDF)
+			message_table.put ("value code $1 used as assumed value in definition at path $2 not defined in value set for $3", ec_VATDA)
 			message_table.put ("value-set id code $1 referenced in definition at path $2 not defined in terminology", ec_VACDF)
 			message_table.put ("at-code $1 used in constraint not defined in flat terminology", ec_VATDC)
 			message_table.put ("term binding key $1 must either be valid term code or valid path in flat archetype", ec_VTBK)
@@ -238,6 +239,7 @@ feature -- Initialisation
 			message_table.put ("code $1 in terminology not used in archetype definition", ec_WOUC)
 			message_table.put ("value set identifier code $1 referenced in value-sets section not defined in terminology", ec_VTVSID)
 			message_table.put ("value set member code $1 referenced in value-sets section not defined in flat terminology", ec_VTVSMD)
+			message_table.put ("value set member code $1 not unique in value set with id $2", ec_VTVSUQ)
 			message_table.put ("AOM profile file $1 does not exist or not readable", ec_aom_profile_file_not_valid)
 			message_table.put ("AOM profile file $1 load failure; reason: $2", ec_aom_profile_load_failure)
 			message_table.put ("AOM profile file $1 load failure due to exception during processing", ec_aom_profile_load_failure_exception)

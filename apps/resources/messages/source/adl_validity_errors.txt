@@ -22,10 +22,11 @@ templates = <
 		["VACSD"] = <"specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
 		["VACSDtop"] = <"specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
 		["VACCD"] = <"archetype definition has no id-code">
-		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
+		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition section">
 		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
 		["VATID"] = <"node id-code $1 at path $2 not defined in flat terminology">
-		["VATDF"] = <"term code $1 referenced in definition at path $2 not defined in flat terminology">
+		["VATDF"] = <"value code $1 referenced in definition at path $2 not defined in flat terminology">
+		["VATDA"] = <"value code $1 used as assumed value in definition at path $2 not defined in value set for $3">
 		["VACDF"] = <"value-set id code $1 referenced in definition at path $2 not defined in terminology">
 		["VATDC"] = <"at-code $1 used in constraint not defined in flat terminology">
 		["VTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
@@ -146,6 +147,7 @@ templates = <
 		-- ARCHETYPE_TERMINOLOGY
 		["VTVSID"] = <"value set identifier code $1 referenced in value-sets section not defined in terminology">
 		["VTVSMD"] = <"value set member code $1 referenced in value-sets section not defined in flat terminology">
+		["VTVSUQ"] = <"value set member code $1 not unique in value set with id $2">
 	>
 >
 

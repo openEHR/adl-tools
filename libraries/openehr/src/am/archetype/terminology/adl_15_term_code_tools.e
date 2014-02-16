@@ -130,6 +130,13 @@ feature -- Definitions
 			-- used to create new ac-codes by appending integer strings to create e.g. ac10000001, ac10000002, etc.
 			-- These can easily be detected in code in order to rewrite them to normal codes
 
+	Default_uri_template: STRING = "http://$terminology_id.org/id/$code_string"
+
+	Default_uri_with_version_template: STRING = "http://$terminology_id.org/ver/$terminology_version/id/$code_string"
+
+	Uri_code_extractor_search_pattern: STRING = "/id/"
+			-- pattern that can be searched for in a coded term URI that precedes the code
+
 feature -- Access
 
 	specialisation_parent_from_code (a_code: STRING): STRING
@@ -405,6 +412,12 @@ feature -- Comparison
 			Result := is_valid_code (a_child_code) and then a_child_code.starts_with (a_parent_code)
 		end
 
+	is_terminology_uri (a_string: STRING): BOOLEAN
+			-- True if `a_string' starts with "http://" and contains "/id/"
+		do
+			Result := a_string.starts_with ("http://") and a_string.has_substring (Uri_code_extractor_search_pattern)
+		end
+
 feature -- Factory
 
 	new_root_id_code_at_level (at_level: INTEGER): STRING
@@ -467,6 +480,27 @@ feature -- Factory
 			end
 			Result.append_character (Specialisation_separator)
 			Result.append ((a_highest_code + 1).out)
+		end
+
+	terminology_code_from_uri (a_uri: STRING): STRING
+			-- extract terminology code from a URI string that is of the IHTSDO form
+			-- "http://domain/id/$code_string" or
+			-- "http://domain/id/$code_string/...."
+		local
+			id_pat_idx, slash_idx, start_idx, end_idx: INTEGER
+		do
+			create Result.make_empty
+			id_pat_idx := a_uri.substring_index (Uri_code_extractor_search_pattern, 1)
+			if id_pat_idx > 0 then
+				start_idx := id_pat_idx  + Uri_code_extractor_search_pattern.count
+				slash_idx := a_uri.index_of ('/', start_idx)
+				if slash_idx > 0 then
+					end_idx := slash_idx
+				else
+					end_idx := a_uri.count
+				end
+				Result.append (a_uri.substring (start_idx, end_idx))
+			end
 		end
 
 feature -- Conversion
