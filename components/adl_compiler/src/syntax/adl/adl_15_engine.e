@@ -353,7 +353,7 @@ feature -- Serialisation
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
 			comp_onts_serialised: STRING
-			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
+			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
 			an_archetype.synchronise_adl15
@@ -376,7 +376,7 @@ feature -- Serialisation
 				rules_context.serialise (a_format)
 			end
 
-			-- ontology section
+			-- terminology section
 			check attached an_archetype.terminology.dt_representation as dt_ont then
 				terminology_context.set_tree (dt_ont)
 				terminology_context.serialise (a_format, False, False)
@@ -385,7 +385,7 @@ feature -- Serialisation
 			-- OPT only: component_ontologies section
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
 				create comp_onts_helper.make
-				comp_onts_helper.set_component_ontologies (opt.component_terminologies)
+				comp_onts_helper.set_component_terminologies (opt.component_terminologies)
 				terminology_context.set_tree (dt_object_converter.object_to_dt (comp_onts_helper))
 				terminology_context.serialise (a_format, False, False)
 				comp_onts_serialised := terminology_context.serialised

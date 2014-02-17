@@ -10,7 +10,7 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class COMPONENT_ONTOLOGIES_HELPER
+class COMPONENT_TERMINOLOGIES_HELPER
 
 inherit
 	DT_CONVERTIBLE
@@ -32,7 +32,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_TERMINOLOGY, STRING]
+	component_terminologies: HASH_TABLE [FLAT_ARCHETYPE_TERMINOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
 		attribute
@@ -41,9 +41,9 @@ feature -- Access
 
 feature -- Modification
 
-	set_component_ontologies (comp_onts: like component_ontologies)
+	set_component_terminologies (a_component_terminologies: like component_terminologies)
 		do
-			component_ontologies := comp_onts
+			component_terminologies := a_component_terminologies
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -54,7 +54,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend ("component_ontologies")
+			Result.extend ("component_terminologies")
 		end
 
 end

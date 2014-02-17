@@ -1556,7 +1556,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 			create $$.make ($1)
 		}
 -------------------------------------------------------------------------------------------------------------
---- START Legacy ADL 1.4 inline term set
+--- START LEGACY ADL 1.4 inline term set
 ---
 	| V_EXPANDED_VALUE_SET_DEF	
 		{
@@ -1648,7 +1648,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 			end
 		}
 ---
---- END Legacy ADL 1.4 inline term set
+--- END LEGACY ADL 1.4 inline term set
 -------------------------------------------------------------------------------------------------------------
 	| ERR_VALUE_SET_MISSING_CODES
 		{

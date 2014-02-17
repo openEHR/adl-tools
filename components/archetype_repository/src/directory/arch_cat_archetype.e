@@ -830,12 +830,20 @@ feature -- Compilation
 							add_error (ec_compile_e1, <<parent_id.as_string>>)
 						end
 					when cs_ready_to_parse_legacy then
-						compile_legacy
+						if is_specialised and not specialisation_ancestor.is_valid then
+							compilation_state := cs_lineage_invalid
+							add_error (ec_compile_e1, <<parent_id.as_string>>)
+						else
+							compile_legacy
+						end
 					when Cs_ready_to_parse then
 						parse
 					when Cs_ready_to_validate then
 						validate
 					when Cs_validated_phase_2 then
+						if adl_15_roundtripping then
+							save_differential
+						end
 						validate_flat
 					when Cs_validated then
 						post_compile_actions

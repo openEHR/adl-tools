@@ -549,6 +549,18 @@ feature -- Application Switches
 			app_cfg.put_value ("/authoring/author_copyright", a_value)
 		end
 
+	adl_15_roundtripping: BOOLEAN
+			-- Set adl_15_roundtripping on
+		do
+			Result := app_cfg.boolean_value ("/compiler/adl_15_roundtripping")
+		end
+
+	set_adl_15_roundtripping (flag: BOOLEAN)
+			-- Set flag for adl_15_roundtripping
+		do
+			app_cfg.put_value ("/compiler/adl_15_roundtripping", flag)
+		end
+
 feature {NONE} -- Cached Settings
 
 	compiler_gen_source_directory: STRING

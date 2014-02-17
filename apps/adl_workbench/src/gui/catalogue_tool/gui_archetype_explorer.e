@@ -215,10 +215,14 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if aca.has_legacy_flat_file and display_archetype_source then
-						text.append ("(lf) ")
-					elseif not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
-						text.append ("(" + aca.differential_text_file_adl_version + ") ")
+					if display_archetype_source then
+						if not aca.differential_text_file_adl_version.is_empty then
+							if not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
+								text.append ("(" + aca.differential_text_file_adl_version + ") ")
+							end
+						elseif aca.has_legacy_flat_file then
+							text.append ("(" + Adl_14_version + ") ")
+						end
 					end
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)
@@ -307,10 +311,14 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if aca.has_legacy_flat_file and display_archetype_source then
-						text.append ("(lf) ")
-					elseif not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
-						text.append ("(" + aca.differential_text_file_adl_version + ") ")
+					if display_archetype_source then
+						if not aca.differential_text_file_adl_version.is_empty then
+							if not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
+								text.append ("(" + aca.differential_text_file_adl_version + ") ")
+							end
+						elseif aca.has_legacy_flat_file then
+							text.append ("(" + Adl_14_version + ") ")
+						end
 					end
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)

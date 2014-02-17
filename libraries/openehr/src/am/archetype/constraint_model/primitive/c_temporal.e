@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_equal, aom_builtin_type, prototype_value, valid_value, as_string, c_conforms_to
+			c_equal, aom_builtin_type, assumed_value, prototype_value, valid_value, as_string, c_conforms_to
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -111,6 +111,8 @@ feature -- Access
 			Result := bare_type_name (({G}).name)
 		end
 
+	assumed_value: detachable ISO8601_TYPE
+
 feature -- Status Report
 
 	valid_value (a_value: G): BOOLEAN
@@ -200,6 +202,9 @@ feature -- Output
 					Result.append_character ('/')
 				end
 				Result.append (constraint_as_string)
+			end
+			if attached assumed_value as av then
+				Result.append ("; " + av.as_string)
 			end
 		end
 

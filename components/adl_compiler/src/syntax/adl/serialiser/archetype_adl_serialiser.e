@@ -55,7 +55,6 @@ feature -- Serialisation
 			serialise_initialise
 			serialise_archetype_id
 			serialise_archetype_specialise
---			serialise_archetype_concept
 
 			if not lang_serialised.is_empty then
 				last_result.append (apply_style(symbol(SYM_LANGUAGE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
@@ -174,20 +173,11 @@ feature -- Serialisation
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
---	serialise_archetype_concept
---		do
---			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} archetype as fa then
---				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
---				last_result.append (create_indent(1) + apply_style("[" + archetype.concept + "]", STYLE_TERM_REF))
---				last_result.append (format_item(FMT_NEWLINE))
---			end
---		end
-
 	serialise_archetype_specialise
 		do
 			if archetype.is_specialised then
 				last_result.append (apply_style(symbol(SYM_SPECIALIZE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (create_indent(1) + archetype.parent_archetype_id.as_string + format_item(FMT_NEWLINE))
+				last_result.append (create_indent(1) + archetype.parent_archetype_id.interface_id + format_item(FMT_NEWLINE))
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
