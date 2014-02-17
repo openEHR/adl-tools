@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (693)
+			create message_table.make (694)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -149,7 +149,7 @@ feature -- Initialisation
 			message_table.put ("specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2", ec_VACSD)
 			message_table.put ("specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype", ec_VACSDtop)
 			message_table.put ("archetype definition has no id-code", ec_VACCD)
-			message_table.put ("translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections", ec_VOTM)
+			message_table.put ("translations for $1 defined in the description / translations section but missing in the term_definition section", ec_VOTM)
 			message_table.put ("code $1 specialisation depth greater than that of archetype $2", ec_VATCD)
 			message_table.put ("node id-code $1 at path $2 not defined in flat terminology", ec_VATID)
 			message_table.put ("value code $1 referenced in definition at path $2 not defined in flat terminology", ec_VATDF)
@@ -451,6 +451,7 @@ feature -- Initialisation
 			message_table.put ("&Edit Rules", ec_xml_menu_edit_rules_text)
 			message_table.put ("&Tools", ec_tools_menu_text)
 			message_table.put ("&Clean Generated Files", ec_tools_menu_clean_text)
+			message_table.put ("&ADL 1.5 Round Trip", ec_tools_menu_adl_15_round_trip_text)
 			message_table.put ("&Options", ec_tools_menu_options_text)
 			message_table.put ("&Help", ec_help_menu_text)
 			message_table.put ("&Online Help", ec_help_menu_online_text)

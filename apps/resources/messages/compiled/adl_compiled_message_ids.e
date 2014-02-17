@@ -436,6 +436,7 @@ feature -- Definitions
 		ec_xml_menu_edit_rules_text: STRING = "xml_menu_edit_rules_text"
 		ec_tools_menu_text: STRING = "tools_menu_text"
 		ec_tools_menu_clean_text: STRING = "tools_menu_clean_text"
+		ec_tools_menu_adl_15_round_trip_text: STRING = "tools_menu_adl_15_round_trip_text"
 		ec_tools_menu_options_text: STRING = "tools_menu_options_text"
 		ec_help_menu_text: STRING = "help_menu_text"
 		ec_help_menu_online_text: STRING = "help_menu_online_text"

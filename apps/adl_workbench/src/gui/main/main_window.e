@@ -225,7 +225,7 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu ("Tools", get_text (ec_tools_menu_text))
 			evx_menu_bar.add_menu_item ("Tools>Test Tool", get_text (ec_test_tool_title), Void, agent open_test_tool)
 			evx_menu_bar.add_menu_item ("Tools>Clean Files", get_text (ec_tools_menu_clean_text), Void, agent clean_generated_files)
-			evx_menu_bar.add_menu_item ("Tools>ADL 1.5 Roundtrip", get_text (ec_tools_menu_clean_text),
+			evx_menu_bar.add_menu_item ("Tools>ADL 1.5 Roundtrip", get_text (ec_tools_menu_adl_15_round_trip_text),
 				if adl_15_roundtripping then get_icon_pixmap ("tool/test_passed") else get_icon_pixmap ("tool/test_failed") end, agent toggle_adl_15_roundtripping)
 			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item ("Tools>Options", get_text (ec_tools_menu_options_text), get_icon_pixmap ("tool/tools"), agent set_options)
