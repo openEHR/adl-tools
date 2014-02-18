@@ -67,71 +67,6 @@ feature {NONE} -- Initialisation
 			evx_id_terms_control_panel.add_frame (evx_id_terms_treeview_control.ev_root_container, False)
 
 
-			-- ======= definitions vbox ===========
---			create ev_defs_vbox
---			ev_defs_vbox.set_padding (Default_padding_width)
---			ev_defs_vbox.set_border_width (Default_border_width)
---			ev_root_container.extend (ev_defs_vbox)
---			ev_root_container.set_item_text (ev_defs_vbox, get_text (ec_term_defs_tab_text))
-
---			create ev_vsplit_1
---			ev_defs_vbox.extend (ev_vsplit_1)
-
---			create ev_vsplit_2
---			ev_vsplit_1.extend (ev_vsplit_2)
---			ev_vsplit_1.enable_item_expand (ev_vsplit_2)
-
---			-- id defs + bindings
---			create id_defs_frame_ctl.make (get_msg (ec_id_defs_frame_text, Void), 0, 0, True)
---			ev_vsplit_2.extend (id_defs_frame_ctl.ev_root_container)
---			ev_vsplit_2.enable_item_expand (id_defs_frame_ctl.ev_root_container)
-
---			create id_defs_mlist_ctl.make_editable (
---				agent :LIST [STRING] do Result := terminology.id_codes end,
---				Void,
---				Void,
---				agent update_term_table_item,
---				undo_redo_chain,
---				0, 0,
---				agent term_definition_header,
---				agent term_definition_row)
---			id_defs_frame_ctl.extend (id_defs_mlist_ctl.ev_root_container, True)
---			gui_controls.extend (id_defs_mlist_ctl)
-
---			-- term defs + bindings
---			create term_defs_frame_ctl.make (get_msg (ec_term_defs_frame_text, Void), 0, 0, True)
---			ev_vsplit_2.extend (term_defs_frame_ctl.ev_root_container)
---			ev_vsplit_2.enable_item_expand (term_defs_frame_ctl.ev_root_container)
-
---			create value_defs_mlist_ctl.make_editable (
---				agent :LIST [STRING] do Result := terminology.value_codes end,
---				Void,
---				Void,
---				agent update_term_table_item,
---				undo_redo_chain,
---				0, 0,
---				agent term_definition_header,
---				agent term_definition_row)
---			term_defs_frame_ctl.extend (value_defs_mlist_ctl.ev_root_container, True)
---			gui_controls.extend (value_defs_mlist_ctl)
-
---			-- constraint defs + bindings
---			create constraint_defs_frame_ctl.make (get_msg (ec_constraint_defs_frame_text, Void), 0, 0, True)
---			ev_vsplit_1.extend (constraint_defs_frame_ctl.ev_root_container)
---			ev_vsplit_1.disable_item_expand (constraint_defs_frame_ctl.ev_root_container)
-
---			create constraint_defs_mlist_ctl.make_editable (
---				agent :LIST [STRING] do Result := terminology.constraint_codes end,
---				Void,
---				Void,
---				agent update_term_table_item,
---				undo_redo_chain,
---				0, 0,
---				agent term_definition_header,
---				agent term_definition_row)
---			constraint_defs_frame_ctl.extend (constraint_defs_mlist_ctl.ev_root_container, True)
---			gui_controls.extend (constraint_defs_mlist_ctl)
-
 			-- ==================================== value sets grid ===========================================
 			-- value sets VBOX
 			create ev_vsets_hbox
@@ -242,8 +177,6 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
---	ev_defs_vbox: EV_VERTICAL_BOX
-
 	ev_vsets_hbox, ev_id_terms_hbox: EV_HORIZONTAL_BOX
 
 	evx_values_grid, evx_id_terms_grid: EVX_GRID
@@ -252,13 +185,7 @@ feature {NONE} -- Implementation
 
 	evx_vsets_treeview_control, evx_id_terms_treeview_control: EVX_TREEVIEW_CONTROL
 
---	id_defs_mlist_ctl, value_defs_mlist_ctl, constraint_defs_mlist_ctl: EVX_MULTI_COLUMN_TABLE_CONTROL
-
---	ev_vsplit_1, ev_vsplit_2: EV_VERTICAL_SPLIT_AREA
-
 	view_frame_ctl: EVX_FRAME_CONTROL
-
---	id_defs_frame_ctl, term_defs_frame_ctl, constraint_defs_frame_ctl: EVX_FRAME_CONTROL
 
 	show_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
@@ -299,9 +226,11 @@ feature {NONE} -- Implementation
 			evx_id_terms_grid.wipe_out
 			ev_parent_rows.wipe_out
 
+			evx_id_terms_grid.ev_grid.lock_update
 			check attached selected_language end
 			create def_it.make (source_archetype.definition)
 			def_it.do_all (agent populate_id_term_row_enter, agent populate_id_term_row_exit)
+			evx_id_terms_grid.ev_grid.unlock_update
 
 			-- set grid titles
 			create col_titles.make (0)
@@ -312,6 +241,16 @@ feature {NONE} -- Implementation
 			evx_id_terms_grid.set_column_titles (col_titles)
 
 			evx_id_terms_grid.expand_tree
+			evx_id_terms_grid.resize_columns_to_content_and_fit (id_grid_fixed_cols)
+		end
+
+	id_grid_fixed_cols: ARRAYED_LIST [INTEGER]
+		do
+			create Result.make (0)
+			Result.extend (Id_terms_grid_col_text)
+			across terminologies as terminologies_csr loop
+				Result.extend (id_terms_grid_col_max + terminologies.count)
+			end
 		end
 
 	populate_id_term_row_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -386,6 +325,8 @@ feature {NONE} -- Implementation
 		do
 			evx_values_grid.wipe_out
 
+			evx_values_grid.ev_grid.lock_update
+
 			-- value sets
 			across terminology.value_sets as vsets_csr loop
 				evx_values_grid.add_row (vsets_csr.item)
@@ -419,6 +360,8 @@ feature {NONE} -- Implementation
 				end
 			end
 
+			evx_values_grid.ev_grid.unlock_update
+
 			-- set grid titles
 			create col_titles.make (0)
 			col_titles.append (Value_sets_grid_col_names.linear_representation)
@@ -426,7 +369,16 @@ feature {NONE} -- Implementation
 				col_titles.extend (terminologies_csr.item)
 			end
 			evx_values_grid.set_column_titles (col_titles)
-			evx_values_grid.resize_columns_to_content
+			evx_values_grid.resize_columns_to_content_and_fit (Value_grid_fixed_cols)
+		end
+
+	Value_grid_fixed_cols: ARRAYED_LIST [INTEGER]
+		do
+			create Result.make (0)
+			Result.extend (Value_sets_grid_col_code)
+			across terminologies as terminologies_csr loop
+				Result.extend (Value_sets_grid_col_max + terminologies.count)
+			end
 		end
 
 	populate_value_row (a_code: STRING; key_item_colour: EV_COLOR)
@@ -480,43 +432,6 @@ feature {NONE} -- Implementation
 			al.append (terminologies)
 
 			Result := al.to_array
-		end
-
-	term_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
-			-- row of data items for term definitions table, as an ARRAY of UTF-32 Strings
-		local
-			a_term: ARCHETYPE_TERM
-		do
-			create Result.make(3)
-
-			-- column #1, 2, 3 - code, text, description
-			Result.extend (a_code)
-			check attached selected_language end
-			a_term := terminology.term_definition (selected_language, a_code)
-			Result.extend (utf8_to_utf32 (a_term.text))
-			Result.extend (utf8_to_utf32 (a_term.description))
-
-			-- populate bindings
-			across terminologies as terminologies_csr loop
-				if terminology.has_term_binding (terminologies_csr.item, a_code) then
-					Result.extend (utf8_to_utf32 (terminology.term_binding (terminologies_csr.item, a_code).as_string))
-				else
-					Result.extend ("")
-				end
-			end
-		end
-
-	update_term_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
-			-- update either term definition or binding in terminology based on `a_col_name' column in displayed table
-		do
-			check attached selected_language end
-			if archetype_term_keys.has (a_col_name) then
-				source_archetype.terminology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
-			elseif source_archetype.terminology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
-				source_archetype.terminology.replace_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
-			elseif source_archetype.terminology.has_terminology (a_col_name) then -- terminology known
-				source_archetype.terminology.put_term_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
-			end
 		end
 
 	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)

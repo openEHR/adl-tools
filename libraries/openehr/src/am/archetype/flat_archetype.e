@@ -58,12 +58,13 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			--
 			-- The following items from the flat:
 			-- 	* definition (with root node id from differential definition)
-			--  * terminology
+			--  * terminology !!! with languages removed that are not in the orig_lang/translations of the diff
 			-- 	* rules
 			--	* annotations
-			-- 
+			--
 		local
 			desc: like description
+			flat_treminology: FLAT_ARCHETYPE_TERMINOLOGY
 		do
 			-- basic identifying info, and language from from child
 			-- definition comes from parent, waiting for flattening of child on top
@@ -71,10 +72,14 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			if attached a_diff.description as orig_desc then
 				desc := orig_desc.safe_deep_twin
 			end
+
+			flat_treminology := a_flat_parent.terminology.deep_twin
+			flat_treminology.reduce_languages_to (a_diff.languages_available)
+
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin, a_diff.uid, desc,
 					a_flat_parent.definition.deep_twin,
-					a_flat_parent.terminology.deep_twin)
+					flat_treminology)
 			definition.set_node_id (a_diff.definition.node_id.twin)
 
 			-- other metadata is created from parent, with child meta-data

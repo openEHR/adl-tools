@@ -349,7 +349,13 @@ c_object: c_complex_object
 	| V_C_DV_QUANTITY
 		{
 			if attached last_c_dv_quantity_value.property as att_prop then
-				last_c_dv_quantity_value.set_property (create {TERMINOLOGY_CODE}.make (Local_terminology_id, new_fake_at_code))
+				-- may already have been encountered in this archetype
+				if attached compiler_billboard.binding_code_map.item (att_prop.code_string) as att_at_code then
+					c_dv_q_prop_code := att_at_code
+				else
+					c_dv_q_prop_code := new_fake_at_code
+				end
+				last_c_dv_quantity_value.set_property (create {TERMINOLOGY_CODE}.make (Local_terminology_id, c_dv_q_prop_code))
 
 				-- add term binding
 				if not compiler_billboard.term_bindings.has (att_prop.terminology_id) then
@@ -357,7 +363,8 @@ c_object: c_complex_object
 				end
 				check attached compiler_billboard.term_bindings.item (att_prop.terminology_id) as att_bindings_for_terminology then
 					str := uri_for_terminology_code (att_prop)
-					att_bindings_for_terminology.put (create {URI}.make_from_string (str), last_fake_at_code)
+					att_bindings_for_terminology.put (create {URI}.make_from_string (str), c_dv_q_prop_code)
+					compiler_billboard.binding_code_map.put (c_dv_q_prop_code, att_prop.code_string)
 				end
 			end
 			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent (new_fake_node_id))
@@ -1428,6 +1435,11 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 					flat_anc.terminology.has_term_binding_for_external_code ($1.terminology_id, $1.first_code) 
 				then
 					create $$.make (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, $1.first_code))
+
+				-- may already have been encountered in this archetype
+				elseif attached compiler_billboard.binding_code_map.item ($1.first_code) as att_at_code then
+					create $$.make (att_at_code)
+
 				else
 					-- otherwise we use the synthesised code
 					check attached $1.last_converted_local as att_tcps then
@@ -2506,6 +2518,11 @@ feature {NONE} -- Implementation
 		end
 
 	last_fake_at_code: STRING
+		attribute
+			create Result.make_empty
+		end
+
+	c_dv_q_prop_code: STRING
 		attribute
 			create Result.make_empty
 		end

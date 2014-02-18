@@ -105,8 +105,8 @@ feature -- Access (computed)
 		do
 			create Result.make(0)
 			Result.compare_objects
-			across term_definitions as ids_csr loop
-				Result.extend (ids_csr.key)
+			across term_definitions as langs_csr loop
+				Result.extend (langs_csr.key)
 			end
 		end
 
@@ -197,6 +197,8 @@ feature -- Access (computed)
 					Result.put (att_term, term_defs_for_lang_csr.key)
 				end
 			end
+		ensure
+			across languages_available as langs_csr all Result.has (langs_csr.item) end
 		end
 
 	term_binding (a_terminology, a_key: STRING): URI
@@ -305,8 +307,9 @@ feature -- Status Report
 			-- is `a_code' known in this terminology
 		do
 			if not term_definitions.is_empty then
-				term_definitions.start
-				Result := term_definitions.item_for_iteration.has (a_code)
+				check attached term_definitions.item (original_language) as term_defs_for_orig_lang then
+					Result := term_defs_for_orig_lang.has (a_code)
+				end
 			end
 		end
 
@@ -688,7 +691,8 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
 		require
 			Code_new: not has_code (a_code)
 			Code_depth_valid: specialisation_depth_from_code (a_code) <= specialisation_depth
-			Term_codes_identical: across a_terms as a_terms_csr all a_terms_csr.item.code.is_equal(a_code) end
+			Term_codes_identical: across a_terms as a_terms_csr all a_terms_csr.item.code.is_equal (a_code) end
+			Languages_identical: across languages_available as langs_csr all a_terms.has (langs_csr.item) end
 		do
 			across a_terms as a_terms_csr loop
 				if not term_definitions.has (a_terms_csr.key) then

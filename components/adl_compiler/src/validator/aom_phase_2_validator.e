@@ -438,8 +438,8 @@ end
 			if passed then
 				if attached {C_OBJECT} a_c_node as a_c_obj then
 					-- is it an overlay or new node; if overlay, then check it
-					if passed then
-						if attached {C_ARCHETYPE_ROOT} a_c_node as car and then attached car.slot_node_id then			-- slot filler
+					if attached {C_ARCHETYPE_ROOT} a_c_node as car then
+						if attached car.slot_node_id then						-- slot filler
 							check attached car.slot_path as att_slot_path then
 								slot_path := att_slot_path
 							end
@@ -451,35 +451,36 @@ end
 									target.annotated_path (slot_path, target_descriptor.archetype_view_language, True),
 									target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
 							end
+						end
 
-						elseif specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
-							is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
-						then
-							create apa.make_from_string (a_c_node.path)
-							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-							Result := flat_ancestor.has_object_path (flat_anc_path)
-							if not Result then -- it should have a matching node in flat ancestor
-								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
-									target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
-									target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
-							end
+					elseif specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
+						is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
 
-						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
-						-- sibling order refers to a valid node in the flat ancestor. Arguably this should be done in the main
-						-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-						elseif attached a_c_obj.sibling_order as sib_ord then
-							create apa.make_from_string (a_c_node.parent.path)
-							ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-							if not ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) then
-								add_error (ec_VSSM, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
-							end
-						else
+					then
+						create apa.make_from_string (a_c_node.path)
+						flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
+						Result := flat_ancestor.has_object_path (flat_anc_path)
+						if not Result then -- it should have a matching node in flat ancestor
+							add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
+								target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
+								target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
+						end
+
+					-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
+					-- sibling order refers to a valid node in the flat ancestor. Arguably this should be done in the main
+					-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
+					elseif attached a_c_obj.sibling_order as sib_ord then
+						create apa.make_from_string (a_c_node.parent.path)
+						ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+						if not ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) then
+							add_error (ec_VSSM, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+						end
+					else
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
 		target.annotated_path (a_c_node.path,
 		target_descriptor.archetype_view_language, True) + " ignored %N")
 end
-						end
 					end
 
 				elseif attached {C_ATTRIBUTE} a_c_node as ca then

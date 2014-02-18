@@ -1590,6 +1590,12 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 					flat_anc.terminology.has_term_binding_for_external_code ($1.terminology_id, $1.first_code) 
 				then
 					create $$.make (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, $1.first_code))
+
+				-- may already have been encountered in this archetype
+				elseif attached compiler_billboard.binding_code_map.item ($1.first_code) as att_at_code then
+					create $$.make (att_at_code)
+
+				-- have to create a new binding
 				else
 					-- otherwise we use the synthesised code
 					check attached $1.last_converted_local as att_tcps then

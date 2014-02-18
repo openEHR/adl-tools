@@ -268,7 +268,6 @@ feature {NONE} -- Implementation
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
 			arch_depth: INTEGER
-			cp: TERMINOLOGY_CODE
 			spec_depth: INTEGER
 			code: STRING
 		do

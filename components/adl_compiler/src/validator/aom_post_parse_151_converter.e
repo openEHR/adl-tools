@@ -68,13 +68,12 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			target := a_target
+			highest_added_id_codes.wipe_out
 			if ara.is_specialised then
 				arch_anc_flat := ara.specialisation_ancestor.flat_archetype
 				arch_anc_flat.rebuild
 			else
 				arch_anc_flat := Void
-				highest_added_id_code := 0
-				highest_added_ac_code := 0
 				highest_refined_code_index.wipe_out
 			end
 		end
@@ -409,15 +408,18 @@ feature {NONE} -- Implementation
 	do_get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 	 	local
 	 		code_number, parent_code: STRING
-	 		spec_depth: INTEGER
+	 		code_spec_depth: INTEGER
 	 	do
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then
 	 			is_valid_id_code (c_obj.node_id) and then not c_obj.node_id.starts_with (fake_adl_14_node_id_base)
 	 		then
-				spec_depth := specialisation_depth_from_code (c_obj.node_id)
-				code_number := index_from_code_at_level (c_obj.node_id, spec_depth)
-				if spec_depth = 0 then
-					highest_added_id_code := highest_added_id_code.max (code_number.to_integer)
+				code_spec_depth := specialisation_depth_from_code (c_obj.node_id)
+				code_number := index_from_code_at_level (c_obj.node_id, code_spec_depth)
+				if not is_refined_code (c_obj.node_id) then
+					if not highest_added_id_codes.has (code_spec_depth) then
+						highest_added_id_codes.put (0, code_spec_depth)
+					end
+					highest_added_id_codes.replace (highest_added_id_codes.item (code_spec_depth).max (code_number.to_integer), code_spec_depth)
 				else
 					parent_code := specialisation_parent_from_code (c_obj.node_id)
 					if not highest_refined_code_index.has (parent_code) then
@@ -438,21 +440,25 @@ feature {NONE} -- Implementation
 	 		parent_ca_in_anc_flat: C_ATTRIBUTE
 	 		parent_co: C_OBJECT
 	 		og_path: OG_PATH
-	 		children_with_rm_type_name_count: INTEGER
+	 		spec_depth, children_with_rm_type_name_count: INTEGER
 	 	do
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then c_obj.node_id.starts_with (fake_adl_14_node_id_base) then
 	 			-- default to a new code; if node is inherited, or redefined an appropriate code will be used
+	 			spec_depth := target.specialisation_depth
+
 	 			create og_path.make_from_string (c_obj.path)
 	 			og_path.last.set_object_id ("")
 	 			old_path := og_path.as_string
- 				id_code := new_added_id_code_at_level (target.specialisation_depth, highest_added_id_code)
- 				highest_added_id_code := highest_added_id_code + 1
+
+ 				id_code := new_added_id_code_at_level (spec_depth, highest_added_id_codes.item (spec_depth))
+				highest_added_id_codes.replace (highest_added_id_codes.item (spec_depth) + 1, spec_depth)
+
 	 			if target.is_specialised then
 	 				-- generate a path; since the terminal object doesn't currently have any node_id,
 	 				-- the path will actually just point to the parent C_ATTRIBUTE
 	 				create apa.make_from_string (old_path)
-	 				if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
-		 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
+	 				if not apa.is_phantom_path_at_level (spec_depth - 1) then
+		 				path_in_flat := apa.path_at_level (spec_depth - 1)
 		 				check attached arch_anc_flat end
 		 				if arch_anc_flat.has_path (path_in_flat) then
 		 					parent_ca_in_anc_flat := arch_anc_flat.attribute_at_path (path_in_flat)
@@ -480,7 +486,7 @@ feature {NONE} -- Implementation
 --									if not highest_refined_code_index.has (parent_id_code) then
 --										highest_refined_code_index.put (0, parent_id_code)
 --									end
---									id_code := new_refined_code_at_level (parent_id_code, target.specialisation_depth, highest_refined_code_index.item (parent_id_code))
+--									id_code := new_refined_code_at_level (parent_id_code, spec_depth, highest_refined_code_index.item (parent_id_code))
 --									highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
 				 				end
 				 			end
@@ -524,9 +530,11 @@ feature {NONE} -- Implementation
 	 		end
 	 	end
 
-	highest_added_id_code: INTEGER
-
-	highest_added_ac_code: INTEGER
+	highest_added_id_codes: HASH_TABLE [INTEGER, INTEGER]
+			-- table of highest known added code value, for each specialisation level
+        attribute
+            create Result.make (0)
+        end
 
 	highest_refined_code_index: HASH_TABLE [INTEGER, STRING]
 			-- Table of current highest code keyed by its parent code, for all specialised codes
