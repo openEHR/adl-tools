@@ -113,7 +113,7 @@ feature -- Comparison
 		end
 
 	generate_diff
-			-- create differential form of archetype based on flat_child
+			-- create uncompressed differential of archetype based on flat_child
 		require
 			target_is_marked
 		local

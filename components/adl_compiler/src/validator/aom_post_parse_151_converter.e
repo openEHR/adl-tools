@@ -69,6 +69,7 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 		do
 			target := a_target
 			highest_added_id_codes.wipe_out
+			rm_schema := ara.rm_schema
 			if ara.is_specialised then
 				arch_anc_flat := ara.specialisation_ancestor.flat_archetype
 				arch_anc_flat.rebuild
@@ -84,6 +85,8 @@ feature -- Access
 			-- differential archetype being processed
 
 	arch_anc_flat: detachable FLAT_ARCHETYPE
+
+	rm_schema: BMM_SCHEMA
 
 feature -- Commands
 
@@ -451,6 +454,9 @@ feature {NONE} -- Implementation
 	 			old_path := og_path.as_string
 
  				id_code := new_added_id_code_at_level (spec_depth, highest_added_id_codes.item (spec_depth))
+				if not highest_added_id_codes.has (spec_depth) then
+					highest_added_id_codes.put (0, spec_depth)
+				end
 				highest_added_id_codes.replace (highest_added_id_codes.item (spec_depth) + 1, spec_depth)
 
 	 			if target.is_specialised then
@@ -480,15 +486,23 @@ feature {NONE} -- Implementation
 								elseif children_with_rm_type_name_count > 1 then
 				 					target.terminology.create_refined_definition (parent_id_code, Synthesised_string, Synthesised_string)
 				 					id_code := target.terminology.last_new_definition_code
-
--- following code only useful if we think the node is under a single-valued attribute, in which case we don't want to create useless
--- term_definitions
---									if not highest_refined_code_index.has (parent_id_code) then
---										highest_refined_code_index.put (0, parent_id_code)
---									end
---									id_code := new_refined_code_at_level (parent_id_code, spec_depth, highest_refined_code_index.item (parent_id_code))
---									highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
 				 				end
+
+				 			-- other case where a single RM conformant type redefines an RM parent type
+				 			elseif parent_ca_in_anc_flat.child_count = 1 and rm_schema.type_conforms_to (c_obj.rm_type_name, parent_ca_in_anc_flat.children.first.rm_type_name) then
+		 						parent_id_code := parent_ca_in_anc_flat.children.first.node_id
+		 						if parent_ca_in_anc_flat.is_single then
+		 							-- id code not needed in terminology; create one locally
+			 						if not highest_refined_code_index.has (parent_id_code) then
+			 							highest_refined_code_index.put (0, parent_id_code)
+			 						end
+			 						id_code := new_refined_code_at_level (parent_id_code, spec_depth, highest_refined_code_index.item (parent_id_code))
+			 						highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
+			 					else
+				 					target.terminology.create_refined_definition (parent_id_code, Synthesised_string, Synthesised_string)
+				 					id_code := target.terminology.last_new_definition_code
+			 						highest_refined_code_index.replace (index_from_code_at_level (id_code, spec_depth).to_integer.max (highest_refined_code_index.item (parent_id_code)), parent_id_code)
+		 						end
 				 			end
 		 				end
 	 				end

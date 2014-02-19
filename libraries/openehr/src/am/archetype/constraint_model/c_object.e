@@ -102,9 +102,12 @@ feature -- Comparison
 			--	rm_type_name is identical
 			--	occurrences is Void
 			-- 	sibling order is Void
+			--	node_id is identical or else the is the only child that overlays the parent node
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and not attached occurrences and
-				node_id_conforms_to (other) and not attached sibling_order
+			Result := rm_type_name.is_equal (other.rm_type_name) and
+				not attached occurrences and
+				node_reuse_congruent (other) and
+				not attached sibling_order
 		end
 
 	occurrences_conforms_to (other: C_OBJECT): BOOLEAN
@@ -128,6 +131,14 @@ feature -- Comparison
 			-- check if `occ' is valid to be set as occurrences on this object
 		do
 			Result := attached parent as p and then p.is_single implies occ.upper <= 1
+		end
+
+	node_reuse_congruent (other: like Current): BOOLEAN
+			-- True if this node is the sole re-using node of the corresponding node in the flat
+		do
+			Result := node_id_conforms_to (other) and
+				(is_root or else
+				attached parent as p and then p.child_reuse_count (other.node_id) = 1)
 		end
 
 feature -- Modification

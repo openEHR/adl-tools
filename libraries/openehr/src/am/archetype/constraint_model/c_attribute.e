@@ -229,6 +229,16 @@ feature -- Access
 			Result := children.item
 		end
 
+	child_reuse_count (a_node_id: STRING): INTEGER
+			-- number of children with either `a_node_id' or specialisations of `a_node_id'
+		do
+			across children as c_obj_csr loop
+				if codes_conformant (c_obj_csr.item.node_id, a_node_id) then
+					Result := Result + 1
+				end
+			end
+		end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN

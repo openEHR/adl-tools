@@ -254,26 +254,26 @@ debug ("flatten")
 	io.put_string ("%Tsee if output object node at " + a_path + " exists in flat parent ... ")
 end
 
+				-- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
+				if parent_path_list.has (a_path) then
+debug ("flatten")
+	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting new sibling object " + cco_child_diff.path + "%N")
+end
+					ca_output := arch_output_flat.attribute_at_path (cco_child_diff.parent.path)
+					new_cco_child := cco_child_diff.safe_deep_twin
+					new_cco_child.set_subtree_specialisation_status (ss_added)
+					new_cco_child.set_specialisation_status_redefined
+					ca_output.put_sibling_child (new_cco_child)
+					child_grafted_path_list.extend (cco_child_diff.path)
+
 				-- check that path exists (in nodes defined by value) in flat parent
-				if arch_output_flat.has_path (a_path) then
+				elseif arch_output_flat.has_path (a_path) then
 debug ("flatten")
 	io.put_string ("YES%N")
 end
 
-					-- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
-					if parent_path_list.has (a_path) then
-debug ("flatten")
-	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting new sibling object " + cco_child_diff.path + "%N")
-end
-						ca_output := arch_output_flat.attribute_at_path (cco_child_diff.parent.path)
-						new_cco_child := cco_child_diff.safe_deep_twin
-						new_cco_child.set_subtree_specialisation_status (ss_added)
-						new_cco_child.set_specialisation_status_redefined
-						ca_output.put_sibling_child (new_cco_child)
-						child_grafted_path_list.extend (cco_child_diff.path)
-
 					-- obtain the node in the flat output to start working at
-					elseif attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (a_path) as cco_output_flat then
+					if attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (a_path) as cco_output_flat then
 debug ("flatten")
 	io.put_string ("%TFirst replacement in flat parent " +
 	cco_child_diff.path + "%N")
@@ -430,7 +430,9 @@ end
 												-- for container attributes in the source archetype, we graft in new elements; overrides will be
 												-- handled by being traversed by this routine later
 												merge_container_attribute (ca_output, ca_child)
-											else -- for single-valued attributes, have to merge any non-CCO children
+
+											-- for single-valued attributes, have to merge any non-CCO children
+											else
 debug ("flatten")
 	io.put_string ("%T%T%Tmerge single attribute at " +
 	ca_child.path + " into output%N")
@@ -464,12 +466,13 @@ end
 
 						-- record path in case sibling objects turn up
 						parent_path_list.extend (a_path)
-					end -- if parent list has path of differential object
+					end -- if path exists in flat
 				else
 debug ("flatten")
 	io.put_string ("NO - ERROR%N")
 end
-				end -- if path exists in flat output
+					raise ("node_graft loction #1 - couldn't find path " + a_path + " in parent flat %N")
+				end -- if path exists in parent paths list
 			end -- if C_COMPLEX_OBJECT
 		end
 
@@ -715,7 +718,7 @@ end
 		end
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- return True if a conformant path of a_c_node within the differential archetype is
+			-- return True if a conformant path of a_c_node in the differential archetype is
 			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
 			-- unless the node is already in the child_grafted_path_list
 		local
@@ -729,9 +732,11 @@ end
 				from child_grafted_path_list.start until found_child or child_grafted_path_list.off loop
 					if np.starts_with (child_grafted_path_list.item) then
 						found_child := True
-						debug ("flatten")
-							io.put_string ("%T%Tchild path " + np + " matches path " + child_grafted_path_list.item + " in child_grafted_path_list - not descending%N")
-						end
+debug ("flatten")
+	io.put_string ("%T%Tchild path " + np + " matches path " +
+		child_grafted_path_list.item +
+		" in child_grafted_path_list - not descending%N")
+end
 					end
 					child_grafted_path_list.forth
 				end

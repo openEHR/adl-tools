@@ -56,7 +56,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			--	* original_language
 			--	* translations
 			--
-			-- The following items from the flat:
+			-- The following items from the flat parent:
 			-- 	* definition (with root node id from differential definition)
 			--  * terminology !!! with languages removed that are not in the orig_lang/translations of the diff
 			-- 	* rules

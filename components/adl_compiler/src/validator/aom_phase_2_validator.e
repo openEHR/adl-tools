@@ -179,6 +179,9 @@ feature {NONE} -- Implementation
 			ca_in_flat_anc: C_ATTRIBUTE
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
+debug ("validate")
+	io.put_string ("C_ATTRIBUTE - " + a_c_node.path  + "%N")
+end
 				create apa.make_from_string (a_c_node.path)
 				ca_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
 				ca_in_flat_anc := flat_ancestor.attribute_at_path (ca_path_in_flat)
@@ -225,7 +228,7 @@ feature {NONE} -- Implementation
 						-- and can be path-compressed
 						if not attached ca_child_diff.existence and not attached ca_child_diff.cardinality and ca_child_diff.parent.is_path_compressible then
 debug ("validate")
-	io.put_string (" (setting is_path_compressible) %N")
+	io.put_string (" (setting is_path_compressible [1]) %N")
 end
 							ca_child_diff.set_is_path_compressible
 						end
@@ -233,9 +236,8 @@ end
 
 				elseif ca_child_diff.c_congruent_to (ca_in_flat_anc, agent rm_schema.type_conforms_to) and ca_child_diff.parent.is_path_compressible then
 debug ("validate")
-	io.put_string (">>>>> validate: C_ATTRIBUTE in child at " +
-	ca_child_diff.path + " CONGRUENT to ancestor node " +
-	ca_in_flat_anc.path + " (setting is_path_compressible) %N")
+	io.put_string (" CONGRUENT to ancestor node " +
+	ca_in_flat_anc.path + " (setting is_path_compressible [2]) %N")
 end
 					ca_child_diff.set_is_path_compressible
 				end
@@ -343,9 +345,9 @@ end
 										child_occ.as_string, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
 										par_flat_occ.as_string>>)
 									co_child_diff.remove_occurrences
-									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
+									if (co_child_diff.is_root or else co_child_diff.parent.is_path_compressible) and co_child_diff.c_congruent_to (co_in_flat_anc, agent rm_schema.type_conforms_to) then
 debug ("validate")
-io.put_string (" (setting is_path_compressible) %N")
+io.put_string (" (setting is_path_compressible [3]) %N")
 end
 										co_child_diff.set_is_path_compressible
 									end
@@ -376,7 +378,7 @@ end
 
 						end
 					else
-						-- nodes are at c_conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
+						-- nodes are c_conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
 						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.
@@ -393,10 +395,10 @@ end
 								-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat ancestor node attributes
 								-- need to be preserved)
 								if co_child_diff.is_root or cco_pf.has_attributes then
-									co_child_diff.set_is_path_compressible
 debug ("validate")
-io.put_string (" (setting is_path_compressible) %N")
+io.put_string (" (setting is_path_compressible [4]) %N")
 end
+									co_child_diff.set_is_path_compressible
 								else
 debug ("validate")
 io.put_string ("(not setting is_path_compressible, due to being overlay node)%N")
