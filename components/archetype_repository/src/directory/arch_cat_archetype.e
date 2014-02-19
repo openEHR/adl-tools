@@ -1068,7 +1068,7 @@ feature {NONE} -- Compilation
 					if specialisation_ancestor.is_valid and attached specialisation_ancestor as att_sp then
 
 						-- perform post-parse object structure finalisation
-						adl_15_engine.post_parse_151_convert (flat_arch, Current)
+						adl_14_engine.post_parse_151_convert (flat_arch, Current)
 
 						-- perform standard post-parse processing
 						adl_14_engine.post_parse_process (flat_arch, Current)

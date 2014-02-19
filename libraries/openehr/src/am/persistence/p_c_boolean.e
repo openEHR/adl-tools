@@ -41,8 +41,8 @@ feature -- Factory
 
 	populate_c_instance (a_c_o: C_BOOLEAN)
 		do
-			precursor (a_c_o)
 			a_c_o.set_constraint (constraint)
+			precursor (a_c_o)
 		end
 
 feature -- Access
