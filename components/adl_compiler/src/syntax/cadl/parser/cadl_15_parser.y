@@ -1467,6 +1467,14 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 				abort_with_error (ec_SCDUPT, <<$1>>)
 			end
 		}
+	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_value
+		{
+			if valid_iso8601_duration_constraint_pattern ($1) then
+				create $$.make_pattern_with_range ($1, create {POINT_INTERVAL [ISO8601_DURATION]}.make ($3))
+			else
+				abort_with_error (ec_SCDUPT, <<$1>>)
+			end
+		}
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_duration_constraint_pattern ($1) then
