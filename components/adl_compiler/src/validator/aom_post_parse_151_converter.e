@@ -36,6 +36,11 @@ inherit
 			{NONE} all
 		end
 
+	EXCEPTIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -47,7 +52,7 @@ feature -- Definitions
 
 	Empty_string_found: STRING = "(empty string found in original archetype)"
 
-	Synthesised_specialised_string: STRING = " (specialised)"
+	Synthesised_specialised_string: STRING = " (synthesised)"
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
@@ -290,45 +295,34 @@ feature {NONE} -- Implementation
 				 						ac_code := parent_ac_code
 
 				 						-- check if any overrides; if so, a refined code & definition is needed
-					 					if not ctc.c_equal (parent_ctc) then
+					 					if not ctc.c_congruent_to (parent_ctc) then
 					 						new_arch_term := arch_anc_flat.terminology.term_definition (target.terminology.original_language, parent_ac_code)
 					 						target.terminology.create_refined_definition (parent_ac_code, new_arch_term.text + Synthesised_specialised_string, new_arch_term.description + Synthesised_specialised_string)
 							 				ac_code := target.terminology.last_new_definition_code
 					 					end
 					 				else
 						 				-- create a new definition at the specialisation level of this archteype
-						 				target.terminology.create_added_constraint_definition (Synthesised_string, Synthesised_string)
-								 		ac_code := target.terminology.last_new_definition_code
+										new_arch_term := create_new_term_from_proximal (ctc)
+						 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
+						 				ac_code := target.terminology.last_new_definition_code
 					 				end
 					 			else
 					 				-- create a new definition at the specialisation level of this archteype
-					 				target.terminology.create_added_constraint_definition (Synthesised_string, Synthesised_string)
-							 		ac_code := target.terminology.last_new_definition_code
+									new_arch_term := create_new_term_from_proximal (ctc)
+					 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
+					 				ac_code := target.terminology.last_new_definition_code
 				 				end
 				 			else
 				 				-- create a new definition at the specialisation level of this archteype
-				 				target.terminology.create_added_constraint_definition (Synthesised_string, Synthesised_string)
-						 		ac_code := target.terminology.last_new_definition_code
+								new_arch_term := create_new_term_from_proximal (ctc)
+				 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
+				 				ac_code := target.terminology.last_new_definition_code
 			 				end
 			 			else
 			 				-- create a definition for the new code; here we obtain an approximate definition for it from
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
-							if attached proximal_term_definition (ctc) as arch_term then
-								if not arch_term.text.is_empty then
-									new_code_text := arch_term.text
-								else
-									create new_code_text.make_from_string (Empty_string_found)
-								end
-								if not arch_term.description.is_empty then
-									new_code_description := arch_term.description
-								else
-									create new_code_description.make_from_string (Empty_string_found)
-								end
-			 				else
-								new_code_text := Synthesised_string
-								new_code_description := Synthesised_string
-			 				end
-			 				target.terminology.create_added_constraint_definition (new_code_text, new_code_description)
+							new_arch_term := create_new_term_from_proximal (ctc)
+			 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
 			 				ac_code := target.terminology.last_new_definition_code
 			 			end
 
@@ -358,6 +352,26 @@ feature {NONE} -- Implementation
 				end
 			end
 			Result := target.terminology.term_definition (target.terminology.original_language, co_csr.node_id)
+ 		end
+
+	create_new_term_from_proximal (ctc: C_TERMINOLOGY_CODE): ARCHETYPE_TERM
+		do
+			create Result.make ("ac1")
+			if attached proximal_term_definition (ctc) as arch_term then
+				if not arch_term.text.is_empty then
+					Result.set_text (arch_term.text + Synthesised_specialised_string)
+				else
+					Result.set_text (Empty_string_found.twin)
+				end
+				if not arch_term.description.is_empty then
+					Result.set_description (arch_term.description + Synthesised_specialised_string)
+				else
+					Result.set_description (Empty_string_found.twin)
+				end
+ 			else
+				Result.set_text (Synthesised_string.twin)
+				Result.set_description (Synthesised_string.twin)
+ 			end
  		end
 
 	convert_fake_id_codes
@@ -453,11 +467,8 @@ feature {NONE} -- Implementation
 	 			og_path.last.set_object_id ("")
 	 			old_path := og_path.as_string
 
- 				id_code := new_added_id_code_at_level (spec_depth, highest_added_id_codes.item (spec_depth))
-				if not highest_added_id_codes.has (spec_depth) then
-					highest_added_id_codes.put (0, spec_depth)
-				end
-				highest_added_id_codes.replace (highest_added_id_codes.item (spec_depth) + 1, spec_depth)
+				-- will get overwritten below
+	 			create id_code.make_from_string ("INITIAL CONDITION")
 
 	 			if target.is_specialised then
 	 				-- generate a path; since the terminal object doesn't currently have any node_id,
@@ -488,24 +499,37 @@ feature {NONE} -- Implementation
 				 					id_code := target.terminology.last_new_definition_code
 				 				end
 
-				 			-- other case where a single RM conformant type redefines an RM parent type
+				 			-- case where a single RM conformant type redefines an RM parent type
 				 			elseif parent_ca_in_anc_flat.child_count = 1 and rm_schema.type_conforms_to (c_obj.rm_type_name, parent_ca_in_anc_flat.children.first.rm_type_name) then
 		 						parent_id_code := parent_ca_in_anc_flat.children.first.node_id
 		 						if parent_ca_in_anc_flat.is_single then
 		 							-- id code not needed in terminology; create one locally
-			 						if not highest_refined_code_index.has (parent_id_code) then
-			 							highest_refined_code_index.put (0, parent_id_code)
-			 						end
-			 						id_code := new_refined_code_at_level (parent_id_code, spec_depth, highest_refined_code_index.item (parent_id_code))
-			 						highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
+		 							id_code := create_refined_id (parent_id_code, spec_depth)
 			 					else
 				 					target.terminology.create_refined_definition (parent_id_code, Synthesised_string, Synthesised_string)
 				 					id_code := target.terminology.last_new_definition_code
 			 						highest_refined_code_index.replace (index_from_code_at_level (id_code, spec_depth).to_integer.max (highest_refined_code_index.item (parent_id_code)), parent_id_code)
 		 						end
+		 					else
+								raise ("do_replace_fake_id_code ERROR: " + target.archetype_id.as_string + " node at path " + c_obj.path +
+									" RM type " + c_obj.rm_type_name + " unhandled redefinition%N")
 				 			end
+				 		-- its a new node off the end of an existing path
+				 		elseif attached c_obj.parent as p and then p.is_multiple then
+				 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
+				 			id_code := target.terminology.last_new_definition_code
+			 			else
+			 				id_code := create_new_id (spec_depth)
 		 				end
-	 				end
+		 			-- new objects at this level; don't have to worry about ids, but need to add definitions in terminology if parent C_ATTRIBUTE is multiple
+		 			elseif attached c_obj.parent as p and then p.is_multiple then
+			 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
+			 			id_code := target.terminology.last_new_definition_code
+		 			else
+		 				id_code := create_new_id (spec_depth)
+		 			end
+	 			else
+		 			id_code := create_new_id (spec_depth)
 	 			end
 				c_obj.parent.replace_node_id (c_obj.node_id, id_code)
 
@@ -543,6 +567,25 @@ feature {NONE} -- Implementation
 				end
 	 		end
 	 	end
+
+	create_new_id (spec_depth: INTEGER): STRING
+		do
+ 			Result := new_added_id_code_at_level (spec_depth, highest_added_id_codes.item (spec_depth))
+			if not highest_added_id_codes.has (spec_depth) then
+				highest_added_id_codes.put (0, spec_depth)
+			end
+			highest_added_id_codes.replace (highest_added_id_codes.item (spec_depth) + 1, spec_depth)
+		end
+
+	create_refined_id (parent_id_code: STRING; spec_depth: INTEGER): STRING
+		do
+ 			-- id code not needed in terminology; create one locally
+ 			if not highest_refined_code_index.has (parent_id_code) then
+ 				highest_refined_code_index.put (0, parent_id_code)
+ 			end
+ 			Result := new_refined_code_at_level (parent_id_code, spec_depth, highest_refined_code_index.item (parent_id_code))
+ 			highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
+		end
 
 	highest_added_id_codes: HASH_TABLE [INTEGER, INTEGER]
 			-- table of highest known added code value, for each specialisation level

@@ -337,7 +337,11 @@ c_object: c_complex_object
 		}
 	| c_primitive_object
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			if attached {C_TERMINOLOGY_CODE} $1 as ctc and then ctc.constraint.is_equal (Missing_codes) then
+				-- ignore
+			else
+				safe_put_c_attribute_child (c_attrs.item, $1)
+			end
 		}
 --
 -- LEGACY ADL 1.4 Syntax
@@ -350,7 +354,12 @@ c_object: c_complex_object
 		{
 			if attached last_c_dv_quantity_value.property as att_prop then
 				-- may already have been encountered in this archetype
-				if attached compiler_billboard.binding_code_map.item (att_prop.code_string) as att_at_code then
+
+				if target_descriptor.is_specialised and then attached flat_ancestor as flat_anc and then
+					flat_anc.terminology.has_term_binding_for_external_code (att_prop.terminology_id, att_prop.code_string) 
+				then
+					c_dv_q_prop_code := flat_anc.terminology.term_binding_key_for_external_code (att_prop.terminology_id, att_prop.code_string)
+				elseif attached compiler_billboard.binding_code_map.item (att_prop.code_string) as att_at_code then
 					c_dv_q_prop_code := att_at_code
 				else
 					c_dv_q_prop_code := new_fake_at_code
@@ -1510,7 +1519,8 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 -------------------------------------------------------------------------------------------------------------
 	| ERR_VALUE_SET_MISSING_CODES
 		{
-			abort_with_error (ec_STVSI, <<err_str, c_attrs.item.path>>)
+			create $$.make (Missing_codes)
+			-- abort_with_error (ec_STVSI, <<err_str, c_attrs.item.path>>)
 		}
 	| ERR_VALUE_SET_DEF_DUP_CODE
 		{
@@ -2571,5 +2581,7 @@ feature {NONE} -- Implementation
 		attribute
 			create Result.default_create
 		end
+
+	Missing_codes: STRING = "missing"
 
 end

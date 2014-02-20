@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 			c_obj: C_OBJECT
 			child_paths_at_parent_level: ARRAYED_LIST [STRING]
 			apa: ARCHETYPE_PATH_ANALYSER
-			a_path: STRING
+			graft_path_in_flat: STRING
 			clone_performed: BOOLEAN
 			flat_use_node_paths: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
 		do
@@ -156,9 +156,9 @@ end
 				across arch_child_diff.all_paths as child_paths_csr loop
 					create apa.make_from_string (child_paths_csr.item)
 					if not apa.is_phantom_path_at_level (arch_parent_flat.specialisation_depth) then
-						a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
-						if not child_paths_at_parent_level.has (a_path) then
-							child_paths_at_parent_level.extend (a_path)
+						graft_path_in_flat := apa.path_at_level (arch_parent_flat.specialisation_depth)
+						if not child_paths_at_parent_level.has (graft_path_in_flat) then
+							child_paths_at_parent_level.extend (graft_path_in_flat)
 						end
 					end
 				end
@@ -225,8 +225,8 @@ end
 		local
 			def_it: C_ITERATOR
 		do
-			parent_path_list.wipe_out
-			child_grafted_path_list.wipe_out
+			grafted_locations_used.wipe_out
+			grafted_child_locations.wipe_out
 
 			-- traverse flat output and mark every node as inherited
 			arch_output_flat.definition.set_subtree_specialisation_status (ss_inherited)
@@ -242,20 +242,21 @@ end
 		local
 			cco_output_flat_proximate, cco_csr, new_cco_child: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			a_path: STRING
-			c_path_in_diff: OG_PATH
+			graft_path_in_flat, path_in_diff: STRING
+			cco_overlay_path: detachable STRING
+			og_path_in_diff, c_path_in_diff: OG_PATH
 			ca_child, ca_child_copy, ca_output, cco_csr_parent: C_ATTRIBUTE
 		do
 			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node then
 				create apa.make_from_string (cco_child_diff.path)
-				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
+				graft_path_in_flat := apa.path_at_level (arch_parent_flat.specialisation_depth)
 debug ("flatten")
 	io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
-	io.put_string ("%Tsee if output object node at " + a_path + " exists in flat parent ... ")
+	io.put_string ("%Tsee if output object node at " + graft_path_in_flat + " exists in flat parent ... ")
 end
 
 				-- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
-				if parent_path_list.has (a_path) then
+				if grafted_locations_used.has (graft_path_in_flat) then
 debug ("flatten")
 	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting new sibling object " + cco_child_diff.path + "%N")
 end
@@ -264,20 +265,42 @@ end
 					new_cco_child.set_subtree_specialisation_status (ss_added)
 					new_cco_child.set_specialisation_status_redefined
 					ca_output.put_sibling_child (new_cco_child)
-					child_grafted_path_list.extend (cco_child_diff.path)
+					grafted_child_locations.extend (cco_child_diff.path)
 
 				-- check that path exists (in nodes defined by value) in flat parent
-				elseif arch_output_flat.has_path (a_path) then
+				else
 debug ("flatten")
 	io.put_string ("YES%N")
 end
 
-					-- obtain the node in the flat output to start working at
-					if attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (a_path) as cco_output_flat then
+					-- figure out graft location in output flat. It could be the flat form of the child
+					-- path, if no overlay has been done already, but it also may match the child path
+					-- other than the final point, due to intermediate node id redefinitions already performed
+					if arch_output_flat.has_path (graft_path_in_flat) then
+						cco_overlay_path := graft_path_in_flat
 debug ("flatten")
-	io.put_string ("%TFirst replacement in flat parent " +
-	cco_child_diff.path + "%N")
+	io.put_string ("%TDirect hit on path " +
+	graft_path_in_flat + "%N")
 end
+					else
+						create og_path_in_diff.make_from_string (cco_child_diff.path)
+						og_path_in_diff.last.set_object_id (code_at_level (og_path_in_diff.last_object_node_id, arch_parent_flat.specialisation_depth))
+						path_in_diff := og_path_in_diff.as_string
+						if arch_output_flat.has_path (path_in_diff) then
+							cco_overlay_path := path_in_diff
+debug ("flatten")
+	io.put_string ("%TFound already overlaid path in output at " +
+	path_in_diff + "%N")
+end
+						else
+debug ("flatten")
+	io.put_string ("NO - ERROR%N")
+end
+							raise ("node_graft loction #1 - can't find overlay location for object at " + cco_child_diff.path + " %N")
+						end
+					end
+					check attached cco_overlay_path end
+					if attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (cco_overlay_path) as cco_output_flat then
 
 						-- if it is a node on which occurrences was set to 0, remove it from the flat.
 						if cco_child_diff.is_prohibited then
@@ -336,7 +359,7 @@ debug ("flatten")
 end
 									cco_output_flat.put_attribute (ca_child_copy)
 								end
-								child_grafted_path_list.extend (cco_child_diff.path)
+								grafted_child_locations.extend (cco_child_diff.path)
 
 							else
 debug ("flatten")
@@ -379,7 +402,7 @@ end
 												cco_csr_parent := p
 											end
 											if c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
-													c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
+												c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
 											then
 debug ("flatten")
 	io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id +
@@ -446,7 +469,7 @@ end
 									else
 										ca_child_copy := ca_child.safe_deep_twin
 										ca_child_copy.set_subtree_specialisation_status (ss_added)
-										child_grafted_path_list.extend (ca_child.path)
+										grafted_child_locations.extend (ca_child.path)
 										ca_child_copy.clear_differential_path
 debug ("flatten")
 	io.put_string ("%T%Tin child only; deep_clone attribute " +
@@ -465,13 +488,8 @@ end
 						end -- if diff object.is_prohibited
 
 						-- record path in case sibling objects turn up
-						parent_path_list.extend (a_path)
+						grafted_locations_used.extend (graft_path_in_flat)
 					end -- if path exists in flat
-				else
-debug ("flatten")
-	io.put_string ("NO - ERROR%N")
-end
-					raise ("node_graft loction #1 - couldn't find path " + a_path + " in parent flat %N")
 				end -- if path exists in parent paths list
 			end -- if C_COMPLEX_OBJECT
 		end
@@ -502,6 +520,7 @@ end
 			after_pending: BOOLEAN
 			start_pos, end_pos: INTEGER
 			node_id_in_parent: STRING
+			sibling_anchor: SIBLING_ORDER
 		do
 			--
 			-- Phase 1: figure out the merge records
@@ -512,11 +531,15 @@ end
 			from ca_child.children.start until ca_child.children.off loop
 
 				-- find the next ordering marker, or end of list
-				from until ca_child.children.off or ca_child.children.item.sibling_order /= Void loop
+				from until ca_child.children.off or attached ca_child.children.item.sibling_order loop
 					ca_child.children.forth
 				end
 
 				if not ca_child.children.off then
+					check attached ca_child.children.item.sibling_order as att_so then
+						sibling_anchor := att_so
+					end
+
 					-- grab pending series from start_pos to here -1 and make a merge record for it
 					if after_pending then
 						end_pos := ca_child.children.index - 1
@@ -525,13 +548,21 @@ end
 						start_pos := end_pos + 1
 					end
 
+					-- Obtain the sibling anchor in the output flat:
+					-- if overlay has already occurred, we look for sibling anchor using child level node id
+					-- otherwise use flat parent level id
+					if ca_output.has_child_with_id (sibling_anchor.sibling_node_id) then
+						insert_obj := ca_output.child_with_id (sibling_anchor.sibling_node_id)
+					else
+						insert_obj := ca_output.child_with_id (code_at_level (sibling_anchor.sibling_node_id, arch_parent_flat.specialisation_depth))
+					end
+
 					-- if the order marker is 'before', it means that the merge list is from the last
 					-- point already taken care of + 1, until the current object, and the merge target in the
 					-- output structure is the object with the same id as the last object just found, carrying
 					-- the 'before' marker
-					if ca_child.children.item.sibling_order.is_before then
+					if sibling_anchor.is_before then
 						end_pos := ca_child.children.index
-						insert_obj := ca_output.child_with_id (ca_child.children.item.sibling_order.sibling_node_id)
 						add_merge_desc (start_pos, end_pos, insert_obj, True)
 						start_pos := end_pos + 1
 
@@ -541,12 +572,12 @@ end
 					-- source list start_pos to the item with the 'after' marker, and the output list cursor object
 					-- to the object with the same id as the object holding the 'after' marker
 					else
-						if not ca_child.children.isfirst and ca_child.children.index > start_pos then -- create a descriptor for the preceding section
+						-- create a descriptor for the preceding section
+						if not ca_child.children.isfirst and ca_child.children.index > start_pos then
 							add_merge_desc (start_pos, ca_child.children.index - 1, insert_obj, True)
 						end
 						-- now take care of series starting with current 'after' marker
 						start_pos := ca_child.children.index
-						insert_obj := ca_output.child_with_id (ca_child.children.item.sibling_order.sibling_node_id)
 						after_pending := True
 					end
 					ca_child.children.forth
@@ -576,10 +607,10 @@ end
 							merge_car := car.safe_deep_twin
 							merge_car.set_subtree_specialisation_status (ss_added)
 							ca_output.put_child_right (merge_car, insert_obj)
-							child_grafted_path_list.extend (car.path) -- remember the path, so we don't try to do it again later on
+							grafted_child_locations.extend (car.path) -- remember the path, so we don't try to do it again later on
 
 						elseif specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added then
-							child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
+							grafted_child_locations.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
 
 							-- now we either merge the object, or deal with the special case of occurrences = 0,
 							-- in which case, remove the target object
@@ -602,7 +633,7 @@ end
 						-- ARCHETYPE_SLOT override
 						elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then
 							node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
-							child_grafted_path_list.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
+							grafted_child_locations.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
 							if arch_slot.is_prohibited then
 								ca_output.remove_child_by_id (node_id_in_parent)
 							elseif arch_slot.is_closed then
@@ -661,7 +692,7 @@ end
 						merge_car.set_subtree_specialisation_status (ss_added)
 					end
 					ca_output.put_child (merge_obj)
-					child_grafted_path_list.extend (car.path)
+					grafted_child_locations.extend (car.path)
 
 				-- we deal with non-C_COMPLEX_OBJECTs except in the case where the object is completely new in the flat
 				-- parent, which means it should just be copied in completely
@@ -672,7 +703,7 @@ end
 							merge_cco.set_subtree_specialisation_status (ss_added)
 						end
 						ca_output.put_child (merge_obj)
-						child_grafted_path_list.extend (cco.path)
+						grafted_child_locations.extend (cco.path)
 					else
 						debug ("flatten")
 							io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + cco.path + "%N")
@@ -682,7 +713,7 @@ end
 					merge_obj := c_obj_csr.item.safe_deep_twin
 					merge_obj.set_specialisation_status_redefined
 					ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
-					child_grafted_path_list.extend (c_obj_csr.item.path)
+					grafted_child_locations.extend (c_obj_csr.item.path)
 				end
 			end
 		end
@@ -718,33 +749,20 @@ end
 		end
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- return True if a conformant path of a_c_node in the differential archetype is
-			-- found within the flat parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
+			-- return True if a conformant path of a_c_node in the differential archetype is found within the flat
+			-- parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
 			-- unless the node is already in the child_grafted_path_list
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			np: STRING
-			found_child: BOOLEAN
+			ac_path: STRING
 		do
-			np := a_c_node.path
-			create apa.make_from_string(np)
---			if not apa.is_phantom_path_at_level (arch_parent_flat.specialisation_depth) then
-				from child_grafted_path_list.start until found_child or child_grafted_path_list.off loop
-					if np.starts_with (child_grafted_path_list.item) then
-						found_child := True
-debug ("flatten")
-	io.put_string ("%T%Tchild path " + np + " matches path " +
-		child_grafted_path_list.item +
-		" in child_grafted_path_list - not descending%N")
-end
-					end
-					child_grafted_path_list.forth
-				end
-				Result := not found_child and arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
---			end
+			ac_path := a_c_node.path
+			create apa.make_from_string (ac_path)
+			Result := not across grafted_child_locations as grafted_paths_csr some ac_path.starts_with (grafted_paths_csr.item) end
+					and arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
 		end
 
-	parent_path_list: ARRAYED_LIST [STRING]
+	grafted_locations_used: ARRAYED_SET [STRING]
 			-- list of paths matched in parent archetype by child archetype nodes. Used to remember paths that
 			-- disappear due to being overwritten by a specialised node (e.g. at0013 becomes at0013.1 in the flat output)
 			-- but then specialised siblings (e.g. at0013.2, at0013.3) turn up and need to be grafted in.
@@ -753,7 +771,7 @@ end
 			Result.compare_objects
 		end
 
-	child_grafted_path_list: ARRAYED_LIST [STRING]
+	grafted_child_locations: ARRAYED_SET [STRING]
 			-- list of root paths of child sub-trees in the child that have been completely grafted from child to parent
 			-- don't descend into paths lower than any path in this list
 		attribute

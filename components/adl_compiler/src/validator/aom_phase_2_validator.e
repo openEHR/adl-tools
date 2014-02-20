@@ -193,51 +193,25 @@ end
 					elseif not ca_child_diff.is_single and ca_in_flat_anc.is_single then
 						add_error (ec_VSAM2, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
 
-					else
-						if not ca_child_diff.existence_conforms_to (ca_in_flat_anc) then
-							check attached ca_child_diff.existence as ccd_ex and then attached ca_in_flat_anc.existence as cpf_ex then
-								if validation_strict or else not ca_child_diff.existence_matches (ca_in_flat_anc) then
-									add_error (ec_VSANCE, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ccd_ex.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-										cpf_ex.as_string>>)
-								else
-									add_warning (ec_VSANCE, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ccd_ex.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-										cpf_ex.as_string>>)
-									ca_child_diff.remove_existence
-								end
-							end
+					elseif not ca_child_diff.existence_conforms_to (ca_in_flat_anc) then
+						check attached ca_child_diff.existence as ccd_ex and then attached ca_in_flat_anc.existence as cpf_ex then
+							add_error (ec_VSANCE, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+								ccd_ex.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+								cpf_ex.as_string>>)
 						end
 
-						if not ca_child_diff.cardinality_conforms_to (ca_in_flat_anc) then
-							check attached ca_child_diff.cardinality as ccd_card and then attached ca_in_flat_anc.cardinality as cpf_card then
-								if validation_strict or else not ca_child_diff.cardinality_matches (ca_in_flat_anc) then
-									add_error (ec_VSANCC, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ccd_card.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-										cpf_card.as_string>>)
-								else
-									add_warning (ec_VSANCC, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-										ccd_card.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-										cpf_card.as_string>>)
-									ca_child_diff.remove_cardinality
-								end
-							end
-						end
-
-						-- if the existence and cardinality redefinitions were removed, then this node is not redefined
-						-- and can be path-compressed
-						if not attached ca_child_diff.existence and not attached ca_child_diff.cardinality and ca_child_diff.parent.is_path_compressible then
-debug ("validate")
-	io.put_string (" (setting is_path_compressible [1]) %N")
-end
-							ca_child_diff.set_is_path_compressible
+					elseif not ca_child_diff.cardinality_conforms_to (ca_in_flat_anc) then
+						check attached ca_child_diff.cardinality as ccd_card and then attached ca_in_flat_anc.cardinality as cpf_card then
+							add_error (ec_VSANCC, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
+								ccd_card.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+								cpf_card.as_string>>)
 						end
 					end
 
-				elseif ca_child_diff.c_congruent_to (ca_in_flat_anc, agent rm_schema.type_conforms_to) and ca_child_diff.parent.is_path_compressible then
+				elseif ca_child_diff.c_congruent_to (ca_in_flat_anc) and ca_child_diff.parent.is_path_compressible then
 debug ("validate")
 	io.put_string (" CONGRUENT to ancestor node " +
-	ca_in_flat_anc.path + " (setting is_path_compressible [2]) %N")
+	ca_in_flat_anc.path + " (setting is_path_compressible [1]) %N")
 end
 					ca_child_diff.set_is_path_compressible
 				end
@@ -257,19 +231,8 @@ end
 							add_error (ec_VARXR, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
-							if attached car.occurrences as occ and then attached a_slot.occurrences as par_flat_occ and then occ.is_equal (par_flat_occ) then
-								if validation_strict then
-									add_error (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), occ.as_string,
-										target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
-								else
-									add_warning (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), occ.as_string,
-										target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
-									car.remove_occurrences
-								end
-							else
-								add_error (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
-									target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
-							end
+							add_error (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+								target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
 						end
 					else
 						add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
@@ -333,31 +296,10 @@ end
 
 						-- occurrences non-conformance was the reason
 						elseif not co_child_diff.occurrences_conforms_to (co_in_flat_anc) then
-							-- if the occurrences interval is just a copy of the one in the flat, treat it as an error only if
-							-- compiling strict, else remove the duplicate and just warn
-							if attached co_child_diff.occurrences as child_occ and then attached co_in_flat_anc.occurrences as par_flat_occ and then child_occ.is_equal (par_flat_occ) then
-								if validation_strict then
-									add_error (ec_VSONCO, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-										child_occ.as_string, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-										par_flat_occ.as_string>>)
-								else
-									add_warning (ec_VSONCO, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-										child_occ.as_string, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-										par_flat_occ.as_string>>)
-									co_child_diff.remove_occurrences
-									if (co_child_diff.is_root or else co_child_diff.parent.is_path_compressible) and co_child_diff.c_congruent_to (co_in_flat_anc, agent rm_schema.type_conforms_to) then
-debug ("validate")
-io.put_string (" (setting is_path_compressible [3]) %N")
-end
-										co_child_diff.set_is_path_compressible
-									end
-								end
-							else
-								add_error (ec_VSONCO, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-									co_child_diff.occurrences_as_string,
-									target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-									co_in_flat_anc.occurrences.as_string>>)
-							end
+							add_error (ec_VSONCO, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_child_diff.occurrences_as_string,
+								target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+								co_in_flat_anc.occurrences.as_string>>)
 
 						-- node id non-conformance value mismatch was the reason
 						elseif not co_child_diff.node_id_conforms_to (co_in_flat_anc) then
@@ -382,7 +324,7 @@ end
 						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.
-						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.c_congruent_to (co_in_flat_anc, agent rm_schema.type_conforms_to) and
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.c_congruent_to (co_in_flat_anc) and
 							(co_child_diff.is_root or else co_child_diff.parent.is_path_compressible)
 						then
 debug ("validate")
@@ -396,7 +338,7 @@ end
 								-- need to be preserved)
 								if co_child_diff.is_root or cco_pf.has_attributes then
 debug ("validate")
-io.put_string (" (setting is_path_compressible [4]) %N")
+io.put_string (" (setting is_path_compressible [2]) %N")
 end
 									co_child_diff.set_is_path_compressible
 								else
@@ -415,7 +357,9 @@ target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_lan
 end
 						end
 
-						if attached co_child_diff.sibling_order and then not co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
+						if attached co_child_diff.sibling_order and then not (co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) or else
+							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, flat_ancestor.specialisation_depth)))
+						then
 							add_error (ec_VSSM, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_child_diff.sibling_order.sibling_node_id>>)
 						end
@@ -474,7 +418,9 @@ end
 					elseif attached a_c_obj.sibling_order as sib_ord then
 						create apa.make_from_string (a_c_node.parent.path)
 						ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-						if not ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) then
+						if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
+							ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, flat_ancestor.specialisation_depth)))
+						then
 							add_error (ec_VSSM, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
 						end
 					else

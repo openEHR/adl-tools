@@ -268,21 +268,21 @@ feature {NONE} -- Implementation
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
 			arch_depth: INTEGER
-			spec_depth: INTEGER
+			code_spec_depth: INTEGER
 			code: STRING
 		do
 			arch_depth := target.specialisation_depth
 			across target.id_codes_index as codes_csr loop
-				spec_depth := specialisation_depth_from_code (codes_csr.key)
+				code_spec_depth := specialisation_depth_from_code (codes_csr.key)
 				-- since id-codes are only required to be defined in the terminology if they identify
 				-- nodes under multiply-valued C_ATTRIBUTEs, we have to check their parent C_ATTRIBUTE type
 				-- to decide. There can be more than one C_OBJECT with the same id-code.
 				across codes_csr.item as ac_csr loop
-					if spec_depth > arch_depth then
+					if code_spec_depth > arch_depth then
 						add_error (ec_VTSD, <<codes_csr.key>>)
 					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
-						if spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) or else
-							spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
+						if code_spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) or else
+							code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
 						then
 							add_error (ec_VATID, <<codes_csr.key, co.path>>)
 						end
@@ -298,11 +298,11 @@ feature {NONE} -- Implementation
 			across target.value_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
 				code := codes_csr.key
-				spec_depth := specialisation_depth_from_code (code)
-				if spec_depth > arch_depth then
+				code_spec_depth := specialisation_depth_from_code (code)
+				if code_spec_depth > arch_depth then
 					add_error (ec_VATCD, <<code, arch_depth.out>>)
-				elseif spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
-					spec_depth = arch_depth and not terminology.has_code (code)
+				elseif code_spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
+					code_spec_depth = arch_depth and not terminology.has_code (code)
 				then
 					add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
 				end

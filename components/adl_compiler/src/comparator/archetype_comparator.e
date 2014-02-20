@@ -120,6 +120,10 @@ feature -- Comparison
 			c_it: C_ITERATOR
 			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 			diff_child: DIFFERENTIAL_ARCHETYPE
+			term_removal_list: ARRAYED_SET [STRING]
+			def_id_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
+			def_at_codes: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
+			def_ac_codes: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
 		do
 			create diff_child.make_from_flat (flat_target)
 			differential_output := diff_child
@@ -141,20 +145,20 @@ feature -- Comparison
 
 			-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
 			across inherited_subtree_list as subtree_csr loop
-				if attached {C_OBJECT} subtree_csr.item as cco_1 then
+				if attached {C_OBJECT} subtree_csr.item as cco then
 					-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
 					-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
 					-- the RM schema
-					if attached cco_1.parent and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
-						if attached {C_OBJECT} cco_1.parent.child_after (cco_1) as cco_next and then
+					if attached cco.parent and (cco.parent.cardinality = Void or else cco.parent.is_ordered) then
+						if attached {C_OBJECT} cco.parent.child_after (cco) as cco_next and then
 							cco_next.specialisation_status = ss_added
 						then
-							cco_next.set_sibling_order_after (cco_1.node_id)
+							cco_next.set_sibling_order_after (cco.node_id)
 						end
-						if attached {C_OBJECT} cco_1.parent.child_before (cco_1) as cco_prev and then
+						if attached {C_OBJECT} cco.parent.child_before (cco) as cco_prev and then
 							cco_prev.specialisation_status = ss_added
 						then
-							cco_prev.set_sibling_order_before (cco_1.node_id)
+							cco_prev.set_sibling_order_before (cco.node_id)
 						end
 					end
 				end
@@ -175,6 +179,48 @@ feature -- Comparison
 
 			-- rebuild all internal references, path cache etc
 			diff_child.rebuild
+
+			-- remove unneeded items from differential terminology
+			create term_removal_list.make (0)
+
+			-- id-codes
+			term_removal_list.compare_objects
+			def_id_codes := diff_child.id_codes_index
+			across diff_child.terminology.id_codes as codes_csr loop
+				if specialisation_depth_from_code (codes_csr.item) = diff_child.specialisation_depth and then not def_id_codes.has (codes_csr.item) or else
+					specialisation_depth_from_code (codes_csr.item) < diff_child.specialisation_depth
+				then
+					term_removal_list.extend (codes_csr.item)
+				end
+			end
+
+			-- ac-codes and value-sets
+			def_ac_codes := diff_child.term_constraints_index
+			across diff_child.terminology.constraint_codes as codes_csr loop
+				if specialisation_depth_from_code (codes_csr.item) = diff_child.specialisation_depth and then not def_ac_codes.has (codes_csr.item) or else
+					specialisation_depth_from_code (codes_csr.item) < diff_child.specialisation_depth
+				then
+					term_removal_list.extend (codes_csr.item)
+					if diff_child.terminology.has_value_set (codes_csr.item) then
+						diff_child.terminology.value_sets.remove (codes_csr.item)
+					end
+				end
+			end
+
+			-- at-codes
+			def_at_codes := diff_child.value_codes_index
+			across diff_child.terminology.value_codes as codes_csr loop
+				if specialisation_depth_from_code (codes_csr.item) = diff_child.specialisation_depth and then
+					not (def_at_codes.has (codes_csr.item) or diff_child.terminology.has_value_set_value_code (codes_csr.item)) or else
+					specialisation_depth_from_code (codes_csr.item) < diff_child.specialisation_depth
+				then
+					term_removal_list.extend (codes_csr.item)
+				end
+			end
+
+			across term_removal_list as terms_csr loop
+				diff_child.terminology.remove_definition (terms_csr.item)
+			end
 		ensure
 			Diff_generated: attached differential_output
 		end
@@ -205,7 +251,7 @@ feature {NONE} -- Implementation
 				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
 				ca_in_flat_anc := flat_ancestor.attribute_at_path (path_in_flat)
 				-- if existence or cardinality have changed, it's a redefinition
-				if not ca_child.c_equal (ca_in_flat_anc) then
+				if not ca_child.c_congruent_to (ca_in_flat_anc) then
 					ca_child.set_specialisation_status_redefined
 				else
 					ca_child.set_specialisation_status_inherited
@@ -225,7 +271,7 @@ feature {NONE} -- Implementation
 				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
 				-- if occurrences different, or node_id different, or RM type different or else primitive object constraint different
-				if not co_child.c_equal (co_in_flat_anc) then
+				if not co_child.c_congruent_to (co_in_flat_anc) or else not co_child.node_id.is_equal (co_in_flat_anc.node_id) then
 					co_child.set_specialisation_status_redefined
 --					if not co_child.node_id.is_equal (co_in_flat_anc.node_id) and (co_child.is_root or else (attached co_child.parent as ca_par and then ca_par.is_path_compressible)) then
 --						co_child.set_is_path_compressible
@@ -243,7 +289,15 @@ feature {NONE} -- Implementation
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
-			if attached {C_OBJECT} a_c_node as co_child then
+			if attached {C_ARCHETYPE_ROOT} a_c_node as car then
+				if attached car.slot_node_id then						-- slot filler
+					check attached car.slot_path as att_slot_path then
+						create apa.make_from_string (att_slot_path)
+					end
+					Result := flat_ancestor.has_object_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				end
+
+			elseif attached {C_OBJECT} a_c_node as co_child then
 				if specialisation_depth_from_code (co_child.node_id) <= flat_ancestor.specialisation_depth -- node from previous level
 					or else is_refined_code (co_child.node_id)  -- from current level, refined
 				then
