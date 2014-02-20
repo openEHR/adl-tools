@@ -47,7 +47,7 @@ feature -- Comparison
 			end
 		end
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if Current and `other' are semantically the same
 			-- Used for diffing flat archetypes, e.g. after editing
 		do
@@ -60,7 +60,7 @@ feature -- Comparison
 					members.off or not Result
 				loop
 					Result := members.item.same_type (other.members.item) and then
-						members.item.c_equal (other.members.item)
+						members.item.c_congruent_to (other.members.item)
 					members.forth
 					other.members.forth
 				end

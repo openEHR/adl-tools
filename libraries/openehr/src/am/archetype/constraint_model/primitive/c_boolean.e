@@ -13,7 +13,7 @@ class C_BOOLEAN
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, c_equal, c_conforms_to
+			default_create, constraint, assumed_value, c_congruent_to, c_conforms_to
 		end
 
 create
@@ -88,7 +88,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			Result := precursor (other) and

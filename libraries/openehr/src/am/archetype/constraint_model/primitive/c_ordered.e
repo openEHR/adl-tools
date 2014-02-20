@@ -12,7 +12,7 @@ deferred class C_ORDERED [G -> COMPARABLE create default_create end]
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, c_equal, c_conforms_to, assumed_value, as_string
+			default_create, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
 		end
 
 feature -- Initialisation
@@ -81,7 +81,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			Result := precursor (other) and constraint.count = other.constraint.count

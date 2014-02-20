@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_equal, aom_builtin_type, assumed_value, prototype_value, valid_value, as_string, c_conforms_to
+			c_congruent_to, aom_builtin_type, assumed_value, prototype_value, valid_value, as_string, c_conforms_to
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -168,7 +168,7 @@ feature -- Comparison
 			end
 		end
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if Current and `other' are semantically the same locally (child objects may differ)
 		do
 			Result := occurrences ~ other.occurrences and

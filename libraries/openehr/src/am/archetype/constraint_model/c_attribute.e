@@ -338,14 +338,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
-			-- True if this node is a duplicate of `other'
-			-- Normally used to detect redefinition while diffing two flat archetypes
-		do
-			Result := cardinality ~ other.cardinality and existence ~ other.existence
-		end
-
-	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses no additional constraints than `other'.
 		do
 			Result := existence = Void and ((is_single and other.is_single) or (is_multiple and other.is_multiple and cardinality = Void))

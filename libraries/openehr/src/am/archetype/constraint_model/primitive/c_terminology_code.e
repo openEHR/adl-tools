@@ -20,7 +20,7 @@ class C_TERMINOLOGY_CODE
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, c_equal, c_conforms_to, set_constraint,
+			default_create, constraint, assumed_value, c_congruent_to, c_conforms_to, set_constraint,
 			as_string
 		end
 
@@ -92,7 +92,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		local
 			this_vset, other_vset: like value_set_expanded

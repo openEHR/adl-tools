@@ -70,16 +70,6 @@ feature -- Status report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
-			-- True if Current and `other' are identical locally (child objects may differ)
-			-- Used when diff'ing two flat archetypes, to determine if a node is just a copy
-			-- (i.e. no redefinitions) of the other.
-		do
-			Result := occurrences ~ other.occurrences and
-				node_id.is_equal (other.node_id) and
-				rm_type_name.is_case_insensitive_equal (other.rm_type_name)
-		end
-
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- `other' is typically in a flat archetype.
@@ -93,7 +83,7 @@ feature -- Comparison
 				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
 		end
 
-	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses no constraints in addition to `other', other than
 			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
 			-- `other' is typically in a flat archetype
@@ -102,9 +92,9 @@ feature -- Comparison
 			--	rm_type_name is identical
 			--	occurrences is Void
 			-- 	sibling order is Void
-			--	node_id is identical or else the is the only child that overlays the parent node
+			--	node_id is identical or else is the only child that overlays the parent node
 		do
-			Result := rm_type_name.is_equal (other.rm_type_name) and
+			Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and
 				not attached occurrences and
 				node_reuse_congruent (other) and
 				not attached sibling_order

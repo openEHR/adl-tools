@@ -41,7 +41,7 @@ feature -- Comparison
 		deferred
 		end
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if Current and `other' are semantically the same locally (child objects may differ)
 		deferred
 		end

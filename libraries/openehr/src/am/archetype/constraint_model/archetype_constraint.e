@@ -84,13 +84,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
-			-- True if this node is a duplicate of `other'
-			-- Normally used to detect redefinition while diffing two flat archetypes
-		deferred
-		end
-
-	c_congruent_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		deferred
 		end

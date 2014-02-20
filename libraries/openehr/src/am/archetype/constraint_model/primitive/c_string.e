@@ -21,7 +21,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, c_equal, c_conforms_to, assumed_value, as_string
+			default_create, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
 		end
 
 create
@@ -162,7 +162,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- <precursor>
 			-- Lists have to be identical, only the order may be different
 		do

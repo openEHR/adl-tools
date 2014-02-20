@@ -66,11 +66,11 @@ feature -- Comparison
 			end
 		end
 
-	c_equal (other: like Current): BOOLEAN
+	c_congruent_to (other: like Current): BOOLEAN
 			-- True if Current and `other' are semantically the same
 		do
 			Result := across tuples as tuple_csr all
-				across other.tuples as other_tuple_csr some tuple_csr.item.c_equal (other_tuple_csr.item) end
+				across other.tuples as other_tuple_csr some tuple_csr.item.c_congruent_to (other_tuple_csr.item) end
 			end
 		end
 

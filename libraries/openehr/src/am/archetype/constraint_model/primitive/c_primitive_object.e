@@ -12,7 +12,7 @@ deferred class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			default_create, out, enter_subtree, exit_subtree
+			default_create, out, enter_subtree, exit_subtree, node_reuse_congruent
 		end
 
 feature -- Initialisaiton
@@ -56,6 +56,14 @@ feature -- Access
 			og_path := representation.path
 			og_path.last.clear_object_id
 			Result := og_path.as_string
+		end
+
+feature -- Comparison
+
+	node_reuse_congruent (other: like Current): BOOLEAN
+			-- True if this node has same id as `other'
+		do
+			Result := node_id.is_equal (other.node_id)
 		end
 
 feature -- Status Report
