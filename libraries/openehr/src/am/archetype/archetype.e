@@ -505,7 +505,7 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
-feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_151_CONVERTER, AOM_VALIDATOR, ARCHETYPE_FLATTENER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
+feature -- Validation
 
 	id_codes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for at-codes that identify nodes in archetype

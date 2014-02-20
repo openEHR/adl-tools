@@ -388,7 +388,7 @@ feature -- Status Report
 			Result := term_binding_map.has (a_terminology.as_lower) and then attached term_binding_map.item (a_terminology.as_lower) as att_map and then att_map.has (a_code)
 		end
 
-	is_value_set_value_code (a_value_code: STRING): BOOLEAN
+	has_value_set_value_code (a_value_code: STRING): BOOLEAN
 			-- True if the at-code `a_value_code' is found in any value set
 		require
 			Valid_code: is_valid_value_code (a_value_code)
@@ -564,7 +564,7 @@ feature -- Modification
 			value_sets.put (a_value_set, a_value_set.id)
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_151_CONVERTER} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 
 	remove_definition (a_code: STRING)
 			-- completely remove the term from the terminology

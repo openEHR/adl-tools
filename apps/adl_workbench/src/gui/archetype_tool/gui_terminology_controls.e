@@ -354,7 +354,7 @@ feature {NONE} -- Implementation
 
 			-- at-codes not in a value set
 			across terminology.value_codes as at_codes_csr loop
-				if not terminology.is_value_set_value_code (at_codes_csr.item) then
+				if not terminology.has_value_set_value_code (at_codes_csr.item) then
 					evx_values_grid.add_row (at_codes_csr.item)
 					populate_value_row (at_codes_csr.item, At_code_color)
 				end
