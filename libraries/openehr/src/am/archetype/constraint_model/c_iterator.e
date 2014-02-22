@@ -59,7 +59,7 @@ feature -- Command
 			tree_iterator.do_all (agent node_enter_action, agent node_exit_action)
 		end
 
-	do_all_entry (a_c_node_enter_action: like c_node_enter_action)
+	do_all_on_entry (a_c_node_enter_action: like c_node_enter_action)
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_exit_action := agent c_no_op

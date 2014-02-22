@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 			if attached c_terminology_code_type_mapping as ctc_tm then
 				att_c_terminology_code_type_mapping := ctc_tm
 				create def_it.make (target.definition)
-				def_it.do_all_entry (agent update_aom_mapped_type)
+				def_it.do_all_on_entry (agent update_aom_mapped_type)
 			end
 		end
 

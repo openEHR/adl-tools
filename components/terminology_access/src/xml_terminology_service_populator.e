@@ -62,7 +62,7 @@ feature {NONE} -- Implementation
 			-- Retrieve xml document from content of `a_text'.
 			-- If deserialization fails, return Void.
 		local
-			parser: XML_LITE_PARSER
+			parser: XML_STANDARD_PARSER
 			callbacks: XML_CALLBACKS_DOCUMENT
 		do
 			create parser.make

@@ -95,8 +95,6 @@ feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
-		local
-			this_code, other_code: STRING
 		do
 			Result := precursor (other, rm_type_conformance_checker)
 			if Result then
