@@ -211,6 +211,16 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 		last_string_value := text
 	}
 
+---------/* V_REUSED_ID_CODE of form: */ ------------
+-- [local::idN]
+--
+
+\[local::[ \t]*{ID_CODE}\]	{
+		str_ := text_substring (2, text_count - 1)
+		last_string_value := str_.substring (str_.substring_index ("::", 1) + 2, str_.count)
+		last_token := V_REUSED_ID_CODE
+	}
+
 ----------/* V_VALUE_SET_REF: term code of form [ac2], [ac0.0.2] */ ---------------
 
 \[{AC_CODE}\] {

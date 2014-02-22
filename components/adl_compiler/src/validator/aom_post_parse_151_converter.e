@@ -96,6 +96,9 @@ feature -- Commands
 	execute
 		do
 			if not target.adl_version.is_equal (latest_adl_version) then
+				-- find C_TERMINOLOGY_CODE constraints containing id-codes, and convert to at-codes
+				convert_reused_id_codes
+
 				-- add value-sets extracted from definition; these value sets originally consisted of a synthesised
 				-- ac-code and synthesised at-codes which need to be converted
 				if not compiler_billboard.value_sets.is_empty then
@@ -128,6 +131,41 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	convert_reused_id_codes
+			-- there are some instances where an at-code from the 1.4 archetype was used as both a node id
+			-- and a value id. These show up as id-codes in C_TERMINOLOGY_CODE objects. We have to add new
+			-- at-coded terms for them, created as copies of id-codes
+		local
+			arch_term: ARCHETYPE_TERM
+		do
+			across term_constraints_with_id_codes as ctc_csr loop
+				if target.terminology.has_term_definition (target.terminology.original_language, ctc_csr.key) then
+					arch_term := target.terminology.term_definition (target.terminology.original_language, ctc_csr.key).deep_twin
+					arch_term.code.replace_substring_all (id_code_leader, value_code_leader)
+					target.terminology.put_new_definition (target.terminology.original_language, arch_term)
+				end
+				ctc_csr.item.constraint.replace_substring_all (id_code_leader, value_code_leader)
+			end
+		end
+
+	term_constraints_with_id_codes: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
+			-- obtain all C_TERMINOLOGY_CODEs that have id-codes instead of at- or ac-codes in them
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (target.definition)
+			def_it.do_all_on_entry (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
+					do
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
+							if is_id_code (ctc.constraint) then
+								idx.put (ctc, ctc.constraint)
+							end
+						end
+					end (?, ?, Result))
+		end
 
 	convert_external_term_constraints
 			-- Here we convert synthesised at-codes created due to conversion of single external

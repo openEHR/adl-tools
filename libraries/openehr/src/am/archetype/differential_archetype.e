@@ -202,7 +202,9 @@ feature {ARCH_CAT_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
 						debug("compress")
 							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
 						end
-						ca2.set_differential_path_to_here
+						if not ca2.parent.is_root then
+							ca2.set_differential_path_to_here
+						end
 					else
 						debug("compress")
 							io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")

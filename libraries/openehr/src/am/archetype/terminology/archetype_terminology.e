@@ -639,7 +639,7 @@ feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_151_CONVERTER, ARCHETYPE_COMPARA
 			term_binding_map_cache := Void
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_151_CONVERTER} -- Modification
 
 	put_new_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
 			-- add a new term definition for language `a_language' and
@@ -731,7 +731,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 			Code_valid: is_valid_code (a_code)
 		local
 			idx: INTEGER
-			parent_code, idx_string: STRING
+			parent_code: STRING
 		do
 			if is_refined_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)

@@ -1076,6 +1076,7 @@ feature {NONE} -- Compilation
 						create archetype_comparator.make (att_sp, flat_arch)
 						archetype_comparator.compare
 						archetype_comparator.generate_diff
+						archetype_comparator.compress_differential_child
 						differential_archetype := archetype_comparator.differential_output
 					else
 						compilation_state := cs_lineage_invalid
@@ -1098,13 +1099,6 @@ feature {NONE} -- Compilation
 
 					-- now validate in two stages
 					validate
-
-					-- if differential archetype was generated from an old-style flat, perform path compression
-					-- FIXME: currently has to be done after validation, because path-compression markers are
-					-- added there as a side-effect. Should be done in a separate pass
-					if differential_archetype.is_specialised then
-						differential_archetype.convert_to_differential_paths
-					end
 
 					if compilation_state = Cs_validated_phase_2 then
 				 		save_differential

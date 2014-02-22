@@ -408,7 +408,8 @@ feature -- Comparison
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
 		do
-			Result := is_valid_code (a_child_code) and then a_child_code.starts_with (a_parent_code)
+			Result := is_valid_code (a_child_code) and then a_child_code.starts_with (a_parent_code) and then
+				(a_child_code.count = a_parent_code.count or else a_child_code.item (a_parent_code.count + 1) = Specialisation_separator)
 		end
 
 	is_terminology_uri (a_string: STRING): BOOLEAN

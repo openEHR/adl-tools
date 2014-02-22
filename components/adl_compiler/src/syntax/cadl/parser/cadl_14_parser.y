@@ -63,7 +63,7 @@ create
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
 
 %token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR 
-%token <STRING> V_VALUE_SET_REF
+%token <STRING> V_VALUE_SET_REF V_REUSED_ID_CODE
 %token <TERM_CONSTRAINT_PARSE_STRUCTURE> V_EXPANDED_VALUE_SET_DEF V_EXTERNAL_VALUE_SET_DEF
 %token ERR_VALUE_SET_DEF_ASSUMED ERR_VALUE_SET_MISSING_CODES ERR_VALUE_SET_DEF_DUP_CODE ERR_VALUE_SET_DEF
 
@@ -1421,6 +1421,11 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 -------------------------------------------------------------------------------------------------------------
 --- START Legacy ADL 1.4 inline term set
 ---
+	| V_REUSED_ID_CODE
+		{
+			-- e.g. [local::idN] due to reuse of at-code as value code in original 1.4 archetype
+			create $$.make ($1)
+		}
 	| V_EXPANDED_VALUE_SET_DEF	
 		{
 			-- e.g. "local::at40"

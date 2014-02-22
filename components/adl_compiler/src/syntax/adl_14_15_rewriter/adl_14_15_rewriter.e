@@ -1634,6 +1634,7 @@ feature {NONE} -- Implementation
 				new_code := adl_14_code_renumbered (an_old_code)
 				converted_codes.put (new_code, an_old_code)
 			end
+
 			out_buffer.append (new_code)
 		end
 

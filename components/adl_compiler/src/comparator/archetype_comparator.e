@@ -245,6 +245,7 @@ feature {NONE} -- Implementation
 			co_in_flat_anc: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			path_in_flat: STRING
+			node_congruent: BOOLEAN
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child then
 				create apa.make_from_string (a_c_node.path)
@@ -255,9 +256,9 @@ feature {NONE} -- Implementation
 					ca_child.set_specialisation_status_redefined
 				else
 					ca_child.set_specialisation_status_inherited
---					if attached ca_child.parent as co_par and then co_par.is_path_compressible then
---						ca_child.set_is_path_compressible
---					end
+					if attached ca_child.parent as co_par and then co_par.is_path_compressible then
+						ca_child.set_is_path_compressible
+					end
 				end
 
 			-- C_ARCHETYPE_ROOT - either a slot filler, or a direct external reference with no parent slot
@@ -270,17 +271,19 @@ feature {NONE} -- Implementation
 				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
 				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
+				node_congruent := co_child.c_congruent_to (co_in_flat_anc)
+
 				-- if occurrences different, or node_id different, or RM type different or else primitive object constraint different
-				if not co_child.c_congruent_to (co_in_flat_anc) or else not co_child.node_id.is_equal (co_in_flat_anc.node_id) then
+				if not node_congruent or else not co_child.node_id.is_equal (co_in_flat_anc.node_id) then
 					co_child.set_specialisation_status_redefined
---					if not co_child.node_id.is_equal (co_in_flat_anc.node_id) and (co_child.is_root or else (attached co_child.parent as ca_par and then ca_par.is_path_compressible)) then
---						co_child.set_is_path_compressible
---					end
 				else
 					co_child.set_specialisation_status_inherited
---					if co_child.is_root or else (attached co_child.parent as ca_par and then ca_par.is_path_compressible) then
---						co_child.set_is_path_compressible
---					end
+				end
+
+				if node_congruent and attached {C_COMPLEX_OBJECT} co_child and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf and then
+					(co_child.is_root or else co_child.parent.is_path_compressible and cco_pf.has_attributes)
+				then
+					co_child.set_is_path_compressible
 				end
 			end
 		end

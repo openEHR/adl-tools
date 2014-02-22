@@ -207,13 +207,6 @@ end
 								cpf_card.as_string>>)
 						end
 					end
-
-				elseif ca_child_diff.c_congruent_to (ca_in_flat_anc) and ca_child_diff.parent.is_path_compressible then
-debug ("validate")
-	io.put_string (" CONGRUENT to ancestor node " +
-	ca_in_flat_anc.path + " (setting is_path_compressible [1]) %N")
-end
-					ca_child_diff.set_is_path_compressible
 				end
 
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
@@ -313,50 +306,13 @@ end
 							add_error (ec_VPOV, <<cpo_child.rm_type_name, target.annotated_path (cpo_child.path, target_descriptor.archetype_view_language, True),
 								cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
 								target.annotated_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
-
 						else
 							add_error (ec_VUNK, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_in_flat_anc.rm_type_name, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
 
 						end
 					else
-						-- nodes are c_conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
-						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
-						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
-						-- diff-tools taking legacy archetypes as input.
-						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.c_congruent_to (co_in_flat_anc) and
-							(co_child_diff.is_root or else co_child_diff.parent.is_path_compressible)
-						then
-debug ("validate")
-io.put_string (">>>>> validate: C_OBJECT in child at " +
-target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True) + " CONGRUENT to ancestor node " +
-target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True))
-end
-							if attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf then
-								-- if this node in the diff archetype is the root, or else if the corresponding node in the flat ancestor has attributes,
-								-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat ancestor node attributes
-								-- need to be preserved)
-								if co_child_diff.is_root or cco_pf.has_attributes then
-debug ("validate")
-io.put_string (" (setting is_path_compressible [2]) %N")
-end
-									co_child_diff.set_is_path_compressible
-								else
-debug ("validate")
-io.put_string ("(not setting is_path_compressible, due to being overlay node)%N")
-end
-								end
-							else
-								add_error (ec_compiler_unexpected_error, <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
-							end
-						else
-debug ("validate")
-io.put_string (">>>>> validate: C_OBJECT in child at " +
-target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True) + " CONFORMANT to ancestor node " +
-target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True) + " %N")
-end
-						end
-
+						-- deal with sibling marker on C_OBJECTs that are redefines of nodes in flat parent
 						if attached co_child_diff.sibling_order and then not (co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) or else
 							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, flat_ancestor.specialisation_depth)))
 						then
