@@ -442,7 +442,7 @@ feature -- Modification
 		local
 			new_term: ARCHETYPE_TERM
 		do
-			create new_term.make_all (new_added_id_code_at_level (specialisation_depth, highest_id_code), a_text, a_description)
+			create new_term.make_all (new_id_code_agt.item([]), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
@@ -711,14 +711,11 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 	highest_refined_code_index: HASH_TABLE [INTEGER, STRING]
 			-- Table of current highest code keyed by its parent code, for all specialised codes
 			-- in this terminology at its level of specialisation.
-			-- For example the entry for key 'at0007' could be 5, meaning that current top child
-			-- code of 'at7' is 'at7.5'
+			-- For example the entry for key 'id7' could be 5, meaning that current top child
+			-- code of 'id7' is 'id7.5'
         attribute
             create Result.make (0)
         end
-
-	highest_id_code: INTEGER
-			-- highest added id code at the level of this terminology; 0 if none so far
 
 	highest_value_code: INTEGER
 			-- highest added term code at the level of this terminology; 0 if none so far
@@ -742,18 +739,12 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 				if idx > highest_refined_code_index [parent_code] then
 					highest_refined_code_index [parent_code] := idx
 				end
-
 			elseif specialisation_depth_from_code (a_code) = specialisation_depth then
-				idx_string := index_from_code_at_level (a_code, specialisation_depth)
-				if idx_string.is_integer then
-					idx := idx_string.to_integer
-					if is_id_code (a_code) then
-						highest_id_code := highest_id_code.max (idx)
-					elseif is_value_code (a_code) then
-						highest_value_code := highest_value_code.max (idx)
-					elseif is_constraint_code (a_code) then
-						highest_constraint_code := highest_constraint_code.max (idx)
-					end
+				idx := code_index_at_level (a_code, specialisation_depth)
+				if is_value_code (a_code) then
+					highest_value_code := highest_value_code.max (idx)
+				elseif is_constraint_code (a_code) then
+					highest_constraint_code := highest_constraint_code.max (idx)
 				end
 			end
 		end
@@ -774,6 +765,16 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 				end
 			end
 		end
+
+feature {ARCHETYPE} -- Modification
+
+	set_new_id_code_agt (an_agt: like new_id_code_agt)
+		do
+			new_id_code_agt := an_agt
+		end
+
+	new_id_code_agt: detachable FUNCTION [ARCHETYPE, TUPLE, STRING]
+			-- agent to obtain new id code at the specialisation level of this archetype
 
 feature {NONE} -- Legacy
 

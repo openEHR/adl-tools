@@ -63,6 +63,7 @@ feature -- Parsing
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
+			new_arch: DIFFERENTIAL_ARCHETYPE
 		do
 			adl_parser.execute (a_text)
 
@@ -186,7 +187,7 @@ feature -- Parsing
 							and then not dt_object_converter.errors.has_errors
 						then
 							-- build the archetype
-							create Result.make (
+							create new_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
 								olt.original_language,
@@ -195,12 +196,7 @@ feature -- Parsing
 								definition,
 								diff_terminology
 							)
-						else
-							errors.add_error (ec_SAON, Void, generator + ".parse")
-							errors.append (dt_object_converter.errors)
-						end
 
-						if attached Result as new_arch then
 							-- add optional parts
 							if attached adl_parser.parent_archetype_id as att_parent_id then
 								new_arch.set_parent_archetype_id (att_parent_id)
@@ -240,6 +236,12 @@ feature -- Parsing
 							if attached annots as att_annots then
 								new_arch.set_annotations (att_annots)
 							end
+
+							new_arch.rebuild
+							Result := new_arch
+						else
+							errors.add_error (ec_SAON, Void, generator + ".parse")
+							errors.append (dt_object_converter.errors)
 						end
 					end
 				end

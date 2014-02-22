@@ -63,6 +63,7 @@ feature -- Parsing
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
+			new_arch: FLAT_ARCHETYPE
 		do
 			adl_parser.execute (a_text)
 
@@ -182,7 +183,7 @@ feature -- Parsing
 							ont_tree.as_object (({FLAT_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
-							create Result.make (
+							create new_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
 								olt.original_language,
@@ -191,12 +192,7 @@ feature -- Parsing
 								definition,
 								flat_terminology
 							)
-						else
-							errors.add_error (ec_SAON, Void, generator + ".parse")
-							errors.append (dt_object_converter.errors)
-						end
 
-						if attached Result as new_arch then
 							-- add optional parts
 							if attached adl_parser.parent_archetype_id as att_parent_id then
 								new_arch.set_parent_archetype_id (att_parent_id)
@@ -236,6 +232,12 @@ feature -- Parsing
 							if attached annots as a then
 								new_arch.set_annotations (a)
 							end
+
+							new_arch.rebuild
+							Result := new_arch
+						else
+							errors.add_error (ec_SAON, Void, generator + ".parse")
+							errors.append (dt_object_converter.errors)
 						end
 					end
 				end

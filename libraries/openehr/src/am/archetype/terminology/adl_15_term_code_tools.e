@@ -210,13 +210,11 @@ feature -- Access
 			Depth_valid: a_depth >= 0
 		local
 			code_defined_in_this_level: BOOLEAN
-			code_at_this_level: STRING
 		do
 			if a_depth > specialisation_depth_from_code (a_code) then
 				Result := ss_inherited
 			else
-				code_at_this_level := index_from_code_at_level (a_code, a_depth)
-				code_defined_in_this_level := code_at_this_level.to_integer > 0
+				code_defined_in_this_level := code_index_at_level (a_code, a_depth).to_integer > 0
 				if code_defined_in_this_level then
 					if a_depth > 0 and code_exists_at_level (a_code, a_depth - 1) then -- parent is valid
 						Result := ss_redefined
@@ -231,7 +229,7 @@ feature -- Access
 			end
 		end
 
-	index_from_code_at_level (a_code: STRING; a_depth: INTEGER): STRING
+	code_index_at_level (a_code: STRING; a_depth: INTEGER): INTEGER
 			-- get the numeric part of the code from this code, at a_depth
 			-- for example:
 			-- 		a_code = at1		a_depth = 0 -> 1
@@ -242,6 +240,7 @@ feature -- Access
 			--		a_code = at0.4.5	a_depth = 1 -> 4
 			--		a_code = at0.4.5	a_depth = 2 -> 5
 		require
+			Valid_code_string: is_valid_code (a_code)
 			Depth_valid: a_depth >= 0 and a_depth <= specialisation_depth_from_code (a_code)
 		local
 			spec_depth: INTEGER
@@ -271,7 +270,7 @@ feature -- Access
 			else
 				rpos := rpos - 1
 			end
-			Result := code_num_part.substring (lpos, rpos)
+			Result := code_num_part.substring (lpos, rpos).to_integer
 		end
 
 	specialisation_depth_from_code (a_code: STRING): INTEGER

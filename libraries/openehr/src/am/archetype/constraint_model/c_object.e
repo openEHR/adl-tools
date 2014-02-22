@@ -96,8 +96,8 @@ feature -- Comparison
 		do
 			Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and
 				not attached occurrences and
-				node_reuse_congruent (other) and
-				not attached sibling_order
+				not attached sibling_order and
+				node_reuse_congruent (other)
 		end
 
 	occurrences_conforms_to (other: C_OBJECT): BOOLEAN

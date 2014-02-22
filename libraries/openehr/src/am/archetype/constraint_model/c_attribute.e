@@ -550,6 +550,7 @@ feature -- Modification
 	replace_node_id (old_id, new_id: STRING)
 			-- replace old_id with new_id in relevant child node, and also in attribute parent list
 		require
+			New_id_valid: not has_child_with_id (new_id)
 			Old_id_valid: has_child_with_id (old_id)
 			New_id_valid: not new_id.is_empty
 		do

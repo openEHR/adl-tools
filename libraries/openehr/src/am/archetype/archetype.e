@@ -19,7 +19,7 @@ inherit
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} deep_twin
+			{ANY} deep_twin, specialisation_depth_from_code, is_valid_code
 		end
 
 	AUTHORED_RESOURCE
@@ -517,7 +517,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING])
 					local
 						og_path: OG_PATH
@@ -554,7 +554,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
@@ -588,7 +588,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
@@ -607,7 +607,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING])
 					do
 						if attached {C_COMPLEX_OBJECT_PROXY} a_c_node as air then
@@ -627,7 +627,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
 					do
 						if attached {C_ARCHETYPE_ROOT} a_c_node as car then
@@ -673,7 +673,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: ARRAYED_LIST [ARCHETYPE_SLOT])
 					do
 						if attached {ARCHETYPE_SLOT} a_c_node as a_slot then idx.extend (a_slot) end
@@ -687,7 +687,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: ARRAYED_LIST [C_COMPLEX_OBJECT])
 					do
 						if attached {C_COMPLEX_OBJECT} a_c_node as cco and then cco.has_attribute_tuples then
@@ -803,6 +803,26 @@ feature -- Modification
 				roll_up_inheritance_status
 			end
 			is_dirty := False
+
+			-- update highest id code in terminology
+			extract_highest_added_id_codes
+		end
+
+	create_new_id_code: STRING
+			-- create a new id-code at the specialisation depth of this archetype
+		do
+			Result := new_added_id_code_at_level (specialisation_depth, highest_added_id_code)
+			highest_added_id_code := highest_added_id_code + 1
+		end
+
+	create_refined_id_code (a_parent_id: STRING): STRING
+			-- create a id-code at the specialisation depth of this archetype as a child
+			-- id of `a_parent_id'
+		require
+			specialisation_depth_from_code (a_parent_id) + 1 = specialisation_depth
+		do
+			Result := new_refined_code_at_level (a_parent_id, specialisation_depth, highest_redefined_id_codes.item (a_parent_id))
+			highest_redefined_id_codes.replace (highest_redefined_id_codes.item (a_parent_id) + 1, a_parent_id)
 		end
 
 feature {ADL_15_ENGINE} -- ADL 1.5 Serialisation
@@ -816,6 +836,47 @@ feature {ADL_15_ENGINE} -- ADL 1.5 Serialisation
 		end
 
 feature {NONE} -- Implementation
+
+	extract_highest_added_id_codes
+			-- set `highest_added_id_code'
+		local
+			def_it: C_ITERATOR
+		do
+			highest_added_id_code := 0
+			create def_it.make (definition)
+			def_it.do_all_on_entry (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					local
+						parent_node_id: STRING
+						code_idx: INTEGER
+					do
+						if attached {C_OBJECT} a_c_node as co and then not attached {C_PRIMITIVE_OBJECT} co then
+							-- need to avoid at-codes in archetypes not yet converted or fully converted
+							if is_id_code (co.node_id) and not co.node_id.starts_with (Fake_adl_14_node_id_base) and then specialisation_depth_from_code (co.node_id) = specialisation_depth then
+								code_idx := code_index_at_level (co.node_id, specialisation_depth)
+								if is_refined_code (co.node_id) then
+									parent_node_id := specialisation_parent_from_code (co.node_id)
+									if not highest_redefined_id_codes.has (parent_node_id) then
+										highest_redefined_id_codes.put (code_idx, parent_node_id)
+									elseif highest_redefined_id_codes.item (parent_node_id) < code_idx then
+										highest_redefined_id_codes.replace (code_idx, parent_node_id)
+									end
+								else
+									highest_added_id_code := highest_added_id_code.max (code_idx)
+								end
+							end
+						end
+					end)
+		end
+
+	highest_added_id_code: INTEGER
+			-- integer code value of the highest id_code added at this specialisation level
+
+	highest_redefined_id_codes: HASH_TABLE [INTEGER, STRING]
+			-- table of highest code indexes of child codes used in this archetype keyed by parent node id
+		attribute
+			create Result.make (0)
+		end
 
 	roll_up_inheritance_status
 			-- set rolled_up_specialisation statuses in nodes of definition
@@ -836,13 +897,21 @@ feature {NONE} -- Implementation
 			-- use_nodes in definition structure; paths to C_OBJECTs have the C_OBJECT reference
 
 	set_terminology_agents
+		do
+			-- set agent to create new id-codes into terminology
+			terminology.set_new_id_code_agt (agent create_new_id_code)
+
+			set_c_terminology_code_agents
+		end
+
+	set_c_terminology_code_agents
 			-- set a terminology extractor agent into every C_TERMINOLOGY_CODE object so
 			-- it can evaluate value sets
 		local
 			def_it: C_ITERATOR
 		do
 			create def_it.make (definition)
-			def_it.do_all_entry (
+			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then

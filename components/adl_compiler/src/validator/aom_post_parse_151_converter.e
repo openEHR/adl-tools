@@ -73,14 +73,12 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			target := a_target
-			highest_added_id_codes.wipe_out
 			rm_schema := ara.rm_schema
 			if ara.is_specialised then
 				arch_anc_flat := ara.specialisation_ancestor.flat_archetype
 				arch_anc_flat.rebuild
 			else
 				arch_anc_flat := Void
-				highest_refined_code_index.wipe_out
 			end
 		end
 
@@ -251,8 +249,7 @@ feature {NONE} -- Implementation
 		local
 			term_vsets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 			arch_c_terms: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
-			ac_code, parent_ac_code, old_path, path_in_flat: STRING
-			old_ac_code, new_code_text, new_code_description: STRING
+			ac_code, old_ac_code, parent_ac_code, old_path, path_in_flat: STRING
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		parent_ca_in_anc_flat: C_ATTRIBUTE
 	 		og_path: OG_PATH
@@ -384,18 +381,15 @@ feature {NONE} -- Implementation
 			use_node_index := target.use_node_index
 			rules_index := target.rules_index
 
+			create def_it.make (target.definition)
 			if is_valid_code (target.definition.node_id) then
-				-- get current highest code ids
-				create def_it.make (target.definition)
-				def_it.do_all_entry (agent do_get_highest_id_codes_and_paths)
-
 				-- now add missing codes
-				def_it.do_all_entry (agent do_replace_fake_id_code)
+				def_it.do_all_on_entry (agent do_replace_fake_id_code)
 
 				-- update C_ATTRIBUTE differential paths. This has the effect of interpolating
 				-- nodes ids on path segments that previously had none
 				if target.is_specialised and then attached arch_anc_flat as pf then
-					def_it.do_all_entry (agent do_rewrite_diff_path (?, ?, pf))
+					def_it.do_all_on_entry (agent do_rewrite_diff_path (?, ?, pf))
 				end
 			end
 		end
@@ -422,32 +416,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_get_highest_id_codes_and_paths (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-	 	local
-	 		code_number, parent_code: STRING
-	 		code_spec_depth: INTEGER
-	 	do
-	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then
-	 			is_valid_id_code (c_obj.node_id) and then not c_obj.node_id.starts_with (fake_adl_14_node_id_base)
-	 		then
-				code_spec_depth := specialisation_depth_from_code (c_obj.node_id)
-				code_number := index_from_code_at_level (c_obj.node_id, code_spec_depth)
-				if not is_refined_code (c_obj.node_id) then
-					if not highest_added_id_codes.has (code_spec_depth) then
-						highest_added_id_codes.put (0, code_spec_depth)
-					end
-					highest_added_id_codes.replace (highest_added_id_codes.item (code_spec_depth).max (code_number.to_integer), code_spec_depth)
-				else
-					parent_code := specialisation_parent_from_code (c_obj.node_id)
-					if not highest_refined_code_index.has (parent_code) then
-						highest_refined_code_index.put (code_number.to_integer, parent_code)
-					else
-						highest_refined_code_index.replace (highest_refined_code_index.item (parent_code).max (code_number.to_integer), parent_code)
-					end
-				end
-			end
-		end
-
 	 do_replace_fake_id_code (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 	 		-- add id-codes to nodes that have no id-code. For specialised archetypes, make sure the id-code is
 	 		-- correct with respect to the parent, if it's on an existing path
@@ -464,7 +432,7 @@ feature {NONE} -- Implementation
 	 			spec_depth := target.specialisation_depth
 
 	 			create og_path.make_from_string (c_obj.path)
-	 			og_path.last.set_object_id ("")
+	 			og_path.last.clear_object_id
 	 			old_path := og_path.as_string
 
 				-- will get overwritten below
@@ -491,7 +459,6 @@ feature {NONE} -- Implementation
 
 			 					if children_with_rm_type_name_count = 1 then
 			 						id_code := parent_id_code
-		 							c_obj.parent.replace_node_id (c_obj.node_id, parent_id_code)
 
 		 						-- in this case, it must be multiple objects under a container attribute
 								elseif children_with_rm_type_name_count > 1 then
@@ -499,17 +466,22 @@ feature {NONE} -- Implementation
 				 					id_code := target.terminology.last_new_definition_code
 				 				end
 
-				 			-- case where a single RM conformant type redefines an RM parent type
-				 			elseif parent_ca_in_anc_flat.child_count = 1 and rm_schema.type_conforms_to (c_obj.rm_type_name, parent_ca_in_anc_flat.children.first.rm_type_name) then
-		 						parent_id_code := parent_ca_in_anc_flat.children.first.node_id
-		 						if parent_ca_in_anc_flat.is_single then
-		 							-- id code not needed in terminology; create one locally
-		 							id_code := create_refined_id (parent_id_code, spec_depth)
+				 			elseif parent_ca_in_anc_flat.child_count = 1 then
+					 			-- case where a single RM conformant type redefines an RM parent type
+				 				if rm_schema.type_conforms_to (c_obj.rm_type_name, parent_ca_in_anc_flat.children.first.rm_type_name) then
+			 						parent_id_code := parent_ca_in_anc_flat.children.first.node_id
+			 						if parent_ca_in_anc_flat.is_single then
+			 							-- id code not needed in terminology; create one locally
+			 							id_code := target.create_refined_id_code (parent_id_code)
+				 					else
+					 					target.terminology.create_refined_definition (parent_id_code, Synthesised_string, Synthesised_string)
+					 					id_code := target.terminology.last_new_definition_code
+			 						end
+
+			 					-- doesn't conform to parent type, but we assume does to RM type. E.g. DV_INTERVAL<> being added alongside a DV_QUANTITY
 			 					else
-				 					target.terminology.create_refined_definition (parent_id_code, Synthesised_string, Synthesised_string)
-				 					id_code := target.terminology.last_new_definition_code
-			 						highest_refined_code_index.replace (index_from_code_at_level (id_code, spec_depth).to_integer.max (highest_refined_code_index.item (parent_id_code)), parent_id_code)
-		 						end
+					 				id_code := target.create_new_id_code
+			 					end
 		 					else
 								raise ("do_replace_fake_id_code ERROR: " + target.archetype_id.as_string + " node at path " + c_obj.path +
 									" RM type " + c_obj.rm_type_name + " unhandled redefinition%N")
@@ -519,17 +491,17 @@ feature {NONE} -- Implementation
 				 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
 				 			id_code := target.terminology.last_new_definition_code
 			 			else
-			 				id_code := create_new_id (spec_depth)
+			 				id_code := target.create_new_id_code
 		 				end
 		 			-- new objects at this level; don't have to worry about ids, but need to add definitions in terminology if parent C_ATTRIBUTE is multiple
 		 			elseif attached c_obj.parent as p and then p.is_multiple then
 			 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
 			 			id_code := target.terminology.last_new_definition_code
 		 			else
-		 				id_code := create_new_id (spec_depth)
+		 				id_code := target.create_new_id_code
 		 			end
 	 			else
-		 			id_code := create_new_id (spec_depth)
+		 			id_code := target.create_new_id_code
 	 			end
 				c_obj.parent.replace_node_id (c_obj.node_id, id_code)
 
@@ -567,40 +539,6 @@ feature {NONE} -- Implementation
 				end
 	 		end
 	 	end
-
-	create_new_id (spec_depth: INTEGER): STRING
-		do
- 			Result := new_added_id_code_at_level (spec_depth, highest_added_id_codes.item (spec_depth))
-			if not highest_added_id_codes.has (spec_depth) then
-				highest_added_id_codes.put (0, spec_depth)
-			end
-			highest_added_id_codes.replace (highest_added_id_codes.item (spec_depth) + 1, spec_depth)
-		end
-
-	create_refined_id (parent_id_code: STRING; spec_depth: INTEGER): STRING
-		do
- 			-- id code not needed in terminology; create one locally
- 			if not highest_refined_code_index.has (parent_id_code) then
- 				highest_refined_code_index.put (0, parent_id_code)
- 			end
- 			Result := new_refined_code_at_level (parent_id_code, spec_depth, highest_refined_code_index.item (parent_id_code))
- 			highest_refined_code_index.replace (highest_refined_code_index.item (parent_id_code) + 1, parent_id_code)
-		end
-
-	highest_added_id_codes: HASH_TABLE [INTEGER, INTEGER]
-			-- table of highest known added code value, for each specialisation level
-        attribute
-            create Result.make (0)
-        end
-
-	highest_refined_code_index: HASH_TABLE [INTEGER, STRING]
-			-- Table of current highest code keyed by its parent code, for all specialised codes
-			-- in this terminology at its level of specialisation.
-			-- For example the entry for key 'at0007' could be 5, meaning that current top child
-			-- code of 'at7' is 'at7.5'
-        attribute
-            create Result.make (0)
-        end
 
 	use_node_index: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
 		attribute
