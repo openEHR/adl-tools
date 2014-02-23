@@ -93,25 +93,34 @@ feature -- Status Report
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+			-- True if this node is the same as `other'
 		local
 			this_vset, other_vset: like value_set_expanded
 		do
 			if precursor (other) then
-				this_vset := value_set_expanded
-				other_vset := other.value_set_expanded
-				Result := this_vset.count = other_vset.count and then
-					across value_set_expanded as vset_csr all other_vset.has (vset_csr.item) end
+				if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+					this_vset := value_set_expanded
+					other_vset := other.value_set_expanded
+					Result := constraint.is_equal (other.constraint) and then
+						this_vset.count = other_vset.count and then
+							across this_vset as vset_csr all other_vset.has (vset_csr.item) end
+				else
+					Result := constraint.is_equal (other.constraint)
+				end
 			end
 		end
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+			-- True if this node is a strict subset of `other'
+		local
+			this_vset, other_vset: like value_set_expanded
 		do
 			if precursor (other, rm_type_conformance_checker) then
 				if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+					this_vset := value_set_expanded
+					other_vset := other.value_set_expanded
 					Result := codes_conformant (constraint, other.constraint) and then
-						is_list_subset (value_set_expanded, other.value_set_expanded)
+						across this_vset as vset_csr all other_vset.has (vset_csr.item) end
 				else
 					Result := codes_conformant (constraint, other.constraint)
 				end
@@ -203,23 +212,6 @@ feature {NONE} -- Implementation
 			-- generate `constraint' as string
 		do
 			Result := constraint
-		end
-
-	is_list_subset (list1, list2: ARRAYED_LIST [STRING]): BOOLEAN
-			-- determine if list1 is a subset of list 2, even though they
-			-- might contain duplicates
-		local
-			set1, set2: ARRAYED_SET [STRING]
-		do
-			create set1.make (0)
-			set1.compare_objects
-			set1.fill (list1)
-
-			create set2.make (0)
-			set2.compare_objects
-			set2.fill (list2)
-
-			Result := set1.is_subset (set2)
 		end
 
 	value_set_extractor: detachable FUNCTION [ANY, TUPLE [ac_code: STRING], ARRAYED_LIST [STRING]]

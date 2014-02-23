@@ -148,43 +148,35 @@ feature -- Status Report
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+			-- True if this node is a strict subset of `other'
 		do
-			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
-				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
-				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
-			if Result then
+			if node_id_conforms_to (other) and occurrences_conforms_to (other) and
+				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name])) and
+					across constraint as ivl_csr all
+						across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
+					end
+			then
 				if not pattern_constraint.is_empty and not other.pattern_constraint.is_empty then
 					Result := valid_pattern_constraint_replacement (pattern_constraint, other.pattern_constraint)
-				elseif pattern_constraint.is_empty and other.pattern_constraint.is_empty then
-					Result := True
-				end
-				if Result then
-					from constraint.start until constraint.off or not Result loop
-						Result := across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (constraint.item) end
-						constraint.forth
-					end
+				else
+					Result := pattern_constraint.is_empty and other.pattern_constraint.is_empty
 				end
 			end
 		end
 
 	c_congruent_to (other: like Current): BOOLEAN
-			-- True if Current and `other' are semantically the same locally (child objects may differ)
+			-- True if Current and `other' are semantically the same
 		do
-			Result := occurrences ~ other.occurrences and
-				node_id.is_equal (other.node_id) and
-				aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
-			if Result then
+			if not attached occurrences and node_id.is_equal (other.node_id) and aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type) and
+				constraint.count = other.constraint.count and then
+					across constraint as ivl_csr all
+						other.constraint.i_th (ivl_csr.cursor_index).is_equal (ivl_csr.item)
+					end
+			then
 				if not pattern_constraint.is_empty and not other.pattern_constraint.is_empty then
 					Result := pattern_constraint.is_equal (other.pattern_constraint)
-				elseif pattern_constraint.is_empty and other.pattern_constraint.is_empty then
-					Result := True
-				end
-				if Result and constraint.count = other.constraint.count then
-					from constraint.start until constraint.off or not Result loop
-						Result := across other.constraint as other_ivl_csr some other_ivl_csr.item.is_equal (constraint.item) end
-						constraint.forth
-					end
+				else
+					Result := pattern_constraint.is_empty and other.pattern_constraint.is_empty
 				end
 			end
 		end

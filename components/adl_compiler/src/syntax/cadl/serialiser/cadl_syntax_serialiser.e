@@ -241,7 +241,8 @@ feature -- Visitor
 			-- loop across the tuples
 			across a_node.tuples as c_prim_tuples_csr loop
 				-- loop across the attributes contributing to the tuple
-				last_result.append (create_indent (depth + 1) + "[")
+				last_result.append (create_indent (depth + 1))
+				last_result.append_character (Tuple_left_delimiter)
 				across c_prim_tuples_csr.item.members as cpo_csr loop
 					last_result.append (symbol (SYM_START_CBLOCK))
 					if attached {C_STRING} cpo_csr.item as c_str then
@@ -254,7 +255,7 @@ feature -- Visitor
 						last_result.append (", ")
 					end
 				end
-				last_result.append ("]")
+				last_result.append_character (Tuple_right_delimiter)
 
 				if not c_prim_tuples_csr.is_last then
 					last_result.append (",")

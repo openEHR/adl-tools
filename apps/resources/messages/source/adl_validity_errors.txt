@@ -110,6 +110,10 @@ templates = <
 		["VVST"] = <"term code $1 invalid; must either be an archetype local term or a qualified external term">
 		["VPOV"] = <"$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6">
 
+		-- C_ATTRIBUTE_TUPLE
+		["VTPIN"] = <"$1 object node at path $2 has tuple constraint $3 that includes non-tuple constrained attribute $4 in parent at path $5">
+		["VTPNC"] = <"$1 object node at path $2 tuple constraint $3 does not conform to counterpart at path $4 in parent">
+
 		-- terminology-related validity
 		["VTSD"] = <"code $1 in terminology more specialised than archetype">
 		["VTLC"] = <"code $1 in terminology not present in language $2">

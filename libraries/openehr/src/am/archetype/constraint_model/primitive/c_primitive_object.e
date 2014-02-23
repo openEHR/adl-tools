@@ -12,7 +12,7 @@ deferred class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			default_create, out, enter_subtree, exit_subtree, node_reuse_congruent
+			default_create, out, enter_subtree, exit_subtree, c_conforms_to, c_congruent_to
 		end
 
 feature -- Initialisaiton
@@ -60,10 +60,30 @@ feature -- Access
 
 feature -- Comparison
 
-	node_reuse_congruent (other: like Current): BOOLEAN
-			-- True if this node has same id as `other'
+	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- `other' is typically in a flat archetype.
+			-- Returns True only when the following is True:
+			--	rm_type_name is the same as rm_type_name of other;
+			--	occurrences is same (= Void) or a sub-interval
 		do
-			Result := node_id.is_equal (other.node_id)
+			Result := occurrences_conforms_to (other) and rm_type_name.is_case_insensitive_equal (other.rm_type_name)
+		end
+
+	c_congruent_to (other: like Current): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses no constraints in addition to `other', other than
+			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
+			-- `other' is typically in a flat archetype
+			-- Used to determine if path segments can be compressed;
+			-- Returns True if:
+			--	rm_type_name is identical
+			--	occurrences is Void
+			-- 	sibling order is Void
+			--	node_id is identical or else is the only child that overlays the parent node
+		do
+			Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and
+				not attached occurrences and
+				not attached sibling_order
 		end
 
 feature -- Status Report

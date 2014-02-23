@@ -200,6 +200,8 @@ feature -- Definitions
 		ec_VARXV: STRING = "VARXV"
 		ec_VVST: STRING = "VVST"
 		ec_VPOV: STRING = "VPOV"
+		ec_VTPIN: STRING = "VTPIN"
+		ec_VTPNC: STRING = "VTPNC"
 		ec_VTSD: STRING = "VTSD"
 		ec_VTLC: STRING = "VTLC"
 		ec_VTCBU: STRING = "VTCBU"

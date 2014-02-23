@@ -89,7 +89,7 @@ feature -- Status Report
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+			-- True if this node is identical to `other'
 		do
 			Result := precursor (other) and
 				constraint.count = other.constraint.count and
@@ -97,9 +97,10 @@ feature -- Comparison
 		end
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+			-- True if this node is a strict subset of `other'
 		do
 			Result := precursor (other, rm_type_conformance_checker) and
+				constraint.count < other.constraint.count and
 				across constraint as val_csr all other.constraint.has (val_csr.item) end
 		end
 

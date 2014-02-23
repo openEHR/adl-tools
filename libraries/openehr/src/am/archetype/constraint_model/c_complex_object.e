@@ -146,6 +146,26 @@ feature -- Access
 			Result := "to be implemented"
 		end
 
+	comparable_attribute_tuple (a_tuple: C_ATTRIBUTE_TUPLE): C_ATTRIBUTE_TUPLE
+			-- Return the tuple in this object that could be compared to `a_tuple', i.e. constrains the same attributes
+			-- in the same order
+		require
+			has_comparable_attribute_tuple (a_tuple)
+		local
+			comparable_tuple: detachable C_ATTRIBUTE_TUPLE
+		do
+			check attached attribute_tuples as att_tuples then
+				across att_tuples as tuples_csr loop
+					if tuples_csr.item.is_comparable_to (a_tuple) then
+						comparable_tuple := tuples_csr.item
+					end
+				end
+			end
+			check attached comparable_tuple as att_tuple then
+				Result := att_tuple
+			end
+		end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN
@@ -203,6 +223,15 @@ feature -- Status Report
 			-- FIXME: to be implemented
 		end
 
+	has_comparable_attribute_tuple (a_tuple: C_ATTRIBUTE_TUPLE): BOOLEAN
+			-- True if there is some tuple in this object that could be compared to `a_tuple', i.e. constrains the same attributes
+			-- in the same order
+		do
+			if attached attribute_tuples as att_tuples then
+				Result := across att_tuples as tuples_csr some tuples_csr.item.is_comparable_to (a_tuple) end
+			end
+		end
+
 feature -- Modification
 
 	put_attribute (an_attr: C_ATTRIBUTE)
@@ -255,6 +284,23 @@ feature -- Modification
 				attribute_tuples := attr_tuples
 			end
 			attr_tuples.extend (an_attr_tuple)
+		end
+
+	replace_comparable_attribute_tuple (a_tuple: C_ATTRIBUTE_TUPLE)
+			-- replace a tuple in this object that matches the signature of `a_tuple'
+		require
+			has_comparable_attribute_tuple (a_tuple)
+		local
+			comparable_tuple: detachable C_ATTRIBUTE_TUPLE
+		do
+			check attached attribute_tuples as att_tuples then
+				from att_tuples.start until att_tuples.item.is_comparable_to (a_tuple) or att_tuples.off loop
+					att_tuples.forth
+				end
+				check not att_tuples.off then
+					attribute_tuples.replace (a_tuple)
+				end
+			end
 		end
 
 feature -- Output

@@ -246,6 +246,8 @@ end
 			cco_overlay_path: detachable STRING
 			og_path_in_diff, c_path_in_diff: OG_PATH
 			ca_child, ca_child_copy, ca_output, cco_csr_parent: C_ATTRIBUTE
+			new_attr_tuple: C_ATTRIBUTE_TUPLE
+			co_copy: C_OBJECT
 		do
 			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node then
 				create apa.make_from_string (cco_child_diff.path)
@@ -359,6 +361,7 @@ debug ("flatten")
 end
 									cco_output_flat.put_attribute (ca_child_copy)
 								end
+
 								grafted_child_locations.extend (cco_child_diff.path)
 
 							else
@@ -440,7 +443,19 @@ end
 												ca_output.set_existence (ca_child.existence.deep_twin)
 												ca_output.set_specialisation_status_redefined
 											end
-											if ca_child.is_multiple then
+
+											-- deal with tuples: remove all children of target
+											-- C_ATTRIBUTE, and do a complete replacement
+											if ca_child.is_second_order_constrained then
+												ca_output.remove_all_children
+												across ca_child.children as cpo_csr loop
+													co_copy := cpo_csr.item.safe_deep_twin
+													co_copy.set_specialisation_status_redefined
+													ca_output.put_child (co_copy)
+												end
+
+											-- otherwise if a container attribute then do a merge
+											elseif ca_child.is_multiple then
 												-- graft the cardinality if that was changed
 												if attached ca_child.cardinality then
 													ca_output.set_cardinality (ca_child.cardinality.deep_twin)
@@ -479,8 +494,28 @@ debug ("flatten")
 end
 										cco_output_flat_proximate.put_attribute (ca_child_copy)
 									end -- if proximate object in flat output has attribute from diff
-								end
+								end -- across c_attribute children
 							end -- if flat output object is any_allowed
+
+							-- graft any tuples objects
+							if attached cco_child_diff.attribute_tuples as att_tuples then
+								across att_tuples as child_tuples_csr loop
+									-- create a new attribute tupe in the output flat
+									create new_attr_tuple.make
+
+									-- connect up the attributes
+									across child_tuples_csr.item as ca_csr loop
+										new_attr_tuple.put_member (cco_output_flat.attribute_with_name (ca_csr.item.rm_attribute_name))
+									end
+
+									new_attr_tuple.rebuild
+									if cco_output_flat.has_comparable_attribute_tuple (new_attr_tuple) then
+										cco_output_flat.replace_comparable_attribute_tuple (new_attr_tuple)
+									else
+										cco_output_flat.put_attribute_tuple (new_attr_tuple)
+									end
+								end
+							end
 debug ("flatten")
 	io.put_string ("%T%T~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%N")
 end

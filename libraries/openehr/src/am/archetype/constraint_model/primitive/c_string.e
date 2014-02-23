@@ -163,19 +163,18 @@ feature -- Status Report
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
-			-- <precursor>
-			-- Lists have to be identical, only the order may be different
+			-- True if `constraint' is identical to other.constraint
 		do
 			Result := precursor (other) and
 				constraint.count = other.constraint.count and then
-				across constraint as constraint_csr all other.constraint.has (constraint_csr.item) end
+				across constraint as str_csr all other.constraint.i_th (str_csr.cursor_index).is_equal (str_csr.item) end
 		end
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- <precursor>
-			-- `constraint' has to be a subset of other.constraint
+			-- True if `constraint' is a strict subset of other.constraint
 		do
 			Result := precursor (other, rm_type_conformance_checker) and
+				constraint.count < other.constraint.count and
 				across constraint as constraint_csr all other.constraint.has (constraint_csr.item) end
 		end
 

@@ -177,6 +177,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_flat, co_path_in_flat: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
+			comparable_flat_tuple: C_ATTRIBUTE_TUPLE
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 debug ("validate")
@@ -312,6 +313,30 @@ end
 
 						end
 					else
+						-- deal with any tuples under C_COMPLEX_OBJECTs
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco_child and then attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat and then
+							attached cco_child.attribute_tuples as child_tuples and then attached cco_flat.attribute_tuples as flat_tuples
+						then
+							across child_tuples as child_tuples_csr loop
+								if cco_flat.has_comparable_attribute_tuple (child_tuples_csr.item) then
+									comparable_flat_tuple := cco_flat.comparable_attribute_tuple (child_tuples_csr.item)
+									if not child_tuples_csr.item.c_conforms_to (comparable_flat_tuple, agent rm_schema.type_conforms_to) then
+										add_error (ec_VTPNC, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+											child_tuples_csr.item.signature,
+											target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
+									end
+								else
+									across child_tuples_csr.item as child_tuple_attrs_csr loop
+										if cco_flat.has_attribute (child_tuple_attrs_csr.item.rm_attribute_name) then
+											add_error (ec_VTPIN, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+												child_tuples_csr.item.signature, child_tuple_attrs_csr.item.rm_attribute_name,
+												target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
+										end
+									end
+								end
+							end
+						end
+
 						-- deal with sibling marker on C_OBJECTs that are redefines of nodes in flat parent
 						if attached co_child_diff.sibling_order and then not (co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) or else
 							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, flat_ancestor.specialisation_depth)))
@@ -388,11 +413,13 @@ end
 					end
 
 				elseif attached {C_ATTRIBUTE} a_c_node as ca then
-					-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
-					-- or its C_OBJECT parent path exists in flat ancestor
-					create apa.make_from_string (a_c_node.path)
-					flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-					Result := flat_ancestor.has_path (flat_anc_path)
+					if not ca.is_second_order_constrained then
+						-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
+						-- or its C_OBJECT parent path exists in flat ancestor
+						create apa.make_from_string (a_c_node.path)
+						flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
+						Result := flat_ancestor.has_path (flat_anc_path)
+					end
 				end
 			end
 		end

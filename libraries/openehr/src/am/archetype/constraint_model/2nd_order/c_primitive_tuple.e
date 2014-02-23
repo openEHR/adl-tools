@@ -31,18 +31,9 @@ feature -- Comparison
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if count = other.count then
-				Result := True
-				from
-					members.start
-					other.members.start
-				until
-					members.off or not Result
-				loop
-					Result := members.item.same_type (other.members.item) and then
-						members.item.c_conforms_to (other.members.item, rm_type_conformance_checker)
-
-					members.forth
-					other.members.forth
+				Result := across members as cpo_csr all
+					cpo_csr.item.same_type (other.members.i_th (cpo_csr.cursor_index)) and then
+						cpo_csr.item.c_conforms_to (other.members.i_th (cpo_csr.cursor_index), rm_type_conformance_checker)
 				end
 			end
 		end
@@ -52,17 +43,9 @@ feature -- Comparison
 			-- Used for diffing flat archetypes, e.g. after editing
 		do
 			if count = other.count then
-				Result := True
-				from
-					members.start
-					other.members.start
-				until
-					members.off or not Result
-				loop
-					Result := members.item.same_type (other.members.item) and then
-						members.item.c_congruent_to (other.members.item)
-					members.forth
-					other.members.forth
+				Result := across members as cpo_csr all
+					cpo_csr.item.same_type (other.members.i_th (cpo_csr.cursor_index)) and then
+						cpo_csr.item.c_congruent_to (other.members.i_th (cpo_csr.cursor_index))
 				end
 			end
 		end

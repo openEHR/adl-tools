@@ -256,7 +256,7 @@ feature {NONE} -- Implementation
 					ca_child.set_specialisation_status_redefined
 				else
 					ca_child.set_specialisation_status_inherited
-					if attached ca_child.parent as co_par and then co_par.is_path_compressible then
+					if not ca_child.is_second_order_constrained and then attached ca_child.parent as co_par and then co_par.is_path_compressible then
 						ca_child.set_is_path_compressible
 					end
 				end

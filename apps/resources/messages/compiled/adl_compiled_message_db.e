@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (694)
+			create message_table.make (696)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -215,6 +215,8 @@ feature -- Initialisation
 			message_table.put ("slot filler at $1 does not have matching slot node in flat parent", ec_VARXV)
 			message_table.put ("term code $1 invalid; must either be an archetype local term or a qualified external term", ec_VVST)
 			message_table.put ("$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6", ec_VPOV)
+			message_table.put ("$1 object node at path $2 has tuple constraint $3 that includes non-tuple constrained attribute $4 in parent at path $5", ec_VTPIN)
+			message_table.put ("$1 object node at path $2 tuple constraint $3 does not conform to counterpart at path $4 in parent", ec_VTPNC)
 			message_table.put ("code $1 in terminology more specialised than archetype", ec_VTSD)
 			message_table.put ("code $1 in terminology not present in language $2", ec_VTLC)
 			message_table.put ("expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1", ec_VTCBU)

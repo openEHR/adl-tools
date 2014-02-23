@@ -9,6 +9,9 @@ note
 
 deferred class C_2ND_ORDER
 
+inherit
+	ITERABLE [ARCHETYPE_CONSTRAINT]
+
 feature -- Initialisation
 
 	make
@@ -32,6 +35,12 @@ feature -- Access
 	count: INTEGER
 		do
 			Result := members.count
+		end
+
+	new_cursor: INDEXABLE_ITERATION_CURSOR [attached like member_type]
+			-- Fresh cursor associated with current structure
+		do
+			Result := members.new_cursor
 		end
 
 feature -- Comparison

@@ -17,6 +17,11 @@ inherit
 			make, member_type
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -48,7 +53,27 @@ feature -- Access
 			Result := tuples.i_th (i)
 		end
 
+	signature: STRING
+			-- generate a human-readable signature of this tuple, consisting of the attribute names
+		do
+			create Result.make_empty
+			Result.append_character (Tuple_left_delimiter)
+			across members as ca_csr loop
+				Result.append (ca_csr.item.rm_attribute_name)
+				if not ca_csr.is_last then
+					Result.append (", ")
+				end
+			end
+			Result.append_character (Tuple_right_delimiter)
+		end
+
 feature -- Status Report
+
+	is_comparable_to (other: like Current): BOOLEAN
+			-- Return a logical signature that can be compared with another tuple, e.g. in flat parent, to
+		do
+			Result := across members as ca_csr all ca_csr.item.rm_attribute_name.is_equal (other.members.i_th (ca_csr.target_index).rm_attribute_name) end
+		end
 
 	has_attribute (an_attr_name: STRING): BOOLEAN
 			-- True if this tuple constrains an attribute called `an_attr_name'
@@ -61,13 +86,18 @@ feature -- Comparison
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			Result := across tuples as tuple_csr all
-				across other.tuples as other_tuple_csr some tuple_csr.item.c_conforms_to (other_tuple_csr.item, rm_type_conformance_checker) end
-			end
+			Result :=
+				across tuples as tuple_csr all
+					across other.tuples as other_tuple_csr some tuple_csr.item.c_conforms_to (other_tuple_csr.item, rm_type_conformance_checker) end
+				end
+			or else tuples.count < other.tuples.count and
+				across tuples as tuple_csr all
+					across other.tuples as other_tuple_csr some tuple_csr.item.c_congruent_to (other_tuple_csr.item) end
+				end
 		end
 
 	c_congruent_to (other: like Current): BOOLEAN
-			-- True if Current and `other' are semantically the same
+			-- True if Current adds no further constraints with respect to `other'
 		do
 			Result := across tuples as tuple_csr all
 				across other.tuples as other_tuple_csr some tuple_csr.item.c_congruent_to (other_tuple_csr.item) end
