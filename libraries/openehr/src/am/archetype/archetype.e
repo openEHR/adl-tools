@@ -305,11 +305,16 @@ feature -- Paths
 				loop
 					if og_phys_path.item.is_addressable then
 						id_code := og_phys_path.item.object_id
+
+						-- only use the object address if it is valid (it could be an archetype id) and
+						-- b) in the terminology (for objects under single-valued attributes, this is optional)
 						if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
 							og_log_path.item.set_object_id (terminology.term_definition (a_language, id_code).text)
 						else
-							og_log_path.item.set_object_id ("")
+							og_log_path.item.clear_object_id
 						end
+					else
+						og_log_path.item.clear_object_id
 					end
 					og_phys_path.forth
 					og_log_path.forth

@@ -157,41 +157,10 @@ feature -- ADL 1.5 conversions
 		require
 			type_name_valid: not a_type_name.is_empty
 		do
-			if adl_version_for_flat_output_numeric >= 150 then
-				Result := "("
-				Result.append (a_type_name)
-				Result.append_character (')')
-			else
-				Result := a_type_name
-			end
+			Result := "("
+			Result.append (a_type_name)
+			Result.append_character (')')
 		end
-
---	add_slot_node_identifiers (a_diff_arch: DIFFERENTIAL_ARCHETYPE) is
---			-- add synthesised node identifiers to archetype slot nodes under multiple attributes
---			-- ADL 1.5 only
---		local
---			a_term: ARCHETYPE_TERM
---			old_key: STRING
---		do
---			from
---				a_diff_arch.slot_index.start
---			until
---				a_diff_arch.slot_index.off
---			loop
---				if a_diff_arch.slot_index.item.parent.is_multiple then
---					old_key := a_diff_arch.slot_index.item.node_id
-
---					create a_term.make (a_diff_arch.ontology.new_non_specialised_term_code)
---					a_term.add_item ("term", "(new slot node code)")
---					a_term.add_item ("description", "(new slot node code description)")
---					a_diff_arch.ontology.add_term_definition (a_diff_arch.ontology.primary_language, a_term)
-
---					a_diff_arch.slot_index.item.set_object_id (a_term.code)
---					a_diff_arch.slot_index.item.parent.replace_child_by_id (a_diff_arch.slot_index.item, old_key)
---				end
---				a_diff_arch.slot_index.forth
---			end
---		end
 
 	old_archetype_id_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids with the 'draft' still in the version
@@ -210,14 +179,6 @@ feature -- ADL 1.5 conversions
 			-- A reverse routine below does the opposite, so that serialisation back out to ADL 1.4 archetypes
 			-- looks the way it always has. One day, we will change the ADL standard on this...
 		do
-			-- convert top-level attribute names
---			if dt.has_attribute ("term_binding") then
---				dt.replace_attribute_name ("term_binding", "term_bindings")
---			end
---			if dt.has_attribute ("constraint_binding") then
---				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
---			end
-
 			convert_ontology_items_to_nested (dt, "term_definitions")
 			convert_ontology_items_to_nested (dt, "constraint_definitions")
 			convert_ontology_items_to_nested (dt, "term_bindings")

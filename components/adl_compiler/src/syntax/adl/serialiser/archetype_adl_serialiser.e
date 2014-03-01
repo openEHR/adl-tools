@@ -129,7 +129,7 @@ feature -- Serialisation
 					if attached {DIFFERENTIAL_ARCHETYPE} archetype then
 						kw_list.append (symbol (SYM_ADL_VERSION) + "=" + archetype.adl_version)
 					else
-						kw_list.append (symbol (SYM_ADL_VERSION) + "=" + adl_version_for_flat_output)
+						kw_list.append (symbol (SYM_ADL_VERSION) + "=" + latest_adl_version)
 					end
 				end
 				if archetype.is_controlled then

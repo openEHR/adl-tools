@@ -111,8 +111,11 @@ feature -- Visitor
 		local
 			ed_node: ARCHETYPE_SLOT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, ed_context)
-			attr_node_stack.item.pre_attach_child_context (ed_node)
+			-- don't show closed archetype slots in flat mode
+			if ed_context.in_differential_view or else not a_node.is_closed then
+				create ed_node.make (a_node, ed_context)
+				attr_node_stack.item.pre_attach_child_context (ed_node)
+			end
 		end
 
 	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)

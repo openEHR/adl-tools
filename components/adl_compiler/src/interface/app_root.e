@@ -169,7 +169,6 @@ feature -- Initialisation
 				end
 
 				-- tell the user a few useful things
-				add_warning (ec_adl_version_warning, <<adl_version_for_flat_output>>)
 				if validation_strict then
 					add_info (ec_validation_strict, Void)
 				else
