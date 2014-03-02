@@ -96,16 +96,6 @@ feature -- UI Feedback
 			end
 		end
 
-feature -- Commands
-
-	change_adl_serialisation_version
-			-- call this if changing it becase control labels and contents need to be repopulated
-		do
-			if attached source and serialisation_control.can_repopulate then
-				serialisation_control.repopulate
-			end
-		end
-
 feature {NONE} -- Events
 
 	on_slot_map_suppliers_tree_key_press (key: EV_KEY)

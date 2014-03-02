@@ -327,48 +327,6 @@ feature -- Application Switches
 			app_cfg.put_object(repository_config_table_path, repository_config_table)
 		end
 
-	adl_version_for_flat_output_numeric: INTEGER
-			-- generate a 3-digit numeric equivalent of the ADL version in use for serialisation, e.g.
-			-- '1.5' -> 150
-			-- '1.4.1' -> 141
-		local
-			s: STRING
-		do
-			if Adl_versions.has (adl_version_for_flat_output) then
-				s := adl_version_for_flat_output.twin
-			else
-				s := Latest_adl_version.twin
-			end
-			s.prune_all ('.')
-			if s.count < 3 then
-				s.append (create {STRING}.make_filled ('0', 3 - s.count))
-			end
-			if s.is_integer then
-				Result := s.to_integer
-			end
-		ensure
-			Result > 100 and Result <= 999
-		end
-
-	adl_version_for_flat_output: STRING
-			-- version of ADL syntax to use for outputting flat archetypes
-		do
-			Result := app_cfg.string_value ("/compiler/adl_version_for_flat_output")
-			if Result.is_empty then
-				Result := Latest_adl_version.twin
-			end
-		ensure
-			not Result.is_empty
-		end
-
-	set_adl_version_for_flat_output (a_value: STRING)
-			-- Set version of ADL syntax to use for outputting flat archetypes.
-		require
-			value_not_empty: not a_value.is_empty
-		do
-			app_cfg.put_value ("/compiler/adl_version_for_flat_output", a_value)
-		end
-
 	validation_strict: BOOLEAN
 			-- Set strict validation on?
 		do

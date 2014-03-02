@@ -123,13 +123,6 @@ feature {NONE} -- Initialization
 			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
 
-			-- ADL save version
-			create adl_save_version_combo_box.make (get_text (ec_adl_serialisation_level_text),
-				agent adl_version_for_flat_output, adl_versions, 0, 100)
-			ev_notebook_compiler_settings_vb.extend (adl_save_version_combo_box.ev_root_container)
-			ev_notebook_compiler_settings_vb.disable_item_expand (adl_save_version_combo_box.ev_root_container)
-			gui_controls.extend (adl_save_version_combo_box)
-
 			-- validation strict checkbox
 			create validation_strict_check_ctl.make (get_text (ec_validation_strict_text),
 				get_text (ec_validation_strict_tooltip), agent validation_strict)
@@ -303,7 +296,6 @@ feature -- Events
 				set_difftool_command (diff_tool_dir_setter.data_control_text)
 
 				-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-				set_adl_version_for_flat_output (adl_save_version_combo_box.data_control_text)
 				set_validation_strict (validation_strict_check_ctl.is_selected)
 				set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
 				set_global_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
@@ -374,7 +366,7 @@ feature {NONE} -- Implementation
 
 	ev_notebook_authoring_vb, ev_notebook_namespaces_vb, ev_notebook_terminology_settings_vb: EV_VERTICAL_BOX
 
-	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
+	parser_error_reporting_level_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
 	validation_strict_check_ctl, rm_flattening_check_ctl, expand_definition_tree_check_ctl, show_line_numbers_check_ctl: EVX_CHECK_BOX_CONTROL
 

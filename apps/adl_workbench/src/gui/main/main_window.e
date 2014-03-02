@@ -76,10 +76,9 @@ feature {NONE} -- Initialization
 
 	create_interface_objects
 		local
-			action_bar, arch_output_version_hbox: EV_HORIZONTAL_BOX
+			action_bar: EV_HORIZONTAL_BOX
 			arch_compile_tool_bar: EV_TOOL_BAR
 			tool_bar_sep_1: EV_TOOL_BAR_SEPARATOR
-			arch_output_version_label: EV_LABEL
 		do
 			create ev_root_vbox
 
@@ -128,25 +127,6 @@ feature {NONE} -- Initialization
 
 			-- address bar
 			action_bar.extend (address_bar.ev_root_container)
-
-			-- ADL output version hbox
-			create arch_output_version_hbox
-			action_bar.extend (arch_output_version_hbox)
-			action_bar.disable_item_expand (arch_output_version_hbox)
-
-			create arch_output_version_label
-			arch_output_version_label.set_text (get_text (ec_adl_version_label_text))
-			arch_output_version_label.set_tooltip (get_text (ec_adl_serialisation_level_tooltip))
-			arch_output_version_hbox.extend (arch_output_version_label)
-			arch_output_version_hbox.disable_item_expand (arch_output_version_label)
-
-			create arch_output_version_combo
-			arch_output_version_combo.set_strings (Adl_versions)
-			arch_output_version_combo.set_minimum_width (50)
-			arch_output_version_combo.select_actions.extend (agent set_adl_version_from_combo)
-			arch_output_version_hbox.extend (arch_output_version_combo)
-			arch_output_version_hbox.disable_item_expand (arch_output_version_combo)
-
 			arch_compile_tool_bar.disable_vertical_button_style
 
 
@@ -264,9 +244,6 @@ feature {NONE} -- Initialization
 			create_new_error_tool
 		--	create_new_test_tool
 			archetype_viewers.create_new_tool
-
-			-- populate any statically populated controls
-			populate_ui_arch_output_version
 
 			-- set up anything else dependent on docking
 			evx_menu_bar.menu_item ("View>New Class Tool").select_actions.extend (agent class_tools.create_new_tool)
@@ -741,7 +718,6 @@ feature {NONE} -- Tools menu events
 
 			if dialog.has_changed_ui_options then
 				save_resources
-				populate_ui_arch_output_version
 				if archetype_viewers.has_tools then
 					update_all_tools_rm_icons_setting
 				end
@@ -1228,25 +1204,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ui_arch_output_version
-			-- populate ADL output version wherever it appears in the UI
-		do
-			-- main form combo
-			arch_output_version_combo.do_all (
-				agent (li: EV_LIST_ITEM)
-					do
-						if li.text.same_string (adl_version_for_flat_output) then
-							li.enable_select
-						end
-					end
-			)
-
-			-- archetype tool
-			if archetype_viewers.has_tools then
-				archetype_viewers.active_tool.change_adl_serialisation_version
-			end
-		end
-
 feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
@@ -1291,28 +1248,6 @@ feature {NONE} -- Build commands
 			ev_application.process_events
 		end
 
-	set_adl_version_from_combo
-			-- set ADL version used for flat output
-		local
-			info_dialog: EV_INFORMATION_DIALOG
-		do
-			if arch_output_version_combo.has_selection then
-				set_adl_version_for_flat_output (arch_output_version_combo.selected_text.as_string_8)
-			end
-
-			-- update archetype tool
-			if archetype_viewers.has_tools then
-				archetype_viewers.active_tool.change_adl_serialisation_version
-			end
-
-			-- for the moment, post a message about ADL 1.4 XML not being available
-			if adl_version_for_flat_output_numeric < 150 then
-				create info_dialog.make_with_text (get_msg (ec_xml_14_not_available_message, Void))
-				info_dialog.set_title (get_msg (ec_config_warning_text, Void))
-				info_dialog.show_modal_to_window (Current)
-			end
-		end
-
 feature {NONE} -- GUI Widgets
 
 	internal_docking_manager: detachable SD_DOCKING_MANAGER
@@ -1341,7 +1276,7 @@ feature {NONE} -- GUI Widgets
 	ev_main_vbox, ev_root_vbox: EV_VERTICAL_BOX
 	viewer_main_cell: EV_CELL
 	evx_menu_bar: EVX_MENU_BAR
-	arch_repositories_combo, arch_output_version_combo: EV_COMBO_BOX
+	arch_repositories_combo: EV_COMBO_BOX
 	compile_button: EV_TOOL_BAR_BUTTON
 
 end
