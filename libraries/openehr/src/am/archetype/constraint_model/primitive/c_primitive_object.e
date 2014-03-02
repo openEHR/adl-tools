@@ -76,14 +76,9 @@ feature -- Comparison
 			-- `other' is typically in a flat archetype
 			-- Used to determine if path segments can be compressed;
 			-- Returns True if:
-			--	rm_type_name is identical
-			--	occurrences is Void
-			-- 	sibling order is Void
-			--	node_id is identical or else is the only child that overlays the parent node
+			--	aom_builtin_type is identical (same as rm_type_name, except when rm_type_name has ben overridden)
 		do
-			Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and
-				not attached occurrences and
-				not attached sibling_order
+			Result := aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
 		end
 
 feature -- Status Report

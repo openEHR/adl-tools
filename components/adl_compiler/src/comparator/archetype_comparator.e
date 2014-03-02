@@ -120,7 +120,7 @@ feature -- Comparison
 			c_it: C_ITERATOR
 			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 			diff_child: DIFFERENTIAL_ARCHETYPE
-			term_removal_list: ARRAYED_SET [STRING]
+			term_removal_list, vset_id_codes_list: ARRAYED_SET [STRING]
 			def_id_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			def_at_codes: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			def_ac_codes: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
@@ -205,6 +205,15 @@ feature -- Comparison
 						diff_child.terminology.value_sets.remove (codes_csr.item)
 					end
 				end
+			end
+			create vset_id_codes_list.make (0)
+			across diff_child.terminology.value_sets as vsets_csr loop
+				if specialisation_depth_from_code (vsets_csr.item.id) < diff_child.specialisation_depth then
+					vset_id_codes_list.extend (vsets_csr.item.id)
+				end
+			end
+			across vset_id_codes_list as vset_keys_to_remove_csr loop
+				diff_child.terminology.value_sets.remove (vset_keys_to_remove_csr.item)
 			end
 
 			-- at-codes

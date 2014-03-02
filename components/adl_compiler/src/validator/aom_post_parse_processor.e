@@ -152,10 +152,10 @@ feature {NONE} -- Implementation
 			def_it: C_ITERATOR
 		do
 			create def_it.make (target.definition)
-			def_it.do_until_surface (agent child_node_remove_multiplicities, agent child_node_test)
+			def_it.do_until_surface (agent do_remove_duplicate_multiplicities, agent child_node_test)
 		end
 
-	child_node_remove_multiplicities (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	do_remove_duplicate_multiplicities (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			co_in_flat_anc: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER

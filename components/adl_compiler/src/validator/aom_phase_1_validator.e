@@ -309,11 +309,17 @@ feature {NONE} -- Implementation
 			end
 
 			across target.term_constraints_index as term_constraints_csr loop
-				if not (terminology.has_constraint_code (term_constraints_csr.key)) then
-					add_error (ec_VACDF, <<term_constraints_csr.key, term_constraints_csr.item.path>>)
+				code := term_constraints_csr.key
+				code_spec_depth := specialisation_depth_from_code (code)
+				if code_spec_depth > arch_depth then
+					add_error (ec_VATCD, <<code, arch_depth.out>>)
+				elseif code_spec_depth < arch_depth and not flat_ancestor.terminology.has_constraint_code (code) or else
+					code_spec_depth = arch_depth and not terminology.has_constraint_code (code)
+				then
+					add_error (ec_VACDF, <<code, term_constraints_csr.item.path>>)
 				elseif attached term_constraints_csr.item.assumed_value as att_av then
-					if attached terminology.value_sets.item (term_constraints_csr.key) as vset and then not vset.has_member_code (att_av) then
-						add_error (ec_VATDA, <<att_av, term_constraints_csr.item.path, term_constraints_csr.key>>)
+					if attached terminology.value_sets.item (code) as vset and then not vset.has_member_code (att_av) then
+						add_error (ec_VATDA, <<att_av, term_constraints_csr.item.path, code>>)
 					end
 				end
 			end

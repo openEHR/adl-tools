@@ -252,7 +252,7 @@ feature -- Validation
 
 	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_CAT_ARCHETYPE)
 		local
-			proc: AOM_POST_PARSE_151_CONVERTER
+			proc: AOM_151_CONVERTER
 		do
 			if attached post_parse_151_converter as pcp then
 				proc := pcp
@@ -431,7 +431,7 @@ feature {NONE} -- Implementation
 
 	annotations_context: ODIN_ENGINE
 
-	post_parse_151_converter: detachable AOM_POST_PARSE_151_CONVERTER
+	post_parse_151_converter: detachable AOM_151_CONVERTER
 		note
 			option: stable
 		attribute

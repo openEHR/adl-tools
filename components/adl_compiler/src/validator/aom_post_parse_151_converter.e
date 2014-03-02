@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class AOM_POST_PARSE_151_CONVERTER
+class AOM_151_CONVERTER
 
 inherit
 	ADL_SYNTAX_CONVERTER
@@ -54,6 +54,11 @@ feature -- Definitions
 
 	Synthesised_specialised_string: STRING = " (synthesised)"
 
+	Es_initial: INTEGER = 0
+	Es_id_codes_converted: INTEGER = 1
+	Es_at_codes_converted: INTEGER = 2
+	Es_ac_codes_converted: INTEGER = 3
+
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	make (a_target: ARCHETYPE; ara: ARCH_CAT_ARCHETYPE)
@@ -80,6 +85,7 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			else
 				arch_anc_flat := Void
 			end
+			execution_state := Es_initial
 		end
 
 feature -- Access
@@ -90,6 +96,9 @@ feature -- Access
 	arch_anc_flat: detachable FLAT_ARCHETYPE
 
 	rm_schema: BMM_SCHEMA
+
+	Execution_state: INTEGER
+			-- has value of one of the Es_* constants
 
 feature -- Commands
 
@@ -105,11 +114,6 @@ feature -- Commands
 					target.terminology.set_value_sets (compiler_billboard.value_sets)
 				end
 
-				-- value sets have already been added to the terminology at this point by the parser
-				-- however they contain fake ac-codes; also the inline C_TERMINOLOGY_CODE objects have
-				-- the fake ac-code; these codes have to be rewritten to normal ac-codes
-				convert_fake_ac_codes
-
 				-- term bindings have already been created for inline external codes and value sets
 				-- However, these contain fake at-codes, as do some C_TERMINOLOGY_CODE objects
 				-- the fake at-codes have to be rewritten to normal at-codes
@@ -120,6 +124,11 @@ feature -- Commands
 
 				-- for ADL 1.4 and non ADL 1.5.1 archetypes, remove terminology definitions for "@ internal @"
 				remove_fake_id_codes
+
+				-- value sets have already been added to the terminology at this point by the parser
+				-- however they contain fake ac-codes; also the inline C_TERMINOLOGY_CODE objects have
+				-- the fake ac-code; these codes have to be rewritten to normal ac-codes
+				convert_fake_ac_codes
 
 				-- for non-1.5.1 archetypes, synthesise ac-codes and value sets for any C_ATTRIBUTE_TUPLE containing
 				-- at-codes not already in a value set (mainly ordinals)
@@ -137,13 +146,18 @@ feature {NONE} -- Implementation
 			-- and a value id. These show up as id-codes in C_TERMINOLOGY_CODE objects. We have to add new
 			-- at-coded terms for them, created as copies of id-codes
 		local
-			arch_term: ARCHETYPE_TERM
+			arch_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]
+			converted_code: STRING
 		do
 			across term_constraints_with_id_codes as ctc_csr loop
-				if target.terminology.has_term_definition (target.terminology.original_language, ctc_csr.key) then
-					arch_term := target.terminology.term_definition (target.terminology.original_language, ctc_csr.key).deep_twin
-					arch_term.code.replace_substring_all (id_code_leader, value_code_leader)
-					target.terminology.put_new_definition (target.terminology.original_language, arch_term)
+				if target.terminology.has_code (ctc_csr.key) then
+					arch_terms := target.terminology.term_definitions_for_code (ctc_csr.key).deep_twin
+					converted_code := ctc_csr.key.twin
+					converted_code.replace_substring_all (id_code_leader, value_code_leader)
+					across arch_terms as terms_csr loop
+						terms_csr.item.set_code (converted_code)
+					end
+					target.terminology.put_definition_and_translations (arch_terms, converted_code)
 				end
 				ctc_csr.item.constraint.replace_substring_all (id_code_leader, value_code_leader)
 			end
@@ -284,15 +298,18 @@ feature {NONE} -- Implementation
 			-- C_TERMINOLOGY_CODE and a new ac-term definition synthesised for the terminology, based on the
 			-- text/description copied from the proximate id-code backing up the tree from the
 			-- C_TERMINOLOGY_CODE.
+		require
+			execution_state = Es_id_codes_converted
 		local
 			term_vsets: HASH_TABLE [VALUE_SET_RELATION, STRING]
 			arch_c_terms: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
 			ac_code, old_ac_code, parent_ac_code, old_path, path_in_flat: STRING
 	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		parent_ca_in_anc_flat: C_ATTRIBUTE
+	 		parent_co_in_anc_flat: C_OBJECT
 	 		og_path: OG_PATH
 	 		ctc: C_TERMINOLOGY_CODE
 	 		new_arch_term: ARCHETYPE_TERM
+			new_arch_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
 			term_vsets := target.terminology.value_sets
 			arch_c_terms := target.term_constraints_index
@@ -318,46 +335,44 @@ feature {NONE} -- Implementation
 				 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
 				 				check attached arch_anc_flat end
 				 				if arch_anc_flat.has_path (path_in_flat) then
-				 					parent_ca_in_anc_flat := arch_anc_flat.attribute_at_path (path_in_flat)
+				 					parent_co_in_anc_flat := arch_anc_flat.object_at_path (path_in_flat)
 
 				 					-- since we can be dealing with ADL 1.4 archetypes without reliable node ids here
 				 					-- we need to find matching node in parent via its RM type, which is a surrogate
 				 					-- for the AOM type C_TERMINOLOGY_CODE
-				 					if parent_ca_in_anc_flat.has_child_with_rm_type_name (ctc.rm_type_name) and then
-				 						attached {C_TERMINOLOGY_CODE} parent_ca_in_anc_flat.child_with_rm_type_name (ctc.rm_type_name) as parent_ctc
-				 					then
+				 					if attached {C_TERMINOLOGY_CODE} parent_co_in_anc_flat as parent_ctc then
 					 					parent_ac_code := parent_ctc.constraint
-				 						ac_code := parent_ac_code
 
 				 						-- check if any overrides; if so, a refined code & definition is needed
-					 					if not ctc.c_congruent_to (parent_ctc) then
-					 						new_arch_term := arch_anc_flat.terminology.term_definition (target.terminology.original_language, parent_ac_code)
-					 						target.terminology.create_refined_definition (parent_ac_code, new_arch_term.text + Synthesised_specialised_string, new_arch_term.description + Synthesised_specialised_string)
+					 					if not ctc.c_congruent_to_sans_code_check (parent_ctc) then
+					 						new_arch_terms := arch_anc_flat.terminology.term_definitions_for_code (parent_ac_code).deep_twin
+					 						across new_arch_terms as terms_csr loop
+					 							terms_csr.item.text.append (Synthesised_specialised_string)
+					 							terms_csr.item.description.append (Synthesised_specialised_string)
+					 						end
+					 						target.terminology.merge_refined_constraint_definition_and_translations (new_arch_terms, parent_ac_code)
 							 				ac_code := target.terminology.last_new_definition_code
+							 			else
+					 						ac_code := parent_ac_code
 					 					end
 					 				else
-						 				-- create a new definition at the specialisation level of this archteype
-										new_arch_term := create_new_term_from_proximal (ctc)
-						 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
-						 				ac_code := target.terminology.last_new_definition_code
+					 					raise ("convert_fake_ac_codes: node in parent at path " + path_in_flat + " should be C_TERMINOLOGY_CODE but is " + parent_co_in_anc_flat.rm_type_name + " instead %N")
+					 					create ac_code.make_empty
 					 				end
 					 			else
 					 				-- create a new definition at the specialisation level of this archteype
-									new_arch_term := create_new_term_from_proximal (ctc)
-					 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
+									target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (ctc))
 					 				ac_code := target.terminology.last_new_definition_code
 				 				end
 				 			else
 				 				-- create a new definition at the specialisation level of this archteype
-								new_arch_term := create_new_term_from_proximal (ctc)
-				 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
+								target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (ctc))
 				 				ac_code := target.terminology.last_new_definition_code
 			 				end
 			 			else
 			 				-- create a definition for the new code; here we obtain an approximate definition for it from
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
-							new_arch_term := create_new_term_from_proximal (ctc)
-			 				target.terminology.create_added_constraint_definition (new_arch_term.text, new_arch_term.description)
+							target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (ctc))
 			 				ac_code := target.terminology.last_new_definition_code
 			 			end
 
@@ -374,9 +389,12 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+			execution_state := Es_ac_codes_converted
+		ensure
+			execution_state = Es_ac_codes_converted
 		end
 
-	proximal_term_definition (origin_node: C_OBJECT): detachable ARCHETYPE_TERM
+	proximal_node_id (origin_node: C_OBJECT): STRING
 			-- obtain the nearest id-code that is defined in the terminology, backing up from `origin_node'
 		local
 	 		co_csr: C_OBJECT
@@ -386,31 +404,31 @@ feature {NONE} -- Implementation
 					co_csr := co
 				end
 			end
-			Result := target.terminology.term_definition (target.terminology.original_language, co_csr.node_id)
+			Result := co_csr.node_id
  		end
 
-	create_new_term_from_proximal (ctc: C_TERMINOLOGY_CODE): ARCHETYPE_TERM
+	create_new_terms_from_proximal (origin_node: C_OBJECT): HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
-			create Result.make ("ac1")
-			if attached proximal_term_definition (ctc) as arch_term then
-				if not arch_term.text.is_empty then
-					Result.set_text (arch_term.text + Synthesised_specialised_string)
+			Result := target.terminology.term_definitions_for_code (proximal_node_id (origin_node)).deep_twin
+			across Result as terms_csr loop
+				terms_csr.item.set_code ("ac1")
+				if not terms_csr.item.text.is_empty then
+					terms_csr.item.text.append (Synthesised_specialised_string)
 				else
-					Result.set_text (Empty_string_found.twin)
+					terms_csr.item.set_text (Empty_string_found.twin)
 				end
-				if not arch_term.description.is_empty then
-					Result.set_description (arch_term.description + Synthesised_specialised_string)
+				if not terms_csr.item.description.is_empty then
+					terms_csr.item.description.append (Synthesised_specialised_string)
 				else
-					Result.set_description (Empty_string_found.twin)
+					terms_csr.item.set_description (Empty_string_found.twin)
 				end
- 			else
-				Result.set_text (Synthesised_string.twin)
-				Result.set_description (Synthesised_string.twin)
- 			end
+			end
  		end
 
 	convert_fake_id_codes
 			-- add id-codes on nodes with no code
+		require
+			execution_state = Es_initial
 		local
 			def_it: C_ITERATOR
 		do
@@ -430,6 +448,10 @@ feature {NONE} -- Implementation
 					def_it.do_all_on_entry (agent do_rewrite_diff_path (?, ?, pf))
 				end
 			end
+
+			execution_state := Es_id_codes_converted
+		ensure
+			execution_state = Es_id_codes_converted
 		end
 
 	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; anc_flat: FLAT_ARCHETYPE)
@@ -538,6 +560,9 @@ feature {NONE} -- Implementation
 		 			else
 		 				id_code := target.create_new_id_code
 		 			end
+	 			elseif attached c_obj.parent as p and then p.is_multiple then
+		 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
+		 			id_code := target.terminology.last_new_definition_code
 	 			else
 		 			id_code := target.create_new_id_code
 	 			end
@@ -624,22 +649,7 @@ feature {NONE} -- Implementation
 			 				-- create a definition for the new code; here we obtain an approximate definition for it from
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
 							if not vset.is_empty then
-								if attached proximal_term_definition (tuples_cco_csr.item) as arch_term then
-									if not arch_term.text.is_empty then
-										new_code_text := arch_term.text
-									else
-										create new_code_text.make_from_string (Empty_string_found)
-									end
-									if not arch_term.description.is_empty then
-										new_code_description := arch_term.description
-									else
-										create new_code_description.make_from_string (Empty_string_found)
-									end
-				 				else
-									new_code_text := Synthesised_string
-									new_code_description := Synthesised_string
-				 				end
-				 				target.terminology.create_added_constraint_definition (new_code_text, new_code_description)
+								target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (tuples_cco_csr.item))
 				 				target.terminology.put_value_set (create {VALUE_SET_RELATION}.make (target.terminology.last_new_definition_code, vset))
 				 			end
 						end

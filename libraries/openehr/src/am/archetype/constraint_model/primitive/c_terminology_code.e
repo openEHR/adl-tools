@@ -134,7 +134,7 @@ feature {C_TERMINOLOGY_CODE, ARCHETYPE} -- Modification
 			value_set_extractor := an_agent
 		end
 
-feature {AOM_POST_PARSE_151_CONVERTER} -- Modification
+feature {AOM_151_CONVERTER} -- Modification
 
 	set_code (a_code: STRING)
 		do
@@ -160,6 +160,22 @@ feature {AOM_POST_PARSE_151_CONVERTER} -- Modification
 			-- check the assumed code
 			if attached assumed_value as att_av and then att_av.is_equal (old_code) then
 				assumed_value := new_code
+			end
+		end
+
+	c_congruent_to_sans_code_check (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'; ignore ac-codes since they are in the midst
+			-- of being converted and probably don't match
+		local
+			this_vset, other_vset: like value_set_expanded
+		do
+			if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+				this_vset := value_set_expanded
+				other_vset := other.value_set_expanded
+				Result := this_vset.count = other_vset.count and then
+						across this_vset as vset_csr all other_vset.has (vset_csr.item) end
+			else
+				Result := constraint.is_equal (other.constraint)
 			end
 		end
 

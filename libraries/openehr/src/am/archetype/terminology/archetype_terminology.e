@@ -564,7 +564,7 @@ feature -- Modification
 			value_sets.put (a_value_set, a_value_set.id)
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 
 	remove_definition (a_code: STRING)
 			-- completely remove the term from the terminology
@@ -639,7 +639,7 @@ feature {DIFFERENTIAL_ARCHETYPE, AOM_POST_PARSE_151_CONVERTER, ARCHETYPE_COMPARA
 			term_binding_map_cache := Void
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_151_CONVERTER} -- Modification
+feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 
 	put_new_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
 			-- add a new term definition for language `a_language' and
@@ -704,6 +704,44 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_151_CONVERTER} -- Mo
 			clear_cache
 		ensure
 			Code_valid: has_code (a_code)
+		end
+
+	merge_new_constraint_definition_and_translations (a_terms: HASH_TABLE [ARCHETYPE_TERM, STRING])
+			-- add the terms in `a_terms' in the languages which are the keys of `a_terms', under a new
+			-- constraint code at this level
+		do
+			last_new_definition_code := new_added_constraint_code_at_level (specialisation_depth, highest_constraint_code)
+			across a_terms as terms_csr loop
+				terms_csr.item.set_code (last_new_definition_code)
+			end
+			put_definition_and_translations (a_terms, last_new_definition_code)
+		end
+
+	merge_refined_constraint_definition_and_translations (a_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]; a_parent_code: STRING)
+			-- add the terms in `a_terms' in the languages which are the keys of `a_terms', under a refined
+			-- constraint code at this level
+		local
+			high_code: INTEGER
+		do
+			if highest_refined_code_index.has (a_parent_code) then
+				high_code := highest_refined_code_index [a_parent_code]
+			end
+			last_new_definition_code := new_refined_code_at_level (a_parent_code, specialisation_depth, high_code)
+			across a_terms as terms_csr loop
+				terms_csr.item.set_code (last_new_definition_code)
+			end
+			put_definition_and_translations (a_terms, last_new_definition_code)
+		end
+
+	merge_new_value_definition_and_translations (a_terms: HASH_TABLE [ARCHETYPE_TERM, STRING])
+			-- add the terms in `a_terms' in the languages which are the keys of `a_terms', under a new
+			-- value code at this level
+		do
+			last_new_definition_code := new_added_value_code_at_level (specialisation_depth, highest_value_code)
+			across a_terms as terms_csr loop
+				terms_csr.item.set_code (last_new_definition_code)
+			end
+			put_definition_and_translations (a_terms, last_new_definition_code)
 		end
 
 feature {ARCHETYPE_TERMINOLOGY} -- Modification
@@ -807,7 +845,7 @@ feature {NONE} -- Legacy
     		end
     	end
 
-feature {P_ARCHETYPE_TERMINOLOGY, AOM_POST_PARSE_151_CONVERTER} -- Implementation
+feature {P_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Implementation
 
 	set_term_definitions (a_term_defs: like term_definitions)
 		do
