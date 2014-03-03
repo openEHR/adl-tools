@@ -156,14 +156,19 @@ feature -- Modification
 			-- including partial path replacements in larger paths
 		local
 			conv_paths: HASH_TABLE [STRING, STRING]
+			annot_path, old_og_path, new_og_path: OG_PATH
 		do
+			create old_og_path.make_from_string (old_path)
+			create new_og_path.make_from_string (new_path)
 			across items as anns_for_lang_csr loop
 				create conv_paths.make (0)
 				across anns_for_lang_csr.item.items as annots_csr loop
+					create annot_path.make_from_string (annots_csr.key)
 					if annots_csr.key.is_equal (old_path) then
 						conv_paths.put (new_path, old_path)
-					elseif annots_csr.key.starts_with (old_path) then
-						conv_paths.put (new_path + annots_csr.key.substring (old_path.count+1, annots_csr.key.count), annots_csr.key)
+					elseif annots_csr.key.starts_with (old_path) and not annot_path.i_th (old_og_path.count).is_addressable then
+						annot_path.i_th (old_og_path.count).set_object_id (new_og_path.last_object_node_id)
+						conv_paths.put (annot_path.as_string, annots_csr.key)
 					end
 				end
 				across conv_paths as conv_paths_csr loop

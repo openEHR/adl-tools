@@ -481,10 +481,10 @@ feature {NONE} -- Implementation
 	 		-- correct with respect to the parent, if it's on an existing path
 	 	local
 	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		path_in_flat, id_code, parent_id_code, old_path, new_path: STRING
+	 		path_in_flat, id_code, parent_id_code, old_path, new_path, use_node_path_str, rule_path_str: STRING
 	 		parent_ca_in_anc_flat: C_ATTRIBUTE
 	 		parent_co: C_OBJECT
-	 		og_path: OG_PATH
+	 		og_path, use_node_path, rule_path: OG_PATH
 	 		spec_depth, children_with_rm_type_name_count: INTEGER
 	 	do
 	 		if attached {C_OBJECT} a_node as c_obj and then not attached {C_PRIMITIVE_OBJECT} c_obj and then c_obj.node_id.starts_with (fake_adl_14_node_id_base) then
@@ -568,29 +568,34 @@ feature {NONE} -- Implementation
 	 			end
 				c_obj.parent.replace_node_id (c_obj.node_id, id_code)
 
-				-- fix any matching use nodes with this path
+				-- fix any matching use nodes with this path; primarily where the path contains a segment
+				-- for e.g. Observation/data which has no object id in some ADL 1.4 archetypes
 				across use_node_index as use_node_idx_csr loop
-					if use_node_idx_csr.key.starts_with (old_path) then
+					-- to work out if we need to replace anything in old use_node paths, we are looking
+					-- for paths that a) match the path we are at now, and b) have a segment with no
+					-- object id, at the corresponding place as the end of the current path where we
+					-- just replaced the fake node id
+					create use_node_path.make_from_string (use_node_idx_csr.key)
+					if use_node_idx_csr.key.starts_with (old_path) and not use_node_path.i_th (og_path.count).is_addressable then
+						use_node_path.i_th (og_path.count).set_object_id (id_code)
+						use_node_path_str := use_node_path.as_string
+
+						-- now replace the paths in each of the use_nodes containing that path
 						across use_node_idx_csr.item as use_nodes_csr loop
-							create new_path.make_from_string (c_obj.path)
-							if use_node_idx_csr.key.count > old_path.count then
-								new_path.append (use_node_idx_csr.key.substring (old_path.count + 1, use_node_idx_csr.key.count))
-							end
-							use_nodes_csr.item.set_target_path (new_path)
+							use_nodes_csr.item.set_target_path (use_node_path_str)
 						end
 					end
 				end
 
-				-- fix any matching rules nodes with this path
+				-- fix any matching rules nodes with this path: same logic as above for use_nodes
 				across rules_index as rules_idx_csr loop
-					if rules_idx_csr.key.starts_with (old_path) then
+					create rule_path.make_from_string (rules_idx_csr.key)
+					if rules_idx_csr.key.starts_with (old_path) and not rule_path.i_th (og_path.count).is_addressable then
+						rule_path.i_th (og_path.count).set_object_id (id_code)
+						rule_path_str := rule_path.as_string
 						across rules_idx_csr.item as rules_csr loop
 							if rules_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
-								create new_path.make_from_string (c_obj.path)
-								if rules_idx_csr.key.count > old_path.count then
-									new_path.append (rules_idx_csr.key.substring (old_path.count + 1, rules_idx_csr.key.count))
-								end
-								rules_csr.item.make_archetype_definition_ref (new_path)
+								rules_csr.item.make_archetype_definition_ref (rule_path_str)
 							end
 						end
 					end
