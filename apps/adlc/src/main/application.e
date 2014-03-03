@@ -4,10 +4,10 @@ note
 				   Command-line form of the compiler.
 				   
 					USAGE:
-					   adlc.exe -s [-q]
-					   adlc.exe -r <repository name> -l [-q]
-					   adlc.exe -r <repository name> -d [-q]
-					   adlc.exe -r <repository name> [-flat] [-cfg <file path>] [-q] [-f <format>] -a <action> <id_pattern>
+					   adlc -s [-q]
+					   adlc -r <repository name> -l [-q]
+					   adlc -r <repository name> -d [-q]
+					   adlc <id_pattern> -r <repository name> [-flat] [-cfg <file path>] [-q] [-f <format>] -a <action>
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
@@ -20,11 +20,11 @@ note
 					   -r --repository        : repository to use
 					                            <repository name>: repository name
 					   -f --format            : output format for generated files (Optional)
-					                            <format>: file formats: json, adl, dadl, yaml, xml (default = adl)
+					                            <format>: file formats: json|adl|odin|yaml|xml (default = adl)
 					      --cfg               : output default configuration file location (Optional)
 					                            <file path>: .cfg file path
 					   -a --action            : action to perform
-					                            <action>: validate, serialise, serialize, list
+					                            <action>: validate|serialise|serialize|list
 					   -? --help              : Display usage information. (Optional)
 
 					NON-SWITCHED ARGUMENTS:
@@ -35,7 +35,7 @@ note
 	keywords:    "ADL, archetype, compiler, command line"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class

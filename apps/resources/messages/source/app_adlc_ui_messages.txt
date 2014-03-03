@@ -26,7 +26,7 @@ templates = <
 
 		-- command line options with arguments
 		["format_switch_desc"] = <"output format for generated files">
-		["format_switch_arg_desc"] = <"file formats: json, adl, dadl, yaml, xml (default = adl)">
+		["format_switch_arg_desc"] = <"file formats: json, adl, odin, yaml, xml (default = adl)">
 
 		["cfg_switch_desc"] = <"output default configuration file location">
 		["cfg_switch_arg_desc"] = <".cfg file path">

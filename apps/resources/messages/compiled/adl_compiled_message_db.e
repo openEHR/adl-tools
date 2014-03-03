@@ -269,7 +269,7 @@ feature -- Initialisation
 			message_table.put ("generate list of archetypes in current repository (use for further processing)", ec_list_archetypes_switch_desc)
 			message_table.put ("generate list of archetypes in current repository in user-friendly format", ec_display_archetypes_switch_desc)
 			message_table.put ("output format for generated files", ec_format_switch_desc)
-			message_table.put ("file formats: json, adl, dadl, yaml, xml (default = adl)", ec_format_switch_arg_desc)
+			message_table.put ("file formats: json, adl, odin, yaml, xml (default = adl)", ec_format_switch_arg_desc)
 			message_table.put ("output default configuration file location", ec_cfg_switch_desc)
 			message_table.put (".cfg file path", ec_cfg_switch_arg_desc)
 			message_table.put ("repository to use", ec_repository_switch_desc)

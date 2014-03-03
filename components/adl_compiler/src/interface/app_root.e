@@ -46,7 +46,7 @@ inherit
 		export
 			{NONE} all
 		undefine
-			app_cfg_initialise, Default_application_name, Application_developer_name
+			app_cfg_initialise, Default_application_name, Application_developer_name, app_cfg
 		end
 
 feature -- Initialisation
