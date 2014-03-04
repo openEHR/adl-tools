@@ -158,44 +158,44 @@ feature -- Conversion
 
 					ca_tuple.rebuild
 
-				-- create single non-tuple constrainer for just magnitudes
-				elseif has_magnitude_constraint then
-					create ca_magnitude.make_single ("magnitude", Void)
-					Result.put_attribute (ca_magnitude)
-					across cq_item_list as cq_items_csr loop
-						if attached cq_items_csr.item.magnitude as mag then
-							if attached cpo_magnitude as att_cpo_magnitude then
-								att_cpo_magnitude.add_interval (mag)
-							else
-								create cpo_magnitude.make_interval (mag)
-							end
-						end
-					end
-					check attached cpo_magnitude as att_cpo_magnitude then
-						ca_magnitude.put_child (att_cpo_magnitude)
-					end
-
-				-- create single non-tuple constrainer for just precisions
-				elseif has_precision_constraint then
-					create ca_precision.make_single ("precision", Void)
-					Result.put_attribute (ca_precision)
-					across cq_item_list as cq_items_csr loop
-						if attached cq_items_csr.item.precision as prec then
-							if attached cpo_precision as att_cpo_precision then
-								att_cpo_precision.add_interval (prec)
-							else
-								create cpo_precision.make_interval (prec)
-							end
-						end
-					end
-					check attached cpo_precision as att_cpo_precision then
-						ca_precision.put_child (att_cpo_precision)
-					end
-
-				-- create single non-tuple constrainer for just units
+				-- non-tuple constraints; note that some can still have multiple items
 				else
-					create ca_units.make_single ("units", Void)
-					Result.put_attribute (ca_units)
+					if has_magnitude_constraint then
+						create ca_magnitude.make_single ("magnitude", Void)
+						Result.put_attribute (ca_magnitude)
+						across cq_item_list as cq_items_csr loop
+							if attached cq_items_csr.item.magnitude as mag then
+								if attached cpo_magnitude as att_cpo_magnitude then
+									att_cpo_magnitude.add_interval (mag)
+								else
+									create cpo_magnitude.make_interval (mag)
+								end
+							end
+						end
+						check attached cpo_magnitude as att_cpo_magnitude then
+							ca_magnitude.put_child (att_cpo_magnitude)
+						end
+					end
+
+					-- create single non-tuple constrainer for just precisions
+					if has_precision_constraint then
+						create ca_precision.make_single ("precision", Void)
+						Result.put_attribute (ca_precision)
+						across cq_item_list as cq_items_csr loop
+							if attached cq_items_csr.item.precision as prec then
+								if attached cpo_precision as att_cpo_precision then
+									att_cpo_precision.add_interval (prec)
+								else
+									create cpo_precision.make_interval (prec)
+								end
+							end
+						end
+						check attached cpo_precision as att_cpo_precision then
+							ca_precision.put_child (att_cpo_precision)
+						end
+					end
+
+					-- create single non-tuple constrainer for just units
 					across cq_item_list as cq_items_csr loop
 						if not cq_items_csr.item.units.is_empty then
 							if attached cpo_units as att_cpo_units then
@@ -205,10 +205,11 @@ feature -- Conversion
 							end
 						end
 					end
-					check attached cpo_units as att_cpo_units then
+					if attached cpo_units as att_cpo_units then
+						create ca_units.make_single ("units", Void)
+						Result.put_attribute (ca_units)
 						ca_units.put_child (att_cpo_units)
 					end
-
 				end
 			end
 		end

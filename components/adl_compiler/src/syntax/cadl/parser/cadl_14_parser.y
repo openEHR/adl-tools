@@ -1426,7 +1426,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 			-- e.g. [local::idN] due to reuse of at-code as value code in original 1.4 archetype
 			create $$.make ($1)
 		}
-	| V_EXPANDED_VALUE_SET_DEF	
+	| V_EXPANDED_VALUE_SET_DEF
 		{
 			-- e.g. "local::at40"
 			if $1.is_single then
@@ -1648,6 +1648,13 @@ c_ordinal: ordinal
 ordinal: integer_value SYM_INTERVAL_DELIM V_EXPANDED_VALUE_SET_DEF
 		{
 			create $$.make ($1, $3.first_code)
+		}
+
+	-- this case is when an id code turns up as the ordinal code, due to 
+	-- at-code reuse as both ids and ordinal values
+	| integer_value SYM_INTERVAL_DELIM V_REUSED_ID_CODE
+		{
+			create $$.make ($1, $3)
 		}
 	| integer_value SYM_INTERVAL_DELIM ERR_VALUE_SET_DEF
 		{

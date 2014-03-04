@@ -173,10 +173,8 @@ feature {NONE} -- Implementation
 			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
-						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							if is_id_code (ctc.constraint) then
-								idx.put (ctc, ctc.constraint)
-							end
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc and then is_id_code (ctc.constraint) then
+							idx.put (ctc, ctc.constraint)
 						end
 					end (?, ?, Result))
 		end
