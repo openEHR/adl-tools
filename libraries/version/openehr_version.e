@@ -19,7 +19,7 @@ inherit
 feature -- Access
 
 
-			-- Details of when this class was last committed to Subversion.
+			-- Details of when this class was last committed to Version control.
 			-- This would typically be whenever `major', `minor', `build' or `out' are manually edited.
 
 	major: INTEGER = 1
@@ -28,7 +28,7 @@ feature -- Access
 	minor: INTEGER = 5
 			-- The minor version number: manually incremented, or else reset to 0 when `major' changes.
 
-	build: INTEGER = 0
+	build: INTEGER = 1
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
 	revision: INTEGER = 2066
@@ -45,7 +45,7 @@ feature -- Access
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " beta " + beta
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + "-beta" + beta
 		ensure then
 			long_enough: Result.count >= 7
 		end
