@@ -189,6 +189,7 @@ feature {NONE} -- Implementation
 		local
 			code_in_parent: STRING
 			spec_depth: INTEGER
+			parent_code_set: detachable ARRAYED_LIST [STRING]
 		do
 			-- determine for parent code that might exist in this flat terminology
 			if is_refined_code (a_value_set.id) then
@@ -199,10 +200,20 @@ feature {NONE} -- Implementation
 				end
 
 				if value_sets.has (code_in_parent) then
+					parent_code_set := value_sets.item (code_in_parent).members
 					value_sets.remove (code_in_parent)
 				end
 			end
 			value_sets.put (a_value_set, a_value_set.id)
+
+			-- remove at codes from parent value set that are not in the current one
+			if attached parent_code_set as p_code_set then
+				across p_code_set as parent_codes_csr loop
+					if not a_value_set.has_member_code (parent_codes_csr.item) then
+						remove_definition (parent_codes_csr.item)
+					end
+				end
+			end
 		end
 
 end
