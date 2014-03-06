@@ -25,6 +25,8 @@ inherit
 		end
 
 	OPENEHR_DEFINITIONS
+		export
+			{NONE} all
 		undefine
 			out, default_create
 		end

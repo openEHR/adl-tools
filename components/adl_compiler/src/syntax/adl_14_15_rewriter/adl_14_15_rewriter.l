@@ -97,9 +97,13 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 	}
 
 -- pattern for use_archetype of form [at0012, archetype_id]
-\[{ADL_14_AT_CODE} {
+\[{ADL_14_AT_CODE}{WHITESPACE_CHAR}*,{WHITESPACE_CHAR}*{ARCHETYPE_ID}\] {
+		str_ := text
 		out_buffer.append_character ('[')
-		output_new_id_code (text_substring (2, text_count))
+		new_code_str := str_.substring (2, str_.index_of (',', 1) - 1)
+		new_code_str.right_adjust
+		output_new_id_code (new_code_str)
+		out_buffer.append (str_.substring (str_.index_of (',', 1), str_.count))
 	}
 
 \[{ADL_14_AC_CODE}\] {
@@ -358,11 +362,11 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 ----------/* all other text */ -------------------------------------------------
 
-^{WHITESPACE}[^[" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace then '['
+^{WHITESPACE}[^[" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	}
 
-[^[" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace then '['
+[^[" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	}
 
@@ -381,6 +385,8 @@ feature {NONE} -- Initialization
 			make_compressed_scanner_skeleton
 			create out_buffer.make (8192)
 			create converted_codes.make (0)
+			create str_.make_empty
+			create new_code_str.make_empty
 		end
 
 feature -- Commands
@@ -402,6 +408,8 @@ feature -- Commands
 		end
 
 feature -- Access
+
+	str_, new_code_str: STRING
 
 	out_buffer: STRING
 

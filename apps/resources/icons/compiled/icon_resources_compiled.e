@@ -258,6 +258,8 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CEN_SECTION}.make).to_pixmap end, "rm/cen/section")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CEN_SECTION_SLOT}.make).to_pixmap end, "rm/cen/section_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CEN_TEXT}.make).to_pixmap end, "rm/cen/text")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CLINICAL_DATA_GROUP}.make).to_pixmap end, "rm/cimi/clinical_data_group")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CLINICAL_DATA_GROUP_SLOT}.make).to_pixmap end, "rm/cimi/clinical_data_group_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CLUSTER}.make).to_pixmap end, "rm/cimi/cluster")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CLUSTER_SLOT}.make).to_pixmap end, "rm/cimi/cluster_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_CODED_TEXT}.make).to_pixmap end, "rm/cimi/coded_text")

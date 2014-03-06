@@ -354,7 +354,7 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
-			comp_onts_serialised: STRING
+			comp_onts_serialised, desc_serialised: STRING
 			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
@@ -365,8 +365,13 @@ feature -- Serialisation
 			language_context.serialise (a_format, False, False)
 
 			-- description section
-			description_context.set_tree (an_archetype.description.dt_representation)
-			description_context.serialise (a_format, False, False)
+			if attached an_archetype.description as att_desc then
+				description_context.set_tree (an_archetype.description.dt_representation)
+				description_context.serialise (a_format, False, False)
+				desc_serialised := description_context.serialised
+			else
+				create desc_serialised.make_empty
+			end
 
 			-- definition section
 			definition_context.set_tree (an_archetype.definition)
@@ -406,7 +411,7 @@ feature -- Serialisation
 				serialiser := ser
 			end
 			serialiser.reset
-			serialiser.serialise_from_parts (an_archetype, language_context.serialised, description_context.serialised, definition_context.serialised,
+			serialiser.serialise_from_parts (an_archetype, language_context.serialised, desc_serialised, definition_context.serialised,
 				rules_context.serialised, terminology_context.serialised, annotations_context.serialised, comp_onts_serialised)
 
 			Result := serialiser.last_result
