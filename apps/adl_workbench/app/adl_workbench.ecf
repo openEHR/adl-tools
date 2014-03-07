@@ -62,13 +62,11 @@
 			</option>
 		</library>
 		<library name="eomf_odin" location="$EOMF\library\odin\odin.ecf"/>
-		<library name="gobo_kernel" location="$GOBO\library\kernel\library.ecf"/>
-		<library name="gobo_lexical" location="$GOBO\library\lexical\library.ecf"/>
-		<library name="gobo_lexical_skl" location="$GOBO\library\lexical\library_skl.ecf"/>
-		<library name="gobo_parse" location="$GOBO\library\parse\library.ecf"/>
-		<library name="gobo_parse_skl" location="$GOBO\library\parse\library_skl.ecf"/>
-		<library name="gobo_regexp" location="$GOBO\library\regexp\library.ecf"/>
-		<library name="gobo_utility" location="$GOBO\library\utility\library.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel-safe.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical-safe.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse-safe.ecf"/>
+		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp-safe.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<library name="ise_base" location="$ISE_LIBRARY\library\base\base-safe.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
