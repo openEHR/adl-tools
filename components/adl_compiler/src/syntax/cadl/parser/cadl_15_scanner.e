@@ -22,11 +22,6 @@ inherit
 			{NONE} all
 		end
 
-	ADL_14_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
@@ -34,17 +29,6 @@ inherit
 
 	UT_CHARACTER_CODES
 		export
-			{NONE} all
-		end
-
-	KL_IMPORTED_INTEGER_ROUTINES
-	KL_IMPORTED_STRING_ROUTINES
-	KL_SHARED_PLATFORM
-	KL_SHARED_EXCEPTIONS
-	KL_SHARED_ARGUMENTS
-
-	ADL_SYNTAX_CONVERTER
-		export 
 			{NONE} all
 		end
 
@@ -560,7 +544,7 @@ end
 
 			last_token := V_URI
 			last_string_value := text
-		
+
 end
 end
 end
@@ -575,7 +559,7 @@ end
 
 		last_token := V_ROOT_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
-	
+
 else
 --|#line 207 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -584,7 +568,7 @@ end
 
 		last_token := V_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
-	
+
 end
 else
 if yy_act = 64 then
@@ -595,7 +579,7 @@ end
 
 		last_token := V_ID_CODE_STR
 		last_string_value := text
-	
+
 else
 --|#line 219 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -604,7 +588,7 @@ end
 
 		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
-	
+
 end
 end
 else
@@ -617,7 +601,7 @@ end
 
 		last_token := V_VALUE_DEF
 		last_string_value := text_substring (2, text_count - 1)
-	
+
 else
 --|#line 231 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -628,7 +612,7 @@ end
 		last_string_value := text_substring (2, text_count - 1)
 		last_string_value.prune_all(' ')
 		last_string_value.prune_all('%T')
-	
+
 end
 else
 if yy_act = 68 then
@@ -642,7 +626,7 @@ end
 		str_ := text_substring (2, text_count)
 		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
 		is_assumed_code := False
-	
+
 else
 --|#line 262 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -661,7 +645,7 @@ end
 			err_str.append (str_)
 			set_start_condition (INITIAL)
 		end
-	
+
 end
 end
 end
@@ -692,7 +676,7 @@ end
 			err_str.append (str_)
 			set_start_condition (INITIAL)
 		end
-	
+
 else
 --|#line 292 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -734,7 +718,7 @@ end
 			err_str.append (str_)
 		end
 		set_start_condition (INITIAL)
-	
+
 else
 --|#line 320 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -743,7 +727,7 @@ end
 	-- Catch-all rules (no backing up)
 			last_token := ERR_VALUE_SET_DEF
 			set_start_condition (INITIAL)
-	
+
 end
 end
 else
@@ -756,7 +740,7 @@ end
 
 		last_token := ERR_VALUE_SET_MISSING_CODES
 		err_str := text
-	
+
 else
 --|#line 346 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -768,7 +752,7 @@ end
 		str_ := text_substring (2, text_count)
 		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
 		is_assumed_code := False
-	
+
 end
 else
 if yy_act = 77 then
@@ -789,7 +773,7 @@ end
 			err_str.append (str_)
 			set_start_condition (INITIAL)
 		end
-	
+
 else
 --|#line 370 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -807,7 +791,7 @@ end
 			err_str.append (str_)
 			set_start_condition (INITIAL)
 		end
-	
+
 end
 end
 end
@@ -854,7 +838,7 @@ end
 			err_str.append (str_)
 		end
 		set_start_condition (INITIAL)
-	
+
 end
 else
 if yy_act = 82 then
@@ -865,7 +849,7 @@ end
 	-- Catch-all rules (no backing up)
 			last_token := ERR_VALUE_SET_DEF
 			set_start_condition (INITIAL)
-	
+
 else
 --|#line 425 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -876,7 +860,7 @@ end
 		last_string_value := text_substring (2, text_count - 1)
 		last_string_value.prune_all(' ')
 		last_string_value.prune_all('%T')
-	
+
 end
 end
 else
@@ -891,7 +875,7 @@ end
 		last_string_value := text_substring (2, text_count - 1)
 		last_string_value.prune_all(' ')
 		last_string_value.prune_all('%T')
-	
+
 else
 --|#line 442 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -900,7 +884,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 end
 else
 if yy_act = 86 then
@@ -911,7 +895,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 else
 --|#line 444 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -920,7 +904,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-		
+
 end
 end
 end
@@ -938,7 +922,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-		
+
 else
 --|#line 452 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -947,7 +931,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-		
+
 end
 else
 --|#line 459 "cadl_15_scanner.l"
@@ -957,7 +941,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-		
+
 end
 else
 if yy_act = 91 then
@@ -968,7 +952,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-		
+
 else
 --|#line 467 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -977,7 +961,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-			
+
 end
 end
 else
@@ -990,7 +974,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-			
+
 else
 --|#line 480 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -999,7 +983,7 @@ end
 
 				last_token := V_ISO8601_DATE_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 else
 if yy_act = 95 then
@@ -1010,7 +994,7 @@ end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text_substring(2, text_count)
-			
+
 else
 --|#line 495 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1019,7 +1003,7 @@ end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 end
 end
@@ -1035,7 +1019,7 @@ end
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 				last_string_value.put('T', last_string_value.index_of(' ', 1))
-			
+
 else
 --|#line 511 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1044,7 +1028,7 @@ end
 
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 else
 if yy_act = 99 then
@@ -1054,9 +1038,9 @@ debug ("GELEX")
 end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
-				unread_character(last_string_value.item(last_string_value.count)) -- put back the last character 
+				unread_character(last_string_value.item(last_string_value.count)) -- put back the last character
 				last_string_value := text
-			
+
 else
 --|#line 531 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1065,7 +1049,7 @@ end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
-			
+
 end
 end
 else
@@ -1078,7 +1062,7 @@ end
 
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
-			
+
 else
 --|#line 543 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1087,7 +1071,7 @@ end
 
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
-			
+
 end
 else
 if yy_act = 103 then
@@ -1099,7 +1083,7 @@ end
 					last_token := V_FEATURE_CALL_IDENTIFIER
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
-			
+
 else
 --|#line 556 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1108,7 +1092,7 @@ end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
-			
+
 end
 end
 end
@@ -1128,7 +1112,7 @@ end
 		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[id-code]"
 			last_token := V_ABS_PATH
 			last_string_value := text
-		
+
 else
 --|#line 568 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1137,7 +1121,7 @@ end
 		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[id-code]"
 			last_token := V_REL_PATH
 			last_string_value := text
-		
+
 end
 else
 --|#line 574 "cadl_15_scanner.l"
@@ -1148,7 +1132,7 @@ end
 			last_token := SYM_START_CBLOCK
 			set_start_condition (IN_REGEXP1)
 			in_buffer.append_character ('/')
-		
+
 end
 else
 if yy_act = 108 then
@@ -1158,7 +1142,7 @@ debug ("GELEX")
 end
  		-- match segment consisting of non / or [
 				in_buffer.append_string (text)
-	
+
 else
 --|#line 585 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1166,7 +1150,7 @@ debug ("GELEX")
 end
  		-- match [] segment
 				in_buffer.append_string (text)
-	
+
 end
 end
 else
@@ -1178,7 +1162,7 @@ debug ("GELEX")
 end
  		-- match segment ending in quoted slashes '\/'
 				in_buffer.append_string (text)
-	
+
 else
 --|#line 593 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1193,7 +1177,7 @@ end
  				last_string_value := str_
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
-	
+
 end
 else
 if yy_act = 112 then
@@ -1204,7 +1188,7 @@ end
 	-- regexp formed using '^' delimiters
  				last_token := V_REGEXP
  				last_string_value := text
-			
+
 else
 --|#line 612 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1213,7 +1197,7 @@ end
 
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
-			
+
 end
 end
 end
@@ -1236,7 +1220,7 @@ end
 					end
 					last_integer_value := in_buffer.to_integer
 					in_buffer.wipe_out
-			
+
 else
 --|#line 632 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1245,7 +1229,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-			
+
 end
 else
 if yy_act = 116 then
@@ -1256,7 +1240,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-			
+
 else
 --|#line 637 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1275,7 +1259,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-			
+
 end
 end
 else
@@ -1298,7 +1282,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-			
+
 else
 --|#line 639 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1317,7 +1301,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-			
+
 end
 else
 if yy_act = 120 then
@@ -1328,7 +1312,7 @@ end
 
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
-			
+
 else
 --|#line 664 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1339,7 +1323,7 @@ end
 					in_buffer.append_string (text_substring (2, text_count))
 				end
 				set_start_condition (IN_STR)
-			
+
 end
 end
 end
@@ -1369,7 +1353,7 @@ debug ("GELEX")
 end
 
 				in_buffer.append_string (text)
-	
+
 end
 else
 if yy_act = 125 then
@@ -1386,7 +1370,7 @@ end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
-			
+
 end
 end
 else
@@ -1406,7 +1390,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-			
+
 else
 --|#line 698 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1415,7 +1399,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-			
+
 end
 else
 if yy_act = 129 then
@@ -1519,7 +1503,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-			
+
 when 3 then
 --|#line 0 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1528,7 +1512,7 @@ end
 	-- Catch-all rules (no backing up)
 			last_token := ERR_VALUE_SET_DEF
 			set_start_condition (INITIAL)
-	
+
 when 4 then
 --|#line 0 "cadl_15_scanner.l"
 debug ("GELEX")
@@ -1537,7 +1521,7 @@ end
 	-- Catch-all rules (no backing up)
 			last_token := ERR_VALUE_SET_DEF
 			set_start_condition (INITIAL)
-	
+
 			else
 				terminate
 			end
