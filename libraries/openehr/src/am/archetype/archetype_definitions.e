@@ -1,4 +1,4 @@
-note
+﻿note
 	component:   "openEHR ADL Tools"
 	description: "Basic archetype definitions"
 	keywords:    "ADL"
@@ -117,6 +117,25 @@ feature -- Definitions
 		end
 
 	Unknown_value: STRING = "(Unknown)"
+
+	Adl_tag_remove_characters: STRING = "'%"#^!£$?"
+			-- characters that will be removed from strings being used to generate API tags from paths
+
+	Adl_tag_underscore_characters: STRING = "-:; %T()[]{}/"
+			-- characters that will be removed from strings being used to generate API tags from paths
+
+	Adl_tag_character_replacements: HASH_TABLE [STRING, CHARACTER]
+			-- characters that will be replaced in strings being used to generate API tags from paths
+		once
+			create Result.make (0)
+			Result.put ("_percent_", '%%')
+			Result.put ("_equals_", '=')
+			Result.put ("_plus_", '+')
+			Result.put ("_star_", '*')
+			Result.put ("_lt_", '<')
+			Result.put ("_gt_", '>')
+			Result.put ("_and_", '&')
+		end
 
 	c_object_constraint_types: HASH_TABLE [STRING, STRING]
 			-- C_OBJECT meanings keyed by class-names (meanings are message tags to be converted to

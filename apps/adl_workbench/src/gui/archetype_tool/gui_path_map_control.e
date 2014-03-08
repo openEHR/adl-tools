@@ -53,7 +53,7 @@ feature -- Definitions
 	interface_column_names: ARRAY [STRING]
 			-- names of columns of path view control
 		once
-			Result := <<"API Tag", "Path">>
+			Result := <<"API Tag", "Path", "RM Type", "Is Multiple">>
 		end
 
 feature {NONE} -- Initialisation
@@ -239,6 +239,7 @@ feature {NONE} -- Implementation
 
 	interface_row (a_path: STRING): ARRAYED_LIST [STRING_32]
 		local
+			co: C_OBJECT
 			tag_str: STRING
 		do
 			create Result.make (0)
@@ -254,6 +255,17 @@ feature {NONE} -- Implementation
 
 				-- second column: path
 				Result.extend (utf8_to_utf32 (a_path))
+
+				-- third column: RM type name
+				co := source_archetype.object_at_path (a_path)
+				Result.extend (utf8_to_utf32 (co.rm_type_name))
+
+				-- fourth column: multiplicity
+				if attached co.parent as ca and then ca.is_multiple then
+					Result.extend ("*")
+				else
+					Result.extend ("")
+				end
 			end
 		end
 

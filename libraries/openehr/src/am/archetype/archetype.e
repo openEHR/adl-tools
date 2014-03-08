@@ -291,7 +291,7 @@ feature -- Paths
 			a_lang_valid: not a_language.is_empty
 		local
 			og_phys_path, og_log_path: OG_PATH
-			tag_path, id_code: STRING
+			tag_path, tag, id_code: STRING
 		do
 			create Result.make (0)
 			across path_set as path_csr loop
@@ -332,8 +332,21 @@ feature -- Paths
 						tag_path.append_character ('_')
 					end
 				end
-				tag_path.replace_substring_all (" ", "_")
-				Result.put (tag_path, og_phys_path.as_string)
+
+				-- perform replacements
+				create tag.make (tag_path.count)
+				across tag_path as char_csr loop
+					if Adl_tag_remove_characters.has (char_csr.item) then
+						-- do nothing
+					elseif Adl_tag_underscore_characters.has (char_csr.item)  then
+						tag.append_character ('_')
+					elseif Adl_tag_character_replacements.has (char_csr.item) and then attached Adl_tag_character_replacements.item (char_csr.item) as rep_str then
+						tag.append (rep_str)
+					else
+						tag.append_character (char_csr.item)
+					end
+				end
+				Result.put (tag, og_phys_path.as_string)
 			end
 		end
 
