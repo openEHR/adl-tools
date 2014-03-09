@@ -36,7 +36,6 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} axis_separator
 		undefine
 			is_equal
 		redefine
@@ -49,6 +48,22 @@ create
 	default_create
 
 feature -- Definitions
+
+	Namespace_separator: STRING = "::"
+			-- separator between namespace and rest of id
+
+	Axis_separator: CHARACTER = '.'
+			-- major separator between values on the different axes
+
+	Section_separator: CHARACTER = '-'
+			-- separator between sections in an axis
+
+	Section_separator_string: STRING = "-"
+			-- separator between sections in an axis
+
+	Version_delimiter: STRING = "v"
+
+	Version_axis_delimiter: STRING = ".v"
 
 	Default_id: STRING = "openehr-ehr-ENTRY.any.v0.0.1"
 
@@ -129,7 +144,7 @@ feature -- Initialisation
 			qual_class_strs: LIST [STRING]
 		do
 			default_create
-			qual_class_strs := a_qualified_rm_class.split (section_separator)
+			qual_class_strs := a_qualified_rm_class.split (Section_separator)
 			rm_publisher := qual_class_strs.i_th (1)
 			rm_closure := qual_class_strs.i_th (2)
 			rm_class := qual_class_strs.i_th (3)
@@ -174,9 +189,9 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (rm_publisher)
-			Result.append (section_separator.out)
+			Result.append (Section_separator.out)
 			Result.append (rm_closure)
-			Result.append (section_separator.out)
+			Result.append (Section_separator.out)
 			Result.append (rm_class)
 		end
 
@@ -184,7 +199,7 @@ feature -- Access
 			-- The ‘interface’ form of the HRID, i.e. down to the major version
 		do
 			Result := hrid_root
-			Result.append_character (axis_separator)
+			Result.append_character (Axis_separator)
 			Result.append (Version_delimiter)
 			Result.append (major_version)
 		end
@@ -198,15 +213,13 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (concept_id)
-			Result.append_character (axis_separator)
+			Result.append_character (Axis_separator)
 			Result.append (Version_delimiter)
 			Result.append (version_id)
 		end
 
 	semantic_id: STRING
 			-- namespace + domain concept part of archetype id + version
-		local
-			str: STRING
 		do
 			create Result.make_empty
 			if attached namespace then
@@ -223,7 +236,7 @@ feature -- Access
 	major_version: STRING
 			-- Major version of this archetype, extracted from release_version.
 		do
-			Result := release_version.substring (1, release_version.index_of (axis_separator, 1) - 1)
+			Result := release_version.substring (1, release_version.index_of (Axis_separator, 1) - 1)
 		end
 
 	minor_version: STRING
@@ -231,8 +244,8 @@ feature -- Access
 		local
 			p: INTEGER
 		do
-			p := release_version.index_of (axis_separator, 1) + 1
-			Result := release_version.substring (p, release_version.index_of (axis_separator, p) - 1)
+			p := release_version.index_of (Axis_separator, 1) + 1
+			Result := release_version.substring (p, release_version.index_of (Axis_separator, p) - 1)
 		end
 
 	patch_version: STRING
@@ -240,8 +253,8 @@ feature -- Access
 		local
 			p: INTEGER
 		do
-			p := release_version.index_of (axis_separator, 1) + 1
-			Result := release_version.substring (release_version.index_of (axis_separator, p) + 1, release_version.count)
+			p := release_version.index_of (Axis_separator, 1) + 1
+			Result := release_version.substring (release_version.index_of (Axis_separator, p) + 1, release_version.count)
 		end
 
 	version_status: INTEGER
@@ -255,7 +268,7 @@ feature -- Access
 			-- The ‘physical’ form of the HRID, i.e. with complete version information.
 		do
 			Result := hrid_root
-			Result.append_character (axis_separator)
+			Result.append_character (Axis_separator)
 			Result.append (Version_delimiter)
 			Result.append (version_id)
 		end
@@ -277,7 +290,7 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (rm_publisher)
-			Result.append_character (section_separator)
+			Result.append_character (Section_separator)
 			Result.append (rm_closure)
 		end
 
@@ -358,9 +371,9 @@ feature -- Output
 		do
 			create Result.make_empty
 			Result.append (rm_class.substring (1, 3))
-			Result.append_character (axis_separator)
+			Result.append_character (Axis_separator)
 			Result.append (concept_id.substring (1, concept_id.count.min (8)))
-			Result.append_character (axis_separator)
+			Result.append_character (Axis_separator)
 			Result.append (major_version)
 		end
 
@@ -375,7 +388,7 @@ feature {NONE} -- Implementation
 				Result.append (namespace_separator)
 			end
 			Result.append (qualified_rm_class)
-			Result.append_character (axis_separator)
+			Result.append_character (Axis_separator)
 			Result.append (concept_id)
 		end
 

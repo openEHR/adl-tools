@@ -610,7 +610,7 @@ feature -- Validation
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							if is_valid_constraint_code (ctc.constraint) then
+							if is_valid_value_set_code (ctc.constraint) then
 								idx.put (ctc, ctc.constraint)
 							end
 						end

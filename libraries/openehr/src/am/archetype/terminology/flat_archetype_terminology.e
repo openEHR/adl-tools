@@ -116,7 +116,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Implementation
 					rm_term_codes.extend (term_codes_csr.item)
 				end
 			end
-			across constraint_codes as constraint_codes_csr loop
+			across value_set_codes as constraint_codes_csr loop
 				if specialisation_depth_from_code (constraint_codes_csr.item) /= specialisation_depth then
 					rm_constraint_codes.extend (constraint_codes_csr.item)
 				end
@@ -183,7 +183,7 @@ feature {NONE} -- Implementation
 			put_term_binding (a_binding, a_terminology_id, a_child_code)
 		end
 
-	merge_specialised_value_set (a_value_set: VALUE_SET_RELATION)
+	merge_specialised_value_set (a_value_set: VALUE_SET)
 			-- merge `a_value_set' into this terminology, if necessary removing any existing
 			-- value set bound to a parent code of ac-code a_value_set.id
 		local

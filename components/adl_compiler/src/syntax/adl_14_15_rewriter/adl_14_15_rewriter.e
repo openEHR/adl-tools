@@ -678,15 +678,15 @@ end
 		do
 			inspect yy_sc
 when 0, 1, 2, 4, 5 then
---|#line 0 "adl_14_15_rewriter.l"
+--|#line 374 "adl_14_15_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 374")
 end
 terminate
 when 3 then
---|#line 0 "adl_14_15_rewriter.l"
+--|#line 358 "adl_14_15_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 358")
 end
 	-- Catch-all rules (no backing up)
 				set_start_condition (INITIAL)

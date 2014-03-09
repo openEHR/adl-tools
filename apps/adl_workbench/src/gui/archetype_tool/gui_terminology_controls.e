@@ -345,7 +345,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- ac-codes with bindings only, no value set
-			across terminology.constraint_codes as ac_codes_csr loop
+			across terminology.value_set_codes as ac_codes_csr loop
 				if not terminology.has_value_set (ac_codes_csr.item) then
 					evx_values_grid.add_row (ac_codes_csr.item)
 					populate_value_row (ac_codes_csr.item, Ac_code_color)
@@ -475,7 +475,7 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_language end
 			create code.make_empty
-			if attached {VALUE_SET_RELATION} a_grid_row.data as vset then
+			if attached {VALUE_SET} a_grid_row.data as vset then
 				code := vset.id
 				show_desc := a_grid_row.is_expanded
 			elseif attached {STRING} a_grid_row.data as str then

@@ -196,7 +196,7 @@ feature -- Comparison
 
 			-- ac-codes and value-sets
 			def_ac_codes := diff_child.term_constraints_index
-			across diff_child.terminology.constraint_codes as codes_csr loop
+			across diff_child.terminology.value_set_codes as codes_csr loop
 				if specialisation_depth_from_code (codes_csr.item) = diff_child.specialisation_depth and then not def_ac_codes.has (codes_csr.item) or else
 					specialisation_depth_from_code (codes_csr.item) < diff_child.specialisation_depth
 				then

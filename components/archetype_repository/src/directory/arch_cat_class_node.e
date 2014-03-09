@@ -25,11 +25,11 @@ feature -- Initialisation
 		do
 			class_definition := a_class_desc
 			bmm_schema := class_definition.bmm_schema
-			qualified_name := bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out + class_definition.name
+			qualified_name := bmm_schema.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out + class_definition.name
 			name := class_definition.name
 			group_name := class_definition.type_category
 		ensure
-			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out +  class_definition.name)
+			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out +  class_definition.name)
 			display_name_set: name = class_definition.name
 		end
 

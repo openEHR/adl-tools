@@ -290,8 +290,6 @@ feature -- Modification
 			-- replace a tuple in this object that matches the signature of `a_tuple'
 		require
 			has_comparable_attribute_tuple (a_tuple)
-		local
-			comparable_tuple: detachable C_ATTRIBUTE_TUPLE
 		do
 			check attached attribute_tuples as att_tuples then
 				from att_tuples.start until att_tuples.item.is_comparable_to (a_tuple) or att_tuples.off loop

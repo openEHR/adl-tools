@@ -51,22 +51,6 @@ feature -- Definitions
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
-	Namespace_separator: STRING = "::"
-			-- separator between namespace and rest of id
-
-	Axis_separator: CHARACTER = '.'
-			-- major separator between values on the different axes
-
-	Section_separator: CHARACTER = '-'
-			-- separator between sections in an axis
-
-	Section_separator_string: STRING = "-"
-			-- separator between sections in an axis
-
-	Version_delimiter: STRING = "v"
-
-	Version_axis_delimiter: STRING = ".v"
-
 	Aom_profile_file_match_regex: STRING
 		once
 			Result :=  ".*\" + Aom_profile_file_extension + "$"
@@ -142,12 +126,12 @@ feature -- Definitions
 			-- natural language via calls to get_text ())
 		once
 			create Result.make (0)
-			Result.put ("c_type_complex_object", "C_COMPLEX_OBJECT")
-			Result.put ("c_type_primitive_object", "C_PRIMITIVE_OBJECT")
-			Result.put ("c_type_internal_reference", "ARCHETYPE_INTERNAL_REF")
-			Result.put ("c_type_archetype_reference", "C_ARCHETYPE_ROOT")
-			Result.put ("c_type_slot", "ARCHETYPE_SLOT")
-			Result.put ("c_type_code_phrase", "C_TERMINOLOGY_CODE")
+			Result.put ("c_type_complex_object", bare_type_name (({C_COMPLEX_OBJECT}).name))
+			Result.put ("c_type_primitive_object", bare_type_name (({C_PRIMITIVE_OBJECT}).name))
+			Result.put ("c_type_internal_reference", bare_type_name (({C_COMPLEX_OBJECT_PROXY}).name))
+			Result.put ("c_type_archetype_reference", bare_type_name (({C_ARCHETYPE_ROOT}).name))
+			Result.put ("c_type_slot", bare_type_name (({ARCHETYPE_SLOT}).name))
+			Result.put ("c_type_code_phrase", bare_type_name (({C_TERMINOLOGY_CODE}).name))
 		end
 
 	c_primitive_subtypes: ARRAYED_SET [STRING]

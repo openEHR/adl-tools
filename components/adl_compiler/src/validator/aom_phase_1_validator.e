@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_terminology_languages
-			-- Are all `value_codes' and `constraint_codes' found in all languages?
+			-- Are all `value_codes' and `value_set_codes' found in all languages?
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
 			langs: ARRAYED_SET [STRING]
@@ -253,7 +253,7 @@ feature {NONE} -- Implementation
 						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
-				across terminology.constraint_codes as code_csr loop
+				across terminology.value_set_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
 						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
@@ -313,8 +313,8 @@ feature {NONE} -- Implementation
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
 					add_error (ec_VATCD, <<code, arch_depth.out>>)
-				elseif code_spec_depth < arch_depth and not flat_ancestor.terminology.has_constraint_code (code) or else
-					code_spec_depth = arch_depth and not terminology.has_constraint_code (code)
+				elseif code_spec_depth < arch_depth and not flat_ancestor.terminology.has_value_set_code (code) or else
+					code_spec_depth = arch_depth and not terminology.has_value_set_code (code)
 				then
 					add_error (ec_VACDF, <<code, term_constraints_csr.item.path>>)
 				elseif attached term_constraints_csr.item.assumed_value as att_av then
@@ -329,7 +329,7 @@ feature {NONE} -- Implementation
 			-- see if every code in value set definitions is in the terminology
 		do
 			across terminology.value_sets as vsets_csr loop
-				if not terminology.has_constraint_code (vsets_csr.item.id) then
+				if not terminology.has_value_set_code (vsets_csr.item.id) then
 					add_error (ec_VTVSID, <<vsets_csr.item.id>>)
 				end
 				across vsets_csr.item.members as vset_at_codes_csr loop

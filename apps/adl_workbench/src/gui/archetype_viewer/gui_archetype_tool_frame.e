@@ -71,7 +71,7 @@ feature {NONE}-- Initialization
 			end
 
 			-- archetype id: namespace separator '::'
-			tool_bar.add_label (namespace_separator, 8, False, False)
+			tool_bar.add_label ({ARCHETYPE_HRID}.namespace_separator, 8, False, False)
 
 			-- archetype id: qualified RM class
 			tool_bar.add_expanding_text_field ("", get_text (ec_archetype_hrid_qualified_rm_class_tooltip))
@@ -80,7 +80,7 @@ feature {NONE}-- Initialization
 			end
 
 			-- archetype id: axis separator '.'
-			tool_bar.add_label (axis_separator.out, 3, False, False)
+			tool_bar.add_label ({ARCHETYPE_HRID}.axis_separator.out, 3, False, False)
 
 			-- archetype id: concept_id
 			tool_bar.add_expanding_text_field ("", get_text (ec_archetype_hrid_concept_id_tooltip))
@@ -89,7 +89,7 @@ feature {NONE}-- Initialization
 			end
 
 			-- archetype id: axis/version separator '.v'
-			tool_bar.add_label (version_axis_delimiter, 8, False, False)
+			tool_bar.add_label ({ARCHETYPE_HRID}.version_axis_delimiter, 8, False, False)
 
 			-- archetype id: version_id
 			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_hrid_version_id_tooltip), 70)

@@ -132,7 +132,7 @@ feature -- Access
 			end
 
 			constraint_codes := term_constraints_index
-			across terminology.constraint_codes as term_codes_csr loop
+			across terminology.value_set_codes as term_codes_csr loop
 				if not constraint_codes.has (term_codes_csr.item) then
 					Result.extend (term_codes_csr.item)
 				end

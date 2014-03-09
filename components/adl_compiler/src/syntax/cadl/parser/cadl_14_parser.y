@@ -1436,7 +1436,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				if attached $1.assumed_code as att_ac then
 					$$.set_assumed_value (att_ac)
 				end
-				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, $1.codes), $$.constraint)
+				compiler_billboard.value_sets.put (create {VALUE_SET}.make ($$.constraint, $1.codes), $$.constraint)
 			end
 		}
 	| V_EXTERNAL_VALUE_SET_DEF	
@@ -1495,13 +1495,13 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 							at_codes.extend (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, ext_code_csr.item))
 						end
 					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, at_codes), $$.constraint)
+					compiler_billboard.value_sets.put (create {VALUE_SET}.make ($$.constraint, at_codes), $$.constraint)
 				else
 					if attached $1.last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
 							$$.set_assumed_value (att_ac)
 						end
-						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, att_tcps.codes), $$.constraint)
+						compiler_billboard.value_sets.put (create {VALUE_SET}.make ($$.constraint, att_tcps.codes), $$.constraint)
 					end
 
 					-- add term bindings

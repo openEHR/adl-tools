@@ -22,12 +22,6 @@ inherit
 			target
 		end
 
-	ADL_15_TERM_CODE_TOOLS
-		export
-			{NONE} all;
-			{ANY} is_valid_code
-		end
-
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_CAT_ARCHETYPE)

@@ -466,8 +466,8 @@ feature -- Access (semantic)
 			str: STRING
 		do
 			str := id.semantic_id
-			if is_specialised and is_legacy and str.has (section_separator) then
-				Result := str.substring (str.last_index_of (section_separator, str.count) + 1, str.count)
+			if is_specialised and is_legacy and str.has ({ARCHETYPE_HRID}.section_separator) then
+				Result := str.substring (str.last_index_of ({ARCHETYPE_HRID}.section_separator, str.count) + 1, str.count)
 			else
 				Result := str
 			end

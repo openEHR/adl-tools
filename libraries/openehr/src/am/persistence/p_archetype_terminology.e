@@ -54,7 +54,7 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	value_sets: detachable HASH_TABLE [VALUE_SET_RELATION, STRING]
+	value_sets: detachable HASH_TABLE [VALUE_SET, STRING]
 			-- table of value set relationships keyed by ac-code
 
 	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
