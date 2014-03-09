@@ -27,12 +27,6 @@ inherit
 			{NONE} all
 		end
 
-	KL_IMPORTED_INTEGER_ROUTINES
-	KL_IMPORTED_STRING_ROUTINES
-	KL_SHARED_PLATFORM
-	KL_SHARED_EXCEPTIONS
-	KL_SHARED_ARGUMENTS
-
 create
 	make
 
@@ -235,7 +229,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_ARCHETYPE
-			
+
 end
 else
 if yy_act = 23 then
@@ -245,7 +239,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_TEMPLATE_OVERLAY
-			
+
 else
 --|#line 114 "adl_15_scanner.l"
 debug ("GELEX")
@@ -253,7 +247,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_TEMPLATE
-			
+
 end
 end
 end
@@ -267,7 +261,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_OPERATIONAL_TEMPLATE
-			
+
 else
 --|#line 122 "adl_15_scanner.l"
 debug ("GELEX")
@@ -275,7 +269,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_ADL_VERSION
-			
+
 end
 else
 if yy_act = 27 then
@@ -285,7 +279,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_IS_CONTROLLED
-			
+
 else
 --|#line 130 "adl_15_scanner.l"
 debug ("GELEX")
@@ -293,7 +287,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_IS_GENERATED
-			
+
 end
 end
 else
@@ -305,7 +299,7 @@ debug ("GELEX")
 end
 
 				last_token := SYM_UID
-			
+
 else
 --|#line 138 "adl_15_scanner.l"
 debug ("GELEX")
@@ -314,7 +308,7 @@ end
 
 				last_token := SYM_SPECIALIZE
 				in_lineno := in_lineno + 1
-			
+
 end
 else
 --|#line 144 "adl_15_scanner.l"
@@ -326,7 +320,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				language_text_start_line := in_lineno
-			
+
 end
 end
 end
@@ -346,7 +340,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				description_text_start_line := in_lineno
-			
+
 else
 --|#line 158 "adl_15_scanner.l"
 debug ("GELEX")
@@ -357,7 +351,7 @@ end
 				set_start_condition (IN_CADL_SECTION)
 				in_lineno := in_lineno + 1
 				definition_text_start_line := in_lineno
-			
+
 end
 else
 if yy_act = 34 then
@@ -370,7 +364,7 @@ end
 				set_start_condition (IN_RULES_SECTION)
 				in_lineno := in_lineno + 1
 				rules_text_start_line := in_lineno
-			
+
 else
 --|#line 172 "adl_15_scanner.l"
 debug ("GELEX")
@@ -381,7 +375,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				terminology_text_start_line := in_lineno
-			
+
 end
 end
 else
@@ -396,7 +390,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				annotations_text_start_line := in_lineno
-			
+
 else
 --|#line 186 "adl_15_scanner.l"
 debug ("GELEX")
@@ -407,7 +401,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				component_terminologies_text_start_line := in_lineno
-			
+
 end
 else
 if yy_act = 38 then
@@ -418,7 +412,7 @@ end
 
 				last_token := SYM_CONCEPT
 				in_lineno := in_lineno + 1
-			
+
 else
 --|#line 201 "adl_15_scanner.l"
 debug ("GELEX")
@@ -429,7 +423,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				component_terminologies_text_start_line := in_lineno
-			
+
 end
 end
 end
@@ -446,7 +440,7 @@ end
 				set_start_condition (IN_RULES_SECTION)
 				in_lineno := in_lineno + 1
 				rules_text_start_line := in_lineno
-			
+
 else
 --|#line 215 "adl_15_scanner.l"
 debug ("GELEX")
@@ -457,7 +451,7 @@ end
 				set_start_condition (IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				terminology_text_start_line := in_lineno
-			
+
 end
 else
 if yy_act = 42 then
@@ -468,7 +462,7 @@ end
 
 				last_token := V_CONCEPT_CODE
 				last_string_value := text_substring (2, text_count - 1)
-			
+
 else
 --|#line 232 "adl_15_scanner.l"
 debug ("GELEX")
@@ -490,7 +484,7 @@ end
 				last_string_value := str_
 
 				set_start_condition (INITIAL)
-			
+
 end
 end
 else
@@ -516,7 +510,7 @@ end
 				last_string_value := str_
 
 				set_start_condition (INITIAL)
-			
+
 else
 --|#line 234 "adl_15_scanner.l"
 debug ("GELEX")
@@ -538,7 +532,7 @@ end
 				last_string_value := str_
 
 				set_start_condition (INITIAL)
-			
+
 end
 else
 --|#line 235 "adl_15_scanner.l"
@@ -561,7 +555,7 @@ end
 				last_string_value := str_
 
 				set_start_condition (INITIAL)
-			
+
 end
 end
 end
@@ -590,7 +584,7 @@ end
 				last_string_value := str_
 
 				set_start_condition (INITIAL)
-			
+
 else
 --|#line 253 "adl_15_scanner.l"
 debug ("GELEX")
@@ -599,7 +593,7 @@ end
  -- LF
 				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
-			
+
 end
 else
 if yy_act = 49 then
@@ -609,7 +603,7 @@ debug ("GELEX")
 end
  -- any text on line with no LF
 				in_buffer.append_string(text)
-			
+
 else
 --|#line 272 "adl_15_scanner.l"
 debug ("GELEX")
@@ -618,7 +612,7 @@ end
 			-- match ^whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-	
+
 end
 end
 else
@@ -642,7 +636,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-	
+
 end
 else
 if yy_act = 53 then
@@ -653,7 +647,7 @@ end
 			-- match ^whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-	
+
 else
 --|#line 296 "adl_15_scanner.l"
 debug ("GELEX")
@@ -679,7 +673,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-	
+
 else
 --|#line 311 "adl_15_scanner.l"
 debug ("GELEX")
@@ -688,7 +682,7 @@ end
 
 					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
-			
+
 end
 else
 if yy_act = 57 then
@@ -699,7 +693,7 @@ end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
-			
+
 else
 --|#line 323 "adl_15_scanner.l"
 debug ("GELEX")
@@ -708,7 +702,7 @@ end
 
 					last_token := V_IDENTIFIER
 					last_string_value := text
-			
+
 end
 end
 else
@@ -721,7 +715,7 @@ end
 
 					last_token := V_VALUE
 					last_string_value := text
-			
+
 else
 --|#line 336 "adl_15_scanner.l"
 debug ("GELEX")
@@ -766,7 +760,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-			
+
 			else
 				terminate
 			end

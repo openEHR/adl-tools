@@ -6,9 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "initial"
-
-
 
 class ARCH_CAT_FILESYS_NODE
 
@@ -16,13 +13,6 @@ inherit
 	ARCH_CAT_MODEL_NODE
 		redefine
 			put_child
-		end
-
-	KL_SHARED_FILE_SYSTEM
-		export
-			{NONE} all
-		undefine
-			is_equal
 		end
 
 create

@@ -23,11 +23,6 @@ inherit
 			{NONE} all
 		end
 
-	ADL_14_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
@@ -35,17 +30,6 @@ inherit
 
 	UT_CHARACTER_CODES
 		export
-			{NONE} all
-		end
-
-	KL_IMPORTED_INTEGER_ROUTINES
-	KL_IMPORTED_STRING_ROUTINES
-	KL_SHARED_PLATFORM
-	KL_SHARED_EXCEPTIONS
-	KL_SHARED_ARGUMENTS
-
-	ADL_SYNTAX_CONVERTER
-		export 
 			{NONE} all
 		end
 
