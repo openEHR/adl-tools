@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="2">
+    <title>ADL Workbench</title>
+    <product id="org.openehr.adl_workbench" version="1.5.0"/>
+    <organization>org.openehr</organization>
+    <options customize="never" require-scripts="false"/>
+    <!-- Documents displayed at various steps -->
+    <background file="background.gif" alignment="topleft" scaling="none"/>
+    <readme file="ReadMe.html"/>
+    <license file="License.html"/>
+    <!-- List all component packages -->
+    <pkg-ref id="org.openehr.adl_workbench" onConclusion="none">ADL%20Workbench.pkg</pkg-ref>
+    <!-- List the component packages again, organised as a hierarchy if you want. -->
+    <choices-outline>
+        <line choice="default">
+            <line choice="org.openehr.adl_workbench"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.openehr.adl_workbench" visible="false">
+        <pkg-ref id="org.openehr.adl_workbench"/>
+    </choice>
+</installer-gui-script>
