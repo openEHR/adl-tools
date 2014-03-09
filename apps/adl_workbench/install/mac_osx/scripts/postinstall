@@ -1,5 +1,5 @@
 #!/bin/sh
 
-echo $SCRIPT_NAME: launching ADL Workbench
-open -a "ADL Workbench"
+echo Showing $2/ADL Workbench.app in the Finder
+open -R "$2/ADL Workbench.app"
 exit 0

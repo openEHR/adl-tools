@@ -53,14 +53,14 @@ InstallDir "$PROGRAMFILES\openEHR\ADL Workbench"
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 1.5.0.0
+VIProductVersion 1.5.1.0
 VIAddVersionKey ProductName "openEHR ADL Workbench"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2013 openEHR Foundation"
+VIAddVersionKey LegalCopyright "Copyright 2003-2014 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 

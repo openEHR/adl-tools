@@ -4,8 +4,6 @@ if [ -r ~/.bashrc ]; then
 	source ~/.bashrc
 fi
 
-open -a Console
-
 echo -----------------------------------------
 echo Launching ADL Workbench
 

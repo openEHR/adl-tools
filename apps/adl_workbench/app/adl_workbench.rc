@@ -4,10 +4,10 @@
 // remains consistent on all systems.
 Logo_icon    ICON    DISCARDABLE     "../../resources/icons/source/openehr_awb_small_logo.ico"
 
-#define VER_FILEVERSION             1,5,0,0
-#define VER_FILEVERSION_STR         "1.5.0.0\0"
+#define VER_FILEVERSION             1,5,1,0
+#define VER_FILEVERSION_STR         "1.5.1.0\0"
 
-#define VER_PRODUCTVERSION          1,5,0,0
+#define VER_PRODUCTVERSION          1,5,1,0
 #define VER_PRODUCTVERSION_STR      "1.5\0"
 
 #ifndef DEBUG
@@ -33,7 +33,7 @@ BEGIN
             VALUE "FileDescription",  "Archetype Definition Language Workbench"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "InternalName",     "adl_workbench.exe"
-            VALUE "LegalCopyright",   "Copyright © 2003-2012"
+            VALUE "LegalCopyright",   "Copyright © 2003-2014"
             VALUE "OriginalFilename", "adl_workbench.exe"
             VALUE "ProductName",      "ADL Workbench"
             VALUE "ProductVersion",   VER_PRODUCTVERSION_STR

@@ -89,22 +89,22 @@ for dir, dirnames, filenames in os.walk('../reference-models'):
 env.Install(aom_profiles, env.Glob('apps/resources/aom_profiles/*.arp'))
 
 ###################################################################################################
-# Define how to put installers, etc., into the distribution directory.
+# Define how to put installers, etc., into the downloads directory.
 # These are not performed unless a path containing 'downloads' is explicitly requested on the command line.
 
-distrib = None
+downloads = None
 installer = None
 
 for target in COMMAND_LINE_TARGETS:
 	s = os.path.normpath(target)
 
-	while distrib == None and s != os.path.dirname(s):
+	while downloads == None and s != os.path.dirname(s):
 		if os.path.basename(s) == 'downloads':
-			distrib = s + '/' + platform
+			downloads = s + '/' + platform
 		else:
 			s = os.path.dirname(s)
 
-if distrib and len(adl_workbench) > 0:
+if downloads and len(adl_workbench) > 0:
 	license = 'apps/adl_workbench/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
@@ -123,7 +123,7 @@ if distrib and len(adl_workbench) > 0:
 			adl_workbench_installer_sources += [os.path.join(dir, filename) for filename in filenames]
 
 	if platform == 'windows':
-		Install(distrib + '/adl_parser/dotnet', adl_parser)
+		Install(downloads + '/adl_parser/dotnet', adl_parser)
 
 		if not env.Detect('makensis'):
 			print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
@@ -136,7 +136,7 @@ if distrib and len(adl_workbench) > 0:
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 
-			installer = env.Command(distrib + '/adl_workbench/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Glob(install + '/ADL_Workbench/*'), [command])
+			installer = env.Command(downloads + '/adl_workbench/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Glob(install + '/ADL_Workbench/*'), [command])
 
 	if platform == 'linux':
 		def create_linux_installer(target, source, env):
@@ -162,80 +162,91 @@ if distrib and len(adl_workbench) > 0:
 
 			tar.close()
 
-		env.Command(distrib + '/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
+		env.Command(downloads + '/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
 
 	if platform == 'mac_osx':
-		packagemaker = '/Developer/usr/bin/packagemaker'
-		if not os.path.exists(packagemaker): packagemaker = '/Developer/Tools/packagemaker'
+		pkg_tmp = downloads + '/' + platform
+		pkg_contents = pkg_tmp + '/contents'
+		pkg_resources = pkg_tmp + '/resources'
 
-		if not os.path.exists(packagemaker):
-			print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
-		else:
-			pkg_tree = distrib + '/' + platform
-			pkg_contents = pkg_tree + '/ADL_Workbench'
-			pkg_resources = pkg_tree + '/English.lproj'
+		def copy_tree(src, dir):
+			name = os.path.basename(src)
 
-			def copy_tree(src, dir):
-				name = os.path.basename(src)
+			if not name.startswith('.'):
+				dst = os.path.join(dir, name)
 
-				if not name.startswith('.'):
-					dst = os.path.join(dir, name)
+				if os.path.isfile(src):
+					shutil.copy2(src, dst)
+				else:
+					os.mkdir(dst)
+					for name in os.listdir(src): copy_tree(os.path.join(src, name), dst)
 
-					if os.path.isfile(src):
-						shutil.copy2(src, dst)
-					else:
-						os.mkdir(dst)
-						for name in os.listdir(src): copy_tree(os.path.join(src, name), dst)
+		def copy_mac_osx_installer_sources(target, source, env):
+			copy_tree(install, downloads)
+			copy_tree(vim, pkg_contents)
+			copy_tree(testscripts, pkg_contents)
 
-			def copy_mac_osx_installer_sources(target, source, env):
-				copy_tree(install, distrib)
-				copy_tree(vim, pkg_contents)
-				copy_tree(testscripts, pkg_contents)
+			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles]:
+				copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
-				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles]:
-					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
+			substitutions = 's|\&|\&amp;|;'
+			substitutions += 's|\<|\&lt;|;'
+			substitutions += 's|\>|\&gt;|;'
+			substitutions += '2s|^.+$|<h2>&</h2>|;'
+			substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
+			substitutions += 's|^$|<br><br>|;'
+			substitutions += 's|^-+$||'
+			f = open(pkg_resources + '/License.html', 'w')
+			f.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"')
+    			f.write('"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">')
+			f.write('<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">')
+  			f.write('<body>')
+			f.write(os.popen('sed -E \'' + substitutions + '\' ' + license).read())
+  			f.write('</body>')
+  			f.write('</html>')
+			f.close()
 
-				substitutions = 's|\&|\&amp;|;'
-				substitutions += 's|\<|\&lt;|;'
-				substitutions += 's|\>|\&gt;|;'
-				substitutions += '2s|^.+$|<h2>&</h2>|;'
-				substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
-				substitutions += 's|^$|<br><br>|;'
-				substitutions += 's|^-+$||'
-				f = open(pkg_resources + '/License.html', 'w')
-				f.write(os.popen('sed -E \'' + substitutions + '\' ' + license).read())
-				f.close()
+		pkg_name = ''
+		match = re.match(r'\d+', os.popen('uname -r').read())
 
-			pkg_name = ''
-			match = re.match(r'\d+', os.popen('uname -r').read())
+		if match:
+			pkg_name = match.group()
+			if pkg_name == '9': pkg_name = 'for Leopard'
+			if pkg_name == '10': pkg_name = 'for Snow Leopard'
+			if pkg_name == '11': pkg_name = 'for Lion'
+			if pkg_name == '12': pkg_name = 'for Mountain Lion'
+			if pkg_name == '13': pkg_name = 'for Mavericks'
 
-			if match:
-				pkg_name = match.group()
-				if pkg_name == '9': pkg_name = 'for Leopard'
-				if pkg_name == '10': pkg_name = 'for Snow Leopard'
-				if pkg_name == '11': pkg_name = 'for Lion'
-				if pkg_name == '12': pkg_name = 'for Mountain Lion'
+		pkg_name = 'ADL Workbench ' + pkg_name
 
-			pkg_name = 'ADL Workbench ' + pkg_name + ' ' + os.popen('uname -p').read().strip()
-			pkg_path = pkg_tree + '/' + pkg_name + '.pkg'
+		pkgbuild = [
+			'pkgbuild',
+			'--root', pkg_contents,
+			'--component-plist', pkg_tmp + '/Component.plist',
+			'--scripts', pkg_tmp + '/scripts',
+			'--identifier', 'org.openehr.adl_workbench',
+			'--version', '1.5.1',
+			'--ownership', 'recommended',
+			'--install-location', '/Applications/openEHR',
+			pkg_tmp + '/ADL Workbench.pkg'
+		]
 
-			command = [
-				packagemaker, '-build',
-				'-p', pkg_path,
-				'-f', pkg_contents,
-				'-r', pkg_resources,
-				'-i', pkg_tree + '/Info.plist',
-				'-d', pkg_tree + '/Description.plist'
-			]
+		productbuild = [
+			'productbuild',
+			'--distribution', pkg_tmp + '/Distribution.xml',
+			'--resources', pkg_resources,
+			'--package-path', pkg_tmp,
+			pkg_tmp + '/' + pkg_name + '.pkg'
+		]
 
-			installer = env.Command(distrib + '/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
-				Delete(pkg_tree),
-				env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
-				command,
-				Move(pkg_path + '/Contents/Resources/TokenDefinitions.plist', pkg_tree + '/TokenDefinitions.plist'),
-				['hdiutil', 'create', '-srcfolder', pkg_path, '$TARGET'],
-				Delete(pkg_tree)
-				])
+		installer = env.Command(downloads + '/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
+			Delete(pkg_tmp),
+			env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tmp),
+			pkgbuild,
+			productbuild,
+			['hdiutil', 'create', '-srcfolder', pkg_tmp + '/' + pkg_name + '.pkg', '$TARGET'],
+			Delete(pkg_tmp)
+			])
 
 ###################################################################################################
 # Set the revision number at the end of the file string.
