@@ -77,14 +77,17 @@ feature {ARCHETYPE_FLATTENER} -- Modification
 
 feature {FLAT_ARCHETYPE} -- Modification
 
-	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
+	reduce_languages_to (diff_child: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY)
 			-- remove any languages not in `lang_set'
 		do
 			across languages_available as langs_csr loop
-				if not a_langs.has (langs_csr.item) then
+				if not diff_child.languages_available.has (langs_csr.item) then
 					term_definitions.remove (langs_csr.item)
 				end
 			end
+			original_language := diff_child.original_language.twin
+		ensure
+			original_language.is_equal (diff_child.original_language)
 		end
 
 feature -- Factory
