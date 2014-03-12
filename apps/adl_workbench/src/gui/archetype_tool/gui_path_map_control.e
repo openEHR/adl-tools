@@ -175,6 +175,12 @@ feature {NONE} -- Implementation
 			leaf_paths_cache := Void
 			interface_paths_cache := Void
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.populate end end)
+
+			evx_adl_15_tab.resize_columns_proportional
+
+			evx_adl_14_tab.resize_columns_proportional
+
+			evx_interface_tab.resize_columns_proportional
 		end
 
 	adl_15_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]

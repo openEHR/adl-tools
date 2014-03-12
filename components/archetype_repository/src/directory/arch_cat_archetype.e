@@ -581,7 +581,7 @@ feature -- Access (compiler)
 
 			inspect compilation_state
 			when Cs_validated then
-				if errors.is_empty then
+				if not errors.has_warnings then
 					Result.append("_valid_" + file_repository.group_id.out)
 				else
 					Result.append("_warning_" + file_repository.group_id.out)
