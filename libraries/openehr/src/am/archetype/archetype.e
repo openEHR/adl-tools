@@ -292,6 +292,7 @@ feature -- Paths
 		local
 			og_phys_path, og_log_path: OG_PATH
 			tag_path, tag, id_code: STRING
+			an_arch_id: ARCHETYPE_HRID
 		do
 			create Result.make (0)
 			across path_set as path_csr loop
@@ -310,6 +311,9 @@ feature -- Paths
 						-- b) in the terminology (for objects under single-valued attributes, this is optional)
 						if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
 							og_log_path.item.set_object_id (terminology.term_definition (a_language, id_code).text)
+						elseif archetype_id.valid_id (id_code) then
+							create an_arch_id.make_from_string (id_code)
+							og_log_path.item.set_object_id (an_arch_id.concept_id)
 						else
 							og_log_path.item.clear_object_id
 						end
