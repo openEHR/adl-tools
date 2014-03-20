@@ -56,7 +56,7 @@ feature -- Initialisation
 			Is_valid: is_valid
 		end
 
-	make_minimal_child (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_parent: ARCHETYPE)
+	make_minimal_child (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_parent: DIFFERENTIAL_ARCHETYPE)
 			-- make a new differential form archetype as a child of `a_parent'
 		require
 			Language_valid: not an_original_language.is_empty
