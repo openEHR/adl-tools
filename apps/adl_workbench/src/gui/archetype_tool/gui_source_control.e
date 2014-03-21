@@ -122,9 +122,9 @@ feature {NONE} -- Implementation
 		do
 			if source.is_text_converted then
 				if attached source.differential_archetype then
-					Result := source.differential_converted_serialised
+					Result := source.differential_serialised
 				elseif source.has_differential_file then
-					Result := source.differential_text_converted
+					Result := source.differential_text
 				end
 			end
 		end
@@ -170,8 +170,8 @@ feature {NONE} -- Implementation
 			if not evx_adl_15_source_editor.is_empty then
 				sel_tab := ev_root_container.item_tab (evx_adl_15_source_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/edit_active"))
-				if not source.differential_text_converted_adl_version.is_empty then
-					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.differential_text_converted_adl_version>>))
+				if not source.differential_text_adl_version.is_empty then
+					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.differential_text_adl_version>>))
 				else
 					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<latest_adl_version>>))
 				end
@@ -204,7 +204,7 @@ feature {NONE} -- Implementation
 	save_151_serialised_source
 		do
 			if attached source as att_source then
-				att_source.save_differential
+				att_source.save_differential_validated
 				evx_adl_15_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.differential_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 	save_15_converted_source
 		do
 			if attached source as att_source then
-				att_source.save_differential_converted
+				att_source.save_differential
 				evx_adl_15_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.differential_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])

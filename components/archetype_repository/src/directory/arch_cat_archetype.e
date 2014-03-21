@@ -187,7 +187,7 @@ feature {NONE} -- Initialisation
 
 			initialise
 			create last_compile_attempt_timestamp.make_now
-			save_differential
+			save_differential_validated
 		ensure
 			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
@@ -221,7 +221,7 @@ feature {NONE} -- Initialisation
 
 			initialise
 			create last_compile_attempt_timestamp.make_now
-			save_differential
+			save_differential_validated
 		ensure
 			Is_specialised: is_specialised
 		end
@@ -266,7 +266,7 @@ feature -- Access (semantic)
 			create Result.make_empty
 		end
 
-	differential_text_converted_adl_version: STRING
+	differential_text_adl_version: STRING
 			-- ADL version of the most recently converted text file (legacy or differential)
 		attribute
 			create Result.make_empty
@@ -309,7 +309,7 @@ feature -- Access (semantic)
 			end
 		end
 
-	differential_text_converted: STRING
+	differential_text: STRING
 			-- Read `differential_text_converted' and `text_timestamp' from `differential_path', returning
 			-- the text of the archetype source file, i.e. the differential form.
 		require
@@ -333,10 +333,10 @@ feature -- Access (semantic)
 			-- extract the adl_version
 			Adl_version_regex_matcher.match (line_1)
 			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
-			differential_text_converted_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
-			differential_text_converted_adl_version.left_adjust
+			differential_text_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
+			differential_text_adl_version.left_adjust
 
-			if differential_text_converted_adl_version < Id_conversion_version then
+			if differential_text_adl_version < Id_conversion_version then
 				adl_14_15_rewriter.execute (arch_text)
 				Result := adl_14_15_rewriter.out_buffer
 				is_text_converted := True
@@ -842,7 +842,7 @@ feature -- Compilation
 						validate
 					when Cs_validated_phase_2 then
 						if adl_15_roundtripping then
-							save_differential
+							save_differential_validated
 						end
 						validate_flat
 					when Cs_validated then
@@ -1101,7 +1101,7 @@ feature {NONE} -- Compilation
 					validate
 
 					if compilation_state = Cs_validated_phase_2 then
-				 		save_differential
+				 		save_differential_validated
 						validate_flat
 						differential_archetype.set_is_valid (adl_14_engine.validation_passed)
 						differential_archetype.set_adl_version (latest_adl_version)
@@ -1130,7 +1130,7 @@ feature {NONE} -- Compilation
 		do
 			add_info (ec_parse_i2, Void)
 			flat_archetype_cache := Void
-			differential_archetype := adl_15_engine.parse (differential_text_converted, Current)
+			differential_archetype := adl_15_engine.parse (differential_text, Current)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
@@ -1267,7 +1267,7 @@ feature {ARCH_CAT_ARCHETYPE} -- Modification
 
 feature -- File Operations (1.5.1 format upgrade)
 
-	differential_converted_serialised: detachable STRING
+	differential_serialised: detachable STRING
 			-- serialise differential archetype to its file in its source form, even if not compiling
 			-- this might fail because the serialiser might try to do something that an invalid archetype
 			-- can't support
@@ -1283,16 +1283,16 @@ feature -- File Operations (1.5.1 format upgrade)
 			exception_occurred := True
 		end
 
-	save_differential_converted
+	save_differential
 			-- Save converted differential archetype to its file in its source form, even if not compiling
 		local
 			ftext: STRING
 		do
-			if attached differential_converted_serialised as txt then
+			if attached differential_serialised as txt then
 				ftext := txt
 				differential_text_file_adl_version := differential_archetype.adl_version
 			else
-				ftext := differential_text_converted
+				ftext := differential_text
 			end
 			file_repository.save_text_to_file (differential_path, ftext)
 			differential_text_timestamp := differential_file_timestamp
@@ -1303,7 +1303,7 @@ feature -- File Operations (1.5.1 format upgrade)
 
 feature -- File Operations
 
-	save_differential
+	save_differential_validated
 			-- Save archetype to its file in its source form
 		require
 			is_valid_differential
@@ -1430,7 +1430,7 @@ feature -- Output
 				if flat_flag then
 					Result := flat_text (False)
 				else
-					Result := differential_text_converted
+					Result := differential_text
 				end
 			elseif has_archetype_native_serialiser_format (a_format) then
 				if flat_flag then

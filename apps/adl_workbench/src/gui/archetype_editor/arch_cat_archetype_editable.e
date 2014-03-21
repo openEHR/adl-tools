@@ -78,7 +78,7 @@ feature -- Access
 			if attached gui_context as gc then
 				gc.on_commit
 			end
-			save_differential
+			save_differential_validated
 			create last_modify_timestamp.make_now
 
 			-- regenerate flat form
