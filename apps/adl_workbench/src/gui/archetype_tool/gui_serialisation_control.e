@@ -149,7 +149,7 @@ feature {NONE} -- Implementation
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
 				if not differential_view then
-					s := source.flat_text (ev_flatten_with_rm_cb.is_selected)
+					s := source.flat_serialised (ev_flatten_with_rm_cb.is_selected)
 				elseif attached source.serialised_differential_archetype as sda then
 					s := sda
 				else

@@ -588,7 +588,7 @@ feature {NONE} -- Tests
 						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, diff_fname))
 				--	end
 
-					-- save legacy ADL
+					-- save a copy of legacy ADL
 					if target.has_legacy_flat_file then
 						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
 					end

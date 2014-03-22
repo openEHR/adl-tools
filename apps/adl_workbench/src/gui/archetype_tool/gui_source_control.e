@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 	save_15_converted_source
 		do
 			if attached source as att_source then
-				att_source.save_differential
+				att_source.save_differential_text
 				evx_adl_15_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.differential_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])

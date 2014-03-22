@@ -404,7 +404,7 @@ feature -- Access (semantic)
 			end
 		end
 
-	flat_text (include_rm: BOOLEAN): STRING
+	flat_serialised (include_rm: BOOLEAN): STRING
 			-- The serialised text of the flat form of the archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -1283,7 +1283,7 @@ feature -- File Operations (1.5.1 format upgrade)
 			exception_occurred := True
 		end
 
-	save_differential
+	save_differential_text
 			-- Save converted differential archetype to its file in its source form, even if not compiling
 		local
 			ftext: STRING
@@ -1344,7 +1344,7 @@ feature -- File Operations
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
-				file_repository.save_text_to_file (a_full_path, flat_text (False))
+				file_repository.save_text_to_file (a_full_path, flat_serialised (False))
 			elseif has_archetype_native_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
@@ -1428,7 +1428,7 @@ feature -- Output
 		do
 			if a_format.same_string (Syntax_type_adl) then
 				if flat_flag then
-					Result := flat_text (False)
+					Result := flat_serialised (False)
 				else
 					Result := differential_text
 				end
