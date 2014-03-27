@@ -86,78 +86,45 @@ create {APP_OBJECT_FACTORY}
 
 feature {NONE} -- Initialisation
 
-	make_legacy (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
-			-- Create for the legacy archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
-		require
-			Path_valid: not a_path.is_empty
-			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
-		local
-			amp: ARCHETYPE_MINI_PARSER
-		do
-			make_item
-
-			file_repository := a_repository
-
-			id := arch_thumbnail.archetype_id
-			rm_schema := rm_schema_for_archetype_id (id)
-			if arch_thumbnail.is_specialised then
-				parent_id := arch_thumbnail.parent_archetype_id
-			end
-			artefact_type := arch_thumbnail.artefact_type
-
-			legacy_flat_path := a_path
-			legacy_flat_text_timestamp := legacy_flat_file_timestamp
-
-			-- differential file details
-			differential_path := extension_replaced (a_path, File_ext_archetype_source)
-			if has_differential_file then
-				differential_text_timestamp := differential_file_timestamp
-				-- have a look at the differential archetype
-				create amp
-				amp.parse (differential_path)
-				is_differential_generated := amp.is_generated
-			end
-
-			finalise_make
-
-			compilation_state := Cs_unread
-		ensure
-			file_repository_set: file_repository = a_repository
-			id_set: id = arch_thumbnail.archetype_id
-			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
-			is_legacy: is_legacy
-		end
-
 	make (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
 			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
 		require
 			Path_valid: not a_path.is_empty
 			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
 		do
-			make_item
-
-			file_repository := a_repository
-
-			id := arch_thumbnail.archetype_id
-			differential_text_file_adl_version := arch_thumbnail.adl_version
+			make_file_any (a_path, a_repository, arch_thumbnail)
 			is_differential_generated := arch_thumbnail.is_generated
-			rm_schema := rm_schema_for_archetype_id (id)
-			if arch_thumbnail.is_specialised then
-				parent_id := arch_thumbnail.parent_archetype_id
-			end
-			artefact_type := arch_thumbnail.artefact_type
-
-			differential_path := a_path
-			differential_path := extension_replaced (a_path, File_ext_archetype_source)
 			differential_text_timestamp := differential_file_timestamp
-
-			finalise_make
-
-			compilation_state := Cs_unread
 		ensure
 			file_repository_set: file_repository = a_repository
 			id_set: id = arch_thumbnail.archetype_id
 			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
+			Compilation_state: compilation_state = Cs_unread
+		end
+
+	make_legacy (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+			-- Create for the legacy archetype described by `arch_thumbnail', whose ADL 1.5 path is `a_path', belonging to `a_repository'.
+		require
+			Path_valid: not a_path.is_empty
+			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
+		local
+			amp: ARCHETYPE_MINI_PARSER
+		do
+			make_file_any (a_path, a_repository, arch_thumbnail)
+			legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
+			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+
+			if has_differential_file then
+				differential_text_timestamp := differential_file_timestamp
+				create amp
+				amp.parse (differential_path)
+				is_differential_generated := amp.is_generated
+			end
+		ensure
+			file_repository_set: file_repository = a_repository
+			id_set: id = arch_thumbnail.archetype_id
+			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
+			Compilation_state: compilation_state = Cs_unread
 		end
 
 	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
@@ -167,26 +134,14 @@ feature {NONE} -- Initialisation
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
-			at: ARTEFACT_TYPE
 		do
-			make_item
-			id := an_id
-			rm_schema := rm_schema_for_archetype_id (id)
-			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
-				differential_path := pn
-			end
+			make_new_any (an_id, a_repository, a_directory)
 
-			file_repository := a_repository
-
-			create at.make_archetype
-			artefact_type := at.value
-			create a_diff_arch.make_minimal (at, an_id, locale_language_short)
-			differential_archetype := a_diff_arch
+			create a_diff_arch.make_minimal (artefact_type, an_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
-			finalise_make
+			differential_archetype := a_diff_arch
 
 			initialise
-			create last_compile_attempt_timestamp.make_now
 			save_differential_validated
 		ensure
 			file_repository_set: file_repository = a_repository
@@ -201,49 +156,65 @@ feature {NONE} -- Initialisation
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
-			at: ARTEFACT_TYPE
 		do
-			make_item
-			id := an_id
-			rm_schema := rm_schema_for_archetype_id (id)
-			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
-				differential_path := pn
-			end
-			file_repository := a_repository
-			parent_id := a_parent.archetype_id
+			make_new_any (an_id, a_repository, a_directory)
 
-			create at.make_archetype
-			artefact_type := at.value
-			create a_diff_arch.make_minimal_child (at, an_id, locale_language_short, a_parent)
+			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
-			finalise_make
+			parent_id := a_parent.archetype_id
 
 			initialise
-			create last_compile_attempt_timestamp.make_now
 			save_differential_validated
 		ensure
 			Is_specialised: is_specialised
 		end
 
-	make_item
+	make_file_any (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
 		do
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
-		end
 
-	finalise_make
-		do
+			file_repository := a_repository
+			id := arch_thumbnail.archetype_id
+			source_file_adl_version := arch_thumbnail.adl_version
+			rm_schema := rm_schema_for_archetype_id (id)
+			if arch_thumbnail.is_specialised then
+				parent_id := arch_thumbnail.parent_archetype_id
+			end
+			create artefact_type.make (arch_thumbnail.artefact_type)
+			differential_path := a_path
+
 			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
 			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
-			check attached (create {ARTEFACT_TYPE}).type_names.item (artefact_type) as af_name then
-				artefact_type_name := af_name
+
+			compilation_state := Cs_unread
+		end
+
+	make_new_any (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+			-- Create a new archetype with `an_id', belonging to `a_repository'.
+		do
+			create status.make_empty
+			create last_modify_timestamp.make_from_epoch (0)
+			file_repository := a_repository
+			id := an_id
+			source_file_adl_version := latest_adl_version
+			rm_schema := rm_schema_for_archetype_id (id)
+
+			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
+				differential_path := pn
 			end
+
+			create artefact_type.make_archetype
+			create last_compile_attempt_timestamp.make_now
+			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
+			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
 		end
 
 feature -- Initialisation
 
-	add_legacy_archetype (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+	add_legacy_archetype (a_path: STRING)
 			-- add legacy details to a descriptor already created for a differential archteype for which
 			-- a legacy archetype has been found
 		require
@@ -257,9 +228,11 @@ feature -- Initialisation
 
 feature -- Access (semantic)
 
-	artefact_type_name: STRING
+	artefact_type: ARTEFACT_TYPE
+			-- type of artefact i.e. archetype, template, template_component, operational_template
+			-- see ARTEFACT_TYPE class
 
-	differential_text_file_adl_version: STRING
+	source_file_adl_version: STRING
 			-- ADL version of the most recently read differential text file
 			-- if this version = 1.5.1, it means the file is already 1.5.1
 		attribute
@@ -419,10 +392,6 @@ feature -- Access (semantic)
 	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 
-	artefact_type: INTEGER
-			-- type of artefact i.e. archetype, template, template_component, operational_template
-			-- see ARTEFACT_TYPE class
-
 	id: ARCHETYPE_HRID
 			-- Archetype identifier.
 
@@ -577,7 +546,7 @@ feature -- Access (compiler)
 			-- Typical examples: 'archetype_valid_2'
 		do
 			create Result.make_empty
-			Result.append (artefact_type_name)
+			Result.append (artefact_type.type_name)
 
 			inspect compilation_state
 			when Cs_validated then
@@ -834,14 +803,16 @@ feature -- Compilation
 							compilation_state := cs_lineage_invalid
 							add_error (ec_compile_e1, <<parent_id.as_string>>)
 						else
-							compile_legacy
+							parse_legacy
 						end
 					when Cs_ready_to_parse then
 						parse
+					when Cs_parsed then
+						evaluate_suppliers
 					when Cs_ready_to_validate then
 						validate
 					when Cs_validated_phase_2 then
-						if adl_15_roundtripping then
+						if adl_15_roundtripping or (has_legacy_flat_file and not has_differential_file) then
 							save_differential_validated
 						end
 						validate_flat
@@ -909,8 +880,8 @@ feature -- Compilation
 			create amp
 			amp.parse (full_path)
 			if amp.passed then
-				if not artefact_type.is_equal (amp.last_archetype.artefact_type) then
-					artefact_type := amp.last_archetype.artefact_type
+				if artefact_type.value /= amp.last_archetype.artefact_type then
+					create artefact_type.make (amp.last_archetype.artefact_type)
 				end
 
 				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_DIRECTORY
@@ -1040,7 +1011,7 @@ feature {NONE} -- Compilation
 			no_rm_schema_compilation_state: rm_schema = Void implies compilation_state = Cs_rm_class_unknown
 		end
 
-	compile_legacy
+	parse_legacy
 			-- Parse and validate `target', legacy flat form; save differential file if there was none.
 			-- Assume that legacy archetypes have no suppliers, i.e. don't include slot-fillers.
 			-- This is safe, since this is an ADL 1.5 only construct
@@ -1057,8 +1028,8 @@ feature {NONE} -- Compilation
 			check attached legacy_flat_text_converted as lft then
 				legacy_flat_archetype := adl_14_engine.parse (lft, Current)
 			end
+		 	compilation_state := Cs_parsed
 			if attached legacy_flat_archetype as flat_arch then
-			 	compilation_state := Cs_parsed
 				add_info (ec_compile_legacy_i1, <<id.as_string>>)
 
 				-- perform post-parse processing and then diff conversion
@@ -1090,23 +1061,6 @@ feature {NONE} -- Compilation
 					adl_14_engine.post_parse_process (flat_arch, Current)
 					create differential_archetype.make_from_flat (flat_arch)
 				end
-
-				if compilation_state = Cs_parsed then
-				 	compilation_state := Cs_ready_to_validate
-					if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
-						set_archetype_view_language (differential_archetype.original_language.code_string)
-					end
-
-					-- now validate in two stages
-					validate
-
-					if compilation_state = Cs_validated_phase_2 then
-				 		save_differential_validated
-						validate_flat
-						differential_archetype.set_is_valid (adl_14_engine.validation_passed)
-						differential_archetype.set_adl_version (latest_adl_version)
-					end
-				end
 			else
 			 	compilation_state := Cs_convert_legacy_failed
 			end
@@ -1115,14 +1069,13 @@ feature {NONE} -- Compilation
 			merge_errors (adl_14_engine.errors)
 			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure
-			Compilation_state: (<<Cs_validated, Cs_validate_failed, Cs_convert_legacy_failed, Cs_lineage_invalid>>).has (compilation_state)
-			Differential_file: compilation_state = Cs_validated implies has_differential_file
+			Compilation_state: (<<Cs_parsed, Cs_convert_legacy_failed, Cs_lineage_invalid>>).has (compilation_state)
 		end
 
 	parse
 			-- Parse archetype, in differential form if available, else in legacy flat form.
 			-- Comilation state changes:
-			-- parse succeeded: Cs_ready_to_parse --> Cs_suppliers_known
+			-- parse succeeded: Cs_ready_to_parse --> Cs_parsed
 			-- parse failed: Cs_ready_to_parse --> Cs_parse_failed
 		require
 			Initial_state: compilation_state = Cs_ready_to_parse
@@ -1146,27 +1099,6 @@ feature {NONE} -- Compilation
 
 				-- perform post-parse object structure finalisation
 				adl_15_engine.post_parse_process (diff_arch, Current)
-
-				-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
-				create suppliers_index.make (0)
-				across diff_arch.suppliers_index as supp_idx_csr loop
-					if current_arch_cat.has_archetype_id_for_ref (supp_idx_csr.key) and then
-						attached current_arch_cat.matching_archetype (supp_idx_csr.key) as supp_arch and then
-						not supp_arch.id.as_string.is_case_insensitive_equal (id.as_string)
-					then
-						suppliers_index.put (supp_arch, supp_arch.id.as_string)
-					end
-				end
-				if not suppliers_index.is_empty then
-					compilation_state := Cs_suppliers_known
-				else
-					compilation_state := Cs_ready_to_validate
-				end
-
-				-- determine what language to view archetype in
-				if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
-					set_archetype_view_language (diff_arch.original_language.code_string)
-				end
 			else
 				compilation_state := Cs_parse_failed
 			end
@@ -1175,8 +1107,46 @@ feature {NONE} -- Compilation
 			merge_errors (adl_15_engine.errors)
 			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure
-			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
-			Archetype_state: compilation_state /= Cs_parse_failed implies attached differential_archetype
+			Compilation_state: compilation_state = Cs_parsed or compilation_state = Cs_parse_failed
+			Archetype_state: compilation_state = Cs_parsed implies attached differential_archetype
+		end
+
+	evaluate_suppliers
+			-- Parse archetype, in differential form if available, else in legacy flat form.
+			-- Comilation state changes:
+			-- has suppliers: Cs_parsed --> Cs_suppliers_known
+			-- no suppliers: Cs_parsed --> Cs_ready_to_validate
+		require
+			Initial_state: compilation_state = Cs_parsed
+		local
+			diff_arch: DIFFERENTIAL_ARCHETYPE
+		do
+			check attached differential_archetype as da then
+				diff_arch := da
+			end
+
+			-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
+			create suppliers_index.make (0)
+			across diff_arch.suppliers_index as supp_idx_csr loop
+				if current_arch_cat.has_archetype_id_for_ref (supp_idx_csr.key) and then
+					attached current_arch_cat.matching_archetype (supp_idx_csr.key) as supp_arch and then
+					not supp_arch.id.as_string.is_case_insensitive_equal (id.as_string)
+				then
+					suppliers_index.put (supp_arch, supp_arch.id.as_string)
+				end
+			end
+			if not suppliers_index.is_empty then
+				compilation_state := Cs_suppliers_known
+			else
+				compilation_state := Cs_ready_to_validate
+			end
+
+			-- determine what language to view archetype in
+			if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
+				set_archetype_view_language (diff_arch.original_language.code_string)
+			end
+		ensure
+			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate
 		end
 
 	validate
@@ -1290,7 +1260,7 @@ feature -- File Operations (1.5.1 format upgrade)
 		do
 			if attached differential_serialised as txt then
 				ftext := txt
-				differential_text_file_adl_version := differential_archetype.adl_version
+				source_file_adl_version := differential_archetype.adl_version
 			else
 				ftext := differential_text
 			end
@@ -1313,7 +1283,7 @@ feature -- File Operations
 			check attached differential_archetype as da then
 				serialised_diff := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
 				file_repository.save_text_to_file (differential_path, serialised_diff)
-				differential_text_file_adl_version := da.adl_version
+				source_file_adl_version := da.adl_version
 			end
 			differential_text_timestamp := differential_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)

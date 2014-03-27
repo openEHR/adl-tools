@@ -68,7 +68,7 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				-- deal with legacy archetype files and directories first
+				-- deal with ADL 1.4 archetype files
 				across fs_node_names as fs_node_names_csr loop
 					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
@@ -87,13 +87,13 @@ feature {NONE} -- Implementation
 								elseif not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
 								elseif not archetype_id_index.has (arch_id) then
-									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, arch_tn)
+									ara := aof.create_arch_cat_archetype_make_legacy (extension_replaced (l_full_path, File_ext_archetype_source), Current, arch_tn)
 									archetype_id_index.force (ara, arch_id)
 								else
 									check attached archetype_id_index.item (arch_id) as att_aca then
 										ara := att_aca
 									end
-									ara.add_legacy_archetype (l_full_path, Current, arch_tn)
+									ara.add_legacy_archetype (l_full_path)
 								end
 							else
 								errors.add_error (ec_general, <<amp.error_strings>>, "")

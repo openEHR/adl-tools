@@ -886,7 +886,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 275")
 end
 
-			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if not target_descriptor.source_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create yyval16.make (yyvs4.item (yyvsp4), new_fake_node_id)
 			else
 				if not object_nodes.is_empty then
@@ -1228,7 +1228,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 409")
 end
 
-			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if not target_descriptor.source_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create yyval10.make (yyvs4.item (yyvsp4 - 1), new_fake_node_id, yyvs4.item (yyvsp4))
 				if attached yyvs14.item (yyvsp14) as att_occ then
 					yyval10.set_occurrences (att_occ)
@@ -1412,7 +1412,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 491")
 end
 
-			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if not target_descriptor.source_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create yyval18.make (yyvs4.item (yyvsp4), new_fake_node_id)
 			else
 				abort_with_error (ec_VCOID, <<yyvs4.item (yyvsp4), c_attrs.item.path>>)

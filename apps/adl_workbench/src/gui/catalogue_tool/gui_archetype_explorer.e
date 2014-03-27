@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type))) then
+								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value))) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
 					gui_semantic_grid.add_row (aci)
@@ -196,7 +196,7 @@ feature {NONE} -- Implementation
    	ev_semantic_grid_populate_exit (aci: ARCH_CAT_ITEM)
    		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type)))
+				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value)))
 			then
 				ev_tree_item_stack.remove
 			end
@@ -215,14 +215,8 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source then
-						if not aca.differential_text_file_adl_version.is_empty then
-							if not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
-								text.append ("(" + aca.differential_text_file_adl_version + ") ")
-							end
-						elseif aca.has_legacy_flat_file then
-							text.append ("(" + Adl_14_version + ") ")
-						end
+					if display_archetype_source and not aca.source_file_adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.source_file_adl_version + ") ")
 					end
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)
@@ -311,14 +305,8 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source then
-						if not aca.differential_text_file_adl_version.is_empty then
-							if not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
-								text.append ("(" + aca.differential_text_file_adl_version + ") ")
-							end
-						elseif aca.has_legacy_flat_file then
-							text.append ("(" + Adl_14_version + ") ")
-						end
+					if display_archetype_source and not aca.source_file_adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.source_file_adl_version + ") ")
 					end
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)

@@ -426,7 +426,7 @@ feature -- Metrics
 			-- count of artefacts designated as templates or template_components
 		do
 			across archetype_index as archs_csr loop
-				if archs_csr.item.artefact_type /= {ARTEFACT_TYPE}.archetype then
+				if archs_csr.item.artefact_type.is_template then
 					Result := Result + 1
 				end
 			end

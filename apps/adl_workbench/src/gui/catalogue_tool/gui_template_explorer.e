@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			rm_schema := ara.rm_schema
 
 			-- make sure it is a template of some kind
-			if artefact_types.has (ara.artefact_type) then
+			if artefact_types.has (ara.artefact_type.value) then
 				-- if it is compiled & valid, display its flat filler structure
 				if semantic_grid_row_map.has (ara.qualified_name) and then attached semantic_grid_row_map.item (ara.qualified_name) as gr then
 					if ara.is_valid then
