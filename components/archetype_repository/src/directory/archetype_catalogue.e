@@ -552,7 +552,7 @@ feature {NONE} -- Implementation
 									added_during_pass := added_during_pass + 1
 									status_list [archs_csr.target_index] := Populate_status_succeeded
 								else
-									add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.full_path>>)
+									add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.differential_path>>)
 									status_list [archs_csr.target_index] := Populate_status_failed
 								end
 							else

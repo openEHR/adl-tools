@@ -186,9 +186,6 @@ feature {NONE} -- Initialisation
 			create artefact_type.make (arch_thumbnail.artefact_type)
 			differential_path := a_path
 
-			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
-			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
-
 			compilation_state := Cs_unread
 		end
 
@@ -208,8 +205,6 @@ feature {NONE} -- Initialisation
 
 			create artefact_type.make_archetype
 			create last_compile_attempt_timestamp.make_now
-			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
-			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
 		end
 
 feature -- Initialisation
@@ -243,18 +238,6 @@ feature -- Access (semantic)
 			-- ADL version of the most recently converted text file (legacy or differential)
 		attribute
 			create Result.make_empty
-		end
-
-	full_path: STRING
-			-- Full path to the primary version of the item (differential or legacy) on the storage medium.
-		do
-			if attached legacy_flat_path as lfp then
-				Result := lfp
-			else
-				Result := differential_path
-			end
-		ensure
-			flat_or_differential: attached legacy_flat_path as lfp implies Result = lfp xor Result = differential_path
 		end
 
 	relative_path: STRING
@@ -325,6 +308,9 @@ feature -- Access (semantic)
 
 	differential_compiled_path: STRING
 			-- path to persisted compiled source form of archetype
+		do
+			Result := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
+		end
 
 	differential_text_timestamp: INTEGER
 			-- Modification timestamp of source file at last read
@@ -425,9 +411,6 @@ feature -- Access (semantic)
 			end
 		end
 
-	old_ontological_parent_name: detachable STRING
-			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
-
 	semantic_id: STRING
 			-- namespace + domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
 			-- return only the final section
@@ -466,6 +449,9 @@ feature -- Access (semantic)
 
 	flat_compiled_path: STRING
 			-- path to persisted compiled flat form of archetype
+		do
+			 Result := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
+		end
 
 	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact
@@ -878,7 +864,11 @@ feature -- Compilation
 
 			-- now deal with changes from file
 			create amp
-			amp.parse (full_path)
+			if is_legacy_file_modified and attached legacy_flat_path as lfp then
+				amp.parse (lfp)
+			elseif is_differential_file_modified then
+				amp.parse (differential_path)
+			end
 			if amp.passed then
 				if artefact_type.value /= amp.last_archetype.artefact_type then
 					create artefact_type.make (amp.last_archetype.artefact_type)
@@ -1464,6 +1454,9 @@ feature {NONE} -- Implementation
 
 	file_repository: ARCHETYPE_REPOSITORY_I
 			-- The repository on which this item is found.
+
+	old_ontological_parent_name: detachable STRING
+			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
 	current_archetype_language: STRING
 			-- find a language from the current archetype that matches `archetype_view_language' either directly

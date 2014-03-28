@@ -345,7 +345,7 @@ feature {NONE} -- Implementation
 					format_list := archetype_all_serialiser_formats
 					dialog_title := get_text (ec_export_archetype_title)
 				end
-				name := extension_replaced (aca.full_path, "")
+				name := extension_replaced (aca.differential_path, "")
 
 				create save_dialog
 				save_dialog.set_title (dialog_title)

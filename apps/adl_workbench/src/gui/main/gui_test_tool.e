@@ -812,7 +812,7 @@ feature {NONE} -- Implementation
 				end
 
 				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-					evx_grid.update_last_row_label_col (1, Void, ara.full_path, Void, Void)
+					evx_grid.update_last_row_label_col (1, Void, ara.differential_path, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
 						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void)
