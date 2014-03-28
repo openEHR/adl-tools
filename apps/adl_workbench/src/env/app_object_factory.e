@@ -11,11 +11,6 @@ class APP_OBJECT_FACTORY
 
 feature -- Factory
 
-	create_arch_cat_archetype_make_legacy (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL): ARCH_CAT_ARCHETYPE_EDITABLE
-		do
-			create Result.make_legacy (a_path, a_repository, arch_thumbnail)
-		end
-
 	create_arch_cat_archetype_make (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL): ARCH_CAT_ARCHETYPE_EDITABLE
 		do
 			create Result.make (a_path, a_repository, arch_thumbnail)

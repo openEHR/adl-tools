@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	make, make_legacy, make_new_archetype, make_new_specialised_archetype
+	make, make_new_archetype, make_new_specialised_archetype
 
 feature -- Status Report
 

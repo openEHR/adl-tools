@@ -82,7 +82,7 @@ inherit
 		end
 
 create {APP_OBJECT_FACTORY}
-	make, make_legacy, make_new_archetype, make_new_specialised_archetype
+	make, make_new_archetype, make_new_specialised_archetype
 
 feature {NONE} -- Initialisation
 
@@ -92,36 +92,30 @@ feature {NONE} -- Initialisation
 			Path_valid: not a_path.is_empty
 			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
 		do
-			make_file_any (a_path, a_repository, arch_thumbnail)
-			is_differential_generated := arch_thumbnail.is_generated
-			differential_text_timestamp := differential_file_timestamp
-		ensure
-			file_repository_set: file_repository = a_repository
-			id_set: id = arch_thumbnail.archetype_id
-			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
-			Compilation_state: compilation_state = Cs_unread
-		end
+			create status.make_empty
+			create last_modify_timestamp.make_from_epoch (0)
 
-	make_legacy (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
-			-- Create for the legacy archetype described by `arch_thumbnail', whose ADL 1.5 path is `a_path', belonging to `a_repository'.
-		require
-			Path_valid: not a_path.is_empty
-			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
-		local
-			amp: ARCHETYPE_MINI_PARSER
-		do
-			make_file_any (a_path, a_repository, arch_thumbnail)
-			legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
-			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+			-- basic state
+			id := arch_thumbnail.archetype_id
+			source_file_adl_version := arch_thumbnail.adl_version
+			if arch_thumbnail.is_specialised then
+				parent_id := arch_thumbnail.parent_archetype_id
+			end
+			create artefact_type.make (arch_thumbnail.artefact_type)
+			compilation_state := Cs_unread
 
-			if has_differential_file then
-				differential_text_timestamp := differential_file_timestamp
-				create amp
-				amp.parse (differential_path)
-				is_differential_generated := amp.is_generated
+			-- create file workflow state
+			if arch_thumbnail.is_legacy then
+				create file_wf.make_legacy (a_path, a_repository)
+
+				-- if we are being called with legacy archetype, there is no differential file yet, so
+				-- by definition it is generated
+				is_differential_generated := True
+			else
+				create file_wf.make (a_path, a_repository)
+				is_differential_generated := arch_thumbnail.is_generated
 			end
 		ensure
-			file_repository_set: file_repository = a_repository
 			id_set: id = arch_thumbnail.archetype_id
 			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
 			Compilation_state: compilation_state = Cs_unread
@@ -170,41 +164,21 @@ feature {NONE} -- Initialisation
 			Is_specialised: is_specialised
 		end
 
-	make_file_any (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
-			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
-		do
-			create status.make_empty
-			create last_modify_timestamp.make_from_epoch (0)
-
-			file_repository := a_repository
-			id := arch_thumbnail.archetype_id
-			source_file_adl_version := arch_thumbnail.adl_version
-			rm_schema := rm_schema_for_archetype_id (id)
-			if arch_thumbnail.is_specialised then
-				parent_id := arch_thumbnail.parent_archetype_id
-			end
-			create artefact_type.make (arch_thumbnail.artefact_type)
-			differential_path := a_path
-
-			compilation_state := Cs_unread
-		end
-
 	make_new_any (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		do
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
+			create last_compile_attempt_timestamp.make_now
 			file_repository := a_repository
 			id := an_id
 			source_file_adl_version := latest_adl_version
-			rm_schema := rm_schema_for_archetype_id (id)
 
 			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
 				differential_path := pn
 			end
 
 			create artefact_type.make_archetype
-			create last_compile_attempt_timestamp.make_now
 		end
 
 feature -- Initialisation
@@ -377,6 +351,9 @@ feature -- Access (semantic)
 
 	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
+		do
+			Result := rm_schema_for_archetype_id (id)
+		end
 
 	id: ARCHETYPE_HRID
 			-- Archetype identifier.
@@ -998,7 +975,6 @@ feature {NONE} -- Compilation
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has (compilation_state)
-			no_rm_schema_compilation_state: rm_schema = Void implies compilation_state = Cs_rm_class_unknown
 		end
 
 	parse_legacy
