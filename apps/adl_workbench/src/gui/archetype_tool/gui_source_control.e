@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 
 	adl_14_converted_text: detachable STRING
 		do
-			if source.has_legacy_flat_file and then attached source.legacy_flat_text_converted as legacy_conv_text then
+			if source.has_legacy_flat_file and then attached source.legacy_flat_text as legacy_conv_text then
 				Result := legacy_conv_text
 			end
 		end

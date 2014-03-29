@@ -485,7 +485,7 @@ feature -- File Management (Legacy)
 			Result := file_repository.text
 		end
 
-	legacy_flat_text_converted: detachable STRING
+	legacy_flat_text: detachable STRING
 			-- Read `legacy_flat_text_converted' and `text_timestamp' from `legacy_flat_path'.
 			-- The text of the legacy archetype, if it exists
 		require
@@ -732,8 +732,6 @@ feature -- Compilation
 		do
 			Result := attached old_ontological_parent_name
 		end
-
-feature -- Status Report - Semantic
 
 	is_valid: BOOLEAN
 			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
@@ -1004,7 +1002,7 @@ feature {NONE} -- Compilation
 			flat_archetype_cache := Void
 
 			-- perform the parse; this can fail, i.e. no result generated
-			check attached legacy_flat_text_converted as lft then
+			check attached legacy_flat_text as lft then
 				legacy_flat_archetype := adl_14_engine.parse (lft, Current)
 			end
 		 	compilation_state := Cs_parsed
@@ -1310,7 +1308,7 @@ feature -- File Operations
 			Archetype_has_legacy: has_legacy_flat_file
 			path_valid: not a_full_path.is_empty
 		do
-			check attached legacy_flat_text_converted as lft then
+			check attached legacy_flat_text as lft then
 				file_repository.save_text_to_file (a_full_path, lft)
 			end
 			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, file_ext_archetype_adl14>>)
