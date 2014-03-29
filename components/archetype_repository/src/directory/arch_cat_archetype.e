@@ -334,205 +334,6 @@ feature {ARCH_CAT_ARCHETYPE} -- Relationships
 			clients_index.extend (an_archetype_id)
 		end
 
-feature -- File Management
-
-	is_differential_file_modified: BOOLEAN
-			-- Is differential_archetype out of date with respect to changes on the file system?
-		require
-			has_differential_file
-		do
-			Result := differential_file_timestamp /= differential_text_timestamp
-		end
-
-	is_legacy_file_modified: BOOLEAN
-			-- Is flat_archetype out of date with respect to changes on the file system?
-		require
-			has_legacy_flat_file
-		do
-			Result := legacy_flat_file_timestamp /= legacy_flat_text_timestamp
-		end
-
-	is_legacy_newer_than_differential: BOOLEAN
-		require
-			has_legacy_flat_file
-		do
-			Result := not has_differential_file or else legacy_flat_file_timestamp > differential_file_timestamp
-		end
-
-	source_file_adl_version: STRING
-			-- ADL version of the most recently read differential text file
-			-- if this version = 1.5.1, it means the file is already 1.5.1
-		attribute
-			create Result.make_empty
-		end
-
-	differential_text_adl_version: STRING
-			-- ADL version of the most recently converted text file (legacy or differential)
-		attribute
-			create Result.make_empty
-		end
-
-	differential_text_original: STRING
-			-- original form of differential file text, with no conversions
-		require
-			differential_file_available: has_differential_file
-		do
-			file_repository.read_text_from_file (differential_path)
-			check attached file_repository.text as t then
-				Result := t
-			end
-		end
-
-	differential_text: STRING
-			-- Read `differential_text_converted' and `text_timestamp' from `differential_path', returning
-			-- the text of the archetype source file, i.e. the differential form.
-		require
-			differential_file_available: has_differential_file
-		local
-			arch_text, line_1, adl_var_ver_text: STRING
-			i: INTEGER
-		do
-			file_repository.read_text_from_file (differential_path)
-			check attached file_repository.text as t then
-				arch_text := t
-			end
-
-			-- obtain the first line of text
-			create line_1.make_empty
-			from i := 1 until arch_text.item (i) = '%N' or i > arch_text.count loop
-				line_1.append_character (arch_text.item (i))
-				i := i + 1
-			end
-
-			-- extract the adl_version
-			Adl_version_regex_matcher.match (line_1)
-			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
-			differential_text_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
-			differential_text_adl_version.left_adjust
-
-			if differential_text_adl_version < Id_conversion_version then
-				adl_14_15_rewriter.execute (arch_text)
-				Result := adl_14_15_rewriter.out_buffer
-				is_text_converted := True
-			else
-				is_text_converted := False
-				Result := arch_text
-			end
-			differential_text_timestamp := differential_file_timestamp
-		end
-
-	differential_path: STRING
-			-- Path of differential source file of archetype.
-
-	differential_compiled_path: STRING
-			-- path to persisted compiled source form of archetype
-		do
-			Result := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
-		end
-
-	differential_text_timestamp: INTEGER
-			-- Modification timestamp of source file at last read
-
-	differential_file_timestamp: INTEGER
-			-- Date and time at which the archetype differential file was last modified.
-		require
-			Has_differential_file: has_differential_file
-		do
-			Result := file_system.file_time_stamp (differential_path)
-		ensure
-			Result > 0
-		end
-
-	flat_compiled_path: STRING
-			-- path to persisted compiled flat form of archetype
-		do
-			 Result := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
-		end
-
-	has_differential_file: BOOLEAN
-			-- Does the repository have a source-form file for this archetype?
-		do
-			Result := file_repository.is_valid_path (differential_path)
-		end
-
-	has_differential_compiled_file: BOOLEAN
-			-- Does the compile generated area have a differential file for this archetype from a previous compile?
-			-- If it is newer than the source file, it can be read instead
-		do
-			Result := file_system.file_exists (differential_compiled_path)
-		end
-
-	has_flat_compiled_file: BOOLEAN
-			-- Does the compile generated area have a flat file for this archetype from a previous compile?
-			-- If it is newer than the source file, it can be read instead
-		do
-			Result := file_repository.is_valid_path (flat_compiled_path)
-		end
-
-feature -- File Management (Legacy)
-
-	legacy_flat_path: detachable STRING
-			-- Path of legacy flat file of archetype.
-
-	legacy_flat_text_original: detachable STRING
-			-- Original unprocessed text of the legacy archetype, if it exists
-		require
-			flat_file_available: has_legacy_flat_file
-		do
-			check attached legacy_flat_path as lfp then
-				file_repository.read_text_from_file (lfp)
-			end
-			Result := file_repository.text
-		end
-
-	legacy_flat_text: detachable STRING
-			-- Read `legacy_flat_text_converted' and `text_timestamp' from `legacy_flat_path'.
-			-- The text of the legacy archetype, if it exists
-		require
-			flat_file_available: has_legacy_flat_file
-		local
-			arch_text: STRING
-		do
-			check attached legacy_flat_path as lfp then
-				file_repository.read_text_from_file (lfp)
-			end
-			check attached file_repository.text as t then
-				arch_text := t
-			end
-			adl_14_15_rewriter.execute (arch_text)
-			Result := adl_14_15_rewriter.out_buffer
-			legacy_flat_text_timestamp := legacy_flat_file_timestamp
-		end
-
-	legacy_flat_file_timestamp: INTEGER
-			-- Date and time at which the legacy archetype file was last modified, as reported by file-system
-		require
-			Has_legacy_file: has_legacy_flat_file
-		do
-			check attached legacy_flat_path as lfp then
-				Result := file_system.file_time_stamp (lfp)
-			end
-		ensure
-			Result > 0
-		end
-
-	legacy_flat_text_timestamp: INTEGER
-			-- File modification date/time when legacy flat file was last read
-
-	has_legacy_flat_file: BOOLEAN
-			-- Does the repository have a legacy flat-form file for this archetype?
-		do
-			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
-		end
-
-	is_legacy: BOOLEAN
-		do
-			Result := attached legacy_flat_path
-		end
-
-	is_text_converted: BOOLEAN
-			-- was last text converted from original form?
-
 feature -- Artefacts
 
 	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
@@ -1213,7 +1014,206 @@ feature -- Conversion
 			end
 		end
 
-feature -- File Operations (1.5.1 format upgrade)
+feature -- File Management
+
+	is_differential_file_modified: BOOLEAN
+			-- Is differential_archetype out of date with respect to changes on the file system?
+		require
+			has_differential_file
+		do
+			Result := differential_file_timestamp /= differential_text_timestamp
+		end
+
+	is_legacy_file_modified: BOOLEAN
+			-- Is flat_archetype out of date with respect to changes on the file system?
+		require
+			has_legacy_flat_file
+		do
+			Result := legacy_flat_file_timestamp /= legacy_flat_text_timestamp
+		end
+
+	is_legacy_newer_than_differential: BOOLEAN
+		require
+			has_legacy_flat_file
+		do
+			Result := not has_differential_file or else legacy_flat_file_timestamp > differential_file_timestamp
+		end
+
+	source_file_adl_version: STRING
+			-- ADL version of the most recently read differential text file
+			-- if this version = 1.5.1, it means the file is already 1.5.1
+		attribute
+			create Result.make_empty
+		end
+
+	differential_text_adl_version: STRING
+			-- ADL version of the most recently converted text file (legacy or differential)
+		attribute
+			create Result.make_empty
+		end
+
+	differential_text_original: STRING
+			-- original form of differential file text, with no conversions
+		require
+			differential_file_available: has_differential_file
+		do
+			file_repository.read_text_from_file (differential_path)
+			check attached file_repository.text as t then
+				Result := t
+			end
+		end
+
+	differential_text: STRING
+			-- Read `differential_text_converted' and `text_timestamp' from `differential_path', returning
+			-- the text of the archetype source file, i.e. the differential form.
+		require
+			differential_file_available: has_differential_file
+		local
+			arch_text, line_1, adl_var_ver_text: STRING
+			i: INTEGER
+		do
+			file_repository.read_text_from_file (differential_path)
+			check attached file_repository.text as t then
+				arch_text := t
+			end
+
+			-- obtain the first line of text
+			create line_1.make_empty
+			from i := 1 until arch_text.item (i) = '%N' or i > arch_text.count loop
+				line_1.append_character (arch_text.item (i))
+				i := i + 1
+			end
+
+			-- extract the adl_version
+			Adl_version_regex_matcher.match (line_1)
+			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
+			differential_text_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
+			differential_text_adl_version.left_adjust
+
+			if differential_text_adl_version < Id_conversion_version then
+				adl_14_15_rewriter.execute (arch_text)
+				Result := adl_14_15_rewriter.out_buffer
+				is_text_converted := True
+			else
+				is_text_converted := False
+				Result := arch_text
+			end
+			differential_text_timestamp := differential_file_timestamp
+		end
+
+	differential_path: STRING
+			-- Path of differential source file of archetype.
+
+	differential_compiled_path: STRING
+			-- path to persisted compiled source form of archetype
+		do
+			Result := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
+		end
+
+	differential_text_timestamp: INTEGER
+			-- Modification timestamp of source file at last read
+
+	differential_file_timestamp: INTEGER
+			-- Date and time at which the archetype differential file was last modified.
+		require
+			Has_differential_file: has_differential_file
+		do
+			Result := file_system.file_time_stamp (differential_path)
+		ensure
+			Result > 0
+		end
+
+	flat_compiled_path: STRING
+			-- path to persisted compiled flat form of archetype
+		do
+			 Result := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
+		end
+
+	has_differential_file: BOOLEAN
+			-- Does the repository have a source-form file for this archetype?
+		do
+			Result := file_repository.is_valid_path (differential_path)
+		end
+
+	has_differential_compiled_file: BOOLEAN
+			-- Does the compile generated area have a differential file for this archetype from a previous compile?
+			-- If it is newer than the source file, it can be read instead
+		do
+			Result := file_system.file_exists (differential_compiled_path)
+		end
+
+	has_flat_compiled_file: BOOLEAN
+			-- Does the compile generated area have a flat file for this archetype from a previous compile?
+			-- If it is newer than the source file, it can be read instead
+		do
+			Result := file_repository.is_valid_path (flat_compiled_path)
+		end
+
+feature -- File Management (Legacy)
+
+	legacy_flat_path: detachable STRING
+			-- Path of legacy flat file of archetype.
+
+	legacy_flat_text_original: detachable STRING
+			-- Original unprocessed text of the legacy archetype, if it exists
+		require
+			flat_file_available: has_legacy_flat_file
+		do
+			check attached legacy_flat_path as lfp then
+				file_repository.read_text_from_file (lfp)
+			end
+			Result := file_repository.text
+		end
+
+	legacy_flat_text: detachable STRING
+			-- Read `legacy_flat_text_converted' and `text_timestamp' from `legacy_flat_path'.
+			-- The text of the legacy archetype, if it exists
+		require
+			flat_file_available: has_legacy_flat_file
+		local
+			arch_text: STRING
+		do
+			check attached legacy_flat_path as lfp then
+				file_repository.read_text_from_file (lfp)
+			end
+			check attached file_repository.text as t then
+				arch_text := t
+			end
+			adl_14_15_rewriter.execute (arch_text)
+			Result := adl_14_15_rewriter.out_buffer
+			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+		end
+
+	legacy_flat_file_timestamp: INTEGER
+			-- Date and time at which the legacy archetype file was last modified, as reported by file-system
+		require
+			Has_legacy_file: has_legacy_flat_file
+		do
+			check attached legacy_flat_path as lfp then
+				Result := file_system.file_time_stamp (lfp)
+			end
+		ensure
+			Result > 0
+		end
+
+	legacy_flat_text_timestamp: INTEGER
+			-- File modification date/time when legacy flat file was last read
+
+	has_legacy_flat_file: BOOLEAN
+			-- Does the repository have a legacy flat-form file for this archetype?
+		do
+			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
+		end
+
+	is_legacy: BOOLEAN
+		do
+			Result := attached legacy_flat_path
+		end
+
+	is_text_converted: BOOLEAN
+			-- was last text converted from original form?
+
+feature -- File Management (1.5.1 format upgrade)
 
 	differential_serialised: detachable STRING
 			-- serialise differential archetype to its file in its source form, even if not compiling
