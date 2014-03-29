@@ -105,14 +105,17 @@ feature {NONE} -- Initialisation
 			compilation_state := Cs_unread
 
 			-- create file workflow state
+			file_repository := a_repository
+			differential_path := a_path
 			if arch_thumbnail.is_legacy then
-				create file_wf.make_legacy (a_path, a_repository)
+				legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
+				legacy_flat_text_timestamp := legacy_flat_file_timestamp
 
 				-- if we are being called with legacy archetype, there is no differential file yet, so
 				-- by definition it is generated
 				is_differential_generated := True
 			else
-				create file_wf.make (a_path, a_repository)
+				differential_text_timestamp := differential_file_timestamp
 				is_differential_generated := arch_thumbnail.is_generated
 			end
 		ensure
