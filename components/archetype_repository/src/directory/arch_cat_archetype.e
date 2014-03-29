@@ -113,10 +113,10 @@ feature {NONE} -- Initialisation
 
 				-- if we are being called with legacy archetype, there is no differential file yet, so
 				-- by definition it is generated
-				is_differential_generated := True
+				is_source_generated := True
 			else
 				differential_text_timestamp := differential_file_timestamp
-				is_differential_generated := arch_thumbnail.is_generated
+				is_source_generated := arch_thumbnail.is_generated
 			end
 		ensure
 			id_set: id = arch_thumbnail.archetype_id
@@ -182,20 +182,6 @@ feature {NONE} -- Initialisation
 			end
 
 			create artefact_type.make_archetype
-		end
-
-feature -- Initialisation
-
-	add_legacy_archetype (a_path: STRING)
-			-- add legacy details to a descriptor already created for a differential archteype for which
-			-- a legacy archetype has been found
-		require
-			Path_valid: not a_path.is_empty
-		do
-			legacy_flat_path := a_path
-			legacy_flat_text_timestamp := legacy_flat_file_timestamp
-		ensure
-			is_legacy: is_legacy
 		end
 
 feature -- Identification
@@ -336,6 +322,49 @@ feature {ARCH_CAT_ARCHETYPE} -- Relationships
 
 feature -- Artefacts
 
+	source_text: STRING
+			-- Read `differential_text_converted' and `text_timestamp' from `source_file_path', returning
+			-- the text of the archetype source file, i.e. the differential form.
+		require
+			source_file_available: has_source_file
+		local
+			arch_text, line_1, adl_var_ver_text: STRING
+			i: INTEGER
+			amp: ARCHETYPE_MINI_PARSER
+		do
+			file_repository.read_text_from_file (source_file_path)
+			check attached file_repository.text as t then
+				arch_text := t
+			end
+
+			-- obtain the first line of text
+			create line_1.make_empty
+			from i := 1 until arch_text.item (i) = '%N' or i > arch_text.count loop
+				line_1.append_character (arch_text.item (i))
+				i := i + 1
+			end
+
+			-- extract the adl_version
+			Adl_version_regex_matcher.match (line_1)
+			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
+			source_text_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
+			source_text_adl_version.left_adjust
+
+			if source_text_adl_version < Id_conversion_version then
+				adl_14_15_rewriter.execute (arch_text)
+				Result := adl_14_15_rewriter.out_buffer
+				is_text_converted := True
+			else
+				is_text_converted := False
+				Result := arch_text
+			end
+			differential_text_timestamp := differential_file_timestamp
+
+			-- extract other details
+			create amp
+			other_details := amp.extract_other_details (Result)
+		end
+
 	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
@@ -399,6 +428,12 @@ feature -- Artefacts
 			else
 				Result := adl_15_engine.serialise (flat_archetype, Syntax_type_adl, current_archetype_language)
 			end
+		end
+
+	other_details: HASH_TABLE [STRING, STRING]
+			-- 'other_details' part of archetype description section, containing regression code, MD5 etc
+		attribute
+			create Result.make (0)
 		end
 
 feature -- Compilation
@@ -548,8 +583,8 @@ feature -- Compilation
 			Result := compilation_state >= Cs_validated_phase_2
 		end
 
-	is_differential_generated: BOOLEAN
-			-- True if the differential form was generated from the flat form
+	is_source_generated: BOOLEAN
+			-- True if the source file was generated from the legacy form
 
 feature -- Compilation
 
@@ -721,7 +756,7 @@ feature -- Compilation
 			flat_path: STRING
 		do
 			status.wipe_out
-			if is_differential_generated then
+			if is_source_generated then
 				if has_source_file then
 					file_repository.delete_file (source_file_path)
 					status.append (get_msg_line ("clean_generated_file", <<source_file_path>>))
@@ -737,7 +772,7 @@ feature -- Compilation
 				file_repository.delete_file (flat_path)
 			end
 		ensure
-			Reset_if_differential_generated: is_differential_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
+			Reset_if_differential_generated: is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
 
 	signal_exception
@@ -1055,44 +1090,6 @@ feature -- File Operations
 			create Result.make_empty
 		end
 
-	source_text: STRING
-			-- Read `differential_text_converted' and `text_timestamp' from `source_file_path', returning
-			-- the text of the archetype source file, i.e. the differential form.
-		require
-			source_file_available: has_source_file
-		local
-			arch_text, line_1, adl_var_ver_text: STRING
-			i: INTEGER
-		do
-			file_repository.read_text_from_file (source_file_path)
-			check attached file_repository.text as t then
-				arch_text := t
-			end
-
-			-- obtain the first line of text
-			create line_1.make_empty
-			from i := 1 until arch_text.item (i) = '%N' or i > arch_text.count loop
-				line_1.append_character (arch_text.item (i))
-				i := i + 1
-			end
-
-			-- extract the adl_version
-			Adl_version_regex_matcher.match (line_1)
-			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
-			source_text_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
-			source_text_adl_version.left_adjust
-
-			if source_text_adl_version < Id_conversion_version then
-				adl_14_15_rewriter.execute (arch_text)
-				Result := adl_14_15_rewriter.out_buffer
-				is_text_converted := True
-			else
-				is_text_converted := False
-				Result := arch_text
-			end
-			differential_text_timestamp := differential_file_timestamp
-		end
-
 	source_file_path: STRING
 			-- Path of differential source file of archetype.
 
@@ -1111,6 +1108,18 @@ feature -- File Operations
 
 feature -- File Management (Legacy)
 
+	add_legacy_archetype (a_path: STRING)
+			-- add legacy details to a descriptor already created for a differential archteype for which
+			-- a legacy archetype has been found
+		require
+			Path_valid: not a_path.is_empty
+		do
+			legacy_flat_path := a_path
+			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+		ensure
+			is_legacy: is_legacy
+		end
+
 	legacy_flat_path: detachable STRING
 			-- Path of legacy flat file of archetype.
 
@@ -1121,6 +1130,7 @@ feature -- File Management (Legacy)
 			flat_file_available: has_legacy_flat_file
 		local
 			arch_text: STRING
+			amp: ARCHETYPE_MINI_PARSER
 		do
 			check attached legacy_flat_path as lfp then
 				file_repository.read_text_from_file (lfp)
@@ -1131,6 +1141,9 @@ feature -- File Management (Legacy)
 			adl_14_15_rewriter.execute (arch_text)
 			Result := adl_14_15_rewriter.out_buffer
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+
+			create amp
+			other_details := amp.extract_other_details (Result)
 		end
 
 	has_legacy_flat_file: BOOLEAN

@@ -601,29 +601,16 @@ feature {NONE} -- Tests
 	regression_test: INTEGER
 			-- if archetype description.other_details contains an item with key "validity", see if the value
 			-- matches the parse result
-		local
-			other_details: HASH_TABLE [STRING, STRING]
-			amp: ARCHETYPE_MINI_PARSER
 		do
 			if regression_test_on then
 				create val_code.make_empty
 
-				-- extract regression test meta-data. We do this on the raw file, since we need the meta-data
-				-- even if the archetype doesn't compile. Probably this should become part of the first pass load
-				create amp
-				if target.has_legacy_flat_file then
-					check attached target.legacy_flat_text as lft then
-						other_details := amp.extract_other_details (lft)
-					end
-				else
-					other_details := amp.extract_other_details (target.source_text)
-				end
-				if other_details.has (Regression_test_key) then
-					check attached other_details.item (Regression_test_key) as rtk then
+				if target.other_details.has (Regression_test_key) then
+					check attached target.other_details.item (Regression_test_key) as rtk then
 						val_code := rtk
 					end
-				elseif other_details.has (Regression_test_key.as_lower) then
-					check attached other_details.item (Regression_test_key.as_lower) as rtk then
+				elseif target.other_details.has (Regression_test_key.as_lower) then
+					check attached target.other_details.item (Regression_test_key.as_lower) as rtk then
 						val_code := rtk
 					end
 				end

@@ -74,7 +74,7 @@ feature -- Access
 			end
 
 			differential_archetype.clear_is_generated
-			is_differential_generated := False
+			is_source_generated := False
 			if attached gui_context as gc then
 				gc.on_commit
 			end
@@ -86,7 +86,7 @@ feature -- Access
 
 			-- set revision appropriately
 		ensure
-			Differential_is_primary: not is_differential_generated and not differential_archetype.is_generated
+			Differential_is_primary: not is_source_generated and not differential_archetype.is_generated
 		end
 
 feature {NONE} -- Implementation
