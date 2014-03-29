@@ -228,7 +228,7 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip
-					tooltip.append (aca.differential_path)
+					tooltip.append (aca.source_file_path)
 					if aca.has_legacy_flat_file and aca.is_differential_generated then
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
@@ -318,7 +318,7 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip
-					tooltip.append (aca.differential_path)
+					tooltip.append (aca.source_file_path)
 					if aca.has_legacy_flat_file and aca.is_differential_generated then
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
@@ -489,7 +489,7 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
 			if attached source as src then
-				create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, src)
+				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), parent_aca.id.deep_twin, parent_aca.id, src)
 				check attached proximate_ev_window (ev_root_container) as prox_win then
 					dialog.show_modal_to_window (prox_win)
 				end
@@ -512,7 +512,7 @@ feature {NONE} -- Implementation
 			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
 			if not matching_ids.is_empty then
 				matching_ids.start
-				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).differential_path)
+				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).source_file_path)
 			else
 				in_dir_path := repository_config_table.current_reference_repository_path
 			end

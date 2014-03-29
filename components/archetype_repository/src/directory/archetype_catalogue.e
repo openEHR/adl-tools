@@ -552,7 +552,7 @@ feature {NONE} -- Implementation
 									added_during_pass := added_during_pass + 1
 									status_list [archs_csr.target_index] := Populate_status_succeeded
 								else
-									add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.differential_path>>)
+									add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.source_file_path>>)
 									status_list [archs_csr.target_index] := Populate_status_failed
 								end
 							else
@@ -623,11 +623,11 @@ feature {NONE} -- Implementation
 			-- appear automatically, due to being added to top-level parent node during
 			-- semantic tree building
 		require
-			not aca.is_specialised and has_filesys_repo_for_path (aca.differential_path)
+			not aca.is_specialised and has_filesys_repo_for_path (aca.source_file_path)
 		local
 			parent_dir: STRING
 		do
-			parent_dir := file_system.dirname (aca.differential_path).as_lower
+			parent_dir := file_system.dirname (aca.source_file_path).as_lower
 			if not filesys_item_index.has (parent_dir) then
 				add_filesys_nodes (parent_dir)
 			end

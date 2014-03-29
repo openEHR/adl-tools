@@ -111,8 +111,8 @@ feature {NONE} -- Implementation
 
 	adl_15_source_text: detachable STRING
 		do
-			if source.has_differential_file then
-				Result := source.differential_text_original
+			if source.has_source_file then
+				Result := source.source_text_original
 			end
 		end
 
@@ -123,8 +123,8 @@ feature {NONE} -- Implementation
 			if source.is_text_converted then
 				if attached source.differential_archetype then
 					Result := source.differential_serialised
-				elseif source.has_differential_file then
-					Result := source.differential_text
+				elseif source.has_source_file then
+					Result := source.source_text
 				end
 			end
 		end
@@ -170,8 +170,8 @@ feature {NONE} -- Implementation
 			if not evx_adl_15_source_editor.is_empty then
 				sel_tab := ev_root_container.item_tab (evx_adl_15_source_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/edit_active"))
-				if not source.differential_text_adl_version.is_empty then
-					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.differential_text_adl_version>>))
+				if not source.source_text_adl_version.is_empty then
+					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.source_text_adl_version>>))
 				else
 					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<latest_adl_version>>))
 				end
@@ -206,7 +206,7 @@ feature {NONE} -- Implementation
 			if attached source as att_source then
 				att_source.save_differential_validated
 				evx_adl_15_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.differential_path>>))
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 			end
 		end
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 			if attached source as att_source then
 				att_source.save_differential_text
 				evx_adl_15_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.differential_path>>))
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 			end
 		end
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			fp: PLAIN_TEXT_FILE
 		do
 			if attached source as att_source then
-				create fp.make_open_write (att_source.differential_path)
+				create fp.make_open_write (att_source.source_file_path)
 				fp.put_string (a_text)
 				fp.close
 				att_source.signal_source_edited

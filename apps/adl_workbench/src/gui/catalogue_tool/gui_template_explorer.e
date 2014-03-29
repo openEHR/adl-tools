@@ -179,7 +179,7 @@ feature {NONE} -- Implementation
 
 			-- tooltip		
 			create tooltip.make_empty
-			tooltip.append (aca.differential_path)
+			tooltip.append (aca.source_file_path)
 			if aca.has_legacy_flat_file and aca.is_differential_generated then
 				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 			end
