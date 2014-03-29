@@ -115,7 +115,7 @@ feature {NONE} -- Initialisation
 				-- by definition it is generated
 				is_source_generated := True
 			else
-				differential_text_timestamp := differential_file_timestamp
+				source_text_timestamp := source_file_timestamp
 				is_source_generated := arch_thumbnail.is_generated
 			end
 		ensure
@@ -256,8 +256,12 @@ feature -- Identification
 			Result := qualified_name
 		end
 
-	is_reference_archetype: BOOLEAN
-			-- True if archetype has path description/other_details["model_level"] = "reference"
+	ontology_location_changed: BOOLEAN
+			-- True if changed due to external editing require a move of this archetype in ontology
+			-- cleared by calling `clear_old_ontological_parent_name'
+		do
+			Result := attached old_ontological_parent_name
+		end
 
 feature {ARCHETYPE_CATALOGUE} -- Identification
 
@@ -358,11 +362,18 @@ feature -- Artefacts
 				is_text_converted := False
 				Result := arch_text
 			end
-			differential_text_timestamp := differential_file_timestamp
+			source_text_timestamp := source_file_timestamp
 
 			-- extract other details
 			create amp
 			other_details := amp.extract_other_details (Result)
+		end
+
+	is_source_modified: BOOLEAN
+			-- Should this archetype be recompiled due to changes on the file system?
+		do
+			Result := has_source_file and is_source_file_modified or
+				 has_legacy_flat_file and is_legacy_file_modified
 		end
 
 	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
@@ -434,6 +445,12 @@ feature -- Artefacts
 			-- 'other_details' part of archetype description section, containing regression code, MD5 etc
 		attribute
 			create Result.make (0)
+		end
+
+	is_reference_archetype: BOOLEAN
+			-- True if archetype has path description/other_details["model_level"] = "reference"
+		do
+			Result := attached other_details.item ("model_level") as mlmd and then mlmd.is_equal ("reference")
 		end
 
 feature -- Compilation
@@ -550,23 +567,9 @@ feature -- Compilation
 			end
 		end
 
-	is_source_modified: BOOLEAN
-			-- Should this archetype be recompiled due to changes on the file system?
-		do
-			Result := has_source_file and is_source_file_modified or
-				 has_legacy_flat_file and is_legacy_file_modified
-		end
-
 	is_in_terminal_compilation_state: BOOLEAN
 		do
 			Result := Cs_terminal_states.has (compilation_state)
-		end
-
-	ontology_location_changed: BOOLEAN
-			-- True if changed due to external editing require a move of this archetype in ontology
-			-- cleared by calling `clear_old_ontological_parent_name'
-		do
-			Result := attached old_ontological_parent_name
 		end
 
 	is_valid: BOOLEAN
@@ -750,31 +753,6 @@ feature -- Compilation
 			Compilation_state_set: compilation_state = Cs_ready_to_validate
 		end
 
-	clean_generated
-			-- delete generated file and compiler products; forces next compilation to start from primary expression
-		local
-			flat_path: STRING
-		do
-			status.wipe_out
-			if is_source_generated then
-				if has_source_file then
-					file_repository.delete_file (source_file_path)
-					status.append (get_msg_line ("clean_generated_file", <<source_file_path>>))
-				end
-				signal_from_scratch
-			end
-
-			-- FIXME: The following code is only needed for a period of time during which legacy users
-			-- may have generated .adlf files into their source repositories; in the future, this will
-			-- never happen, so the code below can be removed (e.g. at release following ADL 1.5 release)
-			flat_path := extension_replaced (source_file_path, File_ext_archetype_flat)
-			if file_repository.is_valid_path (flat_path) then
-				file_repository.delete_file (flat_path)
-			end
-		ensure
-			Reset_if_differential_generated: is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
-		end
-
 	signal_exception
 			-- signal exception caught by compiler during call to some routine here;
 			-- set archetype to invalid state.
@@ -807,7 +785,7 @@ feature {NONE} -- Compilation
 			if compilation_state /= Cs_rm_class_unknown then
 				if has_legacy_flat_file and then (is_legacy_file_modified or
 					is_legacy_newer_than_differential or
-					has_source_file and differential_file_timestamp < application_file_time_stamp)
+					has_source_file and source_file_timestamp < application_file_time_stamp)
 				then
 					compilation_state := Cs_ready_to_parse_legacy
 				elseif has_source_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
@@ -1023,10 +1001,15 @@ feature {NONE} -- Compilation
 		require
 			compilation_state = Cs_validated
 		do
-			-- extract reference archetype marker, if it exists
-			if attached differential_archetype.description as desc and then attached desc.other_details as dets and then dets.has ("model_level") then
-				is_reference_archetype := dets.item ("model_level").is_equal ("reference")
+		end
+
+	set_compile_attempt_timestamp
+			-- Set `compile_attempt_timestamp'
+		do
+			if not compile_attempted then
+				current_arch_cat.update_compile_attempt_count
 			end
+			create last_compile_attempt_timestamp.make_now
 		end
 
 feature -- Conversion
@@ -1099,13 +1082,6 @@ feature -- File Operations
 			Result := file_repository.is_valid_path (source_file_path)
 		end
 
-	has_differential_compiled_file: BOOLEAN
-			-- Does the compile generated area have a differential file for this archetype from a previous compile?
-			-- If it is newer than the source file, it can be read instead
-		do
-			Result := file_system.file_exists (differential_compiled_path)
-		end
-
 feature -- File Management (Legacy)
 
 	add_legacy_archetype (a_path: STRING)
@@ -1152,6 +1128,31 @@ feature -- File Management (Legacy)
 			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
 		end
 
+	clean_generated
+			-- delete generated file and compiler products; forces next compilation to start from primary expression
+		local
+			flat_path: STRING
+		do
+			status.wipe_out
+			if is_source_generated then
+				if has_source_file then
+					file_repository.delete_file (source_file_path)
+					status.append (get_msg_line ("clean_generated_file", <<source_file_path>>))
+				end
+				signal_from_scratch
+			end
+
+			-- FIXME: The following code is only needed for a period of time during which legacy users
+			-- may have generated .adlf files into their source repositories; in the future, this will
+			-- never happen, so the code below can be removed (e.g. at release following ADL 1.5 release)
+			flat_path := extension_replaced (source_file_path, File_ext_archetype_flat)
+			if file_repository.is_valid_path (flat_path) then
+				file_repository.delete_file (flat_path)
+			end
+		ensure
+			Reset_if_source_generated: is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
+		end
+
 feature {NONE} -- File Management
 
 	is_legacy: BOOLEAN
@@ -1164,7 +1165,7 @@ feature {NONE} -- File Management
 		require
 			has_source_file
 		do
-			Result := differential_file_timestamp /= differential_text_timestamp
+			Result := source_file_timestamp /= source_text_timestamp
 		end
 
 	is_legacy_file_modified: BOOLEAN
@@ -1179,13 +1180,13 @@ feature {NONE} -- File Management
 		require
 			has_legacy_flat_file
 		do
-			Result := not has_source_file or else legacy_flat_file_timestamp > differential_file_timestamp
+			Result := not has_source_file or else legacy_flat_file_timestamp > source_file_timestamp
 		end
 
-	differential_text_timestamp: INTEGER
+	source_text_timestamp: INTEGER
 			-- Modification timestamp of source file at last read
 
-	differential_file_timestamp: INTEGER
+	source_file_timestamp: INTEGER
 			-- Date and time at which the archetype differential file was last modified.
 		require
 			has_source_file: has_source_file
@@ -1263,10 +1264,10 @@ feature {GUI_SOURCE_CONTROL} -- File Management
 				ftext := source_text
 			end
 			file_repository.save_text_to_file (source_file_path, ftext)
-			differential_text_timestamp := differential_file_timestamp
+			source_text_timestamp := source_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<source_file_path, Syntax_type_adl>>)
 		ensure
-			differential_text_timestamp = differential_file_timestamp
+			source_text_timestamp = source_file_timestamp
 		end
 
 	save_differential_validated
@@ -1281,10 +1282,10 @@ feature {GUI_SOURCE_CONTROL} -- File Management
 				file_repository.save_text_to_file (source_file_path, serialised_diff)
 				source_file_adl_version := da.adl_version
 			end
-			differential_text_timestamp := differential_file_timestamp
+			source_text_timestamp := source_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<source_file_path, Syntax_type_adl>>)
 		ensure
-			differential_text_timestamp = differential_file_timestamp
+			source_text_timestamp = source_file_timestamp
 		end
 
 	source_text_adl_version: STRING
@@ -1317,6 +1318,13 @@ feature {GUI_TEST_TOOL} -- File Operations
 				file_repository.save_text_to_file (a_full_path, lft)
 			end
 			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, file_ext_archetype_adl14>>)
+		end
+
+	has_differential_compiled_file: BOOLEAN
+			-- Does the compile generated area have a differential file for this archetype from a previous compile?
+			-- If it is newer than the source file, it can be read instead
+		do
+			Result := file_system.file_exists (differential_compiled_path)
 		end
 
 	differential_compiled_path: STRING
@@ -1438,15 +1446,6 @@ feature {NONE} -- Implementation
 			else
 				Result := differential_archetype.original_language.code_string
 			end
-		end
-
-	set_compile_attempt_timestamp
-			-- Set `compile_attempt_timestamp'
-		do
-			if not compile_attempted then
-				current_arch_cat.update_compile_attempt_count
-			end
-			create last_compile_attempt_timestamp.make_now
 		end
 
 	flatten (include_rm: BOOLEAN)
@@ -1576,7 +1575,7 @@ invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)
 
 	legacy_text_timestamp_valid: has_legacy_flat_file implies legacy_flat_text_timestamp > 0
-	differential_text_timestamp_valid: has_source_file implies differential_text_timestamp > 0
+	source_text_timestamp_valid: has_source_file implies source_text_timestamp > 0
 
 	differential_archetype_attached_if_valid: is_valid implies attached differential_archetype
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
