@@ -215,10 +215,10 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.source_file_adl_version.is_equal (latest_adl_version) then
-						text.append ("(" + aca.source_file_adl_version + ") ")
+					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
 						text.append (aca.semantic_id)
@@ -229,14 +229,14 @@ feature {NONE} -- Implementation
 
 					-- tooltip
 					tooltip.append (aca.source_file_path)
-					if aca.has_legacy_flat_file and aca.is_source_generated then
+					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
 					-- pixmap
 					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
@@ -305,10 +305,10 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.source_file_adl_version.is_equal (latest_adl_version) then
-						text.append ("(" + aca.source_file_adl_version + ") ")
+					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
 						text.append (aca.semantic_id)
@@ -319,14 +319,14 @@ feature {NONE} -- Implementation
 
 					-- tooltip
 					tooltip.append (aca.source_file_path)
-					if aca.has_legacy_flat_file and aca.is_source_generated then
+					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
 					-- pixmap
 					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 

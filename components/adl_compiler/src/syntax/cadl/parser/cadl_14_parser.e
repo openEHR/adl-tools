@@ -622,6 +622,7 @@ feature {NONE} -- Semantic actions
 	yy_do_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		local
+			yy_retried: BOOLEAN
 			yyval1: detachable ANY
 			yyval14: C_COMPLEX_OBJECT
 			yyval11: SIBLING_ORDER
@@ -678,6 +679,7 @@ feature {NONE} -- Semantic actions
 			yyval40: INTERVAL [ISO8601_DURATION]
 			yyval46: ARRAYED_LIST [INTERVAL [ISO8601_DURATION]]
 		do
+			if not yy_retried then
 				inspect yy_act
 when 1 then
 --|#line 192 "cadl_14_parser.y"
@@ -7343,6 +7345,12 @@ end
 					end
 					abort
 				end
+			end
+		rescue
+			if yy_parsing_status = yyAborted then
+				yy_retried := True
+				retry
+			end
 		end
 
 	yy_do_error_action (yy_act: INTEGER)

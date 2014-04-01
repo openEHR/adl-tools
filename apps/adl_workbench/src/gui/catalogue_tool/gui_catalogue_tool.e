@@ -406,8 +406,8 @@ feature {NONE} -- Implementation
 			legacy_path: detachable STRING
 		do
 			path := aca.source_file_path
-			if aca.has_legacy_flat_file then
-				check attached aca.legacy_flat_path as lfp then
+			if aca.file_mgr.has_legacy_flat_file then
+				check attached aca.file_mgr.legacy_flat_path as lfp then
 					legacy_path := lfp
 				end
 				if aca.has_source_file then

@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 									check attached archetype_id_index.item (arch_id) as att_aca then
 										ara := att_aca
 									end
-									ara.add_legacy_archetype (l_full_path)
+									ara.file_mgr.add_legacy_archetype (l_full_path)
 								end
 							else
 								errors.add_error (ec_general, <<amp.error_strings>>, "")

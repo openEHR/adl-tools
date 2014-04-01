@@ -589,8 +589,8 @@ feature {NONE} -- Tests
 				--	end
 
 					-- save a copy of legacy ADL
-					if target.has_legacy_flat_file then
-						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
+					if target.file_mgr.has_legacy_flat_file then
+						target.file_mgr.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
 					end
 				end
 			else
@@ -605,12 +605,12 @@ feature {NONE} -- Tests
 			if regression_test_on then
 				create val_code.make_empty
 
-				if target.other_details.has (Regression_test_key) then
-					check attached target.other_details.item (Regression_test_key) as rtk then
+				if target.file_mgr.other_details.has (Regression_test_key) then
+					check attached target.file_mgr.other_details.item (Regression_test_key) as rtk then
 						val_code := rtk
 					end
-				elseif target.other_details.has (Regression_test_key.as_lower) then
-					check attached target.other_details.item (Regression_test_key.as_lower) as rtk then
+				elseif target.file_mgr.other_details.has (Regression_test_key.as_lower) then
+					check attached target.file_mgr.other_details.item (Regression_test_key.as_lower) as rtk then
 						val_code := rtk
 					end
 				end
@@ -704,11 +704,11 @@ feature {NONE} -- Tests
 		do
 			Result := Test_failed
 			if target.is_valid then
-				target.save_compiled_differential
+				target.save_differential_compiled
 				orig_fname := file_system.basename (target.source_file_path)
 				odin_fname := extension_replaced (orig_fname, File_ext_odin)
 
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
+				file_system.copy_file (target.file_mgr.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -719,10 +719,12 @@ feature {NONE} -- Tests
 		local
 			fd: PLAIN_TEXT_FILE
 			orig_fname, src_fname: STRING
+			odin_text: STRING
 		do
 			Result := Test_failed
 			if target.is_valid then
-				if target.has_differential_compiled_file then
+				odin_text := target.compiled_differential
+				if not odin_text.is_empty then
 					orig_fname := file_system.basename (target.source_file_path)
 					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
 
@@ -731,7 +733,7 @@ feature {NONE} -- Tests
 
 					-- post-odin round-tripped file
 					create fd.make_create_read_write (file_system.pathname (diff_odin_round_trip_source_new_dir, src_fname))
-					fd.put_string (target.read_compiled_differential)
+					fd.put_string (odin_text)
 					fd.close
 
 					Result := test_passed

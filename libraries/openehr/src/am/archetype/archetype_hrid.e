@@ -229,6 +229,25 @@ feature -- Access
 			Result.append (concept_id_version)
 		end
 
+	display_semantic_id: STRING
+			-- namespace + domain concept part of archetype id + version; for AL 1.4 ids that are specialised, only include
+			-- the last piece of `concept_id' after the last '-'
+		do
+			create Result.make_empty
+			if attached namespace then
+				Result.append (namespace_string)
+				Result.append (namespace_separator)
+			end
+			if is_adl14_id and concept_id.has (section_separator) then
+				Result.append (concept_id.substring (concept_id.last_index_of (section_separator, concept_id.count) + 1, concept_id.count))
+				Result.append_character (Axis_separator)
+				Result.append (Version_delimiter)
+				Result.append (version_id)
+			else
+				Result.append (concept_id_version)
+			end
+		end
+
 	release_version: STRING
 			-- The full numeric version of this archetype consisting of 3 parts, e.g. 1.8.2. The archetype_hrid
 			-- feature includes only the major version.

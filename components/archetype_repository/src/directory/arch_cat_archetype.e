@@ -97,7 +97,6 @@ feature {NONE} -- Initialisation
 
 			-- basic state
 			id := arch_thumbnail.archetype_id
-			source_file_adl_version := arch_thumbnail.adl_version
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
@@ -105,18 +104,10 @@ feature {NONE} -- Initialisation
 			compilation_state := Cs_unread
 
 			-- create file workflow state
-			file_repository := a_repository
-			source_file_path := a_path
 			if arch_thumbnail.is_legacy then
-				legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
-				legacy_flat_text_timestamp := legacy_flat_file_timestamp
-
-				-- if we are being called with legacy archetype, there is no differential file yet, so
-				-- by definition it is generated
-				is_source_generated := True
+				create file_mgr.make_legacy (arch_thumbnail, a_path, a_repository)
 			else
-				source_text_timestamp := source_file_timestamp
-				is_source_generated := arch_thumbnail.is_generated
+				create file_mgr.make (arch_thumbnail, a_path, a_repository)
 			end
 		ensure
 			id_set: id = arch_thumbnail.archetype_id
@@ -132,16 +123,16 @@ feature {NONE} -- Initialisation
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 		do
-			make_new_any (an_id, a_repository, a_directory)
+			make_new_any (an_id)
+			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
 			create a_diff_arch.make_minimal (artefact_type, an_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 
+			save_differential_text
 			initialise
-			save_differential_validated
 		ensure
-			file_repository_set: file_repository = a_repository
 			id_set: id = an_id
 			validated: is_valid
 		end
@@ -154,33 +145,27 @@ feature {NONE} -- Initialisation
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 		do
-			make_new_any (an_id, a_repository, a_directory)
+			make_new_any (an_id)
+			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
 			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 			parent_id := a_parent.archetype_id
 
+			save_differential_text
 			initialise
-			save_differential_validated
 		ensure
 			Is_specialised: is_specialised
 		end
 
-	make_new_any (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_any (an_id: ARCHETYPE_HRID)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		do
+			id := an_id
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
 			create last_compile_attempt_timestamp.make_now
-			file_repository := a_repository
-			id := an_id
-			source_file_adl_version := latest_adl_version
-
-			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
-				source_file_path := pn
-			end
-
 			create artefact_type.make_archetype
 		end
 
@@ -197,6 +182,9 @@ feature -- Identification
 
 	old_id: detachable like id
 			-- previous Archetype identifier, due to change by editing
+		do
+			Result := file_mgr.old_id
+		end
 
 	parent_id: detachable like id
 			-- Archetype identifier of specialisation parent
@@ -239,15 +227,8 @@ feature -- Identification
 	semantic_id: STRING
 			-- namespace + domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
 			-- return only the final section
-		local
-			str: STRING
 		do
-			str := id.semantic_id
-			if is_specialised and is_legacy and str.has ({ARCHETYPE_HRID}.section_separator) then
-				Result := str.substring (str.last_index_of ({ARCHETYPE_HRID}.section_separator, str.count) + 1, str.count)
-			else
-				Result := str
-			end
+			Result := id.display_semantic_id
 		end
 
 	global_artefact_identifier: STRING
@@ -261,6 +242,30 @@ feature -- Identification
 			-- cleared by calling `clear_old_ontological_parent_name'
 		do
 			Result := attached old_ontological_parent_name
+		end
+
+	group_name: STRING
+			-- Name distinguishing the type of item and the group to which its `repository' belongs.
+			-- Useful as a logical key to pixmap icons, etc.
+			-- Typical examples: 'archetype_valid_2'
+		do
+			create Result.make_empty
+			Result.append (artefact_type.type_name)
+
+			inspect compilation_state
+			when Cs_validated then
+				if not errors.has_warnings then
+					Result.append("_valid_" + file_mgr.group_id)
+				else
+					Result.append("_warning_" + file_mgr.group_id)
+				end
+			when Cs_validate_failed, cs_suppliers_invalid then
+				Result.append("_parsed_" + file_mgr.group_id)
+			when Cs_parse_failed, cs_convert_legacy_failed, cs_lineage_invalid then
+				Result.append("_parse_failed_" + file_mgr.group_id)
+			else
+				Result.append("_" + file_mgr.group_id)
+			end
 		end
 
 feature {ARCHETYPE_CATALOGUE} -- Identification
@@ -329,51 +334,19 @@ feature -- Artefacts
 	source_text: STRING
 			-- Read `differential_text_converted' and `text_timestamp' from `source_file_path', returning
 			-- the text of the archetype source file, i.e. the differential form.
-		require
-			source_file_available: has_source_file
-		local
-			arch_text, line_1, adl_var_ver_text: STRING
-			i: INTEGER
-			amp: ARCHETYPE_MINI_PARSER
 		do
-			file_repository.read_text_from_file (source_file_path)
-			check attached file_repository.text as t then
-				arch_text := t
-			end
-
-			-- obtain the first line of text
-			create line_1.make_empty
-			from i := 1 until arch_text.item (i) = '%N' or i > arch_text.count loop
-				line_1.append_character (arch_text.item (i))
-				i := i + 1
-			end
-
-			-- extract the adl_version
-			Adl_version_regex_matcher.match (line_1)
-			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
-			source_text_adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
-			source_text_adl_version.left_adjust
-
-			if source_text_adl_version < Id_conversion_version then
-				adl_14_15_rewriter.execute (arch_text)
-				Result := adl_14_15_rewriter.out_buffer
-				is_text_converted := True
-			else
-				is_text_converted := False
-				Result := arch_text
-			end
-			source_text_timestamp := source_file_timestamp
-
-			-- extract other details
-			create amp
-			other_details := amp.extract_other_details (Result)
+			Result := file_mgr.source_text
 		end
 
-	is_source_modified: BOOLEAN
-			-- Should this archetype be recompiled due to changes on the file system?
+	source_file_path: STRING
+			-- Path of differential source file of archetype.
 		do
-			Result := has_source_file and is_source_file_modified or
-				 has_legacy_flat_file and is_legacy_file_modified
+			Result := file_mgr.source_file_path
+		end
+
+	has_source_file: BOOLEAN
+		do
+			Result := file_mgr.has_source_file
 		end
 
 	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
@@ -396,11 +369,20 @@ feature -- Artefacts
 			end
 		end
 
-	serialised_differential_archetype: detachable STRING
+	differential_serialised: detachable STRING
+			-- serialise differential archetype to its file in its source form, even if not compiling
+			-- this might fail because the serialiser might try to do something that an invalid archetype
+			-- can't support
+		local
+			exception_occurred: BOOLEAN
 		do
-			if attached differential_archetype as da then
-				Result := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+			if not exception_occurred then
+				if attached differential_archetype as da then
+					Result := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+				end
 			end
+		rescue
+			exception_occurred := True
 		end
 
 	flat_archetype: FLAT_ARCHETYPE
@@ -441,18 +423,6 @@ feature -- Artefacts
 			end
 		end
 
-	other_details: HASH_TABLE [STRING, STRING]
-			-- 'other_details' part of archetype description section, containing regression code, MD5 etc
-		attribute
-			create Result.make (0)
-		end
-
-	is_reference_archetype: BOOLEAN
-			-- True if archetype has path description/other_details["model_level"] = "reference"
-		do
-			Result := attached other_details.item ("model_level") as mlmd and then mlmd.is_equal ("reference")
-		end
-
 feature -- Compilation
 
 	compilation_state: INTEGER
@@ -469,30 +439,6 @@ feature -- Compilation
 
 	last_modify_timestamp: DATE_TIME
 			-- Modification timestamp of `differential_archetype' due to editing
-
-	group_name: STRING
-			-- Name distinguishing the type of item and the group to which its `repository' belongs.
-			-- Useful as a logical key to pixmap icons, etc.
-			-- Typical examples: 'archetype_valid_2'
-		do
-			create Result.make_empty
-			Result.append (artefact_type.type_name)
-
-			inspect compilation_state
-			when Cs_validated then
-				if not errors.has_warnings then
-					Result.append("_valid_" + file_repository.group_id.out)
-				else
-					Result.append("_warning_" + file_repository.group_id.out)
-				end
-			when Cs_validate_failed, cs_suppliers_invalid then
-				Result.append("_parsed_" + file_repository.group_id.out)
-			when Cs_parse_failed, cs_convert_legacy_failed, cs_lineage_invalid then
-				Result.append("_parse_failed_" + file_repository.group_id.out)
-			else
-				Result.append("_" + file_repository.group_id.out)
-			end
-		end
 
 	slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slots, keyed by slot path
@@ -586,11 +532,6 @@ feature -- Compilation
 			Result := compilation_state >= Cs_validated_phase_2
 		end
 
-	is_source_generated: BOOLEAN
-			-- True if the source file was generated from the legacy form
-
-feature -- Compilation
-
 	compile
 			-- perform as many steps of the compilation process as possible; may be called repeatedly by ARCHETYPE_COMPILER as it
 			-- does initial parsing here, finds dependencies, compiles them, comes back here, etc etc
@@ -625,8 +566,8 @@ feature -- Compilation
 					when Cs_ready_to_validate then
 						validate
 					when Cs_validated_phase_2 then
-						if adl_15_roundtripping or (has_legacy_flat_file and not has_source_file) then
-							save_differential_validated
+						if adl_15_roundtripping or (file_mgr.has_legacy_flat_file and not has_source_file) then
+							save_differential_text
 						end
 						validate_flat
 					when Cs_validated then
@@ -646,12 +587,12 @@ feature -- Compilation
 		ensure
 			Compilation_timestamped: last_compile_attempt_timestamp /= Time_epoch
 		rescue
-			if has_legacy_flat_file and compilation_state = Cs_ready_to_parse then
+			if file_mgr.has_legacy_flat_file and compilation_state = Cs_ready_to_parse then
 				clean_generated
-				retry
 			else
 				exception_encountered := True
 			end
+			retry
 		end
 
 	check_compilation_currency
@@ -671,7 +612,6 @@ feature -- Compilation
 			if compile_attempted then
 				current_arch_cat.decrement_compile_attempt_count
 			end
-
 			differential_archetype := Void
 			flat_archetype_cache := Void
 			last_compile_attempt_timestamp := Time_epoch
@@ -684,45 +624,12 @@ feature -- Compilation
 	signal_source_edited
 			-- signal source file changed on disk
 		local
-			amp: ARCHETYPE_MINI_PARSER
 			old_ont_parent: STRING
 		do
-			-- TODO: first check that there is not a more recent modification to the in-memory structure.
-
-			-- now deal with changes from file
-			create amp
-			if is_legacy_file_modified and attached legacy_flat_path as lfp then
-				amp.parse (lfp)
-			elseif is_source_file_modified then
-				amp.parse (source_file_path)
-			end
-			if amp.passed then
-				if artefact_type.value /= amp.last_archetype.artefact_type then
-					create artefact_type.make (amp.last_archetype.artefact_type)
-				end
-
-				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_DIRECTORY
-				-- possible changes:
-				-- 	* parent_id changed
-				-- 	* changed from specialised to non-specialised
-				old_ont_parent := ontological_parent_name
-				if not amp.last_archetype.archetype_id.is_equal (id) then
-					old_id := id
-					id := amp.last_archetype.archetype_id
-				end
-				if amp.last_archetype.is_specialised then
-					check attached parent_id as pid then
-						if not amp.last_archetype.parent_archetype_id.is_equal (pid) then
-							old_ontological_parent_name := old_ont_parent
-							parent_id := amp.last_archetype.parent_archetype_id
-						end
-					end
-				end
-				signal_from_scratch
-			else
-				add_error (ec_general, <<amp.error_strings>>)
-				compilation_state := Cs_invalid
-			end
+			old_ont_parent := ontological_parent_name
+			file_mgr.refresh_from_source
+			old_ontological_parent_name := old_ont_parent
+			signal_from_scratch
 		ensure
 			Compiler_state_set: (<<Cs_unread, Cs_invalid>>).has (compilation_state)
 		end
@@ -782,21 +689,16 @@ feature {NONE} -- Compilation
 			compilation_state = Cs_unread
 		do
 			reset
-			if compilation_state /= Cs_rm_class_unknown then
-				if has_legacy_flat_file and then (is_legacy_file_modified or
-					is_legacy_newer_than_differential or
-					has_source_file and source_file_timestamp < application_file_time_stamp)
-				then
-					compilation_state := Cs_ready_to_parse_legacy
-				elseif has_source_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
-					if is_specialised then
-						compilation_state := Cs_lineage_known
-					else
-						compilation_state := Cs_ready_to_parse
-					end
-				elseif attached differential_archetype then -- must have been newly created
-					compilation_state := Cs_validated
+			if file_mgr.is_legacy_out_of_date then
+				compilation_state := Cs_ready_to_parse_legacy
+			elseif has_source_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
+				if is_specialised then
+					compilation_state := Cs_lineage_known
+				else
+					compilation_state := Cs_ready_to_parse
 				end
+			elseif attached differential_archetype then -- must have been newly created
+				compilation_state := Cs_validated
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has (compilation_state)
@@ -808,7 +710,7 @@ feature {NONE} -- Compilation
 			-- This is safe, since this is an ADL 1.5 only construct
 		require
 			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
-			Legacy_file_available: has_legacy_flat_file
+			Legacy_file_available: file_mgr.has_legacy_flat_file
 		local
 			legacy_flat_archetype: detachable FLAT_ARCHETYPE
 			archetype_comparator: ARCHETYPE_COMPARATOR
@@ -816,7 +718,7 @@ feature {NONE} -- Compilation
 			flat_archetype_cache := Void
 
 			-- perform the parse; this can fail, i.e. no result generated
-			check attached legacy_flat_text as lft then
+			check attached file_mgr.legacy_flat_text as lft then
 				legacy_flat_archetype := adl_14_engine.parse (lft, Current)
 			end
 		 	compilation_state := Cs_parsed
@@ -1032,7 +934,22 @@ feature -- Conversion
 			end
 		end
 
-feature -- File Operations
+feature -- File Access
+
+	file_mgr: ACA_WORKFLOW_MGR_FILE
+
+	save_differential_text
+			-- Save converted differential archetype to its file in its source form, even if not compiling
+		local
+			ftext: STRING
+		do
+			if attached differential_serialised as txt then
+				ftext := txt
+			else
+				ftext := source_text
+			end
+			file_mgr.save_source_text (ftext)
+		end
 
 	save_differential_as (a_full_path, a_format: STRING)
 			-- Save current source archetype to `a_full_path' in `a_format'.
@@ -1042,11 +959,11 @@ feature -- File Operations
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
-				file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (da, a_format, current_archetype_language))
+				file_mgr.save_as (a_full_path, adl_15_engine.serialise (da, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (False, a_format))
 			end
-			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, a_format>>)
+			status := get_msg_line (ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
 
 	save_flat_as (a_full_path, a_format: STRING)
@@ -1057,320 +974,44 @@ feature -- File Operations
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
-				file_repository.save_text_to_file (a_full_path, flat_serialised (False))
+				file_mgr.save_as (a_full_path, flat_serialised (False))
 			elseif has_archetype_native_serialiser_format (a_format) then
-				file_repository.save_text_to_file (a_full_path, adl_15_engine.serialise (flat_archetype, a_format, current_archetype_language))
+				file_mgr.save_as (a_full_path, adl_15_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_repository.save_text_to_file (a_full_path, serialise_object (True, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (True, a_format))
 			end
-			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, a_format>>)
+			status := get_msg_line (ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
 
-	source_file_adl_version: STRING
-			-- ADL version of the most recently read differential text file
-			-- if this version = 1.5.1, it means the file is already 1.5.1
-		attribute
-			create Result.make_empty
-		end
-
-	source_file_path: STRING
-			-- Path of differential source file of archetype.
-
-	has_source_file: BOOLEAN
-			-- Does the repository have a source-form file for this archetype?
-		do
-			Result := file_repository.is_valid_path (source_file_path)
-		end
-
-feature -- File Management (Legacy)
-
-	add_legacy_archetype (a_path: STRING)
-			-- add legacy details to a descriptor already created for a differential archteype for which
-			-- a legacy archetype has been found
-		require
-			Path_valid: not a_path.is_empty
-		do
-			legacy_flat_path := a_path
-			legacy_flat_text_timestamp := legacy_flat_file_timestamp
-		ensure
-			is_legacy: is_legacy
-		end
-
-	legacy_flat_path: detachable STRING
-			-- Path of legacy flat file of archetype.
-
-	legacy_flat_text: detachable STRING
-			-- Read `legacy_flat_text_converted' and `text_timestamp' from `legacy_flat_path'.
-			-- The text of the legacy archetype, if it exists
-		require
-			flat_file_available: has_legacy_flat_file
-		local
-			arch_text: STRING
-			amp: ARCHETYPE_MINI_PARSER
-		do
-			check attached legacy_flat_path as lfp then
-				file_repository.read_text_from_file (lfp)
-			end
-			check attached file_repository.text as t then
-				arch_text := t
-			end
-			adl_14_15_rewriter.execute (arch_text)
-			Result := adl_14_15_rewriter.out_buffer
-			legacy_flat_text_timestamp := legacy_flat_file_timestamp
-
-			create amp
-			other_details := amp.extract_other_details (Result)
-		end
-
-	has_legacy_flat_file: BOOLEAN
-			-- Does the repository have a legacy flat-form file for this archetype?
-		do
-			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
-		end
+feature {MAIN_WINDOW} -- File Access
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
 		local
 			flat_path: STRING
 		do
-			status.wipe_out
-			if is_source_generated then
-				if has_source_file then
-					file_repository.delete_file (source_file_path)
-					status.append (get_msg_line ("clean_generated_file", <<source_file_path>>))
-				end
-				signal_from_scratch
-			end
-
-			-- FIXME: The following code is only needed for a period of time during which legacy users
-			-- may have generated .adlf files into their source repositories; in the future, this will
-			-- never happen, so the code below can be removed (e.g. at release following ADL 1.5 release)
-			flat_path := extension_replaced (source_file_path, File_ext_archetype_flat)
-			if file_repository.is_valid_path (flat_path) then
-				file_repository.delete_file (flat_path)
-			end
+			file_mgr.clean_generated
+			signal_from_scratch
 		ensure
-			Reset_if_source_generated: is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
+			Reset_if_source_generated: file_mgr.is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
 
-feature {NONE} -- File Management
+feature {GUI_TEST_TOOL} -- File Access
 
-	is_legacy: BOOLEAN
-		do
-			Result := attached legacy_flat_path
-		end
-
-	is_source_file_modified: BOOLEAN
-			-- Is differential_archetype out of date with respect to changes on the file system?
-		require
-			has_source_file
-		do
-			Result := source_file_timestamp /= source_text_timestamp
-		end
-
-	is_legacy_file_modified: BOOLEAN
-			-- Is flat_archetype out of date with respect to changes on the file system?
-		require
-			has_legacy_flat_file
-		do
-			Result := legacy_flat_file_timestamp /= legacy_flat_text_timestamp
-		end
-
-	is_legacy_newer_than_differential: BOOLEAN
-		require
-			has_legacy_flat_file
-		do
-			Result := not has_source_file or else legacy_flat_file_timestamp > source_file_timestamp
-		end
-
-	source_text_timestamp: INTEGER
-			-- Modification timestamp of source file at last read
-
-	source_file_timestamp: INTEGER
-			-- Date and time at which the archetype differential file was last modified.
-		require
-			has_source_file: has_source_file
-		do
-			Result := file_system.file_time_stamp (source_file_path)
-		ensure
-			Result > 0
-		end
-
-	flat_compiled_path: STRING
-			-- path to persisted compiled flat form of archetype
-		do
-			 Result := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
-		end
-
-	legacy_flat_text_timestamp: INTEGER
-			-- File modification date/time when legacy flat file was last read
-
-	legacy_flat_file_timestamp: INTEGER
-			-- Date and time at which the legacy archetype file was last modified, as reported by file-system
-		require
-			Has_legacy_file: has_legacy_flat_file
-		do
-			check attached legacy_flat_path as lfp then
-				Result := file_system.file_time_stamp (lfp)
-			end
-		ensure
-			Result > 0
-		end
-
-	file_repository: ARCHETYPE_REPOSITORY_I
-			-- The repository on which this item is found.
-
-feature {GUI_SOURCE_CONTROL} -- File Management
-
-	is_text_converted: BOOLEAN
-			-- was last text converted from original form?
-
-	legacy_flat_text_original: detachable STRING
-			-- Original unprocessed text of the legacy archetype, if it exists
-		require
-			flat_file_available: has_legacy_flat_file
-		do
-			check attached legacy_flat_path as lfp then
-				file_repository.read_text_from_file (lfp)
-			end
-			Result := file_repository.text
-		end
-
-	differential_serialised: detachable STRING
-			-- serialise differential archetype to its file in its source form, even if not compiling
-			-- this might fail because the serialiser might try to do something that an invalid archetype
-			-- can't support
-		local
-			exception_occurred: BOOLEAN
-		do
-			if not exception_occurred then
-				if attached differential_archetype as da then
-					Result := adl_15_engine.serialise (da, Syntax_type_adl, da.original_language.code_string)
-				end
-			end
-		rescue
-			exception_occurred := True
-		end
-
-	save_differential_text
-			-- Save converted differential archetype to its file in its source form, even if not compiling
-		local
-			ftext: STRING
-		do
-			if attached differential_serialised as txt then
-				ftext := txt
-				source_file_adl_version := differential_archetype.adl_version
-			else
-				ftext := source_text
-			end
-			file_repository.save_text_to_file (source_file_path, ftext)
-			source_text_timestamp := source_file_timestamp
-			status := get_msg_line ("file_saved_as_in_format", <<source_file_path, Syntax_type_adl>>)
-		ensure
-			source_text_timestamp = source_file_timestamp
-		end
-
-	save_differential_validated
-			-- Save archetype to its file in its source form
-		require
-			is_valid_differential
-		local
-			serialised_diff: STRING
-		do
-			check attached differential_archetype as da then
-				serialised_diff := adl_15_engine.serialise (da, Syntax_type_adl, current_archetype_language)
-				file_repository.save_text_to_file (source_file_path, serialised_diff)
-				source_file_adl_version := da.adl_version
-			end
-			source_text_timestamp := source_file_timestamp
-			status := get_msg_line ("file_saved_as_in_format", <<source_file_path, Syntax_type_adl>>)
-		ensure
-			source_text_timestamp = source_file_timestamp
-		end
-
-	source_text_adl_version: STRING
-			-- ADL version of the most recently converted text file (legacy or differential)
-		attribute
-			create Result.make_empty
-		end
-
-	source_text_original: STRING
-			-- original form of differential file text, with no conversions
-		require
-			source_file_available: has_source_file
-		do
-			file_repository.read_text_from_file (source_file_path)
-			check attached file_repository.text as t then
-				Result := t
-			end
-		end
-
-feature {GUI_TEST_TOOL} -- File Operations
-
-	save_legacy_to (a_full_path: STRING)
-			-- Save current legacy archetype, if it exists to `a_full_path' in `serialise_format'.
-		require
-			Archetype_valid: is_valid
-			Archetype_has_legacy: has_legacy_flat_file
-			path_valid: not a_full_path.is_empty
-		do
-			check attached legacy_flat_text as lft then
-				file_repository.save_text_to_file (a_full_path, lft)
-			end
-			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, file_ext_archetype_adl14>>)
-		end
-
-	has_differential_compiled_file: BOOLEAN
-			-- Does the compile generated area have a differential file for this archetype from a previous compile?
-			-- If it is newer than the source file, it can be read instead
-		do
-			Result := file_system.file_exists (differential_compiled_path)
-		end
-
-	differential_compiled_path: STRING
-			-- path to persisted compiled source form of archetype
-		do
-			Result := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
-		end
-
-	save_compiled_differential
+	save_differential_compiled
 			-- save validated differential archetype in fast-retrieve form (ODIN)
 		require
 			Archetype_valid: is_valid
-		local
-			fd: PLAIN_TEXT_FILE
 		do
-			create fd.make_create_read_write (differential_compiled_path)
-			fd.put_string (serialise_object (False, Syntax_type_odin))
-			fd.close
+			file_mgr.save_differential_compiled (serialise_object (False, Syntax_type_odin))
 		end
 
-	save_compiled_flat
-		require
-			Archetype_valid: is_valid
+	compiled_differential: STRING
 		local
 			fd: PLAIN_TEXT_FILE
-		do
-			create fd.make_create_read_write (flat_compiled_path)
-			fd.put_string (serialise_object (True, Syntax_type_odin))
-			fd.close
-		end
-
-	read_compiled_differential: STRING
-		require
-			has_differential_compiled_file
-		local
-			fd: PLAIN_TEXT_FILE
-			odin_text: STRING
 		do
 			create Result.make_empty
-			if file_system.file_exists (differential_compiled_path) then
-				-- read the serialised P_ARCHETYPE (ODIN format) file
-				create fd.make_open_read (differential_compiled_path)
-				fd.read_stream (fd.count)
-				odin_text := fd.last_string
-				fd.close
-
+			if attached file_mgr.compiled_differential as odin_text then
 				-- parse the ODIN to DT then materialise to AOM
 				archetype_serialise_engine.set_source (odin_text, 1)
 				archetype_serialise_engine.parse
@@ -1463,11 +1104,6 @@ feature {NONE} -- Implementation
 	flat_archetype_cache: detachable FLAT_ARCHETYPE
 			-- archetype generated by flattening process
 
-	archetype_serialise_engine: ODIN_ENGINE
-		once
-			create Result.make
-		end
-
 	last_include_rm: BOOLEAN
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
@@ -1503,6 +1139,11 @@ feature {NONE} -- Implementation
 			an_arch.description.set_lifecycle_state (Resource_lifecycle_states.first)
 			an_arch.description.add_original_language_details
 			an_arch.description.detail_for_original_language.set_copyright (author_copyright)
+		end
+
+	archetype_serialise_engine: ODIN_ENGINE
+		once
+			create Result.make
 		end
 
 	compute_slot_id_index
@@ -1573,9 +1214,6 @@ feature {NONE} -- Implementation
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)
-
-	legacy_text_timestamp_valid: has_legacy_flat_file implies legacy_flat_text_timestamp > 0
-	source_text_timestamp_valid: has_source_file implies source_text_timestamp > 0
 
 	differential_archetype_attached_if_valid: is_valid implies attached differential_archetype
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void

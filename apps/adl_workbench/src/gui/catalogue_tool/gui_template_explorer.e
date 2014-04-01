@@ -180,7 +180,7 @@ feature {NONE} -- Implementation
 			-- tooltip		
 			create tooltip.make_empty
 			tooltip.append (aca.source_file_path)
-			if aca.has_legacy_flat_file and aca.is_source_generated then
+			if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
 				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 			end
 

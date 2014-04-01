@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupt_requested then
 				if ara.compile_attempted then
-					if ara.is_source_modified then
+					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
 						if ara.ontology_location_changed then
 							current_arch_cat.update_archetype_id(ara)
