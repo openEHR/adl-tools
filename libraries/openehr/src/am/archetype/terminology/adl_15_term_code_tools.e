@@ -40,7 +40,7 @@ feature -- Definitions
 	Value_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
-	Constraint_code_leader: STRING = "ac"
+	Value_set_code_leader: STRING = "ac"
 
 	Code_regex_pattern: STRING = "(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*"
 			-- a regex to match any code of any depth
@@ -70,12 +70,12 @@ feature -- Definitions
 			Result.append_character ('$')
 		end
 
-	Constraint_code_regex_pattern: STRING
+	Value_set_code_regex_pattern: STRING
 			-- a regex to match any constraint code of any depth
 		once
 			create Result.make_empty
 			Result.append_character ('^')
-			Result.append (Constraint_code_leader)
+			Result.append (Value_set_code_leader)
 			Result.append (Code_regex_pattern)
 			Result.append_character ('$')
 		end
@@ -90,7 +90,7 @@ feature -- Definitions
 			Result.append_character ('|')
 			Result.append (Value_code_leader)
 			Result.append_character ('|')
-			Result.append (Constraint_code_leader)
+			Result.append (Value_set_code_leader)
 			Result.append_character (')')
 			Result.append (Code_regex_pattern)
 			Result.append_character ('$')
@@ -299,7 +299,7 @@ feature -- Comparison
 	is_adl_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' any kind of ADL archetype local code?
 		do
-			Result := is_id_code (a_code) or else is_value_code (a_code) or else is_constraint_code (a_code)
+			Result := is_id_code (a_code) or else is_value_code (a_code) or else is_value_set_code (a_code)
 		end
 
 	is_id_code (a_code: STRING): BOOLEAN
@@ -314,10 +314,10 @@ feature -- Comparison
 			Result := a_code.starts_with (Value_code_leader)
 		end
 
-	is_constraint_code (a_code: STRING): BOOLEAN
+	is_value_set_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' an "ac" code?
 		do
-			Result := a_code.starts_with (Constraint_code_leader)
+			Result := a_code.starts_with (Value_set_code_leader)
 		end
 
 	is_valid_root_id_code (a_code: STRING): BOOLEAN
@@ -339,10 +339,10 @@ feature -- Comparison
 			Result := Value_code_regex_matcher.recognizes (a_code)
 		end
 
-	is_valid_constraint_code (a_code: STRING): BOOLEAN
+	is_valid_value_set_code (a_code: STRING): BOOLEAN
 			-- Is `a_code' a valid "ac" code?
 		do
-			Result := Constraint_code_regex_matcher.recognizes (a_code)
+			Result := Value_set_code_regex_matcher.recognizes (a_code)
 		end
 
 	is_valid_code (a_code: STRING): BOOLEAN
@@ -457,11 +457,11 @@ feature -- Factory
 			Result := new_added_code_at_level (Value_code_leader, at_level, a_highest_code)
 		end
 
-	new_added_constraint_code_at_level (at_level: INTEGER; a_highest_code: INTEGER): STRING
+	new_added_value_set_code_at_level (at_level: INTEGER; a_highest_code: INTEGER): STRING
 			-- generate a new code of the form 'idN'. a_highest_code contains highest id code already in use in the
 			-- calling context; the returned code will be unique with respect to this set.
 		do
-			Result := new_added_code_at_level (Constraint_code_leader, at_level, a_highest_code)
+			Result := new_added_code_at_level (Value_set_code_leader, at_level, a_highest_code)
 		end
 
 	new_refined_code_at_level (a_parent_code: STRING; at_level: INTEGER; a_highest_code: INTEGER): STRING
@@ -641,11 +641,11 @@ feature {NONE} -- Implementation
 			Result.compile (Value_code_regex_pattern)
 		end
 
-	Constraint_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	Value_set_code_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- match any term code
 		once
 			create Result.make
-			Result.compile (Constraint_code_regex_pattern)
+			Result.compile (Value_set_code_regex_pattern)
 		end
 
 	Qualified_code_string_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
@@ -662,8 +662,8 @@ feature {NONE} -- Implementation
 				Result := Id_code_leader.count
 			elseif is_value_code (a_code) then
 				Result := Value_code_leader.count
-			elseif is_constraint_code (a_code) then
-				Result := Constraint_code_leader.count
+			elseif is_value_set_code (a_code) then
+				Result := Value_set_code_leader.count
 			end
 		end
 

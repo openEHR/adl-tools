@@ -77,7 +77,7 @@ feature -- Modification
 					errors.add_error (ec_parse_archetype_e4, <<full_path, arch.archetype_id.as_string>>, "")
 				elseif not archetype_id_index.has (arch.archetype_id.as_string) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
-						ara := aof.create_arch_cat_archetype_make_legacy (full_path, Current, arch)
+						ara := aof.create_arch_cat_archetype_make (extension_replaced (full_path, File_ext_archetype_source), Current, arch)
 					else
 						ara := aof.create_arch_cat_archetype_make (full_path, Current, arch)
 					end

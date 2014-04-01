@@ -432,7 +432,7 @@ feature {NONE} -- Implementation
 
 			-- hold the comment over in `last_coded_constraint_comment'
 			create last_coded_constraint_comment.make(0)
-			if terminology.has_constraint_code (a_node.constraint) then
+			if terminology.has_value_set_code (a_node.constraint) then
 				last_coded_constraint_comment.append (format_item (FMT_INDENT))
 				last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 					safe_comment (terminology.term_definition (language, a_node.constraint).text), STYLE_COMMENT))

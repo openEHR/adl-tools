@@ -5,7 +5,7 @@ note
 				 simple OBJECTs, real OBJECT 'use' references, and OBJECTs
 				 which represent constraints on other archetypes.
 				 ]"
-	keywords:    "test, ADL"
+	keywords:    "constraint, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"

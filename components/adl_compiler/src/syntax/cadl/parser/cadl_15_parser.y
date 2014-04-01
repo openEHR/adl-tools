@@ -274,7 +274,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 --
 	| type_identifier
 		{
-			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if not target_descriptor.file_mgr.adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create $$.make ($1, new_fake_node_id)
 			else
 				if not object_nodes.is_empty then
@@ -408,7 +408,7 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 ---
 	| SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
 		{
-			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if not target_descriptor.file_mgr.adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create $$.make ($2, new_fake_node_id, $4)
 				if attached $3 as att_occ then
 					$$.set_occurrences (att_occ)
@@ -490,7 +490,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 --
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			if not target_descriptor.differential_text_file_adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if not target_descriptor.file_mgr.adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
 				create $$.make ($2, new_fake_node_id)
 			else
 				abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)
@@ -1577,7 +1577,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 				if attached $1.assumed_code as att_ac then
 					$$.set_assumed_value (att_ac)
 				end
-				compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, $1.codes), $$.constraint)
+				compiler_billboard.value_sets.put (create {VALUE_SET}.make ($$.constraint, $1.codes), $$.constraint)
 			end
 		}
 	| V_EXTERNAL_VALUE_SET_DEF
@@ -1637,13 +1637,13 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 							at_codes.extend (flat_anc.terminology.term_binding_key_for_external_code ($1.terminology_id, ext_code_csr.item))
 						end
 					end
-					compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, at_codes), $$.constraint)
+					compiler_billboard.value_sets.put (create {VALUE_SET}.make ($$.constraint, at_codes), $$.constraint)
 				else
 					if attached $1.last_converted_local as att_tcps then
 						if attached att_tcps.assumed_code as att_ac then
 							$$.set_assumed_value (att_ac)
 						end
-						compiler_billboard.value_sets.put (create {VALUE_SET_RELATION}.make ($$.constraint, att_tcps.codes), $$.constraint)
+						compiler_billboard.value_sets.put (create {VALUE_SET}.make ($$.constraint, att_tcps.codes), $$.constraint)
 					end
 
 					-- add term bindings

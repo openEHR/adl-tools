@@ -566,17 +566,17 @@ feature {NONE} -- Tests
 				end
 
 				-- save source as read in (not serialised) for in-memory compare test
-				original_differential_text := target.differential_text_converted
+				original_differential_text := target.source_text
 
 				-- save source as serialised to $repository/source/new area
 				if diff_dirs_available then
-					orig_fname := file_system.basename (target.differential_path)
+					orig_fname := file_system.basename (target.source_file_path)
 					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
 					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
 					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
 
 					-- save source as read in (not serialised) to $repository/source/orig area
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, src_fname))
+					file_system.copy_file (target.source_file_path, file_system.pathname (diff_dir_source_orig, src_fname))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
 					serialised_source_path := file_system.pathname (diff_dir_source_new, src_fname)
@@ -588,9 +588,9 @@ feature {NONE} -- Tests
 						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, diff_fname))
 				--	end
 
-					-- save legacy ADL
-					if target.has_legacy_flat_file then
-						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
+					-- save a copy of legacy ADL
+					if target.file_mgr.has_legacy_flat_file then
+						target.file_mgr.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
 					end
 				end
 			else
@@ -601,29 +601,16 @@ feature {NONE} -- Tests
 	regression_test: INTEGER
 			-- if archetype description.other_details contains an item with key "validity", see if the value
 			-- matches the parse result
-		local
-			other_details: HASH_TABLE [STRING, STRING]
-			amp: ARCHETYPE_MINI_PARSER
 		do
 			if regression_test_on then
 				create val_code.make_empty
 
-				-- extract regression test meta-data. We do this on the raw file, since we need the meta-data
-				-- even if the archetype doesn't compile. Probably this should become part of the first pass load
-				create amp
-				if target.has_legacy_flat_file then
-					check attached target.legacy_flat_text_converted as lft then
-						other_details := amp.extract_other_details (lft)
-					end
-				else
-					other_details := amp.extract_other_details (target.differential_text_converted)
-				end
-				if other_details.has (Regression_test_key) then
-					check attached other_details.item (Regression_test_key) as rtk then
+				if target.file_mgr.other_details.has (Regression_test_key) then
+					check attached target.file_mgr.other_details.item (Regression_test_key) as rtk then
 						val_code := rtk
 					end
-				elseif other_details.has (Regression_test_key.as_lower) then
-					check attached other_details.item (Regression_test_key.as_lower) as rtk then
+				elseif target.file_mgr.other_details.has (Regression_test_key.as_lower) then
+					check attached target.file_mgr.other_details.item (Regression_test_key.as_lower) as rtk then
 						val_code := rtk
 					end
 				end
@@ -667,7 +654,7 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
-					orig_fname := file_system.basename (target.differential_path)
+					orig_fname := file_system.basename (target.source_file_path)
 					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
 					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
 
@@ -696,14 +683,14 @@ feature {NONE} -- Tests
 		do
 			Result := Test_failed
 			if target.is_valid then
-				if original_differential_text.count = target.differential_text_converted.count then
-					if original_differential_text.same_string (target.differential_text_converted) then
+				if original_differential_text.count = target.source_text.count then
+					if original_differential_text.same_string (target.source_text) then
 						Result := Test_passed
 					else
 						test_status.append (get_msg_line ("Test_arch_compare_i1", <<>>))
 					end
 				else
-					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text_converted.count.out>>))
+					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.source_text.count.out>>))
 				end
 			else
 				Result := test_not_applicable
@@ -717,11 +704,11 @@ feature {NONE} -- Tests
 		do
 			Result := Test_failed
 			if target.is_valid then
-				target.save_compiled_differential
-				orig_fname := file_system.basename (target.differential_path)
+				target.save_differential_compiled
+				orig_fname := file_system.basename (target.source_file_path)
 				odin_fname := extension_replaced (orig_fname, File_ext_odin)
 
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
+				file_system.copy_file (target.file_mgr.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -732,19 +719,21 @@ feature {NONE} -- Tests
 		local
 			fd: PLAIN_TEXT_FILE
 			orig_fname, src_fname: STRING
+			odin_text: STRING
 		do
 			Result := Test_failed
 			if target.is_valid then
-				if target.has_differential_compiled_file then
-					orig_fname := file_system.basename (target.differential_path)
+				odin_text := target.compiled_differential
+				if not odin_text.is_empty then
+					orig_fname := file_system.basename (target.source_file_path)
 					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
 
 					-- original .adls file, for diffing
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, src_fname))
+					file_system.copy_file (target.source_file_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, src_fname))
 
 					-- post-odin round-tripped file
 					create fd.make_create_read_write (file_system.pathname (diff_odin_round_trip_source_new_dir, src_fname))
-					fd.put_string (target.read_compiled_differential)
+					fd.put_string (odin_text)
 					fd.close
 
 					Result := test_passed
@@ -812,7 +801,7 @@ feature {NONE} -- Implementation
 				end
 
 				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-					evx_grid.update_last_row_label_col (1, Void, ara.full_path, Void, Void)
+					evx_grid.update_last_row_label_col (1, Void, ara.source_file_path, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
 						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void)

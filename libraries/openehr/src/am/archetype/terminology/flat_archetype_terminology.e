@@ -77,14 +77,17 @@ feature {ARCHETYPE_FLATTENER} -- Modification
 
 feature {FLAT_ARCHETYPE} -- Modification
 
-	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
+	reduce_languages_to (diff_child: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY)
 			-- remove any languages not in `lang_set'
 		do
 			across languages_available as langs_csr loop
-				if not a_langs.has (langs_csr.item) then
+				if not diff_child.languages_available.has (langs_csr.item) then
 					term_definitions.remove (langs_csr.item)
 				end
 			end
+			original_language := diff_child.original_language.twin
+		ensure
+			original_language.is_equal (diff_child.original_language)
 		end
 
 feature -- Factory
@@ -116,7 +119,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Implementation
 					rm_term_codes.extend (term_codes_csr.item)
 				end
 			end
-			across constraint_codes as constraint_codes_csr loop
+			across value_set_codes as constraint_codes_csr loop
 				if specialisation_depth_from_code (constraint_codes_csr.item) /= specialisation_depth then
 					rm_constraint_codes.extend (constraint_codes_csr.item)
 				end
@@ -183,7 +186,7 @@ feature {NONE} -- Implementation
 			put_term_binding (a_binding, a_terminology_id, a_child_code)
 		end
 
-	merge_specialised_value_set (a_value_set: VALUE_SET_RELATION)
+	merge_specialised_value_set (a_value_set: VALUE_SET)
 			-- merge `a_value_set' into this terminology, if necessary removing any existing
 			-- value set bound to a parent code of ac-code a_value_set.id
 		local

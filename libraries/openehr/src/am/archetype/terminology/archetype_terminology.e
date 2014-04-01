@@ -18,7 +18,7 @@ inherit
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_root_id_code, is_valid_id_code, is_valid_value_code, is_valid_constraint_code,
+			{ANY} is_valid_root_id_code, is_valid_id_code, is_valid_value_code, is_valid_value_set_code,
 				is_valid_code, specialisation_depth_from_code
 		end
 
@@ -90,7 +90,7 @@ feature -- Access (Stored)
             create Result.make (0)
         end
 
-    value_sets: HASH_TABLE [VALUE_SET_RELATION, STRING]
+    value_sets: HASH_TABLE [VALUE_SET, STRING]
     		-- table of value sets - keyed by ac-code
         attribute
             create Result.make (0)
@@ -156,13 +156,13 @@ feature -- Access (computed)
             end
         end
 
-	constraint_codes: TWO_WAY_SORTED_SET [STRING]
+	value_set_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of constraint codes
         do
             create Result.make
             Result.compare_objects
             across index_term_definitions as defs loop
-            	if is_constraint_code (defs.key) then
+            	if is_value_set_code (defs.key) then
             		Result.extend (defs.key)
             	end
             end
@@ -319,10 +319,10 @@ feature -- Status Report
 			Result := is_id_code (a_code) and has_code (a_code)
 		end
 
-	has_constraint_code (a_code: STRING): BOOLEAN
+	has_value_set_code (a_code: STRING): BOOLEAN
 			-- is `a_code' known in the terms list of this terminology
 		do
-			Result := is_constraint_code (a_code) and has_code (a_code)
+			Result := is_value_set_code (a_code) and has_code (a_code)
 		end
 
 	has_value_code (a_code: STRING): BOOLEAN
@@ -467,7 +467,7 @@ feature -- Modification
 		local
 			new_term: ARCHETYPE_TERM
 		do
-			create new_term.make_all (new_added_constraint_code_at_level (specialisation_depth, highest_constraint_code), a_text, a_description)
+			create new_term.make_all (new_added_value_set_code_at_level (specialisation_depth, highest_value_set_code), a_text, a_description)
 			put_new_definition (original_language, new_term)
 			last_new_definition_code := new_term.code
 		end
@@ -555,11 +555,11 @@ feature -- Modification
 			has_code (a_new_code)
 		end
 
-	put_value_set (a_value_set: VALUE_SET_RELATION)
+	put_value_set (a_value_set: VALUE_SET)
 			-- add `a_value_set' to value sets of this terminology
 		require
 			Not_already_prsent: not has_value_set (a_value_set.id)
-			Valid_id: has_constraint_code (a_value_set.id)
+			Valid_id: has_value_set_code (a_value_set.id)
 		do
 			value_sets.put (a_value_set, a_value_set.id)
 		end
@@ -710,7 +710,7 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			-- add the terms in `a_terms' in the languages which are the keys of `a_terms', under a new
 			-- constraint code at this level
 		do
-			last_new_definition_code := new_added_constraint_code_at_level (specialisation_depth, highest_constraint_code)
+			last_new_definition_code := new_added_value_set_code_at_level (specialisation_depth, highest_value_set_code)
 			across a_terms as terms_csr loop
 				terms_csr.item.set_code (last_new_definition_code)
 			end
@@ -758,7 +758,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 	highest_value_code: INTEGER
 			-- highest added term code at the level of this terminology; 0 if none so far
 
-	highest_constraint_code: INTEGER
+	highest_value_set_code: INTEGER
 			-- highest added constraint code at the level of this terminology; 0 if none so far
 
 	update_highest_codes (a_code: STRING)
@@ -781,8 +781,8 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 				idx := code_index_at_level (a_code, specialisation_depth)
 				if is_value_code (a_code) then
 					highest_value_code := highest_value_code.max (idx)
-				elseif is_constraint_code (a_code) then
-					highest_constraint_code := highest_constraint_code.max (idx)
+				elseif is_value_set_code (a_code) then
+					highest_value_set_code := highest_value_set_code.max (idx)
 				end
 			end
 		end
@@ -962,7 +962,7 @@ invariant
 	Root_code_valid: is_valid_root_id_code (concept_code)
 	Concept_code_defined: id_codes.has (concept_code)
 	Highest_term_code_index_valid: highest_value_code >= 0
-	Highest_constraint_code_valid: highest_constraint_code >= 0
+	Highest_value_set_code_valid: highest_value_set_code >= 0
 
 end
 

@@ -345,7 +345,7 @@ feature {NONE} -- Implementation
 					format_list := archetype_all_serialiser_formats
 					dialog_title := get_text (ec_export_archetype_title)
 				end
-				name := extension_replaced (aca.full_path, "")
+				name := extension_replaced (aca.source_file_path, "")
 
 				create save_dialog
 				save_dialog.set_title (dialog_title)
@@ -405,12 +405,12 @@ feature {NONE} -- Implementation
 			path: STRING
 			legacy_path: detachable STRING
 		do
-			path := aca.differential_path
-			if aca.has_legacy_flat_file then
-				check attached aca.legacy_flat_path as lfp then
+			path := aca.source_file_path
+			if aca.file_mgr.has_legacy_flat_file then
+				check attached aca.file_mgr.legacy_flat_path as lfp then
 					legacy_path := lfp
 				end
-				if aca.has_differential_file then
+				if aca.has_source_file then
 					create question_dialog.make_with_text (get_msg_line (ec_edit_which_file_question,
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
 					question_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.qualified_name>>))

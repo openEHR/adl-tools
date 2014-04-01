@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type))) then
+								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value))) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
 					gui_semantic_grid.add_row (aci)
@@ -196,7 +196,7 @@ feature {NONE} -- Implementation
    	ev_semantic_grid_populate_exit (aci: ARCH_CAT_ITEM)
    		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type)))
+				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value)))
 			then
 				ev_tree_item_stack.remove
 			end
@@ -215,16 +215,10 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source then
-						if not aca.differential_text_file_adl_version.is_empty then
-							if not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
-								text.append ("(" + aca.differential_text_file_adl_version + ") ")
-							end
-						elseif aca.has_legacy_flat_file then
-							text.append ("(" + Adl_14_version + ") ")
-						end
+					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
 						text.append (aca.semantic_id)
@@ -234,15 +228,15 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip
-					tooltip.append (aca.full_path)
-					if aca.has_legacy_flat_file and aca.is_differential_generated then
+					tooltip.append (aca.source_file_path)
+					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
 					-- pixmap
 					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
@@ -311,16 +305,10 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source then
-						if not aca.differential_text_file_adl_version.is_empty then
-							if not aca.differential_text_file_adl_version.is_equal (latest_adl_version) then
-								text.append ("(" + aca.differential_text_file_adl_version + ") ")
-							end
-						elseif aca.has_legacy_flat_file then
-							text.append ("(" + Adl_14_version + ") ")
-						end
+					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
+						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
 						text.append (aca.semantic_id)
@@ -330,15 +318,15 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip
-					tooltip.append (aca.full_path)
-					if aca.has_legacy_flat_file and aca.is_differential_generated then
+					tooltip.append (aca.source_file_path)
+					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
 					-- pixmap
 					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
-					if aca.is_reference_archetype then
+					if aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
@@ -501,7 +489,7 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
 			if attached source as src then
-				create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, src)
+				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), parent_aca.id.deep_twin, parent_aca.id, src)
 				check attached proximate_ev_window (ev_root_container) as prox_win then
 					dialog.show_modal_to_window (prox_win)
 				end
@@ -524,7 +512,7 @@ feature {NONE} -- Implementation
 			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
 			if not matching_ids.is_empty then
 				matching_ids.start
-				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).differential_path)
+				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).source_file_path)
 			else
 				in_dir_path := repository_config_table.current_reference_repository_path
 			end

@@ -443,7 +443,7 @@ feature -- Application Switches
 			-- if True, substitute RM pixmaps, if any found, below icon directory, during
 			-- archetype definition visualisation
 		do
-			Result := app_cfg.boolean_value ("/gui/use_rm_pixmaps")
+			Result := if app_cfg.has_resource ("/gui/use_rm_pixmaps") then app_cfg.boolean_value ("/gui/use_rm_pixmaps") else True end
 		end
 
 	set_use_rm_pixmaps (flag: BOOLEAN)

@@ -70,6 +70,11 @@ feature -- Status Report
 			Result := attached parent_archetype_id
 		end
 
+	is_legacy: BOOLEAN
+		do
+			Result := adl_version.is_equal (adl_14_version)
+		end
+
 	archetype_id_is_old_style: BOOLEAN
 			-- True if the id has an old-style non-conformant form, e.g. with 'draft' in the version id part
 

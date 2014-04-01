@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 			gui_semantic_grid.resize_columns_to_content
 		end
 
-   	ev_tree_node_populate (ara: attached ARCH_CAT_ARCHETYPE)
+   	ev_tree_node_populate (ara: ARCH_CAT_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
    		local
 			og_iterator: OG_ITERATOR
@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			rm_schema := ara.rm_schema
 
 			-- make sure it is a template of some kind
-			if artefact_types.has (ara.artefact_type) then
+			if artefact_types.has (ara.artefact_type.value) then
 				-- if it is compiled & valid, display its flat filler structure
 				if semantic_grid_row_map.has (ara.qualified_name) and then attached semantic_grid_row_map.item (ara.qualified_name) as gr then
 					if ara.is_valid then
@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_node_build_enter_action (an_og_node: attached OG_ITEM; indent_level: INTEGER)
+	ev_node_build_enter_action (an_og_node: OG_ITEM; indent_level: INTEGER)
 		local
 			ca_path: detachable STRING
 			csr: detachable ARCHETYPE_CONSTRAINT
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_node_build_exit_action (an_og_node: attached OG_ITEM; indent_level: INTEGER)
+	ev_node_build_exit_action (an_og_node: OG_ITEM; indent_level: INTEGER)
 		do
 			if attached {C_ATTRIBUTE} an_og_node.content_item as c_attr then
 				from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item loop
@@ -179,8 +179,8 @@ feature {NONE} -- Implementation
 
 			-- tooltip		
 			create tooltip.make_empty
-			tooltip.append (aca.full_path)
-			if aca.has_legacy_flat_file and aca.is_differential_generated then
+			tooltip.append (aca.source_file_path)
+			if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
 				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 			end
 

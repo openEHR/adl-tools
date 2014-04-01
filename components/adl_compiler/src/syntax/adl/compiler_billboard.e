@@ -23,7 +23,7 @@ feature -- Initialisation
 
 feature -- Access
 
-    value_sets: HASH_TABLE [VALUE_SET_RELATION, STRING]
+    value_sets: HASH_TABLE [VALUE_SET, STRING]
     		-- table of value sets keyed by ac-code (value set id)
 
 	term_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING]

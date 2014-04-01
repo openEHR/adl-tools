@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 
 	adl_14_source_text: detachable STRING
 		do
-			if source.has_legacy_flat_file and then attached source.legacy_flat_text_original as ft then
+			if source.file_mgr.has_legacy_flat_file and then attached source.file_mgr.legacy_flat_text_original as ft then
 				Result := ft
 			end
 		end
@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 
 	adl_14_converted_text: detachable STRING
 		do
-			if source.has_legacy_flat_file and then attached source.legacy_flat_text_converted as legacy_conv_text then
+			if source.file_mgr.has_legacy_flat_file and then attached source.file_mgr.legacy_flat_text as legacy_conv_text then
 				Result := legacy_conv_text
 			end
 		end
@@ -111,8 +111,8 @@ feature {NONE} -- Implementation
 
 	adl_15_source_text: detachable STRING
 		do
-			if source.has_differential_file then
-				Result := source.differential_text_original
+			if source.has_source_file then
+				Result := source.file_mgr.source_text_original
 			end
 		end
 
@@ -120,11 +120,11 @@ feature {NONE} -- Implementation
 
 	adl_15_converted_text: detachable STRING
 		do
-			if source.is_text_converted then
+			if source.file_mgr.is_text_converted then
 				if attached source.differential_archetype then
-					Result := source.differential_converted_serialised
-				elseif source.has_differential_file then
-					Result := source.differential_text_converted
+					Result := source.differential_serialised
+				elseif source.has_source_file then
+					Result := source.source_text
 				end
 			end
 		end
@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 
 	adl_151_serialised_text: detachable STRING
 		do
-			if source.is_valid_differential and then attached source.serialised_differential_archetype as sda then
+			if source.is_valid_differential and then attached source.differential_serialised as sda then
 				 Result := sda
 			end
 		end
@@ -170,8 +170,8 @@ feature {NONE} -- Implementation
 			if not evx_adl_15_source_editor.is_empty then
 				sel_tab := ev_root_container.item_tab (evx_adl_15_source_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/edit_active"))
-				if not source.differential_text_converted_adl_version.is_empty then
-					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.differential_text_converted_adl_version>>))
+				if not source.file_mgr.source_text_adl_version.is_empty then
+					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.file_mgr.source_text_adl_version>>))
 				else
 					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<latest_adl_version>>))
 				end
@@ -204,9 +204,9 @@ feature {NONE} -- Implementation
 	save_151_serialised_source
 		do
 			if attached source as att_source then
-				att_source.save_differential
+				att_source.save_differential_text
 				evx_adl_15_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.differential_path>>))
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 			end
 		end
@@ -214,9 +214,9 @@ feature {NONE} -- Implementation
 	save_15_converted_source
 		do
 			if attached source as att_source then
-				att_source.save_differential_converted
+				att_source.save_differential_text
 				evx_adl_15_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.differential_path>>))
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 			end
 		end
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			fp: PLAIN_TEXT_FILE
 		do
 			if attached source as att_source then
-				create fp.make_open_write (att_source.differential_path)
+				create fp.make_open_write (att_source.source_file_path)
 				fp.put_string (a_text)
 				fp.close
 				att_source.signal_source_edited
@@ -240,7 +240,7 @@ feature {NONE} -- Implementation
 		local
 			fp: PLAIN_TEXT_FILE
 		do
-			if attached source as att_source and then attached att_source.legacy_flat_path as lfp then
+			if attached source as att_source and then attached att_source.file_mgr.legacy_flat_path as lfp then
 				create fp.make_open_write (lfp)
 				fp.put_string (a_text)
 				fp.close

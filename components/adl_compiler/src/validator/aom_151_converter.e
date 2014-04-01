@@ -299,14 +299,13 @@ feature {NONE} -- Implementation
 		require
 			execution_state = Es_id_codes_converted
 		local
-			term_vsets: HASH_TABLE [VALUE_SET_RELATION, STRING]
+			term_vsets: HASH_TABLE [VALUE_SET, STRING]
 			arch_c_terms: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
 			ac_code, old_ac_code, parent_ac_code, old_path, path_in_flat: STRING
 	 		apa: ARCHETYPE_PATH_ANALYSER
 	 		parent_co_in_anc_flat: C_OBJECT
 	 		og_path: OG_PATH
 	 		ctc: C_TERMINOLOGY_CODE
-	 		new_arch_term: ARCHETYPE_TERM
 			new_arch_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
 			term_vsets := target.terminology.value_sets
@@ -479,7 +478,7 @@ feature {NONE} -- Implementation
 	 		-- correct with respect to the parent, if it's on an existing path
 	 	local
 	 		apa: ARCHETYPE_PATH_ANALYSER
-	 		path_in_flat, id_code, parent_id_code, old_path, new_path, use_node_path_str, rule_path_str: STRING
+	 		path_in_flat, id_code, parent_id_code, old_path, use_node_path_str, rule_path_str: STRING
 	 		parent_ca_in_anc_flat: C_ATTRIBUTE
 	 		parent_co: C_OBJECT
 	 		og_path, use_node_path, rule_path: OG_PATH
@@ -631,7 +630,6 @@ feature {NONE} -- Implementation
 	synthesise_ordinal_value_sets
 		local
 			vset: ARRAYED_LIST [STRING]
-			new_code_text, new_code_description: STRING
 		do
 			create vset.make (0)
 			vset.compare_objects
@@ -653,7 +651,7 @@ feature {NONE} -- Implementation
 							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
 							if not vset.is_empty then
 								target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (tuples_cco_csr.item))
-				 				target.terminology.put_value_set (create {VALUE_SET_RELATION}.make (target.terminology.last_new_definition_code, vset))
+				 				target.terminology.put_value_set (create {VALUE_SET}.make (target.terminology.last_new_definition_code, vset))
 				 			end
 						end
 					end

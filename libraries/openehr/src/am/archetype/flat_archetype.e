@@ -74,7 +74,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			end
 
 			flat_treminology := a_flat_parent.terminology.deep_twin
-			flat_treminology.reduce_languages_to (a_diff.languages_available)
+			flat_treminology.reduce_languages_to (a_diff.terminology)
 
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin, a_diff.uid, desc,

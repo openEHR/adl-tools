@@ -96,9 +96,11 @@ feature -- Access
 			Result := types.item (a_name)
 		end
 
-	type_name: detachable STRING
+	type_name: STRING
 		do
-			Result := type_names.item (value)
+			check attached type_names.item (value) as tn then
+				Result := tn
+			end
 		end
 
 feature -- Status report

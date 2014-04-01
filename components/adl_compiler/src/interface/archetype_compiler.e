@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupt_requested then
 				if ara.compile_attempted then
-					if ara.is_source_modified then
+					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
 						if ara.ontology_location_changed then
 							current_arch_cat.update_archetype_id(ara)
@@ -268,7 +268,7 @@ feature {NONE} -- Implementation
 					if not exception_encountered then
 						ara.check_compilation_currency
 						if not ara.is_in_terminal_compilation_state then
-							build_status := get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type_name.as_upper, ara.id.physical_id>>)
+							build_status := get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
 							call_archetype_visual_update_action (build_status, ara, dependency_depth)
 
 							-- first phase
@@ -289,12 +289,12 @@ feature {NONE} -- Implementation
 
 						elseif ara.is_valid then
 							if not ara.errors.is_empty then
-								build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+								build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
 							else
-								build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type_name.as_upper, ara.id.physical_id>>)
+								build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
 							end
 						else
-							build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+							build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
 						end
 						call_archetype_visual_update_action (build_status, ara, dependency_depth)
 					else

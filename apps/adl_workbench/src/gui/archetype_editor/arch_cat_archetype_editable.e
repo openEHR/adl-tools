@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	make, make_legacy, make_new_archetype, make_new_specialised_archetype
+	make, make_new_archetype, make_new_specialised_archetype
 
 feature -- Status Report
 
@@ -74,11 +74,11 @@ feature -- Access
 			end
 
 			differential_archetype.clear_is_generated
-			is_differential_generated := False
+			file_mgr.set_is_source_generated (False)
 			if attached gui_context as gc then
 				gc.on_commit
 			end
-			save_differential
+			save_differential_text
 			create last_modify_timestamp.make_now
 
 			-- regenerate flat form
@@ -86,7 +86,7 @@ feature -- Access
 
 			-- set revision appropriately
 		ensure
-			Differential_is_primary: not is_differential_generated and not differential_archetype.is_generated
+			Differential_is_primary: not file_mgr.is_source_generated and not differential_archetype.is_generated
 		end
 
 feature {NONE} -- Implementation

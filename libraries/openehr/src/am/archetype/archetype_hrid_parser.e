@@ -88,19 +88,19 @@ feature -- Commands
 				is_adl15_id := True
 
 				-- look for namespace in first section
-				ns_idx := an_id.substring_index (namespace_separator, 1)
+				ns_idx := an_id.substring_index ({ARCHETYPE_HRID}.namespace_separator, 1)
 				if ns_idx > 0 then
 					create namespace.make (an_id.substring (1, ns_idx - 1))
-					start_pos := ns_idx + namespace_separator.count
+					start_pos := ns_idx + {ARCHETYPE_HRID}.namespace_separator.count
 				else
 					start_pos := 1
 				end
 				local_hrid := an_id.substring (start_pos, an_id.count)
 
-				strs := local_hrid.split (axis_separator)
+				strs := local_hrid.split ({ARCHETYPE_HRID}.axis_separator)
 
 				-- separate the qualified class part
-				qual_class_strs := strs.i_th (1).split (section_separator)
+				qual_class_strs := strs.i_th (1).split ({ARCHETYPE_HRID}.section_separator)
 				rm_publisher := qual_class_strs.i_th (1)
 				rm_closure := qual_class_strs.i_th (2)
 				rm_class := qual_class_strs.i_th (3)
@@ -113,11 +113,11 @@ feature -- Commands
 				from strs.go_i_th (3) until strs.off loop
 					ver_str.append (strs.item)
 					if not strs.islast then
-						ver_str.append_character (Axis_separator)
+						ver_str.append_character ({ARCHETYPE_HRID}.axis_separator)
 					end
 					strs.forth
 				end
-				start_pos := 1 + Version_delimiter.count
+				start_pos := 1 + {ARCHETYPE_HRID}.Version_delimiter.count
 
 				-- case: +uQ
 				sym := version_status_symbol_text (vs_unstable)
@@ -153,10 +153,10 @@ feature -- Commands
 			elseif adl14_id_regex.matches (an_id) then
 				is_adl14_id := True
 
-				strs := an_id.split (axis_separator)
+				strs := an_id.split ({ARCHETYPE_HRID}.axis_separator)
 
 				-- separate the qualified class part
-				qual_class_strs := strs.i_th (1).split (section_separator)
+				qual_class_strs := strs.i_th (1).split ({ARCHETYPE_HRID}.section_separator)
 				rm_publisher := qual_class_strs.i_th (1)
 				rm_closure := qual_class_strs.i_th (2)
 				rm_class := qual_class_strs.i_th (3)
@@ -165,7 +165,7 @@ feature -- Commands
 				concept_id := strs.i_th (2)
 
 				-- version part
-				release_version := strs.i_th (3).substring (1 + Version_delimiter.count, strs.i_th (3).count)
+				release_version := strs.i_th (3).substring (1 + {ARCHETYPE_HRID}.Version_delimiter.count, strs.i_th (3).count)
 				release_version.append (".0.0")
 			else
 			end

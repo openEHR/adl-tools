@@ -247,7 +247,7 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 									child_csr.item.subtree_artefact_counts.item (subtree_counts_csr.key), subtree_counts_csr.key)
 						end
 						if attached {ARCH_CAT_ARCHETYPE} child_csr.item as ara then
-							Result.replace (Result.item (ara.artefact_type) + 1, ara.artefact_type)
+							Result.replace (Result.item (ara.artefact_type.value) + 1, ara.artefact_type.value)
 						end
 					end
 				end

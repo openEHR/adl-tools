@@ -51,7 +51,7 @@ feature -- Access
 			-- effective value or value set of single constraint in tuple_constraint, mediated by terminology
 			-- to expand an ac-code
 		do
-			if is_valid_constraint_code (constraint) then
+			if is_valid_value_set_code (constraint) then
 				Result := value_set_extractor.item ([constraint])
 			else
 				create Result.make (0)
@@ -89,7 +89,7 @@ feature -- Status Report
 			-- True if `code' is an ac-code and `a_value' is an at-code. We don't check against
 			-- `value_set_expanded' because it may not be constructed yet.
 		do
-			Result := is_valid_constraint_code (constraint) or is_valid_value_code (a_value)
+			Result := is_valid_value_set_code (constraint) or is_valid_value_code (a_value)
 		end
 
 feature -- Comparison
@@ -100,7 +100,7 @@ feature -- Comparison
 			this_vset, other_vset: like value_set_expanded
 		do
 			if precursor (other) then
-				if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+				if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
 					this_vset := value_set_expanded
 					other_vset := other.value_set_expanded
 					Result := constraint.is_equal (other.constraint) and then
@@ -118,7 +118,7 @@ feature -- Comparison
 			this_vset, other_vset: like value_set_expanded
 		do
 			if precursor (other, rm_type_conformance_checker) then
-				if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+				if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
 					this_vset := value_set_expanded
 					other_vset := other.value_set_expanded
 					Result := codes_conformant (constraint, other.constraint) and then
@@ -171,7 +171,7 @@ feature {AOM_151_CONVERTER} -- Modification
 		local
 			this_vset, other_vset: like value_set_expanded
 		do
-			if is_valid_constraint_code (constraint) and is_valid_constraint_code (other.constraint) then
+			if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
 				this_vset := value_set_expanded
 				other_vset := other.value_set_expanded
 				Result := this_vset.count = other_vset.count and then
@@ -207,7 +207,7 @@ feature -- Output
 
 			Result.append (Local_terminology_id)
 			Result.append (Terminology_separator)
-			if not is_valid_constraint_code (constraint) then
+			if not is_valid_value_set_code (constraint) then
 				Result.append (constraint)
 			else
 				across value_set_expanded as vset_csr loop

@@ -175,6 +175,12 @@ feature {NONE} -- Implementation
 			leaf_paths_cache := Void
 			interface_paths_cache := Void
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.populate end end)
+
+			evx_adl_15_tab.resize_columns_proportional
+
+			evx_adl_14_tab.resize_columns_proportional
+
+			evx_interface_tab.resize_columns_proportional
 		end
 
 	adl_15_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
@@ -193,13 +199,18 @@ feature {NONE} -- Implementation
 					Result.extend (utf8_to_utf32 (a_path))
 				end
 
-				co := source_archetype.object_at_path (a_path)
+				if source_archetype.has_object_path (a_path) then
+					co := source_archetype.object_at_path (a_path)
 
-				-- second column: RM type name
-				Result.extend (utf8_to_utf32 (co.rm_type_name))
+					-- second column: RM type name
+					Result.extend (utf8_to_utf32 (co.rm_type_name))
 
-				-- third column: AOM type
-				Result.extend (utf8_to_utf32 (co.generating_type))
+					-- third column: AOM type
+					Result.extend (utf8_to_utf32 (co.generating_type))
+				else
+					Result.extend ("")
+					Result.extend ("")
+				end
 
 				-- add an empty column to help display on all platforms
 				Result.extend ("")
@@ -224,13 +235,21 @@ feature {NONE} -- Implementation
 				end
 				Result.extend (utf8_to_utf32 (adl_15_path_converted (path_str)))
 
-				co := source_archetype.object_at_path (a_path)
+				if source_archetype.has_object_path (a_path) then
+					co := source_archetype.object_at_path (a_path)
 
-				-- second column: RM type name
-				Result.extend (utf8_to_utf32 (co.rm_type_name))
+					-- second column: RM type name
+					Result.extend (utf8_to_utf32 (co.rm_type_name))
 
-				-- third column: AOM type
-				Result.extend (utf8_to_utf32 (co.generating_type))
+					-- third column: AOM type
+					Result.extend (utf8_to_utf32 (co.generating_type))
+				else
+					-- second column: RM type name
+					Result.extend ("")
+
+					-- third column: AOM type
+					Result.extend ("")
+				end
 
 				-- add an empty column to help display on all platforms
 				Result.extend ("")
@@ -256,14 +275,19 @@ feature {NONE} -- Implementation
 				-- second column: path
 				Result.extend (utf8_to_utf32 (a_path))
 
-				-- third column: RM type name
-				co := source_archetype.object_at_path (a_path)
-				Result.extend (utf8_to_utf32 (co.rm_type_name))
+				if source_archetype.has_object_path (a_path) then
+					co := source_archetype.object_at_path (a_path)
+					-- third column: RM type name
+					Result.extend (utf8_to_utf32 (co.rm_type_name))
 
-				-- fourth column: multiplicity
-				if attached co.parent as ca and then ca.is_multiple then
-					Result.extend ("*")
+					-- fourth column: multiplicity
+					if attached co.parent as ca and then ca.is_multiple then
+						Result.extend ("*")
+					else
+						Result.extend ("")
+					end
 				else
+					Result.extend ("")
 					Result.extend ("")
 				end
 			end
