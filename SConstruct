@@ -183,11 +183,9 @@ if downloads and len(adl_workbench) > 0:
 
 		def copy_mac_osx_installer_sources(target, source, env):
 			copy_tree(install, downloads)
-			copy_tree(vim, pkg_contents)
-			copy_tree(testscripts, pkg_contents)
 
-			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles]:
-				copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
+			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles, vim, testscripts]:
+				copy_tree(src, pkg_contents)
 
 			substitutions = 's|\&|\&amp;|;'
 			substitutions += 's|\<|\&lt;|;'

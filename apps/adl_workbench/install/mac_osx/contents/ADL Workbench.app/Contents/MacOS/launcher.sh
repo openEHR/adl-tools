@@ -85,7 +85,7 @@ mkdir -p "$HOME/Library/Logs/ADL Workbench"
 	echo ------------------------------------------
 	echo Launching ADL Workbench inside XQuartz
 
-	exec "$(dirname "$(dirname "$0")")/Resources/adl_workbench" &
+	exec "$(dirname "$(dirname "$(dirname "$(dirname "$0")")")")/adl_workbench" &
 
 ) 2>&1 > "$LOGFILE"
 
