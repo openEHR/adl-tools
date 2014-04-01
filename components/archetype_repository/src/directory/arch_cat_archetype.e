@@ -1,6 +1,14 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Descriptor of an archetype in a catalogue of archetypes"
+	description: "[
+				 Descriptor of an archetype in a catalogue of archetypes. The class provides the 
+				 compiler functionality on a per-artefact level. A formal compilation state machine model
+				 is used here, so that any artefact is in a known state in the process.
+				 
+				 Some complications still exist due to the presence of a) ADL 1.4 'legacy' archetypes and
+				 b) ADL 1.5 archetypes not yet converted to modern ADL 1.5.1 format. These should be 
+				 progressively removed.
+				 ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -936,7 +944,7 @@ feature -- Conversion
 
 feature -- File Access
 
-	file_mgr: ACA_WORKFLOW_MGR_FILE
+	file_mgr: ARCH_PERSISTENCE_MGR
 
 	save_differential_text
 			-- Save converted differential archetype to its file in its source form, even if not compiling

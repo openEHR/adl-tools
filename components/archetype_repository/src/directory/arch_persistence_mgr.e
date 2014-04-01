@@ -1,13 +1,32 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "File system state and behaviour for ADL 1.5 format legacy archetype"
+	description: "[
+	             File system state and behaviour for ADL 1.5 format and legacy archetype if it exists.
+	             Some of the state in this object replicates the state recorded in its owning ARCH_CAT_ARCHETYPE.
+	             The state here represents the values last read from a file read, whereas the ARCH_CAT_ARCHETYPE
+	             state represents the state of the in-memory archetype. These are normally the same, unless
+	             editing is occurring. Editing can occur in the following ways:
+	             
+	             	* on text source of the archetype under control of the ADL Workbench, i.e. when the users
+	             	  completes the change, a 'save' function in the AWB causes immediate writing of the file
+	             	  and update of the in-memory form of the artefact.
+	             	  	=> text source is more up to date until resynchronisation achieved
+	             	  
+	             	* on text source of the artefact via an external editor. In this case, an external event
+	             	  needs to be received by the AWB for it to take account of the change.
+	             	  	=> text source is more up to date until resynchronisation achieved
+	             	  
+	             	* direct in-memory editing of archetypes via the UI. In this case, the 'commit' action of the
+	             	  user causes flushing through of changes.
+	             	  	=> in-memory form (ARCH_CAT_ARCHETYPE) form is more up to date until resynchronisation achieved
+	             ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ACA_WORKFLOW_MGR_FILE
+class ARCH_PERSISTENCE_MGR
 
 inherit
 	SHARED_ARCHETYPE_CATALOGUES
@@ -235,13 +254,6 @@ feature -- File Operations
 			end
 		end
 
-	source_file_adl_version: STRING
-			-- ADL version of the most recently read differential text file
-			-- if this version = 1.5.1, it means the file is already 1.5.1
-		attribute
-			create Result.make_empty
-		end
-
 	source_file_path: STRING
 			-- Path of differential source file of archetype.
 
@@ -375,14 +387,10 @@ feature {GUI_SOURCE_CONTROL, ARCH_CAT_ARCHETYPE} -- File Management
 			source_text_timestamp = source_file_timestamp
 		end
 
-	source_text_adl_version: STRING
-			-- ADL version of the most recently converted text file (legacy or differential)
-		attribute
-			create Result.make_empty
-		end
-
 	source_text_original: STRING
 			-- original form of differential file text, with no conversions
+		obsolete
+			"Remove when all at-coded 1.5 archetypes converted to 1.5.1"
 		require
 			source_file_available: has_source_file
 		do
