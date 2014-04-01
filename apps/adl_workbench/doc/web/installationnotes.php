@@ -40,25 +40,12 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 			<h1>Installation Notes</h1>
 			
 			<h2><a name="mac"></a>Mac OS X</h2>
-            <p>The following prerequisite software is needed for the Mac version of ADL Workbench:</p>
-            <ul>
-				<li>Confirm what version of Mac OS X you have. You can check this under the <em>Apple</em> menu at the top left of the screen, by selecting <em>About this Mac</em>.</li>
-				<li>Install the latest version of <a href="http://developer.apple.com/technologies/xcode.html">Xcode Tools</a> for your Mac.</li>
-				<li>Install the latest version of <a href="http://www.macports.org/install.php" rel="nofollow">MacPorts</a>.</li>
-				<li>When MacPorts is installed, install <em>gtk2</em>:
-				<ul>
-					<li>Open a window in the Finder and go to the <em>Applications/Utilities</em> folder.</li>
-					<li>Double-click <em>Terminal</em>. You now have a Terminal window open.</li>
-					<li>Type the following command: <em>sudo port install gtk2 xorg-libXtst</em>.</li>
-					<li>Press <em>Return</em>.</li>
-					<li>When it asks you for a password, type in your administrator password.</li>
-					<li>MacPorts will then install the <em>gtk2</em> library. (This will take some time, depending on the speed of your Mac.)</li>
-				</ul>
-				<li>Download and install the appropriate version of ADL Workbench for your Mac.</li>
-			</ul>
+			<p>This release of ADL Workbench requires OS X 10.9 (Mavericks).
+			You can check what version of Mac OS X you have under the <em>Apple</em> menu at the top left of the screen, by selecting <em>About this Mac</em>.</p>
 			<p>ADL Workbench will be installed in your <em>Applications</em> folder, under a folder called <em>openEHR</em>.</p>
-			<p>When you double-click the <em>ADL Workbench</em> icon, it will start up inside <em>X11</em> or <em>XQuartz</em>.</p>
-		  
+			<p>When you double-click the <em>ADL Workbench</em> icon, it will start up inside <em>XQuartz</em>.
+			The first time you run ADL Workbench, prerequisite software such as XQuartz will be installed if you don't have it yet.
+			This may take up to 30 minutes.</p>
 		  
 			<h2><a name="linux"></a>Linux installation</h2>
 			<p>The Linux version of ADL Workbench requires GTK+ 2.4.0 or above. You can check by typing this command: <em>pkg-config --modversion gtk+-2.0</em> The command should succeed and the version number of GTK+ should appear. If it is not 2.4.0 or above then you need to install GTK+ 2.4.0.</p>

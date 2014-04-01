@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 echo Showing $2/ADL Workbench.app in the Finder
 open -R "$2/ADL Workbench.app"
-exit 0
+
+osascript -e 'tell app "Installer" to activate front window'

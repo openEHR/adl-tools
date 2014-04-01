@@ -6,7 +6,7 @@
     <options customize="never" require-scripts="false"/>
     <!-- Documents displayed at various steps -->
     <background file="background.gif" alignment="topleft" scaling="none"/>
-    <readme file="ReadMe.html"/>
+    <conclusion file="Conclusion.html"/>
     <license file="License.html"/>
     <!-- List all component packages -->
     <pkg-ref id="org.openehr.adl_workbench" onConclusion="none">ADL%20Workbench.pkg</pkg-ref>
