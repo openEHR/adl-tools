@@ -160,7 +160,7 @@ feature -- Definitions
 		ec_VCOSU: STRING = "VCOSU"
 		ec_VACSO: STRING = "VACSO"
 		ec_VACMCU: STRING = "VACMCU"
-		ec_VACMCL: STRING = "VACMCL"
+		ec_WACMCL: STRING = "WACMCL"
 		ec_VACMCO: STRING = "VACMCO"
 		ec_VARCN: STRING = "VARCN"
 		ec_VARND: STRING = "VARND"

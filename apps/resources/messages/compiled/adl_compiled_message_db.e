@@ -175,7 +175,7 @@ feature -- Initialisation
 			message_table.put ("cannot add $1 object with $2 to attribute $3 because attribute already has child with same node id", ec_VCOSU)
 			message_table.put ("cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1", ec_VACSO)
 			message_table.put ("cannot add $1 object with $2 to multiply-valued attribute $3 because occurrences upper bound $4 is greater than cardinality upper bound $5", ec_VACMCU)
-			message_table.put ("for multiply-valued attribute $1 sum of occurrences lower bounds $2 must be less than cardinality upper limit $3", ec_VACMCL)
+			message_table.put ("for multiply-valued attribute $1 sum of occurrences lower bounds $2 must be less than cardinality upper limit $3", ec_WACMCL)
 			message_table.put ("for multiply-valued attribute $1, minimum object count $2 must be less than cardinality upper limit $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)", ec_VACMCO)
 			message_table.put ("invalid root object node_id (concept code) $1; should follow regex pattern $2", ec_VARCN)
 			message_table.put ("invalid object node_id $1; should follow regex pattern $2", ec_VARND)

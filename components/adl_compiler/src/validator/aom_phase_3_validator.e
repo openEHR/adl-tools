@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if attached ca.cardinality and then not ca.cardinality.interval.upper_unbounded then
 					if ca.occurrences_lower_sum > ca.cardinality.interval.upper then
-						add_error (ec_VACMCL, <<ca.path, ca.occurrences_lower_sum.out, ca.cardinality.interval.upper.out>>)
+						add_warning (ec_WACMCL, <<ca.path, ca.occurrences_lower_sum.out, ca.cardinality.interval.upper.out>>)
 					elseif ca.minimum_child_count > ca.cardinality.interval.upper then
 						add_error (ec_VACMCO, <<ca.path, ca.minimum_child_count.out, ca.cardinality.interval.upper.out>>)
 					end
