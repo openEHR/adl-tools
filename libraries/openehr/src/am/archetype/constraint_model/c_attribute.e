@@ -336,6 +336,12 @@ feature -- Status Report
 			Result := children.has (a_node)
 		end
 
+	is_non_constraining: BOOLEAN
+			-- True if there is no existence or cardinality constraint, and any_allowed is true
+		do
+			Result := not attached existence and not attached cardinality and any_allowed
+		end
+
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
