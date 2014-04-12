@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (696)
+			create message_table.make (699)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -136,6 +136,9 @@ feature -- Initialisation
 			message_table.put ("Syntax error: invalid date/time constraint pattern '$1'; allowed patterns: $2", ec_SCDTPT)
 			message_table.put ("Syntax error: invalid duration constraint pattern '$1'; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w] [/duration_interval]", ec_SCDUPT)
 			message_table.put ("Syntax error: regular expression compile error '$1' is not a valid regular expression", ec_SCSRE)
+			message_table.put ("Syntax error: invalid term code reference: '$1'; code string must conform to regex at(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*", ec_STCVA)
+			message_table.put ("Syntax error: invalid id code reference: '$1'; code string must conform to regex id(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*", ec_STCID)
+			message_table.put ("Syntax error: invalid value set reference: '$1'; code string must conform to regex ac(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*", ec_STCVS)
 			message_table.put ("Syntax error: invalid term code constraint pattern '$1': $2", ec_STCCP)
 			message_table.put ("Syntax error: duplicate code $1 found in code list of terminology constraint at path $2", ec_STCDC)
 			message_table.put ("Syntax error: invalid value set with terminology $1 at path $2: no codes supplied", ec_STVSI)

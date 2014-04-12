@@ -56,6 +56,10 @@ templates = <
 
 		["SCSRE"] = <"Syntax error: regular expression compile error '$1' is not a valid regular expression">
 
+		["STCVA"] = <"Syntax error: invalid term code reference: '$1'; code string must conform to regex at(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))*">
+		["STCID"] = <"Syntax error: invalid id code reference: '$1'; code string must conform to regex id(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))*">
+		["STCVS"] = <"Syntax error: invalid value set reference: '$1'; code string must conform to regex ac(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))*">
+
 		["STCCP"] = <"Syntax error: invalid term code constraint pattern '$1': $2">
 		["STCDC"] = <"Syntax error: duplicate code $1 found in code list of terminology constraint at path $2">
 		["STVSI"] = <"Syntax error: invalid value set with terminology $1 at path $2: no codes supplied">

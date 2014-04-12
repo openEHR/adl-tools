@@ -4600,7 +4600,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1535")
 end
 
-			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+			abort_with_error (ec_STCVA, <<c_attrs.item.path>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1

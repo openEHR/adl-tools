@@ -1675,7 +1675,7 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 		}
 	| ERR_VALUE_SET_DEF
 		{
-			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+			abort_with_error (ec_STCVA, <<c_attrs.item.path>>)
 		}
 	;
 
