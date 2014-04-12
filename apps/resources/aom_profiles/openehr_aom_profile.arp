@@ -89,5 +89,6 @@ aom_lifecycle_mappings = <
 	["ReviewSuspended"] = <"unstable">
 	["Review Suspended"] = <"unstable">
 	["Reassess"] = <"published">
+	["Published"] = <"published">
 >
 
