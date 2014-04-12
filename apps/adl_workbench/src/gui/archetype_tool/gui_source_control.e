@@ -111,7 +111,10 @@ feature {NONE} -- Implementation
 
 	adl_15_source_text: detachable STRING
 		do
-			if source.has_source_file then
+			-- following check has to also look at adl_version since that reflects most recently read file
+			-- if the version is 1.4, then the 1.4 file was read for the most recent parse, even if the
+			-- 1.5 file was subsequently created as a result, but before this routine gets called.
+			if source.has_source_file and not source.file_mgr.adl_version.is_equal (Adl_14_version) then
 				Result := source.file_mgr.source_text_original
 			end
 		end
