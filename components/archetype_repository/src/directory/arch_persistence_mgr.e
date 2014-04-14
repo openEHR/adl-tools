@@ -224,7 +224,7 @@ feature -- File Operations
 			amp: ARCHETYPE_MINI_PARSER
 		do
 			create amp
-			if is_legacy_file_modified and attached legacy_flat_path as lfp then
+			if has_legacy_flat_file and then is_legacy_file_modified and then attached legacy_flat_path as lfp then
 				amp.parse (lfp)
 			elseif is_source_file_modified then
 				amp.parse (source_file_path)
