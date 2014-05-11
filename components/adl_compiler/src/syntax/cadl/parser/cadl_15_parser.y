@@ -350,8 +350,9 @@ c_object: c_complex_object
 -- A c_complex_object-like variant would be needed to parse fully flattened templates.
 --
 -- V_SLOT_FILLER looks like the following, no whitespace
--- {ID_CODE},{ARCHETYPE_ID}
+-- id12,archetype_id
 --
+
 c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_SLOT_FILLER c_occurrences 
 		{
 			slot_id_code := $3.substring (1, $3.index_of (',', 1) - 1)
@@ -367,7 +368,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_SLOT_FILLER c_occurrences
 		}
 	| SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences 
 		{
-			archetype_id := $3.substring ($3.index_of (',', 1) + 1, $3.count)
+			archetype_id := $3
 			if archetype_id_parser.valid_id (archetype_id) then
 				create $$.make ($2, archetype_id)
 				if attached $4 as occ then
