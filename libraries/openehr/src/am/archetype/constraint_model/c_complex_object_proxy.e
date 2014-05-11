@@ -12,7 +12,7 @@ class C_COMPLEX_OBJECT_PROXY
 inherit
 	C_OBJECT
 		redefine
-			representation_cache
+			representation_cache, occurrences_conforms_to
 		end
 
 create
@@ -52,6 +52,22 @@ feature -- Status Report
 			-- by the time of runtime use, the target occurrences value has to be set into this object
 		do
 			Result := not attached occurrences
+		end
+
+feature -- Comparison
+
+	occurrences_conforms_to (other: C_OBJECT): BOOLEAN
+			-- if `other' is a C_COMPLEX_OBJECT, then always True, since if occurrences defined on proxy node,
+			-- it is an override of  the occurrences on the target, and it doesn't have to conform to anything
+			-- except the containing attribute's cardinality
+			-- However, if `other' is also a C_COMPLEX_OBJECT then the override is of another use_node, and normal
+			-- occurrences apply
+		do
+			if other.same_type (Current) then
+				Result := precursor (other)
+			else
+				Result := True
+			end
 		end
 
 feature -- Modification

@@ -58,6 +58,8 @@ feature -- Access
 				Result.compare_objects
 				Result.extend (constraint)
 			end
+		ensure
+			Result.object_comparison
 		end
 
 	prototype_value: TERMINOLOGY_CODE
