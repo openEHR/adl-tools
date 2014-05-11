@@ -216,29 +216,29 @@ end
 					end
 				end
 
-			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
+			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT; for external references, nothing to do
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
-				check attached car.slot_path as att_slot_path then
+				if attached car.slot_path as att_slot_path then
 					create apa.make_from_string (att_slot_path)
-				end
-				co_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-				if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.object_at_path (co_path_in_flat) as a_slot then
-					if ancestor_slot_id_index.has (a_slot.path) then
-						if not archetype_id_matches_slot (car.node_id, a_slot) then -- doesn't even match the slot definition
-							add_error (ec_VARXS, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
+					co_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
+					if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.object_at_path (co_path_in_flat) as a_slot then
+						if ancestor_slot_id_index.has (a_slot.path) then
+							if not archetype_id_matches_slot (car.node_id, a_slot) then -- doesn't even match the slot definition
+								add_error (ec_VARXS, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
 
-						elseif not slot_filler_archetype_id_exists (a_slot.path, car.node_id) then -- matches def, but not found in actual list from current repo
-							add_error (ec_VARXR, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
+							elseif not slot_filler_archetype_id_exists (a_slot.path, car.node_id) then -- matches def, but not found in actual list from current repo
+								add_error (ec_VARXR, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
 
-						elseif not car.occurrences_conforms_to (a_slot) then
-							add_error (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
-								target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
+							elseif not car.occurrences_conforms_to (a_slot) then
+								add_error (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
+									target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
+							end
+						else
+							add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
 						end
 					else
-						add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
+						add_error (ec_VARXV, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True)>>)
 					end
-				else
-					add_error (ec_VARXV, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True)>>)
 				end
 
 			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
@@ -384,6 +384,8 @@ end
 									target.annotated_path (slot_path, target_descriptor.archetype_view_language, True),
 									target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
 							end
+						else
+							-- external reference (i.e. no slot involved)
 						end
 
 					elseif specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
