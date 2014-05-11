@@ -105,14 +105,14 @@ feature -- Commands
 	execute
 		do
 			if not target.adl_version.is_equal (latest_adl_version) then
-				-- find C_TERMINOLOGY_CODE constraints containing id-codes, and convert to at-codes
-				convert_reused_id_codes
-
 				-- add value-sets extracted from definition; these value sets originally consisted of a synthesised
 				-- ac-code and synthesised at-codes which need to be converted
 				if not compiler_billboard.value_sets.is_empty then
 					target.terminology.set_value_sets (compiler_billboard.value_sets)
 				end
+
+				-- find C_TERMINOLOGY_CODE constraints containing id-codes, and convert to at-codes
+				convert_reused_id_codes
 
 				-- term bindings have already been created for inline external codes and value sets
 				-- However, these contain fake at-codes, as do some C_TERMINOLOGY_CODE objects
@@ -145,6 +145,8 @@ feature {NONE} -- Implementation
 			-- there are some instances where an at-code from the 1.4 archetype was used as both a node id
 			-- and a value id. These show up as id-codes in C_TERMINOLOGY_CODE objects. We have to add new
 			-- at-coded terms for them, created as copies of id-codes
+			-- This routine only solves single code values, not id-codes that occur inside value sets. For
+			-- now, these have to be dealt with manually.
 		local
 			arch_terms: HASH_TABLE [ARCHETYPE_TERM, STRING]
 			converted_code: STRING
@@ -164,7 +166,7 @@ feature {NONE} -- Implementation
 		end
 
 	term_constraints_with_id_codes: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
-			-- obtain all C_TERMINOLOGY_CODEs that have id-codes instead of at- or ac-codes in them
+			-- obtain all C_TERMINOLOGY_CODEs that have single id-codes instead of at- or ac-codes in them
 		local
 			def_it: C_ITERATOR
 		do
@@ -173,8 +175,10 @@ feature {NONE} -- Implementation
 			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [C_TERMINOLOGY_CODE, STRING])
 					do
-						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc and then is_id_code (ctc.constraint) then
-							idx.put (ctc, ctc.constraint)
+						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
+							if is_id_code (ctc.constraint) then
+								idx.put (ctc, ctc.constraint)
+							end
 						end
 					end (?, ?, Result))
 		end

@@ -65,6 +65,7 @@ ID_CODE_LEADER id
 CODE_STR (0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*
 ID_CODE {ID_CODE_LEADER}{CODE_STR}
 AT_CODE at{CODE_STR}
+AT_OR_ID_CODE (at|id){CODE_STR}
 AC_CODE ac{CODE_STR}
 PATH_SEG [a-z]{ALPHANUM_CHAR}*(\[{ID_CODE}\])?
 
@@ -232,6 +233,11 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --		atN; -- comment
 --		atN] -- an optional assumed value
 --
+-- we actually allow id-codes as well, because this scanner is now called after the 
+-- code-converter, and the archetype may have id-codes. Badly defined archetypes can
+-- have id-codes in among at-code value sets, so we tolerate it here, and convert it
+-- in AOM_POST_PARSE_PROCESSOR
+--
 
 \[local::[ \t]*	{
 		set_start_condition (IN_EXPANDED_VALUE_SET_DEF)
@@ -242,7 +248,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	}
 
 <IN_EXPANDED_VALUE_SET_DEF> {
-	[ \t]*{AT_CODE}[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
+	[ \t]*{AT_OR_ID_CODE}[ \t]*;[ \t]* { -- match second last line with ';' termination (assumed value)
 		str_ := text
 		str_.prune_all(' ')
 		str_.prune_all('%T')
@@ -257,7 +263,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 		end
 	}
 
-	[ \t]*{AT_CODE}[ \t]*,[ \t]* {	-- match any line, with ',' termination
+	[ \t]*{AT_OR_ID_CODE}[ \t]*,[ \t]* {	-- match any line, with ',' termination
 		str_ := text
 		str_.prune_all(' ')
 		str_.prune_all('%T')
@@ -277,7 +283,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
 
-	[ \t]*{AT_CODE}[ \t]*\] { -- match final line, terminating in ']'
+	[ \t]*{AT_OR_ID_CODE}[ \t]*\] { -- match final line, terminating in ']'
 		str_ := text
 		str_.prune_all(' ')
 		str_.prune_all('%T')
