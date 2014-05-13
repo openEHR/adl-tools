@@ -170,8 +170,8 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 
 arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			if archetype_id_parser.valid_id ($2) then
-				create parent_archetype_id.make_from_string ($2)
+			if archetype_id_parser.valid_id_reference ($2) then
+				parent_archetype_id := $2
 			else
 				abort_with_error (ec_SASID, Void)
 			end
@@ -340,7 +340,7 @@ feature -- Parse Output
 
 	artefact_type: ARTEFACT_TYPE
 
-	parent_archetype_id: detachable ARCHETYPE_HRID
+	parent_archetype_id: detachable STRING
 
 	concept: detachable STRING
 

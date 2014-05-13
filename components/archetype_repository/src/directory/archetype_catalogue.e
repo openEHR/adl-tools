@@ -97,7 +97,7 @@ feature -- Access
 		end
 
 	semantic_item_index: HASH_TABLE [ARCH_CAT_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by lower-case ontology concept. Used during construction of `directory'
+			-- Index of archetype & class nodes, keyed by lower-case semantic concept. Used during construction of `directory'
 			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
 		attribute
@@ -163,8 +163,7 @@ feature -- Access
 		end
 
 	matching_archetype (an_archetype_ref: STRING): ARCH_CAT_ARCHETYPE
-			-- Return true if, for a slot path that is known in the parent slot index, there are
-			-- actually archetypes whose ids match
+			-- Return archetype whose id matches `an_archetype_ref'
 		require
 			has_archetype_id_for_ref (an_archetype_ref)
 		local
@@ -175,7 +174,7 @@ feature -- Access
 			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
 			if attached archetype_index.item (an_archetype_ref) as att_aca then
-				matching_aca := att_aca
+				Result := att_aca
 			else
 				create ids.make_from_array (archetype_index.current_keys)
 				from ids.start until ids.off or attached matching_aca loop
@@ -186,9 +185,27 @@ feature -- Access
 					end
 					ids.forth
 				end
+				check attached matching_aca as att_matching_aca then
+					Result := att_matching_aca
+				end
 			end
-			check attached matching_aca as att_matching_aca then
-				Result := att_matching_aca
+		end
+
+	matching_item (a_ref: STRING): ARCH_CAT_ITEM
+			-- Return true if, for a slot path that is known in the parent slot index, there are
+			-- actually archetypes whose ids match
+		require
+			has_item_for_ref (a_ref)
+		local
+			ref_as_lower: STRING
+		do
+			ref_as_lower := a_ref.as_lower
+			-- case-insentive match
+			if semantic_item_index.has (ref_as_lower) and then attached semantic_item_index.item (ref_as_lower) as att_aca then
+				Result := att_aca
+			else
+				-- case-sensitive match
+				Result := matching_archetype (a_ref)
 			end
 		end
 
@@ -222,7 +239,7 @@ feature -- Status Report
 			-- True if `aca' does not exist in the catalogue, but has a viable parent under
 			-- which it can be attached
 		do
-			Result := has_item_with_id (aca.ontological_parent_name) and
+			Result := has_item_with_id (aca.semantic_parent_id) and
 				not has_item_with_id (aca.qualified_key)
 		end
 
@@ -240,6 +257,12 @@ feature -- Status Report
 				create ids.make_from_array (archetype_index.current_keys)
 				Result := across ids as actual_ids_csr some actual_ids_csr.item.starts_with (an_archetype_ref) end
 			end
+		end
+
+	has_item_for_ref (a_ref: STRING): BOOLEAN
+			-- Return true if, there is a semantic id that matches a_ref
+		do
+			Result := semantic_item_index.has (a_ref.as_lower) or else has_archetype_id_for_ref (a_ref)
 		end
 
 feature -- Commands
@@ -330,11 +353,11 @@ feature -- Modification
 				if valid_candidate (aca) then
 					add_filesys_tree_repo_node (file_system.dirname (a_path))
 					put_archetype (aca, a_path)
-				elseif not has_item_with_id (aca.ontological_parent_name.as_lower) then
+				elseif not has_item_with_id (aca.semantic_parent_id.as_lower) then
 					if aca.is_specialised then
-						add_error (ec_arch_cat_orphan_archetype, <<aca.ontological_parent_name, aca.qualified_key>>)
+						add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_id, aca.qualified_key>>)
 					else
-						add_error (ec_arch_cat_orphan_archetype_e2, <<aca.ontological_parent_name, aca.qualified_key>>)
+						add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_id, aca.qualified_key>>)
 					end
 				elseif has_item_with_id (aca.qualified_key) then
 					add_error (ec_arch_cat_dup_archetype, <<a_path>>)
@@ -349,7 +372,7 @@ feature -- Modification
 		require
 			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
 			new_id_valid: not archetype_index.has (aca.id.as_string)
-			ontological_parent_exists: semantic_item_index.has (aca.ontological_parent_name.as_lower)
+			ontological_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
 		do
 			archetype_index.remove (aca.old_id.as_string)
 			archetype_index.force (aca, aca.id.as_string)
@@ -358,12 +381,12 @@ feature -- Modification
 			filesys_item_index.remove (aca.old_id.as_string.as_lower)
 			filesys_item_index.force (aca, aca.id.as_string.as_lower)
 			aca.parent.remove_child (aca)
-			semantic_item_index.item (aca.ontological_parent_name).put_child (aca)
+			semantic_item_index.item (aca.semantic_parent_id).put_child (aca)
 			aca.clear_old_ontological_parent_name
 		ensure
 			Node_added_to_archetype_index: archetype_index.has (aca.id.as_string)
 			Node_added_to_ontology_index: semantic_item_index.has (aca.id.as_string)
-			Node_parent_set: aca.parent.qualified_name.is_equal (aca.ontological_parent_name)
+			Node_parent_set: aca.parent.qualified_name.is_equal (aca.semantic_parent_id)
 		end
 
 feature -- Traversal
@@ -542,11 +565,11 @@ feature {NONE} -- Implementation
 					added_during_pass := 0
 					across archs as archs_csr loop
 						if status_list [archs_csr.target_index] >= 0 then
-							parent_key := archs_csr.item.ontological_parent_name.as_lower
-							if semantic_item_index.has (parent_key) then
+							parent_key := archs_csr.item.semantic_parent_key
+							if has_item_for_ref (parent_key) then
 								child_key := archs_csr.item.qualified_key
 								if not semantic_item_index.has (child_key) then
-									semantic_item_index.item (parent_key).put_child (archs_csr.item)
+									matching_item (parent_key).put_child (archs_csr.item)
 									semantic_item_index.force (archs_csr.item, child_key)
 									archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
 									added_during_pass := added_during_pass + 1
@@ -567,9 +590,9 @@ feature {NONE} -- Implementation
 				across archs as archs_csr loop
 					if status_list [archs_csr.cursor_index] > 0 then
 						if archs_csr.item.is_specialised then
-							add_error (ec_arch_cat_orphan_archetype, <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							add_error (ec_arch_cat_orphan_archetype, <<archs_csr.item.semantic_parent_key, archs_csr.item.qualified_name>>)
 						else
-							add_error (ec_arch_cat_orphan_archetype_e2, <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							add_error (ec_arch_cat_orphan_archetype_e2, <<archs_csr.item.semantic_parent_key, archs_csr.item.qualified_name>>)
 						end
 					end
 				end
@@ -805,7 +828,7 @@ feature {NONE} -- Implementation
 		local
 			parent_key, child_key: STRING
 		do
-			parent_key := aca.ontological_parent_name.as_lower
+			parent_key := aca.semantic_parent_id.as_lower
 			child_key := aca.qualified_key
 
 			-- add to semantic index

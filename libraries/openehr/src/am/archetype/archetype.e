@@ -116,7 +116,7 @@ feature -- Initialisation
 	make_from_other (other: like Current)
 			-- duplicate from another archetype
 		local
-			other_parent_arch_id: detachable like archetype_id
+			other_parent_arch_id: detachable STRING
 			other_annotations: detachable RESOURCE_ANNOTATIONS
 			other_description: detachable RESOURCE_DESCRIPTION
 			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
@@ -184,8 +184,9 @@ feature -- Access
 			Result := archetype_id.version_id
 		end
 
-	parent_archetype_id: detachable ARCHETYPE_HRID
-			-- id of specialisation parent of this archetype
+	parent_archetype_id: detachable STRING
+			-- reference to specialisation parent of this archetype, typically in
+			-- the form of an interface id, i.e. with no minor or patch version
 
 	specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
@@ -787,7 +788,7 @@ feature -- Modification
 			other_metadata.item (a_key).is_equal ((True).out)
 		end
 
-	set_parent_archetype_id (an_id: like archetype_id)
+	set_parent_archetype_id (an_id: like parent_archetype_id)
 		do
 			parent_archetype_id := an_id
 		end

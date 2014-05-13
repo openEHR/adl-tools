@@ -36,9 +36,7 @@ feature -- Initialisation
 			adl_version := an_archetype.adl_version
 			artefact_type := an_archetype.artefact_type.type_name
 
-			if attached an_archetype.parent_archetype_id as att_pid then
-				create parent_archetype_id.make (att_pid)
-			end
+			parent_archetype_id := an_archetype.parent_archetype_id
 
 			is_generated := an_archetype.is_generated
 
@@ -77,7 +75,7 @@ feature -- Access
 	artefact_type: detachable STRING
 			-- design type of artefact, archetype, template, template-component, etc
 
-	parent_archetype_id: detachable P_ARCHETYPE_HRID
+	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
 
 	uid: detachable STRING
@@ -103,16 +101,12 @@ feature -- Factory
 
 	create_archetype: detachable ARCHETYPE
 		local
-			o_parent_archetype_id, o_archetype_id: detachable ARCHETYPE_HRID
+			o_archetype_id: detachable ARCHETYPE_HRID
 			o_diff_terminology: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY
 			o_flat_terminology: FLAT_ARCHETYPE_TERMINOLOGY
 			o_artefact_type: ARTEFACT_TYPE
 			o_uid: detachable HIER_OBJECT_ID
 		do
-			if attached parent_archetype_id as att_pid then
-				create o_parent_archetype_id.make_from_string (att_pid.physical_id)
-			end
-
 			if attached archetype_id as att_aid
 				and attached artefact_type as at
 				and attached adl_version as o_adl_version
@@ -136,7 +130,7 @@ feature -- Factory
 						o_artefact_type,
 						o_adl_version,
 						o_archetype_id,
-						o_parent_archetype_id,
+						parent_archetype_id,
 						is_controlled,
 						o_uid,
 						other_metadata,
@@ -158,7 +152,7 @@ feature -- Factory
 						o_artefact_type,
 						o_adl_version,
 						o_archetype_id,
-						o_parent_archetype_id,
+						parent_archetype_id,
 						is_controlled,
 						o_uid,
 						other_metadata,

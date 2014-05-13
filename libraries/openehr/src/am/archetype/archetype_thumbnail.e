@@ -45,7 +45,7 @@ feature -- Access
 	artefact_type: INTEGER
 			-- design type of artefact, archetype, template, template-component, etc
 
-	parent_archetype_id: detachable ARCHETYPE_HRID
+	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
 
 	other_details: detachable HASH_TABLE [STRING, STRING]
@@ -91,7 +91,7 @@ feature -- Modification
 
 	set_parent_archetype_id (an_id: STRING; id_is_old_style_flag: BOOLEAN)
 		do
-			create parent_archetype_id.make_from_string (an_id)
+			parent_archetype_id := an_id
 			parent_archetype_id_is_old_style := id_is_old_style_flag
 		end
 

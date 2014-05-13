@@ -68,7 +68,7 @@ feature -- Initialisation
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
-			parent_archetype_id := a_parent.archetype_id.deep_twin
+			parent_archetype_id := a_parent.archetype_id.interface_id
 			is_dirty := True
 			is_valid := True
 		ensure
@@ -78,7 +78,7 @@ feature -- Initialisation
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Specialisation_depth_valid: specialisation_depth = a_parent.specialisation_depth + 1
-			Parent_set: parent_archetype_id.as_string.same_string (a_parent.archetype_id.as_string)
+			Parent_set: parent_archetype_id.same_string (a_parent.archetype_id.as_string)
 			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty

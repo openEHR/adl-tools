@@ -116,7 +116,7 @@ feature -- Commands
 
 					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
-						if archetype_id_parser.valid_id(lines[4]) then
+						if archetype_id_parser.valid_id_reference (lines[4]) then
 							parent_id_str := lines[4]
 						elseif old_archetype_id_pattern_regex.matches (lines[4]) then
 							parent_id_str := lines[4]

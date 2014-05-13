@@ -71,6 +71,11 @@ feature -- Status Report
 			Result := adl14_id_regex.recognizes (an_id) or else adl15_id_regex.recognizes (an_id)
 		end
 
+	valid_id_reference (a_ref: STRING): BOOLEAN
+		do
+			Result := adl14_id_regex.recognizes (a_ref) or else adl15_id_reference_regex.recognizes (a_ref)
+		end
+
 	is_adl14_id: BOOLEAN
 
 	is_adl15_id: BOOLEAN
@@ -197,7 +202,7 @@ feature {NONE} -- Implementation
 			-- openEHR-EHR-ENTRY.any-thing.v22
 		once
 			create Result.make
-			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[0-9]+$")
+			Result.compile ((create {ARCHETYPE_HRID}).Adl14_id_regex)
 		end
 
 	adl15_id_regex: RX_PCRE_REGULAR_EXPRESSION
@@ -210,7 +215,20 @@ feature {NONE} -- Implementation
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1+33
 		once
 			create Result.make
-			Result.compile ("^([a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)*::)?[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[0-9]+(\.[0-9]+){2}((-rc|\+u|\+)[0-9]+)?$")
+			Result.compile ((create {ARCHETYPE_HRID}).Id_matcher_regex)
+		end
+
+	adl15_id_reference_regex: RX_PCRE_REGULAR_EXPRESSION
+			-- Pattern matcher for ADL 1.5 archetype id references, with optional namespace and optional versioning;
+			-- 	will match ids like:
+			-- openEHR-EHR-ENTRY.any.v1.0.1
+			-- openEHR-EHR-ENTRY.any.v1
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0
+		once
+			create Result.make
+			Result.compile ((create {ARCHETYPE_HRID}).Id_reference_matcher_regex)
 		end
 
 end

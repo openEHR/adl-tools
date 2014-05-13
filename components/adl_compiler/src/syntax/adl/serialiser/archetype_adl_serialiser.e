@@ -175,9 +175,9 @@ feature -- Serialisation
 
 	serialise_archetype_specialise
 		do
-			if archetype.is_specialised then
+			if attached archetype.parent_archetype_id as pid then
 				last_result.append (apply_style(symbol(SYM_SPECIALIZE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (create_indent(1) + archetype.parent_archetype_id.interface_id + format_item(FMT_NEWLINE))
+				last_result.append (create_indent(1) + pid + format_item(FMT_NEWLINE))
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end

@@ -628,8 +628,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_15_parser.y' at line 263")
 end
 
-			if archetype_id_parser.valid_id (yyvs2.item (yyvsp2)) then
-				create parent_archetype_id.make_from_string (yyvs2.item (yyvsp2))
+			if archetype_id_parser.valid_id_reference (yyvs2.item (yyvsp2)) then
+				parent_archetype_id := yyvs2.item (yyvsp2)
 			else
 				abort_with_error (ec_SASID, Void)
 			end
@@ -1207,7 +1207,7 @@ feature -- Parse Output
 
 	artefact_type: ARTEFACT_TYPE
 
-	parent_archetype_id: detachable ARCHETYPE_HRID
+	parent_archetype_id: detachable STRING
 
 	concept: detachable STRING
 

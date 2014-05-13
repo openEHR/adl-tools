@@ -172,7 +172,7 @@ feature -- Thumbnail state
 	old_id: detachable ARCHETYPE_HRID
 			-- previous Archetype identifier, due to change by editing
 
-	parent_id: detachable ARCHETYPE_HRID
+	parent_id: detachable STRING
 			-- Archetype identifier of specialisation parent at last file read
 
 	adl_version: STRING

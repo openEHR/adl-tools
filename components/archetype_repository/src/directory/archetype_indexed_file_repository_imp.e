@@ -82,8 +82,8 @@ feature {NONE} -- Implementation
 								arch_id := arch_tn.archetype_id.as_string
 								if arch_tn.archetype_id_is_old_style then
 									errors.add_error (ec_parse_archetype_e7, <<fn, arch_id>>, "")
-								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style then
-									errors.add_error (ec_parse_archetype_e11, <<fn, arch_tn.parent_archetype_id.as_string>>, "")
+								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style and attached arch_tn.parent_archetype_id as pid then
+									errors.add_error (ec_parse_archetype_e11, <<fn, pid>>, "")
 								elseif not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
 								elseif not archetype_id_index.has (arch_id) then

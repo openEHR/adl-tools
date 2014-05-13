@@ -44,10 +44,37 @@ inherit
 
 create
 	make, make_adl14, make_namespaced,
-	make_from_string, make_new,
+	make_from_string, make_from_string_reference,
+	make_new,
 	default_create
 
 feature -- Definitions
+
+	namespace_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+(\.[a-zA-Z][a-zA-Z0-9_]+)*"
+			-- Regex for namespace part of archetype ids.
+
+	qualified_rm_class_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}"
+			-- Regex for qualified rm_class part of archetype ids.
+
+	concept_id_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*"
+			-- Regex for concept_id part of archetype ids.
+
+	segment_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+"
+			-- Regex for any segment of an archetype id
+
+	release_version_regex: STRING = "[0-9]+(\.[0-9]+){2}"
+			-- Regex for ADL 1.5 release version
+			-- 	will match string of form N.M.P
+
+	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|\+u|\+)[0-9]+)?"
+			-- Regex for ADL 1.5 release version
+			-- 	will match string of form vN.M.P with or without -rcN, +uN at the end
+
+	reference_version_regex: STRING = "v[0-9]+(\.[0-9]+){0,2}"
+			-- regex for matching version part of an archetype id, which can have 1, 2 or 3 parts, i.e. .v1, .v1.2, .v1.2.1
+
+	major_version_regex: STRING = "v[0-9]+"
+			-- regex for matching major version part of an archetype id
 
 	Namespace_separator: STRING = "::"
 			-- separator between namespace and rest of id
@@ -72,6 +99,42 @@ feature -- Definitions
 	Default_concept: STRING = "any"
 
 	Default_release_version: STRING = "0.0.1"
+
+	Adl14_id_regex: STRING
+		once
+			Result := "^" + qualified_rm_class_regex + "\" + Axis_separator.out + concept_id_regex + "\" + Axis_separator.out + major_version_regex + "$"
+		ensure
+			Result.is_equal ("^" + qualified_rm_class_regex + "\" + Axis_separator.out + concept_id_regex + "\" + Axis_separator.out + major_version_regex + "$")
+		end
+
+	Id_matcher_regex: STRING
+			-- matcher for archetype ids, which must include full version
+		once
+			Result := "^" + root_regex + "\" + Axis_separator.out + version_regex + "$"
+		ensure
+			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + version_regex + "$")
+		end
+
+	Id_reference_matcher_regex: STRING
+			-- matcher for references to archetypes, which may include partial (i.e. interface) form of the version part
+			-- and no +u or -rc extension
+		once
+			Result := "^" + root_regex + "\" + Axis_separator.out + reference_version_regex + "$"
+		ensure
+			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + reference_version_regex + "$")
+		end
+
+	root_regex: STRING
+			-- core part of id up to but not including the '.' before the vN part
+		once
+			Result := "(" + namespace_regex + Namespace_separator + ")?" +
+				qualified_rm_class_regex + "\" + Axis_separator.out +
+				concept_id_regex
+		ensure
+			Result.is_equal ("(" + namespace_regex + Namespace_separator + ")?" +
+				qualified_rm_class_regex + "\" + Axis_separator.out +
+				concept_id_regex)
+		end
 
 feature -- Initialisation
 
@@ -120,6 +183,8 @@ feature -- Initialisation
 		end
 
 	make_from_string (a_str: STRING)
+			-- make from a string full identifier that is recognised by either
+			-- the ADL 1.4 id matcher or the ADL 1.5 id matcher
 		require
 			Valid_id: valid_id (a_str)
 		do
@@ -133,6 +198,24 @@ feature -- Initialisation
 			version_status := id_parser.version_status
 			commit_number := id_parser.commit_number
 			is_adl14_id := id_parser.is_adl14_id
+		end
+
+	make_from_string_reference (a_str: STRING)
+			-- make from a string identifier that is recognised by either
+			-- the ADL 1.4 id matcher or the ADL 1.5 id reference matcher, which
+			-- treats version numbers after the major version as optional
+		require
+			Valid_id_ref: valid_id_reference (a_str)
+		do
+			id_parser.execute (a_str)
+			namespace := id_parser.namespace
+			rm_publisher := id_parser.rm_publisher
+			rm_closure := id_parser.rm_closure
+			rm_class := id_parser.rm_class
+			concept_id := id_parser.concept_id
+			release_version := id_parser.release_version
+			version_status := id_parser.version_status
+			commit_number := id_parser.commit_number
 		end
 
 	make_new (a_qualified_rm_class: STRING)
@@ -316,38 +399,46 @@ feature -- Access
 feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
+			-- True if `an_id' is either a valid ADL 1.4 id or 1.5 id
 		do
 			Result := id_parser.valid_id (an_id)
 		end
 
-	valid_id_segment (a_segment: STRING): BOOLEAN
-			-- check that `a_segment' has no section or axis separators, and consists only of alphanumerics +
-			-- underscore
+	valid_id_reference (a_ref: STRING): BOOLEAN
+			-- True if `a_ref' is a valid reference to an archetype, i.e. a value archetype id
+			-- down to the major version, with optional minor and patch version, no extension
 		do
-			Result := segment_regex.recognizes (a_segment)
+			Result := id_parser.valid_id_reference (a_ref)
+		end
+
+	valid_id_segment (a_segment: STRING): BOOLEAN
+			-- check that `a_segment' has no section or axis separators, and consists
+			-- only of alphanumerics + underscore
+		do
+			Result := segment_regex_matcher.recognizes (a_segment)
 		end
 
 	valid_concept_id (a_concept_id: STRING): BOOLEAN
 			-- Is `a_concept_id' a valid string to be part of an archetype id?
 		do
-			Result := concept_id_regex.recognizes (a_concept_id)
+			Result := concept_id_regex_matcher.recognizes (a_concept_id)
 		end
 
 	valid_qualified_rm_class (a_qualified_rm_class: STRING): BOOLEAN
 			-- Is `a_qualified_rm_class' a valid string to be part of an archetype id?
 		do
-			Result := qualified_rm_class_regex.recognizes (a_qualified_rm_class)
+			Result := qualified_rm_class_regex_matcher.recognizes (a_qualified_rm_class)
 		end
 
 	valid_namespace (a_namespace: STRING): BOOLEAN
 			-- Is `a_namespace' a valid string to be part of an archetype id?
 		do
-			Result := namespace_regex.recognizes (a_namespace)
+			Result := namespace_regex_matcher.recognizes (a_namespace)
 		end
 
 	valid_release_version (a_release_version: STRING): BOOLEAN
 		do
-			Result := release_version_regex.recognizes (a_release_version)
+			Result := release_version_regex_matcher.recognizes (a_release_version)
 		end
 
 	is_adl14_id: BOOLEAN
@@ -411,40 +502,40 @@ feature {NONE} -- Implementation
 			Result.append (concept_id)
 		end
 
-	namespace_regex: RX_PCRE_REGULAR_EXPRESSION
+	namespace_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for namespace part of archetype ids.
 		once
 			create Result.make
-			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(\.[a-zA-Z][a-zA-Z0-9_]+)*$")
+			Result.compile ("^" + namespace_regex + "$")
 		end
 
-	qualified_rm_class_regex: RX_PCRE_REGULAR_EXPRESSION
+	qualified_rm_class_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for qualified rm_class part of archetype ids.
 		once
 			create Result.make
-			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*$")
+			Result.compile ("^" + qualified_rm_class_regex + "$")
 		end
 
-	concept_id_regex: RX_PCRE_REGULAR_EXPRESSION
+	concept_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for concept_id part of archetype ids.
 		once
 			create Result.make
-			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*$")
+			Result.compile ("^" + concept_id_regex + "$")
 		end
 
-	segment_regex: RX_PCRE_REGULAR_EXPRESSION
+	segment_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for any segment of an archetype id
 		once
 			create Result.make
-			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+$")
+			Result.compile ("^" + segment_regex + "$")
 		end
 
-	release_version_regex: RX_PCRE_REGULAR_EXPRESSION
+	release_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 release version
 			-- 	will match string of form N.M.P
 		once
 			create Result.make
-			Result.compile ("^[0-9]+(\.[0-9]+){2}$")
+			Result.compile ("^" + release_version_regex + "$")
 		end
 
 	id_parser: ARCHETYPE_HRID_PARSER

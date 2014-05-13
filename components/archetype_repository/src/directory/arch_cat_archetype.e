@@ -106,7 +106,7 @@ feature {NONE} -- Initialisation
 			-- basic state
 			id := arch_thumbnail.archetype_id
 			if arch_thumbnail.is_specialised then
-				parent_id := arch_thumbnail.parent_archetype_id
+				parent_ref := arch_thumbnail.parent_archetype_id
 			end
 			create artefact_type.make (arch_thumbnail.artefact_type)
 			compilation_state := Cs_unread
@@ -119,7 +119,7 @@ feature {NONE} -- Initialisation
 			end
 		ensure
 			id_set: id = arch_thumbnail.archetype_id
-			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
+			parent_id_set: arch_thumbnail.is_specialised implies parent_ref = arch_thumbnail.parent_archetype_id
 			Compilation_state: compilation_state = Cs_unread
 		end
 
@@ -159,7 +159,7 @@ feature {NONE} -- Initialisation
 			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
-			parent_id := a_parent.archetype_id
+			parent_ref := parent_id.interface_id
 
 			save_differential_text
 			initialise
@@ -195,7 +195,19 @@ feature -- Identification
 		end
 
 	parent_id: detachable like id
-			-- Archetype identifier of specialisation parent
+			-- Archetype identifier of specialisation parent archtype matched in this repository that has
+			-- an id matching the interface id reference (i.e. archetype id down to major version) in
+			-- the 'parent_archetype_id' property of the target.
+		do
+			if is_specialised and then attached {ARCH_CAT_ARCHETYPE} parent as aca then
+				Result := aca.id
+			end
+		end
+
+	parent_ref: detachable STRING
+			-- Archetype id ref from original archetype; this won't usually include on its own the
+			-- full versioning information; the matching process in ARCHETYPE_CATALOG population
+			-- phase has to occur first, and then `parent_id' can be populated.
 
 	artefact_type: ARTEFACT_TYPE
 			-- type of artefact i.e. archetype, template, template_component, operational_template
@@ -220,7 +232,19 @@ feature -- Identification
 			Result := id.as_string
 		end
 
-	ontological_parent_name: STRING
+	semantic_parent_key: STRING
+			-- semantic key to find parent node in semantic id tree
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be an id ref like openEHR-EHR-OBSERVATION.thing.v1
+		do
+			if is_specialised and then attached parent_ref as att_parent_ref then
+				Result := att_parent_ref
+			else
+				Result := id.qualified_rm_class
+			end
+		end
+
+	semantic_parent_id: STRING
 			-- semantic name of parent node in ontology tree
 			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
 			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
@@ -307,7 +331,7 @@ feature -- Relationships
 	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 		do
-			Result := attached parent_id
+			Result := attached parent_ref
 		end
 
 	has_slots: BOOLEAN
@@ -634,7 +658,7 @@ feature -- Compilation
 		local
 			old_ont_parent: STRING
 		do
-			old_ont_parent := ontological_parent_name
+			old_ont_parent := semantic_parent_id
 			file_mgr.refresh_from_source
 			old_ontological_parent_name := old_ont_parent
 			signal_from_scratch
@@ -787,8 +811,8 @@ feature {NONE} -- Compilation
 			differential_archetype := adl_15_engine.parse (source_text, Current)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
-				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
-					add_warning (ec_parse_w1, <<id.as_string, pid.as_string, da_pid.as_string>>)
+				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_parent_ref and then not pid.as_string.starts_with (da_parent_ref) then
+					add_warning (ec_parse_w1, <<id.as_string, pid.as_string, da_parent_ref>>)
 				else
 					add_info (ec_parse_i1, <<id.as_string>>)
 				end
@@ -995,8 +1019,6 @@ feature {MAIN_WINDOW} -- File Access
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
-		local
-			flat_path: STRING
 		do
 			file_mgr.clean_generated
 			signal_from_scratch
@@ -1015,8 +1037,6 @@ feature {GUI_TEST_TOOL} -- File Access
 		end
 
 	compiled_differential: STRING
-		local
-			fd: PLAIN_TEXT_FILE
 		do
 			create Result.make_empty
 			if attached file_mgr.compiled_differential as odin_text then
