@@ -82,7 +82,7 @@ aom_rm_type_substitutions = <
 --
 
 aom_lifecycle_mappings = <
-	["AuthorDraft"] = <"initial">
+	["AuthorDraft"] = <"unmanaged">
 	["Draft"] = <"unstable">
 	["TeamReview"] = <"unstable">
 	["Team Review"] = <"unstable">

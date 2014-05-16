@@ -199,7 +199,7 @@ feature -- Commands
 
 													elseif action.is_equal (opts.Serialise_action) or action.is_equal (opts.Serialise_action_alt_sp) then
 														if aca.is_valid then
-															io.put_string (aca.serialise (use_flat_source, output_format) + "%N")
+															io.put_string (aca.serialise_object (use_flat_source, output_format) + "%N")
 														else
 															io.put_string (get_msg (ec_archetype_not_valid, <<aca.id.as_string>>))
 														end

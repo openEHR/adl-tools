@@ -91,13 +91,13 @@ feature -- Access
 			-- the repository profile accessor from which this catalogue gets its contents
 
 	archetype_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
-			-- index of archetype descriptors keyed by mixed-case archetype id.
+			-- index of archetype descriptors keyed by MIXED-CASE archetype id.
 		attribute
 			create Result.make (0)
 		end
 
 	semantic_item_index: HASH_TABLE [ARCH_CAT_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by lower-case semantic concept. Used during construction of `directory'
+			-- Index of archetype & class nodes, keyed by LOWER-CASE semantic concept. Used during construction of `directory'
 			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
 		attribute
