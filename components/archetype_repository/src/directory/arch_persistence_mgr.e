@@ -114,9 +114,11 @@ feature -- Access
 
 			-- extract the adl_version
 			Adl_version_regex_matcher.match (line_1)
-			adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
-			adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
-			adl_version.left_adjust
+			if Adl_version_regex_matcher.has_matched then
+				adl_var_ver_text := Adl_version_regex_matcher.captured_substring (0)
+				adl_version := adl_var_ver_text.substring (adl_var_ver_text.index_of ('=', 1) + 1, adl_var_ver_text.count)
+				adl_version.left_adjust
+			end
 
 			if adl_version < Id_conversion_version then
 				adl_14_15_rewriter.execute (arch_text)
