@@ -616,8 +616,6 @@ feature -- Compilation
 					add_error (ec_compile_exception, <<id.as_string, att_meaning, att_exc_trace>>)
 				end
 			end
-		ensure
-			Compilation_timestamped: last_compile_attempt_timestamp /= Time_epoch
 		rescue
 			if file_mgr.has_legacy_flat_file and compilation_state = Cs_ready_to_parse then
 				clean_generated
