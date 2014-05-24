@@ -91,6 +91,10 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			flat_parent: FLAT_ARCHETYPE
 			ca, ca_parent_flat: C_ATTRIBUTE
+			path_in_flat: STRING
+			co_type_name: STRING
+			bmm_class_def: detachable BMM_CLASS_DEFINITION
+			is_root_flag: BOOLEAN
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				-- capture total node count
@@ -121,9 +125,19 @@ feature {NONE} -- Implementation
 							-- it is an attribute for a different RM object type
 							create apa.make_from_string (ca.rm_attribute_path)
 							flat_parent := target_descriptor.specialisation_ancestor.flat_archetype
-							ca_parent_flat := flat_parent.attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-							create an_attr_stat_accum.make (ca_parent_flat.parent.rm_type_name, ca_parent_flat.parent.is_root)
-							an_attr_stat_accum.add_rm_attribute_occurrence (ca_parent_flat.rm_attribute_name)
+
+							path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
+							if flat_parent.has_attribute_path (path_in_flat) then
+								ca_parent_flat := flat_parent.attribute_at_path (path_in_flat)
+								co_type_name := ca_parent_flat.parent.rm_type_name
+								is_root_flag := ca_parent_flat.parent.is_root
+							else
+								bmm_class_def := target_descriptor.rm_schema.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
+								co_type_name := bmm_class_def.root_class
+								is_root_flag := False
+							end
+							create an_attr_stat_accum.make (co_type_name, is_root_flag)
+							an_attr_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
 							stat_accums.extend (an_attr_stat_accum)
 						end
 					end
