@@ -82,6 +82,9 @@
 		<library name="ise_vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
 		<library name="ise_xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="ise_xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
+
+		<library name="iso8601" location="$EIFFEL_HUB\library\iso8601\src\iso8601.ecf"/>
+
 		<cluster name="adl_components" location="..\..\..\components\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>

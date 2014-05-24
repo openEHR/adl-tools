@@ -34,6 +34,8 @@
 		<library name="odin" location="$EOMF\library\odin\odin.ecf"/>
 		<library name="bmm" location="$EOMF\library\bmm\bmm.ecf"/>
 
+		<library name="iso8601" location="$EIFFEL_HUB\library\iso8601\src\iso8601.ecf"/>
+
 		<cluster name="app" location="..\src\main\" recursive="true"/>
 		<cluster name="app_env" location="..\src\env\" recursive="true"/>
 
