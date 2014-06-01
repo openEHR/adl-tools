@@ -658,7 +658,11 @@ feature -- Compilation
 		do
 			old_ont_parent := semantic_parent_id
 			file_mgr.refresh_from_source
-			old_ontological_parent_name := old_ont_parent
+
+			-- see if ontological parent has changed
+			if not old_ont_parent.is_equal (semantic_parent_id) then
+				old_ontological_parent_name := old_ont_parent
+			end
 			signal_from_scratch
 		ensure
 			Compiler_state_set: (<<Cs_unread, Cs_invalid>>).has (compilation_state)

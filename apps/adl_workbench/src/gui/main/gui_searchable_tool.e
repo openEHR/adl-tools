@@ -7,15 +7,11 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
-
 deferred class GUI_SEARCHABLE_TOOL
 
 feature -- Access
 
-	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
+	matching_ids (a_key: STRING): ARRAYED_SET [STRING]
 			-- obtain a list of matching ids
 		require
 			Key_valid: not a_key.is_empty
@@ -33,14 +29,14 @@ feature -- Status Report
 		deferred
 		end
 
-	valid_item_id (a_key: attached STRING): BOOLEAN
+	valid_item_id (a_key: STRING): BOOLEAN
 			-- key is a valid identifier of an item managed in this tool
 		deferred
 		end
 
 feature -- Commands
 
-	select_item_by_id (id: attached STRING)
+	select_item_by_id (id: STRING)
 			-- Select `id' in the tool and go to corresponding widget in GUI visualisation
 		require
 			item_selectable
