@@ -15,7 +15,7 @@ profile_name = <"CIMI">
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_pattern = <"cimi_full_1.*|cimi_test.*">
+rm_schema_pattern = <"cimi_full_1.*|cimi_minimal.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
