@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Class map control - visualise property view of a class, including inheritance lineage."
+	description: "Class control - visualise property view of a class, including inheritance lineage."
 	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -30,6 +30,10 @@ feature -- Definitions
 		once
 			Result := <<Grid_declared_in_col, Grid_property_col, Grid_property_type_col>>
 		end
+
+	Grid_enum_name_col: INTEGER = 1
+	Grid_enum_value_col: INTEGER = 2
+	Grid_enum_dummy_col: INTEGER = 3
 
 feature -- Initialisation
 
@@ -66,18 +70,11 @@ feature {NONE} -- Implementation
 			create anc_classes.make(0)
 			anc_classes.compare_objects
 
-			-- grid columns
-			ev_grid.insert_new_column (Grid_declared_in_col)
-			ev_grid.column (Grid_declared_in_col).set_title (get_msg (ec_property_grid_declared_in_col_title, Void))
-			ev_grid.insert_new_column (Grid_property_col)
-			ev_grid.column (Grid_property_col).set_title (get_msg (ec_property_grid_property_col_title, Void))
-			ev_grid.insert_new_column (Grid_property_type_col)
-			ev_grid.column (Grid_property_type_col).set_title (get_msg (ec_property_grid_property_type_col_title, Void))
-
-			-- add the rows
-			check attached source as src then
- 				populate_class_node (src)
- 			end
+			if attached {BMM_ENUMERATION_DEFINITION[COMPARABLE]} source then
+				do_populate_enumeration
+			else
+				do_populate_properties
+			end
 
 			-- resize grid cols properly
 			Grid_column_ids.do_all (
@@ -89,13 +86,55 @@ feature {NONE} -- Implementation
 			)
 		end
 
-	ev_grid: EV_GRID_KBD_MOUSE
+	do_populate_properties
+			-- populate properties of normal class
+		do
+			-- grid columns
+			ev_grid.insert_new_column (Grid_declared_in_col)
+			ev_grid.column (Grid_declared_in_col).set_title (get_text (ec_property_grid_declared_in_col_title))
+			ev_grid.insert_new_column (Grid_property_col)
+			ev_grid.column (Grid_property_col).set_title (get_text (ec_property_grid_property_col_title))
+			ev_grid.insert_new_column (Grid_property_type_col)
+			ev_grid.column (Grid_property_type_col).set_title (get_text (ec_property_grid_property_type_col_title))
+
+			-- add the rows
+			check attached source as src then
+ 				populate_class_node (src)
+ 			end
+		end
+
+	do_populate_enumeration
+			-- populate enumeration class
+   		local
+			gli: EV_GRID_LABEL_ITEM
+		do
+			-- grid columns
+			ev_grid.insert_new_column (Grid_enum_name_col)
+			ev_grid.column (Grid_enum_name_col).set_title (get_text (ec_enumeration_grid_enum_name_col_title))
+			ev_grid.insert_new_column (Grid_enum_value_col)
+			ev_grid.column (Grid_enum_value_col).set_title (get_text (ec_enumeration_grid_enum_value_col_title))
+			ev_grid.insert_new_column (Grid_enum_dummy_col)
+
+			-- add the rows
+			check attached {BMM_ENUMERATION_DEFINITION[COMPARABLE]} source as enum_src then
+				across enum_src.item_names as names_csr loop
+					create gli.make_with_text (names_csr.item)
+					-- gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
+					ev_grid.set_item (Grid_enum_name_col, ev_grid.row_count + 1, gli)
+
+					create gli.make_with_text (enum_src.item_values.i_th (names_csr.target_index).out)
+					ev_grid.set_item (Grid_enum_value_col, ev_grid.row_count, gli)
+				end
+ 			end
+		end
 
 	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 
 	anc_classes: ARRAYED_LIST [STRING]
 
-   	populate_class_node (a_class_def: attached BMM_CLASS_DEFINITION)
+	ev_grid: EV_GRID_KBD_MOUSE
+
+   	populate_class_node (a_class_def: BMM_CLASS_DEFINITION)
 			-- Add rows and sub rows if there are properties from `a_class_def' found in the flat_properties
 			-- of `source'. Then iterate through ancestors recusrively
    		local

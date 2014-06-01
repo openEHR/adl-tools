@@ -629,6 +629,8 @@ feature -- Definitions
 		ec_ancestors_tab_text: STRING = "ancestors_tab_text"
 		ec_descendants_tab_text: STRING = "descendants_tab_text"
 		ec_serialise_frame_text: STRING = "serialise_frame_text"
+		ec_enumeration_grid_enum_name_col_title: STRING = "enumeration_grid_enum_name_col_title"
+		ec_enumeration_grid_enum_value_col_title: STRING = "enumeration_grid_enum_value_col_title"
 		ec_property_grid_declared_in_col_title: STRING = "property_grid_declared_in_col_title"
 		ec_property_grid_property_col_title: STRING = "property_grid_property_col_title"
 		ec_property_grid_property_type_col_title: STRING = "property_grid_property_type_col_title"

@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Controller for CLASS_MAP_TOOL in docking structure."
+	description: "Controller for CLASS_TOOL in docking structure."
 	keywords:    "ADL, archetype, class map, docking"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"

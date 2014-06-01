@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (699)
+			create message_table.make (701)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -644,6 +644,8 @@ feature -- Initialisation
 			message_table.put ("Ancestors", ec_ancestors_tab_text)
 			message_table.put ("Descendants", ec_descendants_tab_text)
 			message_table.put ("Output Format", ec_serialise_frame_text)
+			message_table.put ("Name", ec_enumeration_grid_enum_name_col_title)
+			message_table.put ("Value", ec_enumeration_grid_enum_value_col_title)
 			message_table.put ("Declared in", ec_property_grid_declared_in_col_title)
 			message_table.put ("Property", ec_property_grid_property_col_title)
 			message_table.put ("Type", ec_property_grid_property_type_col_title)

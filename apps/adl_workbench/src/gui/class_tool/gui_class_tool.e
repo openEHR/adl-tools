@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Class map control - Visualise a reference model class as a node map"
-	keywords:    "archetype, class, gui"
+	description: "Class view tool"
+	keywords:    "class, gui"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -69,20 +69,20 @@ feature -- Initialisation
 			ev_view_label.set_text ("View ")
 			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
 			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
-			ev_differential_view_button.set_tooltip (get_msg (ec_set_differential_archetype_view, Void))
-			ev_flat_view_button.set_tooltip (get_msg (ec_set_flat_archetype_view, Void))
+			ev_differential_view_button.set_tooltip (get_text (ec_set_differential_archetype_view))
+			ev_flat_view_button.set_tooltip (get_text (ec_set_flat_archetype_view))
 
 			-- visual characteristics: notebook
-			ev_notebook.set_item_text (properties_view.ev_root_container, get_msg (ec_properties_tab_text, Void))
+			ev_notebook.set_item_text (properties_view.ev_root_container, get_text (ec_properties_tab_text))
 			ev_notebook.item_tab (properties_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/properties"))
 
-			ev_notebook.set_item_text (closure_view.ev_root_container, get_msg (ec_closure_tab_text, Void))
+			ev_notebook.set_item_text (closure_view.ev_root_container, get_text (ec_closure_tab_text))
 			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/closure"))
 
-			ev_notebook.set_item_text (ancestors_view.ev_root_container, get_msg (ec_ancestors_tab_text, Void))
+			ev_notebook.set_item_text (ancestors_view.ev_root_container, get_text (ec_ancestors_tab_text))
 			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/ancestors"))
 
-			ev_notebook.set_item_text (descendants_view.ev_root_container, get_msg (ec_descendants_tab_text, Void))
+			ev_notebook.set_item_text (descendants_view.ev_root_container, get_text (ec_descendants_tab_text))
 			ev_notebook.item_tab (descendants_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/descendants"))
 
 			-- set events
@@ -207,8 +207,6 @@ feature {NONE} -- Implementation
 	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
 
 	ev_view_label: EV_LABEL
-
---	node_path: OG_PATH
 
 feature {NONE} -- Inapplicable
 

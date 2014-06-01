@@ -450,6 +450,9 @@ templates = <
 
 		["serialise_frame_text"] = <"Output Format">
 
+		["enumeration_grid_enum_name_col_title"] = <"Name">
+		["enumeration_grid_enum_value_col_title"] = <"Value">
+
 		["property_grid_declared_in_col_title"] = <"Declared in">
 		["property_grid_property_col_title"] = <"Property">
 		["property_grid_property_type_col_title"] = <"Type">
