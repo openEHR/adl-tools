@@ -839,7 +839,7 @@ end
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- copy existence and cardinality from reference model to node if it doesn't have them set; infer occurrences
 		local
-			rm_attr_desc: BMM_PROPERTY_DEFINITION
+			rm_attr_desc: BMM_PROPERTY [BMM_TYPE]
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				rm_attr_desc := rm_schema.property_definition (ca.parent.rm_type_name, ca.rm_attribute_name)

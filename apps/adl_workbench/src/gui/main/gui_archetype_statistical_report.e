@@ -92,7 +92,7 @@ feature {NONE} -- Implementation
 			ev_rm_breakdown_nb: EV_NOTEBOOK
 			gli: EV_GRID_LABEL_ITEM
 			class_row, attr_row: EV_GRID_ROW
-			class_def: BMM_CLASS_DEFINITION
+			class_def: BMM_CLASS
 		do
 			-----------------------------------
 			-- create widgets
@@ -197,7 +197,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS_DEFINITION} gli.data as class_def then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS} gli.data as class_def then
 				create menu
 				create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_class_in_active_tool (class_def))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
@@ -211,14 +211,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
 			gui_agents.select_class_agent.call ([a_class_def])
 			gui_agents.history_update_agent.call([])
 		end
 
-	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])

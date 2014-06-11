@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 			ca, ca_parent_flat: C_ATTRIBUTE
 			path_in_flat: STRING
 			co_type_name: STRING
-			bmm_class_def: detachable BMM_CLASS_DEFINITION
+			bmm_class_def: detachable BMM_CLASS
 			is_root_flag: BOOLEAN
 		do
 			if attached {C_OBJECT} a_c_node as co then

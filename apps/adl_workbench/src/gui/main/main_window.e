@@ -1017,13 +1017,13 @@ feature -- Class tool
 			create Result.make (docking_manager)
 		end
 
-	display_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
 			class_tools.create_new_tool
 			display_class (a_class_def)
 		end
 
-	display_class (a_class_def: BMM_CLASS_DEFINITION)
+	display_class (a_class_def: BMM_CLASS)
 			-- display a class selected in some tool
 		do
 			class_tools.populate_active_tool (a_class_def)

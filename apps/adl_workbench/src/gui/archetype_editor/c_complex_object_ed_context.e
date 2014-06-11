@@ -51,7 +51,7 @@ feature -- Access
 			-- Editor nodes for unconstrained RM attributes that have been lazy-requested for viewing
 			-- Once created, they don't leave, they are just displayed or hidden in the EV_GRID tree
 
-	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
 		do
 			if ed_context.in_differential_view and not ed_context.editing_enabled then
 				Result := rm_type.semantic_class.properties
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 			Result := across rm_properties as props_csr some can_show_rm_property (props_csr.item) end
 		end
 
-	can_show_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
+	can_show_rm_property (an_rm_prop: BMM_PROPERTY [BMM_TYPE]): BOOLEAN
 			-- True if `an_rm_prop' should be shown below current object node given current UI settings
 		do
 			Result := display_settings.show_rm_data_properties
@@ -244,8 +244,8 @@ feature {NONE} -- Implementation
 				and (not an_rm_prop.is_im_infrastructure or else display_settings.show_rm_infrastructure_properties)
 		end
 
-	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION; ui_settings: GUI_DEFINITION_SETTINGS)
-			-- enter a BMM_PROPERTY_DEFINITION
+	prepare_rm_property (an_rm_prop: BMM_PROPERTY [BMM_TYPE]; ui_settings: GUI_DEFINITION_SETTINGS)
+			-- enter a BMM_PROPERTY
 		local
 			c_attr_ed_node: C_ATTRIBUTE_ED_CONTEXT
 			att_gui_grid: EVX_GRID

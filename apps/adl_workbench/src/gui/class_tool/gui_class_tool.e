@@ -161,7 +161,7 @@ feature -- Commands
 
 	go_to_selected_item
 		do
-			if attached {BMM_CLASS_DEFINITION} selection_history.selected_item as class_def then
+			if attached {BMM_CLASS} selection_history.selected_item as class_def then
 				gui_agents.select_class_agent.call ([class_def])
 			end
 		end

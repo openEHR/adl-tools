@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 		local
 			arch_rm_type_name, ref_rm_type_name, arch_path: detachable STRING
 			tail_path: STRING
-			bmm_class: BMM_CLASS_DEFINITION
+			bmm_class: BMM_CLASS
 			og_tail_path: OG_PATH
 			object_at_matching_path: detachable C_OBJECT
 		do
@@ -447,7 +447,7 @@ end
 		local
 			attr_rm_type_in_flat_anc, rm_attr_type: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
-			rm_prop_def: BMM_PROPERTY_DEFINITION
+			rm_prop_def: BMM_PROPERTY [BMM_TYPE]
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then -- now check if this object a valid type of its owning attribute

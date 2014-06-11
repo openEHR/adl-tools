@@ -186,7 +186,7 @@ feature -- Initialisation
 			create menu_item_index.make (0)
 
 			create ev_menu_bar
-			menu_keys.do_all ()
+		--	menu_keys.do_all ()
 		end
 
 feature -- Access

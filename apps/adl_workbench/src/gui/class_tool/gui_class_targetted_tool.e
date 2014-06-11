@@ -19,7 +19,7 @@ inherit
 
 feature -- Access
 
-	source: detachable BMM_CLASS_DEFINITION
+	source: detachable BMM_CLASS
 			-- class definition to which this tool is targetted
 
 	rm_schema: detachable BMM_SCHEMA
@@ -64,7 +64,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	add_class_context_menu (menu: EV_MENU; a_bmm_class_def: BMM_CLASS_DEFINITION)
+	add_class_context_menu (menu: EV_MENU; a_bmm_class_def: BMM_CLASS)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
@@ -78,14 +78,14 @@ feature {NONE} -- Implementation
 			menu.extend (an_mi)
 		end
 
-	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
 			gui_agents.select_class_agent.call ([a_class_def])
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
 
-	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])

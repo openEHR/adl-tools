@@ -62,7 +62,7 @@ feature {NONE} -- Implementation
 
 	do_all_nodes (a_target: attached ARCHETYPE_CONSTRAINT; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT]])
 		local
-			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+			props: HASH_TABLE [BMM_PROPERTY, STRING]
 		do
 			depth := depth + 1
 
@@ -87,7 +87,7 @@ feature {NONE} -- Implementation
 			depth := depth - 1
 		end
 
-	do_at_surface_nodes (a_target: attached ARCHETYPE_CONSTRAINT; 
+	do_at_surface_nodes (a_target: attached ARCHETYPE_CONSTRAINT;
 				node_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT]];
 				node_is_at_surface: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.

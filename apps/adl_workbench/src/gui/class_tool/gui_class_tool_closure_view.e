@@ -285,7 +285,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
+	continue_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; depth: INTEGER): BOOLEAN
 			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
 		do
 			if attached last_property_grid_row then
@@ -299,8 +299,8 @@ feature {NONE} -- Implementation
 
 	last_property_grid_row: detachable EV_GRID_ROW
 
-	enter_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER)
-			-- enter a BMM_PROPERTY_DEFINITION
+	enter_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; depth: INTEGER)
+			-- enter a BMM_PROPERTY
 		local
 			parent_class_row: EV_GRID_ROW
 			prop_str, type_str: STRING
@@ -320,9 +320,9 @@ feature {NONE} -- Implementation
 				last_property_grid_row := Void
 				-- if a row for the property already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
 				if attached gui_grid.matching_sub_row (parent_class_row,
-					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
+					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY [BMM_TYPE]): BOOLEAN
 						do
-							Result := attached {BMM_PROPERTY_DEFINITION} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
+							Result := attached {BMM_PROPERTY [BMM_TYPE]} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
 						end (?, a_bmm_prop)) as a_prop_row
 				then
 					-- put something on the stack to match stack removal in exit routine
@@ -342,23 +342,23 @@ feature {NONE} -- Implementation
 						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
 						prop_str := a_bmm_prop.name.twin
 						create type_str.make_empty
-						if attached {BMM_CLASS_DEFINITION} a_bmm_prop.type as bmm_class_def then
+						if attached {BMM_CLASS} a_bmm_prop.type as bmm_class_def then
 							type_str.append (bmm_class_def.name)
 							has_type_subs := bmm_class_def.has_type_substitutions
 							type_spec := bmm_class_def
 
-						elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_bmm_prop.type as bmm_cont_type_ref then
+						elseif attached {BMM_CONTAINER_TYPE} a_bmm_prop.type as bmm_cont_type_ref then
 							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
-							type_str.append (bmm_cont_type_ref.type.name)
+							type_str.append (bmm_cont_type_ref.type.as_type_string)
 							has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
 							type_spec := bmm_cont_type_ref.type
 
-						elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_bmm_prop.type as bmm_gen_type_ref then
+						elseif attached {BMM_GENERIC_TYPE} a_bmm_prop.type as bmm_gen_type_ref then
 							type_str.append (bmm_gen_type_ref.as_display_type_string)
 							has_type_subs := bmm_gen_type_ref.has_type_substitutions
 							type_spec := bmm_gen_type_ref.root_type
 
-						elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
+						elseif attached {BMM_GENERIC_PARAMETER} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
 							type_str.append (bmm_gen_parm_def.as_display_type_string)
 							has_type_subs := bmm_gen_parm_def.has_type_substitutions
 							type_spec := a_bmm_prop.type
@@ -412,8 +412,8 @@ feature {NONE} -- Implementation
 		 	ev_grid_rm_row_removals_stack.extend (ignore)
 		end
 
-	exit_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION)
-			-- exit a BMM_PROPERTY_DEFINITION
+	exit_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE])
+			-- exit a BMM_PROPERTY
 		do
 			if not ev_grid_rm_row_removals_stack.item then
 				rm_node_path.remove_last
@@ -432,18 +432,18 @@ feature {NONE} -- Implementation
 				a_class_grid_row.item (1).enable_select
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				if attached {BMM_CLASS_DEFINITION} a_class_grid_row.data as a_class_def then
+				if attached {BMM_CLASS} a_class_grid_row.data as a_class_def then
 					add_class_context_menu (menu, a_class_def)
 				end
 
 				-- if there are type substitutions available, add sub-menu for that
-				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
+				if attached {BMM_CLASS} bmm_type_spec as bmm_class_def then
 					subs := bmm_class_def.type_substitutions
-				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
+				elseif attached {BMM_CONTAINER_TYPE} bmm_type_spec as bmm_cont_type_ref then
 					subs := bmm_cont_type_ref.type.type_substitutions
-				elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
+				elseif attached {BMM_GENERIC_TYPE} bmm_type_spec as bmm_gen_type_ref then
 					subs := bmm_gen_type_ref.type_substitutions
-				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
+				elseif attached {BMM_GENERIC_PARAMETER} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
 					subs := bmm_gen_parm_def.type_substitutions
 				end
 				if attached subs as s then
@@ -459,7 +459,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY_DEFINITION} a_prop_grid_row.data as bmm_pd and then not bmm_pd.is_mandatory then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY [BMM_TYPE]} a_prop_grid_row.data as bmm_pd and then not bmm_pd.is_mandatory then
 				create menu
 				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_property (a_prop_grid_row))
 				menu.extend (an_mi)
@@ -532,7 +532,7 @@ feature {NONE} -- Implementation
 		require
 			class_grid_row_valid: attached a_class_grid_row.parent_row
 		local
-			bmm_subtype_def: BMM_CLASS_DEFINITION
+			bmm_subtype_def: BMM_CLASS
 		do
 			bmm_subtype_def := rm_schema.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes

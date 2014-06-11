@@ -40,7 +40,7 @@ feature -- Initialisation
 			create children.make(0)
 		end
 
-	make_rm (an_rm_prop: BMM_PROPERTY_DEFINITION; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make_rm (an_rm_prop: BMM_PROPERTY [BMM_TYPE]; an_ed_context: ARCH_ED_CONTEXT_STATE)
 			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		do
 			precursor (an_rm_prop, an_ed_context)
@@ -56,7 +56,7 @@ feature -- Access
 	arch_node_in_ancestor: detachable C_ATTRIBUTE
 			-- corresponding archetype node in specialisation parent, if applicable
 
-	rm_property: BMM_PROPERTY_DEFINITION
+	rm_property: BMM_PROPERTY [BMM_TYPE]
 			-- RM property of node being edited
 
 	children: ARRAYED_LIST [C_OBJECT_ED_CONTEXT]
@@ -452,7 +452,7 @@ feature {NONE} -- Context menu
 		local
 			an_mi: EV_MENU_ITEM
 			types_sub_menu: EV_MENU
-			rm_class_def: BMM_CLASS_DEFINITION
+			rm_class_def: BMM_CLASS
 		do
 			create context_menu
 
@@ -479,7 +479,7 @@ feature {NONE} -- Context menu
 			end
 		end
 
-	ui_offer_add_new_arch_child (rm_class_def: BMM_CLASS_DEFINITION)
+	ui_offer_add_new_arch_child (rm_class_def: BMM_CLASS)
 			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
 		local
 			dialog: GUI_C_OBJECT_DIALOG

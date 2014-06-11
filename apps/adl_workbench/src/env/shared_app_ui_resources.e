@@ -206,7 +206,7 @@ feature -- Definitions
 		local
 			pixmap_name: STRING
 		do
-			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
+			if not attached {BMM_GENERIC_PARAMETER} a_type_spec then
 				pixmap_name := rm_icon_dir + resource_path_separator + an_rm_publisher + resource_path_separator + a_type_spec.root_class
 				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 					Result := get_icon_pixmap (pixmap_name)

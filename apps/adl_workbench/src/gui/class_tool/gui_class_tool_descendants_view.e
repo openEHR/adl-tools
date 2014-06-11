@@ -67,7 +67,7 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 
-   	create_node (a_class_def: BMM_CLASS_DEFINITION): EV_TREE_ITEM
+   	create_node (a_class_def: BMM_CLASS): EV_TREE_ITEM
 			-- create a node for `a_class_def'
  		do
 			create Result
@@ -76,19 +76,18 @@ feature {NONE} -- Implementation
 			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 		end
 
-   	populate_descendant_nodes (a_class_def: BMM_CLASS_DEFINITION)
+   	populate_descendant_nodes (a_class_def: BMM_CLASS)
 			-- Add sub node node
    		local
 			a_ti: EV_TREE_ITEM
 		do
-			from a_class_def.immediate_descendants.start until a_class_def.immediate_descendants.off loop
-				a_ti := create_node (a_class_def.immediate_descendants.item_for_iteration)
+			across a_class_def.immediate_descendants as imm_descs_csr loop
+				a_ti := create_node (imm_descs_csr.item)
 	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
-				populate_descendant_nodes (a_class_def.immediate_descendants.item_for_iteration)
+				populate_descendant_nodes (imm_descs_csr.item)
 				ev_tree_item_stack.remove
-				a_class_def.immediate_descendants.forth
 			end
 		end
 
@@ -105,7 +104,7 @@ feature {NONE} -- Implementation
 		local
 			menu: EV_MENU
 		do
-			if attached {BMM_CLASS_DEFINITION} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
+			if attached {BMM_CLASS} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
 				create menu
 				add_class_context_menu (menu, bmm_class_def)
 				menu.show

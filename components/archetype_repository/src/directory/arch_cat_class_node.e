@@ -18,7 +18,7 @@ create
 
 feature -- Initialisation
 
-	make (an_rm_closure_name: STRING; a_class_desc: BMM_CLASS_DEFINITION)
+	make (an_rm_closure_name: STRING; a_class_desc: BMM_CLASS)
 			-- create with RM closure package name and class def
 		require
 			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
@@ -35,7 +35,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	class_definition: BMM_CLASS_DEFINITION
+	class_definition: BMM_CLASS
 
 	bmm_schema: detachable BMM_SCHEMA
 

@@ -23,7 +23,7 @@ feature -- Access
 	arch_node: detachable C_ARCHETYPE_ROOT
 			-- archetype node being edited
 
-	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
 			-- don't produce any RM properties, since node is another archetype
 		do
 			if ed_context.in_differential_view and not ed_context.editing_enabled then

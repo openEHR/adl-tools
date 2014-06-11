@@ -409,7 +409,7 @@ feature {NONE} -- Context menu
 			end
 		end
 
-	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 		end
@@ -419,7 +419,7 @@ feature {NONE} -- Context menu
 		local
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
-			spec_parent_rm_type: BMM_CLASS_DEFINITION
+			spec_parent_rm_type: BMM_CLASS
 			def_occ: MULTIPLICITY_INTERVAL
 			a_term: ARCHETYPE_TERM
 		do

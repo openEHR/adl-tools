@@ -56,22 +56,18 @@ feature -- Traversal
 feature {NONE} -- Implementation
 
 	c_visitor_enter (a_node: ARCHETYPE_CONSTRAINT; indent_level: INTEGER)
-		require
-			Node_exists: a_node /= Void
 		do
 			a_node.enter_subtree (visitor, indent_level)
 		end
 
 	c_visitor_exit (a_node: ARCHETYPE_CONSTRAINT; indent_level: INTEGER)
-		require
-			Node_exists: a_node /= Void
 		do
 			a_node.exit_subtree (visitor, indent_level)
 		end
 
 	do_all_nodes (a_target: attached ARCHETYPE_CONSTRAINT)
 		local
-			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+			props: HASH_TABLE [BMM_PROPERTY, STRING]
 			last_cco: C_COMPLEX_OBJECT
 		do
 			depth := depth + 1

@@ -39,7 +39,7 @@ feature -- Access
 			-- A proper release build done by the SConstruct will have a non-zero revision number.
 			-- The SConstruct automatically reverts its change, after it has finished building.
 
-	beta: STRING = "10"
+	beta: STRING = "11"
 			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
 
 	out: STRING

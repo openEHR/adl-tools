@@ -64,7 +64,7 @@ feature -- Commands
 			active_tool_docking_pane.focus_in_actions.extend (agent do gui_agents.history_set_active_agent.call ([active_tool]) end)
 		end
 
-	populate_active_tool (a_class_def: BMM_CLASS_DEFINITION)
+	populate_active_tool (a_class_def: BMM_CLASS)
 			-- Populate content from visual controls.
 		do
 			if not has_tools then

@@ -65,7 +65,7 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 
-   	create_node (a_class_def: attached BMM_CLASS_DEFINITION): EV_TREE_ITEM
+   	create_node (a_class_def: BMM_CLASS): EV_TREE_ITEM
 			-- create a node for `a_class_def'
  		do
 			create Result
@@ -74,7 +74,7 @@ feature {NONE} -- Implementation
 			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 		end
 
-   	populate_ancestor_nodes (a_class_def: attached BMM_CLASS_DEFINITION)
+   	populate_ancestor_nodes (a_class_def: BMM_CLASS)
 			-- Add sub node node
    		local
 			a_ti: EV_TREE_ITEM
@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_expand (an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_expand (an_ev_tree_node: EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 		local
 			menu: EV_MENU
 		do
-			if attached {BMM_CLASS_DEFINITION} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
+			if attached {BMM_CLASS} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
 				create menu
 				add_class_context_menu (menu, bmm_class_def)
 				menu.show

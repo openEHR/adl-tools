@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_packages (ev_parent_node: EV_GRID_ROW; a_pkg: BMM_PACKAGE_DEFINITION)
+	populate_packages (ev_parent_node: EV_GRID_ROW; a_pkg: BMM_PACKAGE)
 		local
 			pkg_row: EV_GRID_ROW
 		do
@@ -219,7 +219,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_classes (ev_parent_node: EV_GRID_ROW; a_class_def: BMM_CLASS_DEFINITION)
+	populate_classes (ev_parent_node: EV_GRID_ROW; a_class_def: BMM_CLASS)
 		local
 			pixmap_name: STRING
 			ev_class_row: EV_GRID_ROW
@@ -252,7 +252,7 @@ feature {NONE} -- Implementation
 	ev_tree_expand (node: EV_GRID_ROW): BOOLEAN
 			--
 		do
-	 		Result := attached {BMM_PACKAGE_DEFINITION} node.data as pkg_def and node.is_expandable
+	 		Result := attached {BMM_PACKAGE} node.data as pkg_def and node.is_expandable
 		end
 
 	class_node_handler (ev_ti: EV_GRID_ROW; x,y, button: INTEGER)
@@ -261,7 +261,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+			if attached {BMM_CLASS} ev_ti.data as a_class_def then
 				if button = {EV_POINTER_CONSTANTS}.left then
 					select_class_with_delay (a_class_def)
 
@@ -333,8 +333,8 @@ feature {NONE} -- Implementation
 				agent (a_row: attached EV_GRID_ROW): BOOLEAN
 					do
 						Result := attached {BMM_SCHEMA} a_row.data or
-							attached {BMM_PACKAGE_DEFINITION} a_row.data and then
-							not gui_grid.has_matching_sub_row (a_row, agent (a_tn: EV_GRID_ROW): BOOLEAN do Result := attached {BMM_CLASS_DEFINITION} a_tn.data end)
+							attached {BMM_PACKAGE} a_row.data and then
+							not gui_grid.has_matching_sub_row (a_row, agent (a_tn: EV_GRID_ROW): BOOLEAN do Result := attached {BMM_CLASS} a_tn.data end)
 					end
 			)
 		end
@@ -347,7 +347,7 @@ feature {NONE} -- Implementation
 	display_context_selected_class_in_active_tool (a_row: EV_GRID_ROW)
 		do
 			a_row.enable_select
-			if attached {BMM_CLASS_DEFINITION} a_row.data as a_class_def then
+			if attached {BMM_CLASS} a_row.data as a_class_def then
 				gui_agents.select_class_agent.call ([a_class_def])
 			end
 		end
@@ -355,7 +355,7 @@ feature {NONE} -- Implementation
 	display_context_selected_class_in_new_tool (a_row: EV_GRID_ROW)
 		do
 			a_row.enable_select
-			if attached {BMM_CLASS_DEFINITION} a_row.data as a_class_def then
+			if attached {BMM_CLASS} a_row.data as a_class_def then
 				gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 			end
 		end
@@ -421,13 +421,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selected_class_def: detachable BMM_CLASS_DEFINITION
+	selected_class_def: detachable BMM_CLASS
 		note
 			option: stable
 		attribute
 		end
 
-	select_class_with_delay (a_class_def: BMM_CLASS_DEFINITION)
+	select_class_with_delay (a_class_def: BMM_CLASS)
 		do
 			selected_class_def := a_class_def
 			delayed_select_class_agent.set_interval (300)

@@ -1,10 +1,10 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Class control - visualise property view of a class, including inheritance lineage."
-	keywords:    "archetype, cadl, gui"
+	keywords:    "archetype, gui"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_CLASS_TOOL_PROPERTY_VIEW
@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 			create anc_classes.make(0)
 			anc_classes.compare_objects
 
-			if attached {BMM_ENUMERATION_DEFINITION[COMPARABLE]} source then
+			if attached {BMM_ENUMERATION[COMPARABLE]} source then
 				do_populate_enumeration
 			else
 				do_populate_properties
@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 			ev_grid.insert_new_column (Grid_enum_dummy_col)
 
 			-- add the rows
-			check attached {BMM_ENUMERATION_DEFINITION[COMPARABLE]} source as enum_src then
+			check attached {BMM_ENUMERATION[COMPARABLE]} source as enum_src then
 				across enum_src.item_names as names_csr loop
 					create gli.make_with_text (names_csr.item)
 					-- gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
@@ -128,20 +128,20 @@ feature {NONE} -- Implementation
  			end
 		end
 
-	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+	flat_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
 
 	anc_classes: ARRAYED_LIST [STRING]
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
-   	populate_class_node (a_class_def: BMM_CLASS_DEFINITION)
+   	populate_class_node (a_class_def: BMM_CLASS)
 			-- Add rows and sub rows if there are properties from `a_class_def' found in the flat_properties
 			-- of `source'. Then iterate through ancestors recusrively
    		local
 			gli: EV_GRID_LABEL_ITEM
 			class_row, property_row: EV_GRID_ROW
-			prop_list: ARRAYED_LIST [BMM_PROPERTY_DEFINITION]
-			prop_class: BMM_CLASS_DEFINITION
+			prop_list: ARRAYED_LIST [BMM_PROPERTY [BMM_TYPE]]
+			prop_class: BMM_CLASS
 		do
 			-- find properties defined on `a_class_def', if any; have to check against flat properties, since
 			-- there could be properties which were overridden in some lower descendant, and which
@@ -202,10 +202,10 @@ feature {NONE} -- Implementation
 			-- creates the context menu for a right click action for class node
 		local
 			menu: EV_MENU
-			bmm_class_def: BMM_CLASS_DEFINITION
+			bmm_class_def: BMM_CLASS
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
-				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as a_bmm_class_def then
+				if attached {BMM_CLASS} bmm_type_spec as a_bmm_class_def then
 					bmm_class_def := a_bmm_class_def
 				else
 					bmm_class_def := rm_schema.class_definition (bmm_type_spec.root_class)

@@ -721,8 +721,8 @@ feature {NONE} -- Implementation
 			closure_node: ARCH_CAT_CLOSURE_NODE
 			rm_closure_name, qualified_rm_closure_key: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
-			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			root_classes: ARRAYED_SET [BMM_CLASS_DEFINITION]
+			supp_class_list: ARRAYED_LIST [BMM_CLASS]
+			root_classes: ARRAYED_SET [BMM_CLASS]
 			removed: BOOLEAN
 			bmm_schema: BMM_SCHEMA
 		do
@@ -797,12 +797,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_child_nodes (an_rm_closure_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_CAT_MODEL_NODE)
+	add_child_nodes (an_rm_closure_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_CAT_MODEL_NODE)
 			-- populate child nodes of a node in catalogue with immediate descendants of classes in `class_list'
 			-- put each node into `item_index', keyed by `an_rm_closure_name' + '-' + `class_list.item.name',
 			-- which will match with corresponding part of archetype identifier
 		local
-			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			children: ARRAYED_LIST [BMM_CLASS]
 			class_node: ARCH_CAT_CLASS_NODE
 		do
 			across class_list as class_list_csr loop

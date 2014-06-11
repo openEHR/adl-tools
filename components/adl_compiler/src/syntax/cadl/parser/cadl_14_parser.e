@@ -8765,7 +8765,7 @@ feature {NONE} -- Parse Tree
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
 
-	rm_prop_def: detachable BMM_PROPERTY_DEFINITION
+	rm_prop_def: detachable BMM_PROPERTY [BMM_TYPE]
 
 	c_attr_tuple: C_ATTRIBUTE_TUPLE
 		attribute
