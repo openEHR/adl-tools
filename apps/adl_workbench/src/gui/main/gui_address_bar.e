@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Search control, opccupying the 'address bar' position in the UI. Operates on whichever main tool is active."
+	description: "Search control, occupying the 'address bar' position in the UI. Operates on whichever main tool is active."
 	keywords:    "ADL workbench"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"

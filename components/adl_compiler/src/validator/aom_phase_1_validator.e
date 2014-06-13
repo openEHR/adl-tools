@@ -198,7 +198,6 @@ feature {NONE} -- Implementation
 	validate_suppliers
 			-- check that all C_ARCHETYPE_ROOT objects have an archetype id
 		local
-			c_ar_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
 			filler_id: ARCHETYPE_HRID
 		do
 			across target.suppliers_index as supp_csr loop
@@ -207,12 +206,12 @@ feature {NONE} -- Implementation
 				end
 
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
-				c_ar_list := supp_csr.item
-				across c_ar_list as arch_root_csr loop
-					create filler_id.make_from_string (arch_root_csr.item.node_id)
-					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
-						rm_schema.type_name_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_class)) then
-						add_error (ec_VARXTV, <<arch_root_csr.item.node_id, arch_root_csr.item.rm_type_name>>)
+				across supp_csr.item as car_csr loop
+					create filler_id.make_from_string (car_csr.item.node_id)
+					if not car_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
+						rm_schema.conformant_type_for_class (filler_id.rm_class, car_csr.item.rm_type_name)
+					then
+						add_error (ec_VARXTV, <<car_csr.item.node_id, car_csr.item.rm_type_name>>)
 					end
 				end
 			end

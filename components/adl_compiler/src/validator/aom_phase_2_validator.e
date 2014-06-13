@@ -4,7 +4,7 @@ note
 				 Phase 2 validation: validate archetype with respect to flat ancestor archetype, in the case 
 				 of specialised archetypes.
 		         ]"
-	keywords:    "constraint model"
+	keywords:    "constraint model, AOM, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -464,7 +464,7 @@ end
 						if rm_schema.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
 							rm_attr_type := rm_schema.property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name)
 
-							if not rm_schema.valid_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, co.rm_type_name) then
+							if not rm_schema.rt_conformant_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, co.rm_type_name) then
 								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
 								-- has a String field (within some other kind of DATE class)
 								if has_type_substitution (co.rm_type_name, rm_attr_type) then
