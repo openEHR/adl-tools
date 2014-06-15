@@ -208,8 +208,8 @@ feature {NONE} -- Implementation
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
 				across supp_csr.item as car_csr loop
 					create filler_id.make_from_string (car_csr.item.node_id)
-					if not car_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
-						rm_schema.conformant_type_for_class (filler_id.rm_class, car_csr.item.rm_type_name)
+					if not (car_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
+						rm_schema.type_conforms_to (filler_id.rm_class, car_csr.item.rm_type_name))
 					then
 						add_error (ec_VARXTV, <<car_csr.item.node_id, car_csr.item.rm_type_name>>)
 					end
