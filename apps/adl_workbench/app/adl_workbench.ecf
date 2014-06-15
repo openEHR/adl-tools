@@ -104,6 +104,7 @@
 			</option>
 		</cluster>
 		<cluster name="eomf_resources" location="$EOMF\library\app_resources\"/>
+		<cluster name="eomf_gui_resources" location="$EOMF\library\gui_app_resources\"/>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
