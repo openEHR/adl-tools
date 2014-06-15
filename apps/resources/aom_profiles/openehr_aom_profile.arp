@@ -62,6 +62,7 @@ aom_rm_type_substitutions = <
 	["ISO8601_DURATION"] = <"String">
 	["CODE_PHRASE"] = <"DV_CODED_TEXT">
 	["REAL"] = <"Double">
+	["INTEGER"] = <"Double">
 >
 
 ----------------------------------------------------------------------------------------
