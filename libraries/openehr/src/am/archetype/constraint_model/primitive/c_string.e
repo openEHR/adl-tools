@@ -21,7 +21,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
+			default_create, make, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
 		end
 
 create
@@ -81,6 +81,12 @@ feature -- Initialization
 			-- make using an open regex, i.e. ".*" enclosed in "//"
 		do
 			make_value (Regex_any_string)
+		end
+
+	make (a_constraint: like constraint)
+		do
+			precursor (a_constraint)
+			constraint.compare_objects
 		end
 
 feature -- Access
