@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 								is_root_flag := ca_parent_flat.parent.is_root
 							else
 								bmm_class_def := target_descriptor.rm_schema.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
-								co_type_name := bmm_class_def.root_class
+								co_type_name := bmm_class_def.name
 								is_root_flag := False
 							end
 							create an_attr_stat_accum.make (co_type_name, is_root_flag)

@@ -364,7 +364,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			new_code: STRING
 			rm_type_name: STRING
 			occ: MULTIPLICITY_INTERVAL
-			rm_type_spec: BMM_TYPE_SPECIFIER
+			rm_type_spec: BMM_CLASS
 		do
 			rm_type_spec := ed_context.rm_schema.class_definition (co_create_params.rm_type)
 			rm_type_name := co_create_params.rm_type
@@ -412,15 +412,15 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	create_rm_child (a_type_spec: BMM_TYPE_SPECIFIER): C_OBJECT_ED_CONTEXT
+	create_rm_child (a_bmm_type: BMM_TYPE): C_OBJECT_ED_CONTEXT
 			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 		require
 			is_rm
 		do
-			if a_type_spec.semantic_class.is_primitive_type then
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make_rm (a_type_spec, ed_context)
+			if a_bmm_type.base_class.is_primitive_type then
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make_rm (a_bmm_type, ed_context)
 			else
-				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make_rm (a_type_spec, ed_context)
+				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make_rm (a_bmm_type, ed_context)
 			end
 		end
 
@@ -459,13 +459,13 @@ feature {NONE} -- Context menu
 			-- add sub-menu of types to add as children
 			if not is_rm and ed_context.editing_enabled then
 				create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
-				create an_mi.make_with_text_and_action (rm_property.type.semantic_class.name, agent ui_offer_add_new_arch_child (rm_property.type.semantic_class))
-				if rm_property.type.semantic_class.is_abstract then
+				create an_mi.make_with_text_and_action (rm_property.type.base_class.name, agent ui_offer_add_new_arch_child (rm_property.type.base_class))
+				if rm_property.type.base_class.is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
-				across rm_property.type.semantic_class.type_substitutions as subs_csr loop
+				across rm_property.type.base_class.type_substitutions as subs_csr loop
 					rm_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
 					create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
 					if rm_class_def.is_abstract then

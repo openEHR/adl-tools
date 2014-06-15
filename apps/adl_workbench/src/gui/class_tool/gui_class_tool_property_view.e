@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 
 						-- property type
 						create gli.make_with_text (props_csr.item.type.as_display_type_string)
-						prop_class := source.bmm_schema.class_definition (props_csr.item.type.root_class)
+						prop_class := source.bmm_schema.class_definition (props_csr.item.type.base_class.name)
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
 						gli.set_data (prop_class)
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
@@ -204,11 +204,11 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			bmm_class_def: BMM_CLASS
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASSIFIER} eti.data as bmm_type_spec then
 				if attached {BMM_CLASS} bmm_type_spec as a_bmm_class_def then
 					bmm_class_def := a_bmm_class_def
 				else
-					bmm_class_def := rm_schema.class_definition (bmm_type_spec.root_class)
+					bmm_class_def := rm_schema.class_definition (bmm_type_spec.base_class.name)
 				end
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool

@@ -108,7 +108,7 @@ feature {NONE} -- Implementation
 							og_tail_path.start
 							if bmm_class.has_property_path (og_tail_path) then
 								check attached bmm_class.property_definition_at_path (og_tail_path) as bmm_prop then
-									ref_rm_type_name := bmm_prop.type.root_class
+									ref_rm_type_name := bmm_prop.type.base_class.name
 								end
 							else
 								add_error (ec_VRRLPRM, <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
@@ -462,9 +462,9 @@ end
 
 					if not invalid_types.has (attr_rm_type_in_flat_anc) then
 						if rm_schema.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
-							rm_attr_type := rm_schema.property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name)
+							rm_attr_type := rm_schema.effective_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name)
 
-							if not rm_schema.rt_conformant_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, co.rm_type_name) then
+							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, co.rm_type_name) then
 								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
 								-- has a String field (within some other kind of DATE class)
 								if has_type_substitution (co.rm_type_name, rm_attr_type) then

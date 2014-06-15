@@ -305,7 +305,7 @@ feature {NONE} -- Implementation
 			parent_class_row: EV_GRID_ROW
 			prop_str, type_str: STRING
 			has_type_subs: BOOLEAN
-			type_spec: BMM_TYPE_SPECIFIER
+			type_spec: BMM_CLASSIFIER
 			col: EV_COLOR
 			show_prop: BOOLEAN
 			ignore: BOOLEAN
@@ -349,14 +349,14 @@ feature {NONE} -- Implementation
 
 						elseif attached {BMM_CONTAINER_TYPE} a_bmm_prop.type as bmm_cont_type_ref then
 							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
-							type_str.append (bmm_cont_type_ref.type.as_type_string)
-							has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
-							type_spec := bmm_cont_type_ref.type
+							type_str.append (bmm_cont_type_ref.base_type.as_type_string)
+							has_type_subs := bmm_cont_type_ref.base_type.has_type_substitutions
+							type_spec := bmm_cont_type_ref.base_type
 
 						elseif attached {BMM_GENERIC_TYPE} a_bmm_prop.type as bmm_gen_type_ref then
 							type_str.append (bmm_gen_type_ref.as_display_type_string)
 							has_type_subs := bmm_gen_type_ref.has_type_substitutions
-							type_spec := bmm_gen_type_ref.root_type
+							type_spec := bmm_gen_type_ref.base_class
 
 						elseif attached {BMM_GENERIC_PARAMETER} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
 							type_str.append (bmm_gen_parm_def.as_display_type_string)
@@ -428,7 +428,7 @@ feature {NONE} -- Implementation
 			subs: detachable ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASSIFIER} a_class_grid_row.data as bmm_type_spec then
 				a_class_grid_row.item (1).enable_select
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
@@ -440,7 +440,7 @@ feature {NONE} -- Implementation
 				if attached {BMM_CLASS} bmm_type_spec as bmm_class_def then
 					subs := bmm_class_def.type_substitutions
 				elseif attached {BMM_CONTAINER_TYPE} bmm_type_spec as bmm_cont_type_ref then
-					subs := bmm_cont_type_ref.type.type_substitutions
+					subs := bmm_cont_type_ref.base_type.type_substitutions
 				elseif attached {BMM_GENERIC_TYPE} bmm_type_spec as bmm_gen_type_ref then
 					subs := bmm_gen_type_ref.type_substitutions
 				elseif attached {BMM_GENERIC_PARAMETER} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
@@ -520,8 +520,8 @@ feature {NONE} -- Implementation
 			-- there can be more than one class subrow below a property because of additions done by user choosing
 			-- 'add_subtype' menu option
 			from i := 1 until i > a_prop_grid_row.subrow_count loop
-				if a_prop_grid_row.subrow (i).subrow_count = 0 and attached {BMM_TYPE_SPECIFIER} a_prop_grid_row.subrow (i).data as bmm_type_spec then
-					convert_node_to_subtype (bmm_type_spec.root_class, a_prop_grid_row.subrow (i), True)
+				if a_prop_grid_row.subrow (i).subrow_count = 0 and attached {BMM_CLASSIFIER} a_prop_grid_row.subrow (i).data as bmm_type_spec then
+					convert_node_to_subtype (bmm_type_spec.base_class.name, a_prop_grid_row.subrow (i), True)
 				end
 				i := i + 1
 			end
@@ -573,7 +573,7 @@ feature {NONE} -- Implementation
 
 	refresh_row (a_row: EV_GRID_ROW)
 		do
-			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec then
+			if attached {BMM_CLASSIFIER} a_row.data as a_type_spec then
 				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
 					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
 				end

@@ -202,12 +202,12 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
 		end
 
-	rm_type_pixmap (a_type_spec: BMM_TYPE_SPECIFIER; an_rm_publisher: STRING): EV_PIXMAP
+	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER; an_rm_publisher: STRING): EV_PIXMAP
 		local
 			pixmap_name: STRING
 		do
 			if not attached {BMM_GENERIC_PARAMETER} a_type_spec then
-				pixmap_name := rm_icon_dir + resource_path_separator + an_rm_publisher + resource_path_separator + a_type_spec.root_class
+				pixmap_name := rm_icon_dir + resource_path_separator + an_rm_publisher + resource_path_separator + a_type_spec.base_class.name
 				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 					Result := get_icon_pixmap (pixmap_name)
 				else

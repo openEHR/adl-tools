@@ -29,7 +29,7 @@ feature -- Access
 			if ed_context.in_differential_view and not ed_context.editing_enabled then
 				create Result.make (0)
 			else
-				Result := rm_type.semantic_class.flat_properties
+				Result := rm_type.base_class.flat_properties
 			end
 		end
 

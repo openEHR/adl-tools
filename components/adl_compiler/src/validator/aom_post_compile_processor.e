@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 						tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)
 						bmm_class := rm_schema.class_definition (ref_rm_type_name)
 						if attached bmm_class.property_definition_at_path (create {OG_PATH}.make_from_string (tail_path)) as bmm_prop then
-							ref_rm_type_name := bmm_prop.type.root_class
+							ref_rm_type_name := bmm_prop.type.base_class.name
 						end
 					end
 					across ref_path_csr.item as expr_leaf_csr loop

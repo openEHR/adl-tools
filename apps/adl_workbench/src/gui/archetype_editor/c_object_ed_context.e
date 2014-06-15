@@ -35,7 +35,7 @@ feature -- Initialisation
 			create internal_ref_for_rm_type.make (0)
 			precursor (an_arch_node, an_ed_context)
 			set_arch_node_in_ancestor
-			rm_type := ed_context.rm_schema.class_definition (arch_node.rm_type_name)
+			rm_type := ed_context.rm_schema.create_bmm_type_from_name (arch_node.rm_type_name)
 		end
 
 feature -- Access
@@ -46,7 +46,7 @@ feature -- Access
 	arch_node_in_ancestor: detachable C_OBJECT
 			-- corresponding archetype node in specialisation parent, if applicable
 
-	rm_type: BMM_TYPE_SPECIFIER
+	rm_type: BMM_TYPE
 			-- RM class of node being edited
 
 	parent: detachable C_ATTRIBUTE_ED_CONTEXT
@@ -299,7 +299,7 @@ feature {NONE} -- Implementation
 
 	rm_type_text: STRING
 		do
-			Result := rm_type.semantic_class.name
+			Result := rm_type.base_class.name
 		end
 
 	c_object_colour: EV_COLOR
@@ -362,7 +362,7 @@ feature {NONE} -- Context menu
 			an_mi: EV_MENU_ITEM
 		do
 			create context_menu
-			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.semantic_class))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.base_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			context_menu.extend (an_mi)
 
@@ -426,7 +426,7 @@ feature {NONE} -- Context menu
 			if attached arch_node_in_ancestor as parent_a_n then
 				spec_parent_rm_type := ed_context.rm_schema.class_definition (parent_a_n.rm_type_name)
 				rm_type_substitutions := spec_parent_rm_type.type_substitutions
-				rm_type_substitutions.extend (rm_type.semantic_class.name)
+				rm_type_substitutions.extend (rm_type.base_class.name)
 
 				if attached parent_a_n.occurrences as parent_a_n_occ then
 					def_occ := parent_a_n_occ
@@ -434,7 +434,7 @@ feature {NONE} -- Context menu
 					def_occ := parent.default_occurrences
 				end
 
-				create dialog.make (aom_types_for_rm_type (spec_parent_rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.semantic_class.name,
+				create dialog.make (aom_types_for_rm_type (spec_parent_rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
 					def_occ, ed_context.archetype, display_settings)
 
 				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
@@ -455,9 +455,9 @@ feature {NONE} -- Context menu
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
-			rm_type_substitutions := rm_type.semantic_class.type_substitutions
-			rm_type_substitutions.extend (rm_type.semantic_class.name)
-			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.semantic_class.name,
+			rm_type_substitutions := rm_type.base_class.type_substitutions
+			rm_type_substitutions.extend (rm_type.base_class.name)
+			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
 				parent.default_occurrences, ed_context.archetype, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then

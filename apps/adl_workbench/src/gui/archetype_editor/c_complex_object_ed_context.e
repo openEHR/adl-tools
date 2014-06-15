@@ -28,7 +28,7 @@ feature -- Initialisation
 			create rm_attributes.make (0)
 		end
 
-	make_rm (an_rm_type: BMM_TYPE_SPECIFIER; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make_rm (an_rm_type: BMM_TYPE; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_rm_type, an_ed_context)
 			create c_attributes.make (0)
@@ -54,9 +54,9 @@ feature -- Access
 	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
 		do
 			if ed_context.in_differential_view and not ed_context.editing_enabled then
-				Result := rm_type.semantic_class.properties
+				Result := rm_type.base_class.properties
 			else
-				Result := rm_type.semantic_class.flat_properties
+				Result := rm_type.base_class.flat_properties
 			end
 		end
 

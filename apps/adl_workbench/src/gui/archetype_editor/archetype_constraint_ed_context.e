@@ -165,16 +165,16 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	aom_types_for_rm_type (an_rm_type: BMM_TYPE_SPECIFIER): ARRAYED_SET [STRING]
+	aom_types_for_rm_type (an_rm_type: BMM_CLASSIFIER): ARRAYED_SET [STRING]
 			-- list of possible C_OBJECT concrete descendants that can be used on a node of type `an_rm_type'
 		local
 			rm_class_name: STRING
 		do
-			rm_class_name := an_rm_type.semantic_class.name
+			rm_class_name := an_rm_type.base_class.name
 
 			-- add AOM constraint types for RM primitive types
 			-- FIXME: in Eiffel 7.3 replace with reflection generated set of C_PRIMITIVE_OBJECT descendant type names
-			if an_rm_type.semantic_class.is_primitive_type then
+			if an_rm_type.base_class.is_primitive_type then
 				Result := c_primitive_subtypes
 
 			-- deal with mapped types in AOM profile
@@ -190,10 +190,10 @@ feature {NONE} -- Implementation
 				-- figure out whether INTERNAL_REFs would be valid for this RM type (i.e. are there any other
 				-- nodes of this type in the archetype?); if so add ARCHETYPE_INTERNAL_REF
 				if not internal_ref_for_rm_type.has (rm_class_name) then
-					if not ed_context.archetype.rm_type_paths_annotated (display_settings.language, an_rm_type.root_class).is_empty then
-						internal_ref_for_rm_type.put (True, an_rm_type.root_class)
+					if not ed_context.archetype.rm_type_paths_annotated (display_settings.language, an_rm_type.base_class.name).is_empty then
+						internal_ref_for_rm_type.put (True, an_rm_type.base_class.name)
 					else
-						internal_ref_for_rm_type.put (False, an_rm_type.root_class)
+						internal_ref_for_rm_type.put (False, an_rm_type.base_class.name)
 					end
 				end
 				if internal_ref_for_rm_type.item (rm_class_name) then
