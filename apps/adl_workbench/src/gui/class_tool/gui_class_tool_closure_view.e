@@ -25,6 +25,8 @@ inherit
 			{NONE} all
 		end
 
+	DEBUG_HELPER
+
 create
 	make
 
@@ -302,10 +304,10 @@ feature {NONE} -- Implementation
 	enter_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; depth: INTEGER)
 			-- enter a BMM_PROPERTY
 		local
-			parent_class_row: EV_GRID_ROW
+			ev_parent_class_row, ev_prop_row, ev_class_row: EV_GRID_ROW
 			prop_str, type_str: STRING
 			has_type_subs: BOOLEAN
-			type_spec: BMM_CLASSIFIER
+			bmm_class: BMM_CLASS
 			col: EV_COLOR
 			show_prop: BOOLEAN
 			ignore: BOOLEAN
@@ -316,10 +318,12 @@ feature {NONE} -- Implementation
 					and (not a_bmm_prop.is_im_runtime or else include_rm_runtime_properties)
 					and (not a_bmm_prop.is_im_infrastructure or else include_rm_infrastructure_properties)
 
-				parent_class_row := ev_grid_rm_row_stack.item
+				ev_parent_class_row := ev_grid_rm_row_stack.item
+				check attached {BMM_CLASS} ev_parent_class_row.data end
+
 				last_property_grid_row := Void
 				-- if a row for the property already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
-				if attached gui_grid.matching_sub_row (parent_class_row,
+				if attached gui_grid.matching_sub_row (ev_parent_class_row,
 					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY [BMM_TYPE]): BOOLEAN
 						do
 							Result := attached {BMM_PROPERTY [BMM_TYPE]} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
@@ -339,37 +343,23 @@ feature {NONE} -- Implementation
 
 				else
 					if show_prop then
-						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
+						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes						
 						prop_str := a_bmm_prop.name.twin
-						create type_str.make_empty
-						if attached {BMM_CLASS} a_bmm_prop.type as bmm_class_def then
-							type_str.append (bmm_class_def.name)
-							has_type_subs := bmm_class_def.has_type_substitutions
-							type_spec := bmm_class_def
-
-						elseif attached {BMM_CONTAINER_TYPE} a_bmm_prop.type as bmm_cont_type_ref then
-							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
-							type_str.append (bmm_cont_type_ref.base_type.as_type_string)
-							has_type_subs := bmm_cont_type_ref.base_type.has_type_substitutions
-							type_spec := bmm_cont_type_ref.base_type
-
-						elseif attached {BMM_GENERIC_TYPE} a_bmm_prop.type as bmm_gen_type_ref then
-							type_str.append (bmm_gen_type_ref.as_display_type_string)
-							has_type_subs := bmm_gen_type_ref.has_type_substitutions
-							type_spec := bmm_gen_type_ref.base_class
-
-						elseif attached {BMM_GENERIC_PARAMETER} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
-							type_str.append (bmm_gen_parm_def.as_display_type_string)
-							has_type_subs := bmm_gen_parm_def.has_type_substitutions
-							type_spec := a_bmm_prop.type
-
+						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.type as bmm_cont_type then
+							bmm_class := bmm_cont_type.base_type.base_class
+							prop_str.append (": " + bmm_cont_type.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
 						else
-							type_spec := a_bmm_prop.type
+							bmm_class := a_bmm_prop.type.base_class
 						end
+						type_str := bmm_class.as_display_type_string
+						has_type_subs := bmm_class.has_type_substitutions
 
 						-- ======== property node =========
-						gui_grid.add_sub_row (parent_class_row, a_bmm_prop)
+						gui_grid.add_sub_row (ev_parent_class_row, a_bmm_prop)
 						last_property_grid_row := gui_grid.last_row
+						check attached gui_grid.last_row as lr then
+							ev_prop_row := lr
+						end
 
 						if a_bmm_prop.is_im_infrastructure then
 							col := rm_infrastructure_attribute_colour
@@ -391,16 +381,20 @@ feature {NONE} -- Implementation
 						end
 
 						-- add tree expand handler to this node
-						if attached gui_grid.last_row as lr then
-							lr.expand_actions.force_extend (agent property_node_expand_handler (lr))
+						ev_prop_row.expand_actions.force_extend (agent property_node_expand_handler (ev_prop_row))
 
-							-- ======== type node =========					
-							gui_grid.add_sub_row (lr, type_spec)
-							ev_grid_rm_row_stack.extend (lr)
-							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
-							if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
-					 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
-					 	 	end
+						-- ======== class node =========					
+						gui_grid.add_sub_row (ev_prop_row, bmm_class)
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_class, rm_publisher))
+
+						check attached gui_grid.last_row as lr then
+							ev_class_row := lr
+						end
+						ev_grid_rm_row_stack.extend (ev_class_row)
+
+						-- class node right hand menu
+						if attached {EV_GRID_LABEL_ITEM} ev_class_row.item (Definition_grid_col_rm_name) as gli then
+			 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_row, ?, ?, ?))
 						end
 				 	else
 						ignore := True
@@ -424,30 +418,19 @@ feature {NONE} -- Implementation
 
 	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
+			-- add menu item for retarget tool to current node / display in new tool
 		local
 			subs: detachable ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASSIFIER} a_class_grid_row.data as bmm_type_spec then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS} a_class_grid_row.data as bmm_class then
 				a_class_grid_row.item (1).enable_select
 				create menu
-				-- add menu item for retarget tool to current node / display in new tool
-				if attached {BMM_CLASS} a_class_grid_row.data as a_class_def then
-					add_class_context_menu (menu, a_class_def)
-				end
+				add_class_context_menu (menu, bmm_class)
 
-				-- if there are type substitutions available, add sub-menu for that
-				if attached {BMM_CLASS} bmm_type_spec as bmm_class_def then
-					subs := bmm_class_def.type_substitutions
-				elseif attached {BMM_CONTAINER_TYPE} bmm_type_spec as bmm_cont_type_ref then
-					subs := bmm_cont_type_ref.base_type.type_substitutions
-				elseif attached {BMM_GENERIC_TYPE} bmm_type_spec as bmm_gen_type_ref then
-					subs := bmm_gen_type_ref.type_substitutions
-				elseif attached {BMM_GENERIC_PARAMETER} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
-					subs := bmm_gen_parm_def.type_substitutions
-				end
-				if attached subs as s then
-					add_subtype_context_menu (menu, s, a_class_grid_row)
+				subs := bmm_class.type_substitutions
+				if not subs.is_empty then
+					add_subtype_context_menu (menu, subs, a_class_grid_row)
 				end
 				menu.show
 			end
@@ -475,21 +458,20 @@ feature {NONE} -- Implementation
 		do
 			-- create sub menu listing subtypes to change current node into
 			create chg_sub_menu.make_with_text (get_text (ec_context_menu_convert_node_to_subtype))
-			from a_substitutions.start until a_substitutions.off loop
-				create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, True))
-				if rm_schema.class_definition (a_substitutions.item).is_abstract then
+			across a_substitutions as subs_csr loop
+				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, True))
+				if rm_schema.class_definition (subs_csr.item).is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
 	    		chg_sub_menu.extend (an_mi)
-				a_substitutions.forth
 			end
 			menu.extend (chg_sub_menu)
 
 			-- if owning attribute is multiple, allow adding of sibling nodes
 --			if attached a_class_grid_row.parent_row and then
---				attached {BMM_PROPERTY_DEFINITION} a_class_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
+--				attached {BMM_PROPERTY} a_class_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
 --			then
 --				-- create sub menu listing subtypes to add to parent node
 --				create chg_sub_menu.make_with_text (get_text (ec_context_menu_add_subtype_mode))
@@ -520,8 +502,8 @@ feature {NONE} -- Implementation
 			-- there can be more than one class subrow below a property because of additions done by user choosing
 			-- 'add_subtype' menu option
 			from i := 1 until i > a_prop_grid_row.subrow_count loop
-				if a_prop_grid_row.subrow (i).subrow_count = 0 and attached {BMM_CLASSIFIER} a_prop_grid_row.subrow (i).data as bmm_type_spec then
-					convert_node_to_subtype (bmm_type_spec.base_class.name, a_prop_grid_row.subrow (i), True)
+				if a_prop_grid_row.subrow (i).subrow_count = 0 and attached {BMM_CLASS} a_prop_grid_row.subrow (i).data as bmm_class then
+					convert_node_to_subtype (bmm_class.name, a_prop_grid_row.subrow (i), True)
 				end
 				i := i + 1
 			end
@@ -562,7 +544,6 @@ feature {NONE} -- Implementation
 			ev_grid_rm_row_removals_stack.extend (False)
 
 			bmm_subtype_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
-
 			ev_grid_rm_row_stack.remove
 			ev_grid_rm_row_removals_stack.remove
 
@@ -573,9 +554,9 @@ feature {NONE} -- Implementation
 
 	refresh_row (a_row: EV_GRID_ROW)
 		do
-			if attached {BMM_CLASSIFIER} a_row.data as a_type_spec then
+			if attached {BMM_CLASS} a_row.data as bmm_class then
 				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
-					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
+					gli.set_pixmap (rm_type_pixmap (bmm_class, rm_publisher))
 				end
 			end
 		end
@@ -586,5 +567,3 @@ feature {NONE} -- Implementation
 		end
 
 end
-
-

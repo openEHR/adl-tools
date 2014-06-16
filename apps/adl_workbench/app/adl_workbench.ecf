@@ -95,7 +95,7 @@
 		<cluster name="app" location="..\src\env\" recursive="true"/>
 		<cluster name="app_gui" location="..\src\gui\" recursive="true">
 			<option>
-				<assertions precondition="true" postcondition="true"/>
+				<assertions precondition="true" postcondition="true" check="true"/>
 			</option>
 		</cluster>
 		<cluster name="app_icons" location="..\..\resources\icons\compiled\">
