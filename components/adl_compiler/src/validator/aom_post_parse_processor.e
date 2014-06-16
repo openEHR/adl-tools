@@ -95,8 +95,7 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	update_aom_mapped_types
-			-- Find any types that have a AOM profile type mapping and write the
-			-- mapping in
+			-- Find any types that have a AOM profile type mapping and write the mapping in
 		local
 			def_it: C_ITERATOR
 		do

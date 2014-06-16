@@ -12,7 +12,7 @@ class C_INTEGER
 inherit
 	C_ORDERED [INTEGER]
 		redefine
-			assumed_value
+			assumed_value, as_enumeration_string
 		end
 
 create
@@ -23,11 +23,42 @@ feature -- Access
     assumed_value: detachable INTEGER_REF
             -- value to be assumed if none sent in data
 
+    constraint_values: ARRAYED_SET [INTEGER]
+    		-- constraint values as a list of integer values
+    	local
+    		i: INTEGER
+    	do
+    		create Result.make (0)
+    		across constraint as ivl_csr loop
+    			from i := ivl_csr.item.lower until i > ivl_csr.item.upper loop
+    				Result.extend (i)
+    				i := i + 1
+    			end
+    		end
+    	end
+
 feature -- Status Report
 
 	valid_assumed_value (a_value: INTEGER_REF): BOOLEAN
 		do
 			Result := valid_value (a_value.item)
+		end
+
+feature -- Output
+
+	as_enumeration_string (enum_map: HASH_TABLE [STRING, STRING]): STRING
+			-- for an enumerated type, generate a set of strings corresponding to the values in `enum_map'
+			-- whose keys are enumeration values in string form
+		do
+			create Result.make (0)
+			across constraint_values as vals_csr loop
+				check attached enum_map.item (vals_csr.item.out) as enum_item_name then
+					Result.append (enum_item_name)
+				end
+				if not vals_csr.is_last then
+					Result.append (", ")
+				end
+			end
 		end
 
 end

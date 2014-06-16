@@ -187,8 +187,8 @@ feature {NONE} -- Implementation
 				Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
 				Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))
 
-				-- figure out whether INTERNAL_REFs would be valid for this RM type (i.e. are there any other
-				-- nodes of this type in the archetype?); if so add ARCHETYPE_INTERNAL_REF
+				-- figure out whether C_COMPLEX_OBJECT_PROXYs would be valid for this RM type (i.e. are there any other
+				-- nodes of this type in the archetype?); if so add C_COMPLEX_OBJECT_PROXY
 				if not internal_ref_for_rm_type.has (rm_class_name) then
 					if not ed_context.archetype.rm_type_paths_annotated (display_settings.language, an_rm_type.base_class.name).is_empty then
 						internal_ref_for_rm_type.put (True, an_rm_type.base_class.name)

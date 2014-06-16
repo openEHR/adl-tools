@@ -58,6 +58,13 @@ feature -- Access
 			Result := og_path.as_string
 		end
 
+	single_value: ANY
+			-- single value if single-valued
+		require
+			is_single_value
+		deferred
+		end
+
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -83,6 +90,9 @@ feature -- Comparison
 
 feature -- Status Report
 
+	is_enumerated_type_constraint: BOOLEAN
+			-- True if this constraint is actually of an enumerated type that conforms to a primitive type, not a primitive
+
 	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
@@ -90,6 +100,11 @@ feature -- Status Report
 		end
 
 	valid_assumed_value (a_value: like assumed_value): BOOLEAN
+		deferred
+		end
+
+	is_single_value: BOOLEAN
+			-- true if constraint is a single value
 		deferred
 		end
 
@@ -103,6 +118,11 @@ feature -- Modification
 			assumed_value := a_value
 		ensure
 			assumed_value_set: assumed_value = a_value
+		end
+
+	set_enumerated_type_constraint
+		do
+			is_enumerated_type_constraint := True
 		end
 
 feature {P_C_PRIMITIVE_OBJECT} -- Modification
@@ -122,6 +142,15 @@ feature -- Output
 			if attached assumed_value then
 				Result.append ("; " + assumed_value.out)
 			end
+		end
+
+	as_enumeration_string (enum_map: HASH_TABLE [STRING, STRING]): STRING
+			-- for an enumerated type, generate a set of strings corresponding to the values in `enum_map'
+			-- whose keys are enumeration values in string form
+		require
+			is_enumerated_type_constraint
+		do
+			create Result.make (0)
 		end
 
 	out: STRING

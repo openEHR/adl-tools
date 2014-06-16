@@ -62,7 +62,19 @@ feature -- Access
 			 Result := constraint.first
 		end
 
+	single_value: BOOLEAN
+			-- single value if single-valued
+		do
+			Result := constraint.first
+		end
+
 feature -- Status Report
+
+	is_single_value: BOOLEAN
+			-- true if constraint is a single value
+		do
+			Result := constraint.count = 1
+		end
 
 	true_valid: BOOLEAN
 			-- True if the value being constrained is allowed to be "True"

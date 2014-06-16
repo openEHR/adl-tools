@@ -204,15 +204,10 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			bmm_class_def: BMM_CLASS
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASSIFIER} eti.data as bmm_type_spec then
-				if attached {BMM_CLASS} bmm_type_spec as a_bmm_class_def then
-					bmm_class_def := a_bmm_class_def
-				else
-					bmm_class_def := rm_schema.class_definition (bmm_type_spec.base_class.name)
-				end
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS} eti.data as bmm_class then
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, bmm_class_def)
+				add_class_context_menu (menu, bmm_class)
 				menu.show
 			end
 		end

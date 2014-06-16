@@ -72,11 +72,25 @@ feature -- Access
 
 	assumed_value: detachable COMPARABLE
 
+	single_value: G
+			-- single value if single-valued
+		do
+			check attached constraint.first.lower as v then
+				Result := v
+			end
+		end
+
 feature -- Status Report
 
 	valid_value (a_value: G): BOOLEAN
 		do
 			Result := across constraint as ivl_csr some ivl_csr.item.has (a_value) end
+		end
+
+	is_single_value: BOOLEAN
+			-- true if constraint is a single value
+		do
+			Result := constraint.count = 1 and constraint.first.is_point
 		end
 
 feature -- Comparison

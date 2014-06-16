@@ -448,6 +448,7 @@ end
 			attr_rm_type_in_flat_anc, rm_attr_type: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY [BMM_TYPE]
+			bmm_enum: BMM_ENUMERATION [COMPARABLE]
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then -- now check if this object a valid type of its owning attribute
@@ -465,9 +466,46 @@ end
 							rm_attr_type := rm_schema.effective_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name)
 
 							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, co.rm_type_name) then
+
+								-- check if the property type is an enumeration and if the archetype node rm_type_name is
+								-- a compatible primitive type
+								if rm_schema.enumeration_types.has (rm_attr_type) then
+									bmm_enum := rm_schema.enumeration_definition (rm_attr_type)
+									if bmm_enum.underlying_type_name.is_case_insensitive_equal (co.rm_type_name) then
+										if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
+											if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
+												add_error (ec_VCORMENV, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+													rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, c_int.single_value.out>>)
+											else
+												c_int.set_rm_type_name (rm_attr_type)
+												c_int.set_enumerated_type_constraint
+											end
+
+										elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
+											if not across c_str.constraint as str_vals_csr all bmm_enum_str.item_values.has (str_vals_csr.item) end then
+												add_error (ec_VCORMENV, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+													rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, c_str.single_value>>)
+											else
+												c_str.set_rm_type_name (rm_attr_type)
+												c_str.set_enumerated_type_constraint
+											end
+
+										else
+											-- error - unsupported subtype of BMM_ENUMERATION
+											add_error (ec_VCORMEN, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+												rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
+
+										end
+
+									else
+										-- RM property type is an enumerated type, but current node RM type doesn't conform
+										add_error (ec_VCORMENV, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+											rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
+									end
+
 								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
 								-- has a String field (within some other kind of DATE class)
-								if has_type_substitution (co.rm_type_name, rm_attr_type) then
+								elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
 									add_info (ec_ICORMTS, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
 										rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
 									co.set_rm_type_name (rm_attr_type)

@@ -69,7 +69,19 @@ feature -- Access
 
 	assumed_value: detachable STRING
 
+	single_value: TERMINOLOGY_CODE
+			-- single value if single-valued
+		do
+			create Result.make (Local_terminology_id, constraint)
+		end
+
 feature -- Status Report
+
+	is_single_value: BOOLEAN
+			-- true if constraint is a single value
+		do
+			Result := is_constraint_value_code
+		end
 
 	is_constraint_value_code: BOOLEAN
 			-- True if this constraint is a single value code, i.e. not a value-set

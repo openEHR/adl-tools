@@ -21,7 +21,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, make, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
+			default_create, make, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string, as_enumeration_string
 		end
 
 create
@@ -111,20 +111,20 @@ feature -- Access
 			-- return the regex string value in the first constraint,
 			-- minus any enclosing //
 		do
-			if is_single and is_regex_string (constraint_single) then
-				Result := constraint_single.substring (2, constraint_single.count - 1)
+			if is_single_value and is_regex_string (single_value) then
+				Result := single_value.substring (2, single_value.count - 1)
 			end
 		end
 
-	constraint_single: STRING
-			-- return the first and only constrain value
+	single_value: STRING
+			-- single value if single-valued
 		do
 			Result := constraint.first
 		end
 
 feature -- Status Report
 
-	is_single: BOOLEAN
+	is_single_value: BOOLEAN
 			-- True if this constraint has only a single string
 		do
 			Result := constraint.count = 1
@@ -224,6 +224,21 @@ feature -- Output
 				Result.append (cleaner.item ([av]))
 				if not is_regex_string (av) then
 					Result.append_character ('%"')
+				end
+			end
+		end
+
+	as_enumeration_string (enum_map: HASH_TABLE [STRING, STRING]): STRING
+			-- for an enumerated type, generate a set of strings corresponding to the values in `enum_map'
+			-- whose keys are enumeration values in string form
+		do
+			create Result.make (0)
+			across constraint as vals_csr loop
+				check attached enum_map.item (vals_csr.item) as enum_item_name then
+					Result.append (enum_item_name)
+				end
+				if not vals_csr.is_last then
+					Result.append (", ")
 				end
 			end
 		end

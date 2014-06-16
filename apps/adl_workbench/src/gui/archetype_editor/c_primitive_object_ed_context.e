@@ -87,6 +87,8 @@ feature {NONE} -- Implementation
 			if attached arch_node as a_n then
 				if attached {C_TERMINOLOGY_CODE} a_n as ctc then
 					s := c_terminology_code_str (ctc)
+				elseif a_n.is_enumerated_type_constraint then
+					s := a_n.as_enumeration_string (ed_context.rm_schema.enumeration_definition (a_n.rm_type_name).name_map)
 				else
 					s := a_n.as_string
 				end
