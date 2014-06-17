@@ -499,7 +499,7 @@ end
 
 									else
 										-- RM property type is an enumerated type, but current node RM type doesn't conform
-										add_error (ec_VCORMENV, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+										add_error (ec_VCORMENU, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
 											rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
 									end
 

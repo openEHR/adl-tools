@@ -351,8 +351,8 @@ feature {NONE} -- Implementation
 						else
 							bmm_class := a_bmm_prop.type.base_class
 						end
-						type_str := bmm_class.as_display_type_string
-						has_type_subs := bmm_class.has_type_substitutions
+						type_str := bmm_class.as_type_string
+						has_type_subs := bmm_class.has_descendants
 
 						-- ======== property node =========
 						gui_grid.add_sub_row (ev_parent_class_row, a_bmm_prop)
@@ -428,7 +428,7 @@ feature {NONE} -- Implementation
 				create menu
 				add_class_context_menu (menu, bmm_class)
 
-				subs := bmm_class.type_substitutions
+				subs := bmm_class.all_descendants
 				if not subs.is_empty then
 					add_subtype_context_menu (menu, subs, a_class_grid_row)
 				end

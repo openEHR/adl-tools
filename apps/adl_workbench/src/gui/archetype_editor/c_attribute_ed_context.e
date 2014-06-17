@@ -465,7 +465,7 @@ feature {NONE} -- Context menu
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
-				across rm_property.type.base_class.type_substitutions as subs_csr loop
+				across rm_property.type.base_class.all_descendants as subs_csr loop
 					rm_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
 					create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
 					if rm_class_def.is_abstract then

@@ -419,13 +419,13 @@ feature {NONE} -- Context menu
 		local
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
-			spec_parent_rm_type: BMM_CLASS
+			spec_parent_rm_class: BMM_CLASS
 			def_occ: MULTIPLICITY_INTERVAL
 			a_term: ARCHETYPE_TERM
 		do
 			if attached arch_node_in_ancestor as parent_a_n then
-				spec_parent_rm_type := ed_context.rm_schema.class_definition (parent_a_n.rm_type_name)
-				rm_type_substitutions := spec_parent_rm_type.type_substitutions
+				spec_parent_rm_class := ed_context.rm_schema.class_definition (parent_a_n.rm_type_name)
+				rm_type_substitutions := spec_parent_rm_class.all_descendants
 				rm_type_substitutions.extend (rm_type.base_class.name)
 
 				if attached parent_a_n.occurrences as parent_a_n_occ then
@@ -434,7 +434,7 @@ feature {NONE} -- Context menu
 					def_occ := parent.default_occurrences
 				end
 
-				create dialog.make (aom_types_for_rm_type (spec_parent_rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
+				create dialog.make (aom_types_for_rm_type (spec_parent_rm_class), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
 					def_occ, ed_context.archetype, display_settings)
 
 				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
@@ -455,7 +455,7 @@ feature {NONE} -- Context menu
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
-			rm_type_substitutions := rm_type.base_class.type_substitutions
+			rm_type_substitutions := rm_type.base_class.all_descendants
 			rm_type_substitutions.extend (rm_type.base_class.name)
 			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
 				parent.default_occurrences, ed_context.archetype, display_settings)

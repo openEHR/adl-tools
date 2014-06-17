@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
  			if a_class_def.is_override then
  				pixmap_name.append ("_override")
  			end
-			gui_grid.set_last_row_label_col (1, a_class_def.as_display_type_string, a_class_def.description, Void, get_icon_pixmap (pixmap_name))
+			gui_grid.set_last_row_label_col (1, a_class_def.as_type_string, a_class_def.description, Void, get_icon_pixmap (pixmap_name))
 			check attached gui_grid.last_row as lr then
 				ev_class_row := lr
 			end
