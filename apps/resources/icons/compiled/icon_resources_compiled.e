@@ -242,7 +242,6 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_PERFORMEDOBSERVATIONRESULT}.make).to_pixmap end, "rm/cdisc/performedobservationresult")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_PLANNEDACTIVITY}.make).to_pixmap end, "rm/cdisc/plannedactivity")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_PQ}.make).to_pixmap end, "rm/cdisc/pq")
-			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_PUBLIC}.make).to_pixmap end, "rm/cdisc/public")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_ST}.make).to_pixmap end, "rm/cdisc/st")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_TIME}.make).to_pixmap end, "rm/cdisc/time")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CDISC_TS}.make).to_pixmap end, "rm/cdisc/ts")
