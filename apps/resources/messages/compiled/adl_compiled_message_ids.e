@@ -179,6 +179,7 @@ feature -- Definitions
 		ec_VSONT: STRING = "VSONT"
 		ec_VSONCT: STRING = "VSONCT"
 		ec_VSONCO: STRING = "VSONCO"
+		ec_VSONPO: STRING = "VSONPO"
 		ec_VSONCI: STRING = "VSONCI"
 		ec_VCATU: STRING = "VCATU"
 		ec_VSDTV: STRING = "VSDTV"

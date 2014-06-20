@@ -73,6 +73,7 @@ templates = <
 		["VSONT"] = <"$1 object node at path $2 (AOM type $3) does not conform to $4 node at parent path $5 (AOM type $6)">
 		["VSONCT"] = <"object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 		["VSONCO"] = <"object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
+		["VSONPO"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent">
 		["VSONCI"] = <"object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 		["VCATU"] = <"cADL object duplicate attribute $1">
 

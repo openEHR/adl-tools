@@ -401,18 +401,24 @@ end
 								target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
 						end
 
-					-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
-					-- sibling order refers to a valid node in the flat ancestor. Arguably this should be done in the main
-					-- specialised_node_validate routine, but... I will re-engineer the code before contemplating that
-					elseif attached a_c_obj.sibling_order as sib_ord then
-						create apa.make_from_string (a_c_node.parent.path)
-						ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-						if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
-							ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, flat_ancestor.specialisation_depth)))
-						then
-							add_error (ec_VSSM, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
-						end
+					-- special checks if it is a non-overlay node...
 					else
+						-- if it has a sibling order, check that the sibling order refers to a valid node in the flat ancestor.
+						if attached a_c_obj.sibling_order as sib_ord then
+							create apa.make_from_string (a_c_node.parent.path)
+							ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+							if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
+								ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, flat_ancestor.specialisation_depth)))
+							then
+								add_error (ec_VSSM, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+							end
+						end
+
+						-- if it has occurrences matches {0}, it's an error because this can only make sense for nodes that exist
+						if attached a_c_obj.occurrences as occ and then occ.is_prohibited then
+							add_error (ec_VSONPO, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True)>>)
+						end
+					
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
 		target.annotated_path (a_c_node.path,
