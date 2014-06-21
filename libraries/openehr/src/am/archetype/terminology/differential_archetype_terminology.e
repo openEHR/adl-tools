@@ -21,7 +21,7 @@ create
 feature -- Initialisation
 
 	make_empty (an_original_lang: STRING; at_specialisation_depth: INTEGER)
-			-- make an empty ontology at specified specialisation depth
+			-- make an empty terminology at specified specialisation depth
 		require
 			Original_language_valid: not an_original_lang.is_empty
 			Valid_specialisation_depth: at_specialisation_depth >= 0
@@ -38,7 +38,7 @@ feature -- Initialisation
 		end
 
 	make_from_flat (a_flat: FLAT_ARCHETYPE_TERMINOLOGY)
-			-- create from a flat ontology
+			-- create from a flat terminology
 		local
 			a_flat_copy: FLAT_ARCHETYPE_TERMINOLOGY
 		do

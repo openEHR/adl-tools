@@ -193,6 +193,8 @@ feature {NONE} -- Implementation
 			create release_version.make_empty
 			version_status := 0
 			commit_number := 0
+			is_adl14_id := False
+			is_adl15_id := False
 		end
 
 	adl14_id_regex: RX_PCRE_REGULAR_EXPRESSION

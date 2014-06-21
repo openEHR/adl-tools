@@ -94,7 +94,7 @@ feature {NONE} -- Initialization
 			-- ============ constraint type combo-box control ============
 			create aom_type_ctl.make_linked (get_text (ec_initial_c_object_config_constraint_type_text),
 				agent :STRING do Result := new_params.aom_type end,
-				aom_types, agent set_old_aom_type, Void, Void,
+				aom_types, agent set_new_aom_type, Void, Void,
 				0, 0)
 			ev_root_container.extend (aom_type_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (aom_type_ctl.ev_root_container)
@@ -220,7 +220,7 @@ feature -- Modification
 			do_populate
 		end
 
-	set_old_aom_type (a_str: STRING)
+	set_new_aom_type (a_str: STRING)
 		do
 			new_params.set_aom_type (a_str)
 			do_populate

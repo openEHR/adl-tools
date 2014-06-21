@@ -137,9 +137,9 @@ feature {NONE} -- Initialisation
 			create a_diff_arch.make_minimal (artefact_type, an_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
+			initialise
 
 			save_differential_text
-			initialise
 		ensure
 			id_set: id = an_id
 			validated: is_valid
@@ -161,8 +161,8 @@ feature {NONE} -- Initialisation
 			differential_archetype := a_diff_arch
 			parent_ref := parent_id.interface_id
 
-			save_differential_text
 			initialise
+			save_differential_text
 		ensure
 			Is_specialised: is_specialised
 		end
