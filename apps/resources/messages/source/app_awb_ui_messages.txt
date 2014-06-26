@@ -148,6 +148,8 @@ templates = <
 
 		["node_id_text"] = <"Text: ">
 		["node_id_description"] = <"Description: ">
+		["node_id_cb_text"] = <"Require node id term definition?">
+		["node_id_cb_tooltip"] = <"Check if term definition should be forced, even when it isn't required (due to node being single)">
 
 		["c_type_complex_object"] = <"Complex object">
 		["c_type_primitive_object"] = <"Primitive Object">

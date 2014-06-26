@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (706)
+			create message_table.make (707)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -206,7 +206,6 @@ feature -- Initialisation
 			message_table.put ("C_COMPLEX_OBJECT_PROXY path $1 not found in archetype", ec_VUNP)
 			message_table.put ("node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4", ec_VSUNT)
 			message_table.put ("node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4", ec_VSUNC)
-			message_table.put ("definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed' or prohibited (occurrences matches {0})", ec_VASMD)
 			message_table.put ("'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'", ec_VDSEV1)
 			message_table.put ("'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or match 'any' when 'include' matches non-'any'", ec_VDSEV2)
 			message_table.put ("'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or not match 'any' when 'exclude' matches 'any'", ec_VDSIV1)
@@ -412,6 +411,8 @@ feature -- Initialisation
 			message_table.put ("Path ref: ", ec_initial_c_object_config_path_ref_text)
 			message_table.put ("Text: ", ec_node_id_text)
 			message_table.put ("Description: ", ec_node_id_description)
+			message_table.put ("Require node id term definition?", ec_node_id_cb_text)
+			message_table.put ("Check if term definition should be forced, even when it isn't required (due to node being single)", ec_node_id_cb_tooltip)
 			message_table.put ("Complex object", ec_c_type_complex_object)
 			message_table.put ("Primitive Object", ec_c_type_primitive_object)
 			message_table.put ("External ref set", ec_c_type_external_constraint_reference)

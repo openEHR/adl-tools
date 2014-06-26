@@ -45,8 +45,10 @@ feature {NONE} -- Initialization
 			Valid_constraint_types: a_aom_types.object_comparison and a_aom_types.has (an_old_aom_type)
 			Valid_rm_types: an_rm_types.object_comparison and an_rm_types.has (an_old_rm_type)
 		do
-			create old_params.make (an_old_aom_type, an_old_rm_type, an_occurrences_default.as_string)
-			create new_params.make (an_old_aom_type.twin, an_old_rm_type.twin, an_occurrences_default.as_string)
+			occurrences_default := an_occurrences_default
+
+			create old_params.make (an_old_aom_type, an_old_rm_type, an_occurrences_default.as_string, term_definition_mandatory)
+			create new_params.make (an_old_aom_type.twin, an_old_rm_type.twin, an_occurrences_default.as_string, term_definition_mandatory)
 
 			create aom_types.make (0)
 			aom_types.compare_objects
@@ -56,8 +58,6 @@ feature {NONE} -- Initialization
 			end
 
 			rm_types := an_rm_types
-
-			occurrences_default := an_occurrences_default
 
 			archetype := an_archetype
 			display_settings := a_display_settings
@@ -78,7 +78,19 @@ feature {NONE} -- Initialization
 			ev_root_container.set_border_width (Default_border_width)
 
 
-			-- ============ node_id text & description controls ============
+			-- ============ node_id checkbox, text & description controls ============
+
+			create node_id_cb_ctl.make_linked (get_text (ec_node_id_cb_text), get_text (ec_node_id_cb_tooltip),
+				agent :BOOLEAN do Result := user_requires_id_term_definition end,
+				agent set_user_requires_id_term_definition)
+			ev_root_container.extend (node_id_cb_ctl.ev_data_control)
+			ev_root_container.disable_item_expand (node_id_cb_ctl.ev_data_control)
+			if term_definition_mandatory then
+				node_id_cb_ctl.hide
+			end
+			gui_controls.extend (node_id_cb_ctl)
+
+			-- terminology text - not shown by default if not needed
 			create node_id_text_ctl.make_linked (get_text (ec_node_id_text),
 				agent :STRING do Result := new_params.node_id_text end,
 				agent (v:STRING) do new_params.set_node_id_text (v) end,
@@ -86,8 +98,12 @@ feature {NONE} -- Initialization
 				0, 0, True)
 			ev_root_container.extend (node_id_text_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (node_id_text_ctl.ev_root_container)
+			if not term_definition_mandatory then
+				node_id_text_ctl.hide
+			end
 			gui_controls.extend (node_id_text_ctl)
 
+			-- terminology description - not shown by default if not needed
 			create node_id_description_ctl.make_linked (get_text (ec_node_id_description),
 				agent :STRING do Result := new_params.node_id_description end,
 				agent (v:STRING) do new_params.set_node_id_description (v) end,
@@ -95,6 +111,9 @@ feature {NONE} -- Initialization
 				0, 0, True)
 			ev_root_container.extend (node_id_description_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (node_id_description_ctl.ev_root_container)
+			if not term_definition_mandatory then
+				node_id_description_ctl.hide
+			end
 			gui_controls.extend (node_id_description_ctl)
 
 			-- ============ constraint type combo-box control ============
@@ -191,6 +210,9 @@ feature -- Events
 --					not new_params.constraint_type.is_equal (old_params.aom_type) or
 --					not new_params.rm_type.is_equal (old_params.rm_type) or
 --					not new_params.occurrences.is_equal (old_params.occurrences)
+			if term_definition_required then
+				new_params.set_term_definition_required
+			end
 			hide
 		end
 
@@ -207,6 +229,22 @@ feature -- Access
 feature -- Status Report
 
 	is_valid: BOOLEAN
+
+	user_requires_id_term_definition: BOOLEAN
+			-- True if a term definition should be created for the id code, even
+			-- if it is not needed
+
+	term_definition_required: BOOLEAN
+			-- True if a term definition is required
+		do
+			Result := term_definition_mandatory or user_requires_id_term_definition
+		end
+
+	term_definition_mandatory: BOOLEAN
+			-- True if a term definition is mandatory according to occurrences
+		do
+			Result := occurrences_default.upper_unbounded or else occurrences_default.upper > 1
+		end
 
 feature -- Commands
 
@@ -239,6 +277,15 @@ feature -- Modification
 			else
 				arch_path_list_ctl.hide
 				arch_id_list_ctl.hide
+			end
+		end
+
+	set_user_requires_id_term_definition (flag: BOOLEAN)
+		do
+			user_requires_id_term_definition := flag
+			if user_requires_id_term_definition then
+				node_id_text_ctl.show
+				node_id_description_ctl.show
 			end
 		end
 
@@ -294,6 +341,8 @@ feature {NONE} -- Implementation
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	aom_type_ctl, rm_type_ctl, occurrences_choice_ctl, arch_id_list_ctl, arch_path_list_ctl: EVX_COMBO_TEXT_SELECTOR_CONTROL
+
+	node_id_cb_ctl: EVX_CHECK_BOX_CONTROL
 
 	node_id_text_ctl, node_id_description_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 

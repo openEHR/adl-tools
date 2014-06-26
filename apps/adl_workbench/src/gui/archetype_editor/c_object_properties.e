@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_aom_type, a_rm_type, an_occurrences_default_str: STRING)
+	make (an_aom_type, a_rm_type, an_occurrences_default_str: STRING; a_term_definition_required: BOOLEAN)
 			-- Make with RM types, constraint type selection and an occurrences constrainer that is used to determine
 			-- the possible occurrences in this case
 		do
@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 			occurrences := an_occurrences_default_str
 			create node_id_text.make_from_string ("-")
 			create node_id_description.make_from_string ("-")
+			term_definition_required := a_term_definition_required
 		end
 
 feature -- Access
@@ -41,6 +42,11 @@ feature -- Access
 	node_id_text: STRING
 
 	node_id_description: STRING
+
+feature -- Status Report
+
+	term_definition_required: BOOLEAN
+			-- True if a term definition should be created for the id code
 
 feature -- Modification
 
@@ -77,6 +83,11 @@ feature -- Modification
 	set_path_ref (a_str: STRING)
 		do
 			path_ref := a_str.twin
+		end
+
+	set_term_definition_required
+		do
+			term_definition_required := True
 		end
 
 end

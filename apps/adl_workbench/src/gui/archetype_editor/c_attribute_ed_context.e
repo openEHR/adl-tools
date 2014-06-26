@@ -344,8 +344,10 @@ feature {ANY_ED_CONTEXT} -- Implementation
 	default_occurrences: MULTIPLICITY_INTERVAL
 			-- generate a reasonable default occurrences for child C_objects of this C_attribute
 		do
-			if attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop and then attached bmm_cont_prop.cardinality as card then
-				Result := card.deep_twin
+			if attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
+				check attached bmm_cont_prop.cardinality as card then
+					Result := card.deep_twin
+				end
 				Result.set_lower (0)
 			else
 				Result := rm_property.existence.deep_twin
@@ -369,9 +371,13 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			rm_type_spec := ed_context.rm_schema.class_definition (co_create_params.rm_type)
 			rm_type_name := co_create_params.rm_type
 
-			-- first figure out if a new code is needed
-			ed_context.archetype.terminology.create_added_id_definition (co_create_params.node_id_text, co_create_params.node_id_description)
-			new_code := ed_context.archetype.terminology.last_new_definition_code
+			-- first figure out if a new code definition is needed
+			if co_create_params.term_definition_required then
+				ed_context.archetype.terminology.create_added_id_definition (co_create_params.node_id_text, co_create_params.node_id_description)
+				new_code := ed_context.archetype.terminology.last_new_definition_code
+			else
+				new_code := ed_context.archetype.create_new_id_code
+			end
 
 			if c_primitive_subtypes.has (co_create_params.aom_type) then
 				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
