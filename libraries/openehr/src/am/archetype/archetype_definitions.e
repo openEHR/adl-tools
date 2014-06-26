@@ -85,6 +85,12 @@ feature -- Definitions
 
 	Adl_14_version: STRING = "1.4"
 
+	Is_adl_14_version (a_ver: STRING): BOOLEAN
+			-- is `a_ver' any kind of 1.4 version?
+		do
+			Result := a_ver.starts_with (Adl_14_version)
+		end
+
 	Latest_adl_version: STRING
 			-- return current latest known ADL version in this tool
 		once

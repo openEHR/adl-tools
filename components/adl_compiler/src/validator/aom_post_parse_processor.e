@@ -82,7 +82,7 @@ feature -- Commands
 			update_aom_mapped_types
 			update_lifecycle_state
 
-			if not validation_strict then
+			if not validation_strict and Is_adl_14_version (target.adl_version) then
 				remove_duplicate_multiplicities
 			end
 		end
