@@ -77,7 +77,6 @@ feature {NONE} -- Initialization
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
-
 			-- ============ node_id checkbox, text & description controls ============
 
 			create node_id_cb_ctl.make_linked (get_text (ec_node_id_cb_text), get_text (ec_node_id_cb_tooltip),
