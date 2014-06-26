@@ -78,7 +78,7 @@ feature -- Initialisation
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Specialisation_depth_valid: specialisation_depth = a_parent.specialisation_depth + 1
-			Parent_set: parent_archetype_id.same_string (a_parent.archetype_id.as_string)
+			Parent_set: attached parent_archetype_id as att_pid implies a_parent.archetype_id.interface_id.is_equal (att_pid)
 			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty

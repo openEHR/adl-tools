@@ -44,6 +44,11 @@ inherit
 
 	COMPARABLE
 
+
+feature -- Definitons
+
+	Semantic_path_separator: STRING = "/"
+
 feature -- Access
 
 	group_name: STRING
@@ -83,7 +88,7 @@ feature -- Access
 		do
 			create Result.make (0)
 			if attached parent as p then
-				Result.append (p.path + Ontological_path_separator)
+				Result.append (p.path + Semantic_path_separator)
 			end
 			Result.append (name)
 		end

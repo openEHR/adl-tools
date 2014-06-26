@@ -40,14 +40,13 @@ feature -- Initialisation
 			flat_target := a_target_archetype
 		end
 
-	make_create_differential (a_child_aca: ARCH_CAT_ARCHETYPE)
+	make_create_differential (an_ancestor_aca: ARCH_CAT_ARCHETYPE; a_target_archetype: FLAT_ARCHETYPE)
 			-- make with a valid specialised child archetype descriptor
 		require
-			Child_archetype_valid: a_child_aca.is_valid and a_child_aca.is_specialised
+			Valid_ancestor_archetype: an_ancestor_aca.is_valid
+			Target_archetype_valid: a_target_archetype.is_specialised
 		do
-			check attached a_child_aca.specialisation_ancestor as parent_aca then
-				make (parent_aca, a_child_aca.flat_archetype)
-			end
+			make (an_ancestor_aca, a_target_archetype)
 			compare
 			generate_diff
 			compress_differential_child
@@ -75,7 +74,8 @@ feature -- Status Report
 feature -- Comparison
 
 	compare
-			-- validate definition of specialised archetype against flat parent
+			-- compare definition of specialised archetype against flat parent and mark
+			-- nodes in the specialised flat target for removal
 		require
 			Child_specialised: flat_target.is_specialised
 		local

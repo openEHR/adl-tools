@@ -6,7 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "initial"
 
 class ARCH_CAT_ARCHETYPE_EDITABLE
 
@@ -67,7 +66,9 @@ feature -- Access
 
 			-- do diff on flat_archetype_clone
 			if is_specialised then
-				create archetype_comparator.make_create_differential (Current)
+				check attached specialisation_ancestor as parent_aca then
+					create archetype_comparator.make_create_differential (parent_aca, flat_archetype_clone)
+				end
 				differential_archetype := archetype_comparator.differential_output
 			else
 				create differential_archetype.make_from_flat (flat_archetype_clone)

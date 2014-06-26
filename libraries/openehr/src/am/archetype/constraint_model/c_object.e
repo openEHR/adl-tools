@@ -90,13 +90,13 @@ feature -- Comparison
 			-- Used to determine if path segments can be compressed;
 			-- Returns True if:
 			--	rm_type_name is identical
-			--	occurrences is Void
-			-- 	sibling order is Void
+			--	occurrences is Void or else identical to other.occurrences
+			-- 	sibling_order is Void or else identical to other.sibling_order
 			--	node_id is identical or else is the only child that overlays the parent node
 		do
 			Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and
-				not attached occurrences and
-				not attached sibling_order and
+				(occurrences ~ other.occurrences) and
+				(sibling_order ~ other.sibling_order) and
 				node_reuse_congruent (other)
 		end
 

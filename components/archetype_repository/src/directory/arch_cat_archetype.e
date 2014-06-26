@@ -159,7 +159,7 @@ feature {NONE} -- Initialisation
 			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
-			parent_ref := parent_id.interface_id
+			parent_ref := a_parent.archetype_id.interface_id
 
 			initialise
 			save_differential_text
@@ -199,8 +199,8 @@ feature -- Identification
 			-- an id matching the interface id reference (i.e. archetype id down to major version) in
 			-- the 'parent_archetype_id' property of the target.
 		do
-			if is_specialised and then attached {ARCH_CAT_ARCHETYPE} parent as aca then
-				Result := aca.id
+			if is_specialised and then attached {ARCH_CAT_ARCHETYPE} parent as parent_aca then
+				Result := parent_aca.id
 			end
 		end
 
@@ -223,7 +223,7 @@ feature -- Identification
 				csr := csr.parent
 			end
 			if attached {ARCH_CAT_MODEL_NODE} csr as acmn then
-				Result := acmn.path + Ontological_path_separator + id.as_string
+				Result := acmn.path + Semantic_path_separator + id.as_string
 			end
 		end
 
@@ -236,9 +236,13 @@ feature -- Identification
 			-- semantic key to find parent node in semantic id tree
 			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
 			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be an id ref like openEHR-EHR-OBSERVATION.thing.v1
+		require
+			is_specialised implies attached parent_ref
 		do
-			if is_specialised and then attached parent_ref as att_parent_ref then
-				Result := att_parent_ref
+			if is_specialised then
+				check attached parent_ref as att_parent_ref then
+					Result := att_parent_ref
+				end
 			else
 				Result := id.qualified_rm_class
 			end
@@ -246,8 +250,10 @@ feature -- Identification
 
 	semantic_parent_id: STRING
 			-- semantic name of parent node in ontology tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
-			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of the folder,
+			-- e.g. openEHR-EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.0.2,
+			-- it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1.0.0
 		do
 			if is_specialised then
 				Result := parent_id.as_string
@@ -685,14 +691,14 @@ feature -- Compilation
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
 		end
 
-	signal_differential_edited
-			-- signal event of differential in-memory being changed by editing at UI
-		do
-			compilation_state := cs_ready_to_validate
-			clear_cache
-		ensure
-			Compilation_state_set: compilation_state = Cs_ready_to_validate
-		end
+--	signal_differential_edited
+--			-- signal event of differential in-memory being changed by editing at UI
+--		do
+--			compilation_state := cs_ready_to_validate
+--			clear_cache
+--		ensure
+--			Compilation_state_set: compilation_state = Cs_ready_to_validate
+--		end
 
 	signal_exception
 			-- signal exception caught by compiler during call to some routine here;
@@ -959,7 +965,9 @@ feature -- Conversion
 			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
 			if is_specialised then
-				create archetype_comparator.make_create_differential (Current)
+				check attached specialisation_ancestor as parent_aca then
+					create archetype_comparator.make_create_differential (parent_aca, flat_archetype)
+				end
 				check attached archetype_comparator.differential_output as da then
 					Result := da
 				end

@@ -239,7 +239,7 @@ feature -- Status Report
 			-- True if `aca' does not exist in the catalogue, but has a viable parent under
 			-- which it can be attached
 		do
-			Result := has_item_with_id (aca.semantic_parent_id) and
+			Result := has_item_for_ref (aca.semantic_parent_key) and
 				not has_item_with_id (aca.qualified_key)
 		end
 
@@ -826,13 +826,12 @@ feature {NONE} -- Implementation
 		require
 			valid_candidate (aca)
 		local
-			parent_key, child_key: STRING
+			child_key: STRING
 		do
-			parent_key := aca.semantic_parent_id.as_lower
 			child_key := aca.qualified_key
 
 			-- add to semantic index
-			semantic_item_index.item (parent_key).put_child (aca)
+			matching_item (aca.semantic_parent_key).put_child (aca)
 			semantic_item_index.force (aca, child_key)
 			archetype_index.force (aca, child_key)
 
