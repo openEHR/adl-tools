@@ -447,9 +447,6 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 		}
 	| c_archetype_slot_head -- if closed or occurrences = 0
 		{
-			if not ($1.is_closed or $1.is_prohibited) then
-				abort_with_error (ec_VASMD, <<$1.rm_type_name, c_attrs.item.path>>)
-			end
 			$$ := $1
 		}
 	;
