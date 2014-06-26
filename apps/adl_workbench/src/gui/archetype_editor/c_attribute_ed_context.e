@@ -459,12 +459,17 @@ feature {NONE} -- Context menu
 			-- add sub-menu of types to add as children
 			if not is_rm and ed_context.editing_enabled then
 				create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
+
+				-- make a menu item with the base class of the property
 				create an_mi.make_with_text_and_action (rm_property.type.base_class.name, agent ui_offer_add_new_arch_child (rm_property.type.base_class))
 				if rm_property.type.base_class.is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
+	    		types_sub_menu.extend (an_mi)
+
+				-- add more items for all subtypes
 				across rm_property.type.base_class.all_descendants as subs_csr loop
 					rm_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
 					create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
@@ -529,9 +534,11 @@ feature {NONE} -- Context menu
 		do
 			if attached arch_node as a_n and attached ed_context.parent_archetype as parent_arch then
 				create apa.make_from_string (a_n.path)
-				ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
-				if parent_arch.has_attribute_path (ca_path_in_flat) then
-					arch_node_in_ancestor := parent_arch.attribute_at_path (ca_path_in_flat)
+				if not apa.is_phantom_path_at_level (parent_arch.specialisation_depth) then
+					ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
+					if parent_arch.has_attribute_path (ca_path_in_flat) then
+						arch_node_in_ancestor := parent_arch.attribute_at_path (ca_path_in_flat)
+					end
 				end
 			end
 		end

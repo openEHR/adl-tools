@@ -45,11 +45,17 @@ feature {NONE} -- Initialization
 			Valid_constraint_types: a_aom_types.object_comparison and a_aom_types.has (an_old_aom_type)
 			Valid_rm_types: an_rm_types.object_comparison and an_rm_types.has (an_old_rm_type)
 		do
-			aom_types := a_aom_types
-			rm_types := an_rm_types
-
 			create old_params.make (an_old_aom_type, an_old_rm_type, an_occurrences_default.as_string)
 			create new_params.make (an_old_aom_type.twin, an_old_rm_type.twin, an_occurrences_default.as_string)
+
+			create aom_types.make (0)
+			aom_types.compare_objects
+			aom_types.append (a_aom_types)
+			if arch_ext_ref_list.is_empty then
+				aom_types.prune (bare_type_name(({C_ARCHETYPE_ROOT}).name))
+			end
+
+			rm_types := an_rm_types
 
 			occurrences_default := an_occurrences_default
 
@@ -270,7 +276,12 @@ feature {NONE} -- Implementation
 
 	arch_ext_ref_list: ARRAYED_SET [STRING]
 		do
-			Result := current_arch_cat.matching_ids (".*", new_params.rm_type, Void)
+			if attached arch_ext_ref_list_cache as att_cache then
+				Result := att_cache
+			else
+				Result := current_arch_cat.matching_ids (".*", new_params.rm_type, Void)
+				arch_ext_ref_list_cache := Result
+			end
 		end
 
 	arch_path_list: ARRAYED_LIST [STRING]
@@ -293,6 +304,8 @@ feature {NONE} -- Implementation
 		do
 			Result := True
 		end
+
+	arch_ext_ref_list_cache: detachable ARRAYED_SET [STRING]
 
 end
 
