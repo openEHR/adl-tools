@@ -62,6 +62,10 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			else
 				flat_ancestor := Void
 			end
+
+			-- record if this archetype is a 1.4 archetype, because if so we need to reprocess
+			-- more junk silently
+			is_adl14_archetype := ara.file_mgr.has_legacy_flat_file
 		end
 
 feature -- Access
@@ -75,6 +79,11 @@ feature -- Access
 
 	aom_profile: detachable AOM_PROFILE
 
+feature -- Status Report
+
+	is_adl14_archetype: BOOLEAN
+			-- True if archetype originally parsed from ADL 1.4
+
 feature -- Commands
 
 	execute
@@ -82,7 +91,7 @@ feature -- Commands
 			update_aom_mapped_types
 			update_lifecycle_state
 
-			if not validation_strict and Is_adl_14_version (target.adl_version) then
+			if not validation_strict and is_adl14_archetype then
 				remove_duplicate_multiplicities
 			end
 		end
