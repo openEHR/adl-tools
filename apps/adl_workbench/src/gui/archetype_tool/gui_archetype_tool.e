@@ -27,7 +27,7 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- set up shared agents
-			tool_agents.set_code_select_action_agent (agent select_terminology_item_from_code)
+			tool_agents.set_id_code_select_action_agent (agent select_id_code_in_terminology_view)
 
 			-- core tool creation
 			make_core_tools
@@ -55,7 +55,7 @@ feature {NONE}-- Initialization
 
 feature -- UI Feedback
 
-	select_terminology_item_from_code (a_code: STRING)
+	select_id_code_in_terminology_view (a_code: STRING)
 			-- select `a_code' in the terminology tab of this tool
 		do
 			if attached source as src then
@@ -64,7 +64,7 @@ feature -- UI Feedback
 					terminology_controls.populate (src, differential_view, selected_language)
 				end
 				ev_notebook.select_item (terminology_controls.ev_root_container)
-				terminology_controls.select_code (a_code)
+				terminology_controls.select_id_code (a_code)
 			end
 		end
 

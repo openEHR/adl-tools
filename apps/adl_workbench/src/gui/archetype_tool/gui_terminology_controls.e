@@ -18,6 +18,7 @@ inherit
 	ADL_15_TERM_CODE_TOOLS
 		export
 			{NONE} all
+			{ANY} is_id_code
 		end
 
 	STRING_UTILITIES
@@ -153,16 +154,26 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_editable end)
 		end
 
-	select_code (a_code: STRING)
-			-- select row for a_term_code in term_definitions control
+	select_id_code (an_id_code: STRING)
+			-- select row for `an_id_code' in term_definitions control
+		require
+			is_id_code (an_id_code)
+		local
+			a_row: detachable EV_GRID_ROW
 		do
---			if is_id_code (a_code) then
---				select_coded_term_row (a_code, id_defs_mlist_ctl.ev_data_control)
---			elseif is_value_code (a_code) then
---				select_coded_term_row (a_code, value_defs_mlist_ctl.ev_data_control)
---			elseif is_constraint_code (a_code) then
---				select_coded_term_row (a_code, constraint_defs_mlist_ctl.ev_data_control)
---			end
+			if evx_id_terms_grid.ev_grid.row_count /= 0 then
+				a_row := evx_id_terms_grid.matching_sub_row (evx_id_terms_grid.ev_grid.row (1),
+					agent (ev_row: EV_GRID_ROW; key: STRING): BOOLEAN
+						do
+							Result := attached {ARCHETYPE_TERM} ev_row.data as att_term and then att_term.code.is_equal (key)
+						end (?, an_id_code)
+				)
+
+				if attached a_row as att_row then
+					att_row.ensure_visible
+					att_row.enable_select
+				end
+			end
 		end
 
 feature {NONE} -- Events
@@ -432,25 +443,6 @@ feature {NONE} -- Implementation
 			al.append (terminologies)
 
 			Result := al.to_array
-		end
-
-	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)
-			-- Select the row for `a_term_code' in `list_control'.
-		local
-			found: BOOLEAN
-		do
-			list_control.remove_selection
-			list_control.show
-			from list_control.start until list_control.off or found loop
-				if list_control.item.first.is_equal (a_term_code) then
-					list_control.item.enable_select
-					found := True
-				--	if list_control.is_displayed then
-						list_control.ensure_item_visible (list_control.item)
-				--	end
-				end
-				list_control.forth
-			end
 		end
 
 	do_display

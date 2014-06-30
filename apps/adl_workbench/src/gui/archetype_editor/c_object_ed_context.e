@@ -367,11 +367,11 @@ feature {NONE} -- Context menu
 			context_menu.extend (an_mi)
 
 			if attached arch_node as a_n then
-				-- if this node is addressable, add menu item to show node_id in ontology
+				-- if this node is addressable, add menu item to show node_id in terminology
 				create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code),
 					agent (node_id_str: STRING)
 						do
-							tool_agents.code_select_action_agent.call ([node_id_str])
+							tool_agents.id_code_select_action_agent.call ([node_id_str])
 						end (a_n.node_id)
 				)
 				context_menu.extend (an_mi)
