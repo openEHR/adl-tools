@@ -39,6 +39,7 @@ feature -- Compilation
 			-- differential yet available. This is because changes in legacy will be detected independently
 		do
 			precursor
+			flat_archetype_clone_cache := Void
 			gui_context := Void
 		end
 

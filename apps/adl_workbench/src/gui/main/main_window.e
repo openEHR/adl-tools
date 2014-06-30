@@ -287,6 +287,7 @@ feature {NONE} -- Initialization
 			gui_agents.set_select_rm_in_new_tool_agent (agent display_rm_in_new_tool)
 			gui_agents.set_update_all_tools_rm_icons_setting_agent (agent update_all_tools_rm_icons_setting)
 			gui_agents.set_refresh_archetype_viewers_agent (agent refresh_archetype_viewers)
+			gui_agents.set_refresh_archetype_editors_agent (agent refresh_archetype_editors)
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
 			gui_agents.set_close_test_tool_agent (agent close_test_tool)
@@ -982,6 +983,19 @@ feature -- Archetype editors
 	archetype_editors: GUI_ARCHETYPE_EDITORS_CONTROLLER
 		once
 			create Result.make (docking_manager)
+		end
+
+	refresh_archetype_editors (an_archetype_id: STRING)
+			-- repopulate all editors of archetype with `an_archetype_id'
+		do
+			archetype_editors.do_all_tools (
+				agent (a_tool: GUI_ARCHETYPE_EDITOR; an_id: STRING)
+					do
+						if a_tool.source.id.as_string.same_string (an_id) then
+							a_tool.repopulate
+						end
+					end (?, an_archetype_id)
+			)
 		end
 
 	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)

@@ -1025,6 +1025,20 @@ feature -- File Access
 			status := get_msg_line (ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
 
+	save_text_to_legacy_file (a_text: STRING)
+			-- save `a_text' to the legacy file if it exists
+		do
+			file_mgr.save_text_to_legacy_file (a_text)
+			signal_source_edited
+		end
+
+	save_text_to_differential_file (a_text: STRING)
+			-- save `a_text' to the differential file
+		do
+			file_mgr.save_text_to_differential_file (a_text)
+			signal_source_edited
+		end
+
 feature {MAIN_WINDOW} -- File Access
 
 	clean_generated
@@ -1164,10 +1178,6 @@ feature {NONE} -- Implementation
 	clear_cache
 		do
 			flat_archetype_cache := Void
---			flat_archetype_clone_cache := Void
---			if has_gui_context then
---				gui_context.clear
---			end
 		end
 
 	set_archetype_default_details (an_arch: DIFFERENTIAL_ARCHETYPE)

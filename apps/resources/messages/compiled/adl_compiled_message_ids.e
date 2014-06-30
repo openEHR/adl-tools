@@ -689,6 +689,8 @@ feature -- Definitions
 		ec_save_151_serialised_button_tooltip: STRING = "save_151_serialised_button_tooltip"
 		ec_saved_serialised_msg: STRING = "saved_serialised_msg"
 		ec_saved_converted_msg: STRING = "saved_converted_msg"
+		ec_saved_source_msg: STRING = "saved_source_msg"
+		ec_saved_14_source_msg: STRING = "saved_14_source_msg"
 		ec_flatten_with_rm_cb_text: STRING = "flatten_with_rm_cb_text"
 		ec_flatten_with_rm_cb_tooltip: STRING = "flatten_with_rm_cb_tooltip"
 		ec_translation_original_label_text: STRING = "translation_original_label_text"

@@ -205,50 +205,55 @@ feature {NONE} -- Implementation
 		end
 
 	save_151_serialised_source
+			-- save the final serialised result as the new source. Useful to correct any formatting, occasionally causes
+			-- minor syntax upgrading
 		do
 			if attached source as att_source then
 				att_source.save_differential_text
 				evx_adl_15_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
 			end
 		end
 
 	save_15_converted_source
+			-- save the intermediate converted 1.5 source which contains ADL 1.5.1 modifications on ADL 1.5 old style source
 		do
 			if attached source as att_source then
 				att_source.save_differential_text
 				evx_adl_15_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
 			end
 		end
 
 	save_adl_15_source_editor_text (a_text: STRING)
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
+			-- and then select the archetype in the catalogue to force a recompile
 		local
 			fp: PLAIN_TEXT_FILE
 		do
 			if attached source as att_source then
-				create fp.make_open_write (att_source.source_file_path)
-				fp.put_string (a_text)
-				fp.close
-				att_source.signal_source_edited
+				att_source.save_text_to_differential_file (a_text)
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
 			end
 		end
 
 	save_adl_14_source_editor_text (a_text: STRING)
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
+			-- and then select the archetype in the catalogue to force a recompile
 		local
 			fp: PLAIN_TEXT_FILE
 		do
-			if attached source as att_source and then attached att_source.file_mgr.legacy_flat_path as lfp then
-				create fp.make_open_write (lfp)
-				fp.put_string (a_text)
-				fp.close
-				att_source.signal_source_edited
+			if attached source as att_source then
+				att_source.save_text_to_legacy_file (a_text)
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
 			end
 		end
 

@@ -30,6 +30,10 @@ class ARCH_PERSISTENCE_MGR
 
 inherit
 	SHARED_ARCHETYPE_CATALOGUES
+		export
+			{NONE} all
+			{ANY} deep_twin, standard_is_equal, is_deep_equal
+		end
 
 	SHARED_ARCHETYPE_RM_ACCESS
 		export
@@ -354,6 +358,28 @@ feature {ARCH_CAT_ARCHETYPE} -- Commands
 				fd.read_stream (fd.count)
 				Result := fd.last_string
 				fd.close
+			end
+		end
+
+	save_text_to_differential_file (a_text: STRING)
+			-- save `a_text' to the differential file
+		local
+			fp: PLAIN_TEXT_FILE
+		do
+			create fp.make_open_write (source_file_path)
+			fp.put_string (a_text)
+			fp.close
+		end
+
+	save_text_to_legacy_file (a_text: STRING)
+			-- save `a_text' to the legacy file
+		local
+			fp: PLAIN_TEXT_FILE
+		do
+			if attached legacy_flat_path as att_lfp then
+				create fp.make_open_write (att_lfp)
+				fp.put_string (a_text)
+				fp.close
 			end
 		end
 

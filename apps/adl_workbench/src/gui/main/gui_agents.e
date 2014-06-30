@@ -36,6 +36,8 @@ feature -- Access
 
 	refresh_archetype_viewers_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: STRING]]
 
+	refresh_archetype_editors_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: STRING]]
+
 	select_archetype_from_gui_data_agent: detachable PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something
 			-- when an archetype in this tool is selected
@@ -116,6 +118,11 @@ feature -- Modification
 	set_refresh_archetype_viewers_agent (an_agent: like refresh_archetype_viewers_agent)
 		do
 			refresh_archetype_viewers_agent := an_agent
+		end
+
+	set_refresh_archetype_editors_agent (an_agent: like refresh_archetype_editors_agent)
+		do
+			refresh_archetype_editors_agent := an_agent
 		end
 
 	set_select_archetype_from_gui_data_agent (an_agent: like select_archetype_from_gui_data_agent)

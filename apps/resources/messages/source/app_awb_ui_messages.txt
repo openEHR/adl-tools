@@ -514,6 +514,8 @@ templates = <
 		["save_151_serialised_button_tooltip"] = <"Save ADL 1.5.1 serialised output into ADL 1.5 source file (overwrites current file)">
 		["saved_serialised_msg"] = <"Saved ADL 1.5.1 serialised output into $1">
 		["saved_converted_msg"] = <"Saved ADL 1.5.1 converted output into $1">
+		["saved_source_msg"] = <"Wrote source to $1">
+		["saved_14_source_msg"] = <"Wrote ADL 1.4 source to $1">
 		
 		-- GUI_SERIALISATION_CONTROL
 		["flatten_with_rm_cb_text"] = <"Include RM">

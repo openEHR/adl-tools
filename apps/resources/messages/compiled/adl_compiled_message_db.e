@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (707)
+			create message_table.make (709)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -704,6 +704,8 @@ feature -- Initialisation
 			message_table.put ("Save ADL 1.5.1 serialised output into ADL 1.5 source file (overwrites current file)", ec_save_151_serialised_button_tooltip)
 			message_table.put ("Saved ADL 1.5.1 serialised output into $1", ec_saved_serialised_msg)
 			message_table.put ("Saved ADL 1.5.1 converted output into $1", ec_saved_converted_msg)
+			message_table.put ("Wrote source to $1", ec_saved_source_msg)
+			message_table.put ("Wrote ADL 1.4 source to $1", ec_saved_14_source_msg)
 			message_table.put ("Include RM", ec_flatten_with_rm_cb_text)
 			message_table.put ("Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated", ec_flatten_with_rm_cb_tooltip)
 			message_table.put ("Original text", ec_translation_original_label_text)
