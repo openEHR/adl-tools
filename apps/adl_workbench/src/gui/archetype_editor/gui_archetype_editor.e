@@ -34,8 +34,8 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- translation control
-			ev_notebook.extend (translation_control.ev_root_container)
-			ev_notebook.set_item_text (translation_control.ev_root_container, get_text (ec_translation_tab_text))
+			-- ev_notebook.extend (translation_control.ev_root_container)
+			-- ev_notebook.set_item_text (translation_control.ev_root_container, get_text (ec_translation_tab_text))
 			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
 
 			ev_root_container.set_data (Current)
@@ -85,7 +85,7 @@ feature -- Events
 --			else
 --				edit_archetype.clear_is_generated
 --			end
-			populate_primary_source
+			populate_primary_source_indicator
 		end
 
 feature {NONE} -- Implementation
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 	populate_undo_redo_controls
 		do
 			precursor
-			populate_primary_source
+			populate_primary_source_indicator
 		end
 
 	add_editing_controls

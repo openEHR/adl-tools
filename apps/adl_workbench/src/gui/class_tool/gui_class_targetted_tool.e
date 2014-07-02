@@ -55,10 +55,6 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	do_populate
-		deferred
-		end
-
 	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		deferred

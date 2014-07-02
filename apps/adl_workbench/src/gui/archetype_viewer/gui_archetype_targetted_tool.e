@@ -94,12 +94,6 @@ feature -- Commands
 			repopulate
 		end
 
-feature {NONE} -- Implementation
-
-	do_populate
-		deferred
-		end
-
 end
 
 

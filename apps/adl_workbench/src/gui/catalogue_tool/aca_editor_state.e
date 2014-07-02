@@ -24,6 +24,8 @@ feature -- Initialisation
 			if not attached editor_context then
 				create editor_context.make_editable (target, target.rm_schema, an_undo_redo_chain)
 			end
+		ensure
+			attached editor_context
 		end
 
 feature -- Access
