@@ -117,6 +117,7 @@ feature {NONE} -- Initialization
 
 			-- ============ constraint type combo-box control ============
 			create aom_type_ctl.make_linked (get_text (ec_initial_c_object_config_constraint_type_text),
+				get_text (ec_initial_c_object_config_constraint_type_tooltip),
 				agent :STRING do Result := new_params.aom_type end,
 				aom_types, agent set_new_aom_type, Void, Void,
 				0, 0)
@@ -129,6 +130,7 @@ feature {NONE} -- Initialization
 
 			-- ============ RM type combo-box control ============
 			create rm_type_ctl.make_linked (get_text (ec_initial_c_object_config_rm_type_text),
+				get_text (ec_initial_c_object_config_rm_type_tooltip),
 				agent :STRING do Result := new_params.rm_type end,
 				rm_types, agent (a_str: STRING) do new_params.set_rm_type (a_str) end,
 				Void, Void,
@@ -142,6 +144,7 @@ feature {NONE} -- Initialization
 
 			-- ============ Occurrences ============
 			create occurrences_choice_ctl.make_linked (get_text (ec_initial_c_object_config_occurrences_text),
+				get_text (ec_initial_c_object_config_occurrences_tooltip),
 				agent :STRING do Result := new_params.occurrences end,
 				occurrences_constrained_list, agent (a_str: STRING) do new_params.set_occurrences (a_str) end, Void, Void,
 				0, 0)
@@ -151,6 +154,7 @@ feature {NONE} -- Initialization
 
 			-- ============ Archetype ext ref list ============			
 			create arch_id_list_ctl.make_linked (get_text (ec_initial_c_object_config_ext_ref_text),
+				get_text (ec_initial_c_object_config_ext_ref_tooltip),
 				agent :detachable STRING do Result := new_params.ext_ref end,
 				arch_ext_ref_list, agent (a_str: STRING) do new_params.set_ext_ref (a_str) end, Void, Void,
 				0, 0)
@@ -165,6 +169,7 @@ feature {NONE} -- Initialization
 
 			-- ============ Archetype path list ============			
 			create arch_path_list_ctl.make_linked (get_text (ec_initial_c_object_config_path_ref_text),
+				get_text (ec_initial_c_object_config_path_ref_tooltip),
 				agent :detachable STRING do Result := new_params.path_ref end,
 				arch_path_list, agent (a_str: STRING) do new_params.set_path_ref (a_str) end, Void, Void,
 				0, 0)

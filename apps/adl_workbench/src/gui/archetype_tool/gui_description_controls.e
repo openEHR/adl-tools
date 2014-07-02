@@ -45,6 +45,7 @@ feature {NONE} -- Initialisation
 
 			-- lifecycle state control - single line combo text-selection field
 			create lifecycle_state_text_ctl.make_linked (get_text (ec_lifecycle_state_label_text),
+				get_text (ec_lifecycle_state_label_tooltip),
 				agent :detachable STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
 				resource_lifecycle_states,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
@@ -89,7 +90,7 @@ feature {NONE} -- Initialisation
 			lang_original_trans_hbox.extend (original_language_text_ctl.ev_root_container)
 
 			-- translation languages selector
-			create trans_languages_ctl.make (get_text (ec_trans_languages_label_text),
+			create trans_languages_ctl.make (get_text (ec_trans_languages_label_text), Void,
 				agent :detachable DYNAMIC_LIST [STRING]
 					do
 						if source_archetype.has_translations then
