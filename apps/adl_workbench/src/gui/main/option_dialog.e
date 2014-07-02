@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 			ev_notebook.set_item_text (ev_notebook_compiler_settings_vb, get_text (ec_options_compiler_settings_tab_text))
 
 			-- Error reporting level combo			
-			create parser_error_reporting_level_combo_box.make (get_text (ec_error_reporting_level_text),
+			create parser_error_reporting_level_combo_box.make (get_text (ec_error_reporting_level_text), get_text (ec_error_reporting_level_tooltip),
 				agent :STRING
 					do
 						check attached error_type_name_table.item (error_reporting_level) as errname then
@@ -139,35 +139,60 @@ feature {NONE} -- Initialization
 
 			-- ========== Tab 3 - UI settings ==========
 
-			create ev_notebook_ui_settings_vb
-			ev_notebook.extend (ev_notebook_ui_settings_vb)
-			ev_notebook.set_item_text (ev_notebook_ui_settings_vb, get_text (ec_options_ui_settings_tab_text))
+			create ev_notebook_ui_settings_hb
+			ev_notebook.extend (ev_notebook_ui_settings_hb)
+			create ev_notebook_ui_settings_1_vb
+			ev_notebook_ui_settings_hb.extend (ev_notebook_ui_settings_1_vb)
+			ev_notebook.set_item_text (ev_notebook_ui_settings_hb, get_text (ec_options_ui_settings_tab_text))
+
+			-- show entire class hierarchy in archetype explorer
+			create show_all_classes_check_ctl.make (get_text (ec_show_all_classes_text), get_text (ec_show_all_classes_tooltip), agent show_entire_ontology)
+			ev_notebook_ui_settings_1_vb.extend (show_all_classes_check_ctl.ev_data_control)
+			gui_controls.extend (show_all_classes_check_ctl)
+
+			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
+			create display_source_check_ctl.make (get_text (ec_show_source_format_text), get_text (ec_show_source_format_tooltip), agent display_archetype_source)
+			ev_notebook_ui_settings_1_vb.extend (display_source_check_ctl.ev_data_control)
+			gui_controls.extend (display_source_check_ctl)
+
+			-- use RM pixmaps
+			create use_rm_icons_check_ctl.make (get_text (ec_use_rm_icons_text), get_text (ec_use_rm_icons_tooltip), agent use_rm_pixmaps)
+			ev_notebook_ui_settings_1_vb.extend (use_rm_icons_check_ctl.ev_data_control)
+			gui_controls.extend (use_rm_icons_check_ctl)
+
+			-- Show flat form by default
+			create show_flat_form_ctl.make (get_text (ec_show_flat_form_text),
+				get_text (ec_show_flat_form_tooltip), agent show_flat_form)
+			ev_notebook_ui_settings_1_vb.extend (show_flat_form_ctl.ev_data_control)
+			gui_controls.extend (show_flat_form_ctl)
 
 			-- Show definition tree expanded
 			create expand_definition_tree_check_ctl.make (get_text (ec_show_definition_tree_expanded_text),
 				get_text (ec_show_definition_tree_expanded_tooltip), agent expand_definition_tree)
-			ev_notebook_ui_settings_vb.extend (expand_definition_tree_check_ctl.ev_data_control)
+			ev_notebook_ui_settings_1_vb.extend (expand_definition_tree_check_ctl.ev_data_control)
 			gui_controls.extend (expand_definition_tree_check_ctl)
 
-			-- Show line numbers in ADL source
+			-- Show line numbers in ADL source tab
 			create show_line_numbers_check_ctl.make (get_text (ec_show_line_numbers), Void, agent show_line_numbers)
-			ev_notebook_ui_settings_vb.extend  (show_line_numbers_check_ctl.ev_data_control)
+			ev_notebook_ui_settings_1_vb.extend  (show_line_numbers_check_ctl.ev_data_control)
 			gui_controls.extend (show_line_numbers_check_ctl)
 
-			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
-			create display_source_check_ctl.make (get_text (ec_show_source_form_text), get_text ("show_source_form_tooltip"), agent display_archetype_source)
-			ev_notebook_ui_settings_vb.extend (display_source_check_ctl.ev_data_control)
-			gui_controls.extend (display_source_check_ctl)
 
-			-- show entire class hierarchy in archetype explorer
-			create show_all_classes_check_ctl.make (get_text (ec_show_all_classes_text), get_text ("show_all_classes_tooltip"), agent show_entire_ontology)
-			ev_notebook_ui_settings_vb.extend (show_all_classes_check_ctl.ev_data_control)
-			gui_controls.extend (show_all_classes_check_ctl)
+			create ev_notebook_ui_settings_2_vb
+			ev_notebook_ui_settings_hb.extend (ev_notebook_ui_settings_2_vb)
 
-			-- use RM pixmaps
-			create use_rm_icons_check_ctl.make (get_text (ec_use_rm_icons_text), get_text ("use_rm_icons_tooltip"), agent use_rm_pixmaps)
-			ev_notebook_ui_settings_vb.extend (use_rm_icons_check_ctl.ev_data_control)
-			gui_controls.extend (use_rm_icons_check_ctl)
+			-- Tool tab combo
+			create tool_tab_combo_box.make (get_text (ec_options_tool_tab_text), get_text (ec_options_tool_tab_tooltip),
+				agent :STRING
+					do
+						check attached Tool_tab_index.item (default_tool_tab) as tt then
+							Result := tt
+						end
+					end,
+				Tool_tab_names, 0, 100)
+			ev_notebook_ui_settings_2_vb.extend (tool_tab_combo_box.ev_root_container)
+			ev_notebook_ui_settings_2_vb.disable_item_expand (tool_tab_combo_box.ev_root_container)
+			gui_controls.extend (tool_tab_combo_box)
 
 
 			-- ========== Tab 4 - Authoring settings ==========
@@ -305,6 +330,7 @@ feature -- Events
 				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
 				set_expand_definition_tree (expand_definition_tree_check_ctl.is_selected)
 				set_show_line_numbers (show_line_numbers_check_ctl.is_selected)
+				set_show_flat_form (show_flat_form_ctl.is_selected)
 				set_display_archetype_source (display_source_check_ctl.is_selected)
 				set_use_rm_pixmaps (use_rm_icons_check_ctl.is_selected)
 				set_show_entire_ontology (show_all_classes_check_ctl.is_selected)
@@ -313,6 +339,7 @@ feature -- Events
 				else
 					has_changed_navigator_options := False
 				end
+				set_default_tool_tab (Tool_tab_reverse_index.item (tool_tab_combo_box.data_control_text))
 
 				-- namespaces
 				set_namespace_table (namespace_table)
@@ -362,15 +389,19 @@ feature {NONE} -- Implementation
 
 	ev_notebook: EV_NOTEBOOK
 
-	ev_notebook_paths_vb, ev_notebook_compiler_settings_vb, ev_notebook_ui_settings_vb: EV_VERTICAL_BOX
+	ev_notebook_paths_vb, ev_notebook_compiler_settings_vb, ev_notebook_ui_settings_1_vb, ev_notebook_ui_settings_2_vb: EV_VERTICAL_BOX
 
 	ev_notebook_authoring_vb, ev_notebook_namespaces_vb, ev_notebook_terminology_settings_vb: EV_VERTICAL_BOX
 
+	ev_notebook_ui_settings_hb: EV_HORIZONTAL_BOX
+
 	parser_error_reporting_level_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
+
+	tool_tab_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
 	validation_strict_check_ctl, rm_flattening_check_ctl, expand_definition_tree_check_ctl, show_line_numbers_check_ctl: EVX_CHECK_BOX_CONTROL
 
-	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl: EVX_CHECK_BOX_CONTROL
+	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl, show_flat_form_ctl: EVX_CHECK_BOX_CONTROL
 
 	auth_name_text_ctl, auth_org_text_ctl, auth_copyright_text_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 

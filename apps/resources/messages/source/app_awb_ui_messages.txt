@@ -79,13 +79,21 @@ templates = <
 		["show_definition_tree_expanded_text"] = <"Show definition tree expanded">
 		["show_definition_tree_expanded_tooltip"] = <"Show archetype definition tree fully expanded by default when viewing a new archetype">
 		["show_line_numbers"] = <"Show line numbers in ADL source">
-		["show_source_form_text"] = <"Show original creation form">
-		["show_source_form_tooltip"] = <"Indicate original format  - ADL 1.4 legacy flat, ADL 1.5, etc">
+
+		["show_flat_form_text"] = <"Show flat form by default">
+		["show_flat_form_tooltip"] = <"Show flat rather than differential form of archetype in all applicable tabs">
+
+		["show_source_format_text"] = <"Show original source format in explorer">
+		["show_source_format_tooltip"] = <"Indicate original format  - ADL 1.4 legacy flat, ADL 1.5, etc">
+
 		["show_all_classes_text"] = <"Show all classes in explorer">
 		["show_all_classes_tooltip"] = <"Show all archetypable classes in RM even if there are no archetypes based on them in the current repository.">
 		["use_rm_icons_text"] = <"Use RM icons">
 		["use_rm_icons_tooltip"] = <"Use RM-specific icons in visualisation of archetype definition?">
 
+
+		["options_tool_tab_text"] = <"Default Tool Tab: ">
+		["options_tool_tab_tooltip"] = <"Choose which tab is by default shown when opening an archetype">
 		["options_path_tab_text"] = <"Paths">
 
 		["options_compiler_settings_tab_text"] = <"Compiler Settings">
@@ -141,10 +149,15 @@ templates = <
 		-- INITIAL_C_OBJECT_DIALOG
 		["initial_c_object_config_dialog_title"] = <"Configure object constraint">
 		["initial_c_object_config_constraint_type_text"] = <"Constraint type: ">
+		["initial_c_object_config_constraint_type_tooltip"] = <"Choome AOM constraint type">
 		["initial_c_object_config_rm_type_text"] = <"RM type: ">
+		["initial_c_object_config_rm_type_tooltip"] = <"Choose RM type of the new constraint object">
 		["initial_c_object_config_occurrences_text"] = <"Occurrences: ">
+		["initial_c_object_config_occurrences_tooltip"] = <"Limit occurrences of objects in data that conform to this constraint object">
 		["initial_c_object_config_ext_ref_text"] = <"Archetype ref: ">
+		["initial_c_object_config_ext_ref_tooltip"] = <"Identifier of archetype to link to">
 		["initial_c_object_config_path_ref_text"] = <"Path ref: ">
+		["initial_c_object_config_path_ref_tooltip"] = <"Path of node in this archetype to link to">
 
 		["node_id_text"] = <"Text: ">
 		["node_id_description"] = <"Description: ">
@@ -465,6 +478,7 @@ templates = <
 		["term_bindings_tab_text"] = <"Term Bindings">
 
 		["lifecycle_state_label_text"] = <"Lifecycle state:">
+		["lifecycle_state_label_tooltip"] = <"State in archetype lifecycle state machine">
 		["auth_frame_text"] = <"Authorship">
 		["auth_orig_auth_label_text"] = <"Original Author">
 		["auth_contrib_label_text"] = <"Contributors">
@@ -558,9 +572,11 @@ templates = <
 		["term_defs_tab_text"] = <"Ids">
 		["value_sets_tab_text"] = <"Values">
 
-		["value_sets_grid_col_code_text"] = <"Values/ Value sets">
+		["value_sets_grid_col_code_text"] = <"Code">
+		["value_sets_grid_col_text_text"] = <"Values/ Value sets">
 		["value_sets_grid_col_description_text"] = <"Description">
-		["id_terms_grid_col_code_text"] = <"Text">
+		["id_terms_grid_col_code_text"] = <"Code">
+		["id_terms_grid_col_text_text"] = <"Text">
 		["id_terms_grid_col_member_code_text"] = <"Description">
 
 		-- GUI_CLASS_TOOL_CLOSURE_VIEW

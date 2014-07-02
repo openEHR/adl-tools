@@ -35,14 +35,17 @@ feature {NONE}-- Initialization
 			-- interface map control
 			create interface_map_control.make (agent on_path_map_key_press)
 			ev_notebook.extend (interface_map_control.ev_root_container)
-			ev_notebook.set_item_text (interface_map_control.ev_root_container, get_text (ec_interface_tab_text))
+			ev_notebook.set_item_text (interface_map_control.ev_root_container, Tool_tab_name (Tool_tab_interface))
 			ev_notebook.item_tab (interface_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
+			tabs_index.put (interface_map_control.ev_root_container, Tool_tab_interface)
 
 			-- slot map control
 			create slot_map_control.make (agent update_slots_tab_label)
 			ev_notebook.extend (slot_map_control.ev_root_container)
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_text (ec_slots_tab_text))
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, Tool_tab_name (Tool_tab_slots))
 			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
+			tabs_index.put (slot_map_control.ev_root_container, Tool_tab_slots)
+
 			slot_map_control.ev_suppliers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
 			slot_map_control.ev_clients_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
 			slot_map_control.ev_suppliers_tree.pointer_double_press_actions.force (agent on_slot_map_suppliers_tree_double_click)
@@ -51,24 +54,28 @@ feature {NONE}-- Initialization
 			-- source control
 			create source_control.make
 			ev_notebook.extend (source_control.ev_root_container)
-			ev_notebook.set_item_text (source_control.ev_root_container, get_text (ec_source_tab_text))
+			ev_notebook.set_item_text (source_control.ev_root_container, Tool_tab_name (Tool_tab_source))
 			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
+			tabs_index.put (source_control.ev_root_container, Tool_tab_source)
 
 			-- serialisation control
 			create serialisation_control.make
 			ev_notebook.extend (serialisation_control.ev_root_container)
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text (ec_serialised_tab_text))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, Tool_tab_name (Tool_tab_serialised))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
+			tabs_index.put (serialisation_control.ev_root_container, Tool_tab_serialised)
 
 			-- validity control
 			create validity_report_control.make
 			ev_notebook.extend (validity_report_control.ev_root_container)
-			ev_notebook.set_item_text (validity_report_control.ev_root_container, get_text (ec_validity_tab_text))
+			ev_notebook.set_item_text (validity_report_control.ev_root_container, Tool_tab_name (Tool_tab_validity))
+			tabs_index.put (interface_map_control.ev_root_container, Tool_tab_validity)
 
 			-- statistical info control
 			create statistical_information_control.make
 			ev_notebook.extend (statistical_information_control.ev_root_container)
-			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_text (ec_stat_info_tab_text))
+			ev_notebook.set_item_text (statistical_information_control.ev_root_container, Tool_tab_name (Tool_tab_stats))
+			tabs_index.put (statistical_information_control.ev_root_container, Tool_tab_stats)
 
 			set_tab_appearance
 			set_view_tab_texts
@@ -81,7 +88,7 @@ feature -- UI Feedback
 	update_slots_tab_label (slots_count, used_by_count: INTEGER)
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg (ec_slots_tab_text, Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, Tool_tab_name (Tool_tab_slots) + " (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
 	select_path_item_from_path (a_path: STRING)
@@ -173,7 +180,7 @@ feature {NONE} -- Implementation
 					-- pre-populate the description and node-map controls, or else populate the validity control and show it
 					description_controls.populate (src, differential_view, sel_lang)
 					definition_control.populate (src, differential_view, sel_lang)
-					ev_notebook.select_item (definition_control.ev_root_container)
+					ev_notebook.select_item (tabs_index_item (default_tool_tab))
 				else
 					ev_notebook.select_item (validity_report_control.ev_root_container)
 				end

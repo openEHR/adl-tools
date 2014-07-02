@@ -12,7 +12,6 @@ class GUI_TERMINOLOGY_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, can_edit, enable_edit, disable_edit, do_display
 		end
 
 	ADL_15_TERM_CODE_TOOLS
@@ -258,6 +257,7 @@ feature {NONE} -- Implementation
 	id_grid_fixed_cols: ARRAYED_LIST [INTEGER]
 		do
 			create Result.make (0)
+			Result.extend (Id_terms_grid_col_code)
 			Result.extend (Id_terms_grid_col_text)
 			across terminologies as terminologies_csr loop
 				Result.extend (id_terms_grid_col_max + terminologies.count)
@@ -291,6 +291,8 @@ feature {NONE} -- Implementation
 		local
 			id_term: ARCHETYPE_TERM
 			binding_str: STRING
+			ev_row: EV_GRID_ROW
+			term_color: EV_COLOR
 		do
 			check attached selected_language end
 
@@ -300,8 +302,31 @@ feature {NONE} -- Implementation
 			else
 				evx_id_terms_grid.add_sub_row (ev_parent_rows.item, id_term)
 			end
-			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_text, annotated_code (a_node_id, id_term.text, " "), Void, Id_code_color, get_icon_pixmap ("archetype/term_rel_part_of"))
-			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_description, id_term.description, Void, Void, Void)
+			check attached evx_id_terms_grid.last_row as lr then
+				ev_row := lr
+			end
+
+			if specialisation_depth_from_code (a_node_id) = source_archetype.specialisation_depth then
+				term_color := Id_code_color
+			else
+				term_color := Id_code_color_inherited
+			end
+
+			if editing_enabled then
+				-- id code column
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
+				-- text column	
+				evx_id_terms_grid.set_last_row_label_col_editable (Id_terms_grid_col_text, id_term.text, Void, term_color, Void, agent update_term_text (a_node_id, ev_row))
+				-- description column
+				evx_id_terms_grid.set_last_row_label_col_editable (Id_terms_grid_col_description, id_term.description, Void, term_color, Void, agent update_term_description (a_node_id, ev_row))
+			else
+				-- id code column
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
+				-- text column			
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_text, id_term.text, Void, term_color, Void)
+				-- description column
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_description, id_term.description, Void, term_color, Void)
+			end
 
 			-- populate bindings
 			across terminologies as terminologies_csr loop
@@ -333,6 +358,7 @@ feature {NONE} -- Implementation
 		local
 			ev_last_row: EV_GRID_ROW
 			col_titles: ARRAYED_LIST [STRING]
+			term_color: EV_COLOR
 		do
 			evx_values_grid.wipe_out
 
@@ -346,12 +372,23 @@ feature {NONE} -- Implementation
 				end
 
 				-- value set ac-code row
-				populate_value_row (vsets_csr.key, Ac_code_color)
+				if specialisation_depth_from_code (vsets_csr.key) = source_archetype.specialisation_depth then
+					term_color := Ac_code_color
+				else
+					term_color := Id_code_color_inherited
+				end
+				populate_value_row (vsets_csr.key, term_color)
 
 				-- member code rows
 				across vsets_csr.item.members as vset_members_csr loop
+					if specialisation_depth_from_code (vset_members_csr.item) = source_archetype.specialisation_depth then
+						term_color := At_code_color
+					else
+						term_color := Id_code_color_inherited
+					end
+
 					evx_values_grid.add_sub_row (ev_last_row, vset_members_csr.item)
-					populate_value_row (vset_members_csr.item, At_code_color)
+					populate_value_row (vset_members_csr.item, term_color)
 				end
 			end
 
@@ -359,7 +396,12 @@ feature {NONE} -- Implementation
 			across terminology.value_set_codes as ac_codes_csr loop
 				if not terminology.has_value_set (ac_codes_csr.item) then
 					evx_values_grid.add_row (ac_codes_csr.item)
-					populate_value_row (ac_codes_csr.item, Ac_code_color)
+					if specialisation_depth_from_code (ac_codes_csr.item) = source_archetype.specialisation_depth then
+						term_color := Ac_code_color
+					else
+						term_color := Id_code_color_inherited
+					end
+					populate_value_row (ac_codes_csr.item, term_color)
 				end
 			end
 
@@ -367,7 +409,12 @@ feature {NONE} -- Implementation
 			across terminology.value_codes as at_codes_csr loop
 				if not terminology.has_value_set_value_code (at_codes_csr.item) then
 					evx_values_grid.add_row (at_codes_csr.item)
-					populate_value_row (at_codes_csr.item, At_code_color)
+					if specialisation_depth_from_code (at_codes_csr.item) = source_archetype.specialisation_depth then
+						term_color := At_code_color
+					else
+						term_color := Id_code_color_inherited
+					end
+					populate_value_row (at_codes_csr.item, term_color)
 				end
 			end
 
@@ -394,20 +441,24 @@ feature {NONE} -- Implementation
 
 	populate_value_row (a_code: STRING; key_item_colour: EV_COLOR)
 		local
-			vset_code_text, vset_code_string, binding_str: STRING
+			binding_str: STRING
 			term_def: ARCHETYPE_TERM
+			ev_row: EV_GRID_ROW
 		do
 			check attached selected_language end
 
 			term_def := source.flat_archetype.terminology.term_definition (selected_language, a_code)
-			vset_code_text := term_def.text
-			if show_codes then
-				vset_code_string := annotated_code (a_code, vset_code_text, " ")
-			else
-				vset_code_string := vset_code_text
+			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, a_code, Void, key_item_colour, Void)
+			check attached evx_values_grid.last_row as lr then
+				ev_row := lr
 			end
-			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, vset_code_string, Void, key_item_colour, Void)
-			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_definition, term_def.description, Void, Void, Void)
+			if editing_enabled and specialisation_depth_from_code (a_code) = source_archetype.specialisation_depth then
+				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_text, term_def.text, Void, key_item_colour, Void, agent update_term_text (a_code, ev_row))
+				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_description, term_def.description, Void, key_item_colour, Void, agent update_term_description (a_code, ev_row))
+			else
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_text, term_def.text, Void, key_item_colour, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description, term_def.description, Void, key_item_colour, Void)
+			end
 
 			-- populate bindings
 			across terminologies as terminologies_csr loop
@@ -416,7 +467,7 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_definition + terminologies_csr.cursor_index, binding_str, Void, Binding_color, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description + terminologies_csr.cursor_index, binding_str, Void, Binding_color, Void)
 			end
 		end
 
@@ -460,8 +511,9 @@ feature {NONE} -- Implementation
 		end
 
 	update_grid_row (a_grid_row: EV_GRID_ROW)
+			-- hide or show description column depending on whether value set node is expanded or not
 		local
-			code, row_str: STRING
+			code: STRING
 			term_def: ARCHETYPE_TERM
 			show_desc: BOOLEAN
 		do
@@ -476,21 +528,50 @@ feature {NONE} -- Implementation
 			end
 
 			term_def := source.flat_archetype.terminology.term_definition (selected_language, code)
-			if show_codes then
-				row_str := annotated_code (code, term_def.text, " ")
-			else
-				row_str := term_def.text
-			end
-
 			evx_values_grid.set_last_row (a_grid_row)
-			evx_values_grid.update_last_row_label_col (Value_sets_grid_col_code, row_str, Void, Void, Void)
-
-			-- hide or show description column depending on whether value set node is expanded or not
 			if show_desc then
-				evx_values_grid.update_last_row_label_col (value_sets_grid_col_definition, term_def.description, Void, Void, Void)
+				evx_values_grid.update_last_row_label_col (value_sets_grid_col_description, term_def.description, Void, Void, Void)
 			else
-				evx_values_grid.update_last_row_label_col (value_sets_grid_col_definition, "", Void, Void, Void)
+				evx_values_grid.update_last_row_label_col (value_sets_grid_col_description, "", Void, Void, Void)
 			end
+		end
+
+	update_term_text (a_node_id: STRING; an_ev_row: EV_GRID_ROW)
+		local
+			arch_term: ARCHETYPE_TERM
+			old_text: STRING
+		do
+			if attached {EV_GRID_EDITABLE_ITEM} an_ev_row.item (Id_terms_grid_col_text) as att_editable and attached selected_language as att_lang then
+				arch_term := source_archetype.terminology.term_definition (att_lang, a_node_id)
+				old_text := arch_term.text
+				arch_term.set_text (utf32_to_utf8 (att_editable.text))
+
+				undo_redo_chain.add_link (evx_id_terms_grid.ev_grid,
+					agent arch_term.set_text (old_text),
+					agent repopulate,
+					agent arch_term.set_text (utf32_to_utf8 (att_editable.text)),
+					agent repopulate)
+			end
+
+		end
+
+	update_term_description (a_node_id: STRING; an_ev_row: EV_GRID_ROW)
+		local
+			arch_term: ARCHETYPE_TERM
+			old_text: STRING
+		do
+			if attached {EV_GRID_EDITABLE_ITEM} an_ev_row.item (Id_terms_grid_col_description) as att_editable and attached selected_language as att_lang then
+				arch_term := source_archetype.terminology.term_definition (att_lang, a_node_id)
+				old_text := arch_term.description
+				arch_term.set_description (utf32_to_utf8 (att_editable.text))
+
+				undo_redo_chain.add_link (evx_id_terms_grid.ev_grid,
+					agent arch_term.set_description (old_text),
+					agent repopulate,
+					agent arch_term.set_description (utf32_to_utf8 (att_editable.text)),
+					agent repopulate)
+			end
+
 		end
 
 end

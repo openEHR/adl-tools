@@ -83,28 +83,85 @@ feature -- Definitions
 		once
 			create Result.make (0)
 			Result.put (get_text (ec_value_sets_grid_col_code_text), Value_sets_grid_col_code)
-			Result.put (get_text (ec_value_sets_grid_col_description_text), Value_sets_grid_col_definition)
+			Result.put (get_text (ec_value_sets_grid_col_text_text), Value_sets_grid_col_text)
+			Result.put (get_text (ec_value_sets_grid_col_description_text), Value_sets_grid_col_description)
 		end
 
 	Value_sets_grid_col_code: INTEGER = 1
-	Value_sets_grid_col_definition: INTEGER = 2
+	Value_sets_grid_col_text: INTEGER = 2
+	Value_sets_grid_col_description: INTEGER = 3
 	Value_sets_grid_col_max: INTEGER
 		once
-			Result := Value_sets_grid_col_definition
+			Result := Value_sets_grid_col_description
 		end
 
 	Id_terms_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text (ec_id_terms_grid_col_code_text), Id_terms_grid_col_text)
+			Result.put (get_text (ec_id_terms_grid_col_code_text), Id_terms_grid_col_code)
+			Result.put (get_text (ec_id_terms_grid_col_text_text), Id_terms_grid_col_text)
 			Result.put (get_text (ec_id_terms_grid_col_member_code_text), Id_terms_grid_col_description)
 		end
 
-	Id_terms_grid_col_text: INTEGER = 1
-	Id_terms_grid_col_description: INTEGER = 2
+	Id_terms_grid_col_code: INTEGER = 1
+	Id_terms_grid_col_text: INTEGER = 2
+	Id_terms_grid_col_description: INTEGER = 3
 	Id_terms_grid_col_max: INTEGER
 		once
 			Result := Id_terms_grid_col_description
+		end
+
+	Tool_tab_description: INTEGER = 0
+	Tool_tab_definition: INTEGER = 1
+	Tool_tab_terminology: INTEGER = 2
+	Tool_tab_annotations: INTEGER = 3
+	Tool_tab_interface: INTEGER = 4
+	Tool_tab_slots: INTEGER = 5
+	Tool_tab_source: INTEGER = 6
+	Tool_tab_serialised: INTEGER = 7
+	Tool_tab_validity: INTEGER = 8
+	Tool_tab_stats: INTEGER = 9
+	Tool_tab_max: INTEGER = 9
+
+	Tool_tab_index: HASH_TABLE [STRING, INTEGER]
+			-- names of tool tabs keyed by tab constants
+		once
+			create Result.make (0)
+			Result.put (get_text (ec_description_tab_text), Tool_tab_description)
+			Result.put (get_text (ec_definition_tab_text), Tool_tab_definition)
+			Result.put (get_text (ec_terminology_tab_text), Tool_tab_terminology)
+			Result.put (get_text (ec_annotations_tab_text), Tool_tab_annotations)
+			Result.put (get_text (ec_interface_tab_text), Tool_tab_interface)
+			Result.put (get_text (ec_slots_tab_text), Tool_tab_slots)
+			Result.put (get_text (ec_source_tab_text), Tool_tab_source)
+			Result.put (get_text (ec_serialised_tab_text), Tool_tab_serialised)
+			Result.put (get_text (ec_validity_tab_text), Tool_tab_validity)
+			Result.put (get_text (ec_stat_info_tab_text), Tool_tab_stats)
+		end
+
+	Tool_tab_reverse_index: HASH_TABLE [INTEGER, STRING]
+			-- names of tool tabs keyed by tab constants
+		once
+			create Result.make (0)
+			across Tool_tab_index as tabs_csr loop
+				Result.put (tabs_csr.key, tabs_csr.item)
+			end
+		end
+
+	Tool_tab_names: ARRAYED_LIST [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.append (Tool_tab_index.linear_representation)
+		end
+
+	Tool_tab_name (idx: INTEGER): STRING
+		require
+			idx >= 0 and idx <= Tool_tab_max
+		do
+			check attached Tool_tab_index.item (idx) as att_name then
+				Result := att_name
+			end
 		end
 
 	archetype_rm_type_inherited_color: EV_COLOR
@@ -200,6 +257,13 @@ feature -- Definitions
 			-- DARK BLUE
 		once
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
+		end
+
+	Id_code_color_inherited: EV_COLOR
+			-- foreground colour for inherited RM attributes and typenames in the UI
+			-- MEDIUM GREY
+		once
+			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
 
 	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER; an_rm_publisher: STRING): EV_PIXMAP
@@ -507,6 +571,32 @@ feature -- Application Switches
 			value_not_empty: not a_value.is_empty
 		do
 			app_cfg.put_value ("/commands/difftool_command", a_value)
+		end
+
+	show_flat_form: BOOLEAN
+			-- If true show flat rather than differential form of archetype
+		do
+			Result := app_cfg.boolean_value ("/gui/show_flat_form")
+		end
+
+	set_show_flat_form (flag: BOOLEAN)
+			-- Set flag for `show_flat_form'
+		do
+			app_cfg.put_value("/gui/show_flat_form", flag)
+		end
+
+	default_tool_tab: INTEGER
+			-- index of tool tab in `Tool_tab_index'
+		do
+			Result := app_cfg.integer_value ("/gui/default_tool_tab")
+		end
+
+	set_default_tool_tab (v: INTEGER)
+			-- set `default_tool_tab'
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/default_tool_tab", v)
 		end
 
 feature -- Conversion

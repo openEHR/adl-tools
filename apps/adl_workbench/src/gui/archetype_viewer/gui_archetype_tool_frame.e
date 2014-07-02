@@ -140,8 +140,13 @@ feature {NONE}-- Initialization
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
 			ev_notebook.selection_actions.extend (agent on_select_notebook)
 
-			differential_view := True
-			ev_differential_view_button.enable_select
+			if show_flat_form then
+				differential_view := False
+				ev_flat_view_button.enable_select
+			else
+				differential_view := True
+				ev_differential_view_button.enable_select
+			end
 		end
 
 feature -- Access
@@ -267,8 +272,7 @@ feature {NONE} -- Implementation
 			ev_archetype_hrid_concept_id.set_text (source.id.concept_id)
 			ev_archetype_hrid_version_id.set_text (source.id.version_id)
 
-			populate_primary_source
-			check attached source end
+			populate_primary_source_indicator
 			if source.is_valid then
 				-- lifecycle state
 				if not source.differential_archetype.artefact_type.is_overlay then
@@ -299,7 +303,7 @@ feature {NONE} -- Implementation
 
 	ev_language_combo: EV_COMBO_BOX
 
-	populate_primary_source
+	populate_primary_source_indicator
 			-- populate primary source button, which is the inverse of the is_generated flag
 		do
 			if source.file_mgr.is_source_generated then
