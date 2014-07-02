@@ -12,6 +12,7 @@ class GUI_TERMINOLOGY_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
+			can_edit, enable_edit, disable_edit, do_display, can_populate, can_repopulate
 		end
 
 	ADL_15_TERM_CODE_TOOLS
