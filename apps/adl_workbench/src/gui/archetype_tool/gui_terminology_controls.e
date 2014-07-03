@@ -313,7 +313,7 @@ feature {NONE} -- Implementation
 				term_color := Id_code_color_inherited
 			end
 
-			if editing_enabled then
+			if editing_enabled and specialisation_depth_from_code (a_node_id) = source_archetype.specialisation_depth then
 				-- id code column
 				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
 				-- text column	
@@ -454,11 +454,11 @@ feature {NONE} -- Implementation
 				ev_row := lr
 			end
 			if editing_enabled and specialisation_depth_from_code (a_code) = source_archetype.specialisation_depth then
-				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_text, term_def.text, Void, key_item_colour, Void, agent update_term_text (a_code, ev_row))
-				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_description, term_def.description, Void, key_item_colour, Void, agent update_term_description (a_code, ev_row))
+				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_text, term_def.text, Void, Void, Void, agent update_term_text (a_code, ev_row))
+				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_description, term_def.description, Void, Void, Void, agent update_term_description (a_code, ev_row))
 			else
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_text, term_def.text, Void, key_item_colour, Void)
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description, term_def.description, Void, key_item_colour, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_text, term_def.text, Void, Void, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description, term_def.description, Void, Void, Void)
 			end
 
 			-- populate bindings

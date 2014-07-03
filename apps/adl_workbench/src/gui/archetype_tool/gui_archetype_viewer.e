@@ -191,8 +191,10 @@ feature {NONE} -- Implementation
 
 	attach_gui_context
 		do
-			if attached source as src and then not src.has_gui_context then
-				src.set_gui_context (create {ACA_EDITOR_STATE}.make (src))
+			check attached source as src then
+				if not src.has_gui_context then
+					src.set_gui_context (create {ACA_EDITOR_STATE}.make (src))
+				end
 			end
 		end
 

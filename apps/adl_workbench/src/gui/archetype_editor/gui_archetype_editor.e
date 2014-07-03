@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 		local
 			gui_context: detachable ACA_EDITOR_STATE
 		do
-			if attached source as src then
+			check attached source as src then
 				if not source.has_gui_context then
 					create gui_context.make (src)
 					source.set_gui_context (gui_context)
