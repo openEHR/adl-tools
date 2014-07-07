@@ -97,7 +97,8 @@ feature -- Display
 					)
 				end
 			else
-				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour, rm_type_pixmap (rm_type, ed_context.rm_schema.rm_publisher.as_lower))
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour,
+					rm_type_pixmap (rm_type, ed_context.archetype.archetype_id.rm_publisher.as_lower, ed_context.archetype.archetype_id.rm_closure.as_lower))
 			end
 			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
@@ -324,20 +325,25 @@ feature {NONE} -- Implementation
 	c_pixmap: EV_PIXMAP
 			-- find a pixmap for any C_OBJECT node
 		local
-			pixmap_name, c_type_occ_str: STRING
+			pixmap_key, c_type_occ_str: STRING
 		do
+			create pixmap_key.make_empty
 			if attached arch_node as a_n then
-				pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
-				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
-					Result := get_icon_pixmap (pixmap_name)
-				else
+				if use_rm_pixmaps then
+					pixmap_key := rm_type_pixmap_key (a_n.rm_type_name, ed_context.archetype.archetype_id.rm_publisher.as_lower,
+						ed_context.archetype.archetype_id.rm_closure.as_lower)
+				end
+
+				if pixmap_key.is_empty then
 					c_type_occ_str := a_n.generating_type + a_n.occurrences_key_string
 					if has_icon_pixmap (c_type_occ_str) then
-						Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + c_type_occ_str)
+						pixmap_key := "am" + resource_path_separator + "added" + resource_path_separator + c_type_occ_str
 					else
-						Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + a_n.generating_type)
+						pixmap_key := "am" + resource_path_separator + "added" + resource_path_separator + a_n.generating_type
 					end
 				end
+
+				Result := get_icon_pixmap (pixmap_key)
 			else
 				create Result.default_create
 			end

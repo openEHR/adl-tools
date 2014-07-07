@@ -44,6 +44,7 @@ feature -- Initialisation
 			create gui_controls.make (0)
 			create rm_node_path.make_root
 			create rm_publisher.make_empty
+			create rm_closure.make_empty
 			create ev_grid_rm_row_stack.make (0)
 			create ev_grid_rm_row_removals_stack.make (0)
 
@@ -224,7 +225,8 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- for use in icon switching
- 			rm_publisher := source.bmm_schema.rm_publisher
+ 			rm_publisher := source.bmm_schema.rm_publisher.as_lower
+ 			rm_closure := source.bmm_schema.schema_name.as_lower
 
  			-- populate the tree
 			create ev_grid_rm_row_stack.make (0)
@@ -267,6 +269,9 @@ feature {NONE} -- Implementation
 	rm_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
 
+	rm_closure: STRING
+			-- name of closure (i.e. model)
+
 	rm_node_path: OG_PATH
 
 	closure_depth: INTEGER
@@ -280,7 +285,7 @@ feature {NONE} -- Implementation
 			if attached gui_grid.last_row as lr and attached source as src then
 				ev_grid_rm_row_stack.extend (lr)
 				ev_grid_rm_row_removals_stack.extend (False)
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (src, rm_publisher))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (src, rm_publisher, rm_closure))
 				if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 		 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
 		 	 	end
@@ -385,7 +390,7 @@ feature {NONE} -- Implementation
 
 						-- ======== class node =========					
 						gui_grid.add_sub_row (ev_prop_row, bmm_class)
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_class, rm_publisher))
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_class, rm_publisher, rm_closure))
 
 						check attached gui_grid.last_row as lr then
 							ev_class_row := lr
@@ -524,14 +529,14 @@ feature {NONE} -- Implementation
 			if replace_mode then
 				gui_grid.remove_sub_rows (a_class_grid_row)
 				gui_grid.set_last_row (a_class_grid_row)
-				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
+				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher, rm_closure))
 				gui_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				check attached a_class_grid_row.parent_row as pr then
 					gui_grid.add_sub_row (pr, bmm_subtype_def)
 				end
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher, rm_closure))
 				if attached gui_grid.last_row as lr then
 					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 	 	 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
@@ -556,7 +561,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {BMM_CLASS} a_row.data as bmm_class then
 				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
-					gli.set_pixmap (rm_type_pixmap (bmm_class, rm_publisher))
+					gli.set_pixmap (rm_type_pixmap (bmm_class, rm_publisher, rm_closure))
 				end
 			end
 		end
