@@ -286,6 +286,8 @@ feature {NONE} -- Implementation
 		end
 
 	attach_gui_context
+		require
+			attached source
 		deferred
 		end
 

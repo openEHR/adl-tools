@@ -25,6 +25,8 @@ feature -- Access
 
 	source_archetype: detachable ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
+		require
+			is_populated
 		do
 			if not editing_enabled then
 				if differential_view then
@@ -39,6 +41,8 @@ feature -- Access
 
 	source_ed_context: detachable ARCH_ED_CONTEXT
 			-- display / editor context, loaded with archetype for display, or a clone, for editing
+		require
+			is_populated
 		do
 			if not editing_enabled then
 				if differential_view then

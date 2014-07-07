@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 	rolled_up_specialisation_status: INTEGER
 			-- rolled up specialisation status of archetype node in this context object
 		do
-			if attached arch_node as a_n then
+			check attached arch_node as a_n then
 				Result := a_n.rolled_up_specialisation_status
 			end
 		end

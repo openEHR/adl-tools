@@ -207,7 +207,6 @@ feature -- Source Control
 		end
 
 	set_rolled_up_specialisation_status (a_status: INTEGER)
-			-- USED ONLY FOR DIFFing legacy flat form into differential form
 		require
 			valid_specialisation_status: valid_specialisation_status (a_status)
 		do
