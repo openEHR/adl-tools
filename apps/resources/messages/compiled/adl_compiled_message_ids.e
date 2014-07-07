@@ -416,6 +416,8 @@ feature -- Definitions
 		ec_c_type_quantity: STRING = "c_type_quantity"
 		ec_c_type_ordinal: STRING = "c_type_ordinal"
 		ec_c_type_code_phrase: STRING = "c_type_code_phrase"
+		ec_c_attribute_prohibit: STRING = "c_attribute_prohibit"
+		ec_c_attribute_mandate: STRING = "c_attribute_mandate"
 		ec_file_menu_text: STRING = "file_menu_text"
 		ec_file_menu_open_text: STRING = "file_menu_open_text"
 		ec_file_menu_save_as_text: STRING = "file_menu_save_as_text"

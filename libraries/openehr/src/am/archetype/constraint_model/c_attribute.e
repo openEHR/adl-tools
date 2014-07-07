@@ -401,6 +401,24 @@ feature -- Modification
 			existence := an_interval
 		end
 
+	set_prohibited
+			-- set existence constraint on this relation to prohibited, i.e. {0..0}
+		do
+			existence := create {MULTIPLICITY_INTERVAL}.make_prohibited
+		end
+
+	set_mandated
+			-- set existence constraint on this relation to mandatory, i.e. {1..1}
+		do
+			existence := create {MULTIPLICITY_INTERVAL}.make_mandatory
+		end
+
+	set_optional
+			-- set existence constraint on this relation to optional, i.e. {0..1}
+		do
+			existence := create {MULTIPLICITY_INTERVAL}.make_optional
+		end
+
 	set_cardinality (a_cardinality: CARDINALITY)
 			--
 		do

@@ -283,6 +283,44 @@ feature -- Modification
 			Grid_row_unchanged: ev_grid_row ~ old ev_grid_row
 		end
 
+	set_prohibited
+		do
+			if is_rm then
+				convert_to_constraint
+			end
+			check attached arch_node as a_n then
+				a_n.set_prohibited
+			end
+			if is_displayed then
+				display_in_grid (display_settings)
+			end
+		end
+
+	set_mandated
+		do
+			if is_rm then
+				convert_to_constraint
+			end
+			check attached arch_node as a_n then
+				a_n.set_mandated
+			end
+			if is_displayed then
+				display_in_grid (display_settings)
+			end
+		end
+
+	set_optional
+		require
+			not is_rm
+		do
+			check attached arch_node as a_n then
+				a_n.set_optional
+			end
+			if is_displayed then
+				display_in_grid (display_settings)
+			end
+		end
+
 	convert_to_rm
 			-- convert this node from a constraint to an RM node
 			-- and redisplay
@@ -463,30 +501,41 @@ feature {NONE} -- Context menu
 			create context_menu
 
 			-- add sub-menu of types to add as children
-			if not is_rm and ed_context.editing_enabled then
-				create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
-
-				-- make a menu item with the base class of the property
-				create an_mi.make_with_text_and_action (rm_property.type.base_class.name, agent ui_offer_add_new_arch_child (rm_property.type.base_class))
-				if rm_property.type.base_class.is_abstract then
-					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
-				else
-					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
+			if ed_context.editing_enabled then
+				-- offer mandate/prohibit options
+				if rm_property.existence.is_optional then
+					create an_mi.make_with_text_and_action (get_text (ec_c_attribute_prohibit), agent ui_do_prohibit)
+					context_menu.extend (an_mi)
+					create an_mi.make_with_text_and_action (get_text (ec_c_attribute_mandate), agent ui_do_mandate)
+					context_menu.extend (an_mi)
 				end
-	    		types_sub_menu.extend (an_mi)
 
-				-- add more items for all subtypes
-				across rm_property.type.base_class.all_descendants as subs_csr loop
-					rm_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
-					create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
-					if rm_class_def.is_abstract then
+				-- only offer addition of new nodes if current node existence is not prohibited
+				if attached arch_node as a_n and then not a_n.is_prohibited then
+					create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
+
+					-- make a menu item with the base class of the property
+					create an_mi.make_with_text_and_action (rm_property.type.base_class.name, agent ui_offer_add_new_arch_child (rm_property.type.base_class))
+					if rm_property.type.base_class.is_abstract then
 						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 					else
 						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 					end
 		    		types_sub_menu.extend (an_mi)
+
+					-- add more items for all subtypes
+					across rm_property.type.base_class.all_descendants as subs_csr loop
+						rm_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
+						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
+						if rm_class_def.is_abstract then
+							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
+						else
+							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
+						end
+			    		types_sub_menu.extend (an_mi)
+					end
+					context_menu.extend (types_sub_menu)
 				end
-				context_menu.extend (types_sub_menu)
 			end
 		end
 
@@ -507,11 +556,11 @@ feature {NONE} -- Context menu
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 
 			if dialog.is_valid then
-				do_add_new_arch_child (dialog.new_params)
+				ui_do_add_new_arch_child (dialog.new_params)
 			end
 		end
 
-	do_add_new_arch_child (co_create_params: C_OBJECT_PROPERTIES)
+	ui_do_add_new_arch_child (co_create_params: C_OBJECT_PROPERTIES)
 		require
 			not is_rm
 		local
@@ -532,6 +581,54 @@ feature {NONE} -- Context menu
 					end (added_child)
 			)
 		end
+
+	ui_do_prohibit
+			-- prohibit this C_ATTRIBUTE, i.e. set existence to {0} and set up
+			-- UI commit, undo/redo
+		local
+			was_rm: BOOLEAN
+		do
+			was_rm := is_rm
+			set_prohibited
+
+			-- set up undo / redo
+			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+				agent (was_rm_flag: BOOLEAN)
+					do
+						if was_rm_flag then
+							convert_to_rm
+						else
+							set_optional
+						end
+					end (was_rm),
+				agent set_prohibited
+			)
+		end
+
+	ui_do_mandate
+			-- mandate this C_ATTRIBUTE, i.e. set existence to {1} and set up
+			-- UI commit, undo/redo
+		local
+			was_rm: BOOLEAN
+		do
+			was_rm := is_rm
+			set_mandated
+
+			-- set up undo / redo
+			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+				agent (was_rm_flag: BOOLEAN)
+					do
+						if was_rm_flag then
+							convert_to_rm
+						else
+							set_optional
+						end
+					end (was_rm),
+				agent set_mandated
+			)
+		end
+
+feature {NONE} -- Implementation
 
 	set_arch_node_in_ancestor
 		local

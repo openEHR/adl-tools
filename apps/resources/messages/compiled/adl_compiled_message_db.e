@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (721)
+			create message_table.make (723)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -431,6 +431,8 @@ feature -- Initialisation
 			message_table.put ("Quantity", ec_c_type_quantity)
 			message_table.put ("Ordinal", ec_c_type_ordinal)
 			message_table.put ("Code phrase", ec_c_type_code_phrase)
+			message_table.put ("Prohibit", ec_c_attribute_prohibit)
+			message_table.put ("Mandate", ec_c_attribute_mandate)
 			message_table.put ("&File", ec_file_menu_text)
 			message_table.put ("&Open...", ec_file_menu_open_text)
 			message_table.put ("&Save As...", ec_file_menu_save_as_text)
