@@ -120,7 +120,9 @@ end
 
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
-				template_overlay_supplier_definitions
+				check attached arch_output_flat as att_flat then
+					template_overlay_supplier_definitions (att_flat)
+				end
 				template_overlay_supplier_terminologies
 				arch_output_flat.rebuild
 			end
@@ -378,7 +380,7 @@ debug ("flatten")
 	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
 end
 
-									-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent
+									-- first we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent
 									-- - it is either the cco_output_flat that corresponds to the parent object from
 									-- the differential child with we started this routine, or if the current attribute
 									-- has a differential path, its true object parent in the flat parent archetype
@@ -436,9 +438,15 @@ debug ("flatten")
 end
 										ca_output := cco_output_flat_proximate.attribute_with_name (ca_child.rm_attribute_name)
 										if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
-											ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
+											-- mark - for correct data validation we need the attribute marked as prohibited
+											-- otherwise it appears that the attribute is allowed
+											ca_output.set_prohibited
+											ca_output.remove_all_children
+
+											------------ ORIGINAL CODE - probably delete this -----------------------
+											-- ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
 										else
-											-- graft the existence if that has been changed
+											-- graft the attribute existence if that has been changed
 											if attached ca_child.existence then
 												ca_output.set_existence (ca_child.existence.deep_twin)
 												ca_output.set_specialisation_status_redefined
@@ -645,7 +653,8 @@ end
 							grafted_child_locations.extend (car.path) -- remember the path, so we don't try to do it again later on
 
 						elseif specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added then
-							grafted_child_locations.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
+							-- remember the path, so we don't try to do it again later on
+							grafted_child_locations.extend (ca_child.children.i_th (i).path)
 
 							-- now we either merge the object, or deal with the special case of occurrences = 0,
 							-- in which case, remove the target object
@@ -744,6 +753,8 @@ end
 							io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + cco.path + "%N")
 						end
 					end
+
+				-- this is where final C_PRIMITIVE leaf node objects get written into the output
 				else
 					merge_obj := c_obj_csr.item.safe_deep_twin
 					merge_obj.set_specialisation_status_redefined
@@ -875,34 +886,36 @@ end
 		do
 		end
 
-	template_overlay_supplier_definitions
-			-- process `arch_output_flat.suppliers_index' to overlay target definitions.
+	template_overlay_supplier_definitions (a_flat_arch: FLAT_ARCHETYPE)
+			-- process `a_flat_arch.suppliers_index' to overlay target definitions.
 		local
-			arch_root_cco: C_COMPLEX_OBJECT
-			ca_clone: C_ATTRIBUTE
+			supp_flat_arch: FLAT_ARCHETYPE
+			supp_arch_root_cco: C_COMPLEX_OBJECT
 		do
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
 end
-			across arch_output_flat.suppliers_index as xref_idx_csr loop
+			across a_flat_arch.suppliers_index as xref_idx_csr loop
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-				arch_root_cco := current_arch_cat.matching_archetype (xref_idx_csr.key).flat_archetype.definition
+				create supp_flat_arch.make_from_other (current_arch_cat.matching_archetype (xref_idx_csr.key).flat_archetype)
+				supp_arch_root_cco := supp_flat_arch.definition
 
 				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
 				-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
 				-- flat definition structure from the supplier archetype
-				across xref_idx_csr.item as xref_list_csr loop
-					if not xref_list_csr.item.has_attributes then -- it is empty and needs to be filled
+				across xref_idx_csr.item as c_arch_roots_csr loop
+					if not c_arch_roots_csr.item.has_attributes then -- it is empty and needs to be filled
+						-- perform overlays on supplier archetype first
+						template_overlay_supplier_definitions (supp_flat_arch)
 debug ("flatten")
-	io.put_string ("%T node at " + xref_list_csr.item.path +
+	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
 	" with " + xref_idx_csr.key + "%N")
 end
-						across arch_root_cco.attributes as attrs_csr loop
-							ca_clone := attrs_csr.item.safe_deep_twin
-							xref_list_csr.item.put_attribute (ca_clone)
+						across supp_arch_root_cco.attributes as attrs_csr loop
+							c_arch_roots_csr.item.put_attribute (attrs_csr.item)
 debug ("flatten")
 	io.put_string ("%T%T cloning attribute " +
-	ca_clone.rm_attribute_path + "%N")
+	attrs_csr.item.rm_attribute_path + "%N")
 end
 						end
 					end
