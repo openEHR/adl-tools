@@ -36,7 +36,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_start_dir: STRING; an_id_template: ARCHETYPE_HRID; a_source: ARCHETYPE_CATALOGUE)
+	make (a_start_dir: STRING; an_id_template: ARCHETYPE_HRID; a_source: ARCHETYPE_LIBRARY)
 			-- Make with a an initial directory
 		do
 			archetype_directory := a_start_dir
@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 			Id_set: archetype_id = an_id_template
 		end
 
-	make_specialised (a_start_dir: STRING; an_id_template, a_parent_id: attached like parent_archetype_id; a_source: ARCHETYPE_CATALOGUE)
+	make_specialised (a_start_dir: STRING; an_id_template, a_parent_id: attached like parent_archetype_id; a_source: ARCHETYPE_LIBRARY)
 			-- Make with a an initial directory and a parent id
 		do
 			parent_archetype_id := a_parent_id
@@ -173,7 +173,7 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 		end
 
-	source: ARCHETYPE_CATALOGUE
+	source: ARCHETYPE_LIBRARY
 
 	ev_root_container: EV_VERTICAL_BOX
 

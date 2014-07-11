@@ -15,10 +15,10 @@ inherit
 			can_populate, can_repopulate, do_display
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all;
-			{ANY} has_current_repository
+			{ANY} has_current_library
 		end
 
 	STRING_UTILITIES

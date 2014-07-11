@@ -39,7 +39,7 @@ feature {NONE} -- Initialisation
 
 feature -- Commands
 
-	update_tree_node_for_archetype (ara: ARCH_CAT_ARCHETYPE)
+	update_tree_node_for_archetype (ara: ARCH_LIB_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		local
 			an_id: STRING
@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 			gui_semantic_grid.resize_columns_to_content
 		end
 
-   	ev_tree_node_populate (ara: ARCH_CAT_ARCHETYPE)
+   	ev_tree_node_populate (ara: ARCH_LIB_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
    		local
 			og_iterator: OG_ITERATOR
@@ -161,7 +161,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attach_node (str: STRING; pixmap: EV_PIXMAP; aca: ARCH_CAT_ARCHETYPE)
+	attach_node (str: STRING; pixmap: EV_PIXMAP; aca: ARCH_LIB_ARCHETYPE)
 			-- attach a archetype/template node into the tree
 		local
 			tooltip: STRING
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
    	semantic_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the icon appropriate to the item attached to `node'.
 		do
- 			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
+ 			if attached {ARCH_LIB_CLASS_NODE} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
 				gli.set_pixmap (catalogue_node_pixmap (acc))
 			end
 		end

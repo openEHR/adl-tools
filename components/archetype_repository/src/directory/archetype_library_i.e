@@ -8,7 +8,7 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class
-	ARCHETYPE_REPOSITORY_I
+	ARCHETYPE_LIBRARY_I
 
 inherit
 	ARCHETYPE_DEFINITIONS
@@ -34,9 +34,9 @@ feature -- Access
 
 	errors: ERROR_ACCUMULATOR
 
-feature {ARCHETYPE_CATALOGUE} -- Access
+feature {ARCHETYPE_LIBRARY} -- Access
 
-	archetype_id_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	archetype_id_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
 			-- list of all archetypes found in this directory tree, keyed by id
 		attribute
 			create Result.make (0)

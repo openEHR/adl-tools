@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "File-system repository of archetypes - implementation of ARCHETYPE_REPOSITORY_I."
+	description: "File-system repository of archetypes - implementation of ARCHETYPE_LIBRARY_I."
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -8,10 +8,10 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class
-	ARCHETYPE_FILE_REPOSITORY_IMP
+	ARCHETYPE_FILE_LIBRARY_IMP
 
 inherit
-	ARCHETYPE_REPOSITORY_I
+	ARCHETYPE_LIBRARY_I
 
 	SHARED_ADL_APP_RESOURCES
 		rename

@@ -29,7 +29,7 @@ create
 
 feature -- Initialisation
 
-	make (an_ancestor_aca: ARCH_CAT_ARCHETYPE; a_target_archetype: FLAT_ARCHETYPE)
+	make (an_ancestor_aca: ARCH_LIB_ARCHETYPE; a_target_archetype: FLAT_ARCHETYPE)
 			-- create with two archetypes for comparison
 		require
 			Valid_ancestor_archetype: an_ancestor_aca.is_valid
@@ -40,7 +40,7 @@ feature -- Initialisation
 			flat_target := a_target_archetype
 		end
 
-	make_create_differential (an_ancestor_aca: ARCH_CAT_ARCHETYPE; a_target_archetype: FLAT_ARCHETYPE)
+	make_create_differential (an_ancestor_aca: ARCH_LIB_ARCHETYPE; a_target_archetype: FLAT_ARCHETYPE)
 			-- make with a valid specialised child archetype descriptor
 		require
 			Valid_ancestor_archetype: an_ancestor_aca.is_valid
@@ -54,7 +54,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ancestor_descriptor: ARCH_CAT_ARCHETYPE
+	ancestor_descriptor: ARCH_LIB_ARCHETYPE
 			-- compiled parent archetype descriptor
 
 	flat_ancestor: FLAT_ARCHETYPE

@@ -14,7 +14,7 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
+	make (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 		do
 			target := aca
 		end
@@ -30,7 +30,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	target: ARCH_CAT_ARCHETYPE_EDITABLE
+	target: ARCH_LIB_ARCHETYPE_EDITABLE
 
 	differential_display_context: ARCH_ED_CONTEXT
 		do

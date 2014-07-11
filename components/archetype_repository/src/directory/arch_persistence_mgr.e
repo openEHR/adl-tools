@@ -29,7 +29,7 @@ note
 class ARCH_PERSISTENCE_MGR
 
 inherit
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all
 			{ANY} deep_twin, standard_is_equal, is_deep_equal
@@ -56,12 +56,12 @@ inherit
 			{ANY} has_serialiser_format, has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
 		end
 
-create {ARCH_CAT_ARCHETYPE}
+create {ARCH_LIB_ARCHETYPE}
 	make, make_legacy, make_new_archetype
 
 feature {NONE} -- Initialisation
 
-	make (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I)
+	make (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I)
 		require
 			Path_valid: not a_path.is_empty
 		do
@@ -71,7 +71,7 @@ feature {NONE} -- Initialisation
 			file_repository_set: file_repository = a_repository
 		end
 
-	make_legacy (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I)
+	make_legacy (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I)
 		require
 			Path_valid: not a_path.is_empty
 		do
@@ -82,7 +82,7 @@ feature {NONE} -- Initialisation
 			file_repository_set: file_repository = a_repository
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -206,7 +206,7 @@ feature -- Status Report
 			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
 		end
 
-feature {ARCH_CAT_ARCHETYPE} -- Status Report
+feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
 	is_legacy_out_of_date: BOOLEAN
 		do
@@ -303,7 +303,7 @@ feature -- File Management (Legacy)
 			other_details := amp.extract_other_details (Result)
 		end
 
-feature {ARCH_CAT_ARCHETYPE} -- File Management (Legacy)
+feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
@@ -327,7 +327,7 @@ feature {ARCH_CAT_ARCHETYPE} -- File Management (Legacy)
 			end
 		end
 
-feature {ARCH_CAT_ARCHETYPE} -- Commands
+feature {ARCH_LIB_ARCHETYPE} -- Commands
 
 	has_differential_compiled_file: BOOLEAN
 			-- Does the compile generated area have a differential file for this archetype from a previous compile?
@@ -389,7 +389,7 @@ feature {ARCH_CAT_ARCHETYPE} -- Commands
 			file_repository.save_text_to_file (a_full_path, a_text)
 		end
 
-feature {GUI_SOURCE_CONTROL, ARCH_CAT_ARCHETYPE} -- File Management
+feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE} -- File Management
 
 	is_text_converted: BOOLEAN
 			-- was last text converted from original form?
@@ -511,10 +511,10 @@ feature {NONE} -- Implementation
 			Result > 0
 		end
 
-	file_repository: ARCHETYPE_REPOSITORY_I
+	file_repository: ARCHETYPE_LIBRARY_I
 			-- The repository on which this item is found.
 
-	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; is_generated: BOOLEAN)
+	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I; is_generated: BOOLEAN)
 		do
 			file_repository := a_repository
 			source_file_path := a_path

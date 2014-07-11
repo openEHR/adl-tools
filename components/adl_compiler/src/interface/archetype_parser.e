@@ -35,7 +35,7 @@ feature -- Definitions
 
 feature -- Access
 
-	selected_archetype: ARCH_CAT_ARCHETYPE
+	selected_archetype: ARCH_LIB_ARCHETYPE
 			-- The archetype currently selected in the archetype directory.
 		do
 			Result := current_arch_cat.selected_archetype
@@ -74,7 +74,7 @@ feature -- Factory
 		require
 			primary_language_not_empty: not primary_language.is_empty
 		local
-			aca: ARCH_CAT_ARCHETYPE
+			aca: ARCH_LIB_ARCHETYPE
 		do
 			create aca.make_new_archetype (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype)
 			current_arch_cat.set_selected_item (aca)

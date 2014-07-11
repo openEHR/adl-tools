@@ -42,7 +42,7 @@ feature {NONE} -- Events
 				end
 
 				set_error_reporting_level (Error_type_error)
-				use_current_repository (True)
+				use_current_library (True)
 				test_repository := repository_config_table.current_repository.reference_path
 			end
 		end
@@ -77,9 +77,9 @@ feature -- Test routines
 
 			name := file_system.pathname (test_directory, "openehr-TEST_PKG-WHOLE.add_adhoc_item.v1.adls")
 			file_context.save_file (name, adl)
-			assert_equal (False, attached current_arch_cat.last_added_archetype)
-			current_arch_cat.add_adhoc_archetype (name)
-			assert_equal (True, attached current_arch_cat.last_added_archetype)
+			assert_equal (False, attached current_arch_lib.last_added_archetype)
+			current_arch_lib.add_adhoc_archetype (name)
+			assert_equal (True, attached current_arch_lib.last_added_archetype)
 		end
 
 	test_populate
@@ -87,8 +87,8 @@ feature -- Test routines
 		note
 			testing: "covers/{ARCHETYPE_CATALOGUE}.populate"
 		do
-			assert_equal (test_repository, current_arch_cat.repository_access.reference_repository.full_path)
-			assert_equal (0, current_arch_cat.compile_attempt_count)
+			assert_equal (test_repository, current_arch_lib.repository_access.reference_repository.full_path)
+			assert_equal (0, current_arch_lib.compile_attempt_count)
 		--	assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 		end
 

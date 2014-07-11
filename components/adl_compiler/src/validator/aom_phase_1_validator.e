@@ -23,7 +23,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all
 		end
@@ -33,7 +33,7 @@ create
 
 feature -- Status Report
 
-	is_validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
+	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end
@@ -201,7 +201,7 @@ feature {NONE} -- Implementation
 			filler_id: ARCHETYPE_HRID
 		do
 			across target.suppliers_index as supp_csr loop
-				if not current_arch_cat.has_archetype_id_for_ref (supp_csr.key) then
+				if not current_arch_lib.has_archetype_id_for_ref (supp_csr.key) then
 					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				end
 

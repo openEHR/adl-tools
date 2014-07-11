@@ -7,10 +7,10 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_CAT_ARCHETYPE_EDITABLE
+class ARCH_LIB_ARCHETYPE_EDITABLE
 
 inherit
-	ARCH_CAT_ARCHETYPE
+	ARCH_LIB_ARCHETYPE
 		redefine
 			clear_cache, signal_from_scratch
 		end

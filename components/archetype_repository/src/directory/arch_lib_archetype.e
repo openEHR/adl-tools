@@ -15,17 +15,17 @@ note
 	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_CAT_ARCHETYPE
+class ARCH_LIB_ARCHETYPE
 
 inherit
-	ARCH_CAT_ITEM
+	ARCH_LIB_ITEM
 		rename
 			name as semantic_id
 		redefine
 			children
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		undefine
 			is_equal
 		end
@@ -94,7 +94,7 @@ create {APP_OBJECT_FACTORY}
 
 feature {NONE} -- Initialisation
 
-	make (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+	make (a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
 			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
 		require
 			Path_valid: not a_path.is_empty
@@ -123,7 +123,7 @@ feature {NONE} -- Initialisation
 			Compilation_state: compilation_state = Cs_unread
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -145,7 +145,7 @@ feature {NONE} -- Initialisation
 			validated: is_valid
 		end
 
-	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -199,7 +199,7 @@ feature -- Identification
 			-- an id matching the interface id reference (i.e. archetype id down to major version) in
 			-- the 'parent_archetype_id' property of the target.
 		do
-			if is_specialised and then attached {ARCH_CAT_ARCHETYPE} parent as parent_aca then
+			if is_specialised and then attached {ARCH_LIB_ARCHETYPE} parent as parent_aca then
 				Result := parent_aca.id
 			end
 		end
@@ -216,13 +216,13 @@ feature -- Identification
 	relative_path: STRING
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
-			csr: detachable ARCH_CAT_ITEM
+			csr: detachable ARCH_LIB_ITEM
 		do
 			create Result.make(0)
-			from csr := parent until attached {ARCH_CAT_MODEL_NODE} csr or csr = Void loop
+			from csr := parent until attached {ARCH_LIB_MODEL_NODE} csr or csr = Void loop
 				csr := csr.parent
 			end
-			if attached {ARCH_CAT_MODEL_NODE} csr as acmn then
+			if attached {ARCH_LIB_MODEL_NODE} csr as acmn then
 				Result := acmn.path + Semantic_path_separator + id.as_string
 			end
 		end
@@ -306,7 +306,7 @@ feature -- Identification
 			end
 		end
 
-feature {ARCHETYPE_CATALOGUE} -- Identification
+feature {ARCHETYPE_LIBRARY} -- Identification
 
 	clear_old_ontological_parent_name
 		do
@@ -320,16 +320,16 @@ feature {NONE} -- Identification
 
 feature -- Relationships
 
-	suppliers_index: detachable HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	suppliers_index: detachable HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
 			-- list of descriptors of slot fillers or other external references, keyed by archetype id
 			-- currently generated only from C_ARCHETYPE_ROOT index in archetype
 
 	clients_index: detachable ARRAYED_LIST [STRING]
 			-- list of archetype_ids of archetypes that use this archetype
 
-	specialisation_ancestor: detachable ARCH_CAT_ARCHETYPE
+	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE
 		do
-			if attached {ARCH_CAT_ARCHETYPE} parent as aca then
+			if attached {ARCH_LIB_ARCHETYPE} parent as aca then
 				Result := aca
 			end
 		end
@@ -355,7 +355,7 @@ feature -- Relationships
 	has_artefacts: BOOLEAN = True
 			-- True if there are any archetypes at or below this point
 
-feature {ARCH_CAT_ARCHETYPE} -- Relationships
+feature {ARCH_LIB_ARCHETYPE} -- Relationships
 
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
@@ -646,7 +646,7 @@ feature -- Compilation
 			-- differential yet available. This is because changes in legacy will be detected independently
 		do
 			if compile_attempted then
-				current_arch_cat.decrement_compile_attempt_count
+				current_arch_lib.decrement_compile_attempt_count
 			end
 			differential_archetype := Void
 			flat_archetype_cache := Void
@@ -861,8 +861,8 @@ feature {NONE} -- Compilation
 			-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
 			create suppliers_index.make (0)
 			across diff_arch.suppliers_index as supp_idx_csr loop
-				if current_arch_cat.has_archetype_id_for_ref (supp_idx_csr.key) and then
-					attached current_arch_cat.matching_archetype (supp_idx_csr.key) as supp_arch and then
+				if current_arch_lib.has_archetype_id_for_ref (supp_idx_csr.key) and then
+					attached current_arch_lib.matching_archetype (supp_idx_csr.key) as supp_arch and then
 					not supp_arch.id.as_string.is_case_insensitive_equal (id.as_string)
 				then
 					suppliers_index.put (supp_arch, supp_arch.id.as_string)
@@ -949,7 +949,7 @@ feature {NONE} -- Compilation
 			-- Set `compile_attempt_timestamp'
 		do
 			if not compile_attempted then
-				current_arch_cat.update_compile_attempt_count
+				current_arch_lib.update_compile_attempt_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end
@@ -1118,9 +1118,9 @@ feature -- Statistics
 
 	statistical_analyser: detachable ARCHETYPE_STATISTICAL_ANALYSER
 
-feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
+feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable SORTED_TWO_WAY_LIST [ARCH_CAT_ARCHETYPE]
+	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE]
 			-- list of child nodes
 
 feature {NONE} -- Implementation
@@ -1216,30 +1216,30 @@ feature {NONE} -- Implementation
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						across includes as includes_csr loop
 							if attached {STRING} includes_csr.item.regex_constraint.constraint_regex as a_regex then
-								add_slot_ids (slot_idx, current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+								add_slot_ids (slot_idx, current_arch_lib.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
+						add_slot_ids (slot_idx, current_arch_lib.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
-					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_arch_lib.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
 							if attached {STRING} excludes_csr.item.regex_constraint.constraint_regex as a_regex then
-								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
+								across current_arch_lib.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
 									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
 						end
 					end
 				else
-					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_arch_lib.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
 				end
 
 				-- now post the results in the reverse indexes
 				across slot_idx.item (slots_csr.item.path) as ids_csr loop
-					check attached current_arch_cat.archetype_index.item (ids_csr.item) as ara then
+					check attached current_arch_lib.archetype_index.item (ids_csr.item) as ara then
 						if not attached ara.clients_index or else not ara.clients_index.has (id.as_string) then
 							ara.add_client (id.as_string)
 						end

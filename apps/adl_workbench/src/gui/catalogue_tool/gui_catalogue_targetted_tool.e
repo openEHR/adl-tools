@@ -22,7 +22,7 @@ inherit
 
 feature -- Access
 
-	source: detachable ARCHETYPE_CATALOGUE
+	source: detachable ARCHETYPE_LIBRARY
 			-- archetype catalogue to which this tool is targetted
 
 	tool_artefact_id: STRING
@@ -34,7 +34,7 @@ feature -- Access
 
 	selection_history: detachable ARCHETYPE_CATALOGUE_SELECTION_HISTORY
 
-	selected_item: detachable ARCH_CAT_ITEM
+	selected_item: detachable ARCH_LIB_ITEM
 		do
 			Result := selection_history.selected_item
 		end

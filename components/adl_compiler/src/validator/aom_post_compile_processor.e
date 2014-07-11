@@ -14,7 +14,7 @@ create
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (aca: ARCH_CAT_ARCHETYPE)
+	initialise (aca: ARCH_LIB_ARCHETYPE)
 			-- set target
 		require
 			aca.is_valid
@@ -31,7 +31,7 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 feature -- Access
 
-	target_descriptor: ARCH_CAT_ARCHETYPE
+	target_descriptor: ARCH_LIB_ARCHETYPE
 
 	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being processed

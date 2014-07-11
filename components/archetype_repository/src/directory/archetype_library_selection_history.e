@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_CATALOGUE_SELECTION_HISTORY
+class ARCHETYPE_LIBRARY_SELECTION_HISTORY
 
 inherit
 	SELECTION_HISTORY
@@ -20,28 +20,28 @@ create
 
 feature -- Access
 
-	selected_item: detachable ARCH_CAT_ITEM
+	selected_item: detachable ARCH_LIB_ITEM
 			-- The archetype at `selected_item'.
 		do
-			if attached {ARCH_CAT_ITEM} precursor as aci then
+			if attached {ARCH_LIB_ITEM} precursor as aci then
 				Result := aci
 			end
 		end
 
-	selected_archetype: detachable ARCH_CAT_ARCHETYPE
+	selected_archetype: detachable ARCH_LIB_ARCHETYPE
 			-- The archetype at `selected_item'.
 		do
-			if attached {ARCH_CAT_ARCHETYPE} selected_item as aca then
+			if attached {ARCH_LIB_ARCHETYPE} selected_item as aca then
 				Result := aca
 			end
 		ensure
 			consistent_with_history: attached Result implies Result = selected_item
 		end
 
-	selected_class: detachable ARCH_CAT_CLASS_NODE
+	selected_class: detachable ARCH_LIB_CLASS_NODE
 			-- The class node at `selected_item'.
 		do
-			if attached {ARCH_CAT_CLASS_NODE} selected_item as acc then
+			if attached {ARCH_LIB_CLASS_NODE} selected_item as acc then
 				Result := acc
 			end
 		ensure

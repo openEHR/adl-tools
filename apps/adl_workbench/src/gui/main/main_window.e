@@ -103,10 +103,10 @@ feature {NONE} -- Initialization
 
 			-- repository combo
 			create arch_repositories_combo
-			arch_repositories_combo.set_tooltip (get_msg (ec_repo_cfg_combo_tooltip, Void))
+			arch_repositories_combo.set_tooltip (get_msg (ec_library_cfg_combo_tooltip, Void))
 			arch_repositories_combo.set_minimum_width (160)
 			arch_repositories_combo.disable_edit
-			arch_repositories_combo.select_actions.extend (agent select_repository)
+			arch_repositories_combo.select_actions.extend (agent select_library)
 			action_bar.extend (arch_repositories_combo)
 			action_bar.disable_item_expand (arch_repositories_combo)
 
@@ -363,6 +363,7 @@ feature {NONE} -- Initialization
 				-- else use the user's one
 				if file_system.file_exists (default_docking_layout_file_path) then
 					if file_system.file_exists (user_docking_layout_file_path) then
+						-- if the default docking layout is newer than the app's current one, then use it.
 						if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) or
 							not last_exec_app_version.same_string (app_version.out)
 						then
@@ -373,14 +374,14 @@ feature {NONE} -- Initialization
 					end
 				elseif file_system.file_exists (user_docking_layout_file_path) then
 					docking_file_to_use := user_docking_layout_file_path
-					console_tool.append_text (get_msg_line ("copy_docking_file", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+					console_tool.append_text (get_msg_line (ec_copy_docking_file, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 					file_system.copy_file (user_docking_layout_file_path, default_docking_layout_file_path)
 				else
-					console_tool.append_text (get_msg_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+					console_tool.append_text (get_msg_line (ec_no_docking_file_found, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 				end
 
 				if attached docking_file_to_use and then not internal_docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
-					console_tool.append_text (get_msg_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
+					console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<user_docking_layout_file_path>>))
 				end
 			end
 
@@ -508,44 +509,44 @@ feature {NONE} -- AOM profiles events
 			dialog.destroy
 		end
 
-feature {NONE} -- Repository events
+feature {NONE} -- Library events
 
 	configure_repositories
-			-- Display the Repository Settings dialog. This dialog allows changing of
-			-- the repository profiles, adding new ones and removal. Removal of the current
-			-- repository or changing current repository paths will cause visual update;
+			-- Display the Library Settings dialog. This dialog allows changing of
+			-- the library profiles, adding new ones and removal. Removal of the current
+			-- repository or changing current library paths will cause visual update;
 			-- adding a new profile won't - the current selection stays.
 		local
-			dialog: REPOSITORY_DIALOG
-			any_repository_changes_made: BOOLEAN
-			current_repositories_removed: BOOLEAN
-			current_repositories_changed: BOOLEAN
+			dialog: LIBRARY_DIALOG
+			any_library_changes_made: BOOLEAN
+			current_libraries_removed: BOOLEAN
+			current_libraries_changed: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			any_repository_changes_made := dialog.any_repository_changes_made
-			if any_repository_changes_made then
-				current_repositories_removed := dialog.current_repository_removed
-				current_repositories_changed := dialog.current_repository_changed
+			any_library_changes_made := dialog.any_library_changes_made
+			if any_library_changes_made then
+				current_libraries_removed := dialog.current_library_removed
+				current_libraries_changed := dialog.current_library_changed
 				save_resources
 			end
 
 			dialog.destroy
 
 			-- if the list of profiles changed, repopulate the profile combo box selectors
-			if dialog.any_repository_changes_made then
+			if dialog.any_library_changes_made then
 				populate_arch_repo_config_combo
 			end
 
 			-- if the current profile changed or was removed, repopulate the explorers
-			if current_repositories_removed or current_repositories_changed then
+			if current_libraries_removed or current_libraries_changed then
 				console_tool.clear
 				refresh_archetype_catalogue (True)
 			end
 		end
 
-	select_repository
+	select_library
 			-- Called by `select_actions' of profile selector
 		do
 			if not arch_repositories_combo.text.same_string (repository_config_table.current_repository_name) then
@@ -649,7 +650,7 @@ feature {NONE} -- Repository events
 			xml_name: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			if current_arch_cat.has_statistics then
+			if current_arch_lib.has_statistics then
 				create save_dialog
 				save_dialog.set_title (get_text (ec_export_report_dialog_title))
 				save_dialog.set_file_name (Repository_report_filename)
@@ -725,7 +726,7 @@ feature {NONE} -- Tools menu events
 			end
 			if dialog.has_changed_navigator_options and repository_config_table.has_current_repository then
 				save_resources
-				catalogue_tool.populate (current_arch_cat)
+				catalogue_tool.populate (current_arch_lib)
 				test_tool.populate
 			end
 		end
@@ -740,13 +741,13 @@ feature {NONE} -- Tools menu events
 	clean_generated_files
 			-- Remove all generated files below the repository directory and repopulate from scratch
 		do
-			if has_current_repository then
-				do_with_wait_cursor (Current, agent current_arch_cat.do_all_archetypes (agent delete_generated_files))
+			if has_current_library then
+				do_with_wait_cursor (Current, agent current_arch_lib.do_all_archetypes (agent delete_generated_files))
 				refresh_archetype_catalogue (True)
 			end
 		end
 
-	delete_generated_files (ara: ARCH_CAT_ARCHETYPE)
+	delete_generated_files (ara: ARCH_LIB_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
@@ -950,7 +951,7 @@ feature -- Catalogue tool
 	select_archetype_from_gui_node (gui_item: EV_SELECTABLE)
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
-			if attached gui_item and then attached {ARCH_CAT_ITEM} gui_item.data as aci then
+			if attached gui_item and then attached {ARCH_LIB_ITEM} gui_item.data as aci then
 				catalogue_tool.select_item_by_id (aci.qualified_key)
 			end
 		end
@@ -962,7 +963,7 @@ feature -- Archetype viewers
 			create Result.make (docking_manager)
 		end
 
-	display_archetype (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
+	display_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
 			if attached aca.last_compile_attempt_timestamp then
@@ -972,7 +973,7 @@ feature -- Archetype viewers
 			archetype_viewers.active_tool.on_select_notebook
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
+	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 		do
 			archetype_viewers.create_new_tool
 			display_archetype (aca)
@@ -998,7 +999,7 @@ feature -- Archetype editors
 			)
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE_EDITABLE)
+	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 		do
 			archetype_editors.create_new_tool
 			archetype_editors.active_tool.enable_edit
@@ -1006,7 +1007,7 @@ feature -- Archetype editors
 			archetype_editors.active_tool.on_select_notebook
 		end
 
-	archetype_has_editor (aca: ARCH_CAT_ARCHETYPE_EDITABLE): BOOLEAN
+	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE_EDITABLE): BOOLEAN
 		do
 			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.as_string)
 		end
@@ -1163,15 +1164,15 @@ feature {NONE} -- Implementation
 			if attached repository_config_table.current_repository_name as rep_name then
 				console_tool.append_text (get_msg_line ("populating_directory_start", <<rep_name>>))
 			end
-			use_current_repository (refresh_from_repository)
-			console_tool.append_text (current_arch_cat.error_strings)
+			use_current_library (refresh_from_repository)
+			console_tool.append_text (current_arch_lib.error_strings)
 			console_tool.append_text (get_msg_line ("populating_directory_complete", Void))
 
 			clear_toolbar_controls
 			error_tool.clear
 			clear_all_editors
 
-			catalogue_tool.populate (current_arch_cat)
+			catalogue_tool.populate (current_arch_lib)
 			test_tool.populate
 		end
 
@@ -1248,7 +1249,7 @@ feature {NONE} -- Build commands
 		--	ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update GUI with progress on build.
 		do
 			if not a_msg.is_empty then

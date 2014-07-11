@@ -30,32 +30,32 @@ templates = <
 		["export_as_xml"] = <"Export as XML...">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
-		["remove_repo_cfg"] = <"Removing invalid configuration (error: $1)">
-		["repo_cfg_error"] = <"Repository error: $1">
-		["invalid_repo_cfg"] = <"Configuration $1 not known in repository configurations">
-		["ref_repo_not_found"] = <"Reference Path $1 does not exist or not readable">
-		["work_repo_not_found"] = <"Work Path $1 does not exist or not readable">
-		["work_repo_not_valid"] = <"Work Path $1 is the same as or a child of the reference repository $2">
-		["cant_remove_last_repo_cfg"] = <"Last configuration cannot be removed; use 'Edit' to reconfigure">
-		["duplicate_repo_cfg"] = <"New configuration name $1 already used">
-		["empty_repo_cfg"] = <"Repository configuration name must not be empty">
-		["repository_dialog_title"] = <"ADL Workbench Repository Configuration">
+		["remove_library_cfg"] = <"Removing invalid configuration (error: $1)">
+		["library_cfg_error"] = <"Library error: $1">
+		["invalid_library_cfg"] = <"Configuration $1 not known in library configurations">
+		["ref_library_not_found"] = <"Reference Path $1 does not exist or not readable">
+		["work_library_not_found"] = <"Work Path $1 does not exist or not readable">
+		["work_library_not_valid"] = <"Work Path $1 is the same as or a child of the reference library $2">
+		["cant_remove_last_library_cfg"] = <"Last configuration cannot be removed; use 'Edit' to reconfigure">
+		["duplicate_library_cfg"] = <"New configuration name $1 already used">
+		["empty_library_cfg"] = <"Library configuration name must not be empty">
+		["library_dialog_title"] = <"ADL Workbench Library Configuration">
 
-		["repo_cfg_list_text"] = <"Repositories">
-		["add_new_repo_cfg_button_text"] = <"Add New">
-		["add_new_repo_cfg_button_tooltip"] = <"Add a new repository configuration">
-		["remove_repo_cfg_button_text"] = <"Remove">
-		["remove_repo_cfg_button_tooltip"] = <"Remove selected repository configuration">
-		["edit_repo_cfg_button_text"] = <"Edit">
-		["edit_repo_cfg_button_tooltip"] = <"Edit selected repository configuration">
-		["ref_repo_text"] =  <"Reference Path">
-		["work_repo_text"] = <"Work Path">
+		["library_cfg_list_text"] = <"Libraries">
+		["add_new_library_cfg_button_text"] = <"Add New">
+		["add_new_library_cfg_button_tooltip"] = <"Add a new library configuration">
+		["remove_library_cfg_button_text"] = <"Remove">
+		["remove_library_cfg_button_tooltip"] = <"Remove selected library configuration">
+		["edit_library_cfg_button_text"] = <"Edit">
+		["edit_library_cfg_button_tooltip"] = <"Edit selected library configuration">
+		["ref_library_text"] =  <"Reference Path">
+		["work_library_text"] = <"Work Path">
 
 		-- PROFILE_EDIT_DIALOG
-		["repo_cfg_edit_dialog_title"] =  <"Edit Repository Configuration">
-		["repo_cfg_name_text"] =  <"Repository Name:">
-		["ref_repo_dir_text"] =  <"Reference Path:">
-		["work_repo_dir_text"] = <"     Work Path:">
+		["library_cfg_edit_dialog_title"] =  <"Edit Library Configuration">
+		["library_cfg_name_text"] =  <"Archetype Name:">
+		["ref_library_dir_text"] =  <"Reference Path:">
+		["work_library_dir_text"] = <"     Work Path:">
 
 		-- OPTION_DIALOG
 		["option_dialog_title"] = <"ADL Workbench Options">
@@ -87,7 +87,7 @@ templates = <
 		["show_source_format_tooltip"] = <"Indicate original format  - ADL 1.4 legacy flat, ADL 1.5, etc">
 
 		["show_all_classes_text"] = <"Show all classes in explorer">
-		["show_all_classes_tooltip"] = <"Show all archetypable classes in RM even if there are no archetypes based on them in the current repository.">
+		["show_all_classes_tooltip"] = <"Show all archetypable classes in RM even if there are no archetypes based on them in the current library.">
 		["use_rm_icons_text"] = <"Use RM icons">
 		["use_rm_icons_tooltip"] = <"Use RM-specific icons in visualisation of archetype definition?">
 
@@ -210,12 +210,12 @@ templates = <
 		["repository_menu_build_subtree_text"] = <"Build Sub&tree">
 		["repository_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
 		["repository_menu_interrupt_text"] = <"&Interrupt Build">
-		["repository_menu_refresh_text"] = <"Re&fresh Repository">
+		["repository_menu_refresh_text"] = <"Re&fresh Library">
 		["repository_menu_export_html_text"] = <"Export as &HTML...">
 		["repository_menu_export_json_text"] = <"Export as &JSON...">
 		["repository_menu_export_yaml_text"] = <"Export as &YAML...">
 		["repository_menu_export_xml_text"] = <"Export as &XML...">
-		["repository_menu_export_report_text"] = <"&Export Repository Report...">
+		["repository_menu_export_report_text"] = <"&Export Library Report...">
 		["repository_menu_configure_text"] = <"&Configure Repositories...">
 
 		["rm_schemas_menu_text"] = <"&RM Schemas">
@@ -243,7 +243,7 @@ templates = <
 
 		-- MAIN_WINDOW - titles
 		["main_window_title"] = <"Archetype Definition Language $1 Workbench">
-		["export_report_dialog_title"] = <"Export Repository Report">
+		["export_report_dialog_title"] = <"Export Library Report">
 		["export_bmm_schema_dialog_title"] = <"Export BMM Schema">
 		["about_awb_dialog_title"] = <"About ADL Workbench">
 		["reference_models_docking_area_title"] = <"Reference Models">
@@ -252,7 +252,7 @@ templates = <
 		["test_tool_title"] = <"Test tool">
 
 		-- MAIN_WINDOW - widget texts and tooltips
-		["repo_cfg_combo_tooltip"] = <"Select archetype repository">
+		["library_cfg_combo_tooltip"] = <"Select archetype library">
 		["compile_button_text"] = <"Compile">
 		["compile_button_tooltip"] = <"Compile all archetypes (F7)">
 		["adl_version_label_text"] = <"ADL Version:">
@@ -262,19 +262,19 @@ templates = <
 
 		["export_errors_stats_requires_build_text"] = <"Compile system (F7) and display statistics before generating error report">
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
-		["export_repository_report_replace_info"] = <"Exported report to $1">
-		["export_repository_report_replace_err"] = <"Failed to export report to $1">
+		["export_library_report_replace_info"] = <"Exported report to $1">
+		["export_library_report_replace_err"] = <"Failed to export report to $1">
 		["export_question"] = <"Only successfully built archetypes can be exported to $1.%N%NDo you want to build each archetype before exporting it?">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 		["build_and_export_all"] = <"Yes, Build and Export All">
 		["export_only_built"] = <"No, Export only the built ones">
-		["export_in_format_dialog_title"] = <"Export repository in $1 format">
+		["export_in_format_dialog_title"] = <"Export library in $1 format">
 		["compile_before_serialising"] = <"Must compile before serialising">
 		["no_diff_tool"] = <"No diff tool must be configured; see Options">
-		["no_diff_dirs"] = <"No diff directories available; tests must be run on repository first">
-		["populating_directory_start"] = <"Populating from directories in $1 repository configuration...">
-		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Repository menu">
+		["no_diff_dirs"] = <"No diff directories available; tests must be run on library first">
+		["populating_directory_start"] = <"Populating from directories in $1 library configuration...">
+		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Library menu">
 		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
 		["compiler_no_dadl_text"] = <"===================== No ODIN (.odin) text available =======================">
@@ -296,11 +296,11 @@ templates = <
 		["catalogue_template_tab_text"] = <"Templates">
 		["catalogue_metrics_tab_text"] = <"Metrics">
 		["catalogue_stats_tab_text"] = <"Statistics">
-		["catalogue_tool_title"] = <"Repository">
+		["catalogue_tool_title"] = <"Library">
 		["save_archetype_title"] = <"Save Archetype">
 		["export_archetype_title"] = <"Export Archetype">
 		["catalogue_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
-		["catalogue_add_new_archetype_error"] = <"Error adding archetype to repository: $1">
+		["catalogue_add_new_archetype_error"] = <"Error adding archetype to library: $1">
 
 		-- GUI_PATH_MAP_CONTROL
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">
@@ -310,7 +310,7 @@ templates = <
 		["adl_interface_tab_text"] = <"Interface tags">
 
 		-- GUI_SLOT_MAP_CONTROL
-		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
+		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Archetype menu.">
 		["supplier_frame_text"] = <"Supplier Archetypes">
 		["client_frame_text"] = <"Client Archetypes">
 

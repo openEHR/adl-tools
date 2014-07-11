@@ -1,8 +1,8 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 File-system ad hoc repository of archetypes - where archetypes are not arranged as a tree
-				 but may appear anywhere. Items are added to the repository by the user, not by an automatic
+				 File-system ad hoc library of archetypes - where archetypes are not arranged as a tree
+				 but may appear anywhere. Items are added to the library by the user, not by an automatic
 				 scan of a directory tree.
 				 ]"
 	keywords:    "ADL"
@@ -11,10 +11,10 @@ note
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_ADHOC_FILE_REPOSITORY
+class ARCHETYPE_ADHOC_FILE_LIBRARY
 
 inherit
-	ARCHETYPE_FILE_REPOSITORY_IMP
+	ARCHETYPE_FILE_LIBRARY_IMP
 
 create
 	make
@@ -35,7 +35,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	item (full_path: STRING): ARCH_CAT_ARCHETYPE
+	item (full_path: STRING): ARCH_LIB_ARCHETYPE
 			-- The archetype at `full_path'.
 		require
 			has_full_path: has_path (full_path)
@@ -61,7 +61,7 @@ feature -- Modification
 			path_valid: is_valid_path (full_path)
 			hasnt_path: not has_path (full_path)
 		local
-			ara: ARCH_CAT_ARCHETYPE
+			ara: ARCH_LIB_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
 			aof: APP_OBJECT_FACTORY
 		do

@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 
 create
 	make

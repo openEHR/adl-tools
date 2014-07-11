@@ -39,7 +39,7 @@ create
 
 feature -- Status Report
 
-	is_validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
+	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end
@@ -415,10 +415,10 @@ end
 						end
 
 						-- if it has occurrences matches {0}, it's an error because this can only make sense for nodes that exist
-						if attached a_c_obj.occurrences as occ and then occ.is_prohibited then
+						if attached a_c_obj.occurrences as att_occ and then att_occ.is_prohibited then
 							add_error (ec_VSONPO, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True)>>)
 						end
-					
+
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
 		target.annotated_path (a_c_node.path,

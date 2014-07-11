@@ -7,10 +7,10 @@ note
 	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_CAT_FILESYS_NODE
+class ARCH_LIB_FILESYS_NODE
 
 inherit
-	ARCH_CAT_MODEL_NODE
+	ARCH_LIB_MODEL_NODE
 		redefine
 			put_child
 		end
@@ -50,7 +50,7 @@ feature -- Modification
 				create children.make
 			end
 			children.extend (a_child)
-			if attached {ARCH_CAT_FILESYS_NODE} a_child then
+			if attached {ARCH_LIB_FILESYS_NODE} a_child then
 				a_child.set_parent (Current)
 			end
 			reset_subtree_artefact_count

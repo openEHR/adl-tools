@@ -105,7 +105,7 @@ feature -- Definitions
 			Result := get_text (ec_arch_stats_supplier_archetypes_text)
 		end
 
-	Catalogue_metric_names: ARRAY [STRING]
+	Library_metric_names: ARRAY [STRING]
 		once
 			Result := <<Valid_archetype_count, Specialised_archetype_count, Client_archetype_count, Supplier_archetype_count>>
 		end

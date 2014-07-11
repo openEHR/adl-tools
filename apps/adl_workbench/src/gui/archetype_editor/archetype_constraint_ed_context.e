@@ -15,7 +15,7 @@ inherit
 			arch_node, is_prepared
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all
 		end

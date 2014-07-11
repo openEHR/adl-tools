@@ -27,7 +27,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all
 		end
@@ -98,7 +98,7 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	extend_and_select (ara: ARCH_CAT_ARCHETYPE)
+	extend_and_select (ara: ARCH_LIB_ARCHETYPE)
 			-- Add a node representing the errors or warnings of the archetype, if any.
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -126,7 +126,7 @@ feature -- Commands
 						row := cat_row.subrow (row_idx)
 						row.collapse
 
-						if attached {ARCH_CAT_ARCHETYPE} row.data as other then
+						if attached {ARCH_LIB_ARCHETYPE} row.data as other then
 							i := ara.id.three_way_comparison (other.id)
 						end
 					else
@@ -215,10 +215,10 @@ feature -- Commands
 				end
 
 			create statistics_element.make_last (root, "statistics", ns)
-			create_category_element.call ([statistics_element, "Total Archetypes", current_arch_cat.archetype_count])
-			create_category_element.call ([statistics_element, "Specialised Archetypes", current_arch_cat.catalogue_metrics.item (specialised_archetype_count)])
-			create_category_element.call ([statistics_element, "Archetypes with slots", current_arch_cat.catalogue_metrics.item (client_archetype_count)])
-			create_category_element.call ([statistics_element, "Archetypes used by others", current_arch_cat.catalogue_metrics.item (supplier_archetype_count)])
+			create_category_element.call ([statistics_element, "Total Archetypes", current_arch_lib.archetype_count])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", current_arch_lib.library_metrics.item (specialised_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes with slots", current_arch_lib.library_metrics.item (client_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes used by others", current_arch_lib.library_metrics.item (supplier_archetype_count)])
 
 			from err_type := categories.lower until err_type = categories.upper loop
 				err_type := err_type + 1
@@ -233,7 +233,7 @@ feature -- Commands
 						from i := 0 until i = row.subrow_count loop
 							i := i + 1
 
-							if attached {ARCH_CAT_ARCHETYPE} row.subrow (i).data as ara then
+							if attached {ARCH_LIB_ARCHETYPE} row.subrow (i).data as ara then
 								create archetype_element.make_last (category_element, "archetype", ns)
 								create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
@@ -343,7 +343,7 @@ feature {NONE} -- Implementation
 			category_row_attached: attached categories [err_type]
 		end
 
-	remove_archetype_row_if_in_wrong_category (ara: ARCH_CAT_ARCHETYPE)
+	remove_archetype_row_if_in_wrong_category (ara: ARCH_LIB_ARCHETYPE)
 			-- Remove the row representing `ara' from `grid' if it is under the wrong category.
 		local
 			cat_row, row: detachable EV_GRID_ROW
@@ -357,7 +357,7 @@ feature {NONE} -- Implementation
 				row := ev_grid.row (row_idx)
 				row_idx := row_idx - 1
 
-				if attached {ARCH_CAT_ARCHETYPE} row.data as other then
+				if attached {ARCH_LIB_ARCHETYPE} row.data as other then
 					if ara.id.is_equal (other.id) then
 						row_idx := 0
 						cat_row := row.parent_row
@@ -398,7 +398,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE_EDITABLE} ev_ti.data as aca then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_LIB_ARCHETYPE_EDITABLE} ev_ti.data as aca then
 				create menu
 				create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
@@ -415,7 +415,7 @@ feature {NONE} -- Implementation
 	display_context_selected_archetype_in_active_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
-			if attached {ARCH_CAT_ARCHETYPE_EDITABLE} ev_ti.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} ev_ti.data as aca then
 				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
@@ -423,7 +423,7 @@ feature {NONE} -- Implementation
 	display_context_selected_archetype_in_new_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
-			if attached {ARCH_CAT_ARCHETYPE_EDITABLE} ev_ti.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} ev_ti.data as aca then
 				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 			end
 		end

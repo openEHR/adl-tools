@@ -9,10 +9,10 @@ note
 	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCHETYPE_INDEXED_REPOSITORY_I
+deferred class ARCHETYPE_INDEXED_LIBRARY_I
 
 inherit
-	ARCHETYPE_REPOSITORY_I
+	ARCHETYPE_LIBRARY_I
 
 feature {NONE} -- Initialisation
 
@@ -35,9 +35,9 @@ feature -- Access
 	full_path: STRING
 			-- Path of file-system repository of archetypes.
 
-feature {ARCHETYPE_CATALOGUE} -- Access
+feature {ARCHETYPE_LIBRARY} -- Access
 
-	fast_archetype_list: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
+	fast_archetype_list: ARRAYED_LIST [ARCH_LIB_ARCHETYPE]
 			-- linear index list for efficient processing
 		attribute
 			create Result.make (0)

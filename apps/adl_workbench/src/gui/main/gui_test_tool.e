@@ -20,7 +20,7 @@ inherit
 			{NONE} all;
 		end
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all;
 			{ANY} standard_is_equal, deep_twin, is_deep_equal
@@ -329,8 +329,8 @@ feature -- Commands
 		do
 			clear
 
- 			if has_current_repository then
-	 			current_arch_cat.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			if has_current_library then
+	 			current_arch_lib.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
 
  			check attached repository_config_table.current_repository_name as crn then
@@ -360,12 +360,12 @@ feature -- Commands
    	set_row_pixmap (row: attached EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
    		do
-			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_CAT_ITEM} row.data as ari then
+			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_LIB_ITEM} row.data as ari then
 				gli.set_pixmap (get_icon_pixmap ("archetype/" + ari.group_name))
 			end
 		end
 
-	do_row_for_item (ari: ARCH_CAT_ITEM)
+	do_row_for_item (ari: ARCH_LIB_ITEM)
    			-- Perform `action' for the row containing `an_item', if any.
   		local
    			i: INTEGER
@@ -487,7 +487,7 @@ feature {NONE} -- Commands
 			res_label: STRING
 			test_result: INTEGER
 		do
-			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked and attached {ARCH_CAT_ARCHETYPE} row.data as aca then
+			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked and attached {ARCH_LIB_ARCHETYPE} row.data as aca then
 				target := aca
 
 				if attached target then
@@ -772,7 +772,7 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-	target: detachable ARCH_CAT_ARCHETYPE
+	target: detachable ARCH_LIB_ARCHETYPE
 			-- current target of compilation operation
 		note
 			option: stable
@@ -782,7 +782,7 @@ feature {NONE} -- Implementation
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
 
-	populate_gui_tree_node_enter (ari: ARCH_CAT_ITEM)
+	populate_gui_tree_node_enter (ari: ARCH_LIB_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		local
 			col_csr: INTEGER
@@ -800,7 +800,7 @@ feature {NONE} -- Implementation
 					grid_row_stack.extend (lr)
 				end
 
-				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
+				if attached {ARCH_LIB_ARCHETYPE} ari as ara then
 					evx_grid.update_last_row_label_col (1, Void, ara.source_file_path, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
@@ -811,7 +811,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCH_CAT_ITEM)
+	populate_gui_tree_node_exit (an_item: ARCH_LIB_ITEM)
 		do
 			if an_item.has_artefacts then
 				grid_row_stack.remove
@@ -847,7 +847,7 @@ feature {NONE} -- Implementation
 			--							+---- new
 			--
 		require
-			has_current_repository
+			has_current_library
 		local
 			curr_prof, diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, odin_root: STRING
 		do

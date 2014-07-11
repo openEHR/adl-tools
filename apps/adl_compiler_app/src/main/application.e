@@ -58,7 +58,7 @@ feature -- Initialization
 						end
 
 						print (get_text (ec_rep_populate_progress_info))
-						app_root.use_current_repository (False)
+						app_root.use_current_library (False)
 
 						print (get_text (ec_rep_populate_progress_info) + "%N")
 						app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
@@ -83,7 +83,7 @@ feature -- Initialization
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			print (msg)

@@ -7,10 +7,10 @@ note
 	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCH_CAT_MODEL_NODE
+deferred class ARCH_LIB_MODEL_NODE
 
 inherit
-	ARCH_CAT_ITEM
+	ARCH_LIB_ITEM
 		redefine
 			parent
 		end
@@ -35,9 +35,9 @@ feature -- Status Report
 			Result := across subtree_artefact_counts as counts_csr some counts_csr.item > 0 end
 		end
 
-feature {ARCH_CAT_ITEM} -- Implementation
+feature {ARCH_LIB_ITEM} -- Implementation
 
-	parent: detachable ARCH_CAT_MODEL_NODE
+	parent: detachable ARCH_LIB_MODEL_NODE
 			-- parent node
 
 end

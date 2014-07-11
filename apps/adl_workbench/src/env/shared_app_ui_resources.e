@@ -616,12 +616,12 @@ feature -- Application Switches
 
 feature -- Conversion
 
-	catalogue_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
+	catalogue_node_pixmap (ara: ARCH_LIB_ITEM): EV_PIXMAP
 		local
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
-			if attached {ARCH_CAT_CLASS_NODE} ara as acc then
+			if attached {ARCH_LIB_CLASS_NODE} ara as acc then
 				if use_rm_pixmaps then
 					pixmap_key := rm_type_pixmap_key (acc.class_definition.name, acc.bmm_schema.rm_publisher, acc.bmm_schema.schema_name)
 				end

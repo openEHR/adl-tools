@@ -13,7 +13,7 @@ note
 class ARCHETYPE_FLATTENER
 
 inherit
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
@@ -32,9 +32,15 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Max_template_overlay_depth: INTEGER = 8
+			-- max depth to go in template overlayinng process, in order to control effect of
+			-- recursive use_archetype references
+
 feature -- Initialisation
 
-	make (a_child_desc: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (a_child_desc: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Child_desc_valid: a_child_desc.is_valid
@@ -55,9 +61,9 @@ feature -- Initialisation
 
 feature -- Access
 
-	flat_parent_desc: detachable ARCH_CAT_ARCHETYPE
+	flat_parent_desc: detachable ARCH_LIB_ARCHETYPE
 
-	child_desc: ARCH_CAT_ARCHETYPE
+	child_desc: ARCH_LIB_ARCHETYPE
 
 	arch_parent_flat: FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
@@ -121,7 +127,7 @@ end
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
 				check attached arch_output_flat as att_flat then
-					template_overlay_supplier_definitions (att_flat)
+					template_overlay_supplier_definitions (att_flat, 0)
 				end
 				template_overlay_supplier_terminologies
 				arch_output_flat.rebuild
@@ -191,8 +197,8 @@ end
 								end
 
 								-- override occurrences of the ref target object with object proxy occs, if set
-								if attached flat_use_nodes_for_path_csr.item.occurrences then
-									c_obj.set_occurrences (flat_use_nodes_for_path_csr.item.occurrences.deep_twin)
+								if attached flat_use_nodes_for_path_csr.item.occurrences as att_occ then
+									c_obj.set_occurrences (att_occ.deep_twin)
 								end
 								flat_use_nodes_for_path_csr.item.parent.replace_child_by_id (c_obj, flat_use_nodes_for_path_csr.item.node_id)
 								clone_performed := True
@@ -303,6 +309,8 @@ end
 							raise ("node_graft loction #1 - can't find overlay location for object at " + cco_child_diff.path + " %N")
 						end
 					end
+
+					-- At this point, we have a reliable node to overlay onto in the flat parent
 					check attached cco_overlay_path end
 					if attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (cco_overlay_path) as cco_output_flat then
 
@@ -333,7 +341,7 @@ end
 								cco_output_flat.overlay_differential (cco_child_diff, agent rm_schema.type_conforms_to)
 							end
 
-							-- Deal with the case of the output object matches {*} (i.e. 'any') specifically here
+							-- Deal with the case of the output object matches 'any' specifically here
 							-- (it could be also done below, if the merge algorithms were updated to handle empty
 							-- target C_ATTRIBUTEs). If output_flat node matches any, and it is addressable (which
 							-- means the differential child node must also be, and must therefore be intended as
@@ -557,7 +565,7 @@ end
 		require
 			Non_empty_attribute: ca_output.has_children
 		local
-			insert_obj, merge_obj: C_OBJECT
+			insert_obj, merge_obj, cand_obj: C_OBJECT
 			merge_car: C_ARCHETYPE_ROOT
 			i: INTEGER
 			after_pending: BOOLEAN
@@ -625,6 +633,8 @@ end
 					end
 					ca_child.children.forth
 				else
+					-- set the insert_obj to the last item in the flat under this attribute - i.e. the child archetype
+					-- object nodes will be merged after the end of the existing ones in the flat
 					insert_obj := ca_output.children.last
 					add_merge_desc (start_pos, ca_child.children.count, insert_obj, False)
 					after_pending := False
@@ -641,41 +651,52 @@ end
 			across merge_list as merge_list_csr loop
 				if attached merge_list_csr.item then
 					insert_obj := merge_list_csr.item.insert_obj
-					-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
-					-- to be merged either before or after the insert_obj in the flattened output.
-					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
 
-						-- this is where we figure out which nodes from the source are 'new' with respect to the flat output.
-						if attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then
-							merge_car := car.safe_deep_twin
-							merge_car.set_subtree_specialisation_status (ss_added)
-							ca_output.put_child_right (merge_car, insert_obj)
+					-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
+					-- to be merged either before or after the insert_obj in the flattened output, or in a few cases, will modify or delete it
+					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
+						cand_obj := ca_child.children.i_th(i)
+
+						-- deal with C_ARCHETYPE_ROOT specifically. THere are two cases - slot fillers which are always 'addded',
+						-- and external references, which may be overrides or added, so for them we see what is in the parent.
+						if attached {C_ARCHETYPE_ROOT} cand_obj as car then
+
+							-- if it is a prohibition, remove the corresponding node in the flat
+							if cand_obj.is_prohibited then
+								ca_output.remove_child_by_id (cand_obj.node_id)
+
+							-- occurrences might be set to some other value, then it means an override of occurrences
+							elseif ca_output.has_child_with_id (cand_obj.node_id) and then attached cand_obj.occurrences as att_occ then
+								ca_output.child_with_id (cand_obj.node_id).set_occurrences (att_occ.deep_twin)
+
+							else
+								merge_car := car.safe_deep_twin
+								merge_car.set_subtree_specialisation_status (ss_added)
+								ca_output.put_child_right (merge_car, insert_obj)
+							end
 							grafted_child_locations.extend (car.path) -- remember the path, so we don't try to do it again later on
 
-						elseif specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth) = ss_added then
+						-- for any node whose node_id indicates it was added new in this level, e.g. something like id0.3 in level 2
+						-- just merge the node, except if it has occurrences = 0, in which case prohibit
+						elseif specialisation_status_from_code (cand_obj.node_id, arch_child_diff.specialisation_depth) = ss_added then
 							-- remember the path, so we don't try to do it again later on
-							grafted_child_locations.extend (ca_child.children.i_th (i).path)
+							grafted_child_locations.extend (cand_obj.path)
 
-							-- now we either merge the object, or deal with the special case of occurrences = 0,
-							-- in which case, remove the target object
-							if ca_child.children.i_th (i).is_prohibited then
-								ca_output.remove_child (insert_obj)
+							-- now we merge the object
+							merge_obj := cand_obj.safe_deep_twin
+							if merge_list_csr.item.before_flag then -- True = insert before
+								ca_output.put_child_left (merge_obj, insert_obj)
 							else
-								merge_obj := ca_child.children.i_th(i).safe_deep_twin
-								if merge_list_csr.item.before_flag then -- True = insert before
-									ca_output.put_child_left (merge_obj, insert_obj)
-								else
-									ca_output.put_child_right (merge_obj, insert_obj)
-									-- move 1 to the right, so adding occurs after
-									check attached ca_output.child_after (insert_obj) as ch then
-										insert_obj := ch
-									end
+								ca_output.put_child_right (merge_obj, insert_obj)
+								-- move 1 to the right, so adding occurs after
+								check attached ca_output.child_after (insert_obj) as ch then
+									insert_obj := ch
 								end
-								merge_obj.set_specialisation_status (ss_added)
 							end
+							merge_obj.set_specialisation_status (ss_added)
 
 						-- ARCHETYPE_SLOT override
-						elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then
+						elseif attached {ARCHETYPE_SLOT} cand_obj as arch_slot then
 							node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
 							grafted_child_locations.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
 							if arch_slot.is_prohibited then
@@ -693,7 +714,7 @@ end
 						else
 							debug ("flatten")
 								io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_container_attribute location 1; IGNORING " +
-									ca_child.children.i_th(i).path + " (" + i.out + "-th child)%N")
+									cand_obj.path + " (" + i.out + "-th child)%N")
 							end
 						end
 						i := i + 1
@@ -800,12 +821,13 @@ end
 			-- unless the node is already in the child_grafted_path_list
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			ac_path: STRING
+			ac_path, path_in_flat: STRING
 		do
 			ac_path := a_c_node.path
 			create apa.make_from_string (ac_path)
-			Result := not across grafted_child_locations as grafted_paths_csr some ac_path.starts_with (grafted_paths_csr.item) end
-					and arch_parent_flat.has_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
+			path_in_flat := apa.path_at_level (arch_parent_flat.specialisation_depth)
+			Result := arch_parent_flat.has_path (path_in_flat) and
+				not across grafted_child_locations as grafted_paths_csr some ac_path.starts_with (grafted_paths_csr.item) end
 		end
 
 	grafted_locations_used: ARRAYED_SET [STRING]
@@ -886,7 +908,7 @@ end
 		do
 		end
 
-	template_overlay_supplier_definitions (a_flat_arch: FLAT_ARCHETYPE)
+	template_overlay_supplier_definitions (a_flat_arch: FLAT_ARCHETYPE; depth: INTEGER)
 			-- process `a_flat_arch.suppliers_index' to overlay target definitions.
 		local
 			supp_flat_arch: FLAT_ARCHETYPE
@@ -895,28 +917,30 @@ end
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
 end
-			across a_flat_arch.suppliers_index as xref_idx_csr loop
-				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-				create supp_flat_arch.make_from_other (current_arch_cat.matching_archetype (xref_idx_csr.key).flat_archetype)
-				supp_arch_root_cco := supp_flat_arch.definition
+			if depth <= Max_template_overlay_depth then
+				across a_flat_arch.suppliers_index as xref_idx_csr loop
+					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
+					create supp_flat_arch.make_from_other (current_arch_lib.matching_archetype (xref_idx_csr.key).flat_archetype)
+					supp_arch_root_cco := supp_flat_arch.definition
 
-				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
-				-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
-				-- flat definition structure from the supplier archetype
-				across xref_idx_csr.item as c_arch_roots_csr loop
-					if not c_arch_roots_csr.item.has_attributes then -- it is empty and needs to be filled
-						-- perform overlays on supplier archetype first
-						template_overlay_supplier_definitions (supp_flat_arch)
-debug ("flatten")
-	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
-	" with " + xref_idx_csr.key + "%N")
-end
-						across supp_arch_root_cco.attributes as attrs_csr loop
-							c_arch_roots_csr.item.put_attribute (attrs_csr.item)
-debug ("flatten")
-	io.put_string ("%T%T cloning attribute " +
-	attrs_csr.item.rm_attribute_path + "%N")
-end
+					-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
+					-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
+					-- flat definition structure from the supplier archetype
+					across xref_idx_csr.item as c_arch_roots_csr loop
+						if not c_arch_roots_csr.item.has_attributes then -- it is empty and needs to be filled
+							-- perform overlays on supplier archetype first
+							template_overlay_supplier_definitions (supp_flat_arch, depth + 1)
+	debug ("flatten")
+		io.put_string ("%T node at " + c_arch_roots_csr.item.path +
+		" with " + xref_idx_csr.key + "%N")
+	end
+							across supp_arch_root_cco.attributes as attrs_csr loop
+								c_arch_roots_csr.item.put_attribute (attrs_csr.item)
+	debug ("flatten")
+		io.put_string ("%T%T cloning attribute " +
+		attrs_csr.item.rm_attribute_path + "%N")
+	end
+							end
 						end
 					end
 				end

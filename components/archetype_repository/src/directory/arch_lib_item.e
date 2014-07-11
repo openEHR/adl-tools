@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCH_CAT_ITEM
+deferred class ARCH_LIB_ITEM
 
 inherit
 	SHARED_RESOURCES
@@ -37,7 +37,7 @@ inherit
 			is_equal
 		end
 
-	ITERABLE [ARCH_CAT_ITEM]
+	ITERABLE [ARCH_LIB_ITEM]
 		undefine
 			is_equal
 		end
@@ -164,14 +164,14 @@ feature -- Status Report
 			)
 		end
 
-   	has_matching_children (test_agt: FUNCTION [ANY, TUPLE [ARCH_CAT_ITEM], BOOLEAN]): BOOLEAN
+   	has_matching_children (test_agt: FUNCTION [ANY, TUPLE [ARCH_LIB_ITEM], BOOLEAN]): BOOLEAN
    			-- true if any direct children of the types mentioned in `artefact_types'
 		do
  			Result := attached children as c and then
  				across c as child_csr some test_agt.item ([child_csr.item]) end
 		end
 
-feature {ARCHETYPE_CATALOGUE} -- Modification
+feature {ARCHETYPE_LIBRARY} -- Modification
 
 	put_child (a_child: like children.item)
 		local
@@ -203,7 +203,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 			children := Void
 		end
 
-feature {ARCH_CAT_ITEM} -- Modification
+feature {ARCH_LIB_ITEM} -- Modification
 
 	set_parent (a_parent: like parent)
 		do
@@ -218,12 +218,12 @@ feature -- Comparison
 			Result := qualified_name < other.qualified_name
 		end
 
-feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
+feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable SORTED_TWO_WAY_LIST [ARCH_CAT_ITEM]
+	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ITEM]
 			-- list of child nodes
 
-	parent: detachable ARCH_CAT_ITEM
+	parent: detachable ARCH_LIB_ITEM
 			-- parent node
 
 	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
@@ -251,7 +251,7 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 							Result.replace (subtree_counts_csr.item +
 									child_csr.item.subtree_artefact_counts.item (subtree_counts_csr.key), subtree_counts_csr.key)
 						end
-						if attached {ARCH_CAT_ARCHETYPE} child_csr.item as ara then
+						if attached {ARCH_LIB_ARCHETYPE} child_csr.item as ara then
 							Result.replace (Result.item (ara.artefact_type.value) + 1, ara.artefact_type.value)
 						end
 					end
@@ -266,7 +266,7 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 
 	reset_subtree_artefact_count
 		local
-			csr: detachable ARCH_CAT_ITEM
+			csr: detachable ARCH_LIB_ITEM
 		do
 			subtree_artefact_counts_cache := Void
 			from csr := parent until csr = Void loop

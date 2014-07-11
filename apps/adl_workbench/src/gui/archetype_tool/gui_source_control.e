@@ -232,8 +232,6 @@ feature {NONE} -- Implementation
 	save_adl_15_source_editor_text (a_text: STRING)
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
 			-- and then select the archetype in the catalogue to force a recompile
-		local
-			fp: PLAIN_TEXT_FILE
 		do
 			if attached source as att_source then
 				att_source.save_text_to_differential_file (a_text)
@@ -246,8 +244,6 @@ feature {NONE} -- Implementation
 	save_adl_14_source_editor_text (a_text: STRING)
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
 			-- and then select the archetype in the catalogue to force a recompile
-		local
-			fp: PLAIN_TEXT_FILE
 		do
 			if attached source as att_source then
 				att_source.save_text_to_legacy_file (a_text)

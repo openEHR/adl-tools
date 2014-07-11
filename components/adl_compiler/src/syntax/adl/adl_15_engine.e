@@ -57,7 +57,7 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; aca: ARCH_CAT_ARCHETYPE): detachable DIFFERENTIAL_ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE): detachable DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
@@ -250,7 +250,7 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_CAT_ARCHETYPE)
+	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_151_CONVERTER
 		do
@@ -264,7 +264,7 @@ feature -- Validation
 			proc.execute
 		end
 
-	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_CAT_ARCHETYPE)
+	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_POST_PARSE_PROCESSOR
 		do
@@ -278,7 +278,7 @@ feature -- Validation
 			proc.execute
 		end
 
-	phase_1_validate (aca: ARCH_CAT_ARCHETYPE)
+	phase_1_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_PHASE_1_VALIDATOR
 		do
@@ -295,7 +295,7 @@ feature -- Validation
 			errors := proc.errors
 		end
 
-	phase_2_validate (aca: ARCH_CAT_ARCHETYPE)
+	phase_2_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_PHASE_2_VALIDATOR
 		do
@@ -312,7 +312,7 @@ feature -- Validation
 			errors := proc.errors
 		end
 
-	phase_3_validate (aca: ARCH_CAT_ARCHETYPE)
+	phase_3_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_PHASE_3_VALIDATOR
 		do
@@ -329,7 +329,7 @@ feature -- Validation
 			errors := proc.errors
 		end
 
-	post_compile_process (aca: ARCH_CAT_ARCHETYPE)
+	post_compile_process (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_POST_COMPILE_PROCESSOR
 		do

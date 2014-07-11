@@ -32,14 +32,14 @@ feature -- Test routines
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
 			assert_equal (True, archetype_compiler.is_full_build_completed)
-			assert_equal (current_arch_cat.archetype_count, current_arch_cat.compile_attempt_count)
+			assert_equal (current_arch_lib.archetype_count, current_arch_lib.compile_attempt_count)
 			assert_equal ("", errors)
 
 			archetype_compiler.rebuild_all
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
 			assert_equal (True, archetype_compiler.is_full_build_completed)
-			assert_equal (current_arch_cat.archetype_count, current_arch_cat.compile_attempt_count)
+			assert_equal (current_arch_lib.archetype_count, current_arch_lib.compile_attempt_count)
 			assert_equal ("", errors)
 		end
 
@@ -52,7 +52,7 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	on_archetype_update (a_msg: STRING; ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	on_archetype_update (a_msg: STRING; ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update with progress on build.
 		do
 			if ara.compilation_state = ara.cs_invalid then

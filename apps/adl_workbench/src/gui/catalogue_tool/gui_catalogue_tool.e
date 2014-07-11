@@ -10,7 +10,7 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all
 		end
@@ -125,7 +125,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	update_tree_node (aca: ARCH_CAT_ARCHETYPE)
+	update_tree_node (aca: ARCH_LIB_ARCHETYPE)
 		do
 			archetype_explorer.update_tree_node_for_archetype (aca)
 			template_explorer.update_tree_node_for_archetype (aca)
@@ -176,7 +176,7 @@ feature -- Commands
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not current_arch_cat.repository_access.adhoc_source_repository.has_path (fname) then
+				if not current_arch_lib.repository_access.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -325,7 +325,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_archetype (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+	save_archetype (aca: ARCH_LIB_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
 			-- Export differential or flat archetype to a user-specified path
 		local
 			ok_to_write: BOOLEAN
@@ -397,7 +397,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	edit_archetype (aca: ARCH_CAT_ARCHETYPE)
+	edit_archetype (aca: ARCH_LIB_ARCHETYPE)
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			question_dialog: EV_QUESTION_DIALOG

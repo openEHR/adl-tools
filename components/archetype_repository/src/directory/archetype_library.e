@@ -1,11 +1,11 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Archetype catalogue - a data structure containing archetypes (of any kind) found
+				 Archetype library - a data structure containing archetypes (of any kind) found
 				 in one or more physical locations, each of which is on some medium, such as the 
 				 file system or a web-accessible repository. 
 				 
-				 The structure of the catalogue is a list of top-level packages, each containing
+				 The structure of the library is a list of top-level packages, each containing
 				 an inheritance tree of first degree descendants of a class that provides 
 				 archetyping capability, such as the openEHR class LOCATABLE or the 13606 class
 				 RECORD_COMPONENT (which class it is is marked in the .bmm schema for the relevant
@@ -15,7 +15,7 @@ note
 				 working repositories, and are subsequently attached into the structure.
 				 Archetypes opened adhoc are also grafted here.
 				 
-				 The catalogue is populated at startup, using the source repository paths stored in a
+				 The library is populated at startup, using the source repository paths stored in a
 				 configuration file or elsewhere.
 				 
 				 Archetypes can also be explicitly loaded by the user at runtime, outside of the 
@@ -23,7 +23,7 @@ note
 				 stored in /tmp. These archetypes are remembered on the 'adhoc_repository', and this 
 				 is also merged into the directory by 'grafting'.
 				 
-				 In the resulting catalogue, the archetype descriptors from each repository are marked
+				 In the resulting library, the archetype descriptors from each repository are marked
 				 so that calling routines can distinguish them, e.g. to use different coloured icons on 
 				 the screen.
 				 ]"
@@ -33,7 +33,7 @@ note
 	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_CATALOGUE
+class ARCHETYPE_LIBRARY
 
 inherit
 	SHARED_ARCHETYPE_RM_ACCESS
@@ -74,7 +74,7 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_profile_repo_access: REPOSITORY_ACCESS)
+	make (a_profile_repo_access: LIBRARY_ACCESS)
 		do
 			clear
 			repository_access := a_profile_repo_access
@@ -87,16 +87,16 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	repository_access: REPOSITORY_ACCESS
-			-- the repository profile accessor from which this catalogue gets its contents
+	repository_access: LIBRARY_ACCESS
+			-- the repository profile accessor from which this library gets its contents
 
-	archetype_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	archetype_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
 			-- index of archetype descriptors keyed by MIXED-CASE archetype id.
 		attribute
 			create Result.make (0)
 		end
 
-	semantic_item_index: HASH_TABLE [ARCH_CAT_ITEM, STRING]
+	semantic_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by LOWER-CASE semantic concept. Used during construction of `directory'
 			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
@@ -104,7 +104,7 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	filesys_item_index: HASH_TABLE [ARCH_CAT_ITEM, STRING]
+	filesys_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
 			-- Index of archetype & file-system nodes, keyed by relative path of node under repository root path for directory nodes
 			-- and for archetype nodes, the archetype id.
 		attribute
@@ -162,13 +162,13 @@ feature -- Access
 			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end
 		end
 
-	matching_archetype (an_archetype_ref: STRING): ARCH_CAT_ARCHETYPE
+	matching_archetype (an_archetype_ref: STRING): ARCH_LIB_ARCHETYPE
 			-- Return archetype whose id matches `an_archetype_ref'
 		require
 			has_archetype_id_for_ref (an_archetype_ref)
 		local
 			ids: ARRAYED_LIST[STRING]
-			matching_aca: detachable ARCH_CAT_ARCHETYPE
+			matching_aca: detachable ARCH_LIB_ARCHETYPE
 		do
 			-- try for direct match, or else filler id is compatible with available actual ids
 			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
@@ -191,7 +191,7 @@ feature -- Access
 			end
 		end
 
-	matching_item (a_ref: STRING): ARCH_CAT_ITEM
+	matching_item (a_ref: STRING): ARCH_LIB_ITEM
 			-- Return true if, for a slot path that is known in the parent slot index, there are
 			-- actually archetypes whose ids match
 		require
@@ -223,20 +223,20 @@ feature -- Status Report
 			Result := repository_access.adhoc_source_repository.is_valid_path (a_full_path)
 		end
 
-	has_item (an_item: ARCH_CAT_ITEM): BOOLEAN
-			-- True if `an_item' in catalogue
+	has_item (an_item: ARCH_LIB_ITEM): BOOLEAN
+			-- True if `an_item' in library
 		do
 			Result := semantic_item_index.has_item (an_item)
 		end
 
 	has_item_with_id (an_id: STRING): BOOLEAN
-			-- True if `an_id' exists in catalogue
+			-- True if `an_id' exists in library
 		do
 			Result := semantic_item_index.has (an_id.as_lower)
 		end
 
-	valid_candidate (aca: ARCH_CAT_ARCHETYPE): BOOLEAN
-			-- True if `aca' does not exist in the catalogue, but has a viable parent under
+	valid_candidate (aca: ARCH_LIB_ARCHETYPE): BOOLEAN
+			-- True if `aca' does not exist in the library, but has a viable parent under
 			-- which it can be attached
 		do
 			Result := has_item_for_ref (aca.semantic_parent_key) and
@@ -296,7 +296,7 @@ feature -- Commands
 
 feature -- Modification
 
-	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
+	add_new_non_specialised_archetype (accn: ARCH_LIB_CLASS_NODE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
@@ -312,7 +312,7 @@ feature -- Modification
 			has_item_with_id (an_archetype_id.as_string)
 		end
 
-	add_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
+	add_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
@@ -331,7 +331,7 @@ feature -- Modification
 			has_item_with_id (an_archetype_id.as_string)
 		end
 
-	last_added_archetype: detachable ARCH_CAT_ARCHETYPE
+	last_added_archetype: detachable ARCH_LIB_ARCHETYPE
 			-- archetype added by last call to `add_new_archetype' or `add_new_specialised_archetype'
 
 	add_adhoc_archetype (a_path: STRING)
@@ -339,7 +339,7 @@ feature -- Modification
 		require
 			path_valid: adhoc_path_valid (a_path)
 		local
-			aca: ARCH_CAT_ARCHETYPE
+			aca: ARCH_LIB_ARCHETYPE
 		do
 			if semantic_item_index.is_empty then
 				clone_semantic_item_tree_prototype
@@ -367,7 +367,7 @@ feature -- Modification
 			end
 		end
 
-	update_archetype_id (aca: ARCH_CAT_ARCHETYPE)
+	update_archetype_id (aca: ARCH_LIB_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
 		require
 			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
@@ -391,43 +391,43 @@ feature -- Modification
 
 feature -- Traversal
 
-	do_all_semantic (enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+	do_all_semantic (enter_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]])
 			-- On all nodes in `semantic_item_tree', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (semantic_item_tree, enter_action, exit_action)
 		end
 
-	do_all_filesys (enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+	do_all_filesys (enter_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]])
 			-- On all nodes in `filesys_item_tree', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (filesys_item_tree, enter_action, exit_action)
 		end
 
-	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- On all archetype nodes, execute `action'
 		do
 			do_subtree (semantic_item_tree, agent do_if_archetype (?, action), Void)
 		end
 
-	do_archetypes (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+	do_archetypes (aci: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Execute `action' on all archetypes found below `aci' in the tree
 		do
 			do_subtree (aci, agent do_if_archetype (?, action), Void)
 		end
 
-	do_if_archetype (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+	do_if_archetype (aci: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- If `aci' is an archetype, perform `action' on it.
 		do
-			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
+			if attached {ARCH_LIB_ARCHETYPE} aci as aca then
 				action.call ([aca])
 			end
 		end
 
-	do_archetype_lineage (aca: ARCH_CAT_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+	do_archetype_lineage (aca: ARCH_LIB_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- On all archetype nodes from top to `aca', execute `action'
 		local
-			csr: detachable ARCH_CAT_ARCHETYPE
-			lineage: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
+			csr: detachable ARCH_LIB_ARCHETYPE
+			lineage: ARRAYED_LIST [ARCH_LIB_ARCHETYPE]
 		do
 			create lineage.make (1)
 			from csr := aca until csr = Void loop
@@ -491,7 +491,7 @@ feature -- Statistics
 			Result := compile_attempt_count = archetype_count
 		end
 
-	catalogue_metrics: HASH_TABLE [INTEGER, STRING]
+	library_metrics: HASH_TABLE [INTEGER, STRING]
 
 	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
@@ -502,11 +502,11 @@ feature -- Statistics
 		do
 			create terminology_bindings_statistics.make (0)
 			create stats.make (0)
-			create catalogue_metrics.make (catalogue_metric_names.count)
-			Catalogue_metric_names.do_all (
+			create library_metrics.make (Library_metric_names.count)
+			Library_metric_names.do_all (
 				agent (metric_name: STRING)
 					do
-						catalogue_metrics.put (0, metric_name)
+						library_metrics.put (0, metric_name)
 					end
 			)
 			create last_stats_build_timestamp.make_from_epoch (0)
@@ -519,7 +519,7 @@ feature -- Statistics
 			if last_stats_build_timestamp < last_populate_timestamp then
 				reset_statistics
 				do_all_archetypes (agent gather_statistics)
-				catalogue_metrics.put (archetype_count, Total_archetype_count)
+				library_metrics.put (archetype_count, Total_archetype_count)
 				create last_stats_build_timestamp.make_now
 			end
 		end
@@ -539,7 +539,7 @@ feature {NONE} -- Implementation
 	populate_semantic_indexes
 			-- Rebuild `archetype_index' and `item_index' from source repositories.
 		local
-			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
+			archs: ARRAYED_LIST [ARCH_LIB_ARCHETYPE]
 			parent_key, child_key: STRING
 			added_during_pass: INTEGER
 			status_list: ARRAY[INTEGER]
@@ -623,7 +623,7 @@ feature {NONE} -- Implementation
 	add_filesys_tree_repo_node (a_repo_path: STRING)
 			-- add a node directly below the root representing the repository containing the archetype(s)
 		local
-			filesys_node: ARCH_CAT_FILESYS_NODE
+			filesys_node: ARCH_LIB_FILESYS_NODE
 		do
 			create filesys_node.make (a_repo_path)
 			filesys_item_tree.put_child (filesys_node)
@@ -641,7 +641,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_arch_to_filesys_tree (aca: ARCH_CAT_ARCHETYPE)
+	add_arch_to_filesys_tree (aca: ARCH_LIB_ARCHETYPE)
 			-- add top-level archetype to filesys tree. Specialised archetypes will
 			-- appear automatically, due to being added to top-level parent node during
 			-- semantic tree building
@@ -661,7 +661,7 @@ feature {NONE} -- Implementation
 	add_filesys_nodes (a_dir_path: STRING)
 			-- create intermediate file system nodes in `filesys_item_tree' based on `a_dir_path'
 		local
-			filesys_node: ARCH_CAT_FILESYS_NODE
+			filesys_node: ARCH_LIB_FILESYS_NODE
 			parent_dir: STRING
 		do
 			parent_dir := file_system.dirname (a_dir_path)
@@ -675,7 +675,7 @@ feature {NONE} -- Implementation
 			filesys_item_index.force (filesys_node, filesys_node.qualified_key)
 		end
 
-	do_subtree (node: ARCH_CAT_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+	do_subtree (node: ARCH_LIB_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]])
 			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			if attached node then
@@ -691,13 +691,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	filesys_item_tree: ARCH_CAT_CATEGORY_NODE
+	filesys_item_tree: ARCH_LIB_CATEGORY_NODE
 			-- The directory of archetypes in the filesystem structure, with specialisation shown
 		attribute
 			create Result.make (Archetype_category)
 		end
 
-	semantic_item_tree: ARCH_CAT_CATEGORY_NODE
+	semantic_item_tree: ARCH_LIB_CATEGORY_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
 			-- an inheritance tree of first degree descendants of the LOCATABLE class.
@@ -708,7 +708,7 @@ feature {NONE} -- Implementation
 			create Result.make (Archetype_category)
 		end
 
-	semantic_item_tree_prototype: ARCH_CAT_CATEGORY_NODE
+	semantic_item_tree_prototype: ARCH_LIB_CATEGORY_NODE
 			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository
 			-- We use a CELL here because we only want one of these shared between all instances
 		once
@@ -718,7 +718,7 @@ feature {NONE} -- Implementation
 	initialise_semantic_item_tree_prototype
 			-- rebuild `semantic_item_tree_prototype'
 		local
-			closure_node: ARCH_CAT_CLOSURE_NODE
+			closure_node: ARCH_LIB_CLOSURE_NODE
 			rm_closure_name, qualified_rm_closure_key: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS]
@@ -735,7 +735,7 @@ feature {NONE} -- Implementation
 
 					-- create new model node if not already in existence
 					if semantic_item_tree_prototype.has_child_with_qualified_key (qualified_rm_closure_key) and then
-						attached {ARCH_CAT_CLOSURE_NODE} semantic_item_tree_prototype.child_with_qualified_key (qualified_rm_closure_key) as mn
+						attached {ARCH_LIB_CLOSURE_NODE} semantic_item_tree_prototype.child_with_qualified_key (qualified_rm_closure_key) as mn
 					then
 						closure_node := mn
 					else
@@ -797,13 +797,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_child_nodes (an_rm_closure_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_CAT_MODEL_NODE)
-			-- populate child nodes of a node in catalogue with immediate descendants of classes in `class_list'
+	add_child_nodes (an_rm_closure_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_LIB_MODEL_NODE)
+			-- populate child nodes of a node in library with immediate descendants of classes in `class_list'
 			-- put each node into `item_index', keyed by `an_rm_closure_name' + '-' + `class_list.item.name',
 			-- which will match with corresponding part of archetype identifier
 		local
 			children: ARRAYED_LIST [BMM_CLASS]
-			class_node: ARCH_CAT_CLASS_NODE
+			class_node: ARCH_LIB_CLASS_NODE
 		do
 			across class_list as class_list_csr loop
 				create class_node.make (an_rm_closure_name, class_list_csr.item)
@@ -818,10 +818,10 @@ feature {NONE} -- Implementation
 		do
 			semantic_item_tree := semantic_item_tree_prototype.deep_twin
 			create semantic_item_index.make (0)
-			do_all_semantic (agent (ari: attached ARCH_CAT_ITEM) do semantic_item_index.force (ari, ari.qualified_key) end, Void)
+			do_all_semantic (agent (ari: attached ARCH_LIB_ITEM) do semantic_item_index.force (ari, ari.qualified_key) end, Void)
 		end
 
-	put_archetype (aca: ARCH_CAT_ARCHETYPE; in_dir_path: STRING)
+	put_archetype (aca: ARCH_LIB_ARCHETYPE; in_dir_path: STRING)
 			-- put `aca' into the structure
 		require
 			valid_candidate (aca)
@@ -856,24 +856,24 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 		end
 
-	gather_statistics (aca: ARCH_CAT_ARCHETYPE)
+	gather_statistics (aca: ARCH_LIB_ARCHETYPE)
 			-- Update statistics counters from `aca'
 		local
 			terminologies: ARRAYED_LIST [STRING]
 		do
 			if aca.is_specialised then
-				catalogue_metrics.force (catalogue_metrics.item (specialised_archetype_count) + 1, specialised_archetype_count)
+				library_metrics.force (library_metrics.item (specialised_archetype_count) + 1, specialised_archetype_count)
 			end
 			if aca.has_slots then
-				catalogue_metrics.force (catalogue_metrics.item (client_archetype_count) + 1, client_archetype_count)
+				library_metrics.force (library_metrics.item (client_archetype_count) + 1, client_archetype_count)
 			end
 			if aca.is_supplier then
-				catalogue_metrics.force (catalogue_metrics.item (supplier_archetype_count) + 1, supplier_archetype_count)
+				library_metrics.force (library_metrics.item (supplier_archetype_count) + 1, supplier_archetype_count)
 			end
 
 			-- RM stats
 			if aca.is_valid then
-				catalogue_metrics.force (catalogue_metrics.item (valid_archetype_count) + 1, valid_archetype_count)
+				library_metrics.force (library_metrics.item (valid_archetype_count) + 1, valid_archetype_count)
 
 				terminologies := aca.differential_archetype.terminology.terminologies_available
 				across terminologies as terminologies_csr loop

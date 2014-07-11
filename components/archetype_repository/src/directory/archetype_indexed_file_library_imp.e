@@ -7,12 +7,12 @@ note
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP
+class ARCHETYPE_INDEXED_FILE_LIBRARY_IMP
 
 inherit
-	ARCHETYPE_INDEXED_REPOSITORY_I
+	ARCHETYPE_INDEXED_LIBRARY_I
 
-	ARCHETYPE_FILE_REPOSITORY_IMP
+	ARCHETYPE_FILE_LIBRARY_IMP
 
 create
 	make
@@ -26,7 +26,7 @@ feature {NONE} -- Implementation
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			ara: ARCH_CAT_ARCHETYPE
+			ara: ARCH_LIB_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
 			aof: APP_OBJECT_FACTORY
    		do

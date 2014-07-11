@@ -12,7 +12,7 @@ class APP_ROOT
 inherit
 	GLOBAL_ERROR_REPORTING_LEVEL
 
-	SHARED_ARCHETYPE_CATALOGUES
+	SHARED_ARCHETYPE_LIBRARIES
 
 	SHARED_AOM_PROFILES_ACCESS
 
@@ -151,21 +151,21 @@ feature -- Initialisation
 			if not has_errors then
 				create dead_repos.make (0)
 				across repository_config_table as repos_csr loop
-					if not is_repository_valid (repos_csr.key) then
+					if not is_library_valid (repos_csr.key) then
 						dead_repos.extend (repos_csr.key)
 					end
 				end
 				across dead_repos as repos_csr loop
-					add_warning (ec_remove_repo_cfg, <<invalid_repository_reason (repos_csr.item)>>)
+					add_warning (ec_remove_library_cfg, <<invalid_library_reason (repos_csr.item)>>)
 					repository_config_table.remove_repository (repos_csr.item)
 				end
 
 				-- now choose a repository to start with
 				if not repository_config_table.is_empty then
-					if not has_current_repository then
+					if not has_current_library then
 						set_current_repository (repository_config_table.first_repository)
 					end
-					use_current_repository (False)
+					use_current_library (False)
 				end
 
 				-- tell the user a few useful things

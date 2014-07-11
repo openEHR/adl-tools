@@ -11,9 +11,9 @@ class GUI_CATALOGUE_TOOL_AGENTS
 
 feature -- Access
 
-	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca:ARCH_CAT_ARCHETYPE]]
+	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca:ARCH_LIB_ARCHETYPE]]
 
-	save_archetype_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN]]
+	save_archetype_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN]]
 
 	archetype_explorer_select_in_tree_agent: detachable PROCEDURE [ANY, TUPLE [key: STRING]]
 

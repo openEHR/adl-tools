@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Helper class for retrieving object structure of repository configurations from .cfg file dADL structure
+				 Helper class for retrieving object structure of repository configurations from .cfg file ODIN structure
 				 typical example:
 
 				 repository_config_table = <

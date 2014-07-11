@@ -94,7 +94,7 @@ feature -- Commands
 	start
 		local
 			curr_repo, action: STRING
-			aca: ARCH_CAT_ARCHETYPE
+			aca: ARCH_LIB_ARCHETYPE
 			finished: BOOLEAN
 		do
 			app_root.initialise_app
@@ -142,12 +142,12 @@ feature -- Commands
 					end
 
 					if opts.list_archetypes then
-						current_arch_cat.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
+						current_arch_lib.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
 						io.put_string (get_msg (ec_archs_list_text, <<curr_repo>>))
-						current_arch_cat.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
+						current_arch_lib.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 						io.put_string (get_text (ec_archs_list_text_end))
 
 					else
@@ -161,7 +161,7 @@ feature -- Commands
 							if not finished then
 								if valid_regex (opts.archetype_id_pattern) then
 									-- first try and match the user-provided archetype id pattern to some real arguments
-									matched_archetype_ids := current_arch_cat.matching_ids (opts.archetype_id_pattern, Void, Void)
+									matched_archetype_ids := current_arch_lib.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
 										if verbose_output then
 											io.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, curr_repo>>))
@@ -188,7 +188,7 @@ feature -- Commands
 											-- perform action for all matching archetypes
 											if not finished then
 												across matched_archetype_ids as arch_ids_csr loop
-													check attached current_arch_cat.archetype_index.item (arch_ids_csr.item) as aii then
+													check attached current_arch_lib.archetype_index.item (arch_ids_csr.item) as aii then
 														aca := aii
 													end
 													archetype_compiler.build_lineage (aca, 0)
@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			if verbose_output or ara.is_in_terminal_compilation_state and then not ara.is_valid then
@@ -259,7 +259,7 @@ feature {NONE} -- Implementation
 
 	dashes: STRING = "-----------------------------------------------------------------"
 
-	node_lister_enter (aci: ARCH_CAT_ITEM)
+	node_lister_enter (aci: ARCH_LIB_ITEM)
 			-- FIXME: at some point, implement a proper graphical tree in character graphics
 			-- not using fixed length source strings!
 		local
@@ -267,7 +267,7 @@ feature {NONE} -- Implementation
 		do
 			node_depth := node_depth + 1
 			if user_friendly_list_output then
-				if attached {ARCH_CAT_CLASS_NODE} aci as accn and then accn.has_artefacts or else attached {ARCH_CAT_ARCHETYPE} aci then
+				if attached {ARCH_LIB_CLASS_NODE} aci as accn and then accn.has_artefacts or else attached {ARCH_LIB_ARCHETYPE} aci then
 					create leader.make_empty
 					leader := spaces.substring (1, 4 * node_depth)
 					leader.append_character ('+')
@@ -277,13 +277,13 @@ feature {NONE} -- Implementation
 					io.put_string (aci.name)
 					io.new_line
 				end
-			elseif attached {ARCH_CAT_ARCHETYPE} aci then
+			elseif attached {ARCH_LIB_ARCHETYPE} aci then
 				io.put_string (aci.qualified_key)
 				io.new_line
 			end
 		end
 
-	node_lister_exit (aci: ARCH_CAT_ITEM)
+	node_lister_exit (aci: ARCH_LIB_ITEM)
 		do
 			node_depth := node_depth - 1
 		end

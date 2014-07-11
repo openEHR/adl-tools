@@ -9,7 +9,7 @@ note
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class REPOSITORY_ACCESS
+class LIBRARY_ACCESS
 
 inherit
 	SHARED_RESOURCES
@@ -40,7 +40,7 @@ feature -- Initialisation
 			create repositories.make (0)
 			create adhoc_source_repository.make (Group_id_adhoc)
 			check attached file_system.canonical_pathname (a_ref_repo_dir_path) as cpn then
-				create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} ref_repo.make (cpn, Group_id_reference)
+				create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} ref_repo.make (cpn, Group_id_reference)
 			end
 			repositories.force (ref_repo, ref_repo.group_id)
 			reference_repository := ref_repo
@@ -51,20 +51,20 @@ feature -- Initialisation
 
 feature -- Access
 
-	reference_repository: detachable ARCHETYPE_INDEXED_REPOSITORY_I
+	reference_repository: detachable ARCHETYPE_INDEXED_LIBRARY_I
 			-- physical reference repository
 
-	work_repository: detachable ARCHETYPE_INDEXED_REPOSITORY_I
+	work_repository: detachable ARCHETYPE_INDEXED_LIBRARY_I
 			-- physical work repository (optional)
 
-	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_REPOSITORY
+	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_LIBRARY
 			-- An additional 'repository' where archetypes may be found, but not necessarily classified
 			-- under any structure - used e.g. to represent the file local system where isolated archetypes
 			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation.
 
-	repositories: HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+	repositories: HASH_TABLE [ARCHETYPE_INDEXED_LIBRARY_I, INTEGER]
 			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
@@ -108,7 +108,7 @@ feature -- Modification
 			work_repo: attached like work_repository
 		do
 			check attached file_system.canonical_pathname (a_work_repo_dir_path) as wdp then
-				create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repo.make (wdp, Group_id_work)
+				create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} work_repo.make (wdp, Group_id_work)
 			end
 			repositories.force (work_repo, work_repo.group_id)
 			work_repository := work_repo
@@ -129,7 +129,7 @@ feature -- Modification
 
 invariant
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
-	repositories_group_ids: repositories.linear_representation.for_all (agent (repo: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN do Result := repo.group_id > 1 end)
+	repositories_group_ids: repositories.linear_representation.for_all (agent (repo: ARCHETYPE_INDEXED_LIBRARY_I): BOOLEAN do Result := repo.group_id > 1 end)
 
 end
 

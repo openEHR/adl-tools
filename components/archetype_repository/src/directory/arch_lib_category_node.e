@@ -7,10 +7,10 @@ note
 	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_CAT_CATEGORY_NODE
+class ARCH_LIB_CATEGORY_NODE
 
 inherit
-	ARCH_CAT_MODEL_NODE
+	ARCH_LIB_MODEL_NODE
 
 create
 	make

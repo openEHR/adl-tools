@@ -8,10 +8,10 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 	void_safety: "initial"
 
-class ARCH_CAT_CLOSURE_NODE
+class ARCH_LIB_CLOSURE_NODE
 
 inherit
-	ARCH_CAT_MODEL_NODE
+	ARCH_LIB_MODEL_NODE
 		redefine
 			parent
 		end
@@ -47,9 +47,9 @@ feature -- Access
 			Result := qualified_key
 		end
 
-feature {ARCH_CAT_ITEM} -- Implementation
+feature {ARCH_LIB_ITEM} -- Implementation
 
-	parent: detachable ARCH_CAT_CATEGORY_NODE
+	parent: detachable ARCH_LIB_CATEGORY_NODE
 			-- parent node
 
 end

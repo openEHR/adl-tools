@@ -20,7 +20,7 @@ inherit
 
 feature -- Access
 
-	source: detachable ARCH_CAT_ARCHETYPE_EDITABLE
+	source: detachable ARCH_LIB_ARCHETYPE_EDITABLE
 			-- archetype descriptor to which this tool is targetted
 
 	source_archetype: detachable ARCHETYPE
