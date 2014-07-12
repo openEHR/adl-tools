@@ -924,7 +924,7 @@ feature -- RM tools
 
 feature -- Catalogue tool
 
-	catalogue_tool: GUI_CATALOGUE_TOOL
+	catalogue_tool: GUI_LIBRARY_TOOL
 		once
 			create Result.make
 		end

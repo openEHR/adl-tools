@@ -10,7 +10,7 @@ note
 deferred class GUI_ARTEFACT_EXPLORER
 
 inherit
-	GUI_CATALOGUE_TARGETTED_TOOL
+	GUI_LIBRARY_TARGETTED_TOOL
 		redefine
 			repopulate
 		end

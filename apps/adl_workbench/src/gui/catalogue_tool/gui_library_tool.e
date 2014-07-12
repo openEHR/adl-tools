@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_CATALOGUE_TOOL
+class GUI_LIBRARY_TOOL
 
 inherit
 	SHARED_ARCHETYPE_LIBRARIES
@@ -28,7 +28,7 @@ inherit
 
 	GUI_SEARCHABLE_TOOL
 
-	GUI_CATALOGUE_TARGETTED_TOOL
+	GUI_LIBRARY_TARGETTED_TOOL
 		redefine
 			go_to_selected_item, on_rotate_view, mini_tool_bar
 		end
@@ -260,7 +260,7 @@ feature -- Events
 
 	on_rotate_view
 		do
-			if attached {GUI_CATALOGUE_TARGETTED_TOOL} ev_root_container.selected_item.data as cat_tool and attached source then
+			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_root_container.selected_item.data as cat_tool and attached source then
 				cat_tool.on_rotate_view
 			end
 		end

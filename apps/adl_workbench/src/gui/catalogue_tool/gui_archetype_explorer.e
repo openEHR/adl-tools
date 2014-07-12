@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 					col := archetype_rm_type_color
 	 				text.append (" (" + acc.subtree_artefact_count (artefact_types).out + ")")
 
-	 			elseif attached {ARCH_CAT_CLOSURE_NODE} aci as accl then
+	 			elseif attached {ARCH_LIB_CLOSURE_NODE} aci as accl then
 	 				text.append (accl.qualified_name)
 					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
 					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
@@ -374,7 +374,7 @@ feature {NONE} -- Implementation
 	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
 			Result := (attached {ARCH_LIB_CLASS_NODE} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
-				attached {ARCH_CAT_CLOSURE_NODE} ev_grid_row.data) and
+				attached {ARCH_LIB_CLOSURE_NODE} ev_grid_row.data) and
 	 			ev_grid_row.is_expandable
 		end
 

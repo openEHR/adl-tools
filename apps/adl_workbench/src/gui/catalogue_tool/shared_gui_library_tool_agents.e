@@ -7,11 +7,11 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class SHARED_GUI_CATALOGUE_TOOL_AGENTS
+class SHARED_GUI_LIBRARY_TOOL_AGENTS
 
 feature -- Access
 
-	tool_agents: GUI_CATALOGUE_TOOL_AGENTS
+	tool_agents: GUI_LIBRARY_TOOL_AGENTS
 		once
 			create Result
 		end

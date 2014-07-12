@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class GUI_CATALOGUE_TARGETTED_TOOL
+deferred class GUI_LIBRARY_TARGETTED_TOOL
 
 inherit
 	GUI_TOOL
@@ -15,7 +15,7 @@ inherit
 			source, selection_history, selected_item
 		end
 
-	SHARED_GUI_CATALOGUE_TOOL_AGENTS
+	SHARED_GUI_LIBRARY_TOOL_AGENTS
 		export
 			{NONE} all
 		end
@@ -32,7 +32,7 @@ feature -- Access
 			Result := "catalogue"
 		end
 
-	selection_history: detachable ARCHETYPE_CATALOGUE_SELECTION_HISTORY
+	selection_history: detachable ARCHETYPE_LIBRARY_SELECTION_HISTORY
 
 	selected_item: detachable ARCH_LIB_ITEM
 		do
