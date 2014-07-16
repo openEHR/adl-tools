@@ -649,7 +649,7 @@ feature -- Compilation
 				current_arch_lib.decrement_compile_attempt_count
 			end
 			differential_archetype := Void
-			flat_archetype_cache := Void
+			clear_cache
 			last_compile_attempt_timestamp := Time_epoch
 			compilation_state := Cs_unread
 		ensure
@@ -755,7 +755,7 @@ feature {NONE} -- Compilation
 			legacy_flat_archetype: detachable FLAT_ARCHETYPE
 			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
-			flat_archetype_cache := Void
+			clear_cache
 
 			-- perform the parse; this can fail, i.e. no result generated
 			check attached file_mgr.legacy_flat_text as lft then
@@ -815,7 +815,7 @@ feature {NONE} -- Compilation
 			has_source_file: has_source_file
 		do
 			add_info (ec_parse_i2, Void)
-			flat_archetype_cache := Void
+			clear_cache
 			differential_archetype := adl_15_engine.parse (source_text, Current)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
@@ -921,8 +921,6 @@ feature {NONE} -- Compilation
 		require
 			compilation_state = Cs_validated_phase_2
 		do
-			flat_archetype_cache := Void
-
 			-- phase 3: validate flattened archetype
 			adl_15_engine.phase_3_validate (Current)
 			merge_errors (adl_15_engine.errors)
