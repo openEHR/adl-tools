@@ -650,11 +650,14 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 		local
 			trans_term: ARCHETYPE_TERM
 		do
+			-- take care of `a_language' first
 			if not term_definitions.has (a_language) then
 				term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_language)
 			end
 			term_definitions.item (a_language).force (a_term, a_term.code)
-			trans_term := a_term.create_translated_term (original_language)
+
+			-- now take a copy of that, with term in `a_language' as the template
+			trans_term := a_term.create_translated_term (a_language)
 			across term_definitions as term_defs_csr loop
 				if not term_defs_csr.key.is_equal (a_language) then
 					if not term_definitions.has (term_defs_csr.key) then
