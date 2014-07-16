@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Agents required by GUI_CATALOGUE_TOOL subtools"
+	description: "Agents required by GUI_LIBRARY_TOOL subtools"
 	keywords:    "archetype, definition, gui"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWBPR"

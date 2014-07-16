@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "General model of a GUI tool whose data source is an archetype/template catalogue"
+	description: "General model of a GUI tool whose data source is an archetype/template library"
 	keywords:    "GUI, archteype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"

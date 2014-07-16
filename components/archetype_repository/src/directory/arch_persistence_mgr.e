@@ -2,8 +2,8 @@ note
 	component:   "openEHR ADL Tools"
 	description: "[
 	             File system state and behaviour for ADL 1.5 format and legacy archetype if it exists.
-	             Some of the state in this object replicates the state recorded in its owning ARCH_CAT_ARCHETYPE.
-	             The state here represents the values last read from a file read, whereas the ARCH_CAT_ARCHETYPE
+	             Some of the state in this object replicates the state recorded in its owning ARCH_LIB_ARCHETYPE.
+	             The state here represents the values last read from a file read, whereas the ARCH_LIB_ARCHETYPE
 	             state represents the state of the in-memory archetype. These are normally the same, unless
 	             editing is occurring. Editing can occur in the following ways:
 	             
@@ -18,7 +18,7 @@ note
 	             	  
 	             	* direct in-memory editing of archetypes via the UI. In this case, the 'commit' action of the
 	             	  user causes flushing through of changes.
-	             	  	=> in-memory form (ARCH_CAT_ARCHETYPE) form is more up to date until resynchronisation achieved
+	             	  	=> in-memory form (ARCH_LIB_ARCHETYPE) form is more up to date until resynchronisation achieved
 	             ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"

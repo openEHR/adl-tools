@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Shared agents for use across GUI catalogue tool"
+	description: "Shared agents for use across GUI library tool"
 	keywords:    "AWB, archetypes, workbench"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
