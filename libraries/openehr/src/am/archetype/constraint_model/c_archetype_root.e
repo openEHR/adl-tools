@@ -25,46 +25,41 @@ inherit
 		end
 
 create
-	make, make_slot_filler
+	make
 
 feature -- Initialisation
 
-	make (a_rm_type_name, an_archetype_id: STRING)
+	make (a_rm_type_name, an_object_id, an_archetype_ref: STRING)
 			-- make as an archetype external reference
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Archetype_id_valid: valid_archetype_id (an_archetype_id)
+			Valid_node_id: is_valid_id_code (an_object_id)
+			Archetype_id_valid: valid_archetype_id (an_archetype_ref)
 		do
-			rm_type_name := a_rm_type_name
-			create representation_cache.make (an_archetype_id)
-			representation_cache.set_content (Current)
-		end
-
-	make_slot_filler (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
-			-- make as an archetype external reference
-		require
-			Rm_type_name_valid: not a_rm_type_name.is_empty
-			Archetype_id_valid: valid_archetype_id (an_archetype_id)
-			Valid_slot_node_id: is_valid_id_code (a_slot_node_id)
-		do
-			make (a_rm_type_name, an_archetype_id)
-			slot_node_id := a_slot_node_id
+			cco_make (a_rm_type_name, an_object_id)
+			archetype_ref := an_archetype_ref
 		end
 
 feature -- Access
 
-	slot_node_id: detachable STRING
+	archetype_ref: STRING
 
-	slot_path: detachable STRING
-			-- generate the path to the slot this object fills, if applicable
+	flat_path: STRING
+			-- generate the flattened path to the filling node, using an_archetype_ref
 		local
 			og_path: OG_PATH
 		do
-			if attached slot_node_id as att_snid then
-				create og_path.make_from_string (path)
-				og_path.last.set_object_id (att_snid)
-				Result := og_path.as_string
-			end
+			create og_path.make_from_string (path)
+			og_path.last.set_object_id (archetype_ref)
+			Result := og_path.as_string
+		end
+
+feature -- Modification
+
+	convert_to_flat (a_matched_archetype_id: STRING)
+			-- write `a_matched_archetype_id' (that is known to match `archetype_ref') into node_id
+		do
+			set_node_id (a_matched_archetype_id)
 		end
 
 feature -- Output
@@ -73,7 +68,7 @@ feature -- Output
 			-- stringify for GUI use
 		do
 			create Result.make(0)
-			Result.append (rm_type_name + "[" + node_id + "] ")
+			Result.append (rm_type_name + "[" + node_id + ", " + archetype_ref + "] ")
 			if attached occurrences as occ then
 				Result.append (occ.as_string)
 			end

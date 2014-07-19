@@ -334,6 +334,13 @@ feature -- Relationships
 			end
 		end
 
+	has_ancestor (an_anc: ARCH_LIB_ARCHETYPE): BOOLEAN
+			-- True if this archetype has `an_anc' as an ancestor
+		do
+			Result := attached specialisation_ancestor as att_ala and then (att_ala = an_anc or else
+				att_ala.has_ancestor (an_anc))
+		end
+
 	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 		do

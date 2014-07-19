@@ -443,7 +443,7 @@ feature -- Modification
 			new_term: ARCHETYPE_TERM
 		do
 			create new_term.make_all (new_id_code_agt.item([]), a_text, a_description)
-			put_new_definition (original_language, new_term)
+			put_new_definition (new_term)
 			last_new_definition_code := new_term.code
 		end
 
@@ -456,25 +456,27 @@ feature -- Modification
 			new_term: ARCHETYPE_TERM
 		do
 			create new_term.make_all (new_added_value_code_at_level (specialisation_depth, highest_value_code), a_text, a_description)
-			put_new_definition (original_language, new_term)
+			put_new_definition (new_term)
 			last_new_definition_code := new_term.code
 		end
 
 	create_added_constraint_definition (a_text, a_description: STRING)
 			-- add a new constraint definition with 'text' = `a_text', 'description = `a_description';
+			-- language is assumed to be `original_language'.
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_constraint_definition'
 		local
 			new_term: ARCHETYPE_TERM
 		do
 			create new_term.make_all (new_added_value_set_code_at_level (specialisation_depth, highest_value_set_code), a_text, a_description)
-			put_new_definition (original_language, new_term)
+			put_new_definition (new_term)
 			last_new_definition_code := new_term.code
 		end
 
 	create_refined_definition (a_parent_code, a_text, a_description: STRING)
 			-- add a new constraint definition as child of `a_parent_code'
 			-- with 'text' = `a_text', 'description = `a_description';
+			-- language is assumed to be `original_language'.
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_definition'
 		require
@@ -487,7 +489,7 @@ feature -- Modification
 				high_code := highest_refined_code_index [a_parent_code]
 			end
 			create new_term.make_all (new_refined_code_at_level (a_parent_code, specialisation_depth, high_code), a_text, a_description)
-			put_new_definition (original_language, new_term)
+			put_new_definition (new_term)
 			last_new_definition_code := new_term.code
 		end
 
@@ -641,25 +643,21 @@ feature {DIFFERENTIAL_ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Mod
 
 feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 
-	put_new_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new term definition for language `a_language' and
+	put_new_definition (a_term: ARCHETYPE_TERM)
+			-- add a new term definition for `original_language' and
 			-- automatically add translation placeholders in all other languages
 		require
 			Term_valid: not has_code (a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
-			Definition_is_new: not has_term_definition (a_language, a_term.code)
+			Definition_is_new: not has_term_definition (original_language, a_term.code)
 		local
 			trans_term: ARCHETYPE_TERM
 		do
-			-- take care of `a_language' first
-			if not term_definitions.has (a_language) then
-				term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_language)
-			end
-			term_definitions.item (a_language).force (a_term, a_term.code)
+			term_definitions.item (original_language).force (a_term, a_term.code)
 
-			-- now take a copy of that, with term in `a_language' as the template
-			trans_term := a_term.create_translated_term (a_language)
+			-- make copies in other languages
+			trans_term := a_term.create_translated_term (original_language)
 			across term_definitions as term_defs_csr loop
-				if not term_defs_csr.key.is_equal (a_language) then
+				if not term_defs_csr.key.is_equal (original_language) then
 					if not term_definitions.has (term_defs_csr.key) then
 						term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_defs_csr.key)
 					end
@@ -671,7 +669,7 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			clear_cache
 		ensure
 			Code_valid: has_code (a_term.code)
-			Definition_added: has_term_definition (a_language, a_term.code)
+			Definition_added: has_term_definition (original_language, a_term.code)
 		end
 
 	replace_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
@@ -682,7 +680,7 @@ feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			Term_valid: has_code (a_term.code)
 		do
 			if a_language.is_equal (original_language) and replace_translations then
-				put_new_definition (a_language, a_term) -- replace all translations as well
+				put_new_definition (a_term) -- replace all translations as well
 			else
 				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
 			end

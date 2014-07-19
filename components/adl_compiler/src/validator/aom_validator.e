@@ -22,6 +22,11 @@ inherit
 			target
 		end
 
+	SHARED_ARCHETYPE_LIBRARIES
+		export
+			{NONE} all
+		end
+
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_LIB_ARCHETYPE)

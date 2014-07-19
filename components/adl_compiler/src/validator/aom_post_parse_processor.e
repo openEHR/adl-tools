@@ -227,12 +227,7 @@ feature {NONE} -- Implementation
 
 			-- guaranteed to be only specialised archetype nodes here
 			elseif attached {C_OBJECT} a_c_node as co_child_diff and then attached co_child_diff.occurrences as ccd_occ and attached flat_ancestor as fa then
-				if attached {C_ARCHETYPE_ROOT} a_c_node as car and then attached car.slot_path as att_slot_path then
-					create apa.make_from_string (att_slot_path)
-				else
-					create apa.make_from_string (a_c_node.path)
-				end
-
+				create apa.make_from_string (a_c_node.path)
 				if not apa.is_phantom_path_at_level (fa.specialisation_depth) then
 					co_path_in_flat := apa.path_at_level (fa.specialisation_depth)
 					if fa.has_object_path (co_path_in_flat) then

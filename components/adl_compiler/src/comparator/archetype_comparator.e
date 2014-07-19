@@ -301,15 +301,7 @@ feature {NONE} -- Implementation
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
-			if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-				if attached car.slot_node_id then						-- slot filler
-					check attached car.slot_path as att_slot_path then
-						create apa.make_from_string (att_slot_path)
-					end
-					Result := flat_ancestor.has_object_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-				end
-
-			elseif attached {C_OBJECT} a_c_node as co_child then
+			if attached {C_OBJECT} a_c_node as co_child then
 				if specialisation_depth_from_code (co_child.node_id) <= flat_ancestor.specialisation_depth -- node from previous level
 					or else is_refined_code (co_child.node_id)  -- from current level, refined
 				then

@@ -299,37 +299,31 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			terminologies.extend (current_arch_lib.matching_archetype (a_node.node_id).flat_archetype.terminology)
+			terminologies.extend (current_arch_lib.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
 
-			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
-				start_c_complex_object (a_node, depth)
+			last_result.append (create_indent (depth))
 
-			else -- it is in source mode, there are no children, only slot fillers
-				-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences> archetype_id%N'
-				last_result.append (create_indent (depth))
+			-- in flat mode; output '%T TYPE[archetype_id] <occurrences>%N'
+			if a_node.has_attributes then
+				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+				last_result.append (apply_style ("[" + a_node.archetype_ref + "]", STYLE_TERM_REF))
+				last_result.append (format_item (FMT_SPACE))
+			-- else it is in source mode, there are no children
+			-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences>%N'
+			else
 				last_result.append (apply_style (symbol (SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item (FMT_SPACE))
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-
-				last_result.append (apply_style ("[", STYLE_TERM_REF))
-				if attached a_node.slot_node_id as att_snid then
-					last_result.append (apply_style (att_snid + ", ", STYLE_TERM_REF))
-				end
-				last_result.append (apply_style (a_node.node_id + "]", STYLE_TERM_REF))
-
-				last_result.append (format_item (FMT_SPACE))
-
-				serialise_occurrences(a_node, depth)
-
-				last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (apply_style ("[" + a_node.node_id + ", " + a_node.archetype_ref + "]", STYLE_TERM_REF))
 			end
+
+			last_result.append (format_item (FMT_SPACE))
+			serialise_occurrences(a_node, depth)
+			last_result.append (format_item(FMT_NEWLINE))
 		end
 
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
-			if a_node.has_attributes then
-				end_c_complex_object (a_node, depth)
-			end
 			terminologies.remove
 		end
 

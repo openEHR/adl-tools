@@ -24,7 +24,14 @@ inherit
 			all
 		end
 
+	INTERNAL
+		export
+			{NONE} all
+		end
+
 	EXCEPTIONS
+		rename
+			class_name as exception_class_name
 		export
 			{NONE} all
 		end
@@ -450,9 +457,6 @@ end
 											-- otherwise it appears that the attribute is allowed
 											ca_output.set_prohibited
 											ca_output.remove_all_children
-
-											------------ ORIGINAL CODE - probably delete this -----------------------
-											-- ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
 										else
 											-- graft the attribute existence if that has been changed
 											if attached ca_child.existence then
@@ -565,7 +569,7 @@ end
 		require
 			Non_empty_attribute: ca_output.has_children
 		local
-			insert_obj, merge_obj, cand_obj: C_OBJECT
+			insert_obj, merge_obj, cand_obj, co_in_flat: C_OBJECT
 			merge_car: C_ARCHETYPE_ROOT
 			i: INTEGER
 			after_pending: BOOLEAN
@@ -656,66 +660,53 @@ end
 					-- to be merged either before or after the insert_obj in the flattened output, or in a few cases, will modify or delete it
 					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
 						cand_obj := ca_child.children.i_th(i)
+						node_id_in_parent := code_at_level (cand_obj.node_id, arch_parent_flat.specialisation_depth)
 
-						-- deal with C_ARCHETYPE_ROOT specifically. THere are two cases - slot fillers which are always 'addded',
-						-- and external references, which may be overrides or added, so for them we see what is in the parent.
-						if attached {C_ARCHETYPE_ROOT} cand_obj as car then
-
-							-- if it is a prohibition, remove the corresponding node in the flat
-							if cand_obj.is_prohibited then
-								ca_output.remove_child_by_id (cand_obj.node_id)
-
-							-- occurrences might be set to some other value, then it means an override of occurrences
-							elseif ca_output.has_child_with_id (cand_obj.node_id) and then attached cand_obj.occurrences as att_occ then
-								ca_output.child_with_id (cand_obj.node_id).set_occurrences (att_occ.deep_twin)
-
-							else
-								merge_car := car.safe_deep_twin
-								merge_car.set_subtree_specialisation_status (ss_added)
-								ca_output.put_child_right (merge_car, insert_obj)
-							end
-							grafted_child_locations.extend (car.path) -- remember the path, so we don't try to do it again later on
-
-						-- for any node whose node_id indicates it was added new in this level, e.g. something like id0.3 in level 2
-						-- just merge the node, except if it has occurrences = 0, in which case prohibit
-						elseif specialisation_status_from_code (cand_obj.node_id, arch_child_diff.specialisation_depth) = ss_added then
-							-- remember the path, so we don't try to do it again later on
-							grafted_child_locations.extend (cand_obj.path)
-
+						-- if node_id indicates it is is to be added new in this level, e.g. something like id0.3 in level 2, add the node
+						if specialisation_status_from_code (cand_obj.node_id, arch_child_diff.specialisation_depth) = ss_added then
 							-- now we merge the object
 							merge_obj := cand_obj.safe_deep_twin
 							if merge_list_csr.item.before_flag then -- True = insert before
 								ca_output.put_child_left (merge_obj, insert_obj)
 							else
 								ca_output.put_child_right (merge_obj, insert_obj)
-								-- move 1 to the right, so adding occurs after
+
+								-- move insert csr position 1 to the right, so further adding occurs after the object just inserted
 								check attached ca_output.child_after (insert_obj) as ch then
 									insert_obj := ch
 								end
 							end
-							merge_obj.set_specialisation_status (ss_added)
+							merge_obj.deep_set_specialisation_status_added
 
-						-- ARCHETYPE_SLOT override
-						elseif attached {ARCHETYPE_SLOT} cand_obj as arch_slot then
-							node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
-							grafted_child_locations.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
-							if arch_slot.is_prohibited then
-								ca_output.remove_child_by_id (node_id_in_parent)
-							elseif arch_slot.is_closed then
-								if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
-									flat_arch_slot.set_closed
-									flat_arch_slot.set_specialisation_status_redefined
-								end
+							-- remember the path, so we don't try to do it again later on
+							grafted_child_locations.extend (cand_obj.path)
+
+						-- we still have to check if there is a parent node to be overridden, because in the case where
+						-- multiple children override one parent (e.g. id10.1 and id10.2 override id10) the parent may have already
+						-- been replaced by one of the children, and won't be visible anymore; in which case do an add with the
+						-- subsequent children
+						elseif not ca_output.has_child_with_id (node_id_in_parent) then
+							-- now we merge the object
+							merge_obj := cand_obj.safe_deep_twin
+							if merge_list_csr.item.before_flag then -- True = insert before
+								ca_output.put_child_left (merge_obj, insert_obj)
 							else
-								merge_obj := arch_slot.safe_deep_twin
-								ca_output.replace_child_by_id (merge_obj, node_id_in_parent)
-								merge_obj.set_specialisation_status_redefined
+								ca_output.put_child_right (merge_obj, insert_obj)
+
+								-- move insert csr position 1 to the right, so further adding occurs after the object just inserted
+								check attached ca_output.child_after (insert_obj) as ch then
+									insert_obj := ch
+								end
 							end
-						else
-							debug ("flatten")
-								io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_container_attribute location 1; IGNORING " +
-									cand_obj.path + " (" + i.out + "-th child)%N")
-							end
+							merge_obj.set_specialisation_status (ss_redefined)
+
+							-- remember the path, so we don't try to do it again later on
+							grafted_child_locations.extend (cand_obj.path)
+
+						-- don't do anything with a C_COMPLEX_OBJECT that overrides a C_COMPLEX_OBJECT, since the main
+						-- graft routine will take care of it
+						elseif not (dynamic_type (cand_obj) = ({C_COMPLEX_OBJECT}).type_id and dynamic_type (ca_output.child_with_id (node_id_in_parent)) = ({C_COMPLEX_OBJECT}).type_id) then
+							do_override (cand_obj, ca_output)
 						end
 						i := i + 1
 					end
@@ -728,61 +719,73 @@ end
 			-- in the specialised attribute, or are C_COMPLEX_OBJECTs (if they are the latter, they will get traversed
 			-- normally by node_graft())
 		local
-			merge_obj: C_OBJECT
+			merge_obj, co_in_flat: C_OBJECT
 			node_id_in_parent: STRING
 		do
 			across ca_child.children as c_obj_csr loop
-				if attached {ARCHETYPE_SLOT} c_obj_csr.item as arch_slot then
-					node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
-					if arch_slot.is_prohibited then
-						ca_output.remove_child_by_id (node_id_in_parent)
-					elseif arch_slot.is_closed then
-						if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
-							flat_arch_slot.set_closed
-							flat_arch_slot.set_specialisation_status_redefined
-						end
-					elseif specialisation_status_from_code (arch_slot.node_id, arch_child_diff.specialisation_depth) = ss_added then
-						merge_obj := arch_slot.safe_deep_twin
-						ca_output.put_child (merge_obj)
-						merge_obj.set_specialisation_status_added
-					else
-						merge_obj := arch_slot.safe_deep_twin
-						ca_output.replace_child_by_id (merge_obj, node_id_in_parent)
-						merge_obj.set_specialisation_status_redefined
-					end
+				node_id_in_parent := code_at_level (c_obj_csr.item.node_id, arch_parent_flat.specialisation_depth)
 
-				elseif attached {C_ARCHETYPE_ROOT} c_obj_csr.item as car then
-					merge_obj := car.safe_deep_twin
-					if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
-						merge_car.set_subtree_specialisation_status (ss_added)
-					end
-					ca_output.put_child (merge_obj)
-					grafted_child_locations.extend (car.path)
-
-				-- we deal with non-C_COMPLEX_OBJECTs except in the case where the object is completely new in the flat
-				-- parent, which means it should just be copied in completely
-				elseif attached {C_COMPLEX_OBJECT} c_obj_csr.item as cco then
-					if specialisation_status_from_code (cco.node_id, arch_child_diff.specialisation_depth) = ss_added then
-						merge_obj := cco.safe_deep_twin
-						if attached {C_COMPLEX_OBJECT} merge_obj as merge_cco then
-							merge_cco.set_subtree_specialisation_status (ss_added)
-						end
-						ca_output.put_child (merge_obj)
-						grafted_child_locations.extend (cco.path)
-					else
-						debug ("flatten")
-							io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + cco.path + "%N")
-						end
-					end
-
-				-- this is where final C_PRIMITIVE leaf node objects get written into the output
-				else
+				if specialisation_status_from_code (c_obj_csr.item.node_id, arch_child_diff.specialisation_depth) = ss_added then
 					merge_obj := c_obj_csr.item.safe_deep_twin
-					merge_obj.set_specialisation_status_redefined
-					ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
-					grafted_child_locations.extend (c_obj_csr.item.path)
+					merge_obj.deep_set_specialisation_status_added
+					ca_output.put_child (merge_obj)
+
+					-- remember the path, so we don't try to do it again later on
+					grafted_child_locations.extend (merge_obj.path)
+
+				-- we still have to check if there is a parent node to be overridden, because in the case where
+				-- multiple children override one parent (e.g. id10.1 and id10.2 override id10) the parent may have already
+				-- been replaced by one of the children, and won't be visible anymore; in which case do an add with the
+				-- subsequent children
+				elseif not ca_output.has_child_with_id (node_id_in_parent) then
+					merge_obj := c_obj_csr.item.safe_deep_twin
+					merge_obj.set_specialisation_status (ss_redefined)
+					ca_output.put_child (merge_obj)
+
+					-- remember the path, so we don't try to do it again later on
+					grafted_child_locations.extend (merge_obj.path)
+
+				-- don't do anything with a C_COMPLEX_OBJECT that overrides a C_COMPLEX_OBJECT, since the main
+				-- graft routine will take care of it
+				elseif not (dynamic_type (c_obj_csr.item) = ({C_COMPLEX_OBJECT}).type_id and dynamic_type (ca_output.child_with_id (node_id_in_parent)) = ({C_COMPLEX_OBJECT}).type_id) then
+					do_override (c_obj_csr.item, ca_output)
 				end
 			end
+		end
+
+	do_override (co_child_diff: C_OBJECT; ca_output: C_ATTRIBUTE)
+			-- override matching child under `ca_output' in flat with `co_child_diff'
+		local
+			node_id_in_flat: STRING
+			new_obj, co_in_flat: C_OBJECT
+		do
+			node_id_in_flat := code_at_level (co_child_diff.node_id, arch_parent_flat.specialisation_depth)
+			co_in_flat := ca_output.child_with_id (node_id_in_flat)
+
+			-- if child node prohibited, remove corresponding node from parent
+			if co_child_diff.is_prohibited then
+				ca_output.remove_child (co_in_flat)
+
+			else
+				new_obj := co_child_diff.safe_deep_twin
+				new_obj.set_specialisation_status_redefined
+
+				-- C_ARCHETYPE_ROOT redefines ARCHETYPE_SLOT - add it after the slot
+				if attached {C_ARCHETYPE_ROOT} co_child_diff as child_car and attached {ARCHETYPE_SLOT} co_in_flat as flat_slot then
+					ca_output.put_child_right (new_obj, flat_slot)
+
+				-- any other combination of AOM types
+				else
+					-- remember the path being replaced because it will disappear with the replace call below, but
+					-- other children may need it; we detect those in the immediate calling routine
+					grafted_locations_used.extend (co_in_flat.path)
+					ca_output.replace_child_by_id (new_obj, node_id_in_flat)
+					check attached arch_output_flat as att_flat and then att_flat.has_object_path (new_obj.path) end
+				end
+			end
+
+			-- remember the path, so we don't try to do it again later on
+			grafted_child_locations.extend (co_child_diff.path)
 		end
 
 	merge_list: ARRAYED_LIST [like merge_desc]
@@ -913,6 +916,7 @@ end
 		local
 			supp_flat_arch: FLAT_ARCHETYPE
 			supp_arch_root_cco: C_COMPLEX_OBJECT
+			matched_arch: ARCH_LIB_ARCHETYPE
 		do
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
@@ -920,7 +924,8 @@ end
 			if depth <= Max_template_overlay_depth then
 				across a_flat_arch.suppliers_index as xref_idx_csr loop
 					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-					create supp_flat_arch.make_from_other (current_arch_lib.matching_archetype (xref_idx_csr.key).flat_archetype)
+					matched_arch := current_arch_lib.matching_archetype (xref_idx_csr.key)
+					create supp_flat_arch.make_from_other (matched_arch.flat_archetype)
 					supp_arch_root_cco := supp_flat_arch.definition
 
 					-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
@@ -934,6 +939,7 @@ end
 		io.put_string ("%T node at " + c_arch_roots_csr.item.path +
 		" with " + xref_idx_csr.key + "%N")
 	end
+							c_arch_roots_csr.item.convert_to_flat (matched_arch.id.as_string)
 							across supp_arch_root_cco.attributes as attrs_csr loop
 								c_arch_roots_csr.item.put_attribute (attrs_csr.item)
 	debug ("flatten")

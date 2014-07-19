@@ -72,7 +72,7 @@ feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
-			-- `other' is typically in a flat archetype.
+			-- `other' is typically from the flat parent archetype.
 			-- Returns True only when the following is True:
 			--	rm_type_name is the same or a subtype of rm_type_name of other;
 			--	occurrences is same (= Void) or a sub-interval
@@ -86,7 +86,7 @@ feature -- Comparison
 	c_congruent_to (other: like Current): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses no constraints in addition to `other', other than
 			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
-			-- `other' is typically in a flat archetype
+			-- Current and `other' are typically from flat archetypes being compared to generate a diff.
 			-- Used to determine if path segments can be compressed;
 			-- Returns True if:
 			--	rm_type_name is identical

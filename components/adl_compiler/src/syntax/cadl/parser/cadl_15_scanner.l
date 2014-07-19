@@ -405,16 +405,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 --- END Legacy ADL 1.4 inline term set
 -------------------------------------------------------------------------------------------------------------
 
-----------/* slot filler */ -------------------------------------------------
+----------/* external ref / slot filler */ -------------------------------------------------
 \[{ID_CODE}[ \t]*,[ \t]*{ARCHETYPE_ID}\] {
-		last_token := V_SLOT_FILLER
-		last_string_value := text_substring (2, text_count - 1)
-		last_string_value.prune_all(' ')
-		last_string_value.prune_all('%T')
-	}
-
-----------/* external reference */ -------------------------------------------------
-\[{ARCHETYPE_ID}\] {
 		last_token := V_EXT_REF
 		last_string_value := text_substring (2, text_count - 1)
 		last_string_value.prune_all(' ')

@@ -74,6 +74,7 @@ templates = <
 		["VSONCT"] = <"object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 		["VSONCO"] = <"object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
 		["VSONPO"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent">
+		["VSONPT"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node with AOM type $2 that redefines node in the flat parent of different AOM type $3">
 		["VSONCI"] = <"object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 		["VCATU"] = <"cADL object duplicate attribute $1">
 
@@ -101,6 +102,8 @@ templates = <
 
 		-- C_ARCHETYPE_ROOT
 		["VARXR"] = <"slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor">
+		["VARXRA"] = <"external reference at $1 specifies archetype $2 that doesn't exist in current repository">
+		["VARXAV"] = <"external reference at $1 specifies archetype $2 that is not a descendant of archetype $3 mentioned in matching parent node">
 		["VARXS"] = <"slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 		["VARXNC"] = <"slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
 		["VARXTV"] = <"RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">

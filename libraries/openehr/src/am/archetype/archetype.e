@@ -299,6 +299,8 @@ feature -- Paths
 			across path_set as path_csr loop
 				create og_phys_path.make_from_string (path_csr.item)
 				create og_log_path.make_from_other (og_phys_path)
+
+				-- generate a human-readable path from the physical path
 				from
 					og_phys_path.start
 					og_log_path.start
@@ -325,8 +327,8 @@ feature -- Paths
 					og_log_path.forth
 				end
 
-				-- create the string
-				create tag_path.make (50)
+				-- create a string from from the structured form of the path
+				create tag_path.make (200)
 				across og_log_path as path_seg_csr loop
 					if path_seg_csr.item.is_addressable then
 						tag_path.append (path_seg_csr.item.object_id)
@@ -338,7 +340,7 @@ feature -- Paths
 					end
 				end
 
-				-- perform replacements
+				-- perform character-by-character replacements
 				create tag.make (tag_path.count)
 				across tag_path as char_csr loop
 					if Adl_tag_remove_characters.has (char_csr.item) then
@@ -351,7 +353,11 @@ feature -- Paths
 						tag.append_character (char_csr.item)
 					end
 				end
-				Result.put (tag, og_phys_path.as_string)
+
+				-- Add the path to the result, unless it is the root, which is not useful in a set of interface tags
+				if not tag.is_empty then
+					Result.put (tag, og_phys_path.as_string)
+				end
 			end
 		end
 
@@ -654,10 +660,10 @@ feature -- Validation
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
 					do
 						if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-							if not idx.has (car.node_id) then
-								idx.put (create {ARRAYED_LIST [C_ARCHETYPE_ROOT]}.make(0), car.node_id)
+							if not idx.has (car.archetype_ref) then
+								idx.put (create {ARRAYED_LIST [C_ARCHETYPE_ROOT]}.make(0), car.archetype_ref)
 							end
-							idx.item (car.node_id).extend (car)
+							idx.item (car.archetype_ref).extend (car)
 						end
 					end (?, ?, Result))
 		end

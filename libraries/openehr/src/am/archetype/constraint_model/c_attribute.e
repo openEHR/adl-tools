@@ -474,6 +474,8 @@ feature -- Modification
 			representation.put_child (an_obj.representation)
 			children.extend (an_obj)
 			an_obj.set_parent(Current)
+		ensure
+			has_child_with_id (an_obj.node_id)
 		end
 
 	put_child_left (an_obj, before_obj: C_OBJECT)
@@ -486,6 +488,8 @@ feature -- Modification
 			children.go_i_th (children.index_of (before_obj, 1))
 			children.put_left (an_obj)
 			an_obj.set_parent(Current)
+		ensure
+			has_child_with_id (an_obj.node_id)
 		end
 
 	put_child_right (an_obj, after_obj: C_OBJECT)
@@ -498,6 +502,8 @@ feature -- Modification
 			children.go_i_th (children.index_of (after_obj, 1))
 			children.put_right (an_obj)
 			an_obj.set_parent (Current)
+		ensure
+			has_child_with_id (an_obj.node_id)
 		end
 
 	put_sibling_child (an_obj: C_OBJECT)
@@ -518,6 +524,8 @@ feature -- Modification
 			else
 				put_child (an_obj)
 			end
+		ensure
+			has_child_with_id (an_obj.node_id)
 		end
 
 	replace_child_by_id (an_obj: C_OBJECT; an_id: STRING)
@@ -530,6 +538,8 @@ feature -- Modification
 			children.replace (an_obj)
 			representation.replace_child_by_id (an_obj.representation, an_id)
 			an_obj.set_parent(Current)
+		ensure
+			has_child_with_id (an_obj.node_id)
 		end
 
 	replace_child_by_rm_type_name (an_obj: C_OBJECT)
@@ -542,6 +552,8 @@ feature -- Modification
 			children.go_i_th (children.index_of (child_with_rm_type_name(an_obj.rm_type_name), 1))
 			children.replace (an_obj)
 			an_obj.set_parent(Current)
+		ensure
+			has_child_with_id (an_obj.node_id)
 		end
 
 	remove_child (an_obj: C_OBJECT)
@@ -563,6 +575,8 @@ feature -- Modification
 			an_obj := child_with_id (an_id)
 			representation.remove_child_by_id (an_id)
 			children.prune_all(an_obj)
+		ensure
+			not has_child_with_id (an_id)
 		end
 
 	remove_all_children

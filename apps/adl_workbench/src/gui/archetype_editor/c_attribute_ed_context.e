@@ -427,8 +427,10 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make (cco, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
+				-- FIXME: not yet dealing with slot filler or use_archetype redefinition, which needs
+				-- a redefined code, not a new code
 				check attached co_create_params.ext_ref as arch_id then
-					create car.make_slot_filler (rm_type_name, arch_id, new_code)
+					create car.make (rm_type_name, arch_id, new_code)
 				end
 				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
 

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (723)
+			create message_table.make (726)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -109,7 +109,7 @@ feature -- Initialisation
 			message_table.put ("Syntax error: differential syntax not allowed in top-level archetype", ec_SDSF)
 			message_table.put ("Syntax error: invalid ODIN section; error: $1", ec_SDINV)
 			message_table.put ("Syntax error: expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference", ec_SCCOG)
-			message_table.put ("Syntax error: expecting [archetype_id] in use_archetype statement", ec_SUAID)
+			message_table.put ("Syntax error: expecting [idN, archetype_id] in use_archetype statement", ec_SUAID)
 			message_table.put ("Syntax error: invalid archetype id $1", ec_SUAIDI)
 			message_table.put ("Syntax error: expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'", ec_SOCCF)
 			message_table.put ("Syntax error: expecting absolute path in use_node statement", ec_SUNPA)
@@ -195,6 +195,7 @@ feature -- Initialisation
 			message_table.put ("object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4", ec_VSONCT)
 			message_table.put ("object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4", ec_VSONCO)
 			message_table.put ("object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent", ec_VSONPO)
+			message_table.put ("object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node with AOM type $2 that redefines node in the flat parent of different AOM type $3", ec_VSONPT)
 			message_table.put ("object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4", ec_VSONCI)
 			message_table.put ("cADL object duplicate attribute $1", ec_VCATU)
 			message_table.put ("$1 object node at path $2 does not conform to $3 node at parent path $4", ec_VSDTV)
@@ -212,6 +213,8 @@ feature -- Initialisation
 			message_table.put ("'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'", ec_VDSIV2)
 			message_table.put ("Slot node at path $1 may only redefine parent C_COMPLEX_OBJECT in parent if the latter has no child attributes.", ec_VDSSR)
 			message_table.put ("slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor", ec_VARXR)
+			message_table.put ("external reference at $1 specifies archetype $2 that doesn't exist in current repository", ec_VARXRA)
+			message_table.put ("external reference at $1 specifies archetype $2 that is not a descendant of archetype $3 mentioned in matching parent node", ec_VARXAV)
 			message_table.put ("slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint", ec_VARXS)
 			message_table.put ("slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent", ec_VARXNC)
 			message_table.put ("RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent", ec_VARXTV)

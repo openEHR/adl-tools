@@ -184,6 +184,7 @@ feature {NONE} -- Implementation
 			ca_path_in_flat, co_path_in_flat: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
 			comparable_flat_tuple: C_ATTRIBUTE_TUPLE
+			co_child_annotated_path, co_flat_anc_annotated_path: STRING
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 debug ("validate")
@@ -216,106 +217,100 @@ end
 					end
 				end
 
-			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT; for external references, nothing to do
-			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
-				if attached car.slot_path as att_slot_path then
-					create apa.make_from_string (att_slot_path)
-					co_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-					if flat_ancestor.has_object_path (co_path_in_flat) and then attached {ARCHETYPE_SLOT} flat_ancestor.object_at_path (co_path_in_flat) as a_slot then
-						if ancestor_slot_id_index.has (a_slot.path) then
-							if not archetype_id_matches_slot (car.node_id, a_slot) then -- doesn't even match the slot definition
-								add_error (ec_VARXS, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
+			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT; or redefined external references
+			elseif attached {C_OBJECT} a_c_node as co_child_diff then
+				create apa.make_from_string (co_child_diff.path)
+				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				co_child_annotated_path := target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True)
+				co_flat_anc_annotated_path := target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_annotated_path)
+end
+				--------------------------------------------------------------------------------------------------------------
+				-- this block of tests check conformance for specific cases when the child and parent AOM types are different.
+				--------------------------------------------------------------------------------------------------------------
 
-							elseif not slot_filler_archetype_id_exists (a_slot.path, car.node_id) then -- matches def, but not found in actual list from current repo
-								add_error (ec_VARXR, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.node_id>>)
+				-- test conformance specific to C_ARCHETYPE_ROOT where C_ARCHETYPE_ROOT redefines ARCHETYPE_SLOT
+				if attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {ARCHETYPE_SLOT} co_in_flat_anc as a_slot then
+					if ancestor_slot_id_index.has (a_slot.path) then
+						if not archetype_id_matches_slot (car.archetype_ref, a_slot) then -- doesn't match the slot definition
+							add_error (ec_VARXS, <<co_child_annotated_path, car.archetype_ref>>)
 
-							elseif not car.occurrences_conforms_to (a_slot) then
-								add_error (ec_VSONCO, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True), car.occurrences_as_string,
-									target.annotated_path (a_slot.path, target_descriptor.archetype_view_language, True), a_slot.occurrences.as_string>>)
-							end
-						else
-							add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
+						-- matches def, but not found in actual list from current repo
+						elseif not slot_filler_archetype_id_exists (a_slot.path, car.archetype_ref) then
+							add_error (ec_VARXR, <<co_child_annotated_path, car.archetype_ref>>)
 						end
 					else
-						add_error (ec_VARXV, <<target.annotated_path (car.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
 					end
-				end
 
-			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
-			elseif attached {C_OBJECT} a_c_node as co_child_diff then
-				create apa.make_from_string (a_c_node.path)
-				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+				-- where C_ARCHETYPE_ROOT redefines C_ARCHETYPE_ROOT
+				elseif attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {C_ARCHETYPE_ROOT} co_in_flat_anc as parent_car then
+					-- no archetype matches this ref
+					if not current_arch_lib.has_archetype_id_for_ref (car.archetype_ref) then
+						add_error (ec_VARXRA, <<co_child_annotated_path, car.archetype_ref>>)
 
-debug ("validate")
-	io.put_string (">>>>> validate: C_OBJECT in child at " + target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True))
-end
+					-- matching archetype exists, but not same as or else in lineage of parent archetype
+					elseif not car.archetype_ref.is_equal (parent_car.archetype_ref) and
+						not current_arch_lib.matching_archetype (car.archetype_ref).has_ancestor (current_arch_lib.matching_archetype (parent_car.archetype_ref))
+					then
+						add_error (ec_VARXAV, <<co_child_annotated_path, car.archetype_ref, parent_car.archetype_ref>>)
+					end
 
+				-- where C_COMPLEX_OBJECT redefines a C_COMPLEX_OBJECT_PROXY
 				-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 				-- we re-assign co_in_flat_anc to point to the target structure; unless they both are use_nodes, in which case leave them as is
-				if attached {C_COMPLEX_OBJECT_PROXY} co_in_flat_anc as air_p and attached {C_COMPLEX_OBJECT} co_child_diff then
+				elseif attached {C_COMPLEX_OBJECT} co_child_diff and attached {C_COMPLEX_OBJECT_PROXY} co_in_flat_anc as air_p then
 					if attached flat_ancestor.object_at_path (air_p.path) as cpf then
 						co_in_flat_anc := cpf
 					else
-						add_error (ec_VSUNT, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_child_diff.generating_type, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-							co_in_flat_anc.generating_type>>)
+						add_error (ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type, co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
 					end
 
 				-- allow the case where a C_COMPLEX_OBJECT is redefined into objects including C_COMPLEX_OBJECT_PROXY, as long as parent object
 				-- has no children
 				elseif attached {C_COMPLEX_OBJECT_PROXY} co_child_diff as air_c and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat then
 					if not cco_flat.any_allowed then
-						add_error (ec_VSUNC, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_child_diff.generating_type, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-							co_in_flat_anc.generating_type>>)
+						add_error (ec_VSUNC, <<co_child_annotated_path, co_child_diff.generating_type, co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
 					end
 
+				-- case where a C_COMPLEX_OBJECT is redefined into a slot, only legal if the C_COMPLEX_OBJECT had no children
 				elseif attached {ARCHETYPE_SLOT} co_child_diff as air_c and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat then
 					if not cco_flat.any_allowed then
-						add_error (ec_VDSSR, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_VDSSR, <<co_child_annotated_path>>)
 					end
 
 				-- else the AOM meta-types must be the same
 				elseif dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
-					add_error (ec_VSONT, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-						co_child_diff.generating_type, co_in_flat_anc.rm_type_name,
-						target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-						co_in_flat_anc.generating_type>>)
+					add_error (ec_VSONT, <<co_child_diff.rm_type_name, co_child_annotated_path, co_child_diff.generating_type, co_in_flat_anc.rm_type_name,
+						co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
 				end
 
+
+				-------------------------------------------------------------------------------------------------------
+				-- now do generic tests that apply to all AOM node types.
+				-------------------------------------------------------------------------------------------------------
 				if passed then
 					-- Now evaluate c_conforms_to() function
 					if not co_child_diff.c_conforms_to (co_in_flat_anc, agent rm_schema.type_conforms_to) then
 
 						-- RM type non-conformance was the reason
 						if not rm_schema.type_conforms_to (co_child_diff.rm_type_name, co_in_flat_anc.rm_type_name) then
-							add_error (ec_VSONCT, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_child_diff.rm_type_name,
-								target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-								co_in_flat_anc.rm_type_name>>)
+							add_error (ec_VSONCT, <<co_child_annotated_path, co_child_diff.rm_type_name, co_flat_anc_annotated_path, co_in_flat_anc.rm_type_name>>)
 
 						-- occurrences non-conformance was the reason
 						elseif not co_child_diff.occurrences_conforms_to (co_in_flat_anc) then
-							add_error (ec_VSONCO, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_child_diff.occurrences_as_string,
-								target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-								co_in_flat_anc.occurrences.as_string>>)
+							add_error (ec_VSONCO, <<co_child_annotated_path, co_child_diff.occurrences_as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
 
 						-- node id non-conformance value mismatch was the reason
 						elseif not co_child_diff.node_id_conforms_to (co_in_flat_anc) then
-							add_error (ec_VSONI, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_child_diff.node_id,
-								target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True),
-								co_in_flat_anc.node_id>>)
+							add_error (ec_VSONI, <<co_child_annotated_path, co_child_diff.node_id, co_flat_anc_annotated_path, co_in_flat_anc.node_id>>)
 
 						-- leaf object value redefinition
 						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_in_flat_anc as cpo_flat then
-							add_error (ec_VPOV, <<cpo_child.rm_type_name, target.annotated_path (cpo_child.path, target_descriptor.archetype_view_language, True),
-								cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name,
-								target.annotated_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
+							add_error (ec_VPOV, <<cpo_child.rm_type_name, co_child_annotated_path, cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name, co_flat_anc_annotated_path>>)
 						else
-							add_error (ec_VUNK, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_in_flat_anc.rm_type_name, target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
+							add_error (ec_VUNK, <<co_child_diff.rm_type_name, co_child_annotated_path, co_in_flat_anc.rm_type_name, co_flat_anc_annotated_path>>)
 
 						end
 					else
@@ -327,16 +322,13 @@ end
 								if cco_flat.has_comparable_attribute_tuple (child_tuples_csr.item) then
 									comparable_flat_tuple := cco_flat.comparable_attribute_tuple (child_tuples_csr.item)
 									if not child_tuples_csr.item.c_conforms_to (comparable_flat_tuple, agent rm_schema.type_conforms_to) then
-										add_error (ec_VTPNC, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-											child_tuples_csr.item.signature,
-											target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
+										add_error (ec_VTPNC, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature, co_flat_anc_annotated_path>>)
 									end
 								else
 									across child_tuples_csr.item as child_tuple_attrs_csr loop
 										if cco_flat.has_attribute (child_tuple_attrs_csr.item.rm_attribute_name) then
-											add_error (ec_VTPIN, <<co_child_diff.rm_type_name, target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-												child_tuples_csr.item.signature, child_tuple_attrs_csr.item.rm_attribute_name,
-												target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)>>)
+											add_error (ec_VTPIN, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature,
+												child_tuple_attrs_csr.item.rm_attribute_name, co_flat_anc_annotated_path>>)
 										end
 									end
 								end
@@ -347,8 +339,7 @@ end
 						if attached co_child_diff.sibling_order and then not (co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) or else
 							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, flat_ancestor.specialisation_depth)))
 						then
-							add_error (ec_VSSM, <<target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-								co_child_diff.sibling_order.sibling_node_id>>)
+							add_error (ec_VSSM, <<co_child_annotated_path, co_child_diff.sibling_order.sibling_node_id>>)
 						end
 					end
 				end
@@ -361,8 +352,9 @@ end
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			flat_anc_path, slot_path: STRING
+			flat_anc_path, slot_path, co_child_annotated_path: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
+			flat_anc_obj: C_OBJECT
 		do
 			-- if it is a C_ARCHETYPE_ROOT, it is either a slot filler or an external reference. If the former, it is
 			-- redefining an ARCHETYPE_SLOT node, and needs to be validated; if the latter it is a new node, and will
@@ -370,25 +362,10 @@ end
 			-- to determine if it has a corresponding node in the flat ancestor.
 			if passed then
 				if attached {C_OBJECT} a_c_node as a_c_obj then
-					-- is it an overlay or new node; if overlay, then check it
-					if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-						if attached car.slot_node_id then						-- slot filler
-							check attached car.slot_path as att_slot_path then
-								slot_path := att_slot_path
-							end
-							create apa.make_from_string (slot_path)
-							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-							Result := flat_ancestor.has_object_path (flat_anc_path)
-							if not Result then -- it should have a matching node in flat ancestor
-								add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
-									target.annotated_path (slot_path, target_descriptor.archetype_view_language, True),
-									target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
-							end
-						else
-							-- external reference (i.e. no slot involved)
-						end
+					co_child_annotated_path := target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True)
 
-					elseif specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
+					-- is it an overlay or new node; if overlay, then check it
+					if specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
 						is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
 
 					then
@@ -396,9 +373,15 @@ end
 						flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
 						Result := flat_ancestor.has_object_path (flat_anc_path)
 						if not Result then -- it should have a matching node in flat ancestor
-							add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name,
-								target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name, co_child_annotated_path,
 								target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
+
+						-- if it is a prohibit node, the AOM types must be the same in child and parent
+						else
+							flat_anc_obj := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+							if a_c_obj.is_prohibited and dynamic_type (a_c_obj) /= dynamic_type (flat_anc_obj) then
+								add_error (ec_VSONPT, <<co_child_annotated_path, a_c_obj.generating_type, flat_anc_obj.generating_type>>)
+							end
 						end
 
 					-- special checks if it is a non-overlay node...
@@ -410,19 +393,18 @@ end
 							if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
 								ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, flat_ancestor.specialisation_depth)))
 							then
-								add_error (ec_VSSM, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True), sib_ord.sibling_node_id>>)
+								add_error (ec_VSSM, <<co_child_annotated_path, sib_ord.sibling_node_id>>)
 							end
 						end
 
 						-- if it has occurrences matches {0}, it's an error because this can only make sense for nodes that exist
-						if attached a_c_obj.occurrences as att_occ and then att_occ.is_prohibited then
-							add_error (ec_VSONPO, <<target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True)>>)
+						if a_c_obj.is_prohibited then
+							add_error (ec_VSONPO, <<co_child_annotated_path>>)
 						end
 
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
-		target.annotated_path (a_c_node.path,
-		target_descriptor.archetype_view_language, True) + " ignored %N")
+		co_child_annotated_path + " ignored %N")
 end
 					end
 
