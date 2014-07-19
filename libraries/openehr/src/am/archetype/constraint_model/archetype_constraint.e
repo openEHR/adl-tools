@@ -197,6 +197,12 @@ feature -- Source Control
 			specialisation_status := a_spec_status
 		end
 
+	deep_set_specialisation_status_added
+			-- deep version of `set_specialisation_status_added'
+		do
+			specialisation_status := ss_added
+		end
+
 	rolled_up_specialisation_status: INTEGER
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
