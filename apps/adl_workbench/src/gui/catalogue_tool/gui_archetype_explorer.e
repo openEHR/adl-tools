@@ -233,15 +233,11 @@ feature {NONE} -- Implementation
 						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 					end
 
-					-- pixmap
-					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
-
 					if aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
 	 			elseif attached {ARCH_LIB_CLASS_NODE} aci as acc then
-					pixmap := catalogue_node_pixmap (acc)
 		 	 		tooltip.append (acc.qualified_name + "%N" + acc.class_definition.description)
 					text.append (aci.name)
 					col := archetype_rm_type_color
@@ -249,11 +245,12 @@ feature {NONE} -- Implementation
 
 	 			elseif attached {ARCH_LIB_CLOSURE_NODE} aci as accl then
 	 				text.append (accl.qualified_name)
-					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
 					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
 	 				text.append (" (" + accl.subtree_artefact_count (artefact_types).out + ")")
-
 				end
+
+				-- pixmap
+				pixmap := catalogue_node_pixmap (aci)
 
 				-- set text
 				if update_flag then

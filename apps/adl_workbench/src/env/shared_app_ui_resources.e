@@ -625,9 +625,9 @@ feature -- Conversion
 				if use_rm_pixmaps then
 					pixmap_key := rm_type_pixmap_key (acc.class_definition.name, acc.bmm_schema.rm_publisher, acc.bmm_schema.schema_name)
 				end
-				if pixmap_key.is_empty then
-					pixmap_key := "archetype/" + ara.group_name
-				end
+			end
+			if pixmap_key.is_empty then
+				pixmap_key := "archetype/" + ara.group_name
 			end
 			Result := get_icon_pixmap (pixmap_key)
 		end
@@ -643,15 +643,15 @@ feature {NONE} -- Implementation
 			Result.append ("          Source: https://github.com/openEHR/adl-tools.git%N")
 			Result.append ("         License: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
 			Result.append ("        Support: http://www.openehr.org/issues/browse/AWBPR%N")
-			Result.append ("     Funding: Thomas Beale; Ocean Informatics<http://www.oceaninformatics.com>%N")
+			Result.append ("     Funding: Thomas Beale, Ocean Informatics<http://www.oceaninformatics.com>%N")
 			Result.append ("          Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer, Ian McNicoll MD%N")
 			Result.append ("%N")
 			Result.append ("Acknowledgements:%N")
-			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
-			Result.append ("  - Gobo parsing libraries and tools (http://www.gobosoft.com)%N")
-			Result.append ("  - Jonas Rask Design icons (http://jonasraskdesign.com)%N")
-			Result.append ("  - VisualPharm (http://www.visualpharm.com/) 'must-have' icons (CC-BY-ND 3.0)%N")
+			Result.append ("  - Eiffel Software EiffelStudio GPL release <http://www.eiffel.com>%N")
+			Result.append ("  - Gobo parsing libraries and tools <http://www.gobosoft.com>%N")
+			Result.append ("  - Jonas Rask Design icons <http://jonasraskdesign.com>%N")
+			Result.append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)%N")
 		ensure
 			not_empty: not Result.is_empty
 		end
