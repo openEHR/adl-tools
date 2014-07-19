@@ -184,76 +184,52 @@ feature {NONE} -- Implementation
 		end
 
 	adl_15_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
-		local
-			co: C_OBJECT
 		do
-			create Result.make (0)
-			if source_archetype.has_object_path (a_path) then
-				check attached source end
-				check attached selected_language end
-
-				-- first column: path
-				if show_natural_language then
-					Result.extend (utf8_to_utf32 (source.flat_archetype.annotated_path (a_path, selected_language, True)))
-				else
-					Result.extend (utf8_to_utf32 (a_path))
-				end
-
-				if source_archetype.has_object_path (a_path) then
-					co := source_archetype.object_at_path (a_path)
-
-					-- second column: RM type name
-					Result.extend (utf8_to_utf32 (co.rm_type_name))
-
-					-- third column: AOM type
-					Result.extend (utf8_to_utf32 (co.generating_type))
-				else
-					Result.extend ("")
-					Result.extend ("")
-				end
-
-				-- add an empty column to help display on all platforms
-				Result.extend ("")
-			end
+			Result := adl_path_row (a_path, agent (s: STRING): STRING do Result := s end)
 		end
 
 	adl_14_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
+		do
+			Result := adl_path_row (a_path, agent (s: STRING): STRING do Result := adl_15_path_converted (s) end)
+		end
+
+	adl_path_row (a_path: STRING; conv_agt: FUNCTION [ANY, TUPLE [STRING], STRING]): ARRAYED_LIST [STRING_32]
+			-- generate a row for the table consisting of path, RM type, AOM type
+			-- use `conv_agt' to transform the path
 		local
 			co: C_OBJECT
 			path_str: STRING
 		do
 			create Result.make (0)
+			check attached source end
+			check attached selected_language end
+
+			-- first column: path
+			if show_natural_language then
+				path_str := source.flat_archetype.annotated_path (a_path, selected_language, True)
+			else
+				path_str := a_path
+			end
+			Result.extend (utf8_to_utf32 (conv_agt.item ([path_str])))
+
 			if source_archetype.has_object_path (a_path) then
-				check attached source end
-				check attached selected_language end
+				co := source_archetype.object_at_path (a_path)
 
-				-- first column: path
-				if show_natural_language then
-					path_str := source.flat_archetype.annotated_path (a_path, selected_language, True)
-				else
-					path_str := a_path
-				end
-				Result.extend (utf8_to_utf32 (adl_15_path_converted (path_str)))
+				-- second column: RM type name
+				Result.extend (utf8_to_utf32 (co.rm_type_name))
 
-				if source_archetype.has_object_path (a_path) then
-					co := source_archetype.object_at_path (a_path)
+				-- third column: AOM type
+				Result.extend (utf8_to_utf32 (co.generating_type))
+			else
+				-- second column: RM type name
+				Result.extend ("")
 
-					-- second column: RM type name
-					Result.extend (utf8_to_utf32 (co.rm_type_name))
-
-					-- third column: AOM type
-					Result.extend (utf8_to_utf32 (co.generating_type))
-				else
-					-- second column: RM type name
-					Result.extend ("")
-
-					-- third column: AOM type
-					Result.extend ("")
-				end
-
-				-- add an empty column to help display on all platforms
+				-- third column: AOM type
 				Result.extend ("")
 			end
+
+			-- add an empty column to help display on all platforms
+			Result.extend ("")
 		end
 
 	interface_row (a_path: STRING): ARRAYED_LIST [STRING_32]
