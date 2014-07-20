@@ -21,7 +21,7 @@ inherit
 		rename
 			make as cco_make
 		redefine
-			out, enter_subtree, exit_subtree
+			c_congruent_to, out, enter_subtree, exit_subtree
 		end
 
 create
@@ -52,6 +52,16 @@ feature -- Access
 			create og_path.make_from_string (path)
 			og_path.last.set_object_id (archetype_ref)
 			Result := og_path.as_string
+		end
+
+feature -- Comparison
+
+	c_congruent_to (other: like Current): BOOLEAN
+			-- <precursor>
+			-- plus added difference:
+			--	archetype_ref differs
+		do
+			Result := precursor (other) and archetype_ref.is_equal (other.archetype_ref)
 		end
 
 feature -- Modification

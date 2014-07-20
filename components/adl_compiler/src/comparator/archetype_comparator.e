@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	INTERNAL
+		export
+			{NONE} all
+		end
+
 create
 	make, make_create_differential
 
@@ -145,32 +150,28 @@ feature -- Comparison
 
 			-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
 			across inherited_subtree_list as subtree_csr loop
-				if attached {C_OBJECT} subtree_csr.item as cco then
-					-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
-					-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
-					-- the RM schema
-					if attached cco.parent and (cco.parent.cardinality = Void or else cco.parent.is_ordered) then
-						if attached {C_OBJECT} cco.parent.child_after (cco) as cco_next and then
-							cco_next.specialisation_status = ss_added
-						then
-							cco_next.set_sibling_order_after (cco.node_id)
-						end
-						if attached {C_OBJECT} cco.parent.child_before (cco) as cco_prev and then
-							cco_prev.specialisation_status = ss_added
-						then
-							cco_prev.set_sibling_order_before (cco.node_id)
-						end
+				-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
+				-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
+				-- the RM schema
+				if attached {C_OBJECT} subtree_csr.item as co and then attached co.parent as ca_parent and then
+					(ca_parent.cardinality = Void or else ca_parent.is_ordered)
+				then
+					if attached {C_OBJECT} ca_parent.child_after (co) as co_next and then co_next.specialisation_status = ss_added then
+						co_next.set_sibling_order_after (co.node_id)
+					end
+					if attached {C_OBJECT} ca_parent.child_before (co) as co_prev and then co_prev.specialisation_status = ss_added then
+						co_prev.set_sibling_order_before (co.node_id)
 					end
 				end
 			end
 
 			-- now remove inherited subtrees
 			across inherited_subtree_list as subtree_csr loop
-				if attached {C_OBJECT} subtree_csr.item as cco then
-					if attached cco.parent then
-						cco.parent.remove_child (cco)
+				if attached {C_OBJECT} subtree_csr.item as co then
+					if attached co.parent then
+						co.parent.remove_child (co)
 					else
-						-- cco must be the parent, which means the entire definition is a copy of that from the parent archetype
+						-- co must be the parent, which means the entire definition is a copy of that from the parent archetype
 					end
 				elseif attached {C_ATTRIBUTE} subtree_csr.item as c_attr then
 					c_attr.parent.remove_attribute (c_attr)
@@ -247,8 +248,7 @@ feature -- Comparison
 feature {NONE} -- Implementation
 
 	child_node_compare (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- set specialisation status markers in `a_c_node' based on comparison with
-			-- parent
+			-- set specialisation status markers in `a_c_node' based on comparison with parent
 		local
 			ca_in_flat_anc: C_ATTRIBUTE
 			co_in_flat_anc: C_OBJECT
@@ -270,17 +270,14 @@ feature {NONE} -- Implementation
 					end
 				end
 
-			-- C_ARCHETYPE_ROOT - either a slot filler, or a direct external reference with no parent slot
-			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car_child then
-				car_child.set_specialisation_status_redefined
-
 			-- other kind of C_OBJECT
 			elseif attached {C_OBJECT} a_c_node as co_child then
 				create apa.make_from_string (a_c_node.path)
 				path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
 				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 
-				node_congruent := co_child.c_congruent_to (co_in_flat_anc)
+				-- if AOM types different, then it's not congruent, else call congruent_to () on objects to find out
+				node_congruent := dynamic_type (co_in_flat_anc) = dynamic_type (co_child) and then co_child.c_congruent_to (co_in_flat_anc)
 
 				-- if occurrences different, or node_id different, or RM type different or else primitive object constraint different
 				if not node_congruent or else not co_child.node_id.is_equal (co_in_flat_anc.node_id) then
@@ -289,7 +286,10 @@ feature {NONE} -- Implementation
 					co_child.set_specialisation_status_inherited
 				end
 
-				if node_congruent and attached {C_COMPLEX_OBJECT} co_child and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf and then
+				-- mark this node as path_compressible if it is congruent, it's a CCO redefining a CCO, its parent C_ATTR is path-compressible
+				-- and its flat ancestor counterpart CCO has attributes. We use the `is_c_complex_object_type' to make sure both objects really
+				-- are C_COMPLEX_OBJECTs to discount them being C_ARCHETYPE_ROOTs
+				if node_congruent and is_c_complex_object_type (co_child) and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf and then
 					(co_child.is_root or else co_child.parent.is_path_compressible and cco_pf.has_attributes)
 				then
 					co_child.set_is_path_compressible
@@ -315,6 +315,12 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (a_c_node.path)
 				Result := flat_ancestor.has_attribute_path (apa.path_at_level (flat_ancestor.specialisation_depth))
 			end
+		end
+
+	is_c_complex_object_type (co: C_OBJECT): BOOLEAN
+			-- True if `co' has dynamic type attached C_COMPLEX_OBJECT
+		do
+			Result := attached_type (dynamic_type (co)) = ({C_COMPLEX_OBJECT}).type_id
 		end
 
 end

@@ -153,12 +153,12 @@ feature -- Access
 			Result := children.count
 		end
 
-	first_child: detachable C_OBJECT
+	first_child: C_OBJECT
 			-- obtain first child if there are children
+		require
+			child_count > 0
 		do
-			if child_count > 1 then
-				Result := children.first
-			end
+			Result := children.first
 		end
 
 	child_before (an_obj: C_OBJECT): detachable C_OBJECT
@@ -239,6 +239,18 @@ feature -- Access
 			end
 		end
 
+	children_with_rm_type_name_count (a_type_name: STRING): INTEGER
+			-- number of child nodes with rm_type_name = `a_type_name'
+		require
+			Type_name_valid: not a_type_name.is_empty
+		do
+			across children as child_csr loop
+				if child_csr.item.rm_type_name.is_equal (a_type_name) then
+					Result := Result + 1
+				end
+			end
+		end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN
@@ -310,18 +322,6 @@ feature -- Status Report
 			Type_name_valid: not a_type_name.is_empty
 		do
 			Result := across children as child_csr some child_csr.item.rm_type_name.is_equal (a_type_name) end
-		end
-
-	children_with_rm_type_name_count (a_type_name: STRING): INTEGER
-			-- number of child nodes with rm_type_name = `a_type_name'
-		require
-			Type_name_valid: not a_type_name.is_empty
-		do
-			across children as child_csr loop
-				if child_csr.item.rm_type_name.is_equal (a_type_name) then
-					Result := Result + 1
-				end
-			end
 		end
 
 	has_child_matching (match_agt: FUNCTION [ANY, TUPLE [C_OBJECT], BOOLEAN]): BOOLEAN
@@ -506,7 +506,7 @@ feature -- Modification
 			has_child_with_id (an_obj.node_id)
 		end
 
-	put_sibling_child (an_obj: C_OBJECT)
+	put_sibling_child (an_obj: C_OBJECT; to_right: BOOLEAN)
 			-- put a new child node after any sibling that is already there
 			-- 'sibling' is defined as an object with a node_id with the same parent as the node_id of `an_obj';
 			-- usually it is a specialised node id with a common parent, but may be a top level id
@@ -520,7 +520,11 @@ feature -- Modification
 			parent_id := specialisation_parent_from_code (an_obj.node_id)
 			siblings := children_matching_id (parent_id)
 			if not siblings.is_empty then
-				put_child_right (an_obj, siblings.last)
+				if to_right then
+					put_child_right (an_obj, siblings.last)
+				else
+					put_child_left (an_obj, siblings.first)
+				end
 			else
 				put_child (an_obj)
 			end
@@ -612,17 +616,17 @@ feature -- Modification
 			a_flat_obj.overlay_differential (diff_obj, rm_type_conformance_checker)
 		end
 
-	convert_to_ghost
-			-- Remove all children and cardinality - represents a removed node within a flat archetype.
-			-- In an editing context, this enables diff form to be regenerated for saving
-		do
-			remove_all_children
-			remove_cardinality
-			set_specialisation_status_redefined
-		ensure
-			Marked_as_redefined: specialisation_status = {SPECIALISATION_STATUSES}.ss_redefined
-			Cardinality_removed: not attached cardinality
-		end
+--	convert_to_ghost
+--			-- Remove all children and cardinality - represents a removed node within a flat archetype.
+--			-- In an editing context, this enables diff form to be regenerated for saving
+--		do
+--			remove_all_children
+--			remove_cardinality
+--			set_specialisation_status_redefined
+--		ensure
+--			Marked_as_redefined: specialisation_status = {SPECIALISATION_STATUSES}.ss_redefined
+--			Cardinality_removed: not attached cardinality
+--		end
 
 feature -- Validation
 
