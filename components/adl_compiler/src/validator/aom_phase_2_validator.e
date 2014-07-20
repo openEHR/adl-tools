@@ -28,12 +28,6 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
-		export
-			{NONE} all;
-			{ANY} is_valid_code
-		end
-
 create
 	initialise
 

@@ -643,7 +643,7 @@ feature {NONE} -- Implementation
 				across tuples_cco_csr.item.attribute_tuples as c_attr_tuples_csr loop
 					-- C_A_T's C_ATTRIBUTEs
 					across c_attr_tuples_csr.item.members as c_attr_csr loop
-						if attached {C_TERMINOLOGY_CODE} c_attr_csr.item.first_child then
+						if c_attr_csr.item.has_children and then attached {C_TERMINOLOGY_CODE} c_attr_csr.item.first_child then
 							vset.wipe_out
 							-- iterate C_OBJECTs in this C_ATTRIBUTE; should all be of same AOM meta-type
 							across c_attr_csr.item.children as c_obj_csr loop
