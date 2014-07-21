@@ -647,7 +647,7 @@ end
 		local
 			co_child_diff, new_obj: C_OBJECT
 			node_id_in_flat: STRING
-			co_output_insert_pos: detachable C_OBJECT
+			co_output_insert_pos, co_output_del_pos_sibling: detachable C_OBJECT
 			i: INTEGER
 		do
 			co_output_insert_pos := merge_desc.co_output_insert_pos
@@ -700,11 +700,12 @@ end
 					if co_child_diff.is_prohibited then
 						-- capture insert point before doing deletion
 						if attached ca_output.child_after (co_output_insert_pos) as ch then
-							co_output_insert_pos := ch
+							co_output_del_pos_sibling := ch
 						elseif attached ca_output.child_before (co_output_insert_pos) as ch then
-							co_output_insert_pos := ch
+							co_output_del_pos_sibling := ch
 						end
 						ca_output.remove_child (co_output_insert_pos)
+						co_output_insert_pos := co_output_del_pos_sibling
 
 					else
 						new_obj := co_child_diff.safe_deep_twin
