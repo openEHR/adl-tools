@@ -164,9 +164,12 @@ feature -- Events
 	on_select_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source as src and attached selected_language as sel_lang then
+			if attached ev_notebook.selected_item as att_sel_item and then attached {GUI_ARCHETYPE_TARGETTED_TOOL} att_sel_item.data as arch_tool
+				and attached source as src and attached selected_language as sel_lang
+			then
 				-- do anything required when tool becomes visible again
 				arch_tool.on_selected
+				set_default_tool_tab (Tool_tab_reverse_index.item (ev_notebook.item_tab (att_sel_item).text))
 
 				-- update content if out of date in any way
 				if arch_tool.can_populate (src) and then tool_populate_required (arch_tool) then
