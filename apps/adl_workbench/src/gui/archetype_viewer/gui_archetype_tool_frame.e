@@ -233,6 +233,7 @@ feature {NONE} -- Events
 				(not differential_flag and differential_view)  -- changing from diff to flat
 			then
 				differential_view := differential_flag
+				set_show_flat_form (not differential_view)
 				set_view_tab_texts
 				on_select_notebook
 			end
