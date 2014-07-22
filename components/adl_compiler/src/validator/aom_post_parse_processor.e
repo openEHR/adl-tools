@@ -225,15 +225,21 @@ feature {NONE} -- Implementation
 					co_parent.remove_attribute (ca)
 				end
 
-			-- guaranteed to be only specialised archetype nodes here
-			elseif attached {C_OBJECT} a_c_node as co_child_diff and then attached co_child_diff.occurrences as ccd_occ and attached flat_ancestor as fa then
-				create apa.make_from_string (a_c_node.path)
-				if not apa.is_phantom_path_at_level (fa.specialisation_depth) then
-					co_path_in_flat := apa.path_at_level (fa.specialisation_depth)
-					if fa.has_object_path (co_path_in_flat) then
-						co_in_flat_anc := fa.object_at_path (co_path_in_flat)
-						if attached co_in_flat_anc.occurrences as cpf_occ and then ccd_occ.is_equal (cpf_occ) then
-							co_child_diff.remove_occurrences
+			elseif attached {C_OBJECT} a_c_node as co_child_diff and then attached co_child_diff.occurrences as ccd_occ then
+				-- for all archetypes, remove unnecessary occurrences of {0..*}
+				if ccd_occ.is_open then
+					co_child_diff.remove_occurrences
+				-- specialised archetype nodes - if local occurrences exists and is a copy of that in parent, remove it
+				elseif attached flat_ancestor as fa then
+					create apa.make_from_string (a_c_node.path)
+					-- node redefines something in parent; check if it is a duplicate
+					if not apa.is_phantom_path_at_level (fa.specialisation_depth) then
+						co_path_in_flat := apa.path_at_level (fa.specialisation_depth)
+						if fa.has_object_path (co_path_in_flat) then
+							co_in_flat_anc := fa.object_at_path (co_path_in_flat)
+							if attached co_in_flat_anc.occurrences as cpf_occ and then ccd_occ.is_equal (cpf_occ) then
+								co_child_diff.remove_occurrences
+							end
 						end
 					end
 				end
