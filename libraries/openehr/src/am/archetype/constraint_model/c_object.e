@@ -95,8 +95,8 @@ feature -- Comparison
 			--	node_id is identical or else is the only child that overlays the parent node
 		do
 			Result := rm_type_name.is_case_insensitive_equal (other.rm_type_name) and
-				(occurrences ~ other.occurrences) and
-				(sibling_order ~ other.sibling_order) and
+				(not attached occurrences or else occurrences ~ other.occurrences) and
+				(not attached sibling_order or else sibling_order ~ other.sibling_order) and
 				node_reuse_congruent (other)
 		end
 
