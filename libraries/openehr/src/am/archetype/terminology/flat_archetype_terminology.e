@@ -54,7 +54,7 @@ feature {ARCHETYPE_FLATTENER} -- Modification
 
 			-- term definitions
 			across other.term_codes as other_codes_csr loop
-				merge_specialised_term_definition (other.term_definitions_for_code (other_codes_csr.item).deep_twin, other_codes_csr.item)
+				put_definition_and_translations (other.term_definitions_for_code (other_codes_csr.item).deep_twin, other_codes_csr.item)
 			end
 
 			-- terminology bindings; these are sparse and don't work like term defnition translations so
@@ -137,30 +137,6 @@ feature {ARCHETYPE_TERMINOLOGY} -- Implementation
 		end
 
 feature {NONE} -- Implementation
-
-	merge_specialised_term_definition (a_child_term_defs: HASH_TABLE [ARCHETYPE_TERM, STRING]; a_child_code: STRING)
-			-- put `a_child_term_defs', which are term definitions keyed by language from a specialised child terminology
-			-- into this flat terminology, if necessary, removing any parent version for a parent code of `a_child_code'
-		require
-			not has_code (a_child_code)
-		local
-			code_in_parent: STRING
-			spec_depth: INTEGER
-		do
-			-- determine for parent code that might exist in this flat terminology
-			if is_refined_code (a_child_code) then
-				code_in_parent := a_child_code
-				from spec_depth := specialisation_depth until spec_depth = 0 or has_code (code_in_parent) loop
-					spec_depth := spec_depth - 1
-					code_in_parent := code_at_level (a_child_code, spec_depth)
-				end
-
-				if has_code (code_in_parent) then
-					remove_definition (code_in_parent)
-				end
-			end
-			put_definition_and_translations (a_child_term_defs, a_child_code)
-		end
 
 	merge_specialised_term_binding (a_binding: URI; a_terminology_id, a_child_code: STRING)
 			-- merge the binding a_code/a_binding into this terminology, if necessary
