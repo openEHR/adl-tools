@@ -22,7 +22,8 @@ feature -- Definitions
 	Cs_validated_phase_2: INTEGER = 52
 	Cs_validated: INTEGER = 53
 	Cs_invalid: INTEGER = -1
-	cs_lineage_invalid: INTEGER = -10
+	Cs_lineage_invalid: INTEGER = -10
+	Cs_supplier_loop: INTEGER = -15
 	Cs_parse_failed: INTEGER = -20
 	Cs_convert_legacy_failed: INTEGER = -21
 	cs_suppliers_invalid: INTEGER = -30
@@ -45,6 +46,7 @@ feature -- Access
 			Result.put("Validated phase 2", Cs_validated_phase_2)
 			Result.put("Validated", Cs_validated)
 			Result.put("Invalid", Cs_invalid)
+			Result.put("Supplier loop", Cs_supplier_loop)
 			Result.put("Lineage invalid", Cs_lineage_invalid)
 			Result.put("Parse failed", Cs_parse_failed)
 			Result.put("Convert legacy .adl failed", Cs_convert_legacy_failed)
@@ -59,6 +61,7 @@ feature -- Access
 			create Result.make(0)
 			Result.extend(Cs_invalid)
 			Result.extend(Cs_lineage_invalid)
+			Result.extend(Cs_supplier_loop)
 			Result.extend(Cs_parse_failed)
 			Result.extend(Cs_convert_legacy_failed)
 			Result.extend(cs_suppliers_invalid)

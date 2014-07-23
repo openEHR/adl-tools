@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (726)
+			create message_table.make (727)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -146,6 +146,7 @@ feature -- Initialisation
 			message_table.put ("Syntax error: terminology not specified", ec_STCNT)
 			message_table.put ("specialised archetype id not based on specialisation parent archetype id", ec_VASID)
 			message_table.put ("specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)", ec_VALC)
+			message_table.put ("Inheritance loop detected: supplier $1 inherits current archetype", ec_VINH)
 			message_table.put ("translations key '$1' does not match translation item language '$2'", ec_VTRLA)
 			message_table.put ("resource detail key '$1' does not match resource detail item language '$2'", ec_VRDLA)
 			message_table.put ("archetype id type $1 does not match type $2 in definition section", ec_VARDT)

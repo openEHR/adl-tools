@@ -322,10 +322,39 @@ feature -- Relationships
 
 	suppliers_index: detachable HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
 			-- list of descriptors of slot fillers or other external references, keyed by archetype id
-			-- currently generated only from C_ARCHETYPE_ROOT index in archetype
+			-- currently generated only from C_ARCHETYPE_ROOT index in differential archetype
 
 	clients_index: detachable ARRAYED_LIST [STRING]
 			-- list of archetype_ids of archetypes that use this archetype
+
+	slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+			-- list of Archetype ids matching slot definitions of `differential_archetype', keyed by slot path
+			-- Current slot logic of include/exclude lists:
+			-- 	IF includes not empty and /= 'any' THEN
+			-- 		IF not excludes empty THEN -- excludes must = any; means not a recommendation
+			--			create match list = includes constraint
+			--		ELSE -- it is just a recommendation;formally it means match all
+			--			create match list = all archetypes of compatible RM type
+			--		END
+			--	ELSEIF excludes not empty and /= 'any' THEN
+			-- 		IF not includes empty THEN -- includes must = any; means not a recommendation
+			--			create match list = all achetypes - excludes constraint matchlist
+			--		ELSE -- just a recommendation; formally it means match all
+			--			create match list = all archetypes of compatible RM type
+			--		END
+			--  ELSE
+			--		create match list = all archetypes of compatible RM type
+			--	END
+		require
+			compilation_state >= Cs_validated_phase_1
+		do
+			if not attached slot_id_index_cache then
+				compute_slot_id_index
+			end
+			check attached slot_id_index_cache as sic then
+				Result := sic
+			end
+		end
 
 	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE
 		do
@@ -334,11 +363,18 @@ feature -- Relationships
 			end
 		end
 
-	has_ancestor (an_anc: ARCH_LIB_ARCHETYPE): BOOLEAN
+	has_ancestor_descriptor (an_anc: ARCH_LIB_ARCHETYPE): BOOLEAN
 			-- True if this archetype has `an_anc' as an ancestor
 		do
 			Result := attached specialisation_ancestor as att_ala and then (att_ala = an_anc or else
-				att_ala.has_ancestor (an_anc))
+				att_ala.has_ancestor_descriptor (an_anc))
+		end
+
+	has_ancestor (an_arch_id: STRING): BOOLEAN
+			-- True if this archetype has `an_arch_id' among its an ancestors
+		do
+			Result := attached specialisation_ancestor as att_ala and then (att_ala.id.as_string.is_equal (an_arch_id) or else
+				att_ala.has_ancestor (an_arch_id))
 		end
 
 	is_specialised: BOOLEAN
@@ -361,6 +397,12 @@ feature -- Relationships
 
 	has_artefacts: BOOLEAN = True
 			-- True if there are any archetypes at or below this point
+
+	has_flat_supplier (an_arch_id: STRING): BOOLEAN
+			-- True if this archetype or any ancestor has `an_arch_id' in its suppliers list
+		do
+			Result := suppliers_index.has (an_arch_id) or else attached specialisation_ancestor as att_anc and then att_anc.has_flat_supplier (an_arch_id)
+		end
 
 feature {ARCH_LIB_ARCHETYPE} -- Relationships
 
@@ -484,35 +526,6 @@ feature -- Compilation
 
 	last_modify_timestamp: DATE_TIME
 			-- Modification timestamp of `differential_archetype' due to editing
-
-	slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
-			-- list of Archetype ids matching slots, keyed by slot path
-			-- Current slot logic of include/exclude lists:
-			-- 	IF includes not empty and /= 'any' THEN
-			-- 		IF not excludes empty THEN -- excludes must = any; means not a recommendation
-			--			create match list = includes constraint
-			--		ELSE -- it is just a recommendation;formally it means match all
-			--			create match list = all archetypes of compatible RM type
-			--		END
-			--	ELSEIF excludes not empty and /= 'any' THEN
-			-- 		IF not includes empty THEN -- includes must = any; means not a recommendation
-			--			create match list = all achetypes - excludes constraint matchlist
-			--		ELSE -- just a recommendation; formally it means match all
-			--			create match list = all archetypes of compatible RM type
-			--		END
-			--  ELSE
-			--		create match list = all archetypes of compatible RM type
-			--	END
-		require
-			compilation_state >= Cs_validated_phase_1
-		do
-			if not attached slot_id_index_cache then
-				compute_slot_id_index
-			end
-			check attached slot_id_index_cache as sic then
-				Result := sic
-			end
-		end
 
 	compiler_error_type: INTEGER
 			-- generate value from COMPILER_ERROR_TYPES as index for error classification elsewhere
@@ -826,6 +839,11 @@ feature {NONE} -- Compilation
 			differential_archetype := adl_15_engine.parse (source_text, Current)
 		 	compilation_state := Cs_parsed
 			if attached differential_archetype as diff_arch then
+				-- determine what language to view archetype in
+				if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
+					set_archetype_view_language (diff_arch.original_language.code_string)
+				end
+
 				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_parent_ref and then not pid.as_string.starts_with (da_parent_ref) then
 					add_warning (ec_parse_w1, <<id.as_string, pid.as_string, da_parent_ref>>)
 				else
@@ -852,7 +870,6 @@ feature {NONE} -- Compilation
 		end
 
 	evaluate_suppliers
-			-- Parse archetype, in differential form if available, else in legacy flat form.
 			-- Comilation state changes:
 			-- has suppliers: Cs_parsed --> Cs_suppliers_known
 			-- no suppliers: Cs_parsed --> Cs_ready_to_validate
@@ -865,7 +882,8 @@ feature {NONE} -- Compilation
 				diff_arch := da
 			end
 
-			-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid an infinite recursion
+			-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid
+			-- an infinite recursion
 			create suppliers_index.make (0)
 			across diff_arch.suppliers_index as supp_idx_csr loop
 				if current_arch_lib.has_archetype_id_for_ref (supp_idx_csr.key) and then
@@ -876,17 +894,22 @@ feature {NONE} -- Compilation
 				end
 			end
 			if not suppliers_index.is_empty then
-				compilation_state := Cs_suppliers_known
+				-- the following check determines if any of the current archetype's suppliers has the current
+				-- archetype as an ancestor
+				across suppliers_index as supp_idx_csr loop
+					if supp_idx_csr.item.has_ancestor_descriptor (Current) then
+						compilation_state := Cs_supplier_loop
+						add_error (ec_VINH, <<supp_idx_csr.item.id.as_string>>)
+					end
+				end
+				if not has_errors then
+					compilation_state := Cs_suppliers_known
+				end
 			else
 				compilation_state := Cs_ready_to_validate
 			end
-
-			-- determine what language to view archetype in
-			if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
-				set_archetype_view_language (diff_arch.original_language.code_string)
-			end
 		ensure
-			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate
+			Compilation_state: (<<Cs_suppliers_known, Cs_supplier_loop, Cs_ready_to_validate>>).has (compilation_state)
 		end
 
 	validate

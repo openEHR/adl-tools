@@ -12,6 +12,7 @@ templates = <
 	["en"] = <
 		["VASID"] = <"specialised archetype id not based on specialisation parent archetype id">
 		["VALC"] = <"specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)">
+		["VINH"] = <"Inheritance loop detected: supplier $1 inherits current archetype">
 
 		-- description
 		["VTRLA"] = <"translations key '$1' does not match translation item language '$2'">

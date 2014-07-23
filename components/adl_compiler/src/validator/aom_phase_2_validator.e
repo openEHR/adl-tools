@@ -246,7 +246,7 @@ end
 
 					-- matching archetype exists, but not same as or else in lineage of parent archetype
 					elseif not car.archetype_ref.is_equal (parent_car.archetype_ref) and
-						not current_arch_lib.matching_archetype (car.archetype_ref).has_ancestor (current_arch_lib.matching_archetype (parent_car.archetype_ref))
+						not current_arch_lib.matching_archetype (car.archetype_ref).has_ancestor_descriptor (current_arch_lib.matching_archetype (parent_car.archetype_ref))
 					then
 						add_error (ec_VARXAV, <<co_child_annotated_path, car.archetype_ref, parent_car.archetype_ref>>)
 					end

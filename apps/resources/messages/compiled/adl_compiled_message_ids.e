@@ -131,6 +131,7 @@ feature -- Definitions
 		ec_STCNT: STRING = "STCNT"
 		ec_VASID: STRING = "VASID"
 		ec_VALC: STRING = "VALC"
+		ec_VINH: STRING = "VINH"
 		ec_VTRLA: STRING = "VTRLA"
 		ec_VRDLA: STRING = "VRDLA"
 		ec_VARDT: STRING = "VARDT"

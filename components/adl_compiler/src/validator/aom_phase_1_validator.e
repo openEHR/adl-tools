@@ -1,9 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "[
-				 Validator of standalone archetype i.e. without need of flattened parent archetype
-				 in the case of specialised archetypes.
-		         ]"
+	description: "Validator of basic archetype structure, and terminology."
 	keywords:    "constraint model"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
