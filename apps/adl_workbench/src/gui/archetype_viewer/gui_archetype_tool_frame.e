@@ -163,13 +163,24 @@ feature -- Events
 
 	on_select_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
+		local
+			static_tab_text: STRING
+			paren_pos: INTEGER
 		do
 			if attached ev_notebook.selected_item as att_sel_item and then attached {GUI_ARCHETYPE_TARGETTED_TOOL} att_sel_item.data as arch_tool
 				and attached source as src and attached selected_language as sel_lang
 			then
 				-- do anything required when tool becomes visible again
 				arch_tool.on_selected
-				set_default_tool_tab (Tool_tab_reverse_index.item (ev_notebook.item_tab (att_sel_item).text))
+
+				-- Some tab texts have variable text parts in () after the static text part - need to remove this
+				create static_tab_text.make_from_string (ev_notebook.item_tab (att_sel_item).text)
+				paren_pos := static_tab_text.index_of ('(', 1)
+				if paren_pos > 0 then
+					static_tab_text.keep_head (paren_pos - 1)
+					static_tab_text.right_adjust
+				end
+				set_default_tool_tab (Tool_tab_reverse_index.item (static_tab_text))
 
 				-- update content if out of date in any way
 				if arch_tool.can_populate (src) and then tool_populate_required (arch_tool) then
