@@ -166,12 +166,6 @@ feature -- Application Switches
 			app_cfg.put_value ("/general/archetype_view_language", a_lang)
 		end
 
-	old_repository_config_table_path: STRING
-			-- path of the old REPOSITORY_PROFILE_CONFIG within the parent object representing the whole .cfg file
-		once
-			Result := "/" + {REPOSITORY_PROFILE_CONFIG}.root_attribute_name
-		end
-
 	repository_config_table_path: STRING
 			-- path of the REPOSITORY_CONFIG_TABLE within the parent object representing the whole .cfg file
 		once
@@ -199,12 +193,7 @@ feature -- Application Switches
 			if attached repository_config_table_cache.item as pci then
 				Result := pci
 			else
-				if app_cfg.has_resource (old_repository_config_table_path) and then
-					attached {REPOSITORY_PROFILE_CONFIG} app_cfg.object_value (old_repository_config_table_path, ({REPOSITORY_PROFILE_CONFIG}).name) as op
-				then
-					create Result.make_from_old (op)
-					app_cfg.remove_resource (old_repository_config_table_path)
-				elseif attached {REPOSITORY_CONFIG_TABLE} app_cfg.object_value (repository_config_table_path, ({REPOSITORY_CONFIG_TABLE}).name) as p then
+				if attached {REPOSITORY_CONFIG_TABLE} app_cfg.object_value (repository_config_table_path, ({REPOSITORY_CONFIG_TABLE}).name) as p then
 					Result := p
 				else
 					create Result.default_create

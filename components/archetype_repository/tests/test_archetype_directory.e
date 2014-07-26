@@ -87,7 +87,7 @@ feature -- Test routines
 		note
 			testing: "covers/{ARCHETYPE_CATALOGUE}.populate"
 		do
-			assert_equal (test_repository, current_arch_lib.repository_access.reference_repository.full_path)
+			assert_equal (test_repository, current_arch_lib.library_access.primary_source.full_path)
 			assert_equal (0, current_arch_lib.compile_attempt_count)
 		--	assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 		end

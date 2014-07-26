@@ -52,9 +52,6 @@ feature -- Access
 			end
 			if not arch_libs.has (curr_prof) or else refresh then
 				create prof_repo_access.make (repository_config_table.current_reference_repository_path)
-				if repository_config_table.current_repository.has_work_path then
-					prof_repo_access.set_work_repository (repository_config_table.current_work_repository_path)
-				end
 				create new_cat.make (prof_repo_access)
 				new_cat.populate
 				arch_libs.force (new_cat, curr_prof) -- replace original copy if it was there
@@ -72,10 +69,7 @@ feature -- Status Report
 			-- check validity of repository directories etc - can it be created and loaded?
 		do
 			Result := repository_config_table.has_repository (a_lib_name) and
-				directory_exists (repository_config_table.repository (a_lib_name).reference_path) and
-				(repository_config_table.repository (a_lib_name).has_work_path implies
-					attached repository_config_table.repository (a_lib_name).work_path as wr_dir and then
-					directory_exists (wr_dir))
+				directory_exists (repository_config_table.repository (a_lib_name).reference_path)
 
 			-- TODO: potentially other checks as well
 		end
@@ -96,10 +90,6 @@ feature -- Status Report
 				Result := get_msg (ec_invalid_library_cfg, <<a_lib_name>>)
 			elseif not directory_exists (repository_config_table.repository (a_lib_name).reference_path) then
 				Result := get_msg (ec_ref_library_not_found, <<repository_config_table.repository (a_lib_name).reference_path>>)
-			elseif repository_config_table.repository (a_lib_name).has_work_path and then
-				attached repository_config_table.repository (a_lib_name).work_path as wr_dir and then not directory_exists (wr_dir)
-			then
-				Result := get_msg (ec_work_library_not_found, <<wr_dir>>)
 			end
 		end
 

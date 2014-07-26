@@ -106,24 +106,6 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ref_path_ctl.ev_root_container)
 			gui_controls.extend (ref_path_ctl)
 
-			-- work path display control
-			create work_path_ctl.make_readonly (get_text (ec_work_library_text),
-				agent :STRING
-					do
-						create Result.make_empty
-						check attached selected_library_key as spk then
-							if rep_config_table_copy.repository (spk).has_work_path and then
-								attached rep_config_table_copy.repository (spk).work_path as wrep
-							then
-								Result := wrep
-							end
-						end
-					end,
-				0, 0, True)
-			ev_root_container.extend (work_path_ctl.ev_root_container)
-			ev_root_container.disable_item_expand (work_path_ctl.ev_root_container)
-			gui_controls.extend (work_path_ctl)
-
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
@@ -328,7 +310,7 @@ feature {NONE} -- Implementation
 
 	library_frame_ctl: EVX_FRAME_CONTROL
 
-	ref_path_ctl, work_path_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
+	ref_path_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	configs_list: EV_LIST
 

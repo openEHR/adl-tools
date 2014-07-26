@@ -83,14 +83,6 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ref_dir_setter.ev_root_container)
 			gui_controls.extend (ref_dir_setter)
 
-			-- ============ Work path ============
-			create work_dir_setter.make (get_text (ec_work_library_dir_text), agent :detachable STRING do Result := work_dir end, 0, 0)
-			work_dir_setter.set_default_directory_agent (agent :STRING do Result := ref_dir end)
-			work_dir_setter.set_default_directory_agent (agent :STRING do Result := application_startup_directory end)
-			ev_root_container.extend (work_dir_setter.ev_root_container)
-			ev_root_container.disable_item_expand (work_dir_setter.ev_root_container)
-			gui_controls.extend (work_dir_setter)
-
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
@@ -131,7 +123,6 @@ feature -- Events
 				library_name.replace_substring_all (" ", "_")
 			end
 			ref_dir := ref_dir_setter.data_control_text
-			work_dir := work_dir_setter.data_control_text
 
 			-- now validate the name with respect to existing repositories			
 			-- first see if it is non-empty and unique
@@ -150,18 +141,6 @@ feature -- Events
 					create error_dialog.make_with_text (get_msg_line (ec_ref_library_not_found, <<ref_dir>>))
 					error_dialog.show_modal_to_window (Current)
 
-				elseif attached work_dir as wd and then not wd.is_empty then -- now work path			
-					if directory_exists (wd) then
-						if not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (wd)) then
-							is_valid := True
-						else
-							create error_dialog.make_with_text (get_msg_line (ec_work_library_not_valid, <<wd, ref_dir>>))
-							error_dialog.show_modal_to_window (Current)
-						end
-					else
-						create error_dialog.make_with_text (get_msg_line (ec_work_library_not_found, <<wd>>))
-						error_dialog.show_modal_to_window (Current)
-					end
 				else -- there was no work path
 					is_valid := True
 				end
@@ -169,7 +148,7 @@ feature -- Events
 
 			if is_valid then
 				if is_new_library then
-					create a_repo_cfg.make (ref_dir, work_dir)
+					create a_repo_cfg.make (ref_dir)
 					repo_config_table.put_repository (a_repo_cfg, library_name)
 					has_changed_library := True
 
@@ -182,10 +161,6 @@ feature -- Events
 					a_repo_cfg := repo_config_table.repository (library_name)
 					if a_repo_cfg.reference_path /~ ref_dir then
 						a_repo_cfg.set_reference_path (ref_dir)
-						has_changed_library := True
-					end
-					if a_repo_cfg.work_path /~ work_dir and attached work_dir as wd then
-						a_repo_cfg.set_work_path (wd)
 						has_changed_library := True
 					end
 				end
@@ -204,17 +179,11 @@ feature -- Access
 	initial_ref_dir: STRING
 			-- initial value of reference directory, based on whether `initial_library_name' was set
 
-	initial_work_dir: detachable STRING
-			-- initial value of work directory, based on whether `initial_library_name' was set
-
 	library_name: STRING
 			-- current value of library name based on choosing so far
 
 	ref_dir: STRING
 			-- current value of reference directory setting based on choosing so far
-
-	work_dir: detachable STRING
-			-- current value of work directory setting based on choosing so far
 
 feature -- Status Report
 
@@ -252,7 +221,6 @@ feature {NONE} -- Implementation
 			if is_new_library then
 				if repo_config_table.has_current_repository then
 					initial_ref_dir := repo_config_table.current_reference_repository_path
-					initial_work_dir := repo_config_table.current_work_repository_path
 				else
 					initial_ref_dir := user_config_file_directory
 				end
@@ -260,18 +228,12 @@ feature {NONE} -- Implementation
 			else
 				check attached initial_library_name as irn and then attached repo_config_table.repository (irn) as repo then
 					initial_ref_dir := repo.reference_path
-					if repo.has_work_path and then attached repo.work_path as wr then
-						initial_work_dir := wr
-					end
 				end
 				library_name := initial_library_name.twin
 			end
 
 			-- set current values
 			ref_dir := initial_ref_dir.twin
-			if attached initial_work_dir as iwd then
-				work_dir := iwd.twin
-			end
 		end
 
 	ev_root_container: EV_VERTICAL_BOX
@@ -280,7 +242,7 @@ feature {NONE} -- Implementation
 
 	library_name_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
-	ref_dir_setter, work_dir_setter: EVX_DIRECTORY_SETTER
+	ref_dir_setter: EVX_DIRECTORY_SETTER
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 

@@ -74,10 +74,10 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_profile_repo_access: LIBRARY_ACCESS)
+	make (a_lib_access: LIBRARY_ACCESS)
 		do
 			clear
-			repository_access := a_profile_repo_access
+			library_access := a_lib_access
 			if not semantic_item_tree_prototype.has_children then
 				initialise_semantic_item_tree_prototype
 				clone_semantic_item_tree_prototype
@@ -87,7 +87,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	repository_access: LIBRARY_ACCESS
+	library_access: LIBRARY_ACCESS
 			-- the repository profile accessor from which this library gets its contents
 
 	archetype_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
@@ -220,7 +220,7 @@ feature -- Status Report
 	adhoc_path_valid (a_full_path: STRING): BOOLEAN
 			-- True if path is valid in adhoc repository
 		do
-			Result := repository_access.adhoc_source_repository.is_valid_path (a_full_path)
+			Result := library_access.adhoc_source.is_valid_path (a_full_path)
 		end
 
 	has_item (an_item: ARCH_LIB_ITEM): BOOLEAN
@@ -282,13 +282,10 @@ feature -- Commands
 		end
 
 	populate
-			-- populate all indexes from repository source
+			-- populate all indexes from library source
 		do
-			-- populate source repos from physical medium
-			across repository_access.repositories as profile_repos_csr loop
-				profile_repos_csr.item.populate
-				errors.append (profile_repos_csr.item.errors)
-			end
+			library_access.primary_source.populate
+			errors.append (library_access.primary_source.errors)
 
 			populate_semantic_indexes
 			populate_filesys_indexes
@@ -304,10 +301,8 @@ feature -- Modification
 			aof: APP_OBJECT_FACTORY
 		do
 			create aof
-			check attached repository_access.reference_repository as ref_repo then
-				put_archetype (aof.create_arch_cat_archetype_make_new_archetype (an_archetype_id,
-					ref_repo, in_dir_path), in_dir_path)
-			end
+			put_archetype (aof.create_arch_cat_archetype_make_new_archetype (an_archetype_id,
+				library_access.primary_source, in_dir_path), in_dir_path)
 		ensure
 			has_item_with_id (an_archetype_id.as_string)
 		end
@@ -321,11 +316,9 @@ feature -- Modification
 			aof: APP_OBJECT_FACTORY
 		do
 			create aof
-			check attached parent_aca.differential_archetype as parent_diff_arch and attached
-				repository_access.reference_repository as ref_repo
-			then
+			check attached parent_aca.differential_archetype as parent_diff_arch then
 				put_archetype (aof.create_arch_cat_archetype_make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
-					ref_repo, in_dir_path), in_dir_path)
+					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure
 			has_item_with_id (an_archetype_id.as_string)
@@ -346,10 +339,10 @@ feature -- Modification
 			end
 
 			errors.wipe_out
-			repository_access.adhoc_source_repository.add_item (a_path)
-			errors.append (repository_access.adhoc_source_repository.errors)
-			if repository_access.adhoc_source_repository.has_path (a_path) then
-				aca := repository_access.adhoc_source_repository.item (a_path)
+			library_access.adhoc_source.add_item (a_path)
+			errors.append (library_access.adhoc_source.errors)
+			if library_access.adhoc_source.has_path (a_path) then
+				aca := library_access.adhoc_source.item (a_path)
 				if valid_candidate (aca) then
 					add_filesys_tree_repo_node (file_system.dirname (a_path))
 					put_archetype (aca, a_path)
@@ -551,49 +544,47 @@ feature {NONE} -- Implementation
 
 			clone_semantic_item_tree_prototype
 
-			across repository_access.repositories as profile_repos_csr loop
-				archs := profile_repos_csr.item.fast_archetype_list
+			archs := library_access.primary_source.fast_archetype_list
 
-				-- maintain a list indicating status of each attempted archetype; values:
-				-- -1 = succeeded
-				-- -2 = failed (duplicate)
-				--  0 = not yet tried
-				-- +ve number = number of passes attempted with no success
-				create status_list.make_filled (0, 1, archs.count)
+			-- maintain a list indicating status of each attempted archetype; values:
+			-- -1 = succeeded
+			-- -2 = failed (duplicate)
+			--  0 = not yet tried
+			-- +ve number = number of passes attempted with no success
+			create status_list.make_filled (0, 1, archs.count)
 
-				from i := 0 until i > 0 and added_during_pass = 0 loop
-					added_during_pass := 0
-					across archs as archs_csr loop
-						if status_list [archs_csr.target_index] >= 0 then
-							parent_key := archs_csr.item.semantic_parent_key
-							if has_item_for_ref (parent_key) then
-								child_key := archs_csr.item.qualified_key
-								if not semantic_item_index.has (child_key) then
-									matching_item (parent_key).put_child (archs_csr.item)
-									semantic_item_index.force (archs_csr.item, child_key)
-									archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
-									added_during_pass := added_during_pass + 1
-									status_list [archs_csr.target_index] := Populate_status_succeeded
-								else
-									add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.source_file_path>>)
-									status_list [archs_csr.target_index] := Populate_status_failed
-								end
+			from i := 0 until i > 0 and added_during_pass = 0 loop
+				added_during_pass := 0
+				across archs as archs_csr loop
+					if status_list [archs_csr.target_index] >= 0 then
+						parent_key := archs_csr.item.semantic_parent_key
+						if has_item_for_ref (parent_key) then
+							child_key := archs_csr.item.qualified_key
+							if not semantic_item_index.has (child_key) then
+								matching_item (parent_key).put_child (archs_csr.item)
+								semantic_item_index.force (archs_csr.item, child_key)
+								archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
+								added_during_pass := added_during_pass + 1
+								status_list [archs_csr.target_index] := Populate_status_succeeded
 							else
-								status_list [archs_csr.target_index] := status_list [archs_csr.target_index] + 1
+								add_error (ec_arch_cat_dup_archetype, <<archs_csr.item.source_file_path>>)
+								status_list [archs_csr.target_index] := Populate_status_failed
 							end
+						else
+							status_list [archs_csr.target_index] := status_list [archs_csr.target_index] + 1
 						end
 					end
-					i := i + 1
 				end
+				i := i + 1
+			end
 
-				-- now report on all the archetypes which could not be attached into the hierarchy
-				across archs as archs_csr loop
-					if status_list [archs_csr.cursor_index] > 0 then
-						if archs_csr.item.is_specialised then
-							add_error (ec_arch_cat_orphan_archetype, <<archs_csr.item.semantic_parent_key, archs_csr.item.qualified_name>>)
-						else
-							add_error (ec_arch_cat_orphan_archetype_e2, <<archs_csr.item.semantic_parent_key, archs_csr.item.qualified_name>>)
-						end
+			-- now report on all the archetypes which could not be attached into the hierarchy
+			across archs as archs_csr loop
+				if status_list [archs_csr.cursor_index] > 0 then
+					if archs_csr.item.is_specialised then
+						add_error (ec_arch_cat_orphan_archetype, <<archs_csr.item.semantic_parent_key, archs_csr.item.qualified_name>>)
+					else
+						add_error (ec_arch_cat_orphan_archetype_e2, <<archs_csr.item.semantic_parent_key, archs_csr.item.qualified_name>>)
 					end
 				end
 			end
@@ -605,17 +596,14 @@ feature {NONE} -- Implementation
 			-- create top node (never seen in GUI)
 			create filesys_item_tree.make (Archetype_category.twin)
 
-			-- create nodes for archetypes based on their paths in repository
-			across repository_access.repositories as repos_csr loop
-				-- add a node representing repository root
-				add_filesys_tree_repo_node (repos_csr.item.full_path)
+			-- add a node representing repository root
+			add_filesys_tree_repo_node (library_access.primary_source.full_path)
 
-				-- now go through archetypes and add them in to tree, adding intermediate
-				-- filesystem nodes sa required
-				across repos_csr.item.fast_archetype_list as archs_csr loop
-					if not archs_csr.item.is_specialised then
-						add_arch_to_filesys_tree (archs_csr.item)
-					end
+			-- now go through archetypes and add them in to tree, adding intermediate
+			-- filesystem nodes sa required
+			across library_access.primary_source.fast_archetype_list as archs_csr loop
+				if not archs_csr.item.is_specialised then
+					add_arch_to_filesys_tree (archs_csr.item)
 				end
 			end
 		end

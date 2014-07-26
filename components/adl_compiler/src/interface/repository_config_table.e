@@ -38,7 +38,7 @@ inherit
 		end
 
 create
-	make, make_from_old, default_create
+	make, default_create
 
 feature -- Definitions
 
@@ -65,21 +65,6 @@ feature -- Initialisation
 			repositories := a_repos
 		ensure
 			repos_set: repositories = a_repos
-		end
-
-	make_from_old (an_old_config: REPOSITORY_PROFILE_CONFIG)
-			-- create structure from old-style profile
-		local
-			a_repo_config: REPOSITORY_CONFIG
-		do
-			default_create
-			if attached an_old_config.current_profile_name as opn then
-				current_repository_name := opn
-			end
-			across an_old_config.profiles as profs_csr loop
-				create a_repo_config.make_from_old (profs_csr.item)
-				repositories.put (a_repo_config, profs_csr.key)
-			end
 		end
 
 feature -- Access
@@ -119,16 +104,6 @@ feature -- Access
 		do
 			if attached current_repository as cfg then
 				Result := cfg.reference_path
-			else
-				create Result.make_empty
-			end
-		end
-
-	current_work_repository_path: STRING
-			-- path of root of ADL file tree
-		do
-			if attached current_repository as cfg and then attached cfg.work_path as wp then
-				Result := wp
 			else
 				create Result.make_empty
 			end

@@ -176,7 +176,7 @@ feature -- Commands
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not current_arch_lib.repository_access.adhoc_source_repository.has_path (fname) then
+				if not current_arch_lib.library_access.adhoc_source.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
