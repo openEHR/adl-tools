@@ -146,7 +146,7 @@ feature -- Access
 			elseif file_system.file_exists (fallback_user_config_file_path) then
 				Result.initialise (fallback_user_config_file_path)
 			else
-				Result.initialise (user_config_file_path)
+				Result.initialise_create (user_config_file_path)
 			end
 			app_cfg_initialise
 		end
