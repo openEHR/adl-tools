@@ -127,7 +127,8 @@ feature -- Display
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
-			attr_str, ex_str: STRING
+			attr_str, ex_str, card_str: STRING
+			c_col: EV_COLOR
 		do
 			precursor (ui_settings)
 
@@ -147,7 +148,8 @@ feature -- Display
 					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_attribute_name, node_tooltip_str, c_attribute_colour, c_pixmap)
 				end
 
-				-- constraints
+				-- existence
+				c_col := c_attribute_colour
 				create ex_str.make_empty
 				if attached a_n.existence as att_ex then
 					if not att_ex.is_prohibited then
@@ -155,11 +157,24 @@ feature -- Display
 					else
 						ex_str.append (get_text (ec_attribute_removed_text))
 					end
-					evx_grid.update_last_row_label_col (Definition_grid_col_existence, ex_str, Void, c_constraint_colour, Void)
+					c_col := c_constraint_colour
+				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities then
+					ex_str := rm_property.existence.as_string
 				end
-				if attached a_n.cardinality then
-					evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, a_n.cardinality.as_string, Void, c_constraint_colour, Void)
+				evx_grid.update_last_row_label_col (Definition_grid_col_existence, ex_str, Void, c_col, Void)
+
+				-- cardinality
+				create card_str.make_empty
+				c_col := c_attribute_colour
+				if attached a_n.cardinality as att_card then
+					card_str := att_card.as_string
+					c_col := c_constraint_colour
+				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities and then attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
+					card_str := bmm_cont_prop.cardinality.as_string
 				end
+				evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, card_str, Void, c_col, Void)
+
+				-- any allowed
 				if a_n.any_allowed then
 					evx_grid.update_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
 				end

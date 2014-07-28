@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (727)
+			create message_table.make (729)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -570,13 +570,15 @@ feature -- Initialisation
 			message_table.put ("Show technical view including RM classes & properties", ec_technical_detail_button_tooltip)
 			message_table.put ("Add Codes", ec_domain_view_add_codes_text)
 			message_table.put ("RM Visibility", ec_rm_visibility_controls_text)
+			message_table.put ("Multiplicities", ec_show_rm_multiplicities_button_text)
+			message_table.put ("Show archetypable RM multiplicities", ec_show_rm_multiplicities_tooltip)
 			message_table.put ("Data Properties", ec_show_rm_properties_button_text)
 			message_table.put ("Show archetypable RM data properties", ec_show_rm_properties_tooltip)
 			message_table.put ("Runtime Properties", ec_show_rm_runtime_properties_button_text)
 			message_table.put ("Show RM runtime-set properties", ec_show_rm_runtime_properties_tooltip)
 			message_table.put ("I/S Properties", ec_show_rm_if_properties_button_text)
 			message_table.put ("Show RM infrastructure (non-content) properties", ec_show_rm_if_properties_tooltip)
-			message_table.put ("RM Rendering", ec_rm_rendering_controls_text)
+			message_table.put ("Rendering", ec_rendering_controls_text)
 			message_table.put ("Inheritance", ec_show_rm_inh_button_text)
 			message_table.put ("Show inheritance status: inherited, redefined or added here", ec_show_rm_inh_button_tooltip)
 			message_table.put ("Closure depth", ec_rm_closure_depth_control_frame_text)

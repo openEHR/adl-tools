@@ -446,6 +446,18 @@ feature -- Application Switches
 			app_cfg.put_value("/gui/show_technical_view", flag)
 		end
 
+	global_show_rm_multiplicities: BOOLEAN
+			-- Display the RM multiplicities in the archetype definition node tree?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_rm_multiplicities")
+		end
+
+	set_global_show_rm_multiplicities (flag: BOOLEAN)
+			-- Set flag for whether to show the RM multiplicities in the archetype definition node tree
+		do
+			app_cfg.put_value("/gui/show_rm_multiplicities", flag)
+		end
+
 	global_show_rm_data_properties: BOOLEAN
 			-- Display the RM data properties in the archetype definition node tree?
 		do

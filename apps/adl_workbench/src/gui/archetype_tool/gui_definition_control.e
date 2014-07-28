@@ -87,6 +87,13 @@ feature -- Initialisation
 			create rm_property_visibility_frame_ctl.make (get_text (ec_rm_visibility_controls_text), 85, 0, False)
 			gui_definition_control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
+			-- add RM multiplicities check button
+			create rm_multiplicities_checkbox_ctl.make_linked (get_text (ec_show_rm_multiplicities_button_text),
+				get_text (ec_show_rm_multiplicities_tooltip),
+				agent :BOOLEAN do Result := show_rm_multiplicities end, agent update_show_rm_multiplicities)
+			gui_controls.extend (rm_multiplicities_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_multiplicities_checkbox_ctl.ev_data_control, False)
+
 			-- add RM data properties check button
 			create rm_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_properties_button_text),
 				get_text (ec_show_rm_properties_tooltip),
@@ -109,15 +116,15 @@ feature -- Initialisation
 			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- 'RM rendering' frame
-			create rm_rendering_frame_ctl.make (get_text (ec_rm_rendering_controls_text), 85, 0, False)
-			gui_definition_control_panel.add_frame_control (rm_rendering_frame_ctl, False)
+			create rendering_frame_ctl.make (get_text (ec_rendering_controls_text), 85, 0, False)
+			gui_definition_control_panel.add_frame_control (rendering_frame_ctl, False)
 
 			-- use RM inheritance rendering check button
 			create view_rm_display_inheritance_checkbox_ctl.make_linked (get_text (ec_show_rm_inh_button_text),
 				get_text (ec_show_rm_inh_button_tooltip),
 				agent :BOOLEAN do Result := show_rm_inheritance or editing_enabled end, agent update_show_rm_inheritance)
 			gui_controls.extend (view_rm_display_inheritance_checkbox_ctl)
-			rm_rendering_frame_ctl.extend (view_rm_display_inheritance_checkbox_ctl.ev_data_control, False)
+			rendering_frame_ctl.extend (view_rm_display_inheritance_checkbox_ctl.ev_data_control, False)
 
 			-- ============ RULES HBOX, with GRID & control panel =============
 			create ev_rules_hbox
@@ -166,6 +173,9 @@ feature -- Status Report
 	local_show_technical_view: BOOLEAN
 			-- local version of global flag, used only for editing
 
+	local_show_rm_multiplicities: BOOLEAN
+			-- local version of global flag, used only for editing
+
 	local_show_rm_data_properties: BOOLEAN
 			-- local version of global flag, used only for editing
 
@@ -181,6 +191,15 @@ feature -- Status Report
 				Result := local_show_technical_view
 			else
 				Result := global_show_technical_view
+			end
+		end
+
+	show_rm_multiplicities: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_rm_multiplicities
+			else
+				Result := global_show_rm_multiplicities
 			end
 		end
 
@@ -270,6 +289,20 @@ feature {NONE} -- Events
 			show_codes := a_flag
 			if attached source then
 				redisplay
+			end
+		end
+
+	update_show_rm_multiplicities (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model multiplicities in `ev_grid'.
+		do
+			if editing_enabled then
+				local_show_rm_multiplicities := a_flag
+			else
+				set_global_show_rm_multiplicities (a_flag)
+			end
+
+			if attached source then
+				do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
 			end
 		end
 
@@ -388,9 +421,9 @@ feature {NONE} -- Implementation
 
 	view_rm_display_inheritance_checkbox_ctl, show_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: EVX_CHECK_BOX_CONTROL
+	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl, rm_multiplicities_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl: EVX_FRAME_CONTROL
+	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rendering_frame_ctl: EVX_FRAME_CONTROL
 
 	rm_schema: detachable BMM_SCHEMA
 
@@ -426,7 +459,7 @@ feature {NONE} -- Implementation
 
 			check attached selected_language end
 			create ui_settings.make (selected_language,
-				show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
+				show_codes, show_rm_inheritance or editing_enabled, show_technical_view, show_rm_multiplicities,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- populate the main definition grid
@@ -495,7 +528,7 @@ feature {NONE} -- Implementation
 
 			check attached selected_language end
 			create ui_settings.make (selected_language, show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
-				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
+				show_rm_multiplicities, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
 			source_ed_context.definition_context.display_in_grid (ui_settings)

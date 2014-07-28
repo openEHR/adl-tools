@@ -31,6 +31,7 @@ feature -- Initialisation
 			a_show_codes,
 			a_show_rm_inheritance,
 			a_show_technical_view,
+			a_show_rm_multiplicities,
 			a_show_rm_data_properties,
 			a_show_rm_runtime_properties,
 			a_show_rm_infrastructure_properties: BOOLEAN)
@@ -39,6 +40,7 @@ feature -- Initialisation
 			show_codes := a_show_codes
 			show_rm_inheritance := a_show_rm_inheritance
 			show_technical_view := a_show_technical_view
+			show_rm_multiplicities := a_show_rm_multiplicities
 			show_rm_data_properties := a_show_rm_data_properties
 			show_rm_runtime_properties := a_show_rm_runtime_properties
 			show_rm_infrastructure_properties := a_show_rm_infrastructure_properties
@@ -53,6 +55,8 @@ feature -- Access
 	show_rm_inheritance: BOOLEAN
 
 	show_technical_view: BOOLEAN
+
+	show_rm_multiplicities: BOOLEAN
 
 	show_rm_data_properties: BOOLEAN
 

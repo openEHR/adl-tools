@@ -97,7 +97,7 @@ feature -- Initialisation
 			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- frame
-			create rm_rendering_frame_ctl.make (get_text (ec_rm_rendering_controls_text), 85, 0, False)
+			create rm_rendering_frame_ctl.make (get_text (ec_rendering_controls_text), 85, 0, False)
 			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM icons check button

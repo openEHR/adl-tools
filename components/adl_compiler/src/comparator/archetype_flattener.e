@@ -820,7 +820,7 @@ end
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				rm_attr_desc := rm_schema.property_definition (ca.parent.rm_type_name, ca.rm_attribute_name)
 				if ca.existence = Void then
-					ca.set_existence(rm_attr_desc.existence)
+					ca.set_existence (rm_attr_desc.existence)
 				end
 				if ca.is_multiple and ca.cardinality = Void then
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop and then attached cont_prop.cardinality as card then

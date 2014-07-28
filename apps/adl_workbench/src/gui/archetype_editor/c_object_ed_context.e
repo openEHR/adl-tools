@@ -110,6 +110,7 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			s: STRING
+			c_occ_colour: EV_COLOR
 		do
 			precursor (ui_settings)
 
@@ -125,14 +126,18 @@ feature -- Display
 
 				-- card/occ column
 				create s.make_empty
+				c_occ_colour := c_constraint_colour
 				if attached a_n.occurrences as att_occ then
 					if not att_occ.is_prohibited then
 						s.append (att_occ.as_string)
 					else
 						s.append (get_text (ec_occurrences_removed_text))
 					end
+				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities then
+					s := (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0)).as_string
+					c_occ_colour := c_attribute_colour
 				end
-				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour, Void)
+				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_occ_colour, Void)
 
 				-- constraint column
 				display_constraint

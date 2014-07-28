@@ -345,6 +345,8 @@ templates = <
 		["domain_view_add_codes_text"] = <"Add Codes">
 
 		["rm_visibility_controls_text"] = <"RM Visibility">
+		["show_rm_multiplicities_button_text"] = <"Multiplicities">
+		["show_rm_multiplicities_tooltip"] = <"Show archetypable RM multiplicities">
 		["show_rm_properties_button_text"] = <"Data Properties">
 		["show_rm_properties_tooltip"] = <"Show archetypable RM data properties">
 		["show_rm_runtime_properties_button_text"] = <"Runtime Properties">
@@ -352,7 +354,7 @@ templates = <
 		["show_rm_if_properties_button_text"] = <"I/S Properties">
 		["show_rm_if_properties_tooltip"] = <"Show RM infrastructure (non-content) properties">
 
-		["rm_rendering_controls_text"] = <"RM Rendering">
+		["rendering_controls_text"] = <"Rendering">
 		["show_rm_inh_button_text"] = <"Inheritance">
 		["show_rm_inh_button_tooltip"] = <"Show inheritance status: inherited, redefined or added here">
 
