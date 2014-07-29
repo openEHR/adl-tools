@@ -405,6 +405,7 @@ feature -- Commands
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
+				rm_schema_explorer.populate (rm_schemas_access)
 				if repository_config_table.current_reference_repository_path.is_empty then
 					configure_repositories
 				else
@@ -517,9 +518,7 @@ feature {NONE} -- Library events
 			-- adding a new profile won't - the current selection stays.
 		local
 			dialog: LIBRARY_DIALOG
-			any_library_changes_made: BOOLEAN
-			current_libraries_removed: BOOLEAN
-			current_libraries_changed: BOOLEAN
+			any_library_changes_made, current_libraries_removed, current_libraries_changed: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
