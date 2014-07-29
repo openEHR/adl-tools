@@ -405,7 +405,6 @@ feature -- Commands
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
-				rm_schema_explorer.populate (rm_schemas_access)
 				if repository_config_table.current_reference_repository_path.is_empty then
 					configure_repositories
 				else
@@ -780,7 +779,9 @@ feature -- RM Schemas Events
 					console_tool.append_text (rm_schemas_access.error_strings)
 				else
 					rm_schema_explorer.populate (rm_schemas_access)
-					refresh_archetype_catalogue (True)
+					if has_current_library then
+						refresh_archetype_catalogue (True)
+					end
 				end
 			elseif dialog.has_changed_schema_dir then
 				rm_schema_explorer.populate (rm_schemas_access)
