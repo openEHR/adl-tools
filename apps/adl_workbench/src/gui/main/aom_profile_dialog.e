@@ -322,13 +322,13 @@ feature {NONE} -- Implementation
 			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
-	do_edit_profile (a_profile_desc: AOM_PROFILE_DESCRIPTOR)
+	do_edit_profile (a_profile_desc: AOM_PROFILE_ACCESS)
 			-- launch external editor with schema, or info box if none defined
 		do
 			execution_environment.launch (text_editor_command + " %"" + a_profile_desc.profile_path + "%"")
 		end
 
-	show_profile_validation (a_profile_desc: AOM_PROFILE_DESCRIPTOR)
+	show_profile_validation (a_profile_desc: AOM_PROFILE_ACCESS)
 			-- display info dialog with validity report
 		local
 			info_dialog: EV_INFORMATION_DIALOG
