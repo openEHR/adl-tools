@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-12-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-12-0 http://www.eiffel.com/developers/xml/configuration-1-12-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-13-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-13-0 http://www.eiffel.com/developers/xml/configuration-1-13-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
 	<target name="adl_workbench">
 		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
 		<file_rule>
@@ -55,13 +55,21 @@
 		<setting name="line_generation" value="false"/>
 		<setting name="concurrency" value="thread"/>
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
-		<library name="eomf_bmm" location="$EOMF\library\bmm\bmm.ecf"/>
+		<library name="eomf_bmm" location="$EOMF\library\bmm\bmm.ecf">
+			<option>
+				<assertions precondition="true" postcondition="true"/>
+			</option>
+		</library>
 		<library name="eomf_gui" location="$EOMF\library\gui\eomf_gui.ecf">
 			<option>
 				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
 			</option>
 		</library>
-		<library name="eomf_odin" location="$EOMF\library\odin\odin.ecf"/>
+		<library name="eomf_odin" location="$EOMF\library\odin\odin.ecf">
+			<option>
+				<assertions precondition="true"/>
+			</option>
+		</library>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel-safe.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical-safe.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse-safe.ecf"/>
@@ -82,9 +90,7 @@
 		<library name="ise_vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
 		<library name="ise_xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="ise_xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
-
 		<library name="iso8601" location="$EIFFEL_HUB\library\iso8601\src\iso8601.ecf"/>
-
 		<cluster name="adl_components" location="..\..\..\components\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
@@ -92,7 +98,11 @@
 		</cluster>
 		<cluster name="adl_messages" location="..\..\resources\messages\compiled\"/>
 		<cluster name="adl_test" location="..\..\..\libraries\test\" recursive="true"/>
-		<cluster name="app" location="..\src\env\" recursive="true"/>
+		<cluster name="app" location="..\src\env\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true"/>
+			</option>
+		</cluster>
 		<cluster name="app_gui" location="..\src\gui\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true"/>
@@ -103,8 +113,8 @@
 				<assertions precondition="true"/>
 			</option>
 		</cluster>
-		<cluster name="eomf_resources" location="$EOMF\library\app_resources\"/>
 		<cluster name="eomf_gui_resources" location="$EOMF\library\gui_app_resources\"/>
+		<cluster name="eomf_resources" location="$EOMF\library\app_resources\"/>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
