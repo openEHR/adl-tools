@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class AOM_PROFILE_DESCRIPTOR
+class AOM_PROFILE_ACCESS
 
 inherit
 	ANY_VALIDATOR

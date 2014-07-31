@@ -63,10 +63,10 @@ feature -- Access
 	profiles: HASH_TABLE [AOM_PROFILE, STRING]
 			-- loaded profiles
 
-	profile_descriptors: HASH_TABLE [AOM_PROFILE_DESCRIPTOR, STRING]
+	profile_descriptors: HASH_TABLE [AOM_PROFILE_ACCESS, STRING]
 			-- validated profile descriptor objects
 
-	profile_descriptor_candidates: ARRAYED_LIST [AOM_PROFILE_DESCRIPTOR]
+	profile_descriptor_candidates: ARRAYED_LIST [AOM_PROFILE_ACCESS]
 			-- found profile descriptor objects
 
 	profiles_for_rm_schemas: HASH_TABLE [AOM_PROFILE, STRING]
@@ -154,7 +154,7 @@ feature -- Commands
 		local
 			dir: KL_DIRECTORY
 			file_repo: FILE_REPOSITORY
-			aom_pd: AOM_PROFILE_DESCRIPTOR
+			aom_pd: AOM_PROFILE_ACCESS
 		do
 			reset
 			clear
