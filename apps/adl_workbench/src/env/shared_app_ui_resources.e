@@ -111,6 +111,7 @@ feature -- Definitions
 			Result := Id_terms_grid_col_description
 		end
 
+	Tool_tab_min: INTEGER = 0
 	Tool_tab_description: INTEGER = 0
 	Tool_tab_definition: INTEGER = 1
 	Tool_tab_terminology: INTEGER = 2
@@ -621,7 +622,7 @@ feature -- Application Switches
 	set_default_tool_tab (v: INTEGER)
 			-- set `default_tool_tab'
 		require
-			v > 0
+			v >= Tool_tab_min
 		do
 			app_cfg.put_value ("/gui/default_tool_tab", v)
 		end
