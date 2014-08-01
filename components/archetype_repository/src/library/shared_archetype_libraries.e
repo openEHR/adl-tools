@@ -65,11 +65,11 @@ feature -- Status Report
 			Result := repository_config_table.has_current_repository
 		end
 
-	is_library_valid (a_lib_name: STRING): BOOLEAN
+	is_repository_valid (a_rep_name: STRING): BOOLEAN
 			-- check validity of repository directories etc - can it be created and loaded?
 		do
-			Result := repository_config_table.has_repository (a_lib_name) and
-				directory_exists (repository_config_table.repository (a_lib_name).reference_path)
+			Result := repository_config_table.has_repository (a_rep_name) and
+				directory_exists (repository_config_table.repository (a_rep_name).reference_path)
 
 			-- TODO: potentially other checks as well
 		end
@@ -79,7 +79,7 @@ feature -- Status Report
 		require
 			has_current_library
 		do
-			Result := attached repository_config_table.current_repository_name as cpn and then is_library_valid (cpn)
+			Result := attached repository_config_table.current_repository_name as cpn and then is_repository_valid (cpn)
 		end
 
 	invalid_library_reason (a_lib_name: STRING): STRING

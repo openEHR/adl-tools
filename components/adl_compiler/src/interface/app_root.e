@@ -147,11 +147,11 @@ feature -- Initialisation
 
 			-- adjust for repositories being out of sync with current repository setting (e.g. due to
 			-- manual editing of .cfg file)
-			-- first of all check for broken repositories and get rid of them
 			if not has_errors then
+				-- first of all check for broken repositories and get rid of them
 				create dead_repos.make (0)
 				across repository_config_table as repos_csr loop
-					if not is_library_valid (repos_csr.key) then
+					if not is_repository_valid (repos_csr.key) then
 						dead_repos.extend (repos_csr.key)
 					end
 				end
