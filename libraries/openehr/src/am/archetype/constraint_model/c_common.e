@@ -16,16 +16,12 @@ feature -- Access
 			-- default object occurrences object representing 1..1
 		once
 			create Result.make_mandatory
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	default_existence: MULTIPLICITY_INTERVAL
 			-- default property existence object representing 0..1
 		once
 			create Result.make_optional
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

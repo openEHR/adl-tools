@@ -115,14 +115,40 @@ feature -- Access
 			end
 		end
 
+	implied_occurrences: MULTIPLICITY_INTERVAL
+			-- generate default occurrences for any child object, based on existence and cardinality
+		local
+			occ_lower, occ_upper: INTEGER
+			occ_upper_unbounded: BOOLEAN
+		do
+			if attached existence as att_ex then
+				occ_lower := att_ex.lower
+			end
+			if is_single then
+				create Result.make_bounded (occ_lower, 1)
+			else
+				if attached cardinality as att_card then
+					occ_upper_unbounded := att_card.interval.upper_unbounded
+					occ_upper := att_card.interval.upper
+				else
+					occ_upper_unbounded := True
+				end
+
+				if occ_upper_unbounded then
+					create Result.make_upper_unbounded (occ_lower)
+				else
+					create Result.make_bounded (occ_lower, occ_upper)
+				end
+			end
+		end
+
 	occurrences_lower_sum: INTEGER
 			-- calculate sum of all occurrences lower bounds; where no occurrences are stated, 0 is assumed
 		do
-			from children.start until children.off loop
-				if attached children.item.occurrences then
-					Result := Result + children.item.occurrences.lower
+			across children as c_obj_csr loop
+				if attached c_obj_csr.item.occurrences then
+					Result := Result + c_obj_csr.item.occurrences.lower
 				end
-				children.forth
 			end
 		end
 
@@ -132,13 +158,12 @@ feature -- Access
 		local
 			found_opt_obj: BOOLEAN
 		do
-			from children.start until children.off loop
-				if attached children.item.occurrences and then children.item.occurrences.lower > 0 then
+			across children as c_obj_csr loop
+				if attached c_obj_csr.item.occurrences and then c_obj_csr.item.occurrences.lower > 0 then
 					Result := Result + 1
 				else
 					found_opt_obj := True
 				end
-				children.forth
 			end
 			if found_opt_obj then
 				Result := Result + 1

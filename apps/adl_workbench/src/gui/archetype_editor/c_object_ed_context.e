@@ -133,9 +133,11 @@ feature -- Display
 					else
 						s.append (get_text (ec_occurrences_removed_text))
 					end
-				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities then
-					s := (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0)).as_string
-					c_occ_colour := c_attribute_colour
+				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
+					check attached a_n.parent as att_ca then
+						s := att_ca.implied_occurrences.as_string
+						c_occ_colour := c_attribute_colour
+					end
 				end
 				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_occ_colour, Void)
 
