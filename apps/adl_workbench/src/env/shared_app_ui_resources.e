@@ -140,6 +140,24 @@ feature -- Definitions
 			Result.put (get_text (ec_stat_info_tab_text), Tool_tab_stats)
 		end
 
+	tool_tab_text_to_id (a_tab_text: STRING): INTEGER
+			-- Some tab texts have variable text parts in () after the static text part - need to remove this
+			-- to generate the tab id
+		local
+			static_tab_text: STRING
+			paren_pos: INTEGER
+		do
+			create static_tab_text.make_from_string (a_tab_text)
+			paren_pos := static_tab_text.index_of ('(', 1)
+			if paren_pos > 0 then
+				static_tab_text.keep_head (paren_pos - 1)
+				static_tab_text.right_adjust
+			end
+			if Tool_tab_reverse_index.has (static_tab_text) then
+				Result := Tool_tab_reverse_index.item (static_tab_text)
+			end
+		end
+
 	Tool_tab_reverse_index: HASH_TABLE [INTEGER, STRING]
 			-- names of tool tabs keyed by tab constants
 		once
