@@ -864,7 +864,7 @@ end
 			if depth <= Max_template_overlay_depth then
 				across a_flat_arch.suppliers_index as xref_idx_csr loop
 					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-					matched_arch := current_arch_lib.matching_archetype (xref_idx_csr.key)
+					matched_arch := current_library.matching_archetype (xref_idx_csr.key)
 					create supp_flat_arch.make_from_other (matched_arch.flat_archetype)
 					supp_arch_root_cco := supp_flat_arch.definition
 

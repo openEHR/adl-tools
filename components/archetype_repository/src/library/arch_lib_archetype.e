@@ -666,7 +666,7 @@ feature -- Compilation
 			-- differential yet available. This is because changes in legacy will be detected independently
 		do
 			if compile_attempted then
-				current_arch_lib.decrement_compile_attempt_count
+				current_library.decrement_compile_attempt_count
 			end
 			differential_archetype := Void
 			clear_cache
@@ -886,8 +886,8 @@ feature {NONE} -- Compilation
 			-- an infinite recursion
 			create suppliers_index.make (0)
 			across diff_arch.suppliers_index as supp_idx_csr loop
-				if current_arch_lib.has_archetype_id_for_ref (supp_idx_csr.key) and then
-					attached current_arch_lib.matching_archetype (supp_idx_csr.key) as supp_arch and then
+				if current_library.has_archetype_id_for_ref (supp_idx_csr.key) and then
+					attached current_library.matching_archetype (supp_idx_csr.key) as supp_arch and then
 					not supp_arch.id.as_string.is_case_insensitive_equal (id.as_string)
 				then
 					suppliers_index.put (supp_arch, supp_arch.id.as_string)
@@ -977,7 +977,7 @@ feature {NONE} -- Compilation
 			-- Set `compile_attempt_timestamp'
 		do
 			if not compile_attempted then
-				current_arch_lib.update_compile_attempt_count
+				current_library.update_compile_attempt_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end
@@ -1244,30 +1244,30 @@ feature {NONE} -- Implementation
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						across includes as includes_csr loop
 							if attached {STRING} includes_csr.item.regex_constraint.constraint_regex as a_regex then
-								add_slot_ids (slot_idx, current_arch_lib.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+								add_slot_ids (slot_idx, current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (slot_idx, current_arch_lib.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
+						add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
-					add_slot_ids (slot_idx, current_arch_lib.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
 							if attached {STRING} excludes_csr.item.regex_constraint.constraint_regex as a_regex then
-								across current_arch_lib.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
+								across current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
 									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
 						end
 					end
 				else
-					add_slot_ids (slot_idx, current_arch_lib.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
 				end
 
 				-- now post the results in the reverse indexes
 				across slot_idx.item (slots_csr.item.path) as ids_csr loop
-					check attached current_arch_lib.archetype_index.item (ids_csr.item) as ara then
+					check attached current_library.archetype_index.item (ids_csr.item) as ara then
 						if not attached ara.clients_index or else not ara.clients_index.has (id.as_string) then
 							ara.add_client (id.as_string)
 						end

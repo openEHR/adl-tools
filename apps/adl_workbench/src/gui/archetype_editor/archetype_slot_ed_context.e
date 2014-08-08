@@ -165,7 +165,7 @@ feature {NONE} -- Implementation
 			if attached arch_node as a_n and then a_n.has_substantive_includes then
 				across a_n.includes as slot_includes_csr loop
 					if attached {STRING} slot_includes_csr.item.regex_constraint.constraint_regex as a_regex then
-						slot_match_ids.merge (current_arch_lib.matching_ids (a_regex, a_n.rm_type_name, Void))
+						slot_match_ids.merge (current_library.matching_ids (a_regex, a_n.rm_type_name, Void))
 					end
 				end
 				if a_n.has_open_excludes then
@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
 
 				-- ensure we have only a unique set
 				across slot_match_ids as slot_match_ids_csr loop
-					if attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_arch_lib.archetype_index.item (slot_match_ids_csr.item) as aca then
+					if attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_index.item (slot_match_ids_csr.item) as aca then
 						create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([aca]))
 						an_mi.set_pixmap (get_icon_pixmap ("archetype/" + aca.group_name))
 						context_slot_sub_menu.extend (an_mi)

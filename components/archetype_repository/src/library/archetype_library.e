@@ -74,7 +74,7 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_lib_access: LIBRARY_ACCESS)
+	make (a_lib_access: ARCHETYPE_LIBRARY_INTERFACE)
 		do
 			clear
 			library_access := a_lib_access
@@ -87,7 +87,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	library_access: LIBRARY_ACCESS
+	library_access: ARCHETYPE_LIBRARY_INTERFACE
 			-- the repository profile accessor from which this library gets its contents
 
 	archetype_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
@@ -597,7 +597,7 @@ feature {NONE} -- Implementation
 			create filesys_item_tree.make (Archetype_category.twin)
 
 			-- add a node representing repository root
-			add_filesys_tree_repo_node (library_access.primary_source.full_path)
+			add_filesys_tree_repo_node (library_access.library_path)
 
 			-- now go through archetypes and add them in to tree, adding intermediate
 			-- filesystem nodes sa required

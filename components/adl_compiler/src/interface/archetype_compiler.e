@@ -218,14 +218,14 @@ feature {NONE} -- Implementation
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
-			current_arch_lib.do_all_archetypes (action)
+			current_library.do_all_archetypes (action)
 		end
 
 	do_subtree (subtree: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
-			current_arch_lib.do_archetypes (subtree, action)
+			current_library.do_archetypes (subtree, action)
 		end
 
 	do_lineage (ara: ARCH_LIB_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
@@ -233,7 +233,7 @@ feature {NONE} -- Implementation
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
 			is_interrupt_requested := False
-			current_arch_lib.do_archetype_lineage(ara, action)
+			current_library.do_archetype_lineage(ara, action)
 		end
 
 	check_file_system_currency (from_scratch: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
 						if ara.ontology_location_changed then
-							current_arch_lib.update_archetype_id (ara)
+							current_library.update_archetype_id (ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
 						end

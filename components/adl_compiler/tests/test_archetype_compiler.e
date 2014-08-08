@@ -32,14 +32,14 @@ feature -- Test routines
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
 			assert_equal (True, archetype_compiler.is_full_build_completed)
-			assert_equal (current_arch_lib.archetype_count, current_arch_lib.compile_attempt_count)
+			assert_equal (current_library.archetype_count, current_library.compile_attempt_count)
 			assert_equal ("", errors)
 
 			archetype_compiler.rebuild_all
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
 			assert_equal (True, archetype_compiler.is_full_build_completed)
-			assert_equal (current_arch_lib.archetype_count, current_arch_lib.compile_attempt_count)
+			assert_equal (current_library.archetype_count, current_library.compile_attempt_count)
 			assert_equal ("", errors)
 		end
 

@@ -27,6 +27,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ARCHETYPE_LIBRARIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -511,7 +516,7 @@ feature {NONE} -- Implementation
 				matching_ids.start
 				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).source_file_path)
 			else
-				in_dir_path := repository_config_table.current_reference_repository_path
+				in_dir_path := current_library_interface.library_path
 			end
 
 			if attached source as src then

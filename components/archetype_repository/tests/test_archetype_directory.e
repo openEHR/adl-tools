@@ -33,24 +33,22 @@ feature {NONE} -- Events
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 
-				if repository_config_table.has_repository ("Test") then
-					set_current_repository ("Test")
-				elseif repository_config_table.has_repository ("test") then
-					set_current_repository ("test")
+				if repositories_table.has_repository ("openehr:test") then
+					set_current_library_name ("openehr:test")
 				else
-					assert ("Please define the %"Test%" repository in " + app_cfg.file_path, False)
+					assert ("Please define the %"openehr:test%" library in " + app_cfg.file_path, False)
 				end
 
 				set_error_reporting_level (Error_type_error)
 				use_current_library (True)
-				test_repository := repository_config_table.current_repository.reference_path
+				test_library := current_library_interface.primary_source.full_path
 			end
 		end
 
 feature -- Access
 
-	test_repository: detachable STRING
-			-- Repository of test archetypes. Its path must be defined in the cfg file, otherwise these unit tests fail.
+	test_library: detachable STRING
+			-- Library of test archetypes. Its path must be defined in the cfg file, otherwise these unit tests fail.
 		note
 			option: stable
 		attribute
@@ -61,7 +59,7 @@ feature -- Test routines
 	test_add_adhoc_item
 			-- Check that an ad-hoc archetype can be added.
 		note
-			testing: "covers/{ARCHETYPE_CATALOGUE}.add_adhoc_item"
+			testing: "covers/{ARCHETYPE_LIBRARY}.add_adhoc_item"
 		local
 			adl: STRING
 			name: STRING
@@ -77,18 +75,18 @@ feature -- Test routines
 
 			name := file_system.pathname (test_directory, "openehr-TEST_PKG-WHOLE.add_adhoc_item.v1.adls")
 			file_context.save_file (name, adl)
-			assert_equal (False, attached current_arch_lib.last_added_archetype)
-			current_arch_lib.add_adhoc_archetype (name)
-			assert_equal (True, attached current_arch_lib.last_added_archetype)
+			assert_equal (False, attached current_library.last_added_archetype)
+			current_library.add_adhoc_archetype (name)
+			assert_equal (True, attached current_library.last_added_archetype)
 		end
 
 	test_populate
 			-- Check that the repository can be populated.
 		note
-			testing: "covers/{ARCHETYPE_CATALOGUE}.populate"
+			testing: "covers/{ARCHETYPE_LIBRARY}.populate"
 		do
-			assert_equal (test_repository, current_arch_lib.library_access.primary_source.full_path)
-			assert_equal (0, current_arch_lib.compile_attempt_count)
+			assert_equal (test_library, current_library.library_access.primary_source.full_path)
+			assert_equal (0, current_library.compile_attempt_count)
 		--	assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 		end
 

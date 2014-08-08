@@ -58,20 +58,20 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (stats_viewer.ev_root_container)
 
 			-- visual characteristics
-			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text (ec_catalogue_archetype_tab_text))
+			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text (ec_library_archetype_tab_text))
 			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
 
-			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text (ec_catalogue_template_tab_text))
+			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text (ec_library_template_tab_text))
 
-			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text (ec_catalogue_metrics_tab_text))
-			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text (ec_catalogue_stats_tab_text))
+			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text (ec_library_metrics_tab_text))
+			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text (ec_library_stats_tab_text))
 			set_stats_metric_tab_appearance
 
 			-- docking pane mini-toolbar with rotate-view button
 			create gui_mini_tool_bar.make
 			gui_mini_tool_bar.add_tool_bar
 			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_rotate_active"), get_icon_pixmap ("tool/view_rotate_inactive"),
-				get_text (ec_catalogue_mini_toolbar_view_rotate), agent on_rotate_view)
+				get_text (ec_library_mini_toolbar_view_rotate), agent on_rotate_view)
 			check attached gui_mini_tool_bar.last_tool_bar_button as tbb then
 				rotate_view_button := tbb
 				gui_mini_tool_bar.activate_tool_bar_button (tbb)
@@ -132,8 +132,8 @@ feature -- Commands
 		end
 
 	go_to_selected_item
-			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
-			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
+			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_library'.
+			-- No events will be processed because archetype selected in ARCHETYPE_LIBRARY already matches selected tree node
 		do
 			if selection_history.has_selected_item and then source.has_item_with_id (selection_history.selected_item.global_artefact_identifier) then
 				archetype_explorer.select_item_in_tree (selection_history.selected_item.global_artefact_identifier)
@@ -142,7 +142,7 @@ feature -- Commands
 		end
 
 	select_item_by_id (a_globally_qualified_id: STRING)
-			-- Select `a_globally_qualified_id' in the GUI catalogue tree, unless it is the same as the current selection
+			-- Select `a_globally_qualified_id' in the GUI library tree, unless it is the same as the current selection
 		do
 			if not selection_history.has_selected_archetype or else not a_globally_qualified_id.is_equal (selection_history.selected_archetype.qualified_name) then
 				if source.has_item_with_id (a_globally_qualified_id) then
@@ -176,7 +176,7 @@ feature -- Commands
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not current_arch_lib.library_access.adhoc_source.has_path (fname) then
+				if not current_library.library_access.adhoc_source.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -277,10 +277,8 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Populate content from visual controls.
 		do
-			docking_pane.set_short_title (get_text (ec_catalogue_tool_title))
-			check attached repository_config_table.current_repository_name as crn then
-				docking_pane.set_long_title (get_text (ec_catalogue_tool_title) + " " + crn)
-			end
+			docking_pane.set_short_title (get_text (ec_library_tool_title))
+			docking_pane.set_long_title (get_text (ec_library_tool_title) + " " + current_library_name)
 			if attached source as src then
 				archetype_explorer.populate (src)
 				template_explorer.populate (src)
@@ -413,16 +411,16 @@ feature {NONE} -- Implementation
 				if aca.has_source_file then
 					create question_dialog.make_with_text (get_msg_line (ec_edit_which_file_question,
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
-					question_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.qualified_name>>))
-					question_dialog.set_buttons (<<get_text (ec_catalogue_edit_differential_button_text), get_text (ec_catalogue_edit_adl14_button_text)>>)
+					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.qualified_name>>))
+					question_dialog.set_buttons (<<get_text (ec_library_edit_differential_button_text), get_text (ec_library_edit_adl14_button_text)>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-					if question_dialog.selected_button.is_equal (get_text (ec_catalogue_edit_adl14_button_text)) then
+					if question_dialog.selected_button.is_equal (get_text (ec_library_edit_adl14_button_text)) then
 						path := legacy_path
 					end
 				else
 					create info_dialog.make_with_text (get_msg_line (ec_edit_legacy_file_info,
 						<<file_system.basename (legacy_path)>>))
-					info_dialog.set_title (get_msg (ec_catalogue_edit_differential_button_text, <<aca.id.as_string>>))
+					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.id.as_string>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					path := legacy_path
 				end

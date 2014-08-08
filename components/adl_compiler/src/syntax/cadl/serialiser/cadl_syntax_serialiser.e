@@ -299,7 +299,7 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			terminologies.extend (current_arch_lib.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+			terminologies.extend (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
 
 			last_result.append (create_indent (depth))
 

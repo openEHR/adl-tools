@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Root application class for any ADL application; performs all application-wide initialisation."
-	keywords:    "ADL"
+	keywords:    "application, shell"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -13,6 +13,10 @@ inherit
 	GLOBAL_ERROR_REPORTING_LEVEL
 
 	SHARED_ARCHETYPE_LIBRARIES
+
+	SHARED_ARCHETYPE_REPOSITORY_INTERFACES
+
+	SHARED_ARCHETYPE_LIBRARY_INTERFACES
 
 	SHARED_AOM_PROFILES_ACCESS
 
@@ -120,7 +124,7 @@ feature -- Initialisation
 			if file_system.directory_exists (rm_schema_directory) then
 				rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					if repository_config_table.is_empty then
+					if repositories_table.is_empty then
 						add_warning (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
 					else
 						add_error (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
@@ -145,25 +149,31 @@ feature -- Initialisation
 				add_error (ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
 			end
 
-			-- adjust for repositories being out of sync with current repository setting (e.g. due to
-			-- manual editing of .cfg file)
+			-- process repositories and validate; determine setting for `current_library' if
+			-- saved library name no loner valid, or else never set
 			if not has_errors then
 				-- first of all check for broken repositories and get rid of them
 				create dead_repos.make (0)
-				across repository_config_table as repos_csr loop
-					if not is_repository_valid (repos_csr.key) then
+				across repositories_table as repos_csr loop
+					if not directory_exists (repos_csr.item) then
 						dead_repos.extend (repos_csr.key)
 					end
 				end
 				across dead_repos as repos_csr loop
-					add_warning (ec_remove_library_cfg, <<invalid_library_reason (repos_csr.item)>>)
-					repository_config_table.remove_repository (repos_csr.item)
+					add_warning (ec_remove_library_cfg, <<get_msg (ec_ref_library_not_found,
+						<<repositories_table.repository_path (repos_csr.item)>>)>>)
+					repositories_table.remove_repository (repos_csr.item)
 				end
 
-				-- now choose a repository to start with
-				if not repository_config_table.is_empty then
+				-- populate existing repositories, if any
+				across repositories_table as repos_csr loop
+					archetype_repository_interfaces.extend (repos_csr.item)
+				end
+
+				-- now choose a library to start with
+				if not archetype_library_interfaces.is_empty then
 					if not has_current_library then
-						set_current_repository (repository_config_table.first_repository)
+						set_current_library_name (archetype_library_interfaces.keys.first)
 					end
 					use_current_library (False)
 				end

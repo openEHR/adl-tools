@@ -89,7 +89,7 @@ feature -- Visitor
 		do
 			if attached ed_context.archetype as arch and then arch.is_template then
 				new_ed_context := ed_context.twin
-				new_ed_context.set_flat_terminology (current_arch_lib.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+				new_ed_context.set_flat_terminology (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
 				ed_context_stack.extend (new_ed_context)
 			end
 			create ed_node.make (a_node, ed_context)

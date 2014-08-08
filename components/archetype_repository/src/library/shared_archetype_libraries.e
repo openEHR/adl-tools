@@ -16,62 +16,57 @@ class SHARED_ARCHETYPE_LIBRARIES
 
 inherit
 	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists, archetype_view_language
+		end
+
+	SHARED_ARCHETYPE_LIBRARY_INTERFACES
+		export
+			{NONE} all
+		end
 
 feature -- Access
 
-	current_arch_lib: ARCHETYPE_LIBRARY
+	current_library: ARCHETYPE_LIBRARY
 			-- application-wide archetype directory access
 		require
 			is_current_library_valid
-		local
-			curr_prof_name: STRING
 		do
-			check attached repository_config_table.current_repository_name as cpn then
-				curr_prof_name := cpn
-			end
-			if not arch_libs.has (curr_prof_name) then
+			if not libraries.has (current_library_name) then
 				use_current_library (False)
 			end
-			check attached arch_libs.item (curr_prof_name) as ac then
+			check attached libraries.item (current_library_name) as ac then
 				Result := ac
 			end
 		end
 
 	use_current_library (refresh: BOOLEAN)
-			-- switch to current repository; refresh flag forces archetype in memory directory to be refreshed from source repository
+			-- switch to current library; refresh flag forces archetype in-memory library to be refreshed from source location
 		require
 			is_current_library_valid
 		local
-			new_cat: ARCHETYPE_LIBRARY
-			prof_repo_access: LIBRARY_ACCESS
-			curr_prof: STRING
+			new_lib: ARCHETYPE_LIBRARY
 		do
-			init_gen_dirs_from_current_repository
-			check attached repository_config_table.current_repository_name as cpn then
-				curr_prof := cpn
+			init_gen_dirs_from_current_library
+			if not libraries.has (current_library_name) or else refresh then
+				new_lib := archetype_library_interfaces.item (current_library_name).create_library
+				libraries.force (new_lib, current_library_name) -- replace original copy if it was there
 			end
-			if not arch_libs.has (curr_prof) or else refresh then
-				create prof_repo_access.make (repository_config_table.current_reference_repository_path)
-				create new_cat.make (prof_repo_access)
-				new_cat.populate
-				arch_libs.force (new_cat, curr_prof) -- replace original copy if it was there
-			end
+		end
+
+	current_library_interface: ARCHETYPE_LIBRARY_INTERFACE
+		require
+			has_current_library
+		do
+			Result := archetype_library_interfaces.item (current_library_name)
 		end
 
 feature -- Status Report
 
 	has_current_library: BOOLEAN
 		do
-			Result := repository_config_table.has_current_repository
-		end
-
-	is_repository_valid (a_rep_name: STRING): BOOLEAN
-			-- check validity of repository directories etc - can it be created and loaded?
-		do
-			Result := repository_config_table.has_repository (a_rep_name) and
-				directory_exists (repository_config_table.repository (a_rep_name).reference_path)
-
-			-- TODO: potentially other checks as well
+			Result := archetype_library_interfaces.has (current_library_name)
 		end
 
 	is_current_library_valid: BOOLEAN
@@ -79,23 +74,12 @@ feature -- Status Report
 		require
 			has_current_library
 		do
-			Result := attached repository_config_table.current_repository_name as cpn and then is_repository_valid (cpn)
-		end
-
-	invalid_library_reason (a_lib_name: STRING): STRING
-			-- generate reason why library is not valid
-		do
-			create Result.make_empty
-			if not repository_config_table.has_repository (a_lib_name) then
-				Result := get_msg (ec_invalid_library_cfg, <<a_lib_name>>)
-			elseif not directory_exists (repository_config_table.repository (a_lib_name).reference_path) then
-				Result := get_msg (ec_ref_library_not_found, <<repository_config_table.repository (a_lib_name).reference_path>>)
-			end
+			Result := has_current_library and then archetype_library_interfaces.item (current_library_name).is_valid
 		end
 
 feature {NONE} -- Implementation
 
-	arch_libs: HASH_TABLE [ARCHETYPE_LIBRARY, STRING]
+	libraries: HASH_TABLE [ARCHETYPE_LIBRARY, STRING]
 			-- hash of all archetype libraries used so far in the current session;
 			-- keyed by library name;
 			-- lazy populated

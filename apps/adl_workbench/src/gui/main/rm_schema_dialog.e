@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "RM schemas dialog window"
-	keywords:    "ADL, archeytpes, openEHR"
+	keywords:    "BMM, reference model, schema"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"

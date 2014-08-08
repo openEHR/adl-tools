@@ -23,7 +23,7 @@ inherit
 	SHARED_ARCHETYPE_LIBRARIES
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} standard_is_equal, deep_twin, is_deep_equal, has_current_library
 		end
 
 	SHARED_ARCHETYPE_COMPILER
@@ -323,24 +323,21 @@ feature -- Commands
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
+		require
+			has_current_library
 		local
-			curr_repo_name: STRING
 			col_titles: ARRAYED_LIST [STRING]
 		do
 			clear
 
  			if has_current_library then
-	 			current_arch_lib.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
- 			end
-
- 			check attached repository_config_table.current_repository_name as crn then
- 				curr_repo_name := crn
+	 			current_library.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
 
 			-- put names on columns
 			if evx_grid.column_count > 0 then
 				create col_titles.make (0)
-				col_titles.extend ("Archetypes - " + curr_repo_name)
+				col_titles.extend ("Archetypes - " + current_library_name)
 				col_titles.extend ("") -- checkbox column
 				if evx_grid.column_count >= first_test_col then
 					across tests as test_csr loop
@@ -854,9 +851,7 @@ feature {NONE} -- Implementation
 			diff_dirs_available := False
 
 			-- source diff dirs
-			check attached repository_config_table.current_repository_name as cpn then
-				curr_prof := cpn
-			end
+			curr_prof := current_library_name
 			diff_dir_root := file_system.pathname (test_diff_directory, curr_prof)
 				diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
 				diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")

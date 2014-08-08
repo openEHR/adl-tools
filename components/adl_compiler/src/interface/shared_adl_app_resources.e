@@ -166,58 +166,65 @@ feature -- Application Switches
 			app_cfg.put_value ("/general/archetype_view_language", a_lang)
 		end
 
-	repository_config_table_path: STRING
+	repositories_table_path: STRING
 			-- path of the REPOSITORY_CONFIG_TABLE within the parent object representing the whole .cfg file
 		once
-			Result := "/" + {REPOSITORY_CONFIG_TABLE}.root_attribute_name
+			Result := "/" + {REPOSITORIES_TABLE}.root_attribute_name
 		end
 
-	repository_config_table: REPOSITORY_CONFIG_TABLE
+	repositories_table: REPOSITORIES_TABLE
 			-- hash of repo configs each of which is a list of {ref_repo_path, working_repo_path} configs or maybe just
 			-- {ref_repo_path}, keyed by config name. The data are stored in the following way:
 			--
-			--	repository_config_table = <
-			--		current_repository = <"CKM">
-			--		repositories = <
-			--			["CKM"] = <
-			--				reference_path = <"C:\\project\\openehr\\knowledge\\archetypes\\CKM">
-			--			>
-			--			["abc"] = <
-			--				reference_path = <"C:\\some\\other\\ref\\dir">
-			--				work_path = <"C:\\some\\other\\work\\dir">
-			--			>
-			--		>
+			--	locations = <
+			--		["CKM"] = <"C:\\project\\openehr\\knowledge\\archetypes\\CKM">
+			--		["abc"] = <"C:\\some\\other\\ref\\dir">
 			--	>
 			--
 		do
-			if attached repository_config_table_cache.item as pci then
+			if attached repositories_table_cache.item as pci then
 				Result := pci
 			else
-				if attached {REPOSITORY_CONFIG_TABLE} app_cfg.object_value (repository_config_table_path, ({REPOSITORY_CONFIG_TABLE}).name) as p then
+				if attached {REPOSITORIES_TABLE} app_cfg.object_value (repositories_table_path, ({REPOSITORIES_TABLE}).name) as p then
 					Result := p
 				else
 					create Result.default_create
 				end
-				repository_config_table_cache.put (Result)
+				repositories_table_cache.put (Result)
 			end
 		end
 
-	set_repository_config_table (repo_config_table: REPOSITORY_CONFIG_TABLE)
-			-- hash of repo configs each of which is a list of {ref_repo_path, working_repo_path} or maybe just
-			-- {ref_repo_path}, keyed by config name.
+	add_repository_path (a_repo_dir, a_key: STRING)
+			-- add a new repository to repository path
 		do
-			repository_config_table_cache.put (repo_config_table)
-			app_cfg.put_object (repository_config_table_path, repo_config_table)
+			repositories_table.put_repository (a_repo_dir, a_key)
+			save_repositories_table
 		end
 
-	set_current_repository (a_repo_name: STRING)
-		require
-			repo_name_valid: not a_repo_name.is_empty
+	save_repositories_table
+			-- hash of repository paths
 		do
-			repository_config_table.set_current_repository_name (a_repo_name)
-			app_cfg.put_object (repository_config_table_path, repository_config_table)
-		ensure
-			current_repo_set: repository_config_table.current_repository_name.same_string (a_repo_name)
+			app_cfg.put_object (repositories_table_path, repositories_table)
+
+			-- FIXME: temporary - retain for a few releases until all users
+			-- have installed the beta 11 release or later
+			if app_cfg.has_resource ("/repository_config_table") then
+				app_cfg.remove_resource ("/repository_config_table")
+			end
+		end
+
+	current_library_name: STRING
+			-- name of current library
+		do
+			Result := app_cfg.string_value_env_var_sub ("/repositories/current_library_name")
+		end
+
+	set_current_library_name (a_path: STRING)
+			-- Set name of current library
+		require
+			path_not_empty: not a_path.is_empty
+		do
+			app_cfg.put_value ("/repositories/current_library_name", a_path)
 		end
 
 	default_namespaces: HASH_TABLE [STRING, STRING]
@@ -323,31 +330,20 @@ feature -- Application Switches
 			Result.replace_substring_all ("$code_string", a_code)
 		end
 
-	init_gen_dirs_from_current_repository
-			-- create compiler source and flat generated file areas for current repository
+	init_gen_dirs_from_current_library
+			-- create compiler source and flat generated file areas for current library
 		require
-			repository_config_table.has_current_repository
-		local
-			curr_prof: STRING
+			not current_library_name.is_empty
 		do
-			check attached repository_config_table.current_repository_name as cpn then
-				curr_prof := cpn
-			end
-			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "source"))
+			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, current_library_name), "source"))
 			if not file_system.directory_exists (compiler_gen_source_directory) then
 				file_system.recursive_create_directory (compiler_gen_source_directory)
 			end
 
-			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "flat"))
+			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, current_library_name), "flat"))
 			if not file_system.directory_exists (compiler_gen_flat_directory) then
 				file_system.recursive_create_directory (compiler_gen_flat_directory)
 			end
-		end
-
-	clear_current_repository
-		do
-			repository_config_table.clear_current_repository
-			app_cfg.put_object(repository_config_table_path, repository_config_table)
 		end
 
 	validation_strict: BOOLEAN
@@ -556,7 +552,7 @@ feature {NONE} -- Cached Settings
 			create Result.make_empty
 		end
 
-	repository_config_table_cache: CELL [detachable REPOSITORY_CONFIG_TABLE]
+	repositories_table_cache: CELL [detachable REPOSITORIES_TABLE]
 		once
 			create Result.put (Void)
 		end
@@ -574,8 +570,8 @@ feature {NONE} -- Cached Settings
 	resources_refresh_from_file
 			-- actions to clear any cached content from config file, due to file being re-loaded
 		do
-			repository_config_table_cache.put (Void)
-			init_gen_dirs_from_current_repository
+			repositories_table_cache.put (Void)
+			init_gen_dirs_from_current_library
 		end
 
 end

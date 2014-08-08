@@ -16,11 +16,6 @@ inherit
 			show, create_interface_objects, initialize, is_in_default_state
 		end
 
-	EVX_DEFINITIONS
-		undefine
-			is_equal, default_create, copy
-		end
-
 	EV_KEY_CONSTANTS
 		export
 			{NONE} all
@@ -28,12 +23,14 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_APP_ROOT
+	EVX_UTILITIES
+		export
+			{NONE} all
 		undefine
 			copy, default_create
 		end
 
-	SHARED_AOM_PROFILES_ACCESS
+	SHARED_APP_ROOT
 		undefine
 			copy, default_create
 		end
@@ -53,19 +50,7 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_ARCHETYPE_SERIALISERS
-		undefine
-			copy, default_create
-		end
-
 	SHARED_GUI_AGENTS
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
-	EVX_UTILITIES
 		export
 			{NONE} all
 		undefine
@@ -102,13 +87,13 @@ feature {NONE} -- Initialization
 			action_bar.disable_item_expand (history_bar.tool_bar)
 
 			-- repository combo
-			create arch_repositories_combo
-			arch_repositories_combo.set_tooltip (get_msg (ec_library_cfg_combo_tooltip, Void))
-			arch_repositories_combo.set_minimum_width (160)
-			arch_repositories_combo.disable_edit
-			arch_repositories_combo.select_actions.extend (agent select_library)
-			action_bar.extend (arch_repositories_combo)
-			action_bar.disable_item_expand (arch_repositories_combo)
+			create arch_libraries_combo
+			arch_libraries_combo.set_tooltip (get_msg (ec_library_cfg_combo_tooltip, Void))
+			arch_libraries_combo.set_minimum_width (160)
+			arch_libraries_combo.disable_edit
+			arch_libraries_combo.select_actions.extend (agent select_library)
+			action_bar.extend (arch_libraries_combo)
+			action_bar.disable_item_expand (arch_libraries_combo)
 
 			-- compile tool bar
 			create arch_compile_tool_bar
@@ -140,11 +125,11 @@ feature {NONE} -- Initialization
 
 			-- ========== File Menu ===========
 			evx_menu_bar.add_menu ("File", get_text (ec_file_menu_text))
-			evx_menu_bar.add_menu_item ("File>Open", get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent catalogue_tool.open_adhoc_archetype)
+			evx_menu_bar.add_menu_item ("File>Open", get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("File>Save As", get_text (ec_file_menu_save_as_text), Void, agent catalogue_tool.save_source_archetype_as)
-			evx_menu_bar.add_menu_item ("File>Export", get_text (ec_file_menu_export_text), Void, agent catalogue_tool.export_source_archetype_as)
-			evx_menu_bar.add_menu_item ("File>Export Flat", get_text (ec_file_menu_export_flat_as_text), Void, agent catalogue_tool.export_flat_archetype_as)
+			evx_menu_bar.add_menu_item ("File>Save As", get_text (ec_file_menu_save_as_text), Void, agent library_tool.save_source_archetype_as)
+			evx_menu_bar.add_menu_item ("File>Export", get_text (ec_file_menu_export_text), Void, agent library_tool.export_source_archetype_as)
+			evx_menu_bar.add_menu_item ("File>Export Flat", get_text (ec_file_menu_export_flat_as_text), Void, agent library_tool.export_flat_archetype_as)
 			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item ("Exit", "E&xit", Void, agent exit_app)
 
@@ -238,7 +223,7 @@ feature {NONE} -- Initialization
 
 			-- set up docking & tools
 			create internal_docking_manager.make (viewer_main_cell, Current)
-			create_new_catalogue_tool
+			create_new_library_tool
 			create_new_rm_schema_explorer
 			create_new_console_tool
 			create_new_error_tool
@@ -252,7 +237,7 @@ feature {NONE} -- Initialization
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
-			archetype_compiler.set_full_compile_visual_update_action (agent catalogue_tool.on_full_compile)
+			archetype_compiler.set_full_compile_visual_update_action (agent library_tool.on_full_compile)
 
 			-- accelerators
 			initialise_accelerators
@@ -406,11 +391,11 @@ feature -- Commands
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
 				rm_schema_explorer.populate (rm_schemas_access)
-				if repository_config_table.current_reference_repository_path.is_empty then
+				if archetype_repository_interfaces.is_empty then
 					configure_repositories
 				else
-					populate_arch_repo_config_combo
-					refresh_archetype_catalogue (True)
+					populate_arch_lib_combo
+					refresh_archetype_library (True)
 				end
 			end
 
@@ -512,46 +497,40 @@ feature {NONE} -- AOM profiles events
 feature {NONE} -- Library events
 
 	configure_repositories
-			-- Display the Library Settings dialog. This dialog allows changing of
-			-- the library profiles, adding new ones and removal. Removal of the current
-			-- repository or changing current library paths will cause visual update;
-			-- adding a new profile won't - the current selection stays.
+			-- Display the Repository dialog.
 		local
-			dialog: LIBRARY_DIALOG
-			any_library_changes_made, current_libraries_removed, current_libraries_changed: BOOLEAN
+			dialog: REPOSITORY_DIALOG
+			current_library_removed, current_library_changed: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			any_library_changes_made := dialog.any_library_changes_made
-			if any_library_changes_made then
-				current_libraries_removed := dialog.current_library_removed
-				current_libraries_changed := dialog.current_library_changed
+			current_library_removed := dialog.current_library_removed
+			current_library_changed := dialog.current_library_changed
+			if current_library_removed or current_library_changed then
 				save_resources
 			end
 
 			dialog.destroy
 
-			-- if the list of profiles changed, repopulate the profile combo box selectors
-			if dialog.any_library_changes_made then
-				populate_arch_repo_config_combo
-			end
+			-- populate the profile combo box selectors
+			populate_arch_lib_combo
 
 			-- if the current profile changed or was removed, repopulate the explorers
-			if current_libraries_removed or current_libraries_changed then
+			if current_library_removed or current_library_changed then
 				console_tool.clear
-				refresh_archetype_catalogue (True)
+				refresh_archetype_library (True)
 			end
 		end
 
 	select_library
-			-- Called by `select_actions' of profile selector
+			-- Called by `select_actions' of library selector
 		do
-			if not arch_repositories_combo.text.same_string (repository_config_table.current_repository_name) then
+			if not arch_libraries_combo.text.same_string (current_library_name) then
 				console_tool.clear
-				set_current_repository (arch_repositories_combo.text)
+				set_current_library_name (arch_libraries_combo.text)
 			end
-			refresh_archetype_catalogue (False)
+			refresh_archetype_library (False)
 			clear_all_editors
 		end
 
@@ -574,7 +553,7 @@ feature {NONE} -- Library events
 			-- Build the subsystem below the currently selected node.
 		do
 			console_tool.show
-			if catalogue_tool.selection_history.has_selected_item and then attached catalogue_tool.selected_item as sel_item then
+			if library_tool.selection_history.has_selected_item and then attached library_tool.selected_item as sel_item then
 				do_build_action (agent archetype_compiler.build_subtree (sel_item))
 			end
 		end
@@ -583,7 +562,7 @@ feature {NONE} -- Library events
 			-- Force rebuilding of the whole subsystem below the currently selected node.
 		do
 			console_tool.show
-			if catalogue_tool.selection_history.has_selected_item and then attached catalogue_tool.selected_item as sel_item then
+			if library_tool.selection_history.has_selected_item and then attached library_tool.selected_item as sel_item then
 				do_build_action (agent archetype_compiler.rebuild_subtree (sel_item))
 			end
 		end
@@ -648,7 +627,7 @@ feature {NONE} -- Library events
 			xml_name: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			if current_arch_lib.has_statistics then
+			if current_library.has_statistics then
 				create save_dialog
 				save_dialog.set_title (get_text (ec_export_report_dialog_title))
 				save_dialog.set_file_name (Repository_report_filename)
@@ -694,7 +673,7 @@ feature {NONE} -- Library events
 	refresh_directory
 			-- reload current directory
 		do
-			refresh_archetype_catalogue (True)
+			refresh_archetype_library (True)
 		end
 
 feature {NONE} -- XML Menu events
@@ -722,9 +701,9 @@ feature {NONE} -- Tools menu events
 					update_all_tools_rm_icons_setting
 				end
 			end
-			if dialog.has_changed_navigator_options and repository_config_table.has_current_repository then
+			if dialog.has_changed_navigator_options and has_current_library then
 				save_resources
-				catalogue_tool.populate (current_arch_lib)
+				library_tool.populate (current_library)
 				test_tool.populate
 			end
 		end
@@ -733,15 +712,15 @@ feature {NONE} -- Tools menu events
 		do
 			archetype_viewers.do_all_tools (agent (a_tool: GUI_ARCHETYPE_VIEWER) do a_tool.update_rm_icons_setting end)
 			class_tools.do_all_tools (agent (a_tool: GUI_CLASS_TOOL) do a_tool.update_rm_icons_setting end)
-			catalogue_tool.update_rm_icons_setting
+			library_tool.update_rm_icons_setting
 		end
 
 	clean_generated_files
 			-- Remove all generated files below the repository directory and repopulate from scratch
 		do
 			if has_current_library then
-				do_with_wait_cursor (Current, agent current_arch_lib.do_all_archetypes (agent delete_generated_files))
-				refresh_archetype_catalogue (True)
+				do_with_wait_cursor (Current, agent current_library.do_all_archetypes (agent delete_generated_files))
+				refresh_archetype_library (True)
 			end
 		end
 
@@ -770,7 +749,7 @@ feature -- RM Schemas Events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			populate_arch_repo_config_combo
+			populate_arch_lib_combo
 			if dialog.has_changed_schema_load_list then
 				console_tool.clear
 				rm_schemas_access.reload_schemas
@@ -779,12 +758,12 @@ feature -- RM Schemas Events
 				else
 					rm_schema_explorer.populate (rm_schemas_access)
 					if has_current_library then
-						refresh_archetype_catalogue (True)
+						refresh_archetype_library (True)
 					end
 				end
 			elseif dialog.has_changed_schema_dir then
 				rm_schema_explorer.populate (rm_schemas_access)
-				refresh_archetype_catalogue (True)
+				refresh_archetype_library (True)
 			end
 		end
 
@@ -792,7 +771,7 @@ feature -- RM Schemas Events
 			-- user-initiated reload
 		do
 			rm_schemas_access.reload_schemas
-			refresh_archetype_catalogue (True)
+			refresh_archetype_library (True)
 			rm_schema_explorer.populate (rm_schemas_access)
 		end
 
@@ -840,7 +819,7 @@ feature -- Address Bar control
 	address_bar: GUI_ADDRESS_BAR
 		once
 			create Result.make (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
-			Result.add_client_control (catalogue_tool)
+			Result.add_client_control (library_tool)
 			Result.add_client_control (rm_schema_explorer)
 		end
 
@@ -922,37 +901,37 @@ feature -- RM tools
 			rm_tools.populate_active_tool (an_rm)
 		end
 
-feature -- Catalogue tool
+feature -- library tool
 
-	catalogue_tool: GUI_LIBRARY_TOOL
+	library_tool: GUI_LIBRARY_TOOL
 		once
 			create Result.make
 		end
 
-	create_new_catalogue_tool
+	create_new_library_tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg (ec_catalogue_tool_title, Void))
-			if attached catalogue_tool.mini_tool_bar then
-				a_docking_pane.set_mini_toolbar (catalogue_tool.mini_tool_bar)
+			create a_docking_pane.make_with_widget_title_pixmap (library_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg (ec_library_tool_title, Void))
+			if attached library_tool.mini_tool_bar then
+				a_docking_pane.set_mini_toolbar (library_tool.mini_tool_bar)
 			end
-			catalogue_tool.set_docking_pane (a_docking_pane)
+			library_tool.set_docking_pane (a_docking_pane)
 			docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title (get_msg (ec_catalogue_tool_title, Void))
-			a_docking_pane.set_short_title (get_msg (ec_catalogue_tool_title, Void))
+			a_docking_pane.set_long_title (get_msg (ec_library_tool_title, Void))
+			a_docking_pane.set_short_title (get_msg (ec_library_tool_title, Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
-			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
-			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (catalogue_tool))
-			a_docking_pane.focus_in_actions.extend (agent history_bar.set_active_tool (catalogue_tool))
+			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (library_tool))
+			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (library_tool))
+			a_docking_pane.focus_in_actions.extend (agent history_bar.set_active_tool (library_tool))
 		end
 
 	select_archetype_from_gui_node (gui_item: EV_SELECTABLE)
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
 			if attached gui_item and then attached {ARCH_LIB_ITEM} gui_item.data as aci then
-				catalogue_tool.select_item_by_id (aci.qualified_key)
+				library_tool.select_item_by_id (aci.qualified_key)
 			end
 		end
 
@@ -1152,27 +1131,27 @@ feature {NONE} -- Implementation
 			console_tool.append_text (get_msg (ec_cfg_file_i1, <<user_config_file_path>>))
 		end
 
-	refresh_archetype_catalogue (refresh_from_repository: BOOLEAN)
-			-- Rebuild archetype directory & repopulate relevant GUI parts.
+	refresh_archetype_library (refresh_from_source: BOOLEAN)
+			-- Rebuild archetype library & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (Current, agent do_refresh_profile_context (refresh_from_repository))
+			do_with_wait_cursor (Current, agent do_refresh_archetype_library (refresh_from_source))
 		end
 
-	do_refresh_profile_context (refresh_from_repository: BOOLEAN)
+	do_refresh_archetype_library (refresh_from_source: BOOLEAN)
 		do
 			console_tool.show
-			if attached repository_config_table.current_repository_name as rep_name then
-				console_tool.append_text (get_msg_line ("populating_directory_start", <<rep_name>>))
+			if has_current_library then
+				console_tool.append_text (get_msg_line (ec_populating_directory_start, <<current_library_name>>))
 			end
-			use_current_library (refresh_from_repository)
-			console_tool.append_text (current_arch_lib.error_strings)
-			console_tool.append_text (get_msg_line ("populating_directory_complete", Void))
+			use_current_library (refresh_from_source)
+			console_tool.append_text (current_library.error_strings)
+			console_tool.append_text (get_msg_line (ec_populating_directory_complete, Void))
 
 			clear_toolbar_controls
 			error_tool.clear
 			clear_all_editors
 
-			catalogue_tool.populate (current_arch_lib)
+			library_tool.populate (current_library)
 			test_tool.populate
 		end
 
@@ -1188,26 +1167,26 @@ feature {NONE} -- Implementation
 		--	archetype_editors.clear_all_tools_content
 		end
 
-	populate_arch_repo_config_combo
+	populate_arch_lib_combo
 			-- Initialise the dialog's widgets from shared settings.
 		do
-			arch_repositories_combo.select_actions.block
-			arch_repositories_combo.change_actions.block
-			if not repository_config_table.is_empty then
-				arch_repositories_combo.set_strings (repository_config_table.names)
-				if repository_config_table.has_current_repository then
-					arch_repositories_combo.do_all (
+			arch_libraries_combo.select_actions.block
+			arch_libraries_combo.change_actions.block
+			if not archetype_library_interfaces.is_empty then
+				arch_libraries_combo.set_strings (archetype_library_interfaces.keys)
+				if has_current_library then
+					arch_libraries_combo.do_all (
 						agent (li: EV_LIST_ITEM)
 							do
-								if li.text.same_string (repository_config_table.current_repository_name) then li.enable_select end
+								if li.text.same_string (current_library_name) then li.enable_select end
 							end
 					)
 				end
 			else
-				arch_repositories_combo.wipe_out
+				arch_libraries_combo.wipe_out
 			end
-			arch_repositories_combo.select_actions.resume
-			arch_repositories_combo.change_actions.resume
+			arch_libraries_combo.select_actions.resume
+			arch_libraries_combo.change_actions.resume
 		end
 
 	populate_compile_button
@@ -1256,7 +1235,7 @@ feature {NONE} -- Build commands
 				console_tool.append_text (indented (a_msg, create {STRING}.make_filled ('%T', dependency_depth)))
 			end
 
-			catalogue_tool.update_tree_node (aca)
+			library_tool.update_tree_node (aca)
 			test_tool.do_row_for_item (aca)
 			error_tool.extend_and_select (aca)
 
@@ -1291,7 +1270,7 @@ feature {NONE} -- GUI Widgets
 	ev_main_vbox, ev_root_vbox: EV_VERTICAL_BOX
 	viewer_main_cell: EV_CELL
 	evx_menu_bar: EVX_MENU_BAR
-	arch_repositories_combo: EV_COMBO_BOX
+	arch_libraries_combo: EV_COMBO_BOX
 	compile_button: EV_TOOL_BAR_BUTTON
 
 end

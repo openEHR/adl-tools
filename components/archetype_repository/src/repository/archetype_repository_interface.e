@@ -4,7 +4,7 @@ note
 				 Access object for archetype repository. A 'repository' is assumed to contain one
 				 or more 'libraries' where a 'library' is a logical collection of archetypes.
 
-				 At the root of the repository will be a file whose name is
+				 At the root of the repository will be a file whose name is '_repo.idx'
 				 ]"
 	keywords:    "ADL, archetype, repository"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -12,17 +12,17 @@ note
 	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_REPOSITORY_ACCESS
+class ARCHETYPE_REPOSITORY_INTERFACE
 
 inherit
 	ANY_VALIDATOR
 
-	SHARED_DT_OBJECT_CONVERTER
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end
 
-	ADL_COMPILED_MESSAGE_IDS
+	SHARED_ARCHETYPE_LIBRARY_INTERFACES
 		export
 			{NONE} all
 		end
@@ -32,75 +32,79 @@ create
 
 feature -- Definitions
 
-	rep_file_name: STRING = "_repo.idx"
+	Repository_file_name: STRING = "_repo.idx"
 			-- name of definition file at root point of repository
+
+	Repository_definition_unavailable: STRING = "(definition not found)"
 
 feature -- Initialisation
 
 	make (a_dir: STRING)
 		do
-			rep_directory := a_dir
-			rep_file_path := a_dir + xxxx + rep_file_name
+			repository_directory := a_dir
+			create repository_definition_accessor.make (file_system.pathname (a_dir, Repository_file_name))
+			if attached repository_definition_accessor.object as att_obj then
+				repository_definition := att_obj
+
+				-- find all the repositories below this point
+				populate_libraries
+			end
 		end
 
 feature -- Access
 
-	rep_directory: STRING
+	repository_directory: STRING
 			-- repository root directory
 
-	rep_file_path: STRING
-			-- path to file
+	repository_definition_accessor: ODIN_OBJECT_READER [ARCHETYPE_REPOSITORY_DEFINITION]
 
-	repository: detachable ARCHETYPE_REPOSITORY_DEFINITION
-
---	libraries: HASH_TABLE [ARCHETYPE_LIBRARY_DEFINITION, STRING]
-			-- list of libraries under this repository
-
-feature {ARCHETYPE_REPOSITORY_ACCESS} -- Commands
-
-	load
-			-- load resource into in-memory form
-		local
-			rep_file: PLAIN_TEXT_FILE
-		do
-			reset
-			repository := Void
-			create rep_file.make (rep_file_path)
-			if not rep_file.exists or else not rep_file.is_readable then
-				add_error (ec_arch_repository_file_not_valid, <<path>>)
-			else
-				rep_file.open_read
-				rep_file.read_stream (rep_file.count)
-				parser.execute (rep_file.last_string, 1)
-				if not parser.syntax_error and then attached parser.output as dt_tree then
-					if not attached {ARCHETYPE_REPOSITORY_DEFINITION} dt_tree.as_object_from_string (({ARCHETYPE_REPOSITORY_DEFINITION}).name, Void) as arch_rep then
-						add_error (ec_arch_repository_load_failure_exception, <<path>>)
-					elseif dt_object_converter.errors.has_errors then
-						add_error (ec_arch_repository_conv_fail_err, <<path, dt_object_converter.errors.as_string>>)
-					else
-						arch_rep.set_file_path (path)
-						repository := arch_rep
-						passed := True
-					end
-				else
-					add_error (ec_arch_rep_load_failure, <<path, parser.errors.as_string>>)
-				end
-				rep_file.close
-			end
-		ensure
-			attached repository or else has_errors
+	repository_definition: detachable ARCHETYPE_REPOSITORY_DEFINITION
+		note
+			option: stable
+		attribute
 		end
 
-feature -- Validation
+	library_interfaces: HASH_TABLE [ARCHETYPE_LIBRARY_INTERFACE, STRING]
+			-- generate list of libraries of this repository, keyed by library id
+		do
+			create Result.make (0)
+			across archetype_library_interfaces as lib_interfaces_csr loop
+				if lib_interfaces_csr.item.repository_key.is_equal (repository_directory) then
+					Result.put (lib_interfaces_csr.item, lib_interfaces_csr.key)
+				end
+			end
+		end
+
+	key: STRING
+		do
+			if attached repository_definition as att_rep_def then
+				Result := att_rep_def.key
+			else
+				Result := Repository_definition_unavailable
+			end
+		end
+
+feature -- Commands
+
+	populate_libraries
+		local
+			file_rep: FILE_REPOSITORY
+			lib_access: ARCHETYPE_LIBRARY_INTERFACE
+		do
+			create file_rep.make (repository_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
+			across file_rep.matching_paths as lib_def_file_paths_csr loop
+				archetype_library_interfaces.extend (file_system.dirname (lib_def_file_paths_csr.item), repository_directory)
+			end
+		end
 
 	validate
 		do
-			if attached repository as prf then
-				if prf.ready_to_validate then
-					prf.validate
-				end
-				merge_errors (prf.errors)
-			end
+--			if attached repository_definition as rep then
+--				if rep.ready_to_validate then
+--					rep.validate
+--				end
+--				merge_errors (rep.errors)
+--			end
 		end
 
 feature {NONE} -- Implementation
@@ -111,6 +115,4 @@ feature {NONE} -- Implementation
 		end
 
 end
-
-
 

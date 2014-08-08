@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Source repositories providing access to source archetypes & templates.
+				 Interface to library containing source archetypes & templates.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -9,7 +9,7 @@ note
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class LIBRARY_ACCESS
+class ARCHETYPE_LIBRARY_INTERFACE
 
 inherit
 	SHARED_RESOURCES
@@ -27,19 +27,59 @@ feature -- Definitions
 
 	Group_id_primary: INTEGER = 2
 
+	lib_file_name: STRING = "_repo_lib.idx"
+			-- name of definition file at root point of library, within repository
+
+	Library_definition_unavailable: STRING = "(definition not found)"
+
 feature -- Initialisation
 
-	make (a_primary_path: STRING)
+	make (a_library_path, a_repository_key: STRING)
 		require
-			dir_name_valid: directory_exists (a_primary_path)
+			dir_name_valid: directory_exists (a_library_path)
 		do
-			create adhoc_source.make (Group_id_adhoc)
-			check attached file_system.canonical_pathname (a_primary_path) as cpn then
-				create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (cpn, Group_id_primary)
+			create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
+
+			-- read in the library definition file
+			create library_definition_accessor.make (file_system.pathname (a_library_path, lib_file_name))
+			if attached library_definition_accessor.object as att_obj then
+				library_definition := att_obj
 			end
+
+			-- create adhoc file source, in case it is ever needed - allows user to open any archetype file
+			-- outside library and attach it to the library for the duration of the session
+			create adhoc_source.make (Group_id_adhoc)
+
+			repository_key := a_repository_key
 		end
 
 feature -- Access
+
+	library_definition_accessor: ODIN_OBJECT_READER [ARCHETYPE_LIBRARY_DEFINITION]
+
+	library_definition: detachable ARCHETYPE_LIBRARY_DEFINITION
+		note
+			option: stable
+		attribute
+		end
+
+	library_path: STRING
+			-- directory path of library
+		do
+			Result := primary_source.full_path
+		end
+
+	key: STRING
+		do
+			if attached library_definition as att_lib_def then
+				Result := att_lib_def.key
+			else
+				Result := Library_definition_unavailable
+			end
+		end
+
+	repository_key: STRING
+			-- unique key of the repository to which this library belongs
 
 	primary_source: ARCHETYPE_INDEXED_LIBRARY_I
 			-- primary physical artefact source
@@ -50,6 +90,23 @@ feature -- Access
 			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation.
+
+feature -- Status Report
+
+	is_valid: BOOLEAN
+			-- True if this repository location exists
+		do
+			Result := directory_exists (library_path)
+		end
+
+feature -- Commands
+
+	create_library: ARCHETYPE_LIBRARY
+			-- create the in-memory representation of the archetype library file-system and populate it
+		do
+			create Result.make (Current)
+			Result.populate
+		end
 
 end
 

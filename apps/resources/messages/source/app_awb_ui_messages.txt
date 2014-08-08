@@ -138,12 +138,21 @@ templates = <
 		["rm_schema_grid_xml_schema_export_col_title"] = <"XML Export">
 		["rm_schema_dialog_reload_button_text"] = <"Reload">
 
+		-- REPOSITORY_DIALOG
+		["repository_dir_button_text"] = <"Add">
+		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
+		["repository_dialog_header_label"] = <"Repositories and contained libraries">
+		["repository_grid_display_name_col_title"] = <"Repository">
+		["repository_grid_description_col_title"] = <"Description">
+		["repository_grid_validated_col_title"] = <"Validated">
+		["repository_grid_edit_col_title"] = <"Edit">
+
 		-- NEW_ARCHETYPE_DIALOG
 		["create_archetype_dialog_title"] = <"Create new archetype">
 		["archetype_dir_label_text"] = <"Create in directory: ">
 		["archetype_id_label_text"] = <"Archetype id: ">
 		["parent_archetype_id_label_text"] = <"Parent id: ">
-		["duplicate_archetype_id_err_msg"] = <"Id $1 already exists in catalogue">
+		["duplicate_archetype_id_err_msg"] = <"Id $1 already exists in library">
 		["invalid_archetype_id_concept_err"] = <"Concept $1 contains invalid characters">
 
 		-- INITIAL_C_OBJECT_DIALOG
@@ -289,18 +298,18 @@ templates = <
 		["adl_14_files"] = <"ADL 1.4 files">
 		["adl_15_source_files"] = <"ADL 1.5 source files">
 
-		["catalogue_edit_dialog_title"] = <"Edit $1">
-		["catalogue_edit_differential_button_text"] = <"Differential">
-		["catalogue_edit_adl14_button_text"] = <"Original source (ADL 1.4)">
-		["catalogue_archetype_tab_text"] = <"Archetypes">
-		["catalogue_template_tab_text"] = <"Templates">
-		["catalogue_metrics_tab_text"] = <"Metrics">
-		["catalogue_stats_tab_text"] = <"Statistics">
-		["catalogue_tool_title"] = <"Library">
+		["library_edit_dialog_title"] = <"Edit $1">
+		["library_edit_differential_button_text"] = <"Differential">
+		["library_edit_adl14_button_text"] = <"Original source (ADL 1.4)">
+		["library_archetype_tab_text"] = <"Archetypes">
+		["library_template_tab_text"] = <"Templates">
+		["library_metrics_tab_text"] = <"Metrics">
+		["library_stats_tab_text"] = <"Statistics">
+		["library_tool_title"] = <"Library">
 		["save_archetype_title"] = <"Save Archetype">
 		["export_archetype_title"] = <"Export Archetype">
-		["catalogue_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
-		["catalogue_add_new_archetype_error"] = <"Error adding archetype to library: $1">
+		["library_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
+		["library_add_new_archetype_error"] = <"Error adding archetype to library: $1">
 
 		-- GUI_PATH_MAP_CONTROL
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">

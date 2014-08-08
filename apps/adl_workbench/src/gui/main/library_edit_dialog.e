@@ -33,7 +33,7 @@ feature -- Definition
 
 feature {NONE} -- Initialization
 
-	make_edit (a_repo_cfg_table: REPOSITORY_CONFIG_TABLE; an_existing_repo: STRING)
+	make_edit (a_repo_cfg_table: REPOSITORIES_TABLE; an_existing_repo: STRING)
 			-- Make with a reference to the table of repositories and the name of the library being edited.
 		require
 			a_repo_cfg_table.has_repository (an_existing_repo)
@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 			Existing_library: not is_new_library
 		end
 
-	make_new (a_repo_cfg_table: REPOSITORY_CONFIG_TABLE)
+	make_new (a_repo_cfg_table: REPOSITORIES_TABLE)
 			-- Make with a reference to the table of repositories being edited.
 		do
 			repo_config_table := a_repo_cfg_table
@@ -170,7 +170,7 @@ feature -- Events
 
 feature -- Access
 
-	repo_config_table: REPOSITORY_CONFIG_TABLE
+	repo_config_table: REPOSITORIES_TABLE
 			-- Profiles being edited, as a table of {{ref_path, working path}, prof_name}.
 
 	initial_library_name: detachable STRING

@@ -238,7 +238,7 @@ feature {NONE} -- Events
 
 feature {NONE} -- Access
 
-	rep_config_table_copy: REPOSITORY_CONFIG_TABLE
+	rep_config_table_copy: REPOSITORIES_TABLE
 			-- local copy of the state of repositories at dialog launch, as a table of
 			-- {{ref_path, working path}, repo_name}
 

@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 		do
 			across ids as id_csr loop
 				create eti.make_with_text (utf8_to_utf32 (id_csr.item))
-				if current_arch_lib.archetype_index.has(id_csr.item) and then attached current_arch_lib.archetype_index.item (id_csr.item) as ara then
+				if current_library.archetype_index.has(id_csr.item) and then attached current_library.archetype_index.item (id_csr.item) as ara then
 					eti.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 					eti.set_data (ara)
 				end
@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				if current_arch_lib.compile_attempt_count < current_arch_lib.archetype_count then
+				if current_library.compile_attempt_count < current_library.archetype_count then
 					ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
 				end
 

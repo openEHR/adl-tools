@@ -16,7 +16,7 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (dir_name: attached STRING; a_group_id: INTEGER)
+	make (dir_name: STRING; a_group_id: INTEGER)
 			-- Create as part of `a_group_id', based on valid directory path.
 		require
 			dir_name_valid: is_valid_directory (dir_name)

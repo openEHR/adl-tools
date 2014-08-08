@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Shared UI resources"
-	keywords:    "test, ADL"
+	keywords:    "application, UI"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"

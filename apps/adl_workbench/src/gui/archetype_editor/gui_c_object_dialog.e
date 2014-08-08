@@ -330,7 +330,7 @@ feature {NONE} -- Implementation
 			if attached arch_ext_ref_list_cache as att_cache then
 				Result := att_cache
 			else
-				Result := current_arch_lib.matching_ids (".*", new_params.rm_type, Void)
+				Result := current_library.matching_ids (".*", new_params.rm_type, Void)
 				arch_ext_ref_list_cache := Result
 			end
 		end
