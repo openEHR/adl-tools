@@ -52,9 +52,12 @@ feature -- Status Report
 			Result := repositories.is_empty
 		end
 
-	valid_new_repository_path (a_path: STRING): BOOLEAN
+	valid_repository_path (a_path: STRING): BOOLEAN
+			-- a repository index file exists in this location, but has not been added to
+			-- `repositories' - i.e. `a_path' is a valid path to add to `repositories'
 		do
-			Result := file_system.directory_exists (a_path) and not repositories.has (a_path)
+			Result := file_system.file_exists (file_system.pathname (a_path, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name)) and
+				not repositories.has (a_path)
 		end
 
 feature -- Iteration

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (736)
+			create message_table.make (738)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -301,6 +301,7 @@ feature -- Initialisation
 			message_table.put ("Archetype $1 not validated (run with '-a validate' to see errors)%N", ec_archetype_not_valid)
 			message_table.put ("------------ Archetypes in repository '$1 --------------'%N", ec_archs_list_text)
 			message_table.put ("-----------------------------------------------------%N", ec_archs_list_text_end)
+			message_table.put ("Not implemented in this release", ec_to_be_implemented)
 			message_table.put ("Display", ec_display_in_active_tab)
 			message_table.put ("Retarget to this class", ec_retarget_to_this_class)
 			message_table.put ("Display in new tab", ec_display_in_new_tab)
@@ -405,7 +406,8 @@ feature -- Initialisation
 			message_table.put ("Edit", ec_rm_schema_grid_edit_col_title)
 			message_table.put ("XML Export", ec_rm_schema_grid_xml_schema_export_col_title)
 			message_table.put ("Reload", ec_rm_schema_dialog_reload_button_text)
-			message_table.put ("Add", ec_repository_dir_button_text)
+			message_table.put ("Create a new repository (creates repository definition file in selected directory)?", ec_repository_create_new_question_text)
+			message_table.put ("Add Repository ", ec_repository_dir_button_text)
 			message_table.put ("Directory $1 either doesn't exist, or already configured as a repository", ec_repository_dir_invalid)
 			message_table.put ("Repositories and contained libraries", ec_repository_dialog_header_label)
 			message_table.put ("Repository", ec_repository_grid_display_name_col_title)

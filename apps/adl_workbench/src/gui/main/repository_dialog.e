@@ -100,7 +100,7 @@ feature {NONE} -- Initialisation
 			-- ============ main grid ============
 			create evx_grid.make (True, False, True, True)
 			evx_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			evx_grid.set_max_dimensions (max_form_height, max_form_width)
+			evx_grid.set_maximum_dimensions (0, Max_form_width)
 			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- space cell
@@ -133,7 +133,6 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_height (frame_height)
 			set_title (get_text (ec_rm_schema_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
@@ -216,11 +215,13 @@ feature -- Events
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
+			new_repo_dialog: EV_QUESTION_DIALOG
 			new_repo_dir: STRING
 		do
 			new_repo_dir := repo_dir_setter.data_control_text
 
-			if archetype_repository_interfaces.valid_new_repository_path (new_repo_dir) then
+			-- if there is a repostory at this path, then it can be added
+			if archetype_repository_interfaces.valid_repository_path (new_repo_dir) then
 				ok_cancel_buttons.disable_sensitive
 				do_with_wait_cursor (Current,
 					agent (a_dir: STRING)
@@ -231,6 +232,12 @@ feature -- Events
 				)
 				add_repository_path (new_repo_dir, archetype_repository_interfaces.item (new_repo_dir).key)
 				ok_cancel_buttons.enable_sensitive
+
+			-- see if the user wants to create a repository here, by creating a repository definition file
+			elseif file_system.directory_exists (new_repo_dir) then
+				create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<new_repo_dir>>),
+					<<agent on_create_new_repository, agent do end, agent do end>>)
+				new_repo_dialog.show_modal_to_window (Current)
 			else
 				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<new_repo_dir>>))
 				error_dialog.show_modal_to_window (Current)
@@ -269,15 +276,16 @@ feature {NONE} -- Implementation
 					evx_grid.set_last_row (parent_row)
 					add_archetype_library_grid_rows (lib_interfaces_csr.item)
 				end
-				if evx_grid.last_row.is_expandable then
-					evx_grid.last_row.expand
+				if parent_row.is_expandable then
+					parent_row.expand
 				end
 			end
 
 			-- make the columnn content visible
 			evx_grid.set_column_titles (Grid_col_names.linear_representation)
+--			evx_grid.expand_all
 			evx_grid.resize_columns_to_content
-			evx_grid.expand_tree
+			evx_grid.resize_viewable_area_to_content
 		end
 
 	add_archetype_library_grid_rows (a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
@@ -321,6 +329,15 @@ feature {NONE} -- Implementation
 	do_edit_library_definition (a_lib_def: ARCHETYPE_LIBRARY_DEFINITION)
 			-- launch edit dialog
 		do
+		end
+
+	on_create_new_repository
+			-- create a new repository definition, save it, and repopulate
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			create error_dialog.make_with_text (get_msg (ec_to_be_implemented, Void))
+			error_dialog.show_modal_to_window (Current)
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL

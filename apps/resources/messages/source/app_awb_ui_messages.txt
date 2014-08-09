@@ -10,6 +10,9 @@
 
 templates = <
 	["en"] = <
+		-- basics
+		["to_be_implemented"] = <"Not implemented in this release">
+
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">
 		["retarget_to_this_class"] = <"Retarget to this class">
@@ -139,7 +142,8 @@ templates = <
 		["rm_schema_dialog_reload_button_text"] = <"Reload">
 
 		-- REPOSITORY_DIALOG
-		["repository_dir_button_text"] = <"Add">
+		["repository_create_new_question_text"] = <"Create a new repository (creates repository definition file in selected directory)?">
+		["repository_dir_button_text"] = <"Add Repository ">
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
 		["repository_dialog_header_label"] = <"Repositories and contained libraries">
 		["repository_grid_display_name_col_title"] = <"Repository">
