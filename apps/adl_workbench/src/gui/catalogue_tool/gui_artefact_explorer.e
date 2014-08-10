@@ -155,8 +155,6 @@ feature {NONE} -- Implementation
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
--- temp protector for this feature
---	if allow_archetype_editing then
 			if aca.is_valid and not gui_agents.archetype_has_editor_agent.item ([aca]) then -- only offer editor if there is not already one running for this archetype
 				create an_mi.make_with_text_and_action (get_msg (ec_edit, Void), agent edit_archetype_in_new_tool (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
@@ -164,20 +162,39 @@ feature {NONE} -- Implementation
 			end
 
 			add_tool_specific_archetype_menu_items (menu, aca)
---	end
 
-			create an_mi.make_with_text_and_action (get_msg (ec_edit_source, Void), agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE) do tool_agents.edit_archetype_source_agent.call ([an_aca]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_edit_source, Void),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.edit_archetype_source_agent.call ([an_aca])
+					end (aca)
+			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_save_archetype_as, Void), agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE) do tool_agents.save_archetype_agent.call ([an_aca, True, True]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_save_archetype_as, Void),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.save_archetype_agent.call ([an_aca, True, True])
+					end (aca)
+			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_export_archetype_as, Void), agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE) do tool_agents.save_archetype_agent.call ([an_aca, True, False]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_export_archetype_as, Void),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.save_archetype_agent.call ([an_aca, True, False])
+					end (aca)
+			)
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_export_flat_archetype_as, Void), agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE) do tool_agents.save_archetype_agent.call ([an_aca, False, False]) end (aca))
+			create an_mi.make_with_text_and_action (get_msg (ec_export_flat_archetype_as, Void),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.save_archetype_agent.call ([an_aca, False, False])
+					end (aca)
+			)
 			menu.extend (an_mi)
 
 			menu.show

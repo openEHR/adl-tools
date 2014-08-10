@@ -395,14 +395,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	edit_archetype (aca: ARCH_LIB_ARCHETYPE)
+	edit_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
 			path: STRING
 			legacy_path: detachable STRING
+			pf: PROCESS_FACTORY
+			ed_proc: PROCESS
+			orig_time_stamp: INTEGER
 		do
+			-- figure out what file to edit
 			path := aca.source_file_path
 			if aca.file_mgr.has_legacy_flat_file then
 				check attached aca.file_mgr.legacy_flat_path as lfp then
@@ -425,7 +429,17 @@ feature {NONE} -- Implementation
 					path := legacy_path
 				end
 			end
-			execution_environment.launch (editor_app_command + " %"" + path + "%"")
+
+			-- lauch editor process and wait for it
+			orig_time_stamp := file_system.file_time_stamp (path)
+			create pf
+			ed_proc := pf.process_launcher_with_command_line (editor_app_command + " %"" + path + "%"", Void)
+			ed_proc.launch
+			ed_proc.wait_for_exit
+
+			if file_system.file_time_stamp (path) > orig_time_stamp then
+				gui_agents.select_archetype_agent.call ([aca])
+			end
 		end
 
 end

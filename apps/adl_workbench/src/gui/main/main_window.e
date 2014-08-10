@@ -1138,6 +1138,8 @@ feature {NONE} -- Implementation
 		end
 
 	do_refresh_archetype_library (refresh_from_source: BOOLEAN)
+			-- refresh current archetype library - revert to uncompiled state for all archetypes.
+			-- If `refresh_from_source' is true, then re-read files from library source location as well
 		do
 			console_tool.show
 			if has_current_library then
