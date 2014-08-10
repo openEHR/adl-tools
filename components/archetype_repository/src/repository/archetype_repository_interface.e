@@ -41,7 +41,7 @@ feature -- Initialisation
 	make (a_dir: STRING)
 		do
 			repository_directory := a_dir
-			create repository_definition_accessor.make (repository_definition_file_path)
+			create repository_definition_accessor.make_load (repository_definition_file_path)
 			if attached repository_definition_accessor.object as att_obj then
 				repository_definition := att_obj
 

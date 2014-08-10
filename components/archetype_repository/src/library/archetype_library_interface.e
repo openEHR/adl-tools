@@ -41,7 +41,7 @@ feature -- Initialisation
 			create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
 
 			-- read in the library definition file
-			create library_definition_accessor.make (library_definition_file_path)
+			create library_definition_accessor.make_load (library_definition_file_path)
 			if attached library_definition_accessor.object as att_obj then
 				library_definition := att_obj
 			end
