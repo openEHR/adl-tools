@@ -46,7 +46,7 @@ feature -- Definitions
 
 	Grid_display_name_col: INTEGER = 1
 	Grid_description_col: INTEGER = 2
-	Grid_validated_col: INTEGER = 3
+	Grid_maintainer_col: INTEGER = 3
 	Grid_edit_col: INTEGER = 4
 	Grid_max_cols: INTEGER
 		once
@@ -57,8 +57,8 @@ feature -- Definitions
 		once
 			create Result.make (0)
 			Result.put (get_text (ec_repository_grid_display_name_col_title), Grid_display_name_col)
-			Result.put (get_text (ec_repository_grid_display_name_col_title), grid_description_col)
-			Result.put (get_text (ec_repository_grid_validated_col_title), Grid_validated_col)
+			Result.put (get_text (ec_repository_grid_description_col_title), grid_description_col)
+			Result.put (get_text (ec_repository_grid_maintainer_col_title), Grid_maintainer_col)
 			Result.put (get_text (ec_repository_grid_edit_col_title), grid_edit_col)
 		end
 
@@ -133,7 +133,7 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_title (get_text (ec_rm_schema_dialog_title))
+			set_title (get_text (ec_repository_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -203,8 +203,6 @@ feature -- Events
 
 	on_cancel
 			-- Set shared settings from the dialog widgets.
-		local
-			error_dialog: EV_INFORMATION_DIALOG
 		do
 			hide
 		end
@@ -256,9 +254,9 @@ feature {NONE} -- Implementation
 	populate_grid
 			-- Set the grid from shared settings.
 		local
-			i: INTEGER
-			form_width: INTEGER
 			parent_row: EV_GRID_ROW
+			col_text: STRING
+			col_icon: detachable EV_PIXMAP
 		do
 			-- get rid of previously defined rows
 			evx_grid.wipe_out
@@ -266,9 +264,33 @@ feature {NONE} -- Implementation
 			-- create row containing widgets for each library
 			across archetype_repository_interfaces as rep_interfaces_csr loop
 				evx_grid.add_row (rep_interfaces_csr.item.key)
+
+				-- column 1: display name
 				evx_grid.set_last_row_label_col (Grid_display_name_col, rep_interfaces_csr.item.key,
 					rep_interfaces_csr.item.repository_directory, Void, get_icon_pixmap ("tool/globe"))
 
+				-- column 2 - library dscription
+				if attached rep_interfaces_csr.item.repository_definition as att_rep_def then
+					col_text := att_rep_def.description
+				else
+					col_text := "(unknown)"
+				end
+				evx_grid.set_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
+
+				-- column 3 - maintainer
+				if attached rep_interfaces_csr.item.repository_definition as att_rep_def then
+					col_text := att_rep_def.maintainer
+				else
+					col_text := "(unknown)"
+				end
+				evx_grid.set_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
+
+				-- column 4 - create edit button and add to row
+				evx_grid.set_last_row_label_col (Grid_edit_col, "         ", Void, Void, get_icon_pixmap ("tool/edit"))
+				evx_grid.add_last_row_select_actions (Grid_edit_col, agent do_edit_repository_definition (rep_interfaces_csr.item))
+
+
+				-- now do the libraries under the repository
 				check attached evx_grid.last_row as att_row then
 					parent_row := att_row
 				end
@@ -293,7 +315,6 @@ feature {NONE} -- Implementation
 		local
 			col_text: STRING
 			col_icon: detachable EV_PIXMAP
-			col_action: detachable PROCEDURE [ANY, TUPLE]
 		do
 			-- column 1 - name + check box to indicate loaded on top-level schemas
 			evx_grid.add_sub_row_to_last_row (Void)
@@ -308,27 +329,29 @@ feature {NONE} -- Implementation
 			evx_grid.set_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
 
 			-- column 3 - validated
-			if a_lib_if.is_valid then
-				col_icon := get_icon_pixmap ("tool/star")
+			if attached a_lib_if.library_definition as att_lib_def then
+				col_text := att_lib_def.maintainer
 			else
-				col_icon := get_icon_pixmap ("tool/errors")
+				col_text := "(unknown)"
 			end
-			evx_grid.set_last_row_label_col (Grid_validated_col, "         ", Void, Void, col_icon)
+			evx_grid.set_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
 
 			-- column 4 - create edit button and add to row
-			if attached a_lib_if.library_definition as att_lib_def then
-				col_icon := get_icon_pixmap ("tool/edit")
-				col_action := agent do_edit_library_definition (att_lib_def)
-			end
+			col_icon := get_icon_pixmap ("tool/edit")
 			evx_grid.set_last_row_label_col (Grid_edit_col, "         ", Void, Void, col_icon)
-			if attached col_action as att_col_action then
-				evx_grid.add_last_row_select_actions (Grid_edit_col, att_col_action)
-			end
+			evx_grid.add_last_row_select_actions (Grid_edit_col, agent do_edit_library_definition (a_lib_if))
 		end
 
-	do_edit_library_definition (a_lib_def: ARCHETYPE_LIBRARY_DEFINITION)
+	do_edit_repository_definition (a_lib_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- launch edit dialog
 		do
+			execution_environment.launch (text_editor_command + " %"" + a_lib_if.repository_definition_file_path + "%"")
+		end
+
+	do_edit_library_definition (a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
+			-- launch edit dialog
+		do
+			execution_environment.launch (text_editor_command + " %"" + a_lib_if.library_definition_file_path + "%"")
 		end
 
 	on_create_new_repository

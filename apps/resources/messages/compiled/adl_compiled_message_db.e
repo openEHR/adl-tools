@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (738)
+			create message_table.make (739)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -409,10 +409,11 @@ feature -- Initialisation
 			message_table.put ("Create a new repository (creates repository definition file in selected directory)?", ec_repository_create_new_question_text)
 			message_table.put ("Add Repository ", ec_repository_dir_button_text)
 			message_table.put ("Directory $1 either doesn't exist, or already configured as a repository", ec_repository_dir_invalid)
-			message_table.put ("Repositories and contained libraries", ec_repository_dialog_header_label)
-			message_table.put ("Repository", ec_repository_grid_display_name_col_title)
+			message_table.put ("Repositories and contained libraries", ec_repository_dialog_title)
+			message_table.put ("'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.", ec_repository_dialog_header_label)
+			message_table.put ("Repository / Library", ec_repository_grid_display_name_col_title)
 			message_table.put ("Description", ec_repository_grid_description_col_title)
-			message_table.put ("Validated", ec_repository_grid_validated_col_title)
+			message_table.put ("Maintainer", ec_repository_grid_maintainer_col_title)
 			message_table.put ("Edit", ec_repository_grid_edit_col_title)
 			message_table.put ("Create new archetype", ec_create_archetype_dialog_title)
 			message_table.put ("Create in directory: ", ec_archetype_dir_label_text)

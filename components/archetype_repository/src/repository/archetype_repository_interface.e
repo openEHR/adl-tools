@@ -42,7 +42,7 @@ feature -- Initialisation
 	make (a_dir: STRING)
 		do
 			repository_directory := a_dir
-			create repository_definition_accessor.make (file_system.pathname (a_dir, Repository_file_name))
+			create repository_definition_accessor.make (repository_definition_file_path)
 			if attached repository_definition_accessor.object as att_obj then
 				repository_definition := att_obj
 
@@ -55,6 +55,12 @@ feature -- Access
 
 	repository_directory: STRING
 			-- repository root directory
+
+	repository_definition_file_path: STRING
+			-- path of definition file in repository root directory
+		do
+			Result := file_system.pathname (repository_directory, Repository_file_name)
+		end
 
 	repository_definition_accessor: ODIN_OBJECT_READER [ARCHETYPE_REPOSITORY_DEFINITION]
 
