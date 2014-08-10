@@ -91,12 +91,30 @@ feature -- Access
 
 feature -- Commands
 
+	reload_repository_definition
+			-- reload definition file
+		do
+			repository_definition_accessor.load
+			if attached repository_definition_accessor.object as att_obj then
+				repository_definition := att_obj
+			end
+		end
+
 	populate_libraries
 		local
 			file_rep: FILE_REPOSITORY
 		do
+			-- this may not be a first time call, so we need to get rid of libraries currently listed for
+			-- this repository in the main library list
+			across library_interfaces as libs_csr loop
+				archetype_library_interfaces.remove (libs_csr.key)
+			end
+
+			-- now re-evaluate from the file system
 			create file_rep.make (repository_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
 			across file_rep.matching_paths as lib_def_file_paths_csr loop
+				-- this statement just adds the libraries under this repository to the overall library list
+				-- which consists of libraries from all repositories
 				archetype_library_interfaces.extend (file_system.dirname (lib_def_file_paths_csr.item), repository_directory)
 			end
 		end

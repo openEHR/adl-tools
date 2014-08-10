@@ -107,6 +107,15 @@ feature -- Status Report
 
 feature -- Commands
 
+	reload_library_definition
+			-- reload definition file
+		do
+			library_definition_accessor.load
+			if attached library_definition_accessor.object as att_obj then
+				library_definition := att_obj
+			end
+		end
+
 	create_library: ARCHETYPE_LIBRARY
 			-- create the in-memory representation of the archetype library file-system and populate it
 		do

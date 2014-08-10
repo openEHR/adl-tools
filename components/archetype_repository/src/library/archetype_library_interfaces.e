@@ -70,12 +70,22 @@ feature -- Iteration
 			Result := interfaces.new_cursor
 		end
 
-feature -- Commands
+feature -- Modification
 
 	wipe_out
 			-- remove all repositories
 		do
 			interfaces.wipe_out
+		end
+
+	remove (a_repository_key: STRING)
+			-- remove library with key `a_repository_key'
+		require
+			has (a_repository_key)
+		do
+			interfaces.remove (a_repository_key)
+		ensure
+			not has (a_repository_key)
 		end
 
 	extend (a_library_path, a_repository_key: STRING)
