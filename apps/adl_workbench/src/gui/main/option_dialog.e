@@ -350,12 +350,28 @@ feature -- Events
 		end
 
 	on_edit_options_file
+			-- launch edit dialog
+		local
+			pf: PROCESS_FACTORY
+			ed_proc: PROCESS
+			orig_time_stamp: INTEGER
 		do
 			if app_cfg.is_dirty then
 				app_cfg.save
 			end
-			execution_environment.launch (text_editor_command + " %"" + user_config_file_path + "%"")
-			has_edited_options_file := True -- might not be true, but we assume it changed
+
+			orig_time_stamp := file_system.file_time_stamp (user_config_file_path)
+			create pf
+			ed_proc := pf.process_launcher_with_command_line (text_editor_command + " %"" + user_config_file_path + "%"", Void)
+			ed_proc.launch
+			ed_proc.wait_for_exit
+
+			if file_system.file_time_stamp (user_config_file_path) > orig_time_stamp then
+				app_cfg.load
+				do_populate
+			end
+
+			has_edited_options_file := True
 		end
 
 feature -- Commands
