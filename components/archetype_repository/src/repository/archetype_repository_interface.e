@@ -15,11 +15,10 @@ note
 class ARCHETYPE_REPOSITORY_INTERFACE
 
 inherit
-	ANY_VALIDATOR
-
 	SHARED_APP_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, standard_is_equal, is_deep_equal, deep_twin
 		end
 
 	SHARED_ARCHETYPE_LIBRARY_INTERFACES
@@ -95,22 +94,11 @@ feature -- Commands
 	populate_libraries
 		local
 			file_rep: FILE_REPOSITORY
-			lib_access: ARCHETYPE_LIBRARY_INTERFACE
 		do
 			create file_rep.make (repository_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
 			across file_rep.matching_paths as lib_def_file_paths_csr loop
 				archetype_library_interfaces.extend (file_system.dirname (lib_def_file_paths_csr.item), repository_directory)
 			end
-		end
-
-	validate
-		do
---			if attached repository_definition as rep then
---				if rep.ready_to_validate then
---					rep.validate
---				end
---				merge_errors (rep.errors)
---			end
 		end
 
 feature {NONE} -- Implementation

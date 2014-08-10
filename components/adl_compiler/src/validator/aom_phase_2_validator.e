@@ -175,10 +175,9 @@ feature {NONE} -- Implementation
 		local
 			co_in_flat_anc: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			ca_path_in_flat, co_path_in_flat: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
 			comparable_flat_tuple: C_ATTRIBUTE_TUPLE
-			co_child_annotated_path, co_flat_anc_annotated_path: STRING
+			ca_path_in_flat, co_child_annotated_path, co_flat_anc_annotated_path: STRING
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 debug ("validate")
@@ -346,7 +345,7 @@ end
 			-- and no previous errors encountered
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			flat_anc_path, slot_path, co_child_annotated_path: STRING
+			flat_anc_path, co_child_annotated_path: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
 			flat_anc_obj: C_OBJECT
 		do

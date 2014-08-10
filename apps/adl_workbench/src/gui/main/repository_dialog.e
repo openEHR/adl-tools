@@ -256,7 +256,6 @@ feature {NONE} -- Implementation
 		local
 			parent_row: EV_GRID_ROW
 			col_text: STRING
-			col_icon: detachable EV_PIXMAP
 		do
 			-- get rid of previously defined rows
 			evx_grid.wipe_out
@@ -269,7 +268,7 @@ feature {NONE} -- Implementation
 				evx_grid.set_last_row_label_col (Grid_display_name_col, rep_interfaces_csr.item.key,
 					rep_interfaces_csr.item.repository_directory, Void, get_icon_pixmap ("tool/globe"))
 
-				-- column 2 - library dscription
+				-- column 2 - library description
 				if attached rep_interfaces_csr.item.repository_definition as att_rep_def then
 					col_text := att_rep_def.description
 				else
@@ -305,7 +304,6 @@ feature {NONE} -- Implementation
 
 			-- make the columnn content visible
 			evx_grid.set_column_titles (Grid_col_names.linear_representation)
---			evx_grid.expand_all
 			evx_grid.resize_columns_to_content
 			evx_grid.resize_viewable_area_to_content
 		end
