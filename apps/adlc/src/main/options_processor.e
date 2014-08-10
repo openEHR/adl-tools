@@ -85,9 +85,9 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text (ec_display_archetypes_switch_desc), False, False))
 
 			-- switches with arguments
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (repository_switch, get_text (ec_repository_switch_desc), False, False, repository_switch_arg, get_text ("repository_switch_arg_desc"), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (library_switch, get_text (ec_library_switch_desc), False, False, library_switch_arg, get_text (ec_library_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text ("cfg_switch_arg_desc"), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text (ec_action_switch_desc), False, False, action_switch_arg, Actions_string, False))
 
 			-- valid command line configurations
@@ -99,9 +99,9 @@ feature -- Definitions
 		once
 			create Result.make (2)
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (show_config_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (repository_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (repository_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (repository_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
 														switch_of_name (quiet_switch), switch_of_name (format_switch),
 														switch_of_name (action_switch)>>, True))
 		end
@@ -115,8 +115,8 @@ feature -- Definitions
 	action_switch: STRING = "a|action"
 	action_switch_arg: STRING = "action"
 
-	repository_switch: STRING = "r|repository"
-	repository_switch_arg: STRING = "repository name"
+	library_switch: STRING = "b|library"
+	library_switch_arg: STRING = "library name"
 
 	format_switch: STRING = "f|format"
 	format_switch_arg: STRING = "format"
@@ -187,12 +187,12 @@ feature -- Access
 			end
 		end
 
-	repository: detachable STRING
-			-- name of repository
+	library: detachable STRING
+			-- name of library
 		require
 			is_successful: is_successful
 		once
-			if has_option (repository_switch) and then attached option_of_name (repository_switch) as opt and then opt.has_value then
+			if has_option (library_switch) and then attached option_of_name (library_switch) as opt and then opt.has_value then
 				Result := opt.value
 			end
 		end
@@ -229,7 +229,7 @@ feature -- Status Report
 
 feature {NONE} -- Usage
 
-	copyright: STRING = "Copyright (c) 2012 openEHR Foundation"
+	copyright: STRING = "Copyright (c) 2012- openEHR Foundation"
 			--  <Precursor>
 
 	name: STRING

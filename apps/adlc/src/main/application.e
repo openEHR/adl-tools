@@ -5,9 +5,9 @@ note
 				   
 					USAGE:
 					   adlc -s [-q]
-					   adlc -r <repository name> -l [-q]
-					   adlc -r <repository name> -d [-q]
-					   adlc <id_pattern> -r <repository name> [-flat] [-cfg <file path>] [-q] [-f <format>] -a <action>
+					   adlc -b <library name> -l [-q]
+					   adlc -b <library name> -d [-q]
+					   adlc <id_pattern> -b <library name> [-flat] [-cfg <file path>] [-q] [-f <format>] -a <action>
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
@@ -15,10 +15,10 @@ note
 					   -q --quiet             : suppress verbose feedback, including configuration information on startup (Optional)
 					      --flat              : use flat form of archetype[s] for actions, e.g. path extraction etc (Optional)
 					   -s --show_config       : show current configuration and defaults
-					   -l --list_archetypes   : generate list of archetypes in current repository (use for further processing)
-					   -d --display_archetypes: generate list of archetypes in current repository in user-friendly format
-					   -r --repository        : repository to use
-					                            <repository name>: repository name
+					   -l --list_archetypes   : generate list of archetypes in current library (use for further processing)
+					   -d --display_archetypes: generate list of archetypes in current library in user-friendly format
+					   -b --library           : library to use
+					                            <library name>: library name
 					   -f --format            : output format for generated files (Optional)
 					                            <format>: file formats: json|adl|odin|yaml|xml (default = adl)
 					      --cfg               : output default configuration file location (Optional)
@@ -106,10 +106,6 @@ feature -- Commands
 				archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 				archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
-				check attached repository_config_table.current_repository_name as cpn then
-					curr_repo := cpn
-				end
-
 				-- now process command line
 				if opts.show_config then
 					-- location of .cfg file
@@ -121,33 +117,33 @@ feature -- Commands
 						io.put_string ("%T" + loaded_schemas_csr.key + "%N")
 					end
 
-					-- repository info
+					-- repository & library info
 					io.put_string ("%N" + get_text (ec_repos_info_text))
-					across repository_config_table as repos_csr loop
-						io.put_string ("%T" + repos_csr.key + ": " +  repos_csr.item.reference_path + "%N")
+					across archetype_repository_interfaces as rep_interfaces_csr loop
+						io.put_string ("%T" + rep_interfaces_csr.item.repository_directory + "%N")
+						across rep_interfaces_csr.item.library_interfaces as lib_interfaces_csr loop
+							io.put_string ("%T%T" + lib_interfaces_csr.item.library_path + "%N")
+						end
 					end
 
 				else
-					-- process repository
-					if attached opts.repository as repo then
-						if repository_config_table.has_repository (repo) then
-							set_current_repository (repo)
-							check attached repository_config_table.current_repository_name as cp then
-								curr_repo := cp
-							end
+					-- process library
+					if attached opts.library as att_lib then
+						if has_library (att_lib) then
+							set_current_library_name (att_lib)
 						else
-							io.put_string (get_msg (ec_repo_does_not_exist_err, <<repo>>))
+							io.put_string (get_msg (ec_lib_does_not_exist_err, <<att_lib>>))
 							finished := True
 						end
 					end
 
 					if opts.list_archetypes then
-						current_arch_lib.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
+						current_library.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
-						io.put_string (get_msg (ec_archs_list_text, <<curr_repo>>))
-						current_arch_lib.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
+						io.put_string (get_msg (ec_archs_list_text, <<current_library_name>>))
+						current_library.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 						io.put_string (get_text (ec_archs_list_text_end))
 
 					else
@@ -161,10 +157,10 @@ feature -- Commands
 							if not finished then
 								if valid_regex (opts.archetype_id_pattern) then
 									-- first try and match the user-provided archetype id pattern to some real arguments
-									matched_archetype_ids := current_arch_lib.matching_ids (opts.archetype_id_pattern, Void, Void)
+									matched_archetype_ids := current_library.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
 										if verbose_output then
-											io.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, curr_repo>>))
+											io.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
 										end
 									else
 										if action.is_equal (opts.List_action) then
@@ -188,7 +184,7 @@ feature -- Commands
 											-- perform action for all matching archetypes
 											if not finished then
 												across matched_archetype_ids as arch_ids_csr loop
-													check attached current_arch_lib.archetype_index.item (arch_ids_csr.item) as aii then
+													check attached current_library.archetype_index.item (arch_ids_csr.item) as aii then
 														aca := aii
 													end
 													archetype_compiler.build_lineage (aca, 0)

@@ -16,10 +16,6 @@ class SHARED_ARCHETYPE_LIBRARIES
 
 inherit
 	SHARED_ADL_APP_RESOURCES
-		export
-			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists, archetype_view_language
-		end
 
 	SHARED_ARCHETYPE_LIBRARY_INTERFACES
 		export
@@ -67,6 +63,11 @@ feature -- Status Report
 	has_current_library: BOOLEAN
 		do
 			Result := archetype_library_interfaces.has (current_library_name)
+		end
+
+	has_library (a_key: STRING): BOOLEAN
+		do
+			Result := archetype_library_interfaces.has (a_key)
 		end
 
 	is_current_library_valid: BOOLEAN
