@@ -47,7 +47,8 @@ feature -- Definitions
 	Grid_display_name_col: INTEGER = 1
 	Grid_description_col: INTEGER = 2
 	Grid_maintainer_col: INTEGER = 3
-	Grid_edit_col: INTEGER = 4
+	Grid_validation_col: INTEGER = 4
+	Grid_edit_col: INTEGER = 5
 	Grid_max_cols: INTEGER
 		once
 			Result := Grid_edit_col
@@ -59,6 +60,7 @@ feature -- Definitions
 			Result.put (get_text (ec_repository_grid_display_name_col_title), Grid_display_name_col)
 			Result.put (get_text (ec_repository_grid_description_col_title), grid_description_col)
 			Result.put (get_text (ec_repository_grid_maintainer_col_title), Grid_maintainer_col)
+			Result.put (get_text (ec_repository_grid_validation_col_title), Grid_validation_col)
 			Result.put (get_text (ec_repository_grid_edit_col_title), grid_edit_col)
 		end
 
@@ -102,6 +104,7 @@ feature {NONE} -- Initialisation
 			evx_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
 			evx_grid.set_maximum_dimensions (0, Max_form_width)
 			ev_root_container.extend (evx_grid.ev_grid)
+			evx_grid.ev_grid.pointer_button_press_item_actions.extend (agent grid_item_event_handler)
 
 			-- space cell
 			create ev_cell_3
@@ -111,6 +114,8 @@ feature {NONE} -- Initialisation
 
 			-- ============ new repository dir chooser ============
 			create repo_dir_setter.make (get_text (ec_repository_dir_button_text), agent :STRING do Result := "" end, 0, 0)
+			repo_dir_setter.set_button_tooltip (get_text (ec_repository_dir_button_tooltip))
+			repo_dir_setter.set_button_icon (get_icon_pixmap ("tool/info"))
 			repo_dir_setter.set_post_select_agent (agent on_add_repository)
 			ev_root_container.extend (repo_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (repo_dir_setter.ev_root_container)
@@ -184,14 +189,14 @@ feature -- Commands
 	do_reload
 			-- allow user reload after manual changes while correcting schemas
 		do
+			archetype_repository_interfaces.reload
+			do_populate
 		end
 
 feature -- Events
 
 	on_ok
 			-- Set shared settings from the dialog widgets.
-		local
-			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if original_current_library_selected.is_empty and not archetype_library_interfaces.is_empty then
 				set_current_library_name (archetype_library_interfaces.keys.first)
@@ -228,7 +233,7 @@ feature -- Events
 							populate_grid
 						end (new_repo_dir)
 				)
-				add_repository_path (new_repo_dir, archetype_repository_interfaces.item (new_repo_dir).key)
+				add_repository_path_with_key (new_repo_dir, archetype_repository_interfaces.item (new_repo_dir).key)
 				ok_cancel_buttons.enable_sensitive
 
 			-- see if the user wants to create a repository here, by creating a repository definition file
@@ -261,7 +266,7 @@ feature {NONE} -- Implementation
 
 			-- create row containing widgets for each library
 			across archetype_repository_interfaces as rep_interfaces_csr loop
-				evx_grid.add_row (rep_interfaces_csr.item.key)
+				evx_grid.add_row (rep_interfaces_csr.item)
 
 				check attached evx_grid.last_row as att_row then
 					parent_row := att_row
@@ -273,7 +278,10 @@ feature {NONE} -- Implementation
 				-- now do the libraries under the repository
 				across rep_interfaces_csr.item.library_interfaces as lib_interfaces_csr loop
 					evx_grid.set_last_row (parent_row)
-					populate_archetype_library_grid_row (parent_row, lib_interfaces_csr.item)
+					evx_grid.add_sub_row_to_last_row (Void)
+					check attached evx_grid.last_row as att_row then
+						populate_archetype_library_grid_row (att_row, lib_interfaces_csr.item)
+					end
 				end
 				if parent_row.is_expandable then
 					parent_row.expand
@@ -290,45 +298,22 @@ feature {NONE} -- Implementation
 			-- first time populate of repository grid row
 		local
 			col_text: STRING
+			col_icon: detachable EV_PIXMAP
+			errors: ERROR_ACCUMULATOR
 		do
 			evx_grid.set_last_row (a_grid_row)
 
-			-- column 1: display name
-			evx_grid.set_last_row_label_col (Grid_display_name_col, a_rep_if.key,
-				a_rep_if.repository_directory, Void, get_icon_pixmap ("tool/globe"))
-
-			-- column 2 - library description
-			if attached a_rep_if.repository_definition as att_rep_def then
-				col_text := att_rep_def.description
+			-- column 1: display name & repo icon
+			if a_rep_if.is_git_repository then
+				col_icon := get_icon_pixmap ("tool/github")
+			elseif a_rep_if.is_svn_repository then
+				col_icon := get_icon_pixmap ("tool/subversion")
 			else
-				col_text := "(unknown)"
+				col_icon := get_icon_pixmap ("tool/file_system")
 			end
-			evx_grid.set_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rep_if.key, a_rep_if.repository_directory, Void, col_icon)
 
-			-- column 3 - maintainer
-			if attached a_rep_if.repository_definition as att_rep_def then
-				col_text := att_rep_def.maintainer
-			else
-				col_text := "(unknown)"
-			end
-			evx_grid.set_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
-
-			-- column 4 - create edit button and add to row
-			evx_grid.set_last_row_label_col (Grid_edit_col, "         ", Void, Void, get_icon_pixmap ("tool/edit"))
-			evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent do_edit_repository_definition (a_grid_row, a_rep_if))
-		end
-
-	update_archetype_repository_grid_row (a_grid_row: EV_GRID_ROW; a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
-			-- update of repository grid row
-		local
-			col_text: STRING
-		do
-			evx_grid.set_last_row (a_grid_row)
-
-			-- column 1: display name
-			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rep_if.key, a_rep_if.repository_directory, Void, Void)
-
-			-- column 2 - library description
+			-- column 2 - repository description
 			if attached a_rep_if.repository_definition as att_rep_def then
 				col_text := att_rep_def.description
 			else
@@ -344,8 +329,25 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
 
-			-- column 4 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, Void)
+			-- column 4 - validation
+			errors := a_rep_if.errors
+			if errors.has_errors then
+				col_icon := get_icon_pixmap ("tool/errors")
+			elseif errors.has_warnings then
+				col_icon := get_icon_pixmap ("tool/info")
+			else
+				col_icon := Void
+			end
+			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, col_icon)
+			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_validation_col) then
+				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_repository_validation (a_rep_if))
+			end
+
+			-- column 5 - create edit button and add to row
+			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, get_icon_pixmap ("tool/edit"))
+			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
+				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent do_edit_repository_definition (a_grid_row, a_rep_if))
+			end
 		end
 
 	do_edit_repository_definition (a_grid_row: EV_GRID_ROW; a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
@@ -359,54 +361,32 @@ feature {NONE} -- Implementation
 			ed_proc.launch
 			ed_proc.wait_for_exit
 			a_rep_if.reload_repository_definition
-			update_archetype_repository_grid_row (a_grid_row, a_rep_if)
+			populate_archetype_repository_grid_row (a_grid_row, a_rep_if)
 		end
 
-	populate_archetype_library_grid_row (a_parent_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
-			-- create and populate row for `a_lib_if' under repository row `a_parent_grid_row'
+	populate_archetype_library_grid_row (a_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
+			-- create and populate row for `a_lib_if'
 		local
-			col_text: STRING
+			col_text, col_tooltip: STRING
 			col_icon: detachable EV_PIXMAP
-		do
-			evx_grid.set_last_row (a_parent_grid_row)
-
-			-- column 1 - name + check box to indicate loaded on top-level schemas
-			evx_grid.add_sub_row_to_last_row (Void)
-			evx_grid.set_last_row_label_col (Grid_display_name_col, a_lib_if.key, a_lib_if.library_path, Void, get_icon_pixmap ("tool/archetype_library"))
-
-			-- column 2 - library dscription
-			if attached a_lib_if.library_definition as att_lib_def then
-				col_text := att_lib_def.description
-			else
-				col_text := "(unknown)"
-			end
-			evx_grid.set_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
-
-			-- column 3 - validated
-			if attached a_lib_if.library_definition as att_lib_def then
-				col_text := att_lib_def.maintainer
-			else
-				col_text := "(unknown)"
-			end
-			evx_grid.set_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
-
-			-- column 4 - create edit button and add to row
-			col_icon := get_icon_pixmap ("tool/edit")
-			evx_grid.set_last_row_label_col (Grid_edit_col, "         ", Void, Void, col_icon)
-			check attached evx_grid.last_row as att_row then
-				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent do_edit_library_definition (att_row, a_lib_if))
-			end
-		end
-
-	update_archetype_library_grid_row (a_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
-			-- update row for `a_lib_if'
-		local
-			col_text: STRING
+			errors: ERROR_ACCUMULATOR
 		do
 			evx_grid.set_last_row (a_grid_row)
 
 			-- column 1 - name + check box to indicate loaded on top-level schemas
-			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, a_lib_if.library_path, Void, Void)
+			create col_tooltip.make_from_string (a_lib_if.library_path)
+			if a_lib_if.is_remote then
+				col_icon := get_icon_pixmap ("tool/archetype_library_remote")
+				if attached a_lib_if.library_definition.remote as att_rem then
+					col_tooltip.append ("-------------%N")
+					col_tooltip.append ("Remote source:%N")
+					col_tooltip.append ("%TURL: " + att_rem.url + "%N")
+					col_tooltip.append ("%Tcustodian: " + att_rem.custodian)
+				end
+			else
+				col_icon := get_icon_pixmap ("tool/archetype_library")
+			end
+			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, col_tooltip, Void, col_icon)
 
 			-- column 2 - library dscription
 			if attached a_lib_if.library_definition as att_lib_def then
@@ -416,7 +396,7 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
 
-			-- column 3 - validated
+			-- column 3 - maintainer
 			if attached a_lib_if.library_definition as att_lib_def then
 				col_text := att_lib_def.maintainer
 			else
@@ -424,8 +404,26 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
 
-			-- column 4 - create edit button and add to row
-			evx_grid.set_last_row_label_col (Grid_edit_col, "         ", Void, Void, Void)
+			-- column 4 - validation
+			errors := a_lib_if.errors
+			if errors.has_errors then
+				col_icon := get_icon_pixmap ("tool/errors")
+			elseif errors.has_warnings then
+				col_icon := get_icon_pixmap ("tool/info")
+			else
+				col_icon := Void
+			end
+			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, col_icon)
+			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_validation_col) then
+				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_library_validation (a_lib_if))
+			end
+
+			-- column 5 - create edit button and add to row
+			col_icon := get_icon_pixmap ("tool/edit")
+			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, col_icon)
+			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
+				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent do_edit_library_definition (a_grid_row, a_lib_if))
+			end
 		end
 
 	do_edit_library_definition (a_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
@@ -439,7 +437,7 @@ feature {NONE} -- Implementation
 			ed_proc.launch
 			ed_proc.wait_for_exit
 			a_lib_if.reload_library_definition
-			update_archetype_library_grid_row (a_grid_row, a_lib_if)
+			populate_archetype_library_grid_row (a_grid_row, a_lib_if)
 		end
 
 	on_create_new_repository
@@ -447,8 +445,94 @@ feature {NONE} -- Implementation
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			create error_dialog.make_with_text (get_msg (ec_to_be_implemented, Void))
-			error_dialog.show_modal_to_window (Current)
+			archetype_repository_interfaces.extend_new (repo_dir_setter.data_control_text)
+			add_repository_path (repo_dir_setter.data_control_text)
+			populate_grid
+		end
+
+	show_repository_validation (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- display info dialog with validity report
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			if a_rep_if.errors.has_errors_or_warnings then
+				create info_dialog.make_with_text (a_rep_if.errors.as_string)
+				info_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	show_library_validation (a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
+			-- display info dialog with validity report
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			if a_lib_if.errors.has_errors_or_warnings then
+				create info_dialog.make_with_text (a_lib_if.errors.as_string)
+				info_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
+		do
+			if button = {EV_POINTER_CONSTANTS}.right then
+				if attached an_ev_grid_item then
+					if attached {ARCHETYPE_REPOSITORY_INTERFACE} an_ev_grid_item.row.data as ari then
+						build_repository_context_menu (ari)
+					end
+				end
+			end
+		end
+
+	build_repository_context_menu (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- creates the context menu for a right click action for an ARCHETYPE_REPOSITORY_INTERFACE node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
+		do
+			create menu
+
+			-- add new library
+			create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library), agent do_add_new_library (a_rep_if))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_library"))
+	    	menu.extend (an_mi)
+
+			-- add new library here (at top of repository) - only if there are no libraries below
+			if not a_rep_if.has_libraries then
+				create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library_here), agent do_add_new_library_here (a_rep_if))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_library"))
+		    	menu.extend (an_mi)
+			end
+
+			menu.show
+		end
+
+	do_add_new_library (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- add a new library definition file at a user-chosen directory
+		local
+			lib_dir_dialog: EV_DIRECTORY_DIALOG
+			error_dialog: EV_INFORMATION_DIALOG
+			lib_path: STRING
+		do
+			create lib_dir_dialog
+			lib_dir_dialog.set_title (get_text (ec_repository_add_new_library))
+			lib_dir_dialog.set_start_directory (a_rep_if.repository_directory)
+			lib_dir_dialog.show_modal_to_window (Current)
+			lib_path := lib_dir_dialog.directory
+			if not lib_path.is_empty then
+				if a_rep_if.valid_new_library_path (lib_path) then
+					a_rep_if.add_new_library (lib_path, False)
+					populate_grid
+				else
+					create error_dialog.make_with_text (get_msg (ec_repository_invalid_library_path, <<lib_path>>))
+					error_dialog.show_modal_to_window (Current)
+				end
+			end
+		end
+
+	do_add_new_library_here (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+		do
+			a_rep_if.add_new_library_here (False)
+			populate_grid
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL
