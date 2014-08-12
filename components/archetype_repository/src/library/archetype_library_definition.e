@@ -8,6 +8,14 @@ note
 					short_name = <"ADLref">
 					maintainer = <"openEHR">
 					description = <"openEHR ADL 1.5 regression test archetypes">
+					
+				 If the library is a remote copy of archetypes from another location, the following can
+				 be included:
+				 
+					remote = <
+						url = <"http://some.where.org/archetypes">
+						custodian = <"Acme archetypes">
+					>
 				 ]"
 	keywords:    "ADL, archetype, library"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -21,36 +29,55 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	ADL_COMPILED_MESSAGE_IDS
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	DT_CONVERTIBLE
 		redefine
-			finalise_dt
+			finalise_dt, default_create
 		end
 
 create
-	make_dt
+	make_dt, make_template
 
 feature -- Definition
 
-	Default_archetype_library_name: STRING = "Unknown"
-
-	Default_archetype_library_short_name: STRING = "Unknown"
+	Default_value: STRING = "xxxxx"
 
 	Key_separator: STRING = "-"
 
 feature -- Initialisation
 
+	default_create
+		do
+			create name.make_from_string (Default_value)
+			create short_name.make_from_string (Default_value)
+			create description.make_from_string (Default_value)
+			create maintainer.make_from_string (Default_value)
+		end
+
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		do
-			create name.make_from_string (Default_archetype_library_name)
-			create short_name.make_from_string (Default_archetype_library_short_name)
+			default_create
+		end
+
+	make_template (is_remote: BOOLEAN)
+			-- make a template for editing when adding a new repo
+		do
+			default_create
+			if is_remote then
+				create remote.make
+			end
+			synchronise_to_tree
 		end
 
 feature -- Access (attributes from file)
@@ -78,6 +105,9 @@ feature -- Access (attributes from file)
 		attribute
 			create Result.make_empty
 		end
+
+	remote: detachable ARCHETYPE_LIBRARY_REMOTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 feature -- Access
 

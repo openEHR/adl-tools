@@ -26,6 +26,7 @@ feature -- Initialisation
 	make
 		do
 			create interfaces.make (0)
+			create failed_interfaces.make (0)
 		end
 
 feature -- Access
@@ -62,6 +63,19 @@ feature -- Status Report
 			Result := interfaces.is_empty
 		end
 
+feature -- Validation
+
+	failed_interfaces: ARRAYED_LIST [ARCHETYPE_LIBRARY_INTERFACE]
+			-- library interface objects that failed to properly load
+
+	remove_failed_interface (a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
+			-- remove `a_lib_if' from failed interfaces
+		do
+			if failed_interfaces.has (a_lib_if) then
+				failed_interfaces.prune (a_lib_if)
+			end
+		end
+
 feature -- Iteration
 
 	new_cursor: TABLE_ITERATION_CURSOR [ARCHETYPE_LIBRARY_INTERFACE, STRING]
@@ -70,7 +84,7 @@ feature -- Iteration
 			Result := interfaces.new_cursor
 		end
 
-feature -- Modification
+feature {ARCHETYPE_REPOSITORY_INTERFACE} -- Modification
 
 	wipe_out
 			-- remove all repositories
@@ -98,6 +112,21 @@ feature -- Modification
 		do
 			create arch_lib_if.make (a_library_path, a_repository_key)
 			if attached arch_lib_if.library_definition as att_lib_def then
+				interfaces.force (arch_lib_if, att_lib_def.key)
+			else
+				failed_interfaces.extend (arch_lib_if)
+			end
+		end
+
+	extend_new (a_library_path, a_repository_key: STRING; remote_flag: BOOLEAN)
+			-- create new library at path `a_library_path' and create an interface for it
+		require
+			Directory_path_valid: directory_exists (a_library_path)
+		local
+			arch_lib_if: ARCHETYPE_LIBRARY_INTERFACE
+		do
+			create arch_lib_if.make_new (a_library_path, a_repository_key, remote_flag)
+			check attached arch_lib_if.library_definition as att_lib_def then
 				interfaces.force (arch_lib_if, att_lib_def.key)
 			end
 		end

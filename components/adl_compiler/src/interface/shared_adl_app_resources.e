@@ -194,10 +194,17 @@ feature -- Application Switches
 			end
 		end
 
-	add_repository_path (a_repo_dir, a_key: STRING)
+	add_repository_path_with_key (a_repo_dir, a_key: STRING)
 			-- add a new repository to repository path
 		do
 			repositories_table.put_repository (a_repo_dir, a_key)
+			save_repositories_table
+		end
+
+	add_repository_path (a_repo_dir: STRING)
+			-- add a new repository to repository path
+		do
+			repositories_table.put_repository (a_repo_dir, "repository-" + (repositories_table.count + 1).out)
 			save_repositories_table
 		end
 

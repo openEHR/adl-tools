@@ -76,15 +76,35 @@ feature -- Commands
 			repositories.wipe_out
 		end
 
-	extend (a_dir_path: STRING)
-			-- create repository interface for repository at path `a_dir_path'
+	reload
+			-- reload all repositories
+		do
+			across repositories as repos_csr loop
+				repos_csr.item.reload_repository_definition
+				repos_csr.item.populate_libraries
+			end
+		end
+
+	extend (a_repository_path: STRING)
+			-- create repository interface for repository at path `a_repository_path'
 		require
-			Directory_path_valid: directory_exists (a_dir_path)
+			Directory_path_valid: directory_exists (a_repository_path)
 		local
 			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
 		do
-			create arch_rep_if.make (a_dir_path)
-			repositories.force (arch_rep_if, a_dir_path)
+			create arch_rep_if.make (a_repository_path)
+			repositories.force (arch_rep_if, a_repository_path)
+		end
+
+	extend_new (a_repository_path: STRING)
+			-- create new repository at path `a_repository_path' and create an interface for it
+		require
+			Directory_path_valid: directory_exists (a_repository_path)
+		local
+			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
+		do
+			create arch_rep_if.make_new (a_repository_path)
+			repositories.force (arch_rep_if, a_repository_path)
 		end
 
 feature {NONE} -- Implementation

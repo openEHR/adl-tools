@@ -19,7 +19,7 @@ inherit
 		end
 
 create
-	make
+	make, make_new
 
 feature -- Definitions
 
@@ -40,17 +40,33 @@ feature -- Initialisation
 		do
 			create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
 
+			-- create adhoc file source, in case it is ever needed - allows user to open any archetype file
+			-- outside library and attach it to the library for the duration of the session
+			create adhoc_source.make (Group_id_adhoc)
+			repository_key := a_repository_key
+
 			-- read in the library definition file
 			create library_definition_accessor.make_load (library_definition_file_path)
 			if attached library_definition_accessor.object as att_obj then
 				library_definition := att_obj
 			end
+		end
+
+	make_new (a_library_path, a_repository_key: STRING; remote_flag: BOOLEAN)
+		require
+			dir_name_valid: directory_exists (a_library_path)
+		do
+			create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
 
 			-- create adhoc file source, in case it is ever needed - allows user to open any archetype file
 			-- outside library and attach it to the library for the duration of the session
 			create adhoc_source.make (Group_id_adhoc)
-
 			repository_key := a_repository_key
+
+			-- create library definition file
+			create library_definition_accessor.make (library_definition_file_path)
+			create library_definition.make_template (remote_flag)
+			library_definition_accessor.save (library_definition)
 		end
 
 feature -- Access
@@ -103,6 +119,20 @@ feature -- Status Report
 			-- True if this repository location exists
 		do
 			Result := directory_exists (library_path)
+		end
+
+	is_remote: BOOLEAN
+			-- True if the definition file contains a 'remote_copy' section
+		do
+			Result := attached library_definition.remote
+		end
+
+feature -- Validation
+
+	errors: ERROR_ACCUMULATOR
+			-- obtain any errors from definition file load
+		do
+			Result := library_definition_accessor.errors
 		end
 
 feature -- Commands

@@ -19,29 +19,43 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	DT_CONVERTIBLE
 		redefine
-			finalise_dt
+			finalise_dt, default_create
 		end
 
 create
-	make_dt
+	make_dt, make_template
 
 feature -- Definitions
 
-	Default_archetype_repository_name: STRING = "Unknown"
-
-	Default_archetype_repository_maintainer: STRING = "Unknown"
+	Default_value: STRING = "xxxxx"
 
 	Key_separator: STRING = "-"
 
 feature -- Initialisation
 
+	default_create
+		do
+			create name.make_from_string (Default_value)
+			create description.make_from_string (Default_value)
+			create maintainer.make_from_string (Default_value)
+		end
+
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		do
+			default_create
+		end
+
+	make_template
+			-- create a blank version for use when creating new repository
+		do
+			default_create
 		end
 
 feature -- Access (attributes from file)
@@ -49,7 +63,7 @@ feature -- Access (attributes from file)
 	name: STRING
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 		attribute
-			create Result.make_from_string (Default_archetype_repository_name)
+			create Result.make_from_string (Default_value)
 		end
 
 	description: STRING
@@ -61,7 +75,7 @@ feature -- Access (attributes from file)
 	maintainer: STRING
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 		attribute
-			create Result.make_from_string (Default_archetype_repository_maintainer)
+			create Result.make_from_string (Default_value)
 		end
 
 	key: STRING

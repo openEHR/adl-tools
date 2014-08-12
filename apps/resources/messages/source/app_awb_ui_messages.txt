@@ -54,6 +54,25 @@ templates = <
 		["ref_library_text"] =  <"Reference Path">
 		["work_library_text"] = <"Work Path">
 
+		-- REPOSITORY_DIALOG
+		["repository_create_new_question_text"] = <"Create a new repository (creates repository definition file in selected directory)?">
+
+		["repository_dir_button_text"] = <"Add Repository ">
+		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
+
+		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
+		["repository_dialog_title"] = <"Repositories and contained libraries">
+		["repository_dialog_header_label"] = <"'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.">
+		["repository_grid_display_name_col_title"] = <"Repository / Library">
+		["repository_grid_description_col_title"] = <"Description">
+		["repository_grid_maintainer_col_title"] = <"Maintainer">
+		["repository_grid_validation_col_title"] = <"Validation">
+		["repository_grid_edit_col_title"] = <"Edit">
+		["repository_add_new_library_here"] = <"Add new library here">
+		["repository_add_new_library"] = <"Add new library">
+
+		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
+
 		-- PROFILE_EDIT_DIALOG
 		["library_cfg_edit_dialog_title"] =  <"Edit Library Configuration">
 		["library_cfg_name_text"] =  <"Archetype Name:">
@@ -140,17 +159,6 @@ templates = <
 		["rm_schema_grid_edit_col_title"] = <"Edit">
 		["rm_schema_grid_xml_schema_export_col_title"] = <"XML Export">
 		["rm_schema_dialog_reload_button_text"] = <"Reload">
-
-		-- REPOSITORY_DIALOG
-		["repository_create_new_question_text"] = <"Create a new repository (creates repository definition file in selected directory)?">
-		["repository_dir_button_text"] = <"Add Repository ">
-		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
-		["repository_dialog_title"] = <"Repositories and contained libraries">
-		["repository_dialog_header_label"] = <"'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.">
-		["repository_grid_display_name_col_title"] = <"Repository / Library">
-		["repository_grid_description_col_title"] = <"Description">
-		["repository_grid_maintainer_col_title"] = <"Maintainer">
-		["repository_grid_edit_col_title"] = <"Edit">
 
 		-- NEW_ARCHETYPE_DIALOG
 		["create_archetype_dialog_title"] = <"Create new archetype">
