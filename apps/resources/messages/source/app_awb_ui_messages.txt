@@ -68,8 +68,11 @@ templates = <
 		["repository_grid_maintainer_col_title"] = <"Maintainer">
 		["repository_grid_validation_col_title"] = <"Validation">
 		["repository_grid_edit_col_title"] = <"Edit">
+
 		["repository_add_new_library_here"] = <"Add new library here">
 		["repository_add_new_library"] = <"Add new library">
+		["repository_git_pull"] = <"Git pull">
+		["repository_svn_update"] = <"SVN update">
 
 		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
 

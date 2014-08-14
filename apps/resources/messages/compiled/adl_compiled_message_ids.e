@@ -337,6 +337,8 @@ feature -- Definitions
 		ec_repository_grid_edit_col_title: STRING = "repository_grid_edit_col_title"
 		ec_repository_add_new_library_here: STRING = "repository_add_new_library_here"
 		ec_repository_add_new_library: STRING = "repository_add_new_library"
+		ec_repository_git_pull: STRING = "repository_git_pull"
+		ec_repository_svn_update: STRING = "repository_svn_update"
 		ec_repository_invalid_library_path: STRING = "repository_invalid_library_path"
 		ec_library_cfg_edit_dialog_title: STRING = "library_cfg_edit_dialog_title"
 		ec_library_cfg_name_text: STRING = "library_cfg_name_text"

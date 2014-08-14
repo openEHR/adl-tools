@@ -198,7 +198,7 @@ feature -- Events
 	on_ok
 			-- Set shared settings from the dialog widgets.
 		do
-			if original_current_library_selected.is_empty and not archetype_library_interfaces.is_empty then
+			if original_current_library_selected.is_empty and not archetype_library_interfaces.is_empty or else not archetype_library_interfaces.has (original_current_library_selected) then
 				set_current_library_name (archetype_library_interfaces.keys.first)
 				current_library_changed := True
 			end
@@ -336,7 +336,7 @@ feature {NONE} -- Implementation
 			elseif errors.has_warnings then
 				col_icon := get_icon_pixmap ("tool/info")
 			else
-				col_icon := Void
+				col_icon := get_icon_pixmap ("tool/star")
 			end
 			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, col_icon)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_validation_col) then
@@ -355,13 +355,18 @@ feature {NONE} -- Implementation
 		local
 			pf: PROCESS_FACTORY
 			ed_proc: PROCESS
+			orig_time_stamp: INTEGER
 		do
+			orig_time_stamp := file_system.file_time_stamp (a_rep_if.repository_definition_file_path)
 			create pf
 			ed_proc := pf.process_launcher_with_command_line (text_editor_command + " %"" + a_rep_if.repository_definition_file_path + "%"", Void)
 			ed_proc.launch
 			ed_proc.wait_for_exit
-			a_rep_if.reload_repository_definition
-			populate_archetype_repository_grid_row (a_grid_row, a_rep_if)
+
+			if file_system.file_time_stamp (a_rep_if.repository_definition_file_path) > orig_time_stamp then
+				a_rep_if.reload_repository_definition
+				populate_archetype_repository_grid_row (a_grid_row, a_rep_if)
+			end
 		end
 
 	populate_archetype_library_grid_row (a_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
@@ -378,7 +383,7 @@ feature {NONE} -- Implementation
 			if a_lib_if.is_remote then
 				col_icon := get_icon_pixmap ("tool/archetype_library_remote")
 				if attached a_lib_if.library_definition.remote as att_rem then
-					col_tooltip.append ("-------------%N")
+					col_tooltip.append ("%N-------------%N")
 					col_tooltip.append ("Remote source:%N")
 					col_tooltip.append ("%TURL: " + att_rem.url + "%N")
 					col_tooltip.append ("%Tcustodian: " + att_rem.custodian)
@@ -431,13 +436,18 @@ feature {NONE} -- Implementation
 		local
 			pf: PROCESS_FACTORY
 			ed_proc: PROCESS
+			orig_time_stamp: INTEGER
 		do
+			orig_time_stamp := file_system.file_time_stamp (a_lib_if.library_definition_file_path)
 			create pf
 			ed_proc := pf.process_launcher_with_command_line (text_editor_command + " %"" + a_lib_if.library_definition_file_path + "%"", Void)
 			ed_proc.launch
 			ed_proc.wait_for_exit
-			a_lib_if.reload_library_definition
-			populate_archetype_library_grid_row (a_grid_row, a_lib_if)
+
+			if file_system.file_time_stamp (a_lib_if.library_definition_file_path) > orig_time_stamp then
+				a_lib_if.reload_library_definition
+				populate_archetype_library_grid_row (a_grid_row, a_lib_if)
+			end
 		end
 
 	on_create_new_repository
@@ -503,6 +513,13 @@ feature {NONE} -- Implementation
 		    	menu.extend (an_mi)
 			end
 
+			-- do a git pull if a git repo
+			if a_rep_if.is_git_repository and system_has_git_command then
+				create an_mi.make_with_text_and_action (get_text (ec_repository_git_pull), agent do_repository_git_pull (a_rep_if))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/github"))
+		    	menu.extend (an_mi)
+			end
+
 			menu.show
 		end
 
@@ -533,6 +550,26 @@ feature {NONE} -- Implementation
 		do
 			a_rep_if.add_new_library_here (False)
 			populate_grid
+		end
+
+	do_repository_git_pull (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- do a git pull on `a_rep_if' repository
+		require
+			a_rep_if.is_git_repository
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+			res: PROCESS_RESULT
+		do
+			res := system_run_command ("git", "pull", a_rep_if.repository_directory)
+			if res.succeeded then
+				create info_dialog.make_with_text (res.stdout)
+				info_dialog.show_modal_to_window (Current)
+				a_rep_if.reload_repository_definition
+				populate_grid
+			elseif res.failed then
+				create info_dialog.make_with_text ("Command " + res.command_line + " failed: " + res.stderr)
+				info_dialog.show_modal_to_window (Current)
+			end
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL

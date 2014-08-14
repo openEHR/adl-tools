@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (745)
+			create message_table.make (747)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -352,6 +352,8 @@ feature -- Initialisation
 			message_table.put ("Edit", ec_repository_grid_edit_col_title)
 			message_table.put ("Add new library here", ec_repository_add_new_library_here)
 			message_table.put ("Add new library", ec_repository_add_new_library)
+			message_table.put ("Git pull", ec_repository_git_pull)
+			message_table.put ("SVN update", ec_repository_svn_update)
 			message_table.put ("Invalid library path $1; must be at or below repository root, and not below or above any other library root", ec_repository_invalid_library_path)
 			message_table.put ("Edit Library Configuration", ec_library_cfg_edit_dialog_title)
 			message_table.put ("Archetype Name:", ec_library_cfg_name_text)

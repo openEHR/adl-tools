@@ -279,7 +279,9 @@ feature -- Application Switches
 	default_terminology_uri_templates: HASH_TABLE [STRING, STRING]
 		once
 			create Result.make(0)
-			Result.put ("http://snomedct.info/id/$code_string", "snomedct")
+			Result.put ("http://snomed.info/id/$code_string", "snomedct")
+			Result.put ("http://snomed.info/id/$code_string", "snomed-ct")
+			Result.put ("http://snomed.info/id/$code_string", "snomed")
 			Result.put ("http://openehr.org/id/$code_string", "openehr")
 			Result.put ("http://loinc.org/id/$code_string", "loinc")
 		end
@@ -294,7 +296,7 @@ feature -- Application Switches
 			-- hash of terminology template URIs keyed by terminology name. The data are stored in the following way:
 			--
 			--		 uri_templates = <
-			--			 ["snomedct"] = <"http://snomedct.info/id/$code_string">
+			--			 ["snomedct"] = <"http://snomed.info/id/$code_string">
 			--			 ["loinc"] = <"http://loinc.org/id/$code_string">
 			--			 ["openehr"] = <"http://openehr.org/id/$code_string">
 			--		 >
