@@ -248,7 +248,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (namespaces_ctl)
 
 
-			-- ========== Tab6 - Namespace settings ==========
+			-- ========== Tab6 - Terminology settings ==========
 
 			create ev_notebook_terminology_settings_vb
 			ev_notebook.extend (ev_notebook_terminology_settings_vb)
