@@ -51,10 +51,17 @@ feature -- Access
 
 feature -- Status Report
 
-	has (a_lib_short_name: STRING): BOOLEAN
-			-- True if there is a library with key `a_lib_short_name'
+	has (a_lib_key: STRING): BOOLEAN
+			-- True if there is a library with key `a_lib_key', which should be of the form
+			-- "maintainer-short_name"
 		do
-			Result := interfaces.has (a_lib_short_name)
+			Result := interfaces.has (a_lib_key)
+		end
+
+	has_item (a_lib_if: ARCHETYPE_LIBRARY_INTERFACE): BOOLEAN
+			-- True if `a_lib_if' exists in libraries list
+		do
+			Result := interfaces.has_item (a_lib_if)
 		end
 
 	is_empty: BOOLEAN
@@ -111,8 +118,8 @@ feature {ARCHETYPE_REPOSITORY_INTERFACE} -- Modification
 			arch_lib_if: ARCHETYPE_LIBRARY_INTERFACE
 		do
 			create arch_lib_if.make (a_library_path, a_repository_key)
-			if attached arch_lib_if.library_definition as att_lib_def then
-				interfaces.force (arch_lib_if, att_lib_def.key)
+			if arch_lib_if.has_definition then
+				interfaces.force (arch_lib_if, arch_lib_if.key)
 			else
 				failed_interfaces.extend (arch_lib_if)
 			end
@@ -126,8 +133,22 @@ feature {ARCHETYPE_REPOSITORY_INTERFACE} -- Modification
 			arch_lib_if: ARCHETYPE_LIBRARY_INTERFACE
 		do
 			create arch_lib_if.make_new (a_library_path, a_repository_key, remote_flag)
-			check attached arch_lib_if.library_definition as att_lib_def then
-				interfaces.force (arch_lib_if, att_lib_def.key)
+			interfaces.force (arch_lib_if, arch_lib_if.key)
+		end
+
+feature -- Modification
+
+	reload (arch_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
+			-- reload an existing library interface's definition, which could change its key
+		require
+			arch_lib_if.has_definition and has (arch_lib_if.key)
+		local
+			old_key: STRING
+		do
+			old_key := arch_lib_if.key
+			arch_lib_if.reload_library_definition
+			if not arch_lib_if.key.is_equal (old_key) then
+				interfaces.replace_key (arch_lib_if.key, old_key)
 			end
 		end
 

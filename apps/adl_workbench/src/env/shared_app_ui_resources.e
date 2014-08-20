@@ -285,6 +285,13 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
 
+	Repository_remote_proxy_color: EV_COLOR
+			-- foreground colour for displaying remote proxy entry in repo list in the UI
+			-- MEDIUM GREY
+		once
+			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
+		end
+
 	rm_type_pixmap_key (a_type_name, an_rm_publisher, an_rm_closure: STRING): STRING
 			-- generate an RM class pixmap key based on RM publisher and possibly closure (model) name;
 			-- Return empty string if not found

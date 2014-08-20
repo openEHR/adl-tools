@@ -121,6 +121,12 @@ feature -- Status Report
 			Result := directory_exists (library_path)
 		end
 
+	has_definition: BOOLEAN
+			-- True if the definition file contains a 'remote_copy' section
+		do
+			Result := attached library_definition
+		end
+
 	is_remote: BOOLEAN
 			-- True if the definition file contains a 'remote_copy' section
 		do
@@ -135,7 +141,7 @@ feature -- Validation
 			Result := library_definition_accessor.errors
 		end
 
-feature -- Commands
+feature {ARCHETYPE_LIBRARY_INTERFACES} -- Commands
 
 	reload_library_definition
 			-- reload definition file
@@ -145,6 +151,8 @@ feature -- Commands
 				library_definition := att_obj
 			end
 		end
+
+feature {SHARED_ARCHETYPE_LIBRARIES} -- Commands
 
 	create_library: ARCHETYPE_LIBRARY
 			-- create the in-memory representation of the archetype library file-system and populate it

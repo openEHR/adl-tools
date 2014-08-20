@@ -61,8 +61,10 @@ templates = <
 		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
+		["repository_dir_contains_duplicate"] = <"Directory $1 contains a copy of repository at $2 (duplicate Git or SVN checkout?)">
 		["repository_dialog_title"] = <"Repositories and contained libraries">
 		["repository_dialog_header_label"] = <"'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.">
+		["repository_grid_status_col_title"] = <"Status">
 		["repository_grid_display_name_col_title"] = <"Repository / Library">
 		["repository_grid_description_col_title"] = <"Description">
 		["repository_grid_maintainer_col_title"] = <"Maintainer">
@@ -71,10 +73,21 @@ templates = <
 
 		["repository_add_new_library_here"] = <"Add new library here">
 		["repository_add_new_library"] = <"Add new library">
-		["repository_git_pull"] = <"Git pull">
+		["repository_vcs_update"] = <"Update from origin">
 		["repository_svn_update"] = <"SVN update">
 
+		["external_command_did_not_execute"] = <"Could not execute external command (reason unknown)">
+
 		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
+
+		["repository_status_installed"] = <"Installed">
+		["repository_status_install"] = <"Install">
+
+		-- REPOSITORY_INSTALL_DIALOG
+		["repository_install_dialog_title"] = <"Install Repository">
+		["repository_install_dialog_header_label"] = <"If the repository is already cloned on your local system, choose its directory and hit OK.%NIf you want to clone the repository from the remote location, choose the PARENT directory%Nin which you want to create the clone and check the checkbox, then hit OK.">
+		["repository_clone_here_text"] = <"Create new clone / checkout below this directory">
+		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 
 		-- PROFILE_EDIT_DIALOG
 		["library_cfg_edit_dialog_title"] =  <"Edit Library Configuration">
@@ -229,19 +242,19 @@ templates = <
 		["aom_profiles_menu_text"] = <"AOM &Profiles">
 		["aom_profiles_menu_configure_text"] = <"&Configure">
 
-		["repository_menu_text"] = <"&Archetypes">
-		["repository_menu_build_all_text"] = <"&Build All">
-		["repository_menu_rebuild_all_text"] = <"Rebuild &All">
-		["repository_menu_build_subtree_text"] = <"Build Sub&tree">
-		["repository_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
-		["repository_menu_interrupt_text"] = <"&Interrupt Build">
-		["repository_menu_refresh_text"] = <"Re&fresh Library">
-		["repository_menu_export_html_text"] = <"Export as &HTML...">
-		["repository_menu_export_json_text"] = <"Export as &JSON...">
-		["repository_menu_export_yaml_text"] = <"Export as &YAML...">
-		["repository_menu_export_xml_text"] = <"Export as &XML...">
-		["repository_menu_export_report_text"] = <"&Export Library Report...">
-		["repository_menu_configure_text"] = <"&Configure Repositories...">
+		["archetypes_menu_text"] = <"&Archetypes">
+		["archetypes_menu_build_all_text"] = <"&Build All">
+		["archetypes_menu_rebuild_all_text"] = <"Rebuild &All">
+		["archetypes_menu_build_subtree_text"] = <"Build Sub&tree">
+		["archetypes_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
+		["archetypes_menu_interrupt_text"] = <"&Interrupt Build">
+		["archetypes_menu_refresh_text"] = <"Re&fresh Library">
+		["archetypes_menu_export_html_text"] = <"Export as &HTML...">
+		["archetypes_menu_export_json_text"] = <"Export as &JSON...">
+		["archetypes_menu_export_yaml_text"] = <"Export as &YAML...">
+		["archetypes_menu_export_xml_text"] = <"Export as &XML...">
+		["archetypes_menu_export_report_text"] = <"&Export Library Report...">
+		["archetypes_menu_configure_text"] = <"&Configure Repositories...">
 
 		["rm_schemas_menu_text"] = <"&RM Schemas">
 		["rm_schemas_reload_text"] = <"&Reload Schemas">

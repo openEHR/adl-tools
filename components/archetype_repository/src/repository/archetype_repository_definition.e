@@ -79,7 +79,7 @@ feature -- Access (attributes from file)
 		end
 
 	key: STRING
-			-- made from "maintainer:name"
+			-- made from "maintainer-name"
 		do
 			create Result.make_empty
 			Result.append (maintainer)

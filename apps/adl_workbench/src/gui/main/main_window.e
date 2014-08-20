@@ -157,23 +157,23 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu_item ("AOM Profiles>Configure", get_text (ec_aom_profiles_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_aom_profiles)
 
 			-- ================== Repository menu ==================
-			evx_menu_bar.add_menu ("Repository", get_text (ec_repository_menu_text))
-			evx_menu_bar.add_menu_item ("Repository>Build All", get_text (ec_repository_menu_build_all_text), Void, agent build_all)
-			evx_menu_bar.add_menu_item ("Repository>Rebuild All", get_text (ec_repository_menu_rebuild_all_text), Void, agent rebuild_all)
+			evx_menu_bar.add_menu ("Archetypes", get_text (ec_archetypes_menu_text))
+			evx_menu_bar.add_menu_item ("Archetypes>Build All", get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
+			evx_menu_bar.add_menu_item ("Archetypes>Rebuild All", get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Repository>Build Subtree", get_text (ec_repository_menu_build_subtree_text), Void, agent build_subtree)
-			evx_menu_bar.add_menu_item ("Repository>Rebuild Subtree", get_text (ec_repository_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
+			evx_menu_bar.add_menu_item ("Archetypes>Build Subtree", get_text (ec_archetypes_menu_build_subtree_text), Void, agent build_subtree)
+			evx_menu_bar.add_menu_item ("Archetypes>Rebuild Subtree", get_text (ec_archetypes_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Repository>Export HTML", get_text (ec_repository_menu_export_html_text), Void, agent export_repository (syntax_type_adl_html))
-			evx_menu_bar.add_menu_item ("Repository>Export JSON", get_text (ec_repository_menu_export_json_text), Void, agent export_repository (syntax_type_json))
-			evx_menu_bar.add_menu_item ("Repository>Export YAML", get_text (ec_repository_menu_export_yaml_text), Void, agent export_repository (syntax_type_yaml))
-			evx_menu_bar.add_menu_item ("Repository>Export XML", get_text (ec_repository_menu_export_xml_text), Void, agent export_repository (syntax_type_xml))
-			evx_menu_bar.add_menu_item ("Repository>Report", get_text (ec_repository_menu_export_report_text), Void, agent export_repository_report)
+			evx_menu_bar.add_menu_item ("Archetypes>Export HTML", get_text (ec_archetypes_menu_export_html_text), Void, agent export_library (syntax_type_adl_html))
+			evx_menu_bar.add_menu_item ("Archetypes>Export JSON", get_text (ec_archetypes_menu_export_json_text), Void, agent export_library (syntax_type_json))
+			evx_menu_bar.add_menu_item ("Archetypes>Export YAML", get_text (ec_archetypes_menu_export_yaml_text), Void, agent export_library (syntax_type_yaml))
+			evx_menu_bar.add_menu_item ("Archetypes>Export XML", get_text (ec_archetypes_menu_export_xml_text), Void, agent export_library (syntax_type_xml))
+			evx_menu_bar.add_menu_item ("Archetypes>Report", get_text (ec_archetypes_menu_export_report_text), Void, agent export_library_report)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item_disabled ("Repository>Interrupt Build", get_text (ec_repository_menu_interrupt_text), Void, agent interrupt_build)
-			evx_menu_bar.add_menu_item ("Repository>Refresh", get_text (ec_repository_menu_refresh_text), Void, agent refresh_directory)
+			evx_menu_bar.add_menu_item_disabled ("Archetypes>Interrupt Build", get_text (ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
+			evx_menu_bar.add_menu_item ("Archetypes>Refresh", get_text (ec_archetypes_menu_refresh_text), Void, agent refresh_directory)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Repository>Configure", get_text (ec_repository_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
+			evx_menu_bar.add_menu_item ("Archetypes>Configure", get_text (ec_archetypes_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
 
 			-- ================== RM Schemas menu ==================
 			evx_menu_bar.add_menu ("RM Schemas", get_text (ec_rm_schemas_menu_text))
@@ -297,12 +297,12 @@ feature {NONE} -- Initialization
 
 			history_bar.add_shortcuts
 
-			evx_menu_bar.add_menu_shortcut ("Repository>Refresh", key_r, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("Repository>Interrupt Build", key_escape, False, False, True)
-			evx_menu_bar.add_menu_shortcut ("Repository>Rebuild Subtree", key_f7, True, False, True)
-			evx_menu_bar.add_menu_shortcut ("Repository>Build Subtree", key_f7, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("Repository>Rebuild All", key_f7, False, False, True)
-			evx_menu_bar.add_menu_shortcut ("Repository>Build All", key_f7, False, False, False)
+			evx_menu_bar.add_menu_shortcut ("Archetypes>Refresh", key_r, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("Archetypes>Interrupt Build", key_escape, False, False, True)
+			evx_menu_bar.add_menu_shortcut ("Archetypes>Rebuild Subtree", key_f7, True, False, True)
+			evx_menu_bar.add_menu_shortcut ("Archetypes>Build Subtree", key_f7, True, False, False)
+			evx_menu_bar.add_menu_shortcut ("Archetypes>Rebuild All", key_f7, False, False, True)
+			evx_menu_bar.add_menu_shortcut ("Archetypes>Build All", key_f7, False, False, False)
 
 			evx_menu_bar.add_menu_shortcut ("RM Schemas>Reload", key_l, True, False, False)
 
@@ -583,8 +583,8 @@ feature {NONE} -- Library events
 			archetype_compiler.signal_interrupt
 		end
 
-	export_repository (a_syntax: STRING)
-			-- Generate serialised form of flat archetypes into `export_directory'/syntax.
+	export_library (a_syntax: STRING)
+			-- Generate serialised form of flat archetypes into `export_library'/syntax.
 		require
 			Serialise_format_valid: has_archetype_native_serialiser_format (a_syntax) or has_dt_serialiser_format (a_syntax)
 		local
@@ -592,11 +592,11 @@ feature {NONE} -- Library events
 			yes_text, no_text, cancel_text, export_dir: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create dialog.make_with_text (get_msg_line ("export_question", <<a_syntax>>))
+			create dialog.make_with_text (get_msg_line (ec_export_question, <<a_syntax>>))
 			dialog.set_title (get_msg (ec_export_in_format_dialog_title, <<a_syntax>>))
 			yes_text := get_text (ec_build_and_export_all)
 			no_text := get_text (ec_export_only_built)
-			cancel_text := get_msg_line ("cancel_button_text", Void)
+			cancel_text := get_msg_line (ec_cancel_button_text, Void)
 			dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
 
 			dialog.set_default_cancel_button (dialog.button (cancel_text))
@@ -606,7 +606,7 @@ feature {NONE} -- Library events
 				export_dir := file_system.pathname (export_directory, a_syntax)
 				file_system.recursive_create_directory (export_dir)
 				if not file_system.directory_exists (export_dir) then
-					create info_dialog.make_with_text (get_msg_line ("could_not_create_file_text", <<export_dir>>))
+					create info_dialog.make_with_text (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
 				else
 					if dialog.selected_button.same_string (yes_text) then
 						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
@@ -617,8 +617,8 @@ feature {NONE} -- Library events
 			end
 		end
 
-	export_repository_report
-			-- Export the contents of the Errors grid and other statistics to an XML file via a GUI file save dialog.
+	export_library_report
+			-- Export the contents of the current library Errors grid and other statistics to an XML file via a GUI file save dialog.
 		local
 			ok_to_write: BOOLEAN
 			question_dialog: EV_QUESTION_DIALOG
@@ -630,7 +630,7 @@ feature {NONE} -- Library events
 			if current_library.has_statistics then
 				create save_dialog
 				save_dialog.set_title (get_text (ec_export_report_dialog_title))
-				save_dialog.set_file_name (Repository_report_filename)
+				save_dialog.set_file_name (Library_report_filename)
 				save_dialog.set_start_directory (current_work_directory)
 				save_dialog.filters.extend (["*" + File_ext_xml_default, get_msg (ec_save_archetype_as_type, <<Syntax_type_xml.as_upper>>)])
 				save_dialog.show_modal_to_window (Current)
@@ -647,25 +647,25 @@ feature {NONE} -- Library events
 					create file.make (xml_name)
 
 					if file.exists then
-						create question_dialog.make_with_text (get_msg_line ("file_exists_replace_question", <<xml_name>>))
+						create question_dialog.make_with_text (get_msg_line (ec_file_exists_replace_question, <<xml_name>>))
 						question_dialog.set_title (get_text (ec_export_report_dialog_title))
-						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text ("no_response")>>)
+						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 						question_dialog.show_modal_to_window (Current)
 						ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
 					end
 
 					if ok_to_write then
-						do_with_wait_cursor (Current, agent error_tool.export_repository_report (xml_name))
+						do_with_wait_cursor (Current, agent error_tool.export_library_report (xml_name))
 						if file.exists then
-							console_tool.append_text (get_msg_line ("export_repository_report_replace_info", <<xml_name>>))
+							console_tool.append_text (get_msg (ec_export_library_report_replace_info, <<xml_name>>))
 							show_in_system_browser (xml_name)
 						else
-							console_tool.append_text (get_msg_line ("export_repository_report_replace_err", <<xml_name>>))
+							console_tool.append_text (get_msg (ec_export_library_report_replace_err, <<xml_name>>))
 						end
 					end
 				end
 			else
-				create info_dialog.make_with_text (get_msg_line ("export_errors_stats_requires_build_text", Void))
+				create info_dialog.make_with_text (get_text (ec_export_errors_stats_requires_build_text))
 				info_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -716,7 +716,7 @@ feature {NONE} -- Tools menu events
 		end
 
 	clean_generated_files
-			-- Remove all generated files below the repository directory and repopulate from scratch
+			-- Remove all generated files in the current library and repopulate from scratch
 		do
 			if has_current_library then
 				do_with_wait_cursor (Current, agent current_library.do_all_archetypes (agent delete_generated_files))

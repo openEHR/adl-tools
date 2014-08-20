@@ -16,6 +16,8 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists
 		end
 
+	SHARED_EXTERNAL_TOOL_INTERFACES
+
 	TABLE_ITERABLE [ARCHETYPE_REPOSITORY_INTERFACE, STRING]
 
 create
@@ -26,6 +28,7 @@ feature -- Initialisation
 	make
 		do
 			create repositories.make (0)
+			create last_duplicate_key_path.make_empty
 		end
 
 feature -- Access
@@ -41,9 +44,23 @@ feature -- Access
 
 feature -- Status Report
 
-	has (a_repo_key: STRING): BOOLEAN
+	has (a_repo_local_path: STRING): BOOLEAN
+			-- True if a repository at `a_repo_local_path' already loaded
 		do
-			Result := repositories.has (a_repo_key)
+			Result := repositories.has (a_repo_local_path)
+		end
+
+	has_key (a_key: STRING): BOOLEAN
+			-- True if a repository with logical key `a_key' already loaded
+		do
+			Result := across repositories as repos_csr some repos_csr.item.key.is_equal (a_key) end
+		end
+
+	has_remote_repository (a_url: STRING): BOOLEAN
+			-- True if there is an installed repository with the remote URL `a_url'
+		do
+			Result := across repositories as repos_csr some
+				repos_csr.item.has_remote_repository and then repos_csr.item.remote_url.is_equal (a_url) end
 		end
 
 	is_empty: BOOLEAN
@@ -60,6 +77,30 @@ feature -- Status Report
 				not repositories.has (a_path)
 		end
 
+	valid_candidate_repository (a_path: STRING): BOOLEAN
+			-- Check if `a_repository_path' is a valid existing repository that can be loaded.
+			-- True if:
+			--	- `a_repository_path' exists
+			--	- there is not already a repository loaded at that path (can't load same repo twice)
+			-- 	- the repository definition on the file system is not a duplicate of one already loaded (e.g. dup of Git repo)
+		local
+			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
+		do
+			last_duplicate_key_path.wipe_out
+			if valid_repository_path (a_path) then
+				create arch_rep_if.make_local (a_path)
+				if not has_key (arch_rep_if.key) then
+					Result := True
+				else
+					across repositories as repos_csr loop
+						if repos_csr.item.key.is_equal (arch_rep_if.key) then
+							last_duplicate_key_path := repos_csr.item.local_directory
+						end
+					end
+				end
+			end
+		end
+
 feature -- Iteration
 
 	new_cursor: TABLE_ITERATION_CURSOR [ARCHETYPE_REPOSITORY_INTERFACE, STRING]
@@ -67,6 +108,11 @@ feature -- Iteration
 		do
 			Result := repositories.new_cursor
 		end
+
+feature -- Validation
+
+	last_duplicate_key_path: STRING
+			-- path of loaded repository which has same key as the candidate repo path in last call to `valid_candidate_repository'
 
 feature -- Commands
 
@@ -88,23 +134,38 @@ feature -- Commands
 	extend (a_repository_path: STRING)
 			-- create repository interface for repository at path `a_repository_path'
 		require
-			Directory_path_valid: directory_exists (a_repository_path)
+			Repository_path_valid: valid_candidate_repository (a_repository_path)
 		local
 			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
 		do
-			create arch_rep_if.make (a_repository_path)
+			create arch_rep_if.make_local (a_repository_path)
+			arch_rep_if.populate_libraries
 			repositories.force (arch_rep_if, a_repository_path)
 		end
 
-	extend_new (a_repository_path: STRING)
-			-- create new repository at path `a_repository_path' and create an interface for it
+	extend_create_local (a_repository_path: STRING)
+			-- create new local repository at path `a_repository_path' and create an interface for it
 		require
 			Directory_path_valid: directory_exists (a_repository_path)
 		local
 			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
 		do
-			create arch_rep_if.make_new (a_repository_path)
+			create arch_rep_if.make_create_local_only (a_repository_path)
 			repositories.force (arch_rep_if, a_repository_path)
+		end
+
+	extend_create_local_from_remote (a_local_parent_dir, a_repository_url, a_repo_type: STRING)
+			-- create new remote repository proxy using `a_repository_url'
+		require
+			Url_valid: not a_repository_url.is_empty
+			Valid_repo_type: valid_vcs_type (a_repo_type)
+		local
+			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
+		do
+			create arch_rep_if.make_create_local_from_remote (a_local_parent_dir, a_repository_url, a_repo_type)
+			repositories.force (arch_rep_if, arch_rep_if.local_directory)
+		ensure
+			has_remote_repository (a_repository_url)
 		end
 
 feature {NONE} -- Implementation

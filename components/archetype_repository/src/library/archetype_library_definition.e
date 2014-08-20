@@ -112,7 +112,7 @@ feature -- Access (attributes from file)
 feature -- Access
 
 	key: STRING
-			-- made from "maintainer:name"
+			-- made from "maintainer-short_name"
 		local
 			safe_short_name: STRING
 		do

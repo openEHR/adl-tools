@@ -55,6 +55,7 @@
 		<setting name="line_generation" value="false"/>
 		<setting name="concurrency" value="thread"/>
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
+		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
 		<library name="eomf_bmm" location="$EOMF\library\bmm\bmm.ecf">
 			<option>
 				<assertions precondition="true" postcondition="true"/>

@@ -178,7 +178,7 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	export_repository_report (xml_file_name: attached STRING)
+	export_library_report (xml_file_name: STRING)
 			-- Export the contents of the grid and other statistics to XML file `xml_name'.
 		require
 			xml_file_name_valid: not xml_file_name.is_empty

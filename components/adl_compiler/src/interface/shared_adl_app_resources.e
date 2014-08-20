@@ -90,7 +90,7 @@ feature -- Definitions
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/ckm/"
 			-- The URL to CKM.
 
-	Repository_report_filename: STRING = "ArchetypeRepositoryReport.xml"
+	Library_report_filename: STRING = "ArchetypeRepositoryReport.xml"
 
 	Default_aom_profile_directory: STRING
 			-- default directory of AOM profile files (*.arp files, in dadl format)
@@ -125,6 +125,21 @@ feature -- Definitions
 		once
 		--	Result := "Copyright " + UTF8_copyright_char.out + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
+		end
+
+	Available_remote_repositories: HASH_TABLE [REPOSITORY_REMOTE_PROXY, STRING]
+			-- URLs of available online repositories. Hardwired for now, replace in future by a
+			-- web service lookup
+		local
+			a_proxy: REPOSITORY_REMOTE_PROXY
+		once
+			create Result.make (0)
+			create a_proxy.make ("openEHR-reference repository", "https://github.com/openEHR/adl-archetypes.git", "git")
+			Result.put (a_proxy, a_proxy.remote_url)
+			create a_proxy.make ("openEHR-CKM mirror", "https://github.com/openEHR/CKM-mirror.git", "git")
+			Result.put (a_proxy, a_proxy.remote_url)
+			create a_proxy.make ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", "git")
+			Result.put (a_proxy, a_proxy.remote_url)
 		end
 
 feature -- Initialisation

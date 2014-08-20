@@ -26,8 +26,10 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_EXTERNAL_TOOL_INTERFACES
+
 create
-	make, make_new
+	make_local, make_create_local_only, make_remote_only, make_create_local_from_remote
 
 feature -- Definitions
 
@@ -36,46 +38,77 @@ feature -- Definitions
 
 	Repository_definition_unavailable: STRING = "(definition not found)"
 
-	Git_control_directory: STRING = ".git"
-
-	Svn_control_directory: STRING = ".svn"
-
 feature -- Initialisation
 
-	make (a_dir: STRING)
+	make_remote_only (a_remote_url, a_remote_type: STRING)
+			-- make with a local directory and remote access URI and type
+		require
+			valid_vcs_type (a_remote_type)
 		do
-			repository_directory := a_dir
-			create repository_definition_accessor.make_load (repository_definition_file_path)
-			if attached repository_definition_accessor.object as att_obj then
-				repository_definition := att_obj
-
-				-- find all the repositories below this point
-				populate_libraries
+			check attached {VCS_TOOL_INTERFACE} create_tool_interface (a_remote_type) as att_if then
+				remote_access := att_if
 			end
+			remote_access.initialise_remote (a_remote_url)
+		ensure
+			has_remote_repository
 		end
 
-	make_new (a_dir: STRING)
+	make_create_local_from_remote (a_local_parent_dir, a_remote_url, a_remote_type: STRING)
+			-- make with a local directory and remote access URI and type
+			-- perform local repository clone operation
+		require
+			Valid_repository_type: valid_vcs_type (a_remote_type)
 		do
-			repository_directory := a_dir
-			create repository_definition_accessor.make (repository_definition_file_path)
-			create repository_definition.make_template
-			repository_definition_accessor.save (repository_definition)
+			check attached {VCS_TOOL_INTERFACE} create_tool_interface (a_remote_type) as att_if then
+				remote_access := att_if
+			end
+			remote_access.initialise_checkout_from_remote (a_local_parent_dir, a_remote_url)
+		ensure
+			has_remote_repository
+		end
+
+	make_local (a_local_dir: STRING)
+			-- make with an existing local directory; determine remote from local copy
+		require
+			is_checkout_area (a_local_dir)
+		do
+			local_directory := a_local_dir
+			create local_definition_file_access.make_load (local_definition_file_path)
+			if attached local_definition_file_access.object as att_obj then
+				local_definition := att_obj
+			end
+			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
+		ensure
+			has_remote_repository
+		end
+
+	make_create_local_only (a_local_dir: STRING)
+		do
+			local_directory := a_local_dir
+			create local_definition_file_access.make (local_definition_file_path)
+			create local_definition.make_template
+			local_definition_file_access.save (local_definition)
+		ensure
+			not has_remote_repository
 		end
 
 feature -- Access
 
-	repository_directory: STRING
-			-- repository root directory
-
-	repository_definition_file_path: STRING
-			-- path of definition file in repository root directory
-		do
-			Result := file_system.pathname (repository_directory, Repository_file_name)
+	local_directory: STRING
+			-- repository local file-system root directory
+		attribute
+			create Result.make_empty
 		end
 
-	repository_definition_accessor: ODIN_OBJECT_READER [ARCHETYPE_REPOSITORY_DEFINITION]
+	local_definition_file_path: STRING
+			-- path of definition file in local repository root directory
+		require
+			has_local_definition
+		do
+			Result := file_system.pathname (local_directory, Repository_file_name)
+		end
 
-	repository_definition: detachable ARCHETYPE_REPOSITORY_DEFINITION
+	local_definition: detachable ARCHETYPE_REPOSITORY_DEFINITION
 		note
 			option: stable
 		attribute
@@ -83,10 +116,12 @@ feature -- Access
 
 	library_interfaces: HASH_TABLE [ARCHETYPE_LIBRARY_INTERFACE, STRING]
 			-- generate list of libraries of this repository, keyed by library id
+		require
+			has_local_definition
 		do
 			create Result.make (0)
 			across archetype_library_interfaces as lib_interfaces_csr loop
-				if lib_interfaces_csr.item.repository_key.is_equal (repository_directory) then
+				if lib_interfaces_csr.item.repository_key.is_equal (local_directory) then
 					Result.put (lib_interfaces_csr.item, lib_interfaces_csr.key)
 				end
 			end
@@ -94,32 +129,60 @@ feature -- Access
 
 	key: STRING
 		do
-			if attached repository_definition as att_rep_def then
+			if attached local_definition as att_rep_def then
 				Result := att_rep_def.key
 			else
 				Result := Repository_definition_unavailable
 			end
 		end
 
+	remote_url: STRING
+			-- URL of remote repository
+		do
+			create Result.make_empty
+			if attached remote_access as att_rem_acc then
+				Result.append (att_rem_acc.remote_repository_url)
+			end
+		end
+
+	remote_repository_type: STRING
+			-- type of remote repository if applicable
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rem_acc then
+				Result := att_rem_acc.tool_name
+			end
+		end
+
+	last_result: detachable PROCESS_RESULT
+			-- result of last call to an external command, i.e. in `remote_access'
+
 feature -- Status Report
+
+	has_local_definition: BOOLEAN
+			-- True if a local repository path and definition exists
+		do
+			Result := not local_directory.is_empty
+		end
+
+	has_remote_repository: BOOLEAN
+			-- True if there is a definition for a remote location corresponding to this repository
+		do
+			Result := attached remote_access
+		end
+
+	has_repository_tool: BOOLEAN
+			-- True if the external tool required (e.g. git, svn) for working with the repository is available
+		do
+			Result := attached remote_access as att_rem_acc and then att_rem_acc.tool_available
+		end
 
 	has_libraries: BOOLEAN
 			-- True if the repo has no libraries
 		do
 			Result := across archetype_library_interfaces as lib_interfaces_csr some
-				lib_interfaces_csr.item.repository_key.is_equal (repository_directory) end
-		end
-
-	is_git_repository: BOOLEAN
-			-- True if the repo has a .git directory
-		do
-			Result := file_system.directory_exists (file_system.pathname (repository_directory, Git_control_directory))
-		end
-
-	is_svn_repository: BOOLEAN
-			-- True if the repository has a .svn directory
-		do
-			Result := file_system.directory_exists (file_system.pathname (repository_directory, Svn_control_directory))
+				lib_interfaces_csr.item.repository_key.is_equal (local_directory) end
 		end
 
 feature -- Validation
@@ -128,7 +191,7 @@ feature -- Validation
 			-- path must be a sub-path of the repository directory, but not be a sub-path
 			-- or parent path of any existing library
 		do
-			Result := file_system.is_subpathname (repository_directory, lib_path) and
+			Result := file_system.is_subpathname (local_directory, lib_path) and
 				(not has_libraries or else
 				not across archetype_library_interfaces as lib_interfaces_csr some
 						file_system.is_subpathname (lib_interfaces_csr.item.library_path, lib_path) or
@@ -140,7 +203,7 @@ feature -- Validation
 			-- obtain any errors from definition file load
 		do
 			create Result.make
-			Result.append (repository_definition_accessor.errors)
+			Result.append (local_definition_file_access.errors)
 
 			-- errors of loaded libraries
 			across library_interfaces as lib_ifs_csr loop
@@ -158,7 +221,7 @@ feature -- Validation
 		do
 			create Result.make (0)
 			across archetype_library_interfaces.failed_interfaces as lib_interfaces_csr loop
-				if lib_interfaces_csr.item.repository_key.is_equal (repository_directory) then
+				if lib_interfaces_csr.item.repository_key.is_equal (local_directory) then
 					Result.extend (lib_interfaces_csr.item)
 				end
 			end
@@ -166,17 +229,32 @@ feature -- Validation
 
 feature -- Commands
 
+	update_from_remote
+			-- Update local checkout/clone from remote; result in last_result
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rm_acc then
+				att_rm_acc.do_update
+				last_result := att_rm_acc.last_result
+			end
+		end
+
 	reload_repository_definition
 			-- reload definition file
+		require
+			has_local_definition
 		do
-			repository_definition_accessor.load
-			if attached repository_definition_accessor.object as att_obj then
-				repository_definition := att_obj
+			local_definition_file_access.load
+			if attached local_definition_file_access.object as att_obj then
+				local_definition := att_obj
 			end
 		end
 
 	populate_libraries
 			-- populate libraries from the file system or other external medium
+		require
+			has_local_definition
 		local
 			file_rep: FILE_REPOSITORY
 		do
@@ -191,11 +269,11 @@ feature -- Commands
 			end
 
 			-- now re-evaluate from the file system
-			create file_rep.make (repository_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
+			create file_rep.make (local_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
 			across file_rep.matching_paths as lib_def_file_paths_csr loop
 				-- this statement just adds the libraries under this repository to the overall library list
 				-- which consists of libraries from all repositories
-				archetype_library_interfaces.extend (file_system.dirname (lib_def_file_paths_csr.item), repository_directory)
+				archetype_library_interfaces.extend (file_system.dirname (lib_def_file_paths_csr.item), local_directory)
 			end
 		end
 
@@ -203,21 +281,30 @@ feature -- Commands
 			-- create new library at path `a_library_path' and create an interface for it
 		require
 			Directory_path_valid: directory_exists (a_library_path)
-		local
-			arch_lib_if: ARCHETYPE_LIBRARY_INTERFACE
+			Local_repository_exists: has_local_definition
 		do
-			archetype_library_interfaces.extend_new (a_library_path, repository_directory, remote_flag)
+			archetype_library_interfaces.extend_new (a_library_path, local_directory, remote_flag)
 		end
 
 	add_new_library_here (remote_flag: BOOLEAN)
 			-- create new library repository root and create an interface for it
-		local
-			arch_lib_if: ARCHETYPE_LIBRARY_INTERFACE
+		require
+			Local_repository_exists: has_local_definition
 		do
-			archetype_library_interfaces.extend_new (repository_directory, repository_directory, remote_flag)
+			archetype_library_interfaces.extend_new (local_directory, local_directory, remote_flag)
 		end
 
 feature {NONE} -- Implementation
+
+	remote_access: detachable VCS_TOOL_INTERFACE
+			-- remote access object; specific subtype for remote repository type
+
+	local_definition_file_access: detachable ODIN_OBJECT_READER [ARCHETYPE_REPOSITORY_DEFINITION]
+			-- file accessor for the local definition file
+		note
+			option: stable
+		attribute
+		end
 
 	parser: ODIN_PARSER
 		once
