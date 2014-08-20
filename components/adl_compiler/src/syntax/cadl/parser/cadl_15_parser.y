@@ -112,8 +112,9 @@ create
 %type <detachable MULTIPLICITY_INTERVAL> c_occurrences c_existence
 %type <detachable CARDINALITY> c_cardinality
 
-%type <C_COMPLEX_OBJECT> c_complex_object_id c_complex_object_head
+%type <C_COMPLEX_OBJECT> c_complex_object c_complex_object_id c_complex_object_head
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
+%type <C_OBJECT> c_non_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 %type <C_ATTRIBUTE> c_attr_head
 
@@ -264,11 +265,6 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 				abort_with_error (ec_VARCN, <<$2, Root_id_code_regex_pattern>>)
 			end
 		}
-	| sibling_order type_identifier V_ID_CODE
-		{
-			create $$.make ($2, $3)
-			$$.set_sibling_order ($1)
-		}
 ----------------------------------------------------------------------------
 -- START Support transitional ADL 1.5 archetypes containing nodes with no codes
 --
@@ -319,20 +315,14 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 
 ------------------------- node types -----------------------
 
-c_object: c_complex_object 
-		{
-		}
-	| c_archetype_root 
+c_object: c_non_primitive_object 
 		{
 			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
-	| c_complex_object_proxy 
+	| sibling_order c_non_primitive_object 
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
-		}
-	| archetype_slot
-		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			$2.set_sibling_order ($1)
+			safe_put_c_attribute_child (c_attrs.item, $2)
 		}
 	| c_primitive_object
 		{
@@ -341,6 +331,24 @@ c_object: c_complex_object
 	| error		
 		{
 			abort_with_error (ec_SCCOG, Void)
+		}
+	;
+
+c_non_primitive_object: c_complex_object 
+		{
+			$$ := $1
+		}
+	| c_archetype_root 
+		{
+			$$ := $1
+		}
+	| c_complex_object_proxy 
+		{
+			$$ := $1
+		}
+	| archetype_slot
+		{
+			$$ := $1
 		}
 	;
 
@@ -460,11 +468,6 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 		{
 			create $$.make ($2, $3)
-		}
-	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
-		{
-			create $$.make ($3, $4)
-			$$.set_sibling_order ($1)
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE SYM_CLOSED
 		{

@@ -88,8 +88,6 @@
 <div class="rhs">
 | <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
-<div class="rhs">
 | <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
 </div>
 
@@ -117,6 +115,19 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_object">c_object</span>: </div>
 <div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#c_non_primitive_object">c_non_primitive_object</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="rhs_variable"><a href="#c_non_primitive_object">c_non_primitive_object</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_non_primitive_object">c_non_primitive_object</span>: </div>
+<div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_complex_object">c_complex_object</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_archetype_root">c_archetype_root</a> </span></div>
@@ -124,10 +135,6 @@
 | <span class="rhs_variable"><a href="#c_complex_object_proxy">c_complex_object_proxy</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#archetype_slot">archetype_slot</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span></div>
-<div class="rhs">
-| <span class="token">error </span></div>
 </div>
 
 <div class="rule">
@@ -171,8 +178,6 @@
 <span class="lhs_variable" id="c_archetype_slot_id">c_archetype_slot_id</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="token">SYM_CLOSED </span></div>
 <div class="rhs">
