@@ -29,6 +29,7 @@
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
 		<library name="app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
+		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
 		<library name="bmm" location="$EOMF\library\bmm\bmm.ecf"/>
 		<library name="odin" location="$EOMF\library\odin\odin.ecf"/>
 		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>

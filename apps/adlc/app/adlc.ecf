@@ -31,6 +31,7 @@
 		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
 		<library name="app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
+		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
 		<library name="odin" location="$EOMF\library\odin\odin.ecf"/>
 		<library name="bmm" location="$EOMF\library\bmm\bmm.ecf"/>
 
