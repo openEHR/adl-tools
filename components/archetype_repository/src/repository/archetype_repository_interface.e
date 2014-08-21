@@ -63,6 +63,8 @@ feature -- Initialisation
 				remote_access := att_if
 			end
 			remote_access.initialise_checkout_from_remote (a_local_parent_dir, a_remote_url)
+			last_result := remote_access.last_result
+			local_directory := remote_access.local_repository_directory
 		ensure
 			has_remote_repository
 		end
@@ -73,10 +75,6 @@ feature -- Initialisation
 			is_checkout_area (a_local_dir)
 		do
 			local_directory := a_local_dir
-			create local_definition_file_access.make_load (local_definition_file_path)
-			if attached local_definition_file_access.object as att_obj then
-				local_definition := att_obj
-			end
 			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
 		ensure
 			has_remote_repository
@@ -85,9 +83,6 @@ feature -- Initialisation
 	make_create_local_only (a_local_dir: STRING)
 		do
 			local_directory := a_local_dir
-			create local_definition_file_access.make (local_definition_file_path)
-			create local_definition.make_template
-			local_definition_file_access.save (local_definition)
 		ensure
 			not has_remote_repository
 		end
@@ -100,24 +95,37 @@ feature -- Access
 			create Result.make_empty
 		end
 
-	local_definition_file_path: STRING
+	repository_definition_file_path: STRING
 			-- path of definition file in local repository root directory
 		require
-			has_local_definition
+			has_local_directory
 		do
 			Result := file_system.pathname (local_directory, Repository_file_name)
 		end
 
-	local_definition: detachable ARCHETYPE_REPOSITORY_DEFINITION
-		note
-			option: stable
-		attribute
+	repository_definition: ARCHETYPE_REPOSITORY_DEFINITION
+		require
+			has_local_directory
+		do
+			if attached local_definition_cache as att_local_def then
+				Result := att_local_def
+			else
+				if not attached local_definition_file_access then
+					create local_definition_file_access.make_load (repository_definition_file_path)
+				end
+				if attached local_definition_file_access.object as att_obj then
+					Result := att_obj
+				else
+					create Result.make_template
+					local_definition_file_access.save (Result)
+				end
+			end
 		end
 
 	library_interfaces: HASH_TABLE [ARCHETYPE_LIBRARY_INTERFACE, STRING]
 			-- generate list of libraries of this repository, keyed by library id
 		require
-			has_local_definition
+			has_local_directory
 		do
 			create Result.make (0)
 			across archetype_library_interfaces as lib_interfaces_csr loop
@@ -129,11 +137,7 @@ feature -- Access
 
 	key: STRING
 		do
-			if attached local_definition as att_rep_def then
-				Result := att_rep_def.key
-			else
-				Result := Repository_definition_unavailable
-			end
+			Result := repository_definition.key
 		end
 
 	remote_url: STRING
@@ -160,7 +164,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_local_definition: BOOLEAN
+	has_local_directory: BOOLEAN
 			-- True if a local repository path and definition exists
 		do
 			Result := not local_directory.is_empty
@@ -243,18 +247,16 @@ feature -- Commands
 	reload_repository_definition
 			-- reload definition file
 		require
-			has_local_definition
+			has_local_directory
 		do
 			local_definition_file_access.load
-			if attached local_definition_file_access.object as att_obj then
-				local_definition := att_obj
-			end
+			local_definition_cache := Void
 		end
 
 	populate_libraries
 			-- populate libraries from the file system or other external medium
 		require
-			has_local_definition
+			has_local_directory
 		local
 			file_rep: FILE_REPOSITORY
 		do
@@ -281,7 +283,7 @@ feature -- Commands
 			-- create new library at path `a_library_path' and create an interface for it
 		require
 			Directory_path_valid: directory_exists (a_library_path)
-			Local_repository_exists: has_local_definition
+			Local_repository_exists: has_local_directory
 		do
 			archetype_library_interfaces.extend_new (a_library_path, local_directory, remote_flag)
 		end
@@ -289,7 +291,7 @@ feature -- Commands
 	add_new_library_here (remote_flag: BOOLEAN)
 			-- create new library repository root and create an interface for it
 		require
-			Local_repository_exists: has_local_definition
+			Local_repository_exists: has_local_directory
 		do
 			archetype_library_interfaces.extend_new (local_directory, local_directory, remote_flag)
 		end
@@ -310,6 +312,8 @@ feature {NONE} -- Implementation
 		once
 			create Result.make
 		end
+
+	local_definition_cache: detachable ARCHETYPE_REPOSITORY_DEFINITION
 
 end
 

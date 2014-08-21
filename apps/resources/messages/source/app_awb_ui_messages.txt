@@ -61,6 +61,7 @@ templates = <
 		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
+		["repository_clone_dir_invalid"] = <"Can't clone repo at URL $1 to directory $2 because there is already a non-empty sub-directory $3">
 		["repository_dir_contains_duplicate"] = <"Directory $1 contains a copy of repository at $2 (duplicate Git or SVN checkout?)">
 		["repository_dialog_title"] = <"Repositories and contained libraries">
 		["repository_dialog_header_label"] = <"'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.">
@@ -76,17 +77,21 @@ templates = <
 		["repository_vcs_update"] = <"Update from origin">
 		["repository_svn_update"] = <"SVN update">
 
-		["external_command_did_not_execute"] = <"Could not execute external command (reason unknown)">
+		["external_command_did_not_execute"] = <"Could not execute external command $1">
+		["external_command_failed"] = <"External command '$1' failed; reason: $2">
 
 		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
 
 		["repository_status_installed"] = <"Installed">
 		["repository_status_install"] = <"Install">
 
+		["archetype_library_grid_name_col_tooltip"] = <"%N-------------%NRemote source:%N%TURL: $1%N%Tcustodian: $2">
+		["repository_clone_dir_confirm_text"] = <"About to clone repository $1 from $2 in $3; proceed?">
+
 		-- REPOSITORY_INSTALL_DIALOG
 		["repository_install_dialog_title"] = <"Install Repository">
-		["repository_install_dialog_header_label"] = <"If the repository is already cloned on your local system, choose its directory and hit OK.%NIf you want to clone the repository from the remote location, choose the PARENT directory%Nin which you want to create the clone and check the checkbox, then hit OK.">
-		["repository_clone_here_text"] = <"Create new clone / checkout below this directory">
+		["repository_install_dialog_header_label"] = <"Repository at $1%NASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and check the box.">
+		["repository_clone_here_text"] = <"Create new clone & checkout below this directory">
 		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 
 		-- PROFILE_EDIT_DIALOG

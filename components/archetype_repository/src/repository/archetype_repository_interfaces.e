@@ -42,6 +42,13 @@ feature -- Access
 			end
 		end
 
+	last_repository_interface: detachable ARCHETYPE_REPOSITORY_INTERFACE
+			-- repository interface created by most recent create operation
+		note
+			option: stable
+		attribute
+		end
+
 feature -- Status Report
 
 	has (a_repo_local_path: STRING): BOOLEAN
@@ -101,6 +108,17 @@ feature -- Status Report
 			end
 		end
 
+	valid_clone_directory (a_parent_dir, a_repository_url, a_repo_type: STRING): BOOLEAN
+			-- `a_parent_dir' is a valid directory to create a clone of the repo with `a_repository_url' and `a_repo_type'
+			-- if there is no directory under `a_parent_dir' of the repository name (derived from the URL), or else there
+			-- is but it is empty
+		local
+			repo_path: STRING
+		do
+			repo_path := file_system.pathname (a_parent_dir, repository_name_from_url (a_repository_url, a_repo_type))
+			Result := not file_system.directory_exists (repo_path) or else file_system.is_directory_empty (repo_path)
+		end
+
 feature -- Iteration
 
 	new_cursor: TABLE_ITERATION_CURSOR [ARCHETYPE_REPOSITORY_INTERFACE, STRING]
@@ -135,35 +153,33 @@ feature -- Commands
 			-- create repository interface for repository at path `a_repository_path'
 		require
 			Repository_path_valid: valid_candidate_repository (a_repository_path)
-		local
-			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
 		do
-			create arch_rep_if.make_local (a_repository_path)
-			arch_rep_if.populate_libraries
-			repositories.force (arch_rep_if, a_repository_path)
+			create last_repository_interface.make_local (a_repository_path)
+			last_repository_interface.populate_libraries
+			repositories.force (last_repository_interface, a_repository_path)
 		end
 
 	extend_create_local (a_repository_path: STRING)
 			-- create new local repository at path `a_repository_path' and create an interface for it
 		require
 			Directory_path_valid: directory_exists (a_repository_path)
-		local
-			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
 		do
-			create arch_rep_if.make_create_local_only (a_repository_path)
-			repositories.force (arch_rep_if, a_repository_path)
+			create last_repository_interface.make_create_local_only (a_repository_path)
+			repositories.force (last_repository_interface, a_repository_path)
 		end
 
-	extend_create_local_from_remote (a_local_parent_dir, a_repository_url, a_repo_type: STRING)
+	extend_create_local_from_remote (a_parent_dir, a_repository_url, a_repo_type: STRING)
 			-- create new remote repository proxy using `a_repository_url'
 		require
 			Url_valid: not a_repository_url.is_empty
 			Valid_repo_type: valid_vcs_type (a_repo_type)
-		local
-			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
+			Valid_repo_clone_directory: valid_clone_directory (a_parent_dir, a_repository_url, a_repo_type)
 		do
-			create arch_rep_if.make_create_local_from_remote (a_local_parent_dir, a_repository_url, a_repo_type)
-			repositories.force (arch_rep_if, arch_rep_if.local_directory)
+			create last_repository_interface.make_create_local_from_remote (a_parent_dir, a_repository_url, a_repo_type)
+			if attached last_repository_interface.last_result as att_res and then att_res.succeeded then
+				last_repository_interface.populate_libraries
+				repositories.force (last_repository_interface, last_repository_interface.local_directory)
+			end
 		ensure
 			has_remote_repository (a_repository_url)
 		end

@@ -31,6 +31,8 @@ feature {NONE} -- Initialization
 
 	make (a_repo_url: STRING)
 		do
+			repository_url := a_repo_url
+			create local_directory.make_empty
 			default_create
 		end
 
@@ -51,7 +53,7 @@ feature {NONE} -- Initialization
 			ev_cell_1.set_minimum_height (20)
 			ev_root_container.extend (ev_cell_1)
 			create ev_label_1
-			ev_label_1.set_text (get_text (ec_repository_install_dialog_header_label))
+			ev_label_1.set_text (get_msg (ec_repository_install_dialog_header_label, <<repository_url>>))
 			ev_root_container.extend (ev_label_1)
 			create ev_cell_2
 			ev_cell_2.set_minimum_height (20)
@@ -63,6 +65,7 @@ feature {NONE} -- Initialization
 			-- ============ new repository dir chooser ============
 			create evx_dir_setter.make (get_text (ec_repository_dir_button_text), agent :STRING do Result := "" end, 0, 0)
 			evx_dir_setter.set_button_tooltip (get_text (ec_repository_dir_button_tooltip))
+			evx_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
 			ev_root_container.extend (evx_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (evx_dir_setter.ev_root_container)
 			gui_controls.extend (evx_dir_setter)
@@ -103,15 +106,15 @@ feature -- Events
 	on_ok
 		do
 			local_directory := evx_dir_setter.data_control_text
+			set_last_user_selected_directory (local_directory)
 			hide
 		end
 
 feature -- Access
 
+	repository_url: STRING
+
 	local_directory: STRING
-		attribute
-			create Result.make_empty
-		end
 
 feature -- Status Report
 

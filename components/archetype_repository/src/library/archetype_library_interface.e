@@ -44,12 +44,6 @@ feature -- Initialisation
 			-- outside library and attach it to the library for the duration of the session
 			create adhoc_source.make (Group_id_adhoc)
 			repository_key := a_repository_key
-
-			-- read in the library definition file
-			create library_definition_accessor.make_load (library_definition_file_path)
-			if attached library_definition_accessor.object as att_obj then
-				library_definition := att_obj
-			end
 		end
 
 	make_new (a_library_path, a_repository_key: STRING; remote_flag: BOOLEAN)
@@ -64,19 +58,25 @@ feature -- Initialisation
 			repository_key := a_repository_key
 
 			-- create library definition file
-			create library_definition_accessor.make (library_definition_file_path)
-			create library_definition.make_template (remote_flag)
-			library_definition_accessor.save (library_definition)
+			save_library_definition (create {ARCHETYPE_LIBRARY_DEFINITION}.make_template (remote_flag))
 		end
 
 feature -- Access
 
-	library_definition_accessor: ODIN_OBJECT_READER [ARCHETYPE_LIBRARY_DEFINITION]
-
 	library_definition: detachable ARCHETYPE_LIBRARY_DEFINITION
-		note
-			option: stable
-		attribute
+		require
+			has_library_path
+		do
+			if attached library_definition_cache as att_local_def then
+				Result := att_local_def
+			else
+				if not attached library_definition_file_access then
+					create library_definition_file_access.make_load (library_definition_file_path)
+				end
+				if attached library_definition_file_access.object as att_obj then
+					Result := att_obj
+				end
+			end
 		end
 
 	library_path: STRING
@@ -121,6 +121,12 @@ feature -- Status Report
 			Result := directory_exists (library_path)
 		end
 
+	has_library_path: BOOLEAN
+			-- rue if `library_path' has been set
+		do
+			Result := not library_path.is_empty
+		end
+
 	has_definition: BOOLEAN
 			-- True if the definition file contains a 'remote_copy' section
 		do
@@ -138,7 +144,7 @@ feature -- Validation
 	errors: ERROR_ACCUMULATOR
 			-- obtain any errors from definition file load
 		do
-			Result := library_definition_accessor.errors
+			Result := library_definition_file_access.errors
 		end
 
 feature {ARCHETYPE_LIBRARY_INTERFACES} -- Commands
@@ -146,10 +152,17 @@ feature {ARCHETYPE_LIBRARY_INTERFACES} -- Commands
 	reload_library_definition
 			-- reload definition file
 		do
-			library_definition_accessor.load
-			if attached library_definition_accessor.object as att_obj then
-				library_definition := att_obj
+			library_definition_file_access.load
+			library_definition_cache := Void
+		end
+
+	save_library_definition (a_def: ARCHETYPE_LIBRARY_DEFINITION)
+			-- save `a_def' to library definition file
+		do
+			if not attached library_definition_file_access then
+				create library_definition_file_access.make_load (library_definition_file_path)
 			end
+			library_definition_file_access.save (a_def)
 		end
 
 feature {SHARED_ARCHETYPE_LIBRARIES} -- Commands
@@ -161,6 +174,10 @@ feature {SHARED_ARCHETYPE_LIBRARIES} -- Commands
 			Result.populate
 		end
 
+feature {NONE} -- Implementation
+
+	library_definition_file_access: detachable ODIN_OBJECT_READER [ARCHETYPE_LIBRARY_DEFINITION]
+
+	library_definition_cache: detachable ARCHETYPE_LIBRARY_DEFINITION
+
 end
-
-

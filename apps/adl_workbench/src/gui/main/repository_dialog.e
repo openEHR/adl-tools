@@ -42,6 +42,13 @@ inherit
 			copy, default_create
 		end
 
+	EXTERNAL_TOOL_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature -- Definitions
 
 	Grid_display_name_col: INTEGER = 1
@@ -118,6 +125,7 @@ feature {NONE} -- Initialisation
 			create repo_dir_setter.make (get_text (ec_repository_dir_button_text), agent :STRING do Result := "" end, 0, 0)
 			repo_dir_setter.set_button_tooltip (get_text (ec_repository_dir_button_tooltip))
 			repo_dir_setter.set_button_icon (get_icon_pixmap ("tool/info"))
+			repo_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
 			repo_dir_setter.set_post_select_agent (agent on_add_repository)
 			ev_root_container.extend (repo_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (repo_dir_setter.ev_root_container)
@@ -200,7 +208,9 @@ feature -- Events
 	on_ok
 			-- Set shared settings from the dialog widgets.
 		do
-			if original_current_library_selected.is_empty and not archetype_library_interfaces.is_empty or else not archetype_library_interfaces.has (original_current_library_selected) then
+			if original_current_library_selected.is_empty and not archetype_library_interfaces.is_empty or else
+				not original_current_library_selected.is_empty and not archetype_library_interfaces.has (original_current_library_selected)
+			then
 				set_current_library_name (archetype_library_interfaces.keys.first)
 				current_library_changed := True
 			end
@@ -214,19 +224,15 @@ feature -- Events
 			hide
 		end
 
-	on_add_repository
+	on_add_repository (new_repo_dir: STRING)
 			-- add a new repository
-			-- Let the user browse for the directory where RM schemas are found.
-			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 			new_repo_dialog: EV_QUESTION_DIALOG
-			new_repo_dir: STRING
 		do
-			new_repo_dir := repo_dir_setter.data_control_text
-
 			-- if there is a repostory at this path, then see if it can be added
 			if archetype_repository_interfaces.valid_repository_path (new_repo_dir) then
+				set_last_user_selected_directory (new_repo_dir)
 				if archetype_repository_interfaces.valid_candidate_repository (new_repo_dir) then
 					ok_cancel_buttons.disable_sensitive
 					do_with_wait_cursor (Current,
@@ -243,13 +249,53 @@ feature -- Events
 					error_dialog.show_modal_to_window (Current)
 				end
 
-			-- see if the user wants to create a repository here, by creating a repository definition file
+			-- see if the user wants to create a new local repository here, by creating a repository definition file
 			elseif file_system.directory_exists (new_repo_dir) then
+				set_last_user_selected_directory (new_repo_dir)
 				create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<new_repo_dir>>),
 					<<agent on_create_new_repository, agent do end, agent do end>>)
 				new_repo_dialog.show_modal_to_window (Current)
 			else
 				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<new_repo_dir>>))
+				error_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	on_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
+			-- clone a new repository
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+			repo_name, repo_dir: STRING
+		do
+			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
+			repo_dir := file_system.pathname (repo_parent_dir, repo_name)
+
+			-- if there is a repostory at this path, then see if it can be added
+			if archetype_repository_interfaces.valid_clone_directory (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type) then
+				ok_cancel_buttons.disable_sensitive
+				do_with_wait_cursor (Current,
+					agent (a_dir, a_url, a_repo_type: STRING)
+						do
+							archetype_repository_interfaces.extend_create_local_from_remote (a_dir, a_url, a_repo_type)
+						end (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type)
+				)
+				if attached archetype_repository_interfaces.last_repository_interface as att_repo_if then
+					if attached att_repo_if.last_result as att_lr and then not att_lr.succeeded then
+						if att_lr.failed then
+							create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_lr.command_line, att_lr.stderr>>))
+						else
+							create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<att_lr.command_line>>))
+						end
+						error_dialog.show_modal_to_window (Current)
+					else
+						populate_grid
+						add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+					end
+				end
+				ok_cancel_buttons.enable_sensitive
+			else
+				create error_dialog.make_with_text (get_msg (ec_repository_clone_dir_invalid,
+					<<repo_parent_dir, a_rem_proxy.remote_url, repo_name>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -337,20 +383,10 @@ feature {NONE} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void)
 
 			-- column 3 - repository description
-			if attached a_rep_if.local_definition as att_rep_def then
-				col_text := att_rep_def.description
-			else
-				col_text := "(unknown)"
-			end
-			evx_grid.update_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, a_rep_if.repository_definition.description, Void, Void, Void)
 
 			-- column 4 - maintainer
-			if attached a_rep_if.local_definition as att_rep_def then
-				col_text := att_rep_def.maintainer
-			else
-				col_text := "(unknown)"
-			end
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, a_rep_if.repository_definition.maintainer, Void, Void, Void)
 
 			-- column 5 - validation
 			errors := a_rep_if.errors
@@ -367,7 +403,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- column 6 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, get_icon_pixmap ("tool/edit"))
+			evx_grid.update_last_row_label_col (Grid_edit_col, "", Void, Void, get_icon_pixmap ("tool/edit"))
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_repository_definition (a_grid_row, a_rep_if))
 			end
@@ -382,7 +418,7 @@ feature {NONE} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rem_proxy.remote_key, a_rem_proxy.remote_url, Repository_remote_proxy_color, get_icon_pixmap ("tool/" + a_rem_proxy.remote_type))
 
 			-- column 2 - repository status
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Void, get_icon_pixmap ("tool/tools"))
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Void, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_status_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_status_col, agent install_repository (a_grid_row, a_rem_proxy))
 			end
@@ -401,14 +437,29 @@ feature {NONE} -- Implementation
 		end
 
 	install_repository (a_grid_row: EV_GRID_ROW; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
+			-- find or create local repository corresponding to `a_rem_proxy'
 		local
 			repo_install_dialog: REPOSITORY_INSTALL_DIALOG
+			verify_dialog: EV_QUESTION_DIALOG
+			repo_name: STRING
 		do
+			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
 			create repo_install_dialog.make (a_rem_proxy.remote_url)
 			repo_install_dialog.show_modal_to_window (Current)
 
---			repo_install_dialog.local_directory
---			repo_install_dialog.user_requires_repository_clone
+			if not repo_install_dialog.local_directory.is_empty then
+				if not repo_install_dialog.user_requires_repository_clone then
+					on_add_repository (repo_install_dialog.local_directory)
+				else
+					create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text,
+						<<repo_name, a_rem_proxy.remote_url, repo_install_dialog.local_directory>>))
+					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+					verify_dialog.show_modal_to_window (Current)
+					if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+						on_clone_repository (repo_install_dialog.local_directory, a_rem_proxy)
+					end
+				end
+			end
 		end
 
 	populate_archetype_library_grid_row (a_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
@@ -425,17 +476,17 @@ feature {NONE} -- Implementation
 			if a_lib_if.is_remote then
 				col_icon := get_icon_pixmap ("tool/archetype_library_remote")
 				if attached a_lib_if.library_definition.remote as att_rem then
-					col_tooltip.append ("%N-------------%N")
-					col_tooltip.append ("Remote source:%N")
-					col_tooltip.append ("%TURL: " + att_rem.url + "%N")
-					col_tooltip.append ("%Tcustodian: " + att_rem.custodian)
+					col_tooltip.append (get_msg (ec_archetype_library_grid_name_col_tooltip, <<att_rem.url, att_rem.custodian>>))
 				end
 			else
 				col_icon := get_icon_pixmap ("tool/archetype_library")
 			end
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, col_tooltip, Void, col_icon)
 
-			-- column 2 - library dscription
+			-- column 2 - (blank)
+			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void)
+
+			-- column 3 - library dscription
 			if attached a_lib_if.library_definition as att_lib_def then
 				col_text := att_lib_def.description
 			else
@@ -443,7 +494,7 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
 
-			-- column 3 - maintainer
+			-- column 4 - maintainer
 			if attached a_lib_if.library_definition as att_lib_def then
 				col_text := att_lib_def.maintainer
 			else
@@ -451,7 +502,7 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
 
-			-- column 4 - validation
+			-- column 5 - validation
 			errors := a_lib_if.errors
 			if errors.has_errors then
 				col_icon := get_icon_pixmap ("tool/errors")
@@ -465,9 +516,8 @@ feature {NONE} -- Implementation
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_library_validation (a_lib_if))
 			end
 
-			-- column 5 - create edit button and add to row
-			col_icon := get_icon_pixmap ("tool/edit")
-			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, col_icon)
+			-- column 6 - create edit button and add to row
+			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, get_icon_pixmap ("tool/edit"))
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_library_definition (a_grid_row, a_lib_if))
 			end
@@ -482,13 +532,13 @@ feature {NONE} -- Actions
 			ed_proc: PROCESS
 			orig_time_stamp: INTEGER
 		do
-			orig_time_stamp := file_system.file_time_stamp (a_rep_if.local_definition_file_path)
+			orig_time_stamp := file_system.file_time_stamp (a_rep_if.repository_definition_file_path)
 			create pf
-			ed_proc := pf.process_launcher_with_command_line (text_editor_command + " %"" + a_rep_if.local_definition_file_path + "%"", Void)
+			ed_proc := pf.process_launcher_with_command_line (text_editor_command + " %"" + a_rep_if.repository_definition_file_path + "%"", Void)
 			ed_proc.launch
 			ed_proc.wait_for_exit
 
-			if file_system.file_time_stamp (a_rep_if.local_definition_file_path) > orig_time_stamp then
+			if file_system.file_time_stamp (a_rep_if.repository_definition_file_path) > orig_time_stamp then
 				a_rep_if.reload_repository_definition
 				populate_archetype_repository_grid_row (a_grid_row, a_rep_if)
 			end
@@ -634,11 +684,11 @@ feature {NONE} -- Actions
 					a_rep_if.reload_repository_definition
 					populate_grid
 				elseif att_res.failed then
-					create info_dialog.make_with_text ("Command " + att_res.command_line + " failed: " + att_res.stderr)
+					create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_res.command_line, att_res.stderr>>))
 					info_dialog.show_modal_to_window (Current)
 				end
 			else
-				create info_dialog.make_with_text (get_text (ec_external_command_did_not_execute))
+				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (Current)
 			end
 		end
