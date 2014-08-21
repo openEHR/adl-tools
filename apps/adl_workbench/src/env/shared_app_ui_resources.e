@@ -345,6 +345,23 @@ feature -- Application Switches
 			app_cfg.put_value ("/exec/app_version", a_ver)
 		end
 
+	last_user_selected_directory: STRING
+			-- most recently chosen directory, usually via a directory chooser control
+		do
+			Result := app_cfg.string_value ("/file_system/last_user_selected_directory")
+			if Result.is_empty then
+				Result := execution_environment.root_directory_name
+			end
+		end
+
+	set_last_user_selected_directory (a_path: STRING)
+			-- set the directory where archetypes are currently being opened and saved.
+		do
+			if not a_path.is_empty then
+				app_cfg.put_value ("/file_system/last_user_selected_directory", a_path)
+			end
+		end
+
 	current_work_directory: STRING
 			-- Directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
