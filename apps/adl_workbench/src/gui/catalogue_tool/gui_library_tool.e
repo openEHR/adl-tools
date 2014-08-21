@@ -376,7 +376,7 @@ feature {NONE} -- Implementation
 					if file.exists then
 						create question_dialog.make_with_text (get_msg (ec_file_exists_replace_question, <<file_system.basename (name)>>))
 						question_dialog.set_title (get_msg (ec_save_archetype_as_type, <<format.as_upper>>))
-						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text ("no_response")>>)
+						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 						ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
 					end

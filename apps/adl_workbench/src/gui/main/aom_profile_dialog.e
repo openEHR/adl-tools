@@ -148,7 +148,7 @@ feature -- Commands
 	reload
 			-- alow user reload after manual changes while correcting schemas
 		do
-			on_set_aom_profile_dir
+			on_set_aom_profile_dir (dir_setter.data_control_text)
 			aom_profiles_access.load_profiles
 			do_populate
 		end
@@ -164,7 +164,7 @@ feature -- Events
 			-- directory browse button (multiple times). We do it here because the user might have also set the
 			-- directory by directly typing in the directory text box (in which case there is no other event to
 			-- link this call to)
-			on_set_aom_profile_dir
+			on_set_aom_profile_dir (dir_setter.data_control_text)
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_aom_profile_dir) then
@@ -192,14 +192,12 @@ feature -- Events
 			end
 		end
 
-	on_set_aom_profile_dir
+	on_set_aom_profile_dir (new_dir: STRING)
 			-- Let the user browse for the directory where AOM profiles are found.
 			-- if a change is made, reload profiles immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			new_dir: STRING
 		do
-			new_dir := dir_setter.data_control_text
 			if not new_dir.same_string (last_populated_aom_profile_dir) and directory_exists (new_dir) then
 				ok_cancel_buttons.disable_sensitive
 				aom_profiles_access.initialise (new_dir)

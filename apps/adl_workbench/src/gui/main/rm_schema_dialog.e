@@ -178,7 +178,7 @@ feature -- Events
 			-- directory browse button (multiple times). We do it here because the user might have also set the
 			-- directory by directly typing in the directory text box (in which case there is no other event to
 			-- link this call to)
-			on_set_rm_schema_dir
+			on_set_rm_schema_dir (rm_dir_setter.data_control_text)
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_rm_schema_dir) then
@@ -207,14 +207,12 @@ feature -- Events
 			end
 		end
 
-	on_set_rm_schema_dir
+	on_set_rm_schema_dir (new_rm_dir: STRING)
 			-- Let the user browse for the directory where RM schemas are found.
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			new_rm_dir: STRING
 		do
-			new_rm_dir := rm_dir_setter.data_control_text
 			if not new_rm_dir.same_string (last_populated_rm_schema_dir) and directory_exists (new_rm_dir) then
 				ok_cancel_buttons.disable_sensitive
 				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
@@ -349,7 +347,7 @@ feature {NONE} -- Implementation
 			row.set_item (Grid_validated_col, gli)
 
 			-- column 4 - create edit button and add to row
-			create gli.make_with_text ("         ")
+			create gli.make_with_text ("")
 			gli.set_pixmap (get_icon_pixmap ("tool/edit"))
 			gli.select_actions.extend (agent do_edit_schema (a_schema_desc))
 			row.set_item (Grid_edit_col, gli)
