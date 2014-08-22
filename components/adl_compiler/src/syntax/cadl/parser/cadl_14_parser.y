@@ -117,8 +117,9 @@ create
 %type <SIBLING_ORDER> sibling_order
 %type <detachable MULTIPLICITY_INTERVAL> c_occurrences c_existence
 %type <MULTIPLICITY_INTERVAL> multiplicity existence
-%type <C_COMPLEX_OBJECT> c_complex_object_id c_complex_object_head
+%type <C_COMPLEX_OBJECT> c_complex_object c_complex_object_id c_complex_object_head
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
+%type <C_OBJECT> c_non_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 %type <C_ATTRIBUTE> c_attr_head
 
@@ -217,10 +218,10 @@ input: c_complex_object
 c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
 		{ 
 			debug ("ADL_parse")
-				io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+				io.put_string (indent + "POP OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "]%N") 
 				indent.remove_tail (1)
 			end
-			$$ := object_nodes.item
+			$$ := $1
 			object_nodes.remove
 		}
 	;
@@ -242,12 +243,6 @@ debug ("ADL_parse")
 	io.new_line
 	indent.append ("%T")
 end
-
-				-- put it under current attribute, unless it is the root object, in which case it will be returned
-				-- via the 'output' attribute of this parser
-				if not c_attrs.is_empty then
-					safe_put_c_attribute_child (c_attrs.item, $1)
-				end
 			else
 				abort_with_error (ec_VCORM, <<$1.rm_type_name, $1.path>>)
 			end
@@ -321,31 +316,47 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 
 ------------------------- node types -----------------------
 
-c_object: c_complex_object 
+c_object: c_non_primitive_object 
 		{
+			safe_put_c_attribute_child ($1)
 		}
-	| c_complex_object_proxy 
+	| sibling_order c_non_primitive_object 
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
-		}
-	| archetype_slot
-		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			$2.set_sibling_order ($1)
+			safe_put_c_attribute_child ($2)
 		}
 	| c_primitive_object
 		{
 			if attached {C_TERMINOLOGY_CODE} $1 as ctc and then ctc.constraint.is_equal (Missing_codes) then
 				-- ignore
 			else
-				safe_put_c_attribute_child (c_attrs.item, $1)
+				safe_put_c_attribute_child ($1)
 			end
+		}
+	| error		
+		{
+			abort_with_error (ec_SCCOG, Void)
+		}
+	;
+
+c_non_primitive_object: c_complex_object 
+		{
+			$$ := $1
+		}
+	| c_complex_object_proxy 
+		{
+			$$ := $1
+		}
+	| archetype_slot
+		{
+			$$ := $1
 		}
 --
 -- LEGACY ADL 1.4 Syntax
 --
 	| c_ordinal 
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			$$ := $1
 		}
 	| V_C_DV_QUANTITY
 		{
@@ -373,7 +384,7 @@ c_object: c_complex_object
 					compiler_billboard.binding_code_map.put (c_dv_q_prop_code, att_prop.code_string)
 				end
 			end
-			safe_put_c_attribute_child (c_attrs.item, last_c_dv_quantity_value.standard_equivalent (new_fake_node_id))
+			$$ := last_c_dv_quantity_value.standard_equivalent (new_fake_node_id)
 		}
 	| ERR_C_DV_QUANTITY
 		{
@@ -382,12 +393,7 @@ c_object: c_complex_object
 --
 -- END LEGACY ADL 1.4 Syntax
 --
-	| error		
-		{
-			abort_with_error (ec_SCCOG, Void)
-		}
 	;
-
 
 c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
 		{
@@ -2438,17 +2444,19 @@ feature {NONE} -- Implementation
 			create Result.default_create
 		end
 
-	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
+	safe_put_c_attribute_child (an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
 		require
-			Not_already_added: not an_attr.has_child (an_obj)
+			Not_already_added: not c_attrs.item.has_child (an_obj)
 		do
-			debug ("ADL_parse")
-				io.put_string (indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child (" + 
-						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
-			end
-			if check_c_attribute_child (an_attr, an_obj) then
-				c_attrs.item.put_child (an_obj)
+			if not c_attrs.is_empty then
+				debug ("ADL_parse")
+					io.put_string (indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child (" + 
+							an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
+				end
+				if check_c_attribute_child (c_attrs.item, an_obj) then
+					c_attrs.item.put_child (an_obj)
+				end
 			end
 		end
 

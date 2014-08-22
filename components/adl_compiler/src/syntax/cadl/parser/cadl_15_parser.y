@@ -202,20 +202,20 @@ input: c_complex_object
 c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
 		{ 
 			debug ("ADL_parse")
-				io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+				io.put_string (indent + "POP OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "]%N") 
 				indent.remove_tail (1)
 			end
-			$$ := object_nodes.item
+			$$ := $1
 			object_nodes.remove
 		}
 	| c_complex_object_head
 		{
 			-- ok in case where occurrences or node_id is being redefined in a specialised archetype or template
 			debug ("ADL_parse")
-				io.put_string (indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
+				io.put_string (indent + "POP OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "]%N") 
 				indent.remove_tail (1)
 			end
-			$$ := object_nodes.item
+			$$ := $1
 			object_nodes.remove
 		}
 	;
@@ -237,12 +237,6 @@ debug ("ADL_parse")
 	io.new_line
 	indent.append ("%T")
 end
-
-				-- put it under current attribute, unless it is the root object, in which case it will be returned
-				-- via the 'output' attribute of this parser
-				if not c_attrs.is_empty then
-					safe_put_c_attribute_child (c_attrs.item, $1)
-				end
 			else
 				abort_with_error (ec_VCORM, <<$1.rm_type_name, $1.path>>)
 			end
@@ -317,16 +311,16 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 
 c_object: c_non_primitive_object 
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			safe_put_c_attribute_child ($1)
 		}
 	| sibling_order c_non_primitive_object 
 		{
 			$2.set_sibling_order ($1)
-			safe_put_c_attribute_child (c_attrs.item, $2)
+			safe_put_c_attribute_child ($2)
 		}
 	| c_primitive_object
 		{
-			safe_put_c_attribute_child (c_attrs.item, $1)
+			safe_put_c_attribute_child ($1)
 		}
 	| error		
 		{
@@ -584,6 +578,7 @@ c_attribute_def: c_attribute
 
 c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK	
 		{
+			$$ := $1
 			debug ("ADL_parse")
 				io.put_string (indent + "POP ATTR_NODE " + c_attrs.item.rm_attribute_name + "%N") 
 				indent.remove_tail (1)
@@ -592,10 +587,12 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 		}
 	| c_attr_head -- ok if existence or cardinality is being changed in specialised archetype
 		{
+			$$ := $1
 			c_attrs.remove
 		}
 	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
+			$$ := $1
 			abort_with_error (ec_SCAS, Void)
 		}
 	;
@@ -2483,17 +2480,20 @@ feature {NONE} -- Implementation
 			create Result.default_create
 		end
 
-	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
+	safe_put_c_attribute_child (an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
 		require
-			Not_already_added: not an_attr.has_child (an_obj)
+			Not_already_added: not c_attrs.item.has_child (an_obj)
 		do
-			debug ("ADL_parse")
-				io.put_string (indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child (" + 
-						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
-			end
-			if check_c_attribute_child (an_attr, an_obj) then
-				c_attrs.item.put_child (an_obj)
+			if not c_attrs.is_empty then
+				debug ("ADL_parse")
+					io.put_string (indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child (" + 
+							an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
+				end
+
+				if check_c_attribute_child (c_attrs.item, an_obj) then
+					c_attrs.item.put_child (an_obj)
+				end
 			end
 		end
 
