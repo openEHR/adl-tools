@@ -224,39 +224,60 @@ feature -- Events
 			hide
 		end
 
-	on_add_repository (new_repo_dir: STRING)
+	on_add_repository (repo_dir: STRING)
 			-- add a new repository
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 			new_repo_dialog: EV_QUESTION_DIALOG
 		do
 			-- if there is a repostory at this path, then see if it can be added
-			if archetype_repository_interfaces.valid_repository_path (new_repo_dir) then
-				set_last_user_selected_directory (new_repo_dir)
-				if archetype_repository_interfaces.valid_candidate_repository (new_repo_dir) then
+			if archetype_repository_interfaces.valid_repository_path (repo_dir) then
+				set_last_user_selected_directory (repo_dir)
+				if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
 					ok_cancel_buttons.disable_sensitive
 					do_with_wait_cursor (Current,
 						agent (a_dir: STRING)
 							do
 								archetype_repository_interfaces.extend (a_dir)
-								populate_grid
-							end (new_repo_dir)
+							end (repo_dir)
 					)
-					add_repository_path_with_key (new_repo_dir, archetype_repository_interfaces.item (new_repo_dir).key)
+					if attached archetype_repository_interfaces.last_repository_interface as att_repo_if then
+						-- deal with result of clone attempt
+						if attached att_repo_if.last_result as att_lr then
+							if not att_lr.succeeded then
+								-- was tried and failed
+								if att_lr.failed then
+									create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_lr.command_line, att_lr.stderr>>))
+								-- did not run
+								else
+									create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<att_lr.command_line>>))
+								end
+								error_dialog.show_modal_to_window (Current)
+							else
+								populate_grid
+								add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+								create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<att_lr.command_line, att_lr.stdout>>))
+								error_dialog.show_modal_to_window (Current)
+							end
+						else
+							create error_dialog.make_with_text (get_text (ec_external_command_unknown_error))
+							error_dialog.show_modal_to_window (Current)
+						end
+					end
 					ok_cancel_buttons.enable_sensitive
 				else
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<new_repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+					create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 
 			-- see if the user wants to create a new local repository here, by creating a repository definition file
-			elseif file_system.directory_exists (new_repo_dir) then
-				set_last_user_selected_directory (new_repo_dir)
-				create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<new_repo_dir>>),
+			elseif file_system.directory_exists (repo_dir) then
+				set_last_user_selected_directory (repo_dir)
+				create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
 					<<agent on_create_new_repository, agent do end, agent do end>>)
 				new_repo_dialog.show_modal_to_window (Current)
 			else
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<new_repo_dir>>))
+				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -272,6 +293,7 @@ feature -- Events
 
 			-- if there is a repostory at this path, then see if it can be added
 			if archetype_repository_interfaces.valid_clone_directory (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type) then
+				set_last_user_selected_directory (repo_parent_dir)
 				ok_cancel_buttons.disable_sensitive
 				do_with_wait_cursor (Current,
 					agent (a_dir, a_url, a_repo_type: STRING)
@@ -280,16 +302,26 @@ feature -- Events
 						end (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type)
 				)
 				if attached archetype_repository_interfaces.last_repository_interface as att_repo_if then
-					if attached att_repo_if.last_result as att_lr and then not att_lr.succeeded then
-						if att_lr.failed then
-							create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_lr.command_line, att_lr.stderr>>))
+					-- deal with result of clone attempt
+					if attached att_repo_if.last_result as att_lr then
+						if not att_lr.succeeded then
+							-- was tried and failed
+							if att_lr.failed then
+								create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_lr.command_line, att_lr.stderr>>))
+							-- did not run
+							else
+								create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<att_lr.command_line>>))
+							end
+							error_dialog.show_modal_to_window (Current)
 						else
-							create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<att_lr.command_line>>))
+							populate_grid
+							add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+							create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<att_lr.command_line, att_lr.stdout>>))
+							error_dialog.show_modal_to_window (Current)
 						end
-						error_dialog.show_modal_to_window (Current)
 					else
-						populate_grid
-						add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+						create error_dialog.make_with_text (get_text (ec_external_command_unknown_error))
+						error_dialog.show_modal_to_window (Current)
 					end
 				end
 				ok_cancel_buttons.enable_sensitive

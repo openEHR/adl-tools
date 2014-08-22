@@ -77,8 +77,10 @@ templates = <
 		["repository_vcs_update"] = <"Update from origin">
 		["repository_svn_update"] = <"SVN update">
 
+		["external_command_unknown_error"] = <"Could not execute external command $1">
 		["external_command_did_not_execute"] = <"Could not execute external command $1">
-		["external_command_failed"] = <"External command '$1' failed; reason: $2">
+		["external_command_failed"] = <"External command '$1' failed;%N reason: $2">
+		["external_command_succeeded"] = <"External command '$1' ran; output:%N $2">
 
 		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
 

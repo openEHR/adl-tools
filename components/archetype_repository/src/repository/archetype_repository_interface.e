@@ -76,6 +76,7 @@ feature -- Initialisation
 		do
 			local_directory := a_local_dir
 			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
+			last_result := remote_access.last_result
 		ensure
 			has_remote_repository
 		end

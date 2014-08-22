@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (760)
+			create message_table.make (762)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -357,8 +357,10 @@ feature -- Initialisation
 			message_table.put ("Add new library", ec_repository_add_new_library)
 			message_table.put ("Update from origin", ec_repository_vcs_update)
 			message_table.put ("SVN update", ec_repository_svn_update)
+			message_table.put ("Could not execute external command $1", ec_external_command_unknown_error)
 			message_table.put ("Could not execute external command $1", ec_external_command_did_not_execute)
-			message_table.put ("External command '$1' failed; reason: $2", ec_external_command_failed)
+			message_table.put ("External command '$1' failed;%N reason: $2", ec_external_command_failed)
+			message_table.put ("External command '$1' ran; output:%N $2", ec_external_command_succeeded)
 			message_table.put ("Invalid library path $1; must be at or below repository root, and not below or above any other library root", ec_repository_invalid_library_path)
 			message_table.put ("Installed", ec_repository_status_installed)
 			message_table.put ("Install", ec_repository_status_install)
