@@ -120,7 +120,7 @@ feature -- Commands
 					-- repository & library info
 					io.put_string ("%N" + get_text (ec_repos_info_text))
 					across archetype_repository_interfaces as rep_interfaces_csr loop
-						io.put_string ("%T" + rep_interfaces_csr.item.repository_directory + "%N")
+						io.put_string ("%T" + rep_interfaces_csr.item.local_directory + "%N")
 						across rep_interfaces_csr.item.library_interfaces as lib_interfaces_csr loop
 							io.put_string ("%T%T" + lib_interfaces_csr.item.library_path + "%N")
 						end
