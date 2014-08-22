@@ -31,6 +31,7 @@ templates = <
 		["edit_source_schema"] = <"Edit source schema">
 		["expand_packages"] = <"Expand packages">
 		["export_as_xml"] = <"Export as XML...">
+		["tree_controls"] = <"Tree control">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["remove_library_cfg"] = <"Removing invalid configuration (error: $1)">

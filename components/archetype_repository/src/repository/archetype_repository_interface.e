@@ -63,7 +63,6 @@ feature -- Initialisation
 				remote_access := att_if
 			end
 			remote_access.initialise_checkout_from_remote (a_local_parent_dir, a_remote_url)
-			last_result := remote_access.last_result
 			local_directory := remote_access.local_repository_directory
 		ensure
 			has_remote_repository
@@ -76,7 +75,6 @@ feature -- Initialisation
 		do
 			local_directory := a_local_dir
 			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
-			last_result := remote_access.last_result
 		ensure
 			has_remote_repository
 		end
@@ -160,9 +158,6 @@ feature -- Access
 			end
 		end
 
-	last_result: detachable PROCESS_RESULT
-			-- result of last call to an external command, i.e. in `remote_access'
-
 feature -- Status Report
 
 	has_local_directory: BOOLEAN
@@ -241,7 +236,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_update
-				last_result := att_rm_acc.last_result
 			end
 		end
 

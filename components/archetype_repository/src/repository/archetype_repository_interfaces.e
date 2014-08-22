@@ -176,7 +176,7 @@ feature -- Commands
 			Valid_repo_clone_directory: valid_clone_directory (a_parent_dir, a_repository_url, a_repo_type)
 		do
 			create last_repository_interface.make_create_local_from_remote (a_parent_dir, a_repository_url, a_repo_type)
-			if attached last_repository_interface.last_result as att_res and then att_res.succeeded then
+			if last_command_succeeded then
 				last_repository_interface.populate_libraries
 				repositories.force (last_repository_interface, last_repository_interface.local_directory)
 			end

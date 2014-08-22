@@ -241,29 +241,16 @@ feature -- Events
 								archetype_repository_interfaces.extend (a_dir)
 							end (repo_dir)
 					)
-					if attached archetype_repository_interfaces.last_repository_interface as att_repo_if then
-						-- deal with result of clone attempt
-						if attached att_repo_if.last_result as att_lr then
-							if not att_lr.succeeded then
-								-- was tried and failed
-								if att_lr.failed then
-									create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_lr.command_line, att_lr.stderr>>))
-								-- did not run
-								else
-									create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<att_lr.command_line>>))
-								end
-								error_dialog.show_modal_to_window (Current)
-							else
-								populate_grid
-								add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
-								create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<att_lr.command_line, att_lr.stdout>>))
-								error_dialog.show_modal_to_window (Current)
-							end
-						else
-							create error_dialog.make_with_text (get_text (ec_external_command_unknown_error))
-							error_dialog.show_modal_to_window (Current)
-						end
+					if last_command_result.succeeded then
+						populate_grid
+						add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+						create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<last_command_result.command_line, last_command_result.stdout>>))
+					elseif last_command_result.failed then
+						create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+					else
+						create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 					end
+					error_dialog.show_modal_to_window (Current)
 					ok_cancel_buttons.enable_sensitive
 				else
 					create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
@@ -301,29 +288,18 @@ feature -- Events
 							archetype_repository_interfaces.extend_create_local_from_remote (a_dir, a_url, a_repo_type)
 						end (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type)
 				)
-				if attached archetype_repository_interfaces.last_repository_interface as att_repo_if then
-					-- deal with result of clone attempt
-					if attached att_repo_if.last_result as att_lr then
-						if not att_lr.succeeded then
-							-- was tried and failed
-							if att_lr.failed then
-								create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_lr.command_line, att_lr.stderr>>))
-							-- did not run
-							else
-								create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<att_lr.command_line>>))
-							end
-							error_dialog.show_modal_to_window (Current)
-						else
-							populate_grid
-							add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
-							create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<att_lr.command_line, att_lr.stdout>>))
-							error_dialog.show_modal_to_window (Current)
-						end
-					else
-						create error_dialog.make_with_text (get_text (ec_external_command_unknown_error))
-						error_dialog.show_modal_to_window (Current)
-					end
+				if last_command_result.succeeded then
+					populate_grid
+					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+					create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<last_command_result.command_line, last_command_result.stdout>>))
+				elseif last_command_result.failed then
+					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+					error_dialog.show_modal_to_window (Current)
+				else
+					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+					error_dialog.show_modal_to_window (Current)
 				end
+				error_dialog.show_modal_to_window (Current)
 				ok_cancel_buttons.enable_sensitive
 			else
 				create error_dialog.make_with_text (get_msg (ec_repository_clone_dir_invalid,
@@ -393,7 +369,6 @@ feature {NONE} -- Implementation
 	populate_archetype_repository_grid_row (a_grid_row: EV_GRID_ROW; a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- first time populate of repository grid row
 		local
-			col_text: STRING
 			col_icon: detachable EV_PIXMAP
 			errors: ERROR_ACCUMULATOR
 			tooltip: STRING
@@ -709,16 +684,14 @@ feature {NONE} -- Actions
 			info_dialog: EV_INFORMATION_DIALOG
 		do
 			a_rep_if.update_from_remote
-			if attached a_rep_if.last_result as att_res then
-				if att_res.succeeded then
-					create info_dialog.make_with_text (att_res.stdout)
-					info_dialog.show_modal_to_window (Current)
-					a_rep_if.reload_repository_definition
-					populate_grid
-				elseif att_res.failed then
-					create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<att_res.command_line, att_res.stderr>>))
-					info_dialog.show_modal_to_window (Current)
-				end
+			if last_command_result.succeeded then
+				create info_dialog.make_with_text (last_command_result.stdout)
+				info_dialog.show_modal_to_window (Current)
+				a_rep_if.reload_repository_definition
+				populate_grid
+			elseif last_command_result.failed then
+				create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+				info_dialog.show_modal_to_window (Current)
 			else
 				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (Current)
