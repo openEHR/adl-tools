@@ -388,6 +388,7 @@ feature {NONE} -- Implementation
 		end
 
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
+			-- handler for any button, which causes a selection of the node
 		do
 			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay  (aca)
@@ -398,6 +399,7 @@ feature {NONE} -- Implementation
 		end
 
 	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
+			-- right-click handler
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				if attached an_ev_grid_item then
@@ -405,6 +407,8 @@ feature {NONE} -- Implementation
 						build_archetype_node_context_menu (aca)
 					elseif attached {ARCH_LIB_CLASS_NODE} an_ev_grid_item.row.data as accn then
 						build_class_node_context_menu (accn)
+					else
+						build_default_context_menu
 					end
 				end
 			end
@@ -414,7 +418,7 @@ feature {NONE} -- Implementation
 	build_class_node_context_menu (accn: ARCH_LIB_CLASS_NODE)
 			-- creates the context menu for a right click action for an ARCH_CAT_CLASS_NODE node
 		local
-			menu: EV_MENU
+			menu, tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			create menu
@@ -438,6 +442,11 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_msg (ec_create_new_archetype, Void), agent create_new_non_specialised_archetype (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
+
+			-- add in tree controls
+			create tree_menu.make_with_text (get_text (ec_tree_controls))
+			menu.extend (tree_menu)
+			context_menu_add_tree_controls (tree_menu)
 
 			menu.show
 		end

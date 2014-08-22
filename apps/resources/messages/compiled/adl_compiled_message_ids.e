@@ -305,6 +305,7 @@ feature -- Definitions
 		ec_edit_source_schema: STRING = "edit_source_schema"
 		ec_expand_packages: STRING = "expand_packages"
 		ec_export_as_xml: STRING = "export_as_xml"
+		ec_tree_controls: STRING = "tree_controls"
 		ec_remove_library_cfg: STRING = "remove_library_cfg"
 		ec_library_cfg_error: STRING = "library_cfg_error"
 		ec_invalid_library_cfg: STRING = "invalid_library_cfg"

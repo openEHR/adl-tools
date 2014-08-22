@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (762)
+			create message_table.make (763)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -320,6 +320,7 @@ feature -- Initialisation
 			message_table.put ("Edit source schema", ec_edit_source_schema)
 			message_table.put ("Expand packages", ec_expand_packages)
 			message_table.put ("Export as XML...", ec_export_as_xml)
+			message_table.put ("Tree control", ec_tree_controls)
 			message_table.put ("Removing invalid configuration (error: $1)", ec_remove_library_cfg)
 			message_table.put ("Library error: $1", ec_library_cfg_error)
 			message_table.put ("Configuration $1 not known in library configurations", ec_invalid_library_cfg)

@@ -287,7 +287,7 @@ feature {NONE} -- Implementation
 	schema_node_handler (ev_ti: EV_GRID_ROW; x,y, button: INTEGER)
 			-- dynamically initializes the context menu for this tree
 		local
-			menu: EV_MENU
+			menu, tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
@@ -301,15 +301,6 @@ feature {NONE} -- Implementation
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
-				create an_mi.make_with_text_and_action (get_text (ec_expand_button_expand_text), agent schema_expand_all (ev_ti))
-		    	menu.extend (an_mi)
-
-				create an_mi.make_with_text_and_action (get_text (ec_expand_packages), agent schema_expand_packages (ev_ti))
-		    	menu.extend (an_mi)
-
-				create an_mi.make_with_text_and_action (get_text (ec_expand_button_collapse_text), agent schema_collapse (ev_ti))
-		    	menu.extend (an_mi)
-
 				create an_mi.make_with_text_and_action (get_text (ec_edit_source_schema), agent do_edit_schema (bmm_sch.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
@@ -317,6 +308,18 @@ feature {NONE} -- Implementation
 				create an_mi.make_with_text_and_action (get_text (ec_export_as_xml), agent do_export_as_xml (bmm_sch.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
 				menu.extend (an_mi)
+
+				-- tree controls
+				create tree_menu.make_with_text (get_text (ec_tree_controls))
+				menu.extend (tree_menu)
+				create an_mi.make_with_text_and_action (get_text (ec_expand_button_expand_text), agent schema_expand_all (ev_ti))
+		    	tree_menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (get_text (ec_expand_packages), agent schema_expand_packages (ev_ti))
+		    	tree_menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (get_text (ec_expand_button_collapse_text), agent schema_collapse (ev_ti))
+		    	tree_menu.extend (an_mi)
 
 				menu.show
 		    end

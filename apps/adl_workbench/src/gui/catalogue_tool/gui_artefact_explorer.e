@@ -30,6 +30,8 @@ feature {NONE} -- Initialisation
   			gui_semantic_grid.ev_grid.set_minimum_width (100)
   			gui_semantic_grid.ev_grid.hide_header
 
+  			create gui_semantic_grid_tree_control.make (gui_semantic_grid)
+
 			-- set events
 			gui_semantic_grid.ev_grid.pointer_button_press_item_actions.extend (agent grid_item_event_handler)
 			gui_semantic_grid.ev_grid.item_select_actions.extend (agent grid_item_select_handler)
@@ -43,6 +45,9 @@ feature -- Access
 
 	gui_semantic_grid: EVX_GRID
 			-- grid control for view of archetypes based on RM types & archetype ids
+
+	gui_semantic_grid_tree_control: EVX_TREE_CONTROL_GRID
+			-- tree actions controller
 
 feature -- Commands
 
@@ -143,20 +148,20 @@ feature {NONE} -- Implementation
 	build_archetype_node_context_menu (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		local
-			menu: EV_MENU
+			menu, tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			create menu
-			create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_archetype_in_active_tool (aca))
+			create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_archetype_in_active_tool (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 	    	menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_display_in_new_tab, Void), agent display_archetype_in_new_tool (aca))
+			create an_mi.make_with_text_and_action (get_text (ec_display_in_new_tab), agent display_archetype_in_new_tool (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
 			if aca.is_valid and not gui_agents.archetype_has_editor_agent.item ([aca]) then -- only offer editor if there is not already one running for this archetype
-				create an_mi.make_with_text_and_action (get_msg (ec_edit, Void), agent edit_archetype_in_new_tool (aca))
+				create an_mi.make_with_text_and_action (get_text (ec_edit), agent edit_archetype_in_new_tool (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
 				menu.extend (an_mi)
 			end
@@ -197,7 +202,40 @@ feature {NONE} -- Implementation
 			)
 			menu.extend (an_mi)
 
+			-- add in tree controls
+			create tree_menu.make_with_text (get_text (ec_tree_controls))
+			menu.extend (tree_menu)
+			context_menu_add_tree_controls (tree_menu)
+
 			menu.show
+		end
+
+	build_default_context_menu
+			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		local
+			menu: EV_MENU
+		do
+			create menu
+
+			-- add in tree controls
+			context_menu_add_tree_controls (menu)
+
+			menu.show
+		end
+
+	context_menu_add_tree_controls (a_menu: EV_MENU)
+			-- add tree expand, collapse, grow, shrink controls
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			create an_mi.make_with_text_and_action (get_text (ec_expand_complete_button_text), agent do gui_semantic_grid_tree_control.expand_all end)
+			a_menu.extend (an_mi)
+			create an_mi.make_with_text_and_action (get_text (ec_collapse_complete_button_text), agent do gui_semantic_grid_tree_control.collapse_all end)
+			a_menu.extend (an_mi)
+			create an_mi.make_with_text_and_action (get_text (ec_expand_one_level_button_text), agent do gui_semantic_grid_tree_control.expand_one_level end)
+			a_menu.extend (an_mi)
+			create an_mi.make_with_text_and_action (get_text (ec_collapse_one_level_button_text), agent do gui_semantic_grid_tree_control.collapse_one_level end)
+			a_menu.extend (an_mi)
 		end
 
 	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_EDITABLE)
