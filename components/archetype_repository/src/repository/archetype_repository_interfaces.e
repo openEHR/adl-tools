@@ -101,7 +101,7 @@ feature -- Status Report
 				else
 					across repositories as repos_csr loop
 						if repos_csr.item.key.is_equal (arch_rep_if.key) then
-							last_duplicate_key_path := repos_csr.item.local_directory
+							last_duplicate_key_path.append (repos_csr.item.local_directory)
 						end
 					end
 				end

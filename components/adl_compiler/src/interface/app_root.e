@@ -155,7 +155,7 @@ feature -- Initialisation
 				-- first of all check for broken repositories and get rid of them
 				create dead_repos.make (0)
 				across repositories_table as repos_csr loop
-					if not directory_exists (repos_csr.item) then
+					if repos_csr.item.is_empty or else not directory_exists (repos_csr.item) then
 						dead_repos.extend (repos_csr.key)
 					end
 				end
