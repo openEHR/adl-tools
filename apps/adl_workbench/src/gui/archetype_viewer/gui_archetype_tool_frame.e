@@ -170,8 +170,11 @@ feature -- Events
 				-- do anything required when tool becomes visible again
 				arch_tool.on_selected
 
-				-- remember the tab
-				set_default_tool_tab (tool_tab_text_to_id (ev_notebook.item_tab (att_sel_item).text))
+				-- remember the tab, unless it's the error tab and the archetype is invalid, which means it was
+				-- automatically chosen
+				if source.is_valid then
+					set_default_tool_tab (tool_tab_text_to_id (ev_notebook.item_tab (att_sel_item).text))
+				end
 
 				-- update content if out of date in any way
 				if arch_tool.can_populate (src) and then tool_populate_required (arch_tool) then
