@@ -347,14 +347,14 @@ feature {NONE} -- Implementation
 			row.set_item (Grid_validated_col, gli)
 
 			-- column 4 - create edit button and add to row
-			create gli.make_with_text ("")
-			gli.set_pixmap (get_icon_pixmap ("tool/edit"))
+			create gli.make_with_text (get_text (ec_edit))
+			gli.set_foreground_color (Ev_grid_text_link_colour)
 			gli.select_actions.extend (agent do_edit_schema (a_schema_desc))
 			row.set_item (Grid_edit_col, gli)
 
 			-- column 5 - create XML export button and add to row
-			create gli.make_with_text ("         ")
-			gli.set_pixmap (get_icon_pixmap ("tool/xml"))
+			create gli.make_with_text (get_text (ec_export_xml))
+			gli.set_foreground_color (Ev_grid_text_link_colour)
 			gli.select_actions.extend (agent do_export_schema (a_schema_desc))
 			row.set_item (Grid_xml_export_col, gli)
 
