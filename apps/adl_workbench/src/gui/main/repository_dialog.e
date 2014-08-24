@@ -259,10 +259,15 @@ feature -- Events
 
 			-- see if the user wants to create a new local repository here, by creating a repository definition file
 			elseif file_system.directory_exists (repo_dir) then
-				set_last_user_selected_directory (repo_dir)
-				create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
-					<<agent on_create_new_repository, agent do end, agent do end>>)
-				new_repo_dialog.show_modal_to_window (Current)
+				if archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
+					set_last_user_selected_directory (repo_dir)
+					create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
+						<<agent on_create_new_repository, agent do end, agent do end>>)
+					new_repo_dialog.show_modal_to_window (Current)
+				else
+					create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
+					error_dialog.show_modal_to_window (Current)
+				end
 			else
 				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
 				error_dialog.show_modal_to_window (Current)
@@ -410,7 +415,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- column 6 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, "", Void, Void, get_icon_pixmap ("tool/edit"))
+			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_repository_definition (a_grid_row, a_rep_if))
 			end
@@ -425,7 +430,7 @@ feature {NONE} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rem_proxy.remote_key, a_rem_proxy.remote_url, Repository_remote_proxy_color, get_icon_pixmap ("tool/" + a_rem_proxy.remote_type))
 
 			-- column 2 - repository status
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_status_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_status_col, agent install_repository (a_grid_row, a_rem_proxy))
 			end
@@ -524,7 +529,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- column 6 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, "         ", Void, Void, get_icon_pixmap ("tool/edit"))
+			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_library_definition (a_grid_row, a_lib_if))
 			end

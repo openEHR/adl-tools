@@ -292,6 +292,13 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
 
+	Ev_grid_text_link_colour: EV_COLOR
+			-- foreground colour for links in EV_GRID
+			-- BLUE
+		once
+			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
+		end
+
 	rm_type_pixmap_key (a_type_name, an_rm_publisher, an_rm_closure: STRING): STRING
 			-- generate an RM class pixmap key based on RM publisher and possibly closure (model) name;
 			-- Return empty string if not found

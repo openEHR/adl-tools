@@ -70,13 +70,13 @@ feature -- Initialisation
 
 	make_local (a_local_dir: STRING)
 			-- make with an existing local directory; determine remote from local copy
-		require
-			is_checkout_area (a_local_dir)
 		do
 			local_directory := a_local_dir
-			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
+			if is_checkout_area (a_local_dir) then
+				remote_access := create_vcs_tool_interface_from_checkout (local_directory)
+			end
 		ensure
-			has_remote_repository
+			is_checkout_area (a_local_dir) implies has_remote_repository
 		end
 
 	make_create_local_only (a_local_dir: STRING)

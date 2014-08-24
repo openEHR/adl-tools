@@ -31,6 +31,7 @@ templates = <
 		["edit_source_schema"] = <"Edit source schema">
 		["expand_packages"] = <"Expand packages">
 		["export_as_xml"] = <"Export as XML...">
+		["export_xml"] = <"Export as XML">
 		["tree_controls"] = <"Tree control">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
@@ -64,6 +65,7 @@ templates = <
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
 		["repository_clone_dir_invalid"] = <"Can't clone repo at URL $1 to directory $2 because there is already a non-empty sub-directory $3">
 		["repository_dir_contains_duplicate"] = <"Directory $1 contains a copy of repository at $2 (duplicate Git or SVN checkout?)">
+		["repository_dir_in_existing_path"] = <"Directory $1 is either a parent or child path of an existing repository">
 		["repository_dialog_title"] = <"Repositories and contained libraries">
 		["repository_dialog_header_label"] = <"'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.">
 		["repository_grid_status_col_title"] = <"Status">

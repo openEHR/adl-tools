@@ -84,6 +84,19 @@ feature -- Status Report
 				not repositories.has (a_path)
 		end
 
+	valid_new_repository_path (a_path: STRING): BOOLEAN
+			-- True if a new repository can be established at `a_path'. This will fail if:
+			--	`a_path' doesn't exist OR
+			--	`a_path' is a parent or child path of any other installed repository path
+			--	`a_path' is a parent or child of any other repository that isn't yet installed (determined by checking for _repo.idx control files)
+		do
+			Result := not file_system.file_exists (file_system.pathname (a_path, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name)) and
+				not across repositories as repos_csr some
+						file_system.is_subpathname (repos_csr.key, a_path) or
+						file_system.is_subpathname (a_path, repos_csr.key)
+					end
+		end
+
 	valid_candidate_repository (a_path: STRING): BOOLEAN
 			-- Check if `a_repository_path' is a valid existing repository that can be loaded.
 			-- True if:

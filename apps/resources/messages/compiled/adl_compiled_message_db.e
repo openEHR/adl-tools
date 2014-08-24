@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (763)
+			create message_table.make (765)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -320,6 +320,7 @@ feature -- Initialisation
 			message_table.put ("Edit source schema", ec_edit_source_schema)
 			message_table.put ("Expand packages", ec_expand_packages)
 			message_table.put ("Export as XML...", ec_export_as_xml)
+			message_table.put ("Export as XML", ec_export_xml)
 			message_table.put ("Tree control", ec_tree_controls)
 			message_table.put ("Removing invalid configuration (error: $1)", ec_remove_library_cfg)
 			message_table.put ("Library error: $1", ec_library_cfg_error)
@@ -346,6 +347,7 @@ feature -- Initialisation
 			message_table.put ("Directory $1 either doesn't exist, or already configured as a repository", ec_repository_dir_invalid)
 			message_table.put ("Can't clone repo at URL $1 to directory $2 because there is already a non-empty sub-directory $3", ec_repository_clone_dir_invalid)
 			message_table.put ("Directory $1 contains a copy of repository at $2 (duplicate Git or SVN checkout?)", ec_repository_dir_contains_duplicate)
+			message_table.put ("Directory $1 is either a parent or child path of an existing repository", ec_repository_dir_in_existing_path)
 			message_table.put ("Repositories and contained libraries", ec_repository_dialog_title)
 			message_table.put ("'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.", ec_repository_dialog_header_label)
 			message_table.put ("Status", ec_repository_grid_status_col_title)
