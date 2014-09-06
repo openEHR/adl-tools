@@ -584,6 +584,9 @@ templates = <
 		["saved_converted_msg"] = <"Saved ADL 1.5.1 converted output into $1">
 		["saved_source_msg"] = <"Wrote source to $1">
 		["saved_14_source_msg"] = <"Wrote ADL 1.4 source to $1">
+
+		["symbolic_text"] = <"Symbolic form">
+		["symbolic_text_tooltip"] = <"Show text using symbols rather than text rendering">
 		
 		-- GUI_SERIALISATION_CONTROL
 		["flatten_with_rm_cb_text"] = <"Include RM">

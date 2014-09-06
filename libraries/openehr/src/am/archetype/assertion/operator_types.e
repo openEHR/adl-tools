@@ -322,30 +322,110 @@ feature -- Access
 			Result.put(op_exp, "^")
 		end
 
---	operator_glyphs: HASH_TABLE [STRING_32, INTEGER]
---			-- graphic symbols of operators, keyed by value
---		once
---			create Result.make(0)
---			Result.put("=", op_eq)
---			Result.put({STRING_32} "%/0x2260/", op_ne)		-- U+2260
---			Result.put({STRING_32} "%/0x2264/", op_le)		-- U+2264
---			Result.put("<", op_lt)
---			Result.put({STRING_32} "%/0x2265/", op_ge)		-- U+2265
---			Result.put(">", op_gt)
---			Result.put({STRING_32} "%/0x2208/", op_matches) -- U+2208
---			Result.put({STRING_32} "%/0x00AC/", op_not)	-- U+00AC
---			Result.put({STRING_32} "%/0x2227/", op_and)	-- U+2227
---			Result.put({STRING_32} "%/0x2228/", op_or)		-- U+2228
---			Result.put({STRING_32} "%/0x22BB/", op_xor)	-- U+22BB
---			Result.put({STRING_32} "%/0x21D2/", op_implies) -- U+21D2
---			Result.put({STRING_32} "%/0x2200/", op_for_all) -- U+2200
---			Result.put({STRING_32} "%/0x2203/", op_exists) -- U+2203
---			Result.put("+", op_plus)
---			Result.put("-", op_minus)
---			Result.put("*", op_multiply)
---			Result.put("/", op_divide)
---			Result.put("^", op_exp)
---		end
+	operator_glyph (an_op: INTEGER): STRING
+		require
+			valid_operator (an_op)
+		do
+			check attached operator_glyphs.item (an_op) as sym then
+				Result := sym
+			end
+		end
+
+	operator_glyphs: HASH_TABLE [STRING, INTEGER]
+			-- graphic symbols of operators as UTF-8 strings, keyed by value
+		local
+			sym: STRING
+		once
+			create Result.make(0)
+			Result.put("=", op_eq)
+
+			-- not equal U+2260; in UTF-8 = E289A0
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x89/')
+			sym.append_character ('%/0xA0/')
+			Result.put(sym, op_ne)
+
+			-- less than or equal U+2264; in UTF-8 = E289A4
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x89/')
+			sym.append_character ('%/0xA4/')
+			Result.put(sym, op_le)
+
+			Result.put("<", op_lt)
+
+			-- greater than or equal U+2265; in UTF-8 = E289A5
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x89/')
+			sym.append_character ('%/0xA5/')
+			Result.put(sym, op_ge)
+
+			Result.put(">", op_gt)
+
+			-- is in (greek eta) U+2208; in UTF-8 = E28888
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x88/')
+			sym.append_character ('%/0x88/')
+			Result.put(sym, op_matches)
+
+			-- not U+00AC; in UTF-8 = Exxxx
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x88/')
+			sym.append_character ('%/0x88/')
+			Result.put(sym, op_not)
+
+			-- and U+2227; in UTF-8 = E288A7
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x88/')
+			sym.append_character ('%/0xA7/')
+			Result.put(sym, op_and)
+
+			-- or U+2228; in UTF-8 = E288A8
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x88/')
+			sym.append_character ('%/0xA8/')
+			Result.put(sym, op_or)
+
+			-- xor U+22BB; in UTF-8 = E28ABB
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x8A/')
+			sym.append_character ('%/0xBB/')
+			Result.put(sym, op_xor)
+
+			-- implies U+21D2; in UTF-8 = E28792
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x87/')
+			sym.append_character ('%/0x92/')
+			Result.put(sym, op_implies)
+
+			-- for all U+2200; in UTF-8 = E28880
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x88/')
+			sym.append_character ('%/0x80/')
+			Result.put(sym, op_for_all)
+
+			-- there exists U+2203; in UTF-8 = E28883
+			create sym.make_empty
+			sym.append_character ('%/0xE2/')
+			sym.append_character ('%/0x88/')
+			sym.append_character ('%/0x83/')
+			Result.put(sym, op_exists)
+
+			Result.put("+", op_plus)
+			Result.put("-", op_minus)
+			Result.put("*", op_multiply)
+			Result.put("/", op_divide)
+			Result.put("^", op_exp)
+		end
 
 	operator_values: HASH_TABLE [INTEGER, STRING]
 			-- english names of operators, keyed by value

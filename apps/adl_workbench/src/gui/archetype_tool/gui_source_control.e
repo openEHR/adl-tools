@@ -16,6 +16,11 @@ inherit
 			enable_edit, disable_edit
 		end
 
+	OPERATOR_TYPES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -51,6 +56,7 @@ feature {NONE}-- Initialization
 			create evx_adl_151_serialised_editor.make (agent adl_151_serialised_text)
 			ev_root_container.extend (evx_adl_151_serialised_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_151_serialised_editor.ev_root_container, get_text (ec_adl_151_serialised_tab_text))
+			evx_adl_151_serialised_editor.set_text_filter (get_text (ec_symbolic_text), get_text (ec_symbolic_text_tooltip), agent symbolic_text)
 			evx_adl_151_serialised_editor.add_button (Void, Void, get_text (ec_save_151_serialised_button_text), get_text (ec_save_151_serialised_button_tooltip), agent save_151_serialised_source, Void)
 			gui_controls.extend (evx_adl_151_serialised_editor)
 
@@ -250,6 +256,57 @@ feature {NONE} -- Implementation
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
+			end
+		end
+
+	symbolic_text (raw_text: STRING): STRING
+			-- convert text rendering of symbols e.g. 'matches' to UTF-8 characters
+		local
+			loc_text, loc_matches, sym_len, text_len, csr: INTEGER
+			sym, utf8_sym: STRING
+			test_chr: CHARACTER
+			paren_matched, no_match: BOOLEAN
+		do
+			create Result.make (raw_text.count)
+
+			-- perform 'matches' substitution
+			loc_text := 1
+			text_len := raw_text.count
+			sym := operator_symbol (op_matches)
+			sym_len := sym.count
+			utf8_sym := operator_glyph (op_matches)
+			from loc_matches := 1 until loc_matches = 0 or else loc_matches > text_len loop
+				loc_matches := raw_text.substring_index (sym, loc_matches)
+				if loc_matches /= 0 then
+					-- now read ahead to see if this instance of 'matches' is a keyword; check by
+					-- testing for whitespace followed by '{'
+					paren_matched := False
+					no_match := False
+					from csr := loc_matches + sym_len until paren_matched or no_match loop
+						test_chr := raw_text.item (csr)
+						if test_chr = ' ' or test_chr = '%T' or test_chr = '%N' or test_chr = '%R' then
+							csr := csr + 1
+						elseif test_chr = '{' then
+							paren_matched := True
+						else
+							no_match := True
+						end
+					end
+					if paren_matched then
+						Result.append (raw_text.substring (loc_text, loc_matches - 1))
+						Result.append (utf8_sym)
+						loc_text := loc_matches + sym_len
+					else
+						Result.append (raw_text.substring (loc_text, csr))
+						loc_text := csr + 1
+					end
+					loc_matches := loc_text
+				end
+			end
+
+			-- remaining part of text after last 'matches'
+			if loc_text < text_len then
+				Result.append (raw_text.substring (loc_text, text_len))
 			end
 		end
 
