@@ -202,7 +202,6 @@ feature {NONE} -- Implementation
 			-- creates the context menu for a right click action for class node
 		local
 			menu: EV_MENU
-			bmm_class_def: BMM_CLASS
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS} eti.data as bmm_class then
 				create menu
