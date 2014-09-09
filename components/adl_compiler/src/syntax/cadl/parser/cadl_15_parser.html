@@ -238,16 +238,16 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_attribute">c_attribute</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+&nbsp; <span class="rhs_variable"><a href="#c_attribute_head">c_attribute_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_attribute_values">c_attribute_values</a> </span><span class="token">SYM_END_CBLOCK </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span></div>
+| <span class="rhs_variable"><a href="#c_attribute_head">c_attribute_head</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_attr_head">c_attr_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="token">error </span><span class="token">SYM_END_CBLOCK </span></div>
+| <span class="rhs_variable"><a href="#c_attribute_head">c_attribute_head</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="token">error </span><span class="token">SYM_END_CBLOCK </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="c_attr_head">c_attr_head</span>: </div>
+<span class="lhs_variable" id="c_attribute_head">c_attribute_head</span>: </div>
 <div class="rhs">
 &nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span><span class="rhs_variable"><a href="#c_existence">c_existence</a> </span><span class="rhs_variable"><a href="#c_cardinality">c_cardinality</a> </span></div>
 <div class="rhs">
@@ -256,11 +256,11 @@
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="c_attr_values">c_attr_values</span>: </div>
+<span class="lhs_variable" id="c_attribute_values">c_attribute_values</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_attr_values">c_attr_values</a> </span><span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
+| <span class="rhs_variable"><a href="#c_attribute_values">c_attribute_values</a> </span><span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#c_any">c_any</a> </span></div>
 </div>

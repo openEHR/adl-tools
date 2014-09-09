@@ -1922,7 +1922,7 @@ debug ("GEYACC")
 end
 
 			-- add the tuple's C_ATTRIBUTEs to the current object node's children
-			across c_attr_tuple.members as c_attrs_csr loop
+			across ca_tuple.members as c_attrs_csr loop
 				if not object_nodes.item.has_attribute (c_attrs_csr.item.rm_attribute_name) then
 					object_nodes.item.put_attribute (c_attrs_csr.item)
 				else
@@ -1931,7 +1931,7 @@ end
 			end
 
 			-- add the tuple to the current object node
-			object_nodes.item.put_attribute_tuple (c_attr_tuple)
+			object_nodes.item.put_attribute_tuple (ca_tuple)
 
 			debug ("ADL_parse")
 				indent.remove_tail (1)
@@ -1949,8 +1949,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 720")
 end
 
-			create c_attr_tuple.make
-			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs4.item (yyvsp4), Void))
+			create ca_tuple.make
+			ca_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs4.item (yyvsp4), Void))
 			debug ("ADL_parse")
 				io.put_string (indent + "enter C_ATTR_TUPLE%N") 
 				indent.append ("%T")
@@ -1976,7 +1976,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 730")
 end
 
-			c_attr_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs4.item (yyvsp4), Void))
+			ca_tuple.put_member (create {C_ATTRIBUTE}.make_single (yyvs4.item (yyvsp4), Void))
 			debug ("ADL_parse")
 				io.put_string (indent + "add C_ATTR_TUPLE id " + yyvs4.item (yyvsp4) + "%N") 
 			end
@@ -2031,15 +2031,15 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_15_parser.y' at line 755")
 end
 
-			c_attr_tuple.add_tuple
+			ca_tuple.add_tuple
 
 			-- attach the C_PRIMITIVE_OBJECT under the C_ATTRIBUTE
-			c_attr_tuple.i_th_member (c_attr_tuple.tuples.last.count + 1).put_child (yyvs17.item (yyvsp17))
+			ca_tuple.i_th_member (ca_tuple.tuples.last.count + 1).put_child (yyvs17.item (yyvsp17))
 
 			-- attach the C_PRIMITIVE_OBJECT under the new C_PRIMITIVE_TUPLE
-			c_attr_tuple.tuples.last.put_member (yyvs17.item (yyvsp17))
+			ca_tuple.tuples.last.put_member (yyvs17.item (yyvsp17))
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (1).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add C_PRIMITIVE_OBJECT " + ca_tuple.i_th_member (1).rm_attribute_name + " %N")
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -2055,10 +2055,10 @@ debug ("GEYACC")
 end
 
 			-- attach the C_PRIMITIVE_OBJECT under the C_ATTRIBUTE
-			c_attr_tuple.i_th_member (c_attr_tuple.tuples.last.count + 1).put_child (yyvs17.item (yyvsp17))
-			c_attr_tuple.tuples.last.put_member (yyvs17.item (yyvsp17))
+			ca_tuple.i_th_member (ca_tuple.tuples.last.count + 1).put_child (yyvs17.item (yyvsp17))
+			ca_tuple.tuples.last.put_member (yyvs17.item (yyvsp17))
 			debug ("ADL_parse")
-				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + c_attr_tuple.i_th_member (c_attr_tuple.tuples.last.count + 1).rm_attribute_name + " %N")
+				io.put_string (indent + "c_tuple values - add other C_PRIMITIVE_OBJECT " + ca_tuple.i_th_member (ca_tuple.tuples.last.count + 1).rm_attribute_name + " %N")
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -8909,12 +8909,7 @@ feature {NONE} -- Parse Tree
 
 	rm_prop_def: detachable BMM_PROPERTY [BMM_TYPE]
 
-	c_attr_tuple: C_ATTRIBUTE_TUPLE
-		attribute
-			create Result.make
-		end
-
-	c_object_tuple: C_PRIMITIVE_TUPLE
+	ca_tuple: C_ATTRIBUTE_TUPLE
 		attribute
 			create Result.make
 		end

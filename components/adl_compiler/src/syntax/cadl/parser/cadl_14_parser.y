@@ -121,7 +121,7 @@ create
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_OBJECT> c_non_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
-%type <C_ATTRIBUTE> c_attr_head
+%type <C_ATTRIBUTE> c_attribute_head
 
 %type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
@@ -565,7 +565,7 @@ c_attribute_defs: c_attribute
 		}
 	;
 
-c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK	
+c_attribute: c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK	
 		{
 			debug ("ADL_parse")
 				io.put_string (indent + "POP ATTR_NODE " + c_attrs.item.rm_attribute_name + "%N") 
@@ -573,17 +573,17 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 			end
 			c_attrs.remove
 		}
-	| c_attr_head -- ok if existence is being changed in specialised archetype
+	| c_attribute_head -- ok if existence is being changed in specialised archetype
 		{
 			abort_with_error (ec_SCAS, Void)
 		}
-	| c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
+	| c_attribute_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
 			abort_with_error (ec_SCAS, Void)
 		}
 	;
 
-c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
+c_attribute_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 		{
 			rm_attribute_name := $1
 			if not object_nodes.item.has_attribute (rm_attribute_name) then
@@ -647,10 +647,10 @@ end
 		}
 	;
 
-c_attr_values: c_object
+c_attribute_values: c_object
 		{
 		}
-	| c_attr_values c_object
+	| c_attribute_values c_object
 		{
 		} 
 	| c_any	-- to allow a property to have any value

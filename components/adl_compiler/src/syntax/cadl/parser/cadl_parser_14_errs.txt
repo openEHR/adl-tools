@@ -69,13 +69,13 @@ rule 43 c_primitive_object -> c_boolean
 rule 44 c_any -> '*'
 rule 45 c_attribute_defs -> c_attribute
 rule 46 c_attribute_defs -> c_attribute_defs c_attribute
-rule 47 c_attribute -> c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK
-rule 48 c_attribute -> c_attr_head
-rule 49 c_attribute -> c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK
-rule 50 c_attr_head -> V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
-rule 51 c_attr_values -> c_object
-rule 52 c_attr_values -> c_attr_values c_object
-rule 53 c_attr_values -> c_any
+rule 47 c_attribute -> c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK
+rule 48 c_attribute -> c_attribute_head
+rule 49 c_attribute -> c_attribute_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK
+rule 50 c_attribute_head -> V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
+rule 51 c_attribute_values -> c_object
+rule 52 c_attribute_values -> c_attribute_values c_object
+rule 53 c_attribute_values -> c_any
 rule 54 c_includes -> -- Empty
 rule 55 c_includes -> SYM_INCLUDE assertions
 rule 56 c_excludes -> -- Empty
@@ -446,7 +446,7 @@ c_non_primitive_object (15) on left: 19 20 21 22 23 24, on right: 15 16
 c_archetype_slot_id (16) on left: 31 32 33 34, on right: 30
 c_archetype_slot_head (17) on left: 30, on right: 28 29
 archetype_slot (18) on left: 28 29, on right: 21
-c_attr_head (19) on left: 50, on right: 47 48 49
+c_attribute_head (19) on left: 50, on right: 47 48 49
 boolean_node (20) on left: 64 65, on right: 60 61 70 77 79
 boolean_expr (21) on left: 66 67, on right: 65
 boolean_leaf (22) on left: 68 69 70 71, on right: 64 79
@@ -511,7 +511,7 @@ c_any (80) on left: 44, on right: 12 53
 c_attribute_defs (81) on left: 45 46, on right: 13 46
 c_object (82) on left: 15 16 17 18, on right: 51 52
 c_attribute (83) on left: 47 48 49, on right: 45 46
-c_attr_values (84) on left: 51 52 53, on right: 47 52
+c_attribute_values (84) on left: 51 52 53, on right: 47 52
 
 
 state 0
@@ -2278,16 +2278,16 @@ state 90
 	c_any  ->  . '*'   (rule 44)
 	c_attribute_defs  ->  . c_attribute   (rule 45)
 	c_attribute_defs  ->  . c_attribute_defs c_attribute   (rule 46)
-	c_attribute  ->  . c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK   (rule 47)
-	c_attribute  ->  . c_attr_head   (rule 48)
-	c_attribute  ->  . c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
-	c_attr_head  ->  . V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality   (rule 50)
+	c_attribute  ->  . c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK   (rule 47)
+	c_attribute  ->  . c_attribute_head   (rule 48)
+	c_attribute  ->  . c_attribute_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
+	c_attribute_head  ->  . V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality   (rule 50)
 
 	'*'	shift, and go to state 161
 	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 162
 	error	shift, and go to state 163
 
-	c_attr_head	go to state 164
+	c_attribute_head	go to state 164
 	c_complex_object_body	go to state 165
 	c_any	go to state 166
 	c_attribute_defs	go to state 167
@@ -3153,7 +3153,7 @@ state 161
 
 state 162
 
-	c_attr_head  ->  V_ATTRIBUTE_IDENTIFIER . c_existence c_cardinality   (rule 50)
+	c_attribute_head  ->  V_ATTRIBUTE_IDENTIFIER . c_existence c_cardinality   (rule 50)
 	c_existence  ->  .   (rule 106)
 	c_existence  ->  . SYM_EXISTENCE SYM_MATCHES SYM_START_CBLOCK existence SYM_END_CBLOCK   (rule 107)
 
@@ -3175,9 +3175,9 @@ state 163
 
 state 164
 
-	c_attribute  ->  c_attr_head . SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK   (rule 47)
-	c_attribute  ->  c_attr_head .   (rule 48)
-	c_attribute  ->  c_attr_head . SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
+	c_attribute  ->  c_attribute_head . SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK   (rule 47)
+	c_attribute  ->  c_attribute_head .   (rule 48)
+	c_attribute  ->  c_attribute_head . SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
 
 	SYM_MATCHES	shift, and go to state 228
 
@@ -3205,16 +3205,16 @@ state 167
 
 	c_complex_object_body  ->  c_attribute_defs .   (rule 13)
 	c_attribute_defs  ->  c_attribute_defs . c_attribute   (rule 46)
-	c_attribute  ->  . c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK   (rule 47)
-	c_attribute  ->  . c_attr_head   (rule 48)
-	c_attribute  ->  . c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
-	c_attr_head  ->  . V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality   (rule 50)
+	c_attribute  ->  . c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK   (rule 47)
+	c_attribute  ->  . c_attribute_head   (rule 48)
+	c_attribute  ->  . c_attribute_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
+	c_attribute_head  ->  . V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality   (rule 50)
 
 	V_ATTRIBUTE_IDENTIFIER	shift, and go to state 162
 
 	$default	reduce using rule 13 (c_complex_object_body)
 
-	c_attr_head	go to state 164
+	c_attribute_head	go to state 164
 	c_attribute	go to state 230
 
 
@@ -4145,7 +4145,7 @@ state 226
 
 state 227
 
-	c_attr_head  ->  V_ATTRIBUTE_IDENTIFIER c_existence . c_cardinality   (rule 50)
+	c_attribute_head  ->  V_ATTRIBUTE_IDENTIFIER c_existence . c_cardinality   (rule 50)
 	c_cardinality  ->  .   (rule 110)
 	c_cardinality  ->  . SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality SYM_END_CBLOCK   (rule 111)
 
@@ -4159,8 +4159,8 @@ state 227
 
 state 228
 
-	c_attribute  ->  c_attr_head SYM_MATCHES . SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK   (rule 47)
-	c_attribute  ->  c_attr_head SYM_MATCHES . SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
+	c_attribute  ->  c_attribute_head SYM_MATCHES . SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK   (rule 47)
+	c_attribute  ->  c_attribute_head SYM_MATCHES . SYM_START_CBLOCK error SYM_END_CBLOCK   (rule 49)
 
 	SYM_START_CBLOCK	shift, and go to state 344
 
@@ -5243,9 +5243,9 @@ state 342
 
 state 343
 
-	c_attr_head  ->  V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality .   (rule 50)
+	c_attribute_head  ->  V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality .   (rule 50)
 
-	$default	reduce using rule 50 (c_attr_head)
+	$default	reduce using rule 50 (c_attribute_head)
 
 
 
@@ -5289,11 +5289,11 @@ state 344
 	c_primitive_object  ->  . c_terminology_code   (rule 42)
 	c_primitive_object  ->  . c_boolean   (rule 43)
 	c_any  ->  . '*'   (rule 44)
-	c_attribute  ->  c_attr_head SYM_MATCHES SYM_START_CBLOCK . c_attr_values SYM_END_CBLOCK   (rule 47)
-	c_attribute  ->  c_attr_head SYM_MATCHES SYM_START_CBLOCK . error SYM_END_CBLOCK   (rule 49)
-	c_attr_values  ->  . c_object   (rule 51)
-	c_attr_values  ->  . c_attr_values c_object   (rule 52)
-	c_attr_values  ->  . c_any   (rule 53)
+	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK . c_attribute_values SYM_END_CBLOCK   (rule 47)
+	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK . error SYM_END_CBLOCK   (rule 49)
+	c_attribute_values  ->  . c_object   (rule 51)
+	c_attribute_values  ->  . c_attribute_values c_object   (rule 52)
+	c_attribute_values  ->  . c_any   (rule 53)
 	c_integer  ->  . integer_value   (rule 127)
 	c_integer  ->  . integer_list   (rule 128)
 	c_integer  ->  . integer_interval   (rule 129)
@@ -5562,7 +5562,7 @@ state 344
 	c_terminology_code	go to state 157
 	c_any	go to state 432
 	c_object	go to state 433
-	c_attr_values	go to state 434
+	c_attribute_values	go to state 434
 
 
 
@@ -6362,7 +6362,7 @@ state 418
 state 419
 
 	c_object  ->  error .   (rule 18)
-	c_attribute  ->  c_attr_head SYM_MATCHES SYM_START_CBLOCK error . SYM_END_CBLOCK   (rule 49)
+	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK error . SYM_END_CBLOCK   (rule 49)
 
 	SYM_END_CBLOCK	shift, and go to state 466
 
@@ -6560,17 +6560,17 @@ state 431
 
 state 432
 
-	c_attr_values  ->  c_any .   (rule 53)
+	c_attribute_values  ->  c_any .   (rule 53)
 
-	$default	reduce using rule 53 (c_attr_values)
+	$default	reduce using rule 53 (c_attribute_values)
 
 
 
 state 433
 
-	c_attr_values  ->  c_object .   (rule 51)
+	c_attribute_values  ->  c_object .   (rule 51)
 
-	$default	reduce using rule 51 (c_attr_values)
+	$default	reduce using rule 51 (c_attribute_values)
 
 
 
@@ -6613,8 +6613,8 @@ state 434
 	c_primitive_object  ->  . c_string   (rule 41)
 	c_primitive_object  ->  . c_terminology_code   (rule 42)
 	c_primitive_object  ->  . c_boolean   (rule 43)
-	c_attribute  ->  c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values . SYM_END_CBLOCK   (rule 47)
-	c_attr_values  ->  c_attr_values . c_object   (rule 52)
+	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values . SYM_END_CBLOCK   (rule 47)
+	c_attribute_values  ->  c_attribute_values . c_object   (rule 52)
 	c_integer  ->  . integer_value   (rule 127)
 	c_integer  ->  . integer_list   (rule 128)
 	c_integer  ->  . integer_interval   (rule 129)
@@ -7199,7 +7199,7 @@ state 465
 
 state 466
 
-	c_attribute  ->  c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK .   (rule 49)
+	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK .   (rule 49)
 
 	$default	reduce using rule 49 (c_attribute)
 
@@ -7303,7 +7303,7 @@ state 474
 
 state 475
 
-	c_attribute  ->  c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK .   (rule 47)
+	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK .   (rule 47)
 
 	$default	reduce using rule 47 (c_attribute)
 
@@ -7319,9 +7319,9 @@ state 476
 
 state 477
 
-	c_attr_values  ->  c_attr_values c_object .   (rule 52)
+	c_attribute_values  ->  c_attribute_values c_object .   (rule 52)
 
-	$default	reduce using rule 52 (c_attr_values)
+	$default	reduce using rule 52 (c_attribute_values)
 
 
 
