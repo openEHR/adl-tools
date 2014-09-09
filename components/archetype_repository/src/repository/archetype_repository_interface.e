@@ -15,12 +15,6 @@ note
 class ARCHETYPE_REPOSITORY_INTERFACE
 
 inherit
-	SHARED_APP_RESOURCES
-		export
-			{NONE} all;
-			{ANY} deep_copy, standard_is_equal, is_deep_equal, deep_twin, directory_exists
-		end
-
 	SHARED_ARCHETYPE_LIBRARY_INTERFACES
 		export
 			{NONE} all
@@ -29,7 +23,7 @@ inherit
 	SHARED_EXTERNAL_TOOL_INTERFACES
 
 create
-	make_local, make_create_local_only, make_remote_only, make_create_local_from_remote
+	make_associate_with_remote, make, make_checkout_from_remote
 
 feature -- Definitions
 
@@ -40,24 +34,18 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_remote_only (a_remote_url, a_remote_type: STRING)
-			-- make with a local directory and remote access URI and type
-		require
-			valid_vcs_type (a_remote_type)
+	make (a_local_dir: STRING)
 		do
-			check attached {VCS_TOOL_INTERFACE} create_tool_interface (a_remote_type) as att_if then
-				remote_access := att_if
-			end
-			remote_access.initialise_remote (a_remote_url)
+			local_directory := a_local_dir
 		ensure
-			has_remote_repository
+			not has_remote_repository
 		end
 
-	make_create_local_from_remote (a_local_parent_dir, a_remote_url, a_remote_type: STRING)
+	make_checkout_from_remote (a_local_parent_dir, a_remote_url, a_remote_type: STRING)
 			-- make with a local directory and remote access URI and type
 			-- perform local repository clone operation
 		require
-			Valid_repository_type: valid_vcs_type (a_remote_type)
+			Valid_repository_type: tool_supported (a_remote_type)
 		do
 			check attached {VCS_TOOL_INTERFACE} create_tool_interface (a_remote_type) as att_if then
 				remote_access := att_if
@@ -68,22 +56,15 @@ feature -- Initialisation
 			has_remote_repository
 		end
 
-	make_local (a_local_dir: STRING)
+	make_associate_with_remote (a_local_dir: STRING)
 			-- make with an existing local directory; determine remote from local copy
+		require
+			Has_checkout: is_checkout_area (a_local_dir)
 		do
 			local_directory := a_local_dir
-			if is_checkout_area (a_local_dir) then
-				remote_access := create_vcs_tool_interface_from_checkout (local_directory)
-			end
+			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
 		ensure
-			is_checkout_area (a_local_dir) implies has_remote_repository
-		end
-
-	make_create_local_only (a_local_dir: STRING)
-		do
-			local_directory := a_local_dir
-		ensure
-			not has_remote_repository
+			has_remote_repository
 		end
 
 feature -- Access

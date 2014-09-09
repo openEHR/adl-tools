@@ -10,13 +10,11 @@ note
 class ARCHETYPE_REPOSITORY_INTERFACES
 
 inherit
-	SHARED_RESOURCES
+	SHARED_EXTERNAL_TOOL_INTERFACES
 		export
 			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists, tool_supported, is_checkout_area
 		end
-
-	SHARED_EXTERNAL_TOOL_INTERFACES
 
 	TABLE_ITERABLE [ARCHETYPE_REPOSITORY_INTERFACE, STRING]
 
@@ -76,19 +74,18 @@ feature -- Status Report
 			Result := repositories.is_empty
 		end
 
-	valid_repository_path (a_path: STRING): BOOLEAN
-			-- a repository index file exists in this location, but has not been added to
-			-- `repositories' - i.e. `a_path' is a valid path to add to `repositories'
+	repository_exists_at_path (a_path: STRING): BOOLEAN
+			-- a repository index file exists in this location
 		do
-			Result := file_system.file_exists (file_system.pathname (a_path, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name)) and
-				not repositories.has (a_path)
+			Result := file_system.file_exists (file_system.pathname (a_path, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name))
 		end
 
 	valid_new_repository_path (a_path: STRING): BOOLEAN
 			-- True if a new repository can be established at `a_path'. This will fail if:
-			--	`a_path' doesn't exist OR
+			--	`a_path' already exists OR
 			--	`a_path' is a parent or child path of any other installed repository path
-			--	`a_path' is a parent or child of any other repository that isn't yet installed (determined by checking for _repo.idx control files)
+			--	`a_path' is a parent or child of any other repository that isn't yet installed
+			--		(determined by checking for _repo.idx control files)
 		do
 			Result := not file_system.file_exists (file_system.pathname (a_path, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name)) and
 				not across repositories as repos_csr some
@@ -107,8 +104,8 @@ feature -- Status Report
 			arch_rep_if: ARCHETYPE_REPOSITORY_INTERFACE
 		do
 			last_duplicate_key_path.wipe_out
-			if valid_repository_path (a_path) then
-				create arch_rep_if.make_local (a_path)
+			if repository_exists_at_path (a_path) and not repositories.has (a_path) then
+				create arch_rep_if.make_associate_with_remote (a_path)
 				if not has_key (arch_rep_if.key) then
 					Result := True
 				else
@@ -167,7 +164,7 @@ feature -- Commands
 		require
 			Repository_path_valid: valid_candidate_repository (a_repository_path)
 		do
-			create last_repository_interface.make_local (a_repository_path)
+			create last_repository_interface.make (a_repository_path)
 			last_repository_interface.populate_libraries
 			repositories.force (last_repository_interface, a_repository_path)
 		end
@@ -177,18 +174,28 @@ feature -- Commands
 		require
 			Directory_path_valid: directory_exists (a_repository_path)
 		do
-			create last_repository_interface.make_create_local_only (a_repository_path)
+			create last_repository_interface.make (a_repository_path)
 			repositories.force (last_repository_interface, a_repository_path)
 		end
 
-	extend_create_local_from_remote (a_parent_dir, a_repository_url, a_repo_type: STRING)
+	extend_associate_with_remote (a_repository_path: STRING)
+			-- create new local repository at path `a_repository_path' and create an interface for it
+		require
+			Directory_path_valid: valid_candidate_repository (a_repository_path) and is_checkout_area (a_repository_path)
+		do
+			create last_repository_interface.make_associate_with_remote (a_repository_path)
+			last_repository_interface.populate_libraries
+			repositories.force (last_repository_interface, a_repository_path)
+		end
+
+	extend_checkout_from_remote (a_parent_dir, a_repository_url, a_repo_type: STRING)
 			-- create new remote repository proxy using `a_repository_url'
 		require
 			Url_valid: not a_repository_url.is_empty
-			Valid_repo_type: valid_vcs_type (a_repo_type)
+			Valid_repo_type: tool_supported (a_repo_type)
 			Valid_repo_clone_directory: valid_clone_directory (a_parent_dir, a_repository_url, a_repo_type)
 		do
-			create last_repository_interface.make_create_local_from_remote (a_parent_dir, a_repository_url, a_repo_type)
+			create last_repository_interface.make_checkout_from_remote (a_parent_dir, a_repository_url, a_repo_type)
 			if last_command_succeeded then
 				last_repository_interface.populate_libraries
 				repositories.force (last_repository_interface, last_repository_interface.local_directory)

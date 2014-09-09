@@ -35,6 +35,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_EXTERNAL_TOOL_INTERFACES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	EVX_UTILITIES
 		export
 			{NONE} all
@@ -203,7 +210,7 @@ feature -- Commands
 			do_populate
 		end
 
-feature -- Events
+feature {NONE} -- Events
 
 	on_ok
 			-- Set shared settings from the dialog widgets.
@@ -225,40 +232,25 @@ feature -- Events
 		end
 
 	on_add_repository (repo_dir: STRING)
-			-- add a new repository
+			-- add a new repository, either by:
+			--	* association of existing checkout to its remote location
+			--	* clone from a remote location
+			--	* create a new local repository, unconnected to any remote
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 			new_repo_dialog: EV_QUESTION_DIALOG
 		do
 			-- if there is a repostory at this path, then see if it can be added
-			if archetype_repository_interfaces.valid_repository_path (repo_dir) then
-				set_last_user_selected_directory (repo_dir)
-				if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
-					ok_cancel_buttons.disable_sensitive
-					do_with_wait_cursor (Current,
-						agent (a_dir: STRING)
-							do
-								archetype_repository_interfaces.extend (a_dir)
-							end (repo_dir)
-					)
-					if last_command_result.succeeded then
-						populate_grid
-						add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
-						create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<last_command_result.command_line, last_command_result.stdout>>))
-					elseif last_command_result.failed then
-						create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
-					else
-						create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
-					end
-					error_dialog.show_modal_to_window (Current)
-					ok_cancel_buttons.enable_sensitive
+			if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
+				if is_checkout_area (repo_dir) then
+					on_associate_repository (repo_dir)
 				else
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
-					error_dialog.show_modal_to_window (Current)
+					archetype_repository_interfaces.extend (repo_dir)
 				end
 
 			-- see if the user wants to create a new local repository here, by creating a repository definition file
 			elseif file_system.directory_exists (repo_dir) then
+				-- valid path for new repository to be created
 				if archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
 					set_last_user_selected_directory (repo_dir)
 					create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
@@ -274,8 +266,42 @@ feature -- Events
 			end
 		end
 
+	on_associate_repository (repo_dir: STRING)
+			-- add an existing repository that has a local checkout
+		require
+			archetype_repository_interfaces.repository_exists_at_path (repo_dir) and is_checkout_area (repo_dir)
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			set_last_user_selected_directory (repo_dir)
+			if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
+				ok_cancel_buttons.disable_sensitive
+				do_with_wait_cursor (Current,
+					agent (a_dir: STRING)
+						do
+							archetype_repository_interfaces.extend_associate_with_remote (a_dir)
+						end (repo_dir)
+				)
+				if last_command_result.succeeded then
+					populate_grid
+
+				elseif last_command_result.failed then
+					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+					error_dialog.show_modal_to_window (Current)
+
+				else
+					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+					error_dialog.show_modal_to_window (Current)
+				end
+				ok_cancel_buttons.enable_sensitive
+			else
+				create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+				error_dialog.show_modal_to_window (Current)
+			end
+		end
+
 	on_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
-			-- clone a new repository
+			-- clone an existing remote repository to a new checkout
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 			repo_name, repo_dir: STRING
@@ -290,16 +316,18 @@ feature -- Events
 				do_with_wait_cursor (Current,
 					agent (a_dir, a_url, a_repo_type: STRING)
 						do
-							archetype_repository_interfaces.extend_create_local_from_remote (a_dir, a_url, a_repo_type)
+							archetype_repository_interfaces.extend_checkout_from_remote (a_dir, a_url, a_repo_type)
 						end (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type)
 				)
 				if last_command_result.succeeded then
 					populate_grid
 					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
 					create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<last_command_result.command_line, last_command_result.stdout>>))
+
 				elseif last_command_result.failed then
 					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
 					error_dialog.show_modal_to_window (Current)
+
 				else
 					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 					error_dialog.show_modal_to_window (Current)
@@ -423,6 +451,8 @@ feature {NONE} -- Implementation
 
 	populate_remote_repository_grid_row (a_grid_row: EV_GRID_ROW; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
 			-- populate for a repository that only has a remote proxy
+		local
+			text_col: detachable EV_COLOR
 		do
 			evx_grid.set_last_row (a_grid_row)
 
@@ -430,8 +460,15 @@ feature {NONE} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rem_proxy.remote_key, a_rem_proxy.remote_url, Repository_remote_proxy_color, get_icon_pixmap ("tool/" + a_rem_proxy.remote_type))
 
 			-- column 2 - repository status
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Ev_grid_text_link_colour, Void)
-			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_status_col) then
+			if tool_supported (a_rem_proxy.remote_type) then
+				text_col := Ev_grid_text_link_colour
+			else
+				text_col := Void
+			end
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, text_col, Void)
+
+			-- only make the link live if the tool is supported
+			if tool_supported (a_rem_proxy.remote_type) and not evx_grid.has_last_row_pointer_button_press_actions (Grid_status_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_status_col, agent install_repository (a_grid_row, a_rem_proxy))
 			end
 
@@ -449,7 +486,9 @@ feature {NONE} -- Implementation
 		end
 
 	install_repository (a_grid_row: EV_GRID_ROW; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
-			-- find or create local repository corresponding to `a_rem_proxy'
+			-- find or create local repository corresponding to existing remote repository, details in `a_rem_proxy'
+		require
+			tool_supported (a_rem_proxy.remote_type)
 		local
 			repo_install_dialog: REPOSITORY_INSTALL_DIALOG
 			verify_dialog: EV_QUESTION_DIALOG
@@ -461,7 +500,7 @@ feature {NONE} -- Implementation
 
 			if not repo_install_dialog.local_directory.is_empty then
 				if not repo_install_dialog.user_requires_repository_clone then
-					on_add_repository (repo_install_dialog.local_directory)
+					on_associate_repository (repo_install_dialog.local_directory)
 				else
 					create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text,
 						<<repo_name, a_rem_proxy.remote_url, repo_install_dialog.local_directory>>))

@@ -20,6 +20,11 @@ inherit
 
 	SHARED_AOM_PROFILES_ACCESS
 
+	EXTERNAL_TOOL_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
@@ -167,7 +172,11 @@ feature -- Initialisation
 
 				-- populate existing repositories, if any
 				across repositories_table as repos_csr loop
-					archetype_repository_interfaces.extend (repos_csr.item)
+					if is_checkout_area (repos_csr.item) then
+						archetype_repository_interfaces.extend_associate_with_remote (repos_csr.item)
+					else
+						archetype_repository_interfaces.extend (repos_csr.item)
+					end
 				end
 
 				-- now choose a library to start with

@@ -12,17 +12,12 @@ note
 
 class REPOSITORY_REMOTE_PROXY
 
-inherit
-	SHARED_EXTERNAL_TOOL_INTERFACES
-
 create
 	make
 
 feature -- Initialisation
 
 	make (a_remote_key, a_remote_url, a_remote_type: STRING)
-		require
-			valid_vcs_type (a_remote_type)
 		do
 			remote_url := a_remote_url
 			remote_key := a_remote_key
