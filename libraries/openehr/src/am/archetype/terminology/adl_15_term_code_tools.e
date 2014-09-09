@@ -139,8 +139,35 @@ feature -- Definitions
 
 feature -- Access
 
-	specialisation_parent_from_code (a_code: STRING): STRING
-			-- get immediate parent of this specialised code
+	specialised_code_parent (a_code: STRING): STRING
+			-- get parent code of this specialised code
+			-- 	id4.1	=> 	id4
+			-- 	id4.0.1	=>	id4
+			--	id4.1.1 =>	id4.1
+		require
+			Code_valid: specialisation_depth_from_code (a_code) > 0
+		local
+			sep_loc: INTEGER
+		do
+			Result := a_code.substring (1, a_code.last_index_of (Specialisation_separator, a_code.count) - 1)
+
+			-- remove trailing .0 segments
+			from
+				sep_loc := Result.last_index_of (Specialisation_separator, Result.count)
+			until
+				sep_loc = 0 or else not Result.substring (sep_loc + 1, Result.count).is_equal ("0")
+			loop
+				Result.remove_tail (2)
+				sep_loc := Result.last_index_of (Specialisation_separator, Result.count)
+			end
+		ensure
+			Valid_result: not Result.tail (Zero_filler.count).is_equal (Zero_filler)
+		end
+
+	specialised_code_base (a_code: STRING): STRING
+			-- get immediate parent segment of this specialised code
+			-- 	id4.1	=> 	id4
+			-- 	id4.0.1	=>	id4.0
 		require
 			Code_valid: specialisation_depth_from_code (a_code) > 0
 		do

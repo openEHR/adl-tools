@@ -133,8 +133,8 @@ feature -- Comparison
 			create diff_child.make_from_flat (flat_target)
 			differential_output := diff_child
 
-			-- using rolled_up_specialisation statuses in nodes of definition
-			-- generate a list of nodes/paths for deletion from flat-form archetype
+			-- using rolled_up_specialisation statuses in nodes of definition generate a list of nodes/paths
+			-- for deletion from flat-form archetype
 			create inherited_subtree_list.make (0)
 			create c_it.make (diff_child.definition)
 			c_it.do_at_surface (
@@ -150,9 +150,9 @@ feature -- Comparison
 
 			-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
 			across inherited_subtree_list as subtree_csr loop
-				-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
-				-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
-				-- the RM schema
+				-- FIXME: in the following statement, we are assuming that if the cardinality of the parent
+				-- attribute does not exist (typical for a differential archetype), that it is ordered;
+				-- really we should look up the RM schema
 				if attached {C_OBJECT} subtree_csr.item as co and then attached co.parent as ca_parent and then
 					(ca_parent.cardinality = Void or else ca_parent.is_ordered)
 				then
@@ -171,7 +171,8 @@ feature -- Comparison
 					if attached co.parent then
 						co.parent.remove_child (co)
 					else
-						-- co must be the parent, which means the entire definition is a copy of that from the parent archetype
+						-- co must be the parent, which means the entire definition is a copy of that from
+						-- the parent archetype
 					end
 				elseif attached {C_ATTRIBUTE} subtree_csr.item as c_attr then
 					c_attr.parent.remove_attribute (c_attr)
@@ -181,7 +182,7 @@ feature -- Comparison
 			-- rebuild all internal references, path cache etc
 			diff_child.rebuild
 
-			-- remove unneeded items from differential terminology
+			-- =========== remove unneeded items from differential terminology ===========
 			create term_removal_list.make (0)
 
 			-- id-codes

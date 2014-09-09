@@ -773,7 +773,7 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 			parent_code: STRING
 		do
 			if is_refined_code (a_code) then
-				parent_code := specialisation_parent_from_code (a_code)
+				parent_code := specialised_code_base (a_code)
 				idx := specialised_code_tail (a_code).to_integer
 				if idx > highest_refined_code_index [parent_code] then
 					highest_refined_code_index [parent_code] := idx

@@ -542,7 +542,7 @@ feature -- Modification
 			parent_id: STRING
 			siblings: ARRAYED_LIST [C_OBJECT]
 		do
-			parent_id := specialisation_parent_from_code (an_obj.node_id)
+			parent_id := specialised_code_base (an_obj.node_id)
 			siblings := children_matching_id (parent_id)
 			if not siblings.is_empty then
 				if to_right then
@@ -672,11 +672,11 @@ feature -- Validation
 		do
 			if not has_child (an_obj) then
 				if is_single then
-					Result := an_obj.occurrences = Void or else (not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1)
+					Result := not attached an_obj.occurrences as att_occ or else (not att_occ.upper_unbounded and att_occ.upper <= 1)
 				else
-					Result := (an_obj.occurrences = Void or cardinality = Void or else
-							(cardinality.interval.upper_unbounded or else
-							(an_obj.occurrences.upper_unbounded or else cardinality.interval.upper >= an_obj.occurrences.upper)))
+					Result := (not attached an_obj.occurrences as att_occ or else not attached cardinality as att_card or else
+							(att_card.interval.upper_unbounded or else
+							(att_occ.upper_unbounded or else att_card.interval.upper >= att_occ.upper)))
 				end
 			end
 		end
@@ -703,32 +703,36 @@ feature {NONE} -- Implementation
 			csr: detachable ARCHETYPE_CONSTRAINT
 		do
 			if attached parent as p then
-				debug("compress")
-					io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
-				end
+debug("compress")
+	io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path +
+		") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
+end
 				p.remove_attribute (Current)
 				from csr := p until csr.parent = Void loop
 					if attached {C_COMPLEX_OBJECT} csr.parent as cco and attached {C_ATTRIBUTE} csr as ca then
 						if not ca.has_children then
-							debug("compress")
-								io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
-							end
+debug("compress")
+	io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name +
+		" from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+end
 							cco.remove_attribute (ca)
 						end
 					elseif attached {C_ATTRIBUTE} csr.parent as ca and attached {C_COMPLEX_OBJECT} csr as cco then
 						if not cco.has_attributes then
-							debug("compress")
-								io.put_string("%T%Tabout to remove ORPHAN object " + cco.rm_type_name + "[" + cco.node_id + "] from attribute " + ca.rm_attribute_name + "%N")
-							end
+debug("compress")
+	io.put_string("%T%Tabout to remove ORPHAN object " + cco.rm_type_name +
+		"[" + cco.node_id + "] from attribute " + ca.rm_attribute_name + "%N")
+end
 							ca.remove_child (cco)
 						end
 					end
 					csr := csr.parent
 				end
 				if attached {C_COMPLEX_OBJECT} csr as cco then
-					debug("compress")
-						io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
-					end
+debug("compress")
+	io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path +
+		") on ROOT object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+end
 					cco.put_attribute (Current)
 				end
 			end
@@ -749,9 +753,9 @@ feature {NONE} -- Implementation
 invariant
 	Rm_attribute_name_valid: not rm_attribute_name.is_empty
 	Any_allowed_validity: any_allowed xor not children.is_empty
-	Children_occurrences_lower_sum_validity: (cardinality /= Void and then not cardinality.interval.upper_unbounded) implies occurrences_lower_sum <= cardinality.interval.upper
-	Children_orphans_validity: (cardinality /= Void and then not cardinality.interval.upper_unbounded) implies minimum_child_count <= cardinality.interval.upper
-	Differential_path_valid: differential_path /= Void implies not differential_path.is_empty
+	Children_occurrences_lower_sum_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies occurrences_lower_sum <= att_card.interval.upper
+	Children_orphans_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies minimum_child_count <= att_card.interval.upper
+	Differential_path_valid: attached differential_path as att_diff_path implies not att_diff_path.is_empty
 	Alternatives_valid: not is_multiple implies children.for_all (agent (co: C_OBJECT): BOOLEAN do Result := co.occurrences.upper <= 1 end)
 	Has_differential_path_valid: differential_path = Void xor has_differential_path
 

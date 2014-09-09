@@ -867,7 +867,7 @@ feature {ADL_15_ENGINE} -- ADL 1.5 Serialisation
 feature {NONE} -- Implementation
 
 	extract_highest_added_id_codes
-			-- set `highest_added_id_code'
+			-- set `highest_added_id_code' and populate `highest_redefined_id_codes'
 		local
 			def_it: C_ITERATOR
 		do
@@ -884,7 +884,7 @@ feature {NONE} -- Implementation
 							if is_id_code (co.node_id) and not co.node_id.starts_with (Fake_adl_14_node_id_base) and then specialisation_depth_from_code (co.node_id) = specialisation_depth then
 								code_idx := code_index_at_level (co.node_id, specialisation_depth)
 								if is_refined_code (co.node_id) then
-									parent_node_id := specialisation_parent_from_code (co.node_id)
+									parent_node_id := specialised_code_base (co.node_id)
 									if not highest_redefined_id_codes.has (parent_node_id) then
 										highest_redefined_id_codes.put (code_idx, parent_node_id)
 									elseif highest_redefined_id_codes.item (parent_node_id) < code_idx then
