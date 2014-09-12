@@ -68,6 +68,12 @@ feature -- Status report
 			Result := attached occurrences as occ and then occ.is_prohibited
 		end
 
+	is_max_occurrences_one: BOOLEAN
+			-- True if occurrences exists, and max set to 1
+		do
+			Result := attached occurrences as att_occ and then not att_occ.upper_unbounded and then att_occ.upper = 1
+		end
+
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
