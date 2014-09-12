@@ -179,6 +179,11 @@ feature -- Initialisation
 					end
 				end
 
+				-- forget current library if it no longer exists
+				if not archetype_library_interfaces.has (current_library_name) then
+					forget_current_library_name
+				end
+
 				-- now choose a library to start with
 				if not archetype_library_interfaces.is_empty then
 					if not has_current_library then

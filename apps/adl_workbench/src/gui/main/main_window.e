@@ -210,6 +210,11 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_TITLED_WINDOW}
 
+			-- connect external process stdout agent to app console
+			-- THIS FAILS WHEN AN EXTERNAL CALL IS MADE - it hangs on the windows messaging call that
+			-- actually tries to do the update.
+	--		set_stdout_agent (agent console_tool.append_text)
+
 			-- basic UI parameters
 			set_minimum_width (500)
 			set_minimum_height (350)
@@ -379,7 +384,8 @@ feature {NONE} -- Initialization
 feature -- Commands
 
 	show
-			-- Do a few adjustments and load the repository before displaying the window.
+		local
+			tool_install_dialog: EV_QUESTION_DIALOG
 		do
 			Precursor
 

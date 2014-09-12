@@ -156,7 +156,7 @@ feature -- Status Report
 	has_repository_tool: BOOLEAN
 			-- True if the external tool required (e.g. git, svn) for working with the repository is available
 		do
-			Result := attached remote_access as att_rem_acc and then att_rem_acc.tool_available
+			Result := attached remote_access as att_rem_acc and then system_has_command (att_rem_acc.tool_name)
 		end
 
 	has_libraries: BOOLEAN

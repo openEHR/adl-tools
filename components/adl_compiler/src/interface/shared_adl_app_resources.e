@@ -241,6 +241,14 @@ feature -- Application Switches
 			Result := app_cfg.string_value_env_var_sub ("/repositories/current_library_name")
 		end
 
+	forget_current_library_name
+			-- Set name of current library
+		do
+			if app_cfg.has_resource ("/repositories/current_library_name") then
+				app_cfg.remove_resource ("/repositories/current_library_name")
+			end
+		end
+
 	set_current_library_name (a_path: STRING)
 			-- Set name of current library
 		require

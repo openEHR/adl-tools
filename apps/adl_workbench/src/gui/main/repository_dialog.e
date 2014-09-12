@@ -322,7 +322,7 @@ feature {NONE} -- Events
 				if last_command_result.succeeded then
 					populate_grid
 					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
-					create error_dialog.make_with_text (get_msg (ec_external_command_succeeded, <<last_command_result.command_line, last_command_result.stdout>>))
+io.put_string (last_command_result.stdout)
 
 				elseif last_command_result.failed then
 					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
@@ -332,7 +332,6 @@ feature {NONE} -- Events
 					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 					error_dialog.show_modal_to_window (Current)
 				end
-				error_dialog.show_modal_to_window (Current)
 				ok_cancel_buttons.enable_sensitive
 			else
 				create error_dialog.make_with_text (get_msg (ec_repository_clone_dir_invalid,
