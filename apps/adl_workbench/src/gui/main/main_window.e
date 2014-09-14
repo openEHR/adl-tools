@@ -211,9 +211,8 @@ feature {NONE} -- Initialization
 			Precursor {EV_TITLED_WINDOW}
 
 			-- connect external process stdout agent to app console
-			-- THIS FAILS WHEN AN EXTERNAL CALL IS MADE - it hangs on the windows messaging call that
-			-- actually tries to do the update.
-	--		set_stdout_agent (agent console_tool.append_text)
+			set_stderr_agent (agent external_process_console_update)
+			set_stdout_agent (agent external_process_console_update)
 
 			-- basic UI parameters
 			set_minimum_width (500)
@@ -1051,7 +1050,7 @@ feature -- Test tool
 feature -- Console Tool
 
 	console_tool: GUI_CONSOLE_TOOL
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 
@@ -1248,6 +1247,12 @@ feature {NONE} -- Build commands
 			error_tool.extend_and_select (aca)
 
 			ev_application.process_events
+		end
+
+	external_process_console_update (a_msg: STRING)
+			-- Update GUI with progress on build.
+		do
+			ev_application.do_once_on_idle (agent console_tool.append_text (a_msg))
 		end
 
 feature {NONE} -- GUI Widgets

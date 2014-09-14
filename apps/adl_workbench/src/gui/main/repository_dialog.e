@@ -103,13 +103,15 @@ feature {NONE} -- Initialisation
 
 			-- ============ top label ============
 			create ev_cell_1
-			ev_cell_1.set_minimum_height (20)
+			ev_cell_1.set_minimum_height (10)
 			ev_root_container.extend (ev_cell_1)
+
 			create ev_label_1
 			ev_label_1.set_text (get_text (ec_repository_dialog_header_label))
 			ev_root_container.extend (ev_label_1)
+
 			create ev_cell_2
-			ev_cell_2.set_minimum_height (20)
+			ev_cell_2.set_minimum_height (10)
 			ev_root_container.extend (ev_cell_2)
 			ev_root_container.disable_item_expand (ev_cell_1)
 			ev_root_container.disable_item_expand (ev_label_1)
@@ -144,6 +146,12 @@ feature {NONE} -- Initialisation
 			ev_cell_3.set_minimum_height (10)
 			ev_root_container.extend (ev_cell_3)
 			ev_root_container.disable_item_expand (ev_cell_3)
+
+			-- live status text
+			create ev_live_status_text
+			ev_live_status_text.set_text ("")
+			ev_root_container.extend (ev_live_status_text)
+			ev_root_container.disable_item_expand (ev_live_status_text)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent on_cancel)
@@ -322,7 +330,6 @@ feature {NONE} -- Events
 				if last_command_result.succeeded then
 					populate_grid
 					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
-io.put_string (last_command_result.stdout)
 
 				elseif last_command_result.failed then
 					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
@@ -492,7 +499,13 @@ feature {NONE} -- Implementation
 			repo_install_dialog: REPOSITORY_INSTALL_DIALOG
 			verify_dialog: EV_QUESTION_DIALOG
 			repo_name: STRING
+			old_set_stderr_agent: like stderr_agent
+			old_title: STRING_32
 		do
+			-- set status update to agent that will do live update from to the grid status cell
+			old_set_stderr_agent := stderr_agent
+			set_stderr_agent (agent update_grid_install_status)
+
 			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
 			create repo_install_dialog.make (a_rem_proxy.remote_url)
 			repo_install_dialog.show_modal_to_window (Current)
@@ -510,6 +523,30 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+
+			-- reset command output
+			if attached old_set_stderr_agent as att_agt then
+				set_stderr_agent (att_agt)
+			end
+			ev_live_status_text.set_text ("")
+		end
+
+	update_grid_install_status (a_text: STRING)
+			-- live update status cell during install
+		local
+			update_text: STRING
+			cr_loc: INTEGER
+		do
+			-- convert CR/LF to LF, and then remove CRs
+			a_text.replace_substring_all ("%R%N", "%N")
+			cr_loc := a_text.last_index_of ('%R', a_text.count)
+			if cr_loc > 0 and cr_loc < a_text.count then
+				update_text := a_text.substring (cr_loc + 1, a_text.count)
+			else
+				update_text := a_text
+			end
+
+			ev_application.do_once_on_idle (agent ev_live_status_text.set_text (utf8_to_utf32 (update_text)))
 		end
 
 	populate_archetype_library_grid_row (a_grid_row: EV_GRID_ROW; a_lib_if: ARCHETYPE_LIBRARY_INTERFACE)
@@ -743,7 +780,7 @@ feature {NONE} -- Actions
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL
 
-	ev_label_1: EV_LABEL
+	ev_label_1, ev_live_status_text: EV_LABEL
 
 	evx_grid: EVX_GRID
 

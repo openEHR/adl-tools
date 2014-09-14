@@ -62,6 +62,10 @@ feature -- Modification
 feature {NONE} -- Implementation
 
 	docking_pane: detachable SD_CONTENT
+		note
+			option: stable
+		attribute
+		end
 
 end
 

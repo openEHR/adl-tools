@@ -296,7 +296,7 @@ feature {NONE} -- Implementation
 
 				-- column 8 - create edit button and add to row
 				create gli.make_with_text ("Edit")
-				gli.set_pixmap (get_icon_pixmap ("tool/edit"))
+				gli.set_foreground_color (Ev_grid_text_link_colour)
 				gli.select_actions.extend (agent do_edit_profile (profs_csr.item))
 				row.set_item (Grid_edit_col, gli)
 			end
