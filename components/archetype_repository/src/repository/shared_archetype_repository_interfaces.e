@@ -13,7 +13,7 @@ feature -- Access
 
 	archetype_repository_interfaces: ARCHETYPE_REPOSITORY_INTERFACES
 			-- loaded repositories
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 

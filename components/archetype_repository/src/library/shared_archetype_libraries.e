@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			-- hash of all archetype libraries used so far in the current session;
 			-- keyed by library name;
 			-- lazy populated
-		once
+		once ("PROCESS")
 			create Result.make (0)
 		end
 

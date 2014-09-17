@@ -13,7 +13,7 @@ class
 feature -- History Bar control
 
 	history_bar: GUI_HISTORY_TOOLBAR
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 

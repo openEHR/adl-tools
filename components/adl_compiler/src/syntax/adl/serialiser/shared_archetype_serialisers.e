@@ -34,7 +34,7 @@ inherit
 feature -- Initialisation
 
 	initialise_serialisers
-		once
+		once ("PROCESS")
 			archetype_native_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make (create {NATIVE_ADL_SERIALISATION_PROFILE}.make (Syntax_type_adl)), Syntax_type_adl)
 			archetype_native_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make (create {HTML_ADL_SERIALISATION_PROFILE}.make (Syntax_type_adl_html)), Syntax_type_adl_html)
 
@@ -61,7 +61,7 @@ feature -- Access
 
 	archetype_all_serialiser_formats_string: STRING
 			-- utility string indicating valid serialisation formats
-		once
+		once ("PROCESS")
 			create Result.make_empty
 			across archetype_all_serialiser_formats as fmts_csr loop
 				Result.append (fmts_csr.item)
@@ -73,7 +73,7 @@ feature -- Access
 
 	archetype_all_serialiser_formats: ARRAYED_LIST [STRING]
 			-- List of all avalable archetype serialisation format names.
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.compare_objects
 			across archetype_native_serialisers as serialisers_csr loop
@@ -91,7 +91,7 @@ feature -- Access
 
 	archetype_native_serialiser_formats: ARRAYED_LIST [STRING]
 			-- List of native archetype serialisation format names.
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.compare_objects
 			across archetype_native_serialisers as serialisers_csr loop
@@ -112,7 +112,7 @@ feature -- Access
 
 	archetype_file_extensions: HASH_TABLE [STRING, STRING]
 			-- File extensions for logical serialisation formats.
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (File_ext_archetype_source, Syntax_type_adl)
 			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
@@ -126,7 +126,7 @@ feature -- Access
 
 	flat_archetype_file_extensions: HASH_TABLE [STRING, STRING]
 			-- File extensions for logical serialisation formats.
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (File_ext_archetype_flat, Syntax_type_adl)
 			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
@@ -169,7 +169,7 @@ feature {NONE} -- Implementation
 
 	archetype_native_serialisers: HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
 			-- The supported archetype native syntax serialisers, i.e. serialisers based on the ADL syntax
-		once
+		once ("PROCESS")
 			create Result.make (0)
 		end
 

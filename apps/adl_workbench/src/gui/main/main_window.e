@@ -822,7 +822,7 @@ feature {NONE} -- Help events
 feature -- Address Bar control
 
 	address_bar: GUI_ADDRESS_BAR
-		once
+		once ("PROCESS")
 			create Result.make (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
 			Result.add_client_control (library_tool)
 			Result.add_client_control (rm_schema_explorer)
@@ -859,7 +859,7 @@ feature -- Docking controls
 feature -- RM Schema explorer
 
 	rm_schema_explorer: GUI_RM_SCHEMA_EXPLORER
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 
@@ -890,7 +890,7 @@ feature -- RM Schema explorer
 feature -- RM tools
 
 	rm_tools: GUI_RM_TOOLS_CONTROLLER
-		once
+		once ("PROCESS")
 			create Result.make (docking_manager)
 		end
 
@@ -909,7 +909,7 @@ feature -- RM tools
 feature -- library tool
 
 	library_tool: GUI_LIBRARY_TOOL
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 
@@ -943,7 +943,7 @@ feature -- library tool
 feature -- Archetype viewers
 
 	archetype_viewers: GUI_ARCHETYPE_VIEWERS_CONTROLLER
-		once
+		once ("PROCESS")
 			create Result.make (docking_manager)
 		end
 
@@ -966,7 +966,7 @@ feature -- Archetype viewers
 feature -- Archetype editors
 
 	archetype_editors: GUI_ARCHETYPE_EDITORS_CONTROLLER
-		once
+		once ("PROCESS")
 			create Result.make (docking_manager)
 		end
 
@@ -1031,7 +1031,7 @@ feature -- Class tool
 feature -- Test tool
 
 	test_tool: GUI_TEST_TOOL
-		once
+		once ("PROCESS")
 			create Result.make (agent info_feedback)
 		end
 

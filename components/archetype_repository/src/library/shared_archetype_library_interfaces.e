@@ -13,7 +13,7 @@ feature -- Access
 
 	archetype_library_interfaces: ARCHETYPE_LIBRARY_INTERFACES
 			-- loaded libraries
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 

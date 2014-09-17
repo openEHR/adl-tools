@@ -23,7 +23,7 @@ inherit
 feature -- Access
 
 	app_root: APP_ROOT
-		once
+		once ("PROCESS")
 			create Result
 		end
 

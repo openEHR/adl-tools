@@ -196,9 +196,14 @@ feature -- Commands
 			Valid_repo_clone_directory: valid_clone_directory (a_parent_dir, a_repository_url, a_repo_type)
 		do
 			create last_repository_interface.make_checkout_from_remote (a_parent_dir, a_repository_url, a_repo_type)
-			if last_command_succeeded then
-				last_repository_interface.populate_libraries
-				repositories.force (last_repository_interface, last_repository_interface.local_directory)
+		end
+
+	extend_checkout_from_remote_finalise (a_repository_url: STRING)
+			-- create new remote repository proxy using `a_repository_url'
+		do
+			last_repository_interface.populate_libraries
+			if attached last_repository_interface as att_lri then
+				repositories.force (att_lri, last_repository_interface.local_directory)
 			end
 		ensure
 			has_remote_repository (a_repository_url)

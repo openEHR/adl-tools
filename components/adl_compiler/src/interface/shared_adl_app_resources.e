@@ -54,12 +54,12 @@ feature -- Definitions
 
 	Application_developer_name: STRING
 			-- usually the company or organisation name of the application vendor.
-		once
+		once ("PROCESS")
 			Result := "openEHR"
 		end
 
 	Fallback_application_name: STRING
-		once
+		once ("PROCESS")
 			Result := "adl_workbench"
 		end
 
@@ -94,7 +94,7 @@ feature -- Definitions
 
 	Default_aom_profile_directory: STRING
 			-- default directory of AOM profile files (*.arp files, in dadl format)
-		once
+		once ("PROCESS")
 			Result := file_system.pathname (application_startup_directory, "aom_profiles")
 		end
 
@@ -102,7 +102,7 @@ feature -- Definitions
 			-- default directory of Reference Model terminology files; same as full path to app + "/terminology";
 			-- directory of openEHR terminology files; structure is
 			-- $terminology_directory/lang/openehr_terminology.xml
-		once
+		once ("PROCESS")
 			Result := file_system.pathname (application_startup_directory, "terminology")
 		end
 
@@ -113,7 +113,7 @@ feature -- Definitions
 
 	Report_css_template_path: STRING
 			-- path to .css template file to copy when generating HTML report files
-		once
+		once ("PROCESS")
 			Result := file_system.pathname (application_startup_directory, Report_css_template_filename)
 		end
 
@@ -122,7 +122,7 @@ feature -- Definitions
 	Default_author_org: STRING = "Org name <http://www.my_org.org>"
 
 	Default_author_copyright: STRING_32
-		once
+		once ("PROCESS")
 		--	Result := "Copyright " + UTF8_copyright_char.out + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 		end
@@ -132,12 +132,15 @@ feature -- Definitions
 			-- web service lookup
 		local
 			a_proxy: REPOSITORY_REMOTE_PROXY
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			create a_proxy.make ("openEHR-reference repository", "https://github.com/openEHR/adl-archetypes.git", "git")
 			Result.put (a_proxy, a_proxy.remote_url)
 			create a_proxy.make ("openEHR-CKM mirror", "https://github.com/openEHR/CKM-mirror.git", "git")
 			Result.put (a_proxy, a_proxy.remote_url)
+
+--		use for testing
+--			create a_proxy.make ("CIMI-CIMI archetypes", "file:///cygdrive/c/project/CIMI/opencimi/archetypes", "git")
 			create a_proxy.make ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", "git")
 			Result.put (a_proxy, a_proxy.remote_url)
 		end
@@ -154,7 +157,7 @@ feature -- Access
 
 	app_cfg: CONFIG_FILE_ACCESS
 			-- accessor object for application config file
-		once
+		once ("PROCESS")
 			Result := app_cfg_cell.item
 			if file_system.file_exists (user_config_file_path) then
 				Result.initialise (user_config_file_path)
@@ -183,7 +186,7 @@ feature -- Application Switches
 
 	repositories_table_path: STRING
 			-- path of the REPOSITORY_CONFIG_TABLE within the parent object representing the whole .cfg file
-		once
+		once ("PROCESS")
 			Result := "/" + {REPOSITORIES_TABLE}.root_attribute_name
 		end
 
@@ -258,14 +261,14 @@ feature -- Application Switches
 		end
 
 	default_namespaces: HASH_TABLE [STRING, STRING]
-		once
+		once ("PROCESS")
 			create Result.make(0)
 			Result.put ("org.openehr", "oe")
 		end
 
 	namespace_table_path: STRING
 			-- path of the NAMESPACE_TABLE within the parent object representing the whole .cfg file
-		once
+		once ("PROCESS")
 			Result := "/" + {NAMESPACE_TABLE}.root_attribute_name
 		end
 
@@ -300,7 +303,7 @@ feature -- Application Switches
 		end
 
 	default_terminology_uri_templates: HASH_TABLE [STRING, STRING]
-		once
+		once ("PROCESS")
 			create Result.make(0)
 			Result.put ("http://snomed.info/id/$code_string", "snomedct")
 			Result.put ("http://snomed.info/id/$code_string", "snomed-ct")
@@ -311,7 +314,7 @@ feature -- Application Switches
 
 	terminology_settings_path: STRING
 			-- path of the TERMINOLOGY_SETTINGS within the parent object representing the whole .cfg file
-		once
+		once ("PROCESS")
 			Result := "/" + {TERMINOLOGY_SETTINGS}.root_attribute_name
 		end
 
@@ -574,28 +577,28 @@ feature {NONE} -- Cached Settings
 
 	compiler_gen_source_directory: STRING
 			-- Path of directory where compiled source files go in ODIN serialisation form
-		once
+		once ("PROCESS")
 			create Result.make_empty
 		end
 
 	compiler_gen_flat_directory: STRING
 			-- Path of directory where compiled flat files go in ODIN serialisation form
-		once
+		once ("PROCESS")
 			create Result.make_empty
 		end
 
 	repositories_table_cache: CELL [detachable REPOSITORIES_TABLE]
-		once
+		once ("PROCESS")
 			create Result.put (Void)
 		end
 
 	namespace_table_cache: CELL [detachable NAMESPACE_TABLE]
-		once
+		once ("PROCESS")
 			create Result.put (Void)
 		end
 
 	terminology_settings_cache: CELL [detachable TERMINOLOGY_SETTINGS]
-		once
+		once ("PROCESS")
 			create Result.put (Void)
 		end
 

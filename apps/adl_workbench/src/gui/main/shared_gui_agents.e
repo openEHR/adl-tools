@@ -14,7 +14,7 @@ class
 feature -- Access
 
 	gui_agents: GUI_AGENTS
-		once
+		once ("PROCESS")
 			create Result
 		end
 

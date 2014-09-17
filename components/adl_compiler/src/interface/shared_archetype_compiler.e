@@ -12,7 +12,7 @@ class SHARED_ARCHETYPE_COMPILER
 feature -- Implementation
 
 	archetype_compiler: ARCHETYPE_COMPILER
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 

@@ -15,7 +15,7 @@ feature -- Access
 
 	aom_profiles_access: AOM_PROFILES_ACCESS
 			-- loaded profiles
-		once
+		once ("PROCESS")
 			create Result.make
 		end
 

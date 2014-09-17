@@ -22,7 +22,7 @@ inherit
 feature -- Definitions
 
 	icon_directory: STRING
-		once
+		once ("PROCESS")
 			Result := file_system.pathname (application_startup_directory, "icons")
 		end
 
@@ -54,12 +54,12 @@ feature -- Definitions
 	Definition_grid_col_sibling_order: INTEGER = 5
 	Definition_grid_col_constraint: INTEGER = 6
 	Definition_grid_col_max: INTEGER
-		once
+		once ("PROCESS")
 			Result := Definition_grid_col_constraint
 		end
 
 	Definition_grid_col_names: HASH_TABLE [STRING, INTEGER]
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (get_text (ec_definition_grid_col_rm_name_text), Definition_grid_col_rm_name)
 			Result.put (get_text (ec_definition_grid_col_meaning_text), Definition_grid_col_meaning)
@@ -73,14 +73,14 @@ feature -- Definitions
 	Rules_grid_col_expr_value: INTEGER = 2
 
 	Rules_grid_col_names: HASH_TABLE [STRING, INTEGER]
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (get_text (ec_rules_grid_col_expr_type_text), Rules_grid_col_expr_type)
 			Result.put (get_text (ec_rules_grid_col_expr_value_text), Rules_grid_col_expr_value)
 		end
 
 	Value_sets_grid_col_names: HASH_TABLE [STRING, INTEGER]
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (get_text (ec_value_sets_grid_col_code_text), Value_sets_grid_col_code)
 			Result.put (get_text (ec_value_sets_grid_col_text_text), Value_sets_grid_col_text)
@@ -91,12 +91,12 @@ feature -- Definitions
 	Value_sets_grid_col_text: INTEGER = 2
 	Value_sets_grid_col_description: INTEGER = 3
 	Value_sets_grid_col_max: INTEGER
-		once
+		once ("PROCESS")
 			Result := Value_sets_grid_col_description
 		end
 
 	Id_terms_grid_col_names: HASH_TABLE [STRING, INTEGER]
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (get_text (ec_id_terms_grid_col_code_text), Id_terms_grid_col_code)
 			Result.put (get_text (ec_id_terms_grid_col_text_text), Id_terms_grid_col_text)
@@ -107,7 +107,7 @@ feature -- Definitions
 	Id_terms_grid_col_text: INTEGER = 2
 	Id_terms_grid_col_description: INTEGER = 3
 	Id_terms_grid_col_max: INTEGER
-		once
+		once ("PROCESS")
 			Result := Id_terms_grid_col_description
 		end
 
@@ -126,7 +126,7 @@ feature -- Definitions
 
 	Tool_tab_index: HASH_TABLE [STRING, INTEGER]
 			-- names of tool tabs keyed by tab constants
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put (get_text (ec_description_tab_text), Tool_tab_description)
 			Result.put (get_text (ec_definition_tab_text), Tool_tab_definition)
@@ -160,7 +160,7 @@ feature -- Definitions
 
 	Tool_tab_reverse_index: HASH_TABLE [INTEGER, STRING]
 			-- names of tool tabs keyed by tab constants
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			across Tool_tab_index as tabs_csr loop
 				Result.put (tabs_csr.key, tabs_csr.item)
@@ -168,7 +168,7 @@ feature -- Definitions
 		end
 
 	Tool_tab_names: ARRAYED_LIST [STRING]
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.compare_objects
 			Result.append (Tool_tab_index.linear_representation)
@@ -186,7 +186,7 @@ feature -- Definitions
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT BLUE
-		once
+		once ("PROCESS")
 			-- create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
 			create Result.make_with_8_bit_rgb (0x99, 0x99, 0xff)
 		end
@@ -194,14 +194,14 @@ feature -- Definitions
 	archetype_rm_type_redefined_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- DARK GREY
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0x66, 0x66, 0x66)
 		end
 
 	archetype_rm_type_color: EV_COLOR
 			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK BLUE
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0, 0, 0x99)
 		end
 
@@ -215,14 +215,14 @@ feature -- Definitions
 	rm_type_color: EV_COLOR
 			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK GREY
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
 		end
 
 	rm_attribute_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- VERY DARK GREY
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
 			-- create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
@@ -230,7 +230,7 @@ feature -- Definitions
 	rm_runtime_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
-		once
+		once ("PROCESS")
 			-- create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
 			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
@@ -238,21 +238,21 @@ feature -- Definitions
 	rm_infrastructure_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- LIGHT GREY
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
 		end
 
 	Archetype_constraint_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- RED
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 	Binding_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
-		once
+		once ("PROCESS")
 			-- create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
 			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
@@ -260,42 +260,42 @@ feature -- Definitions
 	At_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- RED
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 	Ac_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- FOREST GREEN
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0, 0x66, 0)
 		end
 
 	Id_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- DARK BLUE
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
 		end
 
 	Id_code_color_inherited: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- MEDIUM GREY
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
 
 	Repository_remote_proxy_color: EV_COLOR
 			-- foreground colour for displaying remote proxy entry in repo list in the UI
 			-- MEDIUM GREY
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
 
 	Ev_grid_text_link_colour: EV_COLOR
 			-- foreground colour for links in EV_GRID
 			-- BLUE
-		once
+		once ("PROCESS")
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
@@ -698,7 +698,7 @@ feature {NONE} -- Implementation
 
 	splash_text: STRING
 			-- Text for splash screens, About boxes, etc.
-		once
+		once ("PROCESS")
 			create Result.make_empty
 			Result.append ("ADL " + Latest_adl_version + " Workbench  v" + app_version.out + "%N")
 			Result.append ("(c) 2003- openEHR Foundation%N")
@@ -719,7 +719,7 @@ feature {NONE} -- Implementation
 		end
 
 	app_version: OPENEHR_VERSION
-		once
+		once ("PROCESS")
 			create Result
 		end
 
