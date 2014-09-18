@@ -321,7 +321,9 @@ feature {NONE} -- Events
 			clone_repository_url := a_rem_proxy.remote_url
 
 			-- set status update to agent that will do live update from to the grid status cell
-			old_set_stderr_agent := stderr_agent
+			old_stdout_agent := stdout_agent
+			set_stdout_agent (agent update_grid_install_status)
+			old_stderr_agent := stderr_agent
 			set_stderr_agent (agent update_grid_install_status)
 
 			-- if there is a repostory at this path, then see if it can be added
@@ -332,7 +334,7 @@ feature {NONE} -- Events
 					agent (a_parent_dir, a_repo_type: STRING)
 						do
 							archetype_repository_interfaces.extend_checkout_from_remote (a_parent_dir, clone_repository_url, a_repo_type)
-							on_clone_repository_poll_agent.set_interval (50)
+							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
 						end (repo_parent_dir, a_rem_proxy.remote_type)
 				)
 			else
@@ -363,7 +365,7 @@ feature {NONE} -- Events
 							on_clone_repository_poll_agent.set_interval (0)
 							on_clone_repository_finalise
 						else
-							on_clone_repository_poll_agent.set_interval (50)
+							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
 						end
 					end
 			)
@@ -395,7 +397,10 @@ feature {NONE} -- Events
 			ok_cancel_buttons.enable_sensitive
 
 			-- reset command output
-			if attached old_set_stderr_agent as att_agt then
+			if attached old_stdout_agent as att_agt then
+				set_stdout_agent (att_agt)
+			end
+			if attached old_stderr_agent as att_agt then
 				set_stderr_agent (att_agt)
 			end
 			ev_live_status_text.set_text ("")
@@ -403,7 +408,9 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
-	old_set_stderr_agent: like stderr_agent
+	old_stdout_agent: like stdout_agent
+
+	old_stderr_agent: like stderr_agent
 
 	do_populate
 			-- Set the dialog widgets from shared settings.
@@ -792,14 +799,56 @@ feature {NONE} -- Actions
 			-- do a VCS update on `a_rep_if' repository
 		require
 			a_rep_if.has_repository_tool
+		do
+			vcs_update_repository_interface := a_rep_if
+
+			-- set status update to agent that will do live update from to the grid status cell
+			old_stdout_agent := stdout_agent
+			set_stdout_agent (agent update_grid_install_status)
+			old_stderr_agent := stderr_agent
+			set_stderr_agent (agent update_grid_install_status)
+
+			ok_cancel_buttons.disable_sensitive
+			do_with_wait_cursor (Current,
+				agent (a_rep: ARCHETYPE_REPOSITORY_INTERFACE)
+					do
+						a_rep.update_from_remote
+						do_repository_vcs_update_poll_agent.set_interval (External_process_poll_period)
+					end (a_rep_if)
+			)
+		end
+
+	vcs_update_repository_interface: detachable ARCHETYPE_REPOSITORY_INTERFACE
+
+	do_repository_vcs_update_poll_agent: EV_TIMEOUT
+			-- Timer to check if process is still running
+		once
+			create Result
+			Result.actions.extend (
+				agent
+					do
+						if live_processes.is_empty then
+							do_repository_vcs_update_poll_agent.set_interval (0)
+							do_repository_vcs_update_finalise
+						else
+							do_repository_vcs_update_poll_agent.set_interval (External_process_poll_period)
+						end
+					end
+			)
+		end
+
+	do_repository_vcs_update_finalise
+			-- do a VCS update on `a_rep_if' repository
+		require
+			vcs_update_repository_interface.has_repository_tool
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			a_rep_if.update_from_remote
+			check attached vcs_update_repository_interface end
 			if last_command_result.succeeded then
 				create info_dialog.make_with_text (last_command_result.stdout)
 				info_dialog.show_modal_to_window (Current)
-				a_rep_if.reload_repository_definition
+				vcs_update_repository_interface.reload_repository_definition
 				populate_grid
 			elseif last_command_result.failed then
 				create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
@@ -808,6 +857,17 @@ feature {NONE} -- Actions
 				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (Current)
 			end
+
+			-- reset command output
+			if attached old_stdout_agent as att_agt then
+				set_stdout_agent (att_agt)
+			end
+			if attached old_stderr_agent as att_agt then
+				set_stderr_agent (att_agt)
+			end
+			ev_live_status_text.set_text ("")
+
+			ok_cancel_buttons.enable_sensitive
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL
