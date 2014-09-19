@@ -30,13 +30,6 @@ inherit
 			copy, default_create
 		end
 
-	GLOBAL_ERROR_REPORTING_LEVEL
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 feature {NONE} -- Initialization
 
 	create_interface_objects
