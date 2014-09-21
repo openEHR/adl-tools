@@ -164,10 +164,10 @@ feature -- Access
 
 feature -- Status Report
 
-	show_codes: BOOLEAN
+	local_show_codes: BOOLEAN
 			-- True if codes should be shown in the definition rendering
 
-	show_rm_inheritance: BOOLEAN
+	local_show_rm_inheritance: BOOLEAN
 			-- True if inheritance status should be shown in definition rendering of specialised archetypes
 
 	local_show_technical_view: BOOLEAN
@@ -184,6 +184,24 @@ feature -- Status Report
 
 	local_show_rm_infrastructure_properties: BOOLEAN
 			-- local version of global flag, used only for editing
+
+	show_codes: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_codes
+			else
+				Result := global_show_codes
+			end
+		end
+
+	show_rm_inheritance: BOOLEAN
+		do
+			if editing_enabled then
+				Result := local_show_rm_inheritance
+			else
+				Result := global_show_rm_inheritance
+			end
+		end
 
 	show_technical_view: BOOLEAN
 		do
@@ -258,7 +276,7 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
 			local_show_technical_view := True
 			local_show_rm_data_properties := True
-			show_codes := True
+			local_show_codes := True
 		end
 
 	disable_edit
@@ -286,7 +304,11 @@ feature {NONE} -- Events
 
 	update_show_codes (a_flag: BOOLEAN)
 		do
-			show_codes := a_flag
+			if editing_enabled then
+				local_show_codes := a_flag
+			else
+				set_global_show_codes (a_flag)
+			end
 			if attached source then
 				redisplay
 			end
@@ -386,7 +408,11 @@ feature {NONE} -- Events
 
 	update_show_rm_inheritance (a_flag: BOOLEAN)
 		do
-			show_rm_inheritance := a_flag
+			if editing_enabled then
+				local_show_rm_inheritance := a_flag
+			else
+				set_global_show_rm_inheritance (a_flag)
+			end
 			if attached source then
 				redisplay
 			end

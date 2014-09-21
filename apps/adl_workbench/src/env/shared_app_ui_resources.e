@@ -544,6 +544,30 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/show_rm_infrastructure_properties", flag)
 		end
 
+	global_show_rm_inheritance: BOOLEAN
+			-- Use inheritance-based colourisation in definition tree?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_rm_inheritance")
+		end
+
+	set_global_show_rm_inheritance (flag: BOOLEAN)
+			-- Set flag for whether to show inheritance-based colourisation in definition tree
+		do
+			app_cfg.put_value ("/gui/show_rm_inheritance", flag)
+		end
+
+	global_show_codes: BOOLEAN
+			-- Show codes in definition tree?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_codes")
+		end
+
+	set_global_show_codes (flag: BOOLEAN)
+			-- Set flag for whether to show codes in definition tree
+		do
+			app_cfg.put_value ("/gui/show_codes", flag)
+		end
+
 	show_line_numbers: BOOLEAN
 			-- Display line numbers in the ADL source text box?
 		do
