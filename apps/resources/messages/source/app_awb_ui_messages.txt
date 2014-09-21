@@ -33,6 +33,7 @@ templates = <
 		["export_as_xml"] = <"Export as XML...">
 		["export_xml"] = <"Export as XML">
 		["tree_controls"] = <"Tree control">
+		["status"] = <"Status">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["remove_library_cfg"] = <"Removing invalid configuration (error: $1)">
@@ -95,7 +96,7 @@ templates = <
 
 		-- REPOSITORY_INSTALL_DIALOG
 		["repository_install_dialog_title"] = <"Install Repository">
-		["repository_install_dialog_header_label"] = <"Repository at $1%NASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and check the box.">
+		["repository_install_dialog_header_label"] = <"Repository at $1%NASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.">
 		["repository_clone_here_text"] = <"Create new clone & checkout below this directory">
 		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 

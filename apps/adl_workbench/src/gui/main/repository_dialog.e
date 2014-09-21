@@ -241,171 +241,6 @@ feature {NONE} -- Events
 			hide
 		end
 
-	on_add_repository (repo_dir: STRING)
-			-- add a new repository, either by:
-			--	* association of existing checkout to its remote location
-			--	* clone from a remote location
-			--	* create a new local repository, unconnected to any remote
-		local
-			error_dialog: EV_INFORMATION_DIALOG
-			new_repo_dialog: EV_QUESTION_DIALOG
-		do
-			-- if there is a repostory at this path, then see if it can be added
-			if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
-				if is_checkout_area (repo_dir) then
-					on_associate_repository (repo_dir)
-				else
-					archetype_repository_interfaces.extend (repo_dir)
-				end
-
-			-- see if the user wants to create a new local repository here, by creating a repository definition file
-			elseif file_system.directory_exists (repo_dir) then
-				-- valid path for new repository to be created
-				if archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
-					set_last_user_selected_directory (repo_dir)
-					create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
-						<<agent on_create_new_repository, agent do end, agent do end>>)
-					new_repo_dialog.show_modal_to_window (Current)
-				else
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
-					error_dialog.show_modal_to_window (Current)
-				end
-			else
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
-				error_dialog.show_modal_to_window (Current)
-			end
-		end
-
-	on_associate_repository (repo_dir: STRING)
-			-- add an existing repository that has a local checkout
-		require
-			archetype_repository_interfaces.repository_exists_at_path (repo_dir) and is_checkout_area (repo_dir)
-		local
-			error_dialog: EV_INFORMATION_DIALOG
-		do
-			set_last_user_selected_directory (repo_dir)
-			if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
-				ok_cancel_buttons.disable_sensitive
-				do_with_wait_cursor (Current,
-					agent (a_dir: STRING)
-						do
-							archetype_repository_interfaces.extend_associate_with_remote (a_dir)
-						end (repo_dir)
-				)
-				if last_command_result.succeeded then
-					populate_grid
-
-				elseif last_command_result.failed then
-					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
-					error_dialog.show_modal_to_window (Current)
-
-				else
-					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
-					error_dialog.show_modal_to_window (Current)
-				end
-				ok_cancel_buttons.enable_sensitive
-			else
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
-				error_dialog.show_modal_to_window (Current)
-			end
-		end
-
-	on_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
-			-- clone an existing remote repository to a new checkout
-		local
-			error_dialog: EV_INFORMATION_DIALOG
-			repo_name, repo_dir: STRING
-		do
-			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
-			clone_repository_dir := file_system.pathname (repo_parent_dir, repo_name)
-			clone_repository_url := a_rem_proxy.remote_url
-
-			-- set status update to agent that will do live update from to the grid status cell
-			old_stdout_agent := stdout_agent
-			set_stdout_agent (agent update_grid_install_status)
-			old_stderr_agent := stderr_agent
-			set_stderr_agent (agent update_grid_install_status)
-
-			-- if there is a repostory at this path, then see if it can be added
-			if archetype_repository_interfaces.valid_clone_directory (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type) then
-				set_last_user_selected_directory (repo_parent_dir)
-				ok_cancel_buttons.disable_sensitive
-				do_with_wait_cursor (Current,
-					agent (a_parent_dir, a_repo_type: STRING)
-						do
-							archetype_repository_interfaces.extend_checkout_from_remote (a_parent_dir, clone_repository_url, a_repo_type)
-							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
-						end (repo_parent_dir, a_rem_proxy.remote_type)
-				)
-			else
-				create error_dialog.make_with_text (get_msg (ec_repository_clone_dir_invalid,
-					<<repo_parent_dir, a_rem_proxy.remote_url, repo_name>>))
-				error_dialog.show_modal_to_window (Current)
-			end
-		end
-
-	clone_repository_dir: STRING
-		attribute
-			create Result.make_empty
-		end
-
-	clone_repository_url: STRING
-		attribute
-			create Result.make_empty
-		end
-
-	on_clone_repository_poll_agent: EV_TIMEOUT
-			-- Timer to check if process is still running
-		once
-			create Result
-			Result.actions.extend (
-				agent
-					do
-						if live_processes.is_empty then
-							on_clone_repository_poll_agent.set_interval (0)
-							on_clone_repository_finalise
-						else
-							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
-						end
-					end
-			)
-		end
-
-	on_clone_repository_finalise
-			-- finalise clone an existing remote repository to a new checkout
-		local
-			error_dialog: EV_INFORMATION_DIALOG
-		do
-			if last_command_result.succeeded then
-				do_with_wait_cursor (Current,
-					agent (a_parent_dir, a_repo_type: STRING)
-						do
-							archetype_repository_interfaces.extend_checkout_from_remote_finalise (clone_repository_url)
-							populate_grid
-							add_repository_path_with_key (clone_repository_dir, archetype_repository_interfaces.item (clone_repository_dir).key)
-						end
-				)
-
-			elseif last_command_result.failed then
-				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
-				error_dialog.show_modal_to_window (Current)
-
-			else
-				create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
-				error_dialog.show_modal_to_window (Current)
-			end
-			ok_cancel_buttons.enable_sensitive
-
-			-- reset command output
-			if attached old_stdout_agent as att_agt then
-				set_stdout_agent (att_agt)
-			end
-			if attached old_stderr_agent as att_agt then
-				set_stderr_agent (att_agt)
-			end
-			ev_live_status_text.set_text ("")
-		end
-
 feature {NONE} -- Implementation
 
 	old_stdout_agent: like stdout_agent
@@ -650,6 +485,171 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Actions
+
+	on_add_repository (repo_dir: STRING)
+			-- add a new repository, either by:
+			--	* association of existing checkout to its remote location
+			--	* clone from a remote location
+			--	* create a new local repository, unconnected to any remote
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+			new_repo_dialog: EV_QUESTION_DIALOG
+		do
+			-- if there is a repostory at this path, then see if it can be added
+			if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
+				if is_checkout_area (repo_dir) then
+					on_associate_repository (repo_dir)
+				else
+					archetype_repository_interfaces.extend (repo_dir)
+				end
+
+			-- see if the user wants to create a new local repository here, by creating a repository definition file
+			elseif file_system.directory_exists (repo_dir) then
+				-- valid path for new repository to be created
+				if archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
+					set_last_user_selected_directory (repo_dir)
+					create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
+						<<agent on_create_new_repository, agent do end, agent do end>>)
+					new_repo_dialog.show_modal_to_window (Current)
+				else
+					create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
+					error_dialog.show_modal_to_window (Current)
+				end
+			else
+				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
+				error_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	on_associate_repository (repo_dir: STRING)
+			-- add an existing repository that has a local checkout
+		require
+			archetype_repository_interfaces.repository_exists_at_path (repo_dir) and is_checkout_area (repo_dir)
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			set_last_user_selected_directory (repo_dir)
+			if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
+				ok_cancel_buttons.disable_sensitive
+				do_with_wait_cursor (Current,
+					agent (a_dir: STRING)
+						do
+							archetype_repository_interfaces.extend_associate_with_remote (a_dir)
+						end (repo_dir)
+				)
+				if last_command_result.succeeded then
+					populate_grid
+
+				elseif last_command_result.failed then
+					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+					error_dialog.show_modal_to_window (Current)
+
+				else
+					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+					error_dialog.show_modal_to_window (Current)
+				end
+				ok_cancel_buttons.enable_sensitive
+			else
+				create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+				error_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	on_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
+			-- clone an existing remote repository to a new checkout
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+			repo_name, repo_dir: STRING
+		do
+			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
+			clone_repository_dir := file_system.pathname (repo_parent_dir, repo_name)
+			clone_repository_url := a_rem_proxy.remote_url
+
+			-- set status update to agent that will do live update from to the grid status cell
+			old_stdout_agent := stdout_agent
+			set_stdout_agent (agent update_grid_install_status)
+			old_stderr_agent := stderr_agent
+			set_stderr_agent (agent update_grid_install_status)
+
+			-- if there is a repostory at this path, then see if it can be added
+			if archetype_repository_interfaces.valid_clone_directory (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type) then
+				set_last_user_selected_directory (repo_parent_dir)
+				ok_cancel_buttons.disable_sensitive
+				do_with_wait_cursor (Current,
+					agent (a_parent_dir, a_repo_type: STRING)
+						do
+							archetype_repository_interfaces.extend_checkout_from_remote (a_parent_dir, clone_repository_url, a_repo_type)
+							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
+						end (repo_parent_dir, a_rem_proxy.remote_type)
+				)
+			else
+				create error_dialog.make_with_text (get_msg (ec_repository_clone_dir_invalid,
+					<<repo_parent_dir, a_rem_proxy.remote_url, repo_name>>))
+				error_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	clone_repository_dir: STRING
+		attribute
+			create Result.make_empty
+		end
+
+	clone_repository_url: STRING
+		attribute
+			create Result.make_empty
+		end
+
+	on_clone_repository_poll_agent: EV_TIMEOUT
+			-- Timer to check if process is still running
+		once
+			create Result
+			Result.actions.extend (
+				agent
+					do
+						if live_processes.is_empty then
+							on_clone_repository_poll_agent.set_interval (0)
+							on_clone_repository_finalise
+						else
+							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
+						end
+					end
+			)
+		end
+
+	on_clone_repository_finalise
+			-- finalise clone an existing remote repository to a new checkout
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			if last_command_result.succeeded then
+				do_with_wait_cursor (Current,
+					agent (a_parent_dir, a_repo_type: STRING)
+						do
+							archetype_repository_interfaces.extend_checkout_from_remote_finalise (clone_repository_url)
+							populate_grid
+							add_repository_path_with_key (clone_repository_dir, archetype_repository_interfaces.item (clone_repository_dir).key)
+						end
+				)
+
+			elseif last_command_result.failed then
+				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+				error_dialog.show_modal_to_window (Current)
+
+			else
+				create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+				error_dialog.show_modal_to_window (Current)
+			end
+			ok_cancel_buttons.enable_sensitive
+
+			-- reset command output
+			if attached old_stdout_agent as att_agt then
+				set_stdout_agent (att_agt)
+			end
+			if attached old_stderr_agent as att_agt then
+				set_stderr_agent (att_agt)
+			end
+			ev_live_status_text.set_text ("")
+		end
 
 	edit_repository_definition (a_grid_row: EV_GRID_ROW; a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- launch edit dialog

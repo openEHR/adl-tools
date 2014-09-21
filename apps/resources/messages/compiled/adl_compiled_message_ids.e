@@ -307,6 +307,7 @@ feature -- Definitions
 		ec_export_as_xml: STRING = "export_as_xml"
 		ec_export_xml: STRING = "export_xml"
 		ec_tree_controls: STRING = "tree_controls"
+		ec_status: STRING = "status"
 		ec_remove_library_cfg: STRING = "remove_library_cfg"
 		ec_library_cfg_error: STRING = "library_cfg_error"
 		ec_invalid_library_cfg: STRING = "invalid_library_cfg"
