@@ -115,7 +115,7 @@ feature -- Access
 			end
 		end
 
-	implied_occurrences: MULTIPLICITY_INTERVAL
+	default_child_occurrences: MULTIPLICITY_INTERVAL
 			-- generate default occurrences for any child object, based on existence and cardinality
 		local
 			occ_lower, occ_upper: INTEGER
@@ -142,7 +142,7 @@ feature -- Access
 			end
 		end
 
-	occurrences_lower_sum: INTEGER
+	aggregate_occurrences_lower_sum: INTEGER
 			-- calculate sum of all occurrences lower bounds; where no occurrences are stated, 0 is assumed
 		do
 			across children as c_obj_csr loop
@@ -150,6 +150,17 @@ feature -- Access
 					Result := Result + c_obj_csr.item.occurrences.lower
 				end
 			end
+		end
+
+	aggregate_occurrences_upper_is_one (an_ancestor_node_id: STRING): BOOLEAN
+			-- sum of all occurrences upper bound of children of `an_ancestor_node_id' under this node
+			-- is 1. For example, if this C_ATTRIBUTE node in a differential archetype has one child
+			-- id4.0.1, with occurrences.upper = 1, for ancestor id id4, then Result = True.
+		local
+			matching_children: ARRAYED_LIST [C_OBJECT]
+		do
+			matching_children := children_matching_id (an_ancestor_node_id)
+			Result := matching_children.count = 1 and matching_children.first.is_occurrences_upper_one
 		end
 
 	minimum_child_count: INTEGER
@@ -236,9 +247,9 @@ feature -- Access
 			-- nodes with ids 'at0013.1', 'at0013.2', 'at0013.1.5' and so on
 		do
 			create Result.make(0)
-			across children as children_csr loop
- 				if children_csr.item.node_id.has_substring (a_node_id) then
- 					Result.extend (children_csr.item)
+			across children as child_csr loop
+ 				if codes_conformant (child_csr.item.node_id, a_node_id) then
+ 					Result.extend (child_csr.item)
  				end
 			end
 		end
@@ -257,8 +268,8 @@ feature -- Access
 	child_reuse_count (a_node_id: STRING): INTEGER
 			-- number of children with either `a_node_id' or specialisations of `a_node_id'
 		do
-			across children as c_obj_csr loop
-				if codes_conformant (c_obj_csr.item.node_id, a_node_id) then
+			across children as child_csr loop
+				if codes_conformant (child_csr.item.node_id, a_node_id) then
 					Result := Result + 1
 				end
 			end
@@ -753,7 +764,7 @@ end
 invariant
 	Rm_attribute_name_valid: not rm_attribute_name.is_empty
 	Any_allowed_validity: any_allowed xor not children.is_empty
-	Children_occurrences_lower_sum_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies occurrences_lower_sum <= att_card.interval.upper
+	Children_occurrences_lower_sum_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies aggregate_occurrences_lower_sum <= att_card.interval.upper
 	Children_orphans_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies minimum_child_count <= att_card.interval.upper
 	Differential_path_valid: attached differential_path as att_diff_path implies not att_diff_path.is_empty
 	Alternatives_valid: not is_multiple implies children.for_all (agent (co: C_OBJECT): BOOLEAN do Result := co.occurrences.upper <= 1 end)

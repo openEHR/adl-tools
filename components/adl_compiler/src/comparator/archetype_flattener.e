@@ -311,8 +311,8 @@ end
 
 					-- if node_id is redefined at this level - e.g. id4.0.1, then it is potentially a multiple override. We
 					-- figure out if the parent node (e.g. id4) is:
-					--	* 'closed' (explicit close instruction) or
-					--	* max occurrences = 1
+					--	* 'closed': occurrences matches {0}, OR
+					--	* max occurrences = 1:
 					-- If closed or max occurrences = 1, and this is the first override node for that parent, we override the
 					-- current (only) clone of the parent node (e.g. id4) in the flat, else, we clone that node first from the
 					-- parent flat into the output flat, and then overlay from the diff.
@@ -322,7 +322,7 @@ end
 					check attached {C_COMPLEX_OBJECT} arch_parent_flat.object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as co_in_flat then
 						cco_parent_flat := co_in_flat
 					end
-					max_occurrences_is_one := cco_parent_flat.is_max_occurrences_one or cco_child_diff.is_max_occurrences_one
+					max_occurrences_is_one := cco_parent_flat.is_occurrences_upper_one or (ca_parent_in_child.aggregate_occurrences_upper_is_one (overlay_node_id_in_flat))
 					if (specialisation_depth_from_code (cco_child_diff.node_id) = arch_parent_flat.specialisation_depth or parent_node_closed or max_occurrences_is_one) and
 						arch_output_flat.has_object_path (cco_overlay_path)
 					then
@@ -671,6 +671,7 @@ end
 			co_child_diff, new_obj: C_OBJECT
 			node_id_in_flat: STRING
 			co_output_insert_pos, co_output_del_pos_sibling: detachable C_OBJECT
+			ca_parent_in_child: C_ATTRIBUTE
 			i: INTEGER
 		do
 			co_output_insert_pos := merge_desc.co_output_insert_pos
@@ -740,7 +741,16 @@ end
 
 						-- any other combination of AOM types
 						else
-							ca_output.replace_child_by_id (new_obj, node_id_in_flat)
+							-- decide on whether to replace the parent node in the output flat, or to add next to it
+							-- based on effective aggregated max occurrences
+							check attached co_child_diff.parent as att_parent then
+								ca_parent_in_child := att_parent
+							end
+							if co_output_insert_pos.is_occurrences_upper_one or (ca_parent_in_child.aggregate_occurrences_upper_is_one (node_id_in_flat)) then
+								ca_output.replace_child_by_id (new_obj, node_id_in_flat)
+							else
+								ca_output.put_child_right (new_obj, co_output_insert_pos)
+							end
 						end
 						co_output_insert_pos := new_obj
 					end
