@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_CIMI_CLUSTER_REFERENCE
+class ICON_RM_CIMI_ITEM_GROUP_REFERENCE
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/cimi/cluster_reference"
+			key := "rm/cimi/item_group_reference"
 			make_with_size (16, 16)
 			fill_memory
 		end
