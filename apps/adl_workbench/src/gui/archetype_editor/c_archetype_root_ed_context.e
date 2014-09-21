@@ -12,7 +12,7 @@ class C_ARCHETYPE_ROOT_ED_CONTEXT
 inherit
 	C_COMPLEX_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, rm_properties, display_constraint
+			arch_node, rm_properties, display_constraint, c_pixmap
 		end
 
 create
@@ -34,6 +34,26 @@ feature -- Access
 		end
 
 feature {NONE} -- Implementation
+
+	c_pixmap: EV_PIXMAP
+			-- find a pixmap for an ARCHETYPE_SLOT node if using RM pixmaps
+		local
+			base_pixmap_name, ref_pixmap_name: STRING
+		do
+			if use_rm_pixmaps and attached arch_node as a_n then
+				base_pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
+				create ref_pixmap_name.make_empty
+				ref_pixmap_name.append (base_pixmap_name)
+				ref_pixmap_name.append ("_reference")
+				if has_icon_pixmap (ref_pixmap_name) then
+					Result := get_icon_pixmap (ref_pixmap_name)
+				else
+					Result := get_icon_pixmap (base_pixmap_name)
+				end
+			else
+				Result := precursor
+			end
+		end
 
 	display_constraint
 		do
