@@ -323,8 +323,8 @@ end
 						cco_parent_flat := co_in_flat
 					end
 					max_occurrences_is_one := cco_parent_flat.is_occurrences_upper_one or (ca_parent_in_child.aggregate_occurrences_upper_is_one (overlay_node_id_in_flat))
-					if (specialisation_depth_from_code (cco_child_diff.node_id) = arch_parent_flat.specialisation_depth or parent_node_closed or max_occurrences_is_one) and
-						arch_output_flat.has_object_path (cco_overlay_path)
+					if arch_output_flat.has_object_path (cco_overlay_path) and
+						(cco_child_diff.node_id.is_equal (overlay_node_id_in_flat) or parent_node_closed or max_occurrences_is_one)
 					then
 						check attached {C_COMPLEX_OBJECT} arch_output_flat.object_at_path (cco_overlay_path) as co then
 							cco_output_flat := co
