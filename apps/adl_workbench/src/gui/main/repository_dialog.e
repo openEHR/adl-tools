@@ -225,8 +225,9 @@ feature {NONE} -- Events
 	on_ok
 			-- Set shared settings from the dialog widgets.
 		do
-			if original_current_library_selected.is_empty and not archetype_library_interfaces.is_empty or else
-				not original_current_library_selected.is_empty and not archetype_library_interfaces.has (original_current_library_selected)
+			if not archetype_library_interfaces.is_empty and
+				(original_current_library_selected.is_empty or else
+				 not archetype_library_interfaces.has (original_current_library_selected))
 			then
 				set_current_library_name (archetype_library_interfaces.keys.first)
 				current_library_changed := True
@@ -539,6 +540,7 @@ feature {NONE} -- Actions
 				)
 				if last_command_result.succeeded then
 					populate_grid
+					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
 
 				elseif last_command_result.failed then
 					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
@@ -559,7 +561,7 @@ feature {NONE} -- Actions
 			-- clone an existing remote repository to a new checkout
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			repo_name, repo_dir: STRING
+			repo_name: STRING
 		do
 			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
 			clone_repository_dir := file_system.pathname (repo_parent_dir, repo_name)
@@ -693,7 +695,7 @@ feature {NONE} -- Actions
 			-- create a new local repository, save it, and repopulate
 		do
 			archetype_repository_interfaces.extend_create_local (repo_dir_setter.data_control_text)
-			add_repository_path (repo_dir_setter.data_control_text)
+			add_repository_path_with_key (repo_dir_setter.data_control_text, archetype_repository_interfaces.last_repository_interface.key)
 			populate_grid
 		end
 
@@ -756,6 +758,10 @@ feature {NONE} -- Actions
 				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 		    	menu.extend (an_mi)
 			end
+
+			-- remove
+			create an_mi.make_with_text_and_action (get_text (ec_repository_remove_menu_text), agent repository_remove (a_rep_if))
+		   	menu.extend (an_mi)
 
 			menu.show
 		end
@@ -868,6 +874,25 @@ feature {NONE} -- Actions
 			ev_live_status_text.set_text ("")
 
 			ok_cancel_buttons.enable_sensitive
+		end
+
+	repository_remove (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- remove `a_rep_if' repository
+		local
+			verify_dialog: EV_QUESTION_DIALOG
+		do
+			create verify_dialog.make_with_text (get_msg (ec_repository_remove_confirm_text, <<a_rep_if.key>>))
+			verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+			verify_dialog.show_modal_to_window (Current)
+			if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+				archetype_repository_interfaces.remove (a_rep_if)
+				populate_grid
+				if not archetype_library_interfaces.has (original_current_library_selected) then
+					forget_current_library_name
+					current_library_removed := True
+				end
+				remove_repository (a_rep_if.key)
+			end
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL

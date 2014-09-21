@@ -60,6 +60,11 @@ feature -- Access
 
 feature -- Status Report
 
+	has_libraries: BOOLEAN
+		do
+			Result := not archetype_library_interfaces.is_empty
+		end
+
 	has_current_library: BOOLEAN
 		do
 			Result := archetype_library_interfaces.has (current_library_name)

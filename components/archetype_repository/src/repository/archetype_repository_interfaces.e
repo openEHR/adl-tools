@@ -16,6 +16,11 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists, tool_supported, is_checkout_area
 		end
 
+	SHARED_ARCHETYPE_LIBRARY_INTERFACES
+		export
+			{NONE} all
+		end
+
 	TABLE_ITERABLE [ARCHETYPE_REPOSITORY_INTERFACE, STRING]
 
 create
@@ -47,12 +52,24 @@ feature -- Access
 		attribute
 		end
 
+	count: INTEGER
+			-- number of interfaces installed
+		do
+			Result := repositories.count
+		end
+
 feature -- Status Report
 
 	has (a_repo_local_path: STRING): BOOLEAN
 			-- True if a repository at `a_repo_local_path' already loaded
 		do
 			Result := repositories.has (a_repo_local_path)
+		end
+
+	has_repository (a_repo: ARCHETYPE_REPOSITORY_INTERFACE): BOOLEAN
+			-- True if a `a_repo' loaded
+		do
+			Result := repositories.has_item (a_repo)
 		end
 
 	has_key (a_key: STRING): BOOLEAN
@@ -209,10 +226,19 @@ feature -- Commands
 			has_remote_repository (a_repository_url)
 		end
 
+	remove (a_repo: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- remove a_repo and all its libraries from the configuration (don't touch anything on the system however)
+		require
+			has_repository (a_repo)
+		do
+			archetype_library_interfaces.remove_repository (a_repo.local_directory)
+			repositories.remove (a_repo.local_directory)
+		end
+
 feature {NONE} -- Implementation
 
 	repositories: HASH_TABLE [ARCHETYPE_REPOSITORY_INTERFACE, STRING]
-			-- repository interface objects, keyed by repo path
+			-- repository interface objects, keyed by local repo path
 
 end
 

@@ -91,6 +91,26 @@ feature -- Iteration
 			Result := interfaces.new_cursor
 		end
 
+feature {ARCHETYPE_REPOSITORY_INTERFACES} -- Modification
+
+	remove_repository (a_repository_key: STRING)
+			-- remove all libraries with repository key `a_repository_key'
+		local
+			removal_lib_keys: ARRAYED_LIST [STRING]
+		do
+			create removal_lib_keys.make (0)
+			across interfaces as libs_csr loop
+				if libs_csr.item.repository_key.is_equal (a_repository_key) then
+					removal_lib_keys.extend (libs_csr.item.key)
+				end
+			end
+			across removal_lib_keys as lib_keys_csr loop
+				interfaces.remove (lib_keys_csr.item)
+			end
+		ensure
+			across interfaces as libs_csr all not libs_csr.item.repository_key.is_equal (a_repository_key) end
+		end
+
 feature {ARCHETYPE_REPOSITORY_INTERFACE} -- Modification
 
 	wipe_out
@@ -99,14 +119,14 @@ feature {ARCHETYPE_REPOSITORY_INTERFACE} -- Modification
 			interfaces.wipe_out
 		end
 
-	remove (a_repository_key: STRING)
-			-- remove library with key `a_repository_key'
+	remove (a_library_key: STRING)
+			-- remove library with key `a_library_key'
 		require
-			has (a_repository_key)
+			has (a_library_key)
 		do
-			interfaces.remove (a_repository_key)
+			interfaces.remove (a_library_key)
 		ensure
-			not has (a_repository_key)
+			not has (a_library_key)
 		end
 
 	extend (a_library_path, a_repository_key: STRING)

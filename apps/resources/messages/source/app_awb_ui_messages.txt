@@ -100,6 +100,9 @@ templates = <
 		["repository_clone_here_text"] = <"Create new clone & checkout below this directory">
 		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 
+		["repository_remove_confirm_text"] = <"Remove repository $1 from configuration (doesn't change anything on system)?">
+		["repository_remove_menu_text"] = <"Remove">
+
 		-- PROFILE_EDIT_DIALOG
 		["library_cfg_edit_dialog_title"] =  <"Edit Library Configuration">
 		["library_cfg_name_text"] =  <"Archetype Name:">

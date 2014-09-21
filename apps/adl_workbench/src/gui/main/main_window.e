@@ -396,7 +396,7 @@ feature -- Commands
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
 				rm_schema_explorer.populate (rm_schemas_access)
-				if archetype_repository_interfaces.is_empty then
+				if archetype_repository_interfaces.is_empty or archetype_library_interfaces.is_empty then
 					configure_repositories
 				else
 					populate_arch_lib_combo
@@ -524,7 +524,11 @@ feature {NONE} -- Library events
 			-- if the current profile changed or was removed, repopulate the explorers
 			if current_library_removed or current_library_changed then
 				console_tool.clear
-				refresh_archetype_library (True)
+				if has_libraries then
+					refresh_archetype_library (True)
+				else
+					library_tool.clear
+				end
 			end
 		end
 
@@ -536,7 +540,6 @@ feature {NONE} -- Library events
 				set_current_library_name (arch_libraries_combo.text)
 			end
 			refresh_archetype_library (False)
-			clear_all_editors
 		end
 
 	build_all
@@ -1156,7 +1159,6 @@ feature {NONE} -- Implementation
 
 			clear_toolbar_controls
 			error_tool.clear
-			clear_all_editors
 
 			library_tool.populate (current_library)
 			test_tool.populate
@@ -1167,11 +1169,6 @@ feature {NONE} -- Implementation
 		do
 			history_bar.clear
 			address_bar.clear
-		end
-
-	clear_all_editors
-		do
-		--	archetype_editors.clear_all_tools_content
 		end
 
 	populate_arch_lib_combo

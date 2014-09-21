@@ -226,6 +226,13 @@ feature -- Application Switches
 			save_repositories_table
 		end
 
+	remove_repository (a_key: STRING)
+			-- remove repository with key `a_key'
+		do
+			repositories_table.remove_repository (a_key)
+			save_repositories_table
+		end
+
 	save_repositories_table
 			-- hash of repository paths
 		do

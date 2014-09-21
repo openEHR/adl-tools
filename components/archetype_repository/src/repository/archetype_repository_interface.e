@@ -15,6 +15,11 @@ note
 class ARCHETYPE_REPOSITORY_INTERFACE
 
 inherit
+	SHARED_ARCHETYPE_REPOSITORY_INTERFACES
+		export
+			{NONE} all
+		end
+
 	SHARED_ARCHETYPE_LIBRARY_INTERFACES
 		export
 			{NONE} all
@@ -96,7 +101,7 @@ feature -- Access
 				if attached local_definition_file_access.object as att_obj then
 					Result := att_obj
 				else
-					create Result.make_template
+					create Result.make_template ((archetype_repository_interfaces.count + 1).out)
 					local_definition_file_access.save (Result)
 				end
 			end

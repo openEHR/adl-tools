@@ -52,10 +52,13 @@ feature -- Initialisation
 			default_create
 		end
 
-	make_template
-			-- create a blank version for use when creating new repository
+	make_template (id: STRING)
+			-- create a blank version for use when creating new repository; append
+			-- `id' to make it unique
 		do
 			default_create
+			name.append (key_separator)
+			name.append (id)
 		end
 
 feature -- Access (attributes from file)

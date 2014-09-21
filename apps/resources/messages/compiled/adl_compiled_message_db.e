@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (768)
+			create message_table.make (770)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -374,6 +374,8 @@ feature -- Initialisation
 			message_table.put ("Repository at $1%NASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.", ec_repository_install_dialog_header_label)
 			message_table.put ("Create new clone & checkout below this directory", ec_repository_clone_here_text)
 			message_table.put ("Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.", ec_repository_clone_here_tooltip)
+			message_table.put ("Remove repository $1 from configuration (doesn't change anything on system)?", ec_repository_remove_confirm_text)
+			message_table.put ("Remove", ec_repository_remove_menu_text)
 			message_table.put ("Edit Library Configuration", ec_library_cfg_edit_dialog_title)
 			message_table.put ("Archetype Name:", ec_library_cfg_name_text)
 			message_table.put ("Reference Path:", ec_ref_library_dir_text)

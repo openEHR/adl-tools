@@ -359,6 +359,8 @@ feature -- Definitions
 		ec_repository_install_dialog_header_label: STRING = "repository_install_dialog_header_label"
 		ec_repository_clone_here_text: STRING = "repository_clone_here_text"
 		ec_repository_clone_here_tooltip: STRING = "repository_clone_here_tooltip"
+		ec_repository_remove_confirm_text: STRING = "repository_remove_confirm_text"
+		ec_repository_remove_menu_text: STRING = "repository_remove_menu_text"
 		ec_library_cfg_edit_dialog_title: STRING = "library_cfg_edit_dialog_title"
 		ec_library_cfg_name_text: STRING = "library_cfg_name_text"
 		ec_ref_library_dir_text: STRING = "ref_library_dir_text"
