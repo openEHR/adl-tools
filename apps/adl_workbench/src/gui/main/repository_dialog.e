@@ -852,8 +852,6 @@ feature {NONE} -- Actions
 		do
 			check attached vcs_update_repository_interface end
 			if last_command_result.succeeded then
-				create info_dialog.make_with_text (last_command_result.stdout)
-				info_dialog.show_modal_to_window (Current)
 				vcs_update_repository_interface.reload_repository_definition
 				populate_grid
 			elseif last_command_result.failed then
