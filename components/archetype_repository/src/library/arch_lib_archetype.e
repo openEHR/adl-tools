@@ -1175,7 +1175,7 @@ feature {NONE} -- Implementation
 			is_valid
 		do
 			arch_flattener.flatten (include_rm)
-			flat_archetype_cache := arch_flattener.arch_output_flat
+			flat_archetype_cache := arch_flattener.arch_flat_out
 			last_include_rm := include_rm
 		ensure
 			flat_archetype_cache_attached: attached flat_archetype_cache

@@ -54,7 +54,7 @@ feature -- Validation
 
 			-- validation requiring valid specialisation ancestor
 			if passed then
-				if target.is_specialised then
+				if arch_diff_child.is_specialised then
 					validate_specialised_basics
 					validate_specialised_definition
 				end
@@ -76,20 +76,20 @@ feature {NONE} -- Implementation
 			og_tail_path: OG_PATH
 			object_at_matching_path: detachable C_OBJECT
 		do
-			if target.has_rules then
-				across target.rules_index as ref_path_csr loop
+			if arch_diff_child.has_rules then
+				across arch_diff_child.rules_index as ref_path_csr loop
 					-- get a matching path from archetype - has to be there, either exact or partial
 					ref_rm_type_name := Void
 					object_at_matching_path := Void
-					if attached target.matching_path (ref_path_csr.key) as p then
+					if attached arch_diff_child.matching_path (ref_path_csr.key) as p then
 						arch_path := p
-						if target.has_object_path (arch_path) then
-							object_at_matching_path := target.object_at_path (arch_path)
+						if arch_diff_child.has_object_path (arch_path) then
+							object_at_matching_path := arch_diff_child.object_at_path (arch_path)
 						end
-					elseif attached flat_ancestor and then attached flat_ancestor.matching_path (ref_path_csr.key) as p then
+					elseif attached arch_flat_anc and then attached arch_flat_anc.matching_path (ref_path_csr.key) as p then
 						arch_path := p
-						if flat_ancestor.has_object_path (arch_path) then
-							object_at_matching_path := flat_ancestor.object_at_path (arch_path)
+						if arch_flat_anc.has_object_path (arch_path) then
+							object_at_matching_path := arch_flat_anc.object_at_path (arch_path)
 						end
 					end
 					if attached object_at_matching_path as omp and attached arch_path as ap then
@@ -125,22 +125,22 @@ feature {NONE} -- Implementation
 	validate_specialised_basics
 			-- make sure specialised archetype basic relationship to flat ancestor is valid
 		require
-			Target_specialised: target.is_specialised
+			Target_specialised: arch_diff_child.is_specialised
 		do
-			if not target.languages_available.is_subset (flat_ancestor.languages_available) then
-				add_error (ec_VALC, <<target.languages_available_out, flat_ancestor.languages_available_out>>)
+			if not arch_diff_child.languages_available.is_subset (arch_flat_anc.languages_available) then
+				add_error (ec_VALC, <<arch_diff_child.languages_available_out, arch_flat_anc.languages_available_out>>)
 			end
 		end
 
 	validate_specialised_definition
 			-- validate definition of specialised archetype against flat ancestor
 		require
-			Target_specialised: target.is_specialised
+			Target_specialised: arch_diff_child.is_specialised
 		local
 			def_it: C_ITERATOR
 		do
-			ancestor_slot_id_index := target_descriptor.specialisation_ancestor.slot_id_index
-			create def_it.make (target.definition)
+			ancestor_slot_id_index := child_desc.specialisation_ancestor.slot_id_index
+			create def_it.make (arch_diff_child.definition)
 			def_it.do_until_surface (agent specialised_node_validate, agent specialised_node_validate_test)
 		end
 
@@ -171,7 +171,6 @@ feature {NONE} -- Implementation
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype; nodes are pre-tested
 			-- and can be assumed to have a matching path in ancestor archetype
-			-- SIDE-EFFECT: sets is_path_compressible markers on child archetype nodes
 		local
 			co_in_flat_anc: C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
@@ -184,27 +183,27 @@ debug ("validate")
 	io.put_string ("C_ATTRIBUTE - " + a_c_node.path  + "%N")
 end
 				create apa.make_from_string (a_c_node.path)
-				ca_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
-				ca_in_flat_anc := flat_ancestor.attribute_at_path (ca_path_in_flat)
+				ca_path_in_flat := apa.path_at_level (arch_flat_anc.specialisation_depth)
+				ca_in_flat_anc := arch_flat_anc.attribute_at_path (ca_path_in_flat)
 
 				if not ca_child_diff.c_conforms_to (ca_in_flat_anc, agent rm_schema.type_conforms_to) then
 					if ca_child_diff.is_single and not ca_in_flat_anc.is_single then
-						add_error (ec_VSAM1, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_VSAM1, <<arch_diff_child.annotated_path (ca_child_diff.path, child_desc.archetype_view_language, True)>>)
 
 					elseif not ca_child_diff.is_single and ca_in_flat_anc.is_single then
-						add_error (ec_VSAM2, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True)>>)
+						add_error (ec_VSAM2, <<arch_diff_child.annotated_path (ca_child_diff.path, child_desc.archetype_view_language, True)>>)
 
 					elseif not ca_child_diff.existence_conforms_to (ca_in_flat_anc) then
 						check attached ca_child_diff.existence as ccd_ex and then attached ca_in_flat_anc.existence as cpf_ex then
-							add_error (ec_VSANCE, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-								ccd_ex.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSANCE, <<arch_diff_child.annotated_path (ca_child_diff.path, child_desc.archetype_view_language, True),
+								ccd_ex.as_string, arch_diff_child.annotated_path (ca_in_flat_anc.path, child_desc.archetype_view_language, True),
 								cpf_ex.as_string>>)
 						end
 
 					elseif not ca_child_diff.cardinality_conforms_to (ca_in_flat_anc) then
 						check attached ca_child_diff.cardinality as ccd_card and then attached ca_in_flat_anc.cardinality as cpf_card then
-							add_error (ec_VSANCC, <<target.annotated_path (ca_child_diff.path, target_descriptor.archetype_view_language, True),
-								ccd_card.as_string, target.annotated_path (ca_in_flat_anc.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VSANCC, <<arch_diff_child.annotated_path (ca_child_diff.path, child_desc.archetype_view_language, True),
+								ccd_card.as_string, arch_diff_child.annotated_path (ca_in_flat_anc.path, child_desc.archetype_view_language, True),
 								cpf_card.as_string>>)
 						end
 					end
@@ -213,9 +212,9 @@ end
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT; or redefined external references
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (co_child_diff.path)
-				co_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
-				co_child_annotated_path := target.annotated_path (co_child_diff.path, target_descriptor.archetype_view_language, True)
-				co_flat_anc_annotated_path := target.annotated_path (co_in_flat_anc.path, target_descriptor.archetype_view_language, True)
+				co_in_flat_anc := arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
+				co_child_annotated_path := arch_diff_child.annotated_path (co_child_diff.path, child_desc.archetype_view_language, True)
+				co_flat_anc_annotated_path := arch_diff_child.annotated_path (co_in_flat_anc.path, child_desc.archetype_view_language, True)
 debug ("validate")
 	io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_annotated_path)
 end
@@ -254,7 +253,7 @@ end
 				-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 				-- we re-assign co_in_flat_anc to point to the target structure; unless they both are use_nodes, in which case leave them as is
 				elseif attached {C_COMPLEX_OBJECT} co_child_diff and attached {C_COMPLEX_OBJECT_PROXY} co_in_flat_anc as air_p then
-					if attached flat_ancestor.object_at_path (air_p.path) as cpf then
+					if attached arch_flat_anc.object_at_path (air_p.path) as cpf then
 						co_in_flat_anc := cpf
 					else
 						add_error (ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type, co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
@@ -330,7 +329,7 @@ end
 
 						-- deal with sibling marker on C_OBJECTs that are redefines of nodes in flat parent
 						if attached co_child_diff.sibling_order and then not (co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) or else
-							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, flat_ancestor.specialisation_depth)))
+							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, arch_flat_anc.specialisation_depth)))
 						then
 							add_error (ec_VSSM, <<co_child_annotated_path, co_child_diff.sibling_order.sibling_node_id>>)
 						end
@@ -355,23 +354,23 @@ end
 			-- to determine if it has a corresponding node in the flat ancestor.
 			if passed then
 				if attached {C_OBJECT} a_c_node as a_c_obj then
-					co_child_annotated_path := target.annotated_path (a_c_obj.path, target_descriptor.archetype_view_language, True)
+					co_child_annotated_path := arch_diff_child.annotated_path (a_c_obj.path, child_desc.archetype_view_language, True)
 
 					-- is it an overlay or new node; if overlay, then check it
-					if specialisation_depth_from_code (a_c_obj.node_id) <= flat_ancestor.specialisation_depth or else 	-- node with node_id from previous level OR
+					if specialisation_depth_from_code (a_c_obj.node_id) <= arch_flat_anc.specialisation_depth or else 	-- node with node_id from previous level OR
 						is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
 
 					then
 						create apa.make_from_string (a_c_node.path)
-						flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-						Result := flat_ancestor.has_object_path (flat_anc_path)
+						flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
+						Result := arch_flat_anc.has_object_path (flat_anc_path)
 						if not Result then -- it should have a matching node in flat ancestor
 							add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name, co_child_annotated_path,
-								target.annotated_path (flat_anc_path, target_descriptor.archetype_view_language, True)>>)
+								arch_diff_child.annotated_path (flat_anc_path, child_desc.archetype_view_language, True)>>)
 
 						-- if it is a prohibit node, the AOM types must be the same in child and parent
 						else
-							flat_anc_obj := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+							flat_anc_obj := arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 							if a_c_obj.is_prohibited and dynamic_type (a_c_obj) /= dynamic_type (flat_anc_obj) then
 								add_error (ec_VSONPT, <<co_child_annotated_path, a_c_obj.generating_type, flat_anc_obj.generating_type>>)
 							end
@@ -382,9 +381,9 @@ end
 						-- if it has a sibling order, check that the sibling order refers to a valid node in the flat ancestor.
 						if attached a_c_obj.sibling_order as sib_ord then
 							create apa.make_from_string (a_c_node.parent.path)
-							ca_in_flat_anc := flat_ancestor.attribute_at_path (apa.path_at_level (flat_ancestor.specialisation_depth))
+							ca_in_flat_anc := arch_flat_anc.attribute_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 							if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
-								ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, flat_ancestor.specialisation_depth)))
+								ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, arch_flat_anc.specialisation_depth)))
 							then
 								add_error (ec_VSSM, <<co_child_annotated_path, sib_ord.sibling_node_id>>)
 							end
@@ -394,7 +393,6 @@ end
 						if a_c_obj.is_prohibited then
 							add_error (ec_VSONPO, <<co_child_annotated_path>>)
 						end
-
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
 		co_child_annotated_path + " ignored %N")
@@ -406,8 +404,8 @@ end
 						-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
 						-- or its C_OBJECT parent path exists in flat ancestor
 						create apa.make_from_string (a_c_node.path)
-						flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-						Result := flat_ancestor.has_path (flat_anc_path)
+						flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
+						Result := arch_flat_anc.has_path (flat_anc_path)
 					end
 				end
 			end
@@ -419,7 +417,7 @@ end
 			def_it: C_ITERATOR
 		do
 			invalid_types.wipe_out
-			create def_it.make (target.definition)
+			create def_it.make (arch_diff_child.definition)
 			def_it.do_until_surface (agent rm_node_validate, agent rm_node_validate_test)
 		end
 
@@ -433,11 +431,11 @@ end
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then -- now check if this object a valid type of its owning attribute
-					if target.is_specialised and then co.parent.has_differential_path then
+					if arch_diff_child.is_specialised and then co.parent.has_differential_path then
 						check attached co.parent.differential_path as diff_path then
 							create apa.make_from_string (diff_path)
 						end
-						attr_rm_type_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth)).rm_type_name
+						attr_rm_type_in_flat_anc := arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth)).rm_type_name
 					else
 						attr_rm_type_in_flat_anc := co.parent.parent.rm_type_name
 					end
@@ -455,7 +453,7 @@ end
 									if bmm_enum.underlying_type_name.is_case_insensitive_equal (co.rm_type_name) then
 										if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
 											if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
-												add_error (ec_VCORMENV, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+												add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True),
 													rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, c_int.single_value.out>>)
 											else
 												c_int.set_rm_type_name (rm_attr_type)
@@ -464,7 +462,7 @@ end
 
 										elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
 											if not across c_str.constraint as str_vals_csr all bmm_enum_str.item_values.has (str_vals_csr.item) end then
-												add_error (ec_VCORMENV, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+												add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True),
 													rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, c_str.single_value>>)
 											else
 												c_str.set_rm_type_name (rm_attr_type)
@@ -473,58 +471,58 @@ end
 
 										else
 											-- error - unsupported subtype of BMM_ENUMERATION
-											add_error (ec_VCORMEN, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+											add_error (ec_VCORMEN, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True),
 												rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
 
 										end
 
 									else
 										-- RM property type is an enumerated type, but current node RM type doesn't conform
-										add_error (ec_VCORMENU, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+										add_error (ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True),
 											rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
 									end
 
 								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
 								-- has a String field (within some other kind of DATE class)
 								elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
-									add_info (ec_ICORMTS, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+									add_info (ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True),
 										rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
 									co.set_rm_type_name (rm_attr_type)
 								else
-									add_error (ec_VCORMT, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VCORMT, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True),
 										rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
 									invalid_types.extend (co.rm_type_name)
 								end
 							end
 						else
-							add_error (ec_VCARM, <<co.parent.rm_attribute_name, target.annotated_path (co.parent.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VCARM, <<co.parent.rm_attribute_name, arch_diff_child.annotated_path (co.parent.path, child_desc.archetype_view_language, True),
 								attr_rm_type_in_flat_anc>>)
 						end
 					end
 				end
 			elseif attached {C_ATTRIBUTE} a_c_node as ca then
-				if target.is_specialised and then ca.has_differential_path then
+				if arch_diff_child.is_specialised and then ca.has_differential_path then
 					check attached ca.differential_path as diff_path then
 						create apa.make_from_string (diff_path)
 					end
-					attr_rm_type_in_flat_anc := flat_ancestor.object_at_path (apa.path_at_level (flat_ancestor.specialisation_depth)).rm_type_name
+					attr_rm_type_in_flat_anc := arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth)).rm_type_name
 				else
 					attr_rm_type_in_flat_anc := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
 				if not rm_schema.has_property (attr_rm_type_in_flat_anc, ca.rm_attribute_name) then
-					add_error (ec_VCARM, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True), attr_rm_type_in_flat_anc>>)
+					add_error (ec_VCARM, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True), attr_rm_type_in_flat_anc>>)
 				else
 					rm_prop_def := rm_schema.property_definition (attr_rm_type_in_flat_anc, ca.rm_attribute_name)
 					if attached ca.existence as ca_ex then
 						if not rm_prop_def.existence.contains (ca_ex) then
-							if not target.is_specialised and rm_prop_def.existence.is_equal (ca_ex) then
-								add_warning (ec_WCAEX, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+							if not arch_diff_child.is_specialised and rm_prop_def.existence.is_equal (ca_ex) then
+								add_warning (ec_WCAEX, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 									ca_ex.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
 							else
-								add_error (ec_VCAEX, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+								add_error (ec_VCAEX, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 									ca_ex.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
@@ -535,32 +533,32 @@ end
 							if attached ca.cardinality as ca_card and then not rm_cont_prop_def.cardinality.contains (ca_card.interval) then
 								if rm_cont_prop_def.cardinality.is_equal (ca_card.interval) then
 									if validation_strict then
-										add_error (ec_VCACA, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+										add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 											ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 									else
-										add_warning (ec_WCACA, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+										add_warning (ec_WCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 											ca_card.interval.as_string>>)
 										ca.remove_cardinality
 									end
 								else
-									add_error (ec_VCACA, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+									add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 										ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 								end
 							end
 						else -- archetype has multiple attribute but RM does not
-							add_error (ec_VCAMm, <<target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+							add_error (ec_VCAMm, <<arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 								ca.cardinality.as_string>>)
 						end
 
 					-- archetype attribute is single-valued, but RM has a container attribute
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def then
-						add_error (ec_VCAMs, <<target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+						add_error (ec_VCAMs, <<arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 							rm_cont_prop_def.cardinality.as_string>>)
 					end
 
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
-						add_warning (ec_WCARMC, <<ca.rm_attribute_name, target.annotated_path (ca.path, target_descriptor.archetype_view_language, True),
+						add_warning (ec_WCARMC, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, child_desc.archetype_view_language, True),
 							attr_rm_type_in_flat_anc>>)
 					end
 				end
@@ -580,7 +578,7 @@ end
 			if attached {C_OBJECT} a_c_node as co and then not rm_schema.has_class_definition (co.rm_type_name) and then
 				not invalid_types.has (co.rm_type_name) and then not has_any_type_substitution (co.rm_type_name)
 			then
-				add_error (ec_VCORM, <<co.rm_type_name, target.annotated_path (co.path, target_descriptor.archetype_view_language, True)>>)
+				add_error (ec_VCORM, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, child_desc.archetype_view_language, True)>>)
 				invalid_types.extend (co.rm_type_name)
 				Result := False
 			elseif attached {C_ATTRIBUTE} a_c_node as ca then

@@ -45,7 +45,7 @@ feature -- Validation
 			-- rebuilding might not work earlier because there might be invalid
 			-- node ids
 			if passed then
-				target.rebuild
+				arch_diff_child.rebuild
 			end
 
 			-- languages and meta-data
@@ -78,20 +78,20 @@ feature {NONE} -- Implementation
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
-			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
+			if not child_desc.id.as_string.is_equal (arch_diff_child.archetype_id.as_string) then
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
-				add_warning (ec_validate_e3, <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
-			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_class) then
-				add_error (ec_VARDT, <<target.archetype_id.rm_class, target.definition.rm_type_name>>)
-			elseif not is_valid_root_id_code (target.concept_id) then
-				add_error (ec_VARCN, <<target.concept_id, root_id_code_regex_pattern>>)
-			elseif target_descriptor.is_specialised then
-				if target.specialisation_depth /= target_descriptor.specialisation_ancestor.flat_archetype.specialisation_depth + 1 then
-					add_error (ec_VACSD, <<specialisation_depth_from_code (target.concept_id).out, target.specialisation_depth.out>>)
+				add_warning (ec_validate_e3, <<child_desc.id.as_string, arch_diff_child.archetype_id.as_string>>)
+			elseif not arch_diff_child.definition.rm_type_name.is_equal (arch_diff_child.archetype_id.rm_class) then
+				add_error (ec_VARDT, <<arch_diff_child.archetype_id.rm_class, arch_diff_child.definition.rm_type_name>>)
+			elseif not is_valid_root_id_code (arch_diff_child.concept_id) then
+				add_error (ec_VARCN, <<arch_diff_child.concept_id, root_id_code_regex_pattern>>)
+			elseif child_desc.is_specialised then
+				if arch_diff_child.specialisation_depth /= child_desc.specialisation_ancestor.flat_archetype.specialisation_depth + 1 then
+					add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
 				end
- 			elseif specialisation_depth_from_code (target.concept_id) /= 0 then
- 				add_error (ec_VACSDtop, <<specialisation_depth_from_code (target.concept_id).out>>)
+ 			elseif specialisation_depth_from_code (arch_diff_child.concept_id) /= 0 then
+ 				add_error (ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
 			end
 		end
 
@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			create def_it.make (target.definition)
+			create def_it.make (arch_diff_child.definition)
 			def_it.do_until_surface (agent do_validate_structure_node,
 				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := passed end)
 		end
@@ -115,19 +115,19 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if ca.has_differential_path then
 					-- if differntial path found in non-specialised archetype, it's an error
-					if not target.is_specialised then
+					if not arch_diff_child.is_specialised then
 						add_error (ec_VDIFV, <<ca.path>>)
 					else
 						-- if path doesn't exist in ancestor and path of immediate parent node doesn't exist in ancestor either
 						-- then it's an error
 						create apa.make_from_string (ca.path)
-						if not apa.is_phantom_path_at_level (flat_ancestor.specialisation_depth) then
-							flat_anc_path := apa.path_at_level (flat_ancestor.specialisation_depth)
-							if not flat_ancestor.has_path (flat_anc_path) then
+						if not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) then
+							flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
+							if not arch_flat_anc.has_path (flat_anc_path) then
 								-- allow for a terminal attribute under a parent object, but not if parent is the root ie. '/'
 								-- (since parent archetype is guaranteed to have that)
 								create og_path.make_from_string (flat_anc_path)
-								if og_path.parent_path.is_root or else not flat_ancestor.has_path (og_path.parent_path.as_string) then
+								if og_path.parent_path.is_root or else not arch_flat_anc.has_path (og_path.parent_path.as_string) then
 									add_error (ec_VDIFP1, <<ca.path, flat_anc_path>>)
 								end
 							end
@@ -146,11 +146,11 @@ feature {NONE} -- Implementation
 			err_str: STRING
 		do
 			-- check that languages defined in translations section are in the archetype terminology
-			langs := target.languages_available
-			if not langs.is_subset (target.terminology.languages_available) then
+			langs := arch_diff_child.languages_available
+			if not langs.is_subset (arch_diff_child.terminology.languages_available) then
 				create err_str.make (0)
 				across langs as langs_csr loop
-					if not target.terminology.languages_available.has (langs_csr.item) then
+					if not arch_diff_child.terminology.languages_available.has (langs_csr.item) then
 						if not err_str.is_empty then
 							err_str.append (", ")
 						end
@@ -171,7 +171,7 @@ feature {NONE} -- Implementation
 		local
 			includes, excludes: ARRAYED_LIST [ASSERTION]
 		do
-			across target.slot_index as slot_csr loop
+			across arch_diff_child.slot_index as slot_csr loop
 				includes := slot_csr.item.includes
 				excludes := slot_csr.item.excludes
 
@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 		local
 			filler_id: ARCHETYPE_HRID
 		do
-			across target.suppliers_index as supp_csr loop
+			across arch_diff_child.suppliers_index as supp_csr loop
 				if not current_library.has_archetype_id_for_ref (supp_csr.key) then
 					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				end
@@ -262,8 +262,8 @@ feature {NONE} -- Implementation
 			code_spec_depth: INTEGER
 			code: STRING
 		do
-			arch_depth := target.specialisation_depth
-			across target.id_codes_index as codes_csr loop
+			arch_depth := arch_diff_child.specialisation_depth
+			across arch_diff_child.id_codes_index as codes_csr loop
 				code_spec_depth := specialisation_depth_from_code (codes_csr.key)
 				-- since id-codes are only required to be defined in the terminology if they identify
 				-- nodes under multiply-valued C_ATTRIBUTEs, we have to check their parent C_ATTRIBUTE type
@@ -272,7 +272,7 @@ feature {NONE} -- Implementation
 					if code_spec_depth > arch_depth then
 						add_error (ec_VTSD, <<codes_csr.key>>)
 					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
-						if code_spec_depth < arch_depth and not flat_ancestor.terminology.has_id_code (codes_csr.key) or else
+						if code_spec_depth < arch_depth and not arch_flat_anc.terminology.has_id_code (codes_csr.key) or else
 							code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
 						then
 							add_error (ec_VATID, <<codes_csr.key, co.path>>)
@@ -286,25 +286,25 @@ feature {NONE} -- Implementation
 			--	* a single at-code => check if at-code in term definitions
 			--	* a single ac-code => check if ac-code in term definitions
 			--	* a single ac-code and at-code assumed value pair => both checks above
-			across target.value_codes_index as codes_csr loop
+			across arch_diff_child.value_codes_index as codes_csr loop
 				-- validate local codes for depth & presence in terminology
 				code := codes_csr.key
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
 					add_error (ec_VATCD, <<code, arch_depth.out>>)
-				elseif code_spec_depth < arch_depth and not flat_ancestor.terminology.has_code (code) or else
+				elseif code_spec_depth < arch_depth and not arch_flat_anc.terminology.has_code (code) or else
 					code_spec_depth = arch_depth and not terminology.has_code (code)
 				then
 					add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
 				end
 			end
 
-			across target.term_constraints_index as term_constraints_csr loop
+			across arch_diff_child.term_constraints_index as term_constraints_csr loop
 				code := term_constraints_csr.key
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
 					add_error (ec_VATCD, <<code, arch_depth.out>>)
-				elseif code_spec_depth < arch_depth and not flat_ancestor.terminology.has_value_set_code (code) or else
+				elseif code_spec_depth < arch_depth and not arch_flat_anc.terminology.has_value_set_code (code) or else
 					code_spec_depth = arch_depth and not terminology.has_value_set_code (code)
 				then
 					add_error (ec_VACDF, <<code, term_constraints_csr.item.path>>)
@@ -325,7 +325,7 @@ feature {NONE} -- Implementation
 				end
 				across vsets_csr.item.members as vset_at_codes_csr loop
 					-- check if at-code exists
-					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached flat_ancestor as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
+					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached arch_flat_anc as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
 						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
 
 					-- check if at-code duplicated
@@ -355,8 +355,8 @@ feature {NONE} -- Implementation
 				across bindings_for_terminology_csr.item as bindings_csr loop
 					arch_code := bindings_csr.key
 					if not (is_valid_code (arch_code) and then
-						(terminology.has_code (arch_code) or attached flat_ancestor as att_fa and then att_fa.terminology.has_code (arch_code)) or else
-						target.has_path (arch_code))
+						(terminology.has_code (arch_code) or attached arch_flat_anc as att_fa and then att_fa.terminology.has_code (arch_code)) or else
+						arch_diff_child.has_path (arch_code))
 					then
 						add_error (ec_VTBK, <<arch_code>>)
 					else
@@ -380,18 +380,18 @@ feature {NONE} -- Implementation
 			ann_path: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
-			if target.has_annotations then
-				across target.annotations.items as annots_csr loop
+			if arch_diff_child.has_annotations then
+				across arch_diff_child.annotations.items as annots_csr loop
 					across annots_csr.item.items as annots_for_lang_csr loop
 						ann_path := annots_for_lang_csr.key
 						create apa.make_from_string (ann_path)
 
 						-- firstly see if annotation path is valid
 						if apa.is_archetype_path then
-							if not (target.has_path (ann_path) or else attached flat_ancestor as att_fa and then att_fa.has_path (ann_path)) then
+							if not (arch_diff_child.has_path (ann_path) or else attached arch_flat_anc as att_fa and then att_fa.has_path (ann_path)) then
 								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
 							end
-						elseif not rm_schema.has_property_path (target.definition.rm_type_name, ann_path) then
+						elseif not rm_schema.has_property_path (arch_diff_child.definition.rm_type_name, ann_path) then
 							add_error (ec_VRANP2, <<annots_csr.key, ann_path>>)
 						end
 
@@ -405,7 +405,7 @@ feature {NONE} -- Implementation
 			-- populate lists of at-codes and ac-codes found in terminology that
 			-- are not referenced anywhere in the archetype definition
 		do
-			across target.terminology_unused_term_codes as unused_codes_csr loop
+			across arch_diff_child.terminology_unused_term_codes as unused_codes_csr loop
 				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
 			end
 		end

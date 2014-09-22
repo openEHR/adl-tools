@@ -17,9 +17,10 @@ deferred class AOM_VALIDATOR
 inherit
 	AUTHORED_RESOURCE_VALIDATOR
 		rename
-			initialise as initialise_authored_resource
+			initialise as initialise_authored_resource,
+			target as arch_diff_child
 		redefine
-			target
+			arch_diff_child
 		end
 
 	SHARED_ARCHETYPE_LIBRARIES
@@ -36,8 +37,8 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			valid_candidate: is_validation_candidate (ara)
 		do
 			rm_schema := ara.rm_schema
-			target_descriptor := ara
-			check attached target_descriptor.differential_archetype as da then
+			child_desc := ara
+			check attached child_desc.differential_archetype as da then
 				initialise_authored_resource (da)
 			end
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
@@ -45,12 +46,12 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			end
 
 			-- set flat_ancestor
-			if target_descriptor.is_specialised then
-				flat_ancestor := target_descriptor.specialisation_ancestor.flat_archetype
+			if child_desc.is_specialised then
+				arch_flat_anc := child_desc.specialisation_ancestor.flat_archetype
  			end
 		ensure
-			target_descriptor_set: target_descriptor = ara
-			flat_ancestor_set: ara.is_specialised implies attached flat_ancestor
+			target_descriptor_set: child_desc = ara
+			flat_ancestor_set: ara.is_specialised implies attached arch_flat_anc
 		end
 
 feature -- Status Report
@@ -61,19 +62,19 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	target: DIFFERENTIAL_ARCHETYPE
+	arch_diff_child: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
 
-	flat_ancestor: detachable FLAT_ARCHETYPE
+	arch_flat_anc: detachable FLAT_ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
 
-	target_descriptor: ARCH_LIB_ARCHETYPE
+	child_desc: ARCH_LIB_ARCHETYPE
 			-- differential archetype being validated
 
 	terminology: ARCHETYPE_TERMINOLOGY
 			-- The terminology of the current archetype.
 		do
-			Result := target.terminology
+			Result := arch_diff_child.terminology
 		end
 
 	rm_schema: BMM_SCHEMA

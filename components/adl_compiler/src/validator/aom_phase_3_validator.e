@@ -20,12 +20,12 @@ create
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (a_target_desc: like target_descriptor)
+	initialise (a_target_desc: like child_desc)
 			-- set target_descriptor
 			-- initialise reporting variables
 		do
 			precursor (a_target_desc)
-			target_flat := target_descriptor.flat_archetype
+			target_flat := child_desc.flat_archetype
 		end
 
 feature -- Access
