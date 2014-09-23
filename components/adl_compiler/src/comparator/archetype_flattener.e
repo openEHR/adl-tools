@@ -256,7 +256,7 @@ end
 		local
 			cco_parent_flat, cco_output_flat, cco_output_flat_proximate, cco_csr: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			ca_parent_path_in_output_flat: STRING
+			ca_parent_path_in_flat_out: STRING
 			cco_overlay_path: detachable STRING
 			c_path_in_diff, og_cco_overlay_path_in_output_flat: OG_PATH
 			ca_child, ca_child_copy, ca_output, cco_csr_parent: C_ATTRIBUTE
@@ -276,30 +276,28 @@ end
 				-- already performed that overwrote the node ids higher up in the path with ids of the level of the
 				-- differential archetype
 				if attached cco_child_diff.parent as ca_parent_in_child then
-					create apa.make_from_string (ca_parent_in_child.path)
-					ca_parent_path_in_output_flat := apa.path_at_level (arch_flat_anc.specialisation_depth)
-					if arch_flat_out.has_path (ca_parent_path_in_output_flat) then
-debug ("flatten")
-	io.put_string ("%TDirect hit on path " +
-	ca_parent_path_in_output_flat + "%N")
-end
-					else
-						if arch_flat_out.has_path (ca_parent_in_child.path) then
+					-- first try for the CA parent path assuming overlays have occurred
+					if arch_flat_out.has_path (ca_parent_in_child.path) then
 debug ("flatten")
 	io.put_string ("%TFound already overlaid path in output at " +
 	ca_parent_in_child.path + "%N")
 end
-							ca_parent_path_in_output_flat := ca_parent_in_child.path
-						else
+						ca_parent_path_in_flat_out := ca_parent_in_child.path
+
+					-- now try to match path at level of ancestor flat
+					else
+						create apa.make_from_string (ca_parent_in_child.path)
+						ca_parent_path_in_flat_out := apa.path_at_level (arch_flat_anc.specialisation_depth)
+						if not arch_flat_out.has_path (ca_parent_path_in_flat_out) then
 debug ("flatten")
 	io.put_string ("NO - ERROR%N")
 end
 							raise ("node_graft loction #1 - can't find overlay location for object at " + ca_parent_in_child.path + " %N")
 						end
 					end
-					check attached ca_parent_path_in_output_flat end
-					create og_cco_overlay_path_in_output_flat.make_from_string (ca_parent_path_in_output_flat)
-					if is_refined_code (cco_child_diff.node_id) then
+					check attached ca_parent_path_in_flat_out end
+					create og_cco_overlay_path_in_output_flat.make_from_string (ca_parent_path_in_flat_out)
+					if specialisation_status_from_code (cco_child_diff.node_id, arch_diff_child.specialisation_depth) = ss_redefined then
 						overlay_node_id_in_flat := specialised_code_parent (cco_child_diff.node_id)
 					else
 						overlay_node_id_in_flat := cco_child_diff.node_id
@@ -338,7 +336,7 @@ end
 						cco_output_flat.set_node_id (cco_child_diff.node_id)
 						cco_output_flat.set_subtree_specialisation_status (ss_inherited)
 						cco_output_flat.set_specialisation_status_redefined
-						ca_output := arch_flat_out.attribute_at_path (ca_parent_path_in_output_flat)
+						ca_output := arch_flat_out.attribute_at_path (ca_parent_path_in_flat_out)
 						ca_output.put_sibling_child (cco_output_flat, True)
 					end
 				else

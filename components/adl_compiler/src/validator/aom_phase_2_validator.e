@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 		do
 			ancestor_slot_id_index := child_desc.specialisation_ancestor.slot_id_index
 			create def_it.make (arch_diff_child.definition)
-			def_it.do_until_surface (agent specialised_node_validate, agent specialised_node_validate_test)
+			def_it.do_if (agent specialised_node_validate, agent specialised_node_validate_test)
 		end
 
 	ancestor_slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
@@ -353,33 +353,45 @@ end
 			-- only have been RM-validated. Either way, we need to use the slot path it replaces rather than its literal path,
 			-- to determine if it has a corresponding node in the flat ancestor.
 			if passed then
-				if attached {C_OBJECT} a_c_node as a_c_obj then
-					co_child_annotated_path := arch_diff_child.annotated_path (a_c_obj.path, child_desc.archetype_view_language, True)
+				-- ignore second order constrained object nodes
+				if attached {C_OBJECT} a_c_node as c_obj and then (c_obj.is_root or else not (attached c_obj.parent as c_attr and then c_attr.is_second_order_constrained)) then
+					co_child_annotated_path := arch_diff_child.annotated_path (c_obj.path, child_desc.archetype_view_language, True)
 
 					-- is it an overlay or new node; if overlay, then check it
-					if specialisation_depth_from_code (a_c_obj.node_id) <= arch_flat_anc.specialisation_depth or else 	-- node with node_id from previous level OR
-						is_refined_code (a_c_obj.node_id) 						-- node id refined (i.e. not new)
-
+					if specialisation_depth_from_code (c_obj.node_id) <= arch_flat_anc.specialisation_depth or else 	-- node with node_id from previous level OR
+						is_refined_code (c_obj.node_id) 						-- node id refined (i.e. not new)
 					then
+						-- either the path can't in principle exist in the flat ancestor (phantom path) or
+						-- else it might be possible, but not actually exist. Only if it actually exists is
+						-- the result True.
 						create apa.make_from_string (a_c_node.path)
-						flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
-						Result := arch_flat_anc.has_object_path (flat_anc_path)
-						if not Result then -- it should have a matching node in flat ancestor
-							add_error (ec_VSONIN, <<a_c_obj.node_id, a_c_obj.rm_type_name, co_child_annotated_path,
-								arch_diff_child.annotated_path (flat_anc_path, child_desc.archetype_view_language, True)>>)
+						if not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) then
+							flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
+							Result := arch_flat_anc.has_object_path (flat_anc_path)
+							if Result then
+								flat_anc_obj := arch_flat_anc.object_at_path (flat_anc_path)
+								if c_obj.is_prohibited and dynamic_type (c_obj) /= dynamic_type (flat_anc_obj) then
+									add_error (ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type, flat_anc_obj.generating_type>>)
+								end
 
-						-- if it is a prohibit node, the AOM types must be the same in child and parent
-						else
-							flat_anc_obj := arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
-							if a_c_obj.is_prohibited and dynamic_type (a_c_obj) /= dynamic_type (flat_anc_obj) then
-								add_error (ec_VSONPT, <<co_child_annotated_path, a_c_obj.generating_type, flat_anc_obj.generating_type>>)
+							-- FIXME: at the moment all C_PRIMITIVE_OBJECTs have code id9999 created by the parser, so they don't
+							-- obey the proper specialisation level rules
+							elseif not attached {C_PRIMITIVE_OBJECT} c_obj then
+								-- Since we already know above that the node code is either an inherited code, or else a redefined code
+								-- it should have a matching node in flat ancestor; if it doesn't, it's an error
+								add_error (ec_VSONIN, <<c_obj.node_id, c_obj.rm_type_name, co_child_annotated_path,
+									arch_diff_child.annotated_path (flat_anc_path, child_desc.archetype_view_language, True)>>)
 							end
+
+						-- in this case, check if the node code appears to be a redefine at this level, which would be an error
+						elseif specialisation_status_from_code (c_obj.node_id, arch_diff_child.specialisation_depth) = ss_redefined then
+							add_error (ec_VSONIN, <<c_obj.node_id, c_obj.rm_type_name, co_child_annotated_path, "(none)">>)
 						end
 
 					-- special checks if it is a non-overlay node...
 					else
 						-- if it has a sibling order, check that the sibling order refers to a valid node in the flat ancestor.
-						if attached a_c_obj.sibling_order as sib_ord then
+						if attached c_obj.sibling_order as sib_ord then
 							create apa.make_from_string (a_c_node.parent.path)
 							ca_in_flat_anc := arch_flat_anc.attribute_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 							if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
@@ -390,7 +402,7 @@ end
 						end
 
 						-- if it has occurrences matches {0}, it's an error because this can only make sense for nodes that exist
-						if a_c_obj.is_prohibited then
+						if c_obj.is_prohibited then
 							add_error (ec_VSONPO, <<co_child_annotated_path>>)
 						end
 debug ("validate")
@@ -399,14 +411,12 @@ debug ("validate")
 end
 					end
 
-				elseif attached {C_ATTRIBUTE} a_c_node as ca then
-					if not ca.is_second_order_constrained then
-						-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
-						-- or its C_OBJECT parent path exists in flat ancestor
-						create apa.make_from_string (a_c_node.path)
-						flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
-						Result := arch_flat_anc.has_path (flat_anc_path)
-					end
+				elseif attached {C_ATTRIBUTE} a_c_node as ca and then not ca.is_second_order_constrained then
+					-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
+					-- or its C_OBJECT parent path exists in flat ancestor
+					create apa.make_from_string (a_c_node.path)
+					Result := not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) and then
+						arch_flat_anc.has_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 				end
 			end
 		end
