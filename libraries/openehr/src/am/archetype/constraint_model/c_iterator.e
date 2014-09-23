@@ -82,6 +82,14 @@ feature -- Command
 			tree_iterator.do_until_surface (agent node_action, agent node_is_included)
 		end
 
+	do_if (a_c_node_enter_action: like c_node_enter_action; a_c_node_test: like c_node_test)
+			-- do the enter action on nodes for which a_c_node_test returns true
+		do
+			c_node_enter_action := a_c_node_enter_action
+			c_node_test := a_c_node_test
+			tree_iterator.do_if (agent node_action, agent node_is_included)
+		end
+
 feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
