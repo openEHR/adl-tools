@@ -175,13 +175,15 @@ feature {NONE} -- Implementation
 				includes := slot_csr.item.includes
 				excludes := slot_csr.item.excludes
 
-				if not includes.is_empty and includes.first.matches_any then
-					if not (excludes.is_empty or not excludes.first.matches_any) then
-						add_error (ec_VDSEV1, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
-					end
-				elseif not includes.is_empty and not includes.first.matches_any then
-					if not (excludes.is_empty or excludes.first.matches_any) then
-						add_error (ec_VDSEV2, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+				if not includes.is_empty then
+					if includes.first.matches_any then
+						if not (excludes.is_empty or not excludes.first.matches_any) then
+							add_error (ec_VDSEV1, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+						end
+					else
+						if not (excludes.is_empty or excludes.first.matches_any) then
+							add_error (ec_VDSEV2, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+						end
 					end
 				end
 			end
