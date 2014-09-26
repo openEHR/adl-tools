@@ -323,7 +323,7 @@ feature {NONE} -- Implementation
 	do_edit_profile (a_profile_desc: AOM_PROFILE_ACCESS)
 			-- launch external editor with schema, or info box if none defined
 		do
-			execution_environment.launch (text_editor_command + " %"" + a_profile_desc.profile_path + "%"")
+			do_system_run_command_synchronous (text_editor_command + " %"" + a_profile_desc.profile_path + "%"", Void)
 		end
 
 	show_profile_validation (a_profile_desc: AOM_PROFILE_ACCESS)

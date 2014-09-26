@@ -402,8 +402,6 @@ feature {NONE} -- Implementation
 			info_dialog: EV_INFORMATION_DIALOG
 			path: STRING
 			legacy_path: detachable STRING
-			pf: PROCESS_FACTORY
-			ed_proc: PROCESS
 			orig_time_stamp: INTEGER
 		do
 			-- figure out what file to edit
@@ -432,11 +430,7 @@ feature {NONE} -- Implementation
 
 			-- lauch editor process and wait for it
 			orig_time_stamp := file_system.file_time_stamp (path)
-			create pf
-			ed_proc := pf.process_launcher_with_command_line (editor_app_command + " %"" + path + "%"", Void)
-			ed_proc.launch
-			ed_proc.wait_for_exit
-
+			do_system_run_command_synchronous (editor_app_command + " %"" + path + "%"", Void)
 			if file_system.file_time_stamp (path) > orig_time_stamp then
 				gui_agents.select_archetype_agent.call ([aca])
 			end
