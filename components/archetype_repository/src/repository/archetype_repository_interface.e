@@ -57,6 +57,7 @@ feature -- Initialisation
 			end
 			remote_access.initialise_checkout_from_remote (a_local_parent_dir, a_remote_url)
 			local_directory := remote_access.local_repository_directory
+			get_synchronisation_status
 		ensure
 			has_remote_repository
 		end
@@ -68,6 +69,7 @@ feature -- Initialisation
 		do
 			local_directory := a_local_dir
 			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
+			get_synchronisation_status
 		ensure
 			has_remote_repository
 		end
@@ -144,6 +146,19 @@ feature -- Access
 			end
 		end
 
+	checked_out_branch: STRING
+			-- name of branch locally checked out
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rem_acc then
+				Result := att_rem_acc.checked_out_branch
+			end
+		end
+
+	synchronisation_status: INTEGER
+			-- status of sync between local and remote repository
+
 feature -- Status Report
 
 	has_local_directory: BOOLEAN
@@ -215,13 +230,47 @@ feature -- Validation
 
 feature -- Commands
 
-	update_from_remote
+	pull_from_remote
 			-- Update local checkout/clone from remote; result in last_result
 		require
 			has_remote_repository
 		do
 			check attached remote_access as att_rm_acc then
-				att_rm_acc.do_update
+				att_rm_acc.do_pull
+				get_synchronisation_status
+			end
+		end
+
+	stage
+			-- stage changes from local file system to local repository
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rm_acc then
+				att_rm_acc.do_stage
+				get_synchronisation_status
+			end
+		end
+
+	commit (a_commit_msg: STRING)
+			-- Commit changes from local file system to local repository
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rm_acc then
+				att_rm_acc.do_commit (a_commit_msg)
+				get_synchronisation_status
+			end
+		end
+
+	push_to_remote
+			-- Push changes from local checkout/clone to remote; result in last_result
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rm_acc then
+				att_rm_acc.do_push
+				get_synchronisation_status
 			end
 		end
 
@@ -278,6 +327,17 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	get_synchronisation_status
+			-- get status of sync between local and remote repository and write to
+			-- `synchronisation_status'
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rem_acc then
+				synchronisation_status := att_rem_acc.synchronisation_status
+			end
+		end
 
 	remote_access: detachable VCS_TOOL_INTERFACE
 			-- remote access object; specific subtype for remote repository type

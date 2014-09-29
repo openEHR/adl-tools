@@ -47,6 +47,8 @@ feature -- Definitions
 
 	rm_icon_dir: STRING = "rm"
 
+feature -- Definitions: Archetype viewer
+
 	Definition_grid_col_rm_name: INTEGER = 1
 	Definition_grid_col_meaning: INTEGER = 2
 	Definition_grid_col_existence: INTEGER = 3
@@ -110,6 +112,8 @@ feature -- Definitions
 		once ("PROCESS")
 			Result := Id_terms_grid_col_description
 		end
+
+feature -- Definitions: Tool tabs
 
 	Tool_tab_min: INTEGER = 0
 	Tool_tab_description: INTEGER = 0
@@ -182,6 +186,8 @@ feature -- Definitions
 				Result := att_name
 			end
 		end
+
+feature -- Definitions: Colours
 
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
@@ -328,6 +334,48 @@ feature -- Definitions
 				end
 			end
 			Result := get_icon_pixmap (pixmap_key)
+		end
+
+feature -- Definitions: VCS status
+
+	Vcs_status_icons: HASH_TABLE [EV_PIXMAP, INTEGER]
+		once ("PROCESS")
+			create Result.make (0)
+			Result.put (get_icon_pixmap ("tool/unknown"), Vcs_status_unknown)
+			Result.put (get_icon_pixmap ("tool/vcs_files_not_committed"), Vcs_status_files_not_committed)
+			Result.put (get_icon_pixmap ("tool/vcs_up_to_date"), Vcs_status_up_to_date)
+			Result.put (get_icon_pixmap ("tool/vcs_pull_required"), Vcs_status_pull_required)
+			Result.put (get_icon_pixmap ("tool/vcs_push_required"), Vcs_status_push_required)
+			Result.put (get_icon_pixmap ("tool/vcs_diverged"), Vcs_status_diverged)
+		end
+
+	vcs_status_icon (a_status: INTEGER): EV_PIXMAP
+		require
+			Valid_vcs_status (a_status)
+		do
+			check attached Vcs_status_icons.item (a_status) as att_pixmap then
+				Result := att_pixmap
+			end
+		end
+
+	Vcs_status_tooltips: HASH_TABLE [STRING, INTEGER]
+		once ("PROCESS")
+			create Result.make (0)
+			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
+			Result.put (get_text (ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
+			Result.put (get_text (ec_vcs_status_up_to_date_tooltip), Vcs_status_up_to_date)
+			Result.put (get_text (ec_vcs_status_pull_required_tooltip), Vcs_status_pull_required)
+			Result.put (get_text (ec_vcs_status_push_required_tooltip), Vcs_status_push_required)
+			Result.put (get_text (ec_vcs_status_diverged_tooltip), Vcs_status_diverged)
+		end
+
+	vcs_status_tooltip (a_status: INTEGER): STRING
+		require
+			Valid_vcs_status (a_status)
+		do
+			check attached Vcs_status_tooltips.item (a_status) as att_str then
+				Result := att_str
+			end
 		end
 
 feature -- Access

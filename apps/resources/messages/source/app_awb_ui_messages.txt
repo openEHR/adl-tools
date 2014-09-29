@@ -70,6 +70,8 @@ templates = <
 		["repository_dialog_title"] = <"Repositories and contained libraries">
 		["repository_dialog_header_label"] = <"'Repositories' are physical locations containing one or more 'libraries', %Neach of which is a logical collection of archetypes.">
 		["repository_grid_status_col_title"] = <"Status">
+		["repository_grid_vcs_branch_col_title"] = <"VCS Branch">
+		["repository_grid_vcs_status_col_title"] = <"VCS Status">
 		["repository_grid_display_name_col_title"] = <"Repository / Library">
 		["repository_grid_description_col_title"] = <"Description">
 		["repository_grid_maintainer_col_title"] = <"Maintainer">
@@ -78,13 +80,22 @@ templates = <
 
 		["repository_add_new_library_here"] = <"Add new library here">
 		["repository_add_new_library"] = <"Add new library">
-		["repository_vcs_update"] = <"Update from origin">
+		["repository_vcs_pull"] = <"Pull changes from remote">
+		["repository_vcs_commit"] = <"Commit local changes">
+		["repository_vcs_push"] = <"Push changes to remote">
 		["repository_svn_update"] = <"SVN update">
 
 		["external_command_unknown_error"] = <"Could not execute external command $1">
 		["external_command_did_not_execute"] = <"Could not execute external command $1">
 		["external_command_failed"] = <"External command '$1' failed;%N reason: $2">
 		["external_command_succeeded"] = <"External command '$1' ran; output:%N $2">
+
+		["vcs_status_unknown_tooltip"] = <"Version control repository synchronisation status unknown">
+		["vcs_status_files_not_committed_tooltip"] = <"Version control repository has local files to commit">
+		["vcs_status_up_to_date_tooltip"] = <"Version control repository up to date with remote">
+		["vcs_status_pull_required_tooltip"] = <"Version control repository pull from remote required to be up to date">
+		["vcs_status_push_required_tooltip"] = <"Version control repository push to remote required to be up to date">
+		["vcs_status_diverged_tooltip"] = <"Version control repository status: diverged from remote">
 
 		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
 
@@ -93,6 +104,11 @@ templates = <
 
 		["archetype_library_grid_name_col_tooltip"] = <"%N-------------%NRemote source:%N%TURL: $1%N%Tcustodian: $2">
 		["repository_clone_dir_confirm_text"] = <"About to clone repository $1 from $2 in $3; proceed?">
+
+		-- REPOSITORY_COMMIT_DIALOG
+		["repository_commit_message_label"] = <"Commit Message: ">
+		["repository_commit_dialog_title"] = <"Repository Commit">
+		["repository_commit_dialog_header_label"] = <"Commit local changes to repository $1.">
 
 		-- REPOSITORY_INSTALL_DIALOG
 		["repository_install_dialog_title"] = <"Install Repository">

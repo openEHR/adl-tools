@@ -23,7 +23,8 @@ inherit
 
 	SHARED_ARCHETYPE_REPOSITORY_INTERFACES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} archetype_repository_interfaces
 		undefine
 			copy, default_create
 		end
@@ -37,7 +38,8 @@ inherit
 
 	SHARED_EXTERNAL_TOOL_INTERFACES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} is_checkout_area, tool_supported
 		undefine
 			copy, default_create
 		end
@@ -60,10 +62,12 @@ feature -- Definitions
 
 	Grid_display_name_col: INTEGER = 1
 	Grid_status_col: INTEGER = 2
-	Grid_description_col: INTEGER = 3
-	Grid_maintainer_col: INTEGER = 4
-	Grid_validation_col: INTEGER = 5
-	Grid_edit_col: INTEGER = 6
+	Grid_vcs_branch_col: INTEGER = 3
+	Grid_vcs_status_col: INTEGER = 4
+	Grid_description_col: INTEGER = 5
+	Grid_maintainer_col: INTEGER = 6
+	Grid_validation_col: INTEGER = 7
+	Grid_edit_col: INTEGER = 8
 	Grid_max_cols: INTEGER
 		once
 			Result := Grid_edit_col
@@ -74,6 +78,8 @@ feature -- Definitions
 			create Result.make (0)
 			Result.put (get_text (ec_repository_grid_display_name_col_title), Grid_display_name_col)
 			Result.put (get_text (ec_repository_grid_status_col_title), grid_status_col)
+			Result.put (get_text (ec_repository_grid_vcs_branch_col_title), grid_vcs_branch_col)
+			Result.put (get_text (ec_repository_grid_vcs_status_col_title), grid_vcs_status_col)
 			Result.put (get_text (ec_repository_grid_description_col_title), grid_description_col)
 			Result.put (get_text (ec_repository_grid_maintainer_col_title), Grid_maintainer_col)
 			Result.put (get_text (ec_repository_grid_validation_col_title), Grid_validation_col)
@@ -242,7 +248,7 @@ feature {NONE} -- Events
 			hide
 		end
 
-feature {NONE} -- Implementation
+feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 
 	old_stdout_agent: like stdout_agent
 
@@ -327,13 +333,19 @@ feature {NONE} -- Implementation
 			-- column 2 - repository status
 			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void)
 
-			-- column 3 - repository description
+			-- column 3 - checked out branch
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void)
+
+			-- column 4 - VCS sync status
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (a_rep_if.synchronisation_status), Void, vcs_status_icon (a_rep_if.synchronisation_status))
+
+			-- column 5 - repository description
 			evx_grid.update_last_row_label_col (Grid_description_col, a_rep_if.repository_definition.description, Void, Void, Void)
 
-			-- column 4 - maintainer
+			-- column 6 - maintainer
 			evx_grid.update_last_row_label_col (Grid_maintainer_col, a_rep_if.repository_definition.maintainer, Void, Void, Void)
 
-			-- column 5 - validation
+			-- column 7 - validation
 			errors := a_rep_if.errors
 			if errors.has_errors then
 				col_icon := get_icon_pixmap ("tool/errors")
@@ -347,7 +359,7 @@ feature {NONE} -- Implementation
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_repository_validation (a_rep_if))
 			end
 
-			-- column 6 - create edit button and add to row
+			-- column 8 - create edit button and add to row
 			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_repository_definition (a_grid_row, a_rep_if))
@@ -378,15 +390,21 @@ feature {NONE} -- Implementation
 			end
 
 			-- column 3 - (blank)
-			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void)
 
 			-- column 4 - (blank)
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void)
 
 			-- column 5 - (blank)
-			evx_grid.update_last_row_label_col (Grid_validation_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void)
 
 			-- column 6 - (blank)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, "", Void, Void, Void)
+
+			-- column 7 - (blank)
+			evx_grid.update_last_row_label_col (Grid_validation_col, "", Void, Void, Void)
+
+			-- column 8 - (blank)
 			evx_grid.update_last_row_label_col (Grid_edit_col, "", Void, Void, Void)
 		end
 
@@ -448,7 +466,13 @@ feature {NONE} -- Implementation
 			-- column 2 - (blank)
 			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void)
 
-			-- column 3 - library dscription
+			-- column 3 - (blank)
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void)
+
+			-- column 4 - (blank)
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void)
+
+			-- column 5 - library dscription
 			if attached a_lib_if.library_definition as att_lib_def then
 				col_text := att_lib_def.description
 			else
@@ -456,7 +480,7 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
 
-			-- column 4 - maintainer
+			-- column 6 - maintainer
 			if attached a_lib_if.library_definition as att_lib_def then
 				col_text := att_lib_def.maintainer
 			else
@@ -464,7 +488,7 @@ feature {NONE} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
 
-			-- column 5 - validation
+			-- column 7 - validation
 			errors := a_lib_if.errors
 			if errors.has_errors then
 				col_icon := get_icon_pixmap ("tool/errors")
@@ -478,14 +502,14 @@ feature {NONE} -- Implementation
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_library_validation (a_lib_if))
 			end
 
-			-- column 6 - create edit button and add to row
+			-- column 8 - create edit button and add to row
 			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_library_definition (a_grid_row, a_lib_if))
 			end
 		end
 
-feature {NONE} -- Actions
+feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 	on_add_repository (repo_dir: STRING)
 			-- add a new repository, either by:
@@ -542,13 +566,14 @@ feature {NONE} -- Actions
 					populate_grid
 					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
 
-				elseif last_command_result.failed then
-					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+				elseif last_command_result.did_not_run then
+					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 					error_dialog.show_modal_to_window (Current)
 
 				else
-					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
 					error_dialog.show_modal_to_window (Current)
+
 				end
 				ok_cancel_buttons.enable_sensitive
 			else
@@ -632,13 +657,11 @@ feature {NONE} -- Actions
 							add_repository_path_with_key (clone_repository_dir, archetype_repository_interfaces.item (clone_repository_dir).key)
 						end
 				)
-
-			elseif last_command_result.failed then
-				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
-				error_dialog.show_modal_to_window (Current)
-
-			else
+			elseif last_command_result.did_not_run then
 				create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+				error_dialog.show_modal_to_window (Current)
+			else
+				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 			ok_cancel_buttons.enable_sensitive
@@ -752,9 +775,23 @@ feature {NONE} -- Actions
 		    	menu.extend (an_mi)
 			end
 
-			-- do a git pull if a git repo
-			if a_rep_if.has_repository_tool then
-				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_update), agent repository_vcs_update (a_rep_if))
+			-- VCS pull
+			if a_rep_if.has_repository_tool and a_rep_if.synchronisation_status = vcs_status_pull_required then
+				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+		    	menu.extend (an_mi)
+			end
+
+			-- VCS commit
+			if a_rep_if.has_repository_tool and a_rep_if.synchronisation_status = vcs_status_files_not_committed then
+				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_commit), agent repository_vcs_commit (a_rep_if))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+		    	menu.extend (an_mi)
+			end
+
+			-- VCS push
+			if a_rep_if.has_repository_tool and a_rep_if.synchronisation_status = vcs_status_push_required then
+				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_push), agent repository_vcs_push (a_rep_if))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 		    	menu.extend (an_mi)
 			end
@@ -795,83 +832,31 @@ feature {NONE} -- Actions
 			populate_grid
 		end
 
-	repository_vcs_update (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+	repository_vcs_pull (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- do a git pull on `a_rep_if' repository
 		do
-			do_with_wait_cursor (Current, agent do_repository_vcs_update (a_rep_if))
+			command_runner.do_action (a_rep_if, agent a_rep_if.pull_from_remote)
 		end
 
-	do_repository_vcs_update (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
-			-- do a VCS update on `a_rep_if' repository
-		require
-			a_rep_if.has_repository_tool
-		do
-			vcs_update_repository_interface := a_rep_if
-
-			-- set status update to agent that will do live update from to the grid status cell
-			old_stdout_agent := stdout_agent
-			set_stdout_agent (agent update_grid_install_status)
-			old_stderr_agent := stderr_agent
-			set_stderr_agent (agent update_grid_install_status)
-
-			ok_cancel_buttons.disable_sensitive
-			do_with_wait_cursor (Current,
-				agent (a_rep: ARCHETYPE_REPOSITORY_INTERFACE)
-					do
-						a_rep.update_from_remote
-						do_repository_vcs_update_poll_agent.set_interval (External_process_poll_period)
-					end (a_rep_if)
-			)
-		end
-
-	vcs_update_repository_interface: detachable ARCHETYPE_REPOSITORY_INTERFACE
-
-	do_repository_vcs_update_poll_agent: EV_TIMEOUT
-			-- Timer to check if process is still running
-		once
-			create Result
-			Result.actions.extend (
-				agent
-					do
-						if live_processes.is_empty then
-							do_repository_vcs_update_poll_agent.set_interval (0)
-							do_repository_vcs_update_finalise
-						else
-							do_repository_vcs_update_poll_agent.set_interval (External_process_poll_period)
-						end
-					end
-			)
-		end
-
-	do_repository_vcs_update_finalise
-			-- do a VCS update on `a_rep_if' repository
-		require
-			vcs_update_repository_interface.has_repository_tool
+	repository_vcs_commit (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- do a git pull on `a_rep_if' repository
 		local
-			info_dialog: EV_INFORMATION_DIALOG
+			commit_dialog: REPOSITORY_COMMIT_DIALOG
 		do
-			check attached vcs_update_repository_interface end
-			if last_command_result.succeeded then
-				vcs_update_repository_interface.reload_repository_definition
-				populate_grid
-			elseif last_command_result.failed then
-				create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
-				info_dialog.show_modal_to_window (Current)
-			else
-				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
-				info_dialog.show_modal_to_window (Current)
+			create commit_dialog.make (a_rep_if.key)
+			commit_dialog.show_modal_to_window (Current)
+			if not commit_dialog.message.is_empty then
+				command_runner.do_action (a_rep_if, agent a_rep_if.stage)
+				if last_command_result.succeeded then
+					command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message))
+				end
 			end
+		end
 
-			-- reset command output
-			if attached old_stdout_agent as att_agt then
-				set_stdout_agent (att_agt)
-			end
-			if attached old_stderr_agent as att_agt then
-				set_stderr_agent (att_agt)
-			end
-			ev_live_status_text.set_text ("")
-
-			ok_cancel_buttons.enable_sensitive
+	repository_vcs_push (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- do a git pull on `a_rep_if' repository
+		do
+			command_runner.do_action (a_rep_if, agent a_rep_if.push_to_remote)
 		end
 
 	repository_remove (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
@@ -906,6 +891,11 @@ feature {NONE} -- Actions
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
+
+	command_runner: REPOSITORY_COMMAND_RUNNER
+		once ("PROCESS")
+			create Result.make (Current)
+		end
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?
