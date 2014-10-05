@@ -89,8 +89,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ AOM profile directory setter ============
-			create dir_setter.make (get_text (ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, 0, 0)
-			dir_setter.set_post_select_agent (agent on_set_aom_profile_dir)
+			create dir_setter.make_linked (get_text (ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, agent on_set_aom_profile_dir, Void, Void, 0, 0)
 			ev_root_container.extend (dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (dir_setter.ev_root_container)
 			gui_controls.extend (dir_setter)

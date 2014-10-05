@@ -100,8 +100,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ RM schema directory getter ============
-			create rm_dir_setter.make (get_text (ec_rm_schema_dir_text), agent :STRING do Result := rm_schema_directory end, 0, 0)
-			rm_dir_setter.set_post_select_agent (agent on_set_rm_schema_dir)
+			create rm_dir_setter.make_linked (get_text (ec_rm_schema_dir_text), agent :STRING do Result := rm_schema_directory end, agent on_set_rm_schema_dir, Void, Void, 0, 0)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
 			gui_controls.extend (rm_dir_setter)
