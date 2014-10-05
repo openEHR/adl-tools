@@ -127,24 +127,6 @@ feature -- Definitions
 			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 		end
 
-	Available_remote_repositories: HASH_TABLE [REPOSITORY_REMOTE_PROXY, STRING]
-			-- URLs of available online repositories. Hardwired for now, replace in future by a
-			-- web service lookup
-		local
-			a_proxy: REPOSITORY_REMOTE_PROXY
-		once ("PROCESS")
-			create Result.make (0)
-			create a_proxy.make ("openEHR-reference repository", "https://github.com/openEHR/adl-archetypes.git", "git")
-			Result.put (a_proxy, a_proxy.remote_url)
-			create a_proxy.make ("openEHR-CKM mirror", "https://github.com/openEHR/CKM-mirror.git", "git")
-			Result.put (a_proxy, a_proxy.remote_url)
-
---		use for testing
---			create a_proxy.make ("CIMI-CIMI archetypes", "file:///cygdrive/c/project/CIMI/opencimi/archetypes", "git")
-			create a_proxy.make ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", "git")
-			Result.put (a_proxy, a_proxy.remote_url)
-		end
-
 feature -- Initialisation
 
 	app_cfg_initialise

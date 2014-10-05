@@ -141,8 +141,10 @@ feature -- Access
 		require
 			has_remote_repository
 		do
-			check attached remote_access as att_rem_acc then
+			if attached remote_access as att_rem_acc then
 				Result := att_rem_acc.tool_name
+			else
+				create Result.make_empty
 			end
 		end
 
@@ -151,8 +153,10 @@ feature -- Access
 		require
 			has_remote_repository
 		do
-			check attached remote_access as att_rem_acc then
+			if attached remote_access as att_rem_acc then
 				Result := att_rem_acc.checked_out_branch
+			else
+				create Result.make_empty
 			end
 		end
 

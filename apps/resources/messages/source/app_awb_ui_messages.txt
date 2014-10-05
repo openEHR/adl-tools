@@ -60,7 +60,7 @@ templates = <
 		-- REPOSITORY_DIALOG
 		["repository_create_new_question_text"] = <"Create a new repository (creates repository definition file in selected directory)?">
 
-		["repository_dir_button_text"] = <"Add Repository ">
+		["repository_dir_button_text"] = <"Add Repository">
 		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
@@ -84,6 +84,8 @@ templates = <
 		["repository_vcs_commit"] = <"Commit local changes">
 		["repository_vcs_push"] = <"Push changes to remote">
 		["repository_svn_update"] = <"SVN update">
+
+		["repository_url_label"] = <"Remote URL: ">
 
 		["external_command_unknown_error"] = <"Could not execute external command $1">
 		["external_command_did_not_execute"] = <"Could not execute external command $1">
@@ -112,7 +114,9 @@ templates = <
 
 		-- REPOSITORY_INSTALL_DIALOG
 		["repository_install_dialog_title"] = <"Install Repository">
-		["repository_install_dialog_header_label"] = <"Repository at $1%NASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.">
+		["repository_install_dialog_header_label_url"] = <"ASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.">
+		["repository_install_dialog_header_label"] = <"CREATE NEW LOCAL: select local directory%NASSOCIATE repo to remote: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.">
+		["repository_install_dialog_header_label_clone"] = <"Clone remote repository; choose PARENT directory.">
 		["repository_clone_here_text"] = <"Create new clone & checkout below this directory">
 		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 

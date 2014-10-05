@@ -25,14 +25,23 @@ inherit
 		end
 
 create
-	make
+	make, make_fixed_url
 
 feature {NONE} -- Initialization
 
-	make (a_repo_url: STRING)
+	make_fixed_url (a_repo_url: STRING)
 		do
 			repository_url := a_repo_url
 			create local_directory.make_empty
+			header_text := get_text (ec_repository_install_dialog_header_label_url)
+			default_create
+		end
+
+	make
+		do
+			create repository_url.make_empty
+			create local_directory.make_empty
+			header_text := get_text (ec_repository_install_dialog_header_label)
 			default_create
 		end
 
@@ -53,7 +62,7 @@ feature {NONE} -- Initialization
 			ev_cell_1.set_minimum_height (20)
 			ev_root_container.extend (ev_cell_1)
 			create ev_label_1
-			ev_label_1.set_text (get_msg (ec_repository_install_dialog_header_label, <<repository_url>>))
+			ev_label_1.set_text (header_text)
 			ev_root_container.extend (ev_label_1)
 			create ev_cell_2
 			ev_cell_2.set_minimum_height (20)
@@ -62,8 +71,18 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_label_1)
 			ev_root_container.disable_item_expand (ev_cell_2)
 
+			-- ============ URL text entry ============
+			if repository_url.is_empty then
+				create evx_url_text.make_linked (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, agent set_repository_url, Void, Void, 0, 0, True)
+			else
+				create evx_url_text.make_readonly (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, 0, 0, True)
+			end
+			ev_root_container.extend (evx_url_text.ev_root_container)
+			ev_root_container.disable_item_expand (evx_url_text.ev_root_container)
+			gui_controls.extend (evx_url_text)
+
 			-- ============ new repository dir chooser ============
-			create evx_dir_setter.make (get_text (ec_repository_dir_button_text), agent :STRING do Result := "" end, 0, 0)
+			create evx_dir_setter.make_linked (get_text (ec_repository_dir_button_text), agent :STRING do Result := local_directory end, agent set_local_directory, Void, Void, 0, 0)
 			evx_dir_setter.set_button_tooltip (get_text (ec_repository_dir_button_tooltip))
 			evx_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
 			ev_root_container.extend (evx_dir_setter.ev_root_container)
@@ -105,7 +124,6 @@ feature -- Events
 
 	on_ok
 		do
-			local_directory := evx_dir_setter.data_control_text
 			set_last_user_selected_directory (local_directory)
 			hide
 		end
@@ -128,6 +146,16 @@ feature -- Modification
 			user_requires_repository_clone := a_val
 		end
 
+	set_repository_url (a_url: STRING)
+		do
+			repository_url := a_url
+		end
+
+	set_local_directory (a_dir: STRING)
+		do
+			local_directory := a_dir
+		end
+
 feature -- Commands
 
 	enable_edit
@@ -137,6 +165,8 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	header_text: STRING
 
 	do_populate
 			-- Set the dialog widgets from shared settings.
@@ -159,6 +189,8 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
+	evx_url_text: EVX_SINGLE_LINE_TEXT_CONTROL
+
 	evx_clone_cb: EVX_CHECK_BOX_CONTROL
 
 	evx_dir_setter: EVX_DIRECTORY_SETTER
@@ -172,5 +204,4 @@ feature {NONE} -- Implementation
 		end
 
 end
-
 

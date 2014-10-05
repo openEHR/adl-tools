@@ -13,15 +13,21 @@ note
 class REPOSITORY_REMOTE_PROXY
 
 create
-	make
+	make, make_key
 
 feature -- Initialisation
 
-	make (a_remote_key, a_remote_url, a_remote_type: STRING)
+	make (a_remote_url, a_remote_type: STRING)
 		do
 			remote_url := a_remote_url
-			remote_key := a_remote_key
 			remote_type := a_remote_type
+			create remote_key.make_empty
+		end
+
+	make_key (a_remote_key, a_remote_url, a_remote_type: STRING)
+		do
+			make (a_remote_url, a_remote_type)
+			remote_key.append (a_remote_key)
 		end
 
 feature -- Access

@@ -60,6 +60,25 @@ inherit
 
 feature -- Definitions
 
+	Available_remote_repositories: HASH_TABLE [REPOSITORY_REMOTE_PROXY, STRING]
+			-- URLs of available online repositories. Hardwired for now, replace in future by a
+			-- web service lookup
+		local
+			a_proxy: REPOSITORY_REMOTE_PROXY
+		once ("PROCESS")
+			create Result.make (0)
+			create a_proxy.make_key ("openEHR-reference repository", "https://github.com/openEHR/adl-archetypes.git", Git_tool_name)
+			Result.put (a_proxy, a_proxy.remote_url)
+
+			create a_proxy.make_key ("openEHR-CKM mirror", "https://github.com/openEHR/CKM-mirror.git", Git_tool_name)
+			Result.put (a_proxy, a_proxy.remote_url)
+
+--		use for testing
+--			create a_proxy.make_key ("CIMI-CIMI archetypes", "file:///cygdrive/c/project/CIMI/opencimi/archetypes", Git_tool_name)
+			create a_proxy.make_key ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", Git_tool_name)
+			Result.put (a_proxy, a_proxy.remote_url)
+		end
+
 	Grid_display_name_col: INTEGER = 1
 	Grid_status_col: INTEGER = 2
 	Grid_vcs_branch_col: INTEGER = 3
@@ -136,15 +155,14 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_cell_3)
 			ev_root_container.disable_item_expand (ev_cell_3)
 
-			-- ============ new repository dir chooser ============
-			create repo_dir_setter.make (get_text (ec_repository_dir_button_text), agent :STRING do Result := "" end, 0, 0)
-			repo_dir_setter.set_button_tooltip (get_text (ec_repository_dir_button_tooltip))
-			repo_dir_setter.set_button_icon (get_icon_pixmap ("tool/info"))
-			repo_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
-			repo_dir_setter.set_post_select_agent (agent on_add_repository)
-			ev_root_container.extend (repo_dir_setter.ev_root_container)
-			ev_root_container.disable_item_expand (repo_dir_setter.ev_root_container)
-			gui_controls.extend (repo_dir_setter)
+			-- ============ new repository button ============
+			create ev_hbox_new_repo
+			ev_root_container.extend (ev_hbox_new_repo)
+			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_button_text), get_text (ec_repository_dir_button_tooltip), agent on_add_repository, Void)
+			ev_hbox_new_repo.extend (new_repo_button.ev_button)
+			ev_hbox_new_repo.disable_item_expand (new_repo_button.ev_button)
+			create ev_cell_3
+			ev_hbox_new_repo.extend (ev_cell_3)
 
 			-- space cell
 			create ev_cell_3
@@ -334,7 +352,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void)
 
 			-- column 3 - checked out branch
-			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void)
+			if a_rep_if.has_remote_repository then
+				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void)
+			else
+				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void)
+			end
 
 			-- column 4 - VCS sync status
 			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (a_rep_if.synchronisation_status), Void, vcs_status_icon (a_rep_if.synchronisation_status))
@@ -418,7 +440,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			repo_name: STRING
 		do
 			repo_name := repository_name_from_url (a_rem_proxy.remote_url, a_rem_proxy.remote_type)
-			create repo_install_dialog.make (a_rem_proxy.remote_url)
+			create repo_install_dialog.make_fixed_url (a_rem_proxy.remote_url)
 			repo_install_dialog.show_modal_to_window (Current)
 
 			if not repo_install_dialog.local_directory.is_empty then
@@ -430,7 +452,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 					verify_dialog.show_modal_to_window (Current)
 					if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
-						on_clone_repository (repo_install_dialog.local_directory, a_rem_proxy)
+						do_clone_repository (repo_install_dialog.local_directory, a_rem_proxy)
 					end
 				end
 			end
@@ -511,30 +533,53 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 
 feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
-	on_add_repository (repo_dir: STRING)
+	on_add_repository
 			-- add a new repository, either by:
 			--	* association of existing checkout to its remote location
 			--	* clone from a remote location
 			--	* create a new local repository, unconnected to any remote
 		local
+			repo_install_dialog: REPOSITORY_INSTALL_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 			new_repo_dialog: EV_QUESTION_DIALOG
+			repo_dir, repo_url: STRING
+			verify_dialog: EV_QUESTION_DIALOG
 		do
-			-- if there is a repostory at this path, then see if it can be added
-			if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
-				if is_checkout_area (repo_dir) then
-					on_associate_repository (repo_dir)
-				else
-					archetype_repository_interfaces.extend (repo_dir)
-				end
+			create repo_install_dialog.make
+			repo_install_dialog.show_modal_to_window (Current)
+			repo_dir := repo_install_dialog.local_directory
+			repo_url := repo_install_dialog.repository_url
 
-			-- see if the user wants to create a new local repository here, by creating a repository definition file
-			elseif file_system.directory_exists (repo_dir) then
-				-- valid path for new repository to be created
-				if archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
-					set_last_user_selected_directory (repo_dir)
+			if not repo_dir.is_empty and then file_system.directory_exists (repo_dir) then
+				-- if there is a repostory at this path, then see if it can be added
+				if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
+					if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
+						if is_checkout_area (repo_dir) then
+							-- existing clone
+							on_associate_repository (repo_dir)
+						else
+							-- existing local repository
+							do_add_local_repository (repo_dir)
+						end
+					else
+						create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+						error_dialog.show_modal_to_window (Current)
+					end
+
+				-- user wants to create a new repository by cloning a remote
+				elseif not repo_url.is_empty then
+					create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text, <<"???", repo_url, repo_dir>>))
+					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+					verify_dialog.show_modal_to_window (Current)
+					if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+						do_clone_repository (repo_dir, create {REPOSITORY_REMOTE_PROXY}.make (repo_url, Git_tool_name))
+					end
+
+
+				-- valid path for new local repository to be created; will cause creation of new repo meta-data file
+				elseif archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
 					create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
-						<<agent on_create_new_repository, agent do end, agent do end>>)
+						<<agent do_create_new_local_repository (repo_dir), agent do end, agent do end>>)
 					new_repo_dialog.show_modal_to_window (Current)
 				else
 					create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
@@ -582,7 +627,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			end
 		end
 
-	on_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
+	do_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
 			-- clone an existing remote repository to a new checkout
 		local
 			error_dialog: EV_INFORMATION_DIALOG
@@ -606,7 +651,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					agent (a_parent_dir, a_repo_type: STRING)
 						do
 							archetype_repository_interfaces.extend_checkout_from_remote (a_parent_dir, clone_repository_url, a_repo_type)
-							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
+							clone_repository_poll_agent.set_interval (External_process_poll_period)
 						end (repo_parent_dir, a_rem_proxy.remote_type)
 				)
 			else
@@ -626,7 +671,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			create Result.make_empty
 		end
 
-	on_clone_repository_poll_agent: EV_TIMEOUT
+	clone_repository_poll_agent: EV_TIMEOUT
 			-- Timer to check if process is still running
 		once
 			create Result
@@ -634,16 +679,16 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				agent
 					do
 						if live_processes.is_empty then
-							on_clone_repository_poll_agent.set_interval (0)
-							on_clone_repository_finalise
+							clone_repository_poll_agent.set_interval (0)
+							do_clone_repository_finalise
 						else
-							on_clone_repository_poll_agent.set_interval (External_process_poll_period)
+							clone_repository_poll_agent.set_interval (External_process_poll_period)
 						end
 					end
 			)
 		end
 
-	on_clone_repository_finalise
+	do_clone_repository_finalise
 			-- finalise clone an existing remote repository to a new checkout
 		local
 			error_dialog: EV_INFORMATION_DIALOG
@@ -714,11 +759,19 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			end
 		end
 
-	on_create_new_repository
+	do_add_local_repository (a_repo_dir: STRING)
+			-- add a local repository, and repopulate
+		do
+			archetype_repository_interfaces.extend (a_repo_dir)
+			add_repository_path_with_key (a_repo_dir, archetype_repository_interfaces.last_repository_interface.key)
+			populate_grid
+		end
+
+	do_create_new_local_repository (a_repo_dir: STRING)
 			-- create a new local repository, save it, and repopulate
 		do
-			archetype_repository_interfaces.extend_create_local (repo_dir_setter.data_control_text)
-			add_repository_path_with_key (repo_dir_setter.data_control_text, archetype_repository_interfaces.last_repository_interface.key)
+			archetype_repository_interfaces.extend_create_local (a_repo_dir)
+			add_repository_path_with_key (a_repo_dir, archetype_repository_interfaces.last_repository_interface.key)
 			populate_grid
 		end
 
@@ -886,11 +939,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 	evx_grid: EVX_GRID
 
-	repo_dir_setter: EVX_DIRECTORY_SETTER
+	new_repo_button: EVX_BUTTON
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
+
+	ev_hbox_new_repo: EV_HORIZONTAL_BOX
 
 	command_runner: REPOSITORY_COMMAND_RUNNER
 		once ("PROCESS")

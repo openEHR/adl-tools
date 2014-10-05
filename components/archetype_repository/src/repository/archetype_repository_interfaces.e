@@ -122,7 +122,7 @@ feature -- Status Report
 		do
 			last_duplicate_key_path.wipe_out
 			if repository_exists_at_path (a_path) and not repositories.has (a_path) then
-				create arch_rep_if.make_associate_with_remote (a_path)
+				create arch_rep_if.make (a_path)
 				if not has_key (arch_rep_if.key) then
 					Result := True
 				else
