@@ -82,7 +82,7 @@ feature {NONE} -- Initialization
 			ev_notebook_paths_vb.extend (tool_paths_frame_ctl.ev_root_container)
 
 			-- Text editor path setter control
-			create text_editor_dir_setter.make (get_text (ec_text_editor_directory_text), agent text_editor_command, 0, 0)
+			create text_editor_dir_setter.make_linked (get_text (ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0, 0)
 			tool_paths_frame_ctl.extend (text_editor_dir_setter.ev_root_container, False)
 			gui_controls.extend (text_editor_dir_setter)
 
@@ -309,7 +309,7 @@ feature -- Events
 				set_test_diff_directory (test_files_dir_setter.data_control_text)
 
 				-- tool commands
-				set_text_editor_command (text_editor_dir_setter.data_control_text)
+
 				set_editor_app_command (adl_editor_dir_setter.data_control_text)
 				set_difftool_command (diff_tool_dir_setter.data_control_text)
 
