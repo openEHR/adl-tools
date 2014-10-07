@@ -98,15 +98,6 @@ feature -- Initialisation
 			-- set error reporting level in billboard and all error accumulator objects
 			set_global_error_reporting_level (error_reporting_level)
 
-			-- initialise terminology
-			if terminology_directory.is_empty then
-				set_terminology_directory (Default_terminology_directory)
-			end
-			create term_init.make
-			if term_init.init_failed then
-				add_error (ec_terminology_init_failed, <<term_init.init_fail_reason>>)
-			end
-
 			--
 			-- check if found an XML rules file, and copy in sample one if none
 			--
@@ -197,6 +188,16 @@ feature -- Initialisation
 					add_info (ec_validation_non_strict, Void)
 				end
 			end
+
+			-- initialise terminology
+			if terminology_directory.is_empty then
+				set_terminology_directory (Default_terminology_directory)
+			end
+			create term_init.make
+			if term_init.init_failed then
+				add_error (ec_terminology_init_failed, <<term_init.init_fail_reason>>)
+			end
+
 		end
 
 feature -- Status Report
