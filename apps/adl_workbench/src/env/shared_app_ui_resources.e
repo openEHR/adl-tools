@@ -673,6 +673,11 @@ feature -- Application Switches
 			if Result.is_empty then
 				Result := default_text_editor_command
 				set_text_editor_command (Result)
+
+			-- if it's not a command path, convert it to one
+			elseif not is_command_template (Result) then
+				Result := convert_to_command_template (Result)
+				set_text_editor_command (Result)
 			end
 		end
 
