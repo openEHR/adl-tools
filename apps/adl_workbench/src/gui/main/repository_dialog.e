@@ -695,7 +695,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		do
 			if last_command_result.succeeded then
 				do_with_wait_cursor (Current,
-					agent (a_parent_dir, a_repo_type: STRING)
+					agent
 						do
 							archetype_repository_interfaces.extend_checkout_from_remote_finalise (clone_repository_url)
 							populate_grid
