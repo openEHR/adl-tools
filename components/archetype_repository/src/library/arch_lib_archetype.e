@@ -194,13 +194,15 @@ feature -- Identification
 			Result := file_mgr.old_id
 		end
 
-	parent_id: detachable like id
+	parent_id: like id
 			-- Archetype identifier of specialisation parent archtype matched in this repository that has
 			-- an id matching the interface id reference (i.e. archetype id down to major version) in
 			-- the 'parent_archetype_id' property of the target.
+		require
+			is_specialised
 		do
-			if is_specialised and then attached {ARCH_LIB_ARCHETYPE} parent as parent_aca then
-				Result := parent_aca.id
+			check attached parent_ref as att_pref then
+				create Result.make_from_string (att_pref)
 			end
 		end
 
@@ -256,7 +258,9 @@ feature -- Identification
 			-- it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1.0.0
 		do
 			if is_specialised then
-				Result := parent_id.as_string
+				check attached parent_ref as att_pref then
+					Result := att_pref
+				end
 			else
 				Result := id.qualified_rm_class
 			end
