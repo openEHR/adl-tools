@@ -160,6 +160,16 @@ feature -- Access
 			end
 		end
 
+	available_branches: ARRAYED_LIST [STRING]
+			-- list of all available branches for this repo
+		do
+			if attached remote_access as att_rem_acc then
+				Result := att_rem_acc.available_branches
+			else
+				create Result.make (0)
+			end
+		end
+
 	synchronisation_status: INTEGER
 			-- status of sync between local and remote repository
 
@@ -274,6 +284,18 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_push
+				get_synchronisation_status
+			end
+		end
+
+	checkout_branch (a_branch_name: STRING)
+			-- checkout a different branch locally
+		require
+			Repository_valid: has_remote_repository
+			Branch_valid: available_branches.has (a_branch_name) and not a_branch_name.is_equal (checked_out_branch)
+		do
+			check attached remote_access as att_rm_acc then
+				att_rm_acc.do_checkout_branch (a_branch_name)
 				get_synchronisation_status
 			end
 		end

@@ -849,6 +849,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		    	menu.extend (an_mi)
 			end
 
+			-- checkout other branch
+			if a_rep_if.has_repository_tool and then a_rep_if.available_branches.count > 1 then
+				create an_mi.make_with_text_and_action (get_text (ec_repository_checkout_branch), agent repository_checkout_branch (a_rep_if))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+		    	menu.extend (an_mi)
+			end
+
 			-- remove
 			create an_mi.make_with_text_and_action (get_text (ec_repository_remove_menu_text), agent repository_remove (a_rep_if))
 		   	menu.extend (an_mi)
@@ -903,6 +910,21 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				if last_command_result.succeeded then
 					command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message))
 				end
+			end
+		end
+
+	repository_checkout_branch (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- do a git checkout branch on `a_rep_if' repository
+		local
+			checkout_dialog: REPOSITORY_CHECKOUT_DIALOG
+			branches: ARRAYED_LIST [STRING]
+		do
+			branches := a_rep_if.available_branches
+			branches.prune (a_rep_if.checked_out_branch)
+			create checkout_dialog.make (branches)
+			checkout_dialog.show_modal_to_window (Current)
+			if not checkout_dialog.branch_name.is_empty then
+				command_runner.do_action (a_rep_if, agent a_rep_if.checkout_branch (checkout_dialog.branch_name))
 			end
 		end
 
