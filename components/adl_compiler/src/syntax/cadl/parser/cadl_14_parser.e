@@ -1765,14 +1765,14 @@ end
 
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
 						if attached yyvs12.item (yyvsp12) as ivl and then ivl.is_equal (rm_prop_def.existence) then
-							add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
+							add_warning (ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
 							yyvs12.item (yyvsp12) := Void
 						end
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def and then
 							attached yyvs48.item (yyvsp48) as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
 							ivl.interval.contains (rm_cont_prop_def.cardinality))
 						then
-							add_warning (ec_WCACA14, <<rm_attribute_name, parent_path_str, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
+							add_warning (ec_WCACA14, <<rm_attribute_name, object_nodes.item.path, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 							yyvs48.item (yyvsp48) := Void
 						end
 
@@ -1792,7 +1792,7 @@ end
 					elseif not attached yyvs48.item (yyvsp48) then
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
 						if attached yyvs12.item (yyvsp12) as ivl and then ivl.is_equal (rm_prop_def.existence) then
-							add_warning (ec_WCAEX14, <<rm_attribute_name, parent_path_str, ivl.as_string, rm_prop_def.existence.as_string>>)
+							add_warning (ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
 							yyvs12.item (yyvsp12) := Void
 						end
 
@@ -8717,7 +8717,6 @@ feature -- Initialization
 			create str.make_empty
 			create indent.make_empty
 			create rm_attribute_name.make_empty
-			create parent_path_str.make_empty
 		end
 
 	reset
@@ -8851,7 +8850,6 @@ feature {NONE} -- Parse Tree
 		end
 
 	rm_attribute_name: STRING
-	parent_path_str: STRING
 
 	invariant_expr: detachable STRING
 

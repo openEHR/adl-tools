@@ -51,13 +51,13 @@ templates = <
 		["VSAM2"] = <"attribute at path $1 is multiply-valued but is defined as single-valued in flat parent">
 
 		-- C_OBJECT
-		["VCOID"] = <"object with RM type $1 under attribute $2 does not have a node identifier (id-code)">
-		["VCOSU"] = <"cannot add $1 object with $2 to attribute $3 because attribute already has child with same node id">
-		["VACSO"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
+		["VCOID"] = <"object with RM type $1 under attribute '$2' does not have a node identifier (id-code)">
+		["VCOSU"] = <"cannot add $1 object with $2 to attribute '$3' because attribute already has child with same node id">
+		["VACSO"] = <"cannot add $1 object with $2 to singly-valued attribute '$3' because object occurrences > 1">
 
-		["VACMCU"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because occurrences upper bound $4 is greater than cardinality upper bound $5">
-		["WACMCL"] = <"for multiply-valued attribute $1 sum of occurrences lower bounds $2 must be less than cardinality upper limit $3">
-		["VACMCO"] = <"for multiply-valued attribute $1, minimum object count $2 must be less than cardinality upper limit $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)">
+		["VACMCU"] = <"cannot add $1 object with $2 to multiply-valued attribute '$3' because occurrences upper bound $4 is greater than cardinality upper bound $5">
+		["WACMCL"] = <"for multiply-valued attribute '$1' sum of occurrences lower bounds $2 must be less than cardinality upper limit $3">
+		["VACMCO"] = <"for multiply-valued attribute '$1', minimum object count $2 must be less than cardinality upper limit $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)">
 
 		["VARCN"] = <"invalid root object node_id (concept code) $1; should follow regex pattern $2">
 		["VARND"] = <"invalid object node_id $1; should follow regex pattern $2">
@@ -77,7 +77,7 @@ templates = <
 		["VSONPO"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent">
 		["VSONPT"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node with AOM type $2 that redefines node in the flat parent of different AOM type $3">
 		["VSONCI"] = <"object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
-		["VCATU"] = <"cADL object duplicate attribute $1">
+		["VCATU"] = <"cADL object duplicate attribute '$1'">
 
 		-- C_DOMAIN_TYPE
 		["VSDTV"] = <"$1 object node at path $2 does not conform to $3 node at parent path $4">
@@ -115,7 +115,7 @@ templates = <
 		["VPOV"] = <"$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6">
 
 		-- C_ATTRIBUTE_TUPLE
-		["VTPIN"] = <"$1 object node at path $2 has tuple constraint $3 that includes non-tuple constrained attribute $4 in parent at path $5">
+		["VTPIN"] = <"$1 object node at path $2 has tuple constraint $3 that includes non-tuple constrained attribute '$4' in parent at path $5">
 		["VTPNC"] = <"$1 object node at path $2 tuple constraint $3 does not conform to counterpart at path $4 in parent">
 
 		-- terminology-related validity
@@ -136,12 +136,12 @@ templates = <
 		["VCORM"] = <"type name '$1' at object node at $2 not known in reference model">
 		["VCORMT"] = <"type '$1' of object node at $2 not does not conform to type '$3' of $4.$5 in reference model">
 		["VCARM"] = <"attribute name '$1' in object node at $2 (type=$3) not among flat set of properties in reference model">
-		["VCAEX"] = <"attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
-		["VCACA"] = <"attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
-		["WCACA"] = <"attribute $1 in object node at $2 cardinality $3 same as in reference model">
+		["VCAEX"] = <"attribute '$1' in object node at $2 existence $3 does not conform to existence $4 in reference model">
+		["VCACA"] = <"attribute '$1' in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
+		["WCACA"] = <"attribute '$1' in object node at $2 cardinality $3 same as in reference model">
 		["VCAMs"] = <"single-valued attribute at path $1 cardinality does not conform to cardinality $2 of container attribute in reference model">
 		["VCAMm"] = <"container attribute at path $1 with cardinality $2 does not conform to attribute in reference model, which is single-valued">
-		["WCAEX"] = <"attribute $1 in object node at $2 existence $3 same as in reference model">
+		["WCAEX"] = <"attribute '$1' in object node at $2 existence $3 same as in reference model">
 		["WCARMC"] = <"attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model">
 		["ICORMTS"] = <"type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 		["ICORMEN"] = <"type '$1' of object node at $2 conformance to enumeration type $3 of $4.$5 in reference model inferred">
@@ -150,8 +150,8 @@ templates = <
 		["VCORMENU"] = <"type '$1' of object node at $2 and enumeration type $3 of $4.$5 not supported">
 
 		-- ADL 1.4 legacy existence and cardinality removal messages
-		["WCAEX14"] = <"ADL 1.4 archetype - attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
-		["WCACA14"] = <"ADL 1.4 archetype - attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
+		["WCAEX14"] = <"ADL 1.4 archetype - attribute '$1' in object node at path $2: existence $3 does not conform to existence $4 in reference model">
+		["WCACA14"] = <"ADL 1.4 archetype - attribute '$1' in object node at path $2: cardinality $3 does not conform to cardinality $4 in reference model">
 
 		-- validation warnings: in addition to spec, used to help archetype authors
 		["WOUC"] = <"code $1 in terminology not used in archetype definition">
