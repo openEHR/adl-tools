@@ -241,6 +241,7 @@ feature {NONE} -- Implementation
 		do
 			if attached source as att_source then
 				att_source.save_text_to_differential_file (a_text)
+				att_source.signal_source_edited
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
@@ -248,7 +249,7 @@ feature {NONE} -- Implementation
 		end
 
 	save_adl_14_source_editor_text (a_text: STRING)
-			-- save what is in a 1.5/1.5.1 editor pane to the differential file
+			-- save what is in a 1.4 editor pane to the 1.4 file
 			-- and then select the archetype in the catalogue to force a recompile
 		do
 			if attached source as att_source then

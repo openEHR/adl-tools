@@ -806,6 +806,11 @@ feature {NONE} -- Compilation
 						archetype_comparator.generate_diff
 						archetype_comparator.compress_differential_child
 						differential_archetype := archetype_comparator.differential_output
+
+						-- save text to diff file
+						if attached differential_serialised as txt then
+							save_text_to_differential_file (txt)
+						end
 					else
 						compilation_state := cs_lineage_invalid
 						add_error (ec_compile_e1, <<parent_id.as_string>>)
@@ -817,6 +822,11 @@ feature {NONE} -- Compilation
 					-- perform standard post-parse processing
 					adl_14_engine.post_parse_process (flat_arch, Current)
 					create differential_archetype.make_from_flat (flat_arch)
+
+					-- save text to diff file
+					if attached differential_serialised as txt then
+						save_text_to_differential_file (txt)
+					end
 				end
 			else
 			 	compilation_state := Cs_convert_legacy_failed
@@ -1068,7 +1078,6 @@ feature -- File Access
 			-- save `a_text' to the differential file
 		do
 			file_mgr.save_text_to_differential_file (a_text)
-			signal_source_edited
 		end
 
 feature {MAIN_WINDOW} -- File Access
@@ -1162,8 +1171,9 @@ feature {NONE} -- Implementation
 			-- (e.g. "en" matches "en") or on a language group basis (e.g. "en-GB" matches "en"); if
 			-- none found, return archetype original language
 		require
-			is_valid_differential
+			attached differential_archetype
 		do
+			check attached differential_archetype end
 			if differential_archetype.has_language (archetype_view_language) then
 				Result := archetype_view_language
 			elseif differential_archetype.has_matching_language_tag (archetype_view_language) then
