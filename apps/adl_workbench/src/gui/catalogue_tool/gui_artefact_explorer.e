@@ -229,16 +229,16 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			create an_mi.make_with_text_and_action (get_text (ec_expand_complete_button_text), agent do gui_semantic_grid_tree_control.expand_all end)
-			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_do_expand_all"))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_expand_all"))
 			a_menu.extend (an_mi)
 			create an_mi.make_with_text_and_action (get_text (ec_collapse_complete_button_text), agent do gui_semantic_grid_tree_control.collapse_all end)
-			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_do_collapse_all"))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_collapse_all"))
 			a_menu.extend (an_mi)
 			create an_mi.make_with_text_and_action (get_text (ec_expand_one_level_button_text), agent do gui_semantic_grid_tree_control.expand_one_level end)
-			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_do_expand"))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_expand"))
 			a_menu.extend (an_mi)
 			create an_mi.make_with_text_and_action (get_text (ec_collapse_one_level_button_text), agent do gui_semantic_grid_tree_control.collapse_one_level end)
-			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_do_collapse"))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_collapse"))
 			a_menu.extend (an_mi)
 		end
 
