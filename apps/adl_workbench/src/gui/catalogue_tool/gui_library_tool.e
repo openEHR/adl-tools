@@ -33,6 +33,11 @@ inherit
 			go_to_selected_item, on_rotate_view, mini_tool_bar
 		end
 
+	EV_DIALOG_NAMES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -359,34 +364,36 @@ feature {NONE} -- Implementation
 				end
 
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				name := save_dialog.file_name.as_string_8
 
-				if not name.is_empty then
-					-- finalise the file path & create a handle
-					set_current_work_directory (file_system.dirname (name))
-					format := format_list [save_dialog.selected_filter_index]
-					ext := archetype_file_extension (diff_flag, format)
-					if not file_system.has_extension (name, ext) then
-						name.append (ext)
-					end
-					create file.make (name)
-
-					-- if the file already exists, ask user about overwrite
-					ok_to_write := True
-					if file.exists then
-						create question_dialog.make_with_text (get_msg (ec_file_exists_replace_question, <<file_system.basename (name)>>))
-						question_dialog.set_title (get_msg (ec_save_archetype_as_type, <<format.as_upper>>))
-						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
-						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-						ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
-					end
-					if ok_to_write then
-						if diff_flag then
-							aca.save_differential_as (name, format)
-						else
-							aca.save_flat_as (name, format)
+				if not save_dialog.selected_button_name.is_equal (ev_cancel) then
+					name := save_dialog.file_name.as_string_8
+					if not name.is_empty then
+						-- finalise the file path & create a handle
+						set_current_work_directory (file_system.dirname (name))
+						format := format_list [save_dialog.selected_filter_index]
+						ext := archetype_file_extension (diff_flag, format)
+						if not file_system.has_extension (name, ext) then
+							name.append (ext)
 						end
-						gui_agents.console_tool_append_agent.call ([aca.status])
+						create file.make (name)
+
+						-- if the file already exists, ask user about overwrite
+						ok_to_write := True
+						if file.exists then
+							create question_dialog.make_with_text (get_msg (ec_file_exists_replace_question, <<file_system.basename (name)>>))
+							question_dialog.set_title (get_msg (ec_save_archetype_as_type, <<format.as_upper>>))
+							question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+							question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+							ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
+						end
+						if ok_to_write then
+							if diff_flag then
+								aca.save_differential_as (name, format)
+							else
+								aca.save_flat_as (name, format)
+							end
+							gui_agents.console_tool_append_agent.call ([aca.status])
+						end
 					end
 				end
 			else
