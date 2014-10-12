@@ -163,7 +163,7 @@ feature -- Application Switches
 		require
 			a_lang_attached: not a_lang.is_empty
 		do
-			app_cfg.put_value ("/general/archetype_view_language", a_lang)
+			app_cfg.put_string_value ("/general/archetype_view_language", a_lang)
 		end
 
 	repositories_table_path: STRING
@@ -246,7 +246,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value ("/repositories/current_library_name", a_path)
+			app_cfg.put_string_value ("/repositories/current_library_name", a_path)
 		end
 
 	default_namespaces: HASH_TABLE [STRING, STRING]
@@ -379,7 +379,7 @@ feature -- Application Switches
 	set_validation_strict (flag: BOOLEAN)
 			-- Set flag for strict parser validation
 		do
-			app_cfg.put_value ("/compiler/validation_strict", flag)
+			app_cfg.put_boolean_value ("/compiler/validation_strict", flag)
 		end
 
 	rm_flattening_on: BOOLEAN
@@ -391,7 +391,7 @@ feature -- Application Switches
 	set_rm_flattening_on (flag: BOOLEAN)
 			-- Set flag for RM flattening
 		do
-			app_cfg.put_value ("/compiler/rm_flattening", flag)
+			app_cfg.put_boolean_value ("/compiler/rm_flattening", flag)
 		end
 
 	aom_profile_directory: STRING
@@ -405,7 +405,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value ("/file_system/aom_profile_directory", a_path)
+			app_cfg.put_string_value ("/file_system/aom_profile_directory", a_path)
 		end
 
 	terminology_directory: STRING
@@ -419,7 +419,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value ("/file_system/terminology_directory", a_path)
+			app_cfg.put_string_value ("/file_system/terminology_directory", a_path)
 		end
 
 	export_directory: STRING
@@ -437,7 +437,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value ("/file_system/export_directory", a_path)
+			app_cfg.put_string_value ("/file_system/export_directory", a_path)
 		end
 
 	html_export_directory: STRING
@@ -454,7 +454,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value ("/file_system/html_export_directory", a_path)
+			app_cfg.put_string_value ("/file_system/html_export_directory", a_path)
 		end
 
 	test_diff_directory: STRING
@@ -472,7 +472,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value ("/file_system/test_diff_directory", a_path)
+			app_cfg.put_string_value ("/file_system/test_diff_directory", a_path)
 		end
 
 	compiler_gen_directory: STRING
@@ -490,7 +490,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value("/file_system/compiler_gen_directory", a_path)
+			app_cfg.put_string_value("/file_system/compiler_gen_directory", a_path)
 		end
 
 	author_name: STRING
@@ -509,7 +509,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value ("/authoring/author_name", a_value)
+			app_cfg.put_string_value ("/authoring/author_name", a_value)
 		end
 
 	author_org: STRING
@@ -528,7 +528,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value ("/authoring/author_org", a_value)
+			app_cfg.put_string_value ("/authoring/author_org", a_value)
 		end
 
 	author_copyright: STRING
@@ -547,7 +547,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value ("/authoring/author_copyright", a_value)
+			app_cfg.put_string_value ("/authoring/author_copyright", a_value)
 		end
 
 	adl_15_roundtripping: BOOLEAN
@@ -559,7 +559,7 @@ feature -- Application Switches
 	set_adl_15_roundtripping (flag: BOOLEAN)
 			-- Set flag for adl_15_roundtripping
 		do
-			app_cfg.put_value ("/compiler/adl_15_roundtripping", flag)
+			app_cfg.put_boolean_value ("/compiler/adl_15_roundtripping", flag)
 		end
 
 feature {NONE} -- Cached Settings

@@ -397,7 +397,7 @@ feature -- Application Switches
 	set_last_exec_app_version (a_ver: STRING)
 			-- set the version of app when last run
 		do
-			app_cfg.put_value ("/exec/app_version", a_ver)
+			app_cfg.put_string_value ("/exec/app_version", a_ver)
 		end
 
 	last_user_selected_directory: STRING
@@ -413,7 +413,7 @@ feature -- Application Switches
 			-- set the directory where archetypes are currently being opened and saved.
 		do
 			if not a_path.is_empty then
-				app_cfg.put_value ("/file_system/last_user_selected_directory", a_path)
+				app_cfg.put_string_value ("/file_system/last_user_selected_directory", a_path)
 			end
 		end
 
@@ -429,7 +429,7 @@ feature -- Application Switches
 			-- set the directory where archetypes are currently being opened and saved.
 		do
 			if not a_path.is_empty then
-				app_cfg.put_value ("/file_system/current_work_directory", a_path)
+				app_cfg.put_string_value ("/file_system/current_work_directory", a_path)
 			else
 				app_cfg.remove_resource ("/file_system/current_work_directory")
 			end
@@ -446,7 +446,7 @@ feature -- Application Switches
 		require
 			v > 0
 		do
-			app_cfg.put_value ("/gui/app_width", v)
+			app_cfg.put_integer_value ("/gui/app_width", v)
 		end
 
 	app_height: INTEGER
@@ -460,7 +460,7 @@ feature -- Application Switches
 		require
 			v > 0
 		do
-			app_cfg.put_value ("/gui/app_height", v)
+			app_cfg.put_integer_value ("/gui/app_height", v)
 		end
 
 	app_x_position: INTEGER
@@ -472,7 +472,7 @@ feature -- Application Switches
 	set_app_x_position (v: INTEGER)
 			-- set app x position
 		do
-			app_cfg.put_value ("/gui/app_x_position", v)
+			app_cfg.put_integer_value ("/gui/app_x_position", v)
 		end
 
 	app_y_position: INTEGER
@@ -484,7 +484,7 @@ feature -- Application Switches
 	set_app_y_position (v: INTEGER)
 			-- set app y position
 		do
-			app_cfg.put_value ("/gui/app_y_position", v)
+			app_cfg.put_integer_value ("/gui/app_y_position", v)
 		end
 
 	app_maximised: BOOLEAN
@@ -496,7 +496,7 @@ feature -- Application Switches
 	set_app_maximised (flag: BOOLEAN)
 			-- set app maximised flag
 		do
-			app_cfg.put_value("/gui/app_maximised", flag)
+			app_cfg.put_boolean_value("/gui/app_maximised", flag)
 		end
 
 	test_split_position: INTEGER
@@ -510,7 +510,7 @@ feature -- Application Switches
 		require
 			v > 0
 		do
-			app_cfg.put_value ("/gui/test_split_position", v)
+			app_cfg.put_integer_value ("/gui/test_split_position", v)
 		end
 
 	expand_definition_tree: BOOLEAN
@@ -522,7 +522,7 @@ feature -- Application Switches
 	set_expand_definition_tree (flag: BOOLEAN)
 			-- Set flag for whether to expand the archetype definition node tree by default.
 		do
-			app_cfg.put_value("/gui/expand_node_tree", flag)
+			app_cfg.put_boolean_value ("/gui/expand_node_tree", flag)
 		end
 
 	allow_archetype_editing: BOOLEAN
@@ -541,7 +541,7 @@ feature -- Application Switches
 	set_global_show_technical_view (flag: BOOLEAN)
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
-			app_cfg.put_value("/gui/show_technical_view", flag)
+			app_cfg.put_boolean_value("/gui/show_technical_view", flag)
 		end
 
 	global_show_rm_multiplicities: BOOLEAN
@@ -553,7 +553,7 @@ feature -- Application Switches
 	set_global_show_rm_multiplicities (flag: BOOLEAN)
 			-- Set flag for whether to show the RM multiplicities in the archetype definition node tree
 		do
-			app_cfg.put_value("/gui/show_rm_multiplicities", flag)
+			app_cfg.put_boolean_value("/gui/show_rm_multiplicities", flag)
 		end
 
 	global_show_rm_data_properties: BOOLEAN
@@ -565,7 +565,7 @@ feature -- Application Switches
 	set_global_show_rm_data_properties (flag: BOOLEAN)
 			-- Set flag for whether to show the RM data properties in the archetype definition node tree
 		do
-			app_cfg.put_value("/gui/show_rm_data_properties", flag)
+			app_cfg.put_boolean_value("/gui/show_rm_data_properties", flag)
 		end
 
 	global_show_rm_runtime_properties: BOOLEAN
@@ -577,7 +577,7 @@ feature -- Application Switches
 	set_global_show_rm_runtime_properties (flag: BOOLEAN)
 			-- Set flag for whether to show the RM runtime properties in the archetype definition node tree
 		do
-			app_cfg.put_value ("/gui/show_rm_runtime_properties", flag)
+			app_cfg.put_boolean_value ("/gui/show_rm_runtime_properties", flag)
 		end
 
 	global_show_rm_infrastructure_properties: BOOLEAN
@@ -589,7 +589,7 @@ feature -- Application Switches
 	set_global_show_rm_infrastructure_properties (flag: BOOLEAN)
 			-- Set flag for whether to show the RM infrastructure properties in the archetype definition node tree
 		do
-			app_cfg.put_value ("/gui/show_rm_infrastructure_properties", flag)
+			app_cfg.put_boolean_value ("/gui/show_rm_infrastructure_properties", flag)
 		end
 
 	global_show_rm_inheritance: BOOLEAN
@@ -601,7 +601,7 @@ feature -- Application Switches
 	set_global_show_rm_inheritance (flag: BOOLEAN)
 			-- Set flag for whether to show inheritance-based colourisation in definition tree
 		do
-			app_cfg.put_value ("/gui/show_rm_inheritance", flag)
+			app_cfg.put_boolean_value ("/gui/show_rm_inheritance", flag)
 		end
 
 	global_show_codes: BOOLEAN
@@ -613,7 +613,7 @@ feature -- Application Switches
 	set_global_show_codes (flag: BOOLEAN)
 			-- Set flag for whether to show codes in definition tree
 		do
-			app_cfg.put_value ("/gui/show_codes", flag)
+			app_cfg.put_boolean_value ("/gui/show_codes", flag)
 		end
 
 	show_line_numbers: BOOLEAN
@@ -625,7 +625,7 @@ feature -- Application Switches
 	set_show_line_numbers (flag: BOOLEAN)
 			-- Set flag for whether to show line numbers in the ADL source text box.
 		do
-			app_cfg.put_value("/gui/show_line_numbers", flag)
+			app_cfg.put_boolean_value("/gui/show_line_numbers", flag)
 		end
 
 	show_entire_ontology: BOOLEAN
@@ -637,7 +637,7 @@ feature -- Application Switches
 	set_show_entire_ontology (flag: BOOLEAN)
 			-- Set flag for show_entire_ontology.
 		do
-			app_cfg.put_value("/gui/show_entire_ontology", flag)
+			app_cfg.put_boolean_value("/gui/show_entire_ontology", flag)
 		end
 
 	display_archetype_source: BOOLEAN
@@ -649,7 +649,7 @@ feature -- Application Switches
 	set_display_archetype_source (flag: BOOLEAN)
 			-- Set flag for whether to display markers indicating archetype authoring form.
 		do
-			app_cfg.put_value ("/gui/display_archetype_source", flag)
+			app_cfg.put_boolean_value ("/gui/display_archetype_source", flag)
 		end
 
 	use_rm_pixmaps: BOOLEAN
@@ -662,7 +662,7 @@ feature -- Application Switches
 	set_use_rm_pixmaps (flag: BOOLEAN)
 			--
 		do
-			app_cfg.put_value ("/gui/use_rm_pixmaps", flag)
+			app_cfg.put_boolean_value ("/gui/use_rm_pixmaps", flag)
 		end
 
 	text_editor_command: STRING
@@ -686,7 +686,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value ("/commands/text_editor_command", a_value)
+			app_cfg.put_string_value ("/commands/text_editor_command", a_value)
 		end
 
 	editor_app_command: STRING
@@ -705,7 +705,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value ("/commands/editor_app_command", a_value)
+			app_cfg.put_string_value ("/commands/editor_app_command", a_value)
 		end
 
 	difftool_command: STRING
@@ -724,7 +724,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value ("/commands/difftool_command", a_value)
+			app_cfg.put_string_value ("/commands/difftool_command", a_value)
 		end
 
 	show_flat_form: BOOLEAN
@@ -736,7 +736,7 @@ feature -- Application Switches
 	set_show_flat_form (flag: BOOLEAN)
 			-- Set flag for `show_flat_form'
 		do
-			app_cfg.put_value("/gui/show_flat_form", flag)
+			app_cfg.put_boolean_value("/gui/show_flat_form", flag)
 		end
 
 	default_tool_tab: INTEGER
@@ -750,7 +750,7 @@ feature -- Application Switches
 		require
 			v >= Tool_tab_min
 		do
-			app_cfg.put_value ("/gui/default_tool_tab", v)
+			app_cfg.put_integer_value ("/gui/default_tool_tab", v)
 		end
 
 feature -- Conversion
