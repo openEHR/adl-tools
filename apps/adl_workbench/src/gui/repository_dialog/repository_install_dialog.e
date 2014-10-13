@@ -125,6 +125,7 @@ feature -- Events
 	on_ok
 		do
 			set_last_user_selected_directory (local_directory)
+			is_valid := not local_directory.is_empty
 			hide
 		end
 
@@ -135,6 +136,9 @@ feature -- Access
 	local_directory: STRING
 
 feature -- Status Report
+
+	is_valid: BOOLEAN
+			-- user selected OK, and data valid in this dialog
 
 	user_requires_repository_clone: BOOLEAN
 			-- True if request to clone repo into chosen directory

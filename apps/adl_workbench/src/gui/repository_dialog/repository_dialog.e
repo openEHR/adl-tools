@@ -443,7 +443,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			create repo_install_dialog.make_fixed_url (a_rem_proxy.remote_url)
 			repo_install_dialog.show_modal_to_window (Current)
 
-			if not repo_install_dialog.local_directory.is_empty then
+			if repo_install_dialog.is_valid then
 				if not repo_install_dialog.user_requires_repository_clone then
 					on_associate_repository (repo_install_dialog.local_directory)
 				else
@@ -547,47 +547,48 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		do
 			create repo_install_dialog.make
 			repo_install_dialog.show_modal_to_window (Current)
-			repo_dir := repo_install_dialog.local_directory
-			repo_url := repo_install_dialog.repository_url
+			if repo_install_dialog.is_valid then
+				repo_dir := repo_install_dialog.local_directory
+				repo_url := repo_install_dialog.repository_url
 
-			if not repo_dir.is_empty and then file_system.directory_exists (repo_dir) then
-				-- if there is a repostory at this path, then see if it can be added
-				if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
-					if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
-						if is_checkout_area (repo_dir) then
-							-- existing clone
-							on_associate_repository (repo_dir)
+				if not repo_dir.is_empty and then file_system.directory_exists (repo_dir) then
+					-- if there is a repostory at this path, then see if it can be added
+					if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
+						if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
+							if is_checkout_area (repo_dir) then
+								-- existing clone
+								on_associate_repository (repo_dir)
+							else
+								-- existing local repository
+								do_add_local_repository (repo_dir)
+							end
 						else
-							-- existing local repository
-							do_add_local_repository (repo_dir)
+							create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+							error_dialog.show_modal_to_window (Current)
 						end
+
+					-- user wants to create a new repository by cloning a remote
+					elseif not repo_url.is_empty then
+						create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text, <<"???", repo_url, repo_dir>>))
+						verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+						verify_dialog.show_modal_to_window (Current)
+						if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+							do_clone_repository (repo_dir, create {REPOSITORY_REMOTE_PROXY}.make (repo_url, Git_tool_name))
+						end
+
+					-- valid path for new local repository to be created; will cause creation of new repo meta-data file
+					elseif archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
+						create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
+							<<agent do_create_new_local_repository (repo_dir), agent do end, agent do end>>)
+						new_repo_dialog.show_modal_to_window (Current)
 					else
-						create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+						create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
 						error_dialog.show_modal_to_window (Current)
 					end
-
-				-- user wants to create a new repository by cloning a remote
-				elseif not repo_url.is_empty then
-					create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text, <<"???", repo_url, repo_dir>>))
-					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
-					verify_dialog.show_modal_to_window (Current)
-					if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
-						do_clone_repository (repo_dir, create {REPOSITORY_REMOTE_PROXY}.make (repo_url, Git_tool_name))
-					end
-
-
-				-- valid path for new local repository to be created; will cause creation of new repo meta-data file
-				elseif archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
-					create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
-						<<agent do_create_new_local_repository (repo_dir), agent do end, agent do end>>)
-					new_repo_dialog.show_modal_to_window (Current)
 				else
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
+					create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
-			else
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
-				error_dialog.show_modal_to_window (Current)
 			end
 		end
 
@@ -905,7 +906,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		do
 			create commit_dialog.make (a_rep_if.key)
 			commit_dialog.show_modal_to_window (Current)
-			if not commit_dialog.message.is_empty then
+			if commit_dialog.is_valid then
 				command_runner.do_action (a_rep_if, agent a_rep_if.stage)
 				if last_command_result.succeeded then
 					command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message))
@@ -923,7 +924,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			branches.prune (a_rep_if.checked_out_branch)
 			create checkout_dialog.make (branches)
 			checkout_dialog.show_modal_to_window (Current)
-			if not checkout_dialog.branch_name.is_empty then
+			if checkout_dialog.is_valid then
 				command_runner.do_action (a_rep_if, agent a_rep_if.checkout_branch (checkout_dialog.branch_name))
 			end
 		end

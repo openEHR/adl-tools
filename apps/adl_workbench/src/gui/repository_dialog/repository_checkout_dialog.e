@@ -97,6 +97,7 @@ feature -- Events
 	on_ok
 		do
 			branch_name := evx_branch_combo.data_control_text
+			is_valid := True
 			hide
 		end
 
@@ -105,6 +106,11 @@ feature -- Access
 	branches: ARRAYED_LIST [STRING]
 
 	branch_name: STRING
+
+feature -- Status Report
+
+	is_valid: BOOLEAN
+			-- user selected OK, and data valid in this dialog
 
 feature -- Commands
 

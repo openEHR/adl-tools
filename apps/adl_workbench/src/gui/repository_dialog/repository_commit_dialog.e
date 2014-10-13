@@ -96,6 +96,7 @@ feature -- Events
 	on_ok
 		do
 			message := evx_text_control.data_control_text
+			is_valid := True
 			hide
 		end
 
@@ -106,6 +107,9 @@ feature -- Access
 	message: STRING
 
 feature -- Status Report
+
+	is_valid: BOOLEAN
+			-- user selected OK, and data valid in this dialog
 
 	user_requires_repository_clone: BOOLEAN
 			-- True if request to clone repo into chosen directory
