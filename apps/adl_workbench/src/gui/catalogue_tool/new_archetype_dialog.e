@@ -156,6 +156,7 @@ feature -- Access
 feature -- Status Report
 
 	is_valid: BOOLEAN
+			-- True if the parameters of this dialog are correct, and user selected OK
 
 feature -- Commands
 
