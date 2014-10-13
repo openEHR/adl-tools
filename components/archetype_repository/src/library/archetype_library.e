@@ -301,7 +301,7 @@ feature -- Modification
 			aof: APP_OBJECT_FACTORY
 		do
 			create aof
-			put_archetype (aof.create_arch_cat_archetype_make_new_archetype (an_archetype_id,
+			put_archetype (aof.create_arch_lib_archetype_make_new_archetype (an_archetype_id,
 				library_access.primary_source, in_dir_path), in_dir_path)
 		ensure
 			has_item_with_id (an_archetype_id.as_string)
@@ -317,7 +317,7 @@ feature -- Modification
 		do
 			create aof
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_archetype (aof.create_arch_cat_archetype_make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
+				put_archetype (aof.create_arch_lib_archetype_make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
 					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure
@@ -334,7 +334,7 @@ feature -- Modification
 		do
 			create aof
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_archetype (aof.create_arch_cat_archetype_make_new_template (an_archetype_id, parent_diff_arch,
+				put_archetype (aof.create_arch_lib_archetype_make_new_template (an_archetype_id, parent_diff_arch,
 					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure
