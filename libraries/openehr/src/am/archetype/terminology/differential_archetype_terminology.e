@@ -88,7 +88,7 @@ feature -- Modification
 		require
 			Valid_concept_term: is_valid_root_id_code (a_term.code)
 		do
-			term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make (0), original_language)
+			term_definitions.put (create {HASH_TABLE [ARCHETYPE_TERM, STRING]}.make (0), original_language)
 			term_definitions.item (original_language).put (a_term, a_term.code)
 		ensure
 			Term_definitions_populated: term_definitions.item (original_language).item (concept_code) = a_term

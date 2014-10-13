@@ -26,6 +26,11 @@ feature -- Factory
 			create Result.make_new_specialised_archetype (an_id, a_parent, a_repository, a_directory)
 		end
 
+	create_arch_cat_archetype_make_new_template (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING): ARCH_LIB_ARCHETYPE_EDITABLE
+		do
+			create Result.make_new_template (an_id, a_parent, a_repository, a_directory)
+		end
+
 end
 
 

@@ -178,11 +178,11 @@ feature -- Events
 
 				-- update content if out of date in any way
 				if arch_tool.can_populate (src) and then tool_populate_required (arch_tool) then
-					arch_tool.populate (src, differential_view, sel_lang)
+					do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, differential_view, sel_lang))
 				elseif arch_tool.can_repopulate and sel_lang /= arch_tool.selected_language then
-					arch_tool.repopulate_with_language (sel_lang)
+					do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (sel_lang))
 				elseif arch_tool.can_repopulate  and then tool_repopulate_required (arch_tool) then
-					arch_tool.repopulate
+					do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate)
 				end
 			end
 		end

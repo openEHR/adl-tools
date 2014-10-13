@@ -324,6 +324,23 @@ feature -- Modification
 			has_item_with_id (an_archetype_id.as_string)
 		end
 
+	add_new_template (parent_aca: ARCH_LIB_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
+			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
+		require
+			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
+			Valid_parent: parent_aca.is_valid
+		local
+			aof: APP_OBJECT_FACTORY
+		do
+			create aof
+			check attached parent_aca.differential_archetype as parent_diff_arch then
+				put_archetype (aof.create_arch_cat_archetype_make_new_template (an_archetype_id, parent_diff_arch,
+					library_access.primary_source, in_dir_path), in_dir_path)
+			end
+		ensure
+			has_item_with_id (an_archetype_id.as_string)
+		end
+
 	last_added_archetype: detachable ARCH_LIB_ARCHETYPE
 			-- archetype added by last call to `add_new_archetype' or `add_new_specialised_archetype'
 

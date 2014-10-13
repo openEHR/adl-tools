@@ -90,7 +90,7 @@ inherit
 		end
 
 create {APP_OBJECT_FACTORY}
-	make, make_new_archetype, make_new_specialised_archetype
+	make, make_new_archetype, make_new_specialised_archetype, make_new_template
 
 feature {NONE} -- Initialisation
 
@@ -131,14 +131,14 @@ feature {NONE} -- Initialisation
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 		do
-			make_new_any (an_id)
+			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
 			create a_diff_arch.make_minimal (artefact_type, an_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
-			initialise
 
+			initialise
 			save_differential_text
 		ensure
 			id_set: id = an_id
@@ -153,7 +153,7 @@ feature {NONE} -- Initialisation
 		local
 			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 		do
-			make_new_any (an_id)
+			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
 			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
@@ -167,14 +167,36 @@ feature {NONE} -- Initialisation
 			Is_specialised: is_specialised
 		end
 
-	make_new_any (an_id: ARCHETYPE_HRID)
+	make_new_template (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
+			-- Create a new template with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
+		require
+			Valid_directory: file_system.directory_exists (a_directory)
+			Valid_id: has_rm_schema_for_archetype_id (an_id)
+		local
+			a_diff_arch: DIFFERENTIAL_ARCHETYPE
+		do
+			make_new_any (an_id, create {ARTEFACT_TYPE}.make_template)
+			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
+
+			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
+			set_archetype_default_details (a_diff_arch)
+			differential_archetype := a_diff_arch
+			parent_ref := a_parent.archetype_id.interface_id
+
+			initialise
+			save_differential_text
+		ensure
+			Is_specialised: is_specialised
+		end
+
+	make_new_any (an_id: ARCHETYPE_HRID; an_artefact_type: ARTEFACT_TYPE)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		do
 			id := an_id
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
 			create last_compile_attempt_timestamp.make_now
-			create artefact_type.make_archetype
+			artefact_type := an_artefact_type
 		end
 
 feature -- Identification

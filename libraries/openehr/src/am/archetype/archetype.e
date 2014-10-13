@@ -629,7 +629,7 @@ feature -- Validation
 		end
 
 	use_node_index: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
-			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
+			-- table of {list<C_COMPLEX_OBJECT_PROXY>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 		local
 			def_it: C_ITERATOR
@@ -827,7 +827,6 @@ feature -- Modification
 	rebuild
 			-- rebuild any cached state after changes to definition or invariant structure
 		do
-			path_map_cache := definition.path_map
 			if is_specialised then
 				roll_up_inheritance_status
 			end

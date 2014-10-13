@@ -239,10 +239,10 @@ feature {NONE} -- Implementation
 	reset_rm_schemas_load_list
 			-- get the user-chosen list of schemas from the load list Grid first column check boxes
 		local
-			rm_schemas_ll: LIST [STRING]
+			rm_schemas_ll: ARRAYED_LIST [STRING]
 			i: INTEGER
 		do
-			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
+			create rm_schemas_ll.make (0)
 			rm_schemas_ll.compare_objects
 			from i := 1 until i > grid.row_count loop
 				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_schema_col) as gcli and then gcli.is_checked then

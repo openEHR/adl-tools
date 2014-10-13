@@ -492,6 +492,10 @@ feature {NONE} -- Implementation
 				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				a_menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (aca))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+				a_menu.extend (an_mi)
 			end
 		end
 
@@ -506,6 +510,27 @@ feature {NONE} -- Implementation
 				end
 				if dialog.is_valid then
 					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
+					populate (src)
+					select_item_in_tree (src.last_added_archetype.id.as_string)
+				end
+				dialog.destroy
+			end
+		end
+
+	create_new_template (parent_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+		local
+			dialog: NEW_ARCHETYPE_DIALOG
+			new_id: ARCHETYPE_HRID
+		do
+			if attached source as src then
+				new_id := parent_aca.id.deep_twin
+				new_id.set_concept_id ("t_" + new_id.concept_id)
+				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), new_id, parent_aca.id, src)
+				check attached proximate_ev_window (ev_root_container) as prox_win then
+					dialog.show_modal_to_window (prox_win)
+				end
+				if dialog.is_valid then
+					src.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
 					select_item_in_tree (src.last_added_archetype.id.as_string)
 				end

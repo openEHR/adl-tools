@@ -23,6 +23,7 @@ templates = <
 		["edit"] = <"Edit">
 		["create_new_archetype"] = <"Create new archetype">
 		["create_new_child_archetype"] = <"Create new child archetype">
+		["create_new_template"] = <"Create new template">
 		["save_archetype_as"] = <"Save as">
 		["save_schema_as"] = <"Save schema as">
 		["save_archetype_as_type"] = <"Save as $1">
@@ -250,6 +251,9 @@ templates = <
 		["c_type_quantity"] = <"Quantity">
 		["c_type_ordinal"] = <"Ordinal">
 		["c_type_code_phrase"] = <"Code phrase">
+
+		-- C_ARCHETYPE_ROOT_ED_CONTEXT
+		["open_target_in_new_tab"] = <"Open target in new tab">
 
 		-- C_ATTRIBUTE_ED_CONTEXT
 		["c_attribute_prohibit"] = <"Prohibit">

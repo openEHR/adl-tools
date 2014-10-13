@@ -54,7 +54,7 @@ feature -- Initialisation
 		do
 			rm_schema := an_rm_schema
 			child_desc := a_child_desc
-			if a_child_desc.is_specialised then
+			if child_desc.is_specialised then
 				flat_anc_desc := child_desc.specialisation_ancestor
 			else
 				flat_anc_desc := Void
@@ -153,6 +153,8 @@ feature {NONE} -- Implementation
 			-- if there are overrides in the specialised child that are located at use_node positions, we
 			-- have to expand out a copy of the structures pointed to by the use_nodes in the parent, so that
 			-- the override can be correctly applied.
+		require
+			child_desc.is_specialised
 		local
 			c_obj: C_OBJECT
 			child_paths_at_parent_level: ARRAYED_LIST [STRING]
@@ -880,31 +882,36 @@ end
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
 end
+			-- limit depth in case of recursive inclusion
 			if depth <= Max_template_overlay_depth then
 				across a_flat_arch.suppliers_index as xref_idx_csr loop
 					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
 					matched_arch := current_library.matching_archetype (xref_idx_csr.key)
-					create supp_flat_arch.make_from_other (matched_arch.flat_archetype)
-					supp_arch_root_cco := supp_flat_arch.definition
 
-					-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
-					-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
-					-- flat definition structure from the supplier archetype
-					across xref_idx_csr.item as c_arch_roots_csr loop
-						if not c_arch_roots_csr.item.has_attributes then -- it is empty and needs to be filled
-							-- perform overlays on supplier archetype first
-							template_overlay_supplier_definitions (supp_flat_arch, depth + 1)
-	debug ("flatten")
-		io.put_string ("%T node at " + c_arch_roots_csr.item.path +
-		" with " + xref_idx_csr.key + "%N")
-	end
-							c_arch_roots_csr.item.convert_to_flat (matched_arch.id.as_string)
-							across supp_arch_root_cco.attributes as attrs_csr loop
-								c_arch_roots_csr.item.put_attribute (attrs_csr.item)
-	debug ("flatten")
-		io.put_string ("%T%T cloning attribute " +
-		attrs_csr.item.rm_attribute_path + "%N")
-	end
+					-- prevent cycling due to inclusion of current archetype (FIXME: won't catch indirect recursion)
+					if not matched_arch.id.as_string.is_equal (a_flat_arch.archetype_id.as_string) then
+						create supp_flat_arch.make_from_other (matched_arch.flat_archetype)
+						supp_arch_root_cco := supp_flat_arch.definition
+
+						-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
+						-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
+						-- flat definition structure from the supplier archetype
+						across xref_idx_csr.item as c_arch_roots_csr loop
+							if not c_arch_roots_csr.item.has_attributes and not c_arch_roots_csr.item.is_prohibited then -- it is empty and needs to be filled
+								-- perform overlays on supplier archetype first
+								template_overlay_supplier_definitions (supp_flat_arch, depth + 1)
+debug ("flatten")
+	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
+	" with " + xref_idx_csr.key + "%N")
+end
+								c_arch_roots_csr.item.convert_to_flat (matched_arch.id.as_string)
+								across supp_arch_root_cco.attributes as attrs_csr loop
+									c_arch_roots_csr.item.put_attribute (attrs_csr.item)
+debug ("flatten")
+	io.put_string ("%T%T cloning attribute " +
+	attrs_csr.item.rm_attribute_path + "%N")
+end
+								end
 							end
 						end
 					end
@@ -920,8 +927,8 @@ end
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template terminologies &&&&&&%N")
 end
-			if attached {OPERATIONAL_TEMPLATE} arch_flat_out as opt then
-				across child_desc.suppliers_index as supp_idx_csr loop
+			if attached {OPERATIONAL_TEMPLATE} arch_flat_out as opt and attached child_desc.suppliers_index as att_supp_idx then
+				across att_supp_idx as supp_idx_csr loop
 					ont := supp_idx_csr.item.flat_archetype.terminology
 					opt.add_component_terminology (ont, supp_idx_csr.key)
 debug ("flatten")

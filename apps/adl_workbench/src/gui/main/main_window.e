@@ -952,6 +952,11 @@ feature -- Archetype viewers
 
 	display_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 		do
+			do_with_wait_cursor (Current, agent do_display_archetype (aca))
+		end
+
+	do_display_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
 			if attached aca.last_compile_attempt_timestamp then
 				error_tool.extend_and_select (aca)

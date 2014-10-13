@@ -12,7 +12,7 @@ class C_ARCHETYPE_ROOT_ED_CONTEXT
 inherit
 	C_COMPLEX_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, rm_properties, display_constraint, c_pixmap
+			arch_node, rm_properties, display_constraint, c_pixmap, build_context_menu
 		end
 
 create
@@ -59,6 +59,20 @@ feature {NONE} -- Implementation
 		do
 			if attached arch_node as car and not ed_context.archetype.is_template then
 				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, car.archetype_ref, Void, c_constraint_colour, Void)
+			end
+		end
+
+	build_context_menu
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			precursor
+			if attached arch_node as car then
+				if attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.matching_archetype (car.archetype_ref) as ext_ref_node then
+					create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
+					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
+					context_menu.extend (an_mi)
+				end
 			end
 		end
 
