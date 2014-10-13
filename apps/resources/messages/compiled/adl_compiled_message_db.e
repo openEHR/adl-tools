@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (792)
+			create message_table.make (793)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -393,6 +393,7 @@ feature -- Initialisation
 			message_table.put ("Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.", ec_repository_clone_here_tooltip)
 			message_table.put ("Remove repository $1 from configuration (doesn't change anything on system)?", ec_repository_remove_confirm_text)
 			message_table.put ("Remove", ec_repository_remove_menu_text)
+			message_table.put ("Repository Checkout", ec_repository_checkout_dialog_title)
 			message_table.put ("Checkout Branch", ec_repository_checkout_branch)
 			message_table.put ("Checkout new branch locally", ec_repository_checkout_branch_dialog_header_label)
 			message_table.put ("Checkout: ", ec_repository_checkout_branch_combo_label)

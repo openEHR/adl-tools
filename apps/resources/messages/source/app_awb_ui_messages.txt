@@ -124,6 +124,7 @@ templates = <
 		["repository_remove_confirm_text"] = <"Remove repository $1 from configuration (doesn't change anything on system)?">
 		["repository_remove_menu_text"] = <"Remove">
 
+		["repository_checkout_dialog_title"] = <"Repository Checkout">
 		["repository_checkout_branch"] = <"Checkout Branch">
 		["repository_checkout_branch_dialog_header_label"] = <"Checkout new branch locally">
 		["repository_checkout_branch_combo_label"] = <"Checkout: ">

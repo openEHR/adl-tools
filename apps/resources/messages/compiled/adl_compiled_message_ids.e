@@ -378,6 +378,7 @@ feature -- Definitions
 		ec_repository_clone_here_tooltip: STRING = "repository_clone_here_tooltip"
 		ec_repository_remove_confirm_text: STRING = "repository_remove_confirm_text"
 		ec_repository_remove_menu_text: STRING = "repository_remove_menu_text"
+		ec_repository_checkout_dialog_title: STRING = "repository_checkout_dialog_title"
 		ec_repository_checkout_branch: STRING = "repository_checkout_branch"
 		ec_repository_checkout_branch_dialog_header_label: STRING = "repository_checkout_branch_dialog_header_label"
 		ec_repository_checkout_branch_combo_label: STRING = "repository_checkout_branch_combo_label"
