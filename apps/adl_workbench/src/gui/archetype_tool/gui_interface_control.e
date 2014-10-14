@@ -126,8 +126,17 @@ feature -- Commands
 
 	select_path (a_path: STRING)
 			-- select path `a_path' in ADL 1.5 control
+		local
+			search_path: STRING
 		do
-			evx_adl_15_tab.select_row (a_path)
+			check attached source end
+			check attached selected_language end
+			if show_natural_language then
+				search_path := source.flat_archetype.annotated_path (a_path, selected_language, True)
+			else
+				search_path := a_path
+			end
+			evx_adl_15_tab.select_row (search_path)
 			evx_adl_15_tab.show
 		end
 

@@ -95,10 +95,10 @@ feature -- UI Feedback
 			-- select the `a_path' in the paths tab of this tool
 		do
 			if attached source as src and attached selected_language as sel_lang then
+				ev_notebook.select_item (interface_map_control.ev_root_container)
 				if not interface_map_control.is_populated then
 					interface_map_control.populate (src, differential_view, sel_lang)
 				end
-				ev_notebook.select_item (interface_map_control.ev_root_container)
 				interface_map_control.select_path (a_path)
 			end
 		end
