@@ -16,7 +16,7 @@ if ARGUMENTS.get('git', 0):
        for dir in ['.', '../reference-models', '../terminology', '../EOMF', '../eiffelhub/library/iso8601']:
                os.popen('git --git-dir=' + os.path.abspath(dir + '/.git') + ' pull')
 
-+###################################################################################################
+###################################################################################################
 # Define how to build the parser classes, using the Gobo tools.
 # These are not performed unless explicitly requested on the command line in one of the following ways:
 # * The target 'gobo' builds all of the lex and parser targets.
