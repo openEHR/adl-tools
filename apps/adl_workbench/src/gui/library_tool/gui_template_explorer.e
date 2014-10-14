@@ -91,7 +91,7 @@ feature {NONE} -- Implementation
 						ev_tree_item_stack.extend (gr)
 						gui_semantic_grid.remove_sub_rows (ev_tree_item_stack.item)
 						if attached {EV_GRID_LABEL_ITEM} ev_tree_item_stack.item.item (1) as gli then
-							gli.set_pixmap (catalogue_node_pixmap (ara))
+							gli.set_pixmap (library_node_pixmap (ara))
 						end
 
 						-- add slot filler structure below this row
@@ -100,11 +100,11 @@ feature {NONE} -- Implementation
 						ev_tree_item_stack.remove
 					else
 						if attached {EV_GRID_LABEL_ITEM} semantic_grid_row_map.item (ara.qualified_name).item (1) as gli then
-							gli.set_pixmap (catalogue_node_pixmap (ara))
+							gli.set_pixmap (library_node_pixmap (ara))
 						end
 					end
 				else -- otherwise just display the template root
-					attach_node (ara.id.rm_class + "." + ara.semantic_id, catalogue_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_class + "." + ara.semantic_id, library_node_pixmap (ara), ara)
 					semantic_grid_row_map.force (ev_tree_item_stack.item, ara.qualified_name)
 					ev_tree_item_stack.remove
 				end
@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 						end
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.matching_archetype (car.archetype_ref) as ara then
-					attach_node (ara.id.rm_class + "." + ara.semantic_id, catalogue_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_class + "." + ara.semantic_id, library_node_pixmap (ara), ara)
 				end
 			end
 		end
@@ -191,7 +191,7 @@ feature {NONE} -- Implementation
    			-- Set the icon appropriate to the item attached to `node'.
 		do
  			if attached {ARCH_LIB_CLASS_NODE} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
-				gli.set_pixmap (catalogue_node_pixmap (acc))
+				gli.set_pixmap (library_node_pixmap (acc))
 			end
 		end
 

@@ -255,7 +255,7 @@ feature {NONE} -- Implementation
 				end
 
 				-- pixmap
-				pixmap := catalogue_node_pixmap (aci)
+				pixmap := library_node_pixmap (aci)
 
 				-- set text
 				if update_flag then
