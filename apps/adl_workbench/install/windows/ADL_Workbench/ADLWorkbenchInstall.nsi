@@ -100,7 +100,7 @@ Section -Main SEC0000
 	# RM schemas; this is relying on the Git clone of the Github repo openEHR/reference_models 
 	# to be in the directory 'rm_schemas'
     SetOutPath $INSTDIR\rm_schemas
-    File ..\..\..\..\..\rm_schemas\*
+    File ..\..\..\..\..\rm_schemas\models\*
 
 	# AOM profiles
     SetOutPath $INSTDIR\aom_profiles

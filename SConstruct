@@ -81,7 +81,7 @@ aom_profiles = 'aom_profiles'
 
 env.Install(terminology, env.Glob('../terminology/openEHR_RM/RM/Release-1.0.2/*'))
 
-for dir, dirnames, filenames in os.walk('../reference-models'):
+for dir, dirnames, filenames in os.walk('../reference-models/models'):
 	if '.svn' in dirnames: dirnames.remove('.svn')
 	if '.git' in dirnames: dirnames.remove('.git')
 	env.Install(rm_schemas, [os.path.join(dir, filename) for filename in fnmatch.filter(filenames, '*.bmm')])
