@@ -296,6 +296,7 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_IDENTIFIER}.make).to_pixmap end, "rm/cimi/identifier")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INDIVISIBLE_ENTRY}.make).to_pixmap end, "rm/cimi/indivisible_entry")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INDIVISIBLE_ENTRY_SLOT}.make).to_pixmap end, "rm/cimi/indivisible_entry_slot")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INTERVAL_VALUE}.make).to_pixmap end, "rm/cimi/interval_value")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INTERVAL_VALUE_COUNT}.make).to_pixmap end, "rm/cimi/interval_value_count")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INTERVAL_VALUE_DATE_TIME}.make).to_pixmap end, "rm/cimi/interval_value_date_time")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_INTERVAL_VALUE_DURATION}.make).to_pixmap end, "rm/cimi/interval_value_duration")
