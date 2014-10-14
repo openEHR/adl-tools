@@ -98,7 +98,7 @@ feature -- Display
 				end
 			else
 				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour,
-					rm_type_pixmap (rm_type, ed_context.archetype.archetype_id.rm_publisher.as_lower, ed_context.archetype.archetype_id.rm_closure.as_lower))
+					rm_type_pixmap (rm_type))
 			end
 			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
@@ -337,8 +337,7 @@ feature {NONE} -- Implementation
 			create pixmap_key.make_empty
 			if attached arch_node as a_n then
 				if use_rm_pixmaps then
-					pixmap_key := rm_type_pixmap_key (a_n.rm_type_name, ed_context.archetype.archetype_id.rm_publisher.as_lower,
-						ed_context.archetype.archetype_id.rm_closure.as_lower)
+					pixmap_key := rm_type_pixmap_key (rm_type.base_class)
 				end
 
 				if pixmap_key.is_empty then

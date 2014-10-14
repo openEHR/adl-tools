@@ -73,8 +73,8 @@ feature -- Definitions
 			create a_proxy.make_key ("openEHR-CKM mirror", "https://github.com/openEHR/CKM-mirror.git", Git_tool_name)
 			Result.put (a_proxy, a_proxy.remote_url)
 
---		use for testing
---			create a_proxy.make_key ("CIMI-CIMI archetypes", "file:///cygdrive/c/project/CIMI/opencimi/archetypes", Git_tool_name)
+			--	use for testing
+			--	create a_proxy.make_key ("CIMI-CIMI archetypes", "file:///cygdrive/c/dev/CIMI/archetypes", Git_tool_name)
 			create a_proxy.make_key ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", Git_tool_name)
 			Result.put (a_proxy, a_proxy.remote_url)
 		end

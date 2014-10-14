@@ -305,33 +305,49 @@ feature -- Definitions: Colours
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
-	rm_type_pixmap_key (a_type_name, an_rm_publisher, an_rm_closure: STRING): STRING
+	rm_type_pixmap_key (a_class_def: BMM_CLASS): STRING
 			-- generate an RM class pixmap key based on RM publisher and possibly closure (model) name;
 			-- Return empty string if not found
 		do
 			-- assume form of key that just uses RM publisher, i.e. one set of icons for publisher
-			Result := rm_icon_dir + resource_path_separator + an_rm_publisher + resource_path_separator + a_type_name
+			Result := rm_icon_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + resource_path_separator + a_class_def.name
 			if not has_icon_pixmap (Result) then
 				-- now try icon key based on publisher and model name
-				Result := rm_icon_dir + resource_path_separator + an_rm_publisher + {ARCHETYPE_HRID}.Section_separator_string + an_rm_closure + resource_path_separator + a_type_name
+				Result := rm_icon_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + {ARCHETYPE_HRID}.Section_separator_string + a_class_def.bmm_schema.schema_name + resource_path_separator + a_class_def.name
 				if not has_icon_pixmap (Result) then
 					create Result.make_empty
 				end
 			end
 		end
 
-	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER; an_rm_publisher, an_rm_closure: STRING): EV_PIXMAP
+	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER): EV_PIXMAP
 		local
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
 			if not attached {BMM_GENERIC_PARAMETER} a_type_spec then
 				if use_rm_pixmaps then
-					pixmap_key := rm_type_pixmap_key (a_type_spec.base_class.name, an_rm_publisher, an_rm_closure)
+					pixmap_key := rm_type_pixmap_key (a_type_spec.base_class)
 				end
 				if pixmap_key.is_empty then
 					pixmap_key := "rm" + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category
 				end
+			end
+			Result := get_icon_pixmap (pixmap_key)
+		end
+
+	library_node_pixmap (ara: ARCH_LIB_ITEM): EV_PIXMAP
+		local
+			pixmap_key: STRING
+		do
+			create pixmap_key.make_empty
+			if attached {ARCH_LIB_CLASS_NODE} ara as acc then
+				if use_rm_pixmaps then
+					pixmap_key := rm_type_pixmap_key (acc.class_definition)
+				end
+			end
+			if pixmap_key.is_empty then
+				pixmap_key := "archetype/" + ara.group_name
 			end
 			Result := get_icon_pixmap (pixmap_key)
 		end
@@ -751,24 +767,6 @@ feature -- Application Switches
 			v >= Tool_tab_min
 		do
 			app_cfg.put_integer_value ("/gui/default_tool_tab", v)
-		end
-
-feature -- Conversion
-
-	catalogue_node_pixmap (ara: ARCH_LIB_ITEM): EV_PIXMAP
-		local
-			pixmap_key: STRING
-		do
-			create pixmap_key.make_empty
-			if attached {ARCH_LIB_CLASS_NODE} ara as acc then
-				if use_rm_pixmaps then
-					pixmap_key := rm_type_pixmap_key (acc.class_definition.name, acc.bmm_schema.rm_publisher, acc.bmm_schema.schema_name)
-				end
-			end
-			if pixmap_key.is_empty then
-				pixmap_key := "archetype/" + ara.group_name
-			end
-			Result := get_icon_pixmap (pixmap_key)
 		end
 
 feature {NONE} -- Implementation
