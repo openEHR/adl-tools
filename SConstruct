@@ -10,6 +10,13 @@ if env['PLATFORM'] == 'posix': platform = 'linux'
 if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
 ###################################################################################################
+# Pull the various git repositories if 'git=1' is one of the command line arguments.
+
+if ARGUMENTS.get('git', 0):
+       for dir in ['.', '../reference-models', '../terminology', '../EOMF', '../eiffelhub/library/iso8601']:
+               os.popen('git --git-dir=' + os.path.abspath(dir + '/.git') + ' pull')
+
++###################################################################################################
 # Define how to build the parser classes, using the Gobo tools.
 # These are not performed unless explicitly requested on the command line in one of the following ways:
 # * The target 'gobo' builds all of the lex and parser targets.
@@ -82,7 +89,6 @@ aom_profiles = 'aom_profiles'
 env.Install(terminology, env.Glob('../terminology/openEHR_RM/RM/Release-1.0.2/*'))
 
 for dir, dirnames, filenames in os.walk('../reference-models/models'):
-	if '.svn' in dirnames: dirnames.remove('.svn')
 	if '.git' in dirnames: dirnames.remove('.git')
 	env.Install(rm_schemas, [os.path.join(dir, filename) for filename in fnmatch.filter(filenames, '*.bmm')])
 
@@ -118,7 +124,6 @@ if downloads and len(adl_workbench) > 0:
 
 	for root in [vim, install, testscripts]:
 		for dir, dirnames, filenames in os.walk(root):
-			if '.svn' in dirnames: dirnames.remove('.svn')
 			if '.git' in dirnames: dirnames.remove('.git')
 			adl_workbench_installer_sources += [os.path.join(dir, filename) for filename in filenames]
 
@@ -150,7 +155,6 @@ if downloads and len(adl_workbench) > 0:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
-					if '.svn' in dirnames: dirnames.remove('.svn')
 					if '.git' in dirnames: dirnames.remove('.git')
 
 					if root_dirname_length > 0:
