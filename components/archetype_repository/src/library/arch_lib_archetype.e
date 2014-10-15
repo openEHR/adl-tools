@@ -258,14 +258,14 @@ feature -- Identification
 
 	semantic_parent_key: STRING
 			-- semantic key to find parent node in semantic id tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of the folder, e.g. openEHR-EHR-OBSERVATION
 			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be an id ref like openEHR-EHR-OBSERVATION.thing.v1
 		require
 			is_specialised implies attached parent_ref
 		do
 			if is_specialised then
-				check attached parent_ref as att_parent_ref then
-					Result := att_parent_ref
+				check attached parent_ref as att_pref then
+					Result := att_pref
 				end
 			else
 				Result := id.qualified_rm_class
@@ -273,15 +273,13 @@ feature -- Identification
 		end
 
 	semantic_parent_id: STRING
-			-- semantic name of parent node in ontology tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of the folder,
-			-- e.g. openEHR-EHR-OBSERVATION
-			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.0.2,
-			-- it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1.0.0
+			-- semantic id of parent node in semantic id tree
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of the folder, e.g. openEHR-EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be a resolved id like openEHR-EHR-OBSERVATION.thing.v1.0.4
 		do
 			if is_specialised then
-				check attached parent_ref as att_pref then
-					Result := att_pref
+				check attached specialisation_ancestor as att_spec_anc then
+					Result := att_spec_anc.id.as_string
 				end
 			else
 				Result := id.qualified_rm_class
@@ -708,11 +706,11 @@ feature -- Compilation
 		local
 			old_ont_parent: STRING
 		do
-			old_ont_parent := semantic_parent_id
+			old_ont_parent := semantic_parent_key
 			file_mgr.refresh_from_source
 
 			-- see if ontological parent has changed
-			if not old_ont_parent.is_equal (semantic_parent_id) then
+			if not old_ont_parent.is_equal (semantic_parent_key) then
 				old_ontological_parent_name := old_ont_parent
 			end
 			signal_from_scratch
@@ -1100,6 +1098,12 @@ feature -- File Access
 			-- save `a_text' to the differential file
 		do
 			file_mgr.save_text_to_differential_file (a_text)
+		end
+
+	remove_file
+			-- remove the source file from the file system
+		do
+			file_mgr.remove_source_file
 		end
 
 feature {MAIN_WINDOW} -- File Access

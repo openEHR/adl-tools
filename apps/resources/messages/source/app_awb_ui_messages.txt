@@ -367,7 +367,7 @@ templates = <
 		["config_warning_text"] = <"Configuration warning">
 		["xml_14_not_available_message"] = <"XML based on ADL 1.4 available in next release">
 
-		-- GUI_CATALOGUE_TOOL
+		-- GUI_LIBRARY_TOOL
 		["adl_14_files"] = <"ADL 1.4 files">
 		["adl_15_source_files"] = <"ADL 1.5 source files">
 
@@ -383,6 +383,10 @@ templates = <
 		["export_archetype_title"] = <"Export Archetype">
 		["library_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
 		["library_add_new_archetype_error"] = <"Error adding archetype to library: $1">
+
+		["remove_dialog_title"] = <"Remove artefact confirmation">
+		["remove_artefact_question"] = <"Remove $1? WARNING: really removes from the file system!">
+		["remove_artefact"] = <"Remove from system">
 
 		-- GUI_PATH_MAP_CONTROL
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">
@@ -605,17 +609,19 @@ templates = <
 		-- GUI_SOURCE_CONTROL
 		["adl_14_source_tab_text"] = <"ADL 1.4 source">
 		["adl_14_converted_tab_text"] = <"ADL 1.4 converted">
-		["adl_15_converted_tab_text"] = <"ADL 1.5 converted">
-		["adl_15_source_tab_text"] = <"ADL 1.5 source">
-		["adl_151_source_tab_text"] = <"ADL 1.5.1 source">
+
 		["adl_ver_source_tab_text"] = <"ADL $1 source">
-		["adl_151_serialised_tab_text"] = <"ADL 1.5.1 serialised">
-		["save_15_converted_button_text"] = <"Save as ADL 1.5 source">
-		["save_15_converted_button_tooltip"] = <"Save ADL 1.5.1 converted output into ADL 1.5 source file (overwrites current file)">
-		["save_151_serialised_button_text"] = <"Save as ADL 1.5 source">
-		["save_151_serialised_button_tooltip"] = <"Save ADL 1.5.1 serialised output into ADL 1.5 source file (overwrites current file)">
-		["saved_serialised_msg"] = <"Saved ADL 1.5.1 serialised output into $1">
-		["saved_converted_msg"] = <"Saved ADL 1.5.1 converted output into $1">
+
+		["adl_source_tab_text"] = <"ADL source">
+		["adl_converted_tab_text"] = <"ADL $1 converted">
+		["adl_serialised_tab_text"] = <"ADL $1 serialised">
+		["save_adl_converted_button_text"] = <"Save source">
+		["save_adl_converted_button_tooltip"] = <"Save ADL $1 converted output into .adls source file (overwrites current file)">
+		["save_adl_serialised_button_text"] = <"Save source">
+		["save_adl_serialised_button_tooltip"] = <"Save ADL $1 serialised output into .adls source file (overwrites current file)">
+
+		["saved_serialised_msg"] = <"Saved ADL $1 serialised output into $2">
+		["saved_converted_msg"] = <"Saved ADL $1 converted output into $2">
 		["saved_source_msg"] = <"Wrote source to $1">
 		["saved_14_source_msg"] = <"Wrote ADL 1.4 source to $1">
 

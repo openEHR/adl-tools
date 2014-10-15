@@ -42,23 +42,25 @@ feature {NONE}-- Initialization
 			ev_root_container.set_item_text (evx_adl_14_converted_editor.ev_root_container, get_text (ec_adl_14_converted_tab_text))
 			gui_controls.extend (evx_adl_14_converted_editor)
 
-			create evx_adl_15_source_editor.make_editable (agent adl_15_source_text, agent save_adl_15_source_editor_text)
-			ev_root_container.extend (evx_adl_15_source_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_text (ec_adl_15_source_tab_text))
-			gui_controls.extend (evx_adl_15_source_editor)
+			create evx_adl_source_editor.make_editable (agent adl_source_text, agent save_adl_source_editor_text)
+			ev_root_container.extend (evx_adl_source_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_text (ec_adl_source_tab_text))
+			gui_controls.extend (evx_adl_source_editor)
 
-			create evx_adl_15_converted_editor.make (agent adl_15_converted_text)
-			ev_root_container.extend (evx_adl_15_converted_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_15_converted_editor.ev_root_container, get_text (ec_adl_15_converted_tab_text))
-			evx_adl_15_converted_editor.add_button (Void, Void, get_text (ec_save_15_converted_button_text), get_text (ec_save_15_converted_button_tooltip), agent save_15_converted_source, Void)
-			gui_controls.extend (evx_adl_15_converted_editor)
+			create evx_adl_converted_editor.make (agent adl_converted_text)
+			ev_root_container.extend (evx_adl_converted_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_converted_editor.ev_root_container, get_msg (ec_adl_converted_tab_text, <<latest_adl_version>>))
+			evx_adl_converted_editor.add_button (Void, Void, get_text (ec_save_adl_converted_button_text),
+				get_msg (ec_save_adl_converted_button_tooltip, <<latest_adl_version>>), agent save_adl_converted_source, Void)
+			gui_controls.extend (evx_adl_converted_editor)
 
-			create evx_adl_151_serialised_editor.make (agent adl_151_serialised_text)
-			ev_root_container.extend (evx_adl_151_serialised_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_151_serialised_editor.ev_root_container, get_text (ec_adl_151_serialised_tab_text))
-			evx_adl_151_serialised_editor.set_text_filter (get_text (ec_symbolic_text), get_text (ec_symbolic_text_tooltip), agent symbolic_text)
-			evx_adl_151_serialised_editor.add_button (Void, Void, get_text (ec_save_151_serialised_button_text), get_text (ec_save_151_serialised_button_tooltip), agent save_151_serialised_source, Void)
-			gui_controls.extend (evx_adl_151_serialised_editor)
+			create evx_adl_serialised_editor.make (agent adl_current_serialised_text)
+			ev_root_container.extend (evx_adl_serialised_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_serialised_editor.ev_root_container, get_msg (ec_adl_serialised_tab_text, <<latest_adl_version>>))
+			evx_adl_serialised_editor.set_text_filter (get_text (ec_symbolic_text), get_text (ec_symbolic_text_tooltip), agent symbolic_text)
+			evx_adl_serialised_editor.add_button (Void, Void, get_text (ec_save_adl_serialised_button_text),
+				get_msg (ec_save_adl_serialised_button_tooltip, <<latest_adl_version>>), agent save_adl_serialised_source, Void)
+			gui_controls.extend (evx_adl_serialised_editor)
 
 			differential_view := True
 
@@ -113,9 +115,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	evx_adl_15_source_editor: EVX_TEXT_EDITOR_CONTROL
+	evx_adl_source_editor: EVX_TEXT_EDITOR_CONTROL
 
-	adl_15_source_text: detachable STRING
+	adl_source_text: detachable STRING
 		do
 			-- following check has to also look at adl_version since that reflects most recently read file
 			-- if the version is 1.4, then the 1.4 file was read for the most recent parse, even if the
@@ -125,9 +127,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	evx_adl_15_converted_editor: EVX_TEXT_EDITOR_CONTROL
+	evx_adl_converted_editor: EVX_TEXT_EDITOR_CONTROL
 
-	adl_15_converted_text: detachable STRING
+	adl_converted_text: detachable STRING
 		do
 			if source.file_mgr.is_text_converted then
 				if attached source.differential_archetype then
@@ -138,9 +140,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	evx_adl_151_serialised_editor: EVX_TEXT_EDITOR_CONTROL
+	evx_adl_serialised_editor: EVX_TEXT_EDITOR_CONTROL
 
-	adl_151_serialised_text: detachable STRING
+	adl_current_serialised_text: detachable STRING
 		do
 			if source.is_valid_differential and then attached source.differential_serialised as sda then
 				 Result := sda
@@ -176,32 +178,32 @@ feature {NONE} -- Implementation
 			end
 
 			-- ADL 1.5 source
-			if not evx_adl_15_source_editor.is_empty then
-				sel_tab := ev_root_container.item_tab (evx_adl_15_source_editor.ev_root_container)
+			if not evx_adl_source_editor.is_empty then
+				sel_tab := ev_root_container.item_tab (evx_adl_source_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/edit_active"))
 				if not source.file_mgr.adl_version.is_empty then
-					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.file_mgr.adl_version>>))
+					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.file_mgr.adl_version>>))
 				else
-					ev_root_container.set_item_text (evx_adl_15_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<latest_adl_version>>))
+					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<latest_adl_version>>))
 				end
 			else
-				ev_root_container.item_tab (evx_adl_15_source_editor.ev_root_container).remove_pixmap
+				ev_root_container.item_tab (evx_adl_source_editor.ev_root_container).remove_pixmap
 			end
 
 			-- ADL 1.5 converted
-			if not evx_adl_15_converted_editor.is_empty then
-				sel_tab := ev_root_container.item_tab (evx_adl_15_converted_editor.ev_root_container)
+			if not evx_adl_converted_editor.is_empty then
+				sel_tab := ev_root_container.item_tab (evx_adl_converted_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/serialised"))
 			else
-				ev_root_container.item_tab (evx_adl_15_converted_editor.ev_root_container).remove_pixmap
+				ev_root_container.item_tab (evx_adl_converted_editor.ev_root_container).remove_pixmap
 			end
 
 			-- ADL 1.5.1 serialised
-			if not evx_adl_151_serialised_editor.is_empty then
-				sel_tab := ev_root_container.item_tab (evx_adl_151_serialised_editor.ev_root_container)
+			if not evx_adl_serialised_editor.is_empty then
+				sel_tab := ev_root_container.item_tab (evx_adl_serialised_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/test_passed"))
 			else
-				ev_root_container.item_tab (evx_adl_151_serialised_editor.ev_root_container).remove_pixmap
+				ev_root_container.item_tab (evx_adl_serialised_editor.ev_root_container).remove_pixmap
 			end
 
 			-- select the most recent active tab
@@ -210,32 +212,32 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_151_serialised_source
+	save_adl_serialised_source
 			-- save the final serialised result as the new source. Useful to correct any formatting, occasionally causes
 			-- minor syntax upgrading
 		do
 			if attached source as att_source then
 				att_source.save_differential_text
-				evx_adl_15_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<att_source.source_file_path>>))
+				evx_adl_source_editor.populate
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
 			end
 		end
 
-	save_15_converted_source
+	save_adl_converted_source
 			-- save the intermediate converted 1.5 source which contains ADL 1.5.1 modifications on ADL 1.5 old style source
 		do
 			if attached source as att_source then
 				att_source.save_differential_text
-				evx_adl_15_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<att_source.source_file_path>>))
+				evx_adl_source_editor.populate
+				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
 				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
 			end
 		end
 
-	save_adl_15_source_editor_text (a_text: STRING)
+	save_adl_source_editor_text (a_text: STRING)
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
 			-- and then select the archetype in the catalogue to force a recompile
 		do

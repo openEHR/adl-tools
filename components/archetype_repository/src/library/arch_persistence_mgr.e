@@ -389,6 +389,14 @@ feature {ARCH_LIB_ARCHETYPE} -- Commands
 			file_repository.save_text_to_file (a_full_path, a_text)
 		end
 
+	remove_source_file
+			-- remove the differential source file
+		require
+			has_source_file
+		do
+			file_system.delete_file (source_file_path)
+		end
+
 feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE} -- File Management
 
 	is_text_converted: BOOLEAN

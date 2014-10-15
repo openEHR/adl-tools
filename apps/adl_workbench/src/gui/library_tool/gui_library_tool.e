@@ -47,6 +47,7 @@ feature {NONE} -- Initialisation
 		do
 			tool_agents.set_edit_archetype_source_agent (agent edit_archetype)
 			tool_agents.set_save_archetype_agent (agent save_archetype)
+			tool_agents.set_update_explorers_and_select_agent (agent update_explorers_and_select)
 
 			create archetype_explorer.make
 			create template_explorer.make
@@ -267,6 +268,16 @@ feature -- Events
 		do
 			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_root_container.selected_item.data as cat_tool and attached source then
 				cat_tool.on_rotate_view
+			end
+		end
+
+	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE)
+			-- Populate archetype and template explorers
+		do
+			if attached source as src then
+				archetype_explorer.populate (src)
+				template_explorer.populate (src)
+				archetype_explorer.select_item_in_tree (aca.id.as_string)
 			end
 		end
 

@@ -87,7 +87,7 @@ feature -- Commands
 		end
 
 	update_tree_node_for_archetype (aca: ARCH_LIB_ARCHETYPE)
-			-- update Catalogue tree node with changes in compilation status
+			-- update Library tree node with changes in compilation status
 		do
 			-- update semantic grid
 			if semantic_grid_row_map.has (aca.qualified_name) and then attached semantic_grid_row_map.item (aca.qualified_name) as gr then
@@ -489,12 +489,14 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			if aca.is_valid then
+				-- create new specialised archetype
 				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (aca))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 
+				-- create new template
 				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (aca))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 			end
 		end
@@ -526,13 +528,12 @@ feature {NONE} -- Implementation
 				new_id := parent_aca.id.deep_twin
 				new_id.set_concept_id ("t_" + new_id.concept_id)
 				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), new_id, parent_aca.id, src)
-				check attached proximate_ev_window (ev_root_container) as prox_win then
-					dialog.show_modal_to_window (prox_win)
-				end
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then
 					src.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
-					populate (src)
-					select_item_in_tree (src.last_added_archetype.id.as_string)
+					check attached src.last_added_archetype as att_arch then
+						tool_agents.update_explorers_and_select_agent.call ([att_arch])
+					end
 				end
 				dialog.destroy
 			end

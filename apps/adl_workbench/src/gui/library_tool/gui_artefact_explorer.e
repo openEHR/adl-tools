@@ -152,14 +152,18 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			create menu
+
+			-- display archetype in current tool
 			create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_archetype_in_active_tool (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 	    	menu.extend (an_mi)
 
+			-- display archetype in new tool
 			create an_mi.make_with_text_and_action (get_text (ec_display_in_new_tab), agent display_archetype_in_new_tool (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
+			-- edit archetype in visual editor
 			if aca.is_valid and not gui_agents.archetype_has_editor_agent.item ([aca]) then -- only offer editor if there is not already one running for this archetype
 				create an_mi.make_with_text_and_action (get_text (ec_edit), agent edit_archetype_in_new_tool (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
@@ -168,7 +172,15 @@ feature {NONE} -- Implementation
 
 			add_tool_specific_archetype_menu_items (menu, aca)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_edit_source, Void),
+			-- remove artefact
+			if not aca.artefact_type.is_overlay then
+				create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (aca))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
+				menu.extend (an_mi)
+			end
+
+			-- edit archetype source in external tool
+			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
 				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 					do
 						tool_agents.edit_archetype_source_agent.call ([an_aca])
@@ -177,7 +189,8 @@ feature {NONE} -- Implementation
 			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_save_archetype_as, Void),
+			-- save archetype as ...
+			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
 				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, True, True])
@@ -186,7 +199,8 @@ feature {NONE} -- Implementation
 			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_export_archetype_as, Void),
+			-- export archetype as ...
+			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
 				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, True, False])
@@ -194,7 +208,8 @@ feature {NONE} -- Implementation
 			)
 			menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action (get_msg (ec_export_flat_archetype_as, Void),
+			-- export flat archetype as
+			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
 				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, False, False])
@@ -267,6 +282,26 @@ feature {NONE} -- Implementation
 		note
 			option: stable
 		attribute
+		end
+
+	remove_artefact (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+		local
+			question_dialog: EV_QUESTION_DIALOG
+		do
+			if attached source as src then
+				create question_dialog.make_with_text (get_msg (ec_remove_artefact_question, <<aca.id.as_string>>))
+				question_dialog.set_title (get_text (ec_remove_dialog_title))
+				question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if question_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+					src.remove_artefact (aca)
+					aca.remove_file
+					check attached aca.specialisation_ancestor as att_anc then
+						tool_agents.update_explorers_and_select_agent.call ([att_anc])
+					end
+				end
+				question_dialog.destroy
+			end
 		end
 
 invariant

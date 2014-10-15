@@ -252,7 +252,7 @@ end
 		end
 
 	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- perform grafts of node from differential archetype on corresponding node in flat parent
+			-- perform overlays of node from differential archetype on corresponding node in flat parent
 			-- only interested in C_COMPLEX_OBJECTs; we deal with all the other node types by iterating the
 			-- children of C_COMPLEX_OBJECTs
 		local
@@ -272,7 +272,7 @@ debug ("flatten")
 	io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
 end
 
-				-- First we have to figure out parent path of graft location in output flat, i.e. path of parent attribute
+				-- First we have to figure out parent path of overlay location in output flat, i.e. path of parent attribute
 				-- It could be the flat form of the child path, if no overlay has been done already, but it also may match
 				-- the child path other than the terminal node, i.e. the one we are on here, due to node redefinitions
 				-- already performed that overwrote the node ids higher up in the path with ids of the level of the
@@ -286,7 +286,7 @@ debug ("flatten")
 end
 						ca_parent_path_in_flat_out := ca_parent_in_child.path
 
-					-- now try to match path at level of ancestor flat
+					-- otherwise try to match path at level of ancestor flat
 					else
 						create apa.make_from_string (ca_parent_in_child.path)
 						ca_parent_path_in_flat_out := apa.path_at_level (arch_flat_anc.specialisation_depth)
@@ -298,6 +298,8 @@ end
 						end
 					end
 					check attached ca_parent_path_in_flat_out end
+
+					-- figure out the correct node id to set in the terminal node of the path
 					create og_cco_overlay_path_in_output_flat.make_from_string (ca_parent_path_in_flat_out)
 					if specialisation_status_from_code (cco_child_diff.node_id, arch_diff_child.specialisation_depth) = ss_redefined then
 						overlay_node_id_in_flat := specialised_code_parent (cco_child_diff.node_id)
@@ -348,7 +350,6 @@ end
 debug ("flatten")
 	io.put_string ("YES%N")
 end
-
 				-- if it is a node on which occurrences was set to 0, remove it from the flat.
 				if cco_child_diff.is_prohibited then
 debug ("flatten")
@@ -408,7 +409,6 @@ end
 						end
 
 						grafted_child_locations.extend (cco_child_diff.path)
-
 					else
 debug ("flatten")
 	io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
@@ -487,7 +487,7 @@ end
 									ca_output.set_prohibited
 									ca_output.remove_all_children
 								else
-									-- graft the attribute existence if that has been changed
+									-- overlay the attribute existence if that has been changed
 									if attached ca_child.existence then
 										ca_output.set_existence (ca_child.existence.deep_twin)
 										ca_output.set_specialisation_status_redefined
@@ -587,7 +587,7 @@ end
 			-- source and output structures as two linear lists of objects; the challenge is to figure out
 			-- how to merge those from the source structure that are NEW only, or alternatively, are slot
 			-- redefinitions. New nodes are those whose identifier indicates addition at this level
-			-- (i.e. a code like at0002.1.4 is not new in spec level 3, but at0.0.4 is)
+			-- (i.e. a code like id2.1.4 is not new in spec level 3, but id0.0.4 is)
 		require
 			Non_empty_attribute: ca_output.has_children
 		local

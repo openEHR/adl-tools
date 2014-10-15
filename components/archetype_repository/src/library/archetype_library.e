@@ -363,11 +363,11 @@ feature -- Modification
 				if valid_candidate (aca) then
 					add_filesys_tree_repo_node (file_system.dirname (a_path))
 					put_archetype (aca, a_path)
-				elseif not has_item_with_id (aca.semantic_parent_id.as_lower) then
+				elseif not has_item_with_id (aca.semantic_parent_key.as_lower) then
 					if aca.is_specialised then
-						add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_id, aca.qualified_key>>)
+						add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_key, aca.qualified_key>>)
 					else
-						add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_id, aca.qualified_key>>)
+						add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_key, aca.qualified_key>>)
 					end
 				elseif has_item_with_id (aca.qualified_key) then
 					add_error (ec_arch_cat_dup_archetype, <<a_path>>)
@@ -382,7 +382,7 @@ feature -- Modification
 		require
 			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
 			new_id_valid: not archetype_index.has (aca.id.as_string)
-			ontological_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
+			semantic_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
 		do
 			archetype_index.remove (aca.old_id.as_string)
 			archetype_index.force (aca, aca.id.as_string)
@@ -391,12 +391,27 @@ feature -- Modification
 			filesys_item_index.remove (aca.old_id.as_string.as_lower)
 			filesys_item_index.force (aca, aca.id.as_string.as_lower)
 			aca.parent.remove_child (aca)
-			semantic_item_index.item (aca.semantic_parent_id).put_child (aca)
+			semantic_item_index.item (aca.semantic_parent_key).put_child (aca)
 			aca.clear_old_ontological_parent_name
 		ensure
 			Node_added_to_archetype_index: archetype_index.has (aca.id.as_string)
 			Node_added_to_ontology_index: semantic_item_index.has (aca.id.as_string)
 			Node_parent_set: aca.parent.qualified_name.is_equal (aca.semantic_parent_id)
+		end
+
+	remove_artefact (aca: ARCH_LIB_ARCHETYPE)
+			-- remove `aca' from indexes
+		require
+			new_id_valid: archetype_index.has (aca.id.as_string)
+			Semantic_parent_exists: semantic_item_index.has (aca.id.as_string.as_lower)
+		do
+			archetype_index.remove (aca.id.as_string)
+			semantic_item_index.remove (aca.id.as_string.as_lower)
+			filesys_item_index.remove (aca.id.as_string.as_lower)
+			aca.parent.remove_child (aca)
+		ensure
+			Node_removed_from_archetype_index: not archetype_index.has (aca.id.as_string)
+			Node_removed_from_semantic_index: not semantic_item_index.has (aca.id.as_string)
 		end
 
 feature -- Traversal

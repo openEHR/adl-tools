@@ -528,23 +528,23 @@ feature -- Modification
 			has_child_with_id (an_obj.node_id)
 		end
 
-	put_child_right (an_obj, after_obj: C_OBJECT)
-			-- insert a new child node after another node
+	put_child_right (a_new_obj, after_obj: C_OBJECT)
+			-- insert a new child node `a_new_obj' after the node `after_obj'
 		require
-			Object_valid: valid_new_child (an_obj)
+			Object_valid: valid_new_child (a_new_obj)
 			After_obj_valid: has_child (after_obj)
 		do
-			representation.put_child_right (an_obj.representation, after_obj.representation)
+			representation.put_child_right (a_new_obj.representation, after_obj.representation)
 			children.go_i_th (children.index_of (after_obj, 1))
-			children.put_right (an_obj)
-			an_obj.set_parent (Current)
+			children.put_right (a_new_obj)
+			a_new_obj.set_parent (Current)
 		ensure
-			has_child_with_id (an_obj.node_id)
+			has_child_with_id (a_new_obj.node_id)
 		end
 
 	put_sibling_child (an_obj: C_OBJECT; to_right: BOOLEAN)
-			-- put a new child node after any sibling that is already there
-			-- 'sibling' is defined as an object with a node_id with the same parent as the node_id of `an_obj';
+			-- put a new child node after any sibling that is already there 'sibling' is defined
+			-- as an object with a node_id with the same parent as the node_id of `an_obj';
 			-- usually it is a specialised node id with a common parent, but may be a top level id
 			-- put `an_obj' at end if no sibling found
 		require
