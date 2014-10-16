@@ -120,7 +120,7 @@ feature {NONE} -- Implementation
 					else
 						-- if path doesn't exist in ancestor and path of immediate parent node doesn't exist in ancestor either
 						-- then it's an error
-						create apa.make_from_string (ca.path)
+						create apa.make (ca.og_path)
 						if not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) then
 							flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
 							if not arch_flat_anc.has_path (flat_anc_path) then

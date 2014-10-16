@@ -51,11 +51,11 @@ feature -- Access
 	match_path: STRING
 			-- same as path but with final object_id removed
 		local
-			og_path: OG_PATH
+			an_og_path: OG_PATH
 		do
-			og_path := representation.path
-			og_path.last.clear_object_id
-			Result := og_path.as_string
+			an_og_path := og_path
+			an_og_path.last.clear_object_id
+			Result := an_og_path.as_string
 		end
 
 	single_value: ANY

@@ -177,7 +177,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca and then (attached ca.existence or attached ca.cardinality) then
 				if target.is_specialised then
-					create apa.make_from_string (a_c_node.path)
+					create apa.make (a_c_node.og_path)
 
 					if not apa.is_phantom_path_at_level (flat_ancestor.specialisation_depth) then
 						ca_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
@@ -231,7 +231,7 @@ feature {NONE} -- Implementation
 					co_child_diff.remove_occurrences
 				-- specialised archetype nodes - if local occurrences exists and is a copy of that in parent, remove it
 				elseif attached flat_ancestor as fa then
-					create apa.make_from_string (a_c_node.path)
+					create apa.make (a_c_node.og_path)
 					-- node redefines something in parent; check if it is a duplicate
 					if not apa.is_phantom_path_at_level (fa.specialisation_depth) then
 						co_path_in_flat := apa.path_at_level (fa.specialisation_depth)

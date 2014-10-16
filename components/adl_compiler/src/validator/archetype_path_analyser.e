@@ -17,11 +17,11 @@ inherit
 		end
 
 create
-	make_from_path, make_from_string
+	make, make_from_string
 
 feature -- Initialisation
 
-	make_from_path (a_path: OG_PATH)
+	make (a_path: OG_PATH)
 			-- create from an OG_PATH
 		do
 			target := a_path

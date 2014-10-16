@@ -484,7 +484,7 @@ feature {NONE} -- Context menu
 			co_path_in_flat: STRING
 		do
 			if attached arch_node as a_n and attached ed_context.parent_archetype as parent_arch then
-				create apa.make_from_string (a_n.path)
+				create apa.make (a_n.og_path)
 				if not apa.is_phantom_path_at_level (parent_arch.specialisation_depth) then
 					co_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
 					if parent_arch.has_object_path (co_path_in_flat) then

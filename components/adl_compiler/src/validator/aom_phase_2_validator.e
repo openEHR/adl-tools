@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 debug ("validate")
 	io.put_string ("C_ATTRIBUTE - " + a_c_node.path  + "%N")
 end
-				create apa.make_from_string (a_c_node.path)
+				create apa.make (a_c_node.og_path)
 				ca_path_in_flat := apa.path_at_level (arch_flat_anc.specialisation_depth)
 				ca_in_flat_anc := arch_flat_anc.attribute_at_path (ca_path_in_flat)
 
@@ -211,7 +211,7 @@ end
 
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT; or redefined external references
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
-				create apa.make_from_string (co_child_diff.path)
+				create apa.make (co_child_diff.og_path)
 				co_in_flat_anc := arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 				co_child_annotated_path := arch_diff_child.annotated_path (co_child_diff.path, child_desc.archetype_view_language, True)
 				co_flat_anc_annotated_path := arch_diff_child.annotated_path (co_in_flat_anc.path, child_desc.archetype_view_language, True)
@@ -364,7 +364,7 @@ end
 						-- either the path can't in principle exist in the flat ancestor (phantom path) or
 						-- else it might be possible, but not actually exist. Only if it actually exists is
 						-- the result True.
-						create apa.make_from_string (a_c_node.path)
+						create apa.make (a_c_node.og_path)
 						if not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) then
 							flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
 							Result := arch_flat_anc.has_object_path (flat_anc_path)
@@ -392,7 +392,7 @@ end
 					else
 						-- if it has a sibling order, check that the sibling order refers to a valid node in the flat ancestor.
 						if attached c_obj.sibling_order as sib_ord then
-							create apa.make_from_string (a_c_node.parent.path)
+							create apa.make (a_c_node.parent.og_path)
 							ca_in_flat_anc := arch_flat_anc.attribute_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 							if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
 								ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, arch_flat_anc.specialisation_depth)))
@@ -414,7 +414,7 @@ end
 				elseif attached {C_ATTRIBUTE} a_c_node as ca and then not ca.is_second_order_constrained then
 					-- consider a C_ATTRIBUTE path to be an overlay path if either it exists in flat ancestor
 					-- or its C_OBJECT parent path exists in flat ancestor
-					create apa.make_from_string (a_c_node.path)
+					create apa.make (a_c_node.og_path)
 					Result := not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) and then
 						arch_flat_anc.has_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
 				end

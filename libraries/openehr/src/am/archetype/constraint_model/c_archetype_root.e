@@ -47,11 +47,11 @@ feature -- Access
 	flat_path: STRING
 			-- generate the flattened path to the filling node, using an_archetype_ref
 		local
-			og_path: OG_PATH
+			an_og_path: OG_PATH
 		do
-			create og_path.make_from_string (path)
-			og_path.last.set_object_id (archetype_ref)
-			Result := og_path.as_string
+			an_og_path := og_path
+			an_og_path.last.set_object_id (archetype_ref)
+			Result := an_og_path.as_string
 		end
 
 feature -- Comparison

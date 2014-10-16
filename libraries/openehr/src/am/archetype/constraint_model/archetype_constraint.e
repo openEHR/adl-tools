@@ -24,6 +24,12 @@ feature -- Access
 
 	parent: detachable ARCHETYPE_CONSTRAINT
 
+	og_path: OG_PATH
+			-- path to this object in the tree with respect to root, in structured form
+		do
+			Result := representation.path
+		end
+
 	path: STRING
 			-- path to this object in the tree with respect to root
 		do

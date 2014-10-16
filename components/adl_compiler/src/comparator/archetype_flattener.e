@@ -242,16 +242,16 @@ end
 		local
 			def_it: C_ITERATOR
 		do
-			grafted_child_locations.wipe_out
+			overlaid_child_locations.wipe_out
 
 			-- traverse flat output and mark every node as inherited
 			arch_flat_out.definition.set_subtree_specialisation_status (ss_inherited)
 
 			create def_it.make (arch_diff_child.definition)
-			def_it.do_until_surface (agent node_graft, agent node_test)
+			def_it.do_until_surface (agent node_overlay, agent node_test)
 		end
 
-	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	node_overlay (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform overlays of node from differential archetype on corresponding node in flat parent
 			-- only interested in C_COMPLEX_OBJECTs; we deal with all the other node types by iterating the
 			-- children of C_COMPLEX_OBJECTs
@@ -288,7 +288,7 @@ end
 
 					-- otherwise try to match path at level of ancestor flat
 					else
-						create apa.make_from_string (ca_parent_in_child.path)
+						create apa.make (ca_parent_in_child.og_path)
 						ca_parent_path_in_flat_out := apa.path_at_level (arch_flat_anc.specialisation_depth)
 						if not arch_flat_out.has_path (ca_parent_path_in_flat_out) then
 debug ("flatten")
@@ -320,7 +320,7 @@ end
 					-- parent flat into the output flat, and then overlay from the diff.
 					-- This has the effect of leaving the parent node intact in the flat, for further overriding lower down.
 					parent_node_closed := ca_parent_in_child.has_child_with_id (overlay_node_id_in_flat) and then ca_parent_in_child.child_with_id (overlay_node_id_in_flat).is_prohibited
-					create apa.make_from_string (cco_overlay_path)
+					create apa.make (og_cco_overlay_path_in_output_flat)
 					check attached {C_COMPLEX_OBJECT} arch_flat_anc.object_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth)) as co_in_flat then
 						cco_parent_flat := co_in_flat
 					end
@@ -335,7 +335,7 @@ end
 debug ("flatten")
 	io.put_string ("%TObject in flat parent ALREADY REPLACED - cloning original and overlaying sibling object " + cco_child_diff.path + "%N")
 end
-						create apa.make_from_string (cco_child_diff.path)
+						create apa.make (cco_child_diff.og_path)
 						cco_output_flat := cco_parent_flat.safe_deep_twin
 						cco_output_flat.set_node_id (cco_child_diff.node_id)
 						cco_output_flat.set_subtree_specialisation_status (ss_inherited)
@@ -408,7 +408,7 @@ end
 							cco_output_flat.put_attribute (ca_child_copy)
 						end
 
-						grafted_child_locations.extend (cco_child_diff.path)
+						overlaid_child_locations.extend (cco_child_diff.path)
 					else
 debug ("flatten")
 	io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
@@ -540,7 +540,7 @@ end
 							else
 								ca_child_copy := ca_child.safe_deep_twin
 								ca_child_copy.set_subtree_specialisation_status (ss_added)
-								grafted_child_locations.extend (ca_child.path)
+								overlaid_child_locations.extend (ca_child.path)
 								ca_child_copy.clear_differential_path
 debug ("flatten")
 	io.put_string ("%T%Tin child only; deep_clone attribute " +
@@ -696,7 +696,7 @@ end
 					end
 
 					-- remember the path, so we don't try to do it again later on
-					grafted_child_locations.extend (co_child_diff.path)
+					overlaid_child_locations.extend (co_child_diff.path)
 
 				-- for non CCO by CCO overrides we still have to check if there is a parent node to be overridden, because in the case where
 				-- multiple children override one parent (e.g. id10.1 and id10.2 override id10) the parent may have already
@@ -709,7 +709,7 @@ end
 					co_output_insert_pos := new_obj
 
 					-- remember the path, so we don't try to do it again later on
-					grafted_child_locations.extend (co_child_diff.path)
+					overlaid_child_locations.extend (co_child_diff.path)
 
 				-- don't do anything with a C_COMPLEX_OBJECT that overrides a C_COMPLEX_OBJECT, since the main
 				-- graft routine will take care of it
@@ -756,7 +756,7 @@ end
 					end
 
 					-- remember the path, so we don't try to do it again later on
-					grafted_child_locations.extend (co_child_diff.path)
+					overlaid_child_locations.extend (co_child_diff.path)
 				end
 				i := i + 1
 			end
@@ -791,19 +791,19 @@ end
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- return True if a conformant path of a_c_node in the differential archetype is found within the flat
 			-- parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
-			-- unless the node is already in the child_grafted_path_list
+			-- unless the node is already in the overlaid_child_locations
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 			ac_path, path_in_flat: STRING
 		do
 			ac_path := a_c_node.path
-			create apa.make_from_string (ac_path)
+			create apa.make (a_c_node.og_path)
 			path_in_flat := apa.path_at_level (arch_flat_anc.specialisation_depth)
 			Result := arch_flat_anc.has_path (path_in_flat) and
-				not across grafted_child_locations as grafted_paths_csr some ac_path.starts_with (grafted_paths_csr.item) end
+				not across overlaid_child_locations as overlaid_paths_csr some ac_path.starts_with (overlaid_paths_csr.item) end
 		end
 
-	grafted_child_locations: ARRAYED_SET [STRING]
+	overlaid_child_locations: ARRAYED_SET [STRING]
 			-- list of root paths of child sub-trees in the child that have been completely grafted from child to parent
 			-- don't descend into paths lower than any path in this list
 		attribute
