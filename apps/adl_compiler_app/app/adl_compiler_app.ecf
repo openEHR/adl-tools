@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="adl_compiler_app" uuid="804BD2F5-8F3A-4D4D-8495-001FA30E2894">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="adl_compiler_app" uuid="804BD2F5-8F3A-4D4D-8495-001FA30E2894">
 	<target name="adl_compiler_app">
 		<root feature="make" class="APPLICATION"/>
 		<file_rule>
@@ -11,8 +11,8 @@
 		<option debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="initialization" syntax="standard">
 			<assertions precondition="true" check="true"/>
 		</option>
-
 		<setting name="console_application" value="true"/>
+		<setting name="concurrency" value="thread"/>
 		<library name="argument_parser" location="$ISE_LIBRARY\library\argument_parser\argument_parser-safe.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
@@ -35,7 +35,7 @@
 		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
 
-		<library name="iso8601" location="$EIFFEL_HUB\library\iso8601\src\iso8601.ecf"/>
+		<library name="iso8601" location="$EIFFEL_HUB\iso8601\src\iso8601.ecf"/>
 
 		<cluster name="app" location="..\src\main\" recursive="true"/>
 		<cluster name="app_env" location="..\src\env\" recursive="true"/>
