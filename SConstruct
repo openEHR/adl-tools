@@ -13,7 +13,7 @@ if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 # Pull the various git repositories if 'git=1' is one of the command line arguments.
 
 if ARGUMENTS.get('git', 0):
-       for dir in ['.', '../reference-models', '../terminology', '../EOMF', '../eiffelhub/library/iso8601']:
+       for dir in ['.', '../reference-models', '../terminology', '../EOMF', '../eiffelhub/iso8601']:
                os.popen('git --git-dir=' + os.path.abspath(dir + '/.git') + ' pull')
 
 ###################################################################################################
