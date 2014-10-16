@@ -800,12 +800,10 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
 		do
-			if button = {EV_POINTER_CONSTANTS}.right then
-				if attached an_ev_grid_item then
-					if attached {ARCHETYPE_REPOSITORY_INTERFACE} an_ev_grid_item.row.data as ari then
-						build_repository_context_menu (ari)
-					end
-				end
+			if button = {EV_POINTER_CONSTANTS}.right and then attached an_ev_grid_item as att_ev_gi and then
+				attached {ARCHETYPE_REPOSITORY_INTERFACE} att_ev_gi.row.data as ari
+			then
+				build_repository_context_menu (ari)
 			end
 		end
 
@@ -829,32 +827,34 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		    	menu.extend (an_mi)
 			end
 
-			-- VCS pull
-			if a_rep_if.has_repository_tool and a_rep_if.synchronisation_status = vcs_status_pull_required then
-				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
-		    	menu.extend (an_mi)
-			end
+			if a_rep_if.has_repository_tool then
+				-- VCS pull
+				if a_rep_if.synchronisation_status = vcs_status_pull_required then
+					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+			    	menu.extend (an_mi)
+				end
 
-			-- VCS commit
-			if a_rep_if.has_repository_tool and a_rep_if.synchronisation_status = vcs_status_files_not_committed then
-				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_commit), agent repository_vcs_commit (a_rep_if))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
-		    	menu.extend (an_mi)
-			end
+				-- VCS commit
+				if a_rep_if.synchronisation_status = vcs_status_files_not_committed then
+					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_commit), agent repository_vcs_commit (a_rep_if))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+			    	menu.extend (an_mi)
+				end
 
-			-- VCS push
-			if a_rep_if.has_repository_tool and a_rep_if.synchronisation_status = vcs_status_push_required then
-				create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_push), agent repository_vcs_push (a_rep_if))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
-		    	menu.extend (an_mi)
-			end
+				-- VCS push
+				if a_rep_if.synchronisation_status = vcs_status_push_required then
+					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_push), agent repository_vcs_push (a_rep_if))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+			    	menu.extend (an_mi)
+				end
 
-			-- checkout other branch
-			if a_rep_if.has_repository_tool and then a_rep_if.available_branches.count > 1 then
-				create an_mi.make_with_text_and_action (get_text (ec_repository_checkout_branch), agent repository_checkout_branch (a_rep_if))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
-		    	menu.extend (an_mi)
+				-- checkout other branch
+				if a_rep_if.available_branches.count > 1 then
+					create an_mi.make_with_text_and_action (get_text (ec_repository_checkout_branch), agent repository_checkout_branch (a_rep_if))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+			    	menu.extend (an_mi)
+				end
 			end
 
 			-- remove
@@ -904,7 +904,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		local
 			commit_dialog: REPOSITORY_COMMIT_DIALOG
 		do
-			create commit_dialog.make (a_rep_if.key)
+			create commit_dialog.make (a_rep_if.key, a_rep_if.uncommitted_files)
 			commit_dialog.show_modal_to_window (Current)
 			if commit_dialog.is_valid then
 				command_runner.do_action (a_rep_if, agent a_rep_if.stage)

@@ -29,9 +29,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_repo_name: STRING)
+	make (a_repo_name: STRING; a_file_list: ARRAYED_LIST [STRING])
 		do
 			repository_name := a_repo_name
+			file_list := a_file_list
 			create message.make_empty
 			default_create
 		end
@@ -62,11 +63,16 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_label_1)
 			ev_root_container.disable_item_expand (ev_cell_2)
 
+			-- ============ commit file list ============
+			create evx_file_list_text.make_readonly (get_text (ec_repository_commit_file_list_label), agent :ARRAYED_LIST [STRING] do Result := file_list end, 0, 0, True)
+			ev_root_container.extend (evx_file_list_text.ev_root_container)
+			gui_controls.extend (evx_file_list_text)
+
 			-- ============ commit message ============
-			create evx_text_control.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 0, 0, True)
-			ev_root_container.extend (evx_text_control.ev_root_container)
-			ev_root_container.disable_item_expand (evx_text_control.ev_root_container)
-			gui_controls.extend (evx_text_control)
+			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 0, 0, True)
+			ev_root_container.extend (evx_commit_msg_text.ev_root_container)
+			ev_root_container.disable_item_expand (evx_commit_msg_text.ev_root_container)
+			gui_controls.extend (evx_commit_msg_text)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
@@ -95,7 +101,7 @@ feature -- Events
 
 	on_ok
 		do
-			message := evx_text_control.data_control_text
+			message := evx_commit_msg_text.data_control_text
 			is_valid := True
 			hide
 		end
@@ -103,6 +109,8 @@ feature -- Events
 feature -- Access
 
 	repository_name: STRING
+
+	file_list: ARRAYED_LIST [STRING]
 
 	message: STRING
 
@@ -152,7 +160,9 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	evx_text_control: EVX_MULTILINE_TEXT_CONTROL
+	evx_file_list_text: EVX_TEXT_LIST_CONTROL
+
+	evx_commit_msg_text: EVX_MULTILINE_TEXT_CONTROL
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (795)
+			create message_table.make (796)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -383,6 +383,7 @@ feature -- Initialisation
 			message_table.put ("%N-------------%NRemote source:%N%TURL: $1%N%Tcustodian: $2", ec_archetype_library_grid_name_col_tooltip)
 			message_table.put ("About to clone repository $1 from $2 in $3; proceed?", ec_repository_clone_dir_confirm_text)
 			message_table.put ("Commit Message: ", ec_repository_commit_message_label)
+			message_table.put ("  Commit Files: ", ec_repository_commit_file_list_label)
 			message_table.put ("Repository Commit", ec_repository_commit_dialog_title)
 			message_table.put ("Commit local changes to repository $1.", ec_repository_commit_dialog_header_label)
 			message_table.put ("Install Repository", ec_repository_install_dialog_title)

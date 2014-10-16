@@ -368,6 +368,7 @@ feature -- Definitions
 		ec_archetype_library_grid_name_col_tooltip: STRING = "archetype_library_grid_name_col_tooltip"
 		ec_repository_clone_dir_confirm_text: STRING = "repository_clone_dir_confirm_text"
 		ec_repository_commit_message_label: STRING = "repository_commit_message_label"
+		ec_repository_commit_file_list_label: STRING = "repository_commit_file_list_label"
 		ec_repository_commit_dialog_title: STRING = "repository_commit_dialog_title"
 		ec_repository_commit_dialog_header_label: STRING = "repository_commit_dialog_header_label"
 		ec_repository_install_dialog_title: STRING = "repository_install_dialog_title"

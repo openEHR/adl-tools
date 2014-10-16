@@ -110,6 +110,7 @@ templates = <
 
 		-- REPOSITORY_COMMIT_DIALOG
 		["repository_commit_message_label"] = <"Commit Message: ">
+		["repository_commit_file_list_label"] = <"  Commit Files: ">
 		["repository_commit_dialog_title"] = <"Repository Commit">
 		["repository_commit_dialog_header_label"] = <"Commit local changes to repository $1.">
 

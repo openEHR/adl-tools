@@ -163,8 +163,21 @@ feature -- Access
 	available_branches: ARRAYED_LIST [STRING]
 			-- list of all available branches for this repo
 		do
-			if attached remote_access as att_rem_acc then
+			if attached available_branches_cache as att_cache then
+				Result := available_branches_cache
+			elseif attached remote_access as att_rem_acc then
 				Result := att_rem_acc.available_branches
+				available_branches_cache := Result
+			else
+				create Result.make (0)
+			end
+		end
+
+	uncommitted_files: ARRAYED_LIST [STRING]
+			-- list of uncommitted changes on current branch
+		do
+			if attached remote_access as att_rem_acc then
+				Result := att_rem_acc.uncommitted_files
 			else
 				create Result.make (0)
 			end
@@ -363,6 +376,12 @@ feature {NONE} -- Implementation
 			check attached remote_access as att_rem_acc then
 				synchronisation_status := att_rem_acc.synchronisation_status
 			end
+		end
+
+	available_branches_cache: detachable ARRAYED_LIST [STRING]
+		note
+			option: stable
+		attribute
 		end
 
 	remote_access: detachable VCS_TOOL_INTERFACE
