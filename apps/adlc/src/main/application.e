@@ -96,6 +96,7 @@ feature -- Commands
 			curr_repo, action: STRING
 			aca: ARCH_LIB_ARCHETYPE
 			finished: BOOLEAN
+			lib_name: STRING
 		do
 			app_root.initialise_app
 			if opts.is_verbose then
@@ -122,10 +123,10 @@ feature -- Commands
 					across archetype_repository_interfaces as rep_interfaces_csr loop
 						io.put_string ("%T" + rep_interfaces_csr.item.local_directory + "%N")
 						across rep_interfaces_csr.item.library_interfaces as lib_interfaces_csr loop
-							io.put_string ("%T%T" + lib_interfaces_csr.item.library_path + "%N")
+							lib_name := lib_interfaces_csr.item.key
+							io.put_string ("%T%T" + if lib_name.is_equal (current_library_name) then "* " else "  " end + lib_name + "%N")
 						end
 					end
-
 				else
 					-- process library
 					if attached opts.library as att_lib then

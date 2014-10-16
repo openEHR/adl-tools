@@ -55,12 +55,12 @@
 		<setting name="line_generation" value="false"/>
 		<setting name="concurrency" value="thread"/>
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
-		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
 		<library name="eomf_bmm" location="$EOMF\library\bmm\bmm.ecf">
 			<option>
 				<assertions precondition="true" postcondition="true"/>
 			</option>
 		</library>
+		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
 		<library name="eomf_gui" location="$EOMF\library\gui\eomf_gui.ecf">
 			<option>
 				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
@@ -91,7 +91,7 @@
 		<library name="ise_vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
 		<library name="ise_xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="ise_xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
-		<library name="iso8601" location="$EIFFEL_HUB\library\iso8601\src\iso8601.ecf"/>
+		<library name="iso8601" location="$EIFFEL_HUB\iso8601\src\iso8601.ecf"/>
 		<cluster name="adl_components" location="..\..\..\components\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
