@@ -24,6 +24,11 @@ inherit
 			is_equal, default_create, copy
 		end
 
+	EVX_UTILITIES
+		undefine
+			is_equal, default_create, copy
+		end
+
 create
 	make
 
@@ -87,6 +92,9 @@ feature {NONE} -- Initialization
 			-- window characteristics
 			set_title (get_text (ec_repository_commit_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
+
+			-- ensure size controlled
+			set_max_size_to_monitor (Current)
 
 			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)

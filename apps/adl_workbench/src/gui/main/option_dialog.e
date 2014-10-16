@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 							Result := errname
 						end
 					end,
-				error_type_names, 0, 100)
+				error_type_names, 0, 300)
 			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
 			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
@@ -182,7 +182,7 @@ feature {NONE} -- Initialization
 							Result := tt
 						end
 					end,
-				Tool_tab_names, 0, 100)
+				Tool_tab_names, 0, 300)
 			ev_notebook_ui_settings_2_vb.extend (tool_tab_combo_box.ev_root_container)
 			ev_notebook_ui_settings_2_vb.disable_item_expand (tool_tab_combo_box.ev_root_container)
 			gui_controls.extend (tool_tab_combo_box)

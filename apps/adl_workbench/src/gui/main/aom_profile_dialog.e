@@ -111,6 +111,9 @@ feature {NONE} -- Initialisation
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
+			-- ensure size controlled
+			set_max_size_to_monitor (Current)
+
 			-- Connect events.
 			show_actions.extend (agent grid.set_focus)
 			show_actions.extend (agent do_populate)
@@ -139,13 +142,13 @@ feature -- Commands
 		end
 
 	on_reload
-			-- alow user reload after manual changes while correcting schemas
+			-- allow user reload after manual changes while correcting schemas
 		do
 			do_with_wait_cursor (Current, agent reload)
 		end
 
 	reload
-			-- alow user reload after manual changes while correcting schemas
+			-- allow user reload after manual changes while correcting schemas
 		do
 			on_set_aom_profile_dir (dir_setter.data_control_text)
 			aom_profiles_access.load_profiles
@@ -316,7 +319,7 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
+			set_width ((form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2).min (monitor_area (Current).width))
 		end
 
 	do_edit_profile (a_profile_desc: AOM_PROFILE_ACCESS)

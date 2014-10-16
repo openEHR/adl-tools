@@ -192,16 +192,18 @@ feature {NONE} -- Initialisation
 			set_title (get_text (ec_repository_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
+			-- ensure size controlled
+			set_max_size_to_monitor (Current)
+
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
-
-			-- Connect events.
-		--	show_actions.extend (agent grid.set_focus)
 
 			-- add a reload button to the left of Ok/ Cancel
 			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent reload)
 
 			original_current_library_selected := current_library_name.twin
+
+		--	show_actions.extend (agent (evx_grid.ev_grid).set_focus)
 
 			enable_edit
 			do_populate

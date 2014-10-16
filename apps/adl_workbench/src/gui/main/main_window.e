@@ -214,11 +214,13 @@ feature {NONE} -- Initialization
 			set_stderr_agent (agent external_process_console_update)
 			set_stdout_agent (agent external_process_console_update)
 
-			-- basic UI parameters
-			set_minimum_width (500)
-			set_minimum_height (350)
-			set_maximum_width (2000)
-			set_maximum_height (2000)
+--			-- basic UI parameters
+--			set_minimum_width (500)
+--			set_minimum_height (350)
+
+			-- ensure size controlled
+--			set_max_size_to_monitor (Current)
+
 			set_title (get_msg (ec_main_window_title, <<latest_adl_version>>))
 			close_request_actions.extend (agent exit_app)
 			set_icon_pixmap (adl_workbench_logo)
