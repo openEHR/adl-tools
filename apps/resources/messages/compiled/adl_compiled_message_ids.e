@@ -675,6 +675,7 @@ feature -- Definitions
 		ec_Test_source_roundtrip_button_tooltip: STRING = "Test_source_roundtrip_button_tooltip"
 		ec_Test_parse_test_title: STRING = "Test_parse_test_title"
 		ec_Test_save_flat_test_title: STRING = "Test_save_flat_test_title"
+		ec_Test_compare_flat_test_title: STRING = "Test_compare_flat_test_title"
 		ec_Test_source_compare_test_title: STRING = "Test_source_compare_test_title"
 		ec_Test_save_source_odin_test_title: STRING = "Test_save_source_odin_test_title"
 		ec_Test_read_source_odin_test_title: STRING = "Test_read_source_odin_test_title"

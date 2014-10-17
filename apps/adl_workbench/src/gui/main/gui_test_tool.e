@@ -216,6 +216,7 @@ feature -- Access
 			Result.force (agent test_parse, get_text (ec_Test_parse_test_title))
 			Result.force (agent regression_test, Regression_test_key)
 			Result.force (agent test_save_flat, get_text (ec_Test_save_flat_test_title))
+			Result.force (agent test_compare_flat, get_text (ec_Test_compare_flat_test_title))
 			Result.force (agent test_source_compare, get_text (ec_Test_source_compare_test_title))
 			Result.force (agent test_save_source_odin, get_text (ec_Test_save_source_odin_test_title))
 			Result.force (agent test_read_source_odin, get_text (ec_Test_read_source_odin_test_title))
@@ -354,7 +355,7 @@ feature -- Commands
 			evx_progress_counter.ev_data_control.set_text ("0")
 		end
 
-   	set_row_pixmap (row: attached EV_GRID_ROW)
+   	set_row_pixmap (row: EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
    		do
 			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_LIB_ITEM} row.data as ari then
@@ -368,15 +369,13 @@ feature -- Commands
    			i: INTEGER
 			row: EV_GRID_ROW
    		do
-			if attached ari then
-				from i := evx_grid.row_count until i = 0 loop
-					row := evx_grid.ev_grid.row (i)
-					if row.data /= Void and then row.data.is_equal (ari) then
-						set_row_pixmap (row)
-						i := 0
-					else
-						i := i - 1
-					end
+			from i := evx_grid.row_count until i = 0 loop
+				row := evx_grid.ev_grid.row (i)
+				if attached {ARCH_LIB_ITEM} row.data as row_ari and then row_ari.is_equal (ari) then
+					set_row_pixmap (row)
+					i := 0
+				else
+					i := i - 1
 				end
 			end
 		end
@@ -675,6 +674,32 @@ feature {NONE} -- Tests
 			end
 		end
 
+	test_compare_flat: INTEGER
+			-- compare generated flat with any regression one, if available
+		local
+			orig_fname, diff_fname, flat_fname, regression_flat_path, output_flat_path: STRING
+		do
+			Result := Test_failed
+			if target.is_valid and diff_dirs_available then
+				orig_fname := file_system.basename (target.source_file_path)
+				diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
+				output_flat_path := file_system.pathname (diff_dir_source_flat_new, diff_fname)
+				regression_flat_path := extension_replaced (target.source_file_path, file_ext_archetype_flat)
+
+				if file_system.file_exists (regression_flat_path) then
+					if file_system.same_binary_files (regression_flat_path, output_flat_path) then
+						Result := test_passed
+					else
+						Result := test_failed
+					end
+				else
+					Result := test_not_applicable
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
 	test_source_compare: INTEGER
 			-- parse archetype and return result
 		do
@@ -783,6 +808,7 @@ feature {NONE} -- Implementation
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		local
 			col_csr: INTEGER
+			icon_key: STRING
 		do
 			if ari.has_artefacts or ari.is_root then
 				if grid_row_stack.is_empty then
@@ -791,20 +817,26 @@ feature {NONE} -- Implementation
 					grid_row_stack.item.collapse_actions.extend (agent (evx_grid.ev_grid).step_to_viewable_parent_of_selected_row)
 					evx_grid.add_sub_row (grid_row_stack.item, ari)
 				end
-				evx_grid.set_last_row_label_col (1, ari.name, Void, Void, get_icon_pixmap ("archetype/" + ari.group_name))
+
+				-- create the row
+				evx_grid.set_last_row_label_col (1, ari.name, Void, Void, Void)
 				evx_grid.last_row_add_checkbox (2)
 				check attached evx_grid.last_row as lr then
 					grid_row_stack.extend (lr)
 				end
+				icon_key := "archetype/"
 
-				if attached {ARCH_LIB_ARCHETYPE} ari as ara then
-					evx_grid.update_last_row_label_col (1, Void, ara.source_file_path, Void, Void)
+				if attached {ARCH_LIB_ARCHETYPE} ari as ala then
+					evx_grid.update_last_row_label_col (1, Void, ala.source_file_path, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
 						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void)
 						col_csr := col_csr + 1
 					end
+				elseif attached {ARCH_LIB_CLASS_NODE} ari as alcn then
+					icon_key := "rm/generic/"
 				end
+				evx_grid.update_last_row_label_col (1, Void, Void, Void, get_icon_pixmap (icon_key + ari.group_name))
 			end
 		end
 

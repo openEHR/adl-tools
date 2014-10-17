@@ -500,6 +500,7 @@ templates = <
 
 		["Test_parse_test_title"] = <"Parse">
 		["Test_save_flat_test_title"] = <"->flat">
+		["Test_compare_flat_test_title"] = <"Compare flat">
 		["Test_source_compare_test_title"] = <"Compare .adls">
 		["Test_save_source_odin_test_title"] = <"src AOM->ODIN">
 		["Test_read_source_odin_test_title"] = <"src AOM<-ODIN">

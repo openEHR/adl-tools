@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (796)
+			create message_table.make (797)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -690,6 +690,7 @@ feature -- Initialisation
 			message_table.put ("Open diff tool on source and archetype round-tripped through ODIN P_* objects", ec_Test_source_roundtrip_button_tooltip)
 			message_table.put ("Parse", ec_Test_parse_test_title)
 			message_table.put ("->flat", ec_Test_save_flat_test_title)
+			message_table.put ("Compare flat", ec_Test_compare_flat_test_title)
 			message_table.put ("Compare .adls", ec_Test_source_compare_test_title)
 			message_table.put ("src AOM->ODIN", ec_Test_save_source_odin_test_title)
 			message_table.put ("src AOM<-ODIN", ec_Test_read_source_odin_test_title)
