@@ -4,3 +4,5 @@ EIFGENs/
 *.wb
 *.pyc
 .scons*
+
+*.log
