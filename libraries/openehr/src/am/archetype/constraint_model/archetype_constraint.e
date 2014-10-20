@@ -203,10 +203,16 @@ feature -- Source Control
 			specialisation_status := a_spec_status
 		end
 
+	set_subtree_specialisation_status (a_spec_status: INTEGER)
+			-- mark every node from here down as having the specialisation status `a_spec_status'
+		do
+			specialisation_status := a_spec_status
+		end
+
 	deep_set_specialisation_status_added
 			-- deep version of `set_specialisation_status_added'
 		do
-			specialisation_status := ss_added
+			set_subtree_specialisation_status (ss_added)
 		end
 
 	rolled_up_specialisation_status: INTEGER

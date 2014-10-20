@@ -12,12 +12,17 @@ class C_ATTRIBUTE
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			parent, representation_cache, path
+			parent, representation_cache, path, set_subtree_specialisation_status
 		end
 
 	C_COMMON
 		export {NONE}
 			all
+		end
+
+	ITERABLE [C_OBJECT]
+		undefine
+			is_equal, out
 		end
 
 create
@@ -61,13 +66,12 @@ feature -- Source Control
 			-- mark every node from here down as having the specialisation status `a_spec_status'
 		do
 			set_specialisation_status (a_spec_status)
-			from children.start until children.off loop
-				if attached {C_COMPLEX_OBJECT} children.item as c_c_o then
+			across children as child_csr loop
+				if attached {C_COMPLEX_OBJECT} child_csr.item as c_c_o then
 					c_c_o.set_subtree_specialisation_status (a_spec_status)
 				else
-					children.item.set_specialisation_status (a_spec_status)
+					child_csr.item.set_specialisation_status (a_spec_status)
 				end
-				children.forth
 			end
 		end
 
@@ -378,6 +382,14 @@ feature -- Status Report
 			Result := not attached existence and not attached cardinality and any_allowed
 		end
 
+feature -- Iteration
+
+	new_cursor: INDEXABLE_ITERATION_CURSOR [C_OBJECT]
+			-- Fresh cursor associated with current structure
+		do
+			Result := children.new_cursor
+		end
+
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
@@ -640,29 +652,16 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential (a_flat_obj, diff_obj: C_OBJECT; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN])
+	overlay_differential (a_flat_obj, diff_obj: C_OBJECT)
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
-			Diff_obj_valid: diff_obj.c_conforms_to (a_flat_obj, rm_type_conformance_checker)
 		do
 			if not a_flat_obj.node_id.is_equal (diff_obj.node_id) then
 				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
 			end
-			a_flat_obj.overlay_differential (diff_obj, rm_type_conformance_checker)
+			a_flat_obj.overlay_differential (diff_obj)
 		end
-
---	convert_to_ghost
---			-- Remove all children and cardinality - represents a removed node within a flat archetype.
---			-- In an editing context, this enables diff form to be regenerated for saving
---		do
---			remove_all_children
---			remove_cardinality
---			set_specialisation_status_redefined
---		ensure
---			Marked_as_redefined: specialisation_status = {SPECIALISATION_STATUSES}.ss_redefined
---			Cardinality_removed: not attached cardinality
---		end
 
 feature -- Validation
 

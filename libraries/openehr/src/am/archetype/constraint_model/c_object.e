@@ -194,14 +194,16 @@ feature -- Modification
 			representation.set_node_id (an_object_id)
 		end
 
-	overlay_differential (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN])
+feature {C_ATTRIBUTE} -- Modification
+
+	overlay_differential (other: like Current)
 			-- apply any differences from `other' to this object node including:
 			-- 	node_id
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
-		require
-			Other_valid: other.c_conforms_to (Current, rm_type_conformance_checker)
+			-- Should always be called from C_ATTRIBUTE.overlay_differential() since the
+			-- if the node_id changes, the keyed list in the parent needs to be updated
 		do
 			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
@@ -213,6 +215,29 @@ feature -- Modification
 			end
 			if attached other.occurrences as other_occ then
 				set_occurrences (other_occ.deep_twin)
+				set_specialisation_status_redefined
+			end
+		end
+
+feature {ARCHETYPE_FLATTENER} -- Modification
+
+	overlay_differential_root (other: like Current)
+			-- apply any differences from `other' to this object node including:
+			-- 	node_id
+			-- 	overridden rm_type_name
+			-- 	occurrences
+			-- Current is assumed to be in a flat archetype
+			-- Should always be called from C_ATTRIBUTE.overlay_differential() since the
+			-- if the node_id changes, the keyed list in the parent needs to be updated
+		require
+			Current.is_root and other.is_root
+		do
+			if not other.node_id.is_equal (node_id) then
+				set_node_id (other.node_id.twin)
+				set_specialisation_status_redefined
+			end
+			if not other.rm_type_name.is_case_insensitive_equal (rm_type_name) then
+				rm_type_name := other.rm_type_name.twin
 				set_specialisation_status_redefined
 			end
 		end

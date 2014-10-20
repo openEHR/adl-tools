@@ -328,10 +328,8 @@ end
 						end
 
 						-- deal with sibling marker on C_OBJECTs that are redefines of nodes in flat parent
-						if attached co_child_diff.sibling_order and then not (co_in_flat_anc.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) or else
-							co_in_flat_anc.parent.has_child_with_id (code_at_level (co_child_diff.sibling_order.sibling_node_id, arch_flat_anc.specialisation_depth)))
-						then
-							add_error (ec_VSSM, <<co_child_annotated_path, co_child_diff.sibling_order.sibling_node_id>>)
+						if attached co_child_diff.sibling_order as att_so and then not co_in_flat_anc.parent.has_child_with_id (att_so.sibling_node_id) then
+							add_error (ec_VSSM, <<co_child_annotated_path, att_so.sibling_node_id>>)
 						end
 					end
 				end

@@ -140,7 +140,7 @@ feature -- Definitions
 feature -- Access
 
 	specialised_code_parent (a_code: STRING): STRING
-			-- get parent code of this specialised code
+			-- get semantic parent code of this specialised code
 			-- 	id4.1	=> 	id4
 			-- 	id4.0.1	=>	id4
 			--	id4.1.1 =>	id4.1

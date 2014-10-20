@@ -20,7 +20,7 @@ class C_COMPLEX_OBJECT
 inherit
 	C_DEFINED_OBJECT
 		redefine
-			representation_cache, out, deep_set_specialisation_status_added
+			representation_cache, out, set_subtree_specialisation_status
 		end
 
 create
@@ -58,12 +58,6 @@ feature -- Source Control
 					do
 					end
 			)
-		end
-
-	deep_set_specialisation_status_added
-			-- deep version of `set_specialisation_status_added'
-		do
-			set_subtree_specialisation_status (ss_added)
 		end
 
 feature -- Access
