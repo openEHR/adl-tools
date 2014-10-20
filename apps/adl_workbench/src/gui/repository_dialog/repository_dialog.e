@@ -155,16 +155,22 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_cell_3)
 			ev_root_container.disable_item_expand (ev_cell_3)
 
-			-- ============ new repository button ============
-			create ev_hbox_new_repo
-			ev_root_container.extend (ev_hbox_new_repo)
-			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_button_text), get_text (ec_repository_dir_button_tooltip), agent on_add_repository, Void)
-			ev_hbox_new_repo.extend (new_repo_button.ev_button)
-			ev_hbox_new_repo.disable_item_expand (new_repo_button.ev_button)
-			create ev_cell_3
-			ev_hbox_new_repo.extend (ev_cell_3)
+			-- ============ refresh VCS status ============
+			create ev_hbox_repo_controls
+			ev_root_container.extend (ev_hbox_repo_controls)
+			create refresh_vcs_button.make (Void, Void, get_text (ec_refresh_vcs_button_text), get_text (ec_refresh_vcs_button_tooltip), agent do do_with_wait_cursor (Current, agent refresh_vcs) end, Void)
+			ev_hbox_repo_controls.extend (refresh_vcs_button.ev_button)
+			ev_hbox_repo_controls.disable_item_expand (refresh_vcs_button.ev_button)
 
-			-- space cell
+			-- ============ new repository button ============
+			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_button_text), get_text (ec_repository_dir_button_tooltip), agent on_add_repository, Void)
+			ev_hbox_repo_controls.extend (new_repo_button.ev_button)
+			ev_hbox_repo_controls.disable_item_expand (new_repo_button.ev_button)
+			-- horizontal spacer cell
+			create ev_cell_3
+			ev_hbox_repo_controls.extend (ev_cell_3)
+
+			-- vertical space cell
 			create ev_cell_3
 			ev_cell_3.set_minimum_height (10)
 			ev_root_container.extend (ev_cell_3)
@@ -534,6 +540,15 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 		end
 
 feature {REPOSITORY_COMMAND_RUNNER} -- Actions
+
+	refresh_vcs
+			-- refresh dialog from VCS
+		do
+			across archetype_repository_interfaces as rep_interfaces_csr loop
+				rep_interfaces_csr.item.refresh_vcs_status
+			end
+			populate_grid
+		end
 
 	on_add_repository
 			-- add a new repository, either by:
@@ -964,13 +979,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 	evx_grid: EVX_GRID
 
-	new_repo_button: EVX_BUTTON
+	refresh_vcs_button, new_repo_button: EVX_BUTTON
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
-	ev_hbox_new_repo: EV_HORIZONTAL_BOX
+	ev_hbox_repo_controls: EV_HORIZONTAL_BOX
 
 	command_runner: REPOSITORY_COMMAND_RUNNER
 		once ("PROCESS")

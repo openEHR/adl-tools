@@ -329,6 +329,8 @@ feature -- Definitions
 		ec_ref_library_text: STRING = "ref_library_text"
 		ec_work_library_text: STRING = "work_library_text"
 		ec_repository_create_new_question_text: STRING = "repository_create_new_question_text"
+		ec_refresh_vcs_button_text: STRING = "refresh_vcs_button_text"
+		ec_refresh_vcs_button_tooltip: STRING = "refresh_vcs_button_tooltip"
 		ec_repository_dir_button_text: STRING = "repository_dir_button_text"
 		ec_repository_dir_button_tooltip: STRING = "repository_dir_button_tooltip"
 		ec_repository_dir_invalid: STRING = "repository_dir_invalid"

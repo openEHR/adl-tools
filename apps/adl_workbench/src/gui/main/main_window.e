@@ -88,7 +88,7 @@ feature {NONE} -- Initialization
 
 			-- repository combo
 			create arch_libraries_combo
-			arch_libraries_combo.set_tooltip (get_msg (ec_library_cfg_combo_tooltip, Void))
+			arch_libraries_combo.set_tooltip (get_text (ec_library_cfg_combo_tooltip))
 			arch_libraries_combo.set_minimum_width (160)
 			arch_libraries_combo.disable_edit
 			arch_libraries_combo.select_actions.extend (agent select_library)
@@ -401,7 +401,7 @@ feature -- Commands
 				if archetype_repository_interfaces.is_empty or archetype_library_interfaces.is_empty then
 					configure_repositories
 				else
-					populate_arch_lib_combo
+					populate_arch_libraries_combo
 					refresh_archetype_library (True)
 				end
 			end
@@ -521,7 +521,7 @@ feature {NONE} -- Library events
 			dialog.destroy
 
 			-- populate the profile combo box selectors
-			populate_arch_lib_combo
+			populate_arch_libraries_combo
 
 			-- if the current profile changed or was removed, repopulate the explorers
 			if current_library_removed or current_library_changed then
@@ -759,7 +759,7 @@ feature -- RM Schemas Events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			populate_arch_lib_combo
+			populate_arch_libraries_combo
 			if dialog.has_changed_schema_load_list then
 				console_tool.clear
 				rm_schemas_access.reload_schemas
@@ -1178,7 +1178,7 @@ feature {NONE} -- Implementation
 			address_bar.clear
 		end
 
-	populate_arch_lib_combo
+	populate_arch_libraries_combo
 			-- Initialise the dialog's widgets from shared settings.
 		do
 			arch_libraries_combo.select_actions.block

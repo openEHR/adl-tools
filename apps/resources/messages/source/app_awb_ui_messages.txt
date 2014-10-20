@@ -61,6 +61,8 @@ templates = <
 		-- REPOSITORY_DIALOG
 		["repository_create_new_question_text"] = <"Create a new repository (creates repository definition file in selected directory)?">
 
+		["refresh_vcs_button_text"] = <"VCS Refresh">
+		["refresh_vcs_button_tooltip"] = <"Refresh this dialog to version control system">
 		["repository_dir_button_text"] = <"Add Repository">
 		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 

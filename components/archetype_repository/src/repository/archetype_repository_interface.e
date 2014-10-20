@@ -257,6 +257,12 @@ feature -- Validation
 
 feature -- Commands
 
+	refresh_vcs_status
+			-- refresh cached values from VCS
+		do
+			get_synchronisation_status
+		end
+
 	pull_from_remote
 			-- Update local checkout/clone from remote; result in last_result
 		require
