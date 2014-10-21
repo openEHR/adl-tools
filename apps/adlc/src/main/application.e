@@ -185,7 +185,7 @@ feature -- Commands
 											-- perform action for all matching archetypes
 											if not finished then
 												across matched_archetype_ids as arch_ids_csr loop
-													check attached current_library.archetype_index.item (arch_ids_csr.item) as aii then
+													check attached current_library.archetype_with_id (arch_ids_csr.item) as aii then
 														aca := aii
 													end
 													archetype_compiler.build_lineage (aca, 0)
