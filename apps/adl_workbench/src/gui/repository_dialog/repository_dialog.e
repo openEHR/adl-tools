@@ -545,7 +545,9 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			-- refresh dialog from VCS
 		do
 			across archetype_repository_interfaces as rep_interfaces_csr loop
-				rep_interfaces_csr.item.refresh_vcs_status
+				if rep_interfaces_csr.item.has_remote_repository then
+					rep_interfaces_csr.item.refresh_vcs_status
+				end
 			end
 			populate_grid
 		end

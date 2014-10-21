@@ -259,6 +259,8 @@ feature -- Commands
 
 	refresh_vcs_status
 			-- refresh cached values from VCS
+		require
+			has_remote_repository
 		do
 			get_synchronisation_status
 		end
