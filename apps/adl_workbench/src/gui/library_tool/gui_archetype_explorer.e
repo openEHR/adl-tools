@@ -14,7 +14,8 @@ inherit
 		rename
 			make as make_tree_control
 		redefine
-			on_rotate_view, add_tool_specific_archetype_menu_items, grid_item_select_handler, grid_item_event_handler, repopulate, do_clear
+			on_rotate_view, add_tool_specific_archetype_menu_items, grid_item_select_handler,
+				grid_item_event_handler, repopulate, do_clear, do_select_archetype
 		end
 
 	BMM_DEFINITIONS
@@ -373,6 +374,38 @@ feature {NONE} -- Implementation
 			)
 		end
 
+	do_select_archetype
+		local
+			arch_id: STRING
+			grid_row: EV_GRID_ROW
+		do
+			check attached selected_archetype_node as aca then
+				selection_history.set_selected_item (aca)
+
+				-- ensure selection is reflected in the grid not displayed
+				arch_id := aca.global_artefact_identifier
+				if gui_semantic_grid.ev_grid.is_displayed then
+					if filesys_grid_row_map.has (arch_id) then
+						check attached filesys_grid_row_map.item (arch_id) as gr then
+							grid_row := gr
+						end
+						gui_filesys_grid.ev_grid.ensure_visible (grid_row)
+						select_item_in_grid (grid_row, arch_id)
+					end
+				else
+					if semantic_grid_row_map.has (arch_id) then
+						check attached semantic_grid_row_map.item (arch_id) as gr then
+							grid_row := gr
+						end
+						gui_semantic_grid.ev_grid.ensure_visible (grid_row)
+						select_item_in_grid (grid_row, arch_id)
+					end
+				end
+
+				gui_agents.select_archetype_agent.call ([aca])
+			end
+		end
+
 	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
 			Result := (attached {ARCH_LIB_CLASS_NODE} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
@@ -473,13 +506,14 @@ feature {NONE} -- Implementation
 			-- and do a normal tree node select
 		do
 			if attached {EV_GRID_LABEL_ITEM} an_ev_grid_row.item (1) as gli then
-				if gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) then
-					gli.select_actions.block
-					gli.enable_select
-					gli.select_actions.resume
-				else
-					gli.enable_select
+				gli.select_actions.block
+				gli.enable_select
+				if not gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) and
+					attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_with_id (ari_global_id) as ala
+				then
+					gui_agents.select_archetype_agent.call ([ala])
 				end
+				gli.select_actions.resume
 			end
 		end
 
@@ -549,7 +583,7 @@ feature {NONE} -- Implementation
 			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
 			if not matching_ids.is_empty then
 				matching_ids.start
-				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).source_file_path)
+				in_dir_path := file_system.dirname (source.archetype_with_id (matching_ids.item).source_file_path)
 			else
 				in_dir_path := current_library_interface.library_path
 			end

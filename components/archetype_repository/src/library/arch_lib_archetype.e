@@ -1269,6 +1269,7 @@ feature {NONE} -- Implementation
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 			slot_idx: like slot_id_index
+			ala: ARCH_LIB_ARCHETYPE
 		do
 			if is_specialised then
 				slot_idx := specialisation_ancestor.slot_id_index
@@ -1307,10 +1308,9 @@ feature {NONE} -- Implementation
 
 				-- now post the results in the reverse indexes
 				across slot_idx.item (slots_csr.item.path) as ids_csr loop
-					check attached current_library.archetype_index.item (ids_csr.item) as ara then
-						if not attached ara.clients_index or else not ara.clients_index.has (id.as_string) then
-							ara.add_client (id.as_string)
-						end
+					ala := current_library.archetype_with_id (ids_csr.item)
+					if not attached ala.clients_index or else not ala.clients_index.has (id.as_string) then
+						ala.add_client (id.as_string)
 					end
 				end
 			end

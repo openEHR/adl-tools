@@ -55,6 +55,11 @@ feature -- Commands
 --			end
 		end
 
+	select_item_in_tree (ari_global_id: STRING)
+			-- ensure node with global node id `ari_global_id' is visible in the tree
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	rm_schema: detachable BMM_SCHEMA

@@ -68,6 +68,11 @@ feature -- Commands
 			repopulate
 		end
 
+	select_item_in_tree (ari_global_id: STRING)
+			-- ensure node with global node id `ari_global_id' is visible in the tree
+		deferred
+		end
+
 feature {NONE} -- Implementation
 
 	do_clear
@@ -121,13 +126,14 @@ feature {NONE} -- Implementation
 
 	do_select_archetype
 		do
-			check attached selected_archetype_node as sel_node then
-				selection_history.set_selected_item (sel_node)
-				gui_agents.select_archetype_agent.call ([sel_node])
+			check attached selected_archetype_node as aca then
+				selection_history.set_selected_item (aca)
+				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
 
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
+			-- left-click selection handler
 		do
 			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay (aca)
@@ -136,6 +142,7 @@ feature {NONE} -- Implementation
 		end
 
 	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
+			-- right click context maenu handler
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				if attached an_ev_grid_item and then attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
@@ -148,7 +155,7 @@ feature {NONE} -- Implementation
 	build_archetype_node_context_menu (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		local
-			menu, tree_menu: EV_MENU
+			menu, tree_menu, file_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			create menu
@@ -179,43 +186,10 @@ feature {NONE} -- Implementation
 				menu.extend (an_mi)
 			end
 
-			-- edit archetype source in external tool
-			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
-					do
-						tool_agents.edit_archetype_source_agent.call ([an_aca])
-					end (aca)
-			)
-			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
-			menu.extend (an_mi)
-
-			-- save archetype as ...
-			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
-					do
-						tool_agents.save_archetype_agent.call ([an_aca, True, True])
-					end (aca)
-			)
-			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
-			menu.extend (an_mi)
-
-			-- export archetype as ...
-			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
-					do
-						tool_agents.save_archetype_agent.call ([an_aca, True, False])
-					end (aca)
-			)
-			menu.extend (an_mi)
-
-			-- export flat archetype as
-			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
-					do
-						tool_agents.save_archetype_agent.call ([an_aca, False, False])
-					end (aca)
-			)
-			menu.extend (an_mi)
+			-- add in file submenu
+			create file_menu.make_with_text (get_text (ec_file_menu_text))
+			menu.extend (file_menu)
+			context_menu_add_file_submenu (file_menu, aca)
 
 			-- add in tree controls
 			create tree_menu.make_with_text (get_text (ec_tree_controls))
@@ -254,6 +228,51 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 			create an_mi.make_with_text_and_action (get_text (ec_collapse_one_level_button_text), agent do gui_semantic_grid_tree_control.collapse_one_level end)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_collapse"))
+			a_menu.extend (an_mi)
+		end
+
+	context_menu_add_file_submenu (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+			-- creates the context menu for file operations
+		local
+			tree_menu: EV_MENU
+			an_mi: EV_MENU_ITEM
+		do
+			-- edit archetype source in external tool
+			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.edit_archetype_source_agent.call ([an_aca])
+					end (aca)
+			)
+			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
+			a_menu.extend (an_mi)
+
+			-- save archetype as ...
+			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.save_archetype_agent.call ([an_aca, True, True])
+					end (aca)
+			)
+			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
+			a_menu.extend (an_mi)
+
+			-- export archetype as ...
+			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.save_archetype_agent.call ([an_aca, True, False])
+					end (aca)
+			)
+			a_menu.extend (an_mi)
+
+			-- export flat archetype as
+			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
+				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+					do
+						tool_agents.save_archetype_agent.call ([an_aca, False, False])
+					end (aca)
+			)
 			a_menu.extend (an_mi)
 		end
 

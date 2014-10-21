@@ -90,10 +90,14 @@ feature -- Access
 	library_access: ARCHETYPE_LIBRARY_INTERFACE
 			-- the repository profile accessor from which this library gets its contents
 
-	archetype_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
-			-- index of archetype descriptors keyed by MIXED-CASE archetype id.
-		attribute
-			create Result.make (0)
+	archetype_with_id (an_id: STRING): ARCH_LIB_ARCHETYPE
+			-- get the archetype with id `an_id'
+		require
+			has_archetype_with_id (an_id)
+		do
+			check attached archetype_index.item (an_id) as aca then
+				Result := aca
+			end
 		end
 
 	semantic_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
@@ -229,8 +233,15 @@ feature -- Status Report
 			Result := semantic_item_index.has_item (an_item)
 		end
 
+	has_archetype_with_id (an_archetype_id: STRING): BOOLEAN
+			-- True if `an_archetype_id' exists in library
+		do
+			Result := archetype_index.has (an_archetype_id)
+		end
+
 	has_item_with_id (an_id: STRING): BOOLEAN
-			-- True if `an_id' exists in library
+			-- True if `an_id', which may be for a class, archetype or other tree artefact
+			-- exists in semantic index
 		do
 			Result := semantic_item_index.has (an_id.as_lower)
 		end
@@ -380,8 +391,8 @@ feature -- Modification
 	update_archetype_id (aca: ARCH_LIB_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
 		require
-			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
-			new_id_valid: not archetype_index.has (aca.id.as_string)
+			old_id_valid: attached aca.old_id and then has_archetype_with_id (aca.old_id.as_string) and then archetype_with_id (aca.old_id.as_string) = aca
+			new_id_valid: not has_archetype_with_id (aca.id.as_string)
 			semantic_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
 		do
 			archetype_index.remove (aca.old_id.as_string)
@@ -402,7 +413,7 @@ feature -- Modification
 	remove_artefact (aca: ARCH_LIB_ARCHETYPE)
 			-- remove `aca' from indexes
 		require
-			new_id_valid: archetype_index.has (aca.id.as_string)
+			new_id_valid: has_archetype_with_id (aca.id.as_string)
 			Semantic_parent_exists: semantic_item_index.has (aca.id.as_string.as_lower)
 		do
 			archetype_index.remove (aca.id.as_string)
@@ -560,6 +571,12 @@ feature {NONE} -- Implementation
 	Populate_status_succeeded: INTEGER = -1
 
 	Populate_status_failed: INTEGER = -2
+
+	archetype_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+			-- index of archetype descriptors keyed by MIXED-CASE archetype id.
+		attribute
+			create Result.make (0)
+		end
 
 	populate_semantic_indexes
 			-- Rebuild `archetype_index' and `item_index' from source repositories.

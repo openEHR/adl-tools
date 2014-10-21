@@ -93,17 +93,17 @@ feature {NONE} -- Implementation
 
 	supplier_frame, client_frame: EV_FRAME
 
-	append_tree (subtree: attached EV_TREE_NODE_LIST; ids: attached ARRAYED_LIST [STRING])
+	append_tree (subtree: EV_TREE_NODE_LIST; ids: ARRAYED_LIST [STRING])
 			-- Populate `subtree' from `ids'.
 		local
 			eti: EV_TREE_ITEM
+			ala: ARCH_LIB_ARCHETYPE
 		do
 			across ids as id_csr loop
 				create eti.make_with_text (utf8_to_utf32 (id_csr.item))
-				if current_library.archetype_index.has(id_csr.item) and then attached current_library.archetype_index.item (id_csr.item) as ara then
-					eti.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
-					eti.set_data (ara)
-				end
+				ala := current_library.archetype_with_id (id_csr.item)
+				eti.set_pixmap (get_icon_pixmap ("archetype/" + ala.group_name))
+				eti.set_data (ala)
 				subtree.extend (eti)
 			end
 		ensure
