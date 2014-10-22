@@ -93,9 +93,8 @@ feature {NONE} -- Initialization
 			end
 
 			-- ============ Directory path ============
-			create dir_setter.make (get_text (ec_archetype_dir_label_text), agent :STRING do Result := archetype_directory end, 0, 450)
+			create dir_setter.make (get_text (ec_archetype_dir_label_text), agent :STRING do Result := archetype_directory end, 0, 0)
 			ev_root_container.extend (dir_setter.ev_root_container)
-			ev_root_container.disable_item_expand (dir_setter.ev_root_container)
 			gui_controls.extend (dir_setter)
 
 			-- ============ Ok/Cancel buttons ============
@@ -112,6 +111,7 @@ feature {NONE} -- Initialization
 			-- window characteristics
 			set_title (get_text (ec_create_archetype_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
+			set_minimum_width (650)
 
 			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
