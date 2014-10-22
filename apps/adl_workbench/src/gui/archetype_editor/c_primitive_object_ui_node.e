@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for a C_PRMITIVE_OBJECT"
+	description: "UI visualisation node for a C_PRMITIVE_OBJECT"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class C_PRIMITIVE_OBJECT_ED_CONTEXT
+class C_PRIMITIVE_OBJECT_UI_NODE
 
 inherit
-	C_OBJECT_ED_CONTEXT
+	C_OBJECT_UI_NODE
 		redefine
 			arch_node, prepare_display_in_grid, is_prepared, display_in_grid, rm_type_text, display_constraint
 		end

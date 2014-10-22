@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for a C_ATTRIBUTE_TUPLE"
+	description: "UI visualisation node for a C_ATTRIBUTE_TUPLE"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class C_ATTRIBUTE_TUPLE_ED_CONTEXT
+class C_ATTRIBUTE_TUPLE_UI_NODE
 
 inherit
-	ANY_ED_CONTEXT
+	ANY_UI_NODE
 		redefine
 			arch_node, display_in_grid
 		end
@@ -22,7 +22,7 @@ feature -- Access
 
 	arch_node: detachable C_ATTRIBUTE_TUPLE
 
-	parent: detachable ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	parent: detachable ARCHETYPE_CONSTRAINT_UI_NODE
 			-- parent node in tree
 
 feature -- Display

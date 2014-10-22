@@ -1,13 +1,13 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Shared state information for all nodes of editor tree"
+	description: "Shared state information for all nodes of visualisation tree"
 	keywords:    "visitor, constraint model"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_ED_CONTEXT_STATE
+class ARCHETYPE_UI_GRAPH_STATE
 
 create
 	make, make_editable

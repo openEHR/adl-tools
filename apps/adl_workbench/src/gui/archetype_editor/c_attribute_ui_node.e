@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for any kind of C_ATTRIBUTE"
+	description: "UI visualisation node for any kind of C_ATTRIBUTE"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class C_ATTRIBUTE_ED_CONTEXT
+class C_ATTRIBUTE_UI_NODE
 
 inherit
-	ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	ARCHETYPE_CONSTRAINT_UI_NODE
 		rename
 			rm_element as rm_property
 		redefine
@@ -27,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			create internal_ref_for_rm_type.make (0)
@@ -40,7 +40,7 @@ feature -- Initialisation
 			create children.make(0)
 		end
 
-	make_rm (an_rm_prop: BMM_PROPERTY [BMM_TYPE]; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make_rm (an_rm_prop: BMM_PROPERTY [BMM_TYPE]; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		do
 			precursor (an_rm_prop, an_ed_context)
@@ -59,10 +59,10 @@ feature -- Access
 	rm_property: BMM_PROPERTY [BMM_TYPE]
 			-- RM property of node being edited
 
-	children: ARRAYED_LIST [C_OBJECT_ED_CONTEXT]
+	children: ARRAYED_LIST [C_OBJECT_UI_NODE]
 			-- child objects
 
-	parent: detachable C_COMPLEX_OBJECT_ED_CONTEXT
+	parent: detachable C_COMPLEX_OBJECT_UI_NODE
 
 	path: STRING
 			-- path of this node with respect to top of archetype
@@ -90,7 +90,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_child (a_node: C_OBJECT_ED_CONTEXT): BOOLEAN
+	has_child (a_node: C_OBJECT_UI_NODE): BOOLEAN
 		do
 			Result := children.has (a_node)
 		end
@@ -206,7 +206,7 @@ feature -- Display
 
 feature -- Modification
 
-	pre_attach_child_context (a_context_node: C_OBJECT_ED_CONTEXT)
+	pre_attach_child_context (a_context_node: C_OBJECT_UI_NODE)
 			-- add `a_context_node' to editor structure only;
 			-- used when attaching editor structure to an existing archetype
 		require
@@ -219,7 +219,7 @@ feature -- Modification
 			Has_child: has_child (a_context_node)
 		end
 
-	attach_child_context (a_context_node: C_OBJECT_ED_CONTEXT)
+	attach_child_context (a_context_node: C_OBJECT_UI_NODE)
 			-- add `a_context_node' to editor structure only;
 		require
 			Not_already_has_node: not has_child (a_context_node)
@@ -239,7 +239,7 @@ feature -- Modification
 			Grid_row_attached: a_context_node.ev_grid_row.parent_row = ev_grid_row
 		end
 
-	remove_child (a_context_node: C_OBJECT_ED_CONTEXT)
+	remove_child (a_context_node: C_OBJECT_UI_NODE)
 			-- remove context node `a_context_node' and its `arch_node' completely,
 			-- including from the grid
 		require
@@ -261,7 +261,7 @@ feature -- Modification
 			Grid_row_removed: is_prepared implies attached a_context_node.ev_grid_row as cgr and then not ev_grid_row.has_subrow (cgr)
 		end
 
-	add_child (a_context_node: C_OBJECT_ED_CONTEXT)
+	add_child (a_context_node: C_OBJECT_UI_NODE)
 			-- add an editor context node and if it is a constraint node,
 			-- add its arch_node to the archetype
 		require
@@ -351,7 +351,7 @@ feature -- Modification
 			is_rm: is_rm
 		end
 
-feature {ANY_ED_CONTEXT} -- Implementation
+feature {ANY_UI_NODE} -- Implementation
 
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
@@ -407,7 +407,7 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	create_arch_child (co_create_params: C_OBJECT_PROPERTIES): C_OBJECT_ED_CONTEXT
+	create_arch_child (co_create_params: C_OBJECT_PROPERTIES): C_OBJECT_UI_NODE
 			-- make new C_OBJECT child
 		require
 			not is_rm
@@ -434,12 +434,12 @@ feature {ANY_ED_CONTEXT} -- Implementation
 
 			if c_primitive_subtypes.has (co_create_params.aom_type) then
 				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
-					create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (c_prim_agt.item ([]), ed_context)
+					create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (c_prim_agt.item ([]), ed_context)
 				end
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				create cco.make (rm_type_name, new_code)
-				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make (cco, ed_context)
+				create {C_COMPLEX_OBJECT_UI_NODE} Result.make (cco, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
 				-- FIXME: not yet dealing with slot filler or use_archetype redefinition, which needs
@@ -447,20 +447,20 @@ feature {ANY_ED_CONTEXT} -- Implementation
 				check attached co_create_params.ext_ref as arch_id then
 					create car.make (rm_type_name, arch_id, new_code)
 				end
-				create {C_ARCHETYPE_ROOT_ED_CONTEXT} Result.make (car, ed_context)
+				create {C_ARCHETYPE_ROOT_UI_NODE} Result.make (car, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
 				create arch_slot.make (rm_type_name, new_code)
-				create {ARCHETYPE_SLOT_ED_CONTEXT} Result.make (arch_slot, ed_context)
+				create {ARCHETYPE_SLOT_UI_NODE} Result.make (arch_slot, ed_context)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name)) then
 				check attached co_create_params.path_ref as pr then
 					create air.make (rm_type_name, new_code, pr)
-					create {C_COMPLEX_OBJECT_PROXY_ED_CONTEXT} Result.make (air, ed_context)
+					create {C_COMPLEX_OBJECT_PROXY_UI_NODE} Result.make (air, ed_context)
 				end
 			else
 				-- Should never get here
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make (create {C_STRING}.make_regex_any, ed_context)
+				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (create {C_STRING}.make_regex_any, ed_context)
 
 			end
 
@@ -473,15 +473,15 @@ feature {ANY_ED_CONTEXT} -- Implementation
 			end
 		end
 
-	create_rm_child (a_bmm_type: BMM_TYPE): C_OBJECT_ED_CONTEXT
+	create_rm_child (a_bmm_type: BMM_TYPE): C_OBJECT_UI_NODE
 			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 		require
 			is_rm
 		do
 			if a_bmm_type.base_class.is_primitive_type then
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} Result.make_rm (a_bmm_type, ed_context)
+				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ed_context)
 			else
-				create {C_COMPLEX_OBJECT_ED_CONTEXT} Result.make_rm (a_bmm_type, ed_context)
+				create {C_COMPLEX_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ed_context)
 			end
 		end
 
@@ -581,18 +581,18 @@ feature {NONE} -- Context menu
 		require
 			not is_rm
 		local
-			added_child: C_OBJECT_ED_CONTEXT
+			added_child: C_OBJECT_UI_NODE
 		do
 			add_new_arch_child (co_create_params)
 			added_child := children.last
 
 			-- set up undo / redo
 			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
-				agent (an_added_child: C_OBJECT_ED_CONTEXT)
+				agent (an_added_child: C_OBJECT_UI_NODE)
 					do
 						remove_child (an_added_child)
 					end (added_child),
-				agent (an_added_child: C_OBJECT_ED_CONTEXT)
+				agent (an_added_child: C_OBJECT_UI_NODE)
 					do
 						add_child (an_added_child)
 					end (added_child)

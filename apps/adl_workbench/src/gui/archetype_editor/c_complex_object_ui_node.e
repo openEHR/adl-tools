@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for a C_COMPLEX_OBJECT"
+	description: "UI visualisation node for a C_COMPLEX_OBJECT"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class C_COMPLEX_OBJECT_ED_CONTEXT
+class C_COMPLEX_OBJECT_UI_NODE
 
 inherit
-	C_OBJECT_ED_CONTEXT
+	C_OBJECT_UI_NODE
 		redefine
 			arch_node, make, make_rm, prepare_display_in_grid, display_in_grid, display_constraint
 		end
@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			create c_attributes.make (0)
@@ -28,7 +28,7 @@ feature -- Initialisation
 			create rm_attributes.make (0)
 		end
 
-	make_rm (an_rm_type: BMM_TYPE; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make_rm (an_rm_type: BMM_TYPE; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			precursor (an_rm_type, an_ed_context)
 			create c_attributes.make (0)
@@ -41,13 +41,13 @@ feature -- Access
 	arch_node: detachable C_COMPLEX_OBJECT
 			-- archetype node being edited
 
-	c_attributes: HASH_TABLE [C_ATTRIBUTE_ED_CONTEXT, STRING]
+	c_attributes: HASH_TABLE [C_ATTRIBUTE_UI_NODE, STRING]
 			-- editor nodes for real C_ATTRIBUTEs that are found in C_COMPLEX_OBJECT.attributes
 
-	c_attribute_tuples: ARRAYED_LIST [C_ATTRIBUTE_TUPLE_ED_CONTEXT]
+	c_attribute_tuples: ARRAYED_LIST [C_ATTRIBUTE_TUPLE_UI_NODE]
 			-- editor nodes for C_ATTRIBUTE_TUPLEs that are found in C_COMPLEX_OBJECT.attribute_tuples
 
-	rm_attributes: HASH_TABLE [C_ATTRIBUTE_ED_CONTEXT, STRING]
+	rm_attributes: HASH_TABLE [C_ATTRIBUTE_UI_NODE, STRING]
 			-- Editor nodes for unconstrained RM attributes that have been lazy-requested for viewing
 			-- Once created, they don't leave, they are just displayed or hidden in the EV_GRID tree
 
@@ -62,13 +62,13 @@ feature -- Access
 
 feature -- Status Report
 
-	context_property_not_in_archetype (a_property_context: C_ATTRIBUTE_ED_CONTEXT): BOOLEAN
+	context_property_not_in_archetype (a_property_context: C_ATTRIBUTE_UI_NODE): BOOLEAN
 			-- true if `a_property_context' arch_node is under current node's arch_node
 		do
 			Result := attached arch_node as a_n and then attached a_property_context.arch_node as prop_a_n and then not a_n.has_attribute (prop_a_n.rm_attribute_name)
 		end
 
-	context_property_in_archetype (a_property_context: C_ATTRIBUTE_ED_CONTEXT): BOOLEAN
+	context_property_in_archetype (a_property_context: C_ATTRIBUTE_UI_NODE): BOOLEAN
 			-- true if `a_property_context' arch_node is not under current node's arch_node
 		do
 			Result := attached arch_node as a_n and then attached a_property_context.arch_node as prop_a_n and then a_n.has_attribute (prop_a_n.rm_attribute_name)
@@ -116,7 +116,7 @@ feature -- Display
 
 feature -- Modification
 
-	put_c_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
+	put_c_attribute (a_node: C_ATTRIBUTE_UI_NODE)
 			-- add a new attribute node
 		require
 			attached a_node.arch_node as child_a_n and then not c_attributes.has (child_a_n.rm_attribute_path)
@@ -127,16 +127,16 @@ feature -- Modification
 			end
 		end
 
-	put_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE_ED_CONTEXT)
+	put_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE_UI_NODE)
 			-- add a new attribute_tuple node
 		do
 			c_attribute_tuples.extend (a_node)
 			a_node.set_parent (Current)
 		end
 
-feature {C_ATTRIBUTE_ED_CONTEXT} -- Modification
+feature {C_ATTRIBUTE_UI_NODE} -- Modification
 
-	convert_rm_property_to_constraint (a_property_context: C_ATTRIBUTE_ED_CONTEXT)
+	convert_rm_property_to_constraint (a_property_context: C_ATTRIBUTE_UI_NODE)
 			-- move RM property `a_property_context' to `c_attributes'
 			-- and add its archetype node as a child attribute of the current archetype node
 		require
@@ -156,7 +156,7 @@ feature {C_ATTRIBUTE_ED_CONTEXT} -- Modification
 			Added_to_archetpe: context_property_in_archetype (a_property_context)
 		end
 
-	convert_constraint_to_rm_property (a_property_context: C_ATTRIBUTE_ED_CONTEXT)
+	convert_constraint_to_rm_property (a_property_context: C_ATTRIBUTE_UI_NODE)
 			-- move constraint property `a_property_context' to `rm_attributes'
 		require
 			Context_is_constraint: not a_property_context.is_rm
@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	put_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
+	put_rm_attribute (a_node: C_ATTRIBUTE_UI_NODE)
 			-- add a new attribute node
 		require
 			Valid_node: a_node.is_rm and not rm_attributes.has (a_node.rm_property.name)
@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 	prepare_rm_property (an_rm_prop: BMM_PROPERTY [BMM_TYPE]; ui_settings: GUI_DEFINITION_SETTINGS)
 			-- enter a BMM_PROPERTY
 		local
-			c_attr_ed_node: C_ATTRIBUTE_ED_CONTEXT
+			c_attr_ed_node: C_ATTRIBUTE_UI_NODE
 			att_gui_grid: EVX_GRID
 		do
 			check attached evx_grid as gg then

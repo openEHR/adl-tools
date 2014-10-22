@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Node type corresponding to ARCHETYPE_CONSTRAINT"
+	description: "UI visualisation node corresponding to ARCHETYPE_CONSTRAINT"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCHETYPE_CONSTRAINT_ED_CONTEXT
+deferred class ARCHETYPE_CONSTRAINT_UI_NODE
 
 inherit
-	ANY_ED_CONTEXT
+	ANY_UI_NODE
 		redefine
 			arch_node, is_prepared
 		end
@@ -22,7 +22,7 @@ inherit
 
 feature -- Initialisation
 
-	make_rm (an_rm_element: like rm_element; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make_rm (an_rm_element: like rm_element; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			ed_context := an_ed_context
 			rm_element := an_rm_element
@@ -43,7 +43,7 @@ feature -- Access
 	arch_node_in_ancestor: detachable ARCHETYPE_CONSTRAINT
 			-- corresponding archetype node in specialisation parent, if applicable
 
-	parent: detachable ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	parent: detachable ARCHETYPE_CONSTRAINT_UI_NODE
 			-- parent node in tree
 
 	path: STRING

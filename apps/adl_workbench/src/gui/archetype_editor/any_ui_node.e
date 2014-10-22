@@ -1,13 +1,13 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Interface of any Editor context"
+	description: "Interface of any UI visualisation node"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ANY_ED_CONTEXT
+deferred class ANY_UI_NODE
 
 inherit
 	SHARED_APP_UI_RESOURCES
@@ -69,7 +69,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			create display_settings.make_default
 			ed_context := an_ed_context
@@ -81,7 +81,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ed_context: ARCH_ED_CONTEXT_STATE
+	ed_context: ARCHETYPE_UI_GRAPH_STATE
 			-- assembled context information for display / editing
 
 	arch_node: detachable ANY

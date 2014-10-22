@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context interface for EXPR_LEAF node"
+	description: "UI visualisation node for EXPR_LEAF node"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class EXPR_LEAF_ED_CONTEXT
+class EXPR_LEAF_UI_NODE
 
 inherit
-	EXPR_ITEM_ED_CONTEXT
+	EXPR_ITEM_UI_NODE
 		redefine
 			arch_node, prepare_display_in_grid, display_in_grid
 		end
@@ -24,7 +24,7 @@ feature -- Access
 
 feature -- Display
 
-	prepare_display_in_grid (a_gui_grid: attached EVX_GRID)
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
 			evx_grid := a_gui_grid
 			check attached parent.ev_grid_row as parent_gr then

@@ -27,7 +27,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_gui_context (a_context: ACA_EDITOR_STATE)
+	set_gui_context (a_context: ALA_EDITOR_STATE)
 		do
 			gui_context := a_context
 		end
@@ -45,7 +45,7 @@ feature -- Compilation
 
 feature -- Access
 
-	gui_context: detachable ACA_EDITOR_STATE
+	gui_context: detachable ALA_EDITOR_STATE
 
 	flat_archetype_clone: FLAT_ARCHETYPE
 			-- produce a clone of the current `flat_archetype'

@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context interface for an EXPR_OPERATOR"
+	description: "UI visualisation node interface for an EXPR_OPERATOR"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class EXPR_OPERATOR_ED_CONTEXT
+deferred class EXPR_OPERATOR_UI_NODE
 
 inherit
-	EXPR_ITEM_ED_CONTEXT
+	EXPR_ITEM_UI_NODE
 		redefine
 			arch_node
 		end

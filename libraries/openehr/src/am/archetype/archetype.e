@@ -650,7 +650,7 @@ feature -- Validation
 
 	suppliers_index: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
 			-- table of {list<C_ARCHETYPE_ROOT>, archetype_ref}
-			-- i.e. <list of use_archetype nodes> keyed by archetype ref from template they refer to
+			-- i.e. table of <list of use_archetype nodes>, each keyed by archetype ref
 		local
 			def_it: C_ITERATOR
 		do

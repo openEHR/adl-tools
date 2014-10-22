@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context interface for an EXPR_BINARY_OPERATOR"
+	description: "UI visualisation node for an EXPR_BINARY_OPERATOR"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class EXPR_BINARY_OP_ED_CONTEXT
+class EXPR_BINARY_OP_UI_NODE
 
 inherit
-	EXPR_OPERATOR_ED_CONTEXT
+	EXPR_OPERATOR_UI_NODE
 		redefine
 			arch_node, display_in_grid
 		end
@@ -22,9 +22,9 @@ feature -- Access
 
 	arch_node: detachable EXPR_BINARY_OPERATOR
 
-	left_operand_ed_context: detachable EXPR_ITEM_ED_CONTEXT
+	left_operand_ed_context: detachable EXPR_ITEM_UI_NODE
 
-	right_operand_ed_context: detachable EXPR_ITEM_ED_CONTEXT
+	right_operand_ed_context: detachable EXPR_ITEM_UI_NODE
 
 feature -- Display
 
@@ -56,19 +56,19 @@ feature -- Display
 
 feature -- Modification
 
-	set_left_operand_ed_context (an_ed_context: EXPR_ITEM_ED_CONTEXT)
+	set_left_operand_ed_context (an_ed_context: EXPR_ITEM_UI_NODE)
 		do
 			left_operand_ed_context := an_ed_context
 			an_ed_context.set_parent (Current)
 		end
 
-	set_right_operand_ed_context (an_ed_context: EXPR_ITEM_ED_CONTEXT)
+	set_right_operand_ed_context (an_ed_context: EXPR_ITEM_UI_NODE)
 		do
 			right_operand_ed_context := an_ed_context
 			an_ed_context.set_parent (Current)
 		end
 
-feature {EXPR_ITEM_ED_CONTEXT} -- Implementation
+feature {EXPR_ITEM_UI_NODE} -- Implementation
 
 	meaning: STRING
 			-- generate useful string representatoin for meaning column

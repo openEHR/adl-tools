@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for any kind of C_OBJECT"
+	description: "UI visualisation node for any kind of C_OBJECT"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class C_OBJECT_ED_CONTEXT
+deferred class C_OBJECT_UI_NODE
 
 inherit
-	ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	ARCHETYPE_CONSTRAINT_UI_NODE
 		rename
 			rm_element as rm_type
 		redefine
@@ -30,7 +30,7 @@ feature -- Definition
 
 feature -- Initialisation
 
-	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			create internal_ref_for_rm_type.make (0)
 			precursor (an_arch_node, an_ed_context)
@@ -49,7 +49,7 @@ feature -- Access
 	rm_type: BMM_TYPE
 			-- RM class of node being edited
 
-	parent: detachable C_ATTRIBUTE_ED_CONTEXT
+	parent: detachable C_ATTRIBUTE_UI_NODE
 
 	path: STRING
 			-- path of this node with respect to top of archetype
@@ -89,7 +89,7 @@ feature -- Display
 					gr.expand_actions.force_extend (agent (evx_grid.ev_grid).expand_tree (gr,
 						agent (a_row: EV_GRID_ROW): BOOLEAN
 							do
-								if attached {ARCHETYPE_CONSTRAINT_ED_CONTEXT} a_row.data as ac_ed_ctxt then
+								if attached {ARCHETYPE_CONSTRAINT_UI_NODE} a_row.data as ac_ed_ctxt then
 									Result := attached ac_ed_ctxt.arch_node
 								end
 							end
@@ -182,7 +182,7 @@ feature -- Modification
 		require
 			is_rm
 		local
-			added_child: C_OBJECT_ED_CONTEXT
+			added_child: C_OBJECT_UI_NODE
 		do
 			parent.remove_child (Current)
 			if parent.is_rm then
@@ -193,7 +193,7 @@ feature -- Modification
 
 			-- set up undo / redo
 			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
-				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
+				agent (an_orig_child, an_added_child: C_OBJECT_UI_NODE)
 						-- undo
 					do
 						parent.remove_child (an_added_child)
@@ -202,7 +202,7 @@ feature -- Modification
 						end
 						parent.add_child (an_orig_child)
 					end (Current, added_child),
-				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
+				agent (an_orig_child, an_added_child: C_OBJECT_UI_NODE)
 						-- redo
 					do
 						parent.remove_child (an_orig_child)

@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for a ARCHETYPE_INTERNAL_REF"
+	description: "UI visualisation node for a ARCHETYPE_INTERNAL_REF"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class C_COMPLEX_OBJECT_PROXY_ED_CONTEXT
+class C_COMPLEX_OBJECT_PROXY_UI_NODE
 
 inherit
-	C_OBJECT_ED_CONTEXT
+	C_OBJECT_UI_NODE
 		redefine
 			arch_node, display_in_grid
 		end

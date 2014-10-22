@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for an ASSERTION. One will be needed for each ASSERTION in an archetype."
+	description: "UI visualisation node for an ASSERTION. One will be needed for each ASSERTION in an archetype."
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ASSERTION_ED_CONTEXT
+class ASSERTION_UI_NODE
 
 inherit
-	EXPR_ITEM_ED_CONTEXT
+	EXPR_ITEM_UI_NODE
 		redefine
 			arch_node, prepare_display_in_grid, display_in_grid
 		end
@@ -23,7 +23,7 @@ feature -- Access
 	arch_node: detachable ASSERTION
 			-- assertion being edited
 
-	expression_context: detachable EXPR_ITEM_ED_CONTEXT
+	expression_context: detachable EXPR_ITEM_UI_NODE
 			-- the editor context for `arch_node'.expression
 
 feature -- Display
@@ -67,7 +67,7 @@ feature -- Modification
 			expression_context.set_parent (Current)
 		end
 
-feature {EXPR_ITEM_ED_CONTEXT} -- Implementation
+feature {EXPR_ITEM_UI_NODE} -- Implementation
 
 	meaning: STRING
 			-- generate useful string representatoin for meaning column

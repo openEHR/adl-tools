@@ -385,8 +385,6 @@ feature {NONE} -- Initialization
 feature -- Commands
 
 	show
-		local
-			tool_install_dialog: EV_QUESTION_DIALOG
 		do
 			Precursor
 

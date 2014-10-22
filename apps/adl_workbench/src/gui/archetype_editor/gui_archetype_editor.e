@@ -112,13 +112,13 @@ feature {NONE} -- Implementation
 
 	attach_gui_context
 		local
-			gui_context: detachable ACA_EDITOR_STATE
+			gui_context: detachable ALA_EDITOR_STATE
 		do
 			check attached source as src then
 				if not source.has_gui_context then
 					create gui_context.make (src)
 					source.set_gui_context (gui_context)
-				elseif attached {ACA_EDITOR_STATE} source.gui_context as gc then
+				elseif attached {ALA_EDITOR_STATE} source.gui_context as gc then
 					gui_context := gc
 				end
 				check attached undo_redo_chain end

@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ACA_EDITOR_STATE
+class ALA_EDITOR_STATE
 
 create
 	make
@@ -32,7 +32,7 @@ feature -- Access
 
 	target: ARCH_LIB_ARCHETYPE_EDITABLE
 
-	differential_display_context: ARCH_ED_CONTEXT
+	differential_display_context: ARCHETYPE_UI_GRAPH_ROOT
 		do
 			if attached differential_display_context_cache as ddcc then
 				Result := ddcc
@@ -42,7 +42,7 @@ feature -- Access
 			end
 		end
 
-	flat_display_context: ARCH_ED_CONTEXT
+	flat_display_context: ARCHETYPE_UI_GRAPH_ROOT
 		do
 			if attached flat_display_context_cache as fdcc then
 				Result := fdcc
@@ -52,7 +52,7 @@ feature -- Access
 			end
 		end
 
-	editor_context: detachable ARCH_ED_CONTEXT
+	editor_context: detachable ARCHETYPE_UI_GRAPH_ROOT
 
 feature -- Commands
 
@@ -64,10 +64,10 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	differential_display_context_cache: detachable ARCH_ED_CONTEXT
+	differential_display_context_cache: detachable ARCHETYPE_UI_GRAPH_ROOT
 			-- differential archetype display context
 
-	flat_display_context_cache: detachable ARCH_ED_CONTEXT
+	flat_display_context_cache: detachable ARCHETYPE_UI_GRAPH_ROOT
 			-- differential archetype display context
 
 end

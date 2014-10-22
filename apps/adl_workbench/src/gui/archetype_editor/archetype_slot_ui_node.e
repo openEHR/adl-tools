@@ -1,16 +1,16 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Editor context for an ARCHETYPE_SLOT"
+	description: "UI visualisation node for an ARCHETYPE_SLOT"
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_SLOT_ED_CONTEXT
+class ARCHETYPE_SLOT_UI_NODE
 
 inherit
-	C_OBJECT_ED_CONTEXT
+	C_OBJECT_UI_NODE
 		redefine
 			make, arch_node, c_pixmap, prepare_display_in_grid, display_in_grid, build_context_menu
 		end
@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			create assertions_index.make (0)

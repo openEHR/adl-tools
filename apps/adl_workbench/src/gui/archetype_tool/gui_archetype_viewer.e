@@ -193,7 +193,7 @@ feature {NONE} -- Implementation
 		do
 			check attached source as src then
 				if not src.has_gui_context then
-					src.set_gui_context (create {ACA_EDITOR_STATE}.make (src))
+					src.set_gui_context (create {ALA_EDITOR_STATE}.make (src))
 				end
 			end
 		end

@@ -39,7 +39,7 @@ feature -- Access
 			end
 		end
 
-	source_ed_context: detachable ARCH_ED_CONTEXT
+	source_ed_context: detachable ARCHETYPE_UI_GRAPH_ROOT
 			-- display / editor context, loaded with archetype for display, or a clone, for editing
 		require
 			is_populated
