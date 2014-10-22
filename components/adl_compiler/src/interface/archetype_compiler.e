@@ -278,7 +278,10 @@ feature {NONE} -- Implementation
 							-- external references) to compile first
 							if ara.compilation_state = Cs_suppliers_known then
 								across ara.suppliers_index as suppliers_csr loop
-									build_lineage (suppliers_csr.item, dependency_depth+1)
+									-- allow supplier loops, so avoid cycling back into current archetype
+									if suppliers_csr.item /= ara then
+										build_lineage (suppliers_csr.item, dependency_depth+1)
+									end
 								end
 
 								-- continue compilation - remaining steps after suppliers compilation
