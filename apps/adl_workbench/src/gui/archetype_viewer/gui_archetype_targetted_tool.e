@@ -46,12 +46,12 @@ feature -- Access
 		do
 			if not editing_enabled then
 				if differential_view then
-					Result := source.gui_context.differential_display_context
+					Result := source.gui_context.differential_ui_graph
 				else
-					Result := source.gui_context.flat_display_context
+					Result := source.gui_context.flat_ui_graph
 				end
 			else
-				Result := source.gui_context.editor_context
+				Result := source.gui_context.editor_ui_graph
 			end
 		end
 

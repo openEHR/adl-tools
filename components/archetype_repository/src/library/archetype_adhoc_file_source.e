@@ -35,7 +35,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	item (full_path: STRING): ARCH_LIB_ARCHETYPE
+	item (full_path: STRING): ARCH_LIB_ARCHETYPE_ITEM
 			-- The archetype at `full_path'.
 		require
 			has_full_path: has_path (full_path)
@@ -61,7 +61,7 @@ feature -- Modification
 			path_valid: is_valid_path (full_path)
 			hasnt_path: not has_path (full_path)
 		local
-			ara: ARCH_LIB_ARCHETYPE
+			ara: ARCH_LIB_ARCHETYPE_ITEM
 			amp: ARCHETYPE_MINI_PARSER
 			aof: APP_OBJECT_FACTORY
 		do

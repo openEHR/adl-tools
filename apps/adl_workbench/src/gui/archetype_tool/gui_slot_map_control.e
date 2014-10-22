@@ -97,7 +97,7 @@ feature {NONE} -- Implementation
 			-- Populate `subtree' from `ids'.
 		local
 			eti: EV_TREE_ITEM
-			ala: ARCH_LIB_ARCHETYPE
+			ala: ARCH_LIB_ARCHETYPE_ITEM
 		do
 			across ids as id_csr loop
 				create eti.make_with_text (utf8_to_utf32 (id_csr.item))

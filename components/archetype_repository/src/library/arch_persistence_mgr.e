@@ -56,7 +56,7 @@ inherit
 			{ANY} has_serialiser_format, has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
 		end
 
-create {ARCH_LIB_ARCHETYPE}
+create {ARCH_LIB_ARCHETYPE_ITEM}
 	make, make_legacy, make_new_archetype
 
 feature {NONE} -- Initialisation
@@ -206,7 +206,7 @@ feature -- Status Report
 			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
 		end
 
-feature {ARCH_LIB_ARCHETYPE} -- Status Report
+feature {ARCH_LIB_ARCHETYPE_ITEM} -- Status Report
 
 	is_legacy_out_of_date: BOOLEAN
 		do
@@ -303,7 +303,7 @@ feature -- File Management (Legacy)
 			other_details := amp.extract_other_details (Result)
 		end
 
-feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
+feature {ARCH_LIB_ARCHETYPE_ITEM} -- File Management (Legacy)
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
@@ -327,7 +327,7 @@ feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
 			end
 		end
 
-feature {ARCH_LIB_ARCHETYPE} -- Commands
+feature {ARCH_LIB_ARCHETYPE_ITEM} -- Commands
 
 	has_differential_compiled_file: BOOLEAN
 			-- Does the compile generated area have a differential file for this archetype from a previous compile?
@@ -397,7 +397,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Commands
 			file_system.delete_file (source_file_path)
 		end
 
-feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE} -- File Management
+feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE_ITEM} -- File Management
 
 	is_text_converted: BOOLEAN
 			-- was last text converted from original form?

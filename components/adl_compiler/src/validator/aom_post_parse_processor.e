@@ -31,7 +31,7 @@ create
 
 feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
+	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
@@ -43,7 +43,7 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			initialise (a_target, ara)
 		end
 
-	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
+	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require

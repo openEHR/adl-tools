@@ -131,7 +131,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	update_tree_node (aca: ARCH_LIB_ARCHETYPE)
+	update_tree_node (aca: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			archetype_explorer.update_tree_node_for_archetype (aca)
 			template_explorer.update_tree_node_for_archetype (aca)
@@ -271,7 +271,7 @@ feature -- Events
 			end
 		end
 
-	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE)
+	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Populate archetype and template explorers
 		do
 			if attached source as src then
@@ -339,7 +339,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_archetype (aca: ARCH_LIB_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+	save_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM; diff_flag, native_format_flag: BOOLEAN)
 			-- Export differential or flat archetype to a user-specified path
 		local
 			ok_to_write: BOOLEAN

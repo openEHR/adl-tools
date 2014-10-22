@@ -58,7 +58,7 @@ feature -- Commands
 			gui_semantic_grid.resize_columns_to_content
 		end
 
-	update_tree_node_for_archetype (ara: attached ARCH_LIB_ARCHETYPE)
+	update_tree_node_for_archetype (ara: attached ARCH_LIB_ARCHETYPE_ITEM)
 			-- update Explorer tree node with changes in compilation status
 		deferred
 		end

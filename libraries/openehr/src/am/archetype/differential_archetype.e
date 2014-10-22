@@ -155,7 +155,7 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
-feature {ARCH_LIB_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
+feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure
 
 	convert_to_differential_paths
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form

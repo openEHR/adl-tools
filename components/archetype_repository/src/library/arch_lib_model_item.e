@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCH_LIB_MODEL_NODE
+deferred class ARCH_LIB_MODEL_ITEM
 
 inherit
 	ARCH_LIB_ITEM
@@ -37,7 +37,7 @@ feature -- Status Report
 
 feature {ARCH_LIB_ITEM} -- Implementation
 
-	parent: detachable ARCH_LIB_MODEL_NODE
+	parent: detachable ARCH_LIB_MODEL_ITEM
 			-- parent node
 
 end

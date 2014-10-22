@@ -87,7 +87,7 @@ feature -- Commands
 			end
 		end
 
-	update_tree_node_for_archetype (aca: ARCH_LIB_ARCHETYPE)
+	update_tree_node_for_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- update Library tree node with changes in compilation status
 		do
 			-- update semantic grid
@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_LIB_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value))) then
+								(attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca and then artefact_types.has (aca.artefact_type.value))) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
 					gui_semantic_grid.add_row (aci)
@@ -202,7 +202,7 @@ feature {NONE} -- Implementation
    	ev_semantic_grid_populate_exit (aci: ARCH_LIB_ITEM)
    		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-				(attached {ARCH_LIB_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value)))
+				(attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca and then artefact_types.has (aca.artefact_type.value)))
 			then
 				ev_tree_item_stack.remove
 			end
@@ -219,7 +219,7 @@ feature {NONE} -- Implementation
 				create text.make_empty
 				create tooltip.make_empty
 
-				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
+				if attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca then -- archetype / template node
 					-- text
 					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
@@ -243,13 +243,13 @@ feature {NONE} -- Implementation
 						col := archetype_rm_type_color
 					end
 
-	 			elseif attached {ARCH_LIB_CLASS_NODE} aci as acc then
+	 			elseif attached {ARCH_LIB_CLASS_ITEM} aci as acc then
 		 	 		tooltip.append (acc.qualified_name + "%N" + acc.class_definition.description)
 					text.append (aci.name)
 					col := archetype_rm_type_color
 	 				text.append (" (" + acc.subtree_artefact_count (artefact_types).out + ")")
 
-	 			elseif attached {ARCH_LIB_CLOSURE_NODE} aci as accl then
+	 			elseif attached {ARCH_LIB_PACKAGE_ITEM} aci as accl then
 	 				text.append (accl.qualified_name)
 					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
 	 				text.append (" (" + accl.subtree_artefact_count (artefact_types).out + ")")
@@ -306,7 +306,7 @@ feature {NONE} -- Implementation
 				create text.make_empty
 				create tooltip.make_empty
 
-				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
+				if attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca then -- archetype / template node
 					-- text
 					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
@@ -333,7 +333,7 @@ feature {NONE} -- Implementation
 						col := archetype_rm_type_color
 					end
 
-	 			elseif attached {ARCH_LIB_FILESYS_NODE} aci as acfsn then
+	 			elseif attached {ARCH_LIB_FILESYS_ITEM} aci as acfsn then
 	 				text.append (acfsn.name)
 					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
 	 				text.append (" (" + acfsn.subtree_artefact_count (artefact_types).out + ")")
@@ -350,9 +350,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selected_class_node: detachable ARCH_LIB_CLASS_NODE
+	selected_class_node: detachable ARCH_LIB_CLASS_ITEM
 
-	select_class_with_delay (acc: ARCH_LIB_CLASS_NODE)
+	select_class_with_delay (acc: ARCH_LIB_CLASS_ITEM)
 		do
 			selected_class_node := acc
 			delayed_select_class_agent.set_interval (300)
@@ -408,15 +408,15 @@ feature {NONE} -- Implementation
 
 	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
-			Result := (attached {ARCH_LIB_CLASS_NODE} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
-				attached {ARCH_LIB_CLOSURE_NODE} ev_grid_row.data) and
+			Result := (attached {ARCH_LIB_CLASS_ITEM} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
+				attached {ARCH_LIB_PACKAGE_ITEM} ev_grid_row.data) and
 	 			ev_grid_row.is_expandable
 		end
 
 	ev_filesys_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
-			Result := attached {ARCH_LIB_FILESYS_NODE} ev_grid_row.data as acfs and then
-				acfs.has_matching_children (agent (aci: ARCH_LIB_ITEM): BOOLEAN do Result := attached {ARCH_LIB_FILESYS_NODE} aci end) and
+			Result := attached {ARCH_LIB_FILESYS_ITEM} ev_grid_row.data as acfs and then
+				acfs.has_matching_children (agent (aci: ARCH_LIB_ITEM): BOOLEAN do Result := attached {ARCH_LIB_FILESYS_ITEM} aci end) and
 				ev_grid_row.is_expandable
 		end
 
@@ -425,7 +425,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay  (aca)
-			elseif attached {ARCH_LIB_CLASS_NODE} an_ev_grid_item.row.data as accn then
+			elseif attached {ARCH_LIB_CLASS_ITEM} an_ev_grid_item.row.data as accn then
 				select_class_with_delay (accn)
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
@@ -438,7 +438,7 @@ feature {NONE} -- Implementation
 				if attached an_ev_grid_item then
 					if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
 						build_archetype_node_context_menu (aca)
-					elseif attached {ARCH_LIB_CLASS_NODE} an_ev_grid_item.row.data as accn then
+					elseif attached {ARCH_LIB_CLASS_ITEM} an_ev_grid_item.row.data as accn then
 						build_class_node_context_menu (accn)
 					else
 						build_default_context_menu
@@ -448,7 +448,7 @@ feature {NONE} -- Implementation
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
 
-	build_class_node_context_menu (accn: ARCH_LIB_CLASS_NODE)
+	build_class_node_context_menu (accn: ARCH_LIB_CLASS_ITEM)
 			-- creates the context menu for a right click action for an ARCH_CAT_CLASS_NODE node
 		local
 			menu, tree_menu: EV_MENU
@@ -484,17 +484,17 @@ feature {NONE} -- Implementation
 			menu.show
 		end
 
-	display_context_selected_class_in_active_tool (accn: ARCH_LIB_CLASS_NODE)
+	display_context_selected_class_in_active_tool (accn: ARCH_LIB_CLASS_ITEM)
 		do
 			gui_agents.select_class_agent.call ([accn.class_definition])
 		end
 
-	display_context_selected_class_in_new_tool (accn: ARCH_LIB_CLASS_NODE)
+	display_context_selected_class_in_new_tool (accn: ARCH_LIB_CLASS_ITEM)
 		do
 			gui_agents.select_class_in_new_tool_agent.call ([accn.class_definition])
 		end
 
-	display_context_selected_class_in_rm_schema_tool (accn: ARCH_LIB_CLASS_NODE)
+	display_context_selected_class_in_rm_schema_tool (accn: ARCH_LIB_CLASS_ITEM)
 		do
 			gui_agents.select_class_in_rm_schema_tool_agent.call ([accn.class_definition.globally_qualified_path])
 		end
@@ -573,7 +573,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS_NODE)
+	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS_ITEM)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 			matching_ids: ARRAYED_SET [STRING]

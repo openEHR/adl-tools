@@ -35,7 +35,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
+	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
 		do
 			Result := attached ara.flat_archetype
 		end

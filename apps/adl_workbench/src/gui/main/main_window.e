@@ -732,7 +732,7 @@ feature {NONE} -- Tools menu events
 			end
 		end
 
-	delete_generated_files (ara: ARCH_LIB_ARCHETYPE)
+	delete_generated_files (ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
@@ -1237,7 +1237,7 @@ feature {NONE} -- Build commands
 		--	ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
 			-- Update GUI with progress on build.
 		do
 			if not a_msg.is_empty then

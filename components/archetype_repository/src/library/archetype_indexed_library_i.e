@@ -37,7 +37,7 @@ feature -- Access
 
 feature {ARCHETYPE_LIBRARY} -- Access
 
-	fast_archetype_list: ARRAYED_LIST [ARCH_LIB_ARCHETYPE]
+	fast_archetype_list: ARRAYED_LIST [ARCH_LIB_ARCHETYPE_ITEM]
 			-- linear index list for efficient processing
 		attribute
 			create Result.make (0)

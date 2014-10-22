@@ -341,7 +341,7 @@ feature -- Definitions: Colours
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
-			if attached {ARCH_LIB_CLASS_NODE} ara as acc then
+			if attached {ARCH_LIB_CLASS_ITEM} ara as acc then
 				if use_rm_pixmaps then
 					pixmap_key := rm_type_pixmap_key (acc.class_definition)
 				end

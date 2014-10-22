@@ -40,7 +40,7 @@ feature -- Access
 
 feature -- Commands
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE)
+	set_source (in_text: STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Set `in_text' as working artifact.
 		do
 			parser_set_source (in_text, a_source_start_line)
@@ -91,7 +91,7 @@ feature {NONE} -- Implementation
 
 	parser: CADL_15_PARSER
 
-	target_desc: detachable ARCH_LIB_ARCHETYPE
+	target_desc: detachable ARCH_LIB_ARCHETYPE_ITEM
 		note
 			option: stable
 		attribute

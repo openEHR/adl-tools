@@ -8,10 +8,10 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 	void_safety: "initial"
 
-class ARCH_LIB_CLOSURE_NODE
+class ARCH_LIB_PACKAGE_ITEM
 
 inherit
-	ARCH_LIB_MODEL_NODE
+	ARCH_LIB_MODEL_ITEM
 		redefine
 			parent
 		end
@@ -49,7 +49,7 @@ feature -- Access
 
 feature {ARCH_LIB_ITEM} -- Implementation
 
-	parent: detachable ARCH_LIB_CATEGORY_NODE
+	parent: detachable ARCH_LIB_ARTEFACT_TYPE_ITEM
 			-- parent node
 
 end

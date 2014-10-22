@@ -36,7 +36,7 @@ feature -- Access
 
 feature {ARCHETYPE_LIBRARY} -- Access
 
-	archetype_id_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+	archetype_id_index: HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
 			-- list of all archetypes found in this directory tree, keyed by id
 		attribute
 			create Result.make (0)

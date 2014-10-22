@@ -251,7 +251,7 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 							Result.replace (subtree_counts_csr.item +
 									child_csr.item.subtree_artefact_counts.item (subtree_counts_csr.key), subtree_counts_csr.key)
 						end
-						if attached {ARCH_LIB_ARCHETYPE} child_csr.item as ara then
+						if attached {ARCH_LIB_ARCHETYPE_ITEM} child_csr.item as ara then
 							Result.replace (Result.item (ara.artefact_type.value) + 1, ara.artefact_type.value)
 						end
 					end

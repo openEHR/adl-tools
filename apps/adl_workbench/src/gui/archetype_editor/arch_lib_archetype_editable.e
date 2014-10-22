@@ -10,7 +10,7 @@ note
 class ARCH_LIB_ARCHETYPE_EDITABLE
 
 inherit
-	ARCH_LIB_ARCHETYPE
+	ARCH_LIB_ARCHETYPE_ITEM
 		redefine
 			clear_cache, signal_from_scratch
 		end

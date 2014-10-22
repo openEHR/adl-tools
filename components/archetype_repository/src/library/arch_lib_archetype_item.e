@@ -15,7 +15,7 @@ note
 	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_LIB_ARCHETYPE
+class ARCH_LIB_ARCHETYPE_ITEM
 
 inherit
 	ARCH_LIB_ITEM
@@ -243,10 +243,10 @@ feature -- Identification
 			csr: detachable ARCH_LIB_ITEM
 		do
 			create Result.make(0)
-			from csr := parent until attached {ARCH_LIB_MODEL_NODE} csr or csr = Void loop
+			from csr := parent until attached {ARCH_LIB_MODEL_ITEM} csr or csr = Void loop
 				csr := csr.parent
 			end
-			if attached {ARCH_LIB_MODEL_NODE} csr as acmn then
+			if attached {ARCH_LIB_MODEL_ITEM} csr as acmn then
 				Result := acmn.path + Semantic_path_separator + id.as_string
 			end
 		end
@@ -344,7 +344,7 @@ feature {NONE} -- Identification
 
 feature -- Relationships
 
-	suppliers_index: detachable HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+	suppliers_index: detachable HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
 			-- list of descriptors of slot fillers or other external references, keyed by archetype id
 			-- currently generated only from C_ARCHETYPE_ROOT index in differential archetype
 
@@ -380,14 +380,14 @@ feature -- Relationships
 			end
 		end
 
-	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE
+	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE_ITEM
 		do
-			if attached {ARCH_LIB_ARCHETYPE} parent as aca then
+			if attached {ARCH_LIB_ARCHETYPE_ITEM} parent as aca then
 				Result := aca
 			end
 		end
 
-	has_ancestor_descriptor (an_anc: ARCH_LIB_ARCHETYPE): BOOLEAN
+	has_ancestor_descriptor (an_anc: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
 			-- True if this archetype has `an_anc' as an ancestor
 		do
 			Result := attached specialisation_ancestor as att_ala and then (att_ala = an_anc or else
@@ -428,7 +428,7 @@ feature -- Relationships
 			Result := suppliers_index.has (an_arch_id) or else attached specialisation_ancestor as att_anc and then att_anc.has_flat_supplier (an_arch_id)
 		end
 
-feature {ARCH_LIB_ARCHETYPE} -- Relationships
+feature {ARCH_LIB_ARCHETYPE_ITEM} -- Relationships
 
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
@@ -1187,7 +1187,7 @@ feature -- Statistics
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE]
+	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE_ITEM]
 			-- list of child nodes
 
 feature {NONE} -- Implementation
@@ -1269,7 +1269,7 @@ feature {NONE} -- Implementation
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 			slot_idx: like slot_id_index
-			ala: ARCH_LIB_ARCHETYPE
+			ala: ARCH_LIB_ARCHETYPE_ITEM
 		do
 			if is_specialised then
 				slot_idx := specialisation_ancestor.slot_id_index

@@ -26,7 +26,7 @@ feature {NONE} -- Implementation
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			ara: ARCH_LIB_ARCHETYPE
+			ara: ARCH_LIB_ARCHETYPE_ITEM
 			amp: ARCHETYPE_MINI_PARSER
 			aof: APP_OBJECT_FACTORY
    		do

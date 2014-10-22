@@ -47,7 +47,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_child_desc: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (a_child_desc: ARCH_LIB_ARCHETYPE_ITEM; an_rm_schema: BMM_SCHEMA)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Child_desc_valid: a_child_desc.is_valid
@@ -68,9 +68,9 @@ feature -- Initialisation
 
 feature -- Access
 
-	flat_anc_desc: detachable ARCH_LIB_ARCHETYPE
+	flat_anc_desc: detachable ARCH_LIB_ARCHETYPE_ITEM
 
-	child_desc: ARCH_LIB_ARCHETYPE
+	child_desc: ARCH_LIB_ARCHETYPE_ITEM
 
 	arch_flat_anc: FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
@@ -294,8 +294,7 @@ end
 			attached arch_flat_out
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
-			ca_path_in_output, child_node_id_in_flat: STRING
-			og_ca_path_in_diff: OG_PATH
+			ca_path_in_output: STRING
 			ca_output, ca_in_anc_flat, ca_csr: C_ATTRIBUTE
 			co_copy: C_OBJECT
 			cco_csr: C_COMPLEX_OBJECT
@@ -500,10 +499,9 @@ end
 			-- merge `ca_diff's children into `ca_output'. `ca_anc' is the corresponding flat ancestor node,
 			-- needed where cloning occurs
 		local
-			co_child_diff, new_obj, co_replace_target: C_OBJECT
+			co_child_diff, new_obj: C_OBJECT
 			node_id_in_flat_anc: STRING
 			co_output_insert_pos, co_override_target: detachable C_OBJECT
-			ca_parent_in_child: C_ATTRIBUTE
 			i: INTEGER
 			co_child_spec_sts: INTEGER
 		do
@@ -735,7 +733,7 @@ end
 		local
 			supp_flat_arch: FLAT_ARCHETYPE
 			supp_arch_root_cco: C_COMPLEX_OBJECT
-			matched_arch: ARCH_LIB_ARCHETYPE
+			matched_arch: ARCH_LIB_ARCHETYPE_ITEM
 		do
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")

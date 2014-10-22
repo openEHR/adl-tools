@@ -2390,7 +2390,7 @@ feature -- Initialization
 			accept
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE)
+	execute (in_text:STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			reset
 
@@ -2429,7 +2429,7 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-	target_descriptor: detachable ARCH_LIB_ARCHETYPE
+	target_descriptor: detachable ARCH_LIB_ARCHETYPE_ITEM
 		note
 			option: stable
 		attribute

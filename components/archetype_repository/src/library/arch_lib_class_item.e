@@ -8,10 +8,10 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 	void_safety: "initial"
 
-class ARCH_LIB_CLASS_NODE
+class ARCH_LIB_CLASS_ITEM
 
 inherit
-	ARCH_LIB_MODEL_NODE
+	ARCH_LIB_MODEL_ITEM
 
 create
 	make
