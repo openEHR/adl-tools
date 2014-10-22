@@ -389,8 +389,13 @@ end
 
 					-- if a single-valued attribute then do a merge of alternates
 					else
-						-- do the merge with a synthesised merge descriptor that just says merge everything to the end
-						do_merge (ca_output, ca_diff, ca_in_anc_flat, [1, ca_diff.child_count, Void, False])
+						-- handle C_PRIMITVE_OBJECTs here
+						if attached {C_PRIMITIVE_OBJECT} ca_diff.first_child as cpo and then attached {C_COMPLEX_OBJECT} ca_output.first_child then
+							ca_output.replace_child_by_id (ca_diff.first_child, ca_output.first_child.node_id)
+						else
+							-- do the merge with a synthesised merge descriptor that just says merge everything to the end
+							do_merge (ca_output, ca_diff, ca_in_anc_flat, [1, ca_diff.child_count, Void, False])
+						end
 					end
 				end
 			end
@@ -410,6 +415,7 @@ end
 			-- build merge list for merging objects in container attribute `ca_diff' into the corresponding
 			-- container attribute `ca_output' in the output structure, using ordering information in source
 			-- attribute objects, and replacing or inserting as appropriate.
+			-- The merge list is used like a set of transactions to be processed in the routine `do_merge'
 		require
 			Non_empty_attribute: ca_output.has_children
 		local
@@ -574,12 +580,6 @@ end
 					if attached {C_COMPLEX_OBJECT} co_override_target as att_cco and then att_cco.any_allowed then
 						new_obj := co_child_diff.safe_deep_twin
 						new_obj.deep_set_specialisation_status_added
-						new_obj.set_specialisation_status_redefined
-						ca_output.replace_child_by_id (new_obj, co_override_target.node_id)
-
-					-- ------------------------------ Case REDEFINE of C_PRIMITIVE by C_PRIMITIVE -------------------------------
-					elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as att_cp then
-						new_obj := co_child_diff.safe_deep_twin
 						new_obj.set_specialisation_status_redefined
 						ca_output.replace_child_by_id (new_obj, co_override_target.node_id)
 
