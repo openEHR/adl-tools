@@ -865,12 +865,12 @@ feature {NONE} -- Implementation
 		local
 			child_key: STRING
 		do
-			child_key := aca.qualified_key
-
 			-- add to semantic index
 			matching_item (aca.semantic_parent_key).put_child (aca)
-			semantic_item_index.force (aca, child_key)
-			archetype_index.force (aca, child_key)
+			semantic_item_index.force (aca, aca.qualified_key)
+
+			-- add to main archetype index
+			archetype_index.force (aca, aca.id.as_string)
 
 			-- add to filesys index if top-level archetype (if specialised, the
 			-- connection is already made due to semantic tree link
@@ -881,7 +881,8 @@ feature {NONE} -- Implementation
 			last_added_archetype := aca
 		ensure
 			Last_added_archetype_set: last_added_archetype = aca
-			Archetype_in_index: semantic_item_index.item (aca.qualified_key) = aca
+			Archetype_in_semantic_index: semantic_item_index.item (aca.qualified_key) = aca
+			Archetype_in_archetype_index: has_archetype_with_id (aca.id.as_string)
 		end
 
 	schema_load_counter: INTEGER
