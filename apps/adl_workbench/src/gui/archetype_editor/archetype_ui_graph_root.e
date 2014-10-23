@@ -17,14 +17,14 @@ feature -- Initialisation
 	make (aca: ARCH_LIB_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
 			source := aca
-			create ed_context.make (source, an_rm_schema, differential_view_flag)
+			create ui_graph_state.make (source, an_rm_schema, differential_view_flag)
 			build_context
 		end
 
 	make_editable (aca: ARCH_LIB_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		do
 			source := aca
-			create ed_context.make_editable (source, an_rm_schema, an_undo_redo_chain)
+			create ui_graph_state.make_editable (source, an_rm_schema, an_undo_redo_chain)
 			build_context
 		end
 
@@ -32,50 +32,61 @@ feature -- Access
 
 	source: ARCH_LIB_ARCHETYPE_EDITABLE
 
-	ed_context: ARCHETYPE_UI_GRAPH_STATE
+	ui_graph_state: ARCHETYPE_UI_GRAPH_STATE
 
-	definition_context: C_COMPLEX_OBJECT_UI_NODE
+	definition_ui_graph: C_COMPLEX_OBJECT_UI_NODE
 			-- definition editing context
 
-	assertion_contexts: ARRAYED_LIST [ASSERTION_UI_NODE]
+	assertion_ui_graphs: ARRAYED_LIST [ASSERTION_UI_NODE]
 			-- assertion editing contexts
 
-feature {NONE} -- Implementation
+feature {C_ARCHETYPE_ROOT_UI_NODE} -- Implementation
 
 	build_context
 		do
-			definition_context := build_definition_context (ed_context.archetype.definition.representation)
-			create assertion_contexts.make (0)
-			build_assertions
+			definition_ui_graph := c_object_ui_graph (ui_graph_state.archetype.definition.representation)
+			create assertion_ui_graphs.make (0)
+			build_assertion_ui_graphs
 		end
 
-	build_definition_context (og_root: OG_OBJECT_NODE): C_COMPLEX_OBJECT_UI_NODE
-			-- build a C_COMPLEX_OBJECT_ED_CONTEXT from any part of an archetype definition tree
+	c_object_ui_graph (og_root: OG_OBJECT_NODE): C_COMPLEX_OBJECT_UI_NODE
+			-- build a C_COMPLEX_OBJECT_UI_NODE from any part of an archetype definition tree
 		local
 			a_c_iterator: OG_CONTENT_ITERATOR
-			c_ed_context_builder: ARCHETYPE_UI_GRAPH_BUILDER
+			c_ui_graph_builder: ARCHETYPE_UI_GRAPH_BUILDER
 		do
-			create c_ed_context_builder.make (ed_context)
-			create a_c_iterator.make (og_root, c_ed_context_builder)
-			a_c_iterator.do_all
-			check attached c_ed_context_builder.root_node as rn then
+			create c_ui_graph_builder.make (ui_graph_state)
+			create a_c_iterator.make (og_root, c_ui_graph_builder)
+			a_c_iterator.do_until_surface_plus_one (
+				agent (an_og_node: OG_NODE): BOOLEAN
+					do
+						Result := not attached {C_ARCHETYPE_ROOT} an_og_node.content_item
+					end,
+				False
+			)
+			check attached c_ui_graph_builder.root_node as rn then
 				Result := rn
 			end
 		end
 
-	build_assertions
-			-- build `assertion_contexts'
+	c_object_ui_graph_test (an_og_node: OG_NODE): BOOLEAN
+		do
+			Result := not attached {C_ARCHETYPE_ROOT} an_og_node.content_item
+		end
+
+	build_assertion_ui_graphs
+			-- build `assertion_ui_graphs'
 		local
 			assn_iterator: EXPR_VISITOR_ITERATOR
-			assn_ed_context_builder: ASSERTION_UI_GRAPH_BUILDER
+			assn_ui_graph_builder: ASSERTION_UI_GRAPH_BUILDER
 		do
-			if ed_context.archetype.has_rules then
-				create assn_ed_context_builder.make (ed_context)
-				across ed_context.archetype.rules as inv_csr loop
-					create assn_iterator.make (inv_csr.item, assn_ed_context_builder)
+			if ui_graph_state.archetype.has_rules then
+				create assn_ui_graph_builder.make (ui_graph_state)
+				across ui_graph_state.archetype.rules as inv_csr loop
+					create assn_iterator.make (inv_csr.item, assn_ui_graph_builder)
 					assn_iterator.do_all
-					check attached assn_ed_context_builder.root_node as rn then
-						assertion_contexts.extend (rn)
+					check attached assn_ui_graph_builder.root_node as rn then
+						assertion_ui_graphs.extend (rn)
 					end
 				end
 			end

@@ -20,17 +20,17 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
+	make (an_arch_node: attached like arch_node; a_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE)
 		do
-			precursor (an_arch_node, an_ed_context)
+			precursor (an_arch_node, a_ui_graph_state)
 			create c_attributes.make (0)
 			create c_attribute_tuples.make (0)
 			create rm_attributes.make (0)
 		end
 
-	make_rm (an_rm_type: BMM_TYPE; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
+	make_rm (an_rm_type: BMM_TYPE; a_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE)
 		do
-			precursor (an_rm_type, an_ed_context)
+			precursor (an_rm_type, a_ui_graph_state)
 			create c_attributes.make (0)
 			create c_attribute_tuples.make (0)
 			create rm_attributes.make (0)
@@ -53,7 +53,7 @@ feature -- Access
 
 	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
 		do
-			if ed_context.in_differential_view and not ed_context.editing_enabled then
+			if ui_graph_state.in_differential_view and not ui_graph_state.editing_enabled then
 				Result := rm_type.base_class.properties
 			else
 				Result := rm_type.base_class.flat_properties
@@ -81,20 +81,7 @@ feature -- Display
 			-- set up this node in grid
 			precursor (a_gui_grid)
 
-			-- set up child property nodes in grid
-			across c_attributes as c_attrs_csr loop
-				c_attrs_csr.item.prepare_display_in_grid (a_gui_grid)
-			end
-
-			-- set up child property tuple nodes in grid
-			across c_attribute_tuples as c_attr_tuples_csr loop
-				c_attr_tuples_csr.item.prepare_display_in_grid (a_gui_grid)
-			end
-
-			-- set up child property rm nodes in grid
-			across rm_attributes as rm_attrs_csr loop
-				rm_attrs_csr.item.prepare_display_in_grid (a_gui_grid)
-			end
+			prepare_children_display_in_grid (a_gui_grid)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -259,7 +246,7 @@ feature {NONE} -- Implementation
 				-- see if the property was created previously; if not create it new
 				if not rm_attributes.has (an_rm_prop.name) then
 					-- first time creation
-					create c_attr_ed_node.make_rm (an_rm_prop, ed_context)
+					create c_attr_ed_node.make_rm (an_rm_prop, ui_graph_state)
 					put_rm_attribute (c_attr_ed_node)
 
 					-- once-only prepare step
@@ -279,6 +266,24 @@ feature {NONE} -- Implementation
 
 			elseif rm_attributes.has (an_rm_prop.name) then
 				rm_attributes.item (an_rm_prop.name).hide_in_grid
+			end
+		end
+
+	prepare_children_display_in_grid (a_gui_grid: EVX_GRID)
+		do
+			-- set up child property nodes in grid
+			across c_attributes as c_attrs_csr loop
+				c_attrs_csr.item.prepare_display_in_grid (a_gui_grid)
+			end
+
+			-- set up child property tuple nodes in grid
+			across c_attribute_tuples as c_attr_tuples_csr loop
+				c_attr_tuples_csr.item.prepare_display_in_grid (a_gui_grid)
+			end
+
+			-- set up child property rm nodes in grid
+			across rm_attributes as rm_attrs_csr loop
+				rm_attrs_csr.item.prepare_display_in_grid (a_gui_grid)
 			end
 		end
 

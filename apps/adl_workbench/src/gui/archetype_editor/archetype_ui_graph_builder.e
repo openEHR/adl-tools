@@ -64,7 +64,7 @@ feature -- Visitor
 			if a_node.is_root then
 				root_node := ui_node
 			else
-				attr_node_stack.item.pre_attach_child_context (ui_node)
+				attr_node_stack.item.attach_child (ui_node)
 			end
 		end
 
@@ -85,16 +85,22 @@ feature -- Visitor
 			-- enter a C_ARCHETYPE_ROOT
 		local
 			ui_node: C_ARCHETYPE_ROOT_UI_NODE
-			new_ed_context: ARCHETYPE_UI_GRAPH_STATE
+			new_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE
 		do
 			if attached ui_graph_state.archetype as arch and then arch.is_template then
-				new_ed_context := ui_graph_state.twin
-				new_ed_context.set_flat_terminology (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
-				ui_graph_state_stack.extend (new_ed_context)
+				new_ui_graph_state := ui_graph_state.twin
+				new_ui_graph_state.set_flat_terminology (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+				ui_graph_state_stack.extend (new_ui_graph_state)
 			end
 			create ui_node.make (a_node, ui_graph_state)
 			obj_node_stack.extend (ui_node)
-			attr_node_stack.item.pre_attach_child_context (ui_node)
+
+			-- if no attributes on the stack, this is actually a root node of a subtree being lazy created
+			if attr_node_stack.is_empty then
+				root_node := ui_node
+			else
+				attr_node_stack.item.attach_child (ui_node)
+			end
 		end
 
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
@@ -114,7 +120,7 @@ feature -- Visitor
 			-- don't show closed archetype slots in flat mode
 			if ui_graph_state.in_differential_view or else not a_node.is_closed then
 				create ui_node.make (a_node, ui_graph_state)
-				attr_node_stack.item.pre_attach_child_context (ui_node)
+				attr_node_stack.item.attach_child (ui_node)
 			end
 		end
 
@@ -159,7 +165,7 @@ feature -- Visitor
 			ui_node: C_COMPLEX_OBJECT_PROXY_UI_NODE
 		do
 			create ui_node.make (a_node, ui_graph_state)
-			attr_node_stack.item.pre_attach_child_context (ui_node)
+			attr_node_stack.item.attach_child (ui_node)
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -170,7 +176,7 @@ feature -- Visitor
 			-- ignore objs which are under c_attribute_tuples
 			if not a_node.is_second_order_constrained then
 				create ui_node.make (a_node, ui_graph_state)
-				attr_node_stack.item.pre_attach_child_context (ui_node)
+				attr_node_stack.item.attach_child (ui_node)
 			end
 		end
 
