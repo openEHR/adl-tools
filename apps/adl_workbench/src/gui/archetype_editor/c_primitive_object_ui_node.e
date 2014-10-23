@@ -51,7 +51,7 @@ feature -- Display
 					if display_settings.show_technical_view then
 						attr_str.append (parent_ca.rm_attribute_path)
 					else
-						attr_str.append (ed_context.flat_archetype.annotated_path (parent_ca.rm_attribute_path, display_settings.language, True))
+						attr_str.append (ui_graph_state.flat_archetype.annotated_path (parent_ca.rm_attribute_path, display_settings.language, True))
 					end
 					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 					attr_str.remove_head (1)
@@ -88,7 +88,7 @@ feature {NONE} -- Implementation
 				if attached {C_TERMINOLOGY_CODE} a_n as ctc then
 					s := c_terminology_code_str (ctc)
 				elseif a_n.is_enumerated_type_constraint then
-					s := a_n.as_enumeration_string (ed_context.rm_schema.enumeration_definition (a_n.rm_type_name).name_map)
+					s := a_n.as_enumeration_string (ui_graph_state.rm_schema.enumeration_definition (a_n.rm_type_name).name_map)
 				else
 					s := a_n.as_string
 				end

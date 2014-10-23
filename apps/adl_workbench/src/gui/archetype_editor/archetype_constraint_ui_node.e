@@ -22,9 +22,9 @@ inherit
 
 feature -- Initialisation
 
-	make_rm (an_rm_element: like rm_element; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
+	make_rm (an_rm_element: like rm_element; a_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE)
 		do
-			ed_context := an_ed_context
+			ui_graph_state := a_ui_graph_state
 			rm_element := an_rm_element
 			create display_settings.make_default
 			create internal_ref_for_rm_type.make (0)
@@ -71,7 +71,7 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- True if this node exists in specialised child archetype
 		do
-			Result := ed_context.archetype.is_specialised
+			Result := ui_graph_state.archetype.is_specialised
 		end
 
 	is_prepared: BOOLEAN
@@ -117,32 +117,32 @@ feature {NONE} -- Implementation
 		do
 			if not is_rm then
 				p := arch_node.path
-				Result := ed_context.flat_archetype.annotated_path (p, display_settings.language, True)
+				Result := ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
 					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  nss)
 				end
 
 				-- node-based bindings
-				if attached {C_OBJECT} arch_node as co and then ed_context.flat_terminology.has_any_term_binding (co.node_id) then
+				if attached {C_OBJECT} arch_node as co and then ui_graph_state.flat_terminology.has_any_term_binding (co.node_id) then
 					Result.append ("%N%N" + get_text (ec_node_term_bindings_tooltip_text) + "%N")
-					bindings := ed_context.flat_terminology.term_bindings_for_key (co.node_id)
+					bindings := ui_graph_state.flat_terminology.term_bindings_for_key (co.node_id)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 					end
 				end
 
 				-- path-based bindings
-				if ed_context.flat_terminology.has_any_term_binding (p) then
+				if ui_graph_state.flat_terminology.has_any_term_binding (p) then
 					Result.append ("%N%N" + get_text (ec_path_term_bindings_tooltip_text) + "%N")
-					bindings := ed_context.flat_terminology.term_bindings_for_key (p)
+					bindings := ui_graph_state.flat_terminology.term_bindings_for_key (p)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 					end
 				end
 
-				if attached arch_node as a_n and then ed_context.archetype.has_annotation_at_path (display_settings.language, a_n.path) then
+				if attached arch_node as a_n and then ui_graph_state.archetype.has_annotation_at_path (display_settings.language, a_n.path) then
 					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
-					Result.append (ed_context.archetype.annotations.annotations_at_path (display_settings.language, a_n.path).as_string)
+					Result.append (ui_graph_state.archetype.annotations.annotations_at_path (display_settings.language, a_n.path).as_string)
 				end
 			else
 				Result := path
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 				-- figure out whether C_COMPLEX_OBJECT_PROXYs would be valid for this RM type (i.e. are there any other
 				-- nodes of this type in the archetype?); if so add C_COMPLEX_OBJECT_PROXY
 				if not internal_ref_for_rm_type.has (rm_class_name) then
-					if not ed_context.archetype.rm_type_paths_annotated (display_settings.language, an_rm_type.base_class.name).is_empty then
+					if not ui_graph_state.archetype.rm_type_paths_annotated (display_settings.language, an_rm_type.base_class.name).is_empty then
 						internal_ref_for_rm_type.put (True, an_rm_type.base_class.name)
 					else
 						internal_ref_for_rm_type.put (False, an_rm_type.base_class.name)

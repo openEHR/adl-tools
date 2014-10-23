@@ -72,7 +72,7 @@ feature -- Initialisation
 	make (an_arch_node: attached like arch_node; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			create display_settings.make_default
-			ed_context := an_ed_context
+			ui_graph_state := an_ed_context
 			arch_node := an_arch_node
 		ensure
 			Is_constraint: not is_rm
@@ -81,7 +81,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ed_context: ARCHETYPE_UI_GRAPH_STATE
+	ui_graph_state: ARCHETYPE_UI_GRAPH_STATE
 			-- assembled context information for display / editing
 
 	arch_node: detachable ANY
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 			-- or else "rubric"
 		do
 			create Result.make_empty
-			if attached {ARCHETYPE_TERM} ed_context.flat_terminology.definition_for_code (display_settings.language, a_code) as arch_term then
+			if attached {ARCHETYPE_TERM} ui_graph_state.flat_terminology.definition_for_code (display_settings.language, a_code) as arch_term then
 				if display_settings.show_codes then
 					Result.append (annotated_code (a_code, arch_term.text, " "))
 				else

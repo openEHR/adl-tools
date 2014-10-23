@@ -33,9 +33,9 @@ feature -- Initialisation
 			create internal_ref_for_rm_type.make (0)
 			set_arch_node_in_ancestor
 			if an_arch_node.has_differential_path then
-				rm_property := ed_context.rm_schema.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
+				rm_property := ui_graph_state.rm_schema.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
 			else
-				rm_property := ed_context.rm_schema.property_definition (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_name)
+				rm_property := ui_graph_state.rm_schema.property_definition (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_name)
 			end
 			create children.make(0)
 		end
@@ -45,7 +45,7 @@ feature -- Initialisation
 		do
 			precursor (an_rm_prop, an_ed_context)
 			create children.make(0)
-			pre_attach_child_context (create_rm_child (rm_property.type))
+			attach_child (create_rm_child (rm_property.type))
 		end
 
 feature -- Access
@@ -139,7 +139,7 @@ feature -- Display
 					if display_settings.show_technical_view then
 						attr_str.append (a_n.rm_attribute_path)
 					else
-						attr_str.append (ed_context.flat_archetype.annotated_path (a_n.rm_attribute_path, display_settings.language, True))
+						attr_str.append (ui_graph_state.flat_archetype.annotated_path (a_n.rm_attribute_path, display_settings.language, True))
 					end
 					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 					attr_str.remove_head (1)
@@ -158,7 +158,7 @@ feature -- Display
 						ex_str.append (get_text (ec_attribute_removed_text))
 					end
 					c_col := c_constraint_colour
-				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities then
+				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities then
 					ex_str := rm_property.existence.as_string
 				end
 				evx_grid.update_last_row_label_col (Definition_grid_col_existence, ex_str, Void, c_col, Void)
@@ -169,7 +169,7 @@ feature -- Display
 				if attached a_n.cardinality as att_card then
 					card_str := att_card.as_string
 					c_col := c_constraint_colour
-				elseif not ed_context.in_differential_view and display_settings.show_rm_multiplicities and then attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
+				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and then attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
 					card_str := bmm_cont_prop.cardinality.as_string
 				end
 				evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, card_str, Void, c_col, Void)
@@ -206,74 +206,74 @@ feature -- Display
 
 feature -- Modification
 
-	pre_attach_child_context (a_context_node: C_OBJECT_UI_NODE)
-			-- add `a_context_node' to editor structure only;
+	attach_child (a_ui_node: C_OBJECT_UI_NODE)
+			-- add `a_ui_node' to UI graph
 			-- used when attaching editor structure to an existing archetype
 		require
-			Not_already_has_node: not has_child (a_context_node)
+			Not_already_has_node: not has_child (a_ui_node)
 			Not_grid_prepared: not is_prepared
 		do
-			children.extend (a_context_node)
-			a_context_node.set_parent (Current)
+			children.extend (a_ui_node)
+			a_ui_node.set_parent (Current)
 		ensure
-			Has_child: has_child (a_context_node)
+			Has_child: has_child (a_ui_node)
 		end
 
-	attach_child_context (a_context_node: C_OBJECT_UI_NODE)
-			-- add `a_context_node' to editor structure only;
+	attach_child_and_display (a_ui_node: C_OBJECT_UI_NODE)
+			-- add `a_ui_node' to UI graph and display at the same time
 		require
-			Not_already_has_node: not has_child (a_context_node)
+			Not_already_has_node: not has_child (a_ui_node)
 			Grid_prepared: is_prepared
 		do
-			children.extend (a_context_node)
-			a_context_node.set_parent (Current)
+			children.extend (a_ui_node)
+			a_ui_node.set_parent (Current)
 			check attached evx_grid as gg then
-				a_context_node.prepare_display_in_grid (gg)
+				a_ui_node.prepare_display_in_grid (gg)
 				if is_displayed then
-					a_context_node.display_in_grid (display_settings)
-					a_context_node.show_in_grid
+					a_ui_node.display_in_grid (display_settings)
+					a_ui_node.show_in_grid
 				end
 			end
 		ensure
-			Has_child: has_child (a_context_node)
-			Grid_row_attached: a_context_node.ev_grid_row.parent_row = ev_grid_row
+			Has_child: has_child (a_ui_node)
+			Grid_row_attached: a_ui_node.ev_grid_row.parent_row = ev_grid_row
 		end
 
-	remove_child (a_context_node: C_OBJECT_UI_NODE)
-			-- remove context node `a_context_node' and its `arch_node' completely,
+	remove_child (a_ui_node: C_OBJECT_UI_NODE)
+			-- remove context node `a_ui_node' and its `arch_node' completely,
 			-- including from the grid
 		require
-			Child_valid: has_child (a_context_node)
-			Grid_row_included: is_prepared implies a_context_node.ev_grid_row.parent_row = ev_grid_row
+			Child_valid: has_child (a_ui_node)
+			Grid_row_included: is_prepared implies a_ui_node.ev_grid_row.parent_row = ev_grid_row
 		do
-			children.prune_all (a_context_node)
+			children.prune_all (a_ui_node)
 			if is_prepared then
-				evx_grid.ev_grid.remove_row (a_context_node.ev_grid_row.index)
+				evx_grid.ev_grid.remove_row (a_ui_node.ev_grid_row.index)
 				if is_displayed then
 					display_in_grid (display_settings)
 				end
 			end
-			if attached arch_node as a_n and then attached a_context_node.arch_node as child_a_n then
+			if attached arch_node as a_n and then attached a_ui_node.arch_node as child_a_n then
 				a_n.remove_child (child_a_n)
 			end
 		ensure
-			Child_removed: not has_child (a_context_node)
-			Grid_row_removed: is_prepared implies attached a_context_node.ev_grid_row as cgr and then not ev_grid_row.has_subrow (cgr)
+			Child_removed: not has_child (a_ui_node)
+			Grid_row_removed: is_prepared implies attached a_ui_node.ev_grid_row as cgr and then not ev_grid_row.has_subrow (cgr)
 		end
 
-	add_child (a_context_node: C_OBJECT_UI_NODE)
-			-- add an editor context node and if it is a constraint node,
+	add_child (a_ui_node: C_OBJECT_UI_NODE)
+			-- add `a_ui_node' and if it is a constraint node,
 			-- add its arch_node to the archetype
 		require
-			Not_already_child: not has_child (a_context_node)
-			Coherence: not a_context_node.is_rm implies not is_rm
+			Not_already_child: not has_child (a_ui_node)
+			Coherence: not a_ui_node.is_rm implies not is_rm
 		do
-			if attached arch_node as a_n and attached a_context_node.arch_node as child_a_n then
+			if attached arch_node as a_n and attached a_ui_node.arch_node as child_a_n then
 				a_n.put_child (child_a_n)
 			end
-			attach_child_context (a_context_node)
+			attach_child_and_display (a_ui_node)
 		ensure
-			Has_child: has_child (a_context_node)
+			Has_child: has_child (a_ui_node)
 		end
 
 	convert_to_constraint
@@ -421,25 +421,25 @@ feature {ANY_UI_NODE} -- Implementation
 			occ: MULTIPLICITY_INTERVAL
 			rm_type_spec: BMM_CLASS
 		do
-			rm_type_spec := ed_context.rm_schema.class_definition (co_create_params.rm_type)
+			rm_type_spec := ui_graph_state.rm_schema.class_definition (co_create_params.rm_type)
 			rm_type_name := co_create_params.rm_type
 
 			-- first figure out if a new code definition is needed
 			if co_create_params.term_definition_required then
-				ed_context.archetype.terminology.create_added_id_definition (co_create_params.node_id_text, co_create_params.node_id_description)
-				new_code := ed_context.archetype.terminology.last_new_definition_code
+				ui_graph_state.archetype.terminology.create_added_id_definition (co_create_params.node_id_text, co_create_params.node_id_description)
+				new_code := ui_graph_state.archetype.terminology.last_new_definition_code
 			else
-				new_code := ed_context.archetype.create_new_id_code
+				new_code := ui_graph_state.archetype.create_new_id_code
 			end
 
 			if c_primitive_subtypes.has (co_create_params.aom_type) then
 				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
-					create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (c_prim_agt.item ([]), ed_context)
+					create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (c_prim_agt.item ([]), ui_graph_state)
 				end
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				create cco.make (rm_type_name, new_code)
-				create {C_COMPLEX_OBJECT_UI_NODE} Result.make (cco, ed_context)
+				create {C_COMPLEX_OBJECT_UI_NODE} Result.make (cco, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
 				-- FIXME: not yet dealing with slot filler or use_archetype redefinition, which needs
@@ -447,20 +447,20 @@ feature {ANY_UI_NODE} -- Implementation
 				check attached co_create_params.ext_ref as arch_id then
 					create car.make (rm_type_name, arch_id, new_code)
 				end
-				create {C_ARCHETYPE_ROOT_UI_NODE} Result.make (car, ed_context)
+				create {C_ARCHETYPE_ROOT_UI_NODE} Result.make (car, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({ARCHETYPE_SLOT}).name)) then
 				create arch_slot.make (rm_type_name, new_code)
-				create {ARCHETYPE_SLOT_UI_NODE} Result.make (arch_slot, ed_context)
+				create {ARCHETYPE_SLOT_UI_NODE} Result.make (arch_slot, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name)) then
 				check attached co_create_params.path_ref as pr then
 					create air.make (rm_type_name, new_code, pr)
-					create {C_COMPLEX_OBJECT_PROXY_UI_NODE} Result.make (air, ed_context)
+					create {C_COMPLEX_OBJECT_PROXY_UI_NODE} Result.make (air, ui_graph_state)
 				end
 			else
 				-- Should never get here
-				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (create {C_STRING}.make_regex_any, ed_context)
+				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (create {C_STRING}.make_regex_any, ui_graph_state)
 
 			end
 
@@ -479,9 +479,9 @@ feature {ANY_UI_NODE} -- Implementation
 			is_rm
 		do
 			if a_bmm_type.base_class.is_primitive_type then
-				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ed_context)
+				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 			else
-				create {C_COMPLEX_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ed_context)
+				create {C_COMPLEX_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 			end
 		end
 
@@ -518,7 +518,7 @@ feature {NONE} -- Context menu
 			create context_menu
 
 			-- add sub-menu of types to add as children
-			if ed_context.editing_enabled then
+			if ui_graph_state.editing_enabled then
 				-- offer mandate/prohibit options
 				if rm_property.existence.is_optional then
 					create an_mi.make_with_text_and_action (get_text (ec_c_attribute_prohibit), agent ui_do_prohibit)
@@ -542,7 +542,7 @@ feature {NONE} -- Context menu
 
 					-- add more items for all subtypes
 					across rm_property.type.base_class.all_descendants as subs_csr loop
-						rm_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
+						rm_class_def := ui_graph_state.rm_schema.class_definition (subs_csr.item)
 						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
 						if rm_class_def.is_abstract then
 							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
@@ -569,7 +569,7 @@ feature {NONE} -- Context menu
 			aom_type_subs := aom_types_for_rm_type (rm_class_def)
 			aom_type_subs.start
 			create dialog.make (aom_type_subs, rm_type_substitutions, aom_type_subs.item, rm_class_def.name,
-				default_occurrences, ed_context.archetype, display_settings)
+				default_occurrences, ui_graph_state.archetype, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 
 			if dialog.is_valid then
@@ -587,7 +587,7 @@ feature {NONE} -- Context menu
 			added_child := children.last
 
 			-- set up undo / redo
-			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+			ui_graph_state.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
 				agent (an_added_child: C_OBJECT_UI_NODE)
 					do
 						remove_child (an_added_child)
@@ -609,7 +609,7 @@ feature {NONE} -- Context menu
 			set_prohibited
 
 			-- set up undo / redo
-			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+			ui_graph_state.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
 				agent (was_rm_flag: BOOLEAN)
 					do
 						if was_rm_flag then
@@ -632,7 +632,7 @@ feature {NONE} -- Context menu
 			set_mandated
 
 			-- set up undo / redo
-			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+			ui_graph_state.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
 				agent (was_rm_flag: BOOLEAN)
 					do
 						if was_rm_flag then
@@ -652,7 +652,7 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_flat: STRING
 		do
-			if attached arch_node as a_n and attached ed_context.parent_archetype as parent_arch then
+			if attached arch_node as a_n and attached ui_graph_state.parent_archetype as parent_arch then
 				create apa.make (a_n.og_path)
 				if not apa.is_phantom_path_at_level (parent_arch.specialisation_depth) then
 					ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)

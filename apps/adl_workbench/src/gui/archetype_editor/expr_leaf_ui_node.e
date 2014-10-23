@@ -49,7 +49,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			if attached arch_node as a_n then
 				if a_n.is_archetype_definition_ref then
-					if attached ed_context.flat_terminology.deepest_definition_for_path (a_n.item.out, display_settings.language) as att_term_def then
+					if attached ui_graph_state.flat_terminology.deepest_definition_for_path (a_n.item.out, display_settings.language) as att_term_def then
 						Result.append (att_term_def.text)
 					else
 						Result.append (a_n.item.out)
@@ -71,7 +71,7 @@ feature {NONE} -- Implementation
 				if has_icon_pixmap (pixmap_name) then
 					Result := get_icon_pixmap (pixmap_name)
 				else
-					pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher + resource_path_separator + a_n.type
+					pixmap_name := rm_icon_dir + resource_path_separator + ui_graph_state.rm_schema.rm_publisher + resource_path_separator + a_n.type
 					if has_icon_pixmap (pixmap_name) then
 						Result := get_icon_pixmap (pixmap_name)
 					else

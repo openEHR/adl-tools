@@ -492,8 +492,8 @@ feature {NONE} -- Implementation
 
 			-- populate the main definition grid
 			gui_definition_grid.ev_grid.lock_update
-			source_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
-			source_ed_context.definition_context.display_in_grid (ui_settings)
+			source_ed_context.definition_ui_graph.prepare_display_in_grid (gui_definition_grid)
+			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class as vis_desc_cl then
@@ -525,7 +525,7 @@ feature {NONE} -- Implementation
 			-- populate rules grid, where applicable
 			if source_archetype.has_rules then
 				gui_rules_grid.ev_grid.lock_update
-				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+				across source_ed_context.assertion_ui_graphs as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
@@ -559,7 +559,7 @@ feature {NONE} -- Implementation
 				show_rm_multiplicities, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
-			source_ed_context.definition_context.display_in_grid (ui_settings)
+			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
 
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
@@ -567,7 +567,7 @@ feature {NONE} -- Implementation
 			-- repopulate rules grid, where applicable
 			if source_archetype.has_rules then
 				gui_rules_grid.ev_grid.lock_update
-				across source_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+				across source_ed_context.assertion_ui_graphs as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 				gui_rules_grid.resize_columns_to_content
