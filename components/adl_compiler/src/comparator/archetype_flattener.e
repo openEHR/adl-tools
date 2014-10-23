@@ -546,6 +546,12 @@ end
 						ca_output.put_child (new_obj)
 					end
 
+				-- ------------------------------ Case REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: add filler -----------------------
+				elseif attached {C_ARCHETYPE_ROOT} co_child_diff as att_car and attached {ARCHETYPE_SLOT} co_override_target as att_slot then
+					new_obj := co_child_diff.safe_deep_twin
+					new_obj.set_specialisation_status_redefined
+					ca_output.put_child_left (new_obj, att_slot)
+
 				-- ---------------------------- Case REDEFINE: all cases below are redefines --------------------------------
 				else
 					-- ---------------------------- Case REDEFINE: clone required --------------------------------
@@ -580,12 +586,6 @@ end
 						new_obj.deep_set_specialisation_status_added
 						new_obj.set_specialisation_status_redefined
 						ca_output.replace_child_by_id (new_obj, co_override_target.node_id)
-
-					-- ------------------------------ Case REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: add filler -----------------------
-					elseif attached {C_ARCHETYPE_ROOT} co_child_diff as att_car and attached {ARCHETYPE_SLOT} co_override_target as att_slot then
-						new_obj := co_child_diff.safe_deep_twin
-						new_obj.set_specialisation_status_redefined
-						ca_output.put_child_left (new_obj, att_slot)
 
 					-- ------------------------------ REDEFINE of any other combination of AOM types -----------------------
 					-- All we do here is ensure there is an available overwrite subtree in the output, and then overwrite
