@@ -75,7 +75,7 @@ feature -- Initialization
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			print (msg)

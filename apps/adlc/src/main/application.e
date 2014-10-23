@@ -94,7 +94,7 @@ feature -- Commands
 	start
 		local
 			curr_repo, action: STRING
-			aca: ARCH_LIB_ARCHETYPE
+			aca: ARCH_LIB_ARCHETYPE_ITEM
 			finished: BOOLEAN
 			lib_name: STRING
 		do
@@ -244,7 +244,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			if verbose_output or ara.is_in_terminal_compilation_state and then not ara.is_valid then
@@ -264,7 +264,7 @@ feature {NONE} -- Implementation
 		do
 			node_depth := node_depth + 1
 			if user_friendly_list_output then
-				if attached {ARCH_LIB_CLASS_NODE} aci as accn and then accn.has_artefacts or else attached {ARCH_LIB_ARCHETYPE} aci then
+				if attached {ARCH_LIB_CLASS_ITEM} aci as accn and then accn.has_artefacts or else attached {ARCH_LIB_ARCHETYPE_ITEM} aci then
 					create leader.make_empty
 					leader := spaces.substring (1, 4 * node_depth)
 					leader.append_character ('+')
@@ -274,7 +274,7 @@ feature {NONE} -- Implementation
 					io.put_string (aci.name)
 					io.new_line
 				end
-			elseif attached {ARCH_LIB_ARCHETYPE} aci then
+			elseif attached {ARCH_LIB_ARCHETYPE_ITEM} aci then
 				io.put_string (aci.qualified_key)
 				io.new_line
 			end
