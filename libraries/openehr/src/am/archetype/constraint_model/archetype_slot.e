@@ -20,7 +20,7 @@ class ARCHETYPE_SLOT
 inherit
 	C_OBJECT
 		redefine
-			out, representation_cache
+			out, representation_cache, overlay_differential
 		end
 
 create
@@ -161,6 +161,25 @@ feature -- Modification
 			-- set `is_closed'
 		do
 			is_closed := True
+		end
+
+feature {C_ATTRIBUTE} -- Modification
+
+	overlay_differential (other: like Current)
+			-- apply any differences from `other' to this object node including:
+			-- 	node_id
+			-- 	overridden rm_type_name
+			-- 	occurrences
+			-- Current is assumed to be in a flat archetype
+			-- Should always be called from C_ATTRIBUTE.overlay_differential() since the
+			-- if the node_id changes, the keyed list in the parent needs to be updated
+		do
+			precursor (other)
+
+			if other.is_closed then
+				set_closed
+				set_specialisation_status_redefined
+			end
 		end
 
 feature -- Output
