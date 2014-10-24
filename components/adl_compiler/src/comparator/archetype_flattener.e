@@ -546,7 +546,7 @@ end
 						ca_output.put_child (new_obj)
 					end
 
-				-- ------------------------------ Case REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: add filler -----------------------
+				-- ------------------------------ Case REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler -----------------------
 				elseif attached {C_ARCHETYPE_ROOT} co_child_diff as att_car and attached {ARCHETYPE_SLOT} co_override_target as att_slot then
 					new_obj := co_child_diff.safe_deep_twin
 					new_obj.set_specialisation_status_redefined

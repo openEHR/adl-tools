@@ -368,8 +368,12 @@ end
 							Result := arch_flat_anc.has_object_path (flat_anc_path)
 							if Result then
 								flat_anc_obj := arch_flat_anc.object_at_path (flat_anc_path)
-								if c_obj.is_prohibited and dynamic_type (c_obj) /= dynamic_type (flat_anc_obj) then
-									add_error (ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type, flat_anc_obj.generating_type>>)
+								if c_obj.is_prohibited then
+									if dynamic_type (c_obj) /= dynamic_type (flat_anc_obj) then
+										add_error (ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type, flat_anc_obj.generating_type>>)
+									elseif not flat_anc_obj.node_id.is_equal (c_obj.node_id) then
+										add_error (ec_VSONPI, <<co_child_annotated_path, flat_anc_obj.node_id>>)
+									end
 								end
 
 							-- FIXME: at the moment all C_PRIMITIVE_OBJECTs have code id9999 created by the parser, so they don't

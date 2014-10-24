@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (800)
+			create message_table.make (801)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -198,6 +198,7 @@ feature -- Initialisation
 			message_table.put ("object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4", ec_VSONCO)
 			message_table.put ("object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent", ec_VSONPO)
 			message_table.put ("object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node with AOM type $2 that redefines node in the flat parent of different AOM type $3", ec_VSONPT)
+			message_table.put ("object node at path $1 with prohibited occurrences (i.e. {0}) must have identical id-code $2 to node being redefined", ec_VSONPI)
 			message_table.put ("object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4", ec_VSONCI)
 			message_table.put ("cADL object duplicate attribute '$1'", ec_VCATU)
 			message_table.put ("$1 object node at path $2 does not conform to $3 node at parent path $4", ec_VSDTV)
