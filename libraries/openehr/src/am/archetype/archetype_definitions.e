@@ -64,12 +64,14 @@ feature -- Definitions
 
 	Tuple_right_delimiter: CHARACTER = ']'
 
-	Adl_version_regex: STRING = "adl_version[ \t]*=[ \t]*[0-9]+(\.[0-9]+)*"
+feature -- Version identification
 
-	Adl_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	Adl_version_string_regex: STRING = "adl_version[ \t]*=[ \t]*[0-9]+(\.[0-9]+)*"
+
+	Adl_version_string_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		once
 			create Result.make
-			Result.compile (Adl_version_regex)
+			Result.compile (adl_version_string_regex)
 		end
 
 	Adl_versions: ARRAYED_LIST [STRING]
@@ -80,8 +82,8 @@ feature -- Definitions
 			Result.extend (Adl_14_version)
 			Result.extend (Adl_14_version + ".1")
 			Result.extend ("1.5")
-			Result.extend ("1.5.1")
-			Result.extend ("2.0.0")
+			Result.extend (Adl_id_code_version)
+			Result.extend (Latest_adl_version)
 		end
 
 	Adl_14_version: STRING = "1.4"
@@ -92,14 +94,67 @@ feature -- Definitions
 			Result := a_ver.starts_with (Adl_14_version)
 		end
 
-	Latest_adl_version: STRING
-			-- return current latest known ADL version in this tool
+	Adl_id_code_version: STRING = "1.5.1"
+			-- version in which new id-codes are present
+
+	Latest_adl_version: STRING = "2.0.0"
+
+	Standard_version_regex: STRING = "[0-9]+(\.[0-9]+){0,2}"
+			-- Regex for 1, 2, or 3-part version string string of form N.M.P
+
+	Standard_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		once
-			Result := Adl_versions.last
+			create Result.make
+			Result.compile (Standard_version_regex)
 		end
 
-	Id_conversion_version: STRING = "1.5.1"
-			-- version in which converted ids are present
+	version_less_than (lver, rver: STRING): BOOLEAN
+			-- is `lver'' logically earlier than `rver' in a standard scheme of dot-separated version numbers?
+		require
+			lver_valid: valid_standard_version (lver)
+			rver_valid: valid_standard_version (rver)
+		local
+			lver_strs, rver_strs: LIST [STRING]
+			lver_num, rver_num: INTEGER
+			continue: BOOLEAN
+			i: INTEGER
+		do
+			lver_strs := lver.split ('.')
+			from i := lver_strs.count until i >= 3 loop
+				lver_strs.extend ("0")
+			end
+			rver_strs := rver.split ('.')
+			from i := rver_strs.count until i >= 3 loop
+				rver_strs.extend ("0")
+			end
+
+			from
+				lver_strs.start
+				rver_strs.start
+				continue := True
+			until
+				not continue or lver_strs.off or rver_strs.off
+			loop
+				lver_num := lver_strs.item.to_integer
+				rver_num := rver_strs.item.to_integer
+				if lver_num < rver_num then
+					Result := True
+				elseif lver_num = rver_num then
+					continue := True
+				end
+				lver_strs.forth
+				rver_strs.forth
+			end
+		end
+
+	valid_standard_version (a_ver: STRING): BOOLEAN
+			-- True if `a_ver' fits the pattern of a 1, 2 or 3 part numeric version string
+			-- with '.' separators
+		do
+			Result := Standard_version_regex_matcher.matches (a_ver)
+		end
+
+feature -- Comparison
 
 	archetype_term_keys: ARRAYED_LIST [STRING]
 			-- set of 'key's of an ARCHETYPE_TERM, currently 'text' and 'description'
@@ -175,21 +230,6 @@ feature -- Definitions
 			Result.put (mult_int, mult_int.as_string)
 			create mult_int.make_upper_unbounded (1)
 			Result.put (mult_int, mult_int.as_string)
-		end
-
-feature -- Comparison
-
-	valid_adl_version (a_ver: STRING): BOOLEAN
-			-- set adl_version with a string containing only '.' and numbers,
-			-- not commencing or finishing in '.'
-		require
-			Valid_string: not a_ver.is_empty
-		local
-			str: STRING
-		do
-			str := a_ver.twin
-			str.prune_all ('.')
-			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
 		end
 
 end

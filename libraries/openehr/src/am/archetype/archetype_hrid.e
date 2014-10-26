@@ -63,14 +63,14 @@ feature -- Definitions
 			-- Regex for any segment of an archetype id
 
 	release_version_regex: STRING = "[0-9]+(\.[0-9]+){2}"
-			-- Regex for ADL 1.5 release version
+			-- Regex for ADL 2 release version
 			-- 	will match string of form N.M.P
 
-	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|\+u|\+)[0-9]+)?"
+	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc\.|-alpha\.|\+)[0-9]+)?"
 			-- Regex for ADL 1.5 release version
 			-- 	will match string of form vN.M.P with or without -rcN, +uN at the end
 
-	reference_version_regex: STRING = "v[0-9]+(\.[0-9]+){0,2}"
+	version_reference_regex: STRING = "v[0-9]+(\.[0-9]+){0,2}"
 			-- regex for matching version part of an archetype id, which can have 1, 2 or 3 parts, i.e. .v1, .v1.2, .v1.2.1
 
 	major_version_regex: STRING = "v[0-9]+"
@@ -119,9 +119,9 @@ feature -- Definitions
 			-- matcher for references to archetypes, which may include partial (i.e. interface) form of the version part
 			-- and no +u or -rc extension
 		once
-			Result := "^" + root_regex + "\" + Axis_separator.out + reference_version_regex + "$"
+			Result := "^" + root_regex + "\" + Axis_separator.out + version_reference_regex + "$"
 		ensure
-			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + reference_version_regex + "$")
+			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + version_reference_regex + "$")
 		end
 
 	root_regex: STRING

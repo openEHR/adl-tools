@@ -17,7 +17,7 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, valid_adl_version
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, valid_standard_version
 		end
 
 create

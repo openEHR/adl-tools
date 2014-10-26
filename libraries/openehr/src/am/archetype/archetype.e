@@ -13,7 +13,7 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} deep_twin, valid_adl_version
+			{ANY} deep_twin, valid_standard_version
 		end
 
 	ADL_15_TERM_CODE_TOOLS
@@ -731,7 +731,7 @@ feature -- Modification
 			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
-			Valid_version: valid_adl_version(a_ver)
+			Valid_version: valid_standard_version(a_ver)
 		do
 			adl_version := a_ver
 		end

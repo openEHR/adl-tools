@@ -885,7 +885,7 @@ feature {NONE} -- Compilation
 				end
 
 				-- perform post-parse object structure finalisation
-				if not diff_arch.adl_version.is_equal (latest_adl_version) then
+				if version_less_than (diff_arch.adl_version, Adl_id_code_version) then
 					adl_15_engine.post_parse_151_convert (diff_arch, Current)
 				end
 

@@ -24,6 +24,7 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
+			{ANY} version_less_than, Adl_id_code_version, valid_standard_version
 		end
 
 	ADL_15_TERM_CODE_TOOLS
@@ -66,7 +67,8 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
 		require
-			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
+			Sub_151_version: version_less_than (a_target.adl_version, Adl_id_code_version)
+			Compilation_state: ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			initialise (a_target, ara)
 		end
@@ -75,7 +77,8 @@ feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
-			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
+			Sub_151_version: version_less_than (a_target.adl_version, Adl_id_code_version)
+			Compilation_state: ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			target := a_target
 			rm_schema := ara.rm_schema

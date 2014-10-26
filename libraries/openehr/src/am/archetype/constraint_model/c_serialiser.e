@@ -19,7 +19,7 @@ inherit
 
 	BASIC_DEFINITIONS
 		export
-			{NONE}
+			{NONE} all
 		end
 
 feature -- Initialisation

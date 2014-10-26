@@ -17,7 +17,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all;
-			{ANY} archetype_native_serialiser_formats, has_archetype_native_serialiser_format
+			{ANY} archetype_native_serialiser_formats, has_archetype_native_serialiser_format, version_less_than, valid_standard_version, Adl_id_code_version
 		end
 
 	ADL_SYNTAX_CONVERTER
@@ -251,6 +251,8 @@ feature -- Parsing
 feature -- Validation
 
 	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE_ITEM)
+		require
+			Sub_151_version: version_less_than (an_arch.adl_version, Adl_id_code_version)
 		local
 			proc: AOM_151_CONVERTER
 		do
