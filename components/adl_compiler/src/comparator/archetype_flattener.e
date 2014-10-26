@@ -3,6 +3,8 @@ note
 	description: "[
 				 Generate a flat archetype from a source differential form archetype, and, if the latter is
 				 specialised, its flat parent.
+				 The flattener assumes that the input differential archetype is valid according to the rules
+				 implemented in AOM_PHASE_*_VALIDATORs, and defined by the openEHR ADL 2 specification.
 		         ]"
 	keywords:    "archetype, comparison, constraint model"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -504,104 +506,119 @@ end
 			co_output_insert_pos, co_override_target: detachable C_OBJECT
 			i: INTEGER
 			co_child_spec_sts: INTEGER
+			clone_needed: BOOLEAN
 		do
 			co_output_insert_pos := merge_desc.co_output_insert_pos
 			from i := merge_desc.start_pos until i > merge_desc.end_pos loop
 				co_child_diff := ca_diff.children.i_th (i)
 				co_child_spec_sts := specialisation_status_from_code (co_child_diff.node_id, arch_diff_child.specialisation_depth)
 				node_id_in_flat_anc := code_at_level (co_child_diff.node_id, arch_flat_anc.specialisation_depth)
+				co_override_target := Void
 
-				-- determine if there is a node in the output that could be overwritten
+				-- ================== Direct REPLACE: child node id is same as that of object in ancestor  ================
 				if ca_output.has_child_with_id (co_child_diff.node_id) then
 					co_override_target := ca_output.child_with_id (co_child_diff.node_id)
-				elseif ca_output.has_child_with_id (node_id_in_flat_anc) then
-					co_override_target := ca_output.child_with_id (node_id_in_flat_anc)
-				else
-					co_override_target := Void
-				end
 
-				-- ------------------------------ Case REMOVE: delete node in output -------------------------------
-				if co_child_diff.is_prohibited then
-					-- capture insert point before doing deletion
-					check attached co_override_target end
-					if attached ca_output.child_after (co_override_target) as att_co then
-						co_output_insert_pos := att_co
-					elseif attached ca_output.child_before (co_override_target) as att_co then
-						co_output_insert_pos := att_co
-					end
-					ca_output.remove_child (co_override_target)
-
-				-- ------------------------------ Case ADD new: detect via node id -------------------------------
-				-- if node_id indicates it is is to be added new in this level, e.g. something like id0.3 in level 2, add the node
-				elseif co_child_spec_sts = ss_added then
-					new_obj := co_child_diff.safe_deep_twin
-					new_obj.deep_set_specialisation_status_added
-					if attached co_output_insert_pos as att_co then
-						if merge_desc.before_flag then
-							ca_output.put_child_left (new_obj, att_co)
-						else
-							ca_output.put_child_right (new_obj, att_co)
+					-- ------ REMOVE: delete node in output --------
+					if co_child_diff.is_prohibited then
+						-- capture insert point before doing deletion
+						check attached co_override_target end
+						if attached ca_output.child_after (co_override_target) as att_co then
+							co_output_insert_pos := att_co
+						elseif attached ca_output.child_before (co_override_target) as att_co then
+							co_output_insert_pos := att_co
 						end
+						ca_output.remove_child (co_override_target)
+
+					-- ------ REPLACE C_PRIMITIVE_OBJECT - complete replace, regardless of AOM subtype -----
+					elseif attached {C_PRIMITIVE_OBJECT} co_child_diff then
+						new_obj := co_child_diff.safe_deep_twin
+						new_obj.set_specialisation_status_redefined
+						ca_output.replace_child_by_id (new_obj, co_child_diff.node_id)
+						new_obj.set_specialisation_status_redefined
+
+					-- ------ Any other REPLACE: just do local node override ---------
 					else
-						ca_output.put_child (new_obj)
+						ca_output.overlay_differential (co_override_target, co_child_diff)
 					end
 
-				-- ------------------------------ Case REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler -----------------------
-				elseif attached {C_ARCHETYPE_ROOT} co_child_diff as att_car and attached {ARCHETYPE_SLOT} co_override_target as att_slot then
-					new_obj := co_child_diff.safe_deep_twin
-					new_obj.set_specialisation_status_redefined
-					ca_output.put_child_left (new_obj, att_slot)
+				-- ===================== Logical REDEFINE: child node id is specialised in this level ========================
+				elseif ca_anc.has_child_with_id (node_id_in_flat_anc) then
 
-				-- ---------------------------- Case REDEFINE: all cases below are redefines --------------------------------
-				else
-					-- ---------------------------- Case REDEFINE: clone required --------------------------------
-					-- Either there is no override target, and we need to clone from the parent flat OR
-					-- There is a target, but it must be preserved, which is true when:
-					--	* the override carries the same code as the node in the parent flat (ss_inherited)
-					-- 	* the multiplicity of the override target is 1, and if there is only a single override child in the
-					--	  differential, which implies a direct replace. (The alternative is multiple clones, in which case
-					--	  we just do cloning and rely on an explicit remove node for the original node in the parent)
-					if not attached co_override_target or else
-						not (co_child_spec_sts = ss_inherited or else
-							attached co_override_target.occurrences and then (co_override_target.is_occurrences_upper_one or
-							ca_diff.aggregate_occurrences_upper_is_one (node_id_in_flat_anc)))
-					then
+					clone_needed := False
+
+					-- REDEFINE: node with parent node_id still available in flat output
+					if ca_output.has_child_with_id (node_id_in_flat_anc) then
+						co_override_target := ca_output.child_with_id (node_id_in_flat_anc)
+
+						-- --------- REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler --------
+						if attached {C_ARCHETYPE_ROOT} co_child_diff and attached {ARCHETYPE_SLOT} co_override_target as att_slot then
+							new_obj := co_child_diff.safe_deep_twin
+							new_obj.set_specialisation_status_redefined
+							ca_output.put_child_left (new_obj, att_slot)
+
+							-- nothing else needed; don't do any overriding below
+							co_override_target := Void
+						else
+							-- determine if clone needed: we don't clone if:
+							--	* override target has max occurrences = 1 set OR
+							--	* child diff obj being processed is sole child of its parent, and has max occurrences = 1
+							clone_needed := not (co_override_target.is_occurrences_upper_one or
+								ca_diff.aggregate_occurrences_upper_is_one (node_id_in_flat_anc))
+						end
+
+					-- REDEFINE: node with parent node_id only available in flat ancestor - this means that in the flat output,
+					-- an object with the parent node id has already been overridden - cloning is unavoidable
+					else
+						clone_needed := True
+					end
+
+					if clone_needed then
 						co_override_target := ca_anc.child_with_id (node_id_in_flat_anc).safe_deep_twin
 						co_override_target.set_subtree_specialisation_status (ss_inherited)
-						if attached co_output_insert_pos as att_co then
+						if attached co_output_insert_pos as att_co_ins_pos then
 							if merge_desc.before_flag then
-								ca_output.put_child_left (co_override_target, att_co)
+								ca_output.put_child_left (co_override_target, att_co_ins_pos)
 							else
-								ca_output.put_child_right (co_override_target, att_co)
+								ca_output.put_child_right (co_override_target, att_co_ins_pos)
+								co_output_insert_pos := co_override_target
 							end
 						else
 							ca_output.put_child (co_override_target)
 						end
 					end
-					check attached co_override_target end
 
-					-- ------------------------------ Case REDEFINE of C_COMPLEX_OBJECT with any_allowed (no children) by anything -------------------------------
-					if attached {C_COMPLEX_OBJECT} co_override_target as att_cco and then att_cco.any_allowed then
-						new_obj := co_child_diff.safe_deep_twin
-						new_obj.deep_set_specialisation_status_added
-						new_obj.set_specialisation_status_redefined
-						ca_output.replace_child_by_id (new_obj, co_override_target.node_id)
+					if attached co_override_target as att_tgt then
+						ca_output.overlay_differential (att_tgt, co_child_diff)
+					end
 
-					-- ------------------------------ REDEFINE of any other combination of AOM types -----------------------
-					-- All we do here is ensure there is an available overwrite subtree in the output, and then overwrite
-					-- just the local C_OBJECT details - subtree structure overwrite will be done by later traversal calls
+				-- ------- ADD new: detect via node id --------
+				-- if node_id indicates it is is to be added new in this level, e.g. something like id0.3 in level 2, add the node
+				elseif co_child_spec_sts = ss_added then
+					new_obj := co_child_diff.safe_deep_twin
+					new_obj.deep_set_specialisation_status_added
+					if attached co_output_insert_pos as att_co_ins_pos then
+						if merge_desc.before_flag then
+							ca_output.put_child_left (new_obj, att_co_ins_pos)
+						else
+							ca_output.put_child_right (new_obj, att_co_ins_pos)
+							co_output_insert_pos := new_obj
+						end
 					else
-						-- take care of local overriding of node id and occurrences and RM type, also specialisation_status
-						ca_output.overlay_differential (co_override_target, co_child_diff)
+						ca_output.put_child (new_obj)
+					end
 
-						-- now graft in any C_ATTRIBUTEs under the differential C_COMPLEX_OBJECT which are new (ADDs) with respect to
-						-- the flat output C_ATTRIBUTE, and have not yet been cloned or copied above
-						if attached {C_COMPLEX_OBJECT} co_child_diff as att_diff_cco and attached {C_COMPLEX_OBJECT} co_override_target as att_output_cco then
-							across att_diff_cco.attributes as diff_attrs_csr loop
-								if not diff_attrs_csr.item.has_differential_path and not att_output_cco.has_attribute (diff_attrs_csr.item.rm_attribute_name) then
-									att_output_cco.put_attribute (diff_attrs_csr.item.safe_deep_twin)
-								end
-							end
+				else
+					raise ("do_merge location #1 - child archetype node with path " + co_child_diff.path + " can't be flattened")
+				end
+
+				-- -------- Deal with C_COMPLEX_OBJECT sub-structure in override cases ------------						
+				-- graft in any C_ATTRIBUTEs under the differential C_COMPLEX_OBJECT which are new (ADDs) with respect to
+				-- the flat output C_ATTRIBUTE, and have not yet been cloned or copied above
+				if attached {C_COMPLEX_OBJECT} co_override_target as att_output_cco and attached {C_COMPLEX_OBJECT} co_child_diff as att_diff_cco then
+					across att_diff_cco.attributes as diff_attrs_csr loop
+						if not diff_attrs_csr.item.has_differential_path and not att_output_cco.has_attribute (diff_attrs_csr.item.rm_attribute_name) then
+							att_output_cco.put_attribute (diff_attrs_csr.item.safe_deep_twin)
 						end
 					end
 				end

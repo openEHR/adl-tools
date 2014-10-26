@@ -21,7 +21,7 @@ inherit
 		rename
 			make as cco_make
 		redefine
-			c_congruent_to, out, enter_subtree, exit_subtree
+			c_congruent_to, out, enter_subtree, exit_subtree, overlay_differential
 		end
 
 create
@@ -70,6 +70,21 @@ feature -- Modification
 			-- write `a_matched_archetype_id' (that is known to match `archetype_ref') into node_id
 		do
 			set_node_id (a_matched_archetype_id)
+		end
+
+feature {C_ATTRIBUTE} -- Modification
+
+	overlay_differential (other: like Current)
+			-- apply any differences from `other' to this object node including:
+			-- 	node_id
+			-- 	overridden rm_type_name
+			-- 	occurrences
+			-- Current is assumed to be in a flat archetype
+			-- Should always be called from C_ATTRIBUTE.overlay_differential() since the
+			-- if the node_id changes, the keyed list in the parent needs to be updated
+		do
+			precursor (other)
+			create archetype_ref.make_from_string (other.archetype_ref)
 		end
 
 feature -- Output
