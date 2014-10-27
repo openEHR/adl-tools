@@ -356,7 +356,7 @@ feature {NONE} -- Initialization
 					if file_system.file_exists (user_docking_layout_file_path) then
 						-- if the default docking layout is newer than the app's current one, then use it.
 						if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) or
-							not last_exec_app_version.same_string (app_version.out)
+							not last_exec_app_version.starts_with (app_version.version_to_minor)
 						then
 							docking_file_to_use := default_docking_layout_file_path
 						else

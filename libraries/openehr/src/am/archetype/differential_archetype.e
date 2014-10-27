@@ -36,7 +36,7 @@ feature -- Initialisation
 		do
 			artefact_type := an_artefact_type
 			archetype_id := an_id
-			adl_version := 	Latest_adl_version
+			create adl_version.make_from_string (Latest_adl_version)
 			create terminology.make_empty (an_original_language, 0)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
@@ -45,7 +45,7 @@ feature -- Initialisation
 			is_valid := True
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
-			Adl_version_set: adl_version = Latest_adl_version
+			Adl_version_set: adl_version.same_string (Latest_adl_version)
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
@@ -63,7 +63,7 @@ feature -- Initialisation
 		do
 			artefact_type := an_artefact_type
 			archetype_id := an_id
-			adl_version := 	Latest_adl_version
+			create adl_version.make_from_string (Latest_adl_version)
 			create terminology.make_empty (an_original_language, a_parent.specialisation_depth + 1)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
@@ -73,7 +73,7 @@ feature -- Initialisation
 			is_valid := True
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
-			Adl_version_set: adl_version = Latest_adl_version
+			Adl_version_set: adl_version.same_string (Latest_adl_version)
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)

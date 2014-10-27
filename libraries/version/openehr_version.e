@@ -18,7 +18,6 @@ inherit
 
 feature -- Access
 
-
 			-- Details of when this class was last committed to Version control.
 			-- This would typically be whenever `major', `minor', `build' or `out' are manually edited.
 
@@ -28,7 +27,7 @@ feature -- Access
 	minor: INTEGER = 0
 			-- The minor version number: manually incremented, or else reset to 0 when `major' changes.
 
-	build: INTEGER = 0
+	build: INTEGER = 5
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
 	revision: INTEGER = 0
@@ -42,10 +41,22 @@ feature -- Access
 	beta: STRING = "11"
 			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
 
+	version_to_minor: STRING
+			-- The version as a string of the form "major.minor".
+		do
+			Result := major.out + "." + minor.out
+		end
+
+	version_to_build: STRING
+			-- The version as a string of the form "major.minor".
+		do
+			Result := major.out + "." + minor.out + "." + build.out
+		end
+
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + "-beta" + beta
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out
 		ensure then
 			long_enough: Result.count >= 7
 		end

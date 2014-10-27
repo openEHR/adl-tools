@@ -97,7 +97,20 @@ feature -- Version identification
 	Adl_id_code_version: STRING = "1.5.1"
 			-- version in which new id-codes are present
 
-	Latest_adl_version: STRING = "2.0.0"
+	Latest_adl_version: STRING
+		once
+			Result := (create {OPENEHR_VERSION}).version_to_build
+		end
+
+	Latest_adl_minor_version: STRING
+		once
+			Result := (create {OPENEHR_VERSION}).version_to_minor
+		end
+
+	Latest_adl_major_version: STRING
+		once
+			Result := (create {OPENEHR_VERSION}).major.out
+		end
 
 	Standard_version_regex: STRING = "[0-9]+(\.[0-9]+){0,2}"
 			-- Regex for 1, 2, or 3-part version string string of form N.M.P
@@ -122,10 +135,12 @@ feature -- Version identification
 			lver_strs := lver.split ('.')
 			from i := lver_strs.count until i >= 3 loop
 				lver_strs.extend ("0")
+				i := i + 1
 			end
 			rver_strs := rver.split ('.')
 			from i := rver_strs.count until i >= 3 loop
 				rver_strs.extend ("0")
+				i := i + 1
 			end
 
 			from

@@ -264,7 +264,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 --
 	| type_identifier
 		{
-			if not target_descriptor.file_mgr.adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty then
 				create $$.make ($1, new_fake_node_id)
 			else
 				if not object_nodes.is_empty then
@@ -399,7 +399,7 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 ---
 	| SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
 		{
-			if not target_descriptor.file_mgr.adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty then
 				create $$.make ($2, new_fake_node_id, $4)
 				if attached $3 as att_occ then
 					$$.set_occurrences (att_occ)
@@ -473,7 +473,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 --
 	| SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			if not target_descriptor.file_mgr.adl_version.is_equal (Latest_adl_version) and not object_nodes.is_empty then
+			if version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty then
 				create $$.make ($2, new_fake_node_id)
 			else
 				abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)

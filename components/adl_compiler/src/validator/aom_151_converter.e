@@ -107,7 +107,7 @@ feature -- Commands
 
 	execute
 		do
-			if not target.adl_version.is_equal (latest_adl_version) then
+			if version_less_than (target.adl_version, Adl_id_code_version) then
 				-- add value-sets extracted from definition; these value sets originally consisted of a synthesised
 				-- ac-code and synthesised at-codes which need to be converted
 				if not compiler_billboard.value_sets.is_empty then

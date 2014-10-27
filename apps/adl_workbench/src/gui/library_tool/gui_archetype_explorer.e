@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
+					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
 					if aca.file_mgr.is_reference_archetype then
@@ -308,7 +308,7 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.file_mgr.adl_version.is_equal (latest_adl_version) then
+					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
 					if aca.file_mgr.is_reference_archetype then
