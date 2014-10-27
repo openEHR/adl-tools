@@ -11,6 +11,9 @@ class ARCHETYPE_TERM
 
 inherit
 	DT_CONVERTIBLE
+		redefine
+			default_create
+		end
 
 create
 	make, make_all, default_create --, make_from_string, make_from_data_tree
@@ -31,6 +34,16 @@ feature -- Definitions
 
 feature -- Initialisation
 
+	default_create
+		do
+			create code.make_empty
+            create text.make_from_string (Unknown_value)
+            create description.make_from_string (Unknown_value)
+		ensure then
+			text_set: text.same_string (Unknown_value)
+			description_set: description.same_string (Unknown_value)
+		end
+
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		do
@@ -40,6 +53,7 @@ feature -- Initialisation
 		require
 			Code_valid: not a_code.is_empty
 		do
+			default_create
 			code := a_code
 		ensure
 			code_set: code.same_string (a_code)
@@ -65,19 +79,10 @@ feature -- Initialisation
 feature -- Access
 
 	code: STRING
-        attribute
-            create Result.make_empty
-        end
 
 	text: STRING
-        attribute
-            create Result.make_from_string (Unknown_value)
-        end
 
 	description: STRING
-        attribute
-            create Result.make_from_string (Unknown_value)
-        end
 
 --	provenance: attached STRING
 
