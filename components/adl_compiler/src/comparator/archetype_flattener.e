@@ -503,7 +503,7 @@ end
 		local
 			co_child_diff, new_obj: C_OBJECT
 			node_id_in_flat_anc: STRING
-			co_output_insert_pos, co_override_target: detachable C_OBJECT
+			co_output_insert_pos, co_override_target, co_override_candidate: detachable C_OBJECT
 			i: INTEGER
 			co_child_spec_sts: INTEGER
 			clone_needed: BOOLEAN
@@ -549,17 +549,16 @@ end
 
 					-- REDEFINE: node with parent node_id still available in flat output
 					if ca_output.has_child_with_id (node_id_in_flat_anc) then
-						co_override_target := ca_output.child_with_id (node_id_in_flat_anc)
+						co_override_candidate := ca_output.child_with_id (node_id_in_flat_anc)
 
 						-- --------- REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler --------
-						if attached {C_ARCHETYPE_ROOT} co_child_diff and attached {ARCHETYPE_SLOT} co_override_target as att_slot then
+						if attached {C_ARCHETYPE_ROOT} co_child_diff and attached {ARCHETYPE_SLOT} co_override_candidate as att_slot then
 							new_obj := co_child_diff.safe_deep_twin
 							new_obj.set_specialisation_status_redefined
 							ca_output.put_child_left (new_obj, att_slot)
-
-							-- nothing else needed; don't do any overriding below
-							co_override_target := Void
 						else
+							co_override_target := co_override_candidate
+
 							-- determine if clone needed: we don't clone if:
 							--	* override target has max occurrences = 1 set OR
 							--	* child diff obj being processed is sole child of its parent, and has max occurrences = 1
