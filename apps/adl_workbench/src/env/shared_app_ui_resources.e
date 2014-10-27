@@ -775,14 +775,15 @@ feature {NONE} -- Implementation
 			-- Text for splash screens, About boxes, etc.
 		once ("PROCESS")
 			create Result.make_empty
-			Result.append ("ADL " + Latest_adl_version + " Workbench  v" + app_version.out + "%N")
+			Result.append ("ADL " + Latest_adl_major_version + " Workbench  v" + app_version.out + "%N")
 			Result.append ("(c) 2003- openEHR Foundation%N")
 			Result.append ("          Source: https://github.com/openEHR/adl-tools.git%N")
 			Result.append ("         License: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
 			Result.append ("        Support: http://www.openehr.org/issues/browse/AWBPR%N")
-			Result.append ("     Funding: Thomas Beale, Ocean Informatics<http://www.oceaninformatics.com>%N")
+			Result.append ("     Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
 			Result.append ("          Author: Thomas Beale%N")
-			Result.append ("Contributors: Peter Gummer, Ian McNicoll MD%N")
+			Result.append ("Contributors: Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR)),%N")
+			Result.append ("                        Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
 			Result.append ("%N")
 			Result.append ("Acknowledgements:%N")
 			Result.append ("  - Eiffel Software EiffelStudio GPL release <http://www.eiffel.com>%N")
