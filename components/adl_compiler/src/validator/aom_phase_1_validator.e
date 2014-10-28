@@ -369,7 +369,7 @@ feature {NONE} -- Implementation
 						binding_target_code := terminology_code_from_uri (bindings_csr.item.as_string)
 						if ts.has_terminology (terminology_id) then
 							if not ts.terminology (terminology_id).has_concept_id (binding_target_code) then
-								add_error (ec_WETDF, <<binding_target_code, terminology_id>>)
+								add_warning (ec_VETDF, <<binding_target_code, terminology_id>>)
 							end
 						else
 							add_warning (ec_WETDF, <<binding_target_code, terminology_id>>)
