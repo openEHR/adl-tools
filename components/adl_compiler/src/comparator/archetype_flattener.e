@@ -243,7 +243,7 @@ end
 			arch_diff_child.is_specialised
 		local
 			def_it: C_ITERATOR
-			og_ca_path_in_diff: OG_PATH
+			og_ca_path_in_diff, og_co_parent_path_in_diff: OG_PATH
 			co_parent_path_in_diff: STRING
 			ca_clone: C_ATTRIBUTE
 		do
@@ -271,7 +271,14 @@ end
 				else
 					og_ca_path_in_diff := diff_attrs_csr.item.og_path
 					if not arch_flat_out.definition.has_path (og_ca_path_in_diff.as_string) then
-						co_parent_path_in_diff := og_ca_path_in_diff.parent_path.as_string
+						og_co_parent_path_in_diff := og_ca_path_in_diff.parent_path
+						co_parent_path_in_diff := og_co_parent_path_in_diff.as_string
+
+						-- if parent path not findable, overlay it, it must contain some id overrides
+						if not arch_flat_out.definition.has_object_path (co_parent_path_in_diff) then
+							overlay_differential_path (og_co_parent_path_in_diff)
+						end
+
 						if arch_flat_out.definition.has_object_path (co_parent_path_in_diff) then
 							ca_clone := diff_attrs_csr.item.safe_deep_twin
 							ca_clone.clear_differential_path
@@ -297,9 +304,8 @@ end
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_output: STRING
-			ca_output, ca_in_anc_flat, ca_csr: C_ATTRIBUTE
+			ca_output, ca_in_anc_flat: C_ATTRIBUTE
 			co_copy: C_OBJECT
-			cco_csr: C_COMPLEX_OBJECT
 		do
 			if attached {C_ATTRIBUTE} ac_diff_node as ca_diff then
 				-- --------------------- STEP 1: locate node in flat output -------------------------
@@ -310,28 +316,11 @@ end
 				ca_path_in_output := ca_diff.path
 				if not arch_flat_out.has_path (ca_path_in_output) then
 					-- --------------------- STEP 2: perform any differential path node_id overrides -------------------------
+					--  this supports the ability of a differential path to contain an override of an id code in it.
 					if ca_diff.has_differential_path then
 						-- there must be id-code overrides in the differential path; we need to overlay these
 						-- into the output archetype structure
-						cco_csr := arch_flat_out.definition
-						across ac_diff_node.og_path as og_path_csr loop
-							-- navigate to C_ATTRIBUTE
-							ca_csr := cco_csr.attribute_with_name (og_path_csr.item.attr_name)
-
-							-- navigate to C_COMPLEX_OBJECT & adjust id if needed
-							if og_path_csr.item.is_addressable then
-								if specialisation_depth_from_code (og_path_csr.item.object_id) = arch_diff_child.specialisation_depth then
-									ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_anc.specialisation_depth), og_path_csr.item.object_id)
-								end
-								check attached {C_COMPLEX_OBJECT}ca_csr.child_with_id (og_path_csr.item.object_id) as att_cco then
-									cco_csr := att_cco
-								end
-							elseif ca_csr.has_children then
-								if attached {C_COMPLEX_OBJECT} ca_csr.first_child as att_cco then
-									cco_csr := att_cco
-								end
-							end
-						end
+						overlay_differential_path (ac_diff_node.og_path)
 					else
 						raise ("overlay_node loction #1 - can't find overlay location for C_ATTRIBUTE at " + ca_path_in_output + " %N")
 					end
@@ -410,6 +399,39 @@ end
 		do
 			create apa.make (a_c_node.og_path)
 			Result := arch_flat_anc.has_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
+		end
+
+	overlay_differential_path (an_og_diff_path: OG_PATH)
+			-- overlay a differential path onto the flat output structure. Only call for paths that
+			-- are not findable in the output; it means that the path contains a specialised id-code
+			-- that needs to be written into the output; the path will then be findable
+		require
+			not arch_flat_out.definition.has_path (an_og_diff_path.as_string)
+		local
+			ca_csr: C_ATTRIBUTE
+			cco_csr: C_COMPLEX_OBJECT
+		do
+			cco_csr := arch_flat_out.definition
+			across an_og_diff_path as og_path_csr loop
+				-- navigate to C_ATTRIBUTE
+				ca_csr := cco_csr.attribute_with_name (og_path_csr.item.attr_name)
+
+				-- navigate to C_COMPLEX_OBJECT & adjust id if needed:
+				if og_path_csr.item.is_addressable then
+					if specialisation_depth_from_code (og_path_csr.item.object_id) = arch_diff_child.specialisation_depth then
+						ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_anc.specialisation_depth), og_path_csr.item.object_id)
+					end
+					check attached {C_COMPLEX_OBJECT} ca_csr.child_with_id (og_path_csr.item.object_id) as att_cco then
+						cco_csr := att_cco
+					end
+				elseif ca_csr.has_children then
+					if attached {C_COMPLEX_OBJECT} ca_csr.first_child as att_cco then
+						cco_csr := att_cco
+					end
+				end
+			end
+		ensure
+			arch_flat_out.definition.has_path (an_og_diff_path.as_string)
 		end
 
 	build_merge_list (ca_output, ca_diff: C_ATTRIBUTE)
@@ -530,16 +552,8 @@ end
 						end
 						ca_output.remove_child (co_override_target)
 
-					-- ------ REPLACE C_PRIMITIVE_OBJECT - complete replace, regardless of AOM subtype -----
-					elseif attached {C_PRIMITIVE_OBJECT} co_child_diff then
-						new_obj := co_child_diff.safe_deep_twin
-						new_obj.set_specialisation_status_redefined
-						ca_output.replace_child_by_id (new_obj, co_child_diff.node_id)
-						new_obj.set_specialisation_status_redefined
-
-					-- ------ Any other REPLACE: just do local node override ---------
 					else
-						ca_output.overlay_differential (co_override_target, co_child_diff)
+						overlay_child (ca_output, co_override_target, co_child_diff)
 					end
 
 				-- ===================== Logical REDEFINE: child node id is specialised in this level ========================
@@ -574,6 +588,7 @@ end
 
 					if clone_needed then
 						co_override_target := ca_anc.child_with_id (node_id_in_flat_anc).safe_deep_twin
+						co_override_target.set_node_id (co_child_diff.node_id)
 						co_override_target.set_subtree_specialisation_status (ss_inherited)
 						if attached co_output_insert_pos as att_co_ins_pos then
 							if merge_desc.before_flag then
@@ -588,7 +603,7 @@ end
 					end
 
 					if attached co_override_target as att_tgt then
-						ca_output.overlay_differential (att_tgt, co_child_diff)
+						overlay_child (ca_output, att_tgt, co_child_diff)
 					end
 
 				-- ------- ADD new: detect via node id --------
@@ -623,6 +638,29 @@ end
 				end
 
 				i := i + 1
+			end
+		end
+
+	overlay_child (ca_output: C_ATTRIBUTE; co_override_target, co_child_diff: C_OBJECT)
+			-- perform a node-level overlay with a target output node and a source child node
+		require
+			Target_is_child_of_attr_node: ca_output.has_child (co_override_target)
+			Nodes_have_same_id: co_override_target.node_id.same_string (co_child_diff.node_id)
+		local
+			new_obj: C_OBJECT
+		do
+			-- ------ REPLACE C_COMPLEX_OBJECT with any_allowed - complete replace, regardless of AOM subtype -----
+			-- ------ REPLACE C_PRIMITIVE_OBJECT - complete replace, regardless of AOM subtype -----
+			if attached {C_COMPLEX_OBJECT} co_override_target as att_cco and then att_cco.any_allowed and then not attached {C_COMPLEX_OBJECT} co_child_diff or
+				attached {C_PRIMITIVE_OBJECT} co_child_diff
+			then
+				new_obj := co_child_diff.safe_deep_twin
+				ca_output.replace_child_by_id (new_obj, co_child_diff.node_id)
+				new_obj.set_specialisation_status_redefined
+
+			-- ------ Any other REPLACE: just do local node override ---------
+			else
+				ca_output.overlay_differential (co_override_target, co_child_diff)
 			end
 		end
 
