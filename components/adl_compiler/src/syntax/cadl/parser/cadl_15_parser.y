@@ -264,7 +264,9 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 --
 	| type_identifier
 		{
-			if version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty then
+			if valid_standard_version (target_descriptor.file_mgr.adl_version) and then 
+				version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty 
+			then
 				create $$.make ($1, new_fake_node_id)
 			else
 				if not object_nodes.is_empty then
