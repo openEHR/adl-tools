@@ -94,21 +94,21 @@ templates = <
 		-- C_COMPLEX_OBJECT_PROXY
 		["VUNP"] = <"C_COMPLEX_OBJECT_PROXY path $1 not found in archetype">
 		["VSUNT"] = <"node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
-		["VSUNC"] = <"node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 		-- C_ARCHETYPE_SLOT
 		["VDSEV1"] = <"'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'">
 		["VDSEV2"] = <"'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or match 'any' when 'include' matches non-'any'">
 		["VDSIV1"] = <"'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or not match 'any' when 'exclude' matches 'any'">
 		["VDSIV2"] = <"'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
-		["VDSSR"] = <"Slot node at path $1 may only redefine parent C_COMPLEX_OBJECT in parent if the latter has no child attributes.">
+		["VDSSID"] = <"slot node with node id $1 at $2 redefining slot node (id = $3) must have identical node id">
 
 		-- C_ARCHETYPE_ROOT
 		["VARXR"] = <"slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor">
 		["VARXRA"] = <"external reference at $1 specifies archetype $2 that doesn't exist in current repository">
 		["VARXAV"] = <"external reference at $1 specifies archetype $2 that is not a descendant of archetype $3 mentioned in matching parent node">
 		["VARXS"] = <"slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
-		["VARXNC"] = <"slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
+		["VARXNC"] = <"node id $1 of slot filler at $2 does not correspond to any ARCHETYPE slot in flat parent">
+		["VARXID"] = <"node id $1 of slot filler at $2 must be specialisation of corresponding ARCHETYPE slot node id £3 in flat parent">
 		["VARXTV"] = <"RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
 		["VARXV"] = <"slot filler at $1 does not have matching slot node in flat parent">
 

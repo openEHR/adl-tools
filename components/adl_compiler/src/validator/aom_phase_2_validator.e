@@ -222,21 +222,31 @@ end
 				-- this block of tests check conformance for specific cases when the child and parent AOM types are different.
 				--------------------------------------------------------------------------------------------------------------
 
-				-- test conformance specific to C_ARCHETYPE_ROOT where C_ARCHETYPE_ROOT redefines ARCHETYPE_SLOT
-				if attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {ARCHETYPE_SLOT} co_in_flat_anc as a_slot then
-					if ancestor_slot_id_index.has (a_slot.path) then
-						if not archetype_id_matches_slot (car.archetype_ref, a_slot) then -- doesn't match the slot definition
+				-- C_ARCHETYPE_ROOT specialises (i.e. fills) an ARCHETYPE_SLOT
+				if attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {ARCHETYPE_SLOT} co_in_flat_anc as parent_slot then
+					if ancestor_slot_id_index.has (parent_slot.path) then
+						if not archetype_id_matches_slot (car.archetype_ref, parent_slot) then -- doesn't match the slot definition
 							add_error (ec_VARXS, <<co_child_annotated_path, car.archetype_ref>>)
 
 						-- matches def, but not found in actual list from current repo
-						elseif not slot_filler_archetype_id_exists (a_slot.path, car.archetype_ref) then
+						elseif not slot_filler_archetype_id_exists (parent_slot.path, car.archetype_ref) then
 							add_error (ec_VARXR, <<co_child_annotated_path, car.archetype_ref>>)
+
+						-- filler id is not specialised
+						elseif specialisation_depth_from_code (car.node_id) /= arch_diff_child.specialisation_depth then
+							add_error (ec_VARXID, <<car.node_id, co_child_annotated_path, parent_slot.node_id>>)
 						end
 					else
 						add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
 					end
 
-				-- where C_ARCHETYPE_ROOT redefines C_ARCHETYPE_ROOT
+				-- ARCHETYPE_SLOT redefines ARCHETYPE_SLOT
+				elseif attached {ARCHETYPE_SLOT} co_child_diff as child_slot and attached {ARCHETYPE_SLOT} co_in_flat_anc as parent_slot then
+					if not child_slot.node_id.same_string (parent_slot.node_id) then
+						add_error (ec_VDSSID, <<child_slot.node_id, co_child_annotated_path, parent_slot.node_id>>)
+					end
+
+				-- C_ARCHETYPE_ROOT redefines C_ARCHETYPE_ROOT
 				elseif attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {C_ARCHETYPE_ROOT} co_in_flat_anc as parent_car then
 					-- no archetype matches this ref
 					if not current_library.has_archetype_id_for_ref (car.archetype_ref) then
@@ -259,18 +269,9 @@ end
 						add_error (ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type, co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
 					end
 
-				-- allow the case where a C_COMPLEX_OBJECT is redefined into objects including C_COMPLEX_OBJECT_PROXY, as long as parent object
-				-- has no children
-				elseif attached {C_COMPLEX_OBJECT_PROXY} co_child_diff as air_c and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat then
-					if not cco_flat.any_allowed then
-						add_error (ec_VSUNC, <<co_child_annotated_path, co_child_diff.generating_type, co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
-					end
-
-				-- case where a C_COMPLEX_OBJECT is redefined into a slot, only legal if the C_COMPLEX_OBJECT had no children
-				elseif attached {ARCHETYPE_SLOT} co_child_diff as air_c and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat then
-					if not cco_flat.any_allowed then
-						add_error (ec_VDSSR, <<co_child_annotated_path>>)
-					end
+				-- a C_COMPLEX_OBJECT with any_allowed = True to be redefined into anything. (Basic conformance - RM type, occurrences - checked below)
+				elseif attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat and then cco_flat.any_allowed then
+					-- nothing to do
 
 				-- else the AOM meta-types must be the same
 				elseif dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
