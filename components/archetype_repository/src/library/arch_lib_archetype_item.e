@@ -223,8 +223,8 @@ feature -- Identification
 		require
 			is_specialised
 		do
-			check attached parent_ref as att_pref then
-				create Result.make_from_string (att_pref)
+			check attached specialisation_ancestor as att_sp then
+				Result := att_sp.id
 			end
 		end
 
@@ -878,8 +878,8 @@ feature {NONE} -- Compilation
 					set_archetype_view_language (diff_arch.original_language.code_string)
 				end
 
-				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_parent_ref and then not pid.as_string.starts_with (da_parent_ref) then
-					add_warning (ec_parse_w1, <<id.as_string, pid.as_string, da_parent_ref>>)
+				if is_specialised and then attached diff_arch.parent_archetype_id as da_parent_ref and then not parent_id.as_string.starts_with (da_parent_ref) then
+					add_warning (ec_parse_w1, <<id.as_string, parent_id.as_string, da_parent_ref>>)
 				else
 					add_info (ec_parse_i1, <<id.as_string>>)
 				end
@@ -1335,7 +1335,6 @@ invariant
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
 
 	parent_existence: specialisation_ancestor /= Void implies is_specialised
-	parent_validity: (specialisation_ancestor /= Void and not ontology_location_changed) implies parent_id.is_equal (specialisation_ancestor.id)
 	clients_index_valid: clients_index /= Void implies not clients_index.is_empty
 
 end
