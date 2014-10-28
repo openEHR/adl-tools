@@ -401,8 +401,6 @@ feature {NONE} -- Implementation
 						select_item_in_grid (grid_row, arch_id)
 					end
 				end
-
-				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
 
