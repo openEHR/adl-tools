@@ -83,9 +83,9 @@ feature -- Initialisation
 			an_annotations: like annotations)
 				-- make from all possible items
 		require
-			Translations_valid: a_translations /= Void implies not a_translations.is_empty
+			Translations_valid: attached a_translations as att_trans implies not att_trans.is_empty
 			Description_valid: not an_artefact_type.is_overlay implies attached a_description
-			Invariants_valid: a_rules /= Void implies not a_rules.is_empty
+			Invariants_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
 			make (an_artefact_type, an_id,
 					an_original_language, a_uid,
@@ -503,7 +503,7 @@ feature -- Status Report
 			-- True if this archetype was generated from another one, rather than being an original authored archetype
 
 	is_template: BOOLEAN
-			-- True if `artefact_type' is any type other than archetype
+			-- True if `artefact_type' is a template
 		do
 			Result := artefact_type.is_template
 		end
