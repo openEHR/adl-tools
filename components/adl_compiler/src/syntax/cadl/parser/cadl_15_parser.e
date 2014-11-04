@@ -1142,7 +1142,7 @@ end
 
 			id_code := yyvs4.item (yyvsp4).substring (1, yyvs4.item (yyvsp4).index_of (',', 1) - 1)
 			archetype_ref := yyvs4.item (yyvsp4).substring (yyvs4.item (yyvsp4).index_of (',', 1) + 1, yyvs4.item (yyvsp4).count)
-			if archetype_id_parser.valid_id (archetype_ref) then
+			if archetype_id_checker.valid_id (archetype_ref) then
 				create yyval9.make (yyvs4.item (yyvsp4 - 1), id_code, archetype_ref)
 				if attached yyvs14.item (yyvsp14) as occ then
 					yyval9.set_occurrences (occ)
@@ -8961,11 +8961,6 @@ feature {NONE} -- Implementation
 	og_path: OG_PATH
 		attribute
 			create Result.make_root
-		end
-
-	archetype_id_parser: ARCHETYPE_HRID_PARSER
-		once
-			create Result.make
 		end
 
 end

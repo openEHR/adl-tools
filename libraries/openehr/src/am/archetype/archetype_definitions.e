@@ -52,7 +52,7 @@ feature -- Definitions
 			-- these are
 
 	Aom_profile_file_match_regex: STRING
-		once
+		once ("PROCESS")
 			Result :=  ".*\" + Aom_profile_file_extension + "$"
 		end
 
@@ -64,19 +64,35 @@ feature -- Definitions
 
 	Tuple_right_delimiter: CHARACTER = ']'
 
+feature -- Keywords
+
+	Generated_flag_string: STRING = "generated"
+
+	Adl_version_string: STRING = "adl_version"
+
+feature -- Archetype identifiers
+
+	archetype_id_checker: ARCHETYPE_HRID_PARSER
+		once ("PROCESS")
+			create Result.make
+		end
+
 feature -- Version identification
 
-	Adl_version_string_regex: STRING = "adl_version[ \t]*=[ \t]*[0-9]+(\.[0-9]+)*"
+	Adl_version_string_regex: STRING
+		once ("PROCESS")
+			Result := Adl_version_string + "[ \t]*=[ \t]*" + Standard_version_regex
+		end
 
 	Adl_version_string_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile (adl_version_string_regex)
 		end
 
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
-		once
+		once ("PROCESS")
 			create Result.make(0)
 			Result.compare_objects
 			Result.extend (Adl_14_version)
@@ -98,17 +114,17 @@ feature -- Version identification
 			-- version in which new id-codes are present
 
 	Latest_adl_version: STRING
-		once
+		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).version_to_build
 		end
 
 	Latest_adl_minor_version: STRING
-		once
+		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).version_to_minor
 		end
 
 	Latest_adl_major_version: STRING
-		once
+		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).major.out
 		end
 
@@ -116,7 +132,7 @@ feature -- Version identification
 			-- Regex for 1, 2, or 3-part version string string of form N.M.P
 
 	Standard_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile (Standard_version_regex)
 		end
@@ -173,7 +189,7 @@ feature -- Comparison
 
 	archetype_term_keys: ARRAYED_LIST [STRING]
 			-- set of 'key's of an ARCHETYPE_TERM, currently 'text' and 'description'
-		once
+		once ("PROCESS")
 			Result := (create {ARCHETYPE_TERM}.default_create).Keys
 		end
 
@@ -187,7 +203,7 @@ feature -- Comparison
 
 	Adl_tag_character_replacements: HASH_TABLE [STRING, CHARACTER]
 			-- characters that will be replaced in strings being used to generate API tags from paths
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put ("_percent_", '%%')
 			Result.put ("_equals_", '=')
@@ -201,7 +217,7 @@ feature -- Comparison
 	c_object_constraint_types: HASH_TABLE [STRING, STRING]
 			-- C_OBJECT meanings keyed by class-names (meanings are message tags to be converted to
 			-- natural language via calls to get_text ())
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			Result.put ("c_type_complex_object", bare_type_name (({C_COMPLEX_OBJECT}).name))
 			Result.put ("c_type_primitive_object", bare_type_name (({C_PRIMITIVE_OBJECT}).name))
@@ -214,7 +230,7 @@ feature -- Comparison
 	c_primitive_subtypes: ARRAYED_SET [STRING]
 			-- FIXME: replace with reflection-based implementation as descendants of
 			-- C_PRIMITIVE_OBJECT when compiling with Eiffel 7.3
-		do
+		once ("PROCESS")
 			create Result.make (0)
 			Result.compare_objects
 			Result.extend (bare_type_name(({C_INTEGER}).name))
@@ -233,7 +249,7 @@ feature -- Comparison
 			-- 0..0, 0..1, 1..1, 0..*, 1..*
 		local
 			mult_int: MULTIPLICITY_INTERVAL
-		once
+		once ("PROCESS")
 			create Result.make (0)
 			create mult_int.make_optional
 			Result.put (mult_int, mult_int.as_string)

@@ -65,8 +65,8 @@ feature {NONE} -- Implementation
 	version_status_symbol_texts: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put ("+u", vs_unstable)
-			Result.put ("-rc", vs_release_candidate)
+			Result.put ("-alpha.", vs_unstable)
+			Result.put ("-rc.", vs_release_candidate)
 			Result.put ("", vs_released)
 			Result.put ("+", vs_build)
 		end

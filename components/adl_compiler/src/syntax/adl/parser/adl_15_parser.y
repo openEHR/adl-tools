@@ -262,7 +262,7 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 
 arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			if archetype_id_parser.valid_id_reference ($2) then
+			if archetype_id_checker.valid_id_reference ($2) then
 				parent_archetype_id := $2
 			else
 				abort_with_error (ec_SASID, Void)
@@ -455,16 +455,11 @@ feature {NONE} -- Implementation
 
 	set_archetype_id (an_arch_id: STRING)
 		do
-			if archetype_id_parser.valid_id (an_arch_id) then
+			if archetype_id_checker.valid_id (an_arch_id) then
 				create archetype_id.make_from_string (an_arch_id)
 			else
 				abort_with_error (ec_SASID, Void)
 			end
-		end
-
-	archetype_id_parser: ARCHETYPE_HRID_PARSER
-		once
-			create Result.make
 		end
 
 end

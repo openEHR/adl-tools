@@ -108,21 +108,14 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	filesys_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
-			-- Index of archetype & file-system nodes, keyed by relative path of node under repository root path for directory nodes
-			-- and for archetype nodes, the archetype id.
-		attribute
-			create Result.make (0)
-		end
-
 	matching_ids (a_regex: STRING; an_rm_type, an_rm_closure: detachable STRING): ARRAYED_SET [STRING]
 			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type. Matching using `an_tm_type' and
 			-- `an_rm_closure' is done in lower case. Any case may be supplied for these two
 		require
 			Regex_valid: not a_regex.is_empty
-			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
-			Rm_closure_valid: an_rm_closure /= Void implies not an_rm_closure.is_empty
+			Rm_type_valid: attached an_rm_type as att_rm_type implies not att_rm_type.is_empty
+			Rm_closure_valid: attached an_rm_closure as att_rm_closure implies not att_rm_closure.is_empty
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			arch_id: ARCHETYPE_HRID
@@ -712,20 +705,11 @@ feature {NONE} -- Implementation
 			filesys_item_index.force (filesys_node, filesys_node.qualified_key)
 		end
 
-	do_subtree (node: ARCH_LIB_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]])
-			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
-		do
-			if attached node then
-				enter_action.call ([node])
-				if node.has_children then
-					across node as child_csr loop
-						do_subtree (child_csr.item, enter_action, exit_action)
-					end
-				end
-				if attached exit_action then
-					exit_action.call ([node])
-				end
-			end
+	filesys_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
+			-- Index of archetype & file-system nodes, keyed by relative path of node under repository root path for directory nodes
+			-- and for archetype nodes, the archetype id.
+		attribute
+			create Result.make (0)
 		end
 
 	filesys_item_tree: ARCH_LIB_ARTEFACT_TYPE_ITEM
@@ -924,6 +908,22 @@ feature {NONE} -- Implementation
 					stats.item (aca.rm_schema.schema_id).merge (aca.statistical_analyser.stats)
 				else
 					stats.put (aca.statistical_analyser.stats.duplicate, aca.rm_schema.schema_id)
+				end
+			end
+		end
+
+	do_subtree (node: ARCH_LIB_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]])
+			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+		do
+			if attached node then
+				enter_action.call ([node])
+				if node.has_children then
+					across node as child_csr loop
+						do_subtree (child_csr.item, enter_action, exit_action)
+					end
+				end
+				if attached exit_action then
+					exit_action.call ([node])
 				end
 			end
 		end

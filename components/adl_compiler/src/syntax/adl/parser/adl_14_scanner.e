@@ -61,29 +61,29 @@ if yy_act <= 7 then
 if yy_act <= 4 then
 if yy_act <= 2 then
 if yy_act = 1 then
---|#line 59 "adl_14_scanner.l"
+--|#line 53 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 59")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 53")
 end
 -- Ignore separators
 else
---|#line 60 "adl_14_scanner.l"
+--|#line 54 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 60")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 54")
 end
 in_lineno := in_lineno + text_count
 end
 else
 if yy_act = 3 then
---|#line 65 "adl_14_scanner.l"
+--|#line 59 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 65")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 59")
 end
 -- Ignore comments
 else
---|#line 66 "adl_14_scanner.l"
+--|#line 60 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 66")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 60")
 end
 in_lineno := in_lineno + 1
 end
@@ -91,22 +91,22 @@ end
 else
 if yy_act <= 6 then
 if yy_act = 5 then
---|#line 70 "adl_14_scanner.l"
+--|#line 64 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 70")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 64")
 end
 last_token := Minus_code
 else
---|#line 71 "adl_14_scanner.l"
+--|#line 65 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 71")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 65")
 end
 last_token := Plus_code
 end
 else
---|#line 72 "adl_14_scanner.l"
+--|#line 66 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 72")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 66")
 end
 last_token := Star_code
 end
@@ -115,44 +115,44 @@ else
 if yy_act <= 10 then
 if yy_act <= 9 then
 if yy_act = 8 then
---|#line 73 "adl_14_scanner.l"
+--|#line 67 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 73")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 67")
 end
 last_token := Slash_code
 else
---|#line 74 "adl_14_scanner.l"
+--|#line 68 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 74")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 68")
 end
 last_token := Caret_code
 end
 else
---|#line 75 "adl_14_scanner.l"
+--|#line 69 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 75")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 69")
 end
 last_token := Equal_code
 end
 else
 if yy_act <= 12 then
 if yy_act = 11 then
---|#line 76 "adl_14_scanner.l"
+--|#line 70 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 76")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 70")
 end
 last_token := Dot_code
 else
---|#line 77 "adl_14_scanner.l"
+--|#line 71 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 77")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 71")
 end
 last_token := Semicolon_code
 end
 else
---|#line 78 "adl_14_scanner.l"
+--|#line 72 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 78")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 72")
 end
 last_token := Comma_code
 end
@@ -163,29 +163,29 @@ if yy_act <= 20 then
 if yy_act <= 17 then
 if yy_act <= 15 then
 if yy_act = 14 then
---|#line 79 "adl_14_scanner.l"
+--|#line 73 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 79")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 73")
 end
 last_token := Colon_code
 else
---|#line 80 "adl_14_scanner.l"
+--|#line 74 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 80")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 74")
 end
 last_token := Exclamation_code
 end
 else
 if yy_act = 16 then
---|#line 81 "adl_14_scanner.l"
+--|#line 75 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 81")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 75")
 end
 last_token := Left_parenthesis_code
 else
---|#line 82 "adl_14_scanner.l"
+--|#line 76 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 82")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 76")
 end
 last_token := Right_parenthesis_code
 end
@@ -193,22 +193,22 @@ end
 else
 if yy_act <= 19 then
 if yy_act = 18 then
---|#line 83 "adl_14_scanner.l"
+--|#line 77 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 83")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 77")
 end
 last_token := Dollar_code
 else
---|#line 84 "adl_14_scanner.l"
+--|#line 78 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 84")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 78")
 end
 last_token := Question_mark_code
 end
 else
---|#line 86 "adl_14_scanner.l"
+--|#line 80 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 86")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 80")
 end
 last_token := Left_bracket_code
 end
@@ -217,56 +217,56 @@ else
 if yy_act <= 23 then
 if yy_act <= 22 then
 if yy_act = 21 then
---|#line 87 "adl_14_scanner.l"
+--|#line 81 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 87")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 81")
 end
 last_token := Right_bracket_code
 else
---|#line 91 "adl_14_scanner.l"
+--|#line 85 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 91")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 85")
 end
 
 				last_token := SYM_ARCHETYPE
-
+			
 end
 else
---|#line 95 "adl_14_scanner.l"
+--|#line 89 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 95")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 89")
 end
 
 				last_token := SYM_ADL_VERSION
-
+			
 end
 else
 if yy_act <= 25 then
 if yy_act = 24 then
---|#line 99 "adl_14_scanner.l"
+--|#line 93 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 99")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 93")
 end
 
 				last_token := SYM_IS_CONTROLLED
-
+			
 else
---|#line 103 "adl_14_scanner.l"
+--|#line 97 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 103")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 97")
 end
 
 				last_token := SYM_IS_GENERATED
-
+			
 end
 else
---|#line 107 "adl_14_scanner.l"
+--|#line 101 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 107")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 101")
 end
 
 				last_token := SYM_UID
-
+			
 end
 end
 end
@@ -277,105 +277,105 @@ if yy_act <= 33 then
 if yy_act <= 30 then
 if yy_act <= 28 then
 if yy_act = 27 then
+--|#line 105 "adl_14_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 105")
+end
+
+				last_token := SYM_SPECIALIZE
+				in_lineno := in_lineno + 1
+			
+else
 --|#line 111 "adl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 111")
 end
 
-				last_token := SYM_SPECIALIZE
-				in_lineno := in_lineno + 1
-
-else
---|#line 117 "adl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 117")
-end
-
 				last_token := SYM_CONCEPT
 				in_lineno := in_lineno + 1
-
+			
 end
 else
 if yy_act = 29 then
---|#line 122 "adl_14_scanner.l"
+--|#line 116 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 122")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 116")
 end
 
 				last_token := SYM_LANGUAGE
 				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				language_text_start_line := in_lineno
-
+			
 else
---|#line 129 "adl_14_scanner.l"
+--|#line 123 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 129")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 123")
 end
 
 				last_token := SYM_DESCRIPTION
 				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				description_text_start_line := in_lineno
-
+			
 end
 end
 else
 if yy_act <= 32 then
 if yy_act = 31 then
---|#line 136 "adl_14_scanner.l"
+--|#line 130 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 136")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 130")
 end
 
 				last_token := SYM_DEFINITION
 				set_start_condition(IN_CADL_SECTION)
 				in_lineno := in_lineno + 1
 				definition_text_start_line := in_lineno
-
+			
 else
---|#line 143 "adl_14_scanner.l"
+--|#line 137 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 143")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 137")
 end
 
 				last_token := SYM_INVARIANT
 				set_start_condition(IN_ASSERTION_SECTION)
 				in_lineno := in_lineno + 1
 				invariant_text_start_line := in_lineno
-
+			
 end
 else
---|#line 150 "adl_14_scanner.l"
+--|#line 144 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 150")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 144")
 end
 
 				last_token := SYM_ONTOLOGY
 				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				ontology_text_start_line := in_lineno
-
+			
 end
 end
 else
 if yy_act <= 36 then
 if yy_act <= 35 then
 if yy_act = 34 then
---|#line 157 "adl_14_scanner.l"
+--|#line 151 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 157")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 151")
 end
 
 				last_token := SYM_ANNOTATIONS
 				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
 				annotations_text_start_line := in_lineno
-
+			
 else
---|#line 165 "adl_14_scanner.l"
+--|#line 159 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 165")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 159")
 end
  -- line starting with any keyword that can appear after an ODIN section
 				-- unread the pattern just matched
@@ -393,12 +393,12 @@ end
 				last_string_value := str_
 
 				set_start_condition(INITIAL)
-
+			
 end
 else
---|#line 166 "adl_14_scanner.l"
+--|#line 160 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 166")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 160")
 end
  -- line starting with any keyword that can appear after an ODIN section
 				-- unread the pattern just matched
@@ -416,14 +416,14 @@ end
 				last_string_value := str_
 
 				set_start_condition(INITIAL)
-
+			
 end
 else
 if yy_act <= 38 then
 if yy_act = 37 then
---|#line 167 "adl_14_scanner.l"
+--|#line 161 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 167")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 161")
 end
  -- line starting with any keyword that can appear after an ODIN section
 				-- unread the pattern just matched
@@ -441,25 +441,25 @@ end
 				last_string_value := str_
 
 				set_start_condition(INITIAL)
-
+			
 else
---|#line 184 "adl_14_scanner.l"
+--|#line 178 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 184")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 178")
 end
  -- LF
 				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
-
+			
 end
 else
---|#line 188 "adl_14_scanner.l"
+--|#line 182 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 188")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 182")
 end
  -- any text on line with no LF
 				in_buffer.append_string(text)
-
+			
 end
 end
 end
@@ -468,26 +468,26 @@ if yy_act <= 46 then
 if yy_act <= 43 then
 if yy_act <= 41 then
 if yy_act = 40 then
---|#line 203 "adl_14_scanner.l"
+--|#line 197 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 203")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 197")
 end
 
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-
+	
 else
---|#line 208 "adl_14_scanner.l"
+--|#line 202 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 208")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 202")
 end
 in_lineno := in_lineno + text_count
 end
 else
 if yy_act = 42 then
---|#line 210 "adl_14_scanner.l"
+--|#line 204 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 210")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 204")
 end
  -- non-white space at start
 				unread_character(text.item(1))
@@ -497,30 +497,30 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-
+	
 else
---|#line 222 "adl_14_scanner.l"
+--|#line 216 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 222")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 216")
 end
 			-- match ^whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
-
+	
 end
 end
 else
 if yy_act <= 45 then
 if yy_act = 44 then
---|#line 227 "adl_14_scanner.l"
+--|#line 221 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 227")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 221")
 end
 in_lineno := in_lineno + text_count
 else
---|#line 229 "adl_14_scanner.l"
+--|#line 223 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 229")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 223")
 end
  -- non-white space at start
 				unread_character(text.item(1))
@@ -530,66 +530,66 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-
+	
 end
 else
---|#line 241 "adl_14_scanner.l"
+--|#line 235 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 241")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 235")
 end
 
 					last_token := V_DOTTED_NUMERIC
 					last_string_value := text_substring (1, text_count)
-
+			
 end
 end
 else
 if yy_act <= 49 then
 if yy_act <= 48 then
 if yy_act = 47 then
+--|#line 241 "adl_14_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 241")
+end
+
+					last_token := V_CONCEPT_CODE
+					last_string_value := text_substring (2, text_count - 1)
+			
+else
 --|#line 247 "adl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 247")
 end
 
-					last_token := V_CONCEPT_CODE
-					last_string_value := text_substring (2, text_count - 1)
-
+					last_token := V_ARCHETYPE_ID
+					last_string_value := text
+			
+end
 else
 --|#line 253 "adl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 253")
 end
 
-					last_token := V_ARCHETYPE_ID
+					last_token := V_IDENTIFIER
 					last_string_value := text
-
+			
 end
 else
+if yy_act <= 51 then
+if yy_act = 50 then
 --|#line 259 "adl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 259")
 end
 
-					last_token := V_IDENTIFIER
-					last_string_value := text
-
-end
-else
-if yy_act <= 51 then
-if yy_act = 50 then
---|#line 265 "adl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 265")
-end
-
 					last_token := V_VALUE
 					last_string_value := text
-
+			
 else
---|#line 272 "adl_14_scanner.l"
+--|#line 266 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 272")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 266")
 end
 -- ignore unmatched chars
 end
@@ -612,15 +612,15 @@ end
 		do
 			inspect yy_sc
 when 0, 2, 3 then
---|#line 0 "adl_14_scanner.l"
+--|#line 265 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 265")
 end
 terminate
 when 1 then
---|#line 0 "adl_14_scanner.l"
+--|#line 185 "adl_14_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_scanner.l' at line 185")
 end
 
 				-- get the ODIN section sorted out
@@ -630,7 +630,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition(INITIAL)
-
+			
 			else
 				terminate
 			end

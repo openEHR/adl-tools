@@ -56,7 +56,7 @@ feature -- Definitions
 	qualified_rm_class_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}"
 			-- Regex for qualified rm_class part of archetype ids.
 
-	concept_id_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*"
+	concept_id_regex: STRING = "[a-zA-Z0-9][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+)*"
 			-- Regex for concept_id part of archetype ids.
 
 	segment_regex: STRING = "[a-zA-Z][a-zA-Z0-9_]+"
@@ -66,7 +66,7 @@ feature -- Definitions
 			-- Regex for ADL 2 release version
 			-- 	will match string of form N.M.P
 
-	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc\.|-alpha\.|\+)[0-9]+)?"
+	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|-alpha)\.[0-9]+)?"
 			-- Regex for ADL 1.5 release version
 			-- 	will match string of form vN.M.P with or without -rcN, +uN at the end
 
@@ -96,12 +96,18 @@ feature -- Definitions
 
 	Default_qualified_rm_class: STRING = "openEHR-EHR-ENTRY"
 
+	Default_rm_publisher: STRING = "openEHR"
+
+	Default_rm_closure: STRING = "EHR"
+
+	Default_rm_class: STRING = "ENTRY"
+
 	Default_concept: STRING = "any"
 
 	Default_release_version: STRING = "0.0.1"
 
 	Adl14_id_regex: STRING
-		once
+		once ("PROCESS")
 			Result := "^" + qualified_rm_class_regex + "\" + Axis_separator.out + concept_id_regex + "\" + Axis_separator.out + major_version_regex + "$"
 		ensure
 			Result.is_equal ("^" + qualified_rm_class_regex + "\" + Axis_separator.out + concept_id_regex + "\" + Axis_separator.out + major_version_regex + "$")
@@ -109,7 +115,7 @@ feature -- Definitions
 
 	Id_matcher_regex: STRING
 			-- matcher for archetype ids, which must include full version
-		once
+		once ("PROCESS")
 			Result := "^" + root_regex + "\" + Axis_separator.out + version_regex + "$"
 		ensure
 			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + version_regex + "$")
@@ -118,7 +124,7 @@ feature -- Definitions
 	Id_reference_matcher_regex: STRING
 			-- matcher for references to archetypes, which may include partial (i.e. interface) form of the version part
 			-- and no +u or -rc extension
-		once
+		once ("PROCESS")
 			Result := "^" + root_regex + "\" + Axis_separator.out + version_reference_regex + "$"
 		ensure
 			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + version_reference_regex + "$")
@@ -126,7 +132,7 @@ feature -- Definitions
 
 	root_regex: STRING
 			-- core part of id up to but not including the '.' before the vN part
-		once
+		once ("PROCESS")
 			Result := "(" + namespace_regex + Namespace_separator + ")?" +
 				qualified_rm_class_regex + "\" + Axis_separator.out +
 				concept_id_regex
@@ -237,7 +243,11 @@ feature -- Initialisation
 
 	default_create
 		do
-			make_from_string (Default_id)
+			create rm_publisher.make_from_string (Default_rm_publisher)
+			create rm_closure.make_from_string (Default_rm_closure)
+			create rm_class.make_from_string (Default_rm_class)
+			create concept_id.make_from_string (Default_concept)
+			create release_version.make_from_string (Default_release_version)
 		end
 
 feature -- Access
@@ -369,10 +379,15 @@ feature -- Access
 	physical_id: STRING
 			-- The ‘physical’ form of the HRID, i.e. with complete version information.
 		do
-			Result := hrid_root
-			Result.append_character (Axis_separator)
-			Result.append (Version_delimiter)
-			Result.append (version_id)
+			if attached physical_id_cache as att_phys_id then
+				Result := att_phys_id
+			else
+				Result := hrid_root
+				Result.append_character (Axis_separator)
+				Result.append (Version_delimiter)
+				Result.append (version_id)
+				physical_id_cache := Result
+			end
 		end
 
 	version_id: STRING
@@ -451,6 +466,7 @@ feature -- Modification
 			valid_concept_id (a_concept_id)
 		do
 			concept_id := a_concept_id
+			physical_id_cache := Void
 		end
 
 feature -- Comparison
@@ -504,28 +520,28 @@ feature {NONE} -- Implementation
 
 	namespace_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for namespace part of archetype ids.
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ("^" + namespace_regex + "$")
 		end
 
 	qualified_rm_class_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for qualified rm_class part of archetype ids.
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ("^" + qualified_rm_class_regex + "$")
 		end
 
 	concept_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for concept_id part of archetype ids.
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ("^" + concept_id_regex + "$")
 		end
 
 	segment_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for any segment of an archetype id
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ("^" + segment_regex + "$")
 		end
@@ -533,15 +549,17 @@ feature {NONE} -- Implementation
 	release_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 release version
 			-- 	will match string of form N.M.P
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ("^" + release_version_regex + "$")
 		end
 
 	id_parser: ARCHETYPE_HRID_PARSER
-		once
+		once ("PROCESS")
 			create Result.make
 		end
+
+	physical_id_cache: detachable STRING
 
 invariant
 	Rm_publisher_validity: not rm_publisher.is_empty

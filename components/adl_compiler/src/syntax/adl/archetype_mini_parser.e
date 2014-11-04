@@ -14,21 +14,9 @@ class ARCHETYPE_MINI_PARSER
 
 inherit
 	ADL_SYNTAX_CONVERTER
-		rename
-			file_exists as is_valid_path
 		export
 			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_path
-		end
-
-	BASIC_DEFINITIONS
-		export
-			{NONE} all;
-		end
-
-	ODIN_DEFINITIONS
-		export
-			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, file_system
 		end
 
 	ANY_VALIDATOR
@@ -36,10 +24,6 @@ inherit
 feature -- Definitions
 
 	Other_details_odin_name: STRING = "other_details"
-
-	Generated_flag_string: STRING = "generated"
-
-	Adl_version_string: STRING = "adl_version"
 
 	Double_quote_char: CHARACTER = '"'
 
@@ -56,7 +40,7 @@ feature -- Commands
 			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
 			-- specialisation status and if specialised, specialisation parent
 		require
-			path_valid: is_valid_path (a_full_path)
+			path_valid: file_system.file_exists (a_full_path)
 		local
 			lines: LIST [STRING]
 			artefact_types: ARTEFACT_TYPE
@@ -76,9 +60,10 @@ feature -- Commands
 			-- read first 5 non-blank lines, returned left- and right-adjusted (whitespace-stripped)
 			file_context.set_target (a_full_path)
 			file_context.read_n_lines(5)
-			lines := file_context.file_lines
+			lines := file_context.line_buf
 
 			-- first line
+			create arch_artefact_type_name.make_empty
 			if lines[1].has ('(') then
 				is_generated := lines[1].has_substring (Generated_flag_string)
 
@@ -93,16 +78,15 @@ feature -- Commands
 					adl_ver.left_adjust
 					adl_ver.right_adjust
 				end
-				lines[1].remove_substring (lines[1].index_of ('(', 1), lines[1].count)
-				lines[1].right_adjust
+				arch_artefact_type_name := lines[1].substring (1, lines[1].index_of ('(', 1) - 1)
+				arch_artefact_type_name.right_adjust
 			end
 
 			-- now line[1] should contain only the artefact type, e.g. 'archetype', 'template'
-			if artefact_types.valid_type_name (lines[1]) then
-				arch_artefact_type_name := lines[1]
+			if artefact_types.valid_type_name (arch_artefact_type_name) then
 
 				-- get line 2 - should be archetype id
-				if (create {ARCHETYPE_HRID}).valid_id (lines[2]) then
+				if archetype_id_checker.valid_id (lines[2]) then
 					 -- ok
 				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
 					arch_id_is_old_style := True
@@ -112,14 +96,14 @@ feature -- Commands
 				end
 
 				if not id_bad then
-					archetype_id_str := lines[2]
+					archetype_id_str := lines[2].twin
 
 					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
 						if archetype_id_parser.valid_id_reference (lines[4]) then
-							parent_id_str := lines[4]
+							parent_id_str := lines[4].twin
 						elseif old_archetype_id_pattern_regex.matches (lines[4]) then
-							parent_id_str := lines[4]
+							parent_id_str := lines[4].twin
 							arch_parent_id_is_old_style := True
 						else
 							-- something wrong with the parent id

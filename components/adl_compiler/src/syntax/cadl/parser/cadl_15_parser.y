@@ -361,7 +361,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences
 		{
 			id_code := $3.substring (1, $3.index_of (',', 1) - 1)
 			archetype_ref := $3.substring ($3.index_of (',', 1) + 1, $3.count)
-			if archetype_id_parser.valid_id (archetype_ref) then
+			if archetype_id_checker.valid_id (archetype_ref) then
 				create $$.make ($2, id_code, archetype_ref)
 				if attached $4 as occ then
 					$$.set_occurrences (occ)
@@ -2611,11 +2611,6 @@ feature {NONE} -- Implementation
 	og_path: OG_PATH
 		attribute
 			create Result.make_root
-		end
-
-	archetype_id_parser: ARCHETYPE_HRID_PARSER
-		once
-			create Result.make
 		end
 
 end

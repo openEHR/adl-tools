@@ -2579,11 +2579,6 @@ feature {NONE} -- Implementation
 			create Result.make_root
 		end
 
-	archetype_id_parser: ARCHETYPE_HRID_PARSER
-		once
-			create Result.make
-		end
-
 	ordinal_integer: C_INTEGER
 		attribute
 			create Result.default_create

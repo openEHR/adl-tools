@@ -68,12 +68,12 @@ feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
 		do
-			Result := adl14_id_regex.recognizes (an_id) or else adl15_id_regex.recognizes (an_id)
+			Result := adl15_id_regex_matcher.recognizes (an_id) or else adl14_id_regex_matcher.recognizes (an_id)
 		end
 
 	valid_id_reference (a_ref: STRING): BOOLEAN
 		do
-			Result := adl14_id_regex.recognizes (a_ref) or else adl15_id_reference_regex.recognizes (a_ref)
+			Result := adl15_id_reference_regex_matcher.recognizes (a_ref) or else adl14_id_regex_matcher.recognizes (a_ref)
 		end
 
 	is_adl14_id: BOOLEAN
@@ -89,7 +89,7 @@ feature -- Commands
 			local_hrid, ver_str, sym: STRING
 		do
 			reset
-			if adl15_id_regex.matches (an_id) then
+			if adl15_id_regex_matcher.matches (an_id) then
 				is_adl15_id := True
 
 				-- look for namespace in first section
@@ -113,7 +113,7 @@ feature -- Commands
 				-- concept part
 				concept_id := strs.i_th (2)
 
-				-- version part: looks like vN.M.P or vN.M.P+Q or vN.M.P-rcQ or vN.M.P+uQ
+				-- version part: looks like vN.M.P or vN.M.P-rc.NNN or vN.M.P-alpha.NNN
 				create ver_str.make_empty
 				from strs.go_i_th (3) until strs.off loop
 					ver_str.append (strs.item)
@@ -124,7 +124,7 @@ feature -- Commands
 				end
 				start_pos := 1 + {ARCHETYPE_HRID}.Version_delimiter.count
 
-				-- case: +uQ
+				-- case: -alpha.NNN
 				sym := version_status_symbol_text (vs_unstable)
 				sym_pos := ver_str.substring_index (sym, start_pos)
 				if sym_pos > 0 then
@@ -132,7 +132,7 @@ feature -- Commands
 					commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
 					version_status := vs_unstable
 				else
-					-- case: -rcQ
+					-- case: -rc.NNN
 					sym := version_status_symbol_text (vs_release_candidate)
 					sym_pos := ver_str.substring_index (sym, start_pos)
 					if sym_pos > 0 then
@@ -140,7 +140,7 @@ feature -- Commands
 						commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
 						version_status := vs_release_candidate
 					else
-						-- case: +Q
+						-- case: +NNN
 						sym := version_status_symbol_text (vs_build)
 						sym_pos := ver_str.substring_index (sym, start_pos)
 						if sym_pos > 0 then
@@ -155,7 +155,7 @@ feature -- Commands
 				end
 				release_version := ver_str.substring (start_pos, end_pos)
 
-			elseif adl14_id_regex.matches (an_id) then
+			elseif adl14_id_regex_matcher.matches (an_id) then
 				is_adl14_id := True
 
 				strs := an_id.split ({ARCHETYPE_HRID}.axis_separator)
@@ -197,30 +197,29 @@ feature {NONE} -- Implementation
 			is_adl15_id := False
 		end
 
-	adl14_id_regex: RX_PCRE_REGULAR_EXPRESSION
+	adl14_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for all archetype ids.
 			-- openEHR-EHR-ENTRY.any.v1
 			-- openEHR-EHR-ENTRY.any.v22
 			-- openEHR-EHR-ENTRY.any-thing.v22
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ((create {ARCHETYPE_HRID}).Adl14_id_regex)
 		end
 
-	adl15_id_regex: RX_PCRE_REGULAR_EXPRESSION
+	adl15_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 archetype ids, with optional namespace;
 			-- 	will match ids like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
-			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-rc2
-			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1+u105
-			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1+33
-		once
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-rc.2
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-alpha.105
+		once ("PROCESS")
 			create Result.make
 			Result.compile ((create {ARCHETYPE_HRID}).Id_matcher_regex)
 		end
 
-	adl15_id_reference_regex: RX_PCRE_REGULAR_EXPRESSION
+	adl15_id_reference_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 archetype id references, with optional namespace and optional versioning;
 			-- 	will match ids like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1
@@ -228,7 +227,7 @@ feature {NONE} -- Implementation
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0
-		once
+		once ("PROCESS")
 			create Result.make
 			Result.compile ((create {ARCHETYPE_HRID}).Id_reference_matcher_regex)
 		end
