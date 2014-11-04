@@ -108,12 +108,12 @@ feature -- Display
 			precursor (a_gui_grid)
 
 			-- set an empty string in the rm_name column, so later updates have an object to modify
-			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
+			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, "", Void, Void, Void, c_pixmap)
 
 			-- constraints
-			evx_grid.set_last_row_label_col (Definition_grid_col_existence, "", Void, Void, Void)
-			evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, "", Void, Void, Void)
-			evx_grid.set_last_row_label_col (Definition_grid_col_constraint, "", Void, Void, Void)
+			evx_grid.set_last_row_label_col (Definition_grid_col_existence, "", Void, Void, Void, Void)
+			evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, "", Void, Void, Void, Void)
+			evx_grid.set_last_row_label_col (Definition_grid_col_constraint, "", Void, Void, Void, Void)
 
 			-- add context menu
 			build_context_menu
@@ -143,9 +143,9 @@ feature -- Display
 					end
 					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 					attr_str.remove_head (1)
-					evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+					evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, Void, c_attribute_colour, c_pixmap)
 				else
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_attribute_name, node_tooltip_str, c_attribute_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_attribute_name, node_tooltip_str, Void, c_attribute_colour, c_pixmap)
 				end
 
 				-- existence
@@ -161,7 +161,7 @@ feature -- Display
 				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities then
 					ex_str := rm_property.existence.as_string
 				end
-				evx_grid.update_last_row_label_col (Definition_grid_col_existence, ex_str, Void, c_col, Void)
+				evx_grid.update_last_row_label_col (Definition_grid_col_existence, ex_str, Void, Void, c_col, Void)
 
 				-- cardinality
 				create card_str.make_empty
@@ -172,23 +172,23 @@ feature -- Display
 				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and then attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
 					card_str := bmm_cont_prop.cardinality.as_string
 				end
-				evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, card_str, Void, c_col, Void)
+				evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, card_str, Void, Void, c_col, Void)
 
 				-- any allowed
 				if a_n.any_allowed then
-					evx_grid.update_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+					evx_grid.update_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, Void, c_constraint_colour, Void)
 				end
 
 			else
 				-- RM name
-				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, rm_property.display_name, node_tooltip_str, c_attribute_colour, c_pixmap)
+				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, rm_property.display_name, node_tooltip_str, Void, c_attribute_colour, c_pixmap)
 
 				-- existence
-				evx_grid.update_last_row_label_col (Definition_grid_col_existence, rm_property.existence.as_string, Void, c_attribute_colour, Void)
+				evx_grid.update_last_row_label_col (Definition_grid_col_existence, rm_property.existence.as_string, Void, Void, c_attribute_colour, Void)
 
 				-- cardinality
 				if attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
-					evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, c_attribute_colour, Void)
+					evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, Void, c_attribute_colour, Void)
 				end
 			end
 

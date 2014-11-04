@@ -354,26 +354,26 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			create tooltip.make_empty
 			tooltip.append (" local: " + a_rep_if.local_directory + "%N")
 			tooltip.append ("remote: " + a_rep_if.remote_url + "%N")
-			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rep_if.key, tooltip, Void, col_icon)
+			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rep_if.key, tooltip, Void, Void, col_icon)
 
 			-- column 2 - repository status
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void, Void)
 
 			-- column 3 - checked out branch
 			if a_rep_if.has_remote_repository then
-				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void)
+				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void, Void)
 			else
-				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void)
+				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
 			end
 
 			-- column 4 - VCS sync status
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (a_rep_if.synchronisation_status), Void, vcs_status_icon (a_rep_if.synchronisation_status))
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (a_rep_if.synchronisation_status), Void, Void, vcs_status_icon (a_rep_if.synchronisation_status))
 
 			-- column 5 - repository description
-			evx_grid.update_last_row_label_col (Grid_description_col, a_rep_if.repository_definition.description, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, a_rep_if.repository_definition.description, Void, Void, Void, Void)
 
 			-- column 6 - maintainer
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, a_rep_if.repository_definition.maintainer, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, a_rep_if.repository_definition.maintainer, Void, Void, Void, Void)
 
 			-- column 7 - validation
 			errors := a_rep_if.errors
@@ -384,13 +384,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_icon := get_icon_pixmap ("tool/star")
 			end
-			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, col_icon)
+			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, Void, col_icon)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_validation_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_repository_validation (a_rep_if))
 			end
 
 			-- column 8 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Ev_grid_text_link_colour, Void)
+			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_repository_definition (a_grid_row, a_rep_if))
 			end
@@ -404,7 +404,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			evx_grid.set_last_row (a_grid_row)
 
 			-- column 1: display name & repo icon
-			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rem_proxy.remote_key, a_rem_proxy.remote_url, Repository_remote_proxy_color, get_icon_pixmap ("tool/" + a_rem_proxy.remote_type))
+			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rem_proxy.remote_key, a_rem_proxy.remote_url, Void, Repository_remote_proxy_color, get_icon_pixmap ("tool/" + a_rem_proxy.remote_type))
 
 			-- column 2 - repository status
 			if tool_supported (a_rem_proxy.remote_type) then
@@ -412,7 +412,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				text_col := Void
 			end
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, text_col, Void)
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Void, text_col, Void)
 
 			-- only make the link live if the tool is supported
 			if tool_supported (a_rem_proxy.remote_type) and not evx_grid.has_last_row_pointer_button_press_actions (Grid_status_col) then
@@ -420,22 +420,22 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- column 3 - (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
 
 			-- column 4 - (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void, Void)
 
 			-- column 5 - (blank)
-			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void, Void)
 
 			-- column 6 - (blank)
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, "", Void, Void, Void, Void)
 
 			-- column 7 - (blank)
-			evx_grid.update_last_row_label_col (Grid_validation_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_validation_col, "", Void, Void, Void, Void)
 
 			-- column 8 - (blank)
-			evx_grid.update_last_row_label_col (Grid_edit_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_edit_col, "", Void, Void, Void, Void)
 		end
 
 	install_repository (a_grid_row: EV_GRID_ROW; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
@@ -491,16 +491,16 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_icon := get_icon_pixmap ("tool/archetype_library")
 			end
-			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, col_tooltip, Void, col_icon)
+			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, col_tooltip, Void, Void, col_icon)
 
 			-- column 2 - (blank)
-			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void, Void)
 
 			-- column 3 - (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
 
 			-- column 4 - (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void, Void)
 
 			-- column 5 - library dscription
 			if attached a_lib_if.library_definition as att_lib_def then
@@ -508,7 +508,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_text := "(unknown)"
 			end
-			evx_grid.update_last_row_label_col (Grid_description_col, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, Void, col_text, Void, Void, Void)
 
 			-- column 6 - maintainer
 			if attached a_lib_if.library_definition as att_lib_def then
@@ -516,7 +516,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_text := "(unknown)"
 			end
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, Void, col_text, Void, Void, Void)
 
 			-- column 7 - validation
 			errors := a_lib_if.errors
@@ -527,13 +527,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_icon := Void
 			end
-			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, col_icon)
+			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, Void, col_icon)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_validation_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_library_validation (a_lib_if))
 			end
 
 			-- column 8 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Ev_grid_text_link_colour, Void)
+			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_library_definition (a_grid_row, a_lib_if))
 			end

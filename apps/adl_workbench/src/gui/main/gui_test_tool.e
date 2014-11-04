@@ -819,7 +819,7 @@ feature {NONE} -- Implementation
 				end
 
 				-- create the row
-				evx_grid.set_last_row_label_col (1, ari.name, Void, Void, Void)
+				evx_grid.set_last_row_label_col (1, ari.name, Void, Void, Void, Void)
 				evx_grid.last_row_add_checkbox (2)
 				check attached evx_grid.last_row as lr then
 					grid_row_stack.extend (lr)
@@ -827,16 +827,16 @@ feature {NONE} -- Implementation
 				icon_key := "archetype/"
 
 				if attached {ARCH_LIB_ARCHETYPE_ITEM} ari as ala then
-					evx_grid.update_last_row_label_col (1, Void, ala.source_file_path, Void, Void)
+					evx_grid.update_last_row_label_col (1, Void, ala.source_file_path, Void, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
-						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void)
+						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void, Void)
 						col_csr := col_csr + 1
 					end
 				elseif attached {ARCH_LIB_CLASS_ITEM} ari as alcn then
 					icon_key := "rm/generic/"
 				end
-				evx_grid.update_last_row_label_col (1, Void, Void, Void, get_icon_pixmap (icon_key + ari.group_name))
+				evx_grid.update_last_row_label_col (1, Void, Void, Void, Void, get_icon_pixmap (icon_key + ari.group_name))
 			end
 		end
 

@@ -40,17 +40,17 @@ feature -- Display
 			end
 
 			-- rm_name col
-			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, c_attribute_colour,
+			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, Void, c_attribute_colour,
 				get_icon_pixmap ("rm/generic/c_attribute"))
 
 			-- set meaning column empty
-			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 
 			-- update tooltip in RM column
 		--	evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
 			-- set constraint column
-			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, Void, c_constraint_colour, Void)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -58,13 +58,13 @@ feature -- Display
 			precursor (ui_settings)
 
 			-- RM name col - if in technical mode, show primitive data type
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, Void, Void)
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str,Void,  Void, Void)
 
 			-- update tooltip in RM column
 		--	evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
 			-- set constraint column
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, Void, c_constraint_colour, Void)
 		end
 
 feature -- Modification

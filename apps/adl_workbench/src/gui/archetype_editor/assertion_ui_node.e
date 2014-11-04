@@ -55,8 +55,8 @@ feature -- Display
 			check attached ev_grid_row as gr then
 				evx_grid.set_last_row (gr)
 			end
-			evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, c_meaning_colour, c_pixmap)
-			evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, c_meaning_colour, Void)
+			evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, Void, c_meaning_colour, c_pixmap)
+			evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, Void, c_meaning_colour, Void)
 		end
 
 feature -- Modification

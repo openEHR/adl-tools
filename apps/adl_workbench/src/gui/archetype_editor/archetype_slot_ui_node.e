@@ -49,7 +49,7 @@ feature -- Display
 			-- add closed indicator in constraint column
 			if attached arch_node as a_n and attached ev_grid_row as gr then
 				if a_n.is_closed then
-					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)
+					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, Void, c_constraint_colour, Void)
 				else
 					-- create child nodes for includes & excludes
 					if a_n.has_substantive_includes then
@@ -57,11 +57,11 @@ feature -- Display
 							evx_grid.add_sub_row (gr, includes_csr.item)
 
 							-- put pixmap on RM col
-							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void,
+							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, Void,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_include"))
 
 							-- put blank text in constraint col
-							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
 
 							-- remember the association
 							assertions_index.extend (includes_csr.item)
@@ -76,11 +76,11 @@ feature -- Display
 							evx_grid.add_sub_row (gr, excludes_csr.item)
 
 							-- put pixmap on RM col
-							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void,
+							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void, Void,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_exclude"))
 
 							-- put blank text in constraint col
-							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
 
 							-- remember the association
 							assertions_index.extend (excludes_csr.item)
@@ -101,8 +101,8 @@ feature -- Display
 			-- iterate through the assertions
 			across assertions_index as assn_csr loop
 				evx_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
-				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_object_colour, Void)
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, c_constraint_colour, Void)
+				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, Void, c_object_colour, Void)
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, Void, c_constraint_colour, Void)
 			end
 		end
 

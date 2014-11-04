@@ -317,18 +317,18 @@ feature {NONE} -- Implementation
 
 			if editing_enabled and specialisation_depth_from_code (a_node_id) = source_archetype.specialisation_depth then
 				-- id code column
-				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
 				-- text column	
-				evx_id_terms_grid.set_last_row_label_col_editable (Id_terms_grid_col_text, id_term.text, Void, term_color, Void, agent update_term_text (a_node_id, ev_row))
+				evx_id_terms_grid.set_last_row_label_col_editable (Id_terms_grid_col_text, id_term.text, Void, Void, term_color, Void, agent update_term_text (a_node_id, ev_row))
 				-- description column
-				evx_id_terms_grid.set_last_row_label_col_editable (Id_terms_grid_col_description, id_term.description, Void, term_color, Void, agent update_term_description (a_node_id, ev_row))
+				evx_id_terms_grid.set_last_row_label_col_editable (Id_terms_grid_col_description, id_term.description, Void, Void, term_color, Void, agent update_term_description (a_node_id, ev_row))
 			else
 				-- id code column
-				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, a_node_id, Void, Void, term_color, get_icon_pixmap ("archetype/term_rel_part_of"))
 				-- text column			
-				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_text, id_term.text, Void, term_color, Void)
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_text, id_term.text, Void, Void, term_color, Void)
 				-- description column
-				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_description, id_term.description, Void, term_color, Void)
+				evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_description, id_term.description, Void, Void, term_color, Void)
 			end
 
 			-- populate bindings
@@ -338,7 +338,7 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_id_terms_grid.set_last_row_label_col (id_terms_grid_col_max + terminologies_csr.cursor_index, binding_str, Void, Binding_color, Void)
+				evx_id_terms_grid.set_last_row_label_col (id_terms_grid_col_max + terminologies_csr.cursor_index, binding_str, Void, Void, Binding_color, Void)
 			end
 		end
 
@@ -451,16 +451,16 @@ feature {NONE} -- Implementation
 			check attached selected_language end
 
 			term_def := source.flat_archetype.terminology.term_definition (selected_language, a_code)
-			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, a_code, Void, key_item_colour, Void)
+			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, a_code, Void, Void, key_item_colour, Void)
 			check attached evx_values_grid.last_row as lr then
 				ev_row := lr
 			end
 			if editing_enabled and specialisation_depth_from_code (a_code) = source_archetype.specialisation_depth then
-				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_text, term_def.text, Void, Void, Void, agent update_term_text (a_code, ev_row))
-				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_description, term_def.description, Void, Void, Void, agent update_term_description (a_code, ev_row))
+				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_text, term_def.text, Void, Void, Void, Void, agent update_term_text (a_code, ev_row))
+				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_description, term_def.description, Void, Void, Void, Void, agent update_term_description (a_code, ev_row))
 			else
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_text, term_def.text, Void, Void, Void)
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description, term_def.description, Void, Void, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_text, term_def.text, Void, Void, Void, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description, term_def.description, Void, Void, Void, Void)
 			end
 
 			-- populate bindings
@@ -470,7 +470,7 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description + terminologies_csr.cursor_index, binding_str, Void, Binding_color, Void)
+				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description + terminologies_csr.cursor_index, binding_str, Void, Void, Binding_color, Void)
 			end
 		end
 
@@ -533,9 +533,9 @@ feature {NONE} -- Implementation
 			term_def := source.flat_archetype.terminology.term_definition (selected_language, code)
 			evx_values_grid.set_last_row (a_grid_row)
 			if show_desc then
-				evx_values_grid.update_last_row_label_col (value_sets_grid_col_description, term_def.description, Void, Void, Void)
+				evx_values_grid.update_last_row_label_col (value_sets_grid_col_description, term_def.description, Void, Void, Void, Void)
 			else
-				evx_values_grid.update_last_row_label_col (value_sets_grid_col_description, "", Void, Void, Void)
+				evx_values_grid.update_last_row_label_col (value_sets_grid_col_description, "", Void, Void, Void, Void)
 			end
 		end
 

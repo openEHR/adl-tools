@@ -167,7 +167,7 @@ feature {NONE} -- Implementation
 	display_constraint
 		do
 			if attached arch_node as cco and then cco.any_allowed then
-				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, Void, c_constraint_colour, Void)
 			end
 		end
 

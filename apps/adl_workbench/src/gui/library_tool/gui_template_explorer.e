@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 						gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, c_attr)
 						check attached gui_semantic_grid.last_row as lr then
 							ev_tree_item_stack.extend (lr)
-							gui_semantic_grid.set_last_row_label_col (1, ca_path, Void, Void, get_icon_pixmap ("archetype/" +
+							gui_semantic_grid.set_last_row_label_col (1, ca_path, Void, Void, Void, get_icon_pixmap ("archetype/" +
 								rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 						end
 					end
@@ -189,7 +189,7 @@ feature {NONE} -- Implementation
 				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
 			end
 
-			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)
+			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, Void, pixmap)
 		end
 
    	semantic_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)

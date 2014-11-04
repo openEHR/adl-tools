@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 		do
 			-- add row to grid
 			gui_grid.add_row (a_schema)
-			gui_grid.set_last_row_label_col (1, a_schema.schema_id, Void, Void, get_icon_pixmap ("tool/rm_schema"))
+			gui_grid.set_last_row_label_col (1, a_schema.schema_id, Void, Void, Void, get_icon_pixmap ("tool/rm_schema"))
 			check attached gui_grid.last_row as a_row then
 				pkg_row := a_row
 			end
@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 		do
 			-- add subrow
 			gui_grid.add_sub_row (ev_parent_node, a_pkg)
-			gui_grid.set_last_row_label_col (1, a_pkg.name, "Package " + a_pkg.path, Void, get_icon_pixmap ("rm/generic/package"))
+			gui_grid.set_last_row_label_col (1, a_pkg.name, "Package " + a_pkg.path, Void, Void, get_icon_pixmap ("rm/generic/package"))
 			check attached gui_grid.last_row as a_row then
 				pkg_row := a_row
 			end
@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
  			if a_class_def.is_override then
  				pixmap_name.append ("_override")
  			end
-			gui_grid.set_last_row_label_col (1, a_class_def.as_type_string, a_class_def.description, Void, get_icon_pixmap (pixmap_name))
+			gui_grid.set_last_row_label_col (1, a_class_def.as_type_string, a_class_def.description, Void, Void, get_icon_pixmap (pixmap_name))
 			check attached gui_grid.last_row as lr then
 				ev_class_row := lr
 			end

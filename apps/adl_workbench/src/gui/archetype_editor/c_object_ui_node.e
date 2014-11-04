@@ -77,7 +77,7 @@ feature -- Display
 		do
 			precursor (a_gui_grid)
 			if not is_rm and attached ev_grid_row as gr then
-				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
+				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, Void, c_pixmap)
 
 				-- add 'power expander' action to logical C_OBJECT leaf nodes
 				if attached ui_graph_state.rm_schema.archetype_parent_class as apc then
@@ -100,10 +100,10 @@ feature -- Display
 				-- attach any other node level agents (redefine in descendants)
 				attach_other_ui_node_agents
 			else
-				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour,
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, Void, parent.rm_attribute_colour,
 					rm_type_pixmap (rm_type))
 			end
-			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 
 			-- add context menu
 			build_context_menu
@@ -120,11 +120,11 @@ feature -- Display
 			if attached arch_node as a_n then
 				-- RM name & meaning columns
 				if display_settings.show_technical_view then
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
-					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, Void, c_object_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, Void, c_meaning_colour, Void)
 		 		else
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_object_colour, c_pixmap)
-					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, Void, c_object_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 				end
 
 				-- card/occ column
@@ -142,7 +142,7 @@ feature -- Display
 						c_occ_colour := c_attribute_colour
 					end
 				end
-				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_occ_colour, Void)
+				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
 
 				-- constraint column
 				display_constraint
@@ -156,7 +156,7 @@ feature -- Display
 						s.append ("before")
 					end
 					s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
-					evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, c_constraint_colour, Void)
+					evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
 				end
 			end
 		end

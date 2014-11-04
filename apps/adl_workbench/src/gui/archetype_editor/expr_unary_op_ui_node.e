@@ -52,7 +52,7 @@ feature -- Display
 			check attached ev_grid_row as gr then
 				evx_grid.set_last_row (gr)
 			end
-			evx_grid.set_last_row_label_col (Rules_grid_col_expr_type, Void, Void, Void, c_pixmap)
+			evx_grid.set_last_row_label_col (Rules_grid_col_expr_type, Void, Void, Void, Void, c_pixmap)
 		end
 
 feature -- Modification

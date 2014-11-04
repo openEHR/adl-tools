@@ -61,7 +61,7 @@ feature -- Display
 				if display_settings.show_technical_view then
 					attr_str.append (": " + a_n.rm_type_name)
 				end
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, c_object_colour, Void)
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, Void, c_object_colour, Void)
 
 				-- constraint value
 				display_constraint
@@ -92,7 +92,7 @@ feature {NONE} -- Implementation
 				else
 					s := a_n.as_string
 				end
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, c_constraint_colour, Void)
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, Void, c_constraint_colour, Void)
 			end
 		end
 

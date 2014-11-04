@@ -261,9 +261,9 @@ feature {NONE} -- Implementation
 				-- set text
 				if update_flag then
 					gui_semantic_grid.set_last_row (ev_row)
-					gui_semantic_grid.update_last_row_label_col (1, text, tooltip, col, pixmap)
+					gui_semantic_grid.update_last_row_label_col (1, text, tooltip, Void, col, pixmap)
 				else
-					gui_semantic_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
+					gui_semantic_grid.set_last_row_label_col (1, text, tooltip, Void, col, pixmap)
 				end
 			end
 		end
@@ -343,9 +343,9 @@ feature {NONE} -- Implementation
 				-- set text
 				if update_flag then
 					gui_filesys_grid.set_last_row (ev_row)
-					gui_filesys_grid.update_last_row_label_col (1, text, tooltip, col, pixmap)
+					gui_filesys_grid.update_last_row_label_col (1, text, tooltip, Void, col, pixmap)
 				else
-					gui_filesys_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
+					gui_filesys_grid.set_last_row_label_col (1, text, tooltip, Void, col, pixmap)
 				end
 			end
 		end

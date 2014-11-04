@@ -38,7 +38,7 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
 			precursor (ui_settings)
-			evx_grid.set_last_row_label_col (Rules_grid_col_expr_type, meaning, Void, c_meaning_colour, c_pixmap)
+			evx_grid.set_last_row_label_col (Rules_grid_col_expr_type, meaning, Void, Void, c_meaning_colour, c_pixmap)
 		end
 
 feature {NONE} -- Implementation

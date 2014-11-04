@@ -58,7 +58,7 @@ feature {NONE} -- Implementation
 	display_constraint
 		do
 			if attached arch_node as car and not ui_graph_state.archetype.is_template then
-				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, car.archetype_ref, Void, c_constraint_colour, Void)
+				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, car.archetype_ref, Void, Void, c_constraint_colour, Void)
 			end
 		end
 

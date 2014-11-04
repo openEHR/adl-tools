@@ -49,14 +49,14 @@ feature {NONE}-- Initialization
 
 			create evx_adl_converted_editor.make (agent adl_converted_text)
 			ev_root_container.extend (evx_adl_converted_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_converted_editor.ev_root_container, get_msg (ec_adl_converted_tab_text, <<latest_adl_version>>))
+			ev_root_container.set_item_text (evx_adl_converted_editor.ev_root_container, get_msg (ec_adl_converted_tab_text, <<Latest_adl_major_version>>))
 			evx_adl_converted_editor.add_button (Void, Void, get_text (ec_save_adl_converted_button_text),
 				get_msg (ec_save_adl_converted_button_tooltip, <<latest_adl_version>>), agent save_adl_converted_source, Void)
 			gui_controls.extend (evx_adl_converted_editor)
 
 			create evx_adl_serialised_editor.make (agent adl_current_serialised_text)
 			ev_root_container.extend (evx_adl_serialised_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_serialised_editor.ev_root_container, get_msg (ec_adl_serialised_tab_text, <<latest_adl_version>>))
+			ev_root_container.set_item_text (evx_adl_serialised_editor.ev_root_container, get_msg (ec_adl_serialised_tab_text, <<Latest_adl_major_version>>))
 			evx_adl_serialised_editor.set_text_filter (get_text (ec_symbolic_text), get_text (ec_symbolic_text_tooltip), agent symbolic_text)
 			evx_adl_serialised_editor.add_button (Void, Void, get_text (ec_save_adl_serialised_button_text),
 				get_msg (ec_save_adl_serialised_button_tooltip, <<latest_adl_version>>), agent save_adl_serialised_source, Void)
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 				ev_root_container.item_tab (evx_adl_source_editor.ev_root_container).remove_pixmap
 			end
 
-			-- ADL 1.5 converted
+			-- ADL 2 converted
 			if not evx_adl_converted_editor.is_empty then
 				sel_tab := ev_root_container.item_tab (evx_adl_converted_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/serialised"))
@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 				ev_root_container.item_tab (evx_adl_converted_editor.ev_root_container).remove_pixmap
 			end
 
-			-- ADL 1.5.1 serialised
+			-- ADL 2 serialised
 			if not evx_adl_serialised_editor.is_empty then
 				sel_tab := ev_root_container.item_tab (evx_adl_serialised_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/test_passed"))
