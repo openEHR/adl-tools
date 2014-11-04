@@ -84,6 +84,9 @@ feature -- Definitions
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
 
+	Bug_reporter_url: STRING = "https://github.com/openEHR/adl-tools/issues"
+			-- The URL to ADL Workbench's problem reporter.
+
 	Release_notes_file_path: STRING = "http://www.openehr.org/downloads/ADLworkbench/release_notes"
 			-- The path to ADL Workbench's release notes.
 

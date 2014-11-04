@@ -26,9 +26,6 @@ feature -- Definitions
 			Result := file_system.pathname (application_startup_directory, "icons")
 		end
 
-	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
-			-- The URL to ADL Workbench's problem reporter.
-
 	user_docking_layout_file_path: STRING
 			-- Full path to docking layout configuration file.
 		do
