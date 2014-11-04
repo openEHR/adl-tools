@@ -129,8 +129,6 @@ feature -- Validation
 
 	valid_type_name (s: attached STRING): BOOLEAN
 			-- Function to test validity of string name of value
-		require
-			not s.is_empty
 		do
 			Result := types.has_key(s)
 		end

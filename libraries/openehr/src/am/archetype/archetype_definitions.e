@@ -172,6 +172,8 @@ feature -- Version identification
 					Result := True
 				elseif lver_num = rver_num then
 					continue := True
+				else
+					continue := False
 				end
 				lver_strs.forth
 				rver_strs.forth
