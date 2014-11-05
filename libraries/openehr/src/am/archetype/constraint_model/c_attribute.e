@@ -656,11 +656,17 @@ feature -- Modification
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
+		local
+			old_flat_id: STRING
 		do
-			if not a_flat_obj.node_id.is_equal (diff_obj.node_id) then
-				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
-			end
+			-- have to do the object overlay first, so it detects any difference in node id
+			old_flat_id := a_flat_obj.node_id.twin
 			a_flat_obj.overlay_differential (diff_obj)
+
+			-- now fix the node id
+			if not old_flat_id.is_equal (diff_obj.node_id) then
+				representation.replace_node_id (old_flat_id, diff_obj.node_id)
+			end
 		end
 
 feature -- Validation

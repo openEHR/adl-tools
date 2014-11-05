@@ -410,6 +410,7 @@ end
 		local
 			ca_csr: C_ATTRIBUTE
 			cco_csr: C_COMPLEX_OBJECT
+			set_spec_sts: BOOLEAN
 		do
 			cco_csr := arch_flat_out.definition
 			across an_og_diff_path as og_path_csr loop
@@ -418,12 +419,15 @@ end
 
 				-- navigate to C_COMPLEX_OBJECT & adjust id if needed:
 				if og_path_csr.item.is_addressable then
+					set_spec_sts := False
 					if specialisation_depth_from_code (og_path_csr.item.object_id) = arch_diff_child.specialisation_depth then
 						ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_anc.specialisation_depth), og_path_csr.item.object_id)
-						cco_csr.set_specialisation_status_redefined
 					end
 					check attached {C_COMPLEX_OBJECT} ca_csr.child_with_id (og_path_csr.item.object_id) as att_cco then
 						cco_csr := att_cco
+						if set_spec_sts then
+							cco_csr.set_specialisation_status_redefined
+						end
 					end
 				elseif ca_csr.has_children then
 					if attached {C_COMPLEX_OBJECT} ca_csr.first_child as att_cco then
@@ -591,6 +595,7 @@ end
 						co_override_target := ca_anc.child_with_id (node_id_in_flat_anc).safe_deep_twin
 						co_override_target.set_node_id (co_child_diff.node_id)
 						co_override_target.set_subtree_specialisation_status (ss_inherited)
+						co_override_target.set_specialisation_status_redefined
 						if attached co_output_insert_pos as att_co_ins_pos then
 							if merge_desc.before_flag then
 								ca_output.put_child_left (co_override_target, att_co_ins_pos)
