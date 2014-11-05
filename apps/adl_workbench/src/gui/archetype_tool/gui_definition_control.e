@@ -493,7 +493,6 @@ feature {NONE} -- Implementation
 			-- populate the main definition grid
 			gui_definition_grid.ev_grid.lock_update
 			source_ed_context.definition_ui_graph.prepare_display_in_grid (gui_definition_grid)
-			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class as vis_desc_cl then
@@ -511,6 +510,9 @@ feature {NONE} -- Implementation
 				gui_definition_treeview_control.on_expand_one_level
 				gui_definition_treeview_control.on_expand_one_level
 			end
+
+			-- now do the display, so that colours get set properly according to what is open or closed in the tree
+			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
 
 			-- if top level not expanded at least once, do so now
 			if gui_definition_grid.ev_grid.row (1).is_expandable and then not gui_definition_grid.ev_grid.row (1).is_expanded then
