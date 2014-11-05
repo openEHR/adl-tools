@@ -266,8 +266,8 @@ feature -- Events
 
 	on_rotate_view
 		do
-			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_root_container.selected_item.data as cat_tool and attached source then
-				cat_tool.on_rotate_view
+			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_root_container.selected_item.data as lib_tool and attached source then
+				lib_tool.on_rotate_view
 			end
 		end
 
