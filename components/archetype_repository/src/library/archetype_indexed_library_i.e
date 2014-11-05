@@ -12,7 +12,7 @@ note
 deferred class ARCHETYPE_INDEXED_LIBRARY_I
 
 inherit
-	ARCHETYPE_LIBRARY_I
+	ARCHETYPE_LIBRARY_SOURCE
 
 feature {NONE} -- Initialisation
 

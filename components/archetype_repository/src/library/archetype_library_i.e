@@ -8,7 +8,7 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class
-	ARCHETYPE_LIBRARY_I
+	ARCHETYPE_LIBRARY_SOURCE
 
 inherit
 	ARCHETYPE_DEFINITIONS

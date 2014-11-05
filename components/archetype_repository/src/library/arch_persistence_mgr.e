@@ -61,7 +61,7 @@ create {ARCH_LIB_ARCHETYPE_ITEM}
 
 feature {NONE} -- Initialisation
 
-	make (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I)
+	make (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE)
 		require
 			Path_valid: not a_path.is_empty
 		do
@@ -71,7 +71,7 @@ feature {NONE} -- Initialisation
 			file_repository_set: file_repository = a_repository
 		end
 
-	make_legacy (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I)
+	make_legacy (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE)
 		require
 			Path_valid: not a_path.is_empty
 		do
@@ -82,7 +82,7 @@ feature {NONE} -- Initialisation
 			file_repository_set: file_repository = a_repository
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -519,10 +519,10 @@ feature {NONE} -- Implementation
 			Result > 0
 		end
 
-	file_repository: ARCHETYPE_LIBRARY_I
+	file_repository: ARCHETYPE_LIBRARY_SOURCE
 			-- The repository on which this item is found.
 
-	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I; is_generated: BOOLEAN)
+	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
 		do
 			file_repository := a_repository
 			source_file_path := a_path

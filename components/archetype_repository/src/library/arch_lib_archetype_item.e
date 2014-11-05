@@ -94,7 +94,7 @@ create {APP_OBJECT_FACTORY}
 
 feature {NONE} -- Initialisation
 
-	make (a_path: STRING; a_repository: ARCHETYPE_LIBRARY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+	make (a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE; arch_thumbnail: ARCHETYPE_THUMBNAIL)
 			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
 		require
 			Path_valid: not a_path.is_empty
@@ -123,7 +123,7 @@ feature {NONE} -- Initialisation
 			Compilation_state: compilation_state = Cs_unread
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -145,7 +145,7 @@ feature {NONE} -- Initialisation
 			validated: is_valid
 		end
 
-	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
+	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
@@ -167,7 +167,7 @@ feature {NONE} -- Initialisation
 			Is_specialised: is_specialised
 		end
 
-	make_new_template (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_I; a_directory: STRING)
+	make_new_template (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
 			-- Create a new template with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
