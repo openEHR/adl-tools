@@ -57,7 +57,7 @@ feature -- Display
 							evx_grid.add_sub_row (gr, includes_csr.item)
 
 							-- put pixmap on RM col
-							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, Void,
+							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, c_node_font,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_include"))
 
 							-- put blank text in constraint col
@@ -101,7 +101,7 @@ feature -- Display
 			-- iterate through the assertions
 			across assertions_index as assn_csr loop
 				evx_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
-				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, Void, c_object_colour, Void)
+				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_node_font, c_object_colour, Void)
 				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, Void, c_constraint_colour, Void)
 			end
 		end

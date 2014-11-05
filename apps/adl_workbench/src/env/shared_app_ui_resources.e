@@ -188,17 +188,16 @@ feature -- Definitions: Colours
 
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
-			-- LIGHT BLUE
+			-- LIGHT GREY
 		once ("PROCESS")
-			-- create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
-			create Result.make_with_8_bit_rgb (0x99, 0x99, 0xff)
+			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	archetype_rm_type_redefined_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- DARK GREY
 		once ("PROCESS")
-			create Result.make_with_8_bit_rgb (0x66, 0x66, 0x66)
+			create Result.make_with_8_bit_rgb (0x32, 0x32, 0x32)
 		end
 
 	archetype_rm_type_color: EV_COLOR
@@ -234,8 +233,7 @@ feature -- Definitions: Colours
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
 		once ("PROCESS")
-			-- create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
-			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
+			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	rm_infrastructure_attribute_colour: EV_COLOR
@@ -256,8 +254,7 @@ feature -- Definitions: Colours
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
 		once ("PROCESS")
-			-- create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
-			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
+			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	At_code_color: EV_COLOR
@@ -283,16 +280,16 @@ feature -- Definitions: Colours
 
 	Id_code_color_inherited: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
-			-- MEDIUM GREY
+			-- LIGHT GREY
 		once ("PROCESS")
-			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
+			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	Repository_remote_proxy_color: EV_COLOR
 			-- foreground colour for displaying remote proxy entry in repo list in the UI
-			-- MEDIUM GREY
+			-- DARK GREY
 		once ("PROCESS")
-			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
+			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	Ev_grid_text_link_colour: EV_COLOR
@@ -347,6 +344,20 @@ feature -- Definitions: Colours
 				pixmap_key := "archetype/" + ara.group_name
 			end
 			Result := get_icon_pixmap (pixmap_key)
+		end
+
+feature -- Definitions: Fonts
+
+	Bold_font: EV_FONT
+		once ("PROCESS")
+			create Result
+			Result.set_weight ({EV_FONT_CONSTANTS}.weight_bold)
+		end
+
+	Regular_font: EV_FONT
+		once ("PROCESS")
+			create Result
+			Result.set_weight ({EV_FONT_CONSTANTS}.weight_regular)
 		end
 
 feature -- Definitions: VCS status

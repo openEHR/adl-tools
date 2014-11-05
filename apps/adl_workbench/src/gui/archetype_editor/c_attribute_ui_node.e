@@ -145,7 +145,7 @@ feature -- Display
 					attr_str.remove_head (1)
 					evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, Void, c_attribute_colour, c_pixmap)
 				else
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_attribute_name, node_tooltip_str, Void, c_attribute_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_attribute_name, node_tooltip_str, c_node_font, c_attribute_colour, c_pixmap)
 				end
 
 				-- existence

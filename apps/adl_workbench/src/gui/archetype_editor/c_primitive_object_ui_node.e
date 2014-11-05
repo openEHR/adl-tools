@@ -61,7 +61,7 @@ feature -- Display
 				if display_settings.show_technical_view then
 					attr_str.append (": " + a_n.rm_type_name)
 				end
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, Void, c_object_colour, Void)
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, c_node_font, c_object_colour, Void)
 
 				-- constraint value
 				display_constraint

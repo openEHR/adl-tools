@@ -86,15 +86,7 @@ feature -- Display
 					visualise_descendants_class := avdo
 				end
 				if attached visualise_descendants_class as vdc and then ui_graph_state.rm_schema.is_descendant_of (arch_node.rm_type_name, vdc) then
-					gr.expand_actions.force_extend (agent (evx_grid.ev_grid).expand_tree (gr,
-						agent (a_row: EV_GRID_ROW): BOOLEAN
-							do
-								if attached {ARCHETYPE_CONSTRAINT_UI_NODE} a_row.data as ac_ui_node then
-									Result := attached ac_ui_node.arch_node
-								end
-							end
-						)
-					)
+					gr.expand_actions.force_extend (agent power_expand)
 				end
 
 				-- attach any other node level agents (redefine in descendants)
@@ -120,10 +112,10 @@ feature -- Display
 			if attached arch_node as a_n then
 				-- RM name & meaning columns
 				if display_settings.show_technical_view then
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, Void, c_object_colour, c_pixmap)
-					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, Void, c_meaning_colour, Void)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
 		 		else
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, Void, c_object_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
 					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 				end
 
@@ -498,6 +490,22 @@ feature {NONE} -- Context menu
 						arch_node_in_ancestor := parent_arch.object_at_path (co_path_in_flat)
 					end
 				end
+			end
+		end
+
+	power_expand
+			-- agent to expand to bottom from a node, and redisplay it, to recolour it properly
+		do
+			if attached ev_grid_row as gr then
+				evx_grid.ev_grid.expand_tree (gr,
+					agent (a_row: EV_GRID_ROW): BOOLEAN
+						do
+							if attached {ARCHETYPE_CONSTRAINT_UI_NODE} a_row.data as ac_ui_node then
+								Result := attached ac_ui_node.arch_node
+							end
+						end
+				)
+				display_in_grid (display_settings)
 			end
 		end
 

@@ -20,6 +20,17 @@ inherit
 			{NONE} all
 		end
 
+feature -- Definitions
+
+	c_node_fonts: HASH_TABLE [EV_FONT, INTEGER]
+			-- fonts for RM type representing inheritance status
+		once
+			create Result.make(0)
+			Result.put (Bold_font, ss_added)
+			Result.put (Bold_font, ss_redefined)
+			Result.put (Regular_font, ss_inherited)
+		end
+
 feature -- Initialisation
 
 	make_rm (an_rm_element: like rm_element; a_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE)
@@ -108,6 +119,25 @@ feature -- Modification
 		end
 
 feature {NONE} -- Implementation
+
+	c_node_font: EV_FONT
+			-- generate a font for RM type representing inheritance status
+		local
+			spec_sts: INTEGER
+		do
+			if display_settings.show_rm_inheritance then
+				if ev_grid_row.is_expandable and not ev_grid_row.is_expanded then
+					spec_sts := rolled_up_specialisation_status
+				else
+					spec_sts := specialisation_status
+				end
+				check attached c_node_fonts.item (spec_sts) as att_font then
+					Result := att_font
+				end
+			else
+				Result := regular_font
+			end
+		end
 
 	node_tooltip_str: STRING
 			-- generate a tooltip for this node
