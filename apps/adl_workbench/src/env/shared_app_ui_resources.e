@@ -195,9 +195,9 @@ feature -- Definitions: Colours
 
 	archetype_rm_type_redefined_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
-			-- DARK GREY
+			-- LIGHT-MEDIUM GREY
 		once ("PROCESS")
-			create Result.make_with_8_bit_rgb (0x32, 0x32, 0x32)
+			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	archetype_rm_type_color: EV_COLOR
