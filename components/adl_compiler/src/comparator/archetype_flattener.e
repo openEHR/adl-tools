@@ -420,6 +420,7 @@ end
 				if og_path_csr.item.is_addressable then
 					if specialisation_depth_from_code (og_path_csr.item.object_id) = arch_diff_child.specialisation_depth then
 						ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_anc.specialisation_depth), og_path_csr.item.object_id)
+						cco_csr.set_specialisation_status_redefined
 					end
 					check attached {C_COMPLEX_OBJECT} ca_csr.child_with_id (og_path_csr.item.object_id) as att_cco then
 						cco_csr := att_cco
