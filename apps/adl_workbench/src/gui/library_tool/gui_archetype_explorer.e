@@ -142,6 +142,11 @@ feature -- Events
 		do
 			if gui_semantic_grid.ev_grid.is_displayed then
 				gui_semantic_grid.ev_grid.hide
+
+				-- lazy populate of filesys grid
+				if filesys_grid_row_map.is_empty then
+					do_populate_filesys_grid
+				end
 				gui_filesys_grid.ev_grid.show
 			else
 				gui_filesys_grid.ev_grid.hide
@@ -171,7 +176,10 @@ feature {NONE} -- Implementation
 	 		source.do_all_semantic (agent ev_semantic_grid_populate_enter, agent ev_semantic_grid_populate_exit)
 			gui_semantic_grid.ev_grid.expand_all (agent ev_semantic_tree_expand)
 			gui_semantic_grid.resize_columns_to_content
+		end
 
+	do_populate_filesys_grid
+		do
 			-- populate filesys grid on demand
 	 		source.do_all_filesys (agent ev_filesys_grid_populate_enter, agent ev_filesys_grid_populate_exit)
 			gui_filesys_grid.ev_grid.expand_all (agent ev_filesys_tree_expand)
@@ -377,7 +385,6 @@ feature {NONE} -- Implementation
 	do_select_archetype
 		local
 			arch_id: STRING
-			grid_row: EV_GRID_ROW
 		do
 			check attached selected_archetype_node as aca then
 				selection_history.set_selected_item (aca)
@@ -385,20 +392,16 @@ feature {NONE} -- Implementation
 				-- ensure selection is reflected in the grid not displayed
 				arch_id := aca.global_artefact_identifier
 				if gui_semantic_grid.ev_grid.is_displayed then
-					if filesys_grid_row_map.has (arch_id) then
-						check attached filesys_grid_row_map.item (arch_id) as gr then
-							grid_row := gr
-						end
-						gui_filesys_grid.ev_grid.ensure_visible (grid_row)
-						select_item_in_grid (grid_row, arch_id)
+					if filesys_grid_row_map.has (arch_id) and then attached filesys_grid_row_map.item (arch_id) as fs_gr then
+						gui_filesys_grid.ev_grid.ensure_visible (fs_gr)
+						select_item_in_grid (fs_gr, arch_id)
+					elseif semantic_grid_row_map.has (arch_id) and then attached semantic_grid_row_map.item (arch_id) as sem_gr then
+						select_item_in_grid (sem_gr, arch_id)
 					end
 				else
-					if semantic_grid_row_map.has (arch_id) then
-						check attached semantic_grid_row_map.item (arch_id) as gr then
-							grid_row := gr
-						end
-						gui_semantic_grid.ev_grid.ensure_visible (grid_row)
-						select_item_in_grid (grid_row, arch_id)
+					if semantic_grid_row_map.has (arch_id) and then attached semantic_grid_row_map.item (arch_id) as sem_gr then
+						gui_semantic_grid.ev_grid.ensure_visible (sem_gr)
+						select_item_in_grid (sem_gr, arch_id)
 					end
 				end
 			end

@@ -76,8 +76,8 @@ feature {NONE} -- Initialisation
 
 	make (a_lib_access: ARCHETYPE_LIBRARY_INTERFACE)
 		do
-			clear
 			library_access := a_lib_access
+			clear
 			if not semantic_item_tree_prototype.has_children then
 				initialise_semantic_item_tree_prototype
 				clone_semantic_item_tree_prototype
@@ -277,9 +277,9 @@ feature -- Commands
 			reset
 			archetype_index.wipe_out
 			semantic_item_index.wipe_out
-			filesys_item_index.wipe_out
+			filesys_item_index_cache := Void
 			semantic_item_tree.wipe_out
-			filesys_item_tree.wipe_out
+			filesys_item_tree_cache := Void
 			compile_attempt_count := 0
 			create last_populate_timestamp.make_from_epoch (0)
 			reset_statistics
@@ -292,7 +292,6 @@ feature -- Commands
 			errors.append (library_access.primary_source.errors)
 
 			populate_semantic_indexes
-			populate_filesys_indexes
 		end
 
 feature -- Modification
@@ -354,6 +353,7 @@ feature -- Modification
 			path_valid: adhoc_path_valid (a_path)
 		local
 			aca: ARCH_LIB_ARCHETYPE_ITEM
+			arch_dir: STRING
 		do
 			if semantic_item_index.is_empty then
 				clone_semantic_item_tree_prototype
@@ -365,7 +365,10 @@ feature -- Modification
 			if library_access.adhoc_source.has_path (a_path) then
 				aca := library_access.adhoc_source.item (a_path)
 				if valid_candidate (aca) then
-					add_filesys_tree_repo_node (file_system.dirname (a_path))
+					arch_dir := file_system.dirname (a_path)
+					if is_filesys_tree_populated and not filesys_item_index.has (arch_dir.as_lower) then
+						add_filesys_tree_repo_node (arch_dir)
+					end
 					put_archetype (aca, a_path)
 				elseif not has_item_with_id (aca.semantic_parent_key.as_lower) then
 					if aca.is_specialised then
@@ -392,8 +395,12 @@ feature -- Modification
 			archetype_index.force (aca, aca.id.as_string)
 			semantic_item_index.remove (aca.old_id.as_string.as_lower)
 			semantic_item_index.force (aca, aca.id.as_string.as_lower)
-			filesys_item_index.remove (aca.old_id.as_string.as_lower)
-			filesys_item_index.force (aca, aca.id.as_string.as_lower)
+
+			if is_filesys_tree_populated then
+				filesys_item_index.remove (aca.old_id.as_string.as_lower)
+				filesys_item_index.force (aca, aca.id.as_string.as_lower)
+			end
+
 			aca.parent.remove_child (aca)
 			semantic_item_index.item (aca.semantic_parent_key).put_child (aca)
 			aca.clear_old_ontological_parent_name
@@ -411,7 +418,9 @@ feature -- Modification
 		do
 			archetype_index.remove (aca.id.as_string)
 			semantic_item_index.remove (aca.id.as_string.as_lower)
-			filesys_item_index.remove (aca.id.as_string.as_lower)
+			if is_filesys_tree_populated then
+				filesys_item_index.remove (aca.id.as_string.as_lower)
+			end
 			aca.parent.remove_child (aca)
 		ensure
 			Node_removed_from_archetype_index: not archetype_index.has (aca.id.as_string)
@@ -634,9 +643,12 @@ feature {NONE} -- Implementation
 		end
 
 	populate_filesys_indexes
+		local
+			arch_dir: STRING
 		do
 			-- create top node (never seen in GUI)
-			create filesys_item_tree.make (Archetype_category.twin)
+			create filesys_item_tree_cache.make (Archetype_category.twin)
+			create filesys_item_index_cache.make (0)
 
 			-- add a node representing repository root
 			add_filesys_tree_repo_node (library_access.library_path)
@@ -648,16 +660,27 @@ feature {NONE} -- Implementation
 					add_arch_to_filesys_tree (archs_csr.item)
 				end
 			end
+
+			-- attach any adhoc archetypes
+			across library_access.adhoc_source.archetype_id_index as archs_csr loop
+				arch_dir := file_system.dirname (archs_csr.key)
+				if not filesys_item_index.has (arch_dir.as_lower) then
+					add_filesys_tree_repo_node (arch_dir)
+				end
+				add_arch_to_filesys_tree (archs_csr.item)
+			end
 		end
 
 	add_filesys_tree_repo_node (a_repo_path: STRING)
 			-- add a node directly below the root representing the repository containing the archetype(s)
+		require
+			not filesys_item_index.has (a_repo_path.as_lower)
 		local
 			filesys_node: ARCH_LIB_FILESYS_ITEM
 		do
 			create filesys_node.make (a_repo_path)
-			filesys_item_tree.put_child (filesys_node)
-			filesys_item_index.force (filesys_node, a_repo_path.as_lower)
+			filesys_item_tree_cache.put_child (filesys_node)
+			filesys_item_index_cache.force (filesys_node, a_repo_path.as_lower)
 		end
 
 	has_filesys_repo_for_path (a_path: STRING): BOOLEAN
@@ -676,7 +699,8 @@ feature {NONE} -- Implementation
 			-- appear automatically, due to being added to top-level parent node during
 			-- semantic tree building
 		require
-			not aca.is_specialised and has_filesys_repo_for_path (aca.source_file_path)
+			Filesys_tree_populated: is_filesys_tree_populated
+			Archetype_valid: not aca.is_specialised and has_filesys_repo_for_path (aca.source_file_path)
 		local
 			parent_dir: STRING
 		do
@@ -708,14 +732,30 @@ feature {NONE} -- Implementation
 	filesys_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
 			-- Index of archetype & file-system nodes, keyed by relative path of node under repository root path for directory nodes
 			-- and for archetype nodes, the archetype id.
-		attribute
-			create Result.make (0)
+		do
+			if not attached filesys_item_index_cache then
+				populate_filesys_indexes
+			end
+			check attached filesys_item_index_cache as att_cache then
+				Result := att_cache
+			end
 		end
 
 	filesys_item_tree: ARCH_LIB_ARTEFACT_TYPE_ITEM
 			-- The directory of archetypes in the filesystem structure, with specialisation shown
-		attribute
-			create Result.make (Archetype_category)
+		do
+			if not attached filesys_item_tree_cache then
+				populate_filesys_indexes
+			end
+			check attached filesys_item_tree_cache as att_cache then
+				Result := att_cache
+			end
+		end
+
+	is_filesys_tree_populated: BOOLEAN
+			-- True if the filesystem tree has been populated
+		do
+			Result := attached filesys_item_tree_cache
 		end
 
 	semantic_item_tree: ARCH_LIB_ARTEFACT_TYPE_ITEM
@@ -856,7 +896,7 @@ feature {NONE} -- Implementation
 
 			-- add to filesys index if top-level archetype (if specialised, the
 			-- connection is already made due to semantic tree link
-			if not aca.is_specialised then
+			if is_filesys_tree_populated and then not aca.is_specialised then
 				add_arch_to_filesys_tree (aca)
 			end
 
@@ -927,6 +967,10 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+	filesys_item_index_cache: detachable HASH_TABLE [ARCH_LIB_ITEM, STRING]
+
+	filesys_item_tree_cache: detachable ARCH_LIB_ARTEFACT_TYPE_ITEM
 
 invariant
 	parse_attempted_archetype_count_valid: compile_attempt_count >= 0 and compile_attempt_count <= archetype_count
