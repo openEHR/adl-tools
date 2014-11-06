@@ -259,6 +259,9 @@ feature {NONE} -- Initialization
 
 			-- UI docking
 			initialise_docking_layout
+
+			-- permanent dialogs
+			initialise_dialogs
 		end
 
 	initialise_ui_agents
@@ -382,6 +385,12 @@ feature {NONE} -- Initialization
 			docking_exception := True
 		end
 
+	initialise_dialogs
+			-- intiialise permanent dialogs
+		do
+			repository_dialog.do_nothing
+		end
+
 feature -- Commands
 
 	show
@@ -501,28 +510,26 @@ feature {NONE} -- AOM profiles events
 
 feature {NONE} -- Library events
 
+	repository_dialog: REPOSITORY_DIALOG
+		once ("PROCESS")
+			create Result
+		end
+
 	configure_repositories
 			-- Display the Repository dialog.
-		local
-			dialog: REPOSITORY_DIALOG
-			current_library_removed, current_library_changed: BOOLEAN
 		do
-			create dialog
-			dialog.show_modal_to_window (Current)
+			repository_dialog.show_modal_to_window (Current)
+			repository_dialog.hide
 
-			current_library_removed := dialog.current_library_removed
-			current_library_changed := dialog.current_library_changed
-			if current_library_removed or current_library_changed then
+			if repository_dialog.current_library_changed then
 				save_resources
 			end
-
-			dialog.destroy
 
 			-- populate the profile combo box selectors
 			populate_arch_libraries_combo
 
 			-- if the current profile changed or was removed, repopulate the explorers
-			if current_library_removed or current_library_changed then
+			if repository_dialog.current_library_changed then
 				console_tool.clear
 				if has_libraries then
 					refresh_archetype_library (True)
@@ -749,16 +756,18 @@ feature {NONE} -- Tools menu events
 
 feature -- RM Schemas Events
 
+	rm_schema_dialog: RM_SCHEMA_DIALOG
+		once ("PROCESS")
+			create Result
+		end
+
 	set_rm_schemas
 			-- Called by `select_actions' of `tools_menu_rm_schemas'.
-		local
-			dialog: RM_SCHEMA_DIALOG
 		do
-			create dialog
-			dialog.show_modal_to_window (Current)
+			rm_schema_dialog.show_modal_to_window (Current)
 
 			populate_arch_libraries_combo
-			if dialog.has_changed_schema_load_list then
+			if rm_schema_dialog.has_changed_schema_load_list then
 				console_tool.clear
 				rm_schemas_access.reload_schemas
 				if not rm_schemas_access.found_valid_schemas then
@@ -769,7 +778,7 @@ feature -- RM Schemas Events
 						refresh_archetype_library (True)
 					end
 				end
-			elseif dialog.has_changed_schema_dir then
+			elseif rm_schema_dialog.has_changed_schema_dir then
 				rm_schema_explorer.populate (rm_schemas_access)
 				refresh_archetype_library (True)
 			end

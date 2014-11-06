@@ -228,8 +228,13 @@ feature -- Status
 	current_library_removed: BOOLEAN
 			-- True if current library removed; requires a new library to be selected
 
-	current_library_changed: BOOLEAN
+	current_library_modified: BOOLEAN
 			-- True if current library changed in any way requiring a refresh
+
+	current_library_changed: BOOLEAN
+		do
+			Result := current_library_removed or current_library_modified
+		end
 
 feature -- Commands
 
@@ -262,7 +267,7 @@ feature {NONE} -- Events
 				 not archetype_library_interfaces.has (original_current_library_selected))
 			then
 				set_current_library_name (archetype_library_interfaces.keys.first)
-				current_library_changed := True
+				current_library_modified := True
 			end
 
 			hide
@@ -493,13 +498,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, col_tooltip, Void, Void, col_icon)
 
-			-- column 2 - (blank)
-			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void, Void)
+			-- column 2 - Repo status (blank)
+			evx_grid.update_last_row_label_col (Grid_status_col, "", Void, Void, Void, Void)
 
-			-- column 3 - (blank)
+			-- column 3 - Repo VCS branch (blank)
 			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
 
-			-- column 4 - (blank)
+			-- column 4 - Repo VCS status (blank)
 			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void, Void)
 
 			-- column 5 - library dscription
@@ -508,7 +513,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_text := "(unknown)"
 			end
-			evx_grid.update_last_row_label_col (Grid_description_col, Void, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, col_text, Void, Void, Void, Void)
 
 			-- column 6 - maintainer
 			if attached a_lib_if.library_definition as att_lib_def then
@@ -516,7 +521,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_text := "(unknown)"
 			end
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, Void, col_text, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, col_text, Void, Void, Void, Void)
 
 			-- column 7 - validation
 			errors := a_lib_if.errors

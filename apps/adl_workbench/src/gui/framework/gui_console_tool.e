@@ -38,7 +38,6 @@ feature -- Commands
 		do
 			ev_console.append_text (a_text)
 			ev_console.scroll_to_end
-	--		ev_application.process_graphical_events
 		end
 
 	clear
