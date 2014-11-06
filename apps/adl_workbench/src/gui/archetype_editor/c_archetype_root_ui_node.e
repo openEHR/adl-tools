@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 			a_c_iterator: OG_CONTENT_ITERATOR
 			c_ui_graph_builder: ARCHETYPE_UI_GRAPH_BUILDER
 		do
-			if attached arch_node as car and attached evx_grid as att_evx_grid then
+			if c_attributes.is_empty and then attached arch_node as car and attached evx_grid as att_evx_grid then
 				create c_ui_graph_builder.make (ui_graph_state)
 				create a_c_iterator.make (car.representation, c_ui_graph_builder)
 				a_c_iterator.do_until_surface_plus_one (
