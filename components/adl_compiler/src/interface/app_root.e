@@ -197,7 +197,6 @@ feature -- Initialisation
 			if term_init.init_failed then
 				add_error (ec_terminology_init_failed, <<term_init.init_fail_reason>>)
 			end
-
 		end
 
 feature -- Status Report

@@ -95,6 +95,7 @@ feature {NONE} -- Initialization
 
 			-- ensure size controlled
 			set_max_size_to_monitor (Current)
+			set_minimum_width (800)
 
 			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -103,6 +104,7 @@ feature {NONE} -- Initialization
 			-- set up form for display
 			enable_edit
 			do_populate
+			evx_file_list_text.resize_columns_to_content
 		end
 
 feature -- Events
