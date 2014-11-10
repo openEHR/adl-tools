@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 			Precursor
 			create border
 			border.set_border_width (2)
-			border.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 200))
+			border.set_background_color (Splash_background_color)
 
 			create hb
 			hb.set_padding (10)
@@ -43,10 +43,7 @@ feature {NONE} -- Initialization
 			img_cell.extend (adl_workbench_logo)
 			hb.extend (img_cell)
 
-			create label
-			label.align_text_left
-			label.set_text (splash_text)
-			hb.extend (label)
+			hb.extend (ev_splash_text)
 
 			border.extend (hb)
 		end
@@ -69,8 +66,6 @@ feature {NONE} -- Implementation
 	hb, border: EV_HORIZONTAL_BOX
 
 	img_cell: EV_CELL
-
-	label: EV_LABEL
 
 	close
 			-- Close the window and destroy `timer'.

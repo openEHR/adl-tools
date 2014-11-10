@@ -1164,7 +1164,7 @@ feature {NONE} -- Implementation
 				use_current_library (refresh_from_source)
 				console_tool.append_text (current_library.error_strings)
 				console_tool.append_text (get_msg_line (ec_populating_directory_complete, Void))
-				
+
 				clear_toolbar_controls
 				error_tool.clear
 

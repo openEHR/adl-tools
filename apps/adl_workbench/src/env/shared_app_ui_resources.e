@@ -299,6 +299,97 @@ feature -- Definitions: Colours
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
+	Url_color: EV_COLOR
+			-- foreground colour for links in EV_GRID
+			-- BLUE
+		once ("PROCESS")
+			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
+		end
+
+	Default_bg_color: EV_COLOR
+			-- default background colour
+		once ("PROCESS")
+			create Result.make_with_8_bit_rgb (0xff, 0xff, 0xff)
+		end
+
+	Splash_background_color: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (240, 240, 200)
+		end
+
+feature -- Definitions: Fonts
+
+	Bold_font: EV_FONT
+		once ("PROCESS")
+			create Result
+			Result.set_weight ({EV_FONT_CONSTANTS}.weight_bold)
+		end
+
+	Regular_font: EV_FONT
+		once ("PROCESS")
+			create Result
+			Result.set_weight ({EV_FONT_CONSTANTS}.weight_regular)
+		end
+
+	Normal_url_char_fmt: EV_CHARACTER_FORMAT
+		once ("PROCESS")
+			create Result.make_with_font_and_color (Regular_font, Url_color, Default_bg_color)
+		end
+
+	Normal_char_fmt: EV_CHARACTER_FORMAT
+		once ("PROCESS")
+			create Result.make_with_font (Regular_font)
+		end
+
+	Bold_char_fmt: EV_CHARACTER_FORMAT
+		once ("PROCESS")
+			create Result.make_with_font (Bold_font)
+		end
+
+feature -- Definitions: VCS status
+
+	Vcs_status_icons: HASH_TABLE [EV_PIXMAP, INTEGER]
+		once ("PROCESS")
+			create Result.make (0)
+			Result.put (get_icon_pixmap ("tool/unknown"), Vcs_status_unknown)
+			Result.put (get_icon_pixmap ("tool/vcs_files_not_committed"), Vcs_status_files_not_committed)
+			Result.put (get_icon_pixmap ("tool/vcs_up_to_date"), Vcs_status_up_to_date)
+			Result.put (get_icon_pixmap ("tool/vcs_pull_required"), Vcs_status_pull_required)
+			Result.put (get_icon_pixmap ("tool/vcs_push_required"), Vcs_status_push_required)
+			Result.put (get_icon_pixmap ("tool/vcs_diverged"), Vcs_status_diverged)
+		end
+
+	vcs_status_icon (a_status: INTEGER): EV_PIXMAP
+		require
+			Valid_vcs_status (a_status)
+		do
+			check attached Vcs_status_icons.item (a_status) as att_pixmap then
+				Result := att_pixmap
+			end
+		end
+
+	Vcs_status_tooltips: HASH_TABLE [STRING, INTEGER]
+		once ("PROCESS")
+			create Result.make (0)
+			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
+			Result.put (get_text (ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
+			Result.put (get_text (ec_vcs_status_up_to_date_tooltip), Vcs_status_up_to_date)
+			Result.put (get_text (ec_vcs_status_pull_required_tooltip), Vcs_status_pull_required)
+			Result.put (get_text (ec_vcs_status_push_required_tooltip), Vcs_status_push_required)
+			Result.put (get_text (ec_vcs_status_diverged_tooltip), Vcs_status_diverged)
+		end
+
+	vcs_status_tooltip (a_status: INTEGER): STRING
+		require
+			Valid_vcs_status (a_status)
+		do
+			check attached Vcs_status_tooltips.item (a_status) as att_str then
+				Result := att_str
+			end
+		end
+
+feature -- Access
+
 	rm_type_pixmap_key (a_class_def: BMM_CLASS): STRING
 			-- generate an RM class pixmap key based on RM publisher and possibly closure (model) name;
 			-- Return empty string if not found
@@ -345,64 +436,6 @@ feature -- Definitions: Colours
 			end
 			Result := get_icon_pixmap (pixmap_key)
 		end
-
-feature -- Definitions: Fonts
-
-	Bold_font: EV_FONT
-		once ("PROCESS")
-			create Result
-			Result.set_weight ({EV_FONT_CONSTANTS}.weight_bold)
-		end
-
-	Regular_font: EV_FONT
-		once ("PROCESS")
-			create Result
-			Result.set_weight ({EV_FONT_CONSTANTS}.weight_regular)
-		end
-
-feature -- Definitions: VCS status
-
-	Vcs_status_icons: HASH_TABLE [EV_PIXMAP, INTEGER]
-		once ("PROCESS")
-			create Result.make (0)
-			Result.put (get_icon_pixmap ("tool/unknown"), Vcs_status_unknown)
-			Result.put (get_icon_pixmap ("tool/vcs_files_not_committed"), Vcs_status_files_not_committed)
-			Result.put (get_icon_pixmap ("tool/vcs_up_to_date"), Vcs_status_up_to_date)
-			Result.put (get_icon_pixmap ("tool/vcs_pull_required"), Vcs_status_pull_required)
-			Result.put (get_icon_pixmap ("tool/vcs_push_required"), Vcs_status_push_required)
-			Result.put (get_icon_pixmap ("tool/vcs_diverged"), Vcs_status_diverged)
-		end
-
-	vcs_status_icon (a_status: INTEGER): EV_PIXMAP
-		require
-			Valid_vcs_status (a_status)
-		do
-			check attached Vcs_status_icons.item (a_status) as att_pixmap then
-				Result := att_pixmap
-			end
-		end
-
-	Vcs_status_tooltips: HASH_TABLE [STRING, INTEGER]
-		once ("PROCESS")
-			create Result.make (0)
-			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
-			Result.put (get_text (ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
-			Result.put (get_text (ec_vcs_status_up_to_date_tooltip), Vcs_status_up_to_date)
-			Result.put (get_text (ec_vcs_status_pull_required_tooltip), Vcs_status_pull_required)
-			Result.put (get_text (ec_vcs_status_push_required_tooltip), Vcs_status_push_required)
-			Result.put (get_text (ec_vcs_status_diverged_tooltip), Vcs_status_diverged)
-		end
-
-	vcs_status_tooltip (a_status: INTEGER): STRING
-		require
-			Valid_vcs_status (a_status)
-		do
-			check attached Vcs_status_tooltips.item (a_status) as att_str then
-				Result := att_str
-			end
-		end
-
-feature -- Access
 
 	adl_workbench_logo: EV_PIXMAP
 		do
@@ -784,11 +817,11 @@ feature {NONE} -- Implementation
 		once ("PROCESS")
 			create Result.make_empty
 			Result.append ("ADL " + Latest_adl_major_version + " Workbench  v" + app_version.out + "%N")
-			Result.append ("(c) 2003- openEHR Foundation%N")
+			Result.append ("(c) 2003- openEHR Foundation <http://www.openEHR.org>%N")
 			Result.append ("          Source: https://github.com/openEHR/adl-tools.git%N")
 			Result.append ("         License: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
-			Result.append ("        Support: http://www.openehr.org/issues/browse/AWBPR%N")
-			Result.append ("     Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
+			Result.append ("Issue tracker: https://github.com/openEHR/adl-tools/issues%N")
+			Result.append ("        Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
 			Result.append ("          Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR)),%N")
 			Result.append ("                        Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
@@ -800,6 +833,39 @@ feature {NONE} -- Implementation
 			Result.append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)%N")
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+	ev_splash_text: EV_RICH_TEXT
+			-- Text for splash screens, About boxes, etc.
+		once ("PROCESS")
+			create Result
+			Result.buffered_append ("                                                ADL " + Latest_adl_major_version + " Workbench  v" + app_version.out + "%N", Normal_char_fmt)
+			Result.buffered_append ("                    (c) 2003- openEHR Foundation <", Normal_char_fmt)
+				Result.buffered_append ("http://www.openEHR.org", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
+			Result.buffered_append ("%N", Normal_char_fmt)
+
+			Result.buffered_append ("           Source: ", Bold_char_fmt); Result.buffered_append ("https://github.com/openEHR/adl-tools.git%N", Normal_url_char_fmt)
+			Result.buffered_append ("          License: ", Bold_char_fmt); Result.buffered_append ("Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N", Normal_char_fmt)
+			Result.buffered_append ("Issue tracker: ", Bold_char_fmt); Result.buffered_append ("https://github.com/openEHR/adl-tools/issues%N", Normal_url_char_fmt)
+			Result.buffered_append ("          Funding: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale, Ocean Informatics <", Normal_char_fmt)
+				Result.buffered_append ("http://www.oceaninformatics.com", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
+
+			Result.buffered_append ("           Author: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale <", Normal_char_fmt)
+				Result.buffered_append ("http://wolandscat.net", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
+			Result.buffered_append (" Contributors: ", Bold_char_fmt); Result.buffered_append ("Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR),%N", Normal_char_fmt)
+			Result.buffered_append ("                            Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N", Normal_char_fmt)
+			Result.buffered_append ("%N", Normal_char_fmt)
+			Result.buffered_append ("Acknowledgements:%N", Bold_char_fmt)
+			Result.buffered_append ("  - Eiffel Software EiffelStudio GPL release <", Normal_char_fmt)
+				Result.buffered_append ("http://www.eiffel.com", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
+			Result.buffered_append ("  - Gobo parsing libraries and tools <", Normal_char_fmt)
+				Result.buffered_append ("http://www.gobosoft.com", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
+			Result.buffered_append ("  - Jonas Rask Design icons <http://jonasraskdesign.com>%N", Normal_char_fmt)
+			Result.buffered_append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)%N", Normal_char_fmt)
+			Result.flush_buffer
+			Result.disable_edit
+			Result.set_background_color (Splash_background_color)
+			Result.set_minimum_width (500)
 		end
 
 	app_version: OPENEHR_VERSION
