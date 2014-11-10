@@ -114,7 +114,6 @@ feature {NONE} -- Initialization
 
 			-- ensure size controlled
 			set_max_size_to_monitor (Current)
-	--		set_minimum_width (Min_form_width)
 
 			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -134,7 +133,7 @@ feature -- Events
 			unchecked_files_exist: BOOLEAN
 		do
 			message := evx_commit_msg_text.data_control_text
-			from i := evx_grid.row_count until i = 0 loop
+			from i := 1 until i > evx_grid.row_count loop
 				ev_row := evx_grid.ev_grid.row (i)
 				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_row.item (Col_checkbox) as ev_chk_item then
 					if ev_chk_item.is_checked and then attached {STRING} ev_row.data as fname then
@@ -143,6 +142,7 @@ feature -- Events
 						unchecked_files_exist := True
 					end
 				end
+				i := i + 1
 			end
 
 			commit_all := not unchecked_files_exist
@@ -201,7 +201,7 @@ feature {NONE} -- Implementation
 		do
 			evx_grid.wipe_out
 			across file_list as file_csr loop
-				evx_grid.add_row (file_csr.item)
+				evx_grid.add_row (file_csr.item.filename)
 				evx_grid.last_row_add_checkbox (Col_checkbox)
 				evx_grid.set_last_row_label_col (Col_status, file_csr.item.status, Void, Void, Void, Void)
 				evx_grid.set_last_row_label_col (Col_filename, file_csr.item.filename, Void, Void, Void, Void)
