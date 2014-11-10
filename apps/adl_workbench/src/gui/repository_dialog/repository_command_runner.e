@@ -57,9 +57,9 @@ feature {NONE} -- Implementation
 		do
 			-- set status update to agent that will do live update from to the grid status cell
 			old_stdout_agent := stdout_agent
-			set_stdout_agent (agent parent_dialog.update_grid_install_status)
+			set_stdout_agent (agent parent_dialog.update_grid_status)
 			old_stderr_agent := stderr_agent
-			set_stderr_agent (agent parent_dialog.update_grid_install_status)
+			set_stderr_agent (agent parent_dialog.update_grid_status)
 
 			parent_dialog.ok_cancel_buttons.disable_sensitive
 			do_with_wait_cursor (parent_dialog,

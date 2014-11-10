@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (801)
+			create message_table.make (802)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -390,14 +390,15 @@ feature -- Initialisation
 			message_table.put ("  Commit Files: ", ec_repository_commit_file_list_label)
 			message_table.put ("Repository Commit", ec_repository_commit_dialog_title)
 			message_table.put ("Commit local changes to repository $1.", ec_repository_commit_dialog_header_label)
+			message_table.put ("Commit ...", ec_repository_commit_button_text)
 			message_table.put ("Install Repository", ec_repository_install_dialog_title)
 			message_table.put ("ASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.", ec_repository_install_dialog_header_label_url)
 			message_table.put ("CREATE NEW LOCAL: select local directory%NASSOCIATE repo to remote: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.", ec_repository_install_dialog_header_label)
 			message_table.put ("Clone remote repository; choose PARENT directory.", ec_repository_install_dialog_header_label_clone)
 			message_table.put ("Create new clone & checkout below this directory", ec_repository_clone_here_text)
 			message_table.put ("Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.", ec_repository_clone_here_tooltip)
-			message_table.put ("Remove repository $1 from configuration (doesn't change anything on system)?", ec_repository_remove_confirm_text)
-			message_table.put ("Remove", ec_repository_remove_menu_text)
+			message_table.put ("Forget repository $1 in configuration (doesn't change anything on system)?", ec_repository_forget_confirm_text)
+			message_table.put ("Forget", ec_repository_forget_menu_text)
 			message_table.put ("Repository Checkout", ec_repository_checkout_dialog_title)
 			message_table.put ("Checkout Branch", ec_repository_checkout_branch)
 			message_table.put ("Checkout new branch locally", ec_repository_checkout_branch_dialog_header_label)

@@ -166,24 +166,15 @@ feature {NONE} -- Initialisation
 			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_button_text), get_text (ec_repository_dir_button_tooltip), agent on_add_repository, Void)
 			ev_hbox_repo_controls.extend (new_repo_button.ev_button)
 			ev_hbox_repo_controls.disable_item_expand (new_repo_button.ev_button)
-			-- horizontal spacer cell
-			create ev_cell_3
-			ev_hbox_repo_controls.extend (ev_cell_3)
 
-			-- vertical space cell
-			create ev_cell_3
-			ev_cell_3.set_minimum_height (10)
-			ev_root_container.extend (ev_cell_3)
-			ev_root_container.disable_item_expand (ev_cell_3)
-
-			-- live status text
+			-- ============ live status text ============
 			create ev_live_status_text
 			ev_live_status_text.set_minimum_height (25)
 			ev_live_status_text.disable_edit
 			ev_live_status_text.set_text ("")
 			ev_live_status_text.align_text_left
-			ev_root_container.extend (ev_live_status_text)
-			ev_root_container.disable_item_expand (ev_live_status_text)
+			ev_hbox_repo_controls.extend (ev_live_status_text)
+			ev_root_container.disable_item_expand (ev_hbox_repo_controls)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent on_cancel)
@@ -471,7 +462,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 		end
 
-	update_grid_install_status (a_text: STRING)
+	update_grid_status (a_text: STRING)
 			-- live update status cell during install
 		do
 			ev_application.do_once_on_idle (agent ev_live_status_text.set_text (utf8_to_utf32 (a_text)))
@@ -664,9 +655,9 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 			-- set status update to agent that will do live update from to the grid status cell
 			old_stdout_agent := stdout_agent
-			set_stdout_agent (agent update_grid_install_status)
+			set_stdout_agent (agent update_grid_status)
 			old_stderr_agent := stderr_agent
-			set_stderr_agent (agent update_grid_install_status)
+			set_stderr_agent (agent update_grid_status)
 
 			-- if there is a repostory at this path, then see if it can be added
 			if archetype_repository_interfaces.valid_clone_directory (repo_parent_dir, a_rem_proxy.remote_url, a_rem_proxy.remote_type) then
@@ -881,8 +872,8 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				end
 			end
 
-			-- remove
-			create an_mi.make_with_text_and_action (get_text (ec_repository_remove_menu_text), agent repository_remove (a_rep_if))
+			-- forget
+			create an_mi.make_with_text_and_action (get_text (ec_repository_forget_menu_text), agent repository_forget (a_rep_if))
 		   	menu.extend (an_mi)
 
 			menu.show
@@ -928,10 +919,14 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		local
 			commit_dialog: REPOSITORY_COMMIT_DIALOG
 		do
-			create commit_dialog.make (a_rep_if.key, a_rep_if.uncommitted_files)
+			create commit_dialog.make (a_rep_if)
 			commit_dialog.show_modal_to_window (Current)
 			if commit_dialog.is_valid then
-				command_runner.do_action (a_rep_if, agent a_rep_if.stage)
+				if commit_dialog.commit_all then
+					command_runner.do_action (a_rep_if, agent a_rep_if.stage_all)
+				else
+					command_runner.do_action (a_rep_if, agent a_rep_if.stage (commit_dialog.commit_list))
+				end
 				if last_command_result.succeeded then
 					command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message))
 				end
@@ -959,12 +954,12 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			command_runner.do_action (a_rep_if, agent a_rep_if.push_to_remote)
 		end
 
-	repository_remove (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+	repository_forget (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- remove `a_rep_if' repository
 		local
 			verify_dialog: EV_QUESTION_DIALOG
 		do
-			create verify_dialog.make_with_text (get_msg (ec_repository_remove_confirm_text, <<a_rep_if.key>>))
+			create verify_dialog.make_with_text (get_msg (ec_repository_forget_confirm_text, <<a_rep_if.key>>))
 			verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 			verify_dialog.show_modal_to_window (Current)
 			if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then

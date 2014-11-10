@@ -57,7 +57,6 @@ feature -- Initialisation
 			end
 			remote_access.initialise_checkout_from_remote (a_local_parent_dir, a_remote_url)
 			local_directory := remote_access.local_repository_directory
-			get_synchronisation_status
 		ensure
 			has_remote_repository
 		end
@@ -173,7 +172,7 @@ feature -- Access
 			end
 		end
 
-	uncommitted_files: ARRAYED_LIST [STRING]
+	uncommitted_files: ARRAYED_LIST [TUPLE [status, filename: STRING]]
 			-- list of uncommitted changes on current branch
 		do
 			if attached remote_access as att_rem_acc then
@@ -276,19 +275,30 @@ feature -- Commands
 			end
 		end
 
-	stage
+	stage_all
+			-- stage all changes from local file system to local repository
+		require
+			has_remote_repository
+		do
+			check attached remote_access as att_rm_acc then
+				att_rm_acc.do_stage_all
+				get_synchronisation_status
+			end
+		end
+
+	stage (file_list: ARRAYED_LIST [STRING])
 			-- stage changes from local file system to local repository
 		require
 			has_remote_repository
 		do
 			check attached remote_access as att_rm_acc then
-				att_rm_acc.do_stage
+				att_rm_acc.do_stage (file_list)
 				get_synchronisation_status
 			end
 		end
 
 	commit (a_commit_msg: STRING)
-			-- Commit changes from local file system to local repository
+			-- Commit changes staged from local file system to local repository
 		require
 			has_remote_repository
 		do

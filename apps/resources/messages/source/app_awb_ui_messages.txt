@@ -115,6 +115,7 @@ templates = <
 		["repository_commit_file_list_label"] = <"  Commit Files: ">
 		["repository_commit_dialog_title"] = <"Repository Commit">
 		["repository_commit_dialog_header_label"] = <"Commit local changes to repository $1.">
+		["repository_commit_button_text"] = <"Commit ...">
 
 		-- REPOSITORY_INSTALL_DIALOG
 		["repository_install_dialog_title"] = <"Install Repository">
@@ -124,8 +125,8 @@ templates = <
 		["repository_clone_here_text"] = <"Create new clone & checkout below this directory">
 		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 
-		["repository_remove_confirm_text"] = <"Remove repository $1 from configuration (doesn't change anything on system)?">
-		["repository_remove_menu_text"] = <"Remove">
+		["repository_forget_confirm_text"] = <"Forget repository $1 in configuration (doesn't change anything on system)?">
+		["repository_forget_menu_text"] = <"Forget">
 
 		["repository_checkout_dialog_title"] = <"Repository Checkout">
 		["repository_checkout_branch"] = <"Checkout Branch">

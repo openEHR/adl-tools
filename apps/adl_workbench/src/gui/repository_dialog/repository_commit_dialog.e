@@ -32,12 +32,31 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Min_form_width: INTEGER = 800
+
+	Max_form_width: INTEGER = 800
+
+	col_titles: ARRAYED_LIST [STRING]
+		once
+			create Result.make (0)
+			Result.extend (" ")
+			Result.extend ("  ")
+			Result.extend (get_text (ec_repository_commit_file_list_label))
+		end
+
+	Col_checkbox: INTEGER = 1
+	Col_status: INTEGER = 2
+	Col_filename: INTEGER = 3
+
 feature {NONE} -- Initialization
 
-	make (a_repo_name: STRING; a_file_list: ARRAYED_LIST [STRING])
+	make (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 		do
-			repository_name := a_repo_name
-			file_list := a_file_list
+			create commit_list.make (0)
+			repository_name := a_rep_if.key
+			file_list := a_rep_if.uncommitted_files
 			create message.make_empty
 			default_create
 		end
@@ -69,9 +88,9 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_cell_2)
 
 			-- ============ commit file list ============
-			create evx_file_list_text.make_readonly (get_text (ec_repository_commit_file_list_label), agent :ARRAYED_LIST [STRING] do Result := file_list end, 0, 0, True)
-			ev_root_container.extend (evx_file_list_text.ev_root_container)
-			gui_controls.extend (evx_file_list_text)
+			create evx_grid.make (False, True, False, True)
+			evx_grid.set_maximum_dimensions (0, Max_form_width)
+			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- ============ commit message ============
 			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 0, 0, True)
@@ -95,7 +114,7 @@ feature {NONE} -- Initialization
 
 			-- ensure size controlled
 			set_max_size_to_monitor (Current)
-			set_minimum_width (800)
+	--		set_minimum_width (Min_form_width)
 
 			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -104,14 +123,29 @@ feature {NONE} -- Initialization
 			-- set up form for display
 			enable_edit
 			do_populate
-			evx_file_list_text.resize_columns_to_content
 		end
 
 feature -- Events
 
 	on_ok
+		local
+			i: INTEGER
+			ev_row: EV_GRID_ROW
+			unchecked_files_exist: BOOLEAN
 		do
 			message := evx_commit_msg_text.data_control_text
+			from i := evx_grid.row_count until i = 0 loop
+				ev_row := evx_grid.ev_grid.row (i)
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_row.item (Col_checkbox) as ev_chk_item then
+					if ev_chk_item.is_checked and then attached {STRING} ev_row.data as fname then
+						commit_list.extend (fname)
+					else
+						unchecked_files_exist := True
+					end
+				end
+			end
+
+			commit_all := not unchecked_files_exist
 			is_valid := True
 			hide
 		end
@@ -120,7 +154,11 @@ feature -- Access
 
 	repository_name: STRING
 
-	file_list: ARRAYED_LIST [STRING]
+	file_list: ARRAYED_LIST [TUPLE [status, filename: STRING]]
+
+	commit_list: ARRAYED_LIST [STRING]
+
+	commit_all: BOOLEAN
 
 	message: STRING
 
@@ -152,14 +190,27 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (
-				agent (an_item: EVX_DATA_CONTROL)
-					do
-						if an_item.is_show_requested then
-							an_item.populate
-						end
-					end
-			)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
+			populate_grid
+		end
+
+	populate_grid
+			-- Set the grid from shared settings.
+		local
+			parent_row: EV_GRID_ROW
+		do
+			evx_grid.wipe_out
+			across file_list as file_csr loop
+				evx_grid.add_row (file_csr.item)
+				evx_grid.last_row_add_checkbox (Col_checkbox)
+				evx_grid.set_last_row_label_col (Col_status, file_csr.item.status, Void, Void, Void, Void)
+				evx_grid.set_last_row_label_col (Col_filename, file_csr.item.filename, Void, Void, Void, Void)
+			end
+
+			-- make the columnn content visible
+			evx_grid.set_column_titles (col_titles)
+			evx_grid.resize_columns_to_content
+			evx_grid.resize_viewable_area_to_content
 		end
 
 	ev_cell_1, ev_cell_2: EV_CELL
@@ -170,7 +221,7 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	evx_file_list_text: EVX_TEXT_LIST_CONTROL
+	evx_grid: EVX_GRID
 
 	evx_commit_msg_text: EVX_MULTILINE_TEXT_CONTROL
 
