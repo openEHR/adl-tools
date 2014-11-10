@@ -376,6 +376,7 @@ feature -- Definitions
 		ec_repository_commit_dialog_title: STRING = "repository_commit_dialog_title"
 		ec_repository_commit_dialog_header_label: STRING = "repository_commit_dialog_header_label"
 		ec_repository_commit_button_text: STRING = "repository_commit_button_text"
+		ec_repository_stage_failed: STRING = "repository_stage_failed"
 		ec_repository_install_dialog_title: STRING = "repository_install_dialog_title"
 		ec_repository_install_dialog_header_label_url: STRING = "repository_install_dialog_header_label_url"
 		ec_repository_install_dialog_header_label: STRING = "repository_install_dialog_header_label"

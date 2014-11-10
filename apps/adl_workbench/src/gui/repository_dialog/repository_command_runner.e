@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "VCS command runner for repositories dialog window"
+	description: "Class for running version control system commands asynchronously"
 	keywords:    "ADL, archeytpes, openEHR"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -40,13 +40,16 @@ feature -- Initialisation
 
 feature -- Actions
 
-	do_action (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE; an_action: PROCEDURE [ANY, TUPLE])
+	do_action (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE; an_action: like repository_action;
+		a_finalise_action: detachable PROCEDURE [ANY, TUPLE]; refresh_dialog_flag: BOOLEAN)
 			-- perform action on repository
 		require
 			a_rep_if.has_repository_tool
 		do
 			repository_interface := a_rep_if
 			repository_action := an_action
+			repository_finalise_action := a_finalise_action
+			refresh_dialog := refresh_dialog_flag
 			do_repository_action
 		end
 
@@ -66,7 +69,14 @@ feature {NONE} -- Implementation
 				agent
 					do
 						repository_action.call ([])
-						do_repository_action_poll_agent.set_interval (External_process_poll_period)
+
+						-- if it is an asynchronous call, it will have created a new process, so
+						-- we wait and poll; if not, we go straight to the clean-up
+						if not live_processes.is_empty then
+							do_repository_action_poll_agent.set_interval (External_process_poll_period)
+						else
+							do_repository_action_finalise
+						end
 					end
 			)
 		end
@@ -93,8 +103,12 @@ feature {NONE} -- Implementation
 			info_dialog: EV_INFORMATION_DIALOG
 		do
 			if last_command_result.succeeded then
-				repository_interface.reload_repository_definition
-				parent_dialog.populate_grid
+				if attached repository_finalise_action as att_fin_action then
+					att_fin_action.call ([])
+				end
+				if refresh_dialog then
+					parent_dialog.populate_grid
+				end
 			elseif last_command_result.did_not_run then
 				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (parent_dialog)
@@ -122,6 +136,11 @@ feature {NONE} -- Implementation
 	repository_interface: detachable ARCHETYPE_REPOSITORY_INTERFACE
 
 	repository_action: PROCEDURE [ANY, TUPLE]
+
+	repository_finalise_action: detachable PROCEDURE [ANY, TUPLE]
+
+	refresh_dialog: BOOLEAN
+			-- if set True, repopulate main repository dialog
 
 	parent_dialog: REPOSITORY_DIALOG
 

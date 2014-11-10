@@ -155,26 +155,27 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_cell_3)
 			ev_root_container.disable_item_expand (ev_cell_3)
 
-			-- ============ refresh VCS status ============
+			-- ============ buttons and status output ============
 			create ev_hbox_repo_controls
 			ev_root_container.extend (ev_hbox_repo_controls)
-			create refresh_vcs_button.make (Void, Void, get_text (ec_refresh_vcs_button_text), get_text (ec_refresh_vcs_button_tooltip), agent do do_with_wait_cursor (Current, agent refresh_vcs) end, Void)
+			ev_root_container.disable_item_expand (ev_hbox_repo_controls)
+
+			--  refresh VCS status
+			create refresh_vcs_button.make (Void, Void, get_text (ec_refresh_vcs_button_text), get_text (ec_refresh_vcs_button_tooltip), agent do do_with_wait_cursor (Current, agent populate_grid) end, Void)
 			ev_hbox_repo_controls.extend (refresh_vcs_button.ev_button)
 			ev_hbox_repo_controls.disable_item_expand (refresh_vcs_button.ev_button)
 
-			-- ============ new repository button ============
+			--  new repository button
 			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_button_text), get_text (ec_repository_dir_button_tooltip), agent on_add_repository, Void)
 			ev_hbox_repo_controls.extend (new_repo_button.ev_button)
 			ev_hbox_repo_controls.disable_item_expand (new_repo_button.ev_button)
 
-			-- ============ live status text ============
+			--  live status text: note - updated by polling loop watching async external commands
 			create ev_live_status_text
-			ev_live_status_text.set_minimum_height (25)
 			ev_live_status_text.disable_edit
 			ev_live_status_text.set_text ("")
 			ev_live_status_text.align_text_left
 			ev_hbox_repo_controls.extend (ev_live_status_text)
-			ev_root_container.disable_item_expand (ev_hbox_repo_controls)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent on_cancel)
@@ -200,7 +201,8 @@ feature {NONE} -- Initialisation
 
 			original_current_library_selected := current_library_name.twin
 
-		--	show_actions.extend (agent (evx_grid.ev_grid).set_focus)
+			-- set focus on grid for users who primarily  use keyboard
+			show_actions.extend (agent (evx_grid.ev_grid).set_focus)
 
 			enable_edit
 			do_populate
@@ -338,8 +340,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			col_icon: detachable EV_PIXMAP
 			errors: ERROR_ACCUMULATOR
 			tooltip: STRING
+			rep_sync_status: INTEGER
 		do
 			evx_grid.set_last_row (a_grid_row)
+
+			rep_sync_status := a_rep_if.synchronisation_status
 
 			-- column 1: display name & repo icon
 			if a_rep_if.has_remote_repository then
@@ -363,7 +368,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- column 4 - VCS sync status
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (a_rep_if.synchronisation_status), Void, Void, vcs_status_icon (a_rep_if.synchronisation_status))
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (rep_sync_status), Void, Void, vcs_status_icon (rep_sync_status))
 
 			-- column 5 - repository description
 			evx_grid.update_last_row_label_col (Grid_description_col, a_rep_if.repository_definition.description, Void, Void, Void, Void)
@@ -536,17 +541,6 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 		end
 
 feature {REPOSITORY_COMMAND_RUNNER} -- Actions
-
-	refresh_vcs
-			-- refresh dialog from VCS
-		do
-			across archetype_repository_interfaces as rep_interfaces_csr loop
-				if rep_interfaces_csr.item.has_remote_repository then
-					rep_interfaces_csr.item.refresh_vcs_status
-				end
-			end
-			populate_grid
-		end
 
 	on_add_repository
 			-- add a new repository, either by:
@@ -827,8 +821,10 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		local
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
+			rep_sync_status: INTEGER
 		do
 			create menu
+			rep_sync_status := a_rep_if.synchronisation_status
 
 			-- add new library
 			create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library), agent add_new_library (a_rep_if))
@@ -844,21 +840,21 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 			if a_rep_if.has_repository_tool then
 				-- VCS pull
-				if a_rep_if.synchronisation_status = vcs_status_pull_required then
+				if rep_sync_status = vcs_status_pull_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS commit
-				if a_rep_if.synchronisation_status = vcs_status_files_not_committed then
+				if rep_sync_status = vcs_status_files_not_committed then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_commit), agent repository_vcs_commit (a_rep_if))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS push
-				if a_rep_if.synchronisation_status = vcs_status_push_required then
+				if rep_sync_status = vcs_status_push_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_push), agent repository_vcs_push (a_rep_if))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 			    	menu.extend (an_mi)
@@ -911,7 +907,8 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 	repository_vcs_pull (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- do a git pull on `a_rep_if' repository
 		do
-			command_runner.do_action (a_rep_if, agent a_rep_if.pull_from_remote)
+			command_runner.do_action (a_rep_if, agent a_rep_if.pull_from_remote,
+					agent a_rep_if.reload_repository_definition, True)
 		end
 
 	repository_vcs_commit (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
@@ -923,12 +920,12 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			commit_dialog.show_modal_to_window (Current)
 			if commit_dialog.is_valid then
 				if commit_dialog.commit_all then
-					command_runner.do_action (a_rep_if, agent a_rep_if.stage_all)
+					command_runner.do_action (a_rep_if, agent a_rep_if.stage_all, Void, False)
 				else
-					command_runner.do_action (a_rep_if, agent a_rep_if.stage (commit_dialog.commit_list))
+					command_runner.do_action (a_rep_if, agent a_rep_if.stage (commit_dialog.commit_list), Void, False)
 				end
 				if last_command_result.succeeded then
-					command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message))
+					command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, True)
 				end
 			end
 		end
@@ -944,14 +941,15 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			create checkout_dialog.make (branches)
 			checkout_dialog.show_modal_to_window (Current)
 			if checkout_dialog.is_valid then
-				command_runner.do_action (a_rep_if, agent a_rep_if.checkout_branch (checkout_dialog.branch_name))
+				command_runner.do_action (a_rep_if, agent a_rep_if.checkout_branch (checkout_dialog.branch_name),
+					agent a_rep_if.reload_repository_definition, True)
 			end
 		end
 
 	repository_vcs_push (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 			-- do a git pull on `a_rep_if' repository
 		do
-			command_runner.do_action (a_rep_if, agent a_rep_if.push_to_remote)
+			command_runner.do_action (a_rep_if, agent a_rep_if.push_to_remote, Void, True)
 		end
 
 	repository_forget (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)

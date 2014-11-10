@@ -68,7 +68,6 @@ feature -- Initialisation
 		do
 			local_directory := a_local_dir
 			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
-			get_synchronisation_status
 		ensure
 			has_remote_repository
 		end
@@ -184,6 +183,11 @@ feature -- Access
 
 	synchronisation_status: INTEGER
 			-- status of sync between local and remote repository
+		do
+			if attached remote_access as att_rem_acc then
+				Result := att_rem_acc.synchronisation_status
+			end
+		end
 
 feature -- Status Report
 
@@ -256,14 +260,6 @@ feature -- Validation
 
 feature -- Commands
 
-	refresh_vcs_status
-			-- refresh cached values from VCS
-		require
-			has_remote_repository
-		do
-			get_synchronisation_status
-		end
-
 	pull_from_remote
 			-- Update local checkout/clone from remote; result in last_result
 		require
@@ -271,7 +267,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_pull
-				get_synchronisation_status
 			end
 		end
 
@@ -282,7 +277,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_stage_all
-				get_synchronisation_status
 			end
 		end
 
@@ -293,7 +287,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_stage (file_list)
-				get_synchronisation_status
 			end
 		end
 
@@ -304,7 +297,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_commit (a_commit_msg)
-				get_synchronisation_status
 			end
 		end
 
@@ -315,7 +307,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_push
-				get_synchronisation_status
 			end
 		end
 
@@ -327,7 +318,6 @@ feature -- Commands
 		do
 			check attached remote_access as att_rm_acc then
 				att_rm_acc.do_checkout_branch (a_branch_name)
-				get_synchronisation_status
 			end
 		end
 
@@ -358,7 +348,7 @@ feature -- Commands
 			end
 
 			-- now re-evaluate from the file system
-			create file_rep.make (local_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
+			create file_rep.make_fixed (local_directory, {ARCHETYPE_LIBRARY_INTERFACE}.lib_file_name)
 			across file_rep.matching_paths as lib_def_file_paths_csr loop
 				-- this statement just adds the libraries under this repository to the overall library list
 				-- which consists of libraries from all repositories
@@ -384,17 +374,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
-
-	get_synchronisation_status
-			-- get status of sync between local and remote repository and write to
-			-- `synchronisation_status'
-		require
-			has_remote_repository
-		do
-			check attached remote_access as att_rem_acc then
-				synchronisation_status := att_rem_acc.synchronisation_status
-			end
-		end
 
 	available_branches_cache: detachable ARRAYED_LIST [STRING]
 		note

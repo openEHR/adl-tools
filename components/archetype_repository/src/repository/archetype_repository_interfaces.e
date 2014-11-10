@@ -218,7 +218,6 @@ feature -- Commands
 	extend_checkout_from_remote_finalise (a_repository_url: STRING)
 			-- create new remote repository proxy using `a_repository_url'
 		do
-			last_repository_interface.refresh_vcs_status
 			last_repository_interface.populate_libraries
 			if attached last_repository_interface as att_lri then
 				repositories.force (att_lri, last_repository_interface.local_directory)

@@ -196,13 +196,12 @@ feature {NONE} -- Implementation
 
 	populate_grid
 			-- Set the grid from shared settings.
-		local
-			parent_row: EV_GRID_ROW
 		do
 			evx_grid.wipe_out
 			across file_list as file_csr loop
 				evx_grid.add_row (file_csr.item.filename)
-				evx_grid.last_row_add_checkbox (Col_checkbox)
+				-- make checkbox non-editable for already Added files
+				evx_grid.last_row_add_checkbox (Col_checkbox, True, True)
 				evx_grid.set_last_row_label_col (Col_status, file_csr.item.status, Void, Void, Void, Void)
 				evx_grid.set_last_row_label_col (Col_filename, file_csr.item.filename, Void, Void, Void, Void)
 			end

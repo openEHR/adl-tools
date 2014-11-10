@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (802)
+			create message_table.make (803)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -347,7 +347,7 @@ feature -- Initialisation
 			message_table.put ("Work Path", ec_work_library_text)
 			message_table.put ("Create a new repository (creates repository definition file in selected directory)?", ec_repository_create_new_question_text)
 			message_table.put ("VCS Refresh", ec_refresh_vcs_button_text)
-			message_table.put ("Refresh this dialog to version control system", ec_refresh_vcs_button_tooltip)
+			message_table.put ("Refresh repository statuses in this dialog from version control system", ec_refresh_vcs_button_tooltip)
 			message_table.put ("Add Repository", ec_repository_dir_button_text)
 			message_table.put ("Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.", ec_repository_dir_button_tooltip)
 			message_table.put ("Directory $1 either doesn't exist, or already configured as a repository", ec_repository_dir_invalid)
@@ -391,6 +391,7 @@ feature -- Initialisation
 			message_table.put ("Repository Commit", ec_repository_commit_dialog_title)
 			message_table.put ("Commit local changes to repository $1.", ec_repository_commit_dialog_header_label)
 			message_table.put ("Commit ...", ec_repository_commit_button_text)
+			message_table.put ("Stage error: $1", ec_repository_stage_failed)
 			message_table.put ("Install Repository", ec_repository_install_dialog_title)
 			message_table.put ("ASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.", ec_repository_install_dialog_header_label_url)
 			message_table.put ("CREATE NEW LOCAL: select local directory%NASSOCIATE repo to remote: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.", ec_repository_install_dialog_header_label)

@@ -62,7 +62,7 @@ templates = <
 		["repository_create_new_question_text"] = <"Create a new repository (creates repository definition file in selected directory)?">
 
 		["refresh_vcs_button_text"] = <"VCS Refresh">
-		["refresh_vcs_button_tooltip"] = <"Refresh this dialog to version control system">
+		["refresh_vcs_button_tooltip"] = <"Refresh repository statuses in this dialog from version control system">
 		["repository_dir_button_text"] = <"Add Repository">
 		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
@@ -116,6 +116,7 @@ templates = <
 		["repository_commit_dialog_title"] = <"Repository Commit">
 		["repository_commit_dialog_header_label"] = <"Commit local changes to repository $1.">
 		["repository_commit_button_text"] = <"Commit ...">
+		["repository_stage_failed"] = <"Stage error: $1">
 
 		-- REPOSITORY_INSTALL_DIALOG
 		["repository_install_dialog_title"] = <"Install Repository">

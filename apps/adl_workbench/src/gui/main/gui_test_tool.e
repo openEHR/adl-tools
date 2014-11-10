@@ -820,7 +820,7 @@ feature {NONE} -- Implementation
 
 				-- create the row
 				evx_grid.set_last_row_label_col (1, ari.name, Void, Void, Void, Void)
-				evx_grid.last_row_add_checkbox (2)
+				evx_grid.last_row_add_checkbox (2, True, True)
 				check attached evx_grid.last_row as lr then
 					grid_row_stack.extend (lr)
 				end
