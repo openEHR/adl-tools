@@ -200,6 +200,7 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu_item ("Help>Online Help", get_text (ec_help_menu_online_text), Void, agent show_online_help)
 			evx_menu_bar.add_menu_item ("Help>Release Notes", get_text (ec_help_menu_release_notes_text), Void, agent show_release_notes)
 			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item ("Help>External Tools", get_text (ec_help_menu_external_tools_text), Void, agent show_external_tools_help_page)
 			evx_menu_bar.add_menu_item ("Help>CKM", get_text (ec_help_menu_ckm_text), Void, agent show_clinical_knowledge_manager)
 			evx_menu_bar.add_menu_item ("Help>Report Bug", get_text (ec_help_menu_report_bug_text), Void, agent show_bug_reporter)
 			evx_menu_bar.add_menu_item ("Help>About", get_text (ec_help_menu_about_text), Void, agent show_about)
@@ -394,6 +395,10 @@ feature {NONE} -- Initialization
 feature -- Commands
 
 	show
+		local
+			missing_external_tools: ARRAYED_SET [STRING]
+			missing_external_tools_msg: STRING
+			info_dialog: EV_INFORMATION_DIALOG
 		do
 			Precursor
 
@@ -401,6 +406,22 @@ feature -- Commands
 			if not directory_exists (rm_schema_directory) or not rm_schemas_access.found_valid_schemas then
 				set_rm_schemas
 			end
+
+			-- if no repository access tool (git, svn etc), notify user
+			create missing_external_tools.make (0)
+			missing_external_tools.compare_objects
+			across archetype_repository_interfaces as repos_csr loop
+				if repos_csr.item.is_checkout_area and then not repos_csr.item.has_repository_tool then
+					missing_external_tools.extend (repos_csr.item.repository_type)
+				end
+			end
+			create missing_external_tools_msg.make_empty
+			across missing_external_tools as tool_names_csr loop
+				missing_external_tools_msg.append (get_msg_line (ec_repository_tool_unavailable, <<tool_names_csr.item>>))
+			end
+			missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
+			create info_dialog.make_with_text (missing_external_tools_msg)
+			info_dialog.show_modal_to_window (Current)
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
@@ -623,6 +644,7 @@ feature {NONE} -- Library events
 				file_system.recursive_create_directory (export_dir)
 				if not file_system.directory_exists (export_dir) then
 					create info_dialog.make_with_text (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
+					info_dialog.show_modal_to_window (Current)
 				else
 					if dialog.selected_button.same_string (yes_text) then
 						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
@@ -811,6 +833,12 @@ feature {NONE} -- Help events
 			-- Display CKM in an external browser.
 		do
 			show_in_system_browser (clinical_knowledge_manager_url)
+		end
+
+	show_external_tools_help_page
+			-- external tools help page in an external browser.
+		do
+			show_in_system_browser (external_tools_help_page_url)
 		end
 
 	show_bug_reporter

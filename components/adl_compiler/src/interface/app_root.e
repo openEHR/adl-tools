@@ -161,8 +161,11 @@ feature -- Initialisation
 
 				-- populate existing repositories, if any
 				across repositories_table as repos_csr loop
-					if is_checkout_area (repos_csr.item) then
+					if is_vcs_checkout_area (repos_csr.item) then
 						archetype_repository_interfaces.extend_associate_with_remote (repos_csr.item)
+						if not archetype_repository_interfaces.last_repository_interface.has_repository_tool then
+							add_warning (ec_repository_tool_unavailable, <<archetype_repository_interfaces.last_repository_interface.repository_type>>)
+						end
 					else
 						archetype_repository_interfaces.extend (repos_csr.item)
 					end

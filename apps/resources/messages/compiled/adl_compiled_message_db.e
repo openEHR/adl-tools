@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (803)
+			create message_table.make (806)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -304,6 +304,8 @@ feature -- Initialisation
 			message_table.put ("Archetype $1 not validated (run with '-a validate' to see errors)%N", ec_archetype_not_valid)
 			message_table.put ("------------ Archetypes in library '$1 --------------'%N", ec_archs_list_text)
 			message_table.put ("-----------------------------------------------------%N", ec_archs_list_text_end)
+			message_table.put ("External tool $1 not found on local system; repository operations limited to local access", ec_repository_tool_unavailable)
+			message_table.put ("For missing external tools, see Help menu > External tools", ec_external_tools_help_text)
 			message_table.put ("Not implemented in this release", ec_to_be_implemented)
 			message_table.put ("Display", ec_display_in_active_tab)
 			message_table.put ("Retarget to this class", ec_retarget_to_this_class)
@@ -552,6 +554,7 @@ feature -- Initialisation
 			message_table.put ("&Online Help", ec_help_menu_online_text)
 			message_table.put ("&Release Notes", ec_help_menu_release_notes_text)
 			message_table.put ("Clinical &Knowledge Manager", ec_help_menu_ckm_text)
+			message_table.put ("&External Tools Help", ec_help_menu_external_tools_text)
 			message_table.put ("Report a &Bug", ec_help_menu_report_bug_text)
 			message_table.put ("&About AWB", ec_help_menu_about_text)
 			message_table.put ("Back one item", ec_history_button_back_one_item_text)

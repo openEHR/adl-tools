@@ -321,6 +321,7 @@ templates = <
 		["help_menu_online_text"] = <"&Online Help">
 		["help_menu_release_notes_text"] = <"&Release Notes">
 		["help_menu_ckm_text"] = <"Clinical &Knowledge Manager">
+		["help_menu_external_tools_text"] = <"&External Tools Help">
 		["help_menu_report_bug_text"] = <"Report a &Bug">
 		["help_menu_about_text"] = <"&About AWB">
 

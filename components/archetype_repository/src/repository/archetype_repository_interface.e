@@ -28,7 +28,7 @@ inherit
 	SHARED_EXTERNAL_TOOL_INTERFACES
 
 create
-	make_associate_with_remote, make, make_checkout_from_remote
+	make_associate_with_remote, make, make_clone_remote_and_checkout
 
 feature -- Definitions
 
@@ -43,36 +43,48 @@ feature -- Initialisation
 		do
 			local_directory := a_local_dir
 		ensure
-			not has_remote_repository
+			not has_repository_access
 		end
 
-	make_checkout_from_remote (a_local_parent_dir, a_remote_url, a_remote_type: STRING)
-			-- make with a local directory and remote access URI and type
+	make_clone_remote_and_checkout (a_local_parent_dir, a_remote_url, a_repository_type: STRING)
+			-- make with a local directory and remote access URI and type;
 			-- perform local repository clone operation
 		require
-			Valid_repository_type: tool_supported (a_remote_type)
+			Valid_repository_type: tool_supported (a_repository_type)
 		do
-			check attached {VCS_TOOL_INTERFACE} create_tool_interface (a_remote_type) as att_if then
-				remote_access := att_if
+			repository_type := a_repository_type
+			check attached {VCS_TOOL_INTERFACE} create_tool_interface (a_repository_type) as att_if then
+				repository_access := att_if
 			end
-			remote_access.initialise_checkout_from_remote (a_local_parent_dir, a_remote_url)
-			local_directory := remote_access.local_repository_directory
+			repository_access.initialise_clone_remote_and_checkout (a_local_parent_dir, a_remote_url)
+			local_directory := repository_access.local_repository_directory
 		ensure
-			has_remote_repository
+			has_repository_access
 		end
 
 	make_associate_with_remote (a_local_dir: STRING)
 			-- make with an existing local directory; determine remote from local copy
 		require
-			Has_checkout: is_checkout_area (a_local_dir)
+			Has_checkout: is_vcs_checkout_area (a_local_dir)
 		do
 			local_directory := a_local_dir
-			remote_access := create_vcs_tool_interface_from_checkout (local_directory)
+			repository_type := vcs_checkout_area_type (a_local_dir)
+			if attached {VCS_TOOL_INTERFACE} create_tool_interface_from_checkout (local_directory) as att_if then
+				repository_access := att_if
+			end
 		ensure
-			has_remote_repository
+			Local_directory_set: local_directory = a_local_dir
+			Repository_type_set: repository_type = vcs_checkout_area_type (a_local_dir)
+			Repository_access_if_tool_available: tool_supported (repository_type) implies has_repository_access
 		end
 
 feature -- Access
+
+	repository_type: STRING
+			-- type of repository, e.g. "git" etc
+		attribute
+			create Result.make_empty
+		end
 
 	local_directory: STRING
 			-- repository local file-system root directory
@@ -129,17 +141,15 @@ feature -- Access
 			-- URL of remote repository
 		do
 			create Result.make_empty
-			if attached remote_access as att_rem_acc then
+			if attached repository_access as att_rem_acc then
 				Result.append (att_rem_acc.remote_repository_url)
 			end
 		end
 
 	remote_repository_type: STRING
 			-- type of remote repository if applicable
-		require
-			has_remote_repository
 		do
-			if attached remote_access as att_rem_acc then
+			if attached repository_access as att_rem_acc then
 				Result := att_rem_acc.tool_name
 			else
 				create Result.make_empty
@@ -148,10 +158,8 @@ feature -- Access
 
 	checked_out_branch: STRING
 			-- name of branch locally checked out
-		require
-			has_remote_repository
 		do
-			if attached remote_access as att_rem_acc then
+			if attached repository_access as att_rem_acc then
 				Result := att_rem_acc.checked_out_branch
 			else
 				create Result.make_empty
@@ -163,7 +171,7 @@ feature -- Access
 		do
 			if attached available_branches_cache as att_cache then
 				Result := available_branches_cache
-			elseif attached remote_access as att_rem_acc then
+			elseif attached repository_access as att_rem_acc then
 				Result := att_rem_acc.available_branches
 				available_branches_cache := Result
 			else
@@ -174,7 +182,7 @@ feature -- Access
 	uncommitted_files: ARRAYED_LIST [TUPLE [status, filename: STRING]]
 			-- list of uncommitted changes on current branch
 		do
-			if attached remote_access as att_rem_acc then
+			if attached repository_access as att_rem_acc then
 				Result := att_rem_acc.uncommitted_files
 			else
 				create Result.make (0)
@@ -185,7 +193,7 @@ feature -- Access
 			-- status of sync between local and remote repository
 			-- may be slow!
 		do
-			if attached remote_access as att_rem_acc then
+			if attached repository_access as att_rem_acc then
 				Result := att_rem_acc.synchronisation_status
 				last_synchronisation_status := Result
 			end
@@ -197,22 +205,28 @@ feature -- Access
 
 feature -- Status Report
 
+	is_checkout_area: BOOLEAN
+			-- is this repository a checkout area of some kind?
+		do
+			Result := not repository_type.is_empty
+		end
+
 	has_local_directory: BOOLEAN
 			-- True if a local repository path and definition exists
 		do
 			Result := not local_directory.is_empty
 		end
 
-	has_remote_repository: BOOLEAN
+	has_repository_access: BOOLEAN
 			-- True if there is a definition for a remote location corresponding to this repository
 		do
-			Result := attached remote_access
+			Result := attached repository_access
 		end
 
 	has_repository_tool: BOOLEAN
 			-- True if the external tool required (e.g. git, svn) for working with the repository is available
 		do
-			Result := attached remote_access as att_rem_acc and then system_has_command (att_rem_acc.tool_name)
+			Result := system_has_command (repository_type)
 		end
 
 	has_libraries: BOOLEAN
@@ -269,9 +283,9 @@ feature -- Commands
 	pull_from_remote
 			-- Update local checkout/clone from remote; result in last_result
 		require
-			has_remote_repository
+			has_repository_access
 		do
-			check attached remote_access as att_rm_acc then
+			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_pull
 			end
 		end
@@ -279,9 +293,9 @@ feature -- Commands
 	stage_all
 			-- stage all changes from local file system to local repository
 		require
-			has_remote_repository
+			has_repository_access
 		do
-			check attached remote_access as att_rm_acc then
+			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_stage_all
 			end
 		end
@@ -289,9 +303,9 @@ feature -- Commands
 	stage (file_list: ARRAYED_LIST [STRING])
 			-- stage changes from local file system to local repository
 		require
-			has_remote_repository
+			has_repository_access
 		do
-			check attached remote_access as att_rm_acc then
+			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_stage (file_list)
 			end
 		end
@@ -299,9 +313,9 @@ feature -- Commands
 	commit (a_commit_msg: STRING)
 			-- Commit changes staged from local file system to local repository
 		require
-			has_remote_repository
+			has_repository_access
 		do
-			check attached remote_access as att_rm_acc then
+			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_commit (a_commit_msg)
 			end
 		end
@@ -309,9 +323,9 @@ feature -- Commands
 	push_to_remote
 			-- Push changes from local checkout/clone to remote; result in last_result
 		require
-			has_remote_repository
+			has_repository_access
 		do
-			check attached remote_access as att_rm_acc then
+			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_push
 			end
 		end
@@ -319,10 +333,10 @@ feature -- Commands
 	checkout_branch (a_branch_name: STRING)
 			-- checkout a different branch locally
 		require
-			Repository_valid: has_remote_repository
+			Repository_valid: has_repository_access
 			Branch_valid: available_branches.has (a_branch_name) and not a_branch_name.is_equal (checked_out_branch)
 		do
-			check attached remote_access as att_rm_acc then
+			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_checkout_branch (a_branch_name)
 			end
 		end
@@ -387,8 +401,8 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	remote_access: detachable VCS_TOOL_INTERFACE
-			-- remote access object; specific subtype for remote repository type
+	repository_access: detachable VCS_TOOL_INTERFACE
+			-- repo access object; specific subtype for remote repository type
 
 	local_definition_file_access: detachable ODIN_OBJECT_READER [ARCHETYPE_REPOSITORY_DEFINITION]
 			-- file accessor for the local definition file

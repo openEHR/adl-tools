@@ -39,7 +39,7 @@ inherit
 	SHARED_EXTERNAL_TOOL_INTERFACES
 		export
 			{NONE} all;
-			{ANY} is_checkout_area, tool_supported
+			{ANY} is_vcs_checkout_area, tool_supported
 		undefine
 			copy, default_create
 		end
@@ -347,7 +347,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			rep_sync_status := a_rep_if.synchronisation_status
 
 			-- column 1: display name & repo icon
-			if a_rep_if.has_remote_repository then
+			if a_rep_if.has_repository_access then
 				col_icon := get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type)
 			else
 				col_icon := get_icon_pixmap ("tool/file_system")
@@ -361,14 +361,14 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void, Void)
 
 			-- column 3 - checked out branch
-			if a_rep_if.has_remote_repository then
+			if a_rep_if.has_repository_access then
 				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void, Void)
 			else
 				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
 			end
 
 			-- column 4 - VCS sync status
-			if a_rep_if.has_remote_repository then
+			if a_rep_if.has_repository_access then
 				evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (rep_sync_status), Void, Void, vcs_status_icon (rep_sync_status))
 			else
 				evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", "", Void, Void, Void)
@@ -568,7 +568,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					-- if there is a repostory at this path, then see if it can be added
 					if archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
 						if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
-							if is_checkout_area (repo_dir) then
+							if is_vcs_checkout_area (repo_dir) then
 								-- existing clone
 								on_associate_repository (repo_dir)
 							else
@@ -608,7 +608,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 	on_associate_repository (repo_dir: STRING)
 			-- add an existing repository that has a local checkout
 		require
-			archetype_repository_interfaces.repository_exists_at_path (repo_dir) and is_checkout_area (repo_dir)
+			archetype_repository_interfaces.repository_exists_at_path (repo_dir) and is_vcs_checkout_area (repo_dir)
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
@@ -842,7 +842,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		    	menu.extend (an_mi)
 			end
 
-			if a_rep_if.has_repository_tool then
+			if a_rep_if.has_repository_access then
 				-- VCS pull
 				if rep_sync_status = vcs_status_pull_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))

@@ -57,6 +57,9 @@ templates = <
 
 		["archs_list_text"] = <"------------ Archetypes in library '$1 --------------'%N">
 		["archs_list_text_end"] = <"-----------------------------------------------------%N">
+
+		["repository_tool_unavailable"] = <"External tool $1 not found on local system; repository operations limited to local access">
+		["external_tools_help_text"] = <"For missing external tools, see Help menu > External tools">
 	>
 >
 

@@ -44,7 +44,7 @@ feature -- Actions
 		a_finalise_action: detachable PROCEDURE [ANY, TUPLE]; refresh_dialog_flag: BOOLEAN)
 			-- perform action on repository
 		require
-			a_rep_if.has_repository_tool
+			a_rep_if.has_repository_access
 		do
 			repository_interface := a_rep_if
 			repository_action := an_action

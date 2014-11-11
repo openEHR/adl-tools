@@ -13,7 +13,7 @@ inherit
 	SHARED_EXTERNAL_TOOL_INTERFACES
 		export
 			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists, tool_supported, is_checkout_area
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists, tool_supported, is_vcs_checkout_area
 		end
 
 	SHARED_ARCHETYPE_LIBRARY_INTERFACES
@@ -82,7 +82,7 @@ feature -- Status Report
 			-- True if there is an installed repository with the remote URL `a_url'
 		do
 			Result := across repositories as repos_csr some
-				repos_csr.item.has_remote_repository and then repos_csr.item.remote_url.is_equal (a_url) end
+				repos_csr.item.has_repository_access and then repos_csr.item.remote_url.is_equal (a_url) end
 		end
 
 	is_empty: BOOLEAN
@@ -198,7 +198,7 @@ feature -- Commands
 	extend_associate_with_remote (a_repository_path: STRING)
 			-- create new local repository at path `a_repository_path' and create an interface for it
 		require
-			Directory_path_valid: valid_candidate_repository (a_repository_path) and is_checkout_area (a_repository_path)
+			Directory_path_valid: valid_candidate_repository (a_repository_path) and is_vcs_checkout_area (a_repository_path)
 		do
 			create last_repository_interface.make_associate_with_remote (a_repository_path)
 			last_repository_interface.populate_libraries
@@ -212,7 +212,7 @@ feature -- Commands
 			Valid_repo_type: tool_supported (a_repo_type)
 			Valid_repo_clone_directory: valid_clone_directory (a_parent_dir, a_repository_url, a_repo_type)
 		do
-			create last_repository_interface.make_checkout_from_remote (a_parent_dir, a_repository_url, a_repo_type)
+			create last_repository_interface.make_clone_remote_and_checkout (a_parent_dir, a_repository_url, a_repo_type)
 		end
 
 	extend_checkout_from_remote_finalise (a_repository_url: STRING)

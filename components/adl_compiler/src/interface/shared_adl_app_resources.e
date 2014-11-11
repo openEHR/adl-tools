@@ -93,6 +93,9 @@ feature -- Definitions
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/ckm/"
 			-- The URL to CKM.
 
+	external_tools_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/external_tools"
+			-- URL of external tools help page in AWB documentation
+
 	Library_report_filename: STRING = "ArchetypeRepositoryReport.xml"
 
 	Default_aom_profile_directory: STRING
