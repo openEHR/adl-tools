@@ -101,6 +101,7 @@ feature {NONE} -- Implementation
 	do_repository_action_finalise
 		local
 			info_dialog: EV_INFORMATION_DIALOG
+			err_text: STRING
 		do
 			if last_command_result.succeeded then
 				if attached repository_finalise_action as att_fin_action then
@@ -113,7 +114,14 @@ feature {NONE} -- Implementation
 				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (parent_dialog)
 			else
-				create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+				err_text := last_command_result.stderr
+
+				-- if no error out (we test for that allowing for a \r\n non-empty string), then use
+				-- the standard out.
+				if err_text.count < 2 then
+					err_text := last_command_result.stdout
+				end
+				create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, err_text>>))
 				info_dialog.show_modal_to_window (parent_dialog)
 			end
 
