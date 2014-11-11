@@ -415,13 +415,15 @@ feature -- Commands
 					missing_external_tools.extend (repos_csr.item.repository_type)
 				end
 			end
-			create missing_external_tools_msg.make_empty
-			across missing_external_tools as tool_names_csr loop
-				missing_external_tools_msg.append (get_msg_line (ec_repository_tool_unavailable, <<tool_names_csr.item>>))
+			if not missing_external_tools.is_empty then
+				create missing_external_tools_msg.make_empty
+				across missing_external_tools as tool_names_csr loop
+					missing_external_tools_msg.append (get_msg_line (ec_repository_tool_unavailable, <<tool_names_csr.item>>))
+				end
+				missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
+				create info_dialog.make_with_text (missing_external_tools_msg)
+				info_dialog.show_modal_to_window (Current)
 			end
-			missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
-			create info_dialog.make_with_text (missing_external_tools_msg)
-			info_dialog.show_modal_to_window (Current)
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
