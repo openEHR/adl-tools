@@ -828,7 +828,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			rep_sync_status: INTEGER
 		do
 			create menu
-			rep_sync_status := a_rep_if.synchronisation_status
+			rep_sync_status := a_rep_if.last_synchronisation_status
 
 			-- add new library
 			create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library), agent add_new_library (a_rep_if))
