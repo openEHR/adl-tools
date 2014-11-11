@@ -193,8 +193,10 @@ feature {NONE} -- Implementation
 			end
 
 			-- visit ancestors, recursively
-			across a_class_def.ancestors as ancestors_csr loop
-				populate_class_node (ancestors_csr.item)
+			if not differential_view then
+				across a_class_def.ancestors as ancestors_csr loop
+					populate_class_node (ancestors_csr.item)
+				end
 			end
 		end
 
