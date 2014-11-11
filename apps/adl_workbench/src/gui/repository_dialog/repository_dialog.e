@@ -368,7 +368,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- column 4 - VCS sync status
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (rep_sync_status), Void, Void, vcs_status_icon (rep_sync_status))
+			if a_rep_if.has_remote_repository then
+				evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (rep_sync_status), Void, Void, vcs_status_icon (rep_sync_status))
+			else
+				evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", "", Void, Void, Void)
+			end
 
 			-- column 5 - repository description
 			evx_grid.update_last_row_label_col (Grid_description_col, a_rep_if.repository_definition.description, Void, Void, Void, Void)
