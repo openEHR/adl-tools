@@ -297,14 +297,14 @@ feature -- Visitor
 			-- enter a C_ARCHETYPE_ROOT
 			-- if there are no children, it must be in differential mode, else it is in flat mode
 		do
-			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
-			-- here might be in differential form, and have no component_ontologies aet up
-			terminologies.extend (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
-
 			last_result.append (create_indent (depth))
 
 			-- in flat mode; output '%T TYPE[archetype_id] <occurrences>%N'
 			if a_node.has_attributes then
+				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
+				-- here might be in differential form, and have no component_ontologies aet up
+				terminologies.extend (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 				last_result.append (apply_style ("[" + a_node.archetype_ref + "]", STYLE_TERM_REF))
 				last_result.append (format_item (FMT_SPACE))
@@ -324,7 +324,9 @@ feature -- Visitor
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
-			terminologies.remove
+			if a_node.has_attributes then
+				terminologies.remove
+			end
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
