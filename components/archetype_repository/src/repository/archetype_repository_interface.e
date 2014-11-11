@@ -183,11 +183,17 @@ feature -- Access
 
 	synchronisation_status: INTEGER
 			-- status of sync between local and remote repository
+			-- may be slow!
 		do
 			if attached remote_access as att_rem_acc then
 				Result := att_rem_acc.synchronisation_status
+				last_synchronisation_status := Result
 			end
 		end
+
+	last_synchronisation_status: INTEGER
+			-- result of last call to `synchronisation_status', usable when calling
+			-- context knows that sync status has not changed.
 
 feature -- Status Report
 
