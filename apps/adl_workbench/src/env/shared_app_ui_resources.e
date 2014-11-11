@@ -317,6 +317,11 @@ feature -- Definitions: Colours
 			create Result.make_with_8_bit_rgb (240, 240, 200)
 		end
 
+	Off_white_background_color: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (255, 255, 248)
+		end
+
 feature -- Definitions: Fonts
 
 	Bold_font: EV_FONT

@@ -426,6 +426,7 @@ feature -- Commands
 		do
 			test_tool.ev_root_container.show
 			ev_main_vbox.hide
+			do_with_wait_cursor (Current, agent test_tool.populate)
 		end
 
 	close_test_tool
@@ -453,7 +454,7 @@ feature -- Commands
 				close_test_tool
 			end
 			if not internal_docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
-				console_tool.append_text (get_msg_line ("write_docking_file_failed", <<user_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line (ec_write_docking_file_failed, <<user_docking_layout_file_path>>))
 			end
 
 			ev_application.destroy
@@ -492,7 +493,7 @@ feature -- View Events
 				file_system.copy_file (default_docking_layout_file_path, user_docking_layout_file_path)
 				initialise_docking_layout
 			else
-				console_tool.append_text (get_msg_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<default_docking_layout_file_path>>))
 			end
 		end
 
@@ -826,7 +827,7 @@ feature {NONE} -- Help events
 			create dialog.make_with_text (splash_text)
 			dialog.set_title (get_text (ec_about_awb_dialog_title))
 			dialog.set_pixmap (adl_workbench_logo)
-			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			dialog.set_background_color (Off_white_background_color)
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
 		end
@@ -1169,7 +1170,6 @@ feature {NONE} -- Implementation
 				error_tool.clear
 
 				library_tool.populate (current_library)
-				test_tool.populate
 			end
 		end
 
