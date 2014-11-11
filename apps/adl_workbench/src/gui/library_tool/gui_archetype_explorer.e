@@ -76,6 +76,13 @@ feature {NONE} -- Initialisation
 
 feature -- Commands
 
+	set_semantic_view
+			-- ensure semantic tree is shown
+		do
+			gui_filesys_grid.ev_grid.hide
+			gui_semantic_grid.ev_grid.show
+		end
+
 	repopulate
 			-- repopulate to update GUI settings
 		do

@@ -297,17 +297,28 @@ feature {NONE} -- Implementation
 			docking_pane.set_long_title (get_text (ec_library_tool_title) + " " + current_library_name)
 			if attached source as src then
 				archetype_explorer.populate (src)
+				if not old_current_library_name.is_equal (current_library_name) then
+					archetype_explorer.set_semantic_view
+				end
 				template_explorer.populate (src)
 				set_stats_metric_tab_appearance
 				on_select_notebook
 				go_to_selected_item
 			end
+
+			-- save this library name, so we can distinguish between a later change or refresh
+			old_current_library_name := current_library_name.twin
 		end
 
 	docking_pane: detachable SD_CONTENT
 		note
 			option: stable
 		attribute
+		end
+
+	old_current_library_name: STRING
+		attribute
+			create Result.make_empty
 		end
 
 	gui_mini_tool_bar: EVX_TOOL_BAR
