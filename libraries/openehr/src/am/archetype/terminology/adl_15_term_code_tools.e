@@ -616,8 +616,8 @@ feature -- Conversion
 	adl_15_id_code_converted (an_adl_15_code: STRING): STRING
 			-- convert the lead numeric part of an ADL 1.5 code to an ADL 1.4 at-code
 		local
-			end_pos, dot_pos: INTEGER
-			packed_level_0_numeric, level_0_numeric_part: STRING
+			end_pos, dot_pos, level_0_numeric_part: INTEGER
+			packed_level_0_numeric, level_0_numeric_part_str: STRING
 		do
 			if an_adl_15_code.item (3) = '0' then
 				create Result.make_from_string (an_adl_15_code)
@@ -625,15 +625,17 @@ feature -- Conversion
 			else
 				dot_pos := an_adl_15_code.index_of ('.', 3)
 				end_pos := if dot_pos = 0 then an_adl_15_code.count else dot_pos - 1 end
-				level_0_numeric_part := (an_adl_15_code.substring (3, end_pos).to_integer_32).out
-				create packed_level_0_numeric.make_filled ('0', 4 - level_0_numeric_part.count)
-				packed_level_0_numeric.append (level_0_numeric_part)
+				level_0_numeric_part := an_adl_15_code.substring (3, end_pos).to_integer_32
+				level_0_numeric_part := level_0_numeric_part - 1
+				level_0_numeric_part_str := level_0_numeric_part.out
+				create packed_level_0_numeric.make_filled ('0', 4 - level_0_numeric_part_str.count)
+				packed_level_0_numeric.append (level_0_numeric_part_str)
 
 				create Result.make_from_string (value_code_leader)
 				Result.append (packed_level_0_numeric)
 
 				if dot_pos > 0 then
-					Result.append (an_adl_15_code.substring (dot_pos + 1, an_adl_15_code.count))
+					Result.append (an_adl_15_code.substring (dot_pos, an_adl_15_code.count))
 				end
 			end
 		end
