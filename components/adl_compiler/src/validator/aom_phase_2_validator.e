@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			ancestor_slot_id_index := child_desc.specialisation_ancestor.slot_id_index
+			ancestor_slot_id_index := child_desc.specialisation_ancestor.slot_fillers_index
 			create def_it.make (arch_diff_child.definition)
 			def_it.do_if (agent specialised_node_validate, agent specialised_node_validate_test)
 		end
@@ -248,15 +248,18 @@ end
 
 				-- C_ARCHETYPE_ROOT redefines C_ARCHETYPE_ROOT
 				elseif attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {C_ARCHETYPE_ROOT} co_in_flat_anc as parent_car then
-					-- no archetype matches this ref
-					if not current_library.has_archetype_id_for_ref (car.archetype_ref) then
+					if attached current_library.archetype_matching_ref (car.archetype_ref) as att_matched_child then
+						-- matching archetype exists, but not same as or else in lineage of parent archetype
+						if not car.archetype_ref.is_equal (parent_car.archetype_ref) then
+							-- the following attachment has to work, because the parent is already validated
+							if attached current_library.archetype_matching_ref (parent_car.archetype_ref) as att_matched_parent then
+								if not att_matched_child.has_ancestor_descriptor (att_matched_parent) then
+									add_error (ec_VARXAV, <<co_child_annotated_path, car.archetype_ref, parent_car.archetype_ref>>)
+								end
+							end
+						end
+					else
 						add_error (ec_VARXRA, <<co_child_annotated_path, car.archetype_ref>>)
-
-					-- matching archetype exists, but not same as or else in lineage of parent archetype
-					elseif not car.archetype_ref.is_equal (parent_car.archetype_ref) and
-						not current_library.matching_archetype (car.archetype_ref).has_ancestor_descriptor (current_library.matching_archetype (parent_car.archetype_ref))
-					then
-						add_error (ec_VARXAV, <<co_child_annotated_path, car.archetype_ref, parent_car.archetype_ref>>)
 					end
 
 				-- where C_COMPLEX_OBJECT redefines a C_COMPLEX_OBJECT_PROXY

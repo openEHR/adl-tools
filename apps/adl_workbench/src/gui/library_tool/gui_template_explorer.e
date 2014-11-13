@@ -44,7 +44,7 @@ feature -- Commands
 		local
 			an_id: STRING
 		do
-			an_id := ara.id.as_string
+			an_id := ara.id.physical_id
 --			if gui_node_descriptor_map.has (an_id) then
 				ev_tree_node_populate (ara)
 --			elseif attached ara.old_id then
@@ -146,7 +146,7 @@ feature {NONE} -- Implementation
 								rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 						end
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.matching_archetype (car.archetype_ref) as ara then
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.archetype_matching_ref (car.archetype_ref) as ara then
 					attach_node (ara.id.rm_class + "." + ara.semantic_id, library_node_pixmap (ara), ara)
 				end
 			end

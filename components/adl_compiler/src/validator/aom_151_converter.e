@@ -547,7 +547,7 @@ feature {NONE} -- Implementation
 					 				id_code := target.create_new_id_code
 			 					end
 		 					else
-								raise ("do_replace_fake_id_code ERROR: " + target.archetype_id.as_string + " node at path " + c_obj.path +
+								raise ("do_replace_fake_id_code ERROR: " + target.archetype_id.physical_id + " node at path " + c_obj.path +
 									" RM type " + c_obj.rm_type_name + " unhandled redefinition%N")
 				 			end
 				 		-- its a new node off the end of an existing path

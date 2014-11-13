@@ -277,7 +277,7 @@ feature -- Events
 			if attached source as src then
 				archetype_explorer.populate (src)
 				template_explorer.populate (src)
-				archetype_explorer.select_item_in_tree (aca.id.as_string)
+				archetype_explorer.select_item_in_tree (aca.id.physical_id)
 			end
 		end
 
@@ -451,7 +451,7 @@ feature {NONE} -- Implementation
 				else
 					create info_dialog.make_with_text (get_msg_line (ec_edit_legacy_file_info,
 						<<file_system.basename (legacy_path)>>))
-					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.id.as_string>>))
+					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.id.physical_id>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					path := legacy_path
 				end

@@ -518,7 +518,7 @@ feature {NONE} -- Commands
 						row.set_item (col_csr, gli)
 
 						if not test_status.is_empty then
-							test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
+							test_status_area.append_text ("--------------- " + target.id.physical_id + " -----------------%N" + test_status)
 						end
 
 						ev_application.process_events

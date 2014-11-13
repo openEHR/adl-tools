@@ -74,8 +74,8 @@ feature -- Modification
 				elseif arch.is_specialised and then arch.parent_archetype_id_is_old_style and attached arch.parent_archetype_id as pid then
 					errors.add_error (ec_parse_archetype_e11, <<full_path, pid>>, "")
 				elseif not has_rm_schema_for_archetype_id (arch.archetype_id) then
-					errors.add_error (ec_parse_archetype_e4, <<full_path, arch.archetype_id.as_string>>, "")
-				elseif not archetype_id_index.has (arch.archetype_id.as_string) then
+					errors.add_error (ec_parse_archetype_e4, <<full_path, arch.archetype_id.physical_id>>, "")
+				elseif not archetype_id_index.has (arch.archetype_id.physical_id) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
 						ara := aof.create_arch_lib_archetype_make (extension_replaced (full_path, File_ext_archetype_source), Current, arch)
 					else

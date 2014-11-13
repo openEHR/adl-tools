@@ -101,8 +101,8 @@ feature -- Commands
 			if semantic_grid_row_map.has (aca.qualified_name) and then attached semantic_grid_row_map.item (aca.qualified_name) as gr then
 				semantic_grid_update_row (gr, True)
 			elseif attached aca.old_id then
-				if semantic_grid_row_map.has (aca.old_id.as_string) then
-					semantic_grid_row_map.replace_key (aca.qualified_name, aca.old_id.as_string)
+				if semantic_grid_row_map.has (aca.old_id.physical_id) then
+					semantic_grid_row_map.replace_key (aca.qualified_name, aca.old_id.physical_id)
 					if attached semantic_grid_row_map.item (aca.qualified_name) as gr then
 						semantic_grid_update_row (gr, True)
 					end
@@ -113,8 +113,8 @@ feature -- Commands
 			if filesys_grid_row_map.has (aca.qualified_name) and then attached filesys_grid_row_map.item (aca.qualified_name) as gr then
 				filesys_grid_update_row (gr, True)
 			elseif attached aca.old_id then
-				if filesys_grid_row_map.has (aca.old_id.as_string) then
-					filesys_grid_row_map.replace_key (aca.qualified_name, aca.old_id.as_string)
+				if filesys_grid_row_map.has (aca.old_id.physical_id) then
+					filesys_grid_row_map.replace_key (aca.qualified_name, aca.old_id.physical_id)
 					if attached filesys_grid_row_map.item (aca.qualified_name) as gr then
 						filesys_grid_update_row (gr, True)
 					end
@@ -555,7 +555,7 @@ feature {NONE} -- Implementation
 				if dialog.is_valid then
 					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
-					select_item_in_tree (src.last_added_archetype.id.as_string)
+					select_item_in_tree (src.last_added_archetype.id.physical_id)
 				end
 				dialog.destroy
 			end
@@ -602,7 +602,7 @@ feature {NONE} -- Implementation
 				if dialog.is_valid then
 					src.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
-					select_item_in_tree (src.last_added_archetype.id.as_string)
+					select_item_in_tree (src.last_added_archetype.id.physical_id)
 				end
 				dialog.destroy
 			end

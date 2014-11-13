@@ -68,7 +68,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.populate (aca, not show_flat_form, aca.display_language)
-			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
+			populate_active_tool_pane (aca.id.physical_id, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
 		end
 
 end

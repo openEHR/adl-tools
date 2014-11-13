@@ -106,8 +106,8 @@ feature -- Commands
 			if arch_diff_child.is_specialised then
 debug ("flatten")
 	io.put_string ("============== flattening specialised archetype " +
-		arch_diff_child.archetype_id.as_string + " with " +
-		arch_flat_anc.archetype_id.as_string + " ==============%N")
+		arch_diff_child.archetype_id.physical_id + " with " +
+		arch_flat_anc.archetype_id.physical_id + " ==============%N")
 end
 				if arch_diff_child.is_template then
 					create {OPERATIONAL_TEMPLATE} arch_flat_out.make_specialised (arch_diff_child, arch_flat_anc)
@@ -802,10 +802,12 @@ end
 			if depth <= Max_template_overlay_depth then
 				across a_flat_arch.suppliers_index as xref_idx_csr loop
 					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-					matched_arch := current_library.matching_archetype (xref_idx_csr.key)
+					check attached current_library.archetype_matching_ref (xref_idx_csr.key) as att_ala then
+						matched_arch := att_ala
+					end
 
 					-- prevent cycling due to inclusion of current archetype (FIXME: won't catch indirect recursion)
-					if not matched_arch.id.as_string.is_equal (a_flat_arch.archetype_id.as_string) then
+					if not matched_arch.id.physical_id.is_equal (a_flat_arch.archetype_id.physical_id) then
 						create supp_flat_arch.make_from_other (matched_arch.flat_archetype)
 						supp_arch_root_cco := supp_flat_arch.definition
 
@@ -820,7 +822,7 @@ debug ("flatten")
 	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
 	" with " + xref_idx_csr.key + "%N")
 end
-								c_arch_roots_csr.item.convert_to_flat (matched_arch.id.as_string)
+								c_arch_roots_csr.item.convert_to_flat (matched_arch.id.physical_id)
 								across supp_arch_root_cco.attributes as attrs_csr loop
 									c_arch_roots_csr.item.put_attribute (attrs_csr.item)
 debug ("flatten")
@@ -843,8 +845,8 @@ end
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template terminologies &&&&&&%N")
 end
-			if attached {OPERATIONAL_TEMPLATE} arch_flat_out as opt and attached child_desc.suppliers_index as att_supp_idx then
-				across att_supp_idx as supp_idx_csr loop
+			if attached {OPERATIONAL_TEMPLATE} arch_flat_out as opt then
+				across child_desc.suppliers_index as supp_idx_csr loop
 					ont := supp_idx_csr.item.flat_archetype.terminology
 					opt.add_component_terminology (ont, supp_idx_csr.key)
 debug ("flatten")

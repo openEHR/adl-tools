@@ -308,7 +308,7 @@ feature {NONE} -- Implementation
 			question_dialog: EV_QUESTION_DIALOG
 		do
 			if attached source as src then
-				create question_dialog.make_with_text (get_msg (ec_remove_artefact_question, <<aca.id.as_string>>))
+				create question_dialog.make_with_text (get_msg (ec_remove_artefact_question, <<aca.id.physical_id>>))
 				question_dialog.set_title (get_text (ec_remove_dialog_title))
 				question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))

@@ -78,10 +78,10 @@ feature {NONE} -- Implementation
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
-			if not child_desc.id.as_string.is_equal (arch_diff_child.archetype_id.as_string) then
+			if not child_desc.id.physical_id.is_equal (arch_diff_child.archetype_id.physical_id) then
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
-				add_warning (ec_validate_e3, <<child_desc.id.as_string, arch_diff_child.archetype_id.as_string>>)
+				add_warning (ec_validate_e3, <<child_desc.id.physical_id, arch_diff_child.archetype_id.physical_id>>)
 			elseif not arch_diff_child.definition.rm_type_name.is_equal (arch_diff_child.archetype_id.rm_class) then
 				add_error (ec_VARDT, <<arch_diff_child.archetype_id.rm_class, arch_diff_child.definition.rm_type_name>>)
 			elseif not is_valid_root_id_code (arch_diff_child.concept_id) then
@@ -196,7 +196,7 @@ feature {NONE} -- Implementation
 		do
 			across arch_diff_child.suppliers_index as supp_csr loop
 				-- check that supplier is known in archetype library
-				if not current_library.has_archetype_id_for_ref (supp_csr.key) then
+				if not current_library.has_archetype_matching_ref (supp_csr.key) then
 					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				-- we could detect supplier loop here if we want
 --				elseif current_library.matching_archetype (supp_csr.key).is_equal (child_desc) then

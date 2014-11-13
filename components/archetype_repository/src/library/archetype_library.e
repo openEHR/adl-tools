@@ -159,40 +159,29 @@ feature -- Access
 			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end
 		end
 
-	matching_archetype (an_archetype_ref: STRING): ARCH_LIB_ARCHETYPE_ITEM
+	archetype_matching_ref (an_archetype_ref: STRING): detachable ARCH_LIB_ARCHETYPE_ITEM
 			-- Return archetype whose id matches `an_archetype_ref'
-		require
-			has_archetype_id_for_ref (an_archetype_ref)
-		local
-			ids: ARRAYED_LIST[STRING]
-			matching_aca: detachable ARCH_LIB_ARCHETYPE_ITEM
 		do
 			-- try for direct match, or else filler id is compatible with available actual ids
 			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
-			if attached archetype_index.item (an_archetype_ref) as att_aca then
+			if archetype_index.has (an_archetype_ref) and then attached archetype_index.item (an_archetype_ref) as att_aca then
 				Result := att_aca
 			else
-				create ids.make_from_array (archetype_index.current_keys)
-				from ids.start until ids.off or attached matching_aca loop
-					if ids.item.starts_with (an_archetype_ref) and then
-						attached archetype_index.item (ids.item) as att_aca
+				from archetype_index.start until archetype_index.off or attached Result loop
+					if archetype_index.key_for_iteration.starts_with (an_archetype_ref) and then
+						attached archetype_index.item_for_iteration as att_aca
 					then
-						matching_aca := att_aca
+						Result := att_aca
 					end
-					ids.forth
-				end
-				check attached matching_aca as att_matching_aca then
-					Result := att_matching_aca
+					archetype_index.forth
 				end
 			end
 		end
 
-	matching_item (a_ref: STRING): ARCH_LIB_ITEM
+	item_matching_ref (a_ref: STRING): detachable ARCH_LIB_ITEM
 			-- Return true if, for a slot path that is known in the parent slot index, there are
 			-- actually archetypes whose ids match
-		require
-			has_item_for_ref (a_ref)
 		local
 			ref_as_lower: STRING
 		do
@@ -202,7 +191,7 @@ feature -- Access
 				Result := att_aca
 			else
 				-- case-sensitive match
-				Result := matching_archetype (a_ref)
+				Result := archetype_matching_ref (a_ref)
 			end
 		end
 
@@ -243,30 +232,20 @@ feature -- Status Report
 			-- True if `aca' does not exist in the library, but has a viable parent under
 			-- which it can be attached
 		do
-			Result := has_item_for_ref (aca.semantic_parent_key) and
+			Result := has_item_matching_ref (aca.semantic_parent_key) and
 				not has_item_with_id (aca.qualified_key)
 		end
 
-	has_archetype_id_for_ref (an_archetype_ref: STRING): BOOLEAN
-			-- Return true if, for a slot path that is known in the parent slot index, there are
-			-- actually archetypes whose ids match
-		local
-			ids: ARRAYED_LIST[STRING]
+	has_archetype_matching_ref (an_archetype_ref: STRING): BOOLEAN
+			-- Return true if there is an archetype whose id matches
 		do
-			-- try for direct match, or else filler id is compatible with available actual ids
-			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
-			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
-			Result := archetype_index.has (an_archetype_ref)
-			if not Result then
-				create ids.make_from_array (archetype_index.current_keys)
-				Result := across ids as actual_ids_csr some actual_ids_csr.item.starts_with (an_archetype_ref) end
-			end
+			Result := archetype_index.has (an_archetype_ref) or else attached archetype_matching_ref (an_archetype_ref)
 		end
 
-	has_item_for_ref (a_ref: STRING): BOOLEAN
+	has_item_matching_ref (a_ref: STRING): BOOLEAN
 			-- Return true if, there is a semantic id that matches a_ref
 		do
-			Result := semantic_item_index.has (a_ref.as_lower) or else has_archetype_id_for_ref (a_ref)
+			Result := semantic_item_index.has (a_ref.as_lower) or else has_archetype_matching_ref (a_ref)
 		end
 
 feature -- Commands
@@ -307,7 +286,7 @@ feature -- Modification
 			put_archetype (aof.create_arch_lib_archetype_make_new_archetype (an_archetype_id,
 				library_access.primary_source, in_dir_path), in_dir_path)
 		ensure
-			has_item_with_id (an_archetype_id.as_string)
+			has_item_with_id (an_archetype_id.physical_id)
 		end
 
 	add_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE_ITEM; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
@@ -324,7 +303,7 @@ feature -- Modification
 					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure
-			has_item_with_id (an_archetype_id.as_string)
+			has_item_with_id (an_archetype_id.physical_id)
 		end
 
 	add_new_template (parent_aca: ARCH_LIB_ARCHETYPE_ITEM; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
@@ -341,7 +320,7 @@ feature -- Modification
 					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure
-			has_item_with_id (an_archetype_id.as_string)
+			has_item_with_id (an_archetype_id.physical_id)
 		end
 
 	last_added_archetype: detachable ARCH_LIB_ARCHETYPE_ITEM
@@ -387,44 +366,44 @@ feature -- Modification
 	update_archetype_id (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- move `ara' in tree according to its current and old ids
 		require
-			old_id_valid: attached aca.old_id and then has_archetype_with_id (aca.old_id.as_string) and then archetype_with_id (aca.old_id.as_string) = aca
-			new_id_valid: not has_archetype_with_id (aca.id.as_string)
+			old_id_valid: attached aca.old_id and then has_archetype_with_id (aca.old_id.physical_id) and then archetype_with_id (aca.old_id.physical_id) = aca
+			new_id_valid: not has_archetype_with_id (aca.id.physical_id)
 			semantic_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
 		do
-			archetype_index.remove (aca.old_id.as_string)
-			archetype_index.force (aca, aca.id.as_string)
-			semantic_item_index.remove (aca.old_id.as_string.as_lower)
-			semantic_item_index.force (aca, aca.id.as_string.as_lower)
+			archetype_index.remove (aca.old_id.physical_id)
+			archetype_index.force (aca, aca.id.physical_id)
+			semantic_item_index.remove (aca.old_id.physical_id.as_lower)
+			semantic_item_index.force (aca, aca.id.physical_id.as_lower)
 
 			if is_filesys_tree_populated then
-				filesys_item_index.remove (aca.old_id.as_string.as_lower)
-				filesys_item_index.force (aca, aca.id.as_string.as_lower)
+				filesys_item_index.remove (aca.old_id.physical_id.as_lower)
+				filesys_item_index.force (aca, aca.id.physical_id.as_lower)
 			end
 
 			aca.parent.remove_child (aca)
 			semantic_item_index.item (aca.semantic_parent_key).put_child (aca)
 			aca.clear_old_ontological_parent_name
 		ensure
-			Node_added_to_archetype_index: archetype_index.has (aca.id.as_string)
-			Node_added_to_ontology_index: semantic_item_index.has (aca.id.as_string)
+			Node_added_to_archetype_index: archetype_index.has (aca.id.physical_id)
+			Node_added_to_ontology_index: semantic_item_index.has (aca.id.physical_id)
 			Node_parent_set: aca.parent.qualified_name.is_equal (aca.semantic_parent_id)
 		end
 
 	remove_artefact (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- remove `aca' from indexes
 		require
-			new_id_valid: has_archetype_with_id (aca.id.as_string)
-			Semantic_parent_exists: semantic_item_index.has (aca.id.as_string.as_lower)
+			new_id_valid: has_archetype_with_id (aca.id.physical_id)
+			Semantic_parent_exists: semantic_item_index.has (aca.id.physical_id.as_lower)
 		do
-			archetype_index.remove (aca.id.as_string)
-			semantic_item_index.remove (aca.id.as_string.as_lower)
+			archetype_index.remove (aca.id.physical_id)
+			semantic_item_index.remove (aca.id.physical_id.as_lower)
 			if is_filesys_tree_populated then
-				filesys_item_index.remove (aca.id.as_string.as_lower)
+				filesys_item_index.remove (aca.id.physical_id.as_lower)
 			end
 			aca.parent.remove_child (aca)
 		ensure
-			Node_removed_from_archetype_index: not archetype_index.has (aca.id.as_string)
-			Node_removed_from_semantic_index: not semantic_item_index.has (aca.id.as_string)
+			Node_removed_from_archetype_index: not archetype_index.has (aca.id.physical_id)
+			Node_removed_from_semantic_index: not semantic_item_index.has (aca.id.physical_id)
 		end
 
 feature -- Traversal
@@ -609,10 +588,10 @@ feature {NONE} -- Implementation
 				across archs as archs_csr loop
 					if status_list [archs_csr.target_index] >= 0 then
 						parent_key := archs_csr.item.semantic_parent_key
-						if has_item_for_ref (parent_key) then
+						if attached item_matching_ref (parent_key) as att_ala then
 							child_key := archs_csr.item.qualified_key
 							if not semantic_item_index.has (child_key) then
-								matching_item (parent_key).put_child (archs_csr.item)
+								att_ala.put_child (archs_csr.item)
 								semantic_item_index.force (archs_csr.item, child_key)
 								archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
 								added_during_pass := added_during_pass + 1
@@ -888,11 +867,13 @@ feature {NONE} -- Implementation
 			valid_candidate (aca)
 		do
 			-- add to semantic index
-			matching_item (aca.semantic_parent_key).put_child (aca)
+			check attached item_matching_ref (aca.semantic_parent_key) as att_ala then
+				att_ala.put_child (aca)
+			end
 			semantic_item_index.force (aca, aca.qualified_key)
 
 			-- add to main archetype index
-			archetype_index.force (aca, aca.id.as_string)
+			archetype_index.force (aca, aca.id.physical_id)
 
 			-- add to filesys index if top-level archetype (if specialised, the
 			-- connection is already made due to semantic tree link
@@ -904,7 +885,7 @@ feature {NONE} -- Implementation
 		ensure
 			Last_added_archetype_set: last_added_archetype = aca
 			Archetype_in_semantic_index: semantic_item_index.item (aca.qualified_key) = aca
-			Archetype_in_archetype_index: has_archetype_with_id (aca.id.as_string)
+			Archetype_in_archetype_index: has_archetype_with_id (aca.id.physical_id)
 		end
 
 	schema_load_counter: INTEGER

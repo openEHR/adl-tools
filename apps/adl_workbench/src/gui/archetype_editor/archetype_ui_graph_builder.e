@@ -89,7 +89,7 @@ feature -- Visitor
 		do
 			if attached ui_graph_state.archetype as arch and then arch.is_template then
 				new_ui_graph_state := ui_graph_state.twin
-				new_ui_graph_state.set_flat_terminology (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+				new_ui_graph_state.set_flat_terminology (current_library.archetype_matching_ref (a_node.archetype_ref).flat_archetype.terminology)
 				ui_graph_state_stack.extend (new_ui_graph_state)
 			end
 			create ui_node.make (a_node, ui_graph_state)

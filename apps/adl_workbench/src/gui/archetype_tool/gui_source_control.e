@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 				evx_adl_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
 			end
 		end
 
@@ -233,7 +233,7 @@ feature {NONE} -- Implementation
 				evx_adl_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
 			end
 		end
 
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 				att_source.signal_source_edited
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
 			end
 		end
 
@@ -258,7 +258,7 @@ feature {NONE} -- Implementation
 				att_source.save_text_to_legacy_file (a_text)
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.as_string])
+				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
 			end
 		end
 

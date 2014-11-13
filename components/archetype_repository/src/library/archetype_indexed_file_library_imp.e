@@ -56,10 +56,10 @@ feature {NONE} -- Implementation
 							amp.parse (l_full_path)
 							if amp.passed and then attached amp.last_archetype as arch_tn then
 								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
-									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.as_string>>, "")
+									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.physical_id>>, "")
 								else
 									ara := aof.create_arch_lib_archetype_make (l_full_path, Current, arch_tn)
-									archetype_id_index.force (ara, ara.id.as_string)
+									archetype_id_index.force (ara, ara.id.physical_id)
 								end
 							else
 								errors.add_error (ec_general, <<amp.error_strings>>, "")
@@ -79,7 +79,7 @@ feature {NONE} -- Implementation
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
 							amp.parse (l_full_path)
 							if amp.passed and then attached amp.last_archetype as arch_tn then
-								arch_id := arch_tn.archetype_id.as_string
+								arch_id := arch_tn.archetype_id.physical_id
 								if arch_tn.archetype_id_is_old_style then
 									errors.add_error (ec_parse_archetype_e7, <<fn, arch_id>>, "")
 								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style and attached arch_tn.parent_archetype_id as pid then

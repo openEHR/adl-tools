@@ -333,7 +333,7 @@ feature {NONE} -- Implementation
 				end
 
 				if ara.is_valid then
-					check attached file_system.pathname (an_export_dir, ara.id.as_string) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
+					check attached file_system.pathname (an_export_dir, ara.id.physical_id) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
 						filename := pn + ext
 					end
 					ara.save_flat_as (filename, a_syntax)

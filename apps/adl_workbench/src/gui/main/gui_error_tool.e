@@ -148,7 +148,7 @@ feature -- Commands
 
 				subrow := att_row.subrow (1)
 				cat_row.expand
-				create gli.make_with_text (utf8_to_utf32 (ara.id.as_string))
+				create gli.make_with_text (utf8_to_utf32 (ara.id.physical_id))
 				gli.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 
 				gli.set_tooltip (utf8_to_utf32 (ara.errors.as_string))

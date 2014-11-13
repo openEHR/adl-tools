@@ -36,9 +36,9 @@ feature -- Access
 
 	update_all_tools_rm_icons_setting_agent: detachable PROCEDURE [ANY, TUPLE]
 
-	refresh_archetype_viewers_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: STRING]]
+	refresh_archetype_viewers_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: READABLE_STRING_8]]
 
-	refresh_archetype_editors_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: STRING]]
+	refresh_archetype_editors_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: READABLE_STRING_8]]
 
 	select_archetype_from_gui_data_agent: detachable PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something

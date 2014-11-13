@@ -103,7 +103,7 @@ feature -- Serialisation
 
 			-- title
 			s := format_item (FMT_START_TITLE).twin
-			s.replace_substring_all ("$title", archetype.artefact_type.type_name + " " + archetype.archetype_id.as_string)
+			s.replace_substring_all ("$title", archetype.artefact_type.type_name + " " + archetype.archetype_id.physical_id)
 			s.append (format_item(FMT_END_TITLE))
 
 			-- meta-data

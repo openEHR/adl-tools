@@ -376,16 +376,19 @@ feature -- Access
 			-- Commit number of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
 
-	physical_id: STRING
+	physical_id: IMMUTABLE_STRING_8
 			-- The ‘physical’ form of the HRID, i.e. with complete version information.
+		local
+			str: STRING
 		do
 			if attached physical_id_cache as att_phys_id then
 				Result := att_phys_id
 			else
-				Result := hrid_root
-				Result.append_character (Axis_separator)
-				Result.append (Version_delimiter)
-				Result.append (version_id)
+				str := hrid_root
+				str.append_character (Axis_separator)
+				str.append (Version_delimiter)
+				str.append (version_id)
+				create Result.make_from_string (str)
 				physical_id_cache := Result
 			end
 		end
@@ -481,13 +484,13 @@ feature -- Output
 
 	as_string: STRING
 		do
-			Result := physical_id
+			Result := physical_id.as_string_8
 		end
 
 	as_filename: STRING
 			-- form of `as_string' legal on most file systems
 		do
-			Result := as_string
+			create Result.make_from_string (physical_id)
 			Result.replace_substring_all (namespace_separator, "__")
 		end
 
@@ -559,7 +562,7 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	physical_id_cache: detachable STRING
+	physical_id_cache: detachable IMMUTABLE_STRING_8
 
 invariant
 	Rm_publisher_validity: not rm_publisher.is_empty

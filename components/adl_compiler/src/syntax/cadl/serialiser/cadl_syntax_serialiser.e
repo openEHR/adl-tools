@@ -303,7 +303,7 @@ feature -- Visitor
 			if a_node.has_attributes then
 				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
 				-- here might be in differential form, and have no component_ontologies aet up
-				terminologies.extend (current_library.matching_archetype (a_node.archetype_ref).flat_archetype.terminology)
+				terminologies.extend (current_library.archetype_matching_ref (a_node.archetype_ref).flat_archetype.terminology)
 
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 				last_result.append (apply_style ("[" + a_node.archetype_ref + "]", STYLE_TERM_REF))

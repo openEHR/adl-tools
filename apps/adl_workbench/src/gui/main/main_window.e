@@ -1019,7 +1019,7 @@ feature -- Archetype editors
 			archetype_editors.do_all_tools (
 				agent (a_tool: GUI_ARCHETYPE_EDITOR; an_id: STRING)
 					do
-						if a_tool.source.id.as_string.same_string (an_id) then
+						if a_tool.source.id.physical_id.same_string (an_id) then
 							a_tool.repopulate
 						end
 					end (?, an_archetype_id)
@@ -1036,16 +1036,16 @@ feature -- Archetype editors
 
 	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE_EDITABLE): BOOLEAN
 		do
-			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.as_string)
+			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.physical_id)
 		end
 
-	refresh_archetype_viewers (an_archetype_id: STRING)
+	refresh_archetype_viewers (an_archetype_id: READABLE_STRING_8)
 			-- repopulate all viewers of archetype with `an_archetype_id'
 		do
 			archetype_viewers.do_all_tools (
 				agent (a_tool: GUI_ARCHETYPE_VIEWER; an_id: STRING)
 					do
-						if a_tool.source.id.as_string.same_string (an_id) then
+						if a_tool.source.id.physical_id.same_string (an_id) then
 							a_tool.repopulate
 						end
 					end (?, an_archetype_id)
