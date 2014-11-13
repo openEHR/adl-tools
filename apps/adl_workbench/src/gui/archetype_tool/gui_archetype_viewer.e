@@ -46,10 +46,17 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
 			tabs_index.put (slot_map_control.ev_root_container, Tool_tab_slots)
 
-			slot_map_control.ev_suppliers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
-			slot_map_control.ev_clients_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
-			slot_map_control.ev_suppliers_tree.pointer_double_press_actions.force (agent on_slot_map_suppliers_tree_double_click)
-			slot_map_control.ev_clients_tree.pointer_double_press_actions.force (agent on_slot_map_clients_tree_double_click)
+			slot_map_control.ev_slot_fillers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
+			slot_map_control.ev_slot_owners_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
+			slot_map_control.ev_slot_fillers_tree.pointer_double_press_actions.force (agent on_slot_map_suppliers_tree_double_click)
+			slot_map_control.ev_slot_owners_tree.pointer_double_press_actions.force (agent on_slot_map_clients_tree_double_click)
+
+			-- client/supplier control
+			create clients_suppliers_control.make (agent update_clients_suppliers_tab_label)
+			ev_notebook.extend (clients_suppliers_control.ev_root_container)
+			ev_notebook.set_item_text (clients_suppliers_control.ev_root_container, Tool_tab_name (Tool_tab_clients_suppliers))
+			ev_notebook.item_tab (clients_suppliers_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_reference"))
+			tabs_index.put (clients_suppliers_control.ev_root_container, Tool_tab_clients_suppliers)
 
 			-- source control
 			create source_control.make
@@ -91,6 +98,12 @@ feature -- UI Feedback
 			ev_notebook.set_item_text (slot_map_control.ev_root_container, Tool_tab_name (Tool_tab_slots) + " (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
+	update_clients_suppliers_tab_label (suppliers_count, clients_count: INTEGER)
+			-- On the Clients/Suppliers tab, indicate the numbers of suppliers and clients.
+		do
+			ev_notebook.set_item_text (clients_suppliers_control.ev_root_container, Tool_tab_name (Tool_tab_clients_suppliers) + " (" + suppliers_count.out + "/" + clients_count.out + ")")
+		end
+
 	select_path_item_from_path (a_path: STRING)
 			-- select the `a_path' in the paths tab of this tool
 		do
@@ -109,7 +122,7 @@ feature {NONE} -- Events
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key.code = key_enter and attached slot_map_control.ev_suppliers_tree.selected_item as sel_item then
+				if key.code = key_enter and attached slot_map_control.ev_slot_fillers_tree.selected_item as sel_item then
 					gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
 				end
 			end
@@ -119,7 +132,7 @@ feature {NONE} -- Events
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key.code = key_enter and attached slot_map_control.ev_clients_tree.selected_item as sel_item then
+				if key.code = key_enter and attached slot_map_control.ev_slot_owners_tree.selected_item as sel_item then
 					gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
 				end
 			end
@@ -128,7 +141,7 @@ feature {NONE} -- Events
 	on_slot_map_suppliers_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
 		do
-			if attached slot_map_control.ev_suppliers_tree.selected_item as sel_item then
+			if attached slot_map_control.ev_slot_fillers_tree.selected_item as sel_item then
 				gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
 			end
 		end
@@ -136,7 +149,7 @@ feature {NONE} -- Events
 	on_slot_map_clients_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
 		do
-			if attached slot_map_control.ev_clients_tree.selected_item as sel_item then
+			if attached slot_map_control.ev_slot_owners_tree.selected_item as sel_item then
 				gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
 			end
 		end
@@ -201,6 +214,8 @@ feature {NONE} -- Implementation
 	interface_map_control: GUI_INTERFACE_CONTROL
 
 	slot_map_control: GUI_SLOT_MAP_CONTROL
+
+	clients_suppliers_control: GUI_CLIENTS_SUPPLIERS_CONTROL
 
 	source_control: GUI_SOURCE_CONTROL
 

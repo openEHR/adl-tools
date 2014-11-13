@@ -247,7 +247,7 @@ feature -- Identification
 				csr := csr.parent
 			end
 			if attached {ARCH_LIB_MODEL_ITEM} csr as acmn then
-				Result := acmn.path + Semantic_path_separator + id.as_string
+				Result := acmn.path + Semantic_path_separator + id.physical_id
 			end
 		end
 
@@ -344,14 +344,20 @@ feature {NONE} -- Identification
 
 feature -- Relationships
 
-	suppliers_index: detachable HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
+	suppliers_index: HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
 			-- list of descriptors of slot fillers or other external references, keyed by archetype id
 			-- currently generated only from C_ARCHETYPE_ROOT index in differential archetype
+		attribute
+			create Result.make (0)
+		end
 
 	clients_index: detachable ARRAYED_LIST [STRING]
-			-- list of archetype_ids of archetypes that use this archetype
+			-- list of ids of archetypes that reference this archetype
 
-	slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+	slot_owners_index: detachable ARRAYED_LIST [STRING]
+			-- list of ids of archetypes that have slots that could be filled by this archetype
+
+	slot_fillers_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slot definitions of `differential_archetype', keyed by slot path
 			-- Current slot logic of include/exclude lists:
 			-- 	IF includes not empty and /= 'any' THEN
@@ -397,7 +403,7 @@ feature -- Relationships
 	has_ancestor (an_arch_id: STRING): BOOLEAN
 			-- True if this archetype has `an_arch_id' among its an ancestors
 		do
-			Result := attached specialisation_ancestor as att_ala and then (att_ala.id.as_string.is_equal (an_arch_id) or else
+			Result := attached specialisation_ancestor as att_ala and then (att_ala.id.physical_id.is_equal (an_arch_id) or else
 				att_ala.has_ancestor (an_arch_id))
 		end
 
@@ -410,13 +416,13 @@ feature -- Relationships
 	has_slots: BOOLEAN
 			-- Does this archetype have any slots?
 		do
-			Result := compilation_state >= Cs_validated_phase_1 and then not slot_id_index.is_empty
+			Result := compilation_state >= Cs_validated_phase_1 and then not slot_fillers_index.is_empty
 		end
 
 	is_supplier: BOOLEAN
 			-- Is this archetype used by any other archetypes (i.e. matches any of their slots)?
 		do
-			Result := attached clients_index
+			Result := attached slot_owners_index
 		end
 
 	has_artefacts: BOOLEAN = True
@@ -430,8 +436,18 @@ feature -- Relationships
 
 feature {ARCH_LIB_ARCHETYPE_ITEM} -- Relationships
 
-	add_client (an_archetype_id: STRING)
+	add_slot_owner (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
+		do
+			if not attached slot_owners_index then
+				create slot_owners_index.make (0)
+				slot_owners_index.compare_objects
+			end
+			slot_owners_index.extend (an_archetype_id)
+		end
+
+	add_client (an_archetype_id: STRING)
+			-- add the id of an archetype that references this archetype
 		do
 			if not attached clients_index then
 				create clients_index.make (0)
@@ -590,8 +606,8 @@ feature -- Compilation
 			Result := is_specialised and then specialisation_ancestor.last_compile_attempt_timestamp > last_compile_attempt_timestamp
 
 			-- see if any supplier was recompiled more recently
-			if not Result and attached suppliers_index as supp_idx then
-				Result := across supp_idx as supp_idx_csr some supp_idx_csr.item.last_compile_attempt_timestamp > last_compile_attempt_timestamp end
+			if not Result then
+				Result := across suppliers_index as supp_idx_csr some supp_idx_csr.item.last_compile_attempt_timestamp > last_compile_attempt_timestamp end
 			end
 		end
 
@@ -632,12 +648,12 @@ feature -- Compilation
 							compilation_state := Cs_ready_to_parse
 						else
 							compilation_state := cs_lineage_invalid
-							add_error (ec_compile_e1, <<parent_id.as_string>>)
+							add_error (ec_compile_e1, <<parent_id.physical_id>>)
 						end
 					when cs_ready_to_parse_legacy then
 						if is_specialised and not specialisation_ancestor.is_valid then
 							compilation_state := cs_lineage_invalid
-							add_error (ec_compile_e1, <<parent_id.as_string>>)
+							add_error (ec_compile_e1, <<parent_id.physical_id>>)
 						else
 							parse_legacy
 						end
@@ -663,7 +679,7 @@ feature -- Compilation
 			else
 				signal_exception
 				if attached meaning (exception) as att_meaning and attached exception_trace as att_exc_trace then
-					add_error (ec_compile_exception, <<id.as_string, att_meaning, att_exc_trace>>)
+					add_error (ec_compile_exception, <<id.physical_id, att_meaning, att_exc_trace>>)
 				end
 			end
 		rescue
@@ -729,7 +745,7 @@ feature -- Compilation
 				compilation_state := Cs_ready_to_validate
 			else
 				compilation_state := cs_suppliers_invalid
-				add_error (ec_compile_e2, <<suppliers_index.item_for_iteration.id.as_string>>)
+				add_error (ec_compile_e2, <<suppliers_index.item_for_iteration.id.physical_id>>)
 			end
 		ensure
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
@@ -807,7 +823,7 @@ feature {NONE} -- Compilation
 			end
 		 	compilation_state := Cs_parsed
 			if attached legacy_flat_archetype as flat_arch then
-				add_info (ec_compile_legacy_i1, <<id.as_string>>)
+				add_info (ec_compile_legacy_i1, <<id.physical_id>>)
 
 				-- perform post-parse processing and then diff conversion
 				if is_specialised then
@@ -833,7 +849,7 @@ feature {NONE} -- Compilation
 						end
 					else
 						compilation_state := cs_lineage_invalid
-						add_error (ec_compile_e1, <<parent_id.as_string>>)
+						add_error (ec_compile_e1, <<parent_id.physical_id>>)
 					end
 				else
 					-- perform post-parse object structure finalisation
@@ -878,10 +894,10 @@ feature {NONE} -- Compilation
 					set_archetype_view_language (diff_arch.original_language.code_string)
 				end
 
-				if is_specialised and then attached diff_arch.parent_archetype_id as da_parent_ref and then not parent_id.as_string.starts_with (da_parent_ref) then
-					add_warning (ec_parse_w1, <<id.as_string, parent_id.as_string, da_parent_ref>>)
+				if is_specialised and then attached diff_arch.parent_archetype_id as da_parent_ref and then not parent_id.physical_id.starts_with (da_parent_ref) then
+					add_warning (ec_parse_w1, <<id.physical_id, parent_id.physical_id, da_parent_ref>>)
 				else
-					add_info (ec_parse_i1, <<id.as_string>>)
+					add_info (ec_parse_i1, <<id.physical_id>>)
 				end
 
 				-- perform post-parse object structure finalisation
@@ -918,13 +934,13 @@ feature {NONE} -- Compilation
 
 			-- determine the suppliers list for ongoing compilation; exclude the current archetype to avoid
 			-- an infinite recursion
-			create suppliers_index.make (0)
+			suppliers_index.wipe_out
 			across diff_arch.suppliers_index as supp_idx_csr loop
-				if current_library.has_archetype_id_for_ref (supp_idx_csr.key) and then
-					attached current_library.matching_archetype (supp_idx_csr.key) as supp_arch and then
-					not supp_arch.id.as_string.is_case_insensitive_equal (id.as_string)
+				if attached current_library.archetype_matching_ref (supp_idx_csr.key) as supp_arch and then
+					not supp_arch.id.physical_id.is_case_insensitive_equal (id.physical_id)
 				then
-					suppliers_index.put (supp_arch, supp_arch.id.as_string)
+					suppliers_index.put (supp_arch, supp_arch.id.physical_id)
+					supp_arch.add_client (id.physical_id)
 				end
 			end
 			if not suppliers_index.is_empty then
@@ -933,7 +949,7 @@ feature {NONE} -- Compilation
 				across suppliers_index as supp_idx_csr loop
 					if supp_idx_csr.item.has_ancestor_descriptor (Current) then
 						compilation_state := Cs_supplier_loop
-						add_error (ec_VINH, <<supp_idx_csr.item.id.as_string>>)
+						add_error (ec_VINH, <<supp_idx_csr.item.id.physical_id>>)
 					end
 				end
 				if not has_errors then
@@ -989,7 +1005,7 @@ feature {NONE} -- Compilation
 			adl_15_engine.phase_3_validate (Current)
 			merge_errors (adl_15_engine.errors)
 			if adl_15_engine.validation_passed then
-				add_info (ec_parse_archetype_i2, <<id.as_string>>)
+				add_info (ec_parse_archetype_i2, <<id.physical_id>>)
 				compilation_state := Cs_validated
 				-- not yet in use
 				--	adl_15_engine.post_compile_process (Current)
@@ -1228,6 +1244,8 @@ feature {NONE} -- Implementation
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
 	arch_flattener: ARCHETYPE_FLATTENER
+			-- use a cache and lazy create since in many archetype libraries, the vast majority of archetypes
+			-- are top-level, i.e. need no flattener
 		do
 			if attached arch_flattener_cache as af then
 				Result := af
@@ -1246,6 +1264,7 @@ feature {NONE} -- Implementation
 	clear_cache
 		do
 			flat_archetype_cache := Void
+			slot_id_index_cache := Void
 		end
 
 	set_archetype_default_details (an_arch: DIFFERENTIAL_ARCHETYPE)
@@ -1263,19 +1282,15 @@ feature {NONE} -- Implementation
 		end
 
 	compute_slot_id_index
-			-- generate `slot_id_index_cache' and `clients_index' of client archetype descriptors
+			-- generate `slot_id_index_cache' and `slot_owners_index' of client archetype descriptors
 		require
 			compilation_state >= Cs_validated_phase_1
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			slot_idx: like slot_id_index
+			slot_idx: like slot_fillers_index
 			ala: ARCH_LIB_ARCHETYPE_ITEM
 		do
-			if is_specialised then
-				slot_idx := specialisation_ancestor.slot_id_index
-			else
-				create slot_idx.make (0)
-			end
+			create slot_idx.make (0)
 			slot_id_index_cache := slot_idx
 
 			across differential_archetype.slot_index as slots_csr loop
@@ -1309,8 +1324,8 @@ feature {NONE} -- Implementation
 				-- now post the results in the reverse indexes
 				across slot_idx.item (slots_csr.item.path) as ids_csr loop
 					ala := current_library.archetype_with_id (ids_csr.item)
-					if not attached ala.clients_index or else not ala.clients_index.has (id.as_string) then
-						ala.add_client (id.as_string)
+					if not attached ala.slot_owners_index or else not ala.slot_owners_index.has (id.physical_id) then
+						ala.add_slot_owner (id.physical_id)
 					end
 				end
 			end
@@ -1335,7 +1350,7 @@ invariant
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
 
 	parent_existence: specialisation_ancestor /= Void implies is_specialised
-	clients_index_valid: clients_index /= Void implies not clients_index.is_empty
+	clients_index_valid: slot_owners_index /= Void implies not slot_owners_index.is_empty
 
 end
 

@@ -119,11 +119,12 @@ feature -- Definitions: Tool tabs
 	Tool_tab_annotations: INTEGER = 3
 	Tool_tab_interface: INTEGER = 4
 	Tool_tab_slots: INTEGER = 5
-	Tool_tab_source: INTEGER = 6
-	Tool_tab_serialised: INTEGER = 7
-	Tool_tab_validity: INTEGER = 8
-	Tool_tab_stats: INTEGER = 9
-	Tool_tab_max: INTEGER = 9
+	Tool_tab_clients_suppliers: INTEGER = 6
+	Tool_tab_source: INTEGER = 7
+	Tool_tab_serialised: INTEGER = 8
+	Tool_tab_validity: INTEGER = 9
+	Tool_tab_stats: INTEGER = 10
+	Tool_tab_max: INTEGER = 10
 
 	Tool_tab_index: HASH_TABLE [STRING, INTEGER]
 			-- names of tool tabs keyed by tab constants
@@ -135,6 +136,7 @@ feature -- Definitions: Tool tabs
 			Result.put (get_text (ec_annotations_tab_text), Tool_tab_annotations)
 			Result.put (get_text (ec_interface_tab_text), Tool_tab_interface)
 			Result.put (get_text (ec_slots_tab_text), Tool_tab_slots)
+			Result.put (get_text (ec_clients_suppliers_tab_text), Tool_tab_clients_suppliers)
 			Result.put (get_text (ec_source_tab_text), Tool_tab_source)
 			Result.put (get_text (ec_serialised_tab_text), Tool_tab_serialised)
 			Result.put (get_text (ec_validity_tab_text), Tool_tab_validity)

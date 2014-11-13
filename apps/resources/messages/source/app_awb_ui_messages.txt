@@ -112,7 +112,7 @@ templates = <
 
 		-- REPOSITORY_COMMIT_DIALOG
 		["repository_commit_message_label"] = <"Commit Message: ">
-		["repository_commit_file_list_label"] = <"  Commit Files: ">
+		["repository_commit_file_list_label"] = <"Commit Files">
 		["repository_commit_dialog_title"] = <"Repository Commit">
 		["repository_commit_dialog_header_label"] = <"Commit local changes to repository $1.">
 		["repository_commit_button_text"] = <"Commit ...">
@@ -403,8 +403,13 @@ templates = <
 
 		-- GUI_SLOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Archetype menu.">
-		["supplier_frame_text"] = <"Supplier Archetypes">
-		["client_frame_text"] = <"Client Archetypes">
+		["slot_fillers_frame_text"] = <"Slot fillers for current Archetype">
+		["slot_owners_frame_text"] = <"Archetypes containing slots fillable by current Archetype">
+
+		-- GUI_CLIENT_SUPPLIER_CONTROL
+		["suppliers_frame_text"] = <"Supplier Archetypes">
+		["clients_frame_text"] = <"Client Archetypes">
+		["archetype_references_text"] = <"Archetype References">
 
 		-- GUI_ANNOTATIONS_CONTROL 
 		["annotation_path_text"] = <"Path">
@@ -536,6 +541,7 @@ templates = <
 		["definition_tab_text"] = <"Definition">
 		["terminology_tab_text"] = <"Terminology">
 		["slots_tab_text"] = <"Slots">
+		["clients_suppliers_tab_text"] = <"Clients/Suppliers">
 		["interface_tab_text"] = <"Interface">
 		["annotations_tab_text"] = <"Annotations">
 		["serialised_tab_text"] = <"Serialised">

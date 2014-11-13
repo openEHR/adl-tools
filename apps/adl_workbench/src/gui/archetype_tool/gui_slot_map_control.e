@@ -35,29 +35,33 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-
-			create ev_suppliers_tree
-			create ev_clients_tree
-			create supplier_frame
-			create supplier_vbox
-			create client_frame
-			create client_vbox
-
-			-- connect them together
-			ev_root_container.extend (supplier_frame)
-			supplier_frame.extend (supplier_vbox)
-			supplier_vbox.extend (ev_suppliers_tree)
-			ev_root_container.extend (client_frame)
-			client_frame.extend (client_vbox)
-			client_vbox.extend (ev_clients_tree)
-
-			-- set visual characteristics
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			supplier_frame.set_text (get_msg (ec_supplier_frame_text, Void))
-			supplier_vbox.set_border_width (Default_border_width)
-			client_frame.set_text (get_msg (ec_client_frame_text, Void))
-			client_vbox.set_border_width (Default_border_width)
+
+			-- Slot fillers tree
+			create ev_slot_fillers_tree
+			create ev_slot_owners_tree
+
+			create slot_fillers_frame
+			slot_fillers_frame.set_text (get_msg (ec_slot_fillers_frame_text, Void))
+			ev_root_container.extend (slot_fillers_frame)
+
+			create slot_fillers_vbox
+			slot_fillers_frame.extend (slot_fillers_vbox)
+			slot_fillers_vbox.extend (ev_slot_fillers_tree)
+
+			-- Slot owners tree
+			create slot_owners_frame
+			slot_owners_frame.set_text (get_msg (ec_slot_owners_frame_text, Void))
+			ev_root_container.extend (slot_owners_frame)
+
+			create slot_owners_vbox
+			slot_owners_frame.extend (slot_owners_vbox)
+			slot_owners_vbox.extend (ev_slot_owners_tree)
+
+			-- set visual characteristics
+			slot_fillers_vbox.set_border_width (Default_border_width)
+			slot_owners_vbox.set_border_width (Default_border_width)
 
 			visual_update_action := a_visual_update_action
 
@@ -68,7 +72,7 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	ev_suppliers_tree, ev_clients_tree: EV_TREE
+	ev_slot_fillers_tree, ev_slot_owners_tree: EV_TREE
 
 feature -- Status Report
 
@@ -89,9 +93,9 @@ feature -- UI Feedback
 
 feature {NONE} -- Implementation
 
-	supplier_vbox, client_vbox: EV_VERTICAL_BOX
+	slot_fillers_vbox, slot_owners_vbox: EV_VERTICAL_BOX
 
-	supplier_frame, client_frame: EV_FRAME
+	slot_fillers_frame, slot_owners_frame: EV_FRAME
 
 	append_tree (subtree: EV_TREE_NODE_LIST; ids: ARRAYED_LIST [STRING])
 			-- Populate `subtree' from `ids'.
@@ -112,8 +116,8 @@ feature {NONE} -- Implementation
 
 	do_clear
 		do
-			ev_suppliers_tree.wipe_out
-			ev_clients_tree.wipe_out
+			ev_slot_fillers_tree.wipe_out
+			ev_slot_owners_tree.wipe_out
 			call_visual_update_action (0, 0)
 		end
 
@@ -123,32 +127,63 @@ feature {NONE} -- Implementation
 			eti: EV_TREE_ITEM
 			slots_count: INTEGER
 			used_by_count: INTEGER
+			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM
 		do
 			if attached source as src and attached selected_language as sel_lang then
+				-- =============== SUPPLIERS ===============
+				-- add valid slot fillers to suppliers
 				if src.has_slots then
-					across src.slot_id_index as slots_csr loop
-						create eti.make_with_text (utf8_to_utf32 (src.differential_archetype.annotated_path (slots_csr.key, sel_lang, True)))
-						eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
-						ev_suppliers_tree.extend (eti)
-						append_tree (eti, slots_csr.item)
-						slots_count := slots_count + eti.count
-						if eti.is_expandable then
-							eti.expand
+					across src.slot_fillers_index as slots_csr loop
+						create_slot_tree_node (src.differential_archetype.annotated_path (slots_csr.key, sel_lang, True))
+						append_tree (ev_slot_tree_node, slots_csr.item)
+						slots_count := slots_count + ev_slot_tree_node.count
+						if ev_slot_tree_node.is_expandable then
+							ev_slot_tree_node.expand
 						end
 					end
 				end
 
-				if current_library.compile_attempt_count < current_library.archetype_count then
-					ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
+				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
+				if not differential_view and src.is_specialised then
+					from csr_ala := src.specialisation_ancestor until csr_ala = Void loop
+						if csr_ala.has_slots then
+							across csr_ala.slot_fillers_index as slots_csr loop
+								create_slot_tree_node (src.differential_archetype.annotated_path (slots_csr.key, sel_lang, True))
+								append_tree (ev_slot_tree_node, slots_csr.item)
+								slots_count := slots_count + ev_slot_tree_node.count
+								if ev_slot_tree_node.is_expandable then
+									ev_slot_tree_node.expand
+								end
+							end
+						end
+						csr_ala := csr_ala.specialisation_ancestor
+					end
 				end
 
-				if src.is_supplier and attached src.clients_index as ci then
-					append_tree (ev_clients_tree, ci)
-					used_by_count := used_by_count + ev_clients_tree.count
+				-- =============== CLIENTS ===============
+				if current_library.compile_attempt_count < current_library.archetype_count then
+					ev_slot_owners_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
+				end
+
+				if attached src.slot_owners_index as ci then
+					append_tree (ev_slot_owners_tree, ci)
+					used_by_count := used_by_count + ev_slot_owners_tree.count
 				end
 
 				call_visual_update_action (slots_count, used_by_count)
 			end
+		end
+
+	create_slot_tree_node (a_path: STRING)
+		do
+			create ev_slot_tree_node.make_with_text (utf8_to_utf32 (a_path))
+			ev_slot_tree_node.set_pixmap (get_icon_pixmap ("archetype/slot_fillers"))
+			ev_slot_fillers_tree.extend (ev_slot_tree_node)
+		end
+
+	ev_slot_tree_node: EV_TREE_ITEM
+		attribute
+			create Result
 		end
 
 	call_visual_update_action (val1, val2: INTEGER)
