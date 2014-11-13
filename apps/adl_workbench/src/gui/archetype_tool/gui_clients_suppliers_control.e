@@ -49,18 +49,20 @@ feature {NONE} -- Initialisation
 			suppliers_frame.set_text (get_msg (ec_suppliers_frame_text, Void))
 			ev_root_container.extend (suppliers_frame)
 
-			create ev_suppliers_list.make_readonly ("", agent supplier_ids, 0, 0, True)
-			suppliers_frame.extend (ev_suppliers_list.ev_root_container)
-			gui_controls.extend (ev_suppliers_list)
+			create evx_suppliers_list.make_readonly ("", agent supplier_ids, 0, 0, True)
+			evx_suppliers_list.ev_data_control.pointer_button_press_actions.force_extend (agent suppliers_list_context_menu)
+			suppliers_frame.extend (evx_suppliers_list.ev_root_container)
+			gui_controls.extend (evx_suppliers_list)
 
 			-- Clients
 			create clients_frame
 			clients_frame.set_text (get_msg (ec_clients_frame_text, Void))
 			ev_root_container.extend (clients_frame)
 
-			create ev_clients_list.make_readonly ("", agent client_ids, 0, 0, True)
-			clients_frame.extend (ev_clients_list.ev_root_container)
-			gui_controls.extend (ev_clients_list)
+			create evx_clients_list.make_readonly ("", agent client_ids, 0, 0, True)
+			evx_clients_list.ev_data_control.pointer_button_press_actions.force_extend (agent clients_list_context_menu)
+			clients_frame.extend (evx_clients_list.ev_root_container)
+			gui_controls.extend (evx_clients_list)
 
 			-- set visual characteristics
 			visual_update_action := a_visual_update_action
@@ -72,7 +74,7 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	ev_suppliers_list, ev_clients_list: EVX_TEXT_LIST_CONTROL
+	evx_suppliers_list, evx_clients_list: EVX_TEXT_LIST_CONTROL
 
 feature -- Status Report
 
@@ -171,6 +173,41 @@ feature {NONE} -- Implementation
 		do
 			if attached visual_update_action then
 				visual_update_action.call ([val1, val2])
+			end
+		end
+
+	suppliers_list_context_menu (x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			context_menu: EV_MENU
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and then attached evx_suppliers_list.ev_data_control.selected_item as att_sel_row then
+				create context_menu
+				build_context_menu (context_menu, utf32_to_utf8 (att_sel_row.first))
+				context_menu.show
+			end
+		end
+
+	clients_list_context_menu (x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			context_menu: EV_MENU
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and then attached evx_clients_list.ev_data_control.selected_item as att_sel_row then
+				create context_menu
+				build_context_menu (context_menu, utf32_to_utf8 (att_sel_row.first))
+				context_menu.show
+			end
+		end
+
+	build_context_menu (a_menu: EV_MENU; an_archetype_key: STRING)
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
+				create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
+				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
+				a_menu.extend (an_mi)
 			end
 		end
 

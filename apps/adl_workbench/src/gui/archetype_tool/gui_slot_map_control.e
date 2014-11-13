@@ -39,16 +39,17 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- Slot fillers tree
-			create ev_slot_fillers_tree
-			create ev_slot_owners_tree
-
 			create slot_fillers_frame
 			slot_fillers_frame.set_text (get_msg (ec_slot_fillers_frame_text, Void))
 			ev_root_container.extend (slot_fillers_frame)
 
 			create slot_fillers_vbox
 			slot_fillers_frame.extend (slot_fillers_vbox)
+
+			create ev_slot_fillers_tree
 			slot_fillers_vbox.extend (ev_slot_fillers_tree)
+
+			ev_slot_fillers_tree.pointer_button_press_actions.force_extend (agent slot_fillers_tree_context_menu)
 
 			-- Slot owners tree
 			create slot_owners_frame
@@ -57,7 +58,10 @@ feature {NONE} -- Initialisation
 
 			create slot_owners_vbox
 			slot_owners_frame.extend (slot_owners_vbox)
+
+			create ev_slot_owners_tree
 			slot_owners_vbox.extend (ev_slot_owners_tree)
+			ev_slot_owners_tree.pointer_button_press_actions.force_extend (agent slot_owners_tree_context_menu)
 
 			-- set visual characteristics
 			slot_fillers_vbox.set_border_width (Default_border_width)
@@ -191,6 +195,41 @@ feature {NONE} -- Implementation
 		do
 			if attached visual_update_action then
 				visual_update_action.call ([val1, val2])
+			end
+		end
+
+	slot_fillers_tree_context_menu (x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			context_menu: EV_MENU
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and then attached ev_slot_fillers_tree.selected_item as att_sel_item then
+				create context_menu
+				build_context_menu (context_menu, utf32_to_utf8 (att_sel_item.text))
+				context_menu.show
+			end
+		end
+
+	slot_owners_tree_context_menu (x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			context_menu: EV_MENU
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and then attached ev_slot_owners_tree.selected_item as att_sel_item then
+				create context_menu
+				build_context_menu (context_menu, utf32_to_utf8 (att_sel_item.text))
+				context_menu.show
+			end
+		end
+
+	build_context_menu (a_menu: EV_MENU; an_archetype_key: STRING)
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
+				create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
+				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
+				a_menu.extend (an_mi)
 			end
 		end
 

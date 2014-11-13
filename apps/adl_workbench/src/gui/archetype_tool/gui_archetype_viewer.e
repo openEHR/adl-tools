@@ -46,11 +46,6 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
 			tabs_index.put (slot_map_control.ev_root_container, Tool_tab_slots)
 
-			slot_map_control.ev_slot_fillers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
-			slot_map_control.ev_slot_owners_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
-			slot_map_control.ev_slot_fillers_tree.pointer_double_press_actions.force (agent on_slot_map_suppliers_tree_double_click)
-			slot_map_control.ev_slot_owners_tree.pointer_double_press_actions.force (agent on_slot_map_clients_tree_double_click)
-
 			-- client/supplier control
 			create clients_suppliers_control.make (agent update_clients_suppliers_tab_label)
 			ev_notebook.extend (clients_suppliers_control.ev_root_container)
@@ -117,42 +112,6 @@ feature -- UI Feedback
 		end
 
 feature {NONE} -- Events
-
-	on_slot_map_suppliers_tree_key_press (key: EV_KEY)
-			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
-		do
-			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key.code = key_enter and attached slot_map_control.ev_slot_fillers_tree.selected_item as sel_item then
-					gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
-				end
-			end
-		end
-
-	on_slot_map_clients_tree_key_press (key: EV_KEY)
-			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
-		do
-			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key.code = key_enter and attached slot_map_control.ev_slot_owners_tree.selected_item as sel_item then
-					gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
-				end
-			end
-		end
-
-	on_slot_map_suppliers_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
-			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
-		do
-			if attached slot_map_control.ev_slot_fillers_tree.selected_item as sel_item then
-				gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
-			end
-		end
-
-	on_slot_map_clients_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
-			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
-		do
-			if attached slot_map_control.ev_slot_owners_tree.selected_item as sel_item then
-				gui_agents.select_archetype_from_gui_data_agent.call ([sel_item])
-			end
-		end
 
 	on_path_map_key_press (key: EV_KEY)
 			-- When the user presses ctrl-C on row in path map, copy it to clipboard
@@ -245,7 +204,9 @@ feature {NONE} -- Implementation
 			else
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/errors"))
 			end
-			if attached source and then source.is_valid then
+
+			-- statistics tab
+			if attached source as src and then src.is_valid then
 				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
 				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
