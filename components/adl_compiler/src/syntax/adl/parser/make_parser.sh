@@ -10,5 +10,5 @@
 geyacc --new_typing --rescue-on-abort -v parser_14_errs.txt -t ADL_14_TOKENS -o adl_14_parser.e adl_14_parser.y
 geyacc --doc=html -v parser_14_errs.txt -t ADL_14_TOKENS -o adl_14_parser.html adl_14_parser.y
 
-geyacc --new_typing --rescue-on-abort -v parser_15_errs.txt -t ADL_15_TOKENS -o adl_15_parser.e adl_15_parser.y
-geyacc --doc=html -v parser_15_errs.txt -t ADL_15_TOKENS -o adl_15_parser.html adl_15_parser.y
+geyacc --new_typing --rescue-on-abort -v parser_2_errs.txt -t ADL_2_TOKENS -o adl_2_parser.e adl_2_parser.y
+geyacc --doc=html -v parser_2_errs.txt -t ADL_2_TOKENS -o adl_2_parser.html adl_2_parser.y

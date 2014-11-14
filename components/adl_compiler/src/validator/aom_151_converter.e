@@ -27,7 +27,7 @@ inherit
 			{ANY} version_less_than, Adl_id_code_version, valid_standard_version
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 		end
@@ -60,7 +60,7 @@ feature -- Definitions
 	Es_at_codes_converted: INTEGER = 2
 	Es_ac_codes_converted: INTEGER = 3
 
-feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
+feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- set target_descriptor

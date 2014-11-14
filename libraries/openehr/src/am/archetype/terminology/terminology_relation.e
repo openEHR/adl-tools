@@ -10,7 +10,7 @@ note
 class TERMINOLOGY_RELATION
 
 inherit
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} is_qualified_codestring, is_deep_equal, standard_is_equal, deep_twin

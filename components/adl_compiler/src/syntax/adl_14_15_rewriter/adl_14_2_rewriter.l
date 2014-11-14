@@ -8,7 +8,7 @@ note
 	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_14_15_REWRITER
+class ADL_14_2_REWRITER
 
 inherit
 	YY_COMPRESSED_SCANNER_SKELETON
@@ -23,7 +23,7 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -61,7 +61,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 --------------- Options --------------
 %x IN_ADL_VALUE_SET_DEF IN_VALUE_SET_DEF IN_STR IN_TUPLE IN_PATH
-%option outfile="adl_14_15_rewriter.e"
+%option outfile="adl_14_2_rewriter.e"
 
 %%
 

@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Tools for manipulating ADL 1.5 archetype codes. There are 3 types of codes:
+				 Tools for manipulating ADL 2 archetype codes. There are 3 types of codes:
 					id codes, used to identify nodes - idN, idN.M etc e.g. id1, id20, id2.0.7
 					at codes, used to identify value terms - atN, atN.N etc
 					ac codes, used to identify ref sets - atN, atN.N etc
@@ -20,7 +20,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_15_TERM_CODE_TOOLS
+class ADL_2_TERM_CODE_TOOLS
 
 inherit
 	SPECIALISATION_STATUSES
@@ -553,9 +553,9 @@ feature -- Conversion
 			Result.replace_substring (Id_code_leader, 1, 2)
 		end
 
-	adl_14_path_converted (an_adl_14_path: STRING): STRING
+	adl_14_path_to_adl_2_path (an_adl_14_path: STRING): STRING
 			-- convert `an_adl_14_path' containing ADL 1.4 at-codes to a path containing,
-			-- ADL 1.5 id-codes, using `adl_14_code_renumbered'
+			-- ADL 2 id-codes, using `adl_14_code_renumbered'
 			-- `an_adl_14_path' should be a well-formed path as recognised by a regex,
 			-- of the form /aaaa/bbbb[atNNNN]/cccc[atNNNN]/dddd
 		local
@@ -572,22 +572,22 @@ feature -- Conversion
 			end
 		end
 
-	adl_15_path_converted (an_adl_15_path: STRING): STRING
-			-- convert `an_adl_15_path' containing ADL 1.5 id-codes to a path containing,
-			-- ADL 1.4 at-codes, using `adl_15_code_renumbered'
-			-- `an_adl_15_path' should be a well-formed path as recognised by a regex,
+	adl_2_path_to_adl_14_path (an_adl_2_path: STRING): STRING
+			-- convert `an_adl_2_path' containing ADL 2 id-codes to a path containing,
+			-- ADL 1.4 at-codes, using `adl_2_code_renumbered'
+			-- `an_adl_2_path' should be a well-formed path as recognised by a regex,
 			-- of the form /aaaa/bbbb[idN]/cccc[idN]/dddd
 		local
 			lpos, rpos: INTEGER
 			at_code: STRING
 		do
-			create Result.make_from_string (an_adl_15_path)
-			lpos := an_adl_15_path.index_of ('[', 1)
-			from until lpos = 0 or lpos >= an_adl_15_path.count loop
-				rpos := an_adl_15_path.index_of (']', lpos)
-				at_code := an_adl_15_path.substring (lpos+1, rpos-1)
+			create Result.make_from_string (an_adl_2_path)
+			lpos := an_adl_2_path.index_of ('[', 1)
+			from until lpos = 0 or lpos >= an_adl_2_path.count loop
+				rpos := an_adl_2_path.index_of (']', lpos)
+				at_code := an_adl_2_path.substring (lpos+1, rpos-1)
 				Result.replace_substring_all (at_code, adl_15_id_code_converted (at_code))
-				lpos := an_adl_15_path.index_of ('[', rpos)
+				lpos := an_adl_2_path.index_of ('[', rpos)
 			end
 		end
 

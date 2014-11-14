@@ -21,7 +21,7 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export {NONE}
 			all
 		end

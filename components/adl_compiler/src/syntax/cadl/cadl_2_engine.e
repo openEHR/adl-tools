@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_15_ENGINE
+class CADL_2_ENGINE
 
 inherit
 	PARSER_ENGINE
@@ -85,7 +85,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	parser: CADL_15_PARSER
+	parser: CADL_2_PARSER
 
 	target_desc: detachable ARCH_LIB_ARCHETYPE_ITEM
 		note

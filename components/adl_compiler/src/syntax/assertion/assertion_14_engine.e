@@ -89,7 +89,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	parser: CADL_15_PARSER
+	parser: CADL_2_PARSER
 
 	target_desc: detachable ARCH_LIB_ARCHETYPE_ITEM
 		note

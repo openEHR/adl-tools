@@ -15,7 +15,7 @@ inherit
 			can_edit, enable_edit, disable_edit, do_display, can_populate, can_repopulate
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 			{ANY} is_id_code
@@ -65,7 +65,8 @@ feature {NONE} -- Initialisation
 			create evx_id_terms_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_id_terms_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
-				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
+				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"),
+				agent do evx_id_terms_grid.resize_columns_to_content_and_fit (id_grid_fixed_cols) end)
 			evx_id_terms_control_panel.add_frame (evx_id_terms_treeview_control.ev_root_container, False)
 
 
@@ -91,21 +92,9 @@ feature {NONE} -- Initialisation
 			create evx_vsets_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_values_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
-				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
+				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"),
+				agent do evx_id_terms_grid.resize_columns_to_content_and_fit (id_grid_fixed_cols) end)
 			evx_vsets_control_panel.add_frame (evx_vsets_treeview_control.ev_root_container, False)
-
-			-- ========= view options  =========
-
-			-- 'View' frame
-			create view_frame_ctl.make (get_text (ec_view_detail_controls_text), 85, 100, False)
-			evx_vsets_control_panel.add_frame_control (view_frame_ctl, False)
-
-			-- show codes checkbox
-			create show_codes_checkbox_ctl.make_linked (get_text (ec_domain_view_add_codes_text), Void,
-				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
-			view_frame_ctl.extend (show_codes_checkbox_ctl.ev_data_control, False)
-			gui_controls.extend (show_codes_checkbox_ctl)
-
 
 			-- set editing state
 			if not editing_enabled then
@@ -136,9 +125,6 @@ feature -- Status Report
 		do
 			Result := True
 		end
-
-	show_codes: BOOLEAN
-			-- True if codes should be shown
 
 feature -- Commands
 
@@ -178,16 +164,6 @@ feature -- Commands
 			end
 		end
 
-feature {NONE} -- Events
-
-	update_show_codes (a_flag: BOOLEAN)
-		do
-			show_codes := a_flag
-			if attached source then
-				redisplay
-			end
-		end
-
 feature {NONE} -- Implementation
 
 	ev_vsets_hbox, ev_id_terms_hbox: EV_HORIZONTAL_BOX
@@ -197,10 +173,6 @@ feature {NONE} -- Implementation
 	evx_vsets_control_panel, evx_id_terms_control_panel: EVX_CONTROL_PANEL
 
 	evx_vsets_treeview_control, evx_id_terms_treeview_control: EVX_TREEVIEW_CONTROL
-
-	view_frame_ctl: EVX_FRAME_CONTROL
-
-	show_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 

@@ -16,7 +16,7 @@ inherit
 			{ANY} deep_twin, valid_standard_version
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} deep_twin, specialisation_depth_from_code, is_valid_code
@@ -24,7 +24,7 @@ inherit
 
 	AUTHORED_RESOURCE
 		redefine
-			synchronise_adl15, make_from_other
+			synchronise_adl, make_from_other
 		end
 
 feature -- Initialisation
@@ -853,9 +853,9 @@ feature -- Modification
 			highest_redefined_id_codes.replace (highest_redefined_id_codes.item (a_parent_id) + 1, a_parent_id)
 		end
 
-feature {ADL_15_ENGINE} -- ADL 1.5 Serialisation
+feature {ADL_2_ENGINE} -- ADL 1.5 Serialisation
 
-	synchronise_adl15
+	synchronise_adl
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do

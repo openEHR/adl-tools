@@ -18,7 +18,7 @@ inherit
 create
 	initialise
 
-feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
+feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (a_target_desc: like child_desc)
 			-- set target_descriptor

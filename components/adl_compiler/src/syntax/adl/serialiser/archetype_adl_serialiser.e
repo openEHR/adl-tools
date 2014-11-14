@@ -15,7 +15,7 @@ inherit
 			make
 		end
 
-	ADL_15_TOKENS
+	ADL_2_TOKENS
 		export
 			{NONE} all
 		end

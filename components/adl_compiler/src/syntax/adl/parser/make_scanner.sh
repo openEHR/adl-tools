@@ -9,4 +9,4 @@
 #
 
 gelex adl_14_scanner.l
-gelex adl_15_scanner.l
+gelex adl_2_scanner.l

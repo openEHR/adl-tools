@@ -275,13 +275,11 @@ feature -- Output
 			end
 		end
 
-feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Implementation
+feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Implementation
 
-	synchronise_adl15
+	synchronise_adl
 			-- synchronise object representation of resource to forms suitable for serialisation
 		do
-			-- FIXME - translations are handled like this until ADL2, when the
-			-- whole archetype will just be a dADL doc
 			create orig_lang_translations.make
 			orig_lang_translations.set_original_language (original_language)
 			if attached translations as tr then

@@ -125,8 +125,8 @@ feature -- Access
 			end
 
 			if adl_version < Adl_id_code_version then
-				adl_14_15_rewriter.execute (arch_text)
-				Result := adl_14_15_rewriter.out_buffer
+				adl_14_2_rewriter.execute (arch_text)
+				Result := adl_14_2_rewriter.out_buffer
 				is_text_converted := True
 			else
 				is_text_converted := False
@@ -295,8 +295,8 @@ feature -- File Management (Legacy)
 			check attached file_repository.text as t then
 				arch_text := t
 			end
-			adl_14_15_rewriter.execute (arch_text)
-			Result := adl_14_15_rewriter.out_buffer
+			adl_14_2_rewriter.execute (arch_text)
+			Result := adl_14_2_rewriter.out_buffer
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 
 			create amp

@@ -16,7 +16,7 @@ inherit
 			make
 		end
 
-	CADL_15_TOKENS
+	CADL_2_TOKENS
 		export
 			{NONE} all
 		end

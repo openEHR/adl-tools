@@ -12,7 +12,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	FLAT_ARCHETYPE
 		redefine
-			make_specialised, synchronise_adl15, annotated_path
+			make_specialised, synchronise_adl, annotated_path
 		end
 
 create
@@ -88,7 +88,7 @@ feature -- Modification
 
 feature -- Serialisation
 
-	synchronise_adl15
+	synchronise_adl
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do

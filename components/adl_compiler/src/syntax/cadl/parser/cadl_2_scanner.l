@@ -8,7 +8,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_15_SCANNER
+class CADL_2_SCANNER
 
 inherit
 	YY_COMPRESSED_SCANNER_SKELETON
@@ -18,12 +18,12 @@ inherit
 			output as print_out
 		end
 
-	CADL_15_TOKENS
+	CADL_2_TOKENS
 		export
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -60,7 +60,7 @@ UTF8_CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x
 
 --------------- Options --------------
 %x IN_STR IN_REGEXP1 IN_EXPANDED_VALUE_SET_DEF IN_EXTERNAL_VALUE_SET_DEF
-%option outfile="cadl_15_scanner.e"
+%option outfile="cadl_2_scanner.e"
 
 %%
 

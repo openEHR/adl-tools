@@ -26,7 +26,7 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -64,13 +64,13 @@ feature {NONE} -- Initialisation
 			create ev_root_container
 			create gui_controls.make (0)
 
-			-- ================================== ADL 1.5 paths =======================================
-			create evx_adl_15_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_15_path_row)
-			evx_adl_15_tab.add_boolean_filter (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
+			-- ================================== ADL 2 paths =======================================
+			create evx_adl_2_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_2_path_row)
+			evx_adl_2_tab.add_boolean_filter (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
-			ev_root_container.extend (evx_adl_15_tab.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_15_tab.ev_root_container, get_text (ec_adl_15_paths_tab_text))
-			gui_controls.extend (evx_adl_15_tab)
+			ev_root_container.extend (evx_adl_2_tab.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_2_tab.ev_root_container, get_text (ec_adl_2_paths_tab_text))
+			gui_controls.extend (evx_adl_2_tab)
 
 			-- ================================== ADL 1.4 paths =======================================
 			create evx_adl_14_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_14_path_row)
@@ -99,8 +99,8 @@ feature -- Access
 	selected_row: STRING
 			-- return selected row text from currently visible tab
 		do
-			if evx_adl_15_tab.is_displayed then
-				Result := evx_adl_15_tab.row_selected_text
+			if evx_adl_2_tab.is_displayed then
+				Result := evx_adl_2_tab.row_selected_text
 			elseif evx_adl_14_tab.is_displayed then
 				Result := evx_adl_14_tab.row_selected_text
 			elseif evx_interface_tab.is_displayed then
@@ -136,8 +136,8 @@ feature -- Commands
 			else
 				search_path := a_path
 			end
-			evx_adl_15_tab.select_row (search_path)
-			evx_adl_15_tab.show
+			evx_adl_2_tab.select_row (search_path)
+			evx_adl_2_tab.show
 		end
 
 feature -- Events
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_CONTROL_SHELL]
 
-	evx_adl_15_tab: EVX_TABLE_CONTROL
+	evx_adl_2_tab: EVX_TABLE_CONTROL
 
 	evx_adl_14_tab: EVX_TABLE_CONTROL
 
@@ -185,21 +185,21 @@ feature {NONE} -- Implementation
 			interface_paths_cache := Void
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.populate end end)
 
-			evx_adl_15_tab.resize_columns_proportional
+			evx_adl_2_tab.resize_columns_proportional
 
 			evx_adl_14_tab.resize_columns_proportional
 
 			evx_interface_tab.resize_columns_proportional
 		end
 
-	adl_15_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
+	adl_2_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
 		do
 			Result := adl_path_row (a_path, agent (s: STRING): STRING do Result := s end)
 		end
 
 	adl_14_path_row (a_path: STRING): ARRAYED_LIST [STRING_32]
 		do
-			Result := adl_path_row (a_path, agent (s: STRING): STRING do Result := adl_15_path_converted (s) end)
+			Result := adl_path_row (a_path, agent (s: STRING): STRING do Result := adl_2_path_to_adl_14_path (s) end)
 		end
 
 	adl_path_row (a_path: STRING; conv_agt: FUNCTION [ANY, TUPLE [STRING], STRING]): ARRAYED_LIST [STRING_32]

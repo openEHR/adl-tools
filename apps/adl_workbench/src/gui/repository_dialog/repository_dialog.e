@@ -107,7 +107,6 @@ feature -- Definitions
 
 	frame_height: INTEGER = 100
 
-	Max_form_height: INTEGER = 400
 	Max_form_width: INTEGER = 800
 
 	Grid_expansion_factor: REAL = 1.2
@@ -971,7 +970,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					forget_current_library_name
 					current_library_removed := True
 				end
-				remove_repository (a_rep_if.key)
+				forget_repository (a_rep_if.key)
 			end
 		end
 

@@ -17,7 +17,7 @@ inherit
 			{NONE} all;
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 		end

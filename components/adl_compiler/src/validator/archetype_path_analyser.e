@@ -10,7 +10,7 @@ note
 class ARCHETYPE_PATH_ANALYSER
 
 inherit
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal

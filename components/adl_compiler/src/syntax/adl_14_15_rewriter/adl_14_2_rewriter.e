@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_14_15_REWRITER
+class ADL_14_2_REWRITER
 
 inherit
 	YY_COMPRESSED_SCANNER_SKELETON
@@ -22,7 +22,7 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -66,32 +66,32 @@ if yy_act <= 8 then
 if yy_act <= 4 then
 if yy_act <= 2 then
 if yy_act = 1 then
---|#line 70 "adl_14_15_rewriter.l"
+--|#line 70 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 70")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 70")
 end
 out_buffer.append (text)
 else
---|#line 72 "adl_14_15_rewriter.l"
+--|#line 72 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 72")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 72")
 end
 out_buffer.append (text)			-- pass separate comment line endings
 end
 else
 if yy_act = 3 then
---|#line 76 "adl_14_15_rewriter.l"
+--|#line 76 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 76")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 76")
 end
 
 		out_buffer.append (text)
 		in_terminology := True
 	
 else
---|#line 81 "adl_14_15_rewriter.l"
+--|#line 81 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 81")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 81")
 end
 
 		out_buffer.append (text)
@@ -101,9 +101,9 @@ end
 else
 if yy_act <= 6 then
 if yy_act = 5 then
---|#line 87 "adl_14_15_rewriter.l"
+--|#line 87 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 87")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 87")
 end
 
 		out_buffer.append_character ('[')
@@ -111,9 +111,9 @@ end
 		out_buffer.append_character (']')
 	
 else
---|#line 93 "adl_14_15_rewriter.l"
+--|#line 93 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 93")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 93")
 end
 
 		out_buffer.append_character ('[')
@@ -123,9 +123,9 @@ end
 end
 else
 if yy_act = 7 then
---|#line 100 "adl_14_15_rewriter.l"
+--|#line 100 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 100")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 100")
 end
 
 		str_ := text
@@ -136,9 +136,9 @@ end
 		out_buffer.append (str_.substring (str_.index_of (',', 1), str_.count))
 	
 else
---|#line 109 "adl_14_15_rewriter.l"
+--|#line 109 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 109")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 109")
 end
 
 		out_buffer.append_character ('[')
@@ -152,17 +152,17 @@ else
 if yy_act <= 12 then
 if yy_act <= 10 then
 if yy_act = 9 then
---|#line 115 "adl_14_15_rewriter.l"
+--|#line 115 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 115")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 115")
 end
 
 		out_buffer.append (text)
 	
 else
---|#line 121 "adl_14_15_rewriter.l"
+--|#line 121 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 121")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 121")
 end
 
 		output_converted_code_dt_key (text_substring (3, text_count - 2))
@@ -170,17 +170,17 @@ end
 end
 else
 if yy_act = 11 then
---|#line 125 "adl_14_15_rewriter.l"
+--|#line 125 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 125")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 125")
 end
 
 		output_converted_code_dt_key (text_substring (3, text_count - 2))
 	
 else
---|#line 129 "adl_14_15_rewriter.l"
+--|#line 129 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 129")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 129")
 end
 
 		output_converted_code_dt_key (text_substring (3, text_count - 2))
@@ -190,17 +190,17 @@ end
 else
 if yy_act <= 14 then
 if yy_act = 13 then
---|#line 134 "adl_14_15_rewriter.l"
+--|#line 134 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 134")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 134")
 end
 
 		out_buffer.append (text)
 	
 else
---|#line 138 "adl_14_15_rewriter.l"
+--|#line 138 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 138")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 138")
 end
 		-- match [{
 		out_buffer.append (text)
@@ -208,9 +208,9 @@ end
 	
 end
 else
---|#line 144 "adl_14_15_rewriter.l"
+--|#line 144 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 144")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 144")
 end
  		-- strings and lists of strings
 		out_buffer.append (text)
@@ -223,17 +223,17 @@ if yy_act <= 23 then
 if yy_act <= 19 then
 if yy_act <= 17 then
 if yy_act = 16 then
---|#line 148 "adl_14_15_rewriter.l"
+--|#line 148 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 148")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 148")
 end
  							-- interior }, { pattern
 		out_buffer.append (text)
 	
 else
---|#line 152 "adl_14_15_rewriter.l"
+--|#line 152 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 152")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 152")
 end
 			-- numbers and lists of numbers and symbols (e.g. in intervals)
 		out_buffer.append (text)
@@ -241,9 +241,9 @@ end
 end
 else
 if yy_act = 18 then
---|#line 156 "adl_14_15_rewriter.l"
+--|#line 156 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 156")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 156")
 end
 						-- ADL codes
 		out_buffer.append ("[local::")
@@ -251,9 +251,9 @@ end
 		out_buffer.append_character (']')
 	
 else
---|#line 162 "adl_14_15_rewriter.l"
+--|#line 162 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 162")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 162")
 end
 				-- other codes
 		out_buffer.append (text)
@@ -263,15 +263,15 @@ end
 else
 if yy_act <= 21 then
 if yy_act = 20 then
---|#line 166 "adl_14_15_rewriter.l"
+--|#line 166 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 166")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 166")
 end
 out_buffer.append (text)			-- pass separate comment lines
 else
---|#line 168 "adl_14_15_rewriter.l"
+--|#line 168 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 168")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 168")
 end
 										-- match [{
 		out_buffer.append (text)
@@ -279,18 +279,18 @@ end
 end
 else
 if yy_act = 22 then
---|#line 172 "adl_14_15_rewriter.l"
+--|#line 172 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 172")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 172")
 end
 						-- termination of interior tuple line }],\n with optional comment
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	
 else
---|#line 177 "adl_14_15_rewriter.l"
+--|#line 177 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 177")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 177")
 end
 						-- termination of final tuple line }]\n with optional comment
 		out_buffer.append (text)
@@ -303,9 +303,9 @@ else
 if yy_act <= 27 then
 if yy_act <= 25 then
 if yy_act = 24 then
---|#line 195 "adl_14_15_rewriter.l"
+--|#line 195 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 195")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 195")
 end
 						-- ADL codes
 	out_buffer.append ("[local::")
@@ -313,9 +313,9 @@ end
 	out_buffer.append_character (']')
 
 else
---|#line 201 "adl_14_15_rewriter.l"
+--|#line 201 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 201")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 201")
 end
 
 		out_buffer.append (text)
@@ -324,17 +324,17 @@ end
 end
 else
 if yy_act = 26 then
---|#line 207 "adl_14_15_rewriter.l"
+--|#line 207 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 207")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 207")
 end
  -- match second last line with ';' termination (assumed value)
 		output_new_at_ac_code (text)
 	
 else
---|#line 211 "adl_14_15_rewriter.l"
+--|#line 211 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 211")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 211")
 end
 out_buffer.append (text)
 end
@@ -342,15 +342,15 @@ end
 else
 if yy_act <= 29 then
 if yy_act = 28 then
---|#line 214 "adl_14_15_rewriter.l"
+--|#line 214 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 214")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 214")
 end
 out_buffer.append (text)
 else
---|#line 216 "adl_14_15_rewriter.l"
+--|#line 216 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 216")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 216")
 end
 
 		out_buffer.append (text)
@@ -358,9 +358,9 @@ end
 	
 end
 else
---|#line 224 "adl_14_15_rewriter.l"
+--|#line 224 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 224")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 224")
 end
  
 		if in_terminology then
@@ -380,18 +380,18 @@ if yy_act <= 38 then
 if yy_act <= 34 then
 if yy_act <= 32 then
 if yy_act = 31 then
---|#line 245 "adl_14_15_rewriter.l"
+--|#line 245 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 245")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 245")
 end
 
 		out_buffer.append (text)
 		set_start_condition (IN_VALUE_SET_DEF)
 	
 else
---|#line 250 "adl_14_15_rewriter.l"
+--|#line 250 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 250")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 250")
 end
 
 		out_buffer.append (text)
@@ -400,17 +400,17 @@ end
 end
 else
 if yy_act = 33 then
---|#line 256 "adl_14_15_rewriter.l"
+--|#line 256 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 256")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 256")
 end
  
 		out_buffer.append (text)
 	
 else
---|#line 260 "adl_14_15_rewriter.l"
+--|#line 260 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 260")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 260")
 end
 
 		out_buffer.append (text)
@@ -420,15 +420,15 @@ end
 else
 if yy_act <= 36 then
 if yy_act = 35 then
---|#line 265 "adl_14_15_rewriter.l"
+--|#line 265 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 265")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 265")
 end
 out_buffer.append (text)
 else
---|#line 267 "adl_14_15_rewriter.l"
+--|#line 267 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 267")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 267")
 end
 
 		out_buffer.append (text)
@@ -437,18 +437,18 @@ end
 end
 else
 if yy_act = 37 then
---|#line 274 "adl_14_15_rewriter.l"
+--|#line 274 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 274")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 274")
 end
 
 	out_buffer.append (text)
 	set_start_condition (IN_PATH)
 
 else
---|#line 279 "adl_14_15_rewriter.l"
+--|#line 279 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 279")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 279")
 end
 
 	out_buffer.append (text)
@@ -461,17 +461,17 @@ else
 if yy_act <= 42 then
 if yy_act <= 40 then
 if yy_act = 39 then
---|#line 285 "adl_14_15_rewriter.l"
+--|#line 285 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 285")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 285")
 end
  
 		out_buffer.append (text)
 	
 else
---|#line 289 "adl_14_15_rewriter.l"
+--|#line 289 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 289")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 289")
 end
  
 		out_buffer.append_character ('[')
@@ -481,17 +481,17 @@ end
 end
 else
 if yy_act = 41 then
---|#line 295 "adl_14_15_rewriter.l"
+--|#line 295 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 295")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 295")
 end
 
 		out_buffer.append (text)
 	
 else
---|#line 299 "adl_14_15_rewriter.l"
+--|#line 299 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 299")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 299")
 end
 
 		out_buffer.append (text)
@@ -502,25 +502,25 @@ end
 else
 if yy_act <= 44 then
 if yy_act = 43 then
---|#line 304 "adl_14_15_rewriter.l"
+--|#line 304 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 304")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 304")
 end
 
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	
 else
---|#line 312 "adl_14_15_rewriter.l"
+--|#line 312 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 312")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 312")
 end
 out_buffer.append (text)
 end
 else
---|#line 314 "adl_14_15_rewriter.l"
+--|#line 314 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 314")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 314")
 end
 out_buffer.append (text)
 end
@@ -531,17 +531,17 @@ if yy_act <= 53 then
 if yy_act <= 49 then
 if yy_act <= 47 then
 if yy_act = 46 then
---|#line 317 "adl_14_15_rewriter.l"
+--|#line 317 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 317")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 317")
 end
 
 		out_buffer.append (text)
 	
 else
---|#line 322 "adl_14_15_rewriter.l"
+--|#line 322 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 322")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 322")
 end
 			-- can occur in some string data
 		out_buffer.append_character ('"')
@@ -551,17 +551,17 @@ end
 end
 else
 if yy_act = 48 then
---|#line 328 "adl_14_15_rewriter.l"
+--|#line 328 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 328")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 328")
 end
 
 		out_buffer.append (text)
 	
 else
---|#line 332 "adl_14_15_rewriter.l"
+--|#line 332 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 332")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 332")
 end
 				-- beginning of a string
 		out_buffer.append (text)
@@ -572,31 +572,31 @@ end
 else
 if yy_act <= 51 then
 if yy_act = 50 then
---|#line 338 "adl_14_15_rewriter.l"
+--|#line 338 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 338")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 338")
 end
 out_buffer.append (text)
 else
---|#line 340 "adl_14_15_rewriter.l"
+--|#line 340 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 340")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 340")
 end
 out_buffer.append (text)
 end
 else
 if yy_act = 52 then
---|#line 342 "adl_14_15_rewriter.l"
+--|#line 342 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 342")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 342")
 end
 
 				out_buffer.append (text)
 	
 else
---|#line 346 "adl_14_15_rewriter.l"
+--|#line 346 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 346")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 346")
 end
 out_buffer.append (text)
 end
@@ -606,17 +606,17 @@ else
 if yy_act <= 57 then
 if yy_act <= 55 then
 if yy_act = 54 then
---|#line 348 "adl_14_15_rewriter.l"
+--|#line 348 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 348")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 348")
 end
 
 				out_buffer.append (text)
 	
 else
---|#line 352 "adl_14_15_rewriter.l"
+--|#line 352 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 352")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 352")
 end
 						-- match final end of string
 				out_buffer.append (text)
@@ -625,17 +625,17 @@ end
 end
 else
 if yy_act = 56 then
---|#line 357 "adl_14_15_rewriter.l"
+--|#line 357 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 357")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 357")
 end
 	-- Catch-all rules (no backing up)
 				set_start_condition (INITIAL)
 	
 else
---|#line 365 "adl_14_15_rewriter.l"
+--|#line 365 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 365")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 365")
 end
 		-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
@@ -645,24 +645,24 @@ end
 else
 if yy_act <= 59 then
 if yy_act = 58 then
---|#line 369 "adl_14_15_rewriter.l"
+--|#line 369 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 369")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 369")
 end
 						-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	
 else
---|#line 375 "adl_14_15_rewriter.l"
+--|#line 375 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 375")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 375")
 end
 ;
 end
 else
---|#line 0 "adl_14_15_rewriter.l"
+--|#line 0 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 0")
 end
 default_action
 end
@@ -678,15 +678,15 @@ end
 		do
 			inspect yy_sc
 when 0, 1, 2, 4, 5 then
---|#line 374 "adl_14_15_rewriter.l"
+--|#line 374 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 374")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 374")
 end
 terminate
 when 3 then
---|#line 358 "adl_14_15_rewriter.l"
+--|#line 358 "adl_14_2_rewriter.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'adl_14_15_rewriter.l' at line 358")
+	std.error.put_line ("Executing scanner user-code from file 'adl_14_2_rewriter.l' at line 358")
 end
 	-- Catch-all rules (no backing up)
 				set_start_condition (INITIAL)

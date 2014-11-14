@@ -24,7 +24,7 @@ inherit
 			start_c_primitive_object
 		end
 
-	CADL_15_TOKENS
+	CADL_2_TOKENS
 		export
 			{NONE} all
 		end

@@ -33,7 +33,7 @@ inherit
 
 	DT_CONVERTIBLE
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 		end

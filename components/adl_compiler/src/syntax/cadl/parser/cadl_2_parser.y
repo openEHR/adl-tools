@@ -8,7 +8,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class CADL_15_PARSER
+class CADL_2_PARSER
 
 inherit
 	PARSER_VALIDATOR
@@ -17,7 +17,7 @@ inherit
 			make as make_parser_skeleton
 		end
 
-	CADL_15_SCANNER
+	CADL_2_SCANNER
 		rename
 			make as make_scanner
 		redefine

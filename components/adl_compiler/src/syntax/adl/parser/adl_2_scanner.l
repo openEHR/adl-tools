@@ -8,7 +8,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_15_SCANNER
+class ADL_2_SCANNER
 
 inherit
 	YY_COMPRESSED_SCANNER_SKELETON
@@ -18,7 +18,7 @@ inherit
 			output as print_out
 		end
 
-	ADL_15_TOKENS
+	ADL_2_TOKENS
 		export
 			{NONE} all
 		end
@@ -61,7 +61,7 @@ ID_CODE_LEADER id
 
 --------------- Options --------------
 %x IN_ODIN_SECTION IN_CADL_SECTION IN_RULES_SECTION
-%option outfile="adl_15_scanner.e"
+%option outfile="adl_2_scanner.e"
 
 %%
 

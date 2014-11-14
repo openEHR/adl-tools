@@ -28,7 +28,7 @@ inherit
 			{NONE} all
 		end
 
-feature {ADL_15_ENGINE, ADL_14_ENGINE} -- Initialisation
+feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- set target_descriptor

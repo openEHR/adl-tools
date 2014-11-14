@@ -176,7 +176,7 @@ feature -- Commands
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*" + File_ext_archetype_source, get_text (ec_adl_15_source_files)])
+			dialog.filters.extend (["*" + File_ext_archetype_source, get_text (ec_adl_2_source_files)])
 			dialog.filters.extend (["*" + File_ext_archetype_adl14, get_text (ec_adl_14_files)])
 			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			fname := dialog.file_name.as_string_8

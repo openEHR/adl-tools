@@ -16,7 +16,7 @@ inherit
 			can_populate, can_repopulate, can_edit, disable_edit, enable_edit
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end

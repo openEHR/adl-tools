@@ -35,7 +35,7 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
@@ -214,7 +214,7 @@ feature -- Application Switches
 			save_repositories_table
 		end
 
-	remove_repository (a_key: STRING)
+	forget_repository (a_key: STRING)
 			-- remove repository with key `a_key'
 		do
 			repositories_table.remove_repository (a_key)

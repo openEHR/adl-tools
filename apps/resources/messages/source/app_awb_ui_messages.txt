@@ -314,7 +314,7 @@ templates = <
 
 		["tools_menu_text"] = <"&Tools">
 		["tools_menu_clean_text"] = <"&Clean Generated Files">
-		["tools_menu_adl_15_round_trip_text"] = <"&ADL 1.5 Round Trip">
+		["tools_menu_adl_2_round_trip_text"] = <"&ADL 2 Round Trip">
 		["tools_menu_options_text"] = <"&Options">
 
 		["help_menu_text"] = <"&Help">
@@ -375,7 +375,7 @@ templates = <
 
 		-- GUI_LIBRARY_TOOL
 		["adl_14_files"] = <"ADL 1.4 files">
-		["adl_15_source_files"] = <"ADL 1.5 source files">
+		["adl_2_source_files"] = <"ADL 2 source files">
 
 		["library_edit_dialog_title"] = <"Edit $1">
 		["library_edit_differential_button_text"] = <"Differential">
@@ -397,7 +397,7 @@ templates = <
 		-- GUI_PATH_MAP_CONTROL
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">
 		["nat_lang_checkbox_text"] = <"Natural lang">
-		["adl_15_paths_tab_text"] = <"ADL 1.5 paths">
+		["adl_2_paths_tab_text"] = <"ADL 2 paths">
 		["adl_14_paths_tab_text"] = <"ADL 1.4 paths">
 		["adl_interface_tab_text"] = <"Interface tags">
 

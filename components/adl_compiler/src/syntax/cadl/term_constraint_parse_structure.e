@@ -10,7 +10,7 @@ note
 class TERM_CONSTRAINT_PARSE_STRUCTURE
 
 inherit
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal

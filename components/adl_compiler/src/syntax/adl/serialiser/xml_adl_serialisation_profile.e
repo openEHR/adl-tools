@@ -10,7 +10,7 @@ note
 class XML_ADL_SERIALISATION_PROFILE
 
 inherit
-	ADL_15_TOKENS
+	ADL_2_TOKENS
 		export
 			{NONE} all
 		end

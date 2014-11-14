@@ -3,7 +3,7 @@ note
 	description: "Parser token codes"
 	generator: "geyacc version 3.9"
 
-deferred class ADL_15_TOKENS
+deferred class ADL_2_TOKENS
 
 inherit
 

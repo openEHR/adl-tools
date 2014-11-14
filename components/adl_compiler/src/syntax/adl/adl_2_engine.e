@@ -11,7 +11,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_15_ENGINE
+class ADL_2_ENGINE
 
 inherit
 	SHARED_ARCHETYPE_SERIALISERS
@@ -360,7 +360,7 @@ feature -- Serialisation
 			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
-			an_archetype.synchronise_adl15
+			an_archetype.synchronise_adl
 
 			-- language section
 			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
@@ -421,7 +421,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	adl_parser: ADL_15_PARSER
+	adl_parser: ADL_2_PARSER
 		attribute
 			create Result.make
 		end
@@ -430,9 +430,9 @@ feature {NONE} -- Implementation
 
 	description_context: ODIN_ENGINE
 
-	definition_context: CADL_15_ENGINE
+	definition_context: CADL_2_ENGINE
 
-	rules_context: ASSERTION_15_ENGINE
+	rules_context: ASSERTION_2_ENGINE
 
 	terminology_context: ODIN_ENGINE
 

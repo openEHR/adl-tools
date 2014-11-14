@@ -125,7 +125,7 @@ feature {NONE} -- Initialisation
 			create evx_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
-				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"))
+				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"), Void)
 			evx_control_panel.add_frame (evx_treeview_control.ev_root_container, False)
 
 			--======================== 'Batch update' frame =======================

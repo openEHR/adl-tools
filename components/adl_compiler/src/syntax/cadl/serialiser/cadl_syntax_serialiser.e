@@ -26,7 +26,7 @@ inherit
 			start_c_primitive_object
 		end
 
-	CADL_15_TOKENS
+	CADL_2_TOKENS
 		export
 			{NONE} all
 		end
@@ -36,7 +36,7 @@ inherit
 			{NONE} all
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end

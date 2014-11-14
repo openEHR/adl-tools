@@ -12,7 +12,7 @@ class SHARED_ADL_ENGINE
 
 feature {NONE} -- Implementation
 
-	adl_15_engine: ADL_15_ENGINE
+	adl_2_engine: ADL_2_ENGINE
 		once
 			create Result.make
 		end
@@ -22,7 +22,7 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	adl_14_15_rewriter: ADL_14_15_REWRITER
+	adl_14_2_rewriter: ADL_14_2_REWRITER
 		once
 			create Result.make
 		end

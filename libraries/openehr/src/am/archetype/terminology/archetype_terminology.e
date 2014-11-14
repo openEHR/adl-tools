@@ -15,7 +15,7 @@ inherit
 			finalise_dt
 		end
 
-	ADL_15_TERM_CODE_TOOLS
+	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} is_valid_root_id_code, is_valid_id_code, is_valid_value_code, is_valid_value_set_code,
