@@ -49,9 +49,12 @@ feature -- Status Report
 feature {NONE} -- Implementation
 
 	id_matcher: RX_PCRE_REGULAR_EXPRESSION
+			-- note that we allow underscores here; this name spec follows IETF RFC 1035 + RFC 2181 modifications, which
+			-- widened the character set that can be used in domain names. In any case, underscores are widely supported
+			-- (although arguably not widely used)
 		once
 			create Result.make
-			Result.compile ("([a-zA-Z][a-zA-Z\d-]*[a-zA-Z\d]+)(\.[a-zA-Z][a-zA-Z\d-]*[a-zA-Z\d]+)*")
+			Result.compile ("([a-zA-Z][a-zA-Z\d-_]*[a-zA-Z\d]+)(\.[a-zA-Z][a-zA-Z\d-_]*[a-zA-Z\d]+)*")
 		end
 
 end
