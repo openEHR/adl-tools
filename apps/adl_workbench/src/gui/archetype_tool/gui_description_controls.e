@@ -89,8 +89,8 @@ feature {NONE} -- Initialisation
 			evx_custodian_frame.extend (evx_custodian_organisation_text.ev_root_container, False)
 
 
-			-- original publisher frame & controls
-			create evx_original_publisher_frame.make (get_msg (ec_original_publisher_frame_text, Void), 0, 0, False)
+			-- ---------- original publisher frame & controls -----------
+			create evx_original_publisher_frame.make (get_text (ec_original_publisher_frame_text), 0, 0, False)
 			ev_governance_tab_vbox.extend (evx_original_publisher_frame.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_original_publisher_frame.ev_root_container)
 
@@ -123,26 +123,27 @@ feature {NONE} -- Initialisation
 			evx_original_publisher_frame.extend (evx_original_publisher_text.ev_root_container, False)
 
 
+			-- ---------- IP frame and controls ----------
+			create evx_ip_frame.make (get_text (ec_intellectual_property_frame_text), 0, 0, False)
+			ev_governance_tab_vbox.extend (evx_ip_frame.ev_root_container)
+
 			-- copyright - multi-line text
 			create evx_copyright_text.make_linked (get_text (ec_copyright_label_text),
 				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.copyright end end,
 				agent (a_str: STRING) do source_archetype.description.set_copyright (a_str) end,
 				agent do source_archetype.description.clear_copyright end,
-				undo_redo_chain, 44, 0, True)
+				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_copyright_text)
-			ev_governance_tab_vbox.extend (evx_copyright_text.ev_root_container)
-			ev_governance_tab_vbox.disable_item_expand (evx_copyright_text.ev_root_container)
+			evx_ip_frame.extend (evx_copyright_text.ev_root_container, False)
 
 			-- licence - multi-line text
 			create evx_licence_text.make_linked (get_text (ec_licence_label_text),
 				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.licence end end,
 				agent (a_str: STRING) do source_archetype.description.set_licence (a_str) end,
 				agent do source_archetype.description.clear_licence end,
-				undo_redo_chain, 44, 0, True)
+				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_licence_text)
-			ev_governance_tab_vbox.extend (evx_licence_text.ev_root_container)
-			ev_governance_tab_vbox.disable_item_expand (evx_licence_text.ev_root_container)
-
+			evx_ip_frame.extend (evx_licence_text.ev_root_container, False)
 
 			-- ip_acknowledgements control - Hash
 			create evx_ip_acknowledgements.make_linked (get_text (ec_ip_acknowledgements_label_text),
@@ -150,9 +151,20 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_ip_acknowledgements_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_ip_acknowledgements_item (a_key) end end,
 				undo_redo_chain,
-				0, min_entry_control_width, False, Void)
+				0, 0, True, Void)
 			gui_controls.extend (evx_ip_acknowledgements)
-			ev_governance_tab_vbox.extend (evx_ip_acknowledgements.ev_root_container)
+			evx_ip_frame.extend (evx_ip_acknowledgements.ev_root_container, True)
+
+			-- ---------- source status frame and controls ----------
+			create evx_source_status_frame.make (get_text (ec_source_status_frame_text), 0, 0, False)
+			ev_governance_tab_vbox.extend (evx_source_status_frame.ev_root_container)
+
+			-- generated checkbox
+			create evx_generated_cb.make_linked (get_text (ec_generated_status_label), get_text (ec_generated_status_tooltip),
+				agent get_archetype_is_generated,
+				agent (a_val: BOOLEAN) do if attached source_archetype as att_arch then if a_val then att_arch.set_is_generated else att_arch.clear_is_generated end end end)
+			gui_controls.extend (evx_generated_cb)
+			evx_source_status_frame.extend (evx_generated_cb.ev_data_control, False)
 
 			-- conversion_details control - Hash
 			create evx_conversion_details.make_linked (get_text (ec_conversion_details_label_text),
@@ -160,9 +172,9 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_conversion_details_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_conversion_details_item (a_key) end end,
 				undo_redo_chain,
-				0, min_entry_control_width, False, Void)
+				0, 0, True, Void)
 			gui_controls.extend (evx_conversion_details)
-			ev_governance_tab_vbox.extend (evx_conversion_details.ev_root_container)
+			evx_source_status_frame.extend (evx_conversion_details.ev_root_container, True)
 
 
 			-- ================================== Authoring tab ========================================
@@ -402,9 +414,17 @@ feature {NONE} -- Implementation (governance controls)
 
 	evx_original_namespace_text, evx_original_publisher_text: EVX_SINGLE_LINE_TEXT_CONTROL
 
+	evx_ip_frame: EVX_FRAME_CONTROL
+
 	evx_licence_text, evx_copyright_text: EVX_MULTILINE_TEXT_CONTROL
 
-	evx_ip_acknowledgements, evx_conversion_details: EVX_HASH_TABLE_CONTROL
+	evx_ip_acknowledgements: EVX_HASH_TABLE_CONTROL
+
+	evx_source_status_frame: EVX_FRAME_CONTROL
+
+	evx_generated_cb: EVX_CHECK_BOX_CONTROL
+
+	evx_conversion_details: EVX_HASH_TABLE_CONTROL
 
 feature {NONE} -- Implementation (authoring controls)
 
@@ -467,6 +487,13 @@ feature {NONE} -- Implementation
 		do
 			if source_archetype.has_translations then
 				Result := source_archetype.translation_for_language (evx_trans_languages_combo.selected_text)
+			end
+		end
+
+	get_archetype_is_generated: BOOLEAN
+		do
+			if attached source_archetype as att_arch then
+				Result := att_arch.is_generated
 			end
 		end
 
