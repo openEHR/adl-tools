@@ -51,6 +51,14 @@ feature -- Initialisation
 
 feature -- Access
 
+	lifecycle_state: STRING
+			-- Lifecycle state of the archetype. Includes states such as
+			-- submitted, experimental, awaiting_approval, approved,
+			-- superseded, obsolete. State machine defined by archetype system
+		attribute
+			create Result.make_from_string (Initial_resource_lifecycle_state)
+		end
+
 	original_language: TERMINOLOGY_CODE
 			-- a copy of original_language from parent object
         attribute
@@ -65,23 +73,36 @@ feature -- Access
             Result.put (Default_original_author, "name")
 		end
 
+	original_namespace: detachable INTERNET_ID
+			-- Original namespace of this archetype as a reverse domain name
+
+	original_publisher: detachable STRING
+			-- Original publisher of this archetype as a string name
+
+	custodian_namespace: detachable INTERNET_ID
+			-- Namespace of current custodian organisation of this archetype as a reverse domain name
+
+	custodian_organisation: detachable STRING
+			-- Current custodian organisation of this archetype as a string name
+
+	copyright:  detachable STRING
+			-- Rights over the archetype as a knowledge resource;
+			-- usually copyright and/or license to use.
+
+	licence: detachable STRING
+			-- Licence for this archetype if any, typically a short phrase with embedded URL
+
+	ip_acknowledgements: detachable HASH_TABLE [STRING, STRING]
+			-- list of IP acknowledgments, keyed by tag name of IP being mentioned
+
+	conversion_details: detachable HASH_TABLE [STRING, STRING]
+			-- tagged list of conversion information, where applicable
+
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
-			-- NOTE: this attribute is only detachable because it will be Void for a short time, when an instance
-			-- of this class is created during reading a serialised instance, until the details part from the
-			-- text is also deserialised and attached. The code here treats it as if it were attached for all
-			-- practical purposes.
         attribute
             create Result.make (0)
         end
-
-	lifecycle_state: STRING
-			-- Lifecycle state of the archetype. Includes states such as
-			-- submitted, experimental, awaiting_approval, approved,
-			-- superseded, obsolete. State machine defined by archetype system
-		attribute
-			create Result.make_from_string (Initial_resource_lifecycle_state)
-		end
 
 	other_contributors: detachable ARRAYED_LIST [STRING]
 			-- Other contributors to the resource, probably listed in “name <email>” form
@@ -125,6 +146,16 @@ feature -- Status Report
 			Result := attached details and not details.is_empty
 		end
 
+	has_ip_acknowledgement (a_key: STRING): BOOLEAN
+		do
+			Result := attached ip_acknowledgements as att_ack and then att_ack.has (a_key)
+		end
+
+	has_conversion_detail (a_key: STRING): BOOLEAN
+		do
+			Result := attached conversion_details as att_cd and then att_cd.has (a_key)
+		end
+
 feature -- Comparison
 
 	valid_detail (a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN
@@ -160,6 +191,172 @@ feature -- Modification
 			-- wipeout current items in original_author list
 		do
 			create original_author.make(0)
+		ensure
+			original_author.is_empty
+		end
+
+	set_original_namespace (a_namespace: INTERNET_ID)
+		do
+			original_namespace := a_namespace
+		ensure
+			original_namespace = a_namespace
+		end
+
+	clear_original_namespace
+		do
+			original_namespace := Void
+		ensure
+			not attached original_namespace
+		end
+
+	set_original_publisher (a_name: STRING)
+		do
+			original_publisher := a_name
+		ensure
+			original_publisher = a_name
+		end
+
+	clear_original_publisher
+		do
+			original_publisher := Void
+		ensure
+			not attached original_publisher
+		end
+
+	set_custodian_namespace (a_namespace: INTERNET_ID)
+		do
+			custodian_namespace := a_namespace
+		ensure
+			custodian_namespace = a_namespace
+		end
+
+	clear_custodian_namespace
+		do
+			custodian_namespace := Void
+		ensure
+			not attached custodian_namespace
+		end
+
+	set_custodian_organisation (a_name: STRING)
+		do
+			custodian_organisation := a_name
+		ensure
+			custodian_organisation = a_name
+		end
+
+	clear_custodian_organisation
+		do
+			custodian_organisation := Void
+		ensure
+			not attached custodian_organisation
+		end
+
+	set_copyright (a_copyright: STRING)
+			-- set copyright
+		require
+			Copyright_valid: not a_copyright.is_empty
+		do
+			copyright := a_copyright
+		ensure
+			Copyright_set: copyright = a_copyright
+		end
+
+	clear_copyright
+		do
+			copyright := Void
+		ensure
+			not attached copyright
+		end
+
+	set_licence (a_text: STRING)
+		do
+			licence := a_text
+		ensure
+			licence = a_text
+		end
+
+	clear_licence
+		do
+			licence := Void
+		ensure
+			not attached licence
+		end
+
+	put_ip_acknowledgements_item (a_key, a_value: STRING)
+			-- add the key, value pair to `ip_acknowledgements'; if it does not exist, create it
+		require
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
+		do
+			if not attached ip_acknowledgements then
+				create ip_acknowledgements.make (0)
+			end
+			ip_acknowledgements.force (a_value, a_key)
+		ensure
+			Item_added: attached ip_acknowledgements as att_ack and then att_ack.item (a_key) = a_value
+		end
+
+	remove_ip_acknowledgements_item (a_key: STRING)
+			-- remove the key, value pair from `ip_acknowledgements'
+		require
+			Key_valid: ip_acknowledgements.has (a_key)
+			Ip_acknowledgements_exists: attached ip_acknowledgements
+		do
+			if attached ip_acknowledgements as ack then
+				ack.remove (a_key)
+				if ack.is_empty then
+					ip_acknowledgements := Void
+				end
+			end
+		ensure
+			Item_removed: not has_ip_acknowledgement (a_key)
+			If_last_then_removed: old ip_acknowledgements.count = 1 implies not attached ip_acknowledgements
+		end
+
+	clear_ip_acknowledgements
+			-- wipeout current items in `ip_acknowledgements' list
+		do
+			ip_acknowledgements := Void
+		ensure
+			not attached ip_acknowledgements
+		end
+
+	put_conversion_details_item (a_key, a_value: STRING)
+			-- add the key, value pair to `conversion_details'; if it does not exist, create it
+		require
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
+		do
+			if not attached conversion_details as att_cd then
+				create conversion_details.make (0)
+			end
+			conversion_details.force (a_value, a_key)
+		ensure
+			Item_added: attached conversion_details as att_cd and then att_cd.item (a_key) = a_value
+		end
+
+	remove_conversion_details_item (a_key: STRING)
+			-- remove the key, value pair from `conversion_details'
+		require
+			Key_valid: conversion_details.has (a_key)
+		do
+			if attached conversion_details as cd then
+				cd.remove (a_key)
+				if cd.is_empty then
+					conversion_details := Void
+				end
+			end
+		ensure
+			Item_removed: not has_conversion_detail (a_key)
+			If_last_then_removed: old conversion_details.count = 1 implies not attached conversion_details
+		end
+
+	clear_conversion_details
+			-- wipeout current items in `conversion_details' list
+		do
+			conversion_details := Void
+		ensure
+			not attached conversion_details
 		end
 
 	add_other_contributor (a_contributor: STRING; at_pos: INTEGER)
@@ -305,6 +502,13 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			create Result.make(0)
 			Result.compare_objects
 			Result.extend ("original_author")
+			Result.extend ("original_namespace")
+			Result.extend ("original_publisher")
+			Result.extend ("custodian_namespace")
+			Result.extend ("custodian_organisation")
+			Result.extend ("copyright")
+			Result.extend ("licence")
+			Result.extend ("ip_acknowledgements")
 			Result.extend ("other_contributors")
 			Result.extend ("resource_package_uri")
 			Result.extend ("details")
@@ -318,6 +522,8 @@ invariant
 	Parent_resource_valid: attached parent_resource implies parent_resource.description = Current
 	Language_valid: attached parent_resource implies details.linear_representation.for_all
 		(agent (rdi: RESOURCE_DESCRIPTION_ITEM):BOOLEAN do Result := parent_resource.languages_available.has(rdi.language.code_string) end)
+	Copyright_valid: attached copyright as att_copyright implies not att_copyright.is_empty
+	Ip_acknowledgements_valid: attached ip_acknowledgements as att_ack implies not att_ack.is_empty
 
 end
 

@@ -86,10 +86,6 @@ feature -- Access
 			-- Description of any misuses of the archetype,
 			-- i.e. contexts in which it should not be used.
 
-	copyright:  detachable STRING
-			-- Rights over the archetype as a knowledge resource;
-			-- usually copyright and/or license to use.
-
 	original_resource_uri: detachable HASH_TABLE [STRING, STRING]
 			-- URI of precursor resource of archetype, e.g. natural language
 			-- document, semi-formal description
@@ -150,24 +146,6 @@ feature -- Modification
 			misuse := Void
 		ensure
 			not attached misuse
-		end
-
-	set_copyright (a_copyright: STRING)
-			-- set copyright
-		require
-			Copyright_valid: not a_copyright.is_empty
-		do
-			copyright := a_copyright
-		ensure
-			Copyright_set: copyright = a_copyright
-		end
-
-	clear_copyright
-			-- remove copyright
-		do
-			copyright := Void
-		ensure
-			not attached copyright
 		end
 
 	add_keyword (a_keyword: STRING; i: INTEGER)
@@ -275,9 +253,6 @@ feature -- Copying
 			if attached misuse as att_misuse then
 				Result.set_misuse (prefix_str + att_misuse + suffix_str)
 			end
-			if attached copyright as att_copyright then
-				Result.set_copyright (prefix_str + att_copyright + suffix_str)
-			end
 			if attached keywords as att_keywords then
 				across att_keywords as keywords_csr loop
 					Result.add_keyword (prefix_str + keywords_csr.item + suffix_str, 0)
@@ -310,7 +285,6 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.extend("misuse")
 			Result.extend("keywords")
 			Result.extend("original_resource_uri")
-			Result.extend("copyright")
 			Result.extend("other_details")
 		end
 
@@ -319,7 +293,6 @@ invariant
 	purpose_valid: not purpose.is_empty
 	use_valid: use /= Void implies not use.is_empty
 	misuse_valid: misuse /= Void implies not misuse.is_empty
-	copyright_valid: copyright /= Void implies not copyright.is_empty
 
 end
 

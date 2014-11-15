@@ -578,13 +578,30 @@ templates = <
 		["property_grid_property_type_col_title"] = <"Type">
 
 		-- GUI_DESCRIPTION_CONTROL
+		["governance_tab_text"] = <"Governance">
 		["authoring_tab_text"] = <"Authoring">
 		["descriptive_tab_text"] = <"Details">
 		["term_bindings_tab_text"] = <"Term Bindings">
 
 		["lifecycle_state_label_text"] = <"Lifecycle state:">
 		["lifecycle_state_label_tooltip"] = <"State in archetype lifecycle state machine">
+
+		["custodian_frame_text"] = <"Current Custodian">
+		["custodian_namespace_label_text"] = <"  Namespace:">
+		["custodian_organisation_label_text"] = <"Organisation:">
+
+		["original_publisher_frame_text"] = <"Original Publisher">
+		["original_namespace_label_text"] = <"  Namespace:">
+		["original_publisher_label_text"] = <"Organisation:">
+
+		["copyright_label_text"] = <"Copyright:">
+		["licence_label_text"] = <"    Licence:">
+
+		["ip_acknowledgements_label_text"] = <"IP Acknowledgements:">
+		["conversion_details_label_text"] = <"Conversion Details:">
+
 		["auth_frame_text"] = <"Authorship">
+		["archetype_details_label_text"] = <"Details">
 		["auth_orig_auth_label_text"] = <"Original Author">
 		["auth_contrib_label_text"] = <"Contributors">
 		["lang_frame_text"] = <"Languages">
@@ -593,8 +610,6 @@ templates = <
 		["translator_label_text"] = <"Translator">
 		["accreditation_label_text"] = <"Translator Accreditation">
 		["translator_other_details_label_text"] = <"Translator Other Details">
-		["copyright_label_text"] = <"Copyright:">
-		["archetype_details_label_text"] = <"Archetype Details">
 		["purpose_label_text"] = <"Purpose: ">
 		["use_label_text"] = <"        Use: ">
 		["misuse_label_text"] = <"Misuse: ">
