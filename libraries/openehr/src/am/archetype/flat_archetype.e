@@ -40,10 +40,11 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			if attached a_diff.annotations as a_diff_annots then
 				annotations := a_diff_annots.safe_deep_twin
 			end
+			is_generated := a_diff.is_generated
+
 			rebuild
-			is_generated := True
 		ensure
-			Generated: is_generated
+			Generated: is_generated = a_diff.is_generated
 			Top_level: not is_specialised
 		end
 
@@ -103,10 +104,11 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				annotations := parent_annots.safe_deep_twin
 			end
 
+			is_generated := a_diff.is_generated
+
 			rebuild
-			is_generated := True
 		ensure
-			Generated: is_generated
+			Generated: is_generated = a_diff.is_generated
 			Specialised: is_specialised
 		end
 

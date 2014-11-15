@@ -150,7 +150,7 @@ feature -- Initialisation
 
 			rebuild
 		ensure then
-			Is_generated_preserved: other.is_generated implies is_generated
+			Is_generated_preserved: is_generated = other.is_generated
 		end
 
 feature -- Access
