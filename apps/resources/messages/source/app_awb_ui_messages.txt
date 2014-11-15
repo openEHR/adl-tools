@@ -597,8 +597,13 @@ templates = <
 		["copyright_label_text"] = <"Copyright:">
 		["licence_label_text"] = <"    Licence:">
 
-		["ip_acknowledgements_label_text"] = <"IP Acknowledgements:">
-		["conversion_details_label_text"] = <"Conversion Details:">
+		["intellectual_property_frame_text"] = <"Intellectual Property">
+		["ip_acknowledgements_label_text"] = <"IP%NAcknowledgements:">
+		["conversion_details_label_text"] = <"Conversion%NDetails:">
+
+		["source_status_frame_text"] = <"Source Status">
+		["generated_status_label"] = <"Generated">
+		["generated_status_tooltip"] = <"If true, this archetype was machine generated from another source, possibly an earlier ADL version, or a non-archetype artefact">
 
 		["auth_frame_text"] = <"Authorship">
 		["archetype_details_label_text"] = <"Details">
@@ -612,10 +617,10 @@ templates = <
 		["translator_other_details_label_text"] = <"Translator Other Details">
 		["purpose_label_text"] = <"Purpose: ">
 		["use_label_text"] = <"        Use: ">
-		["misuse_label_text"] = <"Misuse: ">
+		["misuse_label_text"] = <"  Misuse: ">
 		["keywords_label_text"] = <"Keywords">
 		["resources_label_text"] = <"Resources">
-		["packages_label_text"] = <"Package">
+		["packages_label_text"] = <"  Package">
 		["resource_orig_res_label_text"] = <"Original%NResources">
 		["terminology_label_text"] = <"Terminology mappings">
 		["refset_bindings_label_text"] = <"Refset bindings">

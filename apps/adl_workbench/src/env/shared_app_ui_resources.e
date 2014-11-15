@@ -831,7 +831,7 @@ feature {NONE} -- Implementation
 			Result.append ("        Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
 			Result.append ("          Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR)),%N")
-			Result.append ("                        Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
+			Result.append ("                      Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
 			Result.append ("%N")
 			Result.append ("Acknowledgements:%N")
 			Result.append ("  - Eiffel Software EiffelStudio GPL release <http://www.eiffel.com>%N")
