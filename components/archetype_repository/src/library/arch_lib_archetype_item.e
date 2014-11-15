@@ -1129,6 +1129,8 @@ feature {MAIN_WINDOW} -- File Access
 		do
 			file_mgr.clean_generated
 			signal_from_scratch
+			status.wipe_out
+			status.append (file_mgr.status)
 		ensure
 			Reset_if_source_generated: file_mgr.is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
