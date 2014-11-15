@@ -149,7 +149,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-feature -- ADL 1.5 conversions
+feature -- ADL 2 conversions
 
 	convert_odin_type_name (a_type_name: STRING): STRING
 			-- convert type name preceding <> ODIN block to (typename), i.e. add parentheses
@@ -224,6 +224,23 @@ feature -- ADL 1.5 conversions
 						dt_attr.unset_nested
 					end
 				end
+			end
+		end
+
+	has_old_copyright (a_resource_description: DT_COMPLEX_OBJECT): BOOLEAN
+			-- test if copyright is in ADL 1.4 location RESOURCE_DESCRIPTION.details.copyright
+		do
+			Result := a_resource_description.has_path ("details[en]/copyright")
+		end
+
+	move_copyright (a_resource_description: DT_COMPLEX_OBJECT)
+			-- move copyright from RESOURCE_DESCRIPTION.details.copyright to RESOURCE_DESCRIPTION.copyright
+			-- obtain copyright from English language RESOURCE_DESCRIPTION.details
+		require
+			has_old_copyright (a_resource_description)
+		do
+			if attached a_resource_description.attribute_node_at_path ("details[en]/copyright") as dt_attr_details_copyright then
+				a_resource_description.put_attribute (dt_attr_details_copyright)
 			end
 		end
 

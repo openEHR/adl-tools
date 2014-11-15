@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object in ADL 1.4 and 1.5.
+				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object in ADL 1.4 and ADL 2.
 				 Both parsing and serialisation are multi-part, i.e. treat an archetype as a series of sections
 				 each headed by keywords (apart from the items in the header section.
 				 ]"
@@ -29,6 +29,13 @@ inherit
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
+		end
+
+	EXCEPTIONS
+		rename
+			class_name as exception_class_name
+		export
+			{NONE} all
 		end
 
 create
@@ -99,13 +106,23 @@ feature -- Parsing
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
-						elseif not dt_object_converter.errors.has_errors and
-							attached {RESOURCE_DESCRIPTION} description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
-						then
-							res_desc := rd
+						elseif attached {DT_COMPLEX_OBJECT} description_context.tree as resource_desc then
+							-- FIXME: move copyright from RESOURCE_DESCRIPTION.details.copyright to RESOURCE_DESCRIPTION.copyright
+							if has_old_copyright (resource_desc) then
+								move_copyright (resource_desc)
+								errors.add_warning (ec_old_copyright, Void, generator + ".parse")
+							end
+
+							if not dt_object_converter.errors.has_errors and
+								attached {RESOURCE_DESCRIPTION} resource_desc.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
+							then
+								res_desc := rd
+							else
+								errors.add_error (ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
+								errors.append (dt_object_converter.errors)
+							end
 						else
-							errors.add_error (ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
-							errors.append (dt_object_converter.errors)
+							raise (generator + ".parse: AUTHORED_RESOURCE.description Data Tree missing.")
 						end
 					else
 						description_context.reset
