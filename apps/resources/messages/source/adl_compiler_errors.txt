@@ -48,8 +48,9 @@ templates = <
 		["compile_exception"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
 		["compiler_infinite_regress"] = <"Infinite compilation dependency loop detected on archetype $1; descent depth = $2; quitting">
 
-		-- ADL15_ENGINE
+		-- ADL2_ENGINE
 		["deserialise_e1"] = <"Object deserialisation from ODIN failed; type = $1">
+		["old_copyright"] = <"Moved copyright from RESOURCE_DESCRIPTION.details.copyright to RESOURCE_DESCRIPTION.copyright; save to fix permanently">
 
 		-- ARCHETYPE_VALIDATOR
 		["validate_e1"] = <"specialisation parent is missing">
