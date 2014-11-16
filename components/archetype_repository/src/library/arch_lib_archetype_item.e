@@ -664,7 +664,7 @@ feature -- Compilation
 					when Cs_ready_to_validate then
 						validate
 					when Cs_validated_phase_2 then
-						if adl_15_roundtripping or (file_mgr.has_legacy_flat_file and not has_source_file) then
+						if adl_roundtripping or (file_mgr.has_legacy_flat_file and not has_source_file) then
 							save_differential_text
 						end
 						validate_flat

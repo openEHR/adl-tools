@@ -265,6 +265,56 @@ templates = <
 		["c_attribute_prohibit"] = <"Prohibit">
 		["c_attribute_mandate"] = <"Mandate">
 
+		-- MAIN_WINDOW - menu keys
+		["menu_file_key"] = <"File">
+		["menu_file_open_key"] = <"File>Open">
+		["menu_file_save_as_key"] = <"File>Save As">
+		["menu_file_export_key"] = <"File>Export">
+		["menu_file_export_flat_key"] = <"File>Export Flat">
+		["menu_file_exit_key"] = <"File>Exit">
+		["menu_edit_key"] = <"Edit">
+		["menu_edit_copy_key"] = <"Edit>Copy">
+		["menu_edit_select_all_key"] = <"Edit>Select All">
+		["menu_edit_show_clipboard_key"] = <"Edit>Show Clipboard">
+		["menu_view_key"] = <"View">
+		["menu_view_differential_key"] = <"View>Differential">
+		["menu_view_flat_key"] = <"View>Flat">
+		["menu_view_new_archetype_tool_key"] = <"View>New Archetype Tool">
+		["menu_view_new_class_tool_key"] = <"View>New Class Tool">
+		["menu_view_reset_layout_key"] = <"View>Reset Layout">
+		["menu_aom_profiles_key"] = <"AOM Profiles">
+		["menu_aom_profiles_configure_key"] = <"AOM Profiles>Configure">
+		["menu_archetypes_key"] = <"Archetypes">
+		["menu_archetypes_build_all_key"] = <"Archetypes>Build All">
+		["menu_archetypes_rebuild_all_key"] = <"Archetypes>Rebuild All">
+		["menu_archetypes_build_subtree_key"] = <"Archetypes>Build Subtree">
+		["menu_archetypes_rebuild_subtree_key"] = <"Archetypes>Rebuild Subtree">
+		["menu_archetypes_export_html_key"] = <"Archetypes>Export HTML">
+		["menu_archetypes_export_json_key"] = <"Archetypes>Export JSON">
+		["menu_archetypes_export_yaml_key"] = <"Archetypes>Export YAML">
+		["menu_archetypes_export_xml_key"] = <"Archetypes>Export XML">
+		["menu_archetypes_report_key"] = <"Archetypes>Report">
+		["menu_archetypes_interrupt_build_key"] = <"Archetypes>Interrupt Build">
+		["menu_archetypes_refresh_key"] = <"Archetypes>Refresh">
+		["menu_archetypes_configure_key"] = <"Archetypes>Configure">
+		["menu_rm_schemas_key"] = <"RM Schemas">
+		["menu_rm_schemas_reload_key"] = <"RM Schemas>Reload">
+		["menu_rm_schemas_configure_key"] = <"RM Schemas>Configure">
+		["menu_xml_key"] = <"XML">
+		["menu_xml_edit_rules_key"] = <"XML>Edit Rules">
+		["menu_tools_key"] = <"Tools">
+		["menu_tools_test_tool_key"] = <"Tools>Test Tool">
+		["menu_tools_clean_files_key"] = <"Tools>Clean Files">
+		["menu_tools_adl_roundtrip_key"] = <"Tools>ADL 2 Roundtrip">
+		["menu_tools_options_key"] = <"Tools>Options">
+		["menu_help_key"] = <"Help">
+		["menu_help_online_help_key"] = <"Help>Online Help">
+		["menu_help_release_notes_key"] = <"Help>Release Notes">
+		["menu_help_external_tools_key"] = <"Help>External Tools">
+		["menu_help_ckm_key"] = <"Help>CKM">
+		["menu_help_report_bug_key"] = <"Help>Report Bug">
+		["menu_help_about_key"] = <"Help>About">
+
 		-- MAIN_WINDOW - menus
 		["file_menu_text"] = <"&File">
 		["file_menu_open_text"] = <"&Open...">
@@ -314,7 +364,7 @@ templates = <
 
 		["tools_menu_text"] = <"&Tools">
 		["tools_menu_clean_text"] = <"&Clean Generated Files">
-		["tools_menu_adl_2_round_trip_text"] = <"&ADL 2 Round Trip">
+		["tools_menu_adl_roundtrip_text"] = <"&ADL 2 Round Trip">
 		["tools_menu_options_text"] = <"&Options">
 
 		["help_menu_text"] = <"&Help">
@@ -507,6 +557,8 @@ templates = <
 		["Test_source_gen_flat_button_tooltip"] = <"Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.">
 		["Test_source_roundtrip_button_text"] = <"Source v R-trip">
 		["Test_source_roundtrip_button_tooltip"] = <"Open diff tool on source and archetype round-tripped through ODIN P_* objects">
+		["roundtripping_question"] = <"Setting ADL roundtripping on will result in successfully compiled archetypes being unconditionally saved,%Noverwriting the current source. Saving normally occurs automatically when the original source has changed.%NThis option forces it. Useful for syntax upgrades and improving source file formatting.">
+		["roundtripping_dialog_title"] = <"Set ADL Source File Roundtripping">
 
 		["Test_parse_test_title"] = <"Parse">
 		["Test_save_flat_test_title"] = <"->flat">

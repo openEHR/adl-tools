@@ -124,86 +124,86 @@ feature {NONE} -- Initialization
 			create evx_menu_bar.make
 
 			-- ========== File Menu ===========
-			evx_menu_bar.add_menu ("File", get_text (ec_file_menu_text))
-			evx_menu_bar.add_menu_item ("File>Open", get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
+			evx_menu_bar.add_menu (get_text (ec_menu_file_key), get_text (ec_file_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_file_open_key), get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("File>Save As", get_text (ec_file_menu_save_as_text), Void, agent library_tool.save_source_archetype_as)
-			evx_menu_bar.add_menu_item ("File>Export", get_text (ec_file_menu_export_text), Void, agent library_tool.export_source_archetype_as)
-			evx_menu_bar.add_menu_item ("File>Export Flat", get_text (ec_file_menu_export_flat_as_text), Void, agent library_tool.export_flat_archetype_as)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_file_save_as_key), get_text (ec_file_menu_save_as_text), Void, agent library_tool.save_source_archetype_as)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_file_export_key), get_text (ec_file_menu_export_text), Void, agent library_tool.export_source_archetype_as)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_file_export_flat_key), get_text (ec_file_menu_export_flat_as_text), Void, agent library_tool.export_flat_archetype_as)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Exit", "E&xit", Void, agent exit_app)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_file_exit_key), "E&xit", Void, agent exit_app)
 
 			-- ================== Edit menu ==================
-			evx_menu_bar.add_menu ("Edit", get_text (ec_edit_menu_text))
-			evx_menu_bar.add_menu_item ("Edit>Copy", get_text (ec_edit_menu_copy_text), Void, agent text_widget_handler.on_copy)
-			evx_menu_bar.add_menu_item ("Edit>Select All", get_text (ec_edit_menu_select_all_text), Void, agent text_widget_handler.on_select_all)
+			evx_menu_bar.add_menu (get_text (ec_menu_edit_key), get_text (ec_edit_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_edit_copy_key), get_text (ec_edit_menu_copy_text), Void, agent text_widget_handler.on_copy)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_edit_select_all_key), get_text (ec_edit_menu_select_all_text), Void, agent text_widget_handler.on_select_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Edit>Show Clipboard", get_text (ec_edit_menu_clipboard_text), Void, agent show_clipboard)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_edit_show_clipboard_key), get_text (ec_edit_menu_clipboard_text), Void, agent show_clipboard)
 
 			-- ================== View menu ==================
-			evx_menu_bar.add_menu ("View", get_text (ec_view_menu_text))
-			evx_menu_bar.add_menu_item ("View>Differential", get_text (ec_view_menu_differential_text), get_icon_pixmap ("tool/diff_class"), agent on_differential_view)
-			evx_menu_bar.add_menu_item ("View>Flat", get_text (ec_view_menu_flat_text), get_icon_pixmap ("tool/flat_class"), agent on_flat_view)
-			evx_menu_bar.add_menu_item ("View>New Archetype Tool", get_text (ec_view_menu_new_arch_tab_text), get_icon_pixmap ("tool/archetype_tool_new"), Void)
-			evx_menu_bar.add_menu_item ("View>New Class Tool", get_text (ec_view_menu_new_class_tab_text), get_icon_pixmap ("tool/class_tool_new"), Void)
+			evx_menu_bar.add_menu (get_text (ec_menu_view_key), get_text (ec_view_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_view_differential_key), get_text (ec_view_menu_differential_text), get_icon_pixmap ("tool/diff_class"), agent on_differential_view)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_view_flat_key), get_text (ec_view_menu_flat_text), get_icon_pixmap ("tool/flat_class"), agent on_flat_view)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_view_new_archetype_tool_key), get_text (ec_view_menu_new_arch_tab_text), get_icon_pixmap ("tool/archetype_tool_new"), Void)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_view_new_class_tool_key), get_text (ec_view_menu_new_class_tab_text), get_icon_pixmap ("tool/class_tool_new"), Void)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("View>Reset Layout", get_text (ec_view_menu_reset_layout_text), Void, agent on_reset_tool_layout)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_view_reset_layout_key), get_text (ec_view_menu_reset_layout_text), Void, agent on_reset_tool_layout)
 
 			-- ================== History menu ==================
 			history_bar.initialise_menu (evx_menu_bar)
 
 			-- ================== AOM profile menu ==================
-			evx_menu_bar.add_menu ("AOM Profiles", get_text (ec_aom_profiles_menu_text))
-			evx_menu_bar.add_menu_item ("AOM Profiles>Configure", get_text (ec_aom_profiles_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_aom_profiles)
+			evx_menu_bar.add_menu (get_text (ec_menu_aom_profiles_key), get_text (ec_aom_profiles_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_aom_profiles_configure_key), get_text (ec_aom_profiles_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_aom_profiles)
 
 			-- ================== Repository menu ==================
-			evx_menu_bar.add_menu ("Archetypes", get_text (ec_archetypes_menu_text))
-			evx_menu_bar.add_menu_item ("Archetypes>Build All", get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
-			evx_menu_bar.add_menu_item ("Archetypes>Rebuild All", get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
+			evx_menu_bar.add_menu (get_text (ec_menu_archetypes_key), get_text (ec_archetypes_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_all_key), get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_all_key), get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Archetypes>Build Subtree", get_text (ec_archetypes_menu_build_subtree_text), Void, agent build_subtree)
-			evx_menu_bar.add_menu_item ("Archetypes>Rebuild Subtree", get_text (ec_archetypes_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_archetypes_menu_build_subtree_text), Void, agent build_subtree)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_archetypes_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Archetypes>Export HTML", get_text (ec_archetypes_menu_export_html_text), Void, agent export_library (syntax_type_adl_html))
-			evx_menu_bar.add_menu_item ("Archetypes>Export JSON", get_text (ec_archetypes_menu_export_json_text), Void, agent export_library (syntax_type_json))
-			evx_menu_bar.add_menu_item ("Archetypes>Export YAML", get_text (ec_archetypes_menu_export_yaml_text), Void, agent export_library (syntax_type_yaml))
-			evx_menu_bar.add_menu_item ("Archetypes>Export XML", get_text (ec_archetypes_menu_export_xml_text), Void, agent export_library (syntax_type_xml))
-			evx_menu_bar.add_menu_item ("Archetypes>Report", get_text (ec_archetypes_menu_export_report_text), Void, agent export_library_report)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_html_key), get_text (ec_archetypes_menu_export_html_text), Void, agent export_library (syntax_type_adl_html))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_json_key), get_text (ec_archetypes_menu_export_json_text), Void, agent export_library (syntax_type_json))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_yaml_key), get_text (ec_archetypes_menu_export_yaml_text), Void, agent export_library (syntax_type_yaml))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_xml_key), get_text (ec_archetypes_menu_export_xml_text), Void, agent export_library (syntax_type_xml))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_report_key), get_text (ec_archetypes_menu_export_report_text), Void, agent export_library_report)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item_disabled ("Archetypes>Interrupt Build", get_text (ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
-			evx_menu_bar.add_menu_item ("Archetypes>Refresh", get_text (ec_archetypes_menu_refresh_text), Void, agent refresh_directory)
+			evx_menu_bar.add_menu_item_disabled (get_text (ec_menu_archetypes_interrupt_build_key), get_text (ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_refresh_key), get_text (ec_archetypes_menu_refresh_text), Void, agent refresh_directory)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Archetypes>Configure", get_text (ec_archetypes_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_configure_key), get_text (ec_archetypes_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
 
 			-- ================== RM Schemas menu ==================
-			evx_menu_bar.add_menu ("RM Schemas", get_text (ec_rm_schemas_menu_text))
-			evx_menu_bar.add_menu_item ("RM Schemas>Reload", get_text (ec_rm_schemas_reload_text), Void, agent reload_schemas)
+			evx_menu_bar.add_menu (get_text (ec_menu_rm_schemas_key), get_text (ec_rm_schemas_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_rm_schemas_reload_key), get_text (ec_rm_schemas_reload_text), Void, agent reload_schemas)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("RM Schemas>Configure", get_text (ec_rm_schemas_configure_text), get_icon_pixmap ("tool/tools"), agent set_rm_schemas)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_rm_schemas_configure_key), get_text (ec_rm_schemas_configure_text), get_icon_pixmap ("tool/tools"), agent set_rm_schemas)
 
 			-- ================== XML menu ==================
-			evx_menu_bar.add_menu ("XML", get_text (ec_xml_menu_text))
+			evx_menu_bar.add_menu (get_text (ec_menu_xml_key), get_text (ec_xml_menu_text))
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("XML>Edit Rules", get_text (ec_xml_menu_edit_rules_text), get_icon_pixmap ("tool/tools"), agent set_xml_rules)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_xml_edit_rules_key), get_text (ec_xml_menu_edit_rules_text), get_icon_pixmap ("tool/tools"), agent set_xml_rules)
 
 			-- ================== Tools menu ==================
-			evx_menu_bar.add_menu ("Tools", get_text (ec_tools_menu_text))
-			evx_menu_bar.add_menu_item ("Tools>Test Tool", get_text (ec_test_tool_title), Void, agent open_test_tool)
-			evx_menu_bar.add_menu_item ("Tools>Clean Files", get_text (ec_tools_menu_clean_text), Void, agent clean_generated_files)
-			evx_menu_bar.add_menu_item ("Tools>ADL 2 Roundtrip", get_text (ec_tools_menu_adl_2_round_trip_text),
-				if adl_15_roundtripping then get_icon_pixmap ("tool/test_passed") else get_icon_pixmap ("tool/test_failed") end, agent toggle_adl_15_roundtripping)
+			evx_menu_bar.add_menu (get_text (ec_menu_tools_key), get_text (ec_tools_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_test_tool_key), get_text (ec_test_tool_title), Void, agent open_test_tool)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_clean_files_key), get_text (ec_tools_menu_clean_text), Void, agent clean_generated_files)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_adl_roundtrip_key), get_text (ec_tools_menu_adl_roundtrip_text),
+				if adl_roundtripping then get_icon_pixmap ("tool/test_passed") else get_icon_pixmap ("tool/test_failed") end, agent toggle_adl_roundtripping)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Tools>Options", get_text (ec_tools_menu_options_text), get_icon_pixmap ("tool/tools"), agent set_options)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_options_key), get_text (ec_tools_menu_options_text), get_icon_pixmap ("tool/tools"), agent set_options)
 
 			-- ================== Help menu ==================
-			evx_menu_bar.add_menu ("Help", get_text (ec_help_menu_text))
-			evx_menu_bar.add_menu_item ("Help>Online Help", get_text (ec_help_menu_online_text), Void, agent show_online_help)
-			evx_menu_bar.add_menu_item ("Help>Release Notes", get_text (ec_help_menu_release_notes_text), Void, agent show_release_notes)
+			evx_menu_bar.add_menu (get_text (ec_menu_help_key), get_text (ec_help_menu_text))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_help_online_help_key), get_text (ec_help_menu_online_text), Void, agent show_online_help)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_help_release_notes_key), get_text (ec_help_menu_release_notes_text), Void, agent show_release_notes)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item ("Help>External Tools", get_text (ec_help_menu_external_tools_text), Void, agent show_external_tools_help_page)
-			evx_menu_bar.add_menu_item ("Help>CKM", get_text (ec_help_menu_ckm_text), Void, agent show_clinical_knowledge_manager)
-			evx_menu_bar.add_menu_item ("Help>Report Bug", get_text (ec_help_menu_report_bug_text), Void, agent show_bug_reporter)
-			evx_menu_bar.add_menu_item ("Help>About", get_text (ec_help_menu_about_text), Void, agent show_about)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_help_external_tools_key), get_text (ec_help_menu_external_tools_text), Void, agent show_external_tools_help_page)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_help_ckm_key), get_text (ec_help_menu_ckm_text), Void, agent show_clinical_knowledge_manager)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_help_report_bug_key), get_text (ec_help_menu_report_bug_text), Void, agent show_bug_reporter)
+			evx_menu_bar.add_menu_item (get_text (ec_menu_help_about_key), get_text (ec_help_menu_about_text), Void, agent show_about)
 		end
 
 	initialize
@@ -238,8 +238,8 @@ feature {NONE} -- Initialization
 			archetype_viewers.create_new_tool
 
 			-- set up anything else dependent on docking
-			evx_menu_bar.menu_item ("View>New Class Tool").select_actions.extend (agent class_tools.create_new_tool)
-			evx_menu_bar.menu_item ("View>New Archetype Tool").select_actions.extend (agent archetype_viewers.create_new_tool)
+			evx_menu_bar.menu_item (get_text (ec_menu_view_new_class_tool_key)).select_actions.extend (agent class_tools.create_new_tool)
+			evx_menu_bar.menu_item (get_text (ec_menu_view_new_archetype_tool_key)).select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
@@ -296,25 +296,25 @@ feature {NONE} -- Initialization
 			create evx_accelerators.make (accelerators)
 			evx_menu_bar.set_accelerators (evx_accelerators)
 
-			evx_menu_bar.add_menu_shortcut ("File>Open", key_o, True, False, False)
-			evx_menu_bar.add_menu_shortcut_for_action ("Edit>Copy", agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("Edit>Select All", key_a, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_file_open_key), key_o, True, False, False)
+			evx_menu_bar.add_menu_shortcut_for_action (get_text (ec_menu_edit_copy_key), agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_edit_select_all_key), key_a, True, False, False)
 
-			evx_menu_bar.add_menu_shortcut ("View>Differential", key_d, True, False, True)
-			evx_menu_bar.add_menu_shortcut ("View>Flat", key_f, True, False, True)
-			evx_menu_bar.add_menu_shortcut ("View>New Archetype Tool", key_t, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("View>New Class Tool", key_t, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_differential_key), key_d, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_flat_key), key_f, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_new_archetype_tool_key), key_t, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_new_class_tool_key), key_t, True, False, True)
 
 			history_bar.add_shortcuts
 
-			evx_menu_bar.add_menu_shortcut ("Archetypes>Refresh", key_r, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("Archetypes>Interrupt Build", key_escape, False, False, True)
-			evx_menu_bar.add_menu_shortcut ("Archetypes>Rebuild Subtree", key_f7, True, False, True)
-			evx_menu_bar.add_menu_shortcut ("Archetypes>Build Subtree", key_f7, True, False, False)
-			evx_menu_bar.add_menu_shortcut ("Archetypes>Rebuild All", key_f7, False, False, True)
-			evx_menu_bar.add_menu_shortcut ("Archetypes>Build All", key_f7, False, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_refresh_key), key_r, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_interrupt_build_key), key_escape, False, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_subtree_key), key_f7, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_subtree_key), key_f7, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_all_key), key_f7, False, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_all_key), key_f7, False, False, False)
 
-			evx_menu_bar.add_menu_shortcut ("RM Schemas>Reload", key_l, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_rm_schemas_reload_key), key_l, True, False, False)
 
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
@@ -627,30 +627,30 @@ feature {NONE} -- Library events
 		require
 			Serialise_format_valid: has_archetype_native_serialiser_format (a_syntax) or has_dt_serialiser_format (a_syntax)
 		local
-			dialog: EV_QUESTION_DIALOG
+			question_dialog: EV_QUESTION_DIALOG
 			yes_text, no_text, cancel_text, export_dir: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create dialog.make_with_text (get_msg_line (ec_export_question, <<a_syntax>>))
-			dialog.set_title (get_msg (ec_export_in_format_dialog_title, <<a_syntax>>))
+			create question_dialog.make_with_text (get_msg_line (ec_export_question, <<a_syntax>>))
+			question_dialog.set_title (get_msg (ec_export_in_format_dialog_title, <<a_syntax>>))
 			yes_text := get_text (ec_build_and_export_all)
 			no_text := get_text (ec_export_only_built)
 			cancel_text := get_msg_line (ec_cancel_button_text, Void)
-			dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
+			question_dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
 
-			dialog.set_default_cancel_button (dialog.button (cancel_text))
-			dialog.show_modal_to_window (Current)
+			question_dialog.set_default_cancel_button (question_dialog.button (cancel_text))
+			question_dialog.show_modal_to_window (Current)
 
-			if not dialog.selected_button.same_string (cancel_text) then
+			if not question_dialog.selected_button.same_string (cancel_text) then
 				export_dir := file_system.pathname (export_directory, a_syntax)
 				file_system.recursive_create_directory (export_dir)
 				if not file_system.directory_exists (export_dir) then
 					create info_dialog.make_with_text (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
 					info_dialog.show_modal_to_window (Current)
 				else
-					if dialog.selected_button.same_string (yes_text) then
+					if question_dialog.selected_button.same_string (yes_text) then
 						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
-					elseif dialog.selected_button.same_string (no_text) then
+					elseif question_dialog.selected_button.same_string (no_text) then
 						do_build_action (agent archetype_compiler.export_all (export_dir, a_syntax))
 					end
 				end
@@ -771,11 +771,34 @@ feature {NONE} -- Tools menu events
 			console_tool.append_text (ara.status)
 		end
 
-	toggle_adl_15_roundtripping
+	toggle_adl_roundtripping
+			-- toggle roundtripping of successfully compiled ADL files, i.e. successful compile always causes a
+			-- save (overwrite) of existing ADL source file with serialised. Used primarily to a) upgrade syntax
+			-- and b) to get better whitespace formatting in source files.
+		local
+			question_dialog: EV_QUESTION_DIALOG
+			yes_text, no_text, cancel_text, export_dir: STRING
+			info_dialog: EV_INFORMATION_DIALOG
 		do
-			set_adl_15_roundtripping (not adl_15_roundtripping)
-			evx_menu_bar.menu_item ("Tools>ADL 1.5 Roundtrip").set_pixmap (
-				if adl_15_roundtripping then get_icon_pixmap ("tool/test_passed") else
+			if not adl_roundtripping then
+				create question_dialog.make_with_text (get_text (ec_roundtripping_question))
+				question_dialog.set_title (get_text (ec_roundtripping_dialog_title))
+				yes_text := get_text (ec_yes_response)
+				no_text := get_text (ec_no_response)
+				cancel_text := get_text (ec_cancel_button_text)
+				question_dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
+
+				question_dialog.set_default_cancel_button (question_dialog.button (cancel_text))
+				question_dialog.show_modal_to_window (Current)
+
+				if question_dialog.selected_button.same_string (yes_text) then
+					set_adl_roundtripping (True)
+				end
+			else
+				set_adl_roundtripping (False)
+			end
+			evx_menu_bar.menu_item (get_text (ec_menu_tools_adl_roundtrip_key)).set_pixmap (
+				if adl_roundtripping then get_icon_pixmap ("tool/test_passed") else
 				get_icon_pixmap ("tool/test_failed") end)
 		end
 
@@ -1249,16 +1272,16 @@ feature {NONE} -- Build commands
 			build_started: BOOLEAN
 		do
 			if not build_started then
-				evx_menu_bar.disable_menu_items (<<"Repository>Build All", "Repository>Rebuild All",
-					"Repository>Build Subtree", "Repository>Rebuild Subtree", "Repository>Export HTML">>)
-				evx_menu_bar.enable_menu_items (<<"Repository>Interrupt Build">>)
+				evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
+					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
+				evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
 				build_started := True
 				do_with_wait_cursor (Current, action)
 			end
 
-			evx_menu_bar.enable_menu_items (<<"Repository>Build All", "Repository>Rebuild All",
-				"Repository>Build Subtree", "Repository>Rebuild Subtree", "Repository>Export HTML">>)
-			evx_menu_bar.disable_menu_items (<<"Repository>Interrupt Build">>)
+			evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
+					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
+			evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
 		rescue
 			retry
 		end

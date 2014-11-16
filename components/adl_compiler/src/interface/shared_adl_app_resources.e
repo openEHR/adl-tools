@@ -556,16 +556,16 @@ feature -- Application Switches
 			app_cfg.put_string_value ("/authoring/author_copyright", a_value)
 		end
 
-	adl_15_roundtripping: BOOLEAN
+	adl_roundtripping: BOOLEAN
 			-- Set adl_15_roundtripping on
 		do
-			Result := app_cfg.boolean_value ("/compiler/adl_15_roundtripping")
+			Result := app_cfg.boolean_value ("/compiler/adl_roundtripping")
 		end
 
-	set_adl_15_roundtripping (flag: BOOLEAN)
+	set_adl_roundtripping (flag: BOOLEAN)
 			-- Set flag for adl_15_roundtripping
 		do
-			app_cfg.put_boolean_value ("/compiler/adl_15_roundtripping", flag)
+			app_cfg.put_boolean_value ("/compiler/adl_roundtripping", flag)
 		end
 
 feature {NONE} -- Cached Settings
