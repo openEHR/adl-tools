@@ -23,15 +23,16 @@ feature -- Definitions
 			create Result.make(0)
 			Result.compare_objects
 			Result.extend ("unmanaged")
-			Result.extend ("initial")
-			Result.extend ("in_review")
-			Result.extend ("suspended")
-			Result.extend ("unstable")
+			Result.extend ("in_development")
+--			Result.extend ("draft")
+--			Result.extend ("in_review")
+--			Result.extend ("suspended")
 			Result.extend ("release_candidate")
 			Result.extend ("published")
-			Result.extend ("obsolete")
-			Result.extend ("superseded")
 			Result.extend ("deprecated")
+--			Result.extend ("obsolete")
+--			Result.extend ("superseded")
+			Result.extend ("rejected")
 		end
 
 feature -- Status Report
