@@ -87,6 +87,9 @@ feature -- Definitions
 	Bug_reporter_url: STRING = "https://github.com/openEHR/adl-tools/issues"
 			-- The URL to ADL Workbench's problem reporter.
 
+	Source_url: STRING = "https://github.com/openEHR/adl-tools.git"
+			-- URL for source project
+
 	Release_notes_file_path: STRING = "http://www.openehr.org/downloads/ADLworkbench/release_notes"
 			-- The path to ADL Workbench's release notes.
 

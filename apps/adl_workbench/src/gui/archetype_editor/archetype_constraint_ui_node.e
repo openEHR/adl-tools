@@ -148,8 +148,8 @@ feature {NONE} -- Implementation
 			if not is_rm then
 				p := arch_node.path
 				Result := ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True)
-				if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
-					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  nss)
+				if display_settings.show_rm_inheritance then
+					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  specialisation_status_name (specialisation_status))
 				end
 
 				-- node-based bindings

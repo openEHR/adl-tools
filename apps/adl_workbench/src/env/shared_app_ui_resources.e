@@ -42,7 +42,9 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	rm_icon_dir: STRING = "rm"
+	Icon_rm_dir: STRING = "rm"
+
+	Icon_am_dir: STRING = "am"
 
 feature -- Definitions: Archetype viewer
 
@@ -402,10 +404,10 @@ feature -- Access
 			-- Return empty string if not found
 		do
 			-- assume form of key that just uses RM publisher, i.e. one set of icons for publisher
-			Result := rm_icon_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + resource_path_separator + a_class_def.name
+			Result := Icon_rm_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + resource_path_separator + a_class_def.name
 			if not has_icon_pixmap (Result) then
 				-- now try icon key based on publisher and model name
-				Result := rm_icon_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + {ARCHETYPE_HRID}.Section_separator_string + a_class_def.bmm_schema.schema_name + resource_path_separator + a_class_def.name
+				Result := Icon_rm_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + {ARCHETYPE_HRID}.Section_separator_string + a_class_def.bmm_schema.schema_name + resource_path_separator + a_class_def.name
 				if not has_icon_pixmap (Result) then
 					create Result.make_empty
 				end
@@ -422,7 +424,7 @@ feature -- Access
 					pixmap_key := rm_type_pixmap_key (a_type_spec.base_class)
 				end
 				if pixmap_key.is_empty then
-					pixmap_key := "rm" + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category
+					pixmap_key := Icon_rm_dir + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category
 				end
 			end
 			Result := get_icon_pixmap (pixmap_key)
@@ -434,14 +436,10 @@ feature -- Access
 		do
 			create pixmap_key.make_empty
 			if attached {ARCH_LIB_CLASS_ITEM} ara as acc then
-				if use_rm_pixmaps then
-					pixmap_key := rm_type_pixmap_key (acc.class_definition)
-				end
+				Result := rm_type_pixmap (acc.class_definition)
+			else
+				Result := get_icon_pixmap ("archetype/" + ara.group_name)
 			end
-			if pixmap_key.is_empty then
-				pixmap_key := "archetype/" + ara.group_name
-			end
-			Result := get_icon_pixmap (pixmap_key)
 		end
 
 	adl_workbench_logo: EV_PIXMAP
@@ -823,15 +821,17 @@ feature {NONE} -- Implementation
 			-- Text for splash screens, About boxes, etc.
 		once ("PROCESS")
 			create Result.make_empty
-			Result.append ("ADL " + Latest_adl_major_version + " Workbench  v" + app_version.out + "%N")
-			Result.append ("(c) 2003- openEHR Foundation <http://www.openEHR.org>%N")
-			Result.append ("          Source: https://github.com/openEHR/adl-tools.git%N")
+			Result.append ("                                                   ADL " + Latest_adl_major_version + " Workbench  v" + app_version.out + "%N")
+			Result.append ("                    (c) 2003- openEHR Foundation <http://www.openEHR.org>%N")
+			Result.append ("%N")
+			Result.append ("          Source: " + Source_url + "%N")
 			Result.append ("         License: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
-			Result.append ("Issue tracker: https://github.com/openEHR/adl-tools/issues%N")
-			Result.append ("        Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
 			Result.append ("          Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR)),%N")
-			Result.append ("                      Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
+			Result.append ("                        Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
+			Result.append ("        Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
+			Result.append ("%N")
+			Result.append ("Issue tracker: " + Bug_reporter_url + "%N")
 			Result.append ("%N")
 			Result.append ("Acknowledgements:%N")
 			Result.append ("  - Eiffel Software EiffelStudio GPL release <http://www.eiffel.com>%N")
@@ -851,16 +851,17 @@ feature {NONE} -- Implementation
 				Result.buffered_append ("http://www.openEHR.org", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
 			Result.buffered_append ("%N", Normal_char_fmt)
 
-			Result.buffered_append ("           Source: ", Bold_char_fmt); Result.buffered_append ("https://github.com/openEHR/adl-tools.git%N", Normal_url_char_fmt)
+			Result.buffered_append ("           Source: ", Bold_char_fmt); Result.buffered_append (Source_url + "%N", Normal_url_char_fmt)
 			Result.buffered_append ("          License: ", Bold_char_fmt); Result.buffered_append ("Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N", Normal_char_fmt)
-			Result.buffered_append ("Issue tracker: ", Bold_char_fmt); Result.buffered_append ("https://github.com/openEHR/adl-tools/issues%N", Normal_url_char_fmt)
-			Result.buffered_append ("          Funding: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale, Ocean Informatics <", Normal_char_fmt)
-				Result.buffered_append ("http://www.oceaninformatics.com", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
 
 			Result.buffered_append ("           Author: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale <", Normal_char_fmt)
 				Result.buffered_append ("http://wolandscat.net", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
 			Result.buffered_append (" Contributors: ", Bold_char_fmt); Result.buffered_append ("Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR),%N", Normal_char_fmt)
-			Result.buffered_append ("                            Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N", Normal_char_fmt)
+			Result.buffered_append ("                          Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N", Normal_char_fmt)
+			Result.buffered_append ("          Funding: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale, Ocean Informatics <", Normal_char_fmt)
+				Result.buffered_append ("http://www.oceaninformatics.com", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
+			Result.buffered_append ("%N", Normal_char_fmt)
+			Result.buffered_append ("Issue tracker: ", Bold_char_fmt); Result.buffered_append (Bug_reporter_url + "%N", Normal_url_char_fmt)
 			Result.buffered_append ("%N", Normal_char_fmt)
 			Result.buffered_append ("Acknowledgements:%N", Bold_char_fmt)
 			Result.buffered_append ("  - Eiffel Software EiffelStudio GPL release <", Normal_char_fmt)

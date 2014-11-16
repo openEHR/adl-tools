@@ -90,8 +90,8 @@ feature {NONE} -- Implementation
 					-- append the path, optionally with inheritance status
 					Result.append (ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True))
 					Result.append ("%N")
-					if display_settings.show_rm_inheritance and attached specialisation_status_names.item (specialisation_status) as nss then
-						Result.append (get_text (ec_inheritance_status_text) +  nss + "%N")
+					if display_settings.show_rm_inheritance then
+						Result.append (get_text (ec_inheritance_status_text) + specialisation_status_name (specialisation_status) + "%N")
 					end
 
 					-- append any annotations

@@ -342,9 +342,9 @@ feature {NONE} -- Implementation
 				if pixmap_key.is_empty then
 					c_type_occ_str := a_n.generating_type + a_n.occurrences_key_string
 					if has_icon_pixmap (c_type_occ_str) then
-						pixmap_key := "am" + resource_path_separator + "added" + resource_path_separator + c_type_occ_str
+						pixmap_key := Icon_am_dir + resource_path_separator + "added" + resource_path_separator + c_type_occ_str
 					else
-						pixmap_key := "am" + resource_path_separator + "added" + resource_path_separator + a_n.generating_type
+						pixmap_key := Icon_am_dir  + resource_path_separator + "added" + resource_path_separator + a_n.generating_type
 					end
 				end
 

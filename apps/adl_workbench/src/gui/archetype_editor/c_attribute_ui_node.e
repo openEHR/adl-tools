@@ -391,7 +391,7 @@ feature {ANY_UI_NODE} -- Implementation
 
 	c_pixmap: EV_PIXMAP
 		do
-			Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + rm_property.multiplicity_key_string)
+			Result := get_icon_pixmap (Icon_am_dir + resource_path_separator + "added" + resource_path_separator + rm_property.multiplicity_key_string)
 		end
 
 	default_occurrences: MULTIPLICITY_INTERVAL

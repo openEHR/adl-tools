@@ -71,7 +71,7 @@ feature {NONE} -- Implementation
 				if has_icon_pixmap (pixmap_name) then
 					Result := get_icon_pixmap (pixmap_name)
 				else
-					pixmap_name := rm_icon_dir + resource_path_separator + ui_graph_state.rm_schema.rm_publisher + resource_path_separator + a_n.type
+					pixmap_name := Icon_rm_dir + resource_path_separator + ui_graph_state.rm_schema.rm_publisher + resource_path_separator + a_n.type
 					if has_icon_pixmap (pixmap_name) then
 						Result := get_icon_pixmap (pixmap_name)
 					else
