@@ -45,87 +45,87 @@ feature -- Initialisation
 			ev_root_container.extend (ev_definition_hbox)
 
 			-- EV_GRID
-			create gui_definition_grid.make (True, False, True, True)
-			gui_definition_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			ev_definition_hbox.extend (gui_definition_grid.ev_grid)
+			create evx_definition_grid.make (True, False, True, True)
+			evx_definition_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_definition_hbox.extend (evx_definition_grid.ev_grid)
 
 			-- ========== view controls control panel ===========
-			create gui_definition_control_panel.make
-			ev_definition_hbox.extend (gui_definition_control_panel.ev_root_container)
-			ev_definition_hbox.disable_item_expand (gui_definition_control_panel.ev_root_container)
+			create evx_definition_control_panel.make
+			ev_definition_hbox.extend (evx_definition_control_panel.ev_root_container)
+			ev_definition_hbox.disable_item_expand (evx_definition_control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_definition_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_definition_grid),
+			create evx_definition_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_definition_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"), Void)
-			gui_definition_control_panel.add_frame (gui_definition_treeview_control.ev_root_container, False)
+			evx_definition_control_panel.add_frame (evx_definition_treeview_control.ev_root_container, False)
 
 			-- ========= view detail level options  =========
 
 			-- 'Detail level' frame
-			create view_detail_frame_ctl.make (get_text (ec_view_detail_controls_text), 85, 100, False)
-			gui_definition_control_panel.add_frame_control (view_detail_frame_ctl, False)
+			create evx_view_detail_frame.make (get_text (ec_view_detail_controls_text), 85, 100, False)
+			evx_definition_control_panel.add_frame_control (evx_view_detail_frame, False)
 
 			-- view detail radio buttons
-			create view_detail_radio_ctl.make (get_text (ec_domain_detail_button_text), get_text ("technical_detail_button_text"),
-				get_text (ec_domain_detail_button_tooltip), get_text ("technical_detail_button_tooltip"),
+			create evx_view_detail_radio.make (get_text (ec_domain_detail_button_text), get_text (ec_technical_detail_button_text),
+				get_text (ec_domain_detail_button_tooltip), get_text (ec_technical_detail_button_tooltip),
 				agent :BOOLEAN do Result := not show_technical_view end,
 				agent update_show_technical_view, 0, 0)
-			view_detail_frame_ctl.extend (view_detail_radio_ctl.ev_root_container, False)
-			gui_controls.extend (view_detail_radio_ctl)
+			evx_view_detail_frame.extend (evx_view_detail_radio.ev_root_container, False)
+			gui_controls.extend (evx_view_detail_radio)
 
 			-- include codes checkbox
-			create show_codes_checkbox_ctl.make_linked (get_text (ec_domain_view_add_codes_text), Void,
+			create evx_show_codes_cb.make_linked (get_text (ec_domain_view_add_codes_text), Void,
 				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
-			view_detail_frame_ctl.extend (show_codes_checkbox_ctl.ev_data_control, False)
-			gui_controls.extend (show_codes_checkbox_ctl)
+			evx_view_detail_frame.extend (evx_show_codes_cb.ev_data_control, False)
+			gui_controls.extend (evx_show_codes_cb)
 
 
 			-- ========= RM view options =========
 
 			-- 'RM visibility' frame
-			create rm_property_visibility_frame_ctl.make (get_text (ec_rm_visibility_controls_text), 85, 0, False)
-			gui_definition_control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
+			create evx_rm_property_visibility_frame.make (get_text (ec_rm_visibility_controls_text), 85, 0, False)
+			evx_definition_control_panel.add_frame_control (evx_rm_property_visibility_frame, False)
 
 			-- add RM multiplicities check button
-			create rm_multiplicities_checkbox_ctl.make_linked (get_text (ec_show_rm_multiplicities_button_text),
+			create evx_rm_multiplicities_cb.make_linked (get_text (ec_show_rm_multiplicities_button_text),
 				get_text (ec_show_rm_multiplicities_tooltip),
 				agent :BOOLEAN do Result := show_rm_multiplicities end, agent update_show_rm_multiplicities)
-			gui_controls.extend (rm_multiplicities_checkbox_ctl)
-			rm_property_visibility_frame_ctl.extend (rm_multiplicities_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (evx_rm_multiplicities_cb)
+			evx_rm_property_visibility_frame.extend (evx_rm_multiplicities_cb.ev_data_control, False)
 
 			-- add RM data properties check button
-			create rm_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_properties_button_text),
+			create evx_rm_data_attrs_visible_cb.make_linked (get_text (ec_show_rm_properties_button_text),
 				get_text (ec_show_rm_properties_tooltip),
 				agent :BOOLEAN do Result := show_rm_data_properties end, agent update_show_rm_data_properties)
-			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
-			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (evx_rm_data_attrs_visible_cb)
+			evx_rm_property_visibility_frame.extend (evx_rm_data_attrs_visible_cb.ev_data_control, False)
 
 			-- add RM runtime properties option check button
-			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_runtime_properties_button_text),
+			create evx_rm_runtime_attrs_visible_cb.make_linked (get_text (ec_show_rm_runtime_properties_button_text),
 				get_text (ec_show_rm_runtime_properties_tooltip),
 				agent :BOOLEAN do Result := show_rm_runtime_properties end, agent update_show_rm_runtime_properties)
-			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
-			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (evx_rm_runtime_attrs_visible_cb)
+			evx_rm_property_visibility_frame.extend (evx_rm_runtime_attrs_visible_cb.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
-			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_if_properties_button_text),
+			create evx_rm_if_attrs_visible_cb.make_linked (get_text (ec_show_rm_if_properties_button_text),
 				get_text (ec_show_rm_if_properties_tooltip),
 				agent :BOOLEAN do Result := show_rm_infrastructure_properties end, agent update_show_rm_infrastructure_properties)
-			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
-			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (evx_rm_if_attrs_visible_cb)
+			evx_rm_property_visibility_frame.extend (evx_rm_if_attrs_visible_cb.ev_data_control, False)
 
 			-- 'RM rendering' frame
-			create rendering_frame_ctl.make (get_text (ec_rendering_controls_text), 85, 0, False)
-			gui_definition_control_panel.add_frame_control (rendering_frame_ctl, False)
+			create evx_rendering_frame.make (get_text (ec_rendering_controls_text), 85, 0, False)
+			evx_definition_control_panel.add_frame_control (evx_rendering_frame, False)
 
 			-- use RM inheritance rendering check button
-			create view_rm_display_inheritance_checkbox_ctl.make_linked (get_text (ec_show_rm_inh_button_text),
+			create evx_view_rm_display_inheritance_cb.make_linked (get_text (ec_show_rm_inh_button_text),
 				get_text (ec_show_rm_inh_button_tooltip),
 				agent :BOOLEAN do Result := show_rm_inheritance or editing_enabled end, agent update_show_rm_inheritance)
-			gui_controls.extend (view_rm_display_inheritance_checkbox_ctl)
-			rendering_frame_ctl.extend (view_rm_display_inheritance_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (evx_view_rm_display_inheritance_cb)
+			evx_rendering_frame.extend (evx_view_rm_display_inheritance_cb.ev_data_control, False)
 
 			-- ============ RULES HBOX, with GRID & control panel =============
 			create ev_rules_hbox
@@ -134,29 +134,24 @@ feature -- Initialisation
 			ev_root_container.extend (ev_rules_hbox)
 
 			-- EV_GRID
-			create gui_rules_grid.make (True, False, True, False)
-			gui_rules_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			ev_rules_hbox.extend (gui_rules_grid.ev_grid)
+			create evx_rules_grid.make (True, False, True, False)
+			evx_rules_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_rules_hbox.extend (evx_rules_grid.ev_grid)
 
 			-- ========== view controls control panel ===========
-			create gui_rules_control_panel.make
-			ev_rules_hbox.extend (gui_rules_control_panel.ev_root_container)
-			ev_rules_hbox.disable_item_expand (gui_rules_control_panel.ev_root_container)
+			create evx_gui_rules_control_panel.make
+			ev_rules_hbox.extend (evx_gui_rules_control_panel.ev_root_container)
+			ev_rules_hbox.disable_item_expand (evx_gui_rules_control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_rules_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_rules_grid),
+			create evx_gui_rules_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_rules_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"), Void)
-			gui_rules_control_panel.add_frame (gui_rules_treeview_control.ev_root_container, False)
+			evx_gui_rules_control_panel.add_frame (evx_gui_rules_treeview_control.ev_root_container, False)
 
 
 			-- ==================== setup ============================
-			-- initial state
-			if not show_technical_view then
-				rm_attrs_visible_checkbox_ctl.disable_editable
-			end
-
 			ev_root_container.set_data (Current)
 		end
 
@@ -326,7 +321,7 @@ feature {NONE} -- Events
 			end
 
 			if attached source then
-				do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
+				do_with_wait_cursor (evx_definition_grid.ev_grid, agent redisplay)
 			end
 		end
 
@@ -354,7 +349,7 @@ feature {NONE} -- Events
 			end
 
 			if attached source then
-				do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
+				do_with_wait_cursor (evx_definition_grid.ev_grid, agent redisplay)
 			end
 		end
 
@@ -364,25 +359,25 @@ feature {NONE} -- Events
 			if editing_enabled then
 				local_show_rm_runtime_properties := a_flag
 				if a_flag and not local_show_rm_data_properties then
-					rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+					evx_rm_data_attrs_visible_cb.ev_data_control.enable_select
 				else
 					if not a_flag then
 						local_show_rm_infrastructure_properties := False
 					end
 					if attached source then
-						do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
+						do_with_wait_cursor (evx_definition_grid.ev_grid, agent redisplay)
 					end
 				end
 			else
 				set_global_show_rm_runtime_properties (a_flag)
 				if a_flag and not global_show_rm_data_properties then
-					rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+					evx_rm_data_attrs_visible_cb.ev_data_control.enable_select
 				else
 					if not a_flag and global_show_rm_infrastructure_properties then
 						set_global_show_rm_infrastructure_properties (False)
 					end
 					if attached source then
-						do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
+						do_with_wait_cursor (evx_definition_grid.ev_grid, agent redisplay)
 					end
 				end
 			end
@@ -394,16 +389,16 @@ feature {NONE} -- Events
 			if editing_enabled then
 				local_show_rm_infrastructure_properties := a_flag
 				if a_flag and not local_show_rm_runtime_properties then
-					rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+					evx_rm_runtime_attrs_visible_cb.ev_data_control.enable_select
 				elseif attached source then
-					do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
+					do_with_wait_cursor (evx_definition_grid.ev_grid, agent redisplay)
 				end
 			else
 				set_global_show_rm_infrastructure_properties (a_flag)
 				if a_flag and not global_show_rm_runtime_properties then
-					rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+					evx_rm_runtime_attrs_visible_cb.ev_data_control.enable_select
 				elseif attached source then
-					do_with_wait_cursor (gui_definition_grid.ev_grid, agent redisplay)
+					do_with_wait_cursor (evx_definition_grid.ev_grid, agent redisplay)
 				end
 			end
 		end
@@ -428,30 +423,30 @@ feature {NONE} -- Implementation
 
 	ev_definition_hbox: EV_HORIZONTAL_BOX
 
-	gui_definition_grid: EVX_GRID
+	evx_definition_grid: EVX_GRID
 
-	gui_definition_control_panel: EVX_CONTROL_PANEL
+	evx_definition_control_panel: EVX_CONTROL_PANEL
 
-	gui_definition_treeview_control: EVX_TREEVIEW_CONTROL
+	evx_definition_treeview_control: EVX_TREEVIEW_CONTROL
 
 	definition_grid_row_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
 			-- xref table from archetype definition nodes to GUI grid rows
 
 	ev_rules_hbox: EV_HORIZONTAL_BOX
 
-	gui_rules_grid: EVX_GRID
+	evx_rules_grid: EVX_GRID
 
-	gui_rules_control_panel: EVX_CONTROL_PANEL
+	evx_gui_rules_control_panel: EVX_CONTROL_PANEL
 
-	gui_rules_treeview_control: EVX_TREEVIEW_CONTROL
+	evx_gui_rules_treeview_control: EVX_TREEVIEW_CONTROL
 
-	view_detail_radio_ctl: EVX_BOOLEAN_RADIO_CONTROL
+	evx_view_detail_radio: EVX_BOOLEAN_RADIO_CONTROL
 
-	view_rm_display_inheritance_checkbox_ctl, show_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
+	evx_view_rm_display_inheritance_cb, evx_show_codes_cb: EVX_CHECK_BOX_CONTROL
 
-	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl, rm_multiplicities_checkbox_ctl: EVX_CHECK_BOX_CONTROL
+	evx_rm_data_attrs_visible_cb, evx_rm_runtime_attrs_visible_cb, evx_rm_if_attrs_visible_cb, evx_rm_multiplicities_cb: EVX_CHECK_BOX_CONTROL
 
-	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rendering_frame_ctl: EVX_FRAME_CONTROL
+	evx_view_detail_frame, evx_rm_property_visibility_frame, evx_rendering_frame: EVX_FRAME_CONTROL
 
 	rm_schema: detachable BMM_SCHEMA
 
@@ -459,8 +454,8 @@ feature {NONE} -- Implementation
 
 	do_clear
 		do
-			gui_definition_grid.wipe_out
-			gui_rules_grid.wipe_out
+			evx_definition_grid.wipe_out
+			evx_rules_grid.wipe_out
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 			visualise_descendants_class := Void
 		end
@@ -470,8 +465,8 @@ feature {NONE} -- Implementation
 		local
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
-			gui_definition_grid.wipe_out
-			gui_rules_grid.wipe_out
+			evx_definition_grid.wipe_out
+			evx_rules_grid.wipe_out
 
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
 			-- tree expanding stops)
@@ -491,13 +486,13 @@ feature {NONE} -- Implementation
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- populate the main definition grid
-			gui_definition_grid.ev_grid.lock_update
-			source_ed_context.definition_ui_graph.prepare_display_in_grid (gui_definition_grid)
+			evx_definition_grid.ev_grid.lock_update
+			source_ed_context.definition_ui_graph.prepare_display_in_grid (evx_definition_grid)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class as vis_desc_cl then
 				-- collapse the tree except nodes inheriting from `visualise_descendants_class'
-				gui_definition_treeview_control.on_collapse_except (
+				evx_definition_treeview_control.on_collapse_except (
 					agent (a_row: EV_GRID_ROW; vis_desc_class: STRING): BOOLEAN
 						do
 							if attached {C_OBJECT_UI_NODE} a_row.data as co_ed_ctx then
@@ -506,43 +501,43 @@ feature {NONE} -- Implementation
 						end (?, vis_desc_cl)
 				)
 			else
-				gui_definition_treeview_control.on_collapse_all
-				gui_definition_treeview_control.on_expand_one_level
-				gui_definition_treeview_control.on_expand_one_level
+				evx_definition_treeview_control.on_collapse_all
+				evx_definition_treeview_control.on_expand_one_level
+				evx_definition_treeview_control.on_expand_one_level
 			end
 
 			-- now do the display, so that colours get set properly according to what is open or closed in the tree
 			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
 
 			-- if top level not expanded at least once, do so now
-			if gui_definition_grid.ev_grid.row (1).is_expandable and then not gui_definition_grid.ev_grid.row (1).is_expanded then
-				gui_definition_treeview_control.on_expand_one_level
+			if evx_definition_grid.ev_grid.row (1).is_expandable and then not evx_definition_grid.ev_grid.row (1).is_expanded then
+				evx_definition_treeview_control.on_expand_one_level
 			end
 
 			-- set grid titles
-			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
-			gui_definition_grid.resize_columns_to_content
-			gui_definition_grid.ev_grid.unlock_update
+			evx_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
+			evx_definition_grid.resize_columns_to_content
+			evx_definition_grid.ev_grid.unlock_update
 
 			-- populate rules grid, where applicable
 			if source_archetype.has_rules then
-				gui_rules_grid.ev_grid.lock_update
+				evx_rules_grid.ev_grid.lock_update
 				across source_ed_context.assertion_ui_graphs as assn_ed_contexts_csr loop
-					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
+					assn_ed_contexts_csr.item.prepare_display_in_grid (evx_rules_grid)
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 
-				gui_rules_grid.set_column_titles (Rules_grid_col_names.linear_representation)
-				gui_rules_treeview_control.on_collapse_all
+				evx_rules_grid.set_column_titles (Rules_grid_col_names.linear_representation)
+				evx_gui_rules_treeview_control.on_collapse_all
 
-				gui_rules_grid.resize_columns_to_content
-				gui_rules_grid.ev_grid.unlock_update
+				evx_rules_grid.resize_columns_to_content
+				evx_rules_grid.ev_grid.unlock_update
 				ev_rules_hbox.show
 			else
 				ev_rules_hbox.hide
 			end
 			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position -
-				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.visible_row_count))
+				evx_rules_grid.ev_grid.row_height * evx_rules_grid.ev_grid.visible_row_count))
 		end
 
 	do_display
@@ -554,7 +549,7 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
-			gui_definition_grid.ev_grid.lock_update
+			evx_definition_grid.ev_grid.lock_update
 
 			check attached selected_language end
 			create ui_settings.make (selected_language, show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
@@ -563,17 +558,17 @@ feature {NONE} -- Implementation
 			-- repopulate main definition
 			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
 
-			gui_definition_grid.resize_columns_to_content
-			gui_definition_grid.ev_grid.unlock_update
+			evx_definition_grid.resize_columns_to_content
+			evx_definition_grid.ev_grid.unlock_update
 
 			-- repopulate rules grid, where applicable
 			if source_archetype.has_rules then
-				gui_rules_grid.ev_grid.lock_update
+				evx_rules_grid.ev_grid.lock_update
 				across source_ed_context.assertion_ui_graphs as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
-				gui_rules_grid.resize_columns_to_content
-				gui_rules_grid.ev_grid.unlock_update
+				evx_rules_grid.resize_columns_to_content
+				evx_rules_grid.ev_grid.unlock_update
 			end
 		end
 
