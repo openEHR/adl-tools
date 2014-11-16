@@ -712,6 +712,7 @@ feature -- Compilation
 			clear_cache
 			last_compile_attempt_timestamp := Time_epoch
 			compilation_state := Cs_unread
+			status.wipe_out
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
 			Compiler_state_set: compilation_state = Cs_unread
@@ -1129,7 +1130,6 @@ feature {MAIN_WINDOW} -- File Access
 		do
 			file_mgr.clean_generated
 			signal_from_scratch
-			status.wipe_out
 			status.append (file_mgr.status)
 		ensure
 			Reset_if_source_generated: file_mgr.is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
