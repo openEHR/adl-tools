@@ -43,6 +43,15 @@ feature -- Access
 			Result.put ("redefined", ss_redefined)
 		end
 
+	specialisation_status_name (a_status: INTEGER): STRING
+		require
+			valid_status: valid_specialisation_status (a_status)
+		do
+			check attached specialisation_status_names.item (a_status) as str then
+				Result := str
+			end
+		end
+
 	specialisation_status_symbols: HASH_TABLE [STRING, INTEGER]
 			-- symbols, probably only useful for debugging onto the console
 		once
