@@ -27,7 +27,7 @@ feature -- Initialisation
 			group_name := "archetype_category"
 		ensure
 			ontological_name_set: qualified_name.is_equal (a_name)
-			display_name_set: name = qualified_name
+			display_name_set: name.is_equal (qualified_name)
 		end
 
 feature -- Access

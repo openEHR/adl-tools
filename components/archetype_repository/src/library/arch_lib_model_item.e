@@ -21,7 +21,7 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 
-	qualified_name: STRING
+	qualified_name: IMMUTABLE_STRING_8
 			-- name of this node
 
 	name: STRING

@@ -59,7 +59,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	qualified_name: STRING
+	qualified_name: IMMUTABLE_STRING_8
 			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
 			-- used to generate ontological path
 			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
@@ -67,7 +67,7 @@ feature -- Access
 		deferred
 		end
 
-	qualified_key: STRING
+	qualified_key: IMMUTABLE_STRING_8
 			-- lower-case form of `qualified_name' for safe matching
 		do
 			Result := qualified_name.as_lower

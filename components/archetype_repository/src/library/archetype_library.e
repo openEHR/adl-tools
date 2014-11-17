@@ -68,9 +68,15 @@ create
 
 feature -- Definitions
 
-	Archetype_category: STRING = "archetypes"
+	Archetype_category: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("archetypes")
+		end
 
-	Template_category: STRING = "templates"
+	Template_category: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("templates")
+		end
 
 feature {NONE} -- Initialisation
 

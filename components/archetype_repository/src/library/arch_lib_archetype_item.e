@@ -251,9 +251,9 @@ feature -- Identification
 			end
 		end
 
-	qualified_name: STRING
+	qualified_name: IMMUTABLE_STRING_8
 		do
-			Result := id.as_string
+			Result := id.physical_id
 		end
 
 	semantic_parent_key: STRING
