@@ -245,6 +245,7 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PARSABLE}.make).to_pixmap end, "rm/cimi/parsable")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PARTICIPATION}.make).to_pixmap end, "rm/cimi/participation")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PARTY_IDENTITY_SLOT}.make).to_pixmap end, "rm/cimi/party_identity_slot")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PARTY_RELATIONSHIP}.make).to_pixmap end, "rm/cimi/party_relationship")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PERSON_SLOT}.make).to_pixmap end, "rm/cimi/person_slot")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PLAIN_TEXT}.make).to_pixmap end, "rm/cimi/plain_text")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_CIMI_PROPORTION}.make).to_pixmap end, "rm/cimi/proportion")
