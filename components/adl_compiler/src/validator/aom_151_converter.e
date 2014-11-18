@@ -64,6 +64,7 @@ feature -- Definitions
 		once
 			create Result.make (0)
 			Result.put ("1.0.2", "openehr")
+			Result.put ("1.0.0", "cen")
 		end
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
