@@ -487,7 +487,7 @@ feature {NONE} -- Implementation
 
 			-- populate the main definition grid
 			evx_definition_grid.ev_grid.lock_update
-			source_ed_context.definition_ui_graph.prepare_display_in_grid (evx_definition_grid)
+			source_ui_graph.definition_ui_graph.prepare_display_in_grid (evx_definition_grid)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class as vis_desc_cl then
@@ -507,7 +507,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- now do the display, so that colours get set properly according to what is open or closed in the tree
-			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
+			source_ui_graph.definition_ui_graph.display_in_grid (ui_settings)
 
 			-- if top level not expanded at least once, do so now
 			if evx_definition_grid.ev_grid.row (1).is_expandable and then not evx_definition_grid.ev_grid.row (1).is_expanded then
@@ -522,7 +522,7 @@ feature {NONE} -- Implementation
 			-- populate rules grid, where applicable
 			if source_archetype.has_rules then
 				evx_rules_grid.ev_grid.lock_update
-				across source_ed_context.assertion_ui_graphs as assn_ed_contexts_csr loop
+				across source_ui_graph.assertion_ui_graphs as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.prepare_display_in_grid (evx_rules_grid)
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
@@ -556,7 +556,7 @@ feature {NONE} -- Implementation
 				show_rm_multiplicities, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
-			source_ed_context.definition_ui_graph.display_in_grid (ui_settings)
+			source_ui_graph.definition_ui_graph.display_in_grid (ui_settings)
 
 			evx_definition_grid.resize_columns_to_content
 			evx_definition_grid.ev_grid.unlock_update
@@ -564,7 +564,7 @@ feature {NONE} -- Implementation
 			-- repopulate rules grid, where applicable
 			if source_archetype.has_rules then
 				evx_rules_grid.ev_grid.lock_update
-				across source_ed_context.assertion_ui_graphs as assn_ed_contexts_csr loop
+				across source_ui_graph.assertion_ui_graphs as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 				evx_rules_grid.resize_columns_to_content

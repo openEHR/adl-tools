@@ -25,7 +25,7 @@ feature -- Initialisation
 			end
 
 			rm_publisher := an_id.rm_publisher
-			rm_closure := an_id.rm_closure
+			rm_package := an_id.rm_package
 			rm_class := an_id.rm_class
 
 			concept_id := an_id.concept_id
@@ -34,7 +34,7 @@ feature -- Initialisation
 
 			version_status := an_id.version_status
 
-			commit_number := an_id.commit_number
+			build_count := an_id.build_count
 		end
 
 feature -- Access
@@ -48,8 +48,8 @@ feature -- Access
 	rm_publisher: STRING
 			-- Name of the Reference Model publisher.
 
-	rm_closure: STRING
-			-- Name of the package in whose closure the rm_class class is found (there can be more than
+	rm_package: STRING
+			-- Name of the package in whose reachability graph the rm_class class is found (there can be more than
 			-- one possibility in a reference model).
 
 	rm_class: STRING
@@ -65,8 +65,8 @@ feature -- Access
 	version_status: INTEGER
 			-- status of version: release candidate, released, build, unstable
 
-	commit_number: INTEGER
-			-- Commit number of this archetype. This is a number that advances from 1 and is reset for
+	build_count: INTEGER
+			-- Build count of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
 
 end

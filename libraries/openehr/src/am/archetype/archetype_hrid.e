@@ -178,12 +178,12 @@ feature -- Initialisation
 			Valid_commit_number: a_commit_number >= 0
 		do
 			rm_publisher := a_rm_publisher
-			rm_closure := a_rm_closure
+			rm_package := a_rm_closure
 			rm_class := a_rm_class
 			concept_id := a_concept_id
 			release_version := a_release_version
 			version_status := a_version_status
-			commit_number := a_commit_number
+			build_count := a_commit_number
 		ensure
 			not is_adl14_id
 		end
@@ -197,12 +197,12 @@ feature -- Initialisation
 			id_parser.execute (a_str)
 			namespace := id_parser.namespace
 			rm_publisher := id_parser.rm_publisher
-			rm_closure := id_parser.rm_closure
+			rm_package := id_parser.rm_closure
 			rm_class := id_parser.rm_class
 			concept_id := id_parser.concept_id
 			release_version := id_parser.release_version
 			version_status := id_parser.version_status
-			commit_number := id_parser.commit_number
+			build_count := id_parser.commit_number
 			is_adl14_id := id_parser.is_adl14_id
 		end
 
@@ -216,12 +216,12 @@ feature -- Initialisation
 			id_parser.execute (a_str)
 			namespace := id_parser.namespace
 			rm_publisher := id_parser.rm_publisher
-			rm_closure := id_parser.rm_closure
+			rm_package := id_parser.rm_closure
 			rm_class := id_parser.rm_class
 			concept_id := id_parser.concept_id
 			release_version := id_parser.release_version
 			version_status := id_parser.version_status
-			commit_number := id_parser.commit_number
+			build_count := id_parser.commit_number
 		end
 
 	make_new (a_qualified_rm_class: STRING)
@@ -235,7 +235,7 @@ feature -- Initialisation
 			default_create
 			qual_class_strs := a_qualified_rm_class.split (Section_separator)
 			rm_publisher := qual_class_strs.i_th (1)
-			rm_closure := qual_class_strs.i_th (2)
+			rm_package := qual_class_strs.i_th (2)
 			rm_class := qual_class_strs.i_th (3)
 		ensure
 			not is_adl14_id
@@ -244,7 +244,7 @@ feature -- Initialisation
 	default_create
 		do
 			create rm_publisher.make_from_string (Default_rm_publisher)
-			create rm_closure.make_from_string (Default_rm_closure)
+			create rm_package.make_from_string (Default_rm_closure)
 			create rm_class.make_from_string (Default_rm_class)
 			create concept_id.make_from_string (Default_concept)
 			create release_version.make_from_string (Default_release_version)
@@ -269,7 +269,7 @@ feature -- Access
 	rm_publisher: STRING
 			-- Name of the Reference Model publisher.
 
-	rm_closure: STRING
+	rm_package: STRING
 			-- Name of the package in whose closure the rm_class class is found (there can be more than
 			-- one possibility in a reference model).
 
@@ -283,7 +283,7 @@ feature -- Access
 			create Result.make_empty
 			Result.append (rm_publisher)
 			Result.append (Section_separator.out)
-			Result.append (rm_closure)
+			Result.append (rm_package)
 			Result.append (Section_separator.out)
 			Result.append (rm_class)
 		end
@@ -361,7 +361,7 @@ feature -- Access
 	version_status: INTEGER
 			-- status of version: release candidate, released, build, unstable
 
-	commit_number: INTEGER
+	build_count: INTEGER
 			-- Commit number of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
 
@@ -387,9 +387,9 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (release_version)
-			if commit_number > 0 then
+			if build_count > 0 then
 				Result.append (version_status_symbol_text (version_status))
-				Result.append (commit_number.out)
+				Result.append (build_count.out)
 			end
 		end
 
@@ -400,7 +400,7 @@ feature -- Access
 			create Result.make_empty
 			Result.append (rm_publisher)
 			Result.append_character (Section_separator)
-			Result.append (rm_closure)
+			Result.append (rm_package)
 		end
 
 feature -- Status Report
@@ -555,12 +555,12 @@ feature {NONE} -- Implementation
 
 invariant
 	Rm_publisher_validity: not rm_publisher.is_empty
-	Rm_closure_validity: not rm_closure.is_empty
+	Rm_closure_validity: not rm_package.is_empty
 	Rm_class: not rm_class.is_empty
 	Concept_id_validity: not concept_id.is_empty
 	Release_version_validity: not release_version.is_empty
 	Version_status_validity: valid_version_status (version_status)
-	Commit_number_validity: commit_number > 0
+	Commit_number_validity: build_count > 0
 
 end
 

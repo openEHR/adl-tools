@@ -18,14 +18,14 @@ feature -- Initialisation
 		do
 			source := aca
 			create ui_graph_state.make (source, an_rm_schema, differential_view_flag)
-			build_context
+			build_ui_graph
 		end
 
 	make_editable (aca: ARCH_LIB_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		do
 			source := aca
 			create ui_graph_state.make_editable (source, an_rm_schema, an_undo_redo_chain)
-			build_context
+			build_ui_graph
 		end
 
 feature -- Access
@@ -42,7 +42,7 @@ feature -- Access
 
 feature {C_ARCHETYPE_ROOT_UI_NODE} -- Implementation
 
-	build_context
+	build_ui_graph
 		do
 			definition_ui_graph := c_object_ui_graph (ui_graph_state.archetype.definition.representation)
 			create assertion_ui_graphs.make (0)

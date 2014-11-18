@@ -1306,21 +1306,21 @@ feature {NONE} -- Implementation
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
+						add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
 					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
 							if attached {STRING} excludes_csr.item.regex_constraint.constraint_regex as a_regex then
-								across current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_closure) as ids_csr loop
+								across current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_package) as ids_csr loop
 									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
 						end
 					end
 				else
-					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_closure), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
 				end
 
 				-- now post the results in the reverse indexes

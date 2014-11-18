@@ -148,7 +148,7 @@ feature -- Access
 							create arch_id.make_from_string (archs_csr.key)
 							is_candidate := rmt.is_equal (arch_id.rm_class.as_lower)
 							if is_candidate and attached rm_closure as rmc then
-								is_candidate := rmc.is_equal (arch_id.rm_closure.as_lower)
+								is_candidate := rmc.is_equal (arch_id.rm_package.as_lower)
 							end
 						else
 							is_candidate := True
