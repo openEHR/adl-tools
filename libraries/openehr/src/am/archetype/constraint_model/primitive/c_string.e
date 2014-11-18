@@ -273,10 +273,10 @@ feature {NONE} -- Implementation
 				end
 				if not is_regex_string (strings_csr.item) then
 					Result.append_character ('%"')
-				end
-				Result.append (cleaner.item ([strings_csr.item]))
-				if not is_regex_string (strings_csr.item) then
+					Result.append (cleaner.item ([strings_csr.item]))
 					Result.append_character ('%"')
+				else
+					Result.append (strings_csr.item)
 				end
 			end
 		end
