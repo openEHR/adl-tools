@@ -18,7 +18,7 @@ create
 feature -- Initialisation
 
 	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY)
-			-- populate from a differential ontology. Finalisation will involve
+			-- populate from a differential terminology. Finalisation will involve
 			-- merging of codes from parent archetype ontologies if this ontology
 			-- belongs to a specialised archetype
 		local

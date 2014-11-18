@@ -120,7 +120,7 @@ end
 				flatten_rules
 				flatten_terminology
 				flatten_annotations
-				arch_flat_out.set_parent_archetype_id (arch_flat_anc.archetype_id.interface_id)
+				arch_flat_out.set_parent_archetype_id (arch_flat_anc.archetype_id.semantic_id)
 				arch_flat_out.rebuild
 			else
 				create arch_flat_out.make_non_specialised (arch_diff_child)

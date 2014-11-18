@@ -68,7 +68,7 @@ feature -- Initialisation
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
-			parent_archetype_id := a_parent.archetype_id.interface_id
+			parent_archetype_id := a_parent.archetype_id.semantic_id
 			is_dirty := True
 			is_valid := True
 		ensure
@@ -78,7 +78,7 @@ feature -- Initialisation
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Specialisation_depth_valid: specialisation_depth = a_parent.specialisation_depth + 1
-			Parent_set: attached parent_archetype_id as att_pid implies a_parent.archetype_id.interface_id.is_equal (att_pid)
+			Parent_set: attached parent_archetype_id as att_pid implies a_parent.archetype_id.semantic_id.is_equal (att_pid)
 			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
@@ -87,7 +87,7 @@ feature -- Initialisation
 
 	make_from_flat (a_flat: FLAT_ARCHETYPE)
 		do
-			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.archetype_id, a_flat.parent_archetype_id,
+			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.rm_release, a_flat.archetype_id, a_flat.parent_archetype_id,
 					a_flat.is_controlled, a_flat.uid, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
 					a_flat.description, a_flat.definition, a_flat.rules,
 					a_flat.terminology.to_differential, a_flat.annotations)
@@ -168,24 +168,21 @@ feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure
 			Is_generated: is_generated
 		local
 			def_it: C_ITERATOR
+			converted_def: C_COMPLEX_OBJECT
 		do
 			converted_def := definition.deep_twin
 			create def_it.make (definition)
-			def_it.do_at_surface (agent node_set_differential_path,
+			def_it.do_at_surface (agent node_set_differential_path (converted_def, ?, ?),
 				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 					do
 						Result := not a_c_node.is_path_compressible
 					end
 			)
-			if attached converted_def as conv_def then
-				definition := conv_def
-				rebuild
-			end
+			definition := converted_def
+			rebuild
 		end
 
-	converted_def: detachable C_COMPLEX_OBJECT
-
-	node_set_differential_path (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	node_set_differential_path (root_cco: C_COMPLEX_OBJECT; a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- perform validation of node against reference model
 			-- This function gets executed on nodes 1 level BELOW where the is_congruent marker is True
@@ -196,8 +193,8 @@ feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				-- these are attributes that are not congruent to any node in the parent archetype,
 				-- i.e. they don't exist in the parent.
-				if converted_def.has_attribute_path (ca.path) then
-					ca2 := converted_def.attribute_at_path (ca.path)
+				if root_cco.has_attribute_path (ca.path) then
+					ca2 := root_cco.attribute_at_path (ca.path)
 					if not ca2.has_differential_path then
 						debug("compress")
 							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
@@ -213,8 +210,8 @@ feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then
-					if converted_def.has_object_path (co.path) then
-						co2 := converted_def.object_at_path (co.path)
+					if root_cco.has_object_path (co.path) then
+						co2 := root_cco.object_at_path (co.path)
 						if not co2.parent.has_differential_path then
 debug("compress")
 	io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
@@ -231,21 +228,6 @@ end
 		end
 
 feature -- Modification
-
-	set_definition_node_id (an_id_code: STRING)
-			-- set the node_id of the archetype root node to `an_id_code'
-		require
-			Valid_term_code: terminology.has_id_code (an_id_code)
-		do
-			definition.set_node_id (an_id_code)
-		end
-
-	reset_definition
-			-- set definition back to its original state - just the root
-			-- node with all children gone
-		do
-			definition.remove_all_attributes
-		end
 
 	add_language_tag (a_lang_tag: STRING)
 			-- add a new language to the archetype - creates new language section in

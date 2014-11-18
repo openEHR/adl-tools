@@ -77,7 +77,7 @@ feature -- Access
 		end
 
 	namespaces: HASH_TABLE [STRING, STRING]
-			-- Hash table of namespacereferences, keyed by their namespace.
+			-- Hash table of namespace references, keyed by their namespace.
 
 feature -- Status Report
 

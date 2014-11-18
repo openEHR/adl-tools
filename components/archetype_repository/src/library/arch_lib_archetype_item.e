@@ -159,7 +159,7 @@ feature {NONE} -- Initialisation
 			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
-			parent_ref := a_parent.archetype_id.interface_id
+			parent_ref := a_parent.archetype_id.semantic_id
 
 			initialise
 			save_differential_text
@@ -181,7 +181,7 @@ feature {NONE} -- Initialisation
 			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
-			parent_ref := a_parent.archetype_id.interface_id
+			parent_ref := a_parent.archetype_id.semantic_id
 
 			initialise
 			save_differential_text

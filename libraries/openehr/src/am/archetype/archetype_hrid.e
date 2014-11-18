@@ -288,7 +288,7 @@ feature -- Access
 			Result.append (rm_class)
 		end
 
-	interface_id: STRING
+	semantic_id: STRING
 			-- The ‘interface’ form of the HRID, i.e. down to the major version
 		do
 			Result := hrid_root
@@ -309,17 +309,6 @@ feature -- Access
 			Result.append_character (Axis_separator)
 			Result.append (Version_delimiter)
 			Result.append (version_id)
-		end
-
-	semantic_id: STRING
-			-- namespace + domain concept part of archetype id + version
-		do
-			create Result.make_empty
-			if attached namespace then
-				Result.append (namespace_string)
-				Result.append (namespace_separator)
-			end
-			Result.append (concept_id_version)
 		end
 
 	display_semantic_id: STRING
