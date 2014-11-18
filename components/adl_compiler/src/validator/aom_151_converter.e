@@ -60,6 +60,12 @@ feature -- Definitions
 	Es_at_codes_converted: INTEGER = 2
 	Es_ac_codes_converted: INTEGER = 3
 
+	Rm_releases: HASH_TABLE [STRING, STRING]
+		once
+			create Result.make (0)
+			Result.put ("1.0.2", "openehr")
+		end
+
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
@@ -106,6 +112,8 @@ feature -- Access
 feature -- Commands
 
 	execute
+		local
+			rm_pub_key: STRING
 		do
 			if version_less_than (target.adl_version, Adl_id_code_version) then
 				-- add value-sets extracted from definition; these value sets originally consisted of a synthesised
@@ -139,6 +147,12 @@ feature -- Commands
 
 				-- update archetype ADL version
 				target.set_adl_version (latest_adl_version)
+
+				-- if there is a version available for rm_release, use it
+				rm_pub_key := rm_schema.rm_publisher.as_lower
+				if Rm_releases.has (rm_pub_key) and then attached Rm_releases.item (rm_pub_key) as att_rel_str then
+					target.set_rm_release (att_rel_str)
+				end
 			end
 		end
 

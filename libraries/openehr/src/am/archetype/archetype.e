@@ -69,6 +69,7 @@ feature -- Initialisation
 
 	make_all (an_artefact_type: like artefact_type;
 			an_adl_version: STRING;
+			an_rm_release: STRING;
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
@@ -94,6 +95,7 @@ feature -- Initialisation
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
 			adl_version := an_adl_version
+			rm_release := an_rm_release
 			is_controlled := is_controlled_flag
 			other_metadata := an_other_metadata
 			rules := a_rules
@@ -101,6 +103,7 @@ feature -- Initialisation
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = an_adl_version
+			Rm_release_set: rm_release = an_rm_release
 			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
@@ -141,7 +144,7 @@ feature -- Initialisation
 			if attached other.other_metadata then
 				other_other_metadata := other.other_metadata.deep_twin
 			end
-			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
+			make_all (other.artefact_type.twin, other.adl_version.twin, other.rm_release.twin, other.archetype_id.deep_twin,
 					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
 					other_description, other.definition.deep_twin, other_invariants,
@@ -155,15 +158,6 @@ feature -- Initialisation
 
 feature -- Access
 
-	rm_release: STRING
-			-- Semver.org compatible release of the reference model on which the archetype was based.
-			-- This does not imply conformance limited only to this release, since an archetype may
-			-- be valid with respect to multiple releases of a reference model. Conformance is captured
-			-- outside of the archetype.
-		attribute
-			create Result.make_from_string ("1.0.2")
-		end
-
 	uid: detachable HIER_OBJECT_ID
 			-- optional UID identifier of this artefact
 			-- FIXME: should really be in AUTHORED_RESOURCE
@@ -173,7 +167,16 @@ feature -- Access
 	other_metadata: detachable HASH_TABLE [STRING, STRING]
 
 	adl_version: STRING
-			-- ADL version of this archetype
+			-- Semver.org compatible version of ADL/AOM used in this archetype
+
+	rm_release: STRING
+			-- Semver.org compatible release of the reference model on which the archetype was based.
+			-- This does not imply conformance limited only to this release, since an archetype may
+			-- be valid with respect to multiple releases of a reference model. Conformance is captured
+			-- outside of the archetype.
+		attribute
+			create Result.make_empty
+		end
 
 	artefact_type: ARTEFACT_TYPE
 			-- design type of artefact, archetype, template, template-component, etc
@@ -186,7 +189,7 @@ feature -- Access
 
 	parent_archetype_id: detachable STRING
 			-- reference to specialisation parent of this archetype, typically in
-			-- the form of an interface id, i.e. with no minor or patch version
+			-- the form of a semantic id, i.e. with no minor or patch version
 
 	specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
@@ -457,12 +460,6 @@ feature -- Paths
 
 feature -- Status Report
 
-	has_adl_version: BOOLEAN
-			-- True if adl_version is set
-		do
-			Result := attached adl_version
-		end
-
 	is_specialised: BOOLEAN
 			-- 	True if this archetype identifies a specialisation parent
 		do
@@ -728,12 +725,21 @@ feature -- Validation
 feature -- Modification
 
 	set_adl_version (a_ver: STRING)
-			-- set adl_version with a string containing only '.' and numbers,
+			-- set `adl_version' with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
 			Valid_version: valid_standard_version(a_ver)
 		do
 			adl_version := a_ver
+		end
+
+	set_rm_release (a_ver: STRING)
+			-- set `rm_release' with a string containing only '.' and numbers,
+			-- not commencing or finishing in '.'
+		require
+			Valid_version: valid_standard_version (a_ver)
+		do
+			rm_release := a_ver
 		end
 
 	set_archetype_id (an_id: like archetype_id)

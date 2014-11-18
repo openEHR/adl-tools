@@ -50,7 +50,7 @@ create
 
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_TERMINOLOGIES
 %token SYM_DESCRIPTION SYM_TERMINOLOGY SYM_RULES
-%token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_UID
+%token SYM_ADL_VERSION SYM_RM_RELEASE SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_UID
 
 %%
 
@@ -215,7 +215,7 @@ arch_meta_data_items: arch_meta_data_item
 
 arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 		{
-			adl_version := $3
+			adl_version.copy ($3)
 		}
 	-- allow for Oids
 	| SYM_UID '=' V_DOTTED_NUMERIC
@@ -226,6 +226,10 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 	| SYM_UID '=' V_VALUE
 		{
 			create uid.make_from_string ($3)
+		}
+	| SYM_RM_RELEASE '=' V_DOTTED_NUMERIC
+		{
+			rm_release.copy ($3)
 		}
 	| SYM_IS_CONTROLLED
 		{
@@ -365,6 +369,8 @@ feature -- Initialization
 			create language_text.make_empty
 			create terminology_text.make_empty
 			create artefact_type.default_create
+			create adl_version.make_empty
+			create rm_release.make_empty
 		end
 
 	reset
@@ -379,7 +385,8 @@ feature -- Initialization
 			reset
 
 			create artefact_type.default_create
-			adl_version := Void
+			adl_version.wipe_out
+			rm_release.wipe_out
 			other_metadata.wipe_out
 			create archetype_id.default_create
 			uid := Void
@@ -417,7 +424,9 @@ feature -- Parse Output
 
 	other_metadata: HASH_TABLE [STRING, STRING]
 
-	adl_version: detachable STRING
+	adl_version: STRING
+
+	rm_release: STRING
 
 	uid: detachable HIER_OBJECT_ID
 

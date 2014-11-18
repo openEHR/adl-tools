@@ -22,6 +22,8 @@ feature -- Initialisation
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		do
+			create adl_version.make_empty
+			create rm_release.make_empty
 		end
 
 	make (an_archetype: ARCHETYPE)
@@ -34,6 +36,7 @@ feature -- Initialisation
 			create archetype_id.make (an_archetype.archetype_id)
 
 			adl_version := an_archetype.adl_version
+			rm_release := an_archetype.rm_release
 			artefact_type := an_archetype.artefact_type.type_name
 
 			parent_archetype_id := an_archetype.parent_archetype_id
@@ -69,8 +72,11 @@ feature -- Access
 
 	other_metadata: detachable HASH_TABLE [STRING, STRING]
 
-	adl_version: detachable STRING
+	adl_version: STRING
 			-- ADL version of this archetype
+
+	rm_release: STRING
+			-- RM release on which definition of this archetype is based
 
 	artefact_type: detachable STRING
 			-- design type of artefact, archetype, template, template-component, etc
@@ -109,7 +115,6 @@ feature -- Factory
 		do
 			if attached archetype_id as att_aid
 				and attached artefact_type as at
-				and attached adl_version as o_adl_version
 				and attached original_language as o_original_language
 				and attached description as o_description
 				and attached definition as o_definition
@@ -121,14 +126,15 @@ feature -- Factory
 					create o_uid.make_from_string (att_uid)
 				end
 
-				if artefact_object_type.same_string ("DIFFERENTIAL_ARCHETYPE") then
+				if artefact_object_type.same_string (bare_type_name (({DIFFERENTIAL_ARCHETYPE}).name)) then
 					create o_diff_terminology.make (original_language.code_string, o_definition.node_id)
 					o_terminology.populate_terminology (o_diff_terminology)
 					o_diff_terminology.finalise_dt
 
 					create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
 						o_artefact_type,
-						o_adl_version,
+						adl_version,
+						rm_release,
 						o_archetype_id,
 						parent_archetype_id,
 						is_controlled,
@@ -150,7 +156,8 @@ feature -- Factory
 
 					create {FLAT_ARCHETYPE} Result.make_all (
 						o_artefact_type,
-						o_adl_version,
+						adl_version,
+						rm_release,
 						o_archetype_id,
 						parent_archetype_id,
 						is_controlled,

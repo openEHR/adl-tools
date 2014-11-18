@@ -119,6 +119,10 @@ ID_CODE_LEADER id
 				last_token := SYM_ADL_VERSION
 			}
 
+[Rr][Mm]_[Rr][Ee][Ll][Ee][Aa][Ss][Ee] 		{
+				last_token := SYM_RM_RELEASE
+			}
+
 [Cc][Oo][Nn][Nn][Tt][Rr][Oo][Ll][Ll][Ee][Dd] 		{
 				last_token := SYM_IS_CONTROLLED
 			}

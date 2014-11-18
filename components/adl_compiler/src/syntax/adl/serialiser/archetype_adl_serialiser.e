@@ -56,36 +56,43 @@ feature -- Serialisation
 			serialise_archetype_id
 			serialise_archetype_specialise
 
+			-- languages section
 			if not lang_serialised.is_empty then
 				last_result.append (apply_style(symbol(SYM_LANGUAGE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (lang_serialised)
 			end
 
+			-- description section
 			if not desc_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_DESCRIPTION), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (desc_serialised)
 			end
 
+			-- definition section
 			if not def_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_DEFINITION), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (def_serialised)
 			end
 
+			-- rules section
 			if not rules_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_RULES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (rules_serialised)
 			end
 
+			-- terminology section
 			if not term_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_TERMINOLOGY), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (term_serialised)
 			end
 
+			-- annotations section
 			if not ann_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_ANNOTATIONS), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (ann_serialised)
 			end
 
+			-- (templates) component terminologies
 			if not comp_terms_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_COMPONENT_TERMINOLOGIES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (comp_terms_serialised)
@@ -116,56 +123,65 @@ feature -- Serialisation
 		end
 
 	serialise_archetype_id
+			-- serialise artefact type, top-level meta-data and archetype id
 		local
 			arch_kw_str, kw_list: STRING
 		do
 			arch_kw_str := archetype.artefact_type.type_name.twin
-			if archetype.has_adl_version or archetype.is_controlled or archetype.is_generated or attached archetype.uid or attached archetype.other_metadata then
-				arch_kw_str.append (" (")
-				create kw_list.make_empty
 
-				-- fixed meta-data
-				if archetype.has_adl_version then
-					if attached {DIFFERENTIAL_ARCHETYPE} archetype then
-						kw_list.append (symbol (SYM_ADL_VERSION) + "=" + archetype.adl_version)
-					else
-						kw_list.append (symbol (SYM_ADL_VERSION) + "=" + latest_adl_version)
-					end
-				end
-				if archetype.is_controlled then
-					if not kw_list.is_empty then
-						kw_list.append ("; ")
-					end
-					kw_list.append (symbol (SYM_IS_CONTROLLED))
-				end
-				if archetype.is_generated then
-					if not kw_list.is_empty then
-						kw_list.append ("; ")
-					end
-					kw_list.append (symbol (SYM_IS_GENERATED))
-				end
+			arch_kw_str.append (" (")
+			create kw_list.make_empty
 
-				-- uid
-				if attached archetype.uid as a_uid then
-					if not kw_list.is_empty then
-						kw_list.append ("; ")
-					end
-					kw_list.append (symbol (SYM_UID)  + "=" + a_uid.out)
-				end
-
-				-- other metadata
-				if attached archetype.other_metadata as omd then
-					across omd as omd_csr loop
-						if not kw_list.is_empty then
-							kw_list.append ("; ")
-							kw_list.append (omd_csr.key + "=" + omd_csr.item)
-						end
-					end
-				end
-
-				arch_kw_str.append (kw_list)
-				arch_kw_str.append_character(')')
+			-- adl_version
+			if attached {DIFFERENTIAL_ARCHETYPE} archetype then
+				kw_list.append (symbol (SYM_ADL_VERSION) + "=" + archetype.adl_version)
+			else
+				kw_list.append (symbol (SYM_ADL_VERSION) + "=" + latest_adl_version)
 			end
+
+			-- rm_release
+			if not kw_list.is_empty then
+				kw_list.append ("; ")
+			end
+			kw_list.append (symbol (SYM_RM_RELEASE) + "=" + archetype.rm_release)
+
+			-- is_controlled flag
+			if archetype.is_controlled then
+				if not kw_list.is_empty then
+					kw_list.append ("; ")
+				end
+				kw_list.append (symbol (SYM_IS_CONTROLLED))
+			end
+
+			-- is_generated flag
+			if archetype.is_generated then
+				if not kw_list.is_empty then
+					kw_list.append ("; ")
+				end
+				kw_list.append (symbol (SYM_IS_GENERATED))
+			end
+
+			-- uid
+			if attached archetype.uid as a_uid then
+				if not kw_list.is_empty then
+					kw_list.append ("; ")
+				end
+				kw_list.append (symbol (SYM_UID)  + "=" + a_uid.out)
+			end
+
+			-- other metadata
+			if attached archetype.other_metadata as omd then
+				across omd as omd_csr loop
+					if not kw_list.is_empty then
+						kw_list.append ("; ")
+						kw_list.append (omd_csr.key + "=" + omd_csr.item)
+					end
+				end
+			end
+
+			arch_kw_str.append (kw_list)
+			arch_kw_str.append_character(')')
+
 			last_result.append (apply_style(arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 
 			last_result.append (create_indent(1) + apply_style (archetype.archetype_id.as_string, STYLE_IDENTIFIER) +

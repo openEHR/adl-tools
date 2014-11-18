@@ -219,10 +219,12 @@ feature -- Parsing
 								new_arch.set_parent_archetype_id (att_parent_id)
 							end
 
-							if attached adl_parser.adl_version as adl_av then
-								new_arch.set_adl_version (adl_av)
-							else
-								new_arch.set_adl_version (latest_adl_version)
+							if valid_standard_version (adl_parser.adl_version) then
+								new_arch.set_adl_version (adl_parser.adl_version)
+							end
+
+							if valid_standard_version (adl_parser.rm_release) then
+								new_arch.set_rm_release (adl_parser.rm_release)
 							end
 
 							if adl_parser.is_controlled then

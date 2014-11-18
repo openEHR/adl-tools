@@ -45,6 +45,7 @@ feature {NONE} -- Implementation
 			Result.put("template",		SYM_TEMPLATE)
 			Result.put("template_overlay",		SYM_TEMPLATE_OVERLAY)
 			Result.put("adl_version",	SYM_ADL_VERSION)
+			Result.put("rm_release",	SYM_RM_RELEASE)
 			Result.put("controlled",	SYM_IS_CONTROLLED)
 			Result.put("generated",	    SYM_IS_GENERATED)
 			Result.put("specialize",	SYM_SPECIALIZE)

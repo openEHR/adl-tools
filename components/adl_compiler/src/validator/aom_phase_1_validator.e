@@ -78,7 +78,11 @@ feature {NONE} -- Implementation
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
-			if not child_desc.id.physical_id.is_equal (arch_diff_child.archetype_id.physical_id) then
+			if not valid_standard_version (arch_diff_child.adl_version) then
+				add_error (ec_VARAV, <<arch_diff_child.adl_version>>)
+			elseif not valid_standard_version (arch_diff_child.rm_release) then
+				add_error (ec_VARRV, <<arch_diff_child.rm_release>>)
+			elseif not child_desc.id.physical_id.is_equal (arch_diff_child.archetype_id.physical_id) then
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
 				add_warning (ec_validate_e3, <<child_desc.id.physical_id, arch_diff_child.archetype_id.physical_id>>)

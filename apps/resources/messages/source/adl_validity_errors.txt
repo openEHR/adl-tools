@@ -10,6 +10,19 @@
 
 templates = <
 	["en"] = <
+		-- ARCHETYPE
+		["VARAV"] = <"invalid adl_version $1; must be a valid 3-part numeric version identifier">
+		["VARRV"] = <"invalid rm_release $1; must be a valid 3-part numeric version identifier">
+		["VARCN"] = <"invalid root object node_id (concept code) $1; should follow regex pattern $2">
+		["VACDF"] = <"value-set id code $1 referenced in definition at path $2 not defined in terminology">
+		["VATDC"] = <"at-code $1 used in constraint not defined in flat terminology">
+		["VETDF"] = <"External code $1 not found in terminology $2">
+		["WETDF"] = <"External term $1 not verified; terminology $2 unavailable">
+
+		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition section">
+		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
+		["VATID"] = <"node id-code $1 at path $2 not defined in flat terminology">
+		["VATDF"] = <"value code $1 referenced in definition at path $2 not defined in flat terminology">
 		["VASID"] = <"specialised archetype id not based on specialisation parent archetype id">
 		["VALC"] = <"specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)">
 		["VINH"] = <"Inheritance loop detected: supplier $1 inherits current archetype">
@@ -24,17 +37,9 @@ templates = <
 		["VACSD"] = <"specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
 		["VACSDtop"] = <"specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
 		["VACCD"] = <"archetype definition has no id-code">
-		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition section">
-		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
-		["VATID"] = <"node id-code $1 at path $2 not defined in flat terminology">
-		["VATDF"] = <"value code $1 referenced in definition at path $2 not defined in flat terminology">
 		["VATDA"] = <"value code $1 used as assumed value in definition at path $2 not defined in value set for $3">
-		["VACDF"] = <"value-set id code $1 referenced in definition at path $2 not defined in terminology">
-		["VATDC"] = <"at-code $1 used in constraint not defined in flat terminology">
 		["VTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
 		["VCBK"] = <"term binding key $1 must be a valid value-set id code">
-		["VETDF"] = <"External code $1 not found in terminology $2">
-		["WETDF"] = <"External term $1 not verified; terminology $2 unavailable">
 		["VATCV"] = <"Invalid id-code $1 found in terminology definitions; code format must follow regex $2">
 
 		-- annotations
@@ -60,7 +65,6 @@ templates = <
 		["WACMCL"] = <"for multiply-valued attribute '$1' sum of occurrences lower bounds $2 must be less than cardinality upper limit $3">
 		["VACMCO"] = <"for multiply-valued attribute '$1', minimum object count $2 must be less than cardinality upper limit $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)">
 
-		["VARCN"] = <"invalid root object node_id (concept code) $1; should follow regex pattern $2">
 		["VARND"] = <"invalid object node_id $1; should follow regex pattern $2">
 		["VSSM"] = <"node at path $1 has order marker referring to non-existant sibling node $2">
 

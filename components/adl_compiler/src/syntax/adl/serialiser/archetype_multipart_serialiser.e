@@ -29,10 +29,6 @@ feature -- Serialisation
 		deferred
 		end
 
---	serialise_archetype_concept
---		deferred
---		end
-
 	serialise_archetype_specialise
 		deferred
 		end
