@@ -1036,11 +1036,11 @@ feature -- Archetype editors
 			create Result.make (docking_manager)
 		end
 
-	refresh_archetype_editors (an_archetype_id: STRING)
+	refresh_archetype_editors (an_archetype_id: READABLE_STRING_8)
 			-- repopulate all editors of archetype with `an_archetype_id'
 		do
 			archetype_editors.do_all_tools (
-				agent (a_tool: GUI_ARCHETYPE_EDITOR; an_id: STRING)
+				agent (a_tool: GUI_ARCHETYPE_EDITOR; an_id: READABLE_STRING_8)
 					do
 						if a_tool.source.id.physical_id.same_string (an_id) then
 							a_tool.repopulate
@@ -1066,7 +1066,7 @@ feature -- Archetype editors
 			-- repopulate all viewers of archetype with `an_archetype_id'
 		do
 			archetype_viewers.do_all_tools (
-				agent (a_tool: GUI_ARCHETYPE_VIEWER; an_id: STRING)
+				agent (a_tool: GUI_ARCHETYPE_VIEWER; an_id: READABLE_STRING_8)
 					do
 						if a_tool.source.id.physical_id.same_string (an_id) then
 							a_tool.repopulate
