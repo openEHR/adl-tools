@@ -461,7 +461,6 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
-			-- build definition / ontology cross reference tables used for validation and other purposes
 		local
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
@@ -487,7 +486,7 @@ feature {NONE} -- Implementation
 
 			-- populate the main definition grid
 			evx_definition_grid.ev_grid.lock_update
-			source_ui_graph.definition_ui_graph.prepare_display_in_grid (evx_definition_grid)
+			source_ui_graph.prepare_display_in_grid (evx_definition_grid)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class as vis_desc_cl then

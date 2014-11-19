@@ -128,8 +128,6 @@ feature -- Status Report
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
-		require
-			not_prepared: not is_prepared
 		deferred
 		ensure
 			prepared: is_prepared

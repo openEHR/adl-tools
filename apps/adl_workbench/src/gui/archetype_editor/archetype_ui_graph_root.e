@@ -40,6 +40,15 @@ feature -- Access
 	assertion_ui_graphs: ARRAYED_LIST [ASSERTION_UI_NODE]
 			-- assertion editing contexts
 
+feature -- Modification
+
+	prepare_display_in_grid (an_evx_grid: EVX_GRID)
+		require
+			Grid_empty: an_evx_grid.row_count = 0
+		do
+			definition_ui_graph.prepare_display_in_grid (an_evx_grid)
+		end
+
 feature {C_ARCHETYPE_ROOT_UI_NODE} -- Implementation
 
 	build_ui_graph
