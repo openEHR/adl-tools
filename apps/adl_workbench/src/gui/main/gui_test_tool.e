@@ -331,6 +331,8 @@ feature -- Commands
 		do
 			clear
 
+			evx_grid.ev_grid.lock_update
+
  			if has_current_library then
 	 			current_library.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
@@ -351,6 +353,8 @@ feature -- Commands
 			end
 			evx_grid.expand_tree
 			evx_grid.resize_columns_to_content
+			
+			evx_grid.ev_grid.unlock_update
 
 			evx_progress_counter.ev_data_control.set_text ("0")
 		end
