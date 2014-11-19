@@ -520,6 +520,7 @@ feature {NONE} -- Implementation
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_FILES_NOT_COMMITTED}.make).to_pixmap end, "tool/vcs_files_not_committed")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_PULL_REQUIRED}.make).to_pixmap end, "tool/vcs_pull_required")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_PUSH_REQUIRED}.make).to_pixmap end, "tool/vcs_push_required")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_SYNC_REQUIRED}.make).to_pixmap end, "tool/vcs_sync_required")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_UP_TO_DATE}.make).to_pixmap end, "tool/vcs_up_to_date")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VIEW_ROTATE_ACTIVE}.make).to_pixmap end, "tool/view_rotate_active")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VIEW_ROTATE_INACTIVE}.make).to_pixmap end, "tool/view_rotate_inactive")

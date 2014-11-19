@@ -343,7 +343,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 		do
 			evx_grid.set_last_row (a_grid_row)
 
-			rep_sync_status := a_rep_if.synchronisation_status
+			a_rep_if.get_synchronisation_status
+			a_rep_if.get_merge_status
+
+			-- get the highest status of syn status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
+			rep_sync_status := a_rep_if.last_synchronisation_status.max (a_rep_if.last_merge_status)
 
 			-- column 1: display name & repo icon
 			if a_rep_if.has_repository_access then
@@ -842,6 +846,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			end
 
 			if a_rep_if.has_repository_access then
+				-- VCS fetch
+				if rep_sync_status = vcs_status_sync_required then
+					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_fetch), agent repository_vcs_fetch (a_rep_if))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+			    	menu.extend (an_mi)
+				end
+
 				-- VCS pull
 				if rep_sync_status = vcs_status_pull_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))
@@ -912,6 +923,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		do
 			command_runner.do_action (a_rep_if, agent a_rep_if.pull_from_remote,
 					agent a_rep_if.reload_repository_definition, True)
+		end
+
+	repository_vcs_fetch (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- do a git fetch on `a_rep_if' repository
+		do
+			command_runner.do_action (a_rep_if, agent a_rep_if.fetch_from_remote,
+					agent a_rep_if.get_merge_status, True)
 		end
 
 	repository_vcs_commit (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)

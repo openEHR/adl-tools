@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (877)
+			create message_table.make (879)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -371,9 +371,10 @@ feature -- Initialisation
 			message_table.put ("Edit", ec_repository_grid_edit_col_title)
 			message_table.put ("Add new library here", ec_repository_add_new_library_here)
 			message_table.put ("Add new library", ec_repository_add_new_library)
-			message_table.put ("Pull changes from remote", ec_repository_vcs_pull)
+			message_table.put ("Pull changes from remote and merge", ec_repository_vcs_pull)
 			message_table.put ("Commit local changes", ec_repository_vcs_commit)
 			message_table.put ("Push changes to remote", ec_repository_vcs_push)
+			message_table.put ("Fetch updates from remote into local index", ec_repository_vcs_fetch)
 			message_table.put ("SVN update", ec_repository_svn_update)
 			message_table.put ("Remote URL: ", ec_repository_url_label)
 			message_table.put ("Could not execute external command $1", ec_external_command_unknown_error)
@@ -385,6 +386,7 @@ feature -- Initialisation
 			message_table.put ("Version control repository up to date with remote", ec_vcs_status_up_to_date_tooltip)
 			message_table.put ("Version control repository pull from remote required to be up to date", ec_vcs_status_pull_required_tooltip)
 			message_table.put ("Version control repository push to remote required to be up to date", ec_vcs_status_push_required_tooltip)
+			message_table.put ("Version control repository synchronise operation required with remote", ec_vcs_status_sync_required_tooltip)
 			message_table.put ("Version control repository status: diverged from remote", ec_vcs_status_diverged_tooltip)
 			message_table.put ("Invalid library path $1; must be at or below repository root, and not below or above any other library root", ec_repository_invalid_library_path)
 			message_table.put ("Installed", ec_repository_status_installed)

@@ -189,18 +189,29 @@ feature -- Access
 			end
 		end
 
-	synchronisation_status: INTEGER
+	get_synchronisation_status
 			-- status of sync between local and remote repository
-			-- may be slow!
 		do
 			if attached repository_access as att_rem_acc then
-				Result := att_rem_acc.synchronisation_status
-				last_synchronisation_status := Result
+				last_synchronisation_status := att_rem_acc.synchronisation_status
 			end
 		end
 
 	last_synchronisation_status: INTEGER
 			-- result of last call to `synchronisation_status', usable when calling
+			-- context knows that sync status has not changed.
+
+	get_merge_status
+			-- merge status of sync between local and remote repository
+			-- may be slow!
+		do
+			if attached repository_access as att_rem_acc then
+				last_merge_status := att_rem_acc.merge_status
+			end
+		end
+
+	last_merge_status: INTEGER
+			-- result of last call to `merge_status', usable when calling
 			-- context knows that sync status has not changed.
 
 feature -- Status Report
@@ -287,6 +298,16 @@ feature -- Commands
 		do
 			check attached repository_access as att_rm_acc then
 				att_rm_acc.do_pull
+			end
+		end
+
+	fetch_from_remote
+			-- Do fetch from remote to update local index; result in last_result
+		require
+			has_repository_access
+		do
+			check attached repository_access as att_rm_acc then
+				att_rm_acc.do_fetch
 			end
 		end
 

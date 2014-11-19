@@ -83,9 +83,10 @@ templates = <
 
 		["repository_add_new_library_here"] = <"Add new library here">
 		["repository_add_new_library"] = <"Add new library">
-		["repository_vcs_pull"] = <"Pull changes from remote">
+		["repository_vcs_pull"] = <"Pull changes from remote and merge">
 		["repository_vcs_commit"] = <"Commit local changes">
 		["repository_vcs_push"] = <"Push changes to remote">
+		["repository_vcs_fetch"] = <"Fetch updates from remote into local index">
 		["repository_svn_update"] = <"SVN update">
 
 		["repository_url_label"] = <"Remote URL: ">
@@ -100,6 +101,7 @@ templates = <
 		["vcs_status_up_to_date_tooltip"] = <"Version control repository up to date with remote">
 		["vcs_status_pull_required_tooltip"] = <"Version control repository pull from remote required to be up to date">
 		["vcs_status_push_required_tooltip"] = <"Version control repository push to remote required to be up to date">
+		["vcs_status_sync_required_tooltip"] = <"Version control repository synchronise operation required with remote">
 		["vcs_status_diverged_tooltip"] = <"Version control repository status: diverged from remote">
 
 		["repository_invalid_library_path"] = <"Invalid library path $1; must be at or below repository root, and not below or above any other library root">
