@@ -37,7 +37,7 @@ feature -- Initialisation
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			create adl_version.make_from_string (Latest_adl_version)
-			create terminology.make_empty (an_original_language, 0)
+			create terminology.make_differential_empty (an_original_language, 0)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
@@ -64,7 +64,7 @@ feature -- Initialisation
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			create adl_version.make_from_string (Latest_adl_version)
-			create terminology.make_empty (an_original_language, a_parent.specialisation_depth + 1)
+			create terminology.make_differential_empty (an_original_language, a_parent.specialisation_depth + 1)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)

@@ -125,7 +125,7 @@ feature -- Factory
 					create o_uid.make_from_string (att_uid)
 				end
 
-				create arch_terminology.make (original_language.code_string, o_definition.node_id)
+				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)
 				p_terminology.populate_terminology (arch_terminology)
 				arch_terminology.finalise_dt
 

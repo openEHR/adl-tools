@@ -38,11 +38,11 @@ inherit
 		end
 
 create
-	make, make_empty, make_dt
+	make_differential, make_differential_empty, make_dt
 
 feature -- Initialisation
 
-	make (an_original_lang, a_concept_code: STRING)
+	make_differential (an_original_lang, a_concept_code: STRING)
 			-- make terminology from concept code and original language
 		require
 			Original_language_valid: not an_original_lang.is_empty
@@ -61,13 +61,13 @@ feature -- Initialisation
 			Is_differential: is_differential
 		end
 
-	make_empty (an_original_lang: STRING; at_specialisation_depth: INTEGER)
+	make_differential_empty (an_original_lang: STRING; at_specialisation_depth: INTEGER)
 			-- make an empty terminology at specified specialisation depth
 		require
 			Original_language_valid: not an_original_lang.is_empty
 			Valid_specialisation_depth: at_specialisation_depth >= 0
 		do
-			make (an_original_lang, new_root_id_code_at_level (at_specialisation_depth))
+			make_differential (an_original_lang, new_root_id_code_at_level (at_specialisation_depth))
 			add_language (an_original_lang)
 			initialise_term_definitions (create {ARCHETYPE_TERM}.make (concept_code))
 		ensure
@@ -79,7 +79,7 @@ feature -- Initialisation
 			Is_differential: is_differential
 		end
 
-	make_dt (make_args: detachable ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY [ANY])
 			-- assumed args are <<original_language, concept_code>>
 		do
 			if attached {STRING} make_args[1] as str then
