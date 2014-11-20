@@ -68,7 +68,7 @@ feature {NONE} -- Initialisation
 							Result := rpi
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_namespace (create {INTERNET_ID}.make (a_str)) end end,
+				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_namespace (a_str) end end,
 				agent do source_archetype.description.clear_custodian_namespace end,
 				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_custodian_namespace_text)
@@ -102,7 +102,7 @@ feature {NONE} -- Initialisation
 							Result := rpi
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_namespace (create {INTERNET_ID}.make (a_str)) end end,
+				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_namespace (a_str) end end,
 				agent do source_archetype.description.clear_original_namespace end,
 				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_original_namespace_text)
