@@ -73,13 +73,13 @@ feature -- Access
             Result.put (Default_original_author, "name")
 		end
 
-	original_namespace: detachable INTERNET_ID
+	original_namespace: detachable STRING
 			-- Original namespace of this archetype as a reverse domain name
 
 	original_publisher: detachable STRING
 			-- Original publisher of this archetype as a string name
 
-	custodian_namespace: detachable INTERNET_ID
+	custodian_namespace: detachable STRING
 			-- Namespace of current custodian organisation of this archetype as a reverse domain name
 
 	custodian_organisation: detachable STRING
@@ -99,7 +99,7 @@ feature -- Access
 			-- tagged list of conversion information, where applicable
 
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
-			-- list of descriptive details, keyed by language
+			-- list of translatable descriptive details, keyed by language
         attribute
             create Result.make (0)
         end
@@ -115,7 +115,7 @@ feature -- Access
 	resource_package_uri: detachable URI
 			-- URI of archetype package
 
-	languages: ARRAYED_SET[STRING]
+	languages: ARRAYED_SET [STRING]
 			-- list of all languages in details
 		do
 			create Result.make(0)
@@ -195,7 +195,7 @@ feature -- Modification
 			original_author.is_empty
 		end
 
-	set_original_namespace (a_namespace: INTERNET_ID)
+	set_original_namespace (a_namespace: STRING)
 		do
 			original_namespace := a_namespace
 		ensure
@@ -223,7 +223,7 @@ feature -- Modification
 			not attached original_publisher
 		end
 
-	set_custodian_namespace (a_namespace: INTERNET_ID)
+	set_custodian_namespace (a_namespace: STRING)
 		do
 			custodian_namespace := a_namespace
 		ensure

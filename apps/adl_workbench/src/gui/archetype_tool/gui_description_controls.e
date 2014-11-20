@@ -65,7 +65,7 @@ feature {NONE} -- Initialisation
 				agent : detachable STRING
 					do
 						if attached source_archetype.description as desc and then attached desc.custodian_namespace as rpi then
-							Result := rpi.value
+							Result := rpi
 						end
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_namespace (create {INTERNET_ID}.make (a_str)) end end,
@@ -99,7 +99,7 @@ feature {NONE} -- Initialisation
 				agent : detachable STRING
 					do
 						if attached source_archetype.description as desc and then attached desc.original_namespace as rpi then
-							Result := rpi.value
+							Result := rpi
 						end
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_namespace (create {INTERNET_ID}.make (a_str)) end end,
