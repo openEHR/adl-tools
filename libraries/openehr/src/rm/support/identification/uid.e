@@ -51,6 +51,13 @@ feature -- Status Report
 		deferred
 		end
 
+feature -- Conversion
+
+	as_string: STRING
+		do
+			create Result.make_from_string (value)
+		end
+
 invariant
 	value_valid: not value.is_empty
 

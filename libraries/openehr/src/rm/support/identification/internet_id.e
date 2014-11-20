@@ -33,6 +33,10 @@ inherit
 create
 	make, default_create
 
+convert
+	make ({STRING}),
+	as_string: {STRING}
+
 feature -- Definitions
 
 	Default_value: STRING = "org.openehr"
