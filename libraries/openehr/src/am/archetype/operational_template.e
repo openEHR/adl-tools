@@ -28,7 +28,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	component_terminologies: HASH_TABLE [FLAT_ARCHETYPE_TERMINOLOGY, STRING]
+	component_terminologies: HASH_TABLE [ARCHETYPE_TERMINOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
 		attribute
@@ -37,9 +37,10 @@ feature -- Access
 
 feature -- Modification
 
-	add_component_terminology (a_terminology: FLAT_ARCHETYPE_TERMINOLOGY; an_archetype_id: STRING)
+	add_component_terminology (a_terminology: ARCHETYPE_TERMINOLOGY; an_archetype_id: STRING)
 		require
 			Archetype_id_attached: not an_archetype_id.is_empty
+			Terminology_is_flat: a_terminology.is_flat
 		do
 			component_terminologies.put (a_terminology, an_archetype_id)
 		end

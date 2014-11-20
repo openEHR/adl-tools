@@ -11,9 +11,6 @@ class FLAT_ARCHETYPE
 
 inherit
 	ARCHETYPE
-		redefine
-			terminology
-		end
 
 create
 	make, make_all, make_from_other
@@ -65,7 +62,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			--
 		local
 			desc: like description
-			flat_treminology: FLAT_ARCHETYPE_TERMINOLOGY
+			flat_terminology: ARCHETYPE_TERMINOLOGY
 		do
 			-- basic identifying info, and language from from child
 			-- definition comes from parent, waiting for flattening of child on top
@@ -74,13 +71,13 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				desc := orig_desc.safe_deep_twin
 			end
 
-			flat_treminology := a_flat_parent.terminology.deep_twin
-			flat_treminology.reduce_languages_to (a_diff.terminology)
+			flat_terminology := a_flat_parent.terminology.deep_twin
+			flat_terminology.reduce_languages_to (a_diff.terminology)
 
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin, a_diff.uid, desc,
 					a_flat_parent.definition.deep_twin,
-					flat_treminology)
+					flat_terminology)
 			definition.set_node_id (a_diff.definition.node_id.twin)
 
 			-- other metadata is created from parent, with child meta-data
@@ -111,10 +108,6 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			Generated: is_generated = a_diff.is_generated
 			Specialised: is_specialised
 		end
-
-feature -- Access
-
-	terminology: FLAT_ARCHETYPE_TERMINOLOGY
 
 end
 

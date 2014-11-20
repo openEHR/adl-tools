@@ -58,7 +58,7 @@ feature -- Access
 
 	in_differential_view: BOOLEAN
 
-	flat_terminology: FLAT_ARCHETYPE_TERMINOLOGY
+	flat_terminology: ARCHETYPE_TERMINOLOGY
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
@@ -73,9 +73,11 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_flat_terminology (a_flat_ontology: FLAT_ARCHETYPE_TERMINOLOGY)
+	set_flat_terminology (a_flat_terminology: ARCHETYPE_TERMINOLOGY)
+		require
+			Terminology_is_flat: a_flat_terminology.is_flat
 		do
-			flat_terminology := a_flat_ontology
+			flat_terminology := a_flat_terminology
 		end
 
 end

@@ -32,7 +32,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	component_terminologies: HASH_TABLE [FLAT_ARCHETYPE_TERMINOLOGY, STRING]
+	component_terminologies: HASH_TABLE [ARCHETYPE_TERMINOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
 		attribute
@@ -42,6 +42,8 @@ feature -- Access
 feature -- Modification
 
 	set_component_terminologies (a_component_terminologies: like component_terminologies)
+		require
+			across a_component_terminologies as comp_terms_csr all comp_terms_csr.item.is_flat end
 		do
 			component_terminologies := a_component_terminologies
 		end
@@ -56,6 +58,9 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.compare_objects
 			Result.extend ("component_terminologies")
 		end
+
+invariant
+	Components_terminologies_flat: across component_terminologies as comp_terms_csr all comp_terms_csr.item.is_flat end
 
 end
 

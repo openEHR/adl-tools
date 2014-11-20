@@ -108,9 +108,8 @@ feature -- Factory
 	create_archetype: detachable ARCHETYPE
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
-			o_diff_terminology: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY
-			o_flat_terminology: FLAT_ARCHETYPE_TERMINOLOGY
 			o_artefact_type: ARTEFACT_TYPE
+			arch_terminology: ARCHETYPE_TERMINOLOGY
 			o_uid: detachable HIER_OBJECT_ID
 		do
 			if attached archetype_id as att_aid
@@ -118,7 +117,7 @@ feature -- Factory
 				and attached original_language as o_original_language
 				and attached description as o_description
 				and attached definition as o_definition
-				and attached terminology as o_terminology
+				and attached terminology as p_terminology
 			then
 				create o_archetype_id.make_from_string (att_aid.physical_id)
 				create o_artefact_type.make_from_type_name (at)
@@ -126,10 +125,11 @@ feature -- Factory
 					create o_uid.make_from_string (att_uid)
 				end
 
+				create arch_terminology.make (original_language.code_string, o_definition.node_id)
+				p_terminology.populate_terminology (arch_terminology)
+				arch_terminology.finalise_dt
+
 				if artefact_object_type.same_string (bare_type_name (({DIFFERENTIAL_ARCHETYPE}).name)) then
-					create o_diff_terminology.make (original_language.code_string, o_definition.node_id)
-					o_terminology.populate_terminology (o_diff_terminology)
-					o_diff_terminology.finalise_dt
 
 					create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
 						o_artefact_type,
@@ -145,15 +145,11 @@ feature -- Factory
 						o_description,
 						o_definition.create_c_complex_object,
 						rules,
-						o_diff_terminology,
+						arch_terminology,
 						annotations
 					)
 
 				else
-					create o_flat_terminology.make (original_language.code_string, o_definition.node_id)
-					o_terminology.populate_terminology (o_flat_terminology)
-					o_flat_terminology.finalise_dt
-
 					create {FLAT_ARCHETYPE} Result.make_all (
 						o_artefact_type,
 						adl_version,
@@ -168,7 +164,7 @@ feature -- Factory
 						o_description,
 						o_definition.create_c_complex_object,
 						rules,
-						o_flat_terminology,
+						arch_terminology,
 						annotations
 					)
 				end

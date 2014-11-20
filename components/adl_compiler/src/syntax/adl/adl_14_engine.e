@@ -195,8 +195,8 @@ feature -- Parsing
 						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
 						convert_ontology_to_nested (ont_tree)  -- perform any version upgrade conversions
 
-						if attached orig_lang_trans as olt and then attached {FLAT_ARCHETYPE_TERMINOLOGY}
-							ont_tree.as_object (({FLAT_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_terminology
+						if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
+							ont_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
 							create new_arch.make (

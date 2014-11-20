@@ -12,7 +12,7 @@ class DIFFERENTIAL_ARCHETYPE
 inherit
 	ARCHETYPE
 		redefine
-			add_language_tag, terminology, make_from_other
+			add_language_tag, make_from_other
 		end
 
 create
@@ -98,8 +98,6 @@ feature -- Initialisation
 		end
 
 feature -- Access
-
-	terminology: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY
 
 	terminology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in terminology that are not referenced anywhere in the archetype definition

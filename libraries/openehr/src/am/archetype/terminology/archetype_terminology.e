@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCHETYPE_TERMINOLOGY
+class ARCHETYPE_TERMINOLOGY
 
 inherit
 	DT_CONVERTIBLE
@@ -37,6 +37,9 @@ inherit
 			{NONE} all
 		end
 
+create
+	make, make_empty, make_dt
+
 feature -- Initialisation
 
 	make (an_original_lang, a_concept_code: STRING)
@@ -51,9 +54,29 @@ feature -- Initialisation
 				concept_code := Root_id_code_top_level
 			end
 			original_language := an_original_lang
+			is_differential := True
 		ensure
 			concept_code_set: concept_code.is_equal (a_concept_code)
 			original_language_set: original_language.is_equal (an_original_lang)
+			Is_differential: is_differential
+		end
+
+	make_empty (an_original_lang: STRING; at_specialisation_depth: INTEGER)
+			-- make an empty terminology at specified specialisation depth
+		require
+			Original_language_valid: not an_original_lang.is_empty
+			Valid_specialisation_depth: at_specialisation_depth >= 0
+		do
+			make (an_original_lang, new_root_id_code_at_level (at_specialisation_depth))
+			add_language (an_original_lang)
+			initialise_term_definitions (create {ARCHETYPE_TERM}.make (concept_code))
+		ensure
+			Primary_language_set: original_language = an_original_lang
+			Specialisation_level_set: specialisation_depth = at_specialisation_depth
+			Concept_code_set: is_valid_root_id_code (concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
+			Concept_code_in_terms: has_id_code (concept_code)
+			Concept_items_not_empty: not term_definition (original_language, concept_code).text.is_empty
+			Is_differential: is_differential
 		end
 
 	make_dt (make_args: detachable ARRAY[ANY])
@@ -74,9 +97,15 @@ feature -- Access (Stored)
 	original_language:  STRING
 			-- original language of the terminology, as set at archetype creation or parsing time; must
 			-- be a code in the ISO 639-1 2 character language code-set.
+        attribute
+            create Result.make (0)
+        end
 
 	concept_code: STRING
 			-- term code of the concept of the terminology as a whole
+        attribute
+            create Result.make (0)
+        end
 
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
@@ -169,7 +198,7 @@ feature -- Access (computed)
         end
 
 	specialisation_depth: INTEGER
-			-- depth of this terminology with relation to ontologies in other archetypes
+			-- depth of this terminology with relation to terminologies in other archetypes
 		do
 			Result := specialisation_depth_from_code (concept_code)
 		ensure
@@ -289,6 +318,20 @@ feature -- Access (computed)
 
 feature -- Status Report
 
+	is_differential: BOOLEAN
+			-- True if this terminology contains differential additions to a flat terminology
+
+	is_flat: BOOLEAN
+			-- True if this terminology contains all definitions for the lineage of its archetype
+		do
+			Result := not is_differential
+		end
+
+	is_specialised: BOOLEAN
+		do
+			Result := specialisation_depth > 0
+		end
+
 	has_language (a_language: STRING): BOOLEAN
 			-- check that `a_language' supported
 		require
@@ -396,15 +439,33 @@ feature -- Status Report
 			Result := across value_sets as vsets_csr some vsets_csr.item.has_member_code (a_value_code) end
 		end
 
+feature -- Status Setting
+
+	set_flat
+			-- set this archetype to flat status
+		do
+			is_differential := False
+		end
+
+feature {ADL_2_ENGINE, ARCHETYPE_TERMINOLOGY}-- Status Setting
+
+	set_differential
+			-- set this archetype to differential status
+		do
+			is_differential := True
+		end
+
 feature -- Comparison
 
-	semantically_conforms_to (other: DIFFERENTIAL_ARCHETYPE_TERMINOLOGY): BOOLEAN
+	semantically_conforms_to (other: ARCHETYPE_TERMINOLOGY): BOOLEAN
 			-- True if this terminology conforms to `other' by having the same or subset of languages
+		require
+			Conformance: is_flat and other.is_differential
 		do
 			Result := languages_available.is_subset (other.languages_available)
 		end
 
-feature -- Conversion
+feature -- Facility
 
 	substitute_id_codes (str, lang: STRING): STRING
 			-- substitute all occurrences of archetype codes in 'str'
@@ -433,6 +494,44 @@ feature -- Conversion
 		end
 
 feature -- Modification
+
+	add_language (a_language: STRING)
+			-- add a new language to list of languages available
+			-- No action if language already exists
+		require
+			Valid_archetype: is_differential
+			Language_valid: not a_language.is_empty
+		local
+			term_defs_one_lang: detachable HASH_TABLE [ARCHETYPE_TERM, STRING]
+		do
+			if not term_definitions.has (a_language) then
+				create term_defs_one_lang.make (0)
+				term_definitions.put (term_defs_one_lang, a_language)
+
+				-- if not the primary language, add set of translation place-holder terms in this language
+				if attached original_language and then not a_language.is_equal (original_language) then
+					if attached term_definitions.item (original_language) as defs_for_lang then
+						across defs_for_lang as defs_csr loop
+							term_defs_one_lang.put (defs_csr.item.create_translated_term (original_language), defs_csr.item.code)
+						end
+					end
+				end
+			end
+		ensure
+			Language_added: has_language (a_language)
+		end
+
+	initialise_term_definitions (a_term: ARCHETYPE_TERM)
+			-- set concept of terminology from a term
+		require
+			Valid_archetype: is_differential
+			Valid_concept_term: is_valid_root_id_code (a_term.code)
+		do
+			term_definitions.put (create {HASH_TABLE [ARCHETYPE_TERM, STRING]}.make (0), original_language)
+			term_definitions.item (original_language).put (a_term, a_term.code)
+		ensure
+			Term_definitions_populated: term_definitions.item (original_language).item (concept_code) = a_term
+		end
 
 	create_added_id_definition (a_text, a_description: STRING)
 			-- add a new term definition with 'text' = `a_text', 'description = `a_description',
@@ -815,6 +914,187 @@ feature {ARCHETYPE} -- Modification
 	new_id_code_agt: detachable FUNCTION [ARCHETYPE, TUPLE, STRING]
 			-- agent to obtain new id code at the specialisation level of this archetype
 
+feature -- Factory
+
+	to_flat: ARCHETYPE_TERMINOLOGY
+			-- populate from a differential terminology. Finalisation will involve
+			-- merging of codes from parent archetype ontologies if this ontology
+			-- belongs to a specialised archetype
+		require
+			Is_differential: is_differential
+		do
+			Result := deep_twin
+			Result.set_flat
+		ensure
+			Result_is_flat: Result.is_flat
+		end
+
+	to_differential: ARCHETYPE_TERMINOLOGY
+			-- create from a flat terminology by cloning then removing all inherited
+			-- codes and bindings
+		require
+			Is_flat: is_flat
+		do
+			Result := deep_twin
+			if is_specialised then
+				Result.remove_inherited_codes
+			end
+			Result.set_differential
+		ensure
+			Result_is_differential: Result.is_differential
+		end
+
+feature {ARCHETYPE_FLATTENER} -- Flattening
+
+	merge (other: ARCHETYPE_TERMINOLOGY)
+			-- merge other's terminology, doing the following:
+			--	* replace term_definitions, bindings & value sets with other's, if they are overrides
+			-- 	* add new term definitions, bindings and value sets if they are new in other
+		require
+			Logical_conformance: is_flat and other.is_differential
+			Other_valid: semantically_conforms_to (other)
+		do
+			-- concept code
+			concept_code := other.concept_code.twin
+
+			-- term definitions
+			across other.term_codes as other_codes_csr loop
+				put_definition_and_translations (other.term_definitions_for_code (other_codes_csr.item).deep_twin, other_codes_csr.item)
+			end
+
+			-- terminology bindings; these are sparse and don't work like term defnition translations so
+			-- have to be done individually
+			across other.term_bindings as other_bindings_for_terminology_csr loop
+				across other_bindings_for_terminology_csr.item as other_bindings_csr loop
+					merge_specialised_term_binding (other_bindings_csr.item.twin, other_bindings_for_terminology_csr.key, other_bindings_csr.key)
+				end
+			end
+
+			-- value sets: here we have to account for replacement of value sets in parent by child
+			across other.value_sets as value_sets_csr loop
+				merge_specialised_value_set (value_sets_csr.item.deep_twin)
+			end
+
+			sync_stored_properties
+		ensure
+			Specialisation_depth_set: specialisation_depth = other.specialisation_depth
+		end
+
+feature {ARCHETYPE} -- Flattening
+
+	reduce_languages_to (other: ARCHETYPE_TERMINOLOGY)
+			-- remove any languages not in `other'
+		require
+			Valid_conformance: is_flat and other.is_differential
+		do
+			across languages_available as langs_csr loop
+				if not other.languages_available.has (langs_csr.item) then
+					term_definitions.remove (langs_csr.item)
+				end
+			end
+			original_language := other.original_language.twin
+		ensure
+			original_language.is_equal (other.original_language)
+		end
+
+feature {ARCHETYPE_TERMINOLOGY} -- Flattening
+
+	remove_inherited_codes
+			-- remove all at- and ac- codes inherited from ancestor archetypes
+		local
+			rm_id_codes, rm_term_codes, rm_constraint_codes: ARRAYED_LIST[STRING]
+		do
+			create rm_id_codes.make(0)
+			create rm_term_codes.make(0)
+			create rm_constraint_codes.make(0)
+
+			across id_codes as id_codes_csr loop
+				if specialisation_depth_from_code (id_codes_csr.item) /= specialisation_depth then
+					rm_id_codes.extend (id_codes_csr.item)
+				end
+			end
+			across value_codes as term_codes_csr loop
+				if specialisation_depth_from_code (term_codes_csr.item) /= specialisation_depth then
+					rm_term_codes.extend (term_codes_csr.item)
+				end
+			end
+			across value_set_codes as constraint_codes_csr loop
+				if specialisation_depth_from_code (constraint_codes_csr.item) /= specialisation_depth then
+					rm_constraint_codes.extend (constraint_codes_csr.item)
+				end
+			end
+
+			across rm_id_codes as rm_id_codes_csr loop
+				remove_definition (rm_id_codes_csr.item)
+			end
+			across rm_term_codes as rm_term_codes_csr loop
+				remove_definition (rm_term_codes_csr.item)
+			end
+			across rm_constraint_codes as rm_constraint_codes_csr loop
+				remove_definition (rm_constraint_codes_csr.item)
+			end
+			sync_stored_properties
+		end
+
+feature {NONE} -- Flattening
+
+	merge_specialised_term_binding (a_binding: URI; a_terminology_id, a_child_code: STRING)
+			-- merge the binding a_code/a_binding into this terminology, if necessary
+			-- removing any existing binding to a parent code of `a_child_code'
+		require
+			not has_term_binding (a_terminology_id, a_child_code)
+		local
+			code_in_parent: STRING
+			spec_depth: INTEGER
+		do
+			-- determine for parent code that might exist in this flat terminology
+			if is_refined_code (a_child_code) then
+				code_in_parent := a_child_code
+				from spec_depth := specialisation_depth until spec_depth = 0 or has_term_binding (a_terminology_id, code_in_parent) loop
+					spec_depth := spec_depth - 1
+					code_in_parent := code_at_level (a_child_code, spec_depth)
+				end
+
+				if has_term_binding (a_terminology_id, code_in_parent) then
+					remove_term_binding (code_in_parent, a_terminology_id)
+				end
+			end
+			put_term_binding (a_binding, a_terminology_id, a_child_code)
+		end
+
+	merge_specialised_value_set (a_value_set: VALUE_SET)
+			-- merge `a_value_set' into this terminology, if necessary removing any existing
+			-- value set bound to a parent code of ac-code a_value_set.id
+		local
+			code_in_parent: STRING
+			spec_depth: INTEGER
+			parent_code_set: detachable ARRAYED_LIST [STRING]
+		do
+			-- determine for parent code that might exist in this flat terminology
+			if is_refined_code (a_value_set.id) then
+				code_in_parent := a_value_set.id
+				from spec_depth := specialisation_depth until spec_depth = 0 or value_sets.has (code_in_parent) loop
+					spec_depth := spec_depth - 1
+					code_in_parent := code_at_level (a_value_set.id, spec_depth)
+				end
+
+				if value_sets.has (code_in_parent) then
+					parent_code_set := value_sets.item (code_in_parent).members
+					value_sets.remove (code_in_parent)
+				end
+			end
+			value_sets.put (a_value_set, a_value_set.id)
+
+			-- remove at codes from parent value set that are not in the current one
+			if attached parent_code_set as p_code_set then
+				across p_code_set as parent_codes_csr loop
+					if not a_value_set.has_member_code (parent_codes_csr.item) then
+						remove_definition (parent_codes_csr.item)
+					end
+				end
+			end
+		end
+
 feature {NONE} -- Legacy
 
 	constraint_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
@@ -830,6 +1110,8 @@ feature {NONE} -- Legacy
         end
 
     merge_constraint_definitions_and_bindings
+    		-- merge term_definitions and constraint_definitions into one list;
+    		-- merge term_bindings and constraint_bindings into one list
     	do
     		across constraint_definitions as cons_defs_for_lang_csr loop
     			if term_definitions.has (cons_defs_for_lang_csr.key) and then attached term_definitions.item (cons_defs_for_lang_csr.key) as term_defs then

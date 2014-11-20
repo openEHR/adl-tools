@@ -840,15 +840,15 @@ end
 	template_overlay_supplier_terminologies
 			-- process `template_ontology_overlay_list' to overlay target terminologies.
 		local
-			ont: FLAT_ARCHETYPE_TERMINOLOGY
+			flat_terms: ARCHETYPE_TERMINOLOGY
 		do
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template terminologies &&&&&&%N")
 end
 			if attached {OPERATIONAL_TEMPLATE} arch_flat_out as opt then
 				across child_desc.suppliers_index as supp_idx_csr loop
-					ont := supp_idx_csr.item.flat_archetype.terminology
-					opt.add_component_terminology (ont, supp_idx_csr.key)
+					flat_terms := supp_idx_csr.item.flat_archetype.terminology
+					opt.add_component_terminology (flat_terms, supp_idx_csr.key)
 debug ("flatten")
 	io.put_string ("%T adding terminology from " +
 	supp_idx_csr.key + "%N")

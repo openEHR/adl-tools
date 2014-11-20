@@ -199,11 +199,12 @@ feature -- Parsing
 						--
 						-----------------------------------------------------------------------------------------------							
 
-						if attached orig_lang_trans as olt and then attached {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}
-							terminology_tree.as_object (({DIFFERENTIAL_ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_terminology
+						if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
+							terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
 							-- build the archetype
+							diff_terminology.set_differential
 							create new_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
