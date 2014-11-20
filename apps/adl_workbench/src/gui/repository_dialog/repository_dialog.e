@@ -343,10 +343,9 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 		do
 			evx_grid.set_last_row (a_grid_row)
 
+			-- get the highest status of syn status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
 			a_rep_if.get_synchronisation_status
 			a_rep_if.get_merge_status
-
-			-- get the highest status of syn status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
 			rep_sync_status := a_rep_if.last_synchronisation_status.max (a_rep_if.last_merge_status)
 
 			-- column 1: display name & repo icon
@@ -831,7 +830,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			rep_sync_status: INTEGER
 		do
 			create menu
-			rep_sync_status := a_rep_if.last_synchronisation_status
+
+			-- get the highest status of syn status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
+			a_rep_if.get_synchronisation_status
+			a_rep_if.get_merge_status
+			rep_sync_status := a_rep_if.last_synchronisation_status.max (a_rep_if.last_merge_status)
 
 			-- add new library
 			create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library), agent add_new_library (a_rep_if))
