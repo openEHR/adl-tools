@@ -831,7 +831,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		do
 			create menu
 
-			-- get the highest status of syn status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
+			-- get the highest status of sync status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
 			a_rep_if.get_synchronisation_status
 			a_rep_if.get_merge_status
 			rep_sync_status := a_rep_if.last_synchronisation_status.max (a_rep_if.last_merge_status)
