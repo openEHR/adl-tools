@@ -14,7 +14,7 @@ feature -- Initialisation
 	initialise (an_archetype: ARCHETYPE)
 		do
 			archetype := an_archetype
-			differential_view := attached {DIFFERENTIAL_ARCHETYPE} an_archetype
+			differential_view := an_archetype.is_differential
 			archetype_specialisation_level := archetype.specialisation_depth
 			terminologies.wipe_out
 			terminologies.extend (archetype.terminology)

@@ -128,7 +128,6 @@ feature {NONE} -- Implementation
 	do_populate
 			-- populate the ADL tree control by creating it from scratch
 		local
-			eti: EV_TREE_ITEM
 			slots_count: INTEGER
 			used_by_count: INTEGER
 			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM

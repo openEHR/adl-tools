@@ -50,7 +50,7 @@ feature {NONE} -- Initialisation
 			create description_context.make
 			create definition_context.make
 			create invariant_context.make
-			create ontology_context.make
+			create terminology_context.make
 			create annotations_context.make
 		end
 
@@ -64,13 +64,13 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM): detachable FLAT_ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM): detachable ARCHETYPE
 			-- parse text as legacy flat archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
-			new_arch: FLAT_ARCHETYPE
+			new_flat_arch: ARCHETYPE
 		do
 			adl_parser.execute (a_text)
 
@@ -154,15 +154,15 @@ feature -- Parsing
 					end
 				end
 
-				------------------- ontology section (mandatory) ---------------
-				-- parse ARCHETYPE.ontology
+				------------------- terminology section (mandatory) ---------------
+				-- parse ARCHETYPE.terminology
 				if not errors.has_errors then
-					check attached adl_parser.ontology_text as ont_text then
-						ontology_context.set_source (ont_text, adl_parser.ontology_text_start_line)
+					check attached adl_parser.terminology_text as term_text then
+						terminology_context.set_source (term_text, adl_parser.terminology_text_start_line)
 					end
-					ontology_context.parse
-					if not ontology_context.parse_succeeded then
-						errors.append (ontology_context.errors)
+					terminology_context.parse
+					if not terminology_context.parse_succeeded then
+						errors.append (terminology_context.errors)
 					end
 				end
 
@@ -190,16 +190,16 @@ feature -- Parsing
 				------------------- build the archetype --------------					
 				if not errors.has_errors then
 					if attached definition_context.tree as definition and
-						attached ontology_context.tree as ont_tree
+						attached terminology_context.tree as term_tree
 					then
-						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
-						convert_ontology_to_nested (ont_tree)  -- perform any version upgrade conversions
+						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the terminology
+						convert_terminology_to_nested (term_tree)  -- perform any version upgrade conversions
 
 						if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
-							ont_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as flat_terminology
+							term_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, False>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
-							create new_arch.make (
+							create new_flat_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
 								olt.original_language,
@@ -211,46 +211,46 @@ feature -- Parsing
 
 							-- add optional parts
 							if attached adl_parser.parent_archetype_id as att_parent_id then
-								new_arch.set_parent_archetype_id (att_parent_id)
+								new_flat_arch.set_parent_archetype_id (att_parent_id)
 							end
 
 							if attached adl_parser.adl_version as adl_av then
-								new_arch.set_adl_version (adl_av)
+								new_flat_arch.set_adl_version (adl_av)
 							else
-								new_arch.set_adl_version (latest_adl_version)
+								new_flat_arch.set_adl_version (latest_adl_version)
 							end
 
 							if adl_parser.is_controlled then
-								new_arch.set_is_controlled
+								new_flat_arch.set_is_controlled
 							end
 
 							if adl_parser.is_generated then
-								new_arch.set_is_generated
+								new_flat_arch.set_is_generated
 							end
 
 							-- other meta-data
 							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
 								across omd as omd_csr loop
 									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-										new_arch.add_other_metadata_value (a_key, an_item)
+										new_flat_arch.add_other_metadata_value (a_key, an_item)
 									end
 								end
 							end
 
 							if attached orig_lang_trans.translations as olt_trans then
-								new_arch.set_translations (olt_trans)
+								new_flat_arch.set_translations (olt_trans)
 							end
 
 							if attached invariant_context.tree as inv_tree then
-								new_arch.set_rules (inv_tree)
+								new_flat_arch.set_rules (inv_tree)
 							end
 
 							if attached annots as a then
-								new_arch.set_annotations (a)
+								new_flat_arch.set_annotations (a)
 							end
 
-							new_arch.rebuild
-							Result := new_arch
+							new_flat_arch.rebuild
+							Result := new_flat_arch
 						else
 							errors.add_error (ec_SAON, Void, generator + ".parse")
 							errors.append (dt_object_converter.errors)
@@ -258,6 +258,8 @@ feature -- Parsing
 					end
 				end
 			end
+		ensure
+			attached Result implies Result.is_flat
 		end
 
 feature -- Validation
@@ -390,13 +392,13 @@ feature -- Serialisation
 			check attached an_archetype.terminology.dt_representation as dt_ont then
 				-- this is a hack which causes terminology section to be output as ODIN with the 'items' attributes
 				-- rather than the native nested structure
-				convert_ontology_to_unnested (dt_ont)
+				convert_terminology_to_unnested (dt_ont)
 
-				ontology_context.set_tree (dt_ont)
-				ontology_context.serialise (a_format, False, False)
+				terminology_context.set_tree (dt_ont)
+				terminology_context.serialise (a_format, False, False)
 
 				-- and this puts the in-memory structure back to native form so things work correctly from here
-				convert_ontology_to_nested (dt_ont)
+				convert_terminology_to_nested (dt_ont)
 			end
 
 			-- annotations section
@@ -411,7 +413,7 @@ feature -- Serialisation
 			end
 			serialiser.reset
 			serialiser.serialise_from_parts (an_archetype, language_context.serialised, description_context.serialised, definition_context.serialised,
-				invariant_context.serialised, ontology_context.serialised, annotations_context.serialised, "")
+				invariant_context.serialised, terminology_context.serialised, annotations_context.serialised, "")
 
 			Result := serialiser.last_result
 		end
@@ -431,7 +433,7 @@ feature {NONE} -- Implementation
 
 	invariant_context: ASSERTION_14_ENGINE
 
-	ontology_context: ODIN_ENGINE
+	terminology_context: ODIN_ENGINE
 
 	annotations_context: ODIN_ENGINE
 
@@ -471,13 +473,13 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	original_language_and_translations_from_ontology (ontology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
+	original_language_and_translations_from_terminology (terminology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `terminology'.
 		do
 			create Result.make
-			Result.set_original_language_from_string (ontology.original_language)
-			across ontology.languages_available as langs_csr loop
-				if not langs_csr.item.is_equal (ontology.original_language) then
+			Result.set_original_language_from_string (terminology.original_language)
+			across terminology.languages_available as langs_csr loop
+				if not langs_csr.item.is_equal (terminology.original_language) then
 					Result.add_new_translation (langs_csr.item)
 				end
 			end

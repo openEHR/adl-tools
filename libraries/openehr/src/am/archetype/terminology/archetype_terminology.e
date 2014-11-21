@@ -80,7 +80,7 @@ feature -- Initialisation
 		end
 
 	make_dt (make_args: detachable ARRAY [ANY])
-			-- assumed args are <<original_language, concept_code>>
+			-- assumed args are <<original_language, concept_code, differential_flag>>
 		do
 			if attached {STRING} make_args[1] as str then
 				original_language := str
@@ -89,6 +89,9 @@ feature -- Initialisation
 				concept_code := a_concept_code
 			else
 				concept_code := Root_id_code_top_level
+			end
+			if attached {BOOLEAN} make_args[3] as differential_flag then
+				is_differential := differential_flag
 			end
 		end
 
@@ -665,7 +668,7 @@ feature -- Modification
 			value_sets.put (a_value_set, a_value_set.id)
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
+feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 
 	remove_definition (a_code: STRING)
 			-- completely remove the term from the terminology
@@ -740,7 +743,7 @@ feature {DIFFERENTIAL_ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Mod
 			term_binding_map_cache := Void
 		end
 
-feature {DIFFERENTIAL_ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
+feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 
 	put_new_definition (a_term: ARCHETYPE_TERM)
 			-- add a new term definition for `original_language' and

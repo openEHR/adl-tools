@@ -2474,7 +2474,7 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	flat_ancestor: detachable FLAT_ARCHETYPE
+	flat_ancestor: detachable ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
 
 	rm_schema: BMM_SCHEMA

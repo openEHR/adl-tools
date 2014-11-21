@@ -64,13 +64,13 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM): detachable DIFFERENTIAL_ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM): detachable ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
-			new_arch: DIFFERENTIAL_ARCHETYPE
+			new_diff_arch: ARCHETYPE
 		do
 			adl_parser.execute (a_text)
 
@@ -195,17 +195,17 @@ feature -- Parsing
 					then
 						-----------------------------------------------------------------------------------------------
 						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
-						convert_ontology_to_nested (terminology_tree)  -- perform any version upgrade conversions on terminology
+						convert_terminology_to_nested (terminology_tree)  -- perform any version upgrade conversions on terminology
 						--
 						-----------------------------------------------------------------------------------------------							
 
 						if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
-							terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id>>) as diff_terminology
+							terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, True>>) as diff_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
 							-- build the archetype
 							diff_terminology.set_differential
-							create new_arch.make (
+							create new_diff_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
 								olt.original_language,
@@ -217,48 +217,48 @@ feature -- Parsing
 
 							-- add optional parts
 							if attached adl_parser.parent_archetype_id as att_parent_id then
-								new_arch.set_parent_archetype_id (att_parent_id)
+								new_diff_arch.set_parent_archetype_id (att_parent_id)
 							end
 
 							if valid_standard_version (adl_parser.adl_version) then
-								new_arch.set_adl_version (adl_parser.adl_version)
+								new_diff_arch.set_adl_version (adl_parser.adl_version)
 							end
 
 							if valid_standard_version (adl_parser.rm_release) then
-								new_arch.set_rm_release (adl_parser.rm_release)
+								new_diff_arch.set_rm_release (adl_parser.rm_release)
 							end
 
 							if adl_parser.is_controlled then
-								new_arch.set_is_controlled
+								new_diff_arch.set_is_controlled
 							end
 
 							if adl_parser.is_generated then
-								new_arch.set_is_generated
+								new_diff_arch.set_is_generated
 							end
 
 							-- other meta-data
 							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
 								across omd as omd_csr loop
 									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-										new_arch.add_other_metadata_value (a_key, an_item)
+										new_diff_arch.add_other_metadata_value (a_key, an_item)
 									end
 								end
 							end
 
 							if attached orig_lang_trans.translations as olt_trans then
-								new_arch.set_translations (olt_trans)
+								new_diff_arch.set_translations (olt_trans)
 							end
 
 							if attached rules_context.tree as att_rules_tree then
-								new_arch.set_rules (att_rules_tree)
+								new_diff_arch.set_rules (att_rules_tree)
 							end
 
 							if attached annots as att_annots then
-								new_arch.set_annotations (att_annots)
+								new_diff_arch.set_annotations (att_annots)
 							end
 
-							new_arch.rebuild
-							Result := new_arch
+							new_diff_arch.rebuild
+							Result := new_diff_arch
 						else
 							errors.add_error (ec_SAON, Void, generator + ".parse")
 							errors.append (dt_object_converter.errors)
@@ -266,6 +266,8 @@ feature -- Parsing
 					end
 				end
 			end
+		ensure
+			attached Result implies Result.is_differential
 		end
 
 feature -- Validation

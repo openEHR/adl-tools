@@ -30,7 +30,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 feature -- Access
 
-	target_flat: FLAT_ARCHETYPE
+	target_flat: ARCHETYPE
 			-- flat archetype being validated
 
 feature -- Status Report

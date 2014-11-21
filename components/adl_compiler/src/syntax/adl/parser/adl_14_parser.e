@@ -716,7 +716,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_14_parser.y' at line 245")
 end
 
-			ontology_text := yyvs2.item (yyvsp2)
+			terminology_text := yyvs2.item (yyvsp2)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -1019,7 +1019,7 @@ feature -- Initialization
 			create archetype_id.default_create
 			create definition_text.make_empty
 			create language_text.make_empty
-			create ontology_text.make_empty
+			create terminology_text.make_empty
 			create artefact_type.default_create
 		end
 
@@ -1046,7 +1046,7 @@ feature -- Initialization
 			language_text.wipe_out
 			description_text := Void
 			definition_text.wipe_out
-			ontology_text.wipe_out
+			terminology_text.wipe_out
 			invariant_text := Void
 			annotations_text := Void
 			component_ontologies_text := Void
@@ -1095,7 +1095,7 @@ feature -- Parse Output
 
 	invariant_text: detachable STRING
 	
-	ontology_text: STRING
+	terminology_text: STRING
 
 	annotations_text: detachable STRING
 

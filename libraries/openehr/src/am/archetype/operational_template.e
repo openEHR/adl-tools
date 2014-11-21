@@ -10,17 +10,17 @@ note
 class OPERATIONAL_TEMPLATE
 
 inherit
-	FLAT_ARCHETYPE
+	ARCHETYPE
 		redefine
-			make_specialised, synchronise_adl, annotated_path
+			make_flat_specialised, synchronise_adl, annotated_path
 		end
 
 create
-	make_specialised
+	make_flat_specialised
 
 feature -- Initialisation
 
-	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
+	make_flat_specialised (a_diff, a_flat_parent: ARCHETYPE)
 		do
 			precursor (a_diff, a_flat_parent)
 			create artefact_type.make_operational_template

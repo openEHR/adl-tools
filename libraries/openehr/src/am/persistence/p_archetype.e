@@ -129,45 +129,23 @@ feature -- Factory
 				p_terminology.populate_terminology (arch_terminology)
 				arch_terminology.finalise_dt
 
-				if artefact_object_type.same_string (bare_type_name (({DIFFERENTIAL_ARCHETYPE}).name)) then
-
-					create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
-						o_artefact_type,
-						adl_version,
-						rm_release,
-						o_archetype_id,
-						parent_archetype_id,
-						is_controlled,
-						o_uid,
-						other_metadata,
-						o_original_language,
-						translations,
-						o_description,
-						o_definition.create_c_complex_object,
-						rules,
-						arch_terminology,
-						annotations
-					)
-
-				else
-					create {FLAT_ARCHETYPE} Result.make_all (
-						o_artefact_type,
-						adl_version,
-						rm_release,
-						o_archetype_id,
-						parent_archetype_id,
-						is_controlled,
-						o_uid,
-						other_metadata,
-						o_original_language,
-						translations,
-						o_description,
-						o_definition.create_c_complex_object,
-						rules,
-						arch_terminology,
-						annotations
-					)
-				end
+				create Result.make_all (
+					o_artefact_type,
+					adl_version,
+					rm_release,
+					o_archetype_id,
+					parent_archetype_id,
+					is_controlled,
+					o_uid,
+					other_metadata,
+					o_original_language,
+					translations,
+					o_description,
+					o_definition.create_c_complex_object,
+					rules,
+					arch_terminology,
+					annotations
+				)
 
 				if is_generated then
 					Result.set_is_generated

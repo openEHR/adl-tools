@@ -89,7 +89,7 @@ feature {NONE} -- Implementation
 			stat_accums: ARRAYED_LIST [RM_CLASS_STATISTICS]
 			a_class_stat_accum, an_attr_stat_accum: RM_CLASS_STATISTICS
 			apa: ARCHETYPE_PATH_ANALYSER
-			flat_parent: FLAT_ARCHETYPE
+			flat_parent: ARCHETYPE
 			ca, ca_parent_flat: C_ATTRIBUTE
 			path_in_flat: STRING
 			co_type_name: STRING

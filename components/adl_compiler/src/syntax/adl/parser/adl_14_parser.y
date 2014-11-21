@@ -68,7 +68,7 @@ archetype: source_identification
 		arch_description 
 		arch_definition 
 		arch_invariant
-		arch_ontology
+		arch_terminology
 		arch_annotations
 	;
 
@@ -79,7 +79,7 @@ specialised_archetype: source_identification
 		arch_description 
 		arch_definition 
 		arch_invariant
-		arch_ontology
+		arch_terminology
 		arch_annotations
 	;
 
@@ -242,9 +242,9 @@ arch_invariant: -- no invariant ok
 		}
 	;
 
-arch_ontology: SYM_ONTOLOGY V_ODIN_TEXT
+arch_terminology: SYM_ONTOLOGY V_ODIN_TEXT
 		{
-			ontology_text := $2
+			terminology_text := $2
 		}
 	| SYM_ONTOLOGY error
 		{
@@ -276,7 +276,7 @@ feature -- Initialization
 			create archetype_id.default_create
 			create definition_text.make_empty
 			create language_text.make_empty
-			create ontology_text.make_empty
+			create terminology_text.make_empty
 			create artefact_type.default_create
 		end
 
@@ -303,7 +303,7 @@ feature -- Initialization
 			language_text.wipe_out
 			description_text := Void
 			definition_text.wipe_out
-			ontology_text.wipe_out
+			terminology_text.wipe_out
 			invariant_text := Void
 			annotations_text := Void
 			component_ontologies_text := Void
@@ -352,7 +352,7 @@ feature -- Parse Output
 
 	invariant_text: detachable STRING
 	
-	ontology_text: STRING
+	terminology_text: STRING
 
 	annotations_text: detachable STRING
 

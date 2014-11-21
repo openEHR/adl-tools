@@ -145,7 +145,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				last_token := SYM_ONTOLOGY
 				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
-				ontology_text_start_line := in_lineno
+				terminology_text_start_line := in_lineno
 			}
 
 ^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n			{
@@ -325,7 +325,7 @@ feature -- Access
 
 	invariant_text_start_line: INTEGER
 
-	ontology_text_start_line: INTEGER
+	terminology_text_start_line: INTEGER
 
 	annotations_text_start_line: INTEGER
 

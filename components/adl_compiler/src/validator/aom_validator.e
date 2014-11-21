@@ -62,10 +62,10 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	arch_diff_child: DIFFERENTIAL_ARCHETYPE
+	arch_diff_child: ARCHETYPE
 			-- differential archetype being validated
 
-	arch_flat_anc: detachable FLAT_ARCHETYPE
+	arch_flat_anc: detachable ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
 
 	child_desc: ARCH_LIB_ARCHETYPE_ITEM

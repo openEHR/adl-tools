@@ -34,24 +34,24 @@ create
 
 feature -- Initialisation
 
-	make (an_ancestor_aca: ARCH_LIB_ARCHETYPE_ITEM; a_target_archetype: FLAT_ARCHETYPE)
+	make (an_ancestor_aca: ARCH_LIB_ARCHETYPE_ITEM; a_flat_target: ARCHETYPE)
 			-- create with two archetypes for comparison
 		require
 			Valid_ancestor_archetype: an_ancestor_aca.is_valid
-			Target_archetype_valid: a_target_archetype.is_specialised
+			Target_archetype_valid: a_flat_target.is_flat and a_flat_target.is_specialised
 		do
 			ancestor_descriptor := an_ancestor_aca
 			flat_ancestor := ancestor_descriptor.flat_archetype
-			flat_target := a_target_archetype
+			flat_child := a_flat_target
 		end
 
-	make_create_differential (an_ancestor_aca: ARCH_LIB_ARCHETYPE_ITEM; a_target_archetype: FLAT_ARCHETYPE)
+	make_create_differential (an_ancestor_aca: ARCH_LIB_ARCHETYPE_ITEM; a_flat_target: ARCHETYPE)
 			-- make with a valid specialised child archetype descriptor
 		require
 			Valid_ancestor_archetype: an_ancestor_aca.is_valid
-			Target_archetype_valid: a_target_archetype.is_specialised
+			Target_archetype_valid: a_flat_target.is_flat and a_flat_target.is_specialised
 		do
-			make (an_ancestor_aca, a_target_archetype)
+			make (an_ancestor_aca, a_flat_target)
 			compare
 			generate_diff
 			compress_differential_child
@@ -62,19 +62,19 @@ feature -- Access
 	ancestor_descriptor: ARCH_LIB_ARCHETYPE_ITEM
 			-- compiled parent archetype descriptor
 
-	flat_ancestor: FLAT_ARCHETYPE
+	flat_ancestor: ARCHETYPE
 			-- compiled parent archetype
 
-	flat_target: FLAT_ARCHETYPE
+	flat_child: ARCHETYPE
 			-- flat form of child archetype
 
-	differential_output: detachable DIFFERENTIAL_ARCHETYPE
+	differential_output: detachable ARCHETYPE
 			-- generated differential result of calling `
 
 feature -- Status Report
 
 	target_is_marked: BOOLEAN
-			-- True if `compare' has been run on `flat_target'
+			-- True if `compare' has been run on `flat_child'
 
 feature -- Comparison
 
@@ -82,14 +82,14 @@ feature -- Comparison
 			-- compare definition of specialised archetype against flat parent and mark
 			-- nodes in the specialised flat target for removal
 		require
-			Child_specialised: flat_target.is_specialised
+			Child_specialised: flat_child.is_specialised
 		local
 			def_it: C_ITERATOR
 			a_c_iterator: OG_CONTENT_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
 			-- first phase - mark all nodes as added by default
-			create def_it.make (flat_target.definition)
+			create def_it.make (flat_child.definition)
 			def_it.do_all (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 					do
@@ -102,12 +102,12 @@ feature -- Comparison
 
 			-- now mark nodes as added / redefined based on their
 			-- direct counterparts (if they exist) in the flat parent
-			create def_it.make (flat_target.definition)
+			create def_it.make (flat_child.definition)
 			def_it.do_until_surface (agent child_node_compare, agent child_node_test)
 
 			-- phase 2 - roll up the changes
-			create rollup_builder.make (flat_target)
-			create a_c_iterator.make (flat_target.definition.representation, rollup_builder)
+			create rollup_builder.make (flat_child)
+			create a_c_iterator.make (flat_child.definition.representation, rollup_builder)
 			a_c_iterator.do_all
 
 			target_is_marked := True
@@ -124,13 +124,13 @@ feature -- Comparison
 		local
 			c_it: C_ITERATOR
 			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
-			diff_child: DIFFERENTIAL_ARCHETYPE
+			diff_child: ARCHETYPE
 			term_removal_list, vset_id_codes_list: ARRAYED_SET [STRING]
 			def_id_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			def_at_codes: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			def_ac_codes: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
 		do
-			create diff_child.make_from_flat (flat_target)
+			create diff_child.make_differential_from_flat (flat_child)
 			differential_output := diff_child
 
 			-- using rolled_up_specialisation statuses in nodes of definition generate a list of nodes/paths
@@ -233,7 +233,7 @@ feature -- Comparison
 				diff_child.terminology.remove_definition (terms_csr.item)
 			end
 		ensure
-			Diff_generated: attached differential_output
+			Diff_generated: attached differential_output as diff and then diff.is_differential
 		end
 
 	compress_differential_child
@@ -323,6 +323,10 @@ feature {NONE} -- Implementation
 		do
 			Result := attached_type (dynamic_type (co)) = ({C_COMPLEX_OBJECT}).type_id
 		end
+
+invariant
+	Flat_ancestor_is_flat: flat_ancestor.is_flat
+	Flat_target_is_flat: flat_child.is_flat
 
 end
 

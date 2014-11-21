@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class ARCHETYPE
+ class ARCHETYPE
 
 inherit
 	ARCHETYPE_DEFINITIONS
@@ -24,8 +24,26 @@ inherit
 
 	AUTHORED_RESOURCE
 		redefine
-			synchronise_adl, make_from_other
+			synchronise_adl, make_from_other, add_language_tag
 		end
+
+create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
+	make
+
+create {P_ARCHETYPE}
+	make_all
+
+create {ARCHETYPE_COMPARATOR, ARCH_LIB_ARCHETYPE_ITEM}
+	make_differential_from_flat
+
+create {ARCHETYPE_FLATTENER}
+	make_flat_specialised, make_flat_non_specialised
+
+create {ARCHETYPE_FLATTENER, ARCH_LIB_ARCHETYPE_EDITABLE}
+	make_from_other
+
+create {ARCH_LIB_ARCHETYPE_ITEM}
+	make_empty_differential, make_empty_differential_child
 
 feature -- Initialisation
 
@@ -41,7 +59,7 @@ feature -- Initialisation
 			a_description: like description;
 			a_definition: like definition;
 			a_terminology: like terminology)
-				-- make from pieces obtained by parsing
+				-- make from pieces, typically obtained by parsing
 		require
 			Description_valid: not an_artefact_type.is_overlay implies attached a_description
 		do
@@ -53,6 +71,7 @@ feature -- Initialisation
 			definition := a_definition
 			terminology := a_terminology
 			is_dirty := True
+			is_differential := a_terminology.is_differential
 			uid := a_uid
 
 			set_terminology_agents
@@ -64,6 +83,7 @@ feature -- Initialisation
 			Definition_set: definition = a_definition
 			Terminology_set: terminology = a_terminology
 			Is_dirty: is_dirty
+			Is_differential_follows_terminology: is_differential = a_terminology.is_differential
 			Not_generated: not is_generated
 		end
 
@@ -112,6 +132,7 @@ feature -- Initialisation
 			Definition_set: definition = a_definition
 			Invariants_set: rules = a_rules
 			Terminology_set: terminology = a_terminology
+			Is_differential_follows_terminology: is_differential = a_terminology.is_differential
 			Is_dirty: is_dirty
 			Not_generated: not is_generated
 		end
@@ -150,10 +171,194 @@ feature -- Initialisation
 					other_description, other.definition.deep_twin, other_invariants,
 					other.terminology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
+			is_valid := other.is_valid
+			is_differential := other.is_differential
 
 			rebuild
 		ensure then
 			Is_generated_preserved: is_generated = other.is_generated
+			Is_valid_preserved: is_valid = other.is_valid
+			Is_differential_preserved: is_differential = other.is_differential
+		end
+
+feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
+
+	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING)
+			-- make a new differential form archetype
+		require
+			Language_valid: not an_original_language.is_empty
+		do
+			artefact_type := an_artefact_type
+			archetype_id := an_id
+			create adl_version.make_from_string (Latest_adl_version)
+			create terminology.make_differential_empty (an_original_language, 0)
+			create original_language.make (ts.Default_language_code_set, an_original_language)
+			create description.default_create
+			create definition.make (an_id.rm_class, terminology.concept_code.twin)
+			is_dirty := True
+			is_valid := True
+		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version.same_string (Latest_adl_version)
+			Id_set: archetype_id = an_id
+			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
+			Not_specialised: not is_specialised
+			Definition_root_node_id: definition.node_id.is_equal (concept_id)
+			Not_generated: not is_generated
+			Is_dirty: is_dirty
+			Is_valid: is_valid
+		end
+
+	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id: STRING; an_original_language: STRING)
+			-- make a new differential form archetype as a child of `a_parent'
+		require
+			Language_valid: not an_original_language.is_empty
+		do
+			artefact_type := an_artefact_type
+			archetype_id := an_id
+			create adl_version.make_from_string (Latest_adl_version)
+			create terminology.make_differential_empty (an_original_language, spec_depth)
+			create original_language.make (ts.Default_language_code_set, an_original_language)
+			create description.default_create
+			create definition.make (an_id.rm_class, terminology.concept_code.twin)
+			parent_archetype_id := a_parent_id
+			is_dirty := True
+			is_valid := True
+		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version.same_string (Latest_adl_version)
+			Id_set: archetype_id = an_id
+			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			Terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
+			Definition_root_node_id: definition.node_id.is_equal (concept_id)
+			Not_generated: not is_generated
+			Is_dirty: is_dirty
+			Is_valid: is_valid
+			Is_differential: is_differential
+		end
+
+feature {ARCHETYPE_COMPARATOR, ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
+
+	make_differential_from_flat (a_flat: ARCHETYPE)
+			-- make a differential archetype using components (not copies) of a flat archetype
+		require
+			a_flat.is_flat
+		do
+			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.rm_release, a_flat.archetype_id, a_flat.parent_archetype_id,
+					a_flat.is_controlled, a_flat.uid, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
+					a_flat.description, a_flat.definition, a_flat.rules,
+					a_flat.terminology.to_differential, a_flat.annotations)
+			is_generated := True
+			is_differential := True
+			rebuild
+		ensure
+			is_generated
+			is_differential
+		end
+
+feature {ARCHETYPE_FLATTENER} -- Initialisation
+
+	make_flat_non_specialised (a_diff: ARCHETYPE)
+			-- Create a new flat archetype from a top-level differential archetype
+		require
+			a_diff.is_differential and not a_diff.is_specialised
+		do
+			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+					a_diff.original_language.deep_twin,
+					a_diff.uid,
+					a_diff.description.safe_deep_twin,
+					a_diff.definition.deep_twin, a_diff.terminology.to_flat)
+			if attached a_diff.translations as a_diff_trans then
+				translations := a_diff_trans.deep_twin
+			end
+			if attached a_diff.rules as a_diff_invs then
+				rules := a_diff_invs.deep_twin
+			end
+			if attached a_diff.annotations as a_diff_annots then
+				annotations := a_diff_annots.safe_deep_twin
+			end
+			is_generated := a_diff.is_generated
+			is_valid := True
+
+			rebuild
+		ensure
+			Generated: is_generated = a_diff.is_generated
+			Top_level: not is_specialised
+			Is_flat: is_flat
+			Is_valid: is_valid
+		end
+
+	make_flat_specialised (a_diff, a_flat_parent: ARCHETYPE)
+			-- Create a new flat archetype from a differential archetype and its flat parent, as preparation
+			-- for generating a flat archetype. The following items from the differential are used:
+			-- 	* artefact_type
+			--	* archetype_id
+			--	* uid
+			--	* original_language
+			--	* translations
+			--
+			-- The following items from the flat parent:
+			-- 	* definition (with root node id from differential definition)
+			--  * terminology !!! with languages removed that are not in the orig_lang/translations of the diff
+			-- 	* rules
+			--	* annotations
+			--
+		require
+			Conformance: a_diff.is_differential and a_flat_parent.is_flat
+			Valid_specialisation_relationship: a_diff.specialisation_depth = a_flat_parent.specialisation_depth + 1
+		local
+			desc: like description
+			flat_terminology: ARCHETYPE_TERMINOLOGY
+		do
+			-- basic identifying info, and language from from child
+			-- definition comes from parent, waiting for flattening of child on top
+			-- ontology comes from child, waiting for parent items to be merged on top
+			if attached a_diff.description as orig_desc then
+				desc := orig_desc.safe_deep_twin
+			end
+
+			flat_terminology := a_flat_parent.terminology.deep_twin
+			flat_terminology.reduce_languages_to (a_diff.terminology)
+
+			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+					a_diff.original_language.deep_twin, a_diff.uid, desc,
+					a_flat_parent.definition.deep_twin,
+					flat_terminology)
+			definition.set_node_id (a_diff.definition.node_id.twin)
+
+			-- other metadata is created from parent, with child meta-data
+			-- merged on top, overwriting any values of the same key
+			if attached a_flat_parent.other_metadata as att_md then
+				other_metadata := att_md.deep_twin
+			end
+
+			-- translations are what is available in the child archetype
+			if attached a_diff.translations as a_diff_trans then
+				translations := a_diff_trans.deep_twin
+			end
+
+			-- rules starts with what is in the parent archetype and
+			-- child invariants are merged
+			if attached a_flat_parent.rules as parent_rules then
+				rules := parent_rules.deep_twin
+			end
+
+			-- annotations starts with what is in the parent archetype and
+			-- child annotations are merged
+			if attached a_flat_parent.annotations as parent_annots then
+				annotations := parent_annots.safe_deep_twin
+			end
+
+			is_generated := a_diff.is_generated
+			is_valid := True
+
+			rebuild
+		ensure
+			Generated: is_generated = a_diff.is_generated
+			Specialised: is_specialised
+			Is_flat: is_flat
+			Is_valid: is_valid
 		end
 
 feature -- Access
@@ -460,11 +665,23 @@ feature -- Paths
 
 feature -- Status Report
 
+	is_differential: BOOLEAN
+			-- True if this archetype is differential
+
+	is_flat: BOOLEAN
+			-- True if this archetype is flat
+		do
+			Result := not is_differential
+		end
+
 	is_specialised: BOOLEAN
 			-- 	True if this archetype identifies a specialisation parent
 		do
 			Result := specialisation_depth > 0
 		end
+
+	is_valid: BOOLEAN
+			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
 
 	has_rules: BOOLEAN
 			-- true if there are invariants
@@ -506,6 +723,21 @@ feature -- Status Report
 		end
 
 feature -- Status Setting
+
+	set_is_valid (a_validity: BOOLEAN)
+			-- set is_valid flag
+		require
+			Is_differential: is_differential
+		do
+			is_valid := a_validity
+			is_dirty := False
+		end
+
+	set_differential
+			-- set is_diffrential flag
+		do
+			is_differential := True
+		end
 
 	set_is_generated
 			-- set is_generated flag
@@ -722,6 +954,46 @@ feature -- Validation
 					end (?, ?, Result))
 		end
 
+	terminology_unused_term_codes: ARRAYED_LIST [STRING]
+			-- list of at codes found in terminology that are not referenced anywhere in the archetype definition
+		local
+			id_codes: like id_codes_index
+			constraint_codes: like term_constraints_index
+			value_codes: ARRAYED_SET[STRING]
+		do
+			create Result.make (0)
+
+			id_codes := id_codes_index
+			across terminology.id_codes as term_codes_csr loop
+				if not id_codes.has (term_codes_csr.item) then
+					Result.extend (term_codes_csr.item)
+				end
+			end
+
+			create value_codes.make (0)
+			value_codes.compare_objects
+			across terminology.value_sets as vs_csr loop
+				value_codes.merge (vs_csr.item.members)
+			end
+			across value_codes_index.current_keys as keys_csr loop
+				value_codes.extend (keys_csr.item)
+			end
+			across terminology.value_codes as term_codes_csr loop
+				if not value_codes.has (term_codes_csr.item) then
+					Result.extend (term_codes_csr.item)
+				end
+			end
+
+			constraint_codes := term_constraints_index
+			across terminology.value_set_codes as term_codes_csr loop
+				if not constraint_codes.has (term_codes_csr.item) then
+					Result.extend (term_codes_csr.item)
+				end
+			end
+
+			Result.prune (concept_id)
+		end
+
 feature -- Modification
 
 	set_adl_version (a_ver: STRING)
@@ -859,6 +1131,24 @@ feature -- Modification
 			highest_redefined_id_codes.replace (highest_redefined_id_codes.item (a_parent_id) + 1, a_parent_id)
 		end
 
+	add_language_tag (a_lang_tag: STRING)
+			-- add a new language to the archetype - creates new language section in
+			-- terminology, translations and resource description
+		do
+			precursor (a_lang_tag)
+			terminology.add_language (a_lang_tag)
+		end
+
+	remove_terminology_unused_codes
+			-- remove all term and constraint codes from terminology
+		require
+			is_differential
+		do
+			across terminology_unused_term_codes as codes_csr loop
+				terminology.remove_definition (codes_csr.item)
+			end
+		end
+
 feature {ADL_2_ENGINE} -- ADL 1.5 Serialisation
 
 	synchronise_adl
@@ -867,6 +1157,79 @@ feature {ADL_2_ENGINE} -- ADL 1.5 Serialisation
 		do
 			precursor
 			terminology.synchronise_to_tree
+		end
+
+feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure
+
+	convert_to_differential_paths
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
+			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
+			-- are recorded in the `differential_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
+			-- This routine only works if validation has successfully completed because the latter process sets
+			-- is_mergeable markers in the structure.
+		require
+			Is_differential: is_differential
+			Is_specialised: is_specialised
+			Is_generated: is_generated
+		local
+			def_it: C_ITERATOR
+			converted_def: C_COMPLEX_OBJECT
+		do
+			converted_def := definition.deep_twin
+			create def_it.make (definition)
+			def_it.do_at_surface (agent node_set_differential_path (converted_def, ?, ?),
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+					do
+						Result := not a_c_node.is_path_compressible
+					end
+			)
+			definition := converted_def
+			rebuild
+		end
+
+	node_set_differential_path (root_cco: C_COMPLEX_OBJECT; a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
+			-- perform validation of node against reference model
+			-- This function gets executed on nodes 1 level BELOW where the is_congruent marker is True
+		local
+			ca2: C_ATTRIBUTE
+			co2: C_OBJECT
+		do
+			if attached {C_ATTRIBUTE} a_c_node as ca then
+				-- these are attributes that are not congruent to any node in the parent archetype,
+				-- i.e. they don't exist in the parent.
+				if root_cco.has_attribute_path (ca.path) then
+					ca2 := root_cco.attribute_at_path (ca.path)
+					if not ca2.has_differential_path then
+						debug("compress")
+							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
+						end
+						if not ca2.parent.is_root then
+							ca2.set_differential_path_to_here
+						end
+					else
+						debug("compress")
+							io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")
+						end
+					end
+				end
+			elseif attached {C_OBJECT} a_c_node as co then
+				if not co.is_root then
+					if root_cco.has_object_path (co.path) then
+						co2 := root_cco.object_at_path (co.path)
+						if not co2.parent.has_differential_path then
+debug("compress")
+	io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
+end
+							co2.parent.set_differential_path_to_here
+						end
+					else
+		debug("compress")
+			io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
+		end
+					end
+				end
+			end
 		end
 
 feature {NONE} -- Implementation

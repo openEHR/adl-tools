@@ -9,8 +9,8 @@ Grammar
 rule 1 input -> archetype
 rule 2 input -> specialised_archetype
 rule 3 input -> error
-rule 4 archetype -> source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations
-rule 5 specialised_archetype -> source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations
+rule 4 archetype -> source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations
+rule 5 specialised_archetype -> source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations
 rule 6 source_identification -> source_artefact_type arch_meta_data V_ARCHETYPE_ID
 rule 7 source_identification -> source_artefact_type error
 rule 8 source_artefact_type -> SYM_ARCHETYPE
@@ -43,8 +43,8 @@ rule 34 arch_definition -> SYM_DEFINITION error
 rule 35 arch_invariant -> -- Empty
 rule 36 arch_invariant -> SYM_INVARIANT V_ASSERTION_TEXT
 rule 37 arch_invariant -> SYM_INVARIANT error
-rule 38 arch_ontology -> SYM_ONTOLOGY V_ODIN_TEXT
-rule 39 arch_ontology -> SYM_ONTOLOGY error
+rule 38 arch_terminology -> SYM_ONTOLOGY V_ODIN_TEXT
+rule 39 arch_terminology -> SYM_ONTOLOGY error
 rule 40 arch_annotations -> -- Empty
 rule 41 arch_annotations -> SYM_ANNOTATIONS V_ODIN_TEXT
 rule 42 arch_annotations -> SYM_ANNOTATIONS error
@@ -96,7 +96,7 @@ arch_language (6) on left: 29 30, on right: 4 5
 arch_description (7) on left: 31 32, on right: 4 5
 arch_definition (8) on left: 33 34, on right: 4 5
 arch_invariant (9) on left: 35 36 37, on right: 4 5
-arch_ontology (10) on left: 38 39, on right: 4 5
+arch_terminology (10) on left: 38 39, on right: 4 5
 arch_annotations (11) on left: 40 41 42, on right: 4 5
 arch_specialisation (12) on left: 24 25, on right: 5
 arch_meta_data (13) on left: 11 12, on right: 6
@@ -109,8 +109,8 @@ state 0
 	input  ->  . archetype   (rule 1)
 	input  ->  . specialised_archetype   (rule 2)
 	input  ->  . error   (rule 3)
-	archetype  ->  . source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 4)
-	specialised_archetype  ->  . source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 5)
+	archetype  ->  . source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 4)
+	specialised_archetype  ->  . source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 5)
 	source_identification  ->  . source_artefact_type arch_meta_data V_ARCHETYPE_ID   (rule 6)
 	source_identification  ->  . source_artefact_type error   (rule 7)
 	source_artefact_type  ->  . SYM_ARCHETYPE   (rule 8)
@@ -195,8 +195,8 @@ state 7
 
 state 8
 
-	archetype  ->  source_identification . arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 4)
-	specialised_archetype  ->  source_identification . arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 5)
+	archetype  ->  source_identification . arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 4)
+	specialised_archetype  ->  source_identification . arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 5)
 	arch_specialisation  ->  . SYM_SPECIALIZE V_ARCHETYPE_ID   (rule 24)
 	arch_specialisation  ->  . SYM_SPECIALIZE error   (rule 25)
 	arch_concept  ->  .   (rule 26)
@@ -278,7 +278,7 @@ state 13
 
 state 14
 
-	archetype  ->  source_identification arch_concept . arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 4)
+	archetype  ->  source_identification arch_concept . arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 4)
 	arch_language  ->  . SYM_LANGUAGE V_ODIN_TEXT   (rule 29)
 	arch_language  ->  . SYM_LANGUAGE error   (rule 30)
 
@@ -290,7 +290,7 @@ state 14
 
 state 15
 
-	specialised_archetype  ->  source_identification arch_specialisation . arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation . arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 5)
 	arch_concept  ->  .   (rule 26)
 	arch_concept  ->  . SYM_CONCEPT V_CONCEPT_CODE   (rule 27)
 	arch_concept  ->  . SYM_CONCEPT error   (rule 28)
@@ -426,7 +426,7 @@ state 29
 
 state 30
 
-	archetype  ->  source_identification arch_concept arch_language . arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 4)
+	archetype  ->  source_identification arch_concept arch_language . arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 4)
 	arch_description  ->  . SYM_DESCRIPTION V_ODIN_TEXT   (rule 31)
 	arch_description  ->  . SYM_DESCRIPTION error   (rule 32)
 
@@ -438,7 +438,7 @@ state 30
 
 state 31
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept . arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept . arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 5)
 	arch_language  ->  . SYM_LANGUAGE V_ODIN_TEXT   (rule 29)
 	arch_language  ->  . SYM_LANGUAGE error   (rule 30)
 
@@ -536,7 +536,7 @@ state 39
 
 state 40
 
-	archetype  ->  source_identification arch_concept arch_language arch_description . arch_definition arch_invariant arch_ontology arch_annotations   (rule 4)
+	archetype  ->  source_identification arch_concept arch_language arch_description . arch_definition arch_invariant arch_terminology arch_annotations   (rule 4)
 	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 33)
 	arch_definition  ->  . SYM_DEFINITION error   (rule 34)
 
@@ -548,7 +548,7 @@ state 40
 
 state 41
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language . arch_description arch_definition arch_invariant arch_ontology arch_annotations   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language . arch_description arch_definition arch_invariant arch_terminology arch_annotations   (rule 5)
 	arch_description  ->  . SYM_DESCRIPTION V_ODIN_TEXT   (rule 31)
 	arch_description  ->  . SYM_DESCRIPTION error   (rule 32)
 
@@ -634,7 +634,7 @@ state 50
 
 state 51
 
-	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition . arch_invariant arch_ontology arch_annotations   (rule 4)
+	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition . arch_invariant arch_terminology arch_annotations   (rule 4)
 	arch_invariant  ->  .   (rule 35)
 	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 36)
 	arch_invariant  ->  . SYM_INVARIANT error   (rule 37)
@@ -649,7 +649,7 @@ state 51
 
 state 52
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description . arch_definition arch_invariant arch_ontology arch_annotations   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description . arch_definition arch_invariant arch_terminology arch_annotations   (rule 5)
 	arch_definition  ->  . SYM_DEFINITION V_CADL_TEXT   (rule 33)
 	arch_definition  ->  . SYM_DEFINITION error   (rule 34)
 
@@ -687,19 +687,19 @@ state 55
 
 state 56
 
-	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations   (rule 4)
-	arch_ontology  ->  . SYM_ONTOLOGY V_ODIN_TEXT   (rule 38)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 39)
+	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant . arch_terminology arch_annotations   (rule 4)
+	arch_terminology  ->  . SYM_ONTOLOGY V_ODIN_TEXT   (rule 38)
+	arch_terminology  ->  . SYM_ONTOLOGY error   (rule 39)
 
 	SYM_ONTOLOGY	shift, and go to state 60
 
-	arch_ontology	go to state 61
+	arch_terminology	go to state 61
 
 
 
 state 57
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition . arch_invariant arch_ontology arch_annotations   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition . arch_invariant arch_terminology arch_annotations   (rule 5)
 	arch_invariant  ->  .   (rule 35)
 	arch_invariant  ->  . SYM_INVARIANT V_ASSERTION_TEXT   (rule 36)
 	arch_invariant  ->  . SYM_INVARIANT error   (rule 37)
@@ -730,8 +730,8 @@ state 59
 
 state 60
 
-	arch_ontology  ->  SYM_ONTOLOGY . V_ODIN_TEXT   (rule 38)
-	arch_ontology  ->  SYM_ONTOLOGY . error   (rule 39)
+	arch_terminology  ->  SYM_ONTOLOGY . V_ODIN_TEXT   (rule 38)
+	arch_terminology  ->  SYM_ONTOLOGY . error   (rule 39)
 
 	V_ODIN_TEXT	shift, and go to state 63
 	error	shift, and go to state 64
@@ -740,7 +740,7 @@ state 60
 
 state 61
 
-	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations   (rule 4)
+	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology . arch_annotations   (rule 4)
 	arch_annotations  ->  .   (rule 40)
 	arch_annotations  ->  . SYM_ANNOTATIONS V_ODIN_TEXT   (rule 41)
 	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 42)
@@ -755,29 +755,29 @@ state 61
 
 state 62
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant . arch_ontology arch_annotations   (rule 5)
-	arch_ontology  ->  . SYM_ONTOLOGY V_ODIN_TEXT   (rule 38)
-	arch_ontology  ->  . SYM_ONTOLOGY error   (rule 39)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant . arch_terminology arch_annotations   (rule 5)
+	arch_terminology  ->  . SYM_ONTOLOGY V_ODIN_TEXT   (rule 38)
+	arch_terminology  ->  . SYM_ONTOLOGY error   (rule 39)
 
 	SYM_ONTOLOGY	shift, and go to state 60
 
-	arch_ontology	go to state 67
+	arch_terminology	go to state 67
 
 
 
 state 63
 
-	arch_ontology  ->  SYM_ONTOLOGY V_ODIN_TEXT .   (rule 38)
+	arch_terminology  ->  SYM_ONTOLOGY V_ODIN_TEXT .   (rule 38)
 
-	$default	reduce using rule 38 (arch_ontology)
+	$default	reduce using rule 38 (arch_terminology)
 
 
 
 state 64
 
-	arch_ontology  ->  SYM_ONTOLOGY error .   (rule 39)
+	arch_terminology  ->  SYM_ONTOLOGY error .   (rule 39)
 
-	$default	reduce using rule 39 (arch_ontology)
+	$default	reduce using rule 39 (arch_terminology)
 
 
 
@@ -793,7 +793,7 @@ state 65
 
 state 66
 
-	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations .   (rule 4)
+	archetype  ->  source_identification arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations .   (rule 4)
 
 	$default	reduce using rule 4 (archetype)
 
@@ -801,7 +801,7 @@ state 66
 
 state 67
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology . arch_annotations   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology . arch_annotations   (rule 5)
 	arch_annotations  ->  .   (rule 40)
 	arch_annotations  ->  . SYM_ANNOTATIONS V_ODIN_TEXT   (rule 41)
 	arch_annotations  ->  . SYM_ANNOTATIONS error   (rule 42)
@@ -832,7 +832,7 @@ state 69
 
 state 70
 
-	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology arch_annotations .   (rule 5)
+	specialised_archetype  ->  source_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_terminology arch_annotations .   (rule 5)
 
 	$default	reduce using rule 5 (specialised_archetype)
 

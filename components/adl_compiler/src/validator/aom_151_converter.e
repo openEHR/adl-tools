@@ -78,6 +78,8 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			Compilation_state: ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			initialise (a_target, ara)
+		ensure
+			attached arch_anc_flat as aaf implies aaf.is_flat
 		end
 
 	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
@@ -96,6 +98,8 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 				arch_anc_flat := Void
 			end
 			execution_state := Es_initial
+		ensure
+			attached arch_anc_flat as aaf implies aaf.is_flat
 		end
 
 feature -- Access
@@ -103,7 +107,7 @@ feature -- Access
 	target: ARCHETYPE
 			-- differential archetype being processed
 
-	arch_anc_flat: detachable FLAT_ARCHETYPE
+	arch_anc_flat: detachable ARCHETYPE
 
 	rm_schema: BMM_SCHEMA
 
@@ -473,7 +477,7 @@ feature {NONE} -- Implementation
 			execution_state = Es_id_codes_converted
 		end
 
-	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; anc_flat: FLAT_ARCHETYPE)
+	do_rewrite_diff_path (a_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; anc_flat: ARCHETYPE)
 			-- update path so that missing node_ids are added
 		local
 	 		apa: ARCHETYPE_PATH_ANALYSER

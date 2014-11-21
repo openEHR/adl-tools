@@ -27,16 +27,19 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			check attached aca.flat_archetype as fa then
 				target_flat := fa
 			end
+		ensure
+			Target_flat_is_flat: target_flat.is_flat
+			Target_is_differential: target.is_differential
 		end
 
 feature -- Access
 
 	target_descriptor: ARCH_LIB_ARCHETYPE_ITEM
 
-	target: DIFFERENTIAL_ARCHETYPE
+	target: ARCHETYPE
 			-- differential archetype being processed
 
-	target_flat: FLAT_ARCHETYPE
+	target_flat: ARCHETYPE
 		-- flat_parent of `target'
 
 	rm_schema: BMM_SCHEMA

@@ -74,23 +74,27 @@ feature -- Access
 
 	child_desc: ARCH_LIB_ARCHETYPE_ITEM
 
-	arch_flat_anc: FLAT_ARCHETYPE
+	arch_flat_anc: ARCHETYPE
 			-- flat archetype of parent, if applicable
 		require
 			child_desc.is_specialised
 		do
 			Result := flat_anc_desc.flat_archetype
+		ensure
+			Result.is_flat
 		end
 
-	arch_diff_child: DIFFERENTIAL_ARCHETYPE
+	arch_diff_child: ARCHETYPE
 			-- archetype for which flat form is being generated
 		do
 			check attached child_desc.differential_archetype as da then
 				Result := da
 			end
+		ensure
+			Result.is_differential
 		end
 
-	arch_flat_out: detachable FLAT_ARCHETYPE
+	arch_flat_out: detachable ARCHETYPE
 			-- generated flat archetype - logically an overlay of `arch_flat_anc' and `arch_diff_child'
 			-- if the `arch_diff_child' is a template, the dynamic type will be OPERATIONAL_TEMPLATE
 
@@ -110,9 +114,9 @@ debug ("flatten")
 		arch_flat_anc.archetype_id.physical_id + " ==============%N")
 end
 				if arch_diff_child.is_template then
-					create {OPERATIONAL_TEMPLATE} arch_flat_out.make_specialised (arch_diff_child, arch_flat_anc)
+					create {OPERATIONAL_TEMPLATE} arch_flat_out.make_flat_specialised (arch_diff_child, arch_flat_anc)
 				else
-					create arch_flat_out.make_specialised (arch_diff_child, arch_flat_anc)
+					create arch_flat_out.make_flat_specialised (arch_diff_child, arch_flat_anc)
 				end
 				expand_c_proxy_objects
 				flatten_other_metadata
@@ -123,7 +127,7 @@ end
 				arch_flat_out.set_parent_archetype_id (arch_flat_anc.archetype_id.semantic_id)
 				arch_flat_out.rebuild
 			else
-				create arch_flat_out.make_non_specialised (arch_diff_child)
+				create arch_flat_out.make_flat_non_specialised (arch_diff_child)
 			end
 
 			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to
@@ -788,10 +792,12 @@ end
 		do
 		end
 
-	template_overlay_supplier_definitions (a_flat_arch: FLAT_ARCHETYPE; depth: INTEGER)
+	template_overlay_supplier_definitions (a_flat_arch: ARCHETYPE; depth: INTEGER)
 			-- process `a_flat_arch.suppliers_index' to overlay target definitions.
+		require
+			Flat_archetype_valid: a_flat_arch.is_flat
 		local
-			supp_flat_arch: FLAT_ARCHETYPE
+			supp_flat_arch: ARCHETYPE
 			supp_arch_root_cco: C_COMPLEX_OBJECT
 			matched_arch: ARCH_LIB_ARCHETYPE_ITEM
 		do

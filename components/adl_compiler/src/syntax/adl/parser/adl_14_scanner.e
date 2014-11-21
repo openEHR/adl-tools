@@ -354,7 +354,7 @@ end
 				last_token := SYM_ONTOLOGY
 				set_start_condition(IN_ODIN_SECTION)
 				in_lineno := in_lineno + 1
-				ontology_text_start_line := in_lineno
+				terminology_text_start_line := in_lineno
 			
 end
 end
@@ -1196,7 +1196,7 @@ feature -- Access
 
 	invariant_text_start_line: INTEGER
 
-	ontology_text_start_line: INTEGER
+	terminology_text_start_line: INTEGER
 
 	annotations_text_start_line: INTEGER
 

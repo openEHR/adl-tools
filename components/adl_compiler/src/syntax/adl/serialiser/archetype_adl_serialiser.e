@@ -133,7 +133,7 @@ feature -- Serialisation
 			create kw_list.make_empty
 
 			-- adl_version
-			if attached {DIFFERENTIAL_ARCHETYPE} archetype then
+			if archetype.is_differential then
 				kw_list.append (symbol (SYM_ADL_VERSION) + "=" + archetype.adl_version)
 			else
 				kw_list.append (symbol (SYM_ADL_VERSION) + "=" + latest_adl_version)

@@ -44,6 +44,8 @@ feature -- Initialisation
 			if attached aca.specialisation_ancestor as par_aca then
 				parent_archetype := par_aca.flat_archetype
 			end
+		ensure
+			flat_archetype = source.flat_archetype
 		end
 
 feature -- Access
@@ -52,7 +54,7 @@ feature -- Access
 
 	archetype: ARCHETYPE
 
-	flat_archetype: FLAT_ARCHETYPE
+	flat_archetype: ARCHETYPE
 
 	parent_archetype: detachable ARCHETYPE
 

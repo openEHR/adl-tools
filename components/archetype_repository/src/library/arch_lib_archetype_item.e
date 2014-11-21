@@ -129,12 +129,12 @@ feature {NONE} -- Initialisation
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		local
-			a_diff_arch: DIFFERENTIAL_ARCHETYPE
+			a_diff_arch: ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
-			create a_diff_arch.make_minimal (artefact_type, an_id, locale_language_short)
+			create a_diff_arch.make_empty_differential (artefact_type, an_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 
@@ -143,20 +143,22 @@ feature {NONE} -- Initialisation
 		ensure
 			id_set: id = an_id
 			validated: is_valid
+			Differential_archetype_is_differential: differential_archetype.is_differential
 		end
 
-	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
+	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
+			Valid_parent: a_parent.is_differential
 		local
-			a_diff_arch: DIFFERENTIAL_ARCHETYPE
+			a_diff_arch: ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
-			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
+			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
@@ -167,18 +169,19 @@ feature {NONE} -- Initialisation
 			Is_specialised: is_specialised
 		end
 
-	make_new_template (an_id: ARCHETYPE_HRID; a_parent: DIFFERENTIAL_ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
+	make_new_template (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
 			-- Create a new template with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
+			Valid_parent: a_parent.is_differential
 		local
-			a_diff_arch: DIFFERENTIAL_ARCHETYPE
+			a_diff_arch: ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_template)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
-			create a_diff_arch.make_minimal_child (artefact_type, an_id, locale_language_short, a_parent)
+			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
@@ -476,7 +479,7 @@ feature -- Artefacts
 			Result := file_mgr.has_source_file
 		end
 
-	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
+	differential_archetype: detachable ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
@@ -512,7 +515,7 @@ feature -- Artefacts
 			exception_occurred := True
 		end
 
-	flat_archetype: FLAT_ARCHETYPE
+	flat_archetype: ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -523,9 +526,11 @@ feature -- Artefacts
 			check attached flat_archetype_cache as fac then
 				Result := fac
 			end
+		ensure
+			Result.is_flat
 		end
 
-	flat_archetype_with_rm: FLAT_ARCHETYPE
+	flat_archetype_with_rm: ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -536,6 +541,8 @@ feature -- Artefacts
 			check attached flat_archetype_cache as fac then
 				Result := fac
 			end
+		ensure
+			Result.is_flat
 		end
 
 	flat_serialised (include_rm: BOOLEAN): STRING
@@ -813,7 +820,7 @@ feature {NONE} -- Compilation
 			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
 			Legacy_file_available: file_mgr.has_legacy_flat_file
 		local
-			legacy_flat_archetype: detachable FLAT_ARCHETYPE
+			legacy_flat_archetype: detachable ARCHETYPE
 			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
 			clear_cache
@@ -858,7 +865,9 @@ feature {NONE} -- Compilation
 
 					-- perform standard post-parse processing
 					adl_14_engine.post_parse_process (flat_arch, Current)
-					create differential_archetype.make_from_flat (flat_arch)
+					flat_arch.set_differential
+					flat_arch.set_is_generated
+					differential_archetype := flat_arch
 
 					-- save text to diff file
 					if attached differential_serialised as txt then
@@ -927,7 +936,7 @@ feature {NONE} -- Compilation
 		require
 			Initial_state: compilation_state = Cs_parsed
 		local
-			diff_arch: DIFFERENTIAL_ARCHETYPE
+			diff_arch: ARCHETYPE
 		do
 			check attached differential_archetype as da then
 				diff_arch := da
@@ -1035,7 +1044,7 @@ feature {NONE} -- Compilation
 
 feature -- Conversion
 
-	generate_differential: DIFFERENTIAL_ARCHETYPE
+	extract_differential: ARCHETYPE
 			-- generate differential from compiled flat; if is_specialised, then
 			-- result will be path-compressed differential form archetype
 		require
@@ -1051,8 +1060,10 @@ feature -- Conversion
 					Result := da
 				end
 			else
-				create Result.make_from_flat (flat_archetype)
+				create Result.make_differential_from_flat (flat_archetype)
 			end
+		ensure
+			Result.is_differential
 		end
 
 feature -- File Access
@@ -1154,7 +1165,7 @@ feature {GUI_TEST_TOOL} -- File Access
 				archetype_serialise_engine.parse
 				if archetype_serialise_engine.parse_succeeded then
 					if attached {P_ARCHETYPE} archetype_serialise_engine.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
-						if attached {DIFFERENTIAL_ARCHETYPE} p_archetype.create_archetype as an_arch then
+						if attached {ARCHETYPE} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
 							Result := adl_2_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
 						end
@@ -1239,7 +1250,7 @@ feature {NONE} -- Implementation
 			flat_archetype_cache_attached: attached flat_archetype_cache
 		end
 
-	flat_archetype_cache: detachable FLAT_ARCHETYPE
+	flat_archetype_cache: detachable ARCHETYPE
 			-- archetype generated by flattening process
 
 	last_include_rm: BOOLEAN
@@ -1269,13 +1280,15 @@ feature {NONE} -- Implementation
 			slot_id_index_cache := Void
 		end
 
-	set_archetype_default_details (an_arch: DIFFERENTIAL_ARCHETYPE)
+	set_archetype_default_details (a_diff_arch: ARCHETYPE)
+		require
+			a_diff_arch.is_differential
 		do
-			an_arch.description.put_original_author_item ("name", author_name)
-			an_arch.description.put_original_author_item ("organisation", author_org)
-			an_arch.description.set_lifecycle_state (Resource_lifecycle_states.first)
-			an_arch.description.add_original_language_details
-			an_arch.description.set_copyright (author_copyright)
+			a_diff_arch.description.put_original_author_item ("name", author_name)
+			a_diff_arch.description.put_original_author_item ("organisation", author_org)
+			a_diff_arch.description.set_lifecycle_state (Resource_lifecycle_states.first)
+			a_diff_arch.description.add_original_language_details
+			a_diff_arch.description.set_copyright (author_copyright)
 		end
 
 	archetype_serialise_engine: ODIN_ENGINE
@@ -1348,8 +1361,10 @@ feature {NONE} -- Implementation
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)
 
+	Differential_archetype_is_differential: attached differential_archetype as da implies da.is_differential
 	differential_archetype_attached_if_valid: is_valid implies attached differential_archetype
-	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
+	Flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
+	Flat_archetype_cache_is_flat: attached flat_archetype_cache as fac implies fac.is_flat
 
 	parent_existence: specialisation_ancestor /= Void implies is_specialised
 	clients_index_valid: slot_owners_index /= Void implies not slot_owners_index.is_empty

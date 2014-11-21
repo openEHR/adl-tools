@@ -47,7 +47,7 @@ feature -- Access
 
 	gui_context: detachable ALA_EDITOR_STATE
 
-	flat_archetype_clone: FLAT_ARCHETYPE
+	flat_archetype_clone: ARCHETYPE
 			-- produce a clone of the current `flat_archetype'
 		do
 			if attached flat_archetype_clone_cache as facc then
@@ -56,6 +56,8 @@ feature -- Access
 				create Result.make_from_other (flat_archetype)
 				flat_archetype_clone_cache := Result
 			end
+		ensure
+			Result.is_flat
 		end
 
 	commit
@@ -72,7 +74,7 @@ feature -- Access
 				end
 				differential_archetype := archetype_comparator.differential_output
 			else
-				create differential_archetype.make_from_flat (flat_archetype_clone)
+				create differential_archetype.make_differential_from_flat (flat_archetype_clone)
 			end
 
 			differential_archetype.clear_is_generated
@@ -93,7 +95,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
+	flat_archetype_clone_cache: detachable ARCHETYPE
 
 	clear_cache
 		do

@@ -169,7 +169,7 @@ feature -- ADL 2 conversions
 			Result.compile ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_to_nested (dt: DT_COMPLEX_OBJECT)
+	convert_terminology_to_nested (dt: DT_COMPLEX_OBJECT)
 			-- convert 'items' nodes in ontology to nested form, corresponding to declaration like
 			-- HASH_TABLE [HASH_TABLE [ARCHETPE_TERM, STRING]]; the ADL way of expression ontology
 			-- has nested structures in the AOM, but non-nested structures in the ODIN, due to
@@ -179,13 +179,13 @@ feature -- ADL 2 conversions
 			-- A reverse routine below does the opposite, so that serialisation back out to ADL 1.4 archetypes
 			-- looks the way it always has. One day, we will change the ADL standard on this...
 		do
-			convert_ontology_items_to_nested (dt, "term_definitions")
-			convert_ontology_items_to_nested (dt, "constraint_definitions")
-			convert_ontology_items_to_nested (dt, "term_bindings")
-			convert_ontology_items_to_nested (dt, "constraint_bindings")
+			convert_terminology_items_to_nested (dt, "term_definitions")
+			convert_terminology_items_to_nested (dt, "constraint_definitions")
+			convert_terminology_items_to_nested (dt, "term_bindings")
+			convert_terminology_items_to_nested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_nested (dt: DT_COMPLEX_OBJECT; attr_name: STRING)
+	convert_terminology_items_to_nested (dt: DT_COMPLEX_OBJECT; attr_name: STRING)
 			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
@@ -201,17 +201,17 @@ feature -- ADL 2 conversions
 			end
 		end
 
-	convert_ontology_to_unnested (dt: DT_COMPLEX_OBJECT)
+	convert_terminology_to_unnested (dt: DT_COMPLEX_OBJECT)
 			-- routine to reverse effects of `convert_ontology_to_nested' for
 			-- standard ADL1.4 style serialisation
 		do
-			convert_ontology_items_to_unnested (dt, "term_definitions")
-			convert_ontology_items_to_unnested (dt, "constraint_definitions")
-			convert_ontology_items_to_unnested (dt, "term_bindings")
-			convert_ontology_items_to_unnested (dt, "constraint_bindings")
+			convert_terminology_items_to_unnested (dt, "term_definitions")
+			convert_terminology_items_to_unnested (dt, "constraint_definitions")
+			convert_terminology_items_to_unnested (dt, "term_bindings")
+			convert_terminology_items_to_unnested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_unnested (dt: DT_COMPLEX_OBJECT; attr_name: STRING)
+	convert_terminology_items_to_unnested (dt: DT_COMPLEX_OBJECT; attr_name: STRING)
 			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
