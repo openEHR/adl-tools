@@ -202,6 +202,7 @@ feature -- Parsing
 							create new_flat_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
+								"",
 								olt.original_language,
 								adl_parser.uid,
 								res_desc,	-- may be Void

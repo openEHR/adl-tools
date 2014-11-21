@@ -208,6 +208,7 @@ feature -- Parsing
 							create new_diff_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
+								adl_parser.rm_release,
 								olt.original_language,
 								adl_parser.uid,
 								res_desc,	-- may be Void

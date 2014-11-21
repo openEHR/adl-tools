@@ -54,6 +54,7 @@ feature -- Initialisation
 
 	make (an_artefact_type: like artefact_type;
 			an_id: like archetype_id;
+			an_rm_release: like rm_release;
 			an_original_language: like original_language;
 			a_uid: like uid;
 			a_description: like description;
@@ -65,6 +66,7 @@ feature -- Initialisation
 		do
 			artefact_type := an_artefact_type
 			adl_version := 	Latest_adl_version
+			rm_release := an_rm_release
 			archetype_id := an_id
 			original_language := an_original_language
 			description := a_description
@@ -89,7 +91,7 @@ feature -- Initialisation
 
 	make_all (an_artefact_type: like artefact_type;
 			an_adl_version: STRING;
-			an_rm_release: STRING;
+			an_rm_release: like rm_release;
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
@@ -108,14 +110,13 @@ feature -- Initialisation
 			Description_valid: not an_artefact_type.is_overlay implies attached a_description
 			Invariants_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
-			make (an_artefact_type, an_id,
+			make (an_artefact_type, an_id, an_rm_release,
 					an_original_language, a_uid,
 					a_description,
 					a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
 			adl_version := an_adl_version
-			rm_release := an_rm_release
 			is_controlled := is_controlled_flag
 			other_metadata := an_other_metadata
 			rules := a_rules
@@ -183,7 +184,7 @@ feature -- Initialisation
 
 feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 
-	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING)
+	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_rm_release, an_original_language: STRING)
 			-- make a new differential form archetype
 		require
 			Language_valid: not an_original_language.is_empty
@@ -191,6 +192,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			create adl_version.make_from_string (Latest_adl_version)
+			rm_release := an_rm_release
 			create terminology.make_differential_empty (an_original_language, 0)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
@@ -200,6 +202,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version.same_string (Latest_adl_version)
+			Rm_release_set: rm_release = an_rm_release
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
@@ -210,7 +213,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			Is_valid: is_valid
 		end
 
-	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id: STRING; an_original_language: STRING)
+	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_rm_release, an_original_language: STRING)
 			-- make a new differential form archetype as a child of `a_parent'
 		require
 			Language_valid: not an_original_language.is_empty
@@ -218,6 +221,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			create adl_version.make_from_string (Latest_adl_version)
+			rm_release := an_rm_release
 			create terminology.make_differential_empty (an_original_language, spec_depth)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
@@ -228,6 +232,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version.same_string (Latest_adl_version)
+			Rm_release_set: rm_release = an_rm_release
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
@@ -265,6 +270,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			a_diff.is_differential and not a_diff.is_specialised
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+					a_diff.rm_release.twin,
 					a_diff.original_language.deep_twin,
 					a_diff.uid,
 					a_diff.description.safe_deep_twin,
@@ -322,6 +328,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			flat_terminology.reduce_languages_to (a_diff.terminology)
 
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+					a_diff.rm_release.twin,
 					a_diff.original_language.deep_twin, a_diff.uid, desc,
 					a_flat_parent.definition.deep_twin,
 					flat_terminology)
@@ -379,9 +386,6 @@ feature -- Access
 			-- This does not imply conformance limited only to this release, since an archetype may
 			-- be valid with respect to multiple releases of a reference model. Conformance is captured
 			-- outside of the archetype.
-		attribute
-			create Result.make_empty
-		end
 
 	artefact_type: ARTEFACT_TYPE
 			-- design type of artefact, archetype, template, template-component, etc

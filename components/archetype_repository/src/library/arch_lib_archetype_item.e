@@ -134,7 +134,7 @@ feature {NONE} -- Initialisation
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
-			create a_diff_arch.make_empty_differential (artefact_type, an_id, locale_language_short)
+			create a_diff_arch.make_empty_differential (artefact_type, an_id, rm_schema.rm_release, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 
@@ -158,7 +158,7 @@ feature {NONE} -- Initialisation
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
-			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
+			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
@@ -181,7 +181,7 @@ feature {NONE} -- Initialisation
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_template)
 			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
 
-			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
+			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
