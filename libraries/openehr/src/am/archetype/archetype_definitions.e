@@ -128,65 +128,6 @@ feature -- Version identification
 			Result := (create {OPENEHR_VERSION}).major.out
 		end
 
-	Standard_version_regex: STRING = "[0-9]+(\.[0-9]+){0,2}"
-			-- Regex for 1, 2, or 3-part version string string of form N.M.P
-
-	Standard_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
-		once ("PROCESS")
-			create Result.make
-			Result.compile (Standard_version_regex)
-		end
-
-	version_less_than (lver, rver: STRING): BOOLEAN
-			-- is `lver'' logically earlier than `rver' in a standard scheme of dot-separated version numbers?
-		require
-			lver_valid: valid_standard_version (lver)
-			rver_valid: valid_standard_version (rver)
-		local
-			lver_strs, rver_strs: LIST [STRING]
-			lver_num, rver_num: INTEGER
-			continue: BOOLEAN
-			i: INTEGER
-		do
-			lver_strs := lver.split ('.')
-			from i := lver_strs.count until i >= 3 loop
-				lver_strs.extend ("0")
-				i := i + 1
-			end
-			rver_strs := rver.split ('.')
-			from i := rver_strs.count until i >= 3 loop
-				rver_strs.extend ("0")
-				i := i + 1
-			end
-
-			from
-				lver_strs.start
-				rver_strs.start
-				continue := True
-			until
-				not continue or lver_strs.off or rver_strs.off
-			loop
-				lver_num := lver_strs.item.to_integer
-				rver_num := rver_strs.item.to_integer
-				if lver_num < rver_num then
-					Result := True
-				elseif lver_num = rver_num then
-					continue := True
-				else
-					continue := False
-				end
-				lver_strs.forth
-				rver_strs.forth
-			end
-		end
-
-	valid_standard_version (a_ver: STRING): BOOLEAN
-			-- True if `a_ver' fits the pattern of a 1, 2 or 3 part numeric version string
-			-- with '.' separators
-		do
-			Result := Standard_version_regex_matcher.matches (a_ver)
-		end
-
 feature -- Comparison
 
 	archetype_term_keys: ARRAYED_LIST [STRING]
