@@ -1235,14 +1235,6 @@ feature {NONE} -- Implementation
 	term_binding_map_cache: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- cache for `term_binding_map'
 
-	has_path (a_path: STRING): BOOLEAN
-			-- True if path `a_path' exists in structure
-		require
-			a_path_valid: not a_path.is_empty
-		do
-			Result := dt_representation.has_path (a_path)
-		end
-
 invariant
 	Original_language_valid: not original_language.is_empty
 	Root_code_valid: is_valid_root_id_code (concept_code)
