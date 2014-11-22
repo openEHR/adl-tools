@@ -199,6 +199,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
 			is_dirty := True
 			is_valid := True
+			is_differential := True
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version.same_string (Latest_adl_version)
@@ -207,10 +208,10 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
 			Not_specialised: not is_specialised
-			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
 			Is_valid: is_valid
+			Is_differential: is_differential
 		end
 
 	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_rm_release, an_original_language: STRING)
@@ -218,17 +219,8 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 		require
 			Language_valid: not an_original_language.is_empty
 		do
-			artefact_type := an_artefact_type
-			archetype_id := an_id
-			create adl_version.make_from_string (Latest_adl_version)
-			rm_release := an_rm_release
-			create terminology.make_differential_empty (an_original_language, spec_depth)
-			create original_language.make (ts.Default_language_code_set, an_original_language)
-			create description.default_create
-			create definition.make (an_id.rm_class, terminology.concept_code.twin)
+			make_empty_differential (an_artefact_type, an_id, an_rm_release, an_original_language)
 			parent_archetype_id := a_parent_id
-			is_dirty := True
-			is_valid := True
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version.same_string (Latest_adl_version)
@@ -236,17 +228,18 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
-			Definition_root_node_id: definition.node_id.is_equal (concept_id)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
 			Is_valid: is_valid
 			Is_differential: is_differential
+			Parent_archetype_id_set: parent_archetype_id = a_parent_id
 		end
 
 feature {ARCHETYPE_COMPARATOR, ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 
 	make_differential_from_flat (a_flat: ARCHETYPE)
-			-- make a differential archetype using components (not copies) of a flat archetype
+			-- make a differential archetype using components (not copies) of a flat archetype; used to support
+			-- legacy archetyps that are parsed in a flat form but have to be converted to differential form
 		require
 			a_flat.is_flat
 		do
@@ -383,18 +376,12 @@ feature -- Access
 
 	rm_release: STRING
 			-- Semver.org compatible release of the reference model on which the archetype was based.
-			-- This does not imply conformance limited only to this release, since an archetype may
+			-- This does not imply conformance only to this release, since an archetype may
 			-- be valid with respect to multiple releases of a reference model. Conformance is captured
 			-- outside of the archetype.
 
 	artefact_type: ARTEFACT_TYPE
 			-- design type of artefact, archetype, template, template-component, etc
-
-	version: STRING
-			-- version of this archetype, according to its id
-		do
-			Result := archetype_id.version_id
-		end
 
 	parent_archetype_id: detachable STRING
 			-- reference to specialisation parent of this archetype, typically in
@@ -687,6 +674,13 @@ feature -- Status Report
 	is_valid: BOOLEAN
 			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
 
+	is_dirty: BOOLEAN
+			-- marker to be used to indicate if structure has changed in such a way that cached elements have to be regenerated,
+			-- or re-validation is needed. Set to False after validation
+
+	is_generated: BOOLEAN
+			-- True if this archetype was generated from another one, rather than being an original authored archetype
+
 	has_rules: BOOLEAN
 			-- true if there are invariants
 		do
@@ -712,13 +706,6 @@ feature -- Status Report
 		do
 			Result := definition.has_attribute_path (a_path)
 		end
-
-	is_dirty: BOOLEAN
-			-- marker to be used to indicate if structure has changed in such a way that cached elements have to be regenerated,
-			-- or re-validation is needed. Set to False after validation
-
-	is_generated: BOOLEAN
-			-- True if this archetype was generated from another one, rather than being an original authored archetype
 
 	is_template: BOOLEAN
 			-- True if `artefact_type' is a template
@@ -1333,6 +1320,7 @@ feature {NONE} -- Implementation
 
 invariant
 	Description_valid: not artefact_type.is_overlay implies attached description
+	Translations_valid: artefact_type.is_overlay implies not attached description
 	Concept_valid: concept_id.is_equal (terminology.concept_code)
 	Invariants_valid: attached rules implies not rules.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_class.as_lower)
