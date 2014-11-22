@@ -383,8 +383,6 @@ feature -- Serialisation
 			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
-			an_archetype.synchronise_adl
-
 			-- language section
 			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
 			language_context.serialise (a_format, False, False)
@@ -409,16 +407,14 @@ feature -- Serialisation
 			end
 
 			-- terminology section
-			check attached an_archetype.terminology.dt_representation as dt_ont then
-				terminology_context.set_tree (dt_ont)
-				terminology_context.serialise (a_format, False, False)
-			end
+			terminology_context.set_tree (an_archetype.terminology.dt_representation)
+			terminology_context.serialise (a_format, False, False)
 
 			-- OPT only: component_ontologies section
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
 				create comp_onts_helper.make
 				comp_onts_helper.set_component_terminologies (opt.component_terminologies)
-				terminology_context.set_tree (dt_object_converter.object_to_dt (comp_onts_helper))
+				terminology_context.set_tree (comp_onts_helper.dt_representation)
 				terminology_context.serialise (a_format, False, False)
 				comp_onts_serialised := terminology_context.serialised
 			else

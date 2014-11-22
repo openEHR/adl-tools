@@ -1195,7 +1195,6 @@ feature -- Output
 				end
 			end
 
-			dt_arch.synchronise_to_tree
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
 			archetype_serialise_engine.serialise (a_format, False, True)
 			Result := archetype_serialise_engine.serialised

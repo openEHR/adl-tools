@@ -16,15 +16,13 @@ deferred class C_DOMAIN_TYPE
 
 inherit
 	C_LEAF_OBJECT
-		rename
-			safe_deep_twin as c_safe_deep_twin
 		redefine
 			enter_subtree, exit_subtree, node_id, rm_type_name
 		end
 
 	DT_CONVERTIBLE
 		redefine
-			synchronise_to_tree, finalise_dt, safe_deep_twin
+			finalise_dt
 		end
 
 feature -- Initialisation
@@ -91,41 +89,11 @@ feature -- Conversion
 		deferred
 		end
 
-feature -- Duplication
-
-	safe_deep_twin: like Current
-		local
-			dt_c_obj: detachable DT_COMPLEX_OBJECT
-		do
-			if attached dt_representation as dt_co then
-				dt_c_obj := dt_co
-				dt_representation := Void
-			end
-			Result := c_safe_deep_twin
-			if attached dt_c_obj as dt_co then
-				dt_representation := dt_co
-			end
-		end
-
 feature -- Modification
 
 	set_rm_type_mapping (a_rm_type_mapping: attached like rm_type_mapping)
 		do
 			rm_type_mapping := a_rm_type_mapping
-		end
-
-feature -- Synchronisation
-
-	synchronise_to_tree
-			-- synchronise to parse tree representation
-		do
-			precursor
-			if attached dt_representation as dt_rep then
-				dt_rep.set_type_visible
-				if node_id.is_empty and dt_rep.has_attribute ("node_id") then
-					dt_rep.remove_attribute ("node_id")
-				end
-			end
 		end
 
 feature -- Visitor

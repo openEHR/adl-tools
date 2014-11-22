@@ -400,7 +400,6 @@ feature {NONE} -- Implementation
 				check attached source.all_schemas.item (a_schema_id) as sd then
 					schema_desc := sd
 				end
-				schema_desc.p_schema.synchronise_to_tree
 
 				create serialise_engine.make
 				serialise_engine.set_tree (schema_desc.p_schema.dt_representation)

@@ -277,23 +277,6 @@ feature -- Output
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Implementation
 
-	synchronise_adl
-			-- synchronise object representation of resource to forms suitable for serialisation
-		do
-			create orig_lang_translations.make
-			orig_lang_translations.set_original_language (original_language)
-			if attached translations as tr then
-				orig_lang_translations.set_translations (tr)
-			end
-			orig_lang_translations.synchronise_to_tree
-			if attached description as desc then
-				desc.synchronise_to_tree
-			end
-			if attached annotations as ann then
-				ann.synchronise_to_tree
-			end
-		end
-
 	set_translations (a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
@@ -301,8 +284,15 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Implementation
 			languages_available_cache.wipe_out
 		end
 
-	orig_lang_translations: detachable LANGUAGE_TRANSLATIONS
+	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing
+		do
+			create Result.make
+			Result.set_original_language (original_language)
+			if attached translations as tr then
+				Result.set_translations (tr)
+			end
+		end
 
 feature {NONE} -- Implementation
 

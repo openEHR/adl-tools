@@ -12,7 +12,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	ARCHETYPE
 		redefine
-			make_flat_specialised, synchronise_adl, annotated_path
+			make_flat_specialised, annotated_path
 		end
 
 create
@@ -85,18 +85,6 @@ feature -- Modification
 			end
 
 			Result := og_log_path.as_string
-		end
-
-feature -- Serialisation
-
-	synchronise_adl
-			-- synchronise object representation of archetype to forms suitable for
-			-- serialisation
-		do
-			precursor
-			across component_terminologies as terminologies_csr loop
-				terminologies_csr.item.synchronise_to_tree
-			end
 		end
 
 end

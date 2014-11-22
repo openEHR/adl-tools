@@ -24,7 +24,7 @@ inherit
 
 	AUTHORED_RESOURCE
 		redefine
-			synchronise_adl, make_from_other, add_language_tag
+			make_from_other, add_language_tag
 		end
 
 create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
@@ -155,10 +155,10 @@ feature -- Initialisation
 				other_translations := other_trans.deep_twin
 			end
 			if attached other.description as other_desc then
-				other_description := other_desc.safe_deep_twin
+				other_description := other_desc.deep_twin
 			end
 			if attached other.annotations as other_annots then
-				other_annotations := other_annots.safe_deep_twin
+				other_annotations := other_annots.deep_twin
 			end
 			if other.has_rules then
 				other_invariants := other.rules.deep_twin
@@ -170,7 +170,7 @@ feature -- Initialisation
 					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
 					other_description, other.definition.deep_twin, other_invariants,
-					other.terminology.safe_deep_twin, other_annotations)
+					other.terminology.deep_twin, other_annotations)
 			is_generated := other.is_generated
 			is_valid := other.is_valid
 			is_differential := other.is_differential
@@ -266,7 +266,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 					a_diff.rm_release.twin,
 					a_diff.original_language.deep_twin,
 					a_diff.uid,
-					a_diff.description.safe_deep_twin,
+					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.terminology.to_flat)
 			if attached a_diff.translations as a_diff_trans then
 				translations := a_diff_trans.deep_twin
@@ -275,7 +275,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				rules := a_diff_invs.deep_twin
 			end
 			if attached a_diff.annotations as a_diff_annots then
-				annotations := a_diff_annots.safe_deep_twin
+				annotations := a_diff_annots.deep_twin
 			end
 			is_generated := a_diff.is_generated
 			is_valid := True
@@ -314,7 +314,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- definition comes from parent, waiting for flattening of child on top
 			-- ontology comes from child, waiting for parent items to be merged on top
 			if attached a_diff.description as orig_desc then
-				desc := orig_desc.safe_deep_twin
+				desc := orig_desc.deep_twin
 			end
 
 			flat_terminology := a_flat_parent.terminology.deep_twin
@@ -347,7 +347,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- annotations starts with what is in the parent archetype and
 			-- child annotations are merged
 			if attached a_flat_parent.annotations as parent_annots then
-				annotations := parent_annots.safe_deep_twin
+				annotations := parent_annots.deep_twin
 			end
 
 			is_generated := a_diff.is_generated
@@ -1138,16 +1138,6 @@ feature -- Modification
 			across terminology_unused_term_codes as codes_csr loop
 				terminology.remove_definition (codes_csr.item)
 			end
-		end
-
-feature {ADL_2_ENGINE} -- ADL 1.5 Serialisation
-
-	synchronise_adl
-			-- synchronise object representation of archetype to forms suitable for
-			-- serialisation
-		do
-			precursor
-			terminology.synchronise_to_tree
 		end
 
 feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure

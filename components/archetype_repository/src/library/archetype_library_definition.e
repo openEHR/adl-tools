@@ -77,7 +77,6 @@ feature -- Initialisation
 			if is_remote then
 				create remote.make
 			end
-			synchronise_to_tree
 		end
 
 feature -- Access (attributes from file)

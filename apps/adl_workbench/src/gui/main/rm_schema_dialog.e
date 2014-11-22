@@ -381,8 +381,6 @@ feature {NONE} -- Implementation
 			fd: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 		do
-			schema_desc.p_schema.synchronise_to_tree
-
 			create serialise_engine.make
 			serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
 			serialise_engine.serialise (syntax_type_xml, False, False)
