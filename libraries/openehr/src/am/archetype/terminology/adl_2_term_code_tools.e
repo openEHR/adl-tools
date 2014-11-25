@@ -559,13 +559,17 @@ feature -- Conversion
 			-- `an_adl_14_path' should be a well-formed path as recognised by a regex,
 			-- of the form /aaaa/bbbb[atNNNN]/cccc[atNNNN]/dddd
 		local
-			lpos, rpos: INTEGER
+			lpos, rpos, text_lpos: INTEGER
 			at_code: STRING
 		do
 			create Result.make_from_string (an_adl_14_path)
 			lpos := an_adl_14_path.index_of ('[', 1)
 			from until lpos = 0 or lpos >= an_adl_14_path.count loop
 				rpos := an_adl_14_path.index_of (']', lpos)
+				text_lpos := an_adl_14_path.index_of ('|', lpos)
+				if text_lpos > 0 then
+					rpos := text_lpos
+				end
 				at_code := an_adl_14_path.substring (lpos+1, rpos-1)
 				Result.replace_substring_all (at_code, adl_14_id_code_converted (at_code))
 				lpos := an_adl_14_path.index_of ('[', rpos)
@@ -576,15 +580,20 @@ feature -- Conversion
 			-- convert `an_adl_2_path' containing ADL 2 id-codes to a path containing,
 			-- ADL 1.4 at-codes, using `adl_2_code_renumbered'
 			-- `an_adl_2_path' should be a well-formed path as recognised by a regex,
-			-- of the form /aaaa/bbbb[idN]/cccc[idN]/dddd
+			-- of the form /aaaa/bbbb[idN]/cccc[idN]/dddd or
+			--             /aaaa/bbbb[idN|text text text|]/cccc[idN|text text|]/dddd or
 		local
-			lpos, rpos: INTEGER
+			lpos, rpos, text_lpos: INTEGER
 			at_code: STRING
 		do
 			create Result.make_from_string (an_adl_2_path)
 			lpos := an_adl_2_path.index_of ('[', 1)
 			from until lpos = 0 or lpos >= an_adl_2_path.count loop
 				rpos := an_adl_2_path.index_of (']', lpos)
+				text_lpos := an_adl_2_path.index_of ('|', lpos)
+				if text_lpos > 0 then
+					rpos := text_lpos
+				end
 				at_code := an_adl_2_path.substring (lpos+1, rpos-1)
 				Result.replace_substring_all (at_code, adl_15_id_code_converted (at_code))
 				lpos := an_adl_2_path.index_of ('[', rpos)

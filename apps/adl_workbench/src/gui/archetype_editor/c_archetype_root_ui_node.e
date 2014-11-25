@@ -93,6 +93,7 @@ feature {NONE} -- Implementation
 			c_ui_graph_builder: ARCHETYPE_UI_GRAPH_BUILDER
 		do
 			if c_attributes.is_empty and then attached arch_node as car and attached evx_grid as att_evx_grid then
+				-- build more UI graph down to and including the next reachable C_ARCHETYPE_ROOTs
 				create c_ui_graph_builder.make (ui_graph_state)
 				create a_c_iterator.make (car.representation, c_ui_graph_builder)
 				a_c_iterator.do_until_surface_plus_one (
@@ -103,13 +104,15 @@ feature {NONE} -- Implementation
 					True
 				)
 
+				-- graft the children of the build graph root node to this node
 				check attached c_ui_graph_builder.root_node as rn then
 					false_root_ui_node := rn
 				end
-
 				across false_root_ui_node.c_attributes as c_attr_ui_node_csr loop
 					put_c_attribute (c_attr_ui_node_csr.item)
 				end
+
+				-- now do the prepare and display
 				prepare_children_display_in_grid (att_evx_grid)
 				display_in_grid (display_settings)
 			end
