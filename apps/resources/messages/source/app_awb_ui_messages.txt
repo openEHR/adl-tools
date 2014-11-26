@@ -67,6 +67,8 @@ templates = <
 		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
+		["repository_dir_not_repository"] = <"Directory $1 exists but is not an archetype repository (no $2 file found)">
+		["repository_dir_not_checkout"] = <"Archetype repository exists at $1 but is not a version control checkout area">
 		["repository_clone_dir_invalid"] = <"Can't clone repo at URL $1 to directory $2 because there is already a non-empty sub-directory $3">
 		["repository_dir_contains_duplicate"] = <"Directory $1 contains a copy of repository at $2 (duplicate Git or SVN checkout?)">
 		["repository_dir_in_existing_path"] = <"Directory $1 is either a parent or child path of an existing repository">

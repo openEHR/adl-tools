@@ -149,19 +149,20 @@ feature -- Initialisation
 				-- first of all check for broken repositories and get rid of them
 				create dead_repos.make (0)
 				across repositories_table as repos_csr loop
-					if repos_csr.item.is_empty or else not directory_exists (repos_csr.item) then
+					if repos_csr.item.is_empty or else not directory_exists (repos_csr.item) or else not
+						archetype_repository_interfaces.repository_exists_at_path (repos_csr.item)
+					then
 						dead_repos.extend (repos_csr.key)
 					end
 				end
 				across dead_repos as repos_csr loop
-					add_warning (ec_remove_library_cfg, <<get_msg (ec_ref_library_not_found,
-						<<repositories_table.repository_path (repos_csr.item)>>)>>)
+					add_warning (ec_remove_library_cfg, <<get_msg (ec_ref_library_not_found, <<repositories_table.repository_path (repos_csr.item)>>)>>)
 					repositories_table.remove_repository (repos_csr.item)
 				end
 
 				-- populate existing repositories, if any
 				across repositories_table as repos_csr loop
-					if is_vcs_checkout_area (repos_csr.item) then
+					if is_vcs_checkout_area (repos_csr.item) and archetype_repository_interfaces.repository_exists_at_path (repos_csr.item) then
 						archetype_repository_interfaces.extend_associate_with_remote (repos_csr.item)
 						if not archetype_repository_interfaces.last_repository_interface.has_repository_tool then
 							add_warning (ec_repository_tool_unavailable, <<archetype_repository_interfaces.last_repository_interface.repository_type>>)

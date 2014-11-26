@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (879)
+			create message_table.make (881)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -356,6 +356,8 @@ feature -- Initialisation
 			message_table.put ("Add Repository", ec_repository_dir_button_text)
 			message_table.put ("Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.", ec_repository_dir_button_tooltip)
 			message_table.put ("Directory $1 either doesn't exist, or already configured as a repository", ec_repository_dir_invalid)
+			message_table.put ("Directory $1 exists but is not an archetype repository (no $2 file found)", ec_repository_dir_not_repository)
+			message_table.put ("Archetype repository exists at $1 but is not a version control checkout area", ec_repository_dir_not_checkout)
 			message_table.put ("Can't clone repo at URL $1 to directory $2 because there is already a non-empty sub-directory $3", ec_repository_clone_dir_invalid)
 			message_table.put ("Directory $1 contains a copy of repository at $2 (duplicate Git or SVN checkout?)", ec_repository_dir_contains_duplicate)
 			message_table.put ("Directory $1 is either a parent or child path of an existing repository", ec_repository_dir_in_existing_path)

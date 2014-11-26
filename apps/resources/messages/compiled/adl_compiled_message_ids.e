@@ -341,6 +341,8 @@ feature -- Definitions
 		ec_repository_dir_button_text: STRING = "repository_dir_button_text"
 		ec_repository_dir_button_tooltip: STRING = "repository_dir_button_tooltip"
 		ec_repository_dir_invalid: STRING = "repository_dir_invalid"
+		ec_repository_dir_not_repository: STRING = "repository_dir_not_repository"
+		ec_repository_dir_not_checkout: STRING = "repository_dir_not_checkout"
 		ec_repository_clone_dir_invalid: STRING = "repository_clone_dir_invalid"
 		ec_repository_dir_contains_duplicate: STRING = "repository_dir_contains_duplicate"
 		ec_repository_dir_in_existing_path: STRING = "repository_dir_in_existing_path"

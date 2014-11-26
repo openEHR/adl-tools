@@ -576,8 +576,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 								-- existing local repository
 								do_add_local_repository (repo_dir)
 							end
-						else
+						elseif not archetype_repository_interfaces.last_duplicate_key_path.is_empty then
 							create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+							error_dialog.show_modal_to_window (Current)
+						else
+							create error_dialog.make_with_text (get_msg (ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
 							error_dialog.show_modal_to_window (Current)
 						end
 
@@ -608,37 +611,49 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 
 	on_associate_repository (repo_dir: STRING)
 			-- add an existing repository that has a local checkout
-		require
-			archetype_repository_interfaces.repository_exists_at_path (repo_dir) and is_vcs_checkout_area (repo_dir)
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			set_last_user_selected_directory (repo_dir)
-			if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
-				ok_cancel_buttons.disable_sensitive
-				do_with_wait_cursor (Current,
-					agent (a_dir: STRING)
-						do
-							archetype_repository_interfaces.extend_associate_with_remote (a_dir)
-						end (repo_dir)
-				)
-				if last_command_result.succeeded then
-					populate_grid
-					add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
-
-				elseif last_command_result.did_not_run then
-					create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
-					error_dialog.show_modal_to_window (Current)
-
-				else
-					create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
-					error_dialog.show_modal_to_window (Current)
-
-				end
-				ok_cancel_buttons.enable_sensitive
-			else
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+			if not archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
+				create error_dialog.make_with_text (get_msg (ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
 				error_dialog.show_modal_to_window (Current)
+
+			elseif not is_vcs_checkout_area (repo_dir) then
+				create error_dialog.make_with_text (get_msg (ec_repository_dir_not_checkout, <<repo_dir>>))
+				error_dialog.show_modal_to_window (Current)
+
+			else
+				if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
+					ok_cancel_buttons.disable_sensitive
+					do_with_wait_cursor (Current,
+						agent (a_dir: STRING)
+							do
+								archetype_repository_interfaces.extend_associate_with_remote (a_dir)
+							end (repo_dir)
+					)
+					if last_command_result.succeeded then
+						populate_grid
+						add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+
+					elseif last_command_result.did_not_run then
+						create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+						error_dialog.show_modal_to_window (Current)
+
+					else
+						create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+						error_dialog.show_modal_to_window (Current)
+
+					end
+					ok_cancel_buttons.enable_sensitive
+
+				elseif not archetype_repository_interfaces.last_duplicate_key_path.is_empty then
+					create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+					error_dialog.show_modal_to_window (Current)
+				else
+					create error_dialog.make_with_text (get_msg (ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
+					error_dialog.show_modal_to_window (Current)
+				end
 			end
 		end
 
