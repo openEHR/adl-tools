@@ -55,6 +55,8 @@ feature -- Actions
 
 feature {NONE} -- Implementation
 
+	ptr_style: detachable EV_POINTER_STYLE
+
 	do_repository_action
 			-- lauch repository action
 		do
@@ -65,20 +67,19 @@ feature {NONE} -- Implementation
 			set_stderr_agent (agent parent_dialog.update_grid_status)
 
 			parent_dialog.ok_cancel_buttons.disable_sensitive
-			do_with_wait_cursor (parent_dialog,
-				agent
-					do
-						repository_action.call ([])
 
-						-- if it is an asynchronous call, it will have created a new process, so
-						-- we wait and poll; if not, we go straight to the clean-up
-						if not live_processes.is_empty then
-							do_repository_action_poll_agent.set_interval (External_process_poll_period)
-						else
-							do_repository_action_finalise
-						end
-					end
-			)
+			ptr_style := parent_dialog.pointer_style
+			parent_dialog.set_pointer_style ((create {EV_STOCK_PIXMAPS}).wait_cursor)
+
+			repository_action.call ([])
+
+			-- if it is an asynchronous call, it will have created a new process, so
+			-- we wait and poll; if not, we go straight to the clean-up
+			if not live_processes.is_empty then
+				do_repository_action_poll_agent.set_interval (External_process_poll_period)
+			else
+				do_repository_action_finalise
+			end
 		end
 
 	do_repository_action_poll_agent: EV_TIMEOUT
@@ -110,10 +111,19 @@ feature {NONE} -- Implementation
 				if refresh_dialog then
 					parent_dialog.populate_grid
 				end
+				if attached ptr_style as att_ps then
+					parent_dialog.set_pointer_style (att_ps)
+				end
 			elseif last_command_result.did_not_run then
+				if attached ptr_style as att_ps then
+					parent_dialog.set_pointer_style (att_ps)
+				end
 				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (parent_dialog)
 			else
+				if attached ptr_style as att_ps then
+					parent_dialog.set_pointer_style (att_ps)
+				end
 				err_text := last_command_result.stderr
 
 				-- if no error out (we test for that allowing for a \r\n non-empty string), then use

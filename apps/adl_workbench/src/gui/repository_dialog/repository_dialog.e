@@ -144,7 +144,6 @@ feature {NONE} -- Initialisation
 			-- ============ main grid ============
 			create evx_grid.make (True, False, True, True)
 			evx_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			evx_grid.set_maximum_dimensions (0, Max_form_width)
 			ev_root_container.extend (evx_grid.ev_grid)
 			evx_grid.ev_grid.pointer_button_press_item_actions.extend (agent grid_item_event_handler)
 
@@ -818,7 +817,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			if button = {EV_POINTER_CONSTANTS}.right and then attached an_ev_grid_item as att_ev_gi and then
 				attached {ARCHETYPE_REPOSITORY_INTERFACE} att_ev_gi.row.data as ari
 			then
-				build_repository_context_menu (ari)
+				do_with_wait_cursor (Current, agent build_repository_context_menu (ari))
 			end
 		end
 
@@ -832,8 +831,8 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			create menu
 
 			-- get the highest status of sync status (what can be obtained without doing a fetch), and merge_status, which will have been set after a fetch.
-			a_rep_if.get_synchronisation_status
-			a_rep_if.get_merge_status
+	--		a_rep_if.get_synchronisation_status
+	--		a_rep_if.get_merge_status
 			rep_sync_status := a_rep_if.last_synchronisation_status.max (a_rep_if.last_merge_status)
 
 			-- add new library
