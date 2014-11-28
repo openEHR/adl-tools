@@ -68,7 +68,6 @@ aom_rm_type_substitutions = <
 -- States on the value side (right hand side) must be the AOM states:
 --
 --	"unmanaged"
---	"initial"
 --	"in_review"
 --	"suspended"
 --	"unstable"
@@ -82,11 +81,11 @@ aom_rm_type_substitutions = <
 
 aom_lifecycle_mappings = <
 	["AuthorDraft"] = <"initial">
-	["Draft"] = <"unstable">
-	["TeamReview"] = <"unstable">
-	["Team Review"] = <"unstable">
-	["ReviewSuspended"] = <"unstable">
-	["Review Suspended"] = <"unstable">
+	["Draft"] = <"in_development">
+	["TeamReview"] = <"in_development">
+	["Team Review"] = <"in_development">
+	["ReviewSuspended"] = <"in_development">
+	["Review Suspended"] = <"in_development">
 	["Reassess"] = <"published">
 >
 
