@@ -223,7 +223,7 @@ feature -- Initialisation
 			message_table.put ("slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint", ec_VARXS)
 			message_table.put ("node id $1 of slot filler at $2 does not correspond to any ARCHETYPE slot in flat parent", ec_VARXNC)
 			message_table.put ("node id $1 of slot filler at $2 must be specialisation of corresponding ARCHETYPE slot node id $3 in flat parent", ec_VARXID)
-			message_table.put ("RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent", ec_VARXTV)
+			message_table.put ("external reference at $1 has RM type $2 that does not conform to RM type $3 of slot or attribute in flat parent", ec_VARXTV)
 			message_table.put ("slot filler at $1 does not have matching slot node in flat parent", ec_VARXV)
 			message_table.put ("term code $1 invalid; must either be an archetype local term or a qualified external term", ec_VVST)
 			message_table.put ("$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6", ec_VPOV)

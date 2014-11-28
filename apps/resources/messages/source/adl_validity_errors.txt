@@ -113,7 +113,7 @@ templates = <
 		["VARXS"] = <"slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 		["VARXNC"] = <"node id $1 of slot filler at $2 does not correspond to any ARCHETYPE slot in flat parent">
 		["VARXID"] = <"node id $1 of slot filler at $2 must be specialisation of corresponding ARCHETYPE slot node id $3 in flat parent">
-		["VARXTV"] = <"RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
+		["VARXTV"] = <"external reference at $1 has RM type $2 that does not conform to RM type $3 of slot or attribute in flat parent">
 		["VARXV"] = <"slot filler at $1 does not have matching slot node in flat parent">
 
 		-- C_PRIMITIVE_OBJECT

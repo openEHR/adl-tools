@@ -201,7 +201,7 @@ feature {NONE} -- Implementation
 			across arch_diff_child.suppliers_index as supp_csr loop
 				-- check that supplier is known in archetype library
 				if not current_library.has_archetype_matching_ref (supp_csr.key) then
-					add_error (ec_VARXR, <<supp_csr.item.first.parent.path, supp_csr.key>>)
+					add_error (ec_VARXRA, <<supp_csr.item.first.path, supp_csr.key>>)
 				-- we could detect supplier loop here if we want
 --				elseif current_library.matching_archetype (supp_csr.key).is_equal (child_desc) then
 --					add_error (ec_VSUP, <<arch_diff_child.archetype_id.as_string, supp_csr.item.first.parent.path>>)
@@ -213,7 +213,7 @@ feature {NONE} -- Implementation
 					if not (car_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
 						rm_schema.type_conforms_to (filler_id.rm_class, car_csr.item.rm_type_name))
 					then
-						add_error (ec_VARXTV, <<car_csr.item.archetype_ref, car_csr.item.rm_type_name>>)
+						add_error (ec_VARXTV, <<car_csr.item.path, car_csr.item.archetype_ref, car_csr.item.rm_type_name>>)
 					end
 				end
 			end
