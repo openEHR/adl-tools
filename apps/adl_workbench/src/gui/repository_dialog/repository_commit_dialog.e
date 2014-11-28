@@ -34,11 +34,9 @@ create
 
 feature -- Definitions
 
-	Max_form_height: INTEGER = 600
+	Max_grid_height: INTEGER = 600
 
-	Min_form_width: INTEGER = 800
-
-	Max_form_width: INTEGER = 800
+	Max_grid_width: INTEGER = 800
 
 	col_titles: ARRAYED_LIST [STRING]
 		once
@@ -91,7 +89,7 @@ feature {NONE} -- Initialization
 
 			-- ============ commit file list ============
 			create evx_grid.make (False, True, False, True)
-			evx_grid.set_maximum_dimensions (Max_form_height, Max_form_width)
+			evx_grid.set_maximum_dimensions (Max_grid_height, Max_grid_width)
 			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- ============ commit message ============
