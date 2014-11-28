@@ -828,7 +828,7 @@ feature {NONE} -- Implementation
 			Result.append ("%N")
 			Result.append ("          Source: " + Source_url + "%N")
 			Result.append ("         License: Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N")
-			Result.append ("          Author: Thomas Beale%N")
+			Result.append ("          Author: Thomas Beale (Ocean Informatics) <http://wolandscat.net>%N")
 			Result.append ("Contributors: Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR)),%N")
 			Result.append ("                        Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N")
 			Result.append ("        Funding: Thomas Beale, Ocean Informatics <http://www.oceaninformatics.com>%N")
@@ -856,7 +856,7 @@ feature {NONE} -- Implementation
 			Result.buffered_append ("           Source: ", Bold_char_fmt); Result.buffered_append (Source_url + "%N", Normal_url_char_fmt)
 			Result.buffered_append ("          License: ", Bold_char_fmt); Result.buffered_append ("Apache 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>%N", Normal_char_fmt)
 
-			Result.buffered_append ("           Author: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale <", Normal_char_fmt)
+			Result.buffered_append ("           Author: ", Bold_char_fmt); Result.buffered_append ("Thomas Beale (Ocean Informatics) <", Normal_char_fmt)
 				Result.buffered_append ("http://wolandscat.net", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
 			Result.buffered_append (" Contributors: ", Bold_char_fmt); Result.buffered_append ("Peter Gummer (Ocean Informatics), Ian McNicoll MD (FreshEHR),%N", Normal_char_fmt)
 			Result.buffered_append ("                          Patrick Langford (Intermountain Healthcare), Harold Solbrig (Mayo Clinic)%N", Normal_char_fmt)
