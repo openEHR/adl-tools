@@ -292,18 +292,25 @@ feature {NONE} -- Implementation
 
 	do_populate
 			-- Populate content from visual controls.
+		local
+			info_dialog: EV_INFORMATION_DIALOG
 		do
 			docking_pane.set_short_title (get_text (ec_library_tool_title))
 			docking_pane.set_long_title (get_text (ec_library_tool_title) + " " + current_library_name)
 			if attached source as src then
-				archetype_explorer.populate (src)
-				if not old_current_library_name.is_equal (current_library_name) then
-					archetype_explorer.set_semantic_view
+				if src.archetype_count = 0 then
+					create info_dialog.make_with_text (get_text (ec_library_no_archetypes_found))
+					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				else
+					archetype_explorer.populate (src)
+					if not old_current_library_name.is_equal (current_library_name) then
+						archetype_explorer.set_semantic_view
+					end
+					template_explorer.populate (src)
+					set_stats_metric_tab_appearance
+					on_select_notebook
+					go_to_selected_item
 				end
-				template_explorer.populate (src)
-				set_stats_metric_tab_appearance
-				on_select_notebook
-				go_to_selected_item
 			end
 
 			-- save this library name, so we can distinguish between a later change or refresh
