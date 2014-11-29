@@ -144,7 +144,7 @@ feature -- Initialisation
 			end
 
 			-- process repositories and validate; determine setting for `current_library' if
-			-- saved library name no loner valid, or else never set
+			-- saved library name no longer valid, or else never set
 			if not has_errors then
 				-- first of all check for broken repositories and get rid of them
 				create dead_repos.make (0)

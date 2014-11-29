@@ -105,6 +105,40 @@ feature -- Definitions
 			Result.put (get_text (ec_repository_grid_edit_col_title), grid_edit_col)
 		end
 
+	Grid_col_name (a_col: INTEGER): STRING
+		require
+			a_col >= Grid_display_name_col and a_col <=  Grid_max_cols
+		do
+			check attached Grid_col_names.item (a_col) as att_str then
+				Result := att_str
+			end
+		end
+
+	Grid_col_whitespace_strings: HASH_TABLE [STRING, INTEGER]
+			-- FIXME: this is a workaround for the fact that EV_GRID.resize_column_to_content on GTK
+			-- doesn't show headers if the column data is empty. So we instead put whitespace strings
+			-- in the 'empty' columns so that the col resizing works on all platforms.
+		once
+			create Result.make (0)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (Grid_display_name_col).count * 2), Grid_display_name_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (grid_status_col).count * 2), grid_status_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (grid_vcs_branch_col).count * 2), grid_vcs_branch_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (grid_vcs_status_col).count * 2), grid_vcs_status_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (grid_description_col).count * 2), grid_description_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (Grid_maintainer_col).count * 2), Grid_maintainer_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (Grid_validation_col).count * 2), Grid_validation_col)
+			Result.put (create {STRING}.make_filled (' ', Grid_col_name (grid_edit_col).count * 2), grid_edit_col)
+		end
+
+	Grid_col_whitespace (a_col: INTEGER): STRING
+		require
+			a_col >= Grid_display_name_col and a_col <=  Grid_max_cols
+		do
+			check attached Grid_col_whitespace_strings.item (a_col) as att_str then
+				Result := att_str
+			end
+		end
+
 	frame_height: INTEGER = 100
 
 	Max_form_width: INTEGER = 800
@@ -365,14 +399,14 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			if a_rep_if.has_repository_access then
 				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, a_rep_if.checked_out_branch, Void, Void, Void, Void)
 			else
-				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
+				evx_grid.update_last_row_label_col (Grid_vcs_branch_col, Grid_col_whitespace (Grid_vcs_branch_col), Void, Void, Void, Void)
 			end
 
 			-- column 4 - VCS sync status
 			if a_rep_if.has_repository_access then
-				evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", vcs_status_tooltip (rep_sync_status), Void, Void, vcs_status_icon (rep_sync_status))
+				evx_grid.update_last_row_label_col (Grid_vcs_status_col, Grid_col_whitespace (Grid_vcs_status_col), vcs_status_tooltip (rep_sync_status), Void, Void, vcs_status_icon (rep_sync_status))
 			else
-				evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", "", Void, Void, Void)
+				evx_grid.update_last_row_label_col (Grid_vcs_status_col, Grid_col_whitespace (Grid_vcs_status_col), "", Void, Void, Void)
 			end
 
 			-- column 5 - repository description
@@ -390,7 +424,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				col_icon := get_icon_pixmap ("tool/star")
 			end
-			evx_grid.update_last_row_label_col (Grid_validation_col, "         ", Void, Void, Void, col_icon)
+			evx_grid.update_last_row_label_col (Grid_validation_col, Grid_col_whitespace (Grid_validation_col), Void, Void, Void, col_icon)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_validation_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_validation_col, agent show_repository_validation (a_rep_if))
 			end
@@ -426,22 +460,22 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- column 3 - (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, Grid_col_whitespace (Grid_vcs_branch_col), Void, Void, Void, Void)
 
 			-- column 4 - (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, Grid_col_whitespace (Grid_vcs_status_col), Void, Void, Void, Void)
 
 			-- column 5 - (blank)
-			evx_grid.update_last_row_label_col (Grid_description_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_description_col, Grid_col_whitespace (Grid_description_col), Void, Void, Void, Void)
 
 			-- column 6 - (blank)
-			evx_grid.update_last_row_label_col (Grid_maintainer_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_maintainer_col, Grid_col_whitespace (Grid_maintainer_col), Void, Void, Void, Void)
 
 			-- column 7 - (blank)
-			evx_grid.update_last_row_label_col (Grid_validation_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_validation_col, Grid_col_whitespace (Grid_validation_col), Void, Void, Void, Void)
 
 			-- column 8 - (blank)
-			evx_grid.update_last_row_label_col (Grid_edit_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_edit_col, Grid_col_whitespace (Grid_edit_col), Void, Void, Void, Void)
 		end
 
 	install_repository (a_grid_row: EV_GRID_ROW; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
@@ -500,13 +534,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_lib_if.key, col_tooltip, Void, Void, col_icon)
 
 			-- column 2 - Repo status (blank)
-			evx_grid.update_last_row_label_col (Grid_status_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_status_col, Grid_col_whitespace (Grid_status_col), Void, Void, Void, Void)
 
 			-- column 3 - Repo VCS branch (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_branch_col, Grid_col_whitespace (Grid_vcs_branch_col), Void, Void, Void, Void)
 
 			-- column 4 - Repo VCS status (blank)
-			evx_grid.update_last_row_label_col (Grid_vcs_status_col, "", Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_vcs_status_col, Grid_col_whitespace (Grid_vcs_status_col), Void, Void, Void, Void)
 
 			-- column 5 - library dscription
 			if attached a_lib_if.library_definition as att_lib_def then
@@ -999,14 +1033,20 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 			verify_dialog.show_modal_to_window (Current)
 			if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
-				archetype_repository_interfaces.remove (a_rep_if)
-				populate_grid
-				if not archetype_library_interfaces.has (original_current_library_selected) then
-					forget_current_library_name
-					current_library_removed := True
-				end
-				forget_repository (a_rep_if.key)
+				do_with_wait_cursor (Current, agent do_repository_forget (a_rep_if))
 			end
+		end
+
+	do_repository_forget (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
+			-- perform `a_rep_if' repository removal
+		do
+			archetype_repository_interfaces.remove (a_rep_if)
+			populate_grid
+			if not archetype_library_interfaces.has (original_current_library_selected) then
+				forget_current_library_name
+				current_library_removed := True
+			end
+			forget_repository (a_rep_if.key)
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL
