@@ -115,8 +115,11 @@ templates = <
 		["repository_clone_dir_confirm_text"] = <"About to clone repository $1 from $2 in $3; proceed?">
 
 		-- REPOSITORY_COMMIT_DIALOG
+		["repository_commit_include_col_title"] = <"Include">
+		["repository_commit_status_col_title"] = <"Status">
+		["repository_commit_file_list_col_title"] = <"Commit Files">
+
 		["repository_commit_message_label"] = <"Commit Message: ">
-		["repository_commit_file_list_label"] = <"Commit Files">
 		["repository_commit_dialog_title"] = <"Repository Commit">
 		["repository_commit_dialog_header_label"] = <"Commit local changes to repository $1.">
 		["repository_commit_button_text"] = <"Commit ...">
@@ -431,6 +434,7 @@ templates = <
 		["adl_14_files"] = <"ADL 1.4 files">
 		["adl_2_source_files"] = <"ADL 2 source files">
 
+		["library_no_archetypes_found"] = <"No archetypes found; may need to enable appropriate RM schema; see RM Schemas > Configure menu">
 		["library_edit_dialog_title"] = <"Edit $1">
 		["library_edit_differential_button_text"] = <"Differential">
 		["library_edit_adl14_button_text"] = <"Original source (ADL 1.4)">

@@ -41,9 +41,9 @@ feature -- Definitions
 	col_titles: ARRAYED_LIST [STRING]
 		once
 			create Result.make (0)
-			Result.extend (" ")
-			Result.extend ("  ")
-			Result.extend (get_text (ec_repository_commit_file_list_label))
+			Result.extend (get_text (ec_repository_commit_include_col_title))
+			Result.extend (get_text (ec_repository_commit_status_col_title))
+			Result.extend (get_text (ec_repository_commit_file_list_col_title))
 		end
 
 	Col_checkbox: INTEGER = 1
@@ -93,7 +93,7 @@ feature {NONE} -- Initialization
 			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- ============ commit message ============
-			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 0, 0, True)
+			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 2, 50, True)
 			ev_root_container.extend (evx_commit_msg_text.ev_root_container)
 			ev_root_container.disable_item_expand (evx_commit_msg_text.ev_root_container)
 			gui_controls.extend (evx_commit_msg_text)
