@@ -129,7 +129,7 @@ feature {NONE} -- Initialisation
 			evx_control_panel.add_frame (evx_treeview_control.ev_root_container, False)
 
 			--======================== 'Batch update' frame =======================
-			create evx_batch_update_frame.make ("Batch update", 85, 100, False)
+			create evx_batch_update_frame.make ("Batch update", False)
 			evx_control_panel.add_frame_control (evx_batch_update_frame, False)
 
 			-- remove unused codes RB
@@ -138,7 +138,7 @@ feature {NONE} -- Initialisation
 			evx_batch_update_frame.extend (evx_remove_unused_codes_cb.ev_data_control, False)
 
 			--====================== 'Test' frame ========================
-			create evx_test_frame.make ("Test", 85, 100, False)
+			create evx_test_frame.make ("Test", False)
 			evx_control_panel.add_frame_control (evx_test_frame, False)
 
 			-- test refresh button
@@ -167,7 +167,7 @@ feature {NONE} -- Initialisation
 
 
 			-- ==================== 'Diffs' frame =======================
-			create evx_diffs_frame.make ("Diffs", 85, 100, False)
+			create evx_diffs_frame.make ("Diffs", False)
 			evx_control_panel.add_frame_control (evx_diffs_frame, False)
 
 			-- diff source button

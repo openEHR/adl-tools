@@ -64,7 +64,7 @@ feature -- Initialisation
 			-- ========= view detail level options  =========
 
 			-- 'Detail level' frame
-			create evx_view_detail_frame.make (get_text (ec_view_detail_controls_text), 85, 100, False)
+			create evx_view_detail_frame.make (get_text (ec_view_detail_controls_text), False)
 			evx_definition_control_panel.add_frame_control (evx_view_detail_frame, False)
 
 			-- view detail radio buttons
@@ -85,7 +85,7 @@ feature -- Initialisation
 			-- ========= RM view options =========
 
 			-- 'RM visibility' frame
-			create evx_rm_property_visibility_frame.make (get_text (ec_rm_visibility_controls_text), 85, 0, False)
+			create evx_rm_property_visibility_frame.make (get_text (ec_rm_visibility_controls_text), False)
 			evx_definition_control_panel.add_frame_control (evx_rm_property_visibility_frame, False)
 
 			-- add RM multiplicities check button
@@ -117,7 +117,7 @@ feature -- Initialisation
 			evx_rm_property_visibility_frame.extend (evx_rm_if_attrs_visible_cb.ev_data_control, False)
 
 			-- 'RM rendering' frame
-			create evx_rendering_frame.make (get_text (ec_rendering_controls_text), 85, 0, False)
+			create evx_rendering_frame.make (get_text (ec_rendering_controls_text), False)
 			evx_definition_control_panel.add_frame_control (evx_rendering_frame, False)
 
 			-- use RM inheritance rendering check button

@@ -56,7 +56,7 @@ feature {NONE} -- Initialization
 			-- =========== Tab 1 - path settings ===========
 
 			-- frame
-			create path_settings_frame_ctl.make (get_text (ec_path_settings_frame_text), 0, 0, False)
+			create path_settings_frame_ctl.make (get_text (ec_path_settings_frame_text), False)
 			ev_notebook_paths_vb.extend (path_settings_frame_ctl.ev_root_container)
 
 			-- Terminology directory setting
@@ -78,7 +78,7 @@ feature {NONE} -- Initialization
 			-- ========== Tab 1 - external tools settings ==========
 
 			-- frame
-			create tool_paths_frame_ctl.make (get_msg (ec_tool_paths_frame_text, Void), 0, 0, False)
+			create tool_paths_frame_ctl.make (get_msg (ec_tool_paths_frame_text, Void), False)
 			ev_notebook_paths_vb.extend (tool_paths_frame_ctl.ev_root_container)
 
 			-- Text editor path setter control
@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 							Result := errname
 						end
 					end,
-				error_type_names, 100)
+				error_type_names, 15)
 			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
 			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
@@ -182,7 +182,7 @@ feature {NONE} -- Initialization
 							Result := tt
 						end
 					end,
-				Tool_tab_names, 100)
+				Tool_tab_names, 15)
 			ev_notebook_ui_settings_2_vb.extend (tool_tab_combo_box.ev_root_container)
 			ev_notebook_ui_settings_2_vb.disable_item_expand (tool_tab_combo_box.ev_root_container)
 			gui_controls.extend (tool_tab_combo_box)
@@ -233,7 +233,7 @@ feature {NONE} -- Initialization
 				agent (a_key, a_val: STRING) do namespace_table.put_namespace (a_key, a_val) end,
 				agent (a_key: STRING) do namespace_table.remove_namespace (a_key) end,
 				Void,
-				0, 150, False, Void)
+				0, 25, False, Void)
 
 			ev_notebook_namespaces_vb.extend (namespaces_ctl.ev_root_container)
 			gui_controls.extend (namespaces_ctl)
@@ -250,7 +250,7 @@ feature {NONE} -- Initialization
 				agent (a_key, a_val: STRING) do terminology_settings.put_uri (a_key, a_val) end,
 				agent (a_key: STRING) do terminology_settings.remove_uri (a_key) end,
 				Void,
-				0, 150, False, Void)
+				0, 25, False, Void)
 
 			ev_notebook_terminology_settings_vb.extend (terminology_settings_ctl.ev_root_container)
 			gui_controls.extend (terminology_settings_ctl)

@@ -73,7 +73,7 @@ feature -- Initialisation
 			-- ========= RM view options =========
 
 			-- frame
-			create rm_property_visibility_frame_ctl.make (get_text (ec_rm_visibility_controls_text), 85, 0, False)
+			create rm_property_visibility_frame_ctl.make (get_text (ec_rm_visibility_controls_text), False)
 			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
@@ -98,7 +98,7 @@ feature -- Initialisation
 			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- frame
-			create rm_rendering_frame_ctl.make (get_text (ec_rendering_controls_text), 85, 0, False)
+			create rm_rendering_frame_ctl.make (get_text (ec_rendering_controls_text), False)
 			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM icons check button
@@ -109,7 +109,7 @@ feature -- Initialisation
 			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
 
 			-- ========== recompute controls =========
-			create rm_recompute_frame_ctl.make (get_text (ec_rm_closure_depth_control_frame_text), 0, 0, False)
+			create rm_recompute_frame_ctl.make (get_text (ec_rm_closure_depth_control_frame_text), False)
 			control_panel.add_frame_control (rm_recompute_frame_ctl, False)
 
 			-- closure depth control
