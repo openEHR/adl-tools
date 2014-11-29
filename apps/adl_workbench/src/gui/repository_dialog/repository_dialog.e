@@ -324,6 +324,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 		do
 			-- get rid of previously defined rows
 			evx_grid.wipe_out
+			ev_live_status_text.set_text ("")
 
 			-- create row containing widgets for each library
 			across archetype_repository_interfaces as rep_interfaces_csr loop
@@ -675,7 +676,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						error_dialog.show_modal_to_window (Current)
 
 					else
-						create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+						create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.error_output>>))
 						error_dialog.show_modal_to_window (Current)
 
 					end
@@ -770,7 +771,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 				error_dialog.show_modal_to_window (Current)
 			else
-				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.stderr>>))
+				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.error_output>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 			ok_cancel_buttons.enable_sensitive
