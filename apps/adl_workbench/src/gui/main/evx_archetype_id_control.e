@@ -33,14 +33,14 @@ feature -- Initialisation
 
 	make (an_id_template: ARCHETYPE_HRID; a_title: STRING; a_data_source_agent: like data_source_agent)
 		do
-			make_text_ctl (a_title, a_data_source_agent, 0, 0, True)
+			make_text_ctl (a_title, a_data_source_agent, 0, True)
 			make_id_controls (an_id_template)
 		end
 
 	make_readonly (an_id_template: ARCHETYPE_HRID; a_title: detachable STRING; a_data_source_agent: like data_source_agent)
 			-- make so that no user interaction with visual control is possible
 		do
-			make_readonly_text_ctl (a_title, a_data_source_agent, 0, 0, True)
+			make_readonly_text_ctl (a_title, a_data_source_agent, 0, True)
 			make_id_controls (an_id_template)
 		end
 
@@ -50,7 +50,7 @@ feature -- Initialisation
 			an_undo_redo_chain: like undo_redo_chain)
 		do
 			make_linked_text_ctl (a_title, a_data_source_agent, a_data_source_setter_agent,
-				a_data_source_remove_agent, an_undo_redo_chain, 0, 0, True)
+				a_data_source_remove_agent, an_undo_redo_chain, 0, True)
 			make_id_controls (an_id_template)
 		end
 

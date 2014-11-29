@@ -64,7 +64,7 @@ feature {NONE} -- Initialization
 
 			-- ============ branches combo ============
 			create evx_branch_combo.make (get_text (ec_repository_checkout_branch_combo_label), get_text (ec_repository_checkout_branch_combo_tooltip),
-				agent :STRING do Result := branch_name end, branches, 0, 0)
+				agent :STRING do Result := branch_name end, branches, 0)
 			ev_root_container.extend (evx_branch_combo.ev_root_container)
 			ev_root_container.disable_item_expand (evx_branch_combo.ev_root_container)
 			gui_controls.extend (evx_branch_combo)

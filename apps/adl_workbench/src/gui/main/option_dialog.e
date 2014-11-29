@@ -60,17 +60,17 @@ feature {NONE} -- Initialization
 			ev_notebook_paths_vb.extend (path_settings_frame_ctl.ev_root_container)
 
 			-- Terminology directory setting
-			create terminology_dir_setter.make (get_text (ec_terminology_directory_text), agent terminology_directory, 0, 0)
+			create terminology_dir_setter.make (get_text (ec_terminology_directory_text), agent terminology_directory, 0)
 			path_settings_frame_ctl.extend (terminology_dir_setter.ev_root_container, False)
 			gui_controls.extend (terminology_dir_setter)
 
 			-- Export directory setting
-			create export_dir_setter.make (get_text (ec_export_directory_text), agent export_directory, 0, 0)
+			create export_dir_setter.make (get_text (ec_export_directory_text), agent export_directory, 0)
 			path_settings_frame_ctl.extend (export_dir_setter.ev_root_container, False)
 			gui_controls.extend (export_dir_setter)
 
 			-- Save test diff files directory setting
-			create test_files_dir_setter.make (get_text (ec_test_diff_files_directory_text), agent test_diff_directory, 0, 0)
+			create test_files_dir_setter.make (get_text (ec_test_diff_files_directory_text), agent test_diff_directory, 0)
 			path_settings_frame_ctl.extend (test_files_dir_setter.ev_root_container, False)
 			gui_controls.extend (test_files_dir_setter)
 
@@ -82,17 +82,17 @@ feature {NONE} -- Initialization
 			ev_notebook_paths_vb.extend (tool_paths_frame_ctl.ev_root_container)
 
 			-- Text editor path setter control
-			create text_editor_dir_setter.make_linked (get_text (ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0, 0)
+			create text_editor_dir_setter.make_linked (get_text (ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0)
 			tool_paths_frame_ctl.extend (text_editor_dir_setter.ev_root_container, False)
 			gui_controls.extend (text_editor_dir_setter)
 
 			-- ADL editor path setter control
-			create adl_editor_dir_setter.make (get_text (ec_adl_editor_directory_text), agent editor_app_command, 0, 0)
+			create adl_editor_dir_setter.make (get_text (ec_adl_editor_directory_text), agent editor_app_command, 0)
 			tool_paths_frame_ctl.extend (adl_editor_dir_setter.ev_root_container, False)
 			gui_controls.extend (adl_editor_dir_setter)
 
 			-- Diff tool path setter control
-			create diff_tool_dir_setter.make (get_text (ec_diff_tool_directory_text), agent difftool_command, 0, 0)
+			create diff_tool_dir_setter.make (get_text (ec_diff_tool_directory_text), agent difftool_command, 0)
 			tool_paths_frame_ctl.extend (diff_tool_dir_setter.ev_root_container, False)
 			gui_controls.extend (diff_tool_dir_setter)
 
@@ -111,7 +111,7 @@ feature {NONE} -- Initialization
 							Result := errname
 						end
 					end,
-				error_type_names, 0, 100)
+				error_type_names, 100)
 			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
 			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
@@ -182,7 +182,7 @@ feature {NONE} -- Initialization
 							Result := tt
 						end
 					end,
-				Tool_tab_names, 0, 100)
+				Tool_tab_names, 100)
 			ev_notebook_ui_settings_2_vb.extend (tool_tab_combo_box.ev_root_container)
 			ev_notebook_ui_settings_2_vb.disable_item_expand (tool_tab_combo_box.ev_root_container)
 			gui_controls.extend (tool_tab_combo_box)
@@ -198,8 +198,7 @@ feature {NONE} -- Initialization
 				agent :STRING do Result := author_name end,
 				agent (a_str :STRING) do set_author_name (a_str) end,
 				agent do set_author_name ("") end,
-				Void,
-				0, 0, True)
+				Void, 0, True)
 			ev_notebook_authoring_vb.extend (auth_name_text_ctl.ev_root_container)
 			ev_notebook_authoring_vb.disable_item_expand (auth_name_text_ctl.ev_root_container)
 			gui_controls.extend (auth_name_text_ctl)
@@ -209,7 +208,7 @@ feature {NONE} -- Initialization
 				agent (a_str :STRING) do set_author_org (a_str) end,
 				agent do set_author_org ("") end,
 				Void,
-				0, 0, True)
+				0, True)
 			ev_notebook_authoring_vb.extend (auth_org_text_ctl.ev_root_container)
 			ev_notebook_authoring_vb.disable_item_expand (auth_org_text_ctl.ev_root_container)
 			gui_controls.extend (auth_org_text_ctl)
@@ -218,8 +217,7 @@ feature {NONE} -- Initialization
 				agent :STRING do Result := author_copyright end,
 				agent (a_str :STRING) do set_author_copyright (a_str) end,
 				agent do set_author_copyright ("") end,
-				Void,
-				0, 0, True)
+				Void, 0, True)
 			ev_notebook_authoring_vb.extend (auth_copyright_text_ctl.ev_root_container)
 			ev_notebook_authoring_vb.disable_item_expand (auth_copyright_text_ctl.ev_root_container)
 			gui_controls.extend (auth_copyright_text_ctl)

@@ -93,7 +93,7 @@ feature {NONE} -- Initialization
 			end
 
 			-- ============ Directory path ============
-			create dir_setter.make (get_text (ec_archetype_dir_label_text), agent :STRING do Result := archetype_directory end, 0, 0)
+			create dir_setter.make (get_text (ec_archetype_dir_label_text), agent :STRING do Result := archetype_directory end, 0)
 			ev_root_container.extend (dir_setter.ev_root_container)
 			gui_controls.extend (dir_setter)
 

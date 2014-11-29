@@ -93,8 +93,7 @@ feature {NONE} -- Initialization
 			create node_id_text_ctl.make_linked (get_text (ec_node_id_text),
 				agent :STRING do Result := new_params.node_id_text end,
 				agent (v:STRING) do new_params.set_node_id_text (v) end,
-				Void, Void,
-				0, 0, True)
+				Void, Void, 0, True)
 			ev_root_container.extend (node_id_text_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (node_id_text_ctl.ev_root_container)
 			if not term_definition_mandatory then
@@ -106,8 +105,7 @@ feature {NONE} -- Initialization
 			create node_id_description_ctl.make_linked (get_text (ec_node_id_description),
 				agent :STRING do Result := new_params.node_id_description end,
 				agent (v:STRING) do new_params.set_node_id_description (v) end,
-				Void, Void,
-				0, 0, True)
+				Void, Void, 0, True)
 			ev_root_container.extend (node_id_description_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (node_id_description_ctl.ev_root_container)
 			if not term_definition_mandatory then
@@ -119,8 +117,7 @@ feature {NONE} -- Initialization
 			create aom_type_ctl.make_linked (get_text (ec_initial_c_object_config_constraint_type_text),
 				get_text (ec_initial_c_object_config_constraint_type_tooltip),
 				agent :STRING do Result := new_params.aom_type end,
-				aom_types, agent set_new_aom_type, Void, Void,
-				0, 0)
+				aom_types, agent set_new_aom_type, Void, Void, 0)
 			ev_root_container.extend (aom_type_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (aom_type_ctl.ev_root_container)
 			gui_controls.extend (aom_type_ctl)
@@ -133,8 +130,7 @@ feature {NONE} -- Initialization
 				get_text (ec_initial_c_object_config_rm_type_tooltip),
 				agent :STRING do Result := new_params.rm_type end,
 				rm_types, agent (a_str: STRING) do new_params.set_rm_type (a_str) end,
-				Void, Void,
-				0, 0)
+				Void, Void, 0)
 			ev_root_container.extend (rm_type_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (rm_type_ctl.ev_root_container)
 			gui_controls.extend (rm_type_ctl)
@@ -146,8 +142,7 @@ feature {NONE} -- Initialization
 			create occurrences_choice_ctl.make_linked (get_text (ec_initial_c_object_config_occurrences_text),
 				get_text (ec_initial_c_object_config_occurrences_tooltip),
 				agent :STRING do Result := new_params.occurrences end,
-				occurrences_constrained_list, agent (a_str: STRING) do new_params.set_occurrences (a_str) end, Void, Void,
-				0, 0)
+				occurrences_constrained_list, agent (a_str: STRING) do new_params.set_occurrences (a_str) end, Void, Void, 0)
 			ev_root_container.extend (occurrences_choice_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (occurrences_choice_ctl.ev_root_container)
 			gui_controls.extend (occurrences_choice_ctl)
@@ -156,8 +151,7 @@ feature {NONE} -- Initialization
 			create arch_id_list_ctl.make_linked (get_text (ec_initial_c_object_config_ext_ref_text),
 				get_text (ec_initial_c_object_config_ext_ref_tooltip),
 				agent :detachable STRING do Result := new_params.ext_ref end,
-				arch_ext_ref_list, agent (a_str: STRING) do new_params.set_ext_ref (a_str) end, Void, Void,
-				0, 0)
+				arch_ext_ref_list, agent (a_str: STRING) do new_params.set_ext_ref (a_str) end, Void, Void, 0)
 			ev_root_container.extend (arch_id_list_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (arch_id_list_ctl.ev_root_container)
 			if not new_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
@@ -171,8 +165,7 @@ feature {NONE} -- Initialization
 			create arch_path_list_ctl.make_linked (get_text (ec_initial_c_object_config_path_ref_text),
 				get_text (ec_initial_c_object_config_path_ref_tooltip),
 				agent :detachable STRING do Result := new_params.path_ref end,
-				arch_path_list, agent (a_str: STRING) do new_params.set_path_ref (a_str) end, Void, Void,
-				0, 0)
+				arch_path_list, agent (a_str: STRING) do new_params.set_path_ref (a_str) end, Void, Void, 0)
 			ev_root_container.extend (arch_path_list_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (arch_path_list_ctl.ev_root_container)
 			if not new_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT_PROXY}).name)) then

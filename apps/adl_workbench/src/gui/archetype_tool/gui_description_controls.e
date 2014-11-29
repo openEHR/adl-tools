@@ -49,7 +49,7 @@ feature {NONE} -- Initialisation
 				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
 				resource_lifecycle_states,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
-				Void, undo_redo_chain, 0, 100)
+				Void, undo_redo_chain, 100)
 			gui_controls.extend (evx_lifecycle_state_combo)
 			ev_governance_tab_vbox.extend (evx_lifecycle_state_combo.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_lifecycle_state_combo.ev_root_container)
@@ -70,7 +70,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_namespace (a_str) end end,
 				agent do source_archetype.description.clear_custodian_namespace end,
-				undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_custodian_namespace_text)
 			evx_custodian_frame.extend (evx_custodian_namespace_text.ev_root_container, False)
 
@@ -84,7 +84,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_organisation (a_str) end end,
 				agent do source_archetype.description.clear_custodian_organisation end,
-				undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_custodian_organisation_text)
 			evx_custodian_frame.extend (evx_custodian_organisation_text.ev_root_container, False)
 
@@ -104,7 +104,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_namespace (a_str) end end,
 				agent do source_archetype.description.clear_original_namespace end,
-				undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_original_namespace_text)
 			evx_original_publisher_frame.extend (evx_original_namespace_text.ev_root_container, False)
 
@@ -118,7 +118,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_publisher (a_str) end end,
 				agent do source_archetype.description.clear_original_publisher end,
-				undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_original_publisher_text)
 			evx_original_publisher_frame.extend (evx_original_publisher_text.ev_root_container, False)
 
@@ -182,7 +182,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_author_tab_vbox)
 			ev_root_container.set_item_text (ev_author_tab_vbox, get_text (ec_authoring_tab_text))
 
-			create evx_auth_frame.make (get_msg (ec_auth_frame_text, Void), 70, 0, True)
+			create evx_auth_frame.make (get_text (ec_auth_frame_text), 70, 0, True)
 			ev_author_tab_vbox.extend (evx_auth_frame.ev_root_container)
 
 			-- original_author control - Hash
@@ -190,8 +190,7 @@ feature {NONE} -- Initialisation
 				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_original_author_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_original_author_item (a_key) end end,
-				undo_redo_chain,
-				0, min_entry_control_width, False, Void)
+				undo_redo_chain, 0, min_entry_control_width, False, Void)
 			gui_controls.extend (evx_original_author)
 			evx_auth_frame.extend (evx_original_author.ev_root_container, True)
 
@@ -200,20 +199,18 @@ feature {NONE} -- Initialisation
 				agent : detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description as desc and then attached desc.other_contributors as oc then Result := oc end end,
 				agent (a_str: STRING; i: INTEGER) do if attached source_archetype.description as desc then desc.add_other_contributor (a_str, i) end end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.remove_other_contributor (a_str) end end,
-				undo_redo_chain,
-				0, min_entry_control_width, False)
+				undo_redo_chain, 0, min_entry_control_width, False)
 			gui_controls.extend (evx_auth_contrib_list)
 			evx_auth_frame.extend (evx_auth_contrib_list.ev_root_container, True)
 
-			create evx_lang_frame.make (get_msg (ec_lang_frame_text, Void), 130, 0, False)
+			create evx_lang_frame.make (get_text (ec_lang_frame_text), 130, 0, False)
 			ev_author_tab_vbox.extend (evx_lang_frame.ev_root_container)
 			create ev_lang_original_trans_hbox
 			evx_lang_frame.extend (ev_lang_original_trans_hbox, False)
 
 			-- original_language - text field (not modifiable)
 			create evx_original_language_text.make (get_text (ec_original_language_label_text),
-				agent : STRING do Result := source_archetype.original_language.code_string end,
-				0, 0, True)
+				agent : STRING do Result := source_archetype.original_language.code_string end, 50, True)
 			gui_controls.extend (evx_original_language_text)
 			ev_lang_original_trans_hbox.extend (evx_original_language_text.ev_root_container)
 
@@ -224,8 +221,7 @@ feature {NONE} -- Initialisation
 						if source_archetype.has_translations then
 							Result := create {ARRAYED_LIST [STRING]}.make_from_array (source_archetype.translations.current_keys)
 						end
-					end, Void,
-				0, 50, True)
+					end, Void, 0, 50, True)
 			ev_lang_original_trans_hbox.extend (evx_trans_languages_combo.ev_root_container)
 			gui_controls.extend (evx_trans_languages_combo)
 
@@ -236,7 +232,7 @@ feature {NONE} -- Initialisation
 			create ev_trans_author_accreditation_vbox
 			ev_lang_translations_hbox.extend (ev_trans_author_accreditation_vbox)
 			create evx_trans_author.make_linked (get_text (ec_translator_label_text),
-				agent :detachable HASH_TABLE [STRING, STRING]
+				agent : detachable HASH_TABLE [STRING, STRING]
 					do
 						if source_archetype.has_translations then
 							Result := translation_details.author
@@ -264,14 +260,13 @@ feature {NONE} -- Initialisation
 				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
 				agent (a_key, a_val: STRING) do if source_archetype.has_translations then translation_details.put_other_details_item (a_key, a_val) end end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
-				undo_redo_chain,
-				0, min_entry_control_width, False, Void)
+				undo_redo_chain, 0, min_entry_control_width, False, Void)
 			gui_controls.extend (evx_trans_other_details)
 			evx_trans_languages_combo.add_linked_control (evx_trans_other_details)
 			ev_lang_translations_hbox.extend (evx_trans_other_details.ev_root_container)
 
 
-			-- ================================== Descriptive tab ========================================
+			-- ================================== Details tab ========================================
 			create ev_description_tab_vbox
 			ev_root_container.extend (ev_description_tab_vbox)
 			ev_root_container.set_item_text (ev_description_tab_vbox, get_text (ec_descriptive_tab_text))
@@ -333,7 +328,7 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_resource_package_uri (a_str) end end,
 				agent do source_archetype.description.clear_resource_package_uri end,
-				undo_redo_chain, 0, 0, True)
+				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_resource_package)
 			evx_resource_frame.extend (evx_resource_package.ev_root_container, False)
 

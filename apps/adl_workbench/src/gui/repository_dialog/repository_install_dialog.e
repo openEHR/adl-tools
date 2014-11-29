@@ -73,16 +73,16 @@ feature {NONE} -- Initialization
 
 			-- ============ URL text entry ============
 			if repository_url.is_empty then
-				create evx_url_text.make_linked (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, agent set_repository_url, Void, Void, 0, 0, True)
+				create evx_url_text.make_linked (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, agent set_repository_url, Void, Void, 0, True)
 			else
-				create evx_url_text.make_readonly (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, 0, 0, True)
+				create evx_url_text.make_readonly (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, 0, True)
 			end
 			ev_root_container.extend (evx_url_text.ev_root_container)
 			ev_root_container.disable_item_expand (evx_url_text.ev_root_container)
 			gui_controls.extend (evx_url_text)
 
 			-- ============ new repository dir chooser ============
-			create evx_dir_setter.make_linked (get_text (ec_repository_dir_button_text), agent :STRING do Result := local_directory end, agent set_local_directory, Void, Void, 0, 0)
+			create evx_dir_setter.make_linked (get_text (ec_repository_dir_button_text), agent :STRING do Result := local_directory end, agent set_local_directory, Void, Void, 0)
 			evx_dir_setter.set_button_tooltip (get_text (ec_repository_dir_button_tooltip))
 			evx_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
 			ev_root_container.extend (evx_dir_setter.ev_root_container)

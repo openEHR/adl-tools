@@ -153,7 +153,7 @@ feature {NONE} -- Initialisation
 			evx_test_frame.extend (evx_regression_test_cb.ev_data_control, False)
 
 			-- progress indicator
-			create evx_progress_counter.make_readonly (get_text (ec_Test_processed_indicator_text), agent :STRING do Result := last_tested_archetypes_count.out end, 0, 0, True)
+			create evx_progress_counter.make_readonly (get_text (ec_Test_processed_indicator_text), agent :STRING do Result := last_tested_archetypes_count.out end, 0, True)
 			evx_test_frame.extend (evx_progress_counter.ev_root_container, False)
 
 			-- start / stop button
@@ -353,7 +353,7 @@ feature -- Commands
 			end
 			evx_grid.expand_tree
 			evx_grid.resize_columns_to_content
-			
+
 			evx_grid.ev_grid.unlock_update
 
 			evx_progress_counter.ev_data_control.set_text ("0")
