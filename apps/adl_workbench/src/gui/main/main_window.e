@@ -1223,6 +1223,9 @@ feature {NONE} -- Implementation
 				error_tool.clear
 
 				library_tool.populate (current_library)
+			else
+				clear_toolbar_controls
+				library_tool.clear
 			end
 		end
 
