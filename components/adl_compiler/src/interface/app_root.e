@@ -118,7 +118,7 @@ feature -- Initialisation
 			if file_system.directory_exists (rm_schema_directory) then
 				rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					if repositories_table.is_empty then
+					if repository_resources.is_empty then
 						add_warning (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
 					else
 						add_error (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
@@ -148,20 +148,20 @@ feature -- Initialisation
 			if not has_errors then
 				-- first of all check for broken repositories and get rid of them
 				create dead_repos.make (0)
-				across repositories_table as repos_csr loop
+				across repository_resources as repos_csr loop
 					if repos_csr.item.is_empty or else not directory_exists (repos_csr.item) or else not
 						archetype_repository_interfaces.repository_exists_at_path (repos_csr.item)
 					then
-						dead_repos.extend (repos_csr.key)
+						dead_repos.extend (repos_csr.item)
 					end
 				end
 				across dead_repos as repos_csr loop
-					add_warning (ec_remove_library_cfg, <<get_msg (ec_ref_library_not_found, <<repositories_table.repository_path (repos_csr.item)>>)>>)
-					repositories_table.remove_repository (repos_csr.item)
+					add_warning (ec_remove_library_cfg, <<get_msg (ec_ref_library_not_found, <<repos_csr.item>>)>>)
+					repository_resources.remove_repository (repos_csr.item)
 				end
 
 				-- populate existing repositories, if any
-				across repositories_table as repos_csr loop
+				across repository_resources as repos_csr loop
 					if is_vcs_checkout_area (repos_csr.item) and archetype_repository_interfaces.repository_exists_at_path (repos_csr.item) then
 						archetype_repository_interfaces.extend_associate_with_remote (repos_csr.item)
 						if not archetype_repository_interfaces.last_repository_interface.has_repository_tool then

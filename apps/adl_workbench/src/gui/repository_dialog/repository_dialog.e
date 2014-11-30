@@ -669,7 +669,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					)
 					if last_command_result.succeeded then
 						populate_grid
-						add_repository_path_with_key (repo_dir, archetype_repository_interfaces.item (repo_dir).key)
+						add_repository_resource (repo_dir)
 
 					elseif last_command_result.did_not_run then
 						create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
@@ -764,7 +764,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						do
 							archetype_repository_interfaces.extend_checkout_from_remote_finalise (clone_repository_url)
 							populate_grid
-							add_repository_path_with_key (clone_repository_dir, archetype_repository_interfaces.item (clone_repository_dir).key)
+							add_repository_resource (clone_repository_dir)
 						end
 				)
 			elseif last_command_result.did_not_run then
@@ -828,7 +828,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			-- add a local repository, and repopulate
 		do
 			archetype_repository_interfaces.extend (a_repo_dir)
-			add_repository_path_with_key (a_repo_dir, archetype_repository_interfaces.last_repository_interface.key)
+			add_repository_resource (a_repo_dir)
 			populate_grid
 		end
 
@@ -836,7 +836,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			-- create a new local repository, save it, and repopulate
 		do
 			archetype_repository_interfaces.extend_create_local (a_repo_dir)
-			add_repository_path_with_key (a_repo_dir, archetype_repository_interfaces.last_repository_interface.key)
+			add_repository_resource (a_repo_dir)
 			populate_grid
 		end
 
@@ -1047,7 +1047,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				forget_current_library_name
 				current_library_removed := True
 			end
-			forget_repository (a_rep_if.key)
+			forget_repository_resource (a_rep_if.local_directory)
 		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL

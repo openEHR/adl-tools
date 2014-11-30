@@ -26,6 +26,10 @@ inherit
 		end
 
 	SHARED_EXTERNAL_TOOL_INTERFACES
+		export
+			{NONE} all;
+			{ANY} directory_exists, is_vcs_checkout_area, tool_supported, deep_twin, is_deep_equal, standard_is_equal
+		end
 
 create
 	make_associate_with_remote, make, make_clone_remote_and_checkout

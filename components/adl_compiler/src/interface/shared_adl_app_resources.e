@@ -175,13 +175,13 @@ feature -- Application Switches
 			app_cfg.put_string_value ("/general/archetype_view_language", a_lang)
 		end
 
-	repositories_table_path: STRING
+	repository_resources_path: STRING
 			-- path of the REPOSITORY_CONFIG_TABLE within the parent object representing the whole .cfg file
 		once ("PROCESS")
 			Result := "/" + {REPOSITORIES_TABLE}.root_attribute_name
 		end
 
-	repositories_table: REPOSITORIES_TABLE
+	repository_resources: REPOSITORIES_TABLE
 			-- hash of repo configs each of which is a list of {ref_repo_path, working_repo_path} configs or maybe just
 			-- {ref_repo_path}, keyed by config name. The data are stored in the following way:
 			--
@@ -191,43 +191,36 @@ feature -- Application Switches
 			--	>
 			--
 		do
-			if attached repositories_table_cache.item as pci then
+			if attached repository_resources_cache.item as pci then
 				Result := pci
 			else
-				if attached {REPOSITORIES_TABLE} app_cfg.object_value (repositories_table_path, ({REPOSITORIES_TABLE}).name) as p then
+				if attached {REPOSITORIES_TABLE} app_cfg.object_value (repository_resources_path, ({REPOSITORIES_TABLE}).name) as p then
 					Result := p
 				else
 					create Result.default_create
 				end
-				repositories_table_cache.put (Result)
+				repository_resources_cache.put (Result)
 			end
 		end
 
-	add_repository_path_with_key (a_repo_dir, a_key: STRING)
+	add_repository_resource (a_repo_dir: STRING)
 			-- add a new repository to repository path
 		do
-			repositories_table.put_repository (a_repo_dir, a_key)
-			save_repositories_table
+			repository_resources.put_repository (a_repo_dir)
+			save_repository_resources
 		end
 
-	add_repository_path (a_repo_dir: STRING)
-			-- add a new repository to repository path
+	forget_repository_resource (a_path: STRING)
+			-- remove repository with key `a_path'
 		do
-			repositories_table.put_repository (a_repo_dir, "repository-" + (repositories_table.count + 1).out)
-			save_repositories_table
+			repository_resources.remove_repository (a_path)
+			save_repository_resources
 		end
 
-	forget_repository (a_key: STRING)
-			-- remove repository with key `a_key'
-		do
-			repositories_table.remove_repository (a_key)
-			save_repositories_table
-		end
-
-	save_repositories_table
+	save_repository_resources
 			-- hash of repository paths
 		do
-			app_cfg.put_object (repositories_table_path, repositories_table)
+			app_cfg.put_object (repository_resources_path, repository_resources)
 
 			-- FIXME: temporary - retain for a few releases until all users
 			-- have installed the beta 11 release or later
@@ -585,7 +578,7 @@ feature {NONE} -- Cached Settings
 			create Result.make_empty
 		end
 
-	repositories_table_cache: CELL [detachable REPOSITORIES_TABLE]
+	repository_resources_cache: CELL [detachable REPOSITORIES_TABLE]
 		once ("PROCESS")
 			create Result.put (Void)
 		end
@@ -603,7 +596,7 @@ feature {NONE} -- Cached Settings
 	resources_refresh_from_file
 			-- actions to clear any cached content from config file, due to file being re-loaded
 		do
-			repositories_table_cache.put (Void)
+			repository_resources_cache.put (Void)
 			init_gen_dirs_from_current_library
 		end
 
