@@ -996,7 +996,6 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					command_runner.do_action (a_rep_if, agent a_rep_if.stage_all, Void, False)
 					if last_command_result.succeeded then
 						command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, True)
-						current_library_modified := True
 					end
 				else
 					if not commit_dialog.commit_list.is_empty then
@@ -1004,7 +1003,6 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						if last_command_result.succeeded then
 							command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, True)
 						end
-						current_library_modified := True
 					end
 					if not commit_dialog.clean_list.is_empty then
 						command_runner.do_action (a_rep_if, agent a_rep_if.clean_files (commit_dialog.clean_list), Void, False)
@@ -1012,7 +1010,6 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					end
 					if not commit_dialog.revert_list.is_empty then
 						command_runner.do_action (a_rep_if, agent a_rep_if.revert_files (commit_dialog.revert_list), Void, False)
-						current_library_modified := True
 					end
 				end
 			end
