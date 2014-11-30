@@ -325,13 +325,33 @@ feature -- Commands
 			end
 		end
 
-	stage (file_list: ARRAYED_LIST [STRING])
+	stage_files (a_file_list: ARRAYED_LIST [STRING])
 			-- stage changes from local file system to local repository
 		require
 			has_repository_access
 		do
 			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_stage (file_list)
+				att_rm_acc.do_stage_files (a_file_list)
+			end
+		end
+
+	clean_files (a_file_list: ARRAYED_LIST [STRING])
+			-- clean untracked files from local file system
+		require
+			has_repository_access
+		do
+			check attached repository_access as att_rm_acc then
+				att_rm_acc.do_clean_files (a_file_list)
+			end
+		end
+
+	revert_files (a_file_list: ARRAYED_LIST [STRING])
+			-- revert changes to tracked files from local file system
+		require
+			has_repository_access
+		do
+			check attached repository_access as att_rm_acc then
+				att_rm_acc.do_revert_files (a_file_list)
 			end
 		end
 

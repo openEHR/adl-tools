@@ -41,20 +41,28 @@ feature -- Definitions
 	col_titles: ARRAYED_LIST [STRING]
 		once
 			create Result.make (0)
-			Result.extend (get_text (ec_repository_commit_include_col_title))
 			Result.extend (get_text (ec_repository_commit_status_col_title))
+			Result.extend (get_text (ec_repository_commit_commit_col_title))
+			Result.extend (get_text (ec_repository_commit_revert_col_title))
 			Result.extend (get_text (ec_repository_commit_file_list_col_title))
 		end
 
-	Col_checkbox: INTEGER = 1
-	Col_status: INTEGER = 2
-	Col_filename: INTEGER = 3
+	Col_status: INTEGER = 1
+	Col_commit: INTEGER = 2
+	Col_revert: INTEGER = 3
+	Col_filename: INTEGER = 4
 
 feature {NONE} -- Initialization
 
 	make (a_rep_if: ARCHETYPE_REPOSITORY_INTERFACE)
 		do
 			create commit_list.make (0)
+			commit_list.compare_objects
+			create revert_list.make (0)
+			revert_list.compare_objects
+			create clean_list.make (0)
+			clean_list.compare_objects
+
 			repository_name := a_rep_if.key
 			file_list := a_rep_if.uncommitted_files
 			create message.make_empty
@@ -93,7 +101,7 @@ feature {NONE} -- Initialization
 			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- ============ commit message ============
-			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 2, 50, True)
+			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 2, 0, True)
 			ev_root_container.extend (evx_commit_msg_text.ev_root_container)
 			ev_root_container.disable_item_expand (evx_commit_msg_text.ev_root_container)
 			gui_controls.extend (evx_commit_msg_text)
@@ -128,26 +136,50 @@ feature -- Events
 
 	on_ok
 		local
+			error_dialog: EV_INFORMATION_DIALOG
 			i: INTEGER
 			ev_row: EV_GRID_ROW
 			unchecked_files_exist: BOOLEAN
+			fdesc: TUPLE [status, filename: STRING]
 		do
+			commit_list.wipe_out
+			clean_list.wipe_out
+			revert_list.wipe_out
+
 			message := evx_commit_msg_text.data_control_text
+
 			from i := 1 until i > evx_grid.row_count loop
 				ev_row := evx_grid.ev_grid.row (i)
-				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_row.item (Col_checkbox) as ev_chk_item then
-					if ev_chk_item.is_checked and then attached {STRING} ev_row.data as fname then
-						commit_list.extend (fname)
+				check attached {TUPLE [status, filename: STRING]} ev_row.data as att_rd then
+					fdesc := att_rd
+				end
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_row.item (Col_commit) as ev_commit_item then
+					if ev_commit_item.is_checked then
+						commit_list.extend (fdesc.filename)
 					else
 						unchecked_files_exist := True
+					end
+				end
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_row.item (Col_revert) as ev_revert_item then
+					if ev_revert_item.is_checked then
+						if fdesc.status[2] = '?' then
+							clean_list.extend (fdesc.filename)
+						else
+							revert_list.extend (fdesc.filename)
+						end
 					end
 				end
 				i := i + 1
 			end
 
 			commit_all := not unchecked_files_exist
-			is_valid := True
-			hide
+			if (commit_all or not commit_list.is_empty) and message.is_empty then
+				create error_dialog.make_with_text (get_text (ec_no_commit_message_supplied))
+				error_dialog.show_modal_to_window (Current)
+			else
+				is_valid := True
+				hide
+			end
 		end
 
 feature -- Access
@@ -156,7 +188,11 @@ feature -- Access
 
 	file_list: ARRAYED_LIST [TUPLE [status, filename: STRING]]
 
-	commit_list: ARRAYED_LIST [STRING]
+	commit_list: ARRAYED_SET [STRING]
+
+	revert_list: ARRAYED_SET [STRING]
+
+	clean_list: ARRAYED_SET [STRING]
 
 	commit_all: BOOLEAN
 
@@ -199,10 +235,25 @@ feature {NONE} -- Implementation
 		do
 			evx_grid.wipe_out
 			across file_list as file_csr loop
-				evx_grid.add_row (file_csr.item.filename)
-				-- make checkbox non-editable for already Added files
-				evx_grid.last_row_add_checkbox (Col_checkbox, True, True)
+				evx_grid.add_row (file_csr.item)
+
+				-- VCS status
 				evx_grid.set_last_row_label_col (Col_status, file_csr.item.status, Void, Void, Void, Void)
+
+				-- make commit checkbox non-editable for already Added files
+				evx_grid.last_row_add_checkbox (Col_commit, True, True)
+
+				-- revert checkbox
+				evx_grid.last_row_add_checkbox (Col_revert, False, True)
+
+				if attached evx_grid.last_row as lr and then attached {EV_GRID_CHECKABLE_LABEL_ITEM} lr.item (Col_commit) as ev_commit_cb
+					and then attached {EV_GRID_CHECKABLE_LABEL_ITEM} lr.item (Col_revert) as ev_revert_cb
+				then
+					ev_commit_cb.checked_changed_actions.force (agent enforce_commit_revert_xor (?, ev_revert_cb))
+					ev_revert_cb.checked_changed_actions.force (agent enforce_commit_revert_xor (?, ev_commit_cb))
+				end
+
+				-- file name
 				evx_grid.set_last_row_label_col (Col_filename, file_csr.item.filename, Void, Void, Void, Void)
 			end
 
@@ -210,6 +261,13 @@ feature {NONE} -- Implementation
 			evx_grid.set_column_titles (col_titles)
 			evx_grid.resize_columns_to_content
 			evx_grid.resize_viewable_area_to_content
+		end
+
+	enforce_commit_revert_xor (a_changed_cb, other_cb: EV_GRID_CHECKABLE_LABEL_ITEM)
+		do
+			if a_changed_cb.is_checked and other_cb.is_checked then
+				other_cb.set_is_checked (False)
+			end
 		end
 
 	ev_cell_1, ev_cell_2: EV_CELL

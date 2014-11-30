@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (884)
+			create message_table.make (888)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -395,13 +395,17 @@ feature -- Initialisation
 			message_table.put ("Install", ec_repository_status_install)
 			message_table.put ("%N-------------%NRemote source:%N%TURL: $1%N%Tcustodian: $2", ec_archetype_library_grid_name_col_tooltip)
 			message_table.put ("About to clone repository $1 from $2 in $3; proceed?", ec_repository_clone_dir_confirm_text)
-			message_table.put ("Include", ec_repository_commit_include_col_title)
+			message_table.put ("Commit", ec_repository_commit_commit_col_title)
+			message_table.put ("Revert", ec_repository_commit_revert_col_title)
 			message_table.put ("Status", ec_repository_commit_status_col_title)
-			message_table.put ("Commit Files", ec_repository_commit_file_list_col_title)
+			message_table.put ("Files", ec_repository_commit_file_list_col_title)
 			message_table.put ("Commit Message: ", ec_repository_commit_message_label)
 			message_table.put ("Repository Commit", ec_repository_commit_dialog_title)
 			message_table.put ("Commit local changes to repository $1.", ec_repository_commit_dialog_header_label)
 			message_table.put ("Commit ...", ec_repository_commit_button_text)
+			message_table.put ("Revert", ec_repository_commit_revert_button_text)
+			message_table.put ("Forget local changes, and revert to file as last committed to repository, or remove in case of new file.", ec_repository_commit_revert_button_tooltip)
+			message_table.put ("No commmit message supplied", ec_no_commit_message_supplied)
 			message_table.put ("Stage error: $1", ec_repository_stage_failed)
 			message_table.put ("Install Repository", ec_repository_install_dialog_title)
 			message_table.put ("ASSOCIATE: select repository already cloned on your file system OR%NCLONE: clone from the remote repository - choose PARENT directory%N   and tick the box.", ec_repository_install_dialog_header_label_url)
