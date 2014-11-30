@@ -287,6 +287,7 @@ feature {NONE} -- Implementation
 		do
 			metrics_viewer.clear
 			stats_viewer.clear
+			archetype_explorer.clear
 			ev_root_container.select_item (archetype_explorer.ev_root_container)
 		end
 
