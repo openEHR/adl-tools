@@ -183,6 +183,9 @@ feature {NONE} -- Implementation
 	 		source.do_all_semantic (agent ev_semantic_grid_populate_enter, agent ev_semantic_grid_populate_exit)
 			gui_semantic_grid.ev_grid.expand_all (agent ev_semantic_tree_expand)
 			gui_semantic_grid.resize_columns_to_content
+			if gui_filesys_grid.ev_grid.is_displayed then
+				do_populate_filesys_grid
+			end
 		end
 
 	do_populate_filesys_grid
