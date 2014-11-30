@@ -777,8 +777,7 @@ feature {NONE} -- Tools menu events
 			-- and b) to get better whitespace formatting in source files.
 		local
 			question_dialog: EV_QUESTION_DIALOG
-			yes_text, no_text, cancel_text, export_dir: STRING
-			info_dialog: EV_INFORMATION_DIALOG
+			yes_text, no_text, cancel_text: STRING
 		do
 			if not adl_roundtripping then
 				create question_dialog.make_with_text (get_text (ec_roundtripping_question))

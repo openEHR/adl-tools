@@ -33,7 +33,7 @@ feature {NONE} -- Events
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 
-				if repositories_table.has_repository ("openehr:test") then
+				if repository_resources.has_repository ("/tmp/openehr/repositories/test") then
 					set_current_library_name ("openehr:test")
 				else
 					assert ("Please define the %"openehr:test%" library in " + app_cfg.file_path, False)
