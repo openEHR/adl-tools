@@ -108,8 +108,13 @@ feature -- Modification
 			-- put `a_repository', replacing any previous repository of that name
 		require
 			Path_not_empty: not a_path.is_empty and not has_repository (a_path)
+		local
+			cand_key_val: INTEGER
 		do
-			locations.put (a_path, (locations.count + 1).out)
+			from cand_key_val := locations.count + 1 until not locations.has (cand_key_val.out)	loop
+				cand_key_val := cand_key_val + 1
+			end
+			locations.put (a_path, cand_key_val.out)
 		ensure
 			has_repository: has_repository (a_path)
 		end
