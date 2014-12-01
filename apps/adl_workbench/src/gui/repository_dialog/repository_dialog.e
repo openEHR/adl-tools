@@ -324,7 +324,6 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 		do
 			-- get rid of previously defined rows
 			evx_grid.wipe_out
-			ev_live_status_text.set_text ("")
 
 			-- create row containing widgets for each library
 			across archetype_repository_interfaces as rep_interfaces_csr loop
@@ -362,6 +361,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- make the columnn content visible
+			ev_live_status_text.set_text ("")
 			evx_grid.set_column_titles (Grid_col_names.linear_representation)
 			evx_grid.resize_columns_to_content
 			evx_grid.resize_viewable_area_to_content
@@ -995,13 +995,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				if commit_dialog.commit_all then
 					command_runner.do_action (a_rep_if, agent a_rep_if.stage_all, Void, False)
 					if last_command_result.succeeded then
-						command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, True)
+						command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, False)
 					end
 				else
 					if not commit_dialog.commit_list.is_empty then
 						command_runner.do_action (a_rep_if, agent a_rep_if.stage_files (commit_dialog.commit_list), Void, False)
 						if last_command_result.succeeded then
-							command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, True)
+							command_runner.do_action (a_rep_if, agent a_rep_if.commit (commit_dialog.message), Void, False)
 						end
 					end
 					if not commit_dialog.clean_list.is_empty then
@@ -1012,6 +1012,8 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						command_runner.do_action (a_rep_if, agent a_rep_if.revert_files (commit_dialog.revert_list), Void, False)
 					end
 				end
+				do_with_wait_cursor (Current, agent populate_grid)
+
 			end
 		end
 
