@@ -839,7 +839,7 @@ feature {NONE} -- Implementation
 			Result.append ("  - Eiffel Software EiffelStudio GPL release <http://www.eiffel.com>%N")
 			Result.append ("  - Gobo parsing libraries and tools <http://www.gobosoft.com>%N")
 			Result.append ("  - Jonas Rask Design icons <http://jonasraskdesign.com>%N")
-			Result.append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)%N")
+			Result.append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)")
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -871,7 +871,7 @@ feature {NONE} -- Implementation
 			Result.buffered_append ("  - Gobo parsing libraries and tools <", Normal_char_fmt)
 				Result.buffered_append ("http://www.gobosoft.com", Normal_url_char_fmt); Result.buffered_append (">%N", Normal_char_fmt)
 			Result.buffered_append ("  - Jonas Rask Design icons <http://jonasraskdesign.com>%N", Normal_char_fmt)
-			Result.buffered_append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)%N", Normal_char_fmt)
+			Result.buffered_append ("  - VisualPharm <http://www.visualpharm.com/> 'must-have' icons (CC-BY-ND 3.0)", Normal_char_fmt)
 			Result.flush_buffer
 			Result.disable_edit
 			Result.set_background_color (Splash_background_color)
