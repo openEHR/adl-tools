@@ -219,7 +219,17 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 		require
 			Language_valid: not an_original_language.is_empty
 		do
-			make_empty_differential (an_artefact_type, an_id, an_rm_release, an_original_language)
+			artefact_type := an_artefact_type
+			archetype_id := an_id
+			create adl_version.make_from_string (Latest_adl_version)
+			rm_release := an_rm_release
+			create terminology.make_differential_empty (an_original_language, spec_depth)
+			create original_language.make (ts.Default_language_code_set, an_original_language)
+			create description.default_create
+			create definition.make (an_id.rm_class, terminology.concept_code.twin)
+			is_dirty := True
+			is_valid := True
+			is_differential := True
 			parent_archetype_id := a_parent_id
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
