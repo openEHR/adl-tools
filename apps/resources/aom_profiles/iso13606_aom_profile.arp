@@ -80,7 +80,7 @@ aom_rm_type_substitutions = <
 --
 
 aom_lifecycle_mappings = <
-	["AuthorDraft"] = <"initial">
+	["AuthorDraft"] = <"unmanaged">
 	["Draft"] = <"in_development">
 	["TeamReview"] = <"in_development">
 	["Team Review"] = <"in_development">

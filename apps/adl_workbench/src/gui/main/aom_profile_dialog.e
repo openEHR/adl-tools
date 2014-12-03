@@ -54,9 +54,19 @@ feature -- Definitions
 			Result := Grid_edit_col
 		end
 
-	Frame_height: INTEGER = 70
+	Grid_col_names: HASH_TABLE [STRING, INTEGER]
+		once
+			create Result.make (0)
+			Result.put (get_text (ec_aom_profile_grid_profile_col_title), Grid_profile_col)
+			Result.put (get_text (ec_aom_profile_grid_rm_col_title), Grid_rm_schemas_col)
+			Result.put (get_text (ec_aom_profile_grid_term_col_title), Grid_terminologies_col)
+			Result.put (get_text (ec_aom_profile_grid_validated_col_title), Grid_validated_col)
+			Result.put (get_text (ec_aom_profile_grid_edit_col_title), Grid_edit_col)
+		end
 
-	Frame_width: INTEGER = 300
+	Frame_height: INTEGER = 200
+
+	Frame_width: INTEGER = 400
 
 	Grid_expansion_factor: REAL = 1.2
 
@@ -76,11 +86,9 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- ============ main grid ============
-			create grid
-			-- grid.enable_tree
-			ev_root_container.extend (grid)
-			grid.set_minimum_height (Frame_height)
-			grid.set_minimum_width (Frame_width)
+			create evx_grid.make (True, False, True, True)
+	--		evx_grid.set_maximum_dimensions (frame_height, frame_width)
+			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- space cell
 			create ev_cell_3
@@ -89,10 +97,10 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ AOM profile directory setter ============
-			create dir_setter.make_linked (get_text (ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, agent on_set_aom_profile_dir, Void, Void, 0)
-			ev_root_container.extend (dir_setter.ev_root_container)
-			ev_root_container.disable_item_expand (dir_setter.ev_root_container)
-			gui_controls.extend (dir_setter)
+			create evx_dir_setter.make_linked (get_text (ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, agent on_set_aom_profile_dir, Void, Void, 0)
+			ev_root_container.extend (evx_dir_setter.ev_root_container)
+			ev_root_container.disable_item_expand (evx_dir_setter.ev_root_container)
+			gui_controls.extend (evx_dir_setter)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent on_cancel)
@@ -106,7 +114,6 @@ feature {NONE} -- Initialisation
 			extend (ev_root_container)
 			set_title (get_text (ec_aom_profile_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
-			set_minimum_width (Frame_width + 40)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
@@ -115,7 +122,7 @@ feature {NONE} -- Initialisation
 			set_max_size_to_monitor (Current)
 
 			-- Connect events.
-			show_actions.extend (agent grid.set_focus)
+			show_actions.extend (agent (evx_grid.ev_grid).set_focus)
 			show_actions.extend (agent do_populate)
 
 			-- add a reload button to the left of Ok/ Cancel
@@ -150,7 +157,7 @@ feature -- Commands
 	reload
 			-- allow user reload after manual changes while correcting schemas
 		do
-			on_set_aom_profile_dir (dir_setter.data_control_text)
+			on_set_aom_profile_dir (evx_dir_setter.data_control_text)
 			aom_profiles_access.load_profiles
 			do_populate
 		end
@@ -166,7 +173,7 @@ feature -- Events
 			-- directory browse button (multiple times). We do it here because the user might have also set the
 			-- directory by directly typing in the directory text box (in which case there is no other event to
 			-- link this call to)
-			on_set_aom_profile_dir (dir_setter.data_control_text)
+			on_set_aom_profile_dir (evx_dir_setter.data_control_text)
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_aom_profile_dir) then
@@ -228,18 +235,14 @@ feature {NONE} -- Implementation
 			-- Set the grid from shared settings.
 		local
 			i: INTEGER
-			form_width: INTEGER
-			gli: EV_GRID_LABEL_ITEM
-			gci: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
 			aom_profile: AOM_PROFILE
 			prf_name: STRING
 			rm_schemas_list, terminologies: STRING
+			col_icon: EV_PIXMAP
 		do
 			-- get rid of previously defined rows
-			grid.wipe_out
-			grid.enable_column_resize_immediate
-			grid.set_minimum_height ((aom_profiles_access.profile_descriptor_candidates.count + 1) * grid.row_height + grid.header.height)
+			evx_grid.wipe_out
 
 			-- create row containinng widgets for each profile
 			across aom_profiles_access.profile_descriptor_candidates as profs_csr loop
@@ -269,57 +272,40 @@ feature {NONE} -- Implementation
 					prf_name := "unknown"
 				end
 
+				evx_grid.add_row (prf_name)
+
 				-- column 1 - profile name
-				create gli.make_with_text (prf_name)
-				grid.set_item (Grid_profile_col, grid.row_count + 1, gli)
-				row := gli.row
+				evx_grid.update_last_row_label_col (Grid_profile_col, prf_name, Void, Void, Void, Void)
 
 				-- column 2 - matched Reference Models list
-				create gci.make_with_text (rm_schemas_list)
-				row.set_item (Grid_rm_schemas_col, gci)
+				evx_grid.update_last_row_label_col (Grid_rm_schemas_col, rm_schemas_list, Void, Void, Void, Void)
 
 				-- column 3 - matched Terminologies list
-				create gci.make_with_text (terminologies)
-				row.set_item (Grid_terminologies_col, gci)
+				evx_grid.update_last_row_label_col (Grid_terminologies_col, terminologies, Void, Void, Void, Void)
 
-				-- column 7 - validated
-				create gli.make_with_text ("         ")
+				-- column 4 - validated
 				if profs_csr.item.passed and not profs_csr.item.has_warnings then
-					gli.set_pixmap (get_icon_pixmap ("tool/star"))
+					col_icon := get_icon_pixmap ("tool/star")
 				else
 					if profs_csr.item.has_errors then
-						gli.set_pixmap (get_icon_pixmap ("tool/errors"))
+						col_icon := get_icon_pixmap ("tool/errors")
 					else
-						gli.set_pixmap (get_icon_pixmap ("tool/info"))
+						col_icon := get_icon_pixmap ("tool/info")
 					end
-					gli.select_actions.extend (agent show_profile_validation (profs_csr.item))
 				end
-				row.set_item (Grid_validated_col, gli)
+				evx_grid.update_last_row_label_col (Grid_validated_col, "         ", Void, Void, Void, col_icon)
+				if not profs_csr.item.passed or else profs_csr.item.has_warnings then
+					evx_grid.add_last_row_select_actions (Grid_validated_col, agent show_profile_validation (profs_csr.item))
+				end
 
 				-- column 8 - create edit button and add to row
-				create gli.make_with_text ("Edit")
-				gli.set_foreground_color (Ev_grid_text_link_colour)
-				gli.select_actions.extend (agent do_edit_profile (profs_csr.item))
-				row.set_item (Grid_edit_col, gli)
+				evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
+				evx_grid.add_last_row_select_actions (Grid_edit_col, agent do_edit_profile (profs_csr.item))
 			end
 
-			-- make the column content visible
-			if grid.row_count > 0 then
-				-- set grid column titles
-				grid.column (Grid_profile_col).set_title (get_text (ec_aom_profile_grid_profile_col_title))
-				grid.column (Grid_rm_schemas_col).set_title (get_text (ec_aom_profile_grid_rm_col_title))
-				grid.column (Grid_terminologies_col).set_title (get_text (ec_aom_profile_grid_term_col_title))
-				grid.column (Grid_validated_col).set_title (get_text (ec_aom_profile_grid_validated_col_title))
-				grid.column (Grid_edit_col).set_title (get_text (ec_aom_profile_grid_edit_col_title))
-
-				grid.resize_columns_to_content (Grid_expansion_factor)
-				from i := 1 until i > grid.column_count loop
-					form_width := form_width + grid.column (i).width
-					i := i + 1
-				end
-			end
-
-			set_width ((form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2).min (monitor_area (Current).width))
+			evx_grid.set_column_titles (Grid_col_names.linear_representation)
+			evx_grid.resize_columns_to_content
+			evx_grid.resize_viewable_area_to_content
 		end
 
 	do_edit_profile (a_profile_desc: AOM_PROFILE_ACCESS)
@@ -339,11 +325,11 @@ feature {NONE} -- Implementation
 
 	ev_cell_3: EV_CELL
 
-	grid: EV_GRID_KBD_MOUSE
+	evx_grid: EVX_GRID
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	dir_setter: EVX_DIRECTORY_SETTER
+	evx_dir_setter: EVX_DIRECTORY_SETTER
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
