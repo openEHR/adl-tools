@@ -880,7 +880,7 @@ feature {NONE} -- Help events
 			dialog.set_title (get_text (ec_about_awb_dialog_title))
 			dialog.set_pixmap (adl_workbench_logo)
 			dialog.set_background_color (Off_white_background_color)
-			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
+--			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
 		end
 
