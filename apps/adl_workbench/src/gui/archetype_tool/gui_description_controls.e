@@ -54,6 +54,22 @@ feature {NONE} -- Initialisation
 			ev_governance_tab_vbox.extend (evx_lifecycle_state_combo.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_lifecycle_state_combo.ev_root_container)
 
+			-- resource package - String
+			create evx_package_frame.make (get_msg (ec_package_frame_text, Void), False)
+			ev_governance_tab_vbox.extend (evx_package_frame.ev_root_container)
+			ev_governance_tab_vbox.disable_item_expand (evx_package_frame.ev_root_container)
+			create evx_resource_package.make_linked (get_text (ec_packages_label_text),
+				agent :detachable STRING
+					do
+						if attached source_archetype.description as desc and then attached desc.resource_package_uri as rpi then
+							Result := rpi.out
+						end
+					end,
+				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_resource_package_uri (a_str) end end,
+				agent do source_archetype.description.clear_resource_package_uri end,
+				undo_redo_chain, 0, True)
+			gui_controls.extend (evx_resource_package)
+			evx_package_frame.extend (evx_resource_package.ev_root_container, False)
 
 			-- current custodian frame & controls
 			create evx_custodian_frame.make (get_msg (ec_custodian_frame_text, Void), False)
@@ -318,20 +334,6 @@ feature {NONE} -- Initialisation
 			ev_description_tab_vbox.extend (evx_resource_frame.ev_root_container)
 			ev_description_tab_vbox.disable_item_expand (evx_resource_frame.ev_root_container)
 
-			-- resource package - String
-			create evx_resource_package.make_linked (get_text (ec_packages_label_text),
-				agent :detachable STRING
-					do
-						if attached source_archetype.description as desc and then attached desc.resource_package_uri as rpi then
-							Result := rpi.out
-						end
-					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_resource_package_uri (a_str) end end,
-				agent do source_archetype.description.clear_resource_package_uri end,
-				undo_redo_chain, 0, True)
-			gui_controls.extend (evx_resource_package)
-			evx_resource_frame.extend (evx_resource_package.ev_root_container, False)
-
 			-- original resources - Hash
 			create evx_original_resources.make_linked (get_text (ec_resource_orig_res_label_text),
 				agent :detachable HASH_TABLE [STRING, STRING]
@@ -343,7 +345,7 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do if attached description_details as dd then dd.put_original_resource_uri_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached description_details as dd then description_details.remove_original_resource_uri_item (a_key) end end,
 				undo_redo_chain,
-				2, 0, True, Void)
+				3, 0, True, Void)
 			gui_controls.extend (evx_original_resources)
 			evx_resource_frame.extend (evx_original_resources.ev_root_container, False)
 
@@ -425,7 +427,7 @@ feature {NONE} -- Implementation (authoring controls)
 
 	ev_author_tab_vbox, ev_trans_author_accreditation_vbox: EV_VERTICAL_BOX
 
-	evx_auth_frame, evx_lang_frame: EVX_FRAME_CONTROL
+	evx_auth_frame, evx_lang_frame, evx_package_frame: EVX_FRAME_CONTROL
 
 	evx_original_author, evx_trans_author, evx_trans_other_details: EVX_HASH_TABLE_CONTROL
 

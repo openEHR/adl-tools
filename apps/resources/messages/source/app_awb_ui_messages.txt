@@ -652,6 +652,8 @@ templates = <
 		["lifecycle_state_label_text"] = <"Lifecycle state:">
 		["lifecycle_state_label_tooltip"] = <"State in archetype lifecycle state machine">
 
+		["package_frame_text"] = <"Package">
+
 		["custodian_frame_text"] = <"Current Custodian">
 		["custodian_namespace_label_text"] = <"  Namespace:">
 		["custodian_organisation_label_text"] = <"Organisation:">
@@ -660,12 +662,12 @@ templates = <
 		["original_namespace_label_text"] = <"  Namespace:">
 		["original_publisher_label_text"] = <"Organisation:">
 
-		["copyright_label_text"] = <"Copyright:">
-		["licence_label_text"] = <"    Licence:">
+		["copyright_label_text"] = <"     Copyright:">
+		["licence_label_text"] = <"         Licence:">
 
 		["intellectual_property_frame_text"] = <"Intellectual Property">
-		["ip_acknowledgements_label_text"] = <"IP%NAcknowledgements:">
-		["conversion_details_label_text"] = <"Conversion%NDetails:">
+		["ip_acknowledgements_label_text"] = <"IP%NAcknowledge%Nments:">
+		["conversion_details_label_text"] = <"    Conversion%N    Details:">
 
 		["source_status_frame_text"] = <"Source Status">
 		["generated_status_label"] = <"Generated">
@@ -686,8 +688,8 @@ templates = <
 		["misuse_label_text"] = <"  Misuse: ">
 		["keywords_label_text"] = <"Keywords">
 		["resources_label_text"] = <"Resources">
-		["packages_label_text"] = <"  Package">
-		["resource_orig_res_label_text"] = <"Original%NResources">
+		["packages_label_text"] = <"       Package: ">
+		["resource_orig_res_label_text"] = <"Original%NResource%NURIs">
 		["terminology_label_text"] = <"Terminology mappings">
 		["refset_bindings_label_text"] = <"Refset bindings">
 

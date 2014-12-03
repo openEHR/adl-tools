@@ -807,6 +807,7 @@ feature -- Definitions
 		ec_term_bindings_tab_text: STRING = "term_bindings_tab_text"
 		ec_lifecycle_state_label_text: STRING = "lifecycle_state_label_text"
 		ec_lifecycle_state_label_tooltip: STRING = "lifecycle_state_label_tooltip"
+		ec_package_frame_text: STRING = "package_frame_text"
 		ec_custodian_frame_text: STRING = "custodian_frame_text"
 		ec_custodian_namespace_label_text: STRING = "custodian_namespace_label_text"
 		ec_custodian_organisation_label_text: STRING = "custodian_organisation_label_text"
