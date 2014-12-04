@@ -49,7 +49,7 @@ feature {NONE} -- Initialisation
 				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
 				resource_lifecycle_states,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
-				Void, undo_redo_chain, 15)
+				Void, undo_redo_chain, 18)
 			gui_controls.extend (evx_lifecycle_state_combo)
 			ev_governance_tab_vbox.extend (evx_lifecycle_state_combo.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_lifecycle_state_combo.ev_root_container)
