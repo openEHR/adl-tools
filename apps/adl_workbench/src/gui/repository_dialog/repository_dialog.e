@@ -139,12 +139,6 @@ feature -- Definitions
 			end
 		end
 
-	frame_height: INTEGER = 100
-
-	Max_form_width: INTEGER = 800
-
-	Grid_expansion_factor: REAL = 1.2
-
 feature {NONE} -- Initialisation
 
 	create_interface_objects
