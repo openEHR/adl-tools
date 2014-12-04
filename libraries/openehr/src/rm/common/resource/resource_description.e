@@ -465,24 +465,36 @@ feature -- Modification
 			create details.make(0)
 		end
 
-	add_other_detail (a_key, a_value: STRING)
-			-- Add the key, value pair to `other_details'.
+	put_other_details_item (a_key, a_value: STRING)
+			-- Add the key, value pair to `other_details'. Will replace any
+			-- existing value for the same key
+		require
+			Key_valid: not a_key.is_empty
+		local
+			dets: attached like other_details
+		do
+			if attached other_details as att_od then
+				dets := att_od
+			else
+				create dets.make (0)
+				other_details := dets
+			end
+
+			dets.force (a_value, a_key)
+		ensure
+			other_details_attached: attached other_details as od and then od.item (a_key) = a_value
+		end
+
+	remove_other_details_item (a_key: STRING)
+			-- Remove the key, value pair from `other_details'.
 		require
 			Key_valid: not a_key.is_empty
 		do
-			if other_details = Void then
-				create other_details.make (0)
-			end
-
-			if not a_value.is_empty then
-				other_details.force (a_value, a_key)
-			else
-				other_details.remove (a_key)
+			if attached other_details as att_od then
+				att_od.remove (a_key)
 			end
 		ensure
-			other_details_attached: attached other_details
-			other_details_set: not a_value.is_empty implies other_details.item (a_key) = a_value
-			other_details_removed: a_value.is_empty implies not other_details.has (a_key)
+			key_removed: attached other_details as od and then not od.has (a_key)
 		end
 
 	set_parent_resource (a_res: AUTHORED_RESOURCE)

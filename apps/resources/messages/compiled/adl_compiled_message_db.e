@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (889)
+			create message_table.make (891)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -856,6 +856,8 @@ feature -- Initialisation
 			message_table.put ("Original%NResource%NURIs", ec_resource_orig_res_label_text)
 			message_table.put ("Terminology mappings", ec_terminology_label_text)
 			message_table.put ("Refset bindings", ec_refset_bindings_label_text)
+			message_table.put ("    Other%N    Details: ", ec_other_details_label_text)
+			message_table.put ("Other Details", ec_other_details_tab_text)
 			message_table.put ("Archetype statistics (differential)", ec_arch_stats_list_title_diff)
 			message_table.put ("Archetype metrics (differential)", ec_arch_metrics_list_title_diff)
 			message_table.put ("Archetype metrics (flat)", ec_arch_metrics_list_title_flat)

@@ -296,9 +296,9 @@ feature {NONE} -- Initialisation
 			create evx_purpose_text.make_linked (get_text (ec_purpose_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
-				Void, undo_redo_chain, 0, 0, True)
+				Void, undo_redo_chain, 3, 0, True)
 			gui_controls.extend (evx_purpose_text)
-			evx_details_frame.extend (evx_purpose_text.ev_root_container, True)
+			evx_details_frame.extend (evx_purpose_text.ev_root_container, False)
 
 			-- use - mutli-line String
 			create evx_use_text.make_linked (get_text (ec_use_label_text),
@@ -314,8 +314,7 @@ feature {NONE} -- Initialisation
 				agent :detachable STRING do if attached description_details as dd then Result := dd.misuse end end,
 				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
 				agent do description_details.clear_misuse end,
-				undo_redo_chain,
-				0, 0, True)
+				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_misuse_text)
 			evx_details_frame.extend (evx_misuse_text.ev_root_container, True)
 
@@ -324,8 +323,7 @@ feature {NONE} -- Initialisation
 				agent :detachable DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
-				undo_redo_chain,
-				0, 25, False)
+				undo_redo_chain, 0, 25, False)
 			gui_controls.extend (evx_keywords_list)
 			ev_details_hbox.extend (evx_keywords_list.ev_root_container)
 			ev_details_hbox.disable_item_expand (evx_keywords_list.ev_root_container)
@@ -334,26 +332,60 @@ feature {NONE} -- Initialisation
 			ev_description_tab_vbox.extend (evx_resource_frame.ev_root_container)
 			ev_description_tab_vbox.disable_item_expand (evx_resource_frame.ev_root_container)
 
-			-- original resources - Hash
+			-- original resource URIs - Hash <String, String>
 			create evx_original_resources.make_linked (get_text (ec_resource_orig_res_label_text),
 				agent :detachable HASH_TABLE [STRING, STRING]
 					do
-						if attached description_details as dd and then attached dd.original_resource_uri then
-							Result := dd.original_resource_uri
+						if attached description_details as dd and then attached dd.original_resource_uri as ori then
+							Result := ori
 						end
 					end,
 				agent (a_key, a_val: STRING) do if attached description_details as dd then dd.put_original_resource_uri_item (a_key, a_val) end end,
-				agent (a_key: STRING) do if attached description_details as dd then description_details.remove_original_resource_uri_item (a_key) end end,
-				undo_redo_chain,
-				3, 0, True, Void)
+				agent (a_key: STRING) do if attached description_details as dd then dd.remove_original_resource_uri_item (a_key) end end,
+				undo_redo_chain, 3, 0, True, Void)
 			gui_controls.extend (evx_original_resources)
 			evx_resource_frame.extend (evx_original_resources.ev_root_container, False)
 
-			ev_root_container.set_data (Current)
+			-- other details - Hash <String, String>
+			create evx_description_other_details.make_linked (get_text (ec_other_details_label_text),
+				agent :detachable HASH_TABLE [STRING, STRING]
+					do
+						if attached description_details as dd and then attached dd.other_details as od then
+							Result := od
+						end
+					end,
+				agent (a_key, a_val: STRING) do if attached description_details as dd then dd.put_other_details_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached description_details as dd then dd.remove_other_details_item (a_key) end end,
+				undo_redo_chain, 2, 0, True, Void)
+			gui_controls.extend (evx_description_other_details)
+			ev_description_tab_vbox.extend (evx_description_other_details.ev_root_container)
+			ev_description_tab_vbox.disable_item_expand (evx_description_other_details.ev_root_container)
+
+
+			-- ================================== Other Details tab ========================================
+			create ev_other_details_tab_vbox
+			ev_root_container.extend (ev_other_details_tab_vbox)
+			ev_root_container.set_item_text (ev_other_details_tab_vbox, get_text (ec_other_details_tab_text))
+
+			-- other details - Hash <String, String>
+			create evx_other_details.make_linked (get_text (ec_other_details_label_text),
+				agent :detachable HASH_TABLE [STRING, STRING]
+					do
+						if attached source_archetype.description as desc and then attached desc.other_details as od then
+							Result := od
+						end
+					end,
+				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_other_details_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_other_details_item (a_key) end end,
+				undo_redo_chain,
+				2, 0, True, Void)
+			gui_controls.extend (evx_other_details)
+			ev_other_details_tab_vbox.extend (evx_other_details.ev_root_container)
+
 
 			-- =========== set up events ==========
+			ev_root_container.set_data (Current)
 			ev_root_container.select_item (ev_governance_tab_vbox)
-
 			if not editing_enabled then
 				disable_edit
 			end
@@ -449,11 +481,17 @@ feature {NONE} -- Implementation (description controls)
 
 	evx_resource_package: EVX_SINGLE_LINE_TEXT_CONTROL
 
-	evx_original_resources: EVX_HASH_TABLE_CONTROL
+	evx_original_resources, evx_description_other_details: EVX_HASH_TABLE_CONTROL
 
 	evx_keywords_list: EVX_TEXT_LIST_CONTROL
 
 	evx_purpose_text, evx_use_text, evx_misuse_text: EVX_MULTILINE_TEXT_CONTROL
+
+feature {NONE} -- Implementation (other details controls)
+
+	evx_other_details: EVX_HASH_TABLE_CONTROL
+
+	ev_other_details_tab_vbox: EV_VERTICAL_BOX
 
 feature {NONE} -- Implementation
 

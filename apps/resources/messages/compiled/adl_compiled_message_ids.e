@@ -841,6 +841,8 @@ feature -- Definitions
 		ec_resource_orig_res_label_text: STRING = "resource_orig_res_label_text"
 		ec_terminology_label_text: STRING = "terminology_label_text"
 		ec_refset_bindings_label_text: STRING = "refset_bindings_label_text"
+		ec_other_details_label_text: STRING = "other_details_label_text"
+		ec_other_details_tab_text: STRING = "other_details_tab_text"
 		ec_arch_stats_list_title_diff: STRING = "arch_stats_list_title_diff"
 		ec_arch_metrics_list_title_diff: STRING = "arch_metrics_list_title_diff"
 		ec_arch_metrics_list_title_flat: STRING = "arch_metrics_list_title_flat"

@@ -693,6 +693,9 @@ templates = <
 		["terminology_label_text"] = <"Terminology mappings">
 		["refset_bindings_label_text"] = <"Refset bindings">
 
+		["other_details_label_text"] = <"    Other%N    Details: ">
+		["other_details_tab_text"] = <"Other Details">
+
 		-- GUI_ARCHETYPE_INFORMATION_CONTROL
 		["arch_stats_list_title_diff"] = <"Archetype statistics (differential)">
 		["arch_metrics_list_title_diff"] = <"Archetype metrics (differential)">
