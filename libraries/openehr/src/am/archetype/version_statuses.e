@@ -51,6 +51,11 @@ feature -- Validity
 			Result := a_val >= vs_unstable and a_val <= vs_build
 		end
 
+	valid_version_status_symbol (a_str: STRING): BOOLEAN
+		do
+			Result := version_statuses.has (a_str)
+		end
+
 feature {NONE} -- Implementation
 
 	version_status_texts: HASH_TABLE [STRING, INTEGER]
@@ -69,6 +74,13 @@ feature {NONE} -- Implementation
 			Result.put ("-rc.", vs_release_candidate)
 			Result.put ("", vs_released)
 			Result.put ("+", vs_build)
+		end
+
+	version_statuses: HASH_TABLE [INTEGER, STRING]
+		once
+			create Result.make (0)
+			Result.put (vs_unstable, "alpha")
+			Result.put (vs_release_candidate, "rc")
 		end
 
 end

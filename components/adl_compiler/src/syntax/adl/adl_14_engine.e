@@ -112,6 +112,12 @@ feature -- Parsing
 								move_copyright (resource_desc)
 							end
 
+							-- convert other meta-data items from other_details to ADL 2 locations
+							convert_adl14_metadata_to_adl2 (resource_desc)
+
+							-- insert correct revision information into archetype id, if it is available
+							update_adl2_hrid_from_adl14_revision (adl_parser.archetype_id, resource_desc)
+
 							if not dt_object_converter.errors.has_errors and
 								attached {RESOURCE_DESCRIPTION} resource_desc.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
 							then

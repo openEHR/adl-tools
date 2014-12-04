@@ -211,7 +211,8 @@ feature -- Identification
 		end
 
 	id: ARCHETYPE_HRID
-			-- Archetype identifier.
+			-- Archetype identifier; initially set from thumbnail parsing; when successful full
+			-- parse occurs, set as a reference to the id in the differential archetype
 
 	old_id: detachable like id
 			-- previous Archetype identifier, due to change by editing
@@ -851,6 +852,9 @@ feature {NONE} -- Compilation
 						archetype_comparator.compress_differential_child
 						differential_archetype := archetype_comparator.differential_output
 
+						-- the id may have changed due to conversion processing, which picks up ADL 1.4 revision
+						id := differential_archetype.archetype_id
+
 						-- save text to diff file
 						if attached differential_serialised as txt then
 							save_text_to_differential_file (txt)
@@ -868,6 +872,9 @@ feature {NONE} -- Compilation
 					flat_arch.set_differential
 					flat_arch.set_is_generated
 					differential_archetype := flat_arch
+
+					-- the id may have changed due to conversion processing, which picks up ADL 1.4 revision
+					id := differential_archetype.archetype_id
 
 					-- save text to diff file
 					if attached differential_serialised as txt then

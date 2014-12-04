@@ -66,7 +66,7 @@ feature -- Definitions
 			-- Regex for ADL 2 release version
 			-- 	will match string of form N.M.P
 
-	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|-alpha)\.[0-9]+)?"
+	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|-alpha)(\.[0-9]+)?)?"
 			-- Regex for ADL 1.5 release version
 			-- 	will match string of form vN.M.P with or without -rcN, +uN at the end
 
@@ -387,9 +387,15 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (release_version)
-			if build_count > 0 then
+			if version_status /= vs_released then
 				Result.append (version_status_symbol_text (version_status))
-				Result.append (build_count.out)
+				if build_count > 0 then
+					Result.append_character (Axis_separator)
+					Result.append (build_count.out)
+				else
+					-- need to remove trailing '.'
+					Result.remove_tail (1)
+				end
 			end
 		end
 
@@ -459,6 +465,20 @@ feature -- Modification
 		do
 			concept_id := a_concept_id
 			physical_id_cache := Void
+		end
+
+	set_release_version (a_release_version: STRING)
+		require
+			valid_release_version (a_release_version)
+		do
+			release_version := a_release_version
+		end
+
+	set_version_status (a_version_status: INTEGER)
+		require
+			valid_version_status (a_version_status)
+		do
+			version_status := a_version_status
 		end
 
 feature -- Comparison

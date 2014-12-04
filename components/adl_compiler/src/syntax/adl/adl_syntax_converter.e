@@ -24,6 +24,28 @@ inherit
 			{NONE} all
 		end
 
+	VERSION_STATUSES
+		export
+			{NONE} all
+		end
+
+feature -- Definitions
+
+	Adl14_revision_regex: STRING = "[0-9]+(\.[0-9]+){2}((-rc|-alpha)(\.[0-9]+)?)?"
+			-- Regex for 3-part version string string of form N.M.P with optional -rc or -alpha and optional further build number
+			-- Will match:
+			--	1.2.3-alpha.29
+			--	1.2.3-alpha
+			--	1.2.3-rc.29
+			--	1.2.3-rc
+			--	1.2.3
+
+	Adl14_revision_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+		once ("PROCESS")
+			create Result.make
+			Result.compile (Adl14_revision_regex)
+		end
+
 feature -- Access
 
 	perform_syntax_upgrade (odin_text: STRING)
@@ -227,20 +249,99 @@ feature -- ADL 2 conversions
 			end
 		end
 
-	has_old_copyright (a_resource_description: DT_COMPLEX_OBJECT): BOOLEAN
+	has_old_copyright (a_res_desc: DT_COMPLEX_OBJECT): BOOLEAN
 			-- test if copyright is in ADL 1.4 location RESOURCE_DESCRIPTION.details.copyright
 		do
-			Result := a_resource_description.has_path ("details[en]/copyright")
+			Result := a_res_desc.has_path ("details[en]/copyright")
 		end
 
-	move_copyright (a_resource_description: DT_COMPLEX_OBJECT)
+	move_copyright (a_res_desc: DT_COMPLEX_OBJECT)
 			-- move copyright from RESOURCE_DESCRIPTION.details.copyright to RESOURCE_DESCRIPTION.copyright
 			-- obtain copyright from English language RESOURCE_DESCRIPTION.details
 		require
-			has_old_copyright (a_resource_description)
+			has_old_copyright (a_res_desc)
 		do
-			if attached a_resource_description.attribute_node_at_path ("details[en]/copyright") as dt_attr_details_copyright then
-				a_resource_description.put_attribute (dt_attr_details_copyright)
+			if attached a_res_desc.attribute_node_at_path ("details[en]/copyright") as dt_attr_details_copyright then
+				a_res_desc.put_attribute (dt_attr_details_copyright)
+			end
+		end
+
+	convert_adl14_metadata_to_adl2 (a_res_desc: DT_COMPLEX_OBJECT)
+			-- convert items that are in RESOURCE_DESCRIPTION.other_details to ADL 2 locations
+			-- other_details = <
+			--  ["references"] = <"String">					=>	(no change)
+			--  ["MD5-CAM-1.0.1"] = <"String">				=>	(no change)
+			--  ["licence"] = <"String">					=>	/licence
+			--  ["custodian_organisation"] = <"String">		=>	/custodian_organisation
+			--  ["custodian_namespace"] = <"String">		=>	/custodian_namespace
+			--  ["build_uid"] = <"String">					=>	(no change)
+			--  ["original_namespace"] = <"String">			=>	/original_namespace
+			--  ["original_publisher"] = <"String">			=>	/original_publisher
+			--  ["revision"] = <"0.0.1-alpha">				=>	(no change here; converted elsewhere)
+			-- >
+		local
+			dt_attr: DT_ATTRIBUTE
+		do
+			if attached a_res_desc.attribute_node_at_path ("other_details") as dt_attr_od then
+				if dt_attr_od.has_child_with_id ("licence") and then attached dt_attr_od.child_with_id ("licence") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+					create dt_attr.make_single ("licence")
+					dt_attr.put_child (dt_obj)
+					a_res_desc.put_attribute (dt_attr)
+				end
+				if dt_attr_od.has_child_with_id ("custodian_organisation") and then attached dt_attr_od.child_with_id ("custodian_organisation") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+					create dt_attr.make_single ("custodian_organisation")
+					dt_attr.put_child (dt_obj)
+					a_res_desc.put_attribute (dt_attr)
+				end
+				if dt_attr_od.has_child_with_id ("custodian_namespace") and then attached dt_attr_od.child_with_id ("custodian_namespace") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+					create dt_attr.make_single ("custodian_namespace")
+					dt_attr.put_child (dt_obj)
+					a_res_desc.put_attribute (dt_attr)
+				end
+				if dt_attr_od.has_child_with_id ("original_namespace") and then attached dt_attr_od.child_with_id ("original_namespace") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+					create dt_attr.make_single ("original_namespace")
+					dt_attr.put_child (dt_obj)
+					a_res_desc.put_attribute (dt_attr)
+				end
+				if dt_attr_od.has_child_with_id ("original_publisher") and then attached dt_attr_od.child_with_id ("original_publisher") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+					create dt_attr.make_single ("original_publisher")
+					dt_attr.put_child (dt_obj)
+					a_res_desc.put_attribute (dt_attr)
+				end
+			end
+		end
+
+	update_adl2_hrid_from_adl14_revision (arch_id: ARCHETYPE_HRID; a_res_desc: DT_COMPLEX_OBJECT)
+			-- Extract revision information from other_details and write it into `arch_id'
+			--  ["revision"] = <"0.0.1-alpha">
+		local
+			ver_str, ver_sts_str: STRING
+			rpos: INTEGER
+		do
+			if attached a_res_desc.attribute_node_at_path ("other_details") as dt_attr_od then
+				if dt_attr_od.has_child_with_id ("revision") and then attached dt_attr_od.child_with_id ("revision") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+
+					if attached {DT_PRIMITIVE_OBJECT} dt_obj as dt_po and then attached {STRING} dt_po.value as rev_str then
+						if Adl14_revision_regex_matcher.recognizes (rev_str) then
+							rpos := rev_str.index_of ('-', 1) - 1
+							if rpos > 0 then
+								arch_id.set_release_version (rev_str.substring (1, rpos))
+								ver_sts_str := rev_str.substring (rpos + 2, rev_str.count)
+								if valid_version_status_symbol (ver_sts_str) then
+									arch_id.set_version_status (version_statuses.item (ver_sts_str))
+								end
+							else
+								arch_id.set_release_version (rev_str)
+							end
+						end
+					end
+				end
 			end
 		end
 

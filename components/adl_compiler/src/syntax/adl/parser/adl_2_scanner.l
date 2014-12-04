@@ -41,7 +41,7 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 VALUE_STR [a-zA-Z0-9._\-]+
 
-ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\-alpha)\.[0-9]+)?)?
+ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\-alpha)(\.[0-9]+)?)?)?
 
 DESCRIPTION	[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*
 DEFINITION	[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*
