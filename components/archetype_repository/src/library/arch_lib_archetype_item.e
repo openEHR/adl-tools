@@ -242,7 +242,7 @@ feature -- Identification
 			-- see ARTEFACT_TYPE class
 
 	relative_path: STRING
-			-- a path derived from the ontological path of the nearest folder node + archetype_id
+			-- a path derived from the semantic path of the nearest folder node + archetype_id
 		local
 			csr: detachable ARCH_LIB_ITEM
 		do
@@ -303,11 +303,11 @@ feature -- Identification
 			Result := qualified_name
 		end
 
-	ontology_location_changed: BOOLEAN
+	semantic_location_changed: BOOLEAN
 			-- True if changed due to external editing require a move of this archetype in ontology
-			-- cleared by calling `clear_old_ontological_parent_name'
+			-- cleared by calling `clear_old_semantic_parent_name'
 		do
-			Result := attached old_ontological_parent_name
+			Result := attached old_semantic_parent_name
 		end
 
 	group_name: STRING
@@ -336,15 +336,15 @@ feature -- Identification
 
 feature {ARCHETYPE_LIBRARY} -- Identification
 
-	clear_old_ontological_parent_name
+	clear_old_semantic_parent_name
 		do
-			old_ontological_parent_name := Void
+			old_semantic_parent_name := Void
 		end
 
 feature {NONE} -- Identification
 
-	old_ontological_parent_name: detachable STRING
-			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
+	old_semantic_parent_name: detachable STRING
+			-- old vaue of `semantic_parent_name', to facilitate handling changes due to external editing of archetypes
 
 feature -- Relationships
 
@@ -729,14 +729,14 @@ feature -- Compilation
 	signal_source_edited
 			-- signal source file changed on disk
 		local
-			old_ont_parent: STRING
+			old_sem_parent: STRING
 		do
-			old_ont_parent := semantic_parent_key
+			old_sem_parent := semantic_parent_key
 			file_mgr.refresh_from_source
 
 			-- see if ontological parent has changed
-			if not old_ont_parent.is_equal (semantic_parent_key) then
-				old_ontological_parent_name := old_ont_parent
+			if not old_sem_parent.is_equal (semantic_parent_key) then
+				old_semantic_parent_name := old_sem_parent
 			end
 			signal_from_scratch
 		ensure

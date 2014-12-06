@@ -388,7 +388,7 @@ feature -- Modification
 
 			aca.parent.remove_child (aca)
 			semantic_item_index.item (aca.semantic_parent_key).put_child (aca)
-			aca.clear_old_ontological_parent_name
+			aca.clear_old_semantic_parent_name
 		ensure
 			Node_added_to_archetype_index: archetype_index.has (aca.id.physical_id)
 			Node_added_to_ontology_index: semantic_item_index.has (aca.id.physical_id)

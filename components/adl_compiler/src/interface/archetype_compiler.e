@@ -245,7 +245,7 @@ feature {NONE} -- Implementation
 				if ara.compile_attempted then
 					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
-						if ara.ontology_location_changed then
+						if ara.semantic_location_changed then
 							current_library.update_archetype_id (ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
