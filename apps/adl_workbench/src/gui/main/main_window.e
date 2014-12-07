@@ -398,7 +398,6 @@ feature -- Commands
 		local
 			missing_external_tools: ARRAYED_SET [STRING]
 			missing_external_tools_msg: STRING
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			Precursor
 
@@ -421,8 +420,7 @@ feature -- Commands
 					missing_external_tools_msg.append (get_msg_line (ec_repository_tool_unavailable, <<tool_names_csr.item>>))
 				end
 				missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
-				create info_dialog.make_with_text (missing_external_tools_msg)
-				info_dialog.show_modal_to_window (Current)
+				info_feedback (missing_external_tools_msg)
 			end
 
 			-- if some RM schemas now found, set up a repository if necessary
@@ -629,7 +627,6 @@ feature {NONE} -- Library events
 		local
 			question_dialog: EV_QUESTION_DIALOG
 			yes_text, no_text, cancel_text, export_dir: STRING
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			create question_dialog.make_with_text (get_msg_line (ec_export_question, <<a_syntax>>))
 			question_dialog.set_title (get_msg (ec_export_in_format_dialog_title, <<a_syntax>>))
@@ -645,8 +642,7 @@ feature {NONE} -- Library events
 				export_dir := file_system.pathname (export_directory, a_syntax)
 				file_system.recursive_create_directory (export_dir)
 				if not file_system.directory_exists (export_dir) then
-					create info_dialog.make_with_text (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
-					info_dialog.show_modal_to_window (Current)
+					info_feedback (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
 				else
 					if question_dialog.selected_button.same_string (yes_text) then
 						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
@@ -665,7 +661,6 @@ feature {NONE} -- Library events
 			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 			xml_name: STRING
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			if current_library.has_statistics then
 				create save_dialog
@@ -705,8 +700,7 @@ feature {NONE} -- Library events
 					end
 				end
 			else
-				create info_dialog.make_with_text (get_text (ec_export_errors_stats_requires_build_text))
-				info_dialog.show_modal_to_window (Current)
+				info_feedback (get_text (ec_export_errors_stats_requires_build_text))
 			end
 		end
 
