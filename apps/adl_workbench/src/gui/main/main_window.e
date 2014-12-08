@@ -234,7 +234,6 @@ feature {NONE} -- Initialization
 			create_new_rm_schema_explorer
 			create_new_console_tool
 			create_new_error_tool
-		--	create_new_test_tool
 			archetype_viewers.create_new_tool
 
 			-- set up anything else dependent on docking
@@ -380,9 +379,6 @@ feature {NONE} -- Initialization
 					console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<user_docking_layout_file_path>>))
 				end
 			end
-
-			-- Splitter layout
-			initialise_splitter (test_tool.ev_root_container, test_split_position)
 		rescue
 			docking_exception := True
 		end
@@ -467,7 +463,6 @@ feature -- Commands
 				set_app_y_position (y_position)
 			end
 			set_app_maximised (is_maximized)
-			set_test_split_position (test_tool.ev_root_container.split_position)
 			set_last_exec_app_version (app_version.out)
 
 			app_cfg.save
@@ -738,7 +733,9 @@ feature {NONE} -- Tools menu events
 			if dialog.has_changed_navigator_options and has_current_library then
 				save_resources
 				library_tool.populate (current_library)
-				test_tool.populate
+				if test_tool.ev_root_container.is_displayed then
+					test_tool.populate
+				end
 			end
 		end
 
@@ -1284,14 +1281,12 @@ feature {NONE} -- Build commands
 		do
 			populate_compile_button
 			console_tool.append_text (a_msg)
-	--		ev_application.process_events
 		end
 
 	compiler_archetype_gui_update (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Update GUI with progress on build.
 		do
 			library_tool.update_tree_node (aca)
-			test_tool.do_row_for_item (aca)
 			ev_application.process_events
 		end
 

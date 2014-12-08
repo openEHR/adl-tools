@@ -359,31 +359,6 @@ feature -- Commands
 			evx_progress_counter.ev_data_control.set_text ("0")
 		end
 
-   	set_row_pixmap (row: EV_GRID_ROW)
-   			-- Set the icon appropriate to the item attached to `row'.
-   		do
-			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_LIB_ITEM} row.data as ari then
-				gli.set_pixmap (get_icon_pixmap ("archetype/" + ari.group_name))
-			end
-		end
-
-	do_row_for_item (ari: ARCH_LIB_ITEM)
-   			-- Perform `action' for the row containing `an_item', if any.
-  		local
-   			i: INTEGER
-			row: EV_GRID_ROW
-   		do
-			from i := evx_grid.row_count until i = 0 loop
-				row := evx_grid.ev_grid.row (i)
-				if attached {ARCH_LIB_ITEM} row.data as row_ari and then row_ari.is_equal (ari) then
-					set_row_pixmap (row)
-					i := 0
-				else
-					i := i - 1
-				end
-			end
-		end
-
 feature -- Events
 
 	on_close

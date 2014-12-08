@@ -104,7 +104,7 @@ feature -- Commands
 				verbose_output := True
 			end
 			if not app_root.has_errors then
-				archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+				archetype_compiler.set_console_update_action (agent console_update)
 				archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
 				-- now process command line
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 			Result.set_is_usage_displayed_on_error (True)
 		end
 
-	compiler_global_gui_update (msg: STRING)
+	console_update (msg: STRING)
 			-- Update UI with progress on build.
 		do
 			if verbose_output then
@@ -244,11 +244,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; depth: INTEGER)
+	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Update UI with progress on build.
 		do
 			if verbose_output or ara.is_in_terminal_compilation_state and then not ara.is_valid then
-				print (msg)
+				print (ara.error_strings)
 			end
 		end
 
