@@ -57,21 +57,28 @@ feature {NONE} -- Initialisation
 			-- create widgets
 			create ev_root_container
 
-			-- connect widgets
-			ev_root_container.extend (archetype_explorer.ev_root_container)
-			ev_root_container.extend (template_explorer.ev_root_container)
-			ev_root_container.extend (metrics_viewer.ev_root_container)
-			ev_root_container.extend (stats_viewer.ev_root_container)
+			-- ------------------------ main notebook -----------------------------
+			create ev_notebook
+			ev_root_container.extend (ev_notebook)
 
-			-- visual characteristics
-			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text (ec_library_archetype_tab_text))
-			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
+			-- archetype explorer tab
+			ev_notebook.extend (archetype_explorer.ev_root_container)
+			ev_notebook.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
+			ev_notebook.set_item_text (archetype_explorer.ev_root_container, get_text (ec_library_archetype_tab_text))
 
-			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text (ec_library_template_tab_text))
+			-- template explorer tab
+			ev_notebook.extend (template_explorer.ev_root_container)
+			ev_notebook.set_item_text (template_explorer.ev_root_container, get_text (ec_library_template_tab_text))
 
-			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text (ec_library_metrics_tab_text))
-			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text (ec_library_stats_tab_text))
-			set_stats_metric_tab_appearance
+			-- metrics viewer tab
+			ev_notebook.extend (metrics_viewer.ev_root_container)
+			ev_notebook.set_item_text (metrics_viewer.ev_root_container, get_text (ec_library_metrics_tab_text))
+
+			-- statistics viewer tab
+			ev_notebook.extend (stats_viewer.ev_root_container)
+			ev_notebook.set_item_text (stats_viewer.ev_root_container, get_text (ec_library_stats_tab_text))
+
+			set_tabs_appearance
 
 			-- docking pane mini-toolbar with rotate-view button
 			create gui_mini_tool_bar.make
@@ -84,7 +91,24 @@ feature {NONE} -- Initialisation
 			end
 
 			-- set events: select a notebook tab
-			ev_root_container.selection_actions.extend (agent on_select_notebook)
+			ev_notebook.selection_actions.extend (agent on_select_notebook)
+
+			-- ------------------------ compiler status -----------------------------
+			create ev_status_hb
+			ev_root_container.extend (ev_status_hb)
+			ev_root_container.disable_item_expand (ev_status_hb)
+
+			create ev_status_label.make_with_text (get_text (ec_library_compile_status_text))
+			ev_status_hb.extend (ev_status_label)
+			ev_status_hb.disable_item_expand (ev_status_label)
+
+			create ev_status_text.default_create
+			ev_status_hb.extend (ev_status_text)
+			ev_status_hb.disable_item_expand (ev_status_text)
+
+			create ev_status_dummy_text.default_create
+			ev_status_hb.extend (ev_status_dummy_text)
+
 
 			-- set up tool / sub-tool structures
 			add_sub_tool (archetype_explorer)
@@ -98,7 +122,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	ev_root_container: EV_NOTEBOOK
+	ev_root_container: EV_VERTICAL_BOX
 
 	matching_ids (a_key: STRING): ARRAYED_SET [STRING]
 		do
@@ -161,6 +185,26 @@ feature -- Commands
 		do
 			archetype_explorer.update_rm_icons_setting
 			template_explorer.update_rm_icons_setting
+		end
+
+	update_compilation_status (a_total, valid_count, warn_count, err_count: INTEGER)
+			-- update the compilation status text
+		do
+			if a_total \\ 10 = 0 then
+				status_text.wipe_out
+				status_text.append (a_total.out)
+				if valid_count > 0 or warn_count > 0 or err_count > 0 then
+					status_text.append (" (")
+					status_text.append (valid_count.out)
+					status_text.append (", ")
+					status_text.append (warn_count.out)
+					status_text.append (", ")
+					status_text.append (err_count.out)
+					status_text.append_character (')')
+				end
+				ev_status_text.set_text (status_text)
+				ev_status_text.refresh_now
+			end
 		end
 
 	show
@@ -238,14 +282,14 @@ feature -- Events
 	on_select_notebook
 		do
 			if attached source as src then
-				if ev_root_container.selected_item.data = metrics_viewer then
+				if ev_notebook.selected_item.data = metrics_viewer then
 					if src.can_build_statistics then
 						src.build_detailed_statistics
 						if not attached metrics_viewer.last_populate_timestamp or else metrics_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
 							metrics_viewer.populate (src)
 						end
 					end
-				elseif ev_root_container.selected_item.data = stats_viewer then
+				elseif ev_notebook.selected_item.data = stats_viewer then
 					if src.can_build_statistics then
 						src.build_detailed_statistics
 						if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
@@ -261,12 +305,12 @@ feature -- Events
 	on_full_compile
 			-- actions to execute when a complete compile has been done
 		do
-			set_stats_metric_tab_appearance
+			set_tabs_appearance
 		end
 
 	on_rotate_view
 		do
-			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_root_container.selected_item.data as lib_tool and attached source then
+			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_notebook.selected_item.data as lib_tool and attached source then
 				lib_tool.on_rotate_view
 			end
 		end
@@ -283,12 +327,26 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
+	status_text: STRING
+		once
+			create Result.make (20)
+		end
+
+	ev_notebook: EV_NOTEBOOK
+
+	ev_status_hb: EV_HORIZONTAL_BOX
+
+	ev_status_label: EV_LABEL
+
+	ev_status_text, ev_status_dummy_text: EV_LABEL
+
 	do_clear
 		do
 			metrics_viewer.clear
 			stats_viewer.clear
 			archetype_explorer.clear
-			ev_root_container.select_item (archetype_explorer.ev_root_container)
+			ev_notebook.select_item (archetype_explorer.ev_root_container)
+			ev_status_text.set_text ("")
 		end
 
 	do_populate
@@ -308,7 +366,7 @@ feature {NONE} -- Implementation
 						archetype_explorer.set_semantic_view
 					end
 					template_explorer.populate (src)
-					set_stats_metric_tab_appearance
+					set_tabs_appearance
 					on_select_notebook
 					go_to_selected_item
 				end
@@ -341,20 +399,20 @@ feature {NONE} -- Implementation
 
 	stats_viewer: GUI_ARCHETYPE_STATISTICAL_REPORT
 
-	set_stats_metric_tab_appearance
+	set_tabs_appearance
 			-- set visual appearance of stats & metric tab according to whether there are errors or not
 		do
-			if attached source and then source.can_build_statistics then
-				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
-				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
+			if attached source as src and then source.can_build_statistics then
+				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
+				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
-				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
-				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
+				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
+				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
 			end
-			if attached source and then source.template_count > 0 then
-				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog"))
+			if attached source as src and then src.template_count > 0 then
+				ev_notebook.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog"))
 			else
-				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog_grey"))
+				ev_notebook.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog_grey"))
 			end
 		end
 

@@ -52,11 +52,11 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	on_archetype_update (a_msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	on_archetype_update (ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Update with progress on build.
 		do
 			if ara.compilation_state = ara.cs_invalid then
-				errors.append (a_msg + "%R")
+				errors.append (ara.status + "%R")
 			end
 		end
 

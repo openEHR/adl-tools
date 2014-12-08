@@ -58,14 +58,17 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	full_compile_visual_update_action: detachable PROCEDURE [ANY, TUPLE]
-			-- Called after complete build
+	total_count: INTEGER
+			-- total count of artefacts compiled in this run
 
-	global_visual_update_action: detachable PROCEDURE [ANY, TUPLE[STRING]]
-			-- Called after global processing to perform GUI updates
+	valid_count: INTEGER
+			-- validated artefacts compiled in this run
 
-	archetype_visual_update_action: detachable PROCEDURE [ANY, TUPLE [STRING, ARCH_LIB_ARCHETYPE_ITEM, INTEGER]]
-			-- Called after processing each archetype (to perform GUI updates during processing).
+	warning_count: INTEGER
+			-- validated artefacts with warnings compiled in this run
+
+	error_count: INTEGER
+			-- error count of artefacts compiled in this run
 
 feature -- Status
 
@@ -84,14 +87,19 @@ feature -- Status Setting
 			-- Cancel building immediately.
 		do
 			is_interrupt_requested := True
-			call_global_visual_update_action ("************* interrupted *************%N")
+			call_console_update_action ("************* interrupted *************%N")
 		ensure
 			interrupted: is_interrupt_requested
 		end
 
 feature -- Modification
 
-	set_full_compile_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE])
+	set_update_compilation_status (a_update_compilation_status_agt: attached like update_compilation_status)
+		do
+			update_compilation_status := a_update_compilation_status_agt
+		end
+
+	set_full_compile_visual_update_action (a_routine: attached like full_compile_visual_update_action)
 			-- Set `full_compile_visual_update_action'.
 		do
 			full_compile_visual_update_action := a_routine
@@ -99,15 +107,15 @@ feature -- Modification
 			full_compile_visual_update_action_set: full_compile_visual_update_action = a_routine
 		end
 
-	set_global_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE[STRING]])
-			-- Set `global_visual_update_action'.
+	set_console_update_action (a_routine: attached like console_update_action)
+			-- Set `console_update_action'.
 		do
-			global_visual_update_action := a_routine
+			console_update_action := a_routine
 		ensure
-			global_visual_update_action_set: global_visual_update_action = a_routine
+			console_update_action_set: console_update_action = a_routine
 		end
 
-	set_archetype_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE [STRING, ARCH_LIB_ARCHETYPE_ITEM, INTEGER]])
+	set_archetype_visual_update_action (a_routine: attached like archetype_visual_update_action)
 			-- Set `archetype_visual_update_action'.
 		do
 			archetype_visual_update_action := a_routine
@@ -117,17 +125,26 @@ feature -- Modification
 
 feature -- Commands
 
+	reset
+		do
+			total_count := 0
+			valid_count := 0
+			warning_count := 0
+			error_count := 0
+		end
+
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
+			reset
 			is_full_build_completed := False
 			is_building := True
-			call_global_visual_update_action (get_msg_line ("compiler_building_system", Void))
+			call_console_update_action (get_msg_line (ec_compiler_building_system, Void))
 			do_all (agent check_file_system_currency (False, ?))
 			do_all (agent build_archetype (?, 0))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action (get_msg_line ("compiler_finished_building_system", Void))
+			call_console_update_action (get_msg_line (ec_compiler_finished_building_system, Void))
 			if is_full_build_completed then
 				call_full_compile_visual_update_action
 			end
@@ -136,14 +153,15 @@ feature -- Commands
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
+			reset
 			is_full_build_completed := False
 			is_building := True
-			call_global_visual_update_action(get_msg_line (ec_compiler_rebuilding_system, Void))
+			call_console_update_action(get_msg_line (ec_compiler_rebuilding_system, Void))
 			do_all (agent check_file_system_currency (True, ?))
 			do_all (agent build_archetype (?, 0))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_rebuilding_system, Void))
+			call_console_update_action (get_msg_line (ec_compiler_finished_rebuilding_system, Void))
 			if is_full_build_completed then
 				call_full_compile_visual_update_action
 			end
@@ -152,22 +170,24 @@ feature -- Commands
 	build_subtree (aci: ARCH_LIB_ITEM)
 			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
 		do
+			reset
 			is_building := True
-			call_global_visual_update_action (get_msg_line (ec_compiler_building_subtree, Void))
+			call_console_update_action (get_msg_line (ec_compiler_building_subtree, Void))
 			do_subtree (aci, agent check_file_system_currency (False, ?))
 			do_subtree (aci, agent build_archetype (?, 0))
 			is_building := False
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_building_subtree, Void))
+			call_console_update_action (get_msg_line (ec_compiler_finished_building_subtree, Void))
 		end
 
 	rebuild_subtree (aci: ARCH_LIB_ITEM)
 			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
 		do
+			reset
 			is_building := True
-			call_global_visual_update_action (get_msg_line (ec_compiler_rebuilding_subtree, Void))
+			call_console_update_action (get_msg_line (ec_compiler_rebuilding_subtree, Void))
 			do_subtree (aci, agent check_file_system_currency (True, ?))
 			do_subtree (aci, agent build_archetype (?, 0))
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_rebuilding_subtree, Void))
+			call_console_update_action (get_msg_line (ec_compiler_finished_rebuilding_subtree, Void))
 			is_building := False
 		end
 
@@ -195,9 +215,9 @@ feature -- Commands
 	export_all (an_export_dir, a_syntax: STRING)
 			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
 		do
-			call_global_visual_update_action (get_msg_line (ec_compiler_export, <<a_syntax>>))
+			call_console_update_action (get_msg_line (ec_compiler_export, <<a_syntax>>))
 			do_all (agent export_archetype (an_export_dir, a_syntax, False, ?))
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_export, <<a_syntax, an_export_dir>>))
+			call_console_update_action (get_msg_line (ec_compiler_finished_export, <<a_syntax, an_export_dir>>))
 		end
 
 	build_and_export_all (an_export_dir, a_syntax: STRING)
@@ -205,11 +225,12 @@ feature -- Commands
 		do
 			is_full_build_completed := False
 			is_building := True
-			call_global_visual_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax>>))
+			reset
+			call_console_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax>>))
 			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_build_and_export, <<a_syntax, an_export_dir>>))
+			call_console_update_action (get_msg_line (ec_compiler_finished_build_and_export, <<a_syntax, an_export_dir>>))
 		end
 
 feature {NONE} -- Implementation
@@ -232,7 +253,6 @@ feature {NONE} -- Implementation
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
-			is_interrupt_requested := False
 			current_library.do_archetype_lineage(ara, action)
 		end
 
@@ -263,13 +283,15 @@ feature {NONE} -- Implementation
 			exception_encountered: BOOLEAN
 			build_status, exc_trace_str: STRING
 		do
+			create build_status.make_empty
 			if dependency_depth <= max_dependency_depth then
 				if not is_interrupt_requested then
 					if not exception_encountered then
 						ara.check_compilation_currency
 						if not ara.is_in_terminal_compilation_state then
-							build_status := get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
-							call_archetype_visual_update_action (build_status, ara, dependency_depth)
+							if global_error_reporting_level = Error_type_debug then
+								call_console_update_action (get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>))
+							end
 
 							-- first phase
 							ara.compile
@@ -288,26 +310,40 @@ feature {NONE} -- Implementation
 								ara.signal_suppliers_compiled
 								ara.compile
 							end
-							build_status := ara.errors.as_string
 
-						elseif ara.is_valid then
-							if not ara.errors.is_empty then
-								build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
-							else
-								build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
+							update_counts (ara)
+							call_archetype_visual_update_action (ara)
+
+							if global_error_reporting_level = Error_type_debug then
+								call_debug_update_action (ara.errors.as_string, dependency_depth)
 							end
-						else
-							build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+
+						elseif global_error_reporting_level = Error_type_debug then
+							if ara.is_valid then
+								if not ara.errors.is_empty then
+									build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+								else
+									build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
+								end
+							else
+								build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+							end
+							call_debug_update_action (build_status, dependency_depth)
 						end
-						call_archetype_visual_update_action (build_status, ara, dependency_depth)
 					else
 						ara.signal_exception
-						call_archetype_visual_update_action (ara.error_strings, ara, dependency_depth)
+						update_counts (ara)
+						call_archetype_visual_update_action (ara)
+						if global_error_reporting_level = Error_type_debug then
+							call_debug_update_action (ara.error_strings, dependency_depth)
+						end
 					end
 				end
 			else
 				ara.signal_exception
-				call_archetype_visual_update_action (get_msg_line (ec_compiler_infinite_regress, <<ara.id.physical_id, dependency_depth.out>>), ara, dependency_depth)
+				update_counts (ara)
+				call_archetype_visual_update_action (ara)
+				call_console_update_action (get_msg_line (ec_compiler_infinite_regress, <<ara.id.physical_id, dependency_depth.out>>))
 			end
 		rescue
 			if attached exception_trace as et then
@@ -315,7 +351,7 @@ feature {NONE} -- Implementation
 			else
 				create exc_trace_str.make_from_string ("(Exception trace not available)")
 			end
-			call_global_visual_update_action (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
+			call_console_update_action (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end
@@ -337,7 +373,6 @@ feature {NONE} -- Implementation
 						filename := pn + ext
 					end
 					ara.save_flat_as (filename, a_syntax)
-					call_archetype_visual_update_action (ara.status, ara, 0)
 				end
 			end
 		end
@@ -350,19 +385,59 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_global_visual_update_action (a_msg: STRING)
-			-- Call `global_visual_update_action', if it is attached.
+	call_console_update_action (a_msg: STRING)
+			-- Call `console_update_action', if it is attached.
 		do
-			if attached global_visual_update_action as ua then
+			if attached console_update_action as ua then
 				ua.call ([a_msg])
 			end
 		end
 
-	call_archetype_visual_update_action (a_msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	call_debug_update_action (a_msg: STRING; dependency_depth: INTEGER)
+			-- Call `console_update_action', with a build status of an archetype, indented according to its dependency level
+		do
+			if attached console_update_action as ua then
+				ua.call ([create {STRING}.make_filled ('%T', dependency_depth) + a_msg])
+			end
+		end
+
+	call_archetype_visual_update_action (ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Call `archetype_visual_update_action', if it is attached.
 		do
 			if attached archetype_visual_update_action as ua then
-				ua.call ([a_msg, ara, dependency_depth])
+				ua.call ([ara])
+			end
+			update_compilation_status.call ([total_count, valid_count, warning_count, error_count])
+		end
+
+	full_compile_visual_update_action: detachable PROCEDURE [ANY, TUPLE]
+			-- Called after complete build
+
+	console_update_action: detachable PROCEDURE [ANY, TUPLE[STRING]]
+			-- Called after global processing to perform GUI updates
+
+	archetype_visual_update_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]]
+			-- Called after processing each archetype (to perform GUI updates during processing).
+
+	update_compilation_status: detachable PROCEDURE [ANY, TUPLE [a_total, a_valid_count, a_warn_count, an_err_count: INTEGER]]
+			-- update the compilation status text
+		note
+			option: stable
+		attribute
+		end
+
+	update_counts (ara: ARCH_LIB_ARCHETYPE_ITEM)
+			-- update compilation counts
+		do
+			total_count := total_count + 1
+			if ara.is_valid then
+				if not ara.errors.is_empty then
+					warning_count := warning_count + 1
+				else
+					valid_count := valid_count + 1
+				end
+			else
+				error_count := error_count + 1
 			end
 		end
 

@@ -169,6 +169,8 @@ templates = <
 		["adl_serialisation_level_tooltip"] = <"Which version of the ADL syntax to use when saving archetypes.">
 		["error_reporting_level_text"] = <"Error Reporting Level:">
 		["error_reporting_level_tooltip"] = <"Select the level of parser messages to display. All levels >= this level displayed.">
+		["compiler_quiet_text"] = <"Quiet mode">
+		["compiler_quiet_tooltip"] = <"Reduce compiler output to a minimum regardless of error-reporting level.">
 		["rm_flattening_text"] = <"RM flattening on">
 		["rm_flattening_tooltip"] = <"Include RM attribute existence and cardinality in flattened archetypes.">
 		["validation_strict_text"] = <"Validation Strict">
@@ -457,6 +459,8 @@ templates = <
 		["remove_dialog_title"] = <"Remove artefact confirmation">
 		["remove_artefact_question"] = <"Remove $1? WARNING: really removes from the file system!">
 		["remove_artefact"] = <"Remove from system">
+
+		["library_compile_status_text"] = <"Progress: ">
 
 		-- GUI_PATH_MAP_CONTROL
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">

@@ -56,45 +56,45 @@ feature {NONE} -- Initialization
 			-- =========== Tab 1 - path settings ===========
 
 			-- frame
-			create path_settings_frame_ctl.make (get_text (ec_path_settings_frame_text), False)
-			ev_notebook_paths_vb.extend (path_settings_frame_ctl.ev_root_container)
+			create evx_path_settings_frame.make (get_text (ec_path_settings_frame_text), False)
+			ev_notebook_paths_vb.extend (evx_path_settings_frame.ev_root_container)
 
 			-- Terminology directory setting
-			create terminology_dir_setter.make (get_text (ec_terminology_directory_text), agent terminology_directory, 0)
-			path_settings_frame_ctl.extend (terminology_dir_setter.ev_root_container, False)
-			gui_controls.extend (terminology_dir_setter)
+			create evx_terminology_dir_setter.make (get_text (ec_terminology_directory_text), agent terminology_directory, 0)
+			evx_path_settings_frame.extend (evx_terminology_dir_setter.ev_root_container, False)
+			gui_controls.extend (evx_terminology_dir_setter)
 
 			-- Export directory setting
-			create export_dir_setter.make (get_text (ec_export_directory_text), agent export_directory, 0)
-			path_settings_frame_ctl.extend (export_dir_setter.ev_root_container, False)
-			gui_controls.extend (export_dir_setter)
+			create evx_export_dir_setter.make (get_text (ec_export_directory_text), agent export_directory, 0)
+			evx_path_settings_frame.extend (evx_export_dir_setter.ev_root_container, False)
+			gui_controls.extend (evx_export_dir_setter)
 
 			-- Save test diff files directory setting
-			create test_files_dir_setter.make (get_text (ec_test_diff_files_directory_text), agent test_diff_directory, 0)
-			path_settings_frame_ctl.extend (test_files_dir_setter.ev_root_container, False)
-			gui_controls.extend (test_files_dir_setter)
+			create evx_test_files_dir_setter.make (get_text (ec_test_diff_files_directory_text), agent test_diff_directory, 0)
+			evx_path_settings_frame.extend (evx_test_files_dir_setter.ev_root_container, False)
+			gui_controls.extend (evx_test_files_dir_setter)
 
 
 			-- ========== Tab 1 - external tools settings ==========
 
 			-- frame
-			create tool_paths_frame_ctl.make (get_msg (ec_tool_paths_frame_text, Void), False)
-			ev_notebook_paths_vb.extend (tool_paths_frame_ctl.ev_root_container)
+			create evx_tool_paths_frame.make (get_msg (ec_tool_paths_frame_text, Void), False)
+			ev_notebook_paths_vb.extend (evx_tool_paths_frame.ev_root_container)
 
 			-- Text editor path setter control
-			create text_editor_dir_setter.make_linked (get_text (ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0)
-			tool_paths_frame_ctl.extend (text_editor_dir_setter.ev_root_container, False)
-			gui_controls.extend (text_editor_dir_setter)
+			create evx_text_editor_dir_setter.make_linked (get_text (ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0)
+			evx_tool_paths_frame.extend (evx_text_editor_dir_setter.ev_root_container, False)
+			gui_controls.extend (evx_text_editor_dir_setter)
 
 			-- ADL editor path setter control
-			create adl_editor_dir_setter.make (get_text (ec_adl_editor_directory_text), agent editor_app_command, 0)
-			tool_paths_frame_ctl.extend (adl_editor_dir_setter.ev_root_container, False)
-			gui_controls.extend (adl_editor_dir_setter)
+			create evx_adl_editor_dir_setter.make (get_text (ec_adl_editor_directory_text), agent editor_app_command, 0)
+			evx_tool_paths_frame.extend (evx_adl_editor_dir_setter.ev_root_container, False)
+			gui_controls.extend (evx_adl_editor_dir_setter)
 
 			-- Diff tool path setter control
-			create diff_tool_dir_setter.make (get_text (ec_diff_tool_directory_text), agent difftool_command, 0)
-			tool_paths_frame_ctl.extend (diff_tool_dir_setter.ev_root_container, False)
-			gui_controls.extend (diff_tool_dir_setter)
+			create evx_diff_tool_dir_setter.make (get_text (ec_diff_tool_directory_text), agent difftool_command, 0)
+			evx_tool_paths_frame.extend (evx_diff_tool_dir_setter.ev_root_container, False)
+			gui_controls.extend (evx_diff_tool_dir_setter)
 
 
 			-- ========== Tab 2 - compiler settings ==========
@@ -104,7 +104,7 @@ feature {NONE} -- Initialization
 			ev_notebook.set_item_text (ev_notebook_compiler_settings_vb, get_text (ec_options_compiler_settings_tab_text))
 
 			-- Error reporting level combo			
-			create parser_error_reporting_level_combo_box.make (get_text (ec_error_reporting_level_text), get_text (ec_error_reporting_level_tooltip),
+			create evx_parser_error_reporting_level_cob.make (get_text (ec_error_reporting_level_text), get_text (ec_error_reporting_level_tooltip),
 				agent :STRING
 					do
 						check attached error_type_name_table.item (error_reporting_level) as errname then
@@ -112,22 +112,28 @@ feature {NONE} -- Initialization
 						end
 					end,
 				error_type_names, 15)
-			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
-			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
-			gui_controls.extend (parser_error_reporting_level_combo_box)
+			ev_notebook_compiler_settings_vb.extend (evx_parser_error_reporting_level_cob.ev_root_container)
+			ev_notebook_compiler_settings_vb.disable_item_expand (evx_parser_error_reporting_level_cob.ev_root_container)
+			gui_controls.extend (evx_parser_error_reporting_level_cob)
 
 			-- validation strict checkbox
-			create validation_strict_check_ctl.make (get_text (ec_validation_strict_text),
+			create evx_validation_strict_cb.make (get_text (ec_validation_strict_text),
 				get_text (ec_validation_strict_tooltip), agent validation_strict)
-			ev_notebook_compiler_settings_vb.extend (validation_strict_check_ctl.ev_data_control)
-			ev_notebook_compiler_settings_vb.disable_item_expand (validation_strict_check_ctl.ev_data_control)
-			gui_controls.extend (validation_strict_check_ctl)
+			ev_notebook_compiler_settings_vb.extend (evx_validation_strict_cb.ev_data_control)
+			ev_notebook_compiler_settings_vb.disable_item_expand (evx_validation_strict_cb.ev_data_control)
+			gui_controls.extend (evx_validation_strict_cb)
 
 			-- RM flattening on checkbox
-			create rm_flattening_check_ctl.make (get_text (ec_rm_flattening_text), get_text ("rm_flattening_tooltip"), agent rm_flattening_on)
-			ev_notebook_compiler_settings_vb.extend (rm_flattening_check_ctl.ev_data_control)
-			ev_notebook_compiler_settings_vb.disable_item_expand (rm_flattening_check_ctl.ev_data_control)
-			gui_controls.extend (rm_flattening_check_ctl)
+			create evx_rm_flattening_cb.make (get_text (ec_rm_flattening_text), get_text (ec_rm_flattening_tooltip), agent rm_flattening_on)
+			ev_notebook_compiler_settings_vb.extend (evx_rm_flattening_cb.ev_data_control)
+			ev_notebook_compiler_settings_vb.disable_item_expand (evx_rm_flattening_cb.ev_data_control)
+			gui_controls.extend (evx_rm_flattening_cb)
+
+			-- Quiet mode checkbox
+			create evx_quiet_mode_cb.make (get_text (ec_compiler_quiet_text), get_text (ec_compiler_quiet_tooltip), agent compiler_quiet)
+			ev_notebook_compiler_settings_vb.extend (evx_quiet_mode_cb.ev_data_control)
+			ev_notebook_compiler_settings_vb.disable_item_expand (evx_quiet_mode_cb.ev_data_control)
+			gui_controls.extend (evx_quiet_mode_cb)
 
 
 			-- ========== Tab 3 - UI settings ==========
@@ -139,43 +145,43 @@ feature {NONE} -- Initialization
 			ev_notebook.set_item_text (ev_notebook_ui_settings_hb, get_text (ec_options_ui_settings_tab_text))
 
 			-- show entire class hierarchy in archetype explorer
-			create show_all_classes_check_ctl.make (get_text (ec_show_all_classes_text), get_text (ec_show_all_classes_tooltip), agent show_entire_ontology)
-			ev_notebook_ui_settings_1_vb.extend (show_all_classes_check_ctl.ev_data_control)
-			gui_controls.extend (show_all_classes_check_ctl)
+			create evx_show_all_classes_cb.make (get_text (ec_show_all_classes_text), get_text (ec_show_all_classes_tooltip), agent show_entire_ontology)
+			ev_notebook_ui_settings_1_vb.extend (evx_show_all_classes_cb.ev_data_control)
+			gui_controls.extend (evx_show_all_classes_cb)
 
 			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
-			create display_source_check_ctl.make (get_text (ec_show_source_format_text), get_text (ec_show_source_format_tooltip), agent display_archetype_source)
-			ev_notebook_ui_settings_1_vb.extend (display_source_check_ctl.ev_data_control)
-			gui_controls.extend (display_source_check_ctl)
+			create evx_display_source_cb.make (get_text (ec_show_source_format_text), get_text (ec_show_source_format_tooltip), agent display_archetype_source)
+			ev_notebook_ui_settings_1_vb.extend (evx_display_source_cb.ev_data_control)
+			gui_controls.extend (evx_display_source_cb)
 
 			-- use RM pixmaps
-			create use_rm_icons_check_ctl.make (get_text (ec_use_rm_icons_text), get_text (ec_use_rm_icons_tooltip), agent use_rm_pixmaps)
-			ev_notebook_ui_settings_1_vb.extend (use_rm_icons_check_ctl.ev_data_control)
-			gui_controls.extend (use_rm_icons_check_ctl)
+			create evx_use_rm_icons_cb.make (get_text (ec_use_rm_icons_text), get_text (ec_use_rm_icons_tooltip), agent use_rm_pixmaps)
+			ev_notebook_ui_settings_1_vb.extend (evx_use_rm_icons_cb.ev_data_control)
+			gui_controls.extend (evx_use_rm_icons_cb)
 
 			-- Show flat form by default
-			create show_flat_form_ctl.make (get_text (ec_show_flat_form_text),
+			create evx_show_flat_form.make (get_text (ec_show_flat_form_text),
 				get_text (ec_show_flat_form_tooltip), agent show_flat_form)
-			ev_notebook_ui_settings_1_vb.extend (show_flat_form_ctl.ev_data_control)
-			gui_controls.extend (show_flat_form_ctl)
+			ev_notebook_ui_settings_1_vb.extend (evx_show_flat_form.ev_data_control)
+			gui_controls.extend (evx_show_flat_form)
 
 			-- Show definition tree expanded
-			create expand_definition_tree_check_ctl.make (get_text (ec_show_definition_tree_expanded_text),
+			create evx_expand_definition_tree_cb.make (get_text (ec_show_definition_tree_expanded_text),
 				get_text (ec_show_definition_tree_expanded_tooltip), agent expand_definition_tree)
-			ev_notebook_ui_settings_1_vb.extend (expand_definition_tree_check_ctl.ev_data_control)
-			gui_controls.extend (expand_definition_tree_check_ctl)
+			ev_notebook_ui_settings_1_vb.extend (evx_expand_definition_tree_cb.ev_data_control)
+			gui_controls.extend (evx_expand_definition_tree_cb)
 
 			-- Show line numbers in ADL source tab
-			create show_line_numbers_check_ctl.make (get_text (ec_show_line_numbers), Void, agent show_line_numbers)
-			ev_notebook_ui_settings_1_vb.extend  (show_line_numbers_check_ctl.ev_data_control)
-			gui_controls.extend (show_line_numbers_check_ctl)
+			create evx_show_line_numbers_cb.make (get_text (ec_show_line_numbers), Void, agent show_line_numbers)
+			ev_notebook_ui_settings_1_vb.extend  (evx_show_line_numbers_cb.ev_data_control)
+			gui_controls.extend (evx_show_line_numbers_cb)
 
 
 			create ev_notebook_ui_settings_2_vb
 			ev_notebook_ui_settings_hb.extend (ev_notebook_ui_settings_2_vb)
 
 			-- Tool tab combo
-			create tool_tab_combo_box.make (get_text (ec_options_tool_tab_text), get_text (ec_options_tool_tab_tooltip),
+			create evx_tool_tab_cob.make (get_text (ec_options_tool_tab_text), get_text (ec_options_tool_tab_tooltip),
 				agent :STRING
 					do
 						check attached Tool_tab_index.item (default_tool_tab) as tt then
@@ -183,9 +189,9 @@ feature {NONE} -- Initialization
 						end
 					end,
 				Tool_tab_names, 15)
-			ev_notebook_ui_settings_2_vb.extend (tool_tab_combo_box.ev_root_container)
-			ev_notebook_ui_settings_2_vb.disable_item_expand (tool_tab_combo_box.ev_root_container)
-			gui_controls.extend (tool_tab_combo_box)
+			ev_notebook_ui_settings_2_vb.extend (evx_tool_tab_cob.ev_root_container)
+			ev_notebook_ui_settings_2_vb.disable_item_expand (evx_tool_tab_cob.ev_root_container)
+			gui_controls.extend (evx_tool_tab_cob)
 
 
 			-- ========== Tab 4 - Authoring settings ==========
@@ -194,33 +200,33 @@ feature {NONE} -- Initialization
 			ev_notebook.extend (ev_notebook_authoring_vb)
 			ev_notebook.set_item_text (ev_notebook_authoring_vb, get_text (ec_options_authoring_tab_text))
 
-			create auth_name_text_ctl.make_linked (get_text (ec_options_auth_name_label),
+			create evx_auth_name_text.make_linked (get_text (ec_options_auth_name_label),
 				agent :STRING do Result := author_name end,
 				agent (a_str :STRING) do set_author_name (a_str) end,
 				agent do set_author_name ("") end,
 				Void, 0, True)
-			ev_notebook_authoring_vb.extend (auth_name_text_ctl.ev_root_container)
-			ev_notebook_authoring_vb.disable_item_expand (auth_name_text_ctl.ev_root_container)
-			gui_controls.extend (auth_name_text_ctl)
+			ev_notebook_authoring_vb.extend (evx_auth_name_text.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (evx_auth_name_text.ev_root_container)
+			gui_controls.extend (evx_auth_name_text)
 
-			create auth_org_text_ctl.make_linked (get_text (ec_options_auth_org_label),
+			create evx_auth_org_text.make_linked (get_text (ec_options_auth_org_label),
 				agent :STRING do Result := author_org end,
 				agent (a_str :STRING) do set_author_org (a_str) end,
 				agent do set_author_org ("") end,
 				Void,
 				0, True)
-			ev_notebook_authoring_vb.extend (auth_org_text_ctl.ev_root_container)
-			ev_notebook_authoring_vb.disable_item_expand (auth_org_text_ctl.ev_root_container)
-			gui_controls.extend (auth_org_text_ctl)
+			ev_notebook_authoring_vb.extend (evx_auth_org_text.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (evx_auth_org_text.ev_root_container)
+			gui_controls.extend (evx_auth_org_text)
 
-			create auth_copyright_text_ctl.make_linked (get_text (ec_options_auth_copyright_label),
+			create evx_auth_copyright_text.make_linked (get_text (ec_options_auth_copyright_label),
 				agent :STRING do Result := author_copyright end,
 				agent (a_str :STRING) do set_author_copyright (a_str) end,
 				agent do set_author_copyright ("") end,
 				Void, 0, True)
-			ev_notebook_authoring_vb.extend (auth_copyright_text_ctl.ev_root_container)
-			ev_notebook_authoring_vb.disable_item_expand (auth_copyright_text_ctl.ev_root_container)
-			gui_controls.extend (auth_copyright_text_ctl)
+			ev_notebook_authoring_vb.extend (evx_auth_copyright_text.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (evx_auth_copyright_text.ev_root_container)
+			gui_controls.extend (evx_auth_copyright_text)
 
 			-- ========== Tab 5 - Namespace settings ==========
 
@@ -228,15 +234,15 @@ feature {NONE} -- Initialization
 			ev_notebook.extend (ev_notebook_namespaces_vb)
 			ev_notebook.set_item_text (ev_notebook_namespaces_vb, get_text (ec_options_namespaces_tab_text))
 
-			create namespaces_ctl.make_linked (get_text (ec_options_namespaces_tab_text),
+			create evx_namespaces.make_linked (get_text (ec_options_namespaces_tab_text),
 				agent :HASH_TABLE [STRING, STRING] do Result := namespace_table.namespaces end,
 				agent (a_key, a_val: STRING) do namespace_table.put_namespace (a_key, a_val) end,
 				agent (a_key: STRING) do namespace_table.remove_namespace (a_key) end,
 				Void,
 				0, 25, False, Void)
 
-			ev_notebook_namespaces_vb.extend (namespaces_ctl.ev_root_container)
-			gui_controls.extend (namespaces_ctl)
+			ev_notebook_namespaces_vb.extend (evx_namespaces.ev_root_container)
+			gui_controls.extend (evx_namespaces)
 
 
 			-- ========== Tab 6 - Terminology settings ==========
@@ -245,20 +251,20 @@ feature {NONE} -- Initialization
 			ev_notebook.extend (ev_notebook_terminology_settings_vb)
 			ev_notebook.set_item_text (ev_notebook_terminology_settings_vb, get_text (ec_options_terminology_uris_tab_text))
 
-			create terminology_settings_ctl.make_linked (get_text (ec_options_terminology_uris_tab_text),
+			create evx_terminology_settings.make_linked (get_text (ec_options_terminology_uris_tab_text),
 				agent :HASH_TABLE [STRING, STRING] do Result := terminology_settings.uri_templates end,
 				agent (a_key, a_val: STRING) do terminology_settings.put_uri (a_key, a_val) end,
 				agent (a_key: STRING) do terminology_settings.remove_uri (a_key) end,
 				Void,
 				0, 25, False, Void)
 
-			ev_notebook_terminology_settings_vb.extend (terminology_settings_ctl.ev_root_container)
-			gui_controls.extend (terminology_settings_ctl)
+			ev_notebook_terminology_settings_vb.extend (evx_terminology_settings.ev_root_container)
+			gui_controls.extend (evx_terminology_settings)
 
 			-- ============ Ok/Cancel buttons ============
-			create ok_cancel_buttons.make (agent on_ok, agent hide)
-			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
-			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+			create evx_ok_cancel_buttons.make (agent on_ok, agent hide)
+			ev_root_container.extend (evx_ok_cancel_buttons.ev_root_container)
+			ev_root_container.disable_item_expand (evx_ok_cancel_buttons.ev_root_container)
 		end
 
 	initialize
@@ -270,11 +276,11 @@ feature {NONE} -- Initialization
 			set_icon_pixmap (adl_workbench_logo)
 
 			extend (ev_root_container)
-			set_default_cancel_button (ok_cancel_buttons.cancel_button)
-			set_default_push_button (ok_cancel_buttons.ok_button)
+			set_default_cancel_button (evx_ok_cancel_buttons.cancel_button)
+			set_default_push_button (evx_ok_cancel_buttons.ok_button)
 
 			-- add another button to OK/cancel button row to enable edit of options file
-			ok_cancel_buttons.add_button (get_text (ec_option_dialog_edit_file_text), agent on_edit_options_file)
+			evx_ok_cancel_buttons.add_button (get_text (ec_option_dialog_edit_file_text), agent on_edit_options_file)
 			enable_edit
 			old_show_entire_ontology := show_entire_ontology
 			do_populate
@@ -302,35 +308,36 @@ feature -- Events
 				app_cfg.load
 			else
 				-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-				set_terminology_directory (terminology_dir_setter.data_control_text)
-				set_export_directory (export_dir_setter.data_control_text)
-				set_test_diff_directory (test_files_dir_setter.data_control_text)
+				set_terminology_directory (evx_terminology_dir_setter.data_control_text)
+				set_export_directory (evx_export_dir_setter.data_control_text)
+				set_test_diff_directory (evx_test_files_dir_setter.data_control_text)
 
 				-- tool commands
 
-				set_editor_app_command (adl_editor_dir_setter.data_control_text)
-				set_difftool_command (diff_tool_dir_setter.data_control_text)
+				set_editor_app_command (evx_adl_editor_dir_setter.data_control_text)
+				set_difftool_command (evx_diff_tool_dir_setter.data_control_text)
 
 				-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-				set_validation_strict (validation_strict_check_ctl.is_selected)
-				set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
-				set_global_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
+				set_validation_strict (evx_validation_strict_cb.is_selected)
+				set_rm_flattening_on (evx_rm_flattening_cb.is_selected)
+				set_compiler_quiet (evx_quiet_mode_cb.is_selected)
+				set_global_error_reporting_level (error_type_id_table.item (evx_parser_error_reporting_level_cob.data_control_text))
 				set_error_reporting_level (global_error_reporting_level)
 
 				-- GUI options
 				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
-				set_expand_definition_tree (expand_definition_tree_check_ctl.is_selected)
-				set_show_line_numbers (show_line_numbers_check_ctl.is_selected)
-				set_show_flat_form (show_flat_form_ctl.is_selected)
-				set_display_archetype_source (display_source_check_ctl.is_selected)
-				set_use_rm_pixmaps (use_rm_icons_check_ctl.is_selected)
-				set_show_entire_ontology (show_all_classes_check_ctl.is_selected)
+				set_expand_definition_tree (evx_expand_definition_tree_cb.is_selected)
+				set_show_line_numbers (evx_show_line_numbers_cb.is_selected)
+				set_show_flat_form (evx_show_flat_form.is_selected)
+				set_display_archetype_source (evx_display_source_cb.is_selected)
+				set_use_rm_pixmaps (evx_use_rm_icons_cb.is_selected)
+				set_show_entire_ontology (evx_show_all_classes_cb.is_selected)
 				if show_entire_ontology /= old_show_entire_ontology then
 					has_changed_navigator_options := True
 				else
 					has_changed_navigator_options := False
 				end
-				set_default_tool_tab (Tool_tab_reverse_index.item (tool_tab_combo_box.data_control_text))
+				set_default_tool_tab (Tool_tab_reverse_index.item (evx_tool_tab_cob.data_control_text))
 
 				-- namespaces
 				set_namespace_table (namespace_table)
@@ -378,11 +385,11 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	terminology_dir_setter, export_dir_setter, test_files_dir_setter: EVX_DIRECTORY_SETTER
+	evx_terminology_dir_setter, evx_export_dir_setter, evx_test_files_dir_setter: EVX_DIRECTORY_SETTER
 
-	text_editor_dir_setter, adl_editor_dir_setter, diff_tool_dir_setter: EVX_FILE_PATH_SETTER
+	evx_text_editor_dir_setter, evx_adl_editor_dir_setter, evx_diff_tool_dir_setter: EVX_FILE_PATH_SETTER
 
-	path_settings_frame_ctl, tool_paths_frame_ctl: EVX_FRAME_CONTROL
+	evx_path_settings_frame, evx_tool_paths_frame: EVX_FRAME_CONTROL
 
 	ev_root_container: EV_VERTICAL_BOX
 
@@ -394,19 +401,19 @@ feature {NONE} -- Implementation
 
 	ev_notebook_ui_settings_hb: EV_HORIZONTAL_BOX
 
-	parser_error_reporting_level_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
+	evx_parser_error_reporting_level_cob: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
-	tool_tab_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
+	evx_tool_tab_cob: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
-	validation_strict_check_ctl, rm_flattening_check_ctl, expand_definition_tree_check_ctl, show_line_numbers_check_ctl: EVX_CHECK_BOX_CONTROL
+	evx_quiet_mode_cb, evx_validation_strict_cb, evx_rm_flattening_cb, evx_expand_definition_tree_cb, evx_show_line_numbers_cb: EVX_CHECK_BOX_CONTROL
 
-	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl, show_flat_form_ctl: EVX_CHECK_BOX_CONTROL
+	evx_display_source_cb, evx_show_all_classes_cb, evx_use_rm_icons_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
 
-	auth_name_text_ctl, auth_org_text_ctl, auth_copyright_text_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
+	evx_auth_name_text, evx_auth_org_text, evx_auth_copyright_text: EVX_SINGLE_LINE_TEXT_CONTROL
 
-	namespaces_ctl, terminology_settings_ctl: EVX_HASH_TABLE_CONTROL
+	evx_namespaces, evx_terminology_settings: EVX_HASH_TABLE_CONTROL
 
-	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
+	evx_ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

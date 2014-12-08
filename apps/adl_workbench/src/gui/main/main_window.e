@@ -242,9 +242,10 @@ feature {NONE} -- Initialization
 			evx_menu_bar.menu_item (get_text (ec_menu_view_new_archetype_tool_key)).select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
-			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+			archetype_compiler.set_console_update_action (agent compiler_console_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 			archetype_compiler.set_full_compile_visual_update_action (agent library_tool.on_full_compile)
+			archetype_compiler.set_update_compilation_status (agent library_tool.update_compilation_status)
 
 			-- accelerators
 			initialise_accelerators
@@ -581,7 +582,6 @@ feature {NONE} -- Library events
 	rebuild_all
 			-- Force the whole system to rebuild.
 		do
-			error_tool.clear
 			console_tool.show
 			do_build_action (agent archetype_compiler.rebuild_all)
 		end
@@ -1009,9 +1009,6 @@ feature -- Archetype viewers
 	display_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
 		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
-			if attached aca.last_compile_attempt_timestamp then
-				error_tool.extend_and_select (aca)
-			end
 			archetype_viewers.populate_active_tool (aca)
 			archetype_viewers.active_tool.on_select_notebook
 		end
@@ -1282,25 +1279,19 @@ feature {NONE} -- Build commands
 			retry
 		end
 
-	compiler_global_gui_update (a_msg: STRING)
+	compiler_console_update (a_msg: STRING)
 			-- Update GUI with progress on build.
 		do
 			populate_compile_button
 			console_tool.append_text (a_msg)
-		--	ev_application.process_events
+	--		ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Update GUI with progress on build.
 		do
-			if not a_msg.is_empty then
-				console_tool.append_text (indented (a_msg, create {STRING}.make_filled ('%T', dependency_depth)))
-			end
-
 			library_tool.update_tree_node (aca)
 			test_tool.do_row_for_item (aca)
-			error_tool.extend_and_select (aca)
-
 			ev_application.process_events
 		end
 

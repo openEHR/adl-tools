@@ -384,6 +384,18 @@ feature -- Application Switches
 			app_cfg.put_boolean_value ("/compiler/validation_strict", flag)
 		end
 
+	compiler_quiet: BOOLEAN
+			-- Is quiet reporting mode on?
+		do
+			Result := app_cfg.boolean_value ("/compiler/compiler_quiet")
+		end
+
+	set_compiler_quiet (flag: BOOLEAN)
+			-- Set flag for quiet mode
+		do
+			app_cfg.put_boolean_value ("/compiler/compiler_quiet", flag)
+		end
+
 	rm_flattening_on: BOOLEAN
 			-- Set RM flattening on?
 		do

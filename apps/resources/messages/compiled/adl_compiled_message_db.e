@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (891)
+			create message_table.make (894)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -438,6 +438,8 @@ feature -- Initialisation
 			message_table.put ("Which version of the ADL syntax to use when saving archetypes.", ec_adl_serialisation_level_tooltip)
 			message_table.put ("Error Reporting Level:", ec_error_reporting_level_text)
 			message_table.put ("Select the level of parser messages to display. All levels >= this level displayed.", ec_error_reporting_level_tooltip)
+			message_table.put ("Quiet mode", ec_compiler_quiet_text)
+			message_table.put ("Reduce compiler output to a minimum regardless of error-reporting level.", ec_compiler_quiet_tooltip)
 			message_table.put ("RM flattening on", ec_rm_flattening_text)
 			message_table.put ("Include RM attribute existence and cardinality in flattened archetypes.", ec_rm_flattening_tooltip)
 			message_table.put ("Validation Strict", ec_validation_strict_text)
@@ -676,6 +678,7 @@ feature -- Initialisation
 			message_table.put ("Remove artefact confirmation", ec_remove_dialog_title)
 			message_table.put ("Remove $1? WARNING: really removes from the file system!", ec_remove_artefact_question)
 			message_table.put ("Remove from system", ec_remove_artefact)
+			message_table.put ("Progress: ", ec_library_compile_status_text)
 			message_table.put ("Include code meanings in paths", ec_nat_lang_paths_tooltip)
 			message_table.put ("Natural lang", ec_nat_lang_checkbox_text)
 			message_table.put ("ADL 2 paths", ec_adl_2_paths_tab_text)

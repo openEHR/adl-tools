@@ -114,12 +114,7 @@ feature -- Commands
 					cat_row := cat
 				end
 
-				from
-					row_idx := 0
-					i := 1
-				until
-					i /= 1
-				loop
+				from row_idx := 0; i := 1 until i /= 1 loop
 					row_idx := row_idx + 1
 
 					if row_idx <= cat_row.subrow_count then
@@ -349,11 +344,7 @@ feature {NONE} -- Implementation
 			cat_row, row: detachable EV_GRID_ROW
 			row_idx: INTEGER
 		do
-			from
-				row_idx := ev_grid.row_count
-			until
-				row_idx = 0
-			loop
+			from row_idx := ev_grid.row_count until row_idx = 0 loop
 				row := ev_grid.row (row_idx)
 				row_idx := row_idx - 1
 
