@@ -34,18 +34,19 @@ templates = <
 		["compiler_rebuilding_subtree"] = <"=============== rebuilding sub-tree from scratch ===============">
 		["compiler_finished_rebuilding_subtree"] = <"=============== finished rebuilding sub-tree from scratch ===============">
 
-		["compiler_export"] = <"=============== exporting built system as $1 ===============">
-		["compiler_finished_export"] = <"=============== finished exporting built system as $1 to$2 ===============">
+		["compiler_export"] = <"=============== exporting built library as $1 to $2 ===============">
+		["compiler_finished_export"] = <"=============== finished library export ===============">
 
-		["compiler_build_and_export"] = <"=============== building system and exporting as $1 ===============">
-		["compiler_finished_build_and_export"] = <"=============== finished building system and exporting as $1 to $2 ===============">
+		["compiler_build_and_export"] = <"=============== building library and exporting as $1 to $2 ===============">
+		["compiler_finished_build_and_export"] = <"=============== finished library build and export ==============">
 
 		["compiler_compiling_archetype"] = <"------------- compiling $1 ---- $2 -------------">
 		["compiler_already_attempted_failed"] = <"------------- $1 ---- $2 (already attempted - FAILED) -------------%N$2">
 		["compiler_already_attempted_validated"] = <"------------- $1 ---- $2 (already attempted - PASSED) -------------">
 		["compiler_already_attempted_validated_with_warnings"] = <"------------- $1 ---- $2 (already attempted - PASSED with warnings) -------------%N$3">
 		["compiler_unexpected_error"] = <"Location: $1">
-		["compile_exception"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
+		["compile_exception"] = <"EXCEPTION in build of archetype $1; details = $2; stack = $3">
+		["export_exception"] = <"EXCEPTION in export of archetype $1; details = $2; stack = $3">
 		["compiler_infinite_regress"] = <"Infinite compilation dependency loop detected on archetype $1; descent depth = $2; quitting">
 
 		-- ADL2_ENGINE

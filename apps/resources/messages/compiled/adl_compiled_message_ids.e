@@ -36,6 +36,7 @@ feature -- Definitions
 		ec_compiler_already_attempted_validated_with_warnings: STRING = "compiler_already_attempted_validated_with_warnings"
 		ec_compiler_unexpected_error: STRING = "compiler_unexpected_error"
 		ec_compile_exception: STRING = "compile_exception"
+		ec_export_exception: STRING = "export_exception"
 		ec_compiler_infinite_regress: STRING = "compiler_infinite_regress"
 		ec_deserialise_e1: STRING = "deserialise_e1"
 		ec_old_copyright: STRING = "old_copyright"

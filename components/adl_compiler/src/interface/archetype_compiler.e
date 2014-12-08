@@ -215,9 +215,9 @@ feature -- Commands
 	export_all (an_export_dir, a_syntax: STRING)
 			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
 		do
-			call_console_update_action (get_msg_line (ec_compiler_export, <<a_syntax>>))
+			call_console_update_action (get_msg_line (ec_compiler_export, <<a_syntax, an_export_dir>>))
 			do_all (agent export_archetype (an_export_dir, a_syntax, False, ?))
-			call_console_update_action (get_msg_line (ec_compiler_finished_export, <<a_syntax, an_export_dir>>))
+			call_console_update_action (get_msg_line (ec_compiler_finished_export, Void))
 		end
 
 	build_and_export_all (an_export_dir, a_syntax: STRING)
@@ -226,11 +226,11 @@ feature -- Commands
 			is_full_build_completed := False
 			is_building := True
 			reset
-			call_console_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax>>))
+			call_console_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax, an_export_dir>>))
 			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_console_update_action (get_msg_line (ec_compiler_finished_build_and_export, <<a_syntax, an_export_dir>>))
+			call_console_update_action (get_msg_line (ec_compiler_finished_build_and_export, Void))
 		end
 
 feature {NONE} -- Implementation
@@ -361,20 +361,32 @@ feature {NONE} -- Implementation
 		require
 			has_serialiser_format (a_syntax)
 		local
-			filename: STRING
+			filename, exc_trace_str: STRING
+			exception_encountered: BOOLEAN
 		do
-			if not is_interrupt_requested then
-				if build_too then
-					build_archetype (ara, 0)
-				end
-
-				if ara.is_valid then
-					check attached file_system.pathname (an_export_dir, ara.id.physical_id) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
-						filename := pn + ext
+			if not exception_encountered  then
+				if not is_interrupt_requested then
+					if build_too then
+						build_archetype (ara, 0)
 					end
-					ara.save_flat_as (filename, a_syntax)
+
+					if ara.is_valid then
+						check attached file_system.pathname (an_export_dir, ara.id.physical_id) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
+							filename := pn + ext
+						end
+						ara.save_flat_as (filename, a_syntax)
+					end
 				end
 			end
+		rescue
+			if attached exception_trace as et then
+				exc_trace_str := et
+			else
+				create exc_trace_str.make_from_string ("(Exception trace not available)")
+			end
+			call_console_update_action (get_msg (ec_export_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
+			exception_encountered := True
+			retry
 		end
 
 	call_full_compile_visual_update_action

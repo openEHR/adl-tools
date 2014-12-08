@@ -634,7 +634,7 @@ feature {NONE} -- Library events
 			question_dialog.show_modal_to_window (Current)
 
 			if not question_dialog.selected_button.same_string (cancel_text) then
-				export_dir := file_system.pathname (export_directory, a_syntax)
+				export_dir := file_system.pathname (file_system.pathname (export_directory, current_library_name), a_syntax)
 				file_system.recursive_create_directory (export_dir)
 				if not file_system.directory_exists (export_dir) then
 					info_feedback (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
