@@ -84,7 +84,7 @@ feature -- Definitions
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
 
-	Bug_reporter_url: STRING = "https://github.com/openEHR/adl-tools/issues"
+	Bug_reporter_url: STRING = "https://openehr.atlassian.net/browse/AWBPR"
 			-- The URL to ADL Workbench's problem reporter.
 
 	Source_url: STRING = "https://github.com/openEHR/adl-tools.git"
