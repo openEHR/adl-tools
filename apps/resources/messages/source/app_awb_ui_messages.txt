@@ -304,11 +304,11 @@ templates = <
 		["menu_archetypes_rebuild_all_key"] = <"Archetypes>Rebuild All">
 		["menu_archetypes_build_subtree_key"] = <"Archetypes>Build Subtree">
 		["menu_archetypes_rebuild_subtree_key"] = <"Archetypes>Rebuild Subtree">
-		["menu_archetypes_export_html_key"] = <"Archetypes>Export HTML">
-		["menu_archetypes_export_json_key"] = <"Archetypes>Export JSON">
-		["menu_archetypes_export_yaml_key"] = <"Archetypes>Export YAML">
-		["menu_archetypes_export_xml_key"] = <"Archetypes>Export XML">
-		["menu_archetypes_report_key"] = <"Archetypes>Report">
+		["menu_archetypes_export_html_key"] = <"Archetypes>Export Library as HTML">
+		["menu_archetypes_export_json_key"] = <"Archetypes>Export Library as JSON">
+		["menu_archetypes_export_yaml_key"] = <"Archetypes>Export Library as YAML">
+		["menu_archetypes_export_xml_key"] = <"Archetypes>Export Library as XML">
+		["menu_archetypes_report_key"] = <"Archetypes>Library Report">
 		["menu_archetypes_interrupt_build_key"] = <"Archetypes>Interrupt Build">
 		["menu_archetypes_refresh_key"] = <"Archetypes>Refresh">
 		["menu_archetypes_configure_key"] = <"Archetypes>Configure">
@@ -439,6 +439,8 @@ templates = <
 		["xml_14_not_available_message"] = <"XML based on ADL 1.4 available in next release">
 
 		-- GUI_LIBRARY_TOOL
+		["no_archetype_selected"] = <"No archetype selected">
+
 		["adl_14_files"] = <"ADL 1.4 files">
 		["adl_2_source_files"] = <"ADL 2 source files">
 

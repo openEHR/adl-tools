@@ -248,25 +248,40 @@ feature -- Commands
 
 	save_source_archetype_as
 			-- Save source (differential) archetype to a user-specified path
+		local
+			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
 				save_archetype (aca, True, True)
+			else
+				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
 
 	export_source_archetype_as
 			-- Export source archetype to a user-specified path
+		local
+			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
 				save_archetype (aca, True, False)
+			else
+				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
 
 	export_flat_archetype_as
 			-- Export flat archetype to a user-specified path
+		local
+			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
 				save_archetype (aca, False, False)
+			else
+				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
 
@@ -441,7 +456,7 @@ feature {NONE} -- Implementation
 				create save_dialog
 				save_dialog.set_title (dialog_title)
 				save_dialog.set_file_name (name)
-				save_dialog.set_start_directory (current_work_directory)
+				save_dialog.set_start_directory (last_user_save_directory)
 
 				-- ask the user what format
 				across format_list as formats_csr loop
@@ -457,7 +472,7 @@ feature {NONE} -- Implementation
 					name := save_dialog.file_name.as_string_8
 					if not name.is_empty then
 						-- finalise the file path & create a handle
-						set_current_work_directory (file_system.dirname (name))
+						set_last_user_save_directory (file_system.dirname (name))
 						format := format_list [save_dialog.selected_filter_index]
 						ext := archetype_file_extension (diff_flag, format)
 						if not file_system.has_extension (name, ext) then

@@ -646,6 +646,7 @@ feature -- Definitions
 		ec_no_docking_file_found: STRING = "no_docking_file_found"
 		ec_config_warning_text: STRING = "config_warning_text"
 		ec_xml_14_not_available_message: STRING = "xml_14_not_available_message"
+		ec_no_archetype_selected: STRING = "no_archetype_selected"
 		ec_adl_14_files: STRING = "adl_14_files"
 		ec_adl_2_source_files: STRING = "adl_2_source_files"
 		ec_library_no_archetypes_found: STRING = "library_no_archetypes_found"

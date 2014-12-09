@@ -127,10 +127,12 @@ feature -- Commands
 
 	reset
 		do
-			total_count := 0
-			valid_count := 0
-			warning_count := 0
-			error_count := 0
+			if not is_interrupt_requested then
+				total_count := 0
+				valid_count := 0
+				warning_count := 0
+				error_count := 0
+			end
 		end
 
 	build_all

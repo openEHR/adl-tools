@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (895)
+			create message_table.make (896)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -661,6 +661,7 @@ feature -- Initialisation
 			message_table.put ("No docking format file fund at user location $1 or default location $2", ec_no_docking_file_found)
 			message_table.put ("Configuration warning", ec_config_warning_text)
 			message_table.put ("XML based on ADL 1.4 available in next release", ec_xml_14_not_available_message)
+			message_table.put ("No archetype selected", ec_no_archetype_selected)
 			message_table.put ("ADL 1.4 files", ec_adl_14_files)
 			message_table.put ("ADL 2 source files", ec_adl_2_source_files)
 			message_table.put ("No archetypes found; may need to enable appropriate RM schema; see RM Schemas > Configure menu", ec_library_no_archetypes_found)

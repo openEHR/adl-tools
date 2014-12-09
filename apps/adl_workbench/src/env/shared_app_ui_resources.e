@@ -474,10 +474,27 @@ feature -- Application Switches
 		end
 
 	set_last_user_selected_directory (a_path: STRING)
-			-- set the directory where archetypes are currently being opened and saved.
+			-- set user chosen directory.
 		do
 			if not a_path.is_empty then
 				app_cfg.put_string_value ("/file_system/last_user_selected_directory", a_path)
+			end
+		end
+
+	last_user_save_directory: STRING
+			-- most recently chosen save directory, usually via a directory chooser control
+		do
+			Result := app_cfg.string_value ("/file_system/last_user_save_directory")
+			if Result.is_empty then
+				Result := execution_environment.root_directory_name
+			end
+		end
+
+	set_last_user_save_directory (a_path: STRING)
+			-- set the directory for ad hoc saving
+		do
+			if not a_path.is_empty then
+				app_cfg.put_string_value ("/file_system/last_user_save_directory", a_path)
 			end
 		end
 
