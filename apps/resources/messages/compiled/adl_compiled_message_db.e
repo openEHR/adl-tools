@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (896)
+			create message_table.make (897)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -599,10 +599,10 @@ feature -- Initialisation
 			message_table.put ("Rebuild S&ubtree", ec_archetypes_menu_rebuild_subtree_text)
 			message_table.put ("&Interrupt Build", ec_archetypes_menu_interrupt_text)
 			message_table.put ("Re&fresh Library", ec_archetypes_menu_refresh_text)
-			message_table.put ("Export as &HTML...", ec_archetypes_menu_export_html_text)
-			message_table.put ("Export as &JSON...", ec_archetypes_menu_export_json_text)
-			message_table.put ("Export as &YAML...", ec_archetypes_menu_export_yaml_text)
-			message_table.put ("Export as &XML...", ec_archetypes_menu_export_xml_text)
+			message_table.put ("Export Library as &HTML...", ec_archetypes_menu_export_html_text)
+			message_table.put ("Export Library as &JSON...", ec_archetypes_menu_export_json_text)
+			message_table.put ("Export Library as &YAML...", ec_archetypes_menu_export_yaml_text)
+			message_table.put ("Export Library as &XML...", ec_archetypes_menu_export_xml_text)
 			message_table.put ("&Export Library Report...", ec_archetypes_menu_export_report_text)
 			message_table.put ("&Configure Repositories...", ec_archetypes_menu_configure_text)
 			message_table.put ("&RM Schemas", ec_rm_schemas_menu_text)
@@ -861,6 +861,7 @@ feature -- Initialisation
 			message_table.put ("Original%NResource%NURIs", ec_resource_orig_res_label_text)
 			message_table.put ("Terminology mappings", ec_terminology_label_text)
 			message_table.put ("Refset bindings", ec_refset_bindings_label_text)
+			message_table.put ("References", ec_references_tab_text)
 			message_table.put ("    Other%N    Details: ", ec_other_details_label_text)
 			message_table.put ("Other Details", ec_other_details_tab_text)
 			message_table.put ("Archetype statistics (differential)", ec_arch_stats_list_title_diff)

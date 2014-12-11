@@ -363,10 +363,10 @@ templates = <
 		["archetypes_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
 		["archetypes_menu_interrupt_text"] = <"&Interrupt Build">
 		["archetypes_menu_refresh_text"] = <"Re&fresh Library">
-		["archetypes_menu_export_html_text"] = <"Export as &HTML...">
-		["archetypes_menu_export_json_text"] = <"Export as &JSON...">
-		["archetypes_menu_export_yaml_text"] = <"Export as &YAML...">
-		["archetypes_menu_export_xml_text"] = <"Export as &XML...">
+		["archetypes_menu_export_html_text"] = <"Export Library as &HTML...">
+		["archetypes_menu_export_json_text"] = <"Export Library as &JSON...">
+		["archetypes_menu_export_yaml_text"] = <"Export Library as &YAML...">
+		["archetypes_menu_export_xml_text"] = <"Export Library as &XML...">
 		["archetypes_menu_export_report_text"] = <"&Export Library Report...">
 		["archetypes_menu_configure_text"] = <"&Configure Repositories...">
 
@@ -698,6 +698,8 @@ templates = <
 		["resource_orig_res_label_text"] = <"Original%NResource%NURIs">
 		["terminology_label_text"] = <"Terminology mappings">
 		["refset_bindings_label_text"] = <"Refset bindings">
+
+		["references_tab_text"] = <"References">
 
 		["other_details_label_text"] = <"    Other%N    Details: ">
 		["other_details_tab_text"] = <"Other Details">

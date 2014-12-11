@@ -362,13 +362,33 @@ feature {NONE} -- Initialisation
 			ev_description_tab_vbox.disable_item_expand (evx_description_other_details.ev_root_container)
 
 
+			-- ================================== References tab ========================================
+			create ev_references_tab_vbox
+			ev_root_container.extend (ev_references_tab_vbox)
+			ev_root_container.set_item_text (ev_references_tab_vbox, get_text (ec_references_tab_text))
+
+			-- other details - Hash <String, String>
+			create evx_references.make_linked ("",
+				agent :detachable HASH_TABLE [STRING, STRING]
+					do
+						if attached source_archetype.description as desc and then attached desc.references as od then
+							Result := od
+						end
+					end,
+				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_references_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_references_item (a_key) end end,
+				undo_redo_chain,
+				2, 0, True, Void)
+			gui_controls.extend (evx_references)
+			ev_references_tab_vbox.extend (evx_references.ev_root_container)
+
 			-- ================================== Other Details tab ========================================
 			create ev_other_details_tab_vbox
 			ev_root_container.extend (ev_other_details_tab_vbox)
 			ev_root_container.set_item_text (ev_other_details_tab_vbox, get_text (ec_other_details_tab_text))
 
 			-- other details - Hash <String, String>
-			create evx_other_details.make_linked (get_text (ec_other_details_label_text),
+			create evx_other_details.make_linked ("",
 				agent :detachable HASH_TABLE [STRING, STRING]
 					do
 						if attached source_archetype.description as desc and then attached desc.other_details as od then
@@ -492,6 +512,12 @@ feature {NONE} -- Implementation (other details controls)
 	evx_other_details: EVX_HASH_TABLE_CONTROL
 
 	ev_other_details_tab_vbox: EV_VERTICAL_BOX
+
+feature {NONE} -- Implementation (references controls)
+
+	evx_references: EVX_HASH_TABLE_CONTROL
+
+	ev_references_tab_vbox: EV_VERTICAL_BOX
 
 feature {NONE} -- Implementation
 
