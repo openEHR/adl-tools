@@ -127,10 +127,6 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu (get_text (ec_menu_file_key), get_text (ec_file_menu_text))
 			evx_menu_bar.add_menu_item (get_text (ec_menu_file_open_key), get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_save_as_key), get_text (ec_file_menu_save_as_text), Void, agent library_tool.save_source_archetype_as)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_export_key), get_text (ec_file_menu_export_text), Void, agent library_tool.export_source_archetype_as)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_export_flat_key), get_text (ec_file_menu_export_flat_as_text), Void, agent library_tool.export_flat_archetype_as)
-			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item (get_text (ec_menu_file_exit_key), "E&xit", Void, agent exit_app)
 
 			-- ================== Edit menu ==================
@@ -1272,8 +1268,6 @@ feature {NONE} -- Build commands
 			evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
 					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
 			evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
-		rescue
-			retry
 		end
 
 	compiler_console_update (a_msg: STRING)
