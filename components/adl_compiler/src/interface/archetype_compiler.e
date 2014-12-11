@@ -232,7 +232,9 @@ feature -- Commands
 			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_console_update_action (get_msg_line (ec_compiler_finished_build_and_export, Void))
+			if is_full_build_completed then
+				call_full_compile_visual_update_action
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -291,7 +293,7 @@ feature {NONE} -- Implementation
 					if not exception_encountered then
 						ara.check_compilation_currency
 						if not ara.is_in_terminal_compilation_state then
-							if global_error_reporting_level = Error_type_debug then
+							if not compiler_quiet then
 								call_console_update_action (get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>))
 							end
 
