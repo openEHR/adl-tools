@@ -156,12 +156,7 @@ feature -- Status Report
 		require
 			Lower_case_key: a_key.as_lower.same_string (a_key)
 		do
-			Result := attached children as c and then c.there_exists (
-				agent (a_child: like children.item; key: STRING):BOOLEAN
-					do
-						Result := a_child.qualified_key.same_string (key)
-					end (?, a_key)
-			)
+			Result := attached children as c and then across c as child_csr some child_csr.item.qualified_key.same_string (a_key) end
 		end
 
    	has_matching_children (test_agt: FUNCTION [ANY, TUPLE [ARCH_LIB_ITEM], BOOLEAN]): BOOLEAN
@@ -180,7 +175,7 @@ feature {ARCHETYPE_LIBRARY} -- Modification
 			if attached children as c then
 				att_children := c
 			else
-				create att_children.make
+				create att_children.make (0)
 				children := att_children
 			end
 			att_children.extend (a_child)
@@ -220,7 +215,7 @@ feature -- Comparison
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ITEM]
+	children: detachable ARRAYED_LIST [ARCH_LIB_ITEM]
 			-- list of child nodes
 
 	parent: detachable ARCH_LIB_ITEM

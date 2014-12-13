@@ -47,7 +47,7 @@ feature -- Modification
 	put_child (a_child: like child_with_qualified_key)
 		do
 			if children = Void then
-				create children.make
+				create children.make (0)
 			end
 			children.extend (a_child)
 			if attached {ARCH_LIB_FILESYS_ITEM} a_child then

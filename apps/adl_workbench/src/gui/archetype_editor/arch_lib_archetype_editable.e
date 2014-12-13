@@ -74,7 +74,8 @@ feature -- Access
 				end
 				differential_archetype := archetype_comparator.differential_output
 			else
-				create differential_archetype.make_differential_from_flat (flat_archetype_clone)
+				differential_archetype := flat_archetype_clone
+				differential_archetype.set_differential
 			end
 
 			differential_archetype.clear_is_generated

@@ -33,12 +33,6 @@ create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 create {P_ARCHETYPE}
 	make_all
 
-create {ARCHETYPE_COMPARATOR, ARCH_LIB_ARCHETYPE_ITEM}
-	make_differential_from_flat
-
-create {ARCHETYPE_FLATTENER}
-	make_flat_specialised, make_flat_non_specialised
-
 create {ARCHETYPE_FLATTENER, ARCH_LIB_ARCHETYPE_EDITABLE}
 	make_from_other
 
@@ -138,7 +132,7 @@ feature -- Initialisation
 			Not_generated: not is_generated
 		end
 
-	make_from_other (other: like Current)
+	make_from_other (other: ARCHETYPE)
 			-- duplicate from another archetype
 		local
 			other_parent_arch_id: detachable STRING
@@ -245,60 +239,9 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			Parent_archetype_id_set: parent_archetype_id = a_parent_id
 		end
 
-feature {ARCHETYPE_COMPARATOR, ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
-
-	make_differential_from_flat (a_flat: ARCHETYPE)
-			-- make a differential archetype using components (not copies) of a flat archetype; used to support
-			-- legacy archetyps that are parsed in a flat form but have to be converted to differential form
-		require
-			a_flat.is_flat
-		do
-			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.rm_release, a_flat.archetype_id, a_flat.parent_archetype_id,
-					a_flat.is_controlled, a_flat.uid, a_flat.other_metadata, a_flat.original_language, a_flat.translations,
-					a_flat.description, a_flat.definition, a_flat.rules,
-					a_flat.terminology.to_differential, a_flat.annotations)
-			is_generated := True
-			is_differential := True
-			rebuild
-		ensure
-			is_generated
-			is_differential
-		end
-
 feature {ARCHETYPE_FLATTENER} -- Initialisation
 
-	make_flat_non_specialised (a_diff: ARCHETYPE)
-			-- Create a new flat archetype from a top-level differential archetype
-		require
-			a_diff.is_differential and not a_diff.is_specialised
-		do
-			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.rm_release.twin,
-					a_diff.original_language.deep_twin,
-					a_diff.uid,
-					a_diff.description.deep_twin,
-					a_diff.definition.deep_twin, a_diff.terminology.to_flat)
-			if attached a_diff.translations as a_diff_trans then
-				translations := a_diff_trans.deep_twin
-			end
-			if attached a_diff.rules as a_diff_invs then
-				rules := a_diff_invs.deep_twin
-			end
-			if attached a_diff.annotations as a_diff_annots then
-				annotations := a_diff_annots.deep_twin
-			end
-			is_generated := a_diff.is_generated
-			is_valid := True
-
-			rebuild
-		ensure
-			Generated: is_generated = a_diff.is_generated
-			Top_level: not is_specialised
-			Is_flat: is_flat
-			Is_valid: is_valid
-		end
-
-	make_flat_specialised (a_diff, a_flat_parent: ARCHETYPE)
+	overlay_diff (a_diff: ARCHETYPE)
 			-- Create a new flat archetype from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The following items from the differential are used:
 			-- 	* artefact_type
@@ -307,58 +250,36 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			--	* original_language
 			--	* translations
 			--
-			-- The following items from the flat parent:
-			-- 	* definition (with root node id from differential definition)
-			--  * terminology !!! with languages removed that are not in the orig_lang/translations of the diff
-			-- 	* rules
-			--	* annotations
-			--
 		require
-			Conformance: a_diff.is_differential and a_flat_parent.is_flat
-			Valid_specialisation_relationship: a_diff.specialisation_depth = a_flat_parent.specialisation_depth + 1
-		local
-			desc: like description
-			flat_terminology: ARCHETYPE_TERMINOLOGY
+			Conformance: a_diff.is_differential and is_flat
+			Valid_specialisation_relationship: a_diff.specialisation_depth = specialisation_depth + 1
 		do
-			-- basic identifying info, and language from from child
-			-- definition comes from parent, waiting for flattening of child on top
-			-- ontology comes from child, waiting for parent items to be merged on top
-			if attached a_diff.description as orig_desc then
-				desc := orig_desc.deep_twin
-			end
+			-- archetype_id
+			archetype_id := a_diff.archetype_id.deep_twin
 
-			flat_terminology := a_flat_parent.terminology.deep_twin
-			flat_terminology.reduce_languages_to (a_diff.terminology)
-
-			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.rm_release.twin,
-					a_diff.original_language.deep_twin, a_diff.uid, desc,
-					a_flat_parent.definition.deep_twin,
-					flat_terminology)
-			definition.set_node_id (a_diff.definition.node_id.twin)
-
-			-- other metadata is created from parent, with child meta-data
-			-- merged on top, overwriting any values of the same key
-			if attached a_flat_parent.other_metadata as att_md then
-				other_metadata := att_md.deep_twin
-			end
+			-- original_language
+			original_language := a_diff.original_language.deep_twin
 
 			-- translations are what is available in the child archetype
 			if attached a_diff.translations as a_diff_trans then
 				translations := a_diff_trans.deep_twin
 			end
 
-			-- rules starts with what is in the parent archetype and
-			-- child invariants are merged
-			if attached a_flat_parent.rules as parent_rules then
-				rules := parent_rules.deep_twin
+			-- uid
+			if attached a_diff.uid as att_uid then
+				uid := att_uid.deep_twin
 			end
 
-			-- annotations starts with what is in the parent archetype and
-			-- child annotations are merged
-			if attached a_flat_parent.annotations as parent_annots then
-				annotations := parent_annots.deep_twin
+			-- description, if it exists
+			if attached a_diff.description as orig_desc then
+				description := orig_desc.deep_twin
 			end
+
+			-- reduce terminology to overlay's language set
+			terminology.reduce_languages_to (a_diff.terminology)
+
+			-- root node id from diff
+			definition.set_node_id (a_diff.definition.node_id.twin)
 
 			is_generated := a_diff.is_generated
 			is_valid := True
@@ -738,6 +659,14 @@ feature -- Status Setting
 			-- set is_diffrential flag
 		do
 			is_differential := True
+			terminology.set_differential
+		end
+
+	set_flat
+			-- set is_diffrential flag
+		do
+			is_differential := False
+			terminology.set_flat
 		end
 
 	set_is_generated
@@ -750,6 +679,20 @@ feature -- Status Setting
 			-- unset is_generated flag
 		do
 			is_generated := False
+		end
+
+	set_generated_flat
+			-- set is_flat, is_generated True
+		do
+			set_flat
+			is_generated := True
+		end
+
+	set_generated_differential
+			-- set is_differential, is_generated  True
+		do
+			set_differential
+			is_generated := True
 		end
 
 	set_is_dirty

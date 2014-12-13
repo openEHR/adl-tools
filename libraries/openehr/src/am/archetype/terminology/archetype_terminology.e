@@ -450,7 +450,7 @@ feature -- Status Setting
 			is_differential := False
 		end
 
-feature {ADL_2_ENGINE, ARCHETYPE_TERMINOLOGY}-- Status Setting
+feature {ADL_2_ENGINE, ARCHETYPE, ARCHETYPE_TERMINOLOGY}-- Status Setting
 
 	set_differential
 			-- set this archetype to differential status

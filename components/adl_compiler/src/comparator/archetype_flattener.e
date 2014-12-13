@@ -114,10 +114,11 @@ debug ("flatten")
 		arch_flat_anc.archetype_id.physical_id + " ==============%N")
 end
 				if arch_diff_child.is_template then
-					create {OPERATIONAL_TEMPLATE} arch_flat_out.make_flat_specialised (arch_diff_child, arch_flat_anc)
+					create {OPERATIONAL_TEMPLATE} arch_flat_out.make_from_other (arch_flat_anc)
 				else
-					create arch_flat_out.make_flat_specialised (arch_diff_child, arch_flat_anc)
+					arch_flat_out := arch_flat_anc.deep_twin
 				end
+				arch_flat_out.overlay_diff (arch_diff_child)
 				expand_c_proxy_objects
 				flatten_other_metadata
 				flatten_definition
@@ -127,7 +128,8 @@ end
 				arch_flat_out.set_parent_archetype_id (arch_flat_anc.archetype_id.semantic_id)
 				arch_flat_out.rebuild
 			else
-				create arch_flat_out.make_flat_non_specialised (arch_diff_child)
+				arch_flat_out := arch_diff_child.deep_twin
+				arch_flat_out.set_generated_flat
 			end
 
 			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to

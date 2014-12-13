@@ -1067,7 +1067,8 @@ feature -- Conversion
 					Result := da
 				end
 			else
-				create Result.make_differential_from_flat (flat_archetype)
+				Result := flat_archetype
+				Result.set_generated_differential
 			end
 		ensure
 			Result.is_differential
@@ -1222,7 +1223,7 @@ feature -- Statistics
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE_ITEM]
+	children: detachable ARRAYED_LIST [ARCH_LIB_ARCHETYPE_ITEM]
 			-- list of child nodes
 
 feature {NONE} -- Implementation

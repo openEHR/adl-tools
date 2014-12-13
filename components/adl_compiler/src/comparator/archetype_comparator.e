@@ -130,7 +130,8 @@ feature -- Comparison
 			def_at_codes: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]
 			def_ac_codes: HASH_TABLE [C_TERMINOLOGY_CODE, STRING]
 		do
-			create diff_child.make_differential_from_flat (flat_child)
+			diff_child := flat_child
+			diff_child.set_generated_differential
 			differential_output := diff_child
 
 			-- using rolled_up_specialisation statuses in nodes of definition generate a list of nodes/paths
