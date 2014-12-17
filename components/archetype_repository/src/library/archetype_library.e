@@ -97,7 +97,7 @@ feature -- Access
 			-- the repository profile accessor from which this library gets its contents
 
 	archetype_with_id (an_id: STRING): ARCH_LIB_ARCHETYPE_ITEM
-			-- get the archetype with id `an_id'
+			-- get the archetype with physical id `an_id'
 		require
 			has_archetype_with_id (an_id)
 		do
@@ -107,7 +107,7 @@ feature -- Access
 		end
 
 	semantic_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by LOWER-CASE semantic concept. Used during construction of `directory'
+			-- Index of archetype & class nodes, keyed by LOWER-CASE semantic id. Used during construction of `directory'
 			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
 		attribute
@@ -173,7 +173,10 @@ feature -- Access
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
 			if archetype_index.has (an_archetype_ref) and then attached archetype_index.item (an_archetype_ref) as att_aca then
 				Result := att_aca
+			elseif archetype_ref_index.has (an_archetype_ref) and then attached archetype_ref_index.item (an_archetype_ref) as att_aca then
+				Result := att_aca
 			else
+				-- expensive brute force search
 				from archetype_index.start until archetype_index.off or attached Result loop
 					if archetype_index.key_for_iteration.starts_with (an_archetype_ref) and then
 						attached archetype_index.item_for_iteration as att_aca
@@ -215,12 +218,6 @@ feature -- Status Report
 			Result := library_access.adhoc_source.is_valid_path (a_full_path)
 		end
 
-	has_item (an_item: ARCH_LIB_ITEM): BOOLEAN
-			-- True if `an_item' in library
-		do
-			Result := semantic_item_index.has_item (an_item)
-		end
-
 	has_archetype_with_id (an_archetype_id: STRING): BOOLEAN
 			-- True if `an_archetype_id' exists in library
 		do
@@ -245,7 +242,8 @@ feature -- Status Report
 	has_archetype_matching_ref (an_archetype_ref: STRING): BOOLEAN
 			-- Return true if there is an archetype whose id matches
 		do
-			Result := archetype_index.has (an_archetype_ref) or else attached archetype_matching_ref (an_archetype_ref)
+			Result := archetype_index.has (an_archetype_ref) or else archetype_ref_index.has (an_archetype_ref) or else
+				attached archetype_matching_ref (an_archetype_ref)
 		end
 
 	has_item_matching_ref (a_ref: STRING): BOOLEAN
@@ -261,6 +259,7 @@ feature -- Commands
 		do
 			reset
 			archetype_index.wipe_out
+			archetype_ref_index.wipe_out
 			semantic_item_index.wipe_out
 			filesys_item_index_cache := Void
 			semantic_item_tree.wipe_out
@@ -367,10 +366,10 @@ feature -- Modification
 			new_id_valid: not has_archetype_with_id (aca.id.physical_id)
 			semantic_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
 		do
-			archetype_index.remove (aca.old_id.physical_id)
-			archetype_index.force (aca, aca.id.physical_id)
-			semantic_item_index.remove (aca.old_id.physical_id.as_lower)
-			semantic_item_index.force (aca, aca.id.physical_id.as_lower)
+			if attached aca.old_id as att_old_id then
+				archetype_index_remove (att_old_id)
+			end
+			archetype_index_put (aca)
 
 			if is_filesys_tree_populated then
 				filesys_item_index.remove (aca.old_id.physical_id.as_lower)
@@ -392,8 +391,7 @@ feature -- Modification
 			new_id_valid: has_archetype_with_id (aca.id.physical_id)
 			Semantic_parent_exists: semantic_item_index.has (aca.id.physical_id.as_lower)
 		do
-			archetype_index.remove (aca.id.physical_id)
-			semantic_item_index.remove (aca.id.physical_id.as_lower)
+			archetype_index_remove (aca.id)
 			if is_filesys_tree_populated then
 				filesys_item_index.remove (aca.id.physical_id.as_lower)
 			end
@@ -556,11 +554,32 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
+	archetype_ref_index: HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
+			-- index of archetype descriptors keyed by MIXED-CASE archetype ref (i.e. id with with .vN),
+			-- derived from physical archetype id (i.e. id with full vN.N.N version)
+		attribute
+			create Result.make (0)
+		end
+
+	archetype_index_put (ala: ARCH_LIB_ARCHETYPE_ITEM)
+		do
+			archetype_index.force (ala, ala.qualified_name)
+			archetype_ref_index.force (ala, ala.id.semantic_id)
+			semantic_item_index.force (ala, ala.qualified_key)
+		end
+
+	archetype_index_remove (arch_id: ARCHETYPE_HRID)
+		do
+			archetype_index.remove (arch_id.physical_id)
+			archetype_ref_index.remove (arch_id.semantic_id)
+			semantic_item_index.remove (arch_id.physical_id.as_lower)
+		end
+
 	populate_semantic_indexes
 			-- Rebuild `archetype_index' and `item_index' from source repositories.
 		local
 			archs: ARRAYED_LIST [ARCH_LIB_ARCHETYPE_ITEM]
-			parent_key, child_key: STRING
+			parent_key: STRING
 			added_during_pass: INTEGER
 			status_list: ARRAY[INTEGER]
 			i: INTEGER
@@ -586,11 +605,9 @@ feature {NONE} -- Implementation
 					if status_list [archs_csr.target_index] >= 0 then
 						parent_key := archs_csr.item.semantic_parent_key
 						if attached item_matching_ref (parent_key) as att_ala then
-							child_key := archs_csr.item.qualified_key
-							if not semantic_item_index.has (child_key) then
+							if not semantic_item_index.has (archs_csr.item.qualified_key) then
 								att_ala.put_child (archs_csr.item)
-								semantic_item_index.force (archs_csr.item, child_key)
-								archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
+								archetype_index_put (archs_csr.item)
 								added_during_pass := added_during_pass + 1
 								status_list [archs_csr.target_index] := Populate_status_succeeded
 							else
@@ -867,10 +884,8 @@ feature {NONE} -- Implementation
 			check attached item_matching_ref (aca.semantic_parent_key) as att_ala then
 				att_ala.put_child (aca)
 			end
-			semantic_item_index.force (aca, aca.qualified_key)
-
-			-- add to main archetype index
-			archetype_index.force (aca, aca.id.physical_id)
+			-- add to archetype indexes
+			archetype_index_put (aca)
 
 			-- add to filesys index if top-level archetype (if specialised, the
 			-- connection is already made due to semantic tree link
