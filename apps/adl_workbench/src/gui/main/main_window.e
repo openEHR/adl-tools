@@ -999,14 +999,14 @@ feature -- Archetype viewers
 			create Result.make (docking_manager)
 		end
 
-	display_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	display_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
 			archetype_viewers.populate_active_tool (aca)
 			archetype_viewers.active_tool.on_select_notebook
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			archetype_viewers.create_new_tool
 			display_archetype (aca)
@@ -1032,7 +1032,7 @@ feature -- Archetype editors
 			)
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			archetype_editors.create_new_tool
 			archetype_editors.active_tool.enable_edit
@@ -1040,7 +1040,7 @@ feature -- Archetype editors
 			archetype_editors.active_tool.on_select_notebook
 		end
 
-	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE_EDITABLE): BOOLEAN
+	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
 		do
 			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.physical_id)
 		end

@@ -89,7 +89,7 @@ inherit
 			is_equal
 		end
 
-create {APP_OBJECT_FACTORY}
+create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
 	make, make_new_archetype, make_new_specialised_archetype, make_new_template
 
 feature {NONE} -- Initialisation
@@ -721,6 +721,7 @@ feature -- Compilation
 			last_compile_attempt_timestamp := Time_epoch
 			compilation_state := Cs_unread
 			status.wipe_out
+			editor_state := Void
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
 			Compiler_state_set: compilation_state = Cs_unread
@@ -838,7 +839,7 @@ feature {NONE} -- Compilation
 				if is_specialised then
 					-- run the comparator over the legacy flat archetype if specialised; it will mark all
 					-- nodes with a local and also rolled up inheritance status
-					if specialisation_ancestor.is_valid and attached specialisation_ancestor as att_sp then
+					if attached specialisation_ancestor as att_sp and then att_sp.is_valid then
 
 						-- perform post-parse object structure finalisation
 						adl_14_engine.post_parse_151_convert (flat_arch, Current)
@@ -846,7 +847,7 @@ feature {NONE} -- Compilation
 						-- perform standard post-parse processing
 						adl_14_engine.post_parse_process (flat_arch, Current)
 
-						create archetype_comparator.make (att_sp, flat_arch)
+						create archetype_comparator.make (att_sp.flat_archetype, flat_arch)
 						archetype_comparator.compare
 						archetype_comparator.generate_diff
 						archetype_comparator.compress_differential_child
@@ -1061,7 +1062,7 @@ feature -- Conversion
 		do
 			if is_specialised then
 				check attached specialisation_ancestor as parent_aca then
-					create archetype_comparator.make_create_differential (parent_aca, flat_archetype)
+					create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype)
 				end
 				check attached archetype_comparator.differential_output as da then
 					Result := da
@@ -1221,6 +1222,81 @@ feature -- Statistics
 
 	statistical_analyser: detachable ARCHETYPE_STATISTICAL_ANALYSER
 
+feature -- Editing
+
+	has_editor_state: BOOLEAN
+		do
+			Result := attached editor_state
+		end
+
+	set_editor_state (a_context: ALA_EDITOR_STATE)
+		do
+			editor_state := a_context
+		end
+
+	editor_state: detachable ALA_EDITOR_STATE
+
+	flat_archetype_clone: ARCHETYPE
+			-- produce a clone of the current `flat_archetype'
+		do
+			if attached flat_archetype_clone_cache as facc then
+				Result := facc
+			else
+				create Result.make_from_other (flat_archetype)
+				flat_archetype_clone_cache := Result
+			end
+		ensure
+			Result.is_flat
+		end
+
+	commit
+			-- commit modified flat clone to archetype as new differential
+		local
+			archetype_comparator: ARCHETYPE_COMPARATOR
+		do
+			-- do something with previous version of archetype
+
+			-- do diff on flat_archetype_clone
+			if is_specialised then
+				check attached specialisation_ancestor as parent_aca then
+					create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype_clone)
+				end
+				differential_archetype := archetype_comparator.differential_output
+			else
+				differential_archetype := flat_archetype_clone
+				differential_archetype.set_differential
+			end
+
+			differential_archetype.clear_is_generated
+			file_mgr.set_is_source_generated (False)
+			if attached editor_state as gc then
+				gc.on_commit
+			end
+			save_differential_text
+			create last_modify_timestamp.make_now
+
+			-- regenerate flat form
+			flatten (False)
+
+			-- set revision appropriately
+		ensure
+			Differential_is_primary: not file_mgr.is_source_generated and not differential_archetype.is_generated
+		end
+
+feature {NONE} -- Editing
+
+	flat_archetype_clone_cache: detachable ARCHETYPE
+
+	clear_cache
+		do
+			flat_archetype_cache := Void
+			slot_id_index_cache := Void
+			flat_archetype_clone_cache := Void
+			if has_editor_state then
+				editor_state.on_commit
+			end
+		end
+
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
 	children: detachable ARRAYED_LIST [ARCH_LIB_ARCHETYPE_ITEM]
@@ -1279,12 +1355,6 @@ feature {NONE} -- Implementation
 		note
 			option: stable
 		attribute
-		end
-
-	clear_cache
-		do
-			flat_archetype_cache := Void
-			slot_id_index_cache := Void
 		end
 
 	set_archetype_default_details (a_diff_arch: ARCHETYPE)

@@ -40,7 +40,7 @@ feature -- Initialization
 				if rm_schemas_access.found_valid_schemas then
 					print (get_msg (ec_cfg_file_path_info, <<app_root.user_config_file_path>>) + "%N")
 					print (get_text (ec_repos_found_info)  + "%N")
-					if not app_root.repositories_table.is_empty then
+					if not app_root.repository_resources.is_empty then
 						-- now choose a library to start with
 						if not archetype_library_interfaces.is_empty then
 							if not has_current_library then
@@ -50,7 +50,7 @@ feature -- Initialization
 							use_current_library (False)
 
 							print (get_text (ec_rep_populate_progress_info) + "%N")
-							app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+							app_root.archetype_compiler.set_console_update_action (agent compiler_global_gui_update)
 							app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 							app_root.archetype_compiler.build_all
 						else
@@ -75,10 +75,10 @@ feature -- Initialization
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; depth: INTEGER)
+	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Update UI with progress on build.
 		do
-			print (msg)
+			print (ara.status)
 		end
 
 end

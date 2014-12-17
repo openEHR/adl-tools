@@ -164,8 +164,8 @@ feature {NONE} -- Implementation
 	attach_gui_context
 		do
 			check attached source as src then
-				if not src.has_gui_context then
-					src.set_gui_context (create {ALA_EDITOR_STATE}.make (src))
+				if not src.has_editor_state then
+					src.set_editor_state (create {ALA_EDITOR_STATE}.make (src))
 				end
 			end
 		end

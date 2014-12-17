@@ -434,7 +434,7 @@ feature {NONE} -- Implementation
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
 			-- handler for any button, which causes a selection of the node
 		do
-			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE_ITEM} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay  (aca)
 			elseif attached {ARCH_LIB_CLASS_ITEM} an_ev_grid_item.row.data as accn then
 				select_class_with_delay (accn)
@@ -447,7 +447,7 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				if attached an_ev_grid_item then
-					if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
+					if attached {ARCH_LIB_ARCHETYPE_ITEM} an_ev_grid_item.row.data as aca then
 						build_archetype_node_context_menu (aca)
 					elseif attached {ARCH_LIB_CLASS_ITEM} an_ev_grid_item.row.data as accn then
 						build_class_node_context_menu (accn)
@@ -520,7 +520,7 @@ feature {NONE} -- Implementation
 				gli.select_actions.block
 				gli.enable_select
 				if not gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) and
-					attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_with_id (ari_global_id) as ala
+					attached {ARCH_LIB_ARCHETYPE_ITEM} current_library.archetype_with_id (ari_global_id) as ala
 				then
 					gui_agents.select_archetype_agent.call ([ala])
 				end
@@ -528,7 +528,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- add further menu items specific to descendant tools
 		local
 			an_mi: EV_MENU_ITEM
@@ -546,7 +546,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	create_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE_ITEM)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
@@ -564,7 +564,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_template (parent_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	create_new_template (parent_aca: ARCH_LIB_ARCHETYPE_ITEM)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 			new_id: ARCHETYPE_HRID

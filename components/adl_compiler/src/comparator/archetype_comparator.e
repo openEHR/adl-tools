@@ -34,24 +34,23 @@ create
 
 feature -- Initialisation
 
-	make (an_ancestor_aca: ARCH_LIB_ARCHETYPE_ITEM; a_flat_target: ARCHETYPE)
+	make (an_ancestor_flat: ARCHETYPE; a_flat_target: ARCHETYPE)
 			-- create with two archetypes for comparison
 		require
-			Valid_ancestor_archetype: an_ancestor_aca.is_valid
+			Valid_ancestor_archetype: an_ancestor_flat.is_flat
 			Target_archetype_valid: a_flat_target.is_flat and a_flat_target.is_specialised
 		do
-			ancestor_descriptor := an_ancestor_aca
-			flat_ancestor := ancestor_descriptor.flat_archetype
+			flat_ancestor := an_ancestor_flat
 			flat_child := a_flat_target
 		end
 
-	make_create_differential (an_ancestor_aca: ARCH_LIB_ARCHETYPE_ITEM; a_flat_target: ARCHETYPE)
+	make_create_differential (an_ancestor_flat: ARCHETYPE; a_flat_target: ARCHETYPE)
 			-- make with a valid specialised child archetype descriptor
 		require
-			Valid_ancestor_archetype: an_ancestor_aca.is_valid
+			Valid_ancestor_archetype: an_ancestor_flat.is_flat
 			Target_archetype_valid: a_flat_target.is_flat and a_flat_target.is_specialised
 		do
-			make (an_ancestor_aca, a_flat_target)
+			make (an_ancestor_flat, a_flat_target)
 			compare
 			generate_diff
 			compress_differential_child
@@ -59,11 +58,8 @@ feature -- Initialisation
 
 feature -- Access
 
-	ancestor_descriptor: ARCH_LIB_ARCHETYPE_ITEM
-			-- compiled parent archetype descriptor
-
 	flat_ancestor: ARCHETYPE
-			-- compiled parent archetype
+			-- flat form of parent archetype
 
 	flat_child: ARCHETYPE
 			-- flat form of child archetype

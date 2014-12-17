@@ -505,7 +505,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	edit_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	edit_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			question_dialog: EV_QUESTION_DIALOG

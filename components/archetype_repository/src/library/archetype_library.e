@@ -285,11 +285,8 @@ feature -- Modification
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
-		local
-			aof: APP_OBJECT_FACTORY
 		do
-			create aof
-			put_archetype (aof.create_arch_lib_archetype_make_new_archetype (an_archetype_id,
+			put_archetype (create {ARCH_LIB_ARCHETYPE_ITEM}.make_new_archetype (an_archetype_id,
 				library_access.primary_source, in_dir_path), in_dir_path)
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
@@ -300,12 +297,9 @@ feature -- Modification
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
-		local
-			aof: APP_OBJECT_FACTORY
 		do
-			create aof
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_archetype (aof.create_arch_lib_archetype_make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
+				put_archetype (create {ARCH_LIB_ARCHETYPE_ITEM}.make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
 					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure
@@ -317,12 +311,9 @@ feature -- Modification
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
-		local
-			aof: APP_OBJECT_FACTORY
 		do
-			create aof
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_archetype (aof.create_arch_lib_archetype_make_new_template (an_archetype_id, parent_diff_arch,
+				put_archetype (create {ARCH_LIB_ARCHETYPE_ITEM}.make_new_template (an_archetype_id, parent_diff_arch,
 					library_access.primary_source, in_dir_path), in_dir_path)
 			end
 		ensure

@@ -28,10 +28,7 @@ feature {NONE} -- Implementation
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			ara: ARCH_LIB_ARCHETYPE_ITEM
 			amp: ARCHETYPE_MINI_PARSER
-			aof: APP_OBJECT_FACTORY
-   		do
-   			create aof
-
+  		do
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'a_parent_node.item.full_path'
    			debug("arch_dir")
@@ -58,7 +55,7 @@ feature {NONE} -- Implementation
 								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.physical_id>>, "")
 								else
-									ara := aof.create_arch_lib_archetype_make (l_full_path, Current, arch_tn)
+									create ara.make (l_full_path, Current, arch_tn)
 									archetype_id_index.force (ara, ara.id.physical_id)
 								end
 							else
@@ -87,7 +84,7 @@ feature {NONE} -- Implementation
 								elseif not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
 								elseif not archetype_id_index.has (arch_id) then
-									ara := aof.create_arch_lib_archetype_make (extension_replaced (l_full_path, File_ext_archetype_source), Current, arch_tn)
+									create ara.make (extension_replaced (l_full_path, File_ext_archetype_source), Current, arch_tn)
 									archetype_id_index.force (ara, arch_id)
 								else
 									check attached archetype_id_index.item (arch_id) as att_aca then

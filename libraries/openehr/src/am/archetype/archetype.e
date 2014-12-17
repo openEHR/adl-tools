@@ -33,7 +33,7 @@ create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 create {P_ARCHETYPE}
 	make_all
 
-create {ARCHETYPE_FLATTENER, ARCH_LIB_ARCHETYPE_EDITABLE}
+create {ARCHETYPE_FLATTENER, ARCH_LIB_ARCHETYPE_ITEM}
 	make_from_other
 
 create {ARCH_LIB_ARCHETYPE_ITEM}
@@ -237,59 +237,6 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
 			Is_valid: is_valid
 			Is_differential: is_differential
 			Parent_archetype_id_set: parent_archetype_id = a_parent_id
-		end
-
-feature {ARCHETYPE_FLATTENER} -- Initialisation
-
-	overlay_diff (a_diff: ARCHETYPE)
-			-- Create a new flat archetype from a differential archetype and its flat parent, as preparation
-			-- for generating a flat archetype. The following items from the differential are used:
-			-- 	* artefact_type
-			--	* archetype_id
-			--	* uid
-			--	* original_language
-			--	* translations
-			--
-		require
-			Conformance: a_diff.is_differential and is_flat
-			Valid_specialisation_relationship: a_diff.specialisation_depth = specialisation_depth + 1
-		do
-			-- archetype_id
-			archetype_id := a_diff.archetype_id.deep_twin
-
-			-- original_language
-			original_language := a_diff.original_language.deep_twin
-
-			-- translations are what is available in the child archetype
-			if attached a_diff.translations as a_diff_trans then
-				translations := a_diff_trans.deep_twin
-			end
-
-			-- uid
-			if attached a_diff.uid as att_uid then
-				uid := att_uid.deep_twin
-			end
-
-			-- description, if it exists
-			if attached a_diff.description as orig_desc then
-				description := orig_desc.deep_twin
-			end
-
-			-- reduce terminology to overlay's language set
-			terminology.reduce_languages_to (a_diff.terminology)
-
-			-- root node id from diff
-			definition.set_node_id (a_diff.definition.node_id.twin)
-
-			is_generated := a_diff.is_generated
-			is_valid := True
-
-			rebuild
-		ensure
-			Generated: is_generated = a_diff.is_generated
-			Specialised: is_specialised
-			Is_flat: is_flat
-			Is_valid: is_valid
 		end
 
 feature -- Access
@@ -1091,6 +1038,51 @@ feature -- Modification
 			across terminology_unused_term_codes as codes_csr loop
 				terminology.remove_definition (codes_csr.item)
 			end
+		end
+
+feature {ARCHETYPE_FLATTENER} -- Flattening
+
+	overlay_diff (a_diff: ARCHETYPE)
+			-- Create a new flat archetype from a differential archetype and its flat parent, as preparation
+			-- for generating a flat archetype. The following items from the differential are used:
+			-- 	* artefact_type
+			--	* archetype_id
+			--	* uid
+			--	* original_language
+			--	* translations
+			--
+		require
+			Conformance: a_diff.is_differential and is_flat
+			Valid_specialisation_relationship: a_diff.specialisation_depth = specialisation_depth + 1
+		do
+			-- archetype_id
+			archetype_id := a_diff.archetype_id.deep_twin
+
+			-- original_language
+			original_language := a_diff.original_language.deep_twin
+
+			-- translations are what is available in the child archetype
+			if attached a_diff.translations as a_diff_trans then
+				translations := a_diff_trans.deep_twin
+			end
+
+			-- uid
+			if attached a_diff.uid as att_uid then
+				uid := att_uid.deep_twin
+			end
+
+			-- description, if it exists
+			if attached a_diff.description as orig_desc then
+				description := orig_desc.deep_twin
+			end
+
+			-- reduce terminology to overlay's language set
+			terminology.reduce_languages_to (a_diff.terminology)
+
+			-- root node id from diff
+			definition.set_node_id (a_diff.definition.node_id.twin)
+		ensure
+			Specialised: is_specialised
 		end
 
 feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure

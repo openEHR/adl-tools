@@ -14,7 +14,7 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	make (aca: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			target := aca
 		end
@@ -30,7 +30,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	target: ARCH_LIB_ARCHETYPE_EDITABLE
+	target: ARCH_LIB_ARCHETYPE_ITEM
 
 	differential_ui_graph: ARCHETYPE_UI_GRAPH_ROOT
 		do

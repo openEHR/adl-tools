@@ -63,9 +63,7 @@ feature -- Modification
 		local
 			ara: ARCH_LIB_ARCHETYPE_ITEM
 			amp: ARCHETYPE_MINI_PARSER
-			aof: APP_OBJECT_FACTORY
 		do
-			create aof
 			create amp
 			amp.parse (full_path)
 			if amp.passed and then attached amp.last_archetype as arch then
@@ -77,9 +75,9 @@ feature -- Modification
 					errors.add_error (ec_parse_archetype_e4, <<full_path, arch.archetype_id.physical_id>>, "")
 				elseif not archetype_id_index.has (arch.archetype_id.physical_id) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
-						ara := aof.create_arch_lib_archetype_make (extension_replaced (full_path, File_ext_archetype_source), Current, arch)
+						create ara.make (extension_replaced (full_path, File_ext_archetype_source), Current, arch)
 					else
-						ara := aof.create_arch_lib_archetype_make (full_path, Current, arch)
+						create ara.make (full_path, Current, arch)
 					end
 					archetype_id_index.force (ara, full_path)
 				else

@@ -20,7 +20,7 @@ inherit
 
 feature -- Access
 
-	source: detachable ARCH_LIB_ARCHETYPE_EDITABLE
+	source: detachable ARCH_LIB_ARCHETYPE_ITEM
 			-- archetype descriptor to which this tool is targetted
 
 	source_archetype: detachable ARCHETYPE
@@ -46,12 +46,12 @@ feature -- Access
 		do
 			if not editing_enabled then
 				if differential_view then
-					Result := source.gui_context.differential_ui_graph
+					Result := source.editor_state.differential_ui_graph
 				else
-					Result := source.gui_context.flat_ui_graph
+					Result := source.editor_state.flat_ui_graph
 				end
 			else
-				Result := source.gui_context.editor_ui_graph
+				Result := source.editor_state.editor_ui_graph
 			end
 		end
 
