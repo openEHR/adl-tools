@@ -505,6 +505,10 @@ feature {NONE} -- Commands
 						col_csr := col_csr + 1
 					end
 
+					if attached {EV_GRID_LABEL_ITEM} row.item (1) as col_1_gli then
+						col_1_gli.set_pixmap (get_icon_pixmap ("archetype/" + aca.group_name))
+					end
+
 					last_tested_archetypes_count := last_tested_archetypes_count + 1
 					evx_progress_counter.ev_data_control.set_text (last_tested_archetypes_count.out)
 				end
