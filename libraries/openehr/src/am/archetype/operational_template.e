@@ -16,7 +16,7 @@ inherit
 		end
 
 create
-	make_from_other
+	make_from_other, default_create
 
 feature -- Initalisation
 

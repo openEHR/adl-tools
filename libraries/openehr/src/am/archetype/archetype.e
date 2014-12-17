@@ -14,17 +14,21 @@ inherit
 		export
 			{NONE} all;
 			{ANY} deep_twin, valid_standard_version
+		undefine
+			default_create
 		end
 
 	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} deep_twin, specialisation_depth_from_code, is_valid_code
+		undefine
+			default_create
 		end
 
 	AUTHORED_RESOURCE
 		redefine
-			make_from_other, add_language_tag
+			make_from_other, add_language_tag, default_create
 		end
 
 create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
@@ -33,13 +37,18 @@ create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 create {P_ARCHETYPE}
 	make_all
 
-create {ARCHETYPE_FLATTENER, ARCH_LIB_ARCHETYPE_ITEM}
-	make_from_other
+create {ARCHETYPE_FLATTENER, TEMPLATE_OVERLAYER, RM_FLATTENER, ARCH_LIB_ARCHETYPE_ITEM}
+	make_from_other, default_create
 
 create {ARCH_LIB_ARCHETYPE_ITEM}
 	make_empty_differential, make_empty_differential_child
 
 feature -- Initialisation
+
+	default_create
+		do
+			make_empty_differential (create {ARTEFACT_TYPE}.make_archetype, create {ARCHETYPE_HRID}.default_create, "1.0.0", default_language)
+		end
 
 	make_dt (make_args: ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation

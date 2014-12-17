@@ -38,131 +38,68 @@ inherit
 			{NONE} all
 		end
 
-create
-	make
-
-feature -- Definitions
-
-	Max_template_overlay_depth: INTEGER = 8
-			-- max depth to go in template overlayinng process, in order to control effect of
-			-- recursive use_archetype references
-
-feature -- Initialisation
-
-	make (a_child_desc: ARCH_LIB_ARCHETYPE_ITEM; an_rm_schema: BMM_SCHEMA)
-			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
-		require
-			Child_desc_valid: a_child_desc.is_valid
-		do
-			rm_schema := an_rm_schema
-			child_desc := a_child_desc
-			if child_desc.is_specialised then
-				flat_anc_desc := child_desc.specialisation_ancestor
-			else
-				flat_anc_desc := Void
-			end
-			arch_flat_out := Void
-		ensure
-			Parent_set: a_child_desc.is_specialised implies attached flat_anc_desc
-			Child_desc_set: child_desc = a_child_desc
-			Flat_output_reset: not attached arch_flat_out
-		end
-
 feature -- Access
 
-	flat_anc_desc: detachable ARCH_LIB_ARCHETYPE_ITEM
-
-	child_desc: ARCH_LIB_ARCHETYPE_ITEM
-
-	arch_flat_anc: ARCHETYPE
+	arch_flat_parent: ARCHETYPE
 			-- flat archetype of parent, if applicable
-		require
-			child_desc.is_specialised
-		do
-			Result := flat_anc_desc.flat_archetype
-		ensure
-			Result.is_flat
+		attribute
+			create Result.default_create
 		end
 
 	arch_diff_child: ARCHETYPE
 			-- archetype for which flat form is being generated
-		do
-			check attached child_desc.differential_archetype as da then
-				Result := da
-			end
-		ensure
-			Result.is_differential
+		attribute
+			create Result.default_create
 		end
 
 	arch_flat_out: detachable ARCHETYPE
-			-- generated flat archetype - logically an overlay of `arch_flat_anc' and `arch_diff_child'
+			-- generated flat archetype - logically an overlay of `arch_flat_parent' and `arch_diff_child'
 			-- if the `arch_diff_child' is a template, the dynamic type will be OPERATIONAL_TEMPLATE
 
 feature -- Commands
 
-	flatten (include_rm: BOOLEAN)
-			-- flatten archetype to `arch_flat_out'; if non-specialised and `include_rm' is True,
-			-- then flatten against reference model (to pick up existence and cardinality, and infer occurrences);
-			-- if specialised, flatten against a flat parent archetype
+	execute (a_flat_parent, a_diff_child: ARCHETYPE)
+			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
+		require
+			Parent_valid: a_flat_parent.is_valid and then a_flat_parent.is_flat
+			Child_valid: a_diff_child.is_valid and then a_diff_child.is_differential
+			Specialisation_relationship: a_diff_child.specialisation_depth = a_flat_parent.specialisation_depth + 1
 		local
 			def_it: C_ITERATOR
 		do
-			if arch_diff_child.is_specialised then
+			arch_diff_child := a_diff_child
+			arch_flat_parent := a_flat_parent
+			arch_flat_out := Void
+
 debug ("flatten")
 	io.put_string ("============== flattening specialised archetype " +
 		arch_diff_child.archetype_id.physical_id + " with " +
-		arch_flat_anc.archetype_id.physical_id + " ==============%N")
+		arch_flat_parent.archetype_id.physical_id + " ==============%N")
 end
-				if arch_diff_child.is_template then
-					create {OPERATIONAL_TEMPLATE} arch_flat_out.make_from_other (arch_flat_anc)
-				else
-					arch_flat_out := arch_flat_anc.deep_twin
-				end
-				arch_flat_out.overlay_diff (arch_diff_child)
-				expand_c_proxy_objects
-				flatten_other_metadata
-				flatten_definition
-				flatten_rules
-				flatten_terminology
-				flatten_annotations
-				arch_flat_out.set_parent_archetype_id (arch_flat_anc.archetype_id.semantic_id)
-				arch_flat_out.rebuild
-			else
-				arch_flat_out := arch_diff_child.deep_twin
-				arch_flat_out.set_generated_flat
-			end
-
-			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to
-			-- this would look like duplicates during the flattening process
-			if rm_flattening_on and include_rm then
-				create def_it.make (arch_flat_out.definition)
-				def_it.do_all (agent rm_node_flatten_enter, agent rm_node_flatten_exit)
-			end
-
-			-- now finalise template flattening
 			if arch_diff_child.is_template then
-				check attached arch_flat_out as att_flat then
-					template_overlay_supplier_definitions (att_flat, 0)
-				end
-				template_overlay_supplier_terminologies
-				arch_flat_out.rebuild
+				create {OPERATIONAL_TEMPLATE} arch_flat_out.make_from_other (arch_flat_parent)
+			else
+				arch_flat_out := arch_flat_parent.deep_twin
 			end
-
+			arch_flat_out.overlay_diff (arch_diff_child)
+			expand_c_proxy_objects
+			flatten_other_metadata
+			flatten_definition
+			flatten_rules
+			flatten_terminology
+			flatten_annotations
+			arch_flat_out.set_parent_archetype_id (arch_flat_parent.archetype_id.semantic_id)
+			arch_flat_out.rebuild
 		ensure
 			attached arch_flat_out
 		end
 
 feature {NONE} -- Implementation
 
-	rm_schema: BMM_SCHEMA
-			-- utility reference to RM schema used for validation & flattening
-
 	expand_c_proxy_objects
 			-- if there are overrides in the specialised child that are located at use_node positions, we
 			-- have to expand out a copy of the structures pointed to by the use_nodes in the parent, so that
 			-- the override can be correctly applied.
-		require
-			child_desc.is_specialised
 		local
 			c_obj: C_OBJECT
 			child_paths_at_parent_level: ARRAYED_LIST [STRING]
@@ -180,8 +117,8 @@ end
 				child_paths_at_parent_level.compare_objects
 				across arch_diff_child.all_paths as child_paths_csr loop
 					create apa.make_from_string (child_paths_csr.item)
-					if not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) then
-						override_path_in_flat := apa.path_at_level (arch_flat_anc.specialisation_depth)
+					if not apa.is_phantom_path_at_level (arch_flat_parent.specialisation_depth) then
+						override_path_in_flat := apa.path_at_level (arch_flat_parent.specialisation_depth)
 						if not child_paths_at_parent_level.has (override_path_in_flat) then
 							child_paths_at_parent_level.extend (override_path_in_flat)
 						end
@@ -245,8 +182,6 @@ end
 	flatten_definition
 			-- build the flat archetype definition by traversing src_archetype and determining what
 			-- nodes from flat_archetype to add; do the changes to the output archetype
-		require
-			arch_diff_child.is_specialised
 		local
 			def_it: C_ITERATOR
 			og_ca_path_in_diff, og_co_parent_path_in_diff: OG_PATH
@@ -335,7 +270,7 @@ end
 
 				-- figure out the corresponding C_ATTRIBUTE node in the flat ancestor
 				create apa.make (ca_diff.og_path)
-				check attached {C_ATTRIBUTE} arch_flat_anc.attribute_at_path (apa.path_at_level (arch_flat_anc.specialisation_depth)) as att_ca then
+				check attached {C_ATTRIBUTE} arch_flat_parent.attribute_at_path (apa.path_at_level (arch_flat_parent.specialisation_depth)) as att_ca then
 					ca_in_anc_flat := att_ca
 				end
 
@@ -404,7 +339,7 @@ end
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			create apa.make (a_c_node.og_path)
-			Result := arch_flat_anc.has_path (apa.path_at_level (arch_flat_anc.specialisation_depth))
+			Result := arch_flat_parent.has_path (apa.path_at_level (arch_flat_parent.specialisation_depth))
 		end
 
 	overlay_differential_path (an_og_diff_path: OG_PATH)
@@ -427,7 +362,7 @@ end
 				if og_path_csr.item.is_addressable then
 					set_spec_sts := False
 					if specialisation_depth_from_code (og_path_csr.item.object_id) = arch_diff_child.specialisation_depth then
-						ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_anc.specialisation_depth), og_path_csr.item.object_id)
+						ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_parent.specialisation_depth), og_path_csr.item.object_id)
 					end
 					check attached {C_COMPLEX_OBJECT} ca_csr.child_with_id (og_path_csr.item.object_id) as att_cco then
 						cco_csr := att_cco
@@ -488,7 +423,7 @@ end
 					if ca_output.has_child_with_id (sibling_anchor.sibling_node_id) then
 						co_output_csr := ca_output.child_with_id (sibling_anchor.sibling_node_id)
 					else
-						co_output_csr := ca_output.child_with_id (code_at_level (sibling_anchor.sibling_node_id, arch_flat_anc.specialisation_depth))
+						co_output_csr := ca_output.child_with_id (code_at_level (sibling_anchor.sibling_node_id, arch_flat_parent.specialisation_depth))
 					end
 
 					-- if the order marker is 'before', it means that the merge list is from the last
@@ -545,7 +480,7 @@ end
 			from i := merge_desc.start_pos until i > merge_desc.end_pos loop
 				co_child_diff := ca_diff.children.i_th (i)
 				co_child_spec_sts := specialisation_status_from_code (co_child_diff.node_id, arch_diff_child.specialisation_depth)
-				node_id_in_flat_anc := code_at_level (co_child_diff.node_id, arch_flat_anc.specialisation_depth)
+				node_id_in_flat_anc := code_at_level (co_child_diff.node_id, arch_flat_parent.specialisation_depth)
 				co_override_target := Void
 
 				-- ================== Direct REPLACE: child node id is same as that of object in ancestor  ================
@@ -753,122 +688,6 @@ end
 			-- build a flattened form of the annotations, by merging everything found in child into flat parent annotations
 		do
 			arch_flat_out.merge_annotations_from_resource (arch_diff_child)
-		end
-
-	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- copy existence and cardinality from reference model to node if it doesn't have them set; infer occurrences
-		local
-			rm_attr_desc: BMM_PROPERTY [BMM_TYPE]
-		do
-			if attached {C_ATTRIBUTE} a_c_node as ca then
-				rm_attr_desc := rm_schema.property_definition (ca.parent.rm_type_name, ca.rm_attribute_name)
-				if ca.existence = Void then
-					ca.set_existence (rm_attr_desc.existence)
-				end
-				if ca.is_multiple and ca.cardinality = Void then
-					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop and then attached cont_prop.cardinality as card then
-						ca.set_cardinality (create {CARDINALITY}.make (card))
-					else -- should never get here
-						raise ("rm_node_flatten_enter location #1")
-					end
-				end
-			elseif attached {C_OBJECT} a_c_node as co then
-				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
-				-- so it is set from the enclosing attribute cardinality if a container, or set to RM existence if not a container
-				if co.occurrences = Void and not co.is_root then
-					rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
-					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-						if cont_prop.cardinality.upper_unbounded then
-							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
-						else
-							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded (0, cont_prop.cardinality.upper))
-						end
-					else
-						co.set_occurrences (rm_attr_desc.existence)
-					end
-				end
-			end
-		end
-
-	rm_node_flatten_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		do
-		end
-
-	template_overlay_supplier_definitions (a_flat_arch: ARCHETYPE; depth: INTEGER)
-			-- process `a_flat_arch.suppliers_index' to overlay target definitions.
-		require
-			Flat_archetype_valid: a_flat_arch.is_flat
-		local
-			supp_flat_arch: ARCHETYPE
-			supp_arch_root_cco: C_COMPLEX_OBJECT
-			matched_arch: ARCH_LIB_ARCHETYPE_ITEM
-		do
-debug ("flatten")
-	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
-end
-			-- limit depth in case of recursive inclusion
-			if depth <= Max_template_overlay_depth then
-				across a_flat_arch.suppliers_index as xref_idx_csr loop
-					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-					check attached current_library.archetype_matching_ref (xref_idx_csr.key) as att_ala then
-						matched_arch := att_ala
-					end
-
-					-- prevent cycling due to inclusion of current archetype (FIXME: won't catch indirect recursion)
-					if not matched_arch.id.physical_id.is_equal (a_flat_arch.archetype_id.physical_id) then
-						create supp_flat_arch.make_from_other (matched_arch.flat_archetype)
-						supp_arch_root_cco := supp_flat_arch.definition
-
-						-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
-						-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
-						-- flat definition structure from the supplier archetype
-						across xref_idx_csr.item as c_arch_roots_csr loop
-							if not c_arch_roots_csr.item.has_attributes and not c_arch_roots_csr.item.is_prohibited then -- it is empty and needs to be filled
-								-- perform overlays on supplier archetype first
-								template_overlay_supplier_definitions (supp_flat_arch, depth + 1)
-debug ("flatten")
-	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
-	" with " + xref_idx_csr.key + "%N")
-end
-								c_arch_roots_csr.item.convert_to_flat (matched_arch.id.physical_id)
-								across supp_arch_root_cco.attributes as attrs_csr loop
-									c_arch_roots_csr.item.put_attribute (attrs_csr.item)
-debug ("flatten")
-	io.put_string ("%T%T cloning attribute " +
-	attrs_csr.item.rm_attribute_path + "%N")
-end
-								end
-							end
-						end
-					end
-				end
-			end
-		end
-
-	template_overlay_supplier_terminologies
-			-- process `template_ontology_overlay_list' to overlay target terminologies.
-		local
-			flat_terms: ARCHETYPE_TERMINOLOGY
-		do
-debug ("flatten")
-	io.put_string ("&&&&&& flattening template terminologies &&&&&&%N")
-end
-			if attached {OPERATIONAL_TEMPLATE} arch_flat_out as opt then
-				across child_desc.suppliers_index as supp_idx_csr loop
-					flat_terms := supp_idx_csr.item.flat_archetype.terminology
-					opt.add_component_terminology (flat_terms, supp_idx_csr.key)
-debug ("flatten")
-	io.put_string ("%T adding terminology from " +
-	supp_idx_csr.key + "%N")
-end
-				end
-			end
-		end
-
-	is_c_complex_object_type (co: C_OBJECT): BOOLEAN
-			-- True if `co' has dynamic type attached C_COMPLEX_OBJECT
-		do
-			Result := attached_type (dynamic_type (co)) = ({C_COMPLEX_OBJECT}).type_id
 		end
 
 end

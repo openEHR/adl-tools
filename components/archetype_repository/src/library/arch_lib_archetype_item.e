@@ -37,6 +37,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_ARCHETYPE_FLATTENER
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	SHARED_ADL_APP_RESOURCES
 		export
 			{NONE} all
@@ -1325,9 +1332,43 @@ feature {NONE} -- Implementation
 			-- (re)generate flat-form of this archetype
 		require
 			is_valid
+		local
+			fillers_index: HASH_TABLE [ARCHETYPE, STRING]
+			diff_arch, flattened_arch: ARCHETYPE
 		do
-			arch_flattener.flatten (include_rm)
-			flat_archetype_cache := arch_flattener.arch_flat_out
+			check attached differential_archetype as da then
+				diff_arch := da
+			end
+
+			-- archteype flattening step
+			if is_specialised then
+				check attached specialisation_ancestor as spec_anc then
+					arch_flattener.execute (spec_anc.flat_archetype, diff_arch)
+				end
+				check attached arch_flattener.arch_flat_out as fa then
+					flattened_arch := fa
+				end
+			else
+				flattened_arch := diff_arch.deep_twin
+				flattened_arch.set_generated_flat
+			end
+
+			-- if requested, do RM flattening		
+			if rm_flattening_on and include_rm then
+				rm_flattener.execute (flattened_arch, rm_schema)
+			end
+
+			-- perform template filler overlaying
+			if attached {OPERATIONAL_TEMPLATE} flattened_arch as opt then
+				create fillers_index.make (0)
+				across suppliers_index as supp_arch_csr loop
+					fillers_index.put (supp_arch_csr.item.flat_archetype, supp_arch_csr.key)
+				end
+				template_overlayer.execute (opt, fillers_index)
+			end
+
+			flat_archetype_cache := flattened_arch
+
 			last_include_rm := include_rm
 		ensure
 			flat_archetype_cache_attached: attached flat_archetype_cache
@@ -1338,24 +1379,6 @@ feature {NONE} -- Implementation
 
 	last_include_rm: BOOLEAN
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
-
-	arch_flattener: ARCHETYPE_FLATTENER
-			-- use a cache and lazy create since in many archetype libraries, the vast majority of archetypes
-			-- are top-level, i.e. need no flattener
-		do
-			if attached arch_flattener_cache as af then
-				Result := af
-			else
-				create Result.make (Current, rm_schema)
-				arch_flattener_cache := Result
-			end
-		end
-
-	arch_flattener_cache: detachable ARCHETYPE_FLATTENER
-		note
-			option: stable
-		attribute
-		end
 
 	set_archetype_default_details (a_diff_arch: ARCHETYPE)
 		require
