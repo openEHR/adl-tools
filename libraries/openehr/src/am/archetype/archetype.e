@@ -28,7 +28,7 @@ inherit
 
 	AUTHORED_RESOURCE
 		redefine
-			make_from_other, add_language_tag, default_create
+			make_from_other, set_original_language, add_language_tag, reduce_languages_to, default_create
 		end
 
 create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
@@ -148,7 +148,7 @@ feature -- Initialisation
 			other_annotations: detachable RESOURCE_ANNOTATIONS
 			other_description: detachable RESOURCE_DESCRIPTION
 			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
-			other_invariants: detachable  ARRAYED_LIST [ASSERTION]
+			other_rules: detachable  ARRAYED_LIST [ASSERTION]
 			other_other_metadata: detachable HASH_TABLE [STRING, STRING]
 		do
 			if attached other.parent_archetype_id as other_pid then
@@ -164,7 +164,7 @@ feature -- Initialisation
 				other_annotations := other_annots.deep_twin
 			end
 			if other.has_rules then
-				other_invariants := other.rules.deep_twin
+				other_rules := other.rules.deep_twin
 			end
 			if attached other.other_metadata then
 				other_other_metadata := other.other_metadata.deep_twin
@@ -172,7 +172,7 @@ feature -- Initialisation
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.rm_release.twin, other.archetype_id.deep_twin,
 					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
 					other.original_language.deep_twin, other_translations,
-					other_description, other.definition.deep_twin, other_invariants,
+					other_description, other.definition.deep_twin, other_rules,
 					other.terminology.deep_twin, other_annotations)
 			is_generated := other.is_generated
 			is_valid := other.is_valid
@@ -1051,47 +1051,61 @@ feature -- Modification
 
 feature {ARCHETYPE_FLATTENER} -- Flattening
 
-	overlay_diff (a_diff: ARCHETYPE)
-			-- Create a new flat archetype from a differential archetype and its flat parent, as preparation
-			-- for generating a flat archetype. The following items from the differential are used:
+	overlay_differential (a_diff: ARCHETYPE)
+			-- Overlay specific parts of this archetype with elements from a differential archetype, as preparation
+			-- for the full flattening process. The following items from the differential are used:
 			-- 	* artefact_type
 			--	* archetype_id
+			--	* parent_archetype_id
 			--	* uid
-			--	* original_language
 			--	* translations
+			--	* description
 			--
 		require
 			Conformance: a_diff.is_differential and is_flat
 			Valid_specialisation_relationship: a_diff.specialisation_depth = specialisation_depth + 1
 		do
+			-- artefact_type
+			create artefact_type.make (a_diff.artefact_type.value)
+
 			-- archetype_id
 			archetype_id := a_diff.archetype_id.deep_twin
 
-			-- original_language
-			original_language := a_diff.original_language.deep_twin
-
-			-- translations are what is available in the child archetype
-			if attached a_diff.translations as a_diff_trans then
-				translations := a_diff_trans.deep_twin
-			end
+			-- parent_archetype_id
+			parent_archetype_id := a_diff.parent_archetype_id
 
 			-- uid
 			if attached a_diff.uid as att_uid then
 				uid := att_uid.deep_twin
 			end
 
+			-- translations are what is available in the child archetype
+			if attached a_diff.translations as a_diff_trans then
+				translations := a_diff_trans.deep_twin
+			end
+
+			-- root node id from diff
+			definition.set_node_id (a_diff.definition.node_id.twin)
+
 			-- description, if it exists
 			if attached a_diff.description as orig_desc then
 				description := orig_desc.deep_twin
 			end
-
-			-- reduce terminology to overlay's language set
-			terminology.reduce_languages_to (a_diff.terminology)
-
-			-- root node id from diff
-			definition.set_node_id (a_diff.definition.node_id.twin)
 		ensure
 			Specialised: is_specialised
+		end
+
+	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
+			-- reduce languages to those in the supplied list
+		do
+			precursor (a_langs)
+			terminology.reduce_languages_to (a_langs)
+		end
+
+	set_original_language (a_lang: TERMINOLOGY_CODE)
+		do
+			precursor (a_lang)
+			terminology.set_original_language (a_lang.code_string)
 		end
 
 feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure

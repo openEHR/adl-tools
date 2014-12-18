@@ -69,26 +69,28 @@ feature -- Commands
 		do
 			arch_diff_child := a_diff_child
 			arch_flat_parent := a_flat_parent
-			arch_flat_out := Void
 
-debug ("flatten")
-	io.put_string ("============== flattening specialised archetype " +
-		arch_diff_child.archetype_id.physical_id + " with " +
-		arch_flat_parent.archetype_id.physical_id + " ==============%N")
-end
 			if arch_diff_child.is_template then
 				create {OPERATIONAL_TEMPLATE} arch_flat_out.make_from_other (arch_flat_parent)
 			else
 				arch_flat_out := arch_flat_parent.deep_twin
 			end
-			arch_flat_out.overlay_diff (arch_diff_child)
+
+			-- overlay various identification and meta-data elements, and adjust languages and translations
+			arch_flat_out.overlay_differential (arch_diff_child)
+			arch_flat_out.reduce_languages_to (arch_diff_child.languages_available)
+			arch_flat_out.set_original_language (arch_diff_child.original_language)
+
+			-- core definitional parts
 			expand_c_proxy_objects
-			flatten_other_metadata
 			flatten_definition
 			flatten_rules
 			flatten_terminology
+
+			-- remaining meta-data
+			flatten_other_metadata
 			flatten_annotations
-			arch_flat_out.set_parent_archetype_id (arch_flat_parent.archetype_id.semantic_id)
+
 			arch_flat_out.rebuild
 		ensure
 			attached arch_flat_out

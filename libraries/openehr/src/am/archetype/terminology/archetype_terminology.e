@@ -985,19 +985,21 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 
 feature {ARCHETYPE} -- Flattening
 
-	reduce_languages_to (other: ARCHETYPE_TERMINOLOGY)
-			-- remove any languages not in `other'
-		require
-			Valid_conformance: is_flat and other.is_differential
+	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
+			-- remove any languages not in `a_langs'
 		do
 			across languages_available as langs_csr loop
-				if not other.languages_available.has (langs_csr.item) then
+				if not a_langs.has (langs_csr.item) then
 					term_definitions.remove (langs_csr.item)
 				end
 			end
-			original_language := other.original_language.twin
+		end
+
+	set_original_language (a_lang: STRING)
+		do
+			original_language := a_lang
 		ensure
-			original_language.is_equal (other.original_language)
+			original_language.is_equal (a_lang)
 		end
 
 feature {ARCHETYPE_TERMINOLOGY} -- Flattening

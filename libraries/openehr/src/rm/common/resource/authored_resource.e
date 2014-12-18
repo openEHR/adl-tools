@@ -81,7 +81,7 @@ feature -- Access
 
 	languages_available: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
-			-- original_language and translations. Guaranteed to at least include original_language
+			-- `original_language' and `translations'. Guaranteed to at least include `original_language'
 		do
 			if languages_available_cache.is_empty then
 				languages_available_cache.extend (original_language.code_string)
@@ -177,6 +177,13 @@ feature -- Status Report
 
 feature -- Modification
 
+	set_original_language (a_lang: TERMINOLOGY_CODE)
+		do
+			original_language := a_lang
+		ensure
+			original_language = a_lang
+		end
+
 	set_description (a_desc: RESOURCE_DESCRIPTION)
 		require
 			Description_valid: a_desc.languages.is_equal(languages_available)
@@ -259,6 +266,26 @@ feature -- Status setting
 			-- set 'is_controlled'
 		do
 			is_controlled := True
+		end
+
+feature {ARCHETYPE} -- Flattening
+
+	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
+			-- remove any languages not in `a_langs'
+		do
+			across languages_available as langs_csr loop
+				if not a_langs.has (langs_csr.item) then
+					if attached translations as trans then
+						trans.remove (langs_csr.item)
+					end
+					if attached description as desc then
+						desc.remove_language (langs_csr.item)
+					end
+					if attached annotations as annots then
+						annots.remove_language (langs_csr.item)
+					end
+				end
+			end
 		end
 
 feature -- Output
