@@ -10,6 +10,13 @@ note
 class ARCH_LIB_FILESYS_ITEM
 
 inherit
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	ARCH_LIB_MODEL_ITEM
 		redefine
 			put_child
@@ -47,7 +54,7 @@ feature -- Modification
 	put_child (a_child: like child_with_qualified_key)
 		do
 			if children = Void then
-				create children.make (0)
+				create children.make
 			end
 			children.extend (a_child)
 			if attached {ARCH_LIB_FILESYS_ITEM} a_child then

@@ -44,13 +44,6 @@ inherit
 			is_equal
 		end
 
-	SHARED_ADL_APP_RESOURCES
-		export
-			{NONE} all
-		undefine
-			is_equal
-		end
-
 	SHARED_ADL_ENGINE
 		export
 			{NONE} all
@@ -1306,7 +1299,7 @@ feature {NONE} -- Editing
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable ARRAYED_LIST [ARCH_LIB_ARCHETYPE_ITEM]
+	children: detachable FAST_SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE_ITEM]
 			-- list of child nodes
 
 feature {NONE} -- Implementation

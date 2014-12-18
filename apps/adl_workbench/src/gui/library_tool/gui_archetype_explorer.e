@@ -242,6 +242,7 @@ feature {NONE} -- Implementation
 					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
+
 					if aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
@@ -249,6 +250,10 @@ feature {NONE} -- Implementation
 					end
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
+					end
+
+					if aca.has_children then
+						text.append (" [" + aca.subtree_artefact_total.out + "]")
 					end
 
 					-- tooltip
@@ -265,12 +270,12 @@ feature {NONE} -- Implementation
 		 	 		tooltip.append (acc.qualified_name + "%N" + acc.class_definition.description)
 					text.append (aci.name)
 					col := archetype_rm_type_color
-	 				text.append (" (" + acc.subtree_artefact_count (artefact_types).out + ")")
+	 				text.append (" [" + acc.subtree_artefact_count (artefact_types).out + "]")
 
 	 			elseif attached {ARCH_LIB_PACKAGE_ITEM} aci as accl then
 	 				text.append (accl.qualified_name)
 					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
-	 				text.append (" (" + accl.subtree_artefact_count (artefact_types).out + ")")
+	 				text.append (" [" + accl.subtree_artefact_count (artefact_types).out + "]")
 				end
 
 				-- pixmap

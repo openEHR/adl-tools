@@ -10,13 +10,6 @@ note
 deferred class ARCH_LIB_ITEM
 
 inherit
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		undefine
-			is_equal
-		end
-
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -104,6 +97,14 @@ feature -- Access
  			end
 		end
 
+   	subtree_artefact_total: INTEGER
+   			-- number of artefacts below this node of any type
+		do
+ 			across subtree_artefact_counts as count_csr loop
+ 				Result := Result + count_csr.item
+ 			end
+		end
+
 	child_with_qualified_key (a_key: STRING): like children.item
 		require
 			has_child_with_qualified_key (a_key)
@@ -175,7 +176,7 @@ feature {ARCHETYPE_LIBRARY} -- Modification
 			if attached children as c then
 				att_children := c
 			else
-				create att_children.make (0)
+				create att_children.make
 				children := att_children
 			end
 			att_children.extend (a_child)
@@ -215,7 +216,7 @@ feature -- Comparison
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable ARRAYED_LIST [ARCH_LIB_ITEM]
+	children: detachable FAST_SORTED_TWO_WAY_LIST [ARCH_LIB_ITEM]
 			-- list of child nodes
 
 	parent: detachable ARCH_LIB_ITEM
