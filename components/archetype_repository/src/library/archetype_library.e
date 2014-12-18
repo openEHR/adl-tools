@@ -171,9 +171,9 @@ feature -- Access
 			-- try for direct match, or else filler id is compatible with available actual ids
 			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
-			if archetype_index.has (an_archetype_ref) and then attached archetype_index.item (an_archetype_ref) as att_aca then
+			if attached archetype_ref_index.item (an_archetype_ref) as att_aca then
 				Result := att_aca
-			elseif archetype_ref_index.has (an_archetype_ref) and then attached archetype_ref_index.item (an_archetype_ref) as att_aca then
+			elseif attached archetype_index.item (an_archetype_ref) as att_aca then
 				Result := att_aca
 			else
 				-- expensive brute force search
@@ -196,7 +196,7 @@ feature -- Access
 		do
 			ref_as_lower := a_ref.as_lower
 			-- case-insentive match
-			if semantic_item_index.has (ref_as_lower) and then attached semantic_item_index.item (ref_as_lower) as att_aca then
+			if attached semantic_item_index.item (ref_as_lower) as att_aca then
 				Result := att_aca
 			else
 				-- case-sensitive match
@@ -362,18 +362,18 @@ feature -- Modification
 	update_archetype_id (aca: ARCH_LIB_ARCHETYPE_ITEM)
 			-- move `ara' in tree according to its current and old ids
 		require
-			old_id_valid: attached aca.old_id and then has_archetype_with_id (aca.old_id.physical_id) and then archetype_with_id (aca.old_id.physical_id) = aca
+			old_id_valid: attached aca.old_id as old_id and then has_archetype_with_id (old_id.physical_id) and then archetype_with_id (old_id.physical_id) = aca
 			new_id_valid: not has_archetype_with_id (aca.id.physical_id)
 			semantic_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
 		do
 			if attached aca.old_id as att_old_id then
-				archetype_index_remove (att_old_id)
-			end
-			archetype_index_put (aca)
+				archetype_indexes_remove (att_old_id)
+				archetype_indexes_put (aca)
 
-			if is_filesys_tree_populated then
-				filesys_item_index.remove (aca.old_id.physical_id.as_lower)
-				filesys_item_index.force (aca, aca.id.physical_id.as_lower)
+				if is_filesys_tree_populated and not aca.is_specialised then
+					remove_arch_from_filesys_tree (att_old_id)
+					add_arch_to_filesys_tree (aca)
+				end
 			end
 
 			aca.parent.remove_child (aca)
@@ -391,7 +391,7 @@ feature -- Modification
 			new_id_valid: has_archetype_with_id (aca.id.physical_id)
 			Semantic_parent_exists: semantic_item_index.has (aca.id.physical_id.as_lower)
 		do
-			archetype_index_remove (aca.id)
+			archetype_indexes_remove (aca.id)
 			if is_filesys_tree_populated then
 				filesys_item_index.remove (aca.id.physical_id.as_lower)
 			end
@@ -561,14 +561,14 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
-	archetype_index_put (ala: ARCH_LIB_ARCHETYPE_ITEM)
+	archetype_indexes_put (ala: ARCH_LIB_ARCHETYPE_ITEM)
 		do
 			archetype_index.force (ala, ala.qualified_name)
 			archetype_ref_index.force (ala, ala.id.semantic_id)
 			semantic_item_index.force (ala, ala.qualified_key)
 		end
 
-	archetype_index_remove (arch_id: ARCHETYPE_HRID)
+	archetype_indexes_remove (arch_id: ARCHETYPE_HRID)
 		do
 			archetype_index.remove (arch_id.physical_id)
 			archetype_ref_index.remove (arch_id.semantic_id)
@@ -607,7 +607,7 @@ feature {NONE} -- Implementation
 						if attached item_matching_ref (parent_key) as att_ala then
 							if not semantic_item_index.has (archs_csr.item.qualified_key) then
 								att_ala.put_child (archs_csr.item)
-								archetype_index_put (archs_csr.item)
+								archetype_indexes_put (archs_csr.item)
 								added_during_pass := added_during_pass + 1
 								status_list [archs_csr.target_index] := Populate_status_succeeded
 							else
@@ -660,7 +660,9 @@ feature {NONE} -- Implementation
 				if not filesys_item_index.has (arch_dir.as_lower) then
 					add_filesys_tree_repo_node (arch_dir)
 				end
-				add_arch_to_filesys_tree (archs_csr.item)
+				if not archs_csr.item.is_specialised then
+					add_arch_to_filesys_tree (archs_csr.item)
+				end
 			end
 		end
 
@@ -699,13 +701,33 @@ feature {NONE} -- Implementation
 		do
 			parent_dir := file_system.dirname (aca.source_file_path).as_lower
 			if not filesys_item_index.has (parent_dir) then
-				add_filesys_nodes (parent_dir)
+				add_filesys_dir_node_hierarchy (parent_dir)
 			end
 			filesys_item_index.item (parent_dir).put_child (aca)
 			filesys_item_index.force (aca, aca.qualified_key)
+		ensure
+			filesys_item_index.has (aca.qualified_key)
 		end
 
-	add_filesys_nodes (a_dir_path: STRING)
+	remove_arch_from_filesys_tree (arch_id: ARCHETYPE_HRID)
+			-- remove archetype from filesys tree. Specialised archetypes will
+			-- appear automatically, due to being added to top-level parent node during
+			-- semantic tree building
+		require
+			Filesys_tree_populated: is_filesys_tree_populated and then filesys_item_index.has (arch_id.physical_id)
+		local
+			parent_dir: STRING
+		do
+			if attached {ARCH_LIB_ARCHETYPE_ITEM} filesys_item_index.item (arch_id.physical_id) as ala then
+				parent_dir := file_system.dirname (ala.source_file_path).as_lower
+				filesys_item_index.item (parent_dir).remove_child (ala)
+				filesys_item_index.remove (arch_id.physical_id)
+			end
+		ensure
+			not filesys_item_index.has (arch_id.physical_id)
+		end
+
+	add_filesys_dir_node_hierarchy (a_dir_path: STRING)
 			-- create intermediate file system nodes in `filesys_item_tree' based on `a_dir_path'
 		local
 			filesys_node: ARCH_LIB_FILESYS_ITEM
@@ -713,13 +735,15 @@ feature {NONE} -- Implementation
 		do
 			parent_dir := file_system.dirname (a_dir_path)
 			if not filesys_item_index.has (parent_dir) then
-				add_filesys_nodes (parent_dir)
+				add_filesys_dir_node_hierarchy (parent_dir)
 			end
 
 			-- now parent node must be there
 			create filesys_node.make (a_dir_path)
 			filesys_item_index.item (parent_dir).put_child (filesys_node)
 			filesys_item_index.force (filesys_node, filesys_node.qualified_key)
+		ensure
+			filesys_item_index.has (file_system.dirname (a_dir_path))
 		end
 
 	filesys_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
@@ -885,7 +909,7 @@ feature {NONE} -- Implementation
 				att_ala.put_child (aca)
 			end
 			-- add to archetype indexes
-			archetype_index_put (aca)
+			archetype_indexes_put (aca)
 
 			-- add to filesys index if top-level archetype (if specialised, the
 			-- connection is already made due to semantic tree link
