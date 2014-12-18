@@ -85,11 +85,11 @@ feature -- Commands
 			expand_c_proxy_objects
 			flatten_definition
 			flatten_rules
-			flatten_terminology
+			arch_flat_out.terminology.merge (arch_diff_child.terminology)
 
 			-- remaining meta-data
 			flatten_other_metadata
-			flatten_annotations
+			arch_flat_out.merge_annotations_from_resource (arch_diff_child)
 
 			arch_flat_out.rebuild
 		ensure
@@ -176,7 +176,7 @@ end
 		do
 			if attached arch_diff_child.other_metadata as child_omd then
 				across child_omd as child_omd_csr loop
-					arch_flat_out.add_other_metadata_value (child_omd_csr.key, child_omd_csr.item)
+					arch_flat_out.put_other_metadata_value (child_omd_csr.key, child_omd_csr.item)
 				end
 			end
 		end
@@ -678,18 +678,6 @@ end
 					arch_flat_out.add_rule (rules_csr.item.deep_twin)
 				end
 			end
-		end
-
-	flatten_terminology
-			-- build the flat archetype ontology as the sum of parent and source ontologies
-		do
-			arch_flat_out.terminology.merge (arch_diff_child.terminology)
-		end
-
-	flatten_annotations
-			-- build a flattened form of the annotations, by merging everything found in child into flat parent annotations
-		do
-			arch_flat_out.merge_annotations_from_resource (arch_diff_child)
 		end
 
 end

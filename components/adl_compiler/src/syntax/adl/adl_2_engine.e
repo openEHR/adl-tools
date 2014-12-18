@@ -241,7 +241,7 @@ feature -- Parsing
 							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
 								across omd as omd_csr loop
 									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-										new_diff_arch.add_other_metadata_value (a_key, an_item)
+										new_diff_arch.put_other_metadata_value (a_key, an_item)
 									end
 								end
 							end

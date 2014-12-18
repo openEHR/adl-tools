@@ -37,7 +37,7 @@ create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 create {P_ARCHETYPE}
 	make_all
 
-create {ARCHETYPE_FLATTENER, TEMPLATE_OVERLAYER, RM_FLATTENER, ARCH_LIB_ARCHETYPE_ITEM}
+create {ARCHETYPE_FLATTENER, TEMPLATE_FLATTENER, RM_FLATTENER, ARCH_LIB_ARCHETYPE_ITEM}
 	make_from_other, default_create
 
 create {ARCH_LIB_ARCHETYPE_ITEM}
@@ -936,7 +936,7 @@ feature -- Modification
 			other_metadata := a_metadata
 		end
 
-	add_other_metadata_value (a_key, a_value: STRING)
+	put_other_metadata_value (a_key, a_value: STRING)
 			-- add the pair `a_key' / `a_value' to `other_metadata', overwriting any value
 			-- with the same key if necessary.
 		local
@@ -946,28 +946,18 @@ feature -- Modification
 				o_metadata := omd
 			else
 				create o_metadata.make (0)
+				other_metadata := o_metadata
 			end
 			o_metadata.force (a_value, a_key)
-			other_metadata := o_metadata
 		ensure
 			other_metadata.item (a_key) = a_value
 		end
 
-	add_other_metadata_flag (a_key: STRING)
+	put_other_metadata_flag (a_key: STRING)
 			-- add a meta-data item of the form of a flag, whose value is implied to be 'true',
 			-- overwriting any value with the same key if necessary.
-		local
-			o_metadata: HASH_TABLE [STRING, STRING]
-			any_flag: BOOLEAN
 		do
-			if attached other_metadata as omd then
-				o_metadata := omd
-			else
-				create o_metadata.make (0)
-			end
-			any_flag := True
-			o_metadata.force (any_flag.out, a_key)
-			other_metadata := o_metadata
+			put_other_metadata_value (a_key, (True).out)
 		ensure
 			other_metadata.item (a_key).is_equal ((True).out)
 		end
