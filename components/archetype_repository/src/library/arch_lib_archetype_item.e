@@ -1351,13 +1351,13 @@ feature {NONE} -- Implementation
 				rm_flattener.execute (flattened_arch, rm_schema)
 			end
 
-			-- perform template filler overlaying
+			-- perform template filler substitution
 			if attached {OPERATIONAL_TEMPLATE} flattened_arch as opt then
 				create fillers_index.make (0)
 				across suppliers_index as supp_arch_csr loop
 					fillers_index.put (supp_arch_csr.item.flat_archetype, supp_arch_csr.key)
 				end
-				template_overlayer.execute (opt, fillers_index)
+				template_flattener.execute (opt, fillers_index)
 			end
 
 			flat_archetype_cache := flattened_arch
@@ -1456,11 +1456,11 @@ invariant
 
 	Differential_archetype_is_differential: attached differential_archetype as da implies da.is_differential
 	differential_archetype_attached_if_valid: is_valid implies attached differential_archetype
-	Flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
+	Flat_archetype_attached_if_valid: is_valid implies attached flat_archetype
 	Flat_archetype_cache_is_flat: attached flat_archetype_cache as fac implies fac.is_flat
 
-	parent_existence: specialisation_ancestor /= Void implies is_specialised
-	clients_index_valid: slot_owners_index /= Void implies not slot_owners_index.is_empty
+	parent_existence: attached specialisation_ancestor implies is_specialised
+	clients_index_valid: attached slot_owners_index as soi implies not soi.is_empty
 
 end
 

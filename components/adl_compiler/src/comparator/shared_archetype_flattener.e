@@ -21,7 +21,7 @@ feature -- Access
 			create Result
 		end
 
-	template_overlayer: TEMPLATE_FLATTENER
+	template_flattener: TEMPLATE_FLATTENER
 		once ("PROCESS")
 			create Result
 		end
