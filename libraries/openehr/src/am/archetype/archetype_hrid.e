@@ -472,6 +472,7 @@ feature -- Modification
 			valid_release_version (a_release_version)
 		do
 			release_version := a_release_version
+			physical_id_cache := Void
 		end
 
 	set_version_status (a_version_status: INTEGER)
@@ -479,6 +480,7 @@ feature -- Modification
 			valid_version_status (a_version_status)
 		do
 			version_status := a_version_status
+			physical_id_cache := Void
 		end
 
 feature -- Comparison
