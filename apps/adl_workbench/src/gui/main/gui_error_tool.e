@@ -38,7 +38,7 @@ inherit
 			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
-	STRING_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		end

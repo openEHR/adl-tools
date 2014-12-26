@@ -28,7 +28,6 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			p, s: STRING
-			gli: EV_GRID_LABEL_ITEM
 		do
 			precursor (ui_settings)
 
@@ -44,10 +43,8 @@ feature -- Display
 				p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				p.remove_head (1)
 				s.append (p)
-				create gli.make_with_text (utf8_to_utf32 (s))
-				gli.set_foreground_color (c_attribute_colour)
-				ev_grid_row.set_item (Definition_grid_col_constraint, gli)
-				ev_grid_row.set_height (gli.text_height + Default_grid_row_expansion)
+
+				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, Void, c_attribute_colour, Void)
 			end
 		end
 
