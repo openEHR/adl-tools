@@ -287,4 +287,18 @@ feature {NONE} -- Implementation
 
 	node_depth: INTEGER
 
+ 	valid_regex (a_regex: STRING): BOOLEAN
+ 			-- True if `a_regex' is valid according to standard PERL-based regex rules
+ 		require
+ 			Regex_valid: not a_regex.is_empty
+ 		local
+ 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+ 		do
+ 			create regex_matcher.make
+ 			regex_matcher.set_case_insensitive (True)
+ 			regex_matcher.compile (a_regex)
+ 			Result := regex_matcher.is_compiled
+ 		end
+
+
 end
