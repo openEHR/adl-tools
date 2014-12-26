@@ -114,7 +114,7 @@ feature -- Commands
 
 					elseif key.count >= 3 then
 						 -- it is a partial id, get a list of candidates
-						matching_ids := client_controls.item (current_client).matching_ids (regex_from_string(key))
+						matching_ids := client_controls.item (current_client).matching_ids (string_to_regex (key))
 
 						if matching_ids.count = 0 then
 							ev_search_combo.set_text (get_msg (ec_no_match_found, Void))
@@ -164,6 +164,13 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	string_to_regex (a_str: STRING): STRING
+			-- turn an ordinary string like "abc" into a regex that can be used with standard regex matching
+			-- libs like gobo
+		do
+			Result := ".*" + a_str + ".*"
+		end
 
 	ev_search_combo: EV_COMBO_BOX
 	ev_tool_bar: EV_TOOL_BAR

@@ -124,10 +124,10 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	matching_ids (a_key: STRING): ARRAYED_SET [STRING]
+	matching_ids (a_regex: STRING): ARRAYED_SET [STRING]
 		do
-			if attached source then
-				Result := source.matching_ids (a_key, Void, Void)
+			if attached source as src then
+				Result := src.matching_ids (a_regex, Void, Void)
 			else
 				create Result.make(0)
 			end

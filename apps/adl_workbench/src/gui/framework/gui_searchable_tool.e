@@ -11,10 +11,10 @@ deferred class GUI_SEARCHABLE_TOOL
 
 feature -- Access
 
-	matching_ids (a_key: STRING): ARRAYED_SET [STRING]
-			-- obtain a list of matching ids
+	matching_ids (a_regex: STRING): ARRAYED_SET [STRING]
+			-- obtain a list of ids matching `a_regex'
 		require
-			Key_valid: not a_key.is_empty
+			Regex_valid: not a_regex.is_empty
 		deferred
 		end
 
