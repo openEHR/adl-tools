@@ -106,14 +106,6 @@ feature -- Access
 			end
 		end
 
-	semantic_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by LOWER-CASE semantic id. Used during construction of `directory'
-			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
-			-- For archetype nodes, this will be the archetype id.
-		attribute
-			create Result.make (0)
-		end
-
 	matching_ids (a_regex: STRING; an_rm_type, an_rm_closure: detachable STRING): ARRAYED_SET [STRING]
 			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type. Matching using `an_tm_type' and
@@ -162,7 +154,7 @@ feature -- Access
 				Result.extend (get_msg_line ("regex_e1", <<a_regex>>))
 			end
 		ensure
-			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end
+			across Result as ids_csr all has_item_with_id (ids_csr.item) end
 		end
 
 	archetype_matching_ref (an_archetype_ref: STRING): detachable ARCH_LIB_ARCHETYPE_ITEM
@@ -191,12 +183,9 @@ feature -- Access
 	item_matching_ref (a_ref: STRING): detachable ARCH_LIB_ITEM
 			-- Return true if, for a slot path that is known in the parent slot index, there are
 			-- actually archetypes whose ids match
-		local
-			ref_as_lower: STRING
 		do
-			ref_as_lower := a_ref.as_lower
 			-- case-insentive match
-			if attached semantic_item_index.item (ref_as_lower) as att_aca then
+			if attached semantic_item_index.item (a_ref.as_lower) as att_aca then
 				Result := att_aca
 			else
 				-- case-sensitive match
@@ -249,7 +238,7 @@ feature -- Status Report
 	has_item_matching_ref (a_ref: STRING): BOOLEAN
 			-- Return true if, there is a semantic id that matches a_ref
 		do
-			Result := semantic_item_index.has (a_ref.as_lower) or else has_archetype_matching_ref (a_ref)
+			Result := has_item_with_id (a_ref) or else has_archetype_matching_ref (a_ref)
 		end
 
 feature -- Commands
@@ -345,7 +334,7 @@ feature -- Modification
 						add_filesys_tree_repo_node (arch_dir)
 					end
 					put_archetype (aca, a_path)
-				elseif not has_item_with_id (aca.semantic_parent_key.as_lower) then
+				elseif not has_item_with_id (aca.semantic_parent_key) then
 					if aca.is_specialised then
 						add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_key, aca.qualified_key>>)
 					else
@@ -364,7 +353,7 @@ feature -- Modification
 		require
 			old_id_valid: attached aca.old_id as old_id and then has_archetype_with_id (old_id.physical_id) and then archetype_with_id (old_id.physical_id) = aca
 			new_id_valid: not has_archetype_with_id (aca.id.physical_id)
-			semantic_parent_exists: semantic_item_index.has (aca.semantic_parent_id.as_lower)
+			semantic_parent_exists: has_item_with_id (aca.semantic_parent_id)
 		do
 			if attached aca.old_id as att_old_id then
 				archetype_indexes_remove (att_old_id)
@@ -377,11 +366,11 @@ feature -- Modification
 			end
 
 			aca.parent.remove_child (aca)
-			semantic_item_index.item (aca.semantic_parent_key).put_child (aca)
+			semantic_item_index.item (aca.semantic_parent_key.as_lower).put_child (aca)
 			aca.clear_old_semantic_parent_name
 		ensure
 			Node_added_to_archetype_index: archetype_index.has (aca.id.physical_id)
-			Node_added_to_ontology_index: semantic_item_index.has (aca.id.physical_id)
+			Node_added_to_ontology_index: has_item_with_id (aca.id.physical_id)
 			Node_parent_set: aca.parent.qualified_name.is_equal (aca.semantic_parent_id)
 		end
 
@@ -389,7 +378,7 @@ feature -- Modification
 			-- remove `aca' from indexes
 		require
 			new_id_valid: has_archetype_with_id (aca.id.physical_id)
-			Semantic_parent_exists: semantic_item_index.has (aca.id.physical_id.as_lower)
+			Semantic_parent_exists: has_item_with_id (aca.id.physical_id)
 		do
 			archetype_indexes_remove (aca.id)
 			if is_filesys_tree_populated then
@@ -398,7 +387,7 @@ feature -- Modification
 			aca.parent.remove_child (aca)
 		ensure
 			Node_removed_from_archetype_index: not archetype_index.has (aca.id.physical_id)
-			Node_removed_from_semantic_index: not semantic_item_index.has (aca.id.physical_id)
+			Node_removed_from_semantic_index: not has_item_with_id (aca.id.physical_id)
 		end
 
 feature -- Traversal
@@ -548,6 +537,14 @@ feature {NONE} -- Implementation
 
 	Populate_status_failed: INTEGER = -2
 
+	semantic_item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
+			-- Index of archetype & class nodes, keyed by LOWER-CASE semantic id. Used during construction of `directory'
+			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
+			-- For archetype nodes, this will be the archetype id.
+		attribute
+			create Result.make (0)
+		end
+
 	archetype_index: HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
 			-- index of archetype descriptors keyed by MIXED-CASE archetype id.
 		attribute
@@ -605,7 +602,7 @@ feature {NONE} -- Implementation
 					if status_list [archs_csr.target_index] >= 0 then
 						parent_key := archs_csr.item.semantic_parent_key
 						if attached item_matching_ref (parent_key) as att_ala then
-							if not semantic_item_index.has (archs_csr.item.qualified_key) then
+							if not has_item_with_id (archs_csr.item.qualified_key) then
 								att_ala.put_child (archs_csr.item)
 								archetype_indexes_put (archs_csr.item)
 								added_during_pass := added_during_pass + 1

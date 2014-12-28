@@ -44,14 +44,6 @@ feature -- Status Report
 			end
 		end
 
-	has_file_changed_on_disk (path: STRING; timestamp: INTEGER): BOOLEAN
-			-- Has the loaded archetype designated by `path' changed on disk since last read?
-		do
-			file_context.set_target (path)
-			file_context.read_file_timestamp
-			Result := file_context.file_timestamp > timestamp
-		end
-
 feature -- Commands
 
 	read_text_from_file (full_path: STRING)
