@@ -64,6 +64,16 @@ feature -- Definitions
 
 	Tuple_right_delimiter: CHARACTER = ']'
 
+	Archetype_category: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("archetypes")
+		end
+
+	Template_category: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("templates")
+		end
+
 feature -- Keywords
 
 	Generated_flag_string: STRING = "generated"
