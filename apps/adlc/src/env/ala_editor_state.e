@@ -14,14 +14,14 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	make (aca: ARCH_LIB_ARCHETYPE)
 		do
 			target := aca
 		end
 
 feature -- Access
 
-	target: ARCH_LIB_ARCHETYPE_ITEM
+	target: ARCH_LIB_ARCHETYPE
 
 feature -- Commands
 
