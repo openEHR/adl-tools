@@ -8,7 +8,7 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 	void_safety: "initial"
 
-class ARCH_LIB_CLASS_ITEM
+class ARCH_LIB_CLASS
 
 inherit
 	ARCH_LIB_MODEL_ITEM

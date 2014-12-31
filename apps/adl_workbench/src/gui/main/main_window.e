@@ -423,7 +423,7 @@ feature -- Commands
 					configure_repositories
 				else
 					populate_arch_libraries_combo
-					refresh_archetype_library (True)
+					display_archetype_library (False)
 				end
 			end
 
@@ -546,7 +546,7 @@ feature {NONE} -- Library events
 			if repository_dialog.current_library_changed then
 				console_tool.clear
 				if has_libraries then
-					refresh_archetype_library (True)
+					display_archetype_library (True)
 				else
 					library_tool.clear
 				end
@@ -560,7 +560,7 @@ feature {NONE} -- Library events
 				console_tool.clear
 				set_current_library_name (arch_libraries_combo.text)
 			end
-			refresh_archetype_library (False)
+			display_archetype_library (False)
 		end
 
 	build_all
@@ -698,7 +698,7 @@ feature {NONE} -- Library events
 	refresh_directory
 			-- reload current directory
 		do
-			refresh_archetype_library (True)
+			display_archetype_library (True)
 		end
 
 feature {NONE} -- XML Menu events
@@ -747,11 +747,11 @@ feature {NONE} -- Tools menu events
 		do
 			if has_current_library then
 				do_with_wait_cursor (Current, agent current_library.do_all_archetypes (agent delete_generated_files))
-				refresh_archetype_library (True)
+				display_archetype_library (True)
 			end
 		end
 
-	delete_generated_files (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	delete_generated_files (ara: ARCH_LIB_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
@@ -809,12 +809,12 @@ feature -- RM Schemas Events
 				else
 					rm_schema_explorer.populate (rm_schemas_access)
 					if has_current_library then
-						refresh_archetype_library (True)
+						display_archetype_library (True)
 					end
 				end
 			elseif rm_schema_dialog.has_changed_schema_dir then
 				rm_schema_explorer.populate (rm_schemas_access)
-				refresh_archetype_library (True)
+				display_archetype_library (True)
 			end
 		end
 
@@ -822,7 +822,7 @@ feature -- RM Schemas Events
 			-- user-initiated reload
 		do
 			rm_schemas_access.reload_schemas
-			refresh_archetype_library (True)
+			display_archetype_library (True)
 			rm_schema_explorer.populate (rm_schemas_access)
 		end
 
@@ -999,14 +999,14 @@ feature -- Archetype viewers
 			create Result.make (docking_manager)
 		end
 
-	display_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	display_archetype (aca: ARCH_LIB_ARCHETYPE)
 		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
 			archetype_viewers.populate_active_tool (aca)
 			archetype_viewers.active_tool.on_select_notebook
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			archetype_viewers.create_new_tool
 			display_archetype (aca)
@@ -1032,7 +1032,7 @@ feature -- Archetype editors
 			)
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			archetype_editors.create_new_tool
 			archetype_editors.active_tool.enable_edit
@@ -1040,7 +1040,7 @@ feature -- Archetype editors
 			archetype_editors.active_tool.on_select_notebook
 		end
 
-	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
+	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE): BOOLEAN
 		do
 			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.physical_id)
 		end
@@ -1185,13 +1185,13 @@ feature {NONE} -- Implementation
 			console_tool.append_text (get_msg (ec_cfg_file_i1, <<user_config_file_path>>))
 		end
 
-	refresh_archetype_library (refresh_from_source: BOOLEAN)
+	display_archetype_library (refresh_from_source: BOOLEAN)
 			-- Rebuild archetype library & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (Current, agent do_refresh_archetype_library (refresh_from_source))
+			do_with_wait_cursor (Current, agent do_display_archetype_library (refresh_from_source))
 		end
 
-	do_refresh_archetype_library (refresh_from_source: BOOLEAN)
+	do_display_archetype_library (refresh_from_source: BOOLEAN)
 			-- refresh current archetype library - revert to uncompiled state for all archetypes.
 			-- If `refresh_from_source' is true, then re-read files from library source location as well
 		do
@@ -1277,7 +1277,7 @@ feature {NONE} -- Build commands
 			console_tool.append_text (a_msg)
 		end
 
-	compiler_archetype_gui_update (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	compiler_archetype_gui_update (aca: ARCH_LIB_ARCHETYPE)
 			-- Update GUI with progress on build.
 		do
 			library_tool.update_tree_node (aca)

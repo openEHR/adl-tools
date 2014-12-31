@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 			-- Populate `subtree' from `ids'.
 		local
 			eti: EV_TREE_ITEM
-			ala: ARCH_LIB_ARCHETYPE_ITEM
+			ala: ARCH_LIB_ARCHETYPE
 		do
 			across ids as id_csr loop
 				create eti.make_with_text (utf8_to_utf32 (id_csr.item))
@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 		local
 			slots_count: INTEGER
 			used_by_count: INTEGER
-			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM
+			csr_ala: detachable ARCH_LIB_ARCHETYPE
 		do
 			if attached source as src and attached selected_language as sel_lang then
 				-- =============== SUPPLIERS ===============
@@ -225,7 +225,7 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_LIB_ARCHETYPE_ITEM} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
+			if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
 				create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
 				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
 				a_menu.extend (an_mi)

@@ -14,7 +14,7 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_LIB_ARCHETYPE_ITEM; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+	make (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
 			source := aca
 			in_differential_view := differential_view_flag
@@ -32,7 +32,7 @@ feature -- Initialisation
 			flat_terminology := source.flat_archetype.terminology
 		end
 
-	make_editable (aca: ARCH_LIB_ARCHETYPE_ITEM; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		do
 			source := aca
 			in_differential_view := False
@@ -50,7 +50,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	source: ARCH_LIB_ARCHETYPE_ITEM
+	source: ARCH_LIB_ARCHETYPE
 
 	archetype: ARCHETYPE
 

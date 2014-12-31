@@ -37,10 +37,10 @@ create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 create {P_ARCHETYPE}
 	make_all
 
-create {ARCHETYPE_FLATTENER, TEMPLATE_FLATTENER, RM_FLATTENER, ARCH_LIB_ARCHETYPE_ITEM}
+create {ARCHETYPE_FLATTENER, TEMPLATE_FLATTENER, RM_FLATTENER, ARCH_LIB_ARCHETYPE}
 	make_from_other, default_create
 
-create {ARCH_LIB_ARCHETYPE_ITEM}
+create {ARCH_LIB_ARCHETYPE}
 	make_empty_differential, make_empty_differential_child
 
 feature -- Initialisation
@@ -185,7 +185,7 @@ feature -- Initialisation
 			Is_differential_preserved: is_differential = other.is_differential
 		end
 
-feature {ARCH_LIB_ARCHETYPE_ITEM} -- Initialisation
+feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 
 	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_rm_release, an_original_language: STRING)
 			-- make a new differential form archetype
@@ -601,15 +601,6 @@ feature -- Status Report
 		end
 
 feature -- Status Setting
-
-	set_is_valid (a_validity: BOOLEAN)
-			-- set is_valid flag
-		require
-			Is_differential: is_differential
-		do
-			is_valid := a_validity
-			is_dirty := False
-		end
 
 	set_differential
 			-- set is_diffrential flag
@@ -1098,7 +1089,7 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 			terminology.set_original_language (a_lang.code_string)
 		end
 
-feature {ARCH_LIB_ARCHETYPE_ITEM, ARCHETYPE_COMPARATOR} -- Structure
+feature {ARCH_LIB_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
 
 	convert_to_differential_paths
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form

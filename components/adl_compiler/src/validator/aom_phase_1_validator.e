@@ -25,7 +25,7 @@ create
 
 feature -- Status Report
 
-	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
+	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end

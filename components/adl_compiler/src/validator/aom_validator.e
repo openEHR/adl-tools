@@ -30,7 +30,7 @@ inherit
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	initialise (ara: ARCH_LIB_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -56,7 +56,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 feature -- Status Report
 
-	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
+	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
 		deferred
 		end
 
@@ -68,7 +68,7 @@ feature {NONE} -- Implementation
 	arch_flat_anc: detachable ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
 
-	child_desc: ARCH_LIB_ARCHETYPE_ITEM
+	child_desc: ARCH_LIB_ARCHETYPE
 			-- differential archetype being validated
 
 	terminology: ARCHETYPE_TERMINOLOGY

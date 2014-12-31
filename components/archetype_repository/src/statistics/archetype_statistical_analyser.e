@@ -22,7 +22,7 @@ create
 
 feature -- Initialisation
 
-	make (a_target_descriptor: ARCH_LIB_ARCHETYPE_ITEM; in_differential_mode: BOOLEAN)
+	make (a_target_descriptor: ARCH_LIB_ARCHETYPE; in_differential_mode: BOOLEAN)
 		require
 			a_target_descriptor.is_valid
 		do
@@ -39,7 +39,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	target_descriptor: ARCH_LIB_ARCHETYPE_ITEM
+	target_descriptor: ARCH_LIB_ARCHETYPE
 			-- target descriptor
 
 	target: ARCHETYPE

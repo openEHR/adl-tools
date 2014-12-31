@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 		do
 			precursor
 			if attached arch_node as car then
-				if attached {ARCH_LIB_ARCHETYPE_ITEM} current_library.archetype_matching_ref (car.archetype_ref) as ext_ref_node then
+				if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_matching_ref (car.archetype_ref) as ext_ref_node then
 					create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab),
 						agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
 					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))

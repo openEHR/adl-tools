@@ -23,7 +23,7 @@ inherit
 		end
 
 create
-	make
+	make, make_root
 
 feature -- Initialisation
 
@@ -39,6 +39,16 @@ feature -- Initialisation
 			group_name := "file_folder"
 		ensure
 			qualified_name_set: qualified_name.is_equal (a_dir_path)
+		end
+
+	make_root
+			-- create as top-level directory at root of file system
+		do
+			create qualified_name.make_empty
+			create name.make_empty
+			group_name := "file_folder"
+		ensure
+			qualified_name_set: qualified_name.is_empty
 		end
 
 feature -- Access

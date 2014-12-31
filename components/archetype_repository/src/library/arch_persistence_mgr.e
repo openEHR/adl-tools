@@ -56,40 +56,40 @@ inherit
 			{ANY} has_serialiser_format, has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
 		end
 
-create {ARCH_LIB_ARCHETYPE_ITEM}
+create {ARCH_LIB_ARCHETYPE}
 	make, make_legacy, make_new_archetype
 
 feature {NONE} -- Initialisation
 
-	make (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE)
+	make (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE)
 		require
 			Path_valid: not a_path.is_empty
 		do
-			make_base (arch_thumbnail.archetype_id, arch_thumbnail.artefact_type, arch_thumbnail.adl_version, a_path, a_repository, arch_thumbnail.is_generated)
+			make_base (arch_thumbnail.archetype_id, arch_thumbnail.artefact_type, arch_thumbnail.adl_version, a_path, a_source, arch_thumbnail.is_generated)
 			source_text_timestamp := source_file_timestamp
 		ensure
-			file_repository_set: file_repository = a_repository
+			file_repository_set: file_repository = a_source
 		end
 
-	make_legacy (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE)
+	make_legacy (arch_thumbnail: ARCHETYPE_THUMBNAIL; a_path: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE)
 		require
 			Path_valid: not a_path.is_empty
 		do
-			make_base (arch_thumbnail.archetype_id, arch_thumbnail.artefact_type, arch_thumbnail.adl_version, a_path, a_repository, True)
+			make_base (arch_thumbnail.archetype_id, arch_thumbnail.artefact_type, arch_thumbnail.adl_version, a_path, a_source, True)
 			legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 		ensure
-			file_repository_set: file_repository = a_repository
+			file_repository_set: file_repository = a_source
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
-			-- Create a new archetype with `an_id', belonging to `a_repository'.
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_source: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
+			-- Create a new archetype with `an_id', belonging to `a_source'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 		do
-			make_base (an_id, {ARTEFACT_TYPE}.archetype, latest_adl_version, file_system.pathname (a_directory, an_id.physical_id + File_ext_archetype_source), a_repository, False)
+			make_base (an_id, {ARTEFACT_TYPE}.archetype, latest_adl_version, file_system.pathname (a_directory, an_id.physical_id + File_ext_archetype_source), a_source, False)
 		ensure
-			file_repository_set: file_repository = a_repository
+			file_repository_set: file_repository = a_source
 		end
 
 feature -- Access
@@ -197,7 +197,7 @@ feature -- Status Report
 	has_source_file: BOOLEAN
 			-- Does the repository have a source-form file for this archetype?
 		do
-			Result := file_repository.is_valid_path (source_file_path)
+			Result := file_system.file_exists (source_file_path)
 		end
 
 	has_legacy_flat_file: BOOLEAN
@@ -206,13 +206,19 @@ feature -- Status Report
 			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
 		end
 
-feature {ARCH_LIB_ARCHETYPE_ITEM} -- Status Report
+feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
 	is_legacy_out_of_date: BOOLEAN
 		do
 			Result := has_legacy_flat_file and then (is_legacy_file_modified or
 				is_legacy_newer_than_differential or
 				has_source_file and source_file_timestamp < application_file_time_stamp)
+		end
+
+	is_adhoc: BOOLEAN
+			-- True if this is an adhoc archetype
+		do
+			Result := file_repository.is_adhoc
 		end
 
 feature -- Status Setting
@@ -303,7 +309,7 @@ feature -- File Management (Legacy)
 			other_details := amp.extract_other_details (Result)
 		end
 
-feature {ARCH_LIB_ARCHETYPE_ITEM} -- File Management (Legacy)
+feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
@@ -313,7 +319,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- File Management (Legacy)
 			status.wipe_out
 			if is_source_generated then
 				if has_source_file then
-					file_repository.delete_file (source_file_path)
+					file_system.delete_file (source_file_path)
 					status.append (get_msg_line (ec_clean_generated_file, <<source_file_path>>))
 				end
 			end
@@ -322,12 +328,12 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- File Management (Legacy)
 			-- may have generated .adlf files into their source repositories; in the future, this will
 			-- never happen, so the code below can be removed (e.g. at release following ADL 1.5 release)
 			flat_path := extension_replaced (source_file_path, File_ext_archetype_flat)
-			if file_repository.is_valid_path (flat_path) then
-				file_repository.delete_file (flat_path)
+			if file_system.file_exists (flat_path) then
+				file_system.delete_file (flat_path)
 			end
 		end
 
-feature {ARCH_LIB_ARCHETYPE_ITEM} -- Commands
+feature {ARCH_LIB_ARCHETYPE} -- Commands
 
 	has_differential_compiled_file: BOOLEAN
 			-- Does the compile generated area have a differential file for this archetype from a previous compile?
@@ -397,7 +403,7 @@ feature {ARCH_LIB_ARCHETYPE_ITEM} -- Commands
 			file_system.delete_file (source_file_path)
 		end
 
-feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE_ITEM} -- File Management
+feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE} -- File Management
 
 	is_text_converted: BOOLEAN
 			-- was last text converted from original form?
@@ -522,9 +528,9 @@ feature {NONE} -- Implementation
 	file_repository: ARCHETYPE_LIBRARY_SOURCE
 			-- The repository on which this item is found.
 
-	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
+	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
 		do
-			file_repository := a_repository
+			file_repository := a_source
 			source_file_path := a_path
 			is_source_generated := is_generated
 			create artefact_type.make (an_artefact_type_val)

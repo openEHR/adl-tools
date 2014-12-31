@@ -437,7 +437,7 @@ feature -- Access
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
-			if attached {ARCH_LIB_CLASS_ITEM} ara as acc then
+			if attached {ARCH_LIB_CLASS} ara as acc then
 				Result := rm_type_pixmap (acc.class_definition)
 			else
 				Result := get_icon_pixmap ("archetype/" + ara.group_name)

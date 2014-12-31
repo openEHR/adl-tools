@@ -28,20 +28,20 @@ feature -- Access
 			end
 		end
 
-	selected_archetype: detachable ARCH_LIB_ARCHETYPE_ITEM
+	selected_archetype: detachable ARCH_LIB_ARCHETYPE
 			-- The archetype at `selected_item'.
 		do
-			if attached {ARCH_LIB_ARCHETYPE_ITEM} selected_item as aca then
+			if attached {ARCH_LIB_ARCHETYPE} selected_item as aca then
 				Result := aca
 			end
 		ensure
 			consistent_with_history: attached Result implies Result = selected_item
 		end
 
-	selected_class: detachable ARCH_LIB_CLASS_ITEM
+	selected_class: detachable ARCH_LIB_CLASS
 			-- The class node at `selected_item'.
 		do
-			if attached {ARCH_LIB_CLASS_ITEM} selected_item as acc then
+			if attached {ARCH_LIB_CLASS} selected_item as acc then
 				Result := acc
 			end
 		ensure

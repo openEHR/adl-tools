@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 	build_supplier_ids
 			-- populate the ADL tree control by creating it from scratch
 		local
-			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM
+			csr_ala: detachable ARCH_LIB_ARCHETYPE
 		do
 			if attached source as src then
 				-- add C_ARCHETYPE_ROOTs to suppliers
@@ -144,7 +144,7 @@ feature {NONE} -- Implementation
 	build_client_ids
 			-- populate the ADL tree control by creating it from scratch
 		local
-			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM
+			csr_ala: detachable ARCH_LIB_ARCHETYPE
 		do
 			if attached source as src then
 				-- add C_ARCHETYPE_ROOTs to clients
@@ -204,7 +204,7 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_LIB_ARCHETYPE_ITEM} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
+			if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
 				create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
 				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
 				a_menu.extend (an_mi)

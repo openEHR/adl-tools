@@ -93,7 +93,7 @@ feature -- Commands
 
 			arch_flat_out.rebuild
 		ensure
-			attached arch_flat_out
+			attached arch_flat_out as att_flat and then att_flat.is_flat and then att_flat.is_valid
 		end
 
 feature {NONE} -- Implementation

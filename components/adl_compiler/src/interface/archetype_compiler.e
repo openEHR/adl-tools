@@ -193,7 +193,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	build_lineage (ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	build_lineage (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 			-- dependency depth indicates how many dependency relationships away from original artefact
@@ -204,7 +204,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	rebuild_lineage (ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	rebuild_lineage (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
@@ -239,28 +239,28 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	do_all (action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]])
+	do_all (action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
 			current_library.do_all_archetypes (action)
 		end
 
-	do_subtree (subtree: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]])
+	do_subtree (subtree: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
 			current_library.do_archetypes (subtree, action)
 		end
 
-	do_lineage (ara: ARCH_LIB_ARCHETYPE_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]])
+	do_lineage (ara: ARCH_LIB_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
 			current_library.do_archetype_lineage(ara, action)
 		end
 
-	check_file_system_currency (from_scratch: BOOLEAN; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	check_file_system_currency (from_scratch: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
 			-- check archetype for anything that would require recompilation:
 			-- * editing changes, including anything that might cause reparenting
 			-- * user request to start from scratch
@@ -281,7 +281,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_archetype (ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	build_archetype (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		local
 			exception_encountered: BOOLEAN
@@ -306,13 +306,16 @@ feature {NONE} -- Implementation
 								across ara.suppliers_index as suppliers_csr loop
 									-- allow supplier loops, so avoid cycling back into current archetype
 									if suppliers_csr.item /= ara then
-										build_lineage (suppliers_csr.item, dependency_depth+1)
+										build_lineage (suppliers_csr.item, dependency_depth + 1)
 									end
 								end
 
-								-- continue compilation - remaining steps after suppliers compilation
-								ara.signal_suppliers_compiled
-								ara.compile
+								-- continue compilation - remaining steps after suppliers compilation; we check
+								-- that the archetype was not already compiled due to being in a supplier lineage
+								if ara.compilation_state /= cs_validated then
+									ara.signal_suppliers_compiled
+									ara.compile
+								end
 							end
 
 							update_counts (ara)
@@ -360,7 +363,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
 			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
 		require
 			has_serialiser_format (a_syntax)
@@ -417,7 +420,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_archetype_visual_update_action (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	call_archetype_visual_update_action (ara: ARCH_LIB_ARCHETYPE)
 			-- Call `archetype_visual_update_action', if it is attached.
 		do
 			if attached archetype_visual_update_action as ua then
@@ -432,7 +435,7 @@ feature {NONE} -- Implementation
 	console_update_action: detachable PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
 
-	archetype_visual_update_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]]
+	archetype_visual_update_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
 			-- Called after processing each archetype (to perform GUI updates during processing).
 
 	update_compilation_status: detachable PROCEDURE [ANY, TUPLE [a_total, a_valid_count, a_warn_count, an_err_count: INTEGER]]
@@ -442,7 +445,7 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	update_counts (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	update_counts (ara: ARCH_LIB_ARCHETYPE)
 			-- update compilation counts
 		do
 			total_count := total_count + 1

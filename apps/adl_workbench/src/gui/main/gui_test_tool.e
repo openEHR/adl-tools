@@ -462,7 +462,7 @@ feature {NONE} -- Commands
 			res_label: STRING
 			test_result: INTEGER
 		do
-			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked and attached {ARCH_LIB_ARCHETYPE_ITEM} row.data as aca then
+			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked and attached {ARCH_LIB_ARCHETYPE} row.data as aca then
 				target := aca
 
 				if attached target then
@@ -777,7 +777,7 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-	target: detachable ARCH_LIB_ARCHETYPE_ITEM
+	target: detachable ARCH_LIB_ARCHETYPE
 			-- current target of compilation operation
 		note
 			option: stable
@@ -809,14 +809,14 @@ feature {NONE} -- Implementation
 				end
 				icon_key := "archetype/"
 
-				if attached {ARCH_LIB_ARCHETYPE_ITEM} ari as ala then
+				if attached {ARCH_LIB_ARCHETYPE} ari as ala then
 					evx_grid.update_last_row_label_col (1, Void, ala.source_file_path, Void, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
 						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void, Void)
 						col_csr := col_csr + 1
 					end
-				elseif attached {ARCH_LIB_CLASS_ITEM} ari as alcn then
+				elseif attached {ARCH_LIB_CLASS} ari as alcn then
 					icon_key := "rm/generic/"
 				end
 				evx_grid.update_last_row_label_col (1, Void, Void, Void, Void, get_icon_pixmap (icon_key + ari.group_name))

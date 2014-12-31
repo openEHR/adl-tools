@@ -15,7 +15,7 @@ note
 	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_LIB_ARCHETYPE_ITEM
+class ARCH_LIB_ARCHETYPE
 
 inherit
 	ARCH_LIB_ITEM
@@ -123,8 +123,8 @@ feature {NONE} -- Initialisation
 			Compilation_state: compilation_state = Cs_unread
 		end
 
-	make_new_archetype (an_id: ARCHETYPE_HRID; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
-			-- Create a new archetype with `an_id', belonging to `a_repository'.
+	make_new_archetype (an_id: ARCHETYPE_HRID; a_lib_source: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
+			-- Create a new archetype with `an_id', belonging to `a_lib_source'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
@@ -132,7 +132,7 @@ feature {NONE} -- Initialisation
 			a_diff_arch: ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
-			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
+			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential (artefact_type, an_id, rm_schema.rm_release, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
@@ -146,8 +146,8 @@ feature {NONE} -- Initialisation
 			Differential_archetype_is_differential: differential_archetype.is_differential
 		end
 
-	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
-			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
+	make_new_specialised_archetype (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_lib_source: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
+			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_lib_source'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
@@ -156,7 +156,7 @@ feature {NONE} -- Initialisation
 			a_diff_arch: ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
-			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
+			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
@@ -169,8 +169,8 @@ feature {NONE} -- Initialisation
 			Is_specialised: is_specialised
 		end
 
-	make_new_template (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
-			-- Create a new template with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
+	make_new_template (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_lib_source: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
+			-- Create a new template with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_lib_source'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
@@ -179,7 +179,7 @@ feature {NONE} -- Initialisation
 			a_diff_arch: ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_template)
-			create file_mgr.make_new_archetype (an_id, a_repository, a_directory)
+			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
 			set_archetype_default_details (a_diff_arch)
@@ -193,7 +193,7 @@ feature {NONE} -- Initialisation
 		end
 
 	make_new_any (an_id: ARCHETYPE_HRID; an_artefact_type: ARTEFACT_TYPE)
-			-- Create a new archetype with `an_id', belonging to `a_repository'.
+			-- Create a new archetype with `an_id'
 		do
 			id := an_id
 			create status.make_empty
@@ -348,7 +348,7 @@ feature {NONE} -- Identification
 
 feature -- Relationships
 
-	suppliers_index: HASH_TABLE [ARCH_LIB_ARCHETYPE_ITEM, STRING]
+	suppliers_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
 			-- list of descriptors of slot fillers or other external references, keyed by archetype id
 			-- currently generated only from C_ARCHETYPE_ROOT index in differential archetype
 		attribute
@@ -390,14 +390,14 @@ feature -- Relationships
 			end
 		end
 
-	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE_ITEM
+	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE
 		do
-			if attached {ARCH_LIB_ARCHETYPE_ITEM} parent as aca then
+			if attached {ARCH_LIB_ARCHETYPE} parent as aca then
 				Result := aca
 			end
 		end
 
-	has_ancestor_descriptor (an_anc: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
+	has_ancestor_descriptor (an_anc: ARCH_LIB_ARCHETYPE): BOOLEAN
 			-- True if this archetype has `an_anc' as an ancestor
 		do
 			Result := attached specialisation_ancestor as att_ala and then (att_ala = an_anc or else
@@ -438,7 +438,7 @@ feature -- Relationships
 			Result := suppliers_index.has (an_arch_id) or else attached specialisation_ancestor as att_anc and then att_anc.has_flat_supplier (an_arch_id)
 		end
 
-feature {ARCH_LIB_ARCHETYPE_ITEM} -- Relationships
+feature {ARCH_LIB_ARCHETYPE} -- Relationships
 
 	add_slot_owner (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
@@ -1079,6 +1079,12 @@ feature -- File Access
 
 	file_mgr: ARCH_PERSISTENCE_MGR
 
+	is_adhoc: BOOLEAN
+			-- True if this is an adhoc archetype
+		do
+			Result := file_mgr.is_adhoc
+		end
+
 	save_differential_text
 			-- Save converted differential archetype to its file in its source form, even if not compiling
 		local
@@ -1299,7 +1305,7 @@ feature {NONE} -- Editing
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
-	children: detachable FAST_SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE_ITEM]
+	children: detachable FAST_SORTED_TWO_WAY_LIST [ARCH_LIB_ARCHETYPE]
 			-- list of child nodes
 
 feature {NONE} -- Implementation
@@ -1396,7 +1402,7 @@ feature {NONE} -- Implementation
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 			slot_idx: like slot_fillers_index
-			ala: ARCH_LIB_ARCHETYPE_ITEM
+			ala: ARCH_LIB_ARCHETYPE
 		do
 			create slot_idx.make (0)
 			slot_id_index_cache := slot_idx

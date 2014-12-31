@@ -69,7 +69,7 @@ feature -- Definitions
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
@@ -82,7 +82,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			attached arch_anc_flat as aaf implies aaf.is_flat
 		end
 
-	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
