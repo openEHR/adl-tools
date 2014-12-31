@@ -286,11 +286,15 @@ feature -- Modification
 		do
 			if attached aca.old_id as att_old_id then
 				item_index_remove (att_old_id)
-
 				item_index_put (aca)
 
-				library_access.source.remove_archetype (att_old_id)
-				library_access.source.put_archetype (aca)
+				if library_access.adhoc_source.has_archetype_with_id (att_old_id.physical_id) then
+					library_access.adhoc_source.remove_archetype (att_old_id)
+					library_access.adhoc_source.put_archetype (aca)
+				else
+					library_access.source.remove_archetype (att_old_id)
+					library_access.source.put_archetype (aca)
+				end
 			end
 
 			aca.parent.remove_child (aca)
