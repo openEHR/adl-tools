@@ -118,21 +118,19 @@ feature -- Access
 	archetype_matching_ref (an_archetype_ref: STRING): detachable ARCH_LIB_ARCHETYPE
 			-- Return archetype whose id matches `an_archetype_ref'
 		do
-			if attached library_access.adhoc_source.archetype_matching_ref (an_archetype_ref) as ala then
+			if attached library_access.source.archetype_matching_ref (an_archetype_ref) as ala then
 				Result := ala
 			else
-				Result := library_access.source.archetype_matching_ref (an_archetype_ref)
+				Result := library_access.adhoc_source.archetype_matching_ref (an_archetype_ref)
 			end
 		end
 
-	item_matching_ref (a_ref: STRING): detachable ARCH_LIB_ITEM
-			-- Return true if, for a slot path that is known in the parent slot index, there are
-			-- actually archetypes whose ids match
+	archetype_parent_item (ala: ARCH_LIB_ARCHETYPE): detachable ARCH_LIB_ITEM
 		do
-			if attached item_index.item (a_ref.as_lower) as att_aca then
-				Result := att_aca
-			elseif archetype_id_checker.valid_id_reference (a_ref) then
-				Result := archetype_matching_ref (a_ref)
+			if not ala.is_specialised then
+				Result := item_index.item (ala.semantic_parent_key.as_lower)
+			else
+				Result := archetype_matching_ref (ala.semantic_parent_key)
 			end
 		end
 
@@ -164,12 +162,12 @@ feature -- Status Report
 			Result := item_index.has (an_id.as_lower)
 		end
 
-	valid_candidate (aca: ARCH_LIB_ARCHETYPE): BOOLEAN
-			-- True if `aca' does not exist in the library, but has a viable parent under
+	valid_candidate (ala: ARCH_LIB_ARCHETYPE): BOOLEAN
+			-- True if `ala' does not exist in the library, but has a viable parent under
 			-- which it can be attached
 		do
-			Result := has_item_matching_ref (aca.semantic_parent_key) and
-				not has_item_with_id (aca.qualified_key)
+			Result := has_parent_item (ala) and
+				not has_item_with_id (ala.qualified_key)
 		end
 
 	has_archetype_matching_ref (an_archetype_ref: STRING): BOOLEAN
@@ -179,10 +177,10 @@ feature -- Status Report
 				library_access.adhoc_source.has_archetype_matching_ref (an_archetype_ref)
 		end
 
-	has_item_matching_ref (a_ref: STRING): BOOLEAN
-			-- Return true if, there is a semantic id that matches a_ref
+	has_parent_item (ala: ARCH_LIB_ARCHETYPE): BOOLEAN
+			-- Return true if a parent item can be found for `ala'
 		do
-			Result := has_item_with_id (a_ref) or else has_archetype_matching_ref (a_ref)
+			Result := attached archetype_parent_item (ala)
 		end
 
 feature -- Commands
@@ -255,8 +253,6 @@ feature -- Modification
 			-- Add the archetype designated by `a_path' to the ad hoc repository, and graft it into `directory'.
 		require
 			path_valid: valid_adhoc_path (a_path)
-		local
-			remove_list: ARRAYED_LIST [ARCHETYPE_HRID]
 		do
 			if item_index.is_empty then
 				clone_item_tree_prototype
@@ -266,9 +262,9 @@ feature -- Modification
 			library_access.adhoc_source.put_archetype_from_file (a_path)
 			errors.append (library_access.adhoc_source.errors)
 
-			create remove_list.make (0)
+			remove_list.wipe_out
 			if attached library_access.adhoc_source.last_added_archetype as aca then
-				try_put_archetype (aca, remove_list)
+				try_put_archetype (aca)
 				if not has_errors then
 					last_added_archetype := aca
 				end
@@ -298,7 +294,7 @@ feature -- Modification
 			end
 
 			aca.parent.remove_child (aca)
-			item_index.item (aca.semantic_parent_key.as_lower).put_child (aca)
+			archetype_parent_item (aca).put_child (aca)
 			aca.clear_old_semantic_parent_name
 		ensure
 			Node_added_to_archetype_index: has_archetype_with_id (aca.id.physical_id)
@@ -485,8 +481,6 @@ feature {NONE} -- Implementation
 
 	populate_item_index
 			-- Rebuild `archetype_index' and `item_index' from source repositories.
-		local
-			remove_list: ARRAYED_LIST [ARCHETYPE_HRID]
 		do
 			-- re-initialise the class tree if the schema has been reloaded since last time
 			if schema_load_counter < rm_schemas_access.load_count then
@@ -495,9 +489,9 @@ feature {NONE} -- Implementation
 
 			clone_item_tree_prototype
 
-			create remove_list.make (0)
-			across library_access.source as archs_csr loop
-				try_put_archetype (archs_csr.item, remove_list)
+			remove_list.wipe_out
+			across library_access.source as arch_csr loop
+				try_put_archetype (arch_csr.item)
 			end
 
 			-- process remove_list
@@ -508,9 +502,14 @@ feature {NONE} -- Implementation
 			create last_populate_timestamp.make_now
 		end
 
-	try_put_archetype (aca: ARCH_LIB_ARCHETYPE; remove_list: ARRAYED_LIST [ARCHETYPE_HRID])
+	remove_list: ARRAYED_LIST [ARCHETYPE_HRID]
+		attribute
+			create Result.make (20)
+		end
+
+	try_put_archetype (aca: ARCH_LIB_ARCHETYPE)
 		do
-			if attached item_matching_ref (aca.semantic_parent_key) as att_parent_ala then
+			if attached archetype_parent_item (aca) as att_parent_ala then
 				if not has_item_with_id (aca.qualified_key) then
 					att_parent_ala.put_child (aca)
 					item_index_put (aca)
@@ -647,8 +646,8 @@ feature {NONE} -- Implementation
 	clone_item_tree_prototype
 			-- clone `item_tree_prototype' for use in an `item_tree'
 		do
+			item_index.wipe_out
 			item_tree := item_tree_prototype.deep_twin
-			create item_index.make (0)
 			do_all_semantic (agent (ari: attached ARCH_LIB_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
 		end
 
@@ -657,7 +656,7 @@ feature {NONE} -- Implementation
 		require
 			valid_candidate (aca)
 		do
-			check attached item_matching_ref (aca.semantic_parent_key) as att_ala then
+			check attached archetype_parent_item (aca) as att_ala then
 				att_ala.put_child (aca)
 			end
 			item_index_put (aca)

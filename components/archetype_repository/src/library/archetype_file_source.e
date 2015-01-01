@@ -200,6 +200,7 @@ feature {NONE} -- Implementation
 								else
 									create ara.make (l_full_path, Current, arch_tn)
 									archetype_id_index.force (ara, ara.id.physical_id)
+									archetype_ref_index.force (ara, ara.id.semantic_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end
@@ -232,6 +233,7 @@ feature {NONE} -- Implementation
 								elseif not archetype_id_index.has (arch_id) then
 									create ara.make (extension_replaced (l_full_path, File_ext_archetype_source), Current, arch_tn)
 									archetype_id_index.force (ara, arch_id)
+									archetype_ref_index.force (ara, ara.id.semantic_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end

@@ -23,6 +23,9 @@ inherit
 		end
 
 	TABLE_ITERABLE [ARCH_LIB_ARCHETYPE, STRING]
+		undefine
+			default_create
+		end
 
 feature -- Access
 
@@ -61,8 +64,8 @@ feature {ARCHETYPE_LIBRARY} -- Access
 	template_count: INTEGER
 			-- count of artefacts designated as templates or template_components
 		do
-			across archetype_id_index as archs_csr loop
-				if archs_csr.item.artefact_type.is_template then
+			across archetype_id_index as arch_csr loop
+				if arch_csr.item.artefact_type.is_template then
 					Result := Result + 1
 				end
 			end
@@ -113,7 +116,6 @@ feature {ARCHETYPE_LIBRARY} -- Access
 			Rm_type_valid: attached an_rm_type as att_rm_type implies not att_rm_type.is_empty
 			Rm_closure_valid: attached an_rm_closure as att_rm_closure implies not att_rm_closure.is_empty
 		local
-			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			arch_id: ARCHETYPE_HRID
 			is_candidate: BOOLEAN
 			rm_type, rm_closure: detachable STRING
@@ -128,7 +130,6 @@ feature {ARCHETYPE_LIBRARY} -- Access
 				rm_closure := rm_cl.as_lower
 			end
 
-			create regex_matcher.make
 			regex_matcher.set_case_insensitive (True)
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
@@ -337,6 +338,7 @@ feature {NONE} -- Implementation
 
 	create_filesys_node_for_path (a_file_path: STRING): ARCH_LIB_FILESYS_ITEM
 			-- recursively create nodes in local file system tree that corresponds to the path `a_file_path'
+			-- if the path exists, no node creation will occur, and the existing matching node will be returned
 		require
 			real_file_path: is_valid_path (a_file_path) and then a_file_path.starts_with (full_path)
 		local
@@ -378,6 +380,11 @@ feature {NONE} -- Implementation
 			end
 
 			Result := dir_node
+		end
+
+	regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+		attribute
+			create Result.make
 		end
 
 invariant

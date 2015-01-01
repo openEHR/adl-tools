@@ -288,13 +288,21 @@ feature -- Access
 			Result.append (rm_class)
 		end
 
-	semantic_id: STRING
-			-- The ‘interface’ form of the HRID, i.e. down to the major version
+	semantic_id: IMMUTABLE_STRING_8
+			-- The interface form of the HRID, i.e. down to the major version
+		local
+			str: STRING
 		do
-			Result := hrid_root
-			Result.append_character (Axis_separator)
-			Result.append (Version_delimiter)
-			Result.append (major_version)
+			if attached semantic_id_cache as att_sem_id then
+				Result := att_sem_id
+			else
+				str := hrid_root
+				str.append_character (Axis_separator)
+				str.append (Version_delimiter)
+				str.append (major_version)
+				create Result.make_from_string (str)
+				semantic_id_cache := Result
+			end
 		end
 
 	concept_id: STRING
@@ -465,6 +473,7 @@ feature -- Modification
 		do
 			concept_id := a_concept_id
 			physical_id_cache := Void
+			semantic_id_cache := Void
 		end
 
 	set_release_version (a_release_version: STRING)
@@ -473,6 +482,7 @@ feature -- Modification
 		do
 			release_version := a_release_version
 			physical_id_cache := Void
+			semantic_id_cache := Void
 		end
 
 	set_version_status (a_version_status: INTEGER)
@@ -574,6 +584,8 @@ feature {NONE} -- Implementation
 		end
 
 	physical_id_cache: detachable IMMUTABLE_STRING_8
+
+	semantic_id_cache: detachable IMMUTABLE_STRING_8
 
 invariant
 	Rm_publisher_validity: not rm_publisher.is_empty
