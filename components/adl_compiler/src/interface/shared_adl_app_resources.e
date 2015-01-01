@@ -165,6 +165,9 @@ feature -- Application Switches
 	archetype_view_language: STRING
 		do
 			Result := app_cfg.string_value ("/general/archetype_view_language")
+			if Result.is_empty then
+				Result := Default_language
+			end
 		end
 
 	set_archetype_view_language (a_lang: STRING)
