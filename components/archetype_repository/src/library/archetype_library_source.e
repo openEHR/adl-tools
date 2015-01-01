@@ -130,7 +130,6 @@ feature {ARCHETYPE_LIBRARY} -- Access
 				rm_closure := rm_cl.as_lower
 			end
 
-			regex_matcher.set_case_insensitive (True)
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
 				across archetype_id_index as archs_csr loop
@@ -385,6 +384,7 @@ feature {NONE} -- Implementation
 	regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		attribute
 			create Result.make
+			Result.set_case_insensitive (True)
 		end
 
 invariant
