@@ -299,74 +299,6 @@ feature -- Validation
 			proc.execute
 		end
 
-	phase_1_validate (aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_PHASE_1_VALIDATOR
-		do
-			validation_passed := False
-			if attached phase_1_validator as pv then
-				proc := pv
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				phase_1_validator := proc
-			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
-		end
-
-	phase_2_validate (aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_PHASE_2_VALIDATOR
-		do
-			validation_passed := False
-			if attached phase_2_validator as pv then
-				proc := pv
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				phase_2_validator := proc
-			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
-		end
-
-	phase_3_validate (aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_PHASE_3_VALIDATOR
-		do
-			validation_passed := False
-			if attached phase_3_validator as pv then
-				proc := pv
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				phase_3_validator := proc
-			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
-		end
-
-	post_compile_process (aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_POST_COMPILE_PROCESSOR
-		do
-			if attached post_compile_processor as pcp then
-				proc := pcp
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				post_compile_processor := proc
-			end
-			proc.execute
-		end
-
-	validation_passed: BOOLEAN
-			-- result of last validation
-
 feature -- Serialisation
 
 	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING): STRING
@@ -451,30 +383,6 @@ feature {NONE} -- Implementation
 		end
 
 	post_parse_processor: detachable AOM_POST_PARSE_PROCESSOR
-		note
-			option: stable
-		attribute
-		end
-
-	phase_1_validator: detachable AOM_PHASE_1_VALIDATOR
-		note
-			option: stable
-		attribute
-		end
-
-	phase_2_validator: detachable AOM_PHASE_2_VALIDATOR
-		note
-			option: stable
-		attribute
-		end
-
-	phase_3_validator: detachable AOM_PHASE_3_VALIDATOR
-		note
-			option: stable
-		attribute
-		end
-
-	post_compile_processor: detachable AOM_POST_COMPILE_PROCESSOR
 		note
 			option: stable
 		attribute
