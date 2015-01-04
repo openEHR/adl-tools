@@ -129,11 +129,11 @@ feature {NONE} -- Implementation
 
 				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
 				if not differential_view and src.is_specialised then
-					from csr_ala := src.specialisation_ancestor until csr_ala = Void loop
+					from csr_ala := src.specialisation_parent until csr_ala = Void loop
 						across src.suppliers_index as id_csr loop
 							supplier_ids.extend (id_csr.key)
 						end
-						csr_ala := csr_ala.specialisation_ancestor
+						csr_ala := csr_ala.specialisation_parent
 					end
 				end
 			end
@@ -156,13 +156,13 @@ feature {NONE} -- Implementation
 
 				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
 				if not differential_view and src.is_specialised then
-					from csr_ala := src.specialisation_ancestor until csr_ala = Void loop
+					from csr_ala := src.specialisation_parent until csr_ala = Void loop
 						if attached csr_ala.clients_index as att_clients then
 							across att_clients as id_csr loop
 								client_ids.extend (id_csr.item)
 							end
 						end
-						csr_ala := csr_ala.specialisation_ancestor
+						csr_ala := csr_ala.specialisation_parent
 					end
 				end
 			end

@@ -130,36 +130,22 @@ feature {NONE} -- Implementation
 		local
 			slots_count: INTEGER
 			used_by_count: INTEGER
-			csr_ala: detachable ARCH_LIB_ARCHETYPE
+			slot_fillers_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
 			if attached source as src and attached selected_language as sel_lang then
 				-- =============== SUPPLIERS ===============
 				-- add valid slot fillers to suppliers
-				if src.has_slots then
-					across src.slot_fillers_index as slots_csr loop
-						create_slot_tree_node (src.differential_archetype.annotated_path (slots_csr.key, sel_lang, True))
-						append_tree (ev_slot_tree_node, slots_csr.item)
-						slots_count := slots_count + ev_slot_tree_node.count
-						if ev_slot_tree_node.is_expandable then
-							ev_slot_tree_node.expand
-						end
-					end
+				if differential_view then
+					slot_fillers_index := src.slot_fillers_index
+				else
+					slot_fillers_index := src.flat_slot_fillers_index
 				end
-
-				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
-				if not differential_view and src.is_specialised then
-					from csr_ala := src.specialisation_ancestor until csr_ala = Void loop
-						if csr_ala.has_slots then
-							across csr_ala.slot_fillers_index as slots_csr loop
-								create_slot_tree_node (src.differential_archetype.annotated_path (slots_csr.key, sel_lang, True))
-								append_tree (ev_slot_tree_node, slots_csr.item)
-								slots_count := slots_count + ev_slot_tree_node.count
-								if ev_slot_tree_node.is_expandable then
-									ev_slot_tree_node.expand
-								end
-							end
-						end
-						csr_ala := csr_ala.specialisation_ancestor
+				across slot_fillers_index as slots_csr loop
+					create_slot_tree_node (src.differential_archetype.annotated_path (slots_csr.key, sel_lang, True))
+					append_tree (ev_slot_tree_node, slots_csr.item)
+					slots_count := slots_count + ev_slot_tree_node.count
+					if ev_slot_tree_node.is_expandable then
+						ev_slot_tree_node.expand
 					end
 				end
 

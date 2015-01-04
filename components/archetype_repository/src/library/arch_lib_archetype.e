@@ -227,7 +227,7 @@ feature -- Identification
 		require
 			is_specialised
 		do
-			check attached specialisation_ancestor as att_sp then
+			check attached specialisation_parent as att_sp then
 				Result := att_sp.id
 			end
 		end
@@ -282,7 +282,7 @@ feature -- Identification
 			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be a resolved id like openEHR-EHR-OBSERVATION.thing.v1.0.4
 		do
 			if is_specialised then
-				check attached specialisation_ancestor as att_spec_anc then
+				check attached specialisation_parent as att_spec_anc then
 					Result := att_spec_anc.id.as_string
 				end
 			else
@@ -381,16 +381,35 @@ feature -- Relationships
 			--	END
 		require
 			compilation_state >= Cs_validated_phase_1
+		local
+			diff_arch: ARCHETYPE
 		do
-			if not attached slot_id_index_cache then
-				compute_slot_id_index
-			end
-			check attached slot_id_index_cache as sic then
-				Result := sic
+			if attached slot_id_index_cache as att_cache then
+				Result := att_cache
+			else
+				check attached differential_archetype as da then
+					diff_arch := da
+				end
+				Result := compute_slot_id_index (diff_arch)
+
+				slot_id_index_cache := Result
 			end
 		end
 
-	specialisation_ancestor: detachable ARCH_LIB_ARCHETYPE
+	flat_slot_fillers_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+			-- same as `slot_fillers_index' but for flat form
+		require
+			compilation_state >= Cs_validated_phase_1
+		do
+			if attached flat_slot_id_index_cache as att_cache then
+				Result := att_cache
+			else
+				Result := compute_slot_id_index (flat_archetype)
+				flat_slot_id_index_cache := Result
+			end
+		end
+
+	specialisation_parent: detachable ARCH_LIB_ARCHETYPE
 		do
 			if attached {ARCH_LIB_ARCHETYPE} parent as aca then
 				Result := aca
@@ -400,14 +419,14 @@ feature -- Relationships
 	has_ancestor_descriptor (an_anc: ARCH_LIB_ARCHETYPE): BOOLEAN
 			-- True if this archetype has `an_anc' as an ancestor
 		do
-			Result := attached specialisation_ancestor as att_ala and then (att_ala = an_anc or else
+			Result := attached specialisation_parent as att_ala and then (att_ala = an_anc or else
 				att_ala.has_ancestor_descriptor (an_anc))
 		end
 
 	has_ancestor (an_arch_id: STRING): BOOLEAN
 			-- True if this archetype has `an_arch_id' among its an ancestors
 		do
-			Result := attached specialisation_ancestor as att_ala and then (att_ala.id.physical_id.is_equal (an_arch_id) or else
+			Result := attached specialisation_parent as att_ala and then (att_ala.id.physical_id.is_equal (an_arch_id) or else
 				att_ala.has_ancestor (an_arch_id))
 		end
 
@@ -435,7 +454,7 @@ feature -- Relationships
 	has_flat_supplier (an_arch_id: STRING): BOOLEAN
 			-- True if this archetype or any ancestor has `an_arch_id' in its suppliers list
 		do
-			Result := suppliers_index.has (an_arch_id) or else attached specialisation_ancestor as att_anc and then att_anc.has_flat_supplier (an_arch_id)
+			Result := suppliers_index.has (an_arch_id) or else attached specialisation_parent as att_anc and then att_anc.has_flat_supplier (an_arch_id)
 		end
 
 feature {ARCH_LIB_ARCHETYPE} -- Relationships
@@ -496,7 +515,7 @@ feature -- Artefacts
 					Result := differential_archetype.original_language.code_string
 				end
 			else
-				Result := Default_language
+				Result := archetype_view_language
 			end
 		end
 
@@ -611,7 +630,7 @@ feature -- Compilation
 			-- It this archetype out of date with respect to parents or suppliers?
 		do
 			-- see if parents were recompiled more recently
-			Result := is_specialised and then specialisation_ancestor.last_compile_attempt_timestamp > last_compile_attempt_timestamp
+			Result := is_specialised and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp
 
 			-- see if any supplier was recompiled more recently
 			if not Result then
@@ -652,14 +671,14 @@ feature -- Compilation
 					when Cs_unread then
 						initialise
 					when Cs_lineage_known then
-						if specialisation_ancestor.is_valid then
+						if specialisation_parent.is_valid then
 							compilation_state := Cs_ready_to_parse
 						else
 							compilation_state := cs_lineage_invalid
 							add_error (ec_compile_e1, <<parent_id.physical_id>>)
 						end
 					when cs_ready_to_parse_legacy then
-						if is_specialised and not specialisation_ancestor.is_valid then
+						if is_specialised and not specialisation_parent.is_valid then
 							compilation_state := cs_lineage_invalid
 							add_error (ec_compile_e1, <<parent_id.physical_id>>)
 						else
@@ -839,10 +858,10 @@ feature {NONE} -- Compilation
 				if is_specialised then
 					-- run the comparator over the legacy flat archetype if specialised; it will mark all
 					-- nodes with a local and also rolled up inheritance status
-					if attached specialisation_ancestor as att_sp and then att_sp.is_valid then
+					if attached specialisation_parent as att_sp and then att_sp.is_valid then
 
 						-- perform post-parse object structure finalisation
-						adl_14_engine.post_parse_151_convert (flat_arch, Current)
+						post_parse_151_convert (flat_arch)
 
 						-- perform standard post-parse processing
 						adl_14_engine.post_parse_process (flat_arch, Current)
@@ -866,7 +885,7 @@ feature {NONE} -- Compilation
 					end
 				else
 					-- perform post-parse object structure finalisation
-					adl_14_engine.post_parse_151_convert (flat_arch, Current)
+					post_parse_151_convert (flat_arch)
 
 					-- perform standard post-parse processing
 					adl_14_engine.post_parse_process (flat_arch, Current)
@@ -920,7 +939,7 @@ feature {NONE} -- Compilation
 
 				-- perform post-parse object structure finalisation
 				if version_less_than (diff_arch.adl_version, Adl_id_code_version) then
-					adl_2_engine.post_parse_151_convert (diff_arch, Current)
+					post_parse_151_convert (diff_arch)
 				end
 
 				-- perform post-parse object structure finalisation
@@ -935,6 +954,13 @@ feature {NONE} -- Compilation
 		ensure
 			Compilation_state: compilation_state = Cs_parsed or compilation_state = Cs_parse_failed
 			Archetype_state: compilation_state = Cs_parsed implies attached differential_archetype
+		end
+
+	post_parse_151_convert (an_archetype: ARCHETYPE)
+		require
+			Compilation_state: compilation_state >= {COMPILATION_STATES}.Cs_parsed
+		do
+			adl_2_engine.post_parse_151_convert (an_archetype, Current)
 		end
 
 	evaluate_suppliers
@@ -985,26 +1011,40 @@ feature {NONE} -- Compilation
 			-- Compilation state change:
 			--	validated succeeded: Cs_ready_to_validate --> Cs_validated_phase_2
 			--	validate failed: Cs_ready_to_validate --> Cs_validate_failed
+		local
+			diff_arch: ARCHETYPE
 		do
-			-- phase 1: validate archetype stand-alone
-			adl_2_engine.phase_1_validate (Current)
-			merge_errors (adl_2_engine.errors)
+			check attached differential_archetype as da then
+				diff_arch := da
+			end
 
-			if adl_2_engine.validation_passed then
-				compilation_state := Cs_validated_phase_1
-
-	 			-- phase 2: validate archetype against flat parent
-				adl_2_engine.phase_2_validate (Current)
+			if not id.physical_id.is_equal (diff_arch.archetype_id.physical_id) then
+				-- this is a serious error, because it means that the archteype and its descriptor are
+				-- out of sync, due to some uncontrolled modification on the archetype
+				add_error (ec_validate_e3, <<id.physical_id, diff_arch.archetype_id.physical_id>>)
+				compilation_state := Cs_validate_failed
+			else
+				-- phase 1: validate archetype stand-alone
+				adl_2_engine.phase_1_validate (Current)
 				merge_errors (adl_2_engine.errors)
 
 				if adl_2_engine.validation_passed then
-					compilation_state := Cs_validated_phase_2
-					differential_archetype.set_adl_version (latest_adl_version)
+					compilation_state := Cs_validated_phase_1
+
+		 			-- phase 2: validate archetype against flat parent
+					adl_2_engine.phase_2_validate (Current)
+					merge_errors (adl_2_engine.errors)
+
+					if adl_2_engine.validation_passed then
+						compilation_state := Cs_validated_phase_2
+						diff_arch.set_is_valid
+						diff_arch.set_adl_version (latest_adl_version)
+					else
+						compilation_state := Cs_validate_failed
+					end
 				else
 					compilation_state := Cs_validate_failed
 				end
-			else
-				compilation_state := Cs_validate_failed
 			end
 			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure then
@@ -1061,7 +1101,7 @@ feature -- Conversion
 			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
 			if is_specialised then
-				check attached specialisation_ancestor as parent_aca then
+				check attached specialisation_parent as parent_aca then
 					create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype)
 				end
 				check attached archetype_comparator.differential_output as da then
@@ -1264,7 +1304,7 @@ feature -- Editing
 
 			-- do diff on flat_archetype_clone
 			if is_specialised then
-				check attached specialisation_ancestor as parent_aca then
+				check attached specialisation_parent as parent_aca then
 					create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype_clone)
 				end
 				differential_archetype := archetype_comparator.differential_output
@@ -1297,6 +1337,7 @@ feature {NONE} -- Editing
 		do
 			flat_archetype_cache := Void
 			slot_id_index_cache := Void
+			flat_slot_id_index_cache := Void
 			flat_archetype_clone_cache := Void
 			if has_editor_state then
 				editor_state.on_commit
@@ -1330,7 +1371,7 @@ feature {NONE} -- Implementation
 	flatten (include_rm: BOOLEAN)
 			-- (re)generate flat-form of this archetype
 		require
-			is_valid
+			compilation_state >= Cs_validated_phase_2
 		local
 			fillers_index: HASH_TABLE [ARCHETYPE, STRING]
 			diff_arch, flattened_arch: ARCHETYPE
@@ -1341,7 +1382,7 @@ feature {NONE} -- Implementation
 
 			-- archteype flattening step
 			if is_specialised then
-				check attached specialisation_ancestor as spec_anc then
+				check attached specialisation_parent as spec_anc then
 					arch_flattener.execute (spec_anc.flat_archetype, diff_arch)
 				end
 				check attached arch_flattener.arch_flat_out as fa then
@@ -1350,6 +1391,7 @@ feature {NONE} -- Implementation
 			else
 				flattened_arch := diff_arch.deep_twin
 				flattened_arch.set_generated_flat
+				flattened_arch.set_is_valid
 			end
 
 			-- if requested, do RM flattening		
@@ -1395,51 +1437,50 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	compute_slot_id_index
-			-- generate `slot_id_index_cache' and `slot_owners_index' of client archetype descriptors
+	compute_slot_id_index (an_archetype: ARCHETYPE): like slot_fillers_index
+			-- generate a table of slot fillers and if `an_archteype' is the differential, add to `slot_owners_index' of client archetype descriptors
 		require
 			compilation_state >= Cs_validated_phase_1
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			slot_idx: like slot_fillers_index
 			ala: ARCH_LIB_ARCHETYPE
 		do
-			create slot_idx.make (0)
-			slot_id_index_cache := slot_idx
-
-			across differential_archetype.slot_index as slots_csr loop
+			create Result.make (0)
+			across an_archetype.slot_index as slots_csr loop
 				includes := slots_csr.item.includes
 				excludes := slots_csr.item.excludes
 				if not includes.is_empty and not includes.first.matches_any then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						across includes as includes_csr loop
 							if attached {STRING} includes_csr.item.regex_constraint.constraint_regex as a_regex then
-								add_slot_ids (slot_idx, current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+								add_slot_ids (Result, current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
+						add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
-					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+					add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
 							if attached {STRING} excludes_csr.item.regex_constraint.constraint_regex as a_regex then
 								across current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_package) as ids_csr loop
-									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
+									Result.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
 						end
 					end
 				else
-					add_slot_ids (slot_idx, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
+					add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
 				end
 
-				-- now post the results in the reverse indexes
-				across slot_idx.item (slots_csr.item.path) as ids_csr loop
-					ala := current_library.archetype_with_id (ids_csr.item)
-					if not attached ala.slot_owners_index or else not ala.slot_owners_index.has (id.physical_id) then
-						ala.add_slot_owner (id.physical_id)
+				-- if it's the differential, post the results in the reverse indexes
+				if an_archetype.is_differential then
+					across Result.item (slots_csr.item.path) as ids_csr loop
+						ala := current_library.archetype_with_id (ids_csr.item)
+						if not attached ala.slot_owners_index or else not ala.slot_owners_index.has (id.physical_id) then
+							ala.add_slot_owner (id.physical_id)
+						end
 					end
 				end
 			end
@@ -1457,6 +1498,8 @@ feature {NONE} -- Implementation
 
 	slot_id_index_cache: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 
+	flat_slot_id_index_cache: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
+
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)
 
@@ -1465,7 +1508,7 @@ invariant
 	Flat_archetype_attached_if_valid: is_valid implies attached flat_archetype
 	Flat_archetype_cache_is_flat: attached flat_archetype_cache as fac implies fac.is_flat
 
-	parent_existence: attached specialisation_ancestor implies is_specialised
+	parent_existence: attached specialisation_parent implies is_specialised
 	clients_index_valid: attached slot_owners_index as soi implies not soi.is_empty
 
 end

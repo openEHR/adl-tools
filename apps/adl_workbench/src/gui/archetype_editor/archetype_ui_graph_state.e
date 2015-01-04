@@ -41,7 +41,7 @@ feature -- Initialisation
 			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype_clone.terminology
 			undo_redo_chain := an_undo_redo_chain
-			if attached aca.specialisation_ancestor as par_aca then
+			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype
 			end
 		ensure

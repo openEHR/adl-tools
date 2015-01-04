@@ -11,8 +11,10 @@ class AOM_PHASE_3_VALIDATOR
 
 inherit
 	AOM_VALIDATOR
+		rename
+			initialise as aom_validator_initialise
 		redefine
-			validate, initialise
+			validate
 		end
 
 create
@@ -20,25 +22,18 @@ create
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (a_target_desc: like child_desc)
+	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_arch_flat: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		do
-			precursor (a_target_desc)
-			target_flat := child_desc.flat_archetype
+			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
+			target_flat := an_arch_flat
 		end
 
 feature -- Access
 
 	target_flat: ARCHETYPE
 			-- flat archetype being validated
-
-feature -- Status Report
-
-	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
-		do
-			Result := attached ara.flat_archetype
-		end
 
 feature -- Validation
 

@@ -654,6 +654,11 @@ feature -- Status Setting
 			is_dirty := False
 		end
 
+	set_is_valid
+		do
+			is_valid := True
+		end
+
 feature -- Validation
 
 	id_codes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
@@ -1043,50 +1048,44 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 			--	* description
 			--
 		require
-			Conformance: a_diff.is_differential and is_flat
+			Is_flat: is_flat
+			Differential_valid: a_diff.is_differential
 			Valid_specialisation_relationship: a_diff.specialisation_depth = specialisation_depth + 1
 		do
-			-- artefact_type
+			-- take on the artefact type of the differential
 			create artefact_type.make (a_diff.artefact_type.value)
 
-			-- archetype_id
+			-- identifiers
 			archetype_id := a_diff.archetype_id.deep_twin
-
-			-- parent_archetype_id
 			parent_archetype_id := a_diff.parent_archetype_id
-
-			-- uid
 			if attached a_diff.uid as att_uid then
 				uid := att_uid.deep_twin
 			end
 
-			-- translations are what is available in the child archetype
-			if attached a_diff.translations as a_diff_trans then
-				translations := a_diff_trans.deep_twin
+			-- flatten other_metadata so that child archetype values overwrite any parent values with same key;
+			-- otherwise parent key/val pairs are preserved
+			if attached a_diff.other_metadata as diff_omd then
+				across diff_omd as md_csr loop
+					put_other_metadata_value (md_csr.key, md_csr.item)
+				end
 			end
 
-			-- root node id from diff
-			definition.set_node_id (a_diff.definition.node_id.twin)
-
-			-- description, if it exists
-			if attached a_diff.description as orig_desc then
-				description := orig_desc.deep_twin
+			-- replace translations and description with differential
+			if attached a_diff.translations as diff_trans then
+				translations := diff_trans.deep_twin
 			end
+			if attached a_diff.description as diff_desc then
+				description := diff_desc.deep_twin
+			end
+
+			-- adjust languages
+			terminology.reduce_languages_to (a_diff.languages_available)
+			set_original_language (a_diff.original_language)
+
+			-- set definition root code to the one from `a_diff'
+			definition.set_root_node_id (a_diff.concept_id.twin)
 		ensure
 			Specialised: is_specialised
-		end
-
-	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
-			-- reduce languages to those in the supplied list
-		do
-			precursor (a_langs)
-			terminology.reduce_languages_to (a_langs)
-		end
-
-	set_original_language (a_lang: TERMINOLOGY_CODE)
-		do
-			precursor (a_lang)
-			terminology.set_original_language (a_lang.code_string)
 		end
 
 feature {ARCH_LIB_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
@@ -1255,6 +1254,19 @@ feature {NONE} -- Implementation
 				create Result.make (0)
 				Result.compare_objects
 			end
+		end
+
+	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
+			-- reduce languages to those in the supplied list
+		do
+			precursor (a_langs)
+			terminology.reduce_languages_to (a_langs)
+		end
+
+	set_original_language (a_lang: TERMINOLOGY_CODE)
+		do
+			precursor (a_lang)
+			terminology.set_original_language (a_lang.code_string)
 		end
 
 invariant

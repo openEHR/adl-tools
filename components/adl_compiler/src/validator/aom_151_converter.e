@@ -69,37 +69,33 @@ feature -- Definitions
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
+	make (a_target: ARCHETYPE; a_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
 		require
 			Sub_151_version: version_less_than (a_target.adl_version, Adl_id_code_version)
-			Compilation_state: ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			initialise (a_target, ara)
+			initialise (a_target, a_flat_parent, an_rm_schema)
 		ensure
-			attached arch_anc_flat as aaf implies aaf.is_flat
+			attached arch_flat_parent as aaf implies aaf.is_flat
 		end
 
-	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
+	initialise (a_target: ARCHETYPE; a_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
 			Sub_151_version: version_less_than (a_target.adl_version, Adl_id_code_version)
-			Compilation_state: ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			target := a_target
-			rm_schema := ara.rm_schema
-			if ara.is_specialised then
-				arch_anc_flat := ara.specialisation_ancestor.flat_archetype
-				arch_anc_flat.rebuild
-			else
-				arch_anc_flat := Void
+			rm_schema := an_rm_schema
+			arch_flat_parent := a_flat_parent
+			if attached arch_flat_parent as afp then
+				afp.rebuild
 			end
 			execution_state := Es_initial
 		ensure
-			attached arch_anc_flat as aaf implies aaf.is_flat
+			attached arch_flat_parent as afp implies afp.is_flat
 		end
 
 feature -- Access
@@ -107,7 +103,7 @@ feature -- Access
 	target: ARCHETYPE
 			-- differential archetype being processed
 
-	arch_anc_flat: detachable ARCHETYPE
+	arch_flat_parent: detachable ARCHETYPE
 
 	rm_schema: BMM_SCHEMA
 
@@ -356,9 +352,9 @@ feature {NONE} -- Implementation
 			 				create apa.make_from_string (old_path)
 			 				if not apa.is_phantom_path_at_level (target.specialisation_depth - 1) then
 				 				path_in_flat := apa.path_at_level (target.specialisation_depth - 1)
-				 				check attached arch_anc_flat end
-				 				if arch_anc_flat.has_path (path_in_flat) then
-				 					parent_co_in_anc_flat := arch_anc_flat.object_at_path (path_in_flat)
+				 				check attached arch_flat_parent end
+				 				if arch_flat_parent.has_path (path_in_flat) then
+				 					parent_co_in_anc_flat := arch_flat_parent.object_at_path (path_in_flat)
 
 				 					-- since we can be dealing with ADL 1.4 archetypes without reliable node ids here
 				 					-- we need to find matching node in parent via its RM type, which is a surrogate
@@ -368,7 +364,7 @@ feature {NONE} -- Implementation
 
 				 						-- check if any overrides; if so, a refined code & definition is needed
 					 					if not ctc.c_congruent_to_sans_code_check (parent_ctc) then
-					 						new_arch_terms := arch_anc_flat.terminology.term_definitions_for_code (parent_ac_code).deep_twin
+					 						new_arch_terms := arch_flat_parent.terminology.term_definitions_for_code (parent_ac_code).deep_twin
 					 						across new_arch_terms as terms_csr loop
 					 							terms_csr.item.text.append (Synthesised_specialised_string)
 					 							terms_csr.item.description.append (Synthesised_specialised_string)
@@ -467,7 +463,7 @@ feature {NONE} -- Implementation
 
 				-- update C_ATTRIBUTE differential paths. This has the effect of interpolating
 				-- nodes ids on path segments that previously had none
-				if target.is_specialised and then attached arch_anc_flat as pf then
+				if target.is_specialised and then attached arch_flat_parent as pf then
 					def_it.do_all_on_entry (agent do_rewrite_diff_path (?, ?, pf))
 				end
 			end
@@ -527,9 +523,9 @@ feature {NONE} -- Implementation
 	 				create apa.make_from_string (old_path)
 	 				if not apa.is_phantom_path_at_level (spec_depth - 1) then
 		 				path_in_flat := apa.path_at_level (spec_depth - 1)
-		 				check attached arch_anc_flat end
-		 				if arch_anc_flat.has_path (path_in_flat) then
-		 					parent_ca_in_anc_flat := arch_anc_flat.attribute_at_path (path_in_flat)
+		 				check attached arch_flat_parent end
+		 				if arch_flat_parent.has_path (path_in_flat) then
+		 					parent_ca_in_anc_flat := arch_flat_parent.attribute_at_path (path_in_flat)
 
 		 					-- we look for a single child of same RM type as in parent, typically something
 		 					-- like DV_CODED_TEXT with an internal redefinition. However, there are some other

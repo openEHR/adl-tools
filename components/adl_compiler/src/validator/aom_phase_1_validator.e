@@ -23,13 +23,6 @@ inherit
 create
 	initialise
 
-feature -- Status Report
-
-	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE): BOOLEAN
-		do
-			Result := attached ara.differential_archetype
-		end
-
 feature -- Validation
 
 	validate
@@ -39,7 +32,10 @@ feature -- Validation
 			-- basic validation
 			validate_basics
 			if passed then
-				validate_structure
+				validate_meta_data
+			end
+			if passed then
+				validate_definition_structure
 			end
 
 			-- rebuilding might not work earlier because there might be invalid
@@ -64,11 +60,15 @@ feature -- Validation
 			if passed then
 				validate_terminology_code_formats
 				validate_terminology_languages
-				validate_definition_codes
 				validate_terminology_bindings
-				validate_value_sets
-				validate_annotations
+				validate_terminology_value_sets
 				report_unused_terminology_codes
+			end
+
+			-- validation that assums terminology is valid
+			if passed then
+				validate_definition_codes
+				validate_annotations_structure
 			end
 		end
 
@@ -78,28 +78,49 @@ feature {NONE} -- Implementation
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
-			if not valid_standard_version (arch_diff_child.adl_version) then
-				add_error (ec_VARAV, <<arch_diff_child.adl_version>>)
-			elseif not valid_standard_version (arch_diff_child.rm_release) then
-				add_error (ec_VARRV, <<arch_diff_child.rm_release>>)
-			elseif not child_desc.id.physical_id.is_equal (arch_diff_child.archetype_id.physical_id) then
-				-- this is a serious error, because it means that the archteype and its descriptor are
-				-- out of sync, due to some uncontrolled modification on the archetype
-				add_warning (ec_validate_e3, <<child_desc.id.physical_id, arch_diff_child.archetype_id.physical_id>>)
-			elseif not arch_diff_child.definition.rm_type_name.is_equal (arch_diff_child.archetype_id.rm_class) then
+			if not arch_diff_child.definition.rm_type_name.is_equal (arch_diff_child.archetype_id.rm_class) then
 				add_error (ec_VARDT, <<arch_diff_child.archetype_id.rm_class, arch_diff_child.definition.rm_type_name>>)
+
 			elseif not is_valid_root_id_code (arch_diff_child.concept_id) then
 				add_error (ec_VARCN, <<arch_diff_child.concept_id, root_id_code_regex_pattern>>)
-			elseif child_desc.is_specialised then
-				if arch_diff_child.specialisation_depth /= child_desc.specialisation_ancestor.flat_archetype.specialisation_depth + 1 then
+
+			elseif arch_diff_child.is_specialised then
+				if attached arch_flat_parent as att_flat_parent then
+					if arch_diff_child.specialisation_depth /= att_flat_parent.specialisation_depth + 1 then
+						add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
+					end
+ 				else
 					add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
 				end
- 			elseif specialisation_depth_from_code (arch_diff_child.concept_id) /= 0 then
- 				add_error (ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
+
+			else -- specialised
+				if specialisation_depth_from_code (arch_diff_child.concept_id) /= 0 then
+ 					add_error (ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
+				elseif attached arch_flat_parent then
+ 					add_error (ec_VACSDpar, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
+ 				end
 			end
 		end
 
-	validate_structure
+	validate_meta_data
+			-- check meta-data items
+		do
+			if not valid_standard_version (arch_diff_child.adl_version) then
+				add_error (ec_VARAV, <<arch_diff_child.adl_version>>)
+
+			elseif not valid_standard_version (arch_diff_child.rm_release) then
+				add_error (ec_VARRV, <<arch_diff_child.rm_release>>)
+
+			else
+				if arch_diff_child.is_specialised then
+					if not arch_diff_child.languages_available.is_subset (arch_flat_parent.languages_available) then
+						add_error (ec_VALC, <<arch_diff_child.languages_available_out, arch_flat_parent.languages_available_out>>)
+					end
+				end
+			end
+		end
+
+	validate_definition_structure
 			-- validate definition structure of archetype
 		local
 			def_it: C_ITERATOR
@@ -122,16 +143,16 @@ feature {NONE} -- Implementation
 					if not arch_diff_child.is_specialised then
 						add_error (ec_VDIFV, <<ca.path>>)
 					else
-						-- if path doesn't exist in ancestor and path of immediate parent node doesn't exist in ancestor either
+						-- if path doesn't exist in flat parent or path of immediate parent node doesn't exist in flat parent either
 						-- then it's an error
 						create apa.make (ca.og_path)
-						if not apa.is_phantom_path_at_level (arch_flat_anc.specialisation_depth) then
-							flat_anc_path := apa.path_at_level (arch_flat_anc.specialisation_depth)
-							if not arch_flat_anc.has_path (flat_anc_path) then
+						if not apa.is_phantom_path_at_level (arch_flat_parent.specialisation_depth) then
+							flat_anc_path := apa.path_at_level (arch_flat_parent.specialisation_depth)
+							if not arch_flat_parent.has_path (flat_anc_path) then
 								-- allow for a terminal attribute under a parent object, but not if parent is the root ie. '/'
 								-- (since parent archetype is guaranteed to have that)
 								create og_path.make_from_string (flat_anc_path)
-								if og_path.parent_path.is_root or else not arch_flat_anc.has_path (og_path.parent_path.as_string) then
+								if og_path.parent_path.is_root or else not arch_flat_parent.has_path (og_path.parent_path.as_string) then
 									add_error (ec_VDIFP1, <<ca.path, flat_anc_path>>)
 								end
 							end
@@ -282,7 +303,7 @@ feature {NONE} -- Implementation
 					if code_spec_depth > arch_depth then
 						add_error (ec_VTSD, <<codes_csr.key>>)
 					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
-						if code_spec_depth < arch_depth and not arch_flat_anc.terminology.has_id_code (codes_csr.key) or else
+						if code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_id_code (codes_csr.key) or else
 							code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
 						then
 							add_error (ec_VATID, <<codes_csr.key, co.path>>)
@@ -302,7 +323,7 @@ feature {NONE} -- Implementation
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
 					add_error (ec_VATCD, <<code, arch_depth.out>>)
-				elseif code_spec_depth < arch_depth and not arch_flat_anc.terminology.has_code (code) or else
+				elseif code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_code (code) or else
 					code_spec_depth = arch_depth and not terminology.has_code (code)
 				then
 					add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
@@ -314,7 +335,7 @@ feature {NONE} -- Implementation
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
 					add_error (ec_VATCD, <<code, arch_depth.out>>)
-				elseif code_spec_depth < arch_depth and not arch_flat_anc.terminology.has_value_set_code (code) or else
+				elseif code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_value_set_code (code) or else
 					code_spec_depth = arch_depth and not terminology.has_value_set_code (code)
 				then
 					add_error (ec_VACDF, <<code, term_constraints_csr.item.path>>)
@@ -326,8 +347,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_value_sets
-			-- see if every code in value set definitions is in the terminology
+	validate_terminology_value_sets
+			-- see if every code in terminology value set definitions is in the terminology
 		do
 			across terminology.value_sets as vsets_csr loop
 				if not terminology.has_value_set_code (vsets_csr.item.id) then
@@ -335,7 +356,7 @@ feature {NONE} -- Implementation
 				end
 				across vsets_csr.item.members as vset_at_codes_csr loop
 					-- check if at-code exists
-					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached arch_flat_anc as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
+					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached arch_flat_parent as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
 						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
 
 					-- check if at-code duplicated
@@ -365,7 +386,7 @@ feature {NONE} -- Implementation
 				across bindings_for_terminology_csr.item as bindings_csr loop
 					arch_code := bindings_csr.key
 					if not (is_valid_code (arch_code) and then
-						(terminology.has_code (arch_code) or attached arch_flat_anc as att_fa and then att_fa.terminology.has_code (arch_code)) or else
+						(terminology.has_code (arch_code) or attached arch_flat_parent as att_fa and then att_fa.terminology.has_code (arch_code)) or else
 						arch_diff_child.has_path (arch_code))
 					then
 						add_error (ec_VTBK, <<arch_code>>)
@@ -383,7 +404,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_annotations
+	validate_annotations_structure
 			-- for each language, ensure that annotations are proper translations of each other (if present)
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
@@ -398,7 +419,7 @@ feature {NONE} -- Implementation
 
 						-- firstly see if annotation path is valid
 						if apa.is_archetype_path then
-							if not (arch_diff_child.has_path (ann_path) or else attached arch_flat_anc as att_fa and then att_fa.has_path (ann_path)) then
+							if not (arch_diff_child.has_path (ann_path) or else attached arch_flat_parent as att_fa and then att_fa.has_path (ann_path)) then
 								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
 							end
 						elseif not rm_schema.has_property_path (arch_diff_child.definition.rm_type_name, ann_path) then

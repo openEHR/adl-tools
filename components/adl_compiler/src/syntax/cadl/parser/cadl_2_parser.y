@@ -2435,7 +2435,7 @@ feature -- Initialization
 			target_descriptor := aca
 			rm_schema := aca.rm_schema
 			if target_descriptor.is_specialised then
-				flat_ancestor := target_descriptor.specialisation_ancestor.flat_archetype
+				flat_ancestor := target_descriptor.specialisation_parent.flat_archetype
  			end
 
 			source_start_line := a_source_start_line

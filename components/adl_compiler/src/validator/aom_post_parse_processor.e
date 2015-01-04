@@ -58,7 +58,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			end
 			target := a_target
 			if ara.is_specialised then
-				flat_ancestor := ara.specialisation_ancestor.flat_archetype
+				flat_ancestor := ara.specialisation_parent.flat_archetype
 			else
 				flat_ancestor := Void
 			end

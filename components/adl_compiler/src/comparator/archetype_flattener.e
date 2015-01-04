@@ -64,8 +64,6 @@ feature -- Commands
 			Parent_valid: a_flat_parent.is_valid and then a_flat_parent.is_flat
 			Child_valid: a_diff_child.is_valid and then a_diff_child.is_differential
 			Specialisation_relationship: a_diff_child.specialisation_depth = a_flat_parent.specialisation_depth + 1
-		local
-			def_it: C_ITERATOR
 		do
 			arch_diff_child := a_diff_child
 			arch_flat_parent := a_flat_parent
@@ -78,8 +76,6 @@ feature -- Commands
 
 			-- overlay various identification and meta-data elements, and adjust languages and translations
 			arch_flat_out.overlay_differential (arch_diff_child)
-			arch_flat_out.reduce_languages_to (arch_diff_child.languages_available)
-			arch_flat_out.set_original_language (arch_diff_child.original_language)
 
 			-- core definitional parts
 			expand_c_proxy_objects
@@ -87,9 +83,9 @@ feature -- Commands
 			flatten_rules
 			arch_flat_out.terminology.merge (arch_diff_child.terminology)
 
-			-- remaining meta-data
-			flatten_other_metadata
+			-- any parts that rely on paths have to be done after definition flattening: annotations
 			arch_flat_out.merge_annotations_from_resource (arch_diff_child)
+			arch_flat_out.set_is_valid
 
 			arch_flat_out.rebuild
 		ensure
@@ -104,24 +100,31 @@ feature {NONE} -- Implementation
 			-- the override can be correctly applied.
 		local
 			c_obj: C_OBJECT
-			child_paths_at_parent_level: ARRAYED_LIST [STRING]
+			child_paths_at_parent_level: ARRAYED_SET [STRING]
 			apa: ARCHETYPE_PATH_ANALYSER
 			override_path_in_flat: STRING
 			clone_performed: BOOLEAN
 			flat_use_node_paths: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
+			cco_proxy_in_flat: C_COMPLEX_OBJECT_PROXY
 		do
 			flat_use_node_paths := arch_flat_out.use_node_index
 			if not flat_use_node_paths.is_empty then
 debug ("flatten")
 	io.put_string ("--> expand_c_proxy_objects%N")
 end
+				-- make a list of paths in the flat that have corresponding paths in the child diff,
+				-- i.e. the set of 'overlay paths'.
 				create child_paths_at_parent_level.make (0)
 				child_paths_at_parent_level.compare_objects
 				across arch_diff_child.all_paths as child_paths_csr loop
-					create apa.make_from_string (child_paths_csr.item)
-					if not apa.is_phantom_path_at_level (arch_flat_parent.specialisation_depth) then
-						override_path_in_flat := apa.path_at_level (arch_flat_parent.specialisation_depth)
-						if not child_paths_at_parent_level.has (override_path_in_flat) then
+					-- Ignore any paths in the diff that have C_COMPLEX_OBJECT_PROXY
+					-- objects, since we don't do anything special about a proxy overriding a proxy
+					if arch_diff_child.has_object_path (child_paths_csr.item) and then
+						not attached {C_COMPLEX_OBJECT_PROXY} arch_diff_child.object_at_path (child_paths_csr.item)
+					then
+						create apa.make_from_string (child_paths_csr.item)
+						if not apa.is_phantom_path_at_level (arch_flat_parent.specialisation_depth) then
+							override_path_in_flat := apa.path_at_level (arch_flat_parent.specialisation_depth)
 							child_paths_at_parent_level.extend (override_path_in_flat)
 						end
 					end
@@ -133,13 +136,14 @@ end
 				-- so that the override will work properly.
 				across flat_use_node_paths as flat_use_node_path_csr loop
 					across flat_use_node_path_csr.item as flat_use_nodes_for_path_csr loop
+						cco_proxy_in_flat := flat_use_nodes_for_path_csr.item
 debug ("flatten")
 	io.put_string ("%T...checking flat parent use_node path " +
 	flat_use_nodes_for_path_csr.item.path + " against child path map%N")
 end
 						clone_performed := False
 						from child_paths_at_parent_level.start until child_paths_at_parent_level.off or clone_performed loop
-							if child_paths_at_parent_level.item.starts_with (flat_use_nodes_for_path_csr.item.path) then
+							if child_paths_at_parent_level.item.starts_with (cco_proxy_in_flat.path) then
 debug ("flatten")
 	io.put_string ("%T...cloning node at " +
 	flat_use_node_path_csr.key + " and replacing at " +
@@ -147,16 +151,17 @@ debug ("flatten")
 end
 								c_obj := arch_flat_out.object_at_path (flat_use_node_path_csr.key).safe_deep_twin
 
-								-- override target object's node_id in copy if it's a sibling target
-								if flat_use_nodes_for_path_csr.item.has_sibling_target then
-									c_obj.set_node_id (flat_use_nodes_for_path_csr.item.node_id)
+								-- override target object's node_id in copy with the node id of the proxy source node,
+								-- if the reference points to a sibling of the proxy object
+								if cco_proxy_in_flat.has_sibling_target then
+									c_obj.set_root_node_id (cco_proxy_in_flat.node_id)
 								end
 
 								-- override occurrences of the ref target object with object proxy occs, if set
-								if attached flat_use_nodes_for_path_csr.item.occurrences as att_occ then
+								if attached cco_proxy_in_flat.occurrences as att_occ then
 									c_obj.set_occurrences (att_occ.deep_twin)
 								end
-								flat_use_nodes_for_path_csr.item.parent.replace_child_by_id (c_obj, flat_use_nodes_for_path_csr.item.node_id)
+								cco_proxy_in_flat.parent.replace_child_by_id (c_obj, cco_proxy_in_flat.node_id)
 								clone_performed := True
 							end
 							child_paths_at_parent_level.forth
@@ -167,17 +172,6 @@ end
 debug ("flatten")
 	io.put_string ("<-- expand_c_proxy_objects%N")
 end
-			end
-		end
-
-	flatten_other_metadata
-			-- flatten other_metadata so that child archetype values overwrite any parent values with same key;
-			-- otherwise parent key/val pairs are preserved
-		do
-			if attached arch_diff_child.other_metadata as child_omd then
-				across child_omd as child_omd_csr loop
-					arch_flat_out.put_other_metadata_value (child_omd_csr.key, child_omd_csr.item)
-				end
 			end
 		end
 
@@ -198,7 +192,7 @@ end
 
 			-- do all nodes
 			create def_it.make (arch_diff_child.definition)
-			def_it.do_until_surface (agent overlay_node, agent overlay_test)
+			def_it.do_until_surface (agent overlay_ac_node, agent overlay_ac_node_test)
 
 			-- do root node
 			arch_flat_out.definition.overlay_differential_root (arch_diff_child.definition)
@@ -239,15 +233,14 @@ end
 			process_tuple_objects
 		end
 
-	overlay_node (ac_diff_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- perform overlays of C_ATTRIBUTE node from differential archetype on corresponding node in
-			-- flat parent.
+	overlay_ac_node (ac_diff_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- perform overlays of C_ATTRIBUTE node from differential archetype on corresponding node in flat parent.
 		require
 			attached arch_flat_out
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_output: STRING
-			ca_output, ca_in_anc_flat: C_ATTRIBUTE
+			ca_output, ca_in_flat_parent: C_ATTRIBUTE
 			co_copy: C_OBJECT
 		do
 			if attached {C_ATTRIBUTE} ac_diff_node as ca_diff then
@@ -261,11 +254,11 @@ end
 					-- --------------------- STEP 2: perform any differential path node_id overrides -------------------------
 					--  this supports the ability of a differential path to contain an override of an id code in it.
 					if ca_diff.has_differential_path then
-						-- there must be id-code overrides in the differential path; we need to overlay these
+						-- there must be id-code overrides in some differential path in the path; we need to overlay these
 						-- into the output archetype structure
 						overlay_differential_path (ac_diff_node.og_path)
 					else
-						raise ("overlay_node loction #1 - can't find overlay location for C_ATTRIBUTE at " + ca_path_in_output + " %N")
+						raise ("overlay_ac_node loction #1 - can't find overlay location for C_ATTRIBUTE at " + ca_path_in_output + " %N")
 					end
 				end
 				ca_output := arch_flat_out.attribute_at_path (ca_path_in_output)
@@ -273,7 +266,7 @@ end
 				-- figure out the corresponding C_ATTRIBUTE node in the flat ancestor
 				create apa.make (ca_diff.og_path)
 				check attached {C_ATTRIBUTE} arch_flat_parent.attribute_at_path (apa.path_at_level (arch_flat_parent.specialisation_depth)) as att_ca then
-					ca_in_anc_flat := att_ca
+					ca_in_flat_parent := att_ca
 				end
 
 				-- --------------------- STEP 3: perform C_ATTRIBUTE overrides -------------------------
@@ -315,33 +308,35 @@ end
 						end
 						-- for container attributes in the source archetype, we build a merge list to properly deal with 'after'
 						-- and 'before' keywords in differential archetype
-						build_merge_list (ca_output, ca_diff)
-						across merge_list as merge_list_csr loop
-							do_merge (ca_output, ca_diff, ca_in_anc_flat, merge_list_csr.item)
+						build_ca_merge_list (ca_output, ca_diff)
+						across ca_merge_list as merge_list_csr loop
+							do_ca_merge (ca_output, ca_diff, ca_in_flat_parent, merge_list_csr.item)
 						end
 
 					-- if a single-valued attribute then do a merge of alternates
 					else
 						-- handle C_PRIMITVE_OBJECTs here
 						if attached {C_PRIMITIVE_OBJECT} ca_diff.first_child as cpo and then attached {C_COMPLEX_OBJECT} ca_output.first_child then
-							ca_output.replace_child_by_id (ca_diff.first_child, ca_output.first_child.node_id)
+							ca_output.replace_child_by_id (ca_diff.first_child.safe_deep_twin, ca_output.first_child.node_id)
 						else
 							-- do the merge with a synthesised merge descriptor that just says merge everything to the end
-							do_merge (ca_output, ca_diff, ca_in_anc_flat, [1, ca_diff.child_count, Void, False])
+							do_ca_merge (ca_output, ca_diff, ca_in_flat_parent, [1, ca_diff.child_count, Void, False])
 						end
 					end
 				end
 			end
 		end
 
-	overlay_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+	overlay_ac_node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
 			-- return True if a conformant path of a_c_node in the differential archetype is found within the flat
 			-- parent archetype - i.e. a_c_node is inherited or redefined from parent (but not new)
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			create apa.make (a_c_node.og_path)
-			Result := arch_flat_parent.has_path (apa.path_at_level (arch_flat_parent.specialisation_depth))
+			if not apa.is_phantom_path_at_level (arch_flat_parent.specialisation_depth) then
+				Result := arch_flat_parent.has_path (apa.path_at_level (arch_flat_parent.specialisation_depth))
+			end
 		end
 
 	overlay_differential_path (an_og_diff_path: OG_PATH)
@@ -354,19 +349,24 @@ end
 			ca_csr: C_ATTRIBUTE
 			cco_csr: C_COMPLEX_OBJECT
 			set_spec_sts: BOOLEAN
+			co_diff_node_id: STRING
 		do
 			cco_csr := arch_flat_out.definition
 			across an_og_diff_path as og_path_csr loop
 				-- navigate to C_ATTRIBUTE
 				ca_csr := cco_csr.attribute_with_name (og_path_csr.item.attr_name)
+				co_diff_node_id := og_path_csr.item.object_id
 
 				-- navigate to C_COMPLEX_OBJECT & adjust id if needed:
 				if og_path_csr.item.is_addressable then
 					set_spec_sts := False
-					if specialisation_depth_from_code (og_path_csr.item.object_id) = arch_diff_child.specialisation_depth then
-						ca_csr.replace_node_id (code_at_level (og_path_csr.item.object_id, arch_flat_parent.specialisation_depth), og_path_csr.item.object_id)
+					if specialisation_depth_from_code (co_diff_node_id) = arch_diff_child.specialisation_depth and
+						not ca_csr.has_child_with_id (co_diff_node_id)
+					then
+						ca_csr.replace_node_id (code_at_level (co_diff_node_id, arch_flat_parent.specialisation_depth), co_diff_node_id)
+						set_spec_sts := True
 					end
-					check attached {C_COMPLEX_OBJECT} ca_csr.child_with_id (og_path_csr.item.object_id) as att_cco then
+					check attached {C_COMPLEX_OBJECT} ca_csr.child_with_id (co_diff_node_id) as att_cco then
 						cco_csr := att_cco
 						if set_spec_sts then
 							cco_csr.set_specialisation_status_redefined
@@ -382,11 +382,11 @@ end
 			arch_flat_out.definition.has_path (an_og_diff_path.as_string)
 		end
 
-	build_merge_list (ca_output, ca_diff: C_ATTRIBUTE)
+	build_ca_merge_list (ca_output, ca_diff: C_ATTRIBUTE)
 			-- build merge list for merging objects in container attribute `ca_diff' into the corresponding
 			-- container attribute `ca_output' in the output structure, using ordering information in source
 			-- attribute objects, and replacing or inserting as appropriate.
-			-- The merge list is used like a set of transactions to be processed in the routine `do_merge'
+			-- The merge list is used like a set of transactions to be processed in the routine `do_ca_merge'
 		require
 			Non_empty_attribute: ca_output.has_children
 		local
@@ -396,7 +396,7 @@ end
 			sibling_anchor: SIBLING_ORDER
 			co_list: ARRAYED_LIST [C_OBJECT]
 		do
-			merge_list.wipe_out
+			ca_merge_list.wipe_out
 			start_pos := 1
 			co_output_csr := ca_output.first_child
 			co_list := ca_diff.children
@@ -467,8 +467,8 @@ end
 			end
 		end
 
-	do_merge (ca_output, ca_diff, ca_anc: C_ATTRIBUTE; merge_desc: like merge_list.item)
-			-- merge `ca_diff's children into `ca_output'. `ca_anc' is the corresponding flat ancestor node,
+	do_ca_merge (ca_output, ca_diff, ca_flat_parent: C_ATTRIBUTE; merge_desc: like ca_merge_list.item)
+			-- merge `ca_diff's children into `ca_output'. `ca_flat_parent' is the corresponding node in the flat parent
 			-- needed where cloning occurs
 		local
 			co_child_diff, new_obj: C_OBJECT
@@ -482,82 +482,11 @@ end
 			from i := merge_desc.start_pos until i > merge_desc.end_pos loop
 				co_child_diff := ca_diff.children.i_th (i)
 				co_child_spec_sts := specialisation_status_from_code (co_child_diff.node_id, arch_diff_child.specialisation_depth)
-				node_id_in_flat_anc := code_at_level (co_child_diff.node_id, arch_flat_parent.specialisation_depth)
 				co_override_target := Void
 
-				-- ================== Direct REPLACE: child node id is same as that of object in ancestor  ================
-				if ca_output.has_child_with_id (co_child_diff.node_id) then
-					co_override_target := ca_output.child_with_id (co_child_diff.node_id)
-
-					-- ------ REMOVE: delete node in output --------
-					if co_child_diff.is_prohibited then
-						-- capture insert point before doing deletion
-						check attached co_override_target end
-						if attached ca_output.child_after (co_override_target) as att_co then
-							co_output_insert_pos := att_co
-						elseif attached ca_output.child_before (co_override_target) as att_co then
-							co_output_insert_pos := att_co
-						end
-						ca_output.remove_child (co_override_target)
-
-					else
-						overlay_child (ca_output, co_override_target, co_child_diff)
-					end
-
-				-- ===================== Logical REDEFINE: child node id is specialised in this level ========================
-				elseif ca_anc.has_child_with_id (node_id_in_flat_anc) then
-
-					clone_needed := False
-
-					-- REDEFINE: node with parent node_id still available in flat output
-					if ca_output.has_child_with_id (node_id_in_flat_anc) then
-						co_override_candidate := ca_output.child_with_id (node_id_in_flat_anc)
-
-						-- --------- REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler --------
-						if attached {C_ARCHETYPE_ROOT} co_child_diff and attached {ARCHETYPE_SLOT} co_override_candidate as att_slot then
-							new_obj := co_child_diff.safe_deep_twin
-							new_obj.set_specialisation_status_redefined
-							ca_output.put_child_left (new_obj, att_slot)
-						else
-							co_override_target := co_override_candidate
-
-							-- determine if clone needed: we don't clone if:
-							--	* override target has max occurrences = 1 set OR
-							--	* child diff obj being processed is sole child of its parent, and has max occurrences = 1
-							clone_needed := not (co_override_target.is_occurrences_upper_one or
-								ca_diff.aggregate_occurrences_upper_is_one (node_id_in_flat_anc))
-						end
-
-					-- REDEFINE: node with parent node_id only available in flat ancestor - this means that in the flat output,
-					-- an object with the parent node id has already been overridden - cloning is unavoidable
-					else
-						clone_needed := True
-					end
-
-					if clone_needed then
-						co_override_target := ca_anc.child_with_id (node_id_in_flat_anc).safe_deep_twin
-						co_override_target.set_node_id (co_child_diff.node_id)
-						co_override_target.set_subtree_specialisation_status (ss_inherited)
-						co_override_target.set_specialisation_status_redefined
-						if attached co_output_insert_pos as att_co_ins_pos then
-							if merge_desc.before_flag then
-								ca_output.put_child_left (co_override_target, att_co_ins_pos)
-							else
-								ca_output.put_child_right (co_override_target, att_co_ins_pos)
-								co_output_insert_pos := co_override_target
-							end
-						else
-							ca_output.put_child (co_override_target)
-						end
-					end
-
-					if attached co_override_target as att_tgt then
-						overlay_child (ca_output, att_tgt, co_child_diff)
-					end
-
-				-- ------- ADD new: detect via node id --------
-				-- if node_id indicates it is is to be added new in this level, e.g. something like id0.3 in level 2, add the node
-				elseif co_child_spec_sts = ss_added then
+				if co_child_spec_sts = ss_added then
+					-- ===================== ADD new: detect via node id =====================
+					-- if node_id indicates it is is to be added new in this level, e.g. something like id0.3 in level 2, add the node
 					new_obj := co_child_diff.safe_deep_twin
 					new_obj.deep_set_specialisation_status_added
 					if attached co_output_insert_pos as att_co_ins_pos then
@@ -572,7 +501,91 @@ end
 					end
 
 				else
-					raise ("do_merge location #1 - child archetype node with path " + co_child_diff.path + " can't be flattened")
+					node_id_in_flat_anc := code_at_level (co_child_diff.node_id, arch_flat_parent.specialisation_depth)
+
+					-- ================== Direct REPLACE: child node id is same as that of object in ancestor  ================
+					if ca_output.has_child_with_id (co_child_diff.node_id) then
+						co_override_target := ca_output.child_with_id (co_child_diff.node_id)
+
+						-- ------ REMOVE: delete node in output --------
+						if co_child_diff.is_prohibited then
+							-- capture insert point before doing deletion
+							check attached co_override_target end
+							if attached ca_output.child_after (co_override_target) as att_co then
+								co_output_insert_pos := att_co
+							elseif attached ca_output.child_before (co_override_target) as att_co then
+								co_output_insert_pos := att_co
+							end
+							ca_output.remove_child (co_override_target)
+
+						else
+							overlay_co_node (ca_output, co_override_target, co_child_diff)
+
+							-- we reset the insert pos marker object in case the above call caused a new object creation
+							co_output_insert_pos := ca_output.child_with_id (co_child_diff.node_id)
+						end
+
+					-- ===================== Logical REDEFINE: child node id is specialised in this level ========================
+					elseif ca_flat_parent.has_child_with_id (node_id_in_flat_anc) then
+
+						clone_needed := False
+
+						-- REDEFINE: node with parent node_id still available in flat output
+						if ca_output.has_child_with_id (node_id_in_flat_anc) then
+							co_override_candidate := ca_output.child_with_id (node_id_in_flat_anc)
+
+							-- --------- REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler --------
+							if attached {C_ARCHETYPE_ROOT} co_child_diff and attached {ARCHETYPE_SLOT} co_override_candidate as att_slot then
+								new_obj := co_child_diff.safe_deep_twin
+								new_obj.set_specialisation_status_redefined
+								ca_output.put_child_left (new_obj, att_slot)
+							else
+								co_override_target := co_override_candidate
+
+								-- determine if clone needed: we don't clone if:
+								--	* override target has max occurrences = 1 set OR
+								--	* child diff obj being processed is sole child of its parent, and has max occurrences = 1
+								clone_needed := not (co_override_target.is_occurrences_upper_one or
+									ca_diff.aggregate_occurrences_upper_is_one (node_id_in_flat_anc))
+							end
+
+						-- REDEFINE: node with parent node_id only available in flat ancestor - this means that in the flat output,
+						-- an object with the parent node id has already been overridden - cloning is unavoidable
+						else
+							clone_needed := True
+						end
+
+						if clone_needed then
+							co_override_target := ca_flat_parent.child_with_id (node_id_in_flat_anc).safe_deep_twin
+							co_override_target.set_root_node_id (co_child_diff.node_id)
+							co_override_target.set_subtree_specialisation_status (ss_inherited)
+							co_override_target.set_specialisation_status_redefined
+							if attached co_output_insert_pos as att_co_ins_pos then
+								if merge_desc.before_flag then
+									ca_output.put_child_left (co_override_target, att_co_ins_pos)
+								else
+									ca_output.put_child_right (co_override_target, att_co_ins_pos)
+									co_output_insert_pos := co_override_target
+								end
+							else
+								ca_output.put_child (co_override_target)
+							end
+						else
+							check attached co_override_target.parent as ca then
+								ca.replace_node_id (node_id_in_flat_anc, co_child_diff.node_id)
+							end
+						end
+
+						if attached co_override_target as att_tgt then
+							overlay_co_node (ca_output, att_tgt, co_child_diff)
+
+							-- we reset the insert pos marker object in case the above call caused a new object creation
+							co_output_insert_pos := ca_output.child_with_id (co_child_diff.node_id)
+						end
+
+					else
+						raise ("do_ca_merge location #1 - child archetype node with path " + co_child_diff.path + " can't be flattened")
+					end
 				end
 
 				-- -------- Deal with C_COMPLEX_OBJECT sub-structure in override cases ------------						
@@ -590,8 +603,11 @@ end
 			end
 		end
 
-	overlay_child (ca_output: C_ATTRIBUTE; co_override_target, co_child_diff: C_OBJECT)
+	overlay_co_node (ca_output: C_ATTRIBUTE; co_override_target, co_child_diff: C_OBJECT)
 			-- perform a node-level overlay with a target output node and a source child node
+			-- This routine might create a new clone from the `co_child_diff' if `co_override_target'
+			-- has any_allowed (no children). If this happens, it means the replaced object in the
+			-- output won't be the insert position any more.
 		require
 			Target_is_child_of_attr_node: ca_output.has_child (co_override_target)
 			Nodes_have_same_id: co_override_target.node_id.same_string (co_child_diff.node_id)
@@ -599,12 +615,12 @@ end
 			new_obj: C_OBJECT
 		do
 			-- ------ REPLACE C_COMPLEX_OBJECT with any_allowed - complete replace, regardless of AOM subtype -----
+			if attached {C_COMPLEX_OBJECT} co_override_target as att_cco and then att_cco.any_allowed and then not attached {C_COMPLEX_OBJECT} co_child_diff
 			-- ------ REPLACE C_PRIMITIVE_OBJECT - complete replace, regardless of AOM subtype -----
-			if attached {C_COMPLEX_OBJECT} co_override_target as att_cco and then att_cco.any_allowed and then not attached {C_COMPLEX_OBJECT} co_child_diff or
-				attached {C_PRIMITIVE_OBJECT} co_child_diff
+				or else attached {C_PRIMITIVE_OBJECT} co_child_diff
 			then
 				new_obj := co_child_diff.safe_deep_twin
-				ca_output.replace_child_by_id (new_obj, co_child_diff.node_id)
+				ca_output.replace_child_by_id (new_obj, new_obj.node_id)
 				new_obj.set_specialisation_status_redefined
 
 			-- ------ Any other REPLACE: just do local node override ---------
@@ -613,7 +629,7 @@ end
 			end
 		end
 
-	merge_list: ARRAYED_LIST [TUPLE [start_pos: INTEGER; end_pos: INTEGER; co_output_insert_pos: detachable C_OBJECT; before_flag: BOOLEAN]]
+	ca_merge_list: ARRAYED_LIST [TUPLE [start_pos: INTEGER; end_pos: INTEGER; co_output_insert_pos: detachable C_OBJECT; before_flag: BOOLEAN]]
 			-- merge descriptor list of TUPLEs of the following structure:
 			--	start pos in source list: INTEGER
 			--	end pos in source list: INTEGER
@@ -626,14 +642,14 @@ end
 	add_merge_desc (src_start_pos, src_end_pos: INTEGER; tgt_co_output_insert_pos: C_OBJECT; before_flag: BOOLEAN)
 			-- create a merge tuple for use in later merging
 		local
-			merge_desc: like merge_list.item
+			merge_desc: like ca_merge_list.item
 		do
 			create merge_desc
 			merge_desc.start_pos := src_start_pos
 			merge_desc.end_pos := src_end_pos
 			merge_desc.co_output_insert_pos := tgt_co_output_insert_pos
 			merge_desc.before_flag := before_flag
-			merge_list.extend (merge_desc)
+			ca_merge_list.extend (merge_desc)
 			debug ("flatten")
 				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_co_output_insert_pos.node_id + ", " + before_flag.out + "%N")
 			end

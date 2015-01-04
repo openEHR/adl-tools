@@ -278,12 +278,17 @@ feature -- Validation
 			Sub_151_version: version_less_than (an_arch.adl_version, Adl_id_code_version)
 		local
 			proc: AOM_151_CONVERTER
+			flat_parent: detachable ARCHETYPE
 		do
+			if attached aca.specialisation_parent as spec_parent then
+				flat_parent := spec_parent.flat_archetype
+ 			end
+
 			if attached post_parse_151_converter as pcp then
 				proc := pcp
-				proc.initialise (an_arch, aca)
+				proc.initialise (an_arch, flat_parent, aca.rm_schema)
 			else
-				create proc.make (an_arch, aca)
+				create proc.make (an_arch, flat_parent, aca.rm_schema)
 				post_parse_151_converter := proc
 			end
 			proc.execute
@@ -306,13 +311,22 @@ feature -- Validation
 	phase_1_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_PHASE_1_VALIDATOR
+			flat_parent: detachable ARCHETYPE
+			diff_child: ARCHETYPE
 		do
 			validation_passed := False
+			check attached aca.differential_archetype as da then
+				diff_child := da
+			end
+			if attached aca.specialisation_parent as spec_parent then
+				flat_parent := spec_parent.flat_archetype
+ 			end
+
 			if attached phase_1_validator as pv then
 				proc := pv
-				proc.initialise (aca)
+				proc.initialise (diff_child, flat_parent, aca.rm_schema)
 			else
-				create proc.initialise (aca)
+				create proc.initialise (diff_child, flat_parent, aca.rm_schema)
 				phase_1_validator := proc
 			end
 			proc.validate
@@ -323,13 +337,24 @@ feature -- Validation
 	phase_2_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_PHASE_2_VALIDATOR
+			flat_parent: detachable ARCHETYPE
+			diff_child: ARCHETYPE
+			flat_parent_slot_fillers_index: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
 			validation_passed := False
+			check attached aca.differential_archetype as da then
+				diff_child := da
+			end
+			if attached aca.specialisation_parent as spec_parent then
+				flat_parent := spec_parent.flat_archetype
+				flat_parent_slot_fillers_index := spec_parent.flat_slot_fillers_index
+ 			end
+
 			if attached phase_2_validator as pv then
 				proc := pv
-				proc.initialise (aca)
+				proc.initialise (diff_child, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
 			else
-				create proc.initialise (aca)
+				create proc.initialise (diff_child, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
 				phase_2_validator := proc
 			end
 			proc.validate
@@ -340,13 +365,22 @@ feature -- Validation
 	phase_3_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_PHASE_3_VALIDATOR
+			flat_parent: detachable ARCHETYPE
+			diff_child: ARCHETYPE
 		do
 			validation_passed := False
+			check attached aca.differential_archetype as da then
+				diff_child := da
+			end
+			if attached aca.specialisation_parent as spec_parent then
+				flat_parent := spec_parent.flat_archetype
+ 			end
+
 			if attached phase_3_validator as pv then
 				proc := pv
-				proc.initialise (aca)
+				proc.initialise (diff_child, flat_parent, aca.flat_archetype, aca.rm_schema)
 			else
-				create proc.initialise (aca)
+				create proc.initialise (diff_child, flat_parent, aca.flat_archetype, aca.rm_schema)
 				phase_3_validator := proc
 			end
 			proc.validate

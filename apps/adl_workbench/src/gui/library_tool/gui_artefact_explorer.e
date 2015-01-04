@@ -315,7 +315,7 @@ feature {NONE} -- Implementation
 				if question_dialog.selected_button.same_string (get_text (ec_yes_response)) then
 					src.remove_artefact (aca)
 					aca.remove_file
-					check attached aca.specialisation_ancestor as att_anc then
+					check attached aca.specialisation_parent as att_anc then
 						tool_agents.update_explorers_and_select_agent.call ([att_anc])
 					end
 				end

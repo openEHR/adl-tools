@@ -271,20 +271,6 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_151_CONVERTER
-		do
-			if attached post_parse_151_converter as pcp then
-				proc := pcp
-				proc.initialise (an_arch, aca)
-			else
-				create proc.make (an_arch, aca)
-				post_parse_151_converter := proc
-			end
-			proc.execute
-		end
-
 	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_POST_PARSE_PROCESSOR
@@ -375,12 +361,6 @@ feature {NONE} -- Implementation
 	terminology_context: ODIN_ENGINE
 
 	annotations_context: ODIN_ENGINE
-
-	post_parse_151_converter: detachable AOM_151_CONVERTER
-		note
-			option: stable
-		attribute
-		end
 
 	post_parse_processor: detachable AOM_POST_PARSE_PROCESSOR
 		note

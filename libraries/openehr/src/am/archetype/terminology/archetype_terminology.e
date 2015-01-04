@@ -244,7 +244,7 @@ feature -- Access (computed)
 		end
 
 	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
-			-- true if there is an extract from terminology `a_terminology'
+			-- obtain term for `a_code' in terminology extract `a_terminology'
 		require
 			Terminology_valid: has_terminology_extract (a_terminology)
 			Term_code_valid: has_terminology_extract_code (a_terminology, a_code)
@@ -890,23 +890,6 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 			end
 		end
 
-	sync_stored_properties
-			-- update various stored properties to correspond to primary stored properties
-		local
-			code: STRING
-		do
-			-- populate id code list & set codes in ARCHETYPE_TERM objects
-			clear_cache
-			across index_term_definitions as term_defs_csr loop
-				code := term_defs_csr.key
-				term_defs_csr.item.set_code (code)
-				-- code might not be valid if just read this terminology in from a file
-				if is_valid_code (code) then
-					update_highest_codes (code)
-				end
-			end
-		end
-
 feature {ARCHETYPE} -- Modification
 
 	set_new_id_code_agt (an_agt: like new_id_code_agt)
@@ -1050,12 +1033,13 @@ feature {NONE} -- Flattening
 			not has_term_binding (a_terminology_id, a_child_code)
 		local
 			code_in_parent: STRING
-			spec_depth: INTEGER
+			spec_depth, code_anc_spec_level: INTEGER
 		do
 			-- determine for parent code that might exist in this flat terminology
 			if is_refined_code (a_child_code) then
 				code_in_parent := a_child_code
-				from spec_depth := specialisation_depth until spec_depth = 0 or has_term_binding (a_terminology_id, code_in_parent) loop
+				code_anc_spec_level := code_ancestor_level (code_in_parent)
+				from spec_depth := specialisation_depth until spec_depth <= code_anc_spec_level or has_term_binding (a_terminology_id, code_in_parent) loop
 					spec_depth := spec_depth - 1
 					code_in_parent := code_at_level (a_child_code, spec_depth)
 				end
@@ -1072,13 +1056,14 @@ feature {NONE} -- Flattening
 			-- value set bound to a parent code of ac-code a_value_set.id
 		local
 			code_in_parent: STRING
-			spec_depth: INTEGER
+			spec_depth, code_anc_spec_level: INTEGER
 			parent_code_set: detachable ARRAYED_LIST [STRING]
 		do
 			-- determine for parent code that might exist in this flat terminology
 			if is_refined_code (a_value_set.id) then
 				code_in_parent := a_value_set.id
-				from spec_depth := specialisation_depth until spec_depth = 0 or value_sets.has (code_in_parent) loop
+				code_anc_spec_level := code_ancestor_level (code_in_parent)
+				from spec_depth := specialisation_depth until spec_depth <= code_anc_spec_level or value_sets.has (code_in_parent) loop
 					spec_depth := spec_depth - 1
 					code_in_parent := code_at_level (a_value_set.id, spec_depth)
 				end
@@ -1166,6 +1151,14 @@ feature -- Finalisation
 					vset_csr.item.correct_members
 				end
 			end
+
+			-- set term codes in all languages
+			across term_definitions as term_defs_for_lang_csr loop
+				across term_defs_for_lang_csr.item as term_defs_csr loop
+					term_defs_csr.item.set_code (term_defs_csr.key)
+				end
+			end
+
 			sync_stored_properties
 		end
 
@@ -1183,6 +1176,24 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 feature {NONE} -- Implementation
+
+	sync_stored_properties
+			-- update various stored properties to correspond to primary stored properties
+		local
+			code: STRING
+		do
+			-- populate id code list & set codes in ARCHETYPE_TERM objects
+			clear_cache
+
+			-- set codes in terms under original language and reset highest_codes
+			across index_term_definitions as term_defs_csr loop
+				code := term_defs_csr.key
+				-- code might not be valid if just read this terminology in from a file
+				if is_valid_code (code) then
+					update_highest_codes (code)
+				end
+			end
+		end
 
 	clear_cache
 		do

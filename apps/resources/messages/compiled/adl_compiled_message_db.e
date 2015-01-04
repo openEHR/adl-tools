@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (897)
+			create message_table.make (898)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -146,6 +146,11 @@ feature -- Initialisation
 			message_table.put ("Syntax error: invalid value set with terminology $1 at path $2: no codes supplied", ec_STVSI)
 			message_table.put ("Syntax error: assumed value code $1 not found in code list of terminology constraint at path $2", ec_STCAC)
 			message_table.put ("Syntax error: terminology not specified", ec_STCNT)
+			message_table.put ("archetype id type $1 does not match type $2 in definition section", ec_VARDT)
+			message_table.put ("specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2", ec_VACSD)
+			message_table.put ("specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype", ec_VACSDtop)
+			message_table.put ("specialisation depth of concept code $1 not consistent with declaration of specialisation parent", ec_VACSDpar)
+			message_table.put ("archetype definition has no id-code", ec_VACCD)
 			message_table.put ("invalid adl_version $1; must be a valid 3-part numeric version identifier", ec_VARAV)
 			message_table.put ("invalid rm_release $1; must be a valid 3-part numeric version identifier", ec_VARRV)
 			message_table.put ("invalid root object node_id (concept code) $1; should follow regex pattern $2", ec_VARCN)
@@ -163,10 +168,6 @@ feature -- Initialisation
 			message_table.put ("Supplier loop detected: $1 has itself as supplier at path $2", ec_VSUP)
 			message_table.put ("translations key '$1' does not match translation item language '$2'", ec_VTRLA)
 			message_table.put ("resource detail key '$1' does not match resource detail item language '$2'", ec_VRDLA)
-			message_table.put ("archetype id type $1 does not match type $2 in definition section", ec_VARDT)
-			message_table.put ("specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2", ec_VACSD)
-			message_table.put ("specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype", ec_VACSDtop)
-			message_table.put ("archetype definition has no id-code", ec_VACCD)
 			message_table.put ("value code $1 used as assumed value in definition at path $2 not defined in value set for $3", ec_VATDA)
 			message_table.put ("term binding key $1 must either be valid term code or valid path in flat archetype", ec_VTBK)
 			message_table.put ("term binding key $1 must be a valid value-set id code", ec_VCBK)
