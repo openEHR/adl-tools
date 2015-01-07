@@ -231,9 +231,9 @@ end
 		do
 			inspect yy_sc
 when 0 then
---|#line 0 "units_scanner.l"
+--|#line 98 "units_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 98")
 end
 terminate
 			else
@@ -244,6 +244,7 @@ terminate
 feature {NONE} -- Table templates
 
 	yy_nxt_template: SPECIAL [INTEGER]
+			-- Template for `yy_nxt'
 		once
 			Result := yy_fixed_array (<<
 			    0,    4,    5,    6,    7,    8,    9,    4,   10,   11,
@@ -254,6 +255,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_chk_template: SPECIAL [INTEGER]
+			-- Template for `yy_chk'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -264,6 +266,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_base_template: SPECIAL [INTEGER]
+			-- Template for `yy_base'
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   31,   32,   32,   27,   32,   32,   32,
@@ -272,6 +275,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_def_template: SPECIAL [INTEGER]
+			-- Template for `yy_def'
 		once
 			Result := yy_fixed_array (<<
 			    0,   28,    1,   28,   28,   28,   28,   28,   28,   28,
@@ -280,6 +284,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_ec_template: SPECIAL [INTEGER]
+			-- Template for `yy_ec'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -313,6 +318,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_meta_template: SPECIAL [INTEGER]
+			-- Template for `yy_meta'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -320,6 +326,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_accept_template: SPECIAL [INTEGER]
+			-- Template for `yy_accept'
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   18,   16,   17,   12,    6,    7,    1,

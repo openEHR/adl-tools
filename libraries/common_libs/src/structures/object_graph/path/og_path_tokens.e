@@ -3,7 +3,7 @@ note
 	description: "Parser token codes"
 	generator: "geyacc version 3.9"
 
-class OG_PATH_TOKENS
+deferred class OG_PATH_TOKENS
 
 inherit
 

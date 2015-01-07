@@ -270,7 +270,7 @@ a[ct][0-9.]+ {
 		}
 
 ----------/* archetype id */ -------------------------------------------------
-{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
+{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[0-9]+ {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}

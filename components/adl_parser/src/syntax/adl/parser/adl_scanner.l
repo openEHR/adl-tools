@@ -224,7 +224,8 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
-	\n+				in_lineno := in_lineno + text_count
+
+	\n+			in_lineno := in_lineno + text_count
 
 	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
@@ -238,7 +239,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 }
 
 <IN_ASSERTION_SECTION>{
-	^[ \t]+[^\n]*\n {			-- match TAB whitsepace <anything> \n
+	^[ \t]+[^\n]*\n {			-- match TAB whitespace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
@@ -269,7 +270,7 @@ DOTTED_NUMERIC_STR	[0-9]+\.[0-9]+(\.[0-9]+)*
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[1-9][0-9]* {
+({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\+u|\+)[0-9]+)?)? {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
@@ -355,7 +356,7 @@ feature -- Access
 
 feature {NONE} -- Constants
 
-	Init_buffer_size: INTEGER = 256
+	Init_buffer_size: INTEGER = 8192
 				-- Initial size for `in_buffer'
 
 invariant

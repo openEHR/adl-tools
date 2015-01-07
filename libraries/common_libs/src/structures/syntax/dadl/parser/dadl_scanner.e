@@ -889,15 +889,15 @@ end
 		do
 			inspect yy_sc
 when 0, 2 then
---|#line 0 "dadl_scanner.l"
+--|#line 331 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 331")
 end
 terminate
 when 1 then
---|#line 0 "dadl_scanner.l"
+--|#line 311 "dadl_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 0")
+	std.error.put_line ("Executing scanner user-code from file 'dadl_scanner.l' at line 311")
 end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
@@ -911,6 +911,7 @@ end
 feature {NONE} -- Table templates
 
 	yy_nxt_template: SPECIAL [INTEGER]
+			-- Template for `yy_nxt'
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -1121,6 +1122,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_chk_template: SPECIAL [INTEGER]
+			-- Template for `yy_chk'
 		local
 			an_array: ARRAY [INTEGER]
 		once
@@ -1331,6 +1333,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_base_template: SPECIAL [INTEGER]
+			-- Template for `yy_base'
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,   76,   81,   13,   18,  704, 1638,   87,
@@ -1367,6 +1370,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_def_template: SPECIAL [INTEGER]
+			-- Template for `yy_def'
 		once
 			Result := yy_fixed_array (<<
 			    0,  262,    1,  263,  263,  264,  264,  262,  262,  262,
@@ -1403,6 +1407,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_ec_template: SPECIAL [INTEGER]
+			-- Template for `yy_ec'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -1436,6 +1441,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_meta_template: SPECIAL [INTEGER]
+			-- Template for `yy_meta'
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    2,    3,    1,    4,    1,    1,    5,
@@ -1449,6 +1455,7 @@ feature {NONE} -- Table templates
 		end
 
 	yy_accept_template: SPECIAL [INTEGER]
+			-- Template for `yy_accept'
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,    0,    0,   77,   75,    1,
