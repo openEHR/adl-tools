@@ -284,11 +284,11 @@ feature {NONE} -- Implementation
 			populate_primary_source_indicator
 			if source.is_valid then
 				-- lifecycle state
-				if not source.differential_archetype.artefact_type.is_overlay then
-					ev_archetype_lifecycle_state.set_text (source.differential_archetype.description.lifecycle_state)
+				if attached {AUTHORED_ARCHETYPE} source.differential_archetype as auth_arch then
+					ev_archetype_lifecycle_state.set_text (auth_arch.description.lifecycle_state)
+					ev_adl_version_text.set_text (auth_arch.adl_version)
 				end
 
-				ev_adl_version_text.set_text (source.differential_archetype.adl_version)
 				selected_language := source.differential_archetype.original_language.code_string
 				populate_languages
 			end

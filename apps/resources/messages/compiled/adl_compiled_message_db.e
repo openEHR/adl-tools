@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (898)
+			create message_table.make (899)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -159,6 +159,7 @@ feature -- Initialisation
 			message_table.put ("External code $1 not found in terminology $2", ec_VETDF)
 			message_table.put ("External term $1 not verified; terminology $2 unavailable", ec_WETDF)
 			message_table.put ("translations for $1 defined in the description / translations section but missing in the term_definition section", ec_VOTM)
+			message_table.put ("original language $1 not defined in terminology", ec_VOLT)
 			message_table.put ("code $1 specialisation depth greater than that of archetype $2", ec_VATCD)
 			message_table.put ("node id-code $1 at path $2 not defined in flat terminology", ec_VATID)
 			message_table.put ("value code $1 referenced in definition at path $2 not defined in flat terminology", ec_VATDF)

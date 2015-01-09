@@ -119,13 +119,13 @@ feature {NONE} -- Implementation
 
 	update_lifecycle_state
 		do
-			if attached target.description as att_desc then
-				if not valid_resource_lifecycle_state (att_desc.lifecycle_state) and then
-					attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (att_desc.lifecycle_state)
+			if attached {AUTHORED_ARCHETYPE} target as auth_arch then
+				if not valid_resource_lifecycle_state (auth_arch.description.lifecycle_state) and then
+					attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (auth_arch.description.lifecycle_state)
 				then
-					att_desc.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (att_desc.lifecycle_state))
+					auth_arch.description.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (auth_arch.description.lifecycle_state))
 				else
-					att_desc.set_lifecycle_state (Initial_resource_lifecycle_state)
+					auth_arch.description.set_lifecycle_state (Initial_resource_lifecycle_state)
 				end
 			end
 		end

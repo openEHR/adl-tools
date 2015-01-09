@@ -18,6 +18,8 @@ feature -- Initialisation
 		local
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 		do
+			original_language := a_terminology.original_language.as_string
+
 			term_definitions := a_terminology.term_definitions
 
 			if attached a_terminology.term_bindings then
@@ -42,6 +44,8 @@ feature -- Initialisation
 
 feature -- Access
 
+	original_language: STRING
+
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
 		attribute
@@ -60,7 +64,6 @@ feature -- Access
 	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
-
 feature -- Factory
 
 	populate_terminology (a_terminology: ARCHETYPE_TERMINOLOGY)
@@ -70,6 +73,7 @@ feature -- Factory
 			tb_ont_code_table: HASH_TABLE [URI, STRING]
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 		do
+			a_terminology.set_original_language (create {TERMINOLOGY_CODE}.make_from_string (original_language))
 			a_terminology.set_term_definitions (term_definitions)
 
 			create tb_ont.make (0)

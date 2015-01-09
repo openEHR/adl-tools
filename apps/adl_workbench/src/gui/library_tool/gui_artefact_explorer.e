@@ -234,7 +234,6 @@ feature {NONE} -- Implementation
 	context_menu_add_file_submenu (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE)
 			-- creates the context menu for file operations
 		local
-			tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			-- edit archetype source in external tool

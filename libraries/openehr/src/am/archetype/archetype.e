@@ -13,7 +13,7 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} deep_twin, valid_standard_version
+			{ANY} deep_twin, is_deep_equal, standard_is_equal, generating_type, valid_standard_version
 		undefine
 			default_create
 		end
@@ -21,15 +21,18 @@ inherit
 	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} deep_twin, specialisation_depth_from_code, is_valid_code
+			{ANY} specialisation_depth_from_code, is_valid_code
+		redefine
+			default_create
+		end
+
+	LINGUISTIC_RESOURCE
 		undefine
 			default_create
 		end
 
-	AUTHORED_RESOURCE
-		redefine
-			make_from_other, set_original_language, add_language_tag, reduce_languages_to, default_create
-		end
+create
+	default_create
 
 create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 	make
@@ -37,8 +40,8 @@ create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
 create {P_ARCHETYPE}
 	make_all
 
-create {ARCHETYPE_FLATTENER, TEMPLATE_FLATTENER, RM_FLATTENER, ARCH_LIB_ARCHETYPE}
-	make_from_other, default_create
+create {TEMPLATE_FLATTENER}
+	make_from_other
 
 create {ARCH_LIB_ARCHETYPE}
 	make_empty_differential, make_empty_differential_child
@@ -47,44 +50,26 @@ feature -- Initialisation
 
 	default_create
 		do
-			make_empty_differential (create {ARTEFACT_TYPE}.make_archetype, create {ARCHETYPE_HRID}.default_create, "1.0.0", default_language)
-		end
-
-	make_dt (make_args: ARRAY[ANY])
-			-- basic make routine to guarantee validity on creation
-		do
+			make_empty_differential (create {ARTEFACT_TYPE}.make_archetype, create {ARCHETYPE_HRID}.default_create, default_language)
 		end
 
 	make (an_artefact_type: like artefact_type;
 			an_id: like archetype_id;
-			an_rm_release: like rm_release;
-			an_original_language: like original_language;
-			a_uid: like uid;
-			a_description: like description;
 			a_definition: like definition;
 			a_terminology: like terminology)
 				-- make from pieces, typically obtained by parsing
-		require
-			Description_valid: not an_artefact_type.is_overlay implies attached a_description
 		do
 			artefact_type := an_artefact_type
-			adl_version := 	Latest_adl_version
-			rm_release := an_rm_release
 			archetype_id := an_id
-			original_language := an_original_language
-			description := a_description
 			definition := a_definition
 			terminology := a_terminology
 			is_dirty := True
 			is_differential := a_terminology.is_differential
-			uid := a_uid
 
 			set_terminology_agents
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
-			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
-			Original_language_set: original_language = an_original_language
 			Definition_set: definition = a_definition
 			Terminology_set: terminology = a_terminology
 			Is_dirty: is_dirty
@@ -93,46 +78,22 @@ feature -- Initialisation
 		end
 
 	make_all (an_artefact_type: like artefact_type;
-			an_adl_version: STRING;
-			an_rm_release: like rm_release;
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
-			is_controlled_flag: BOOLEAN;
-			a_uid: like uid;
-			an_other_metadata: like other_metadata;
-			an_original_language: like original_language;
-			a_translations: like translations;
-			a_description: like description;
 			a_definition: like definition;
 			a_rules: like rules;
-			a_terminology: like terminology;
-			an_annotations: like annotations)
+			a_terminology: like terminology)
 				-- make from all possible items
 		require
-			Translations_valid: attached a_translations as att_trans implies not att_trans.is_empty
-			Description_valid: not an_artefact_type.is_overlay implies attached a_description
 			Invariants_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
-			make (an_artefact_type, an_id, an_rm_release,
-					an_original_language, a_uid,
-					a_description,
-					a_definition, a_terminology)
+			make (an_artefact_type, an_id, a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
-			translations := a_translations
-			adl_version := an_adl_version
-			is_controlled := is_controlled_flag
-			other_metadata := an_other_metadata
 			rules := a_rules
-			annotations := an_annotations
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
-			Adl_version_set: adl_version = an_adl_version
-			Rm_release_set: rm_release = an_rm_release
-			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
-			Original_language_set: original_language = an_original_language
-			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
 			Invariants_set: rules = a_rules
 			Terminology_set: terminology = a_terminology
@@ -145,40 +106,19 @@ feature -- Initialisation
 			-- duplicate from another archetype
 		local
 			other_parent_arch_id: detachable STRING
-			other_annotations: detachable RESOURCE_ANNOTATIONS
-			other_description: detachable RESOURCE_DESCRIPTION
-			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			other_rules: detachable  ARRAYED_LIST [ASSERTION]
-			other_other_metadata: detachable HASH_TABLE [STRING, STRING]
 		do
 			if attached other.parent_archetype_id as other_pid then
 				other_parent_arch_id := other_pid.deep_twin
 			end
-			if attached other.translations as other_trans then
-				other_translations := other_trans.deep_twin
-			end
-			if attached other.description as other_desc then
-				other_description := other_desc.deep_twin
-			end
-			if attached other.annotations as other_annots then
-				other_annotations := other_annots.deep_twin
-			end
 			if other.has_rules then
 				other_rules := other.rules.deep_twin
 			end
-			if attached other.other_metadata then
-				other_other_metadata := other.other_metadata.deep_twin
-			end
-			make_all (other.artefact_type.twin, other.adl_version.twin, other.rm_release.twin, other.archetype_id.deep_twin,
-					other_parent_arch_id, other.is_controlled, other.uid, other_other_metadata,
-					other.original_language.deep_twin, other_translations,
-					other_description, other.definition.deep_twin, other_rules,
-					other.terminology.deep_twin, other_annotations)
+			make_all (other.artefact_type.twin, other.archetype_id.deep_twin, other_parent_arch_id,
+					other.definition.deep_twin, other_rules, other.terminology.deep_twin)
 			is_generated := other.is_generated
 			is_valid := other.is_valid
 			is_differential := other.is_differential
-
-			rebuild
 		ensure then
 			Is_generated_preserved: is_generated = other.is_generated
 			Is_valid_preserved: is_valid = other.is_valid
@@ -187,29 +127,22 @@ feature -- Initialisation
 
 feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 
-	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_rm_release, an_original_language: STRING)
+	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language_str: STRING)
 			-- make a new differential form archetype
 		require
-			Language_valid: not an_original_language.is_empty
+			Language_valid: not an_original_language_str.is_empty
 		do
 			artefact_type := an_artefact_type
 			archetype_id := an_id
-			create adl_version.make_from_string (Latest_adl_version)
-			rm_release := an_rm_release
-			create terminology.make_differential_empty (an_original_language, 0)
-			create original_language.make (ts.Default_language_code_set, an_original_language)
-			create description.default_create
+			create terminology.make_differential_empty (an_original_language_str, 0)
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
 			is_dirty := True
 			is_valid := True
 			is_differential := True
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
-			Adl_version_set: adl_version.same_string (Latest_adl_version)
-			Rm_release_set: rm_release = an_rm_release
 			Id_set: archetype_id = an_id
-			Original_language_set: original_language.code_string.is_equal (an_original_language)
-			terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
+			Original_language_set: original_language.code_string.is_equal (an_original_language_str)
 			Not_specialised: not is_specialised
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
@@ -217,18 +150,14 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			Is_differential: is_differential
 		end
 
-	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_rm_release, an_original_language: STRING)
+	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_original_language_str: STRING)
 			-- make a new differential form archetype as a child of `a_parent'
 		require
-			Language_valid: not an_original_language.is_empty
+			Language_valid: not an_original_language_str.is_empty
 		do
 			artefact_type := an_artefact_type
 			archetype_id := an_id
-			create adl_version.make_from_string (Latest_adl_version)
-			rm_release := an_rm_release
-			create terminology.make_differential_empty (an_original_language, spec_depth)
-			create original_language.make (ts.Default_language_code_set, an_original_language)
-			create description.default_create
+			create terminology.make_differential_empty (an_original_language_str, spec_depth)
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
 			is_dirty := True
 			is_valid := True
@@ -236,11 +165,8 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			parent_archetype_id := a_parent_id
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
-			Adl_version_set: adl_version.same_string (Latest_adl_version)
-			Rm_release_set: rm_release = an_rm_release
 			Id_set: archetype_id = an_id
-			Original_language_set: original_language.code_string.is_equal (an_original_language)
-			Terminology_original_language_set: original_language.code_string.is_equal (terminology.original_language)
+			Original_language_set: original_language.code_string.is_equal (an_original_language_str)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty
 			Is_valid: is_valid
@@ -250,22 +176,20 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 
 feature -- Access
 
-	uid: detachable HIER_OBJECT_ID
-			-- optional UID identifier of this artefact
-			-- FIXME: should really be in AUTHORED_RESOURCE
+	original_language:  TERMINOLOGY_CODE
+			-- original language of the archetype, derived from the terminology
+			-- be a code in the ISO 639-1 2 character language code-set.
+		do
+            Result := terminology.original_language
+        end
+
+   	languages_available: ARRAYED_SET [STRING]
+   			-- languages known in terminology
+		do
+			Result := terminology.languages_available
+		end
 
 	archetype_id: ARCHETYPE_HRID
-
-	other_metadata: detachable HASH_TABLE [STRING, STRING]
-
-	adl_version: STRING
-			-- Semver.org compatible version of ADL/AOM used in this archetype
-
-	rm_release: STRING
-			-- Semver.org compatible release of the reference model on which the archetype was based.
-			-- This does not imply conformance only to this release, since an archetype may
-			-- be valid with respect to multiple releases of a reference model. Conformance is captured
-			-- outside of the archetype.
 
 	artefact_type: ARTEFACT_TYPE
 			-- design type of artefact, archetype, template, template-component, etc
@@ -555,7 +479,7 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- 	True if this archetype identifies a specialisation parent
 		do
-			Result := specialisation_depth > 0
+			Result := attached parent_archetype_id
 		end
 
 	is_valid: BOOLEAN
@@ -598,6 +522,12 @@ feature -- Status Report
 			-- True if `artefact_type' is a template
 		do
 			Result := artefact_type.is_template
+		end
+
+	is_template_or_overlay: BOOLEAN
+			-- True if `artefact_type' is a template
+		do
+			Result := artefact_type.is_template_or_overlay
 		end
 
 feature -- Status Setting
@@ -892,32 +822,9 @@ feature -- Validation
 
 feature -- Modification
 
-	set_adl_version (a_ver: STRING)
-			-- set `adl_version' with a string containing only '.' and numbers,
-			-- not commencing or finishing in '.'
-		require
-			Valid_version: valid_standard_version(a_ver)
-		do
-			adl_version := a_ver
-		end
-
-	set_rm_release (a_ver: STRING)
-			-- set `rm_release' with a string containing only '.' and numbers,
-			-- not commencing or finishing in '.'
-		require
-			Valid_version: valid_standard_version (a_ver)
-		do
-			rm_release := a_ver
-		end
-
 	set_archetype_id (an_id: like archetype_id)
 		do
 			archetype_id := an_id
-		end
-
-	set_uid (a_uid: STRING)
-		do
-			create uid.make_from_string (a_uid)
 		end
 
 	set_artefact_type_from_string (s: STRING)
@@ -925,37 +832,6 @@ feature -- Modification
 			(create {ARTEFACT_TYPE}).valid_type_name(s)
 		do
 			create artefact_type.make_from_type_name(s)
-		end
-
-	set_other_metadata (a_metadata: like other_metadata)
-		do
-			other_metadata := a_metadata
-		end
-
-	put_other_metadata_value (a_key, a_value: STRING)
-			-- add the pair `a_key' / `a_value' to `other_metadata', overwriting any value
-			-- with the same key if necessary.
-		local
-			o_metadata: HASH_TABLE [STRING, STRING]
-		do
-			if attached other_metadata as omd then
-				o_metadata := omd
-			else
-				create o_metadata.make (0)
-				other_metadata := o_metadata
-			end
-			o_metadata.force (a_value, a_key)
-		ensure
-			other_metadata.item (a_key) = a_value
-		end
-
-	put_other_metadata_flag (a_key: STRING)
-			-- add a meta-data item of the form of a flag, whose value is implied to be 'true',
-			-- overwriting any value with the same key if necessary.
-		do
-			put_other_metadata_value (a_key, (True).out)
-		ensure
-			other_metadata.item (a_key).is_equal ((True).out)
 		end
 
 	set_parent_archetype_id (an_id: like parent_archetype_id)
@@ -977,6 +853,7 @@ feature -- Modification
 	set_terminology (an_ont: attached like terminology)
 		do
 			terminology := an_ont
+			is_dirty := True
 		end
 
 	add_rule (an_inv: ASSERTION)
@@ -1017,11 +894,15 @@ feature -- Modification
 			highest_redefined_id_codes.replace (highest_redefined_id_codes.item (a_parent_id) + 1, a_parent_id)
 		end
 
-	add_language_tag (a_lang_tag: STRING)
-			-- add a new language to the archetype - creates new language section in
-			-- terminology, translations and resource description
+	set_original_language (a_lang: TERMINOLOGY_CODE)
 		do
-			precursor (a_lang_tag)
+			terminology.set_original_language (a_lang)
+		end
+
+	add_language (a_lang_tag: STRING)
+			-- add a new language to the archetype - creates new language section in
+			-- terminology
+		do
 			terminology.add_language (a_lang_tag)
 		end
 
@@ -1043,9 +924,6 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 			-- 	* artefact_type
 			--	* archetype_id
 			--	* parent_archetype_id
-			--	* uid
-			--	* translations
-			--	* description
 			--
 		require
 			Is_flat: is_flat
@@ -1058,28 +936,9 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 			-- identifiers
 			archetype_id := a_diff.archetype_id.deep_twin
 			parent_archetype_id := a_diff.parent_archetype_id
-			if attached a_diff.uid as att_uid then
-				uid := att_uid.deep_twin
-			end
-
-			-- flatten other_metadata so that child archetype values overwrite any parent values with same key;
-			-- otherwise parent key/val pairs are preserved
-			if attached a_diff.other_metadata as diff_omd then
-				across diff_omd as md_csr loop
-					put_other_metadata_value (md_csr.key, md_csr.item)
-				end
-			end
-
-			-- replace translations and description with differential
-			if attached a_diff.translations as diff_trans then
-				translations := diff_trans.deep_twin
-			end
-			if attached a_diff.description as diff_desc then
-				description := diff_desc.deep_twin
-			end
 
 			-- adjust languages
-			terminology.reduce_languages_to (a_diff.languages_available)
+			terminology.reduce_languages_to (a_diff.terminology.languages_available)
 			set_original_language (a_diff.original_language)
 
 			-- set definition root code to the one from `a_diff'
@@ -1259,24 +1118,14 @@ feature {NONE} -- Implementation
 	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
 			-- reduce languages to those in the supplied list
 		do
-			precursor (a_langs)
 			terminology.reduce_languages_to (a_langs)
 		end
 
-	set_original_language (a_lang: TERMINOLOGY_CODE)
-		do
-			precursor (a_lang)
-			terminology.set_original_language (a_lang.code_string)
-		end
-
 invariant
-	Description_valid: not artefact_type.is_overlay implies attached description
-	Translations_valid: artefact_type.is_overlay implies not attached description
 	Concept_valid: concept_id.is_equal (terminology.concept_code)
 	Invariants_valid: attached rules implies not rules.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_class.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and attached parent_archetype_id)
 
 end
-
 

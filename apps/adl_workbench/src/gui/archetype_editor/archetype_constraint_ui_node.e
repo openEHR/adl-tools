@@ -170,9 +170,11 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				if attached arch_node as a_n and then ui_graph_state.archetype.has_annotation_at_path (display_settings.language, a_n.path) then
+				if attached arch_node as a_n and then attached {AUTHORED_ARCHETYPE} ui_graph_state.archetype as auth_arch and then
+					auth_arch.has_annotation_at_path (display_settings.language, a_n.path)
+				then
 					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
-					Result.append (ui_graph_state.archetype.annotations.annotations_at_path (display_settings.language, a_n.path).as_string)
+					Result.append (auth_arch.annotations.annotations_at_path (display_settings.language, a_n.path).as_string)
 				end
 			else
 				Result := path

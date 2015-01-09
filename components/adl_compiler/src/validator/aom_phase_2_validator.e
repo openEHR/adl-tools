@@ -15,7 +15,7 @@ class AOM_PHASE_2_VALIDATOR
 inherit
 	AOM_VALIDATOR
 		rename
-			initialise as aom_valdator_initialise
+			initialise as aom_validator_initialise
 		redefine
 			validate
 		end
@@ -39,7 +39,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			a_flat_parent_slot_fillers_index: detachable like flat_parent_slot_fillers_index;
 			an_rm_schema: BMM_SCHEMA; a_display_language: STRING)
 		do
-			aom_valdator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
+			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
 			display_language := a_display_language
 			if attached a_flat_parent_slot_fillers_index as att_sid then
 				flat_parent_slot_fillers_index := att_sid

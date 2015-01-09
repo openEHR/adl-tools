@@ -18,14 +18,13 @@ create
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE)
+	serialise (an_archetype: ARCHETYPE)
 		do
 		end
 
-	serialise_from_parts (an_archetype: attached ARCHETYPE;
-				lang_serialised, desc_serialised, def_serialised: attached STRING;
-				inv_serialised: STRING;
-				ont_serialised: attached STRING;
+	serialise_from_parts (an_archetype: ARCHETYPE;
+				lang_serialised, desc_serialised, def_serialised,
+				inv_serialised, ont_serialised,
 				ann_serialised, comp_onts_serialised: STRING)
 		do
 			archetype := an_archetype

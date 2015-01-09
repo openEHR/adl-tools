@@ -15,13 +15,7 @@ note
 deferred class AOM_VALIDATOR
 
 inherit
-	AUTHORED_RESOURCE_VALIDATOR
-		rename
-			initialise as initialise_authored_resource,
-			target as arch_diff_child
-		redefine
-			arch_diff_child
-		end
+	ANY_VALIDATOR
 
 	SHARED_ARCHETYPE_LIBRARIES
 		export
@@ -33,12 +27,14 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
 			rm_schema := an_rm_schema
-			initialise_authored_resource (an_arch_diff_child)
+			arch_diff_child := an_arch_diff_child
 			arch_flat_parent := an_arch_flat_parent
 
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
 				aom_profile := aom_p
 			end
+
+			reset
 		ensure
 			arch_diff_child_set: arch_diff_child = an_arch_diff_child
 		end

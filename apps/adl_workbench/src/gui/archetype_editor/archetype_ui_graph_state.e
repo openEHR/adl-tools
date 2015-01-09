@@ -54,7 +54,7 @@ feature -- Access
 
 	archetype: ARCHETYPE
 
-	flat_archetype: ARCHETYPE
+	flat_archetype: AUTHORED_ARCHETYPE
 
 	parent_archetype: detachable ARCHETYPE
 

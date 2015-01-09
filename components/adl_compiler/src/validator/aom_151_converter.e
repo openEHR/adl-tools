@@ -69,7 +69,7 @@ feature -- Definitions
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: ARCHETYPE; a_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (a_target: AUTHORED_ARCHETYPE; a_flat_parent: detachable AUTHORED_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
@@ -81,7 +81,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			attached arch_flat_parent as aaf implies aaf.is_flat
 		end
 
-	initialise (a_target: ARCHETYPE; a_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (a_target: AUTHORED_ARCHETYPE; a_flat_parent: detachable AUTHORED_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -100,10 +100,10 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 feature -- Access
 
-	target: ARCHETYPE
+	target: AUTHORED_ARCHETYPE
 			-- differential archetype being processed
 
-	arch_flat_parent: detachable ARCHETYPE
+	arch_flat_parent: detachable AUTHORED_ARCHETYPE
 
 	rm_schema: BMM_SCHEMA
 
@@ -220,7 +220,7 @@ feature {NONE} -- Implementation
 	 		replaced_at_codes: HASH_TABLE [STRING, STRING]
 		do
 			arch_c_terms := target.value_codes_index
-			orig_lang := target.terminology.original_language
+			orig_lang := target.terminology.original_language.code_string
 			create replaced_at_codes.make (0)
 
 			if not arch_c_terms.is_empty then
@@ -280,7 +280,7 @@ feature {NONE} -- Implementation
 		local
 			orig_lang, new_text, new_desc, new_trans_text, new_trans_desc: STRING
 		do
-			orig_lang := target.terminology.original_language
+			orig_lang := target.terminology.original_language.code_string
 
 			-- write the parser's term bindings in to the terminology
 			across compiler_billboard.term_bindings as bindings_csr loop

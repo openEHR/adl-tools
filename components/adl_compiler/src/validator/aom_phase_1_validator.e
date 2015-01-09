@@ -12,7 +12,7 @@ class AOM_PHASE_1_VALIDATOR
 inherit
 	AOM_VALIDATOR
 		redefine
-			validate
+			validate, initialise
 		end
 
 	ADL_SYNTAX_CONVERTER
@@ -20,8 +20,30 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	initialise
+
+feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
+
+	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		local
+			an_auth_flat_parent: detachable AUTHORED_ARCHETYPE
+		do
+			precursor (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
+			if attached {AUTHORED_ARCHETYPE} an_arch_diff_child as auth_arch then
+				if attached {AUTHORED_ARCHETYPE} an_arch_flat_parent as auth_arch_flat_parent then
+					an_auth_flat_parent := auth_arch_flat_parent
+				end
+				create auth_arch_validator.initialise (auth_arch, an_auth_flat_parent, an_rm_schema)
+			else
+				create auth_arch_validator.default_create
+			end
+		end
 
 feature -- Validation
 
@@ -31,48 +53,46 @@ feature -- Validation
 
 			-- basic validation
 			validate_basics
-			if passed then
-				validate_meta_data
+			validate_languages_consistency
+			if passed and attached {AUTHORED_ARCHETYPE} arch_diff_child as auth_arch then
+				auth_arch_validator.validate
+				merge_errors (auth_arch_validator.errors)
 			end
+
+			-- definition and terminology validation
 			if passed then
 				validate_definition_structure
+				validate_terminology
 			end
 
-			-- rebuilding might not work earlier because there might be invalid
-			-- node ids
+			-- rebuilding might not work earlier because there might be invalid node ids
 			if passed then
 				arch_diff_child.rebuild
-			end
 
-			-- languages and meta-data
-			if passed then
-				precursor
-				validate_languages_consistency
-			end
-
-			-- validation requiring the archetype xref tables
-			if passed then
+				-- validation requiring the archetype xref tables
 				validate_slots
 				validate_suppliers
 			end
 
-			-- basic validation terminology
-			if passed then
-				validate_terminology_code_formats
-				validate_terminology_languages
-				validate_terminology_bindings
-				validate_terminology_value_sets
-				report_unused_terminology_codes
-			end
-
-			-- validation that assums terminology is valid
+			-- validation that assumes terminology is valid
 			if passed then
 				validate_definition_codes
-				validate_annotations_structure
+			end
+
+			-- annotations
+			if passed and attached {AUTHORED_ARCHETYPE} arch_diff_child as auth_arch then
+				auth_arch_validator.validate_annotations
+				merge_errors (auth_arch_validator.errors)
+			end
+
+			if passed then
+				report_unused_terminology_codes
 			end
 		end
 
 feature {NONE} -- Implementation
+
+	auth_arch_validator: AUTHORED_ARCHETYPE_VALIDATOR
 
 	validate_basics
 			-- are basic features of archetype structurally intact and correct?
@@ -84,6 +104,11 @@ feature {NONE} -- Implementation
 			elseif not is_valid_root_id_code (arch_diff_child.concept_id) then
 				add_error (ec_VARCN, <<arch_diff_child.concept_id, root_id_code_regex_pattern>>)
 
+			-- empty terminology
+			elseif arch_diff_child.terminology.term_definitions.is_empty then
+				add_error (ec_STCNT, Void)
+
+			-- if specialised according to declaration of parent archetype id
 			elseif arch_diff_child.is_specialised then
 				if attached arch_flat_parent as att_flat_parent then
 					if arch_diff_child.specialisation_depth /= att_flat_parent.specialisation_depth + 1 then
@@ -93,7 +118,7 @@ feature {NONE} -- Implementation
 					add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
 				end
 
-			else -- specialised
+			else -- not specialised
 				if specialisation_depth_from_code (arch_diff_child.concept_id) /= 0 then
  					add_error (ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
 				elseif attached arch_flat_parent then
@@ -102,20 +127,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_meta_data
-			-- check meta-data items
+	validate_languages_consistency
+			-- check to see that languages in child archetype are a subset of those in flat parent
 		do
-			if not valid_standard_version (arch_diff_child.adl_version) then
-				add_error (ec_VARAV, <<arch_diff_child.adl_version>>)
-
-			elseif not valid_standard_version (arch_diff_child.rm_release) then
-				add_error (ec_VARRV, <<arch_diff_child.rm_release>>)
-
-			else
-				if arch_diff_child.is_specialised then
-					if not arch_diff_child.languages_available.is_subset (arch_flat_parent.languages_available) then
-						add_error (ec_VALC, <<arch_diff_child.languages_available_out, arch_flat_parent.languages_available_out>>)
-					end
+			if arch_diff_child.is_specialised then
+				if not arch_diff_child.languages_available.is_subset (arch_flat_parent.languages_available) then
+					add_error (ec_VALC, <<arrayed_list_out (arch_diff_child.languages_available), arrayed_list_out (arch_flat_parent.languages_available)>>)
 				end
 			end
 		end
@@ -161,28 +178,6 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
-			end
-		end
-
-	validate_languages_consistency
-			-- check to see that all linguistic items in terminology, description, etc are all coherent
-		local
-			langs: ARRAYED_SET [STRING]
-			err_str: STRING
-		do
-			-- check that languages defined in translations section are in the archetype terminology
-			langs := arch_diff_child.languages_available
-			if not langs.is_subset (arch_diff_child.terminology.languages_available) then
-				create err_str.make (0)
-				across langs as langs_csr loop
-					if not arch_diff_child.terminology.languages_available.has (langs_csr.item) then
-						if not err_str.is_empty then
-							err_str.append (", ")
-						end
-						err_str.append (langs_csr.item)
-					end
-				end
-				add_error (ec_VOTM, <<err_str>>)
 			end
 		end
 
@@ -238,6 +233,14 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+		end
+
+	validate_terminology
+		do
+			validate_terminology_code_formats
+			validate_terminology_languages
+			validate_terminology_bindings
+			validate_terminology_value_sets
 		end
 
 	validate_terminology_code_formats
@@ -404,34 +407,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	validate_annotations_structure
-			-- for each language, ensure that annotations are proper translations of each other (if present)
-			-- For specialised archetypes, requires flat ancestor to be available
-		local
-			ann_path: STRING
-			apa: ARCHETYPE_PATH_ANALYSER
-		do
-			if arch_diff_child.has_annotations then
-				across arch_diff_child.annotations.items as annots_csr loop
-					across annots_csr.item.items as annots_for_lang_csr loop
-						ann_path := annots_for_lang_csr.key
-						create apa.make_from_string (ann_path)
-
-						-- firstly see if annotation path is valid
-						if apa.is_archetype_path then
-							if not (arch_diff_child.has_path (ann_path) or else attached arch_flat_parent as att_fa and then att_fa.has_path (ann_path)) then
-								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
-							end
-						elseif not rm_schema.has_property_path (arch_diff_child.definition.rm_type_name, ann_path) then
-							add_error (ec_VRANP2, <<annots_csr.key, ann_path>>)
-						end
-
-						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
-					end
-				end
-			end
-		end
-
 	report_unused_terminology_codes
 			-- populate lists of at-codes and ac-codes found in terminology that
 			-- are not referenced anywhere in the archetype definition
@@ -442,5 +417,3 @@ feature {NONE} -- Implementation
 		end
 
 end
-
-

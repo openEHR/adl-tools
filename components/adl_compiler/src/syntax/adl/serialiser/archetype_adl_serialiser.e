@@ -44,8 +44,8 @@ feature -- Serialisation
 		end
 
 	serialise_from_parts (an_archetype: ARCHETYPE;
-				lang_serialised, desc_serialised, def_serialised: STRING;
-				rules_serialised: STRING; term_serialised: STRING;
+				lang_serialised, desc_serialised, def_serialised,
+				rules_serialised, term_serialised,
 				ann_serialised, comp_terms_serialised: STRING)
 		do
 			last_result.wipe_out
@@ -129,60 +129,62 @@ feature -- Serialisation
 		do
 			arch_kw_str := archetype.artefact_type.type_name.twin
 
-			arch_kw_str.append (" (")
-			create kw_list.make_empty
+			if attached {AUTHORED_ARCHETYPE} archetype as auth_arch then
+				arch_kw_str.append (" (")
+				create kw_list.make_empty
 
-			-- adl_version
-			if archetype.is_differential then
-				kw_list.append (symbol (SYM_ADL_VERSION) + "=" + archetype.adl_version)
-			else
-				kw_list.append (symbol (SYM_ADL_VERSION) + "=" + latest_adl_version)
-			end
+				-- adl_version
+				if auth_arch.is_differential then
+					kw_list.append (symbol (SYM_ADL_VERSION) + "=" + auth_arch.adl_version)
+				else
+					kw_list.append (symbol (SYM_ADL_VERSION) + "=" + latest_adl_version)
+				end
 
-			-- rm_release
-			if not kw_list.is_empty then
-				kw_list.append ("; ")
-			end
-			kw_list.append (symbol (SYM_RM_RELEASE) + "=" + archetype.rm_release)
-
-			-- is_controlled flag
-			if archetype.is_controlled then
+				-- rm_release
 				if not kw_list.is_empty then
 					kw_list.append ("; ")
 				end
-				kw_list.append (symbol (SYM_IS_CONTROLLED))
-			end
+				kw_list.append (symbol (SYM_RM_RELEASE) + "=" + auth_arch.rm_release)
 
-			-- is_generated flag
-			if archetype.is_generated then
-				if not kw_list.is_empty then
-					kw_list.append ("; ")
-				end
-				kw_list.append (symbol (SYM_IS_GENERATED))
-			end
-
-			-- uid
-			if attached archetype.uid as a_uid then
-				if not kw_list.is_empty then
-					kw_list.append ("; ")
-				end
-				kw_list.append (symbol (SYM_UID)  + "=" + a_uid.out)
-			end
-
-			-- other metadata
-			if attached archetype.other_metadata as omd then
-				across omd as omd_csr loop
+				-- is_controlled flag
+				if auth_arch.is_controlled then
 					if not kw_list.is_empty then
 						kw_list.append ("; ")
-						kw_list.append (omd_csr.key + "=" + omd_csr.item)
+					end
+					kw_list.append (symbol (SYM_IS_CONTROLLED))
+				end
+
+				-- is_generated flag
+				if auth_arch.is_generated then
+					if not kw_list.is_empty then
+						kw_list.append ("; ")
+					end
+					kw_list.append (symbol (SYM_IS_GENERATED))
+				end
+
+				-- uid
+				if attached auth_arch.uid as a_uid then
+					if not kw_list.is_empty then
+						kw_list.append ("; ")
+					end
+					kw_list.append (symbol (SYM_UID)  + "=" + a_uid.out)
+				end
+
+				-- other metadata
+				if attached auth_arch.other_metadata as omd then
+					across omd as omd_csr loop
+						if not kw_list.is_empty then
+							kw_list.append ("; ")
+							kw_list.append (omd_csr.key + "=" + omd_csr.item)
+						end
 					end
 				end
+
+				arch_kw_str.append (kw_list)
+				arch_kw_str.append_character(')')
+
+				last_result.append (apply_style (arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 			end
-
-			arch_kw_str.append (kw_list)
-			arch_kw_str.append_character(')')
-
-			last_result.append (apply_style(arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 
 			last_result.append (create_indent(1) + apply_style (archetype.archetype_id.as_string, STYLE_IDENTIFIER) +
 				format_item(FMT_NEWLINE))

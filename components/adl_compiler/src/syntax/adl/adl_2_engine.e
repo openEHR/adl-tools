@@ -70,7 +70,9 @@ feature -- Parsing
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
-			new_diff_arch: ARCHETYPE
+			new_diff_arch: AUTHORED_ARCHETYPE
+			new_overlay: ARCHETYPE
+			tpl_orig_lang: TERMINOLOGY_CODE
 		do
 			adl_parser.execute (a_text)
 
@@ -83,19 +85,19 @@ feature -- Parsing
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				check attached adl_parser.language_text as lt then
-					language_context.set_source (lt, adl_parser.language_text_start_line)
-				end
-				language_context.parse
-				if not language_context.parse_succeeded then
-					errors.append (language_context.errors)
-				elseif not dt_object_converter.errors.has_errors and
-					attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
-				then
-					orig_lang_trans := lt
-				else
-					errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
-					errors.append (dt_object_converter.errors)
+				if not adl_parser.artefact_type.is_overlay then
+					language_context.set_source (adl_parser.language_text, adl_parser.language_text_start_line)
+					language_context.parse
+					if not language_context.parse_succeeded then
+						errors.append (language_context.errors)
+					elseif not dt_object_converter.errors.has_errors and
+						attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
+					then
+						orig_lang_trans := lt
+					else
+						errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
+						errors.append (dt_object_converter.errors)
+					end
 				end
 
 				------------------- description section (optional) ---------------
@@ -193,76 +195,116 @@ feature -- Parsing
 					if attached definition_context.tree as definition and
 						attached terminology_context.tree as terminology_tree
 					then
-						-----------------------------------------------------------------------------------------------
-						-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
-						convert_terminology_to_nested (terminology_tree)  -- perform any version upgrade conversions on terminology
-						--
-						-----------------------------------------------------------------------------------------------							
 
-						if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
-							terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, True>>) as diff_terminology
-							and then not dt_object_converter.errors.has_errors
-						then
-							-- build the archetype
-							diff_terminology.set_differential
-							create new_diff_arch.make (
-								adl_parser.artefact_type,
-								adl_parser.archetype_id,
-								adl_parser.rm_release,
-								olt.original_language,
-								adl_parser.uid,
-								res_desc,	-- may be Void
-								definition,
-								diff_terminology
-							)
+						if adl_parser.artefact_type.is_overlay then
+							create tpl_orig_lang.default_create
+							if attached {ARCHETYPE_TERMINOLOGY}
+								terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<tpl_orig_lang.code_string, definition.node_id, True>>) as diff_terminology
+								and then not dt_object_converter.errors.has_errors
+							then
+								-- build the archetype
+								diff_terminology.set_differential
+								create new_overlay.make (
+									adl_parser.artefact_type,
+									adl_parser.archetype_id,
+									definition,
+									diff_terminology
+								)
 
-							-- add optional parts
-							if attached adl_parser.parent_archetype_id as att_parent_id then
-								new_diff_arch.set_parent_archetype_id (att_parent_id)
+								-- add optional standard parts
+								if attached adl_parser.parent_archetype_id as att_parent_id then
+									new_overlay.set_parent_archetype_id (att_parent_id)
+								end
+
+								if adl_parser.is_generated then
+									new_overlay.set_is_generated
+								end
+
+								if attached rules_context.tree as att_rules_tree then
+									new_overlay.set_rules (att_rules_tree)
+								end
+
+								new_overlay.rebuild
+								Result := new_overlay
+							else
+								errors.add_error (ec_SAON, Void, generator + ".parse")
+								errors.append (dt_object_converter.errors)
 							end
+						else
+							-----------------------------------------------------------------------------------------------
+							-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
+							convert_terminology_to_nested (terminology_tree)  -- perform any version upgrade conversions on terminology
+							--
+							-----------------------------------------------------------------------------------------------
 
-							if valid_standard_version (adl_parser.adl_version) then
-								new_diff_arch.set_adl_version (adl_parser.adl_version)
-							end
+							if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
+								terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, True>>) as diff_terminology
+								and then not dt_object_converter.errors.has_errors
+							then
+								-- build the archetype
+								check attached res_desc end
+								diff_terminology.set_differential
+								create new_diff_arch.make (
+									adl_parser.artefact_type,
+									adl_parser.archetype_id,
+									adl_parser.rm_release,
+									olt.original_language,
+									adl_parser.uid,
+									res_desc,
+									definition,
+									diff_terminology
+								)
 
-							if valid_standard_version (adl_parser.rm_release) then
-								new_diff_arch.set_rm_release (adl_parser.rm_release)
-							end
+								-- add optional standard parts
+								if attached adl_parser.parent_archetype_id as att_parent_id then
+									new_diff_arch.set_parent_archetype_id (att_parent_id)
+								end
 
-							if adl_parser.is_controlled then
-								new_diff_arch.set_is_controlled
-							end
+								if adl_parser.is_generated then
+									new_diff_arch.set_is_generated
+								end
 
-							if adl_parser.is_generated then
-								new_diff_arch.set_is_generated
-							end
+								if attached rules_context.tree as att_rules_tree then
+									new_diff_arch.set_rules (att_rules_tree)
+								end
 
-							-- other meta-data
-							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
-								across omd as omd_csr loop
-									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-										new_diff_arch.put_other_metadata_value (a_key, an_item)
+								-- version meta-data
+								if valid_standard_version (adl_parser.adl_version) then
+									new_diff_arch.set_adl_version (adl_parser.adl_version)
+								end
+
+								if valid_standard_version (adl_parser.rm_release) then
+									new_diff_arch.set_rm_release (adl_parser.rm_release)
+								end
+
+								if adl_parser.is_controlled then
+									new_diff_arch.set_is_controlled
+								end
+
+								-- other meta-data
+								if attached adl_parser.other_metadata as omd and then not omd.is_empty then
+									across omd as omd_csr loop
+										if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
+											new_diff_arch.put_other_metadata_value (a_key, an_item)
+										end
 									end
 								end
-							end
 
-							if attached orig_lang_trans.translations as olt_trans then
-								new_diff_arch.set_translations (olt_trans)
-							end
+								-- descriptive meta-data
+								if attached orig_lang_trans.translations as olt_trans then
+									new_diff_arch.set_translations (olt_trans)
+								end
 
-							if attached rules_context.tree as att_rules_tree then
-								new_diff_arch.set_rules (att_rules_tree)
-							end
+								if attached annots as att_annots then
+									new_diff_arch.set_annotations (att_annots)
+								end
 
-							if attached annots as att_annots then
-								new_diff_arch.set_annotations (att_annots)
+								new_diff_arch.rebuild
+								Result := new_diff_arch
+							else
+								errors.add_error (ec_SAON, Void, generator + ".parse")
+								errors.append (dt_object_converter.errors)
 							end
-
-							new_diff_arch.rebuild
-							Result := new_diff_arch
-						else
-							errors.add_error (ec_SAON, Void, generator + ".parse")
-							errors.append (dt_object_converter.errors)
 						end
 					end
 				end
@@ -273,15 +315,15 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
+	post_parse_151_convert (an_arch: AUTHORED_ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
 		require
 			Sub_151_version: version_less_than (an_arch.adl_version, Adl_id_code_version)
 		local
 			proc: AOM_151_CONVERTER
-			flat_parent: detachable ARCHETYPE
+			flat_parent: detachable AUTHORED_ARCHETYPE
 		do
-			if attached aca.specialisation_parent as spec_parent then
-				flat_parent := spec_parent.flat_archetype
+			if attached aca.specialisation_parent as spec_parent and then attached {AUTHORED_ARCHETYPE} spec_parent.flat_archetype as auth_arch then
+				flat_parent := auth_arch
  			end
 
 			if attached post_parse_151_converter as pcp then
@@ -413,21 +455,22 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
-			comp_onts_serialised, desc_serialised: STRING
+			lang_serialised, desc_serialised, rules_serialised, annot_serialised, comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
-			-- language section
-			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			language_context.serialise (a_format, False, False)
+			create lang_serialised.make_empty
+			create desc_serialised.make_empty
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				-- language section
+				language_context.set_tree (auth_arch.orig_lang_translations.dt_representation)
+				language_context.serialise (a_format, False, False)
+				lang_serialised := language_context.serialised
 
-			-- description section
-			if attached an_archetype.description as att_desc then
-				description_context.set_tree (an_archetype.description.dt_representation)
+				-- description section
+				description_context.set_tree (auth_arch.description.dt_representation)
 				description_context.serialise (a_format, False, False)
 				desc_serialised := description_context.serialised
-			else
-				create desc_serialised.make_empty
 			end
 
 			-- definition section
@@ -435,30 +478,35 @@ feature -- Serialisation
 			definition_context.serialise (an_archetype, a_format, a_lang)
 
 			-- rules section
+			create rules_serialised.make_empty
 			if an_archetype.has_rules then
 				rules_context.set_tree (an_archetype.rules)
 				rules_context.serialise (a_format)
+				rules_serialised := rules_context.serialised
 			end
 
 			-- terminology section
 			terminology_context.set_tree (an_archetype.terminology.dt_representation)
 			terminology_context.serialise (a_format, False, False)
 
+			-- annotations section
+			create annot_serialised.make_empty
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				if auth_arch.has_annotations then
+					annotations_context.set_tree (auth_arch.annotations.dt_representation)
+					annotations_context.serialise (a_format, False, False)
+					annot_serialised := annotations_context.serialised
+				end
+			end
+
 			-- OPT only: component_ontologies section
+			create comp_onts_serialised.make_empty
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
 				create comp_onts_helper.make
 				comp_onts_helper.set_component_terminologies (opt.component_terminologies)
 				terminology_context.set_tree (comp_onts_helper.dt_representation)
 				terminology_context.serialise (a_format, False, False)
 				comp_onts_serialised := terminology_context.serialised
-			else
-				create comp_onts_serialised.make_empty
-			end
-
-			-- annotations section
-			if an_archetype.has_annotations then
-				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-				annotations_context.serialise (a_format, False, False)
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
@@ -466,8 +514,8 @@ feature -- Serialisation
 				serialiser := ser
 			end
 			serialiser.reset
-			serialiser.serialise_from_parts (an_archetype, language_context.serialised, desc_serialised, definition_context.serialised,
-				rules_context.serialised, terminology_context.serialised, annotations_context.serialised, comp_onts_serialised)
+			serialiser.serialise_from_parts (an_archetype, lang_serialised, desc_serialised, definition_context.serialised,
+					rules_serialised, terminology_context.serialised, annot_serialised, comp_onts_serialised)
 
 			Result := serialiser.last_result
 		end
@@ -527,13 +575,13 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	original_language_and_translations_from_ontology (ontology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
-			-- The original language and translations, mined from `terminology'.
+	original_language_and_translations_from_ontology (a_terminology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
+			-- The original language and translations, mined from `a_terminology'.
 		do
 			create Result.make
-			Result.set_original_language_from_string (ontology.original_language)
-			across ontology.languages_available as langs_csr loop
-				if not langs_csr.item.is_equal (ontology.original_language) then
+			Result.set_original_language_from_string (a_terminology.original_language.code_string)
+			across a_terminology.languages_available as langs_csr loop
+				if not langs_csr.item.is_equal (a_terminology.original_language.code_string) then
 					Result.add_new_translation (langs_csr.item)
 				end
 			end

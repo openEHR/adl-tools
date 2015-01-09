@@ -10,7 +10,7 @@ note
 class OPERATIONAL_TEMPLATE
 
 inherit
-	ARCHETYPE
+	AUTHORED_ARCHETYPE
 		redefine
 			make_from_other, annotated_path
 		end
@@ -20,9 +20,9 @@ create
 
 feature -- Initalisation
 
-	make_from_other (an_other: ARCHETYPE)
+	make_from_other (other: AUTHORED_ARCHETYPE)
 		do
-			precursor (an_other)
+			precursor (other)
 			create artefact_type.make_operational_template
 		end
 

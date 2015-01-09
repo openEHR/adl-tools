@@ -95,10 +95,10 @@ feature {NONE} -- Implementation
 					end
 
 					-- append any annotations
-					if ui_graph_state.archetype.has_annotation_at_path (display_settings.language, p) then
+					if attached {AUTHORED_ARCHETYPE} ui_graph_state.archetype as auth_arch and then auth_arch.has_annotation_at_path (display_settings.language, p) then
 						Result.append (get_text (ec_annotations_text) + ":%N")
 						Result.append ("%T")
-						Result.append (ui_graph_state.archetype.annotations.annotations_at_path (display_settings.language, p).as_string)
+						Result.append (auth_arch.annotations.annotations_at_path (display_settings.language, p).as_string)
 					end
 
 					if not c_attrs_csr.is_last then

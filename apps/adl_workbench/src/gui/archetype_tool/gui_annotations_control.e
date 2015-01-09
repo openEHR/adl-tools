@@ -13,7 +13,7 @@ class GUI_ANNOTATIONS_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, can_populate, can_repopulate
+			can_edit, can_populate, can_repopulate, source_archetype
 		end
 
 create
@@ -46,6 +46,14 @@ feature {NONE} -- Initialisation
 feature -- Access
 
 	ev_root_container: EV_GRID_KBD_MOUSE
+
+	source_archetype: detachable AUTHORED_ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view'
+		do
+			if attached {AUTHORED_ARCHETYPE} precursor as auth_arch then
+				Result := auth_arch
+			end
+		end
 
 feature -- Status Report
 

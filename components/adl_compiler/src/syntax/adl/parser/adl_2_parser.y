@@ -123,9 +123,8 @@ template: template_marker arch_meta_data archetype_id
 		arch_annotations
 	;
 
-template_overlay: template_overlay_marker arch_meta_data archetype_id 
+template_overlay: template_overlay_marker archetype_id 
 	   	arch_specialisation
-		arch_language 
 		arch_definition 
 		arch_terminology
 	;

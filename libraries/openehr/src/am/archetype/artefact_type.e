@@ -106,13 +106,19 @@ feature -- Access
 feature -- Status report
 
 	is_template: BOOLEAN
-			-- True if any type other than `archetype'
+			-- True if value is `template'
 		do
-			Result := value /= archetype
+			Result := value = template
+		end
+
+	is_template_or_overlay: BOOLEAN
+			-- True if value is `template' or `template_overlay'
+		do
+			Result := value = template or value = template_overlay
 		end
 
 	is_overlay: BOOLEAN
-			-- True if any type other than `template_overlay'
+			-- True if value is `template_overlay'
 		do
 			Result := value = template_overlay
 		end

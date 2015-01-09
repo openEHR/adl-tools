@@ -40,7 +40,7 @@ inherit
 
 feature -- Access
 
-	arch_flat_parent: ARCHETYPE
+	arch_flat_parent: AUTHORED_ARCHETYPE
 			-- flat archetype of parent, if applicable
 		attribute
 			create Result.default_create
@@ -52,13 +52,13 @@ feature -- Access
 			create Result.default_create
 		end
 
-	arch_flat_out: detachable ARCHETYPE
+	arch_flat_out: detachable AUTHORED_ARCHETYPE
 			-- generated flat archetype - logically an overlay of `arch_flat_parent' and `arch_diff_child'
 			-- if the `arch_diff_child' is a template, the dynamic type will be OPERATIONAL_TEMPLATE
 
 feature -- Commands
 
-	execute (a_flat_parent, a_diff_child: ARCHETYPE)
+	execute (a_flat_parent: AUTHORED_ARCHETYPE; a_diff_child: ARCHETYPE)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Parent_valid: a_flat_parent.is_valid and then a_flat_parent.is_flat
@@ -84,7 +84,10 @@ feature -- Commands
 			arch_flat_out.terminology.merge (arch_diff_child.terminology)
 
 			-- any parts that rely on paths have to be done after definition flattening: annotations
-			arch_flat_out.merge_annotations_from_resource (arch_diff_child)
+			if attached {AUTHORED_ARCHETYPE} arch_flat_out as auth_arch_flat_out and attached {AUTHORED_ARCHETYPE} arch_diff_child as auth_arch_diff_child then
+				auth_arch_flat_out.merge_annotations_from_resource (auth_arch_diff_child)
+			end
+
 			arch_flat_out.set_is_valid
 
 			arch_flat_out.rebuild

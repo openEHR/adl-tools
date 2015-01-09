@@ -33,6 +33,9 @@ feature -- Definitions
 			create Result.make (Default_encoding_code_set, Default_encoding)
 		end
 
+	Non_existent_language: STRING = "zz"
+			-- useful as a default if need to detect that no real value has been set
+
 feature -- Access
 
 	terminology (name: STRING): TERMINOLOGY_ACCESS

@@ -144,6 +144,7 @@ feature -- Definitions
 		ec_VETDF: STRING = "VETDF"
 		ec_WETDF: STRING = "WETDF"
 		ec_VOTM: STRING = "VOTM"
+		ec_VOLT: STRING = "VOLT"
 		ec_VATCD: STRING = "VATCD"
 		ec_VATID: STRING = "VATID"
 		ec_VATDF: STRING = "VATDF"

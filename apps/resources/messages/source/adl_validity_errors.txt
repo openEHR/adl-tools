@@ -26,6 +26,7 @@ templates = <
 		["WETDF"] = <"External term $1 not verified; terminology $2 unavailable">
 
 		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition section">
+		["VOLT"] = <"original language $1 not defined in terminology">
 		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
 		["VATID"] = <"node id-code $1 at path $2 not defined in flat terminology">
 		["VATDF"] = <"value code $1 referenced in definition at path $2 not defined in flat terminology">

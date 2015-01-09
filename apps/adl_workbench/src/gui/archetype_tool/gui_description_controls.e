@@ -12,7 +12,7 @@ class GUI_DESCRIPTION_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, can_edit, disable_edit, enable_edit
+			can_populate, can_repopulate, can_edit, disable_edit, enable_edit, source_archetype
 		end
 
 create
@@ -46,9 +46,9 @@ feature {NONE} -- Initialisation
 			-- lifecycle state control - single line combo text-selection field
 			create evx_lifecycle_state_combo.make_linked (get_text (ec_lifecycle_state_label_text),
 				get_text (ec_lifecycle_state_label_tooltip),
-				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.lifecycle_state end end,
+				agent : detachable STRING do if attached source_archetype as auth_arch then Result := auth_arch.description.lifecycle_state end end,
 				resource_lifecycle_states,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_lifecycle_state (a_str) end end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_lifecycle_state (a_str) end end,
 				Void, undo_redo_chain, 18)
 			gui_controls.extend (evx_lifecycle_state_combo)
 			ev_governance_tab_vbox.extend (evx_lifecycle_state_combo.ev_root_container)
@@ -61,12 +61,12 @@ feature {NONE} -- Initialisation
 			create evx_resource_package.make_linked (get_text (ec_packages_label_text),
 				agent :detachable STRING
 					do
-						if attached source_archetype.description as desc and then attached desc.resource_package_uri as rpi then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.resource_package_uri as rpi then
 							Result := rpi.out
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_resource_package_uri (a_str) end end,
-				agent do source_archetype.description.clear_resource_package_uri end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_resource_package_uri (a_str) end end,
+				agent do if attached source_archetype as auth_arch then auth_arch.description.clear_resource_package_uri end end,
 				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_resource_package)
 			evx_package_frame.extend (evx_resource_package.ev_root_container, False)
@@ -80,12 +80,12 @@ feature {NONE} -- Initialisation
 			create evx_custodian_namespace_text.make_linked (get_text (ec_custodian_namespace_label_text),
 				agent : detachable STRING
 					do
-						if attached source_archetype.description as desc and then attached desc.custodian_namespace as rpi then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.custodian_namespace as rpi then
 							Result := rpi
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_namespace (a_str) end end,
-				agent do source_archetype.description.clear_custodian_namespace end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_custodian_namespace (a_str) end end,
+				agent do if attached source_archetype as auth_arch then auth_arch.description.clear_custodian_namespace end end,
 				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_custodian_namespace_text)
 			evx_custodian_frame.extend (evx_custodian_namespace_text.ev_root_container, False)
@@ -94,12 +94,12 @@ feature {NONE} -- Initialisation
 			create evx_custodian_organisation_text.make_linked (get_text (ec_custodian_organisation_label_text),
 				agent : detachable STRING
 					do
-						if attached source_archetype.description as desc and then attached desc.custodian_organisation as rpi then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.custodian_organisation as rpi then
 							Result := rpi
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_custodian_organisation (a_str) end end,
-				agent do source_archetype.description.clear_custodian_organisation end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_custodian_organisation (a_str) end end,
+				agent do if attached source_archetype as auth_arch then auth_arch.description.clear_custodian_organisation end end,
 				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_custodian_organisation_text)
 			evx_custodian_frame.extend (evx_custodian_organisation_text.ev_root_container, False)
@@ -114,12 +114,12 @@ feature {NONE} -- Initialisation
 			create evx_original_namespace_text.make_linked (get_text (ec_original_namespace_label_text),
 				agent : detachable STRING
 					do
-						if attached source_archetype.description as desc and then attached desc.original_namespace as rpi then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.original_namespace as rpi then
 							Result := rpi
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_namespace (a_str) end end,
-				agent do source_archetype.description.clear_original_namespace end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_original_namespace (a_str) end end,
+				agent do if attached source_archetype as auth_arch then auth_arch.description.clear_original_namespace end end,
 				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_original_namespace_text)
 			evx_original_publisher_frame.extend (evx_original_namespace_text.ev_root_container, False)
@@ -128,12 +128,12 @@ feature {NONE} -- Initialisation
 			create evx_original_publisher_text.make_linked (get_text (ec_original_publisher_label_text),
 				agent : detachable STRING
 					do
-						if attached source_archetype.description as desc and then attached desc.original_publisher as rpi then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.original_publisher as rpi then
 							Result := rpi
 						end
 					end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.set_original_publisher (a_str) end end,
-				agent do source_archetype.description.clear_original_publisher end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_original_publisher (a_str) end end,
+				agent do if attached source_archetype as auth_arch then auth_arch.description.clear_original_publisher end end,
 				undo_redo_chain, 0, True)
 			gui_controls.extend (evx_original_publisher_text)
 			evx_original_publisher_frame.extend (evx_original_publisher_text.ev_root_container, False)
@@ -145,7 +145,7 @@ feature {NONE} -- Initialisation
 
 			-- copyright - multi-line text
 			create evx_copyright_text.make_linked (get_text (ec_copyright_label_text),
-				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.copyright end end,
+				agent : detachable STRING do if attached source_archetype as auth_arch then Result := auth_arch.description.copyright end end,
 				agent (a_str: STRING) do source_archetype.description.set_copyright (a_str) end,
 				agent do source_archetype.description.clear_copyright end,
 				undo_redo_chain, 0, 0, True)
@@ -154,18 +154,18 @@ feature {NONE} -- Initialisation
 
 			-- licence - multi-line text
 			create evx_licence_text.make_linked (get_text (ec_licence_label_text),
-				agent : detachable STRING do if attached source_archetype.description as desc then Result := desc.licence end end,
-				agent (a_str: STRING) do source_archetype.description.set_licence (a_str) end,
-				agent do source_archetype.description.clear_licence end,
+				agent : detachable STRING do if attached source_archetype as auth_arch then Result := auth_arch.description.licence end end,
+				agent (a_str: STRING) do if attached source_archetype as auth_arch then auth_arch.description.set_licence (a_str) end end,
+				agent do if attached source_archetype as auth_arch then auth_arch.description.clear_licence end end,
 				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_licence_text)
 			evx_ip_frame.extend (evx_licence_text.ev_root_container, False)
 
 			-- ip_acknowledgements control - Hash
 			create evx_ip_acknowledgements.make_linked (get_text (ec_ip_acknowledgements_label_text),
-				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc and then attached desc.ip_acknowledgements as ack then Result := ack end end,
-				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_ip_acknowledgements_item (a_key, a_val) end end,
-				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_ip_acknowledgements_item (a_key) end end,
+				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype as auth_arch and then attached auth_arch.description.ip_acknowledgements as ack then Result := ack end end,
+				agent (a_key, a_val: STRING) do if attached source_archetype as auth_arch then auth_arch.description.put_ip_acknowledgements_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached source_archetype as auth_arch then auth_arch.description.remove_ip_acknowledgements_item (a_key) end end,
 				undo_redo_chain,
 				0, 0, True, Void)
 			gui_controls.extend (evx_ip_acknowledgements)
@@ -371,12 +371,12 @@ feature {NONE} -- Initialisation
 			create evx_references.make_linked ("",
 				agent :detachable HASH_TABLE [STRING, STRING]
 					do
-						if attached source_archetype.description as desc and then attached desc.references as od then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.references as od then
 							Result := od
 						end
 					end,
-				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_references_item (a_key, a_val) end end,
-				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_references_item (a_key) end end,
+				agent (a_key, a_val: STRING) do if attached source_archetype as auth_arch then auth_arch.description.put_references_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached source_archetype as auth_arch then auth_arch.description.remove_references_item (a_key) end end,
 				undo_redo_chain,
 				2, 0, True, Void)
 			gui_controls.extend (evx_references)
@@ -391,12 +391,12 @@ feature {NONE} -- Initialisation
 			create evx_other_details.make_linked ("",
 				agent :detachable HASH_TABLE [STRING, STRING]
 					do
-						if attached source_archetype.description as desc and then attached desc.other_details as od then
+						if attached source_archetype as auth_arch and then attached auth_arch.description.other_details as od then
 							Result := od
 						end
 					end,
-				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_other_details_item (a_key, a_val) end end,
-				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_other_details_item (a_key) end end,
+				agent (a_key, a_val: STRING) do if attached source_archetype as auth_arch then auth_arch.description.put_other_details_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached source_archetype as auth_arch then auth_arch.description.remove_other_details_item (a_key) end end,
 				undo_redo_chain,
 				2, 0, True, Void)
 			gui_controls.extend (evx_other_details)
@@ -414,6 +414,14 @@ feature {NONE} -- Initialisation
 feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
+
+	source_archetype: detachable AUTHORED_ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view'
+		do
+			if attached {AUTHORED_ARCHETYPE} precursor as auth_arch then
+				Result := auth_arch
+			end
+		end
 
 feature -- Status Report
 
@@ -546,8 +554,8 @@ feature {NONE} -- Implementation
 
 	translation_details: detachable TRANSLATION_DETAILS
 		do
-			if source_archetype.has_translations then
-				Result := source_archetype.translation_for_language (evx_trans_languages_combo.selected_text)
+			if attached source_archetype as auth_arch and then auth_arch.has_translations then
+				Result := auth_arch.translation_for_language (evx_trans_languages_combo.selected_text)
 			end
 		end
 

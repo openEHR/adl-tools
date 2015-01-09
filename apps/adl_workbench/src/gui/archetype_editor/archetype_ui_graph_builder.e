@@ -87,7 +87,9 @@ feature -- Visitor
 			ui_node: C_ARCHETYPE_ROOT_UI_NODE
 			new_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE
 		do
-			if attached ui_graph_state.archetype as arch and then arch.is_template then
+			-- if we are in a template, put a new UI graph context object on the stack, because the
+			-- C_ARCHETYPE_ROOT will be expanded, rather than just a reference
+			if attached ui_graph_state.archetype as arch and then arch.is_template_or_overlay then
 				new_ui_graph_state := ui_graph_state.twin
 				new_ui_graph_state.set_flat_terminology (current_library.archetype_matching_ref (a_node.archetype_ref).flat_archetype.terminology)
 				ui_graph_state_stack.extend (new_ui_graph_state)
@@ -107,7 +109,7 @@ feature -- Visitor
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			obj_node_stack.remove
-			if attached ui_graph_state.archetype as arch and then arch.is_template then
+			if attached ui_graph_state.archetype as arch and then arch.is_template_or_overlay then
 				ui_graph_state_stack.remove
 			end
 		end

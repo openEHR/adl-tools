@@ -20,13 +20,13 @@ inherit
 			{NONE} all
 		end
 
-	LANGUAGE_TAG_TOOLS
+	LINGUISTIC_RESOURCE
 
 feature -- Definitions
 
 	Uncontrolled_revision_name: STRING = "(uncontrolled)"
 
-feature -- Initialisation
+feature {P_AUTHORED_ARCHETYPE} -- Initialisation
 
 	make_from_other (other: AUTHORED_RESOURCE)
 		local
@@ -50,7 +50,7 @@ feature -- Access
 			-- authoring is required to ensure natural language translations can preserve
 			-- quality. Language is relevant in both the description and ontology sections.
 		attribute
-			Result := ts.Default_language_code
+			create Result.default_create
 		end
 
 	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
@@ -58,7 +58,7 @@ feature -- Access
 			-- language tag. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
 
-	description: detachable RESOURCE_DESCRIPTION
+	description: RESOURCE_DESCRIPTION
 			-- Description and lifecycle information of the resource.
 
 	revision_history: detachable REVISION_HISTORY
@@ -92,8 +92,6 @@ feature -- Access
 				end
 			end
 			Result := languages_available_cache
-		ensure
-			not Result.is_empty
 		end
 
 	translation_for_language (a_lang: STRING): detachable TRANSLATION_DETAILS
@@ -107,42 +105,11 @@ feature -- Access
 			end
 		end
 
-	matching_language_tag (a_lang: STRING): STRING
-			-- Currently defined language tag for language `a_lang', e.g.
-			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
-			-- FIXME: this currently returns the FIRST matching tag
-		require
-			Valid_language: has_matching_language_tag (a_lang)
-		do
-			from languages_available.start until languages_available.off or language_tag_has_language (languages_available.item, a_lang) loop
-				languages_available.forth
-			end
-			Result := languages_available.item
-		end
-
 feature -- Status Report
 
 	is_controlled: BOOLEAN
 			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
-
-	has_language (a_lang_tag: STRING): BOOLEAN
-			-- True if either original_language or translations has a_lang_tag
-		do
-			Result := original_language.code_string.is_equal (a_lang_tag) or else (has_translations and then translations.has (a_lang_tag))
-		end
-
-	has_matching_language_tag (a_lang: STRING): BOOLEAN
-			-- True if the currently defined language tags match the language `a_lang', e.g.
-			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
-		require
-			Valid_language: valid_language_pattern_tag (a_lang)
-		do
-			from languages_available.start until languages_available.off or language_tag_has_language (languages_available.item, a_lang) loop
-				languages_available.forth
-			end
-			Result := not languages_available.off
-		end
 
 	has_translations: BOOLEAN
 			-- True if there are translations
@@ -180,8 +147,6 @@ feature -- Modification
 	set_original_language (a_lang: TERMINOLOGY_CODE)
 		do
 			original_language := a_lang
-		ensure
-			original_language = a_lang
 		end
 
 	set_description (a_desc: RESOURCE_DESCRIPTION)
@@ -218,19 +183,12 @@ feature -- Modification
 			languages_available.has (a_trans.language.code_string)
 		end
 
-	add_language_tag (a_lang_tag: STRING)
+	add_language (a_lang_tag: STRING)
 			-- add a new translation language to the resource, creating appropriate copies
-		require
-			Lang_tag_valid: valid_language_tag(a_lang_tag)
-			Lang_tag_not_already_present: not has_language(a_lang_tag)
 		do
 			add_default_translation (a_lang_tag)
-			if attached description as desc then
-				desc.add_language (a_lang_tag)
-			end
+			description.add_language (a_lang_tag)
 			languages_available_cache.wipe_out
-		ensure
-			has_language(a_lang_tag)
 		end
 
 	merge_annotations (a_lang_tag: STRING; a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
@@ -260,6 +218,15 @@ feature -- Modification
 			end
 		end
 
+	set_authoring_default_details (an_author_name, an_author_org, a_lifecycle_state, a_copyright: STRING)
+		do
+			description.put_original_author_item ("name", an_author_name)
+			description.put_original_author_item ("organisation", an_author_org)
+			description.set_lifecycle_state (a_lifecycle_state)
+			description.add_original_language_details
+			description.set_copyright (a_copyright)
+		end
+
 feature -- Status setting
 
 	set_is_controlled
@@ -278,27 +245,11 @@ feature {ARCHETYPE} -- Flattening
 					if attached translations as trans then
 						trans.remove (langs_csr.item)
 					end
-					if attached description as desc then
-						desc.remove_language (langs_csr.item)
-					end
+					description.remove_language (langs_csr.item)
 					if attached annotations as annots then
 						annots.remove_language (langs_csr.item)
 					end
 				end
-			end
-		end
-
-feature -- Output
-
-	languages_available_out: STRING
-			-- generate readable comma-separated list of languages available
-		do
-			create Result.make_empty
-			across languages_available as langs_csr loop
-				if not Result.is_empty then
-					Result.append (", ")
-				end
-				Result.append (langs_csr.item)
 			end
 		end
 

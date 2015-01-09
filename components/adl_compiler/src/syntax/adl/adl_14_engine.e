@@ -64,13 +64,13 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE): detachable ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE): detachable AUTHORED_ARCHETYPE
 			-- parse text as legacy flat archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
-			new_flat_arch: ARCHETYPE
+			new_flat_arch: AUTHORED_ARCHETYPE
 		do
 			adl_parser.execute (a_text)
 
@@ -83,9 +83,7 @@ feature -- Parsing
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				check attached adl_parser.language_text as lt then
-					language_context.set_source (lt, adl_parser.language_text_start_line)
-				end
+				language_context.set_source (adl_parser.language_text, adl_parser.language_text_start_line)
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
@@ -205,6 +203,7 @@ feature -- Parsing
 							term_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, False>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
+							check attached res_desc end
 							create new_flat_arch.make (
 								adl_parser.artefact_type,
 								adl_parser.archetype_id,
@@ -293,24 +292,33 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
+			lang_serialised, desc_serialised, invs_serialised, annot_serialised: STRING
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
-			-- language section
-			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			language_context.serialise (a_format, False, False)
+			create lang_serialised.make_empty
+			create desc_serialised.make_empty
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				-- language section
+				language_context.set_tree (auth_arch.orig_lang_translations.dt_representation)
+				language_context.serialise (a_format, False, False)
+				lang_serialised := language_context.serialised
 
-			-- description section
-			description_context.set_tree (an_archetype.description.dt_representation)
-			description_context.serialise (a_format, False, False)
+				-- description section
+				description_context.set_tree (auth_arch.description.dt_representation)
+				description_context.serialise (a_format, False, False)
+				desc_serialised := description_context.serialised
+			end
 
 			-- definition section
 			definition_context.set_tree (an_archetype.definition)
 			definition_context.serialise (an_archetype, a_format, a_lang)
 
 			-- rules section
+			create invs_serialised.make_empty
 			if an_archetype.has_rules then
 				invariant_context.set_tree (an_archetype.rules)
 				invariant_context.serialise (a_format)
+				invs_serialised := invariant_context.serialised
 			end
 
 			-- terminology section
@@ -327,9 +335,13 @@ feature -- Serialisation
 			end
 
 			-- annotations section
-			if an_archetype.has_annotations then
-				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-				annotations_context.serialise (a_format, False, False)
+			create annot_serialised.make_empty
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				if auth_arch.has_annotations then
+					annotations_context.set_tree (auth_arch.annotations.dt_representation)
+					annotations_context.serialise (a_format, False, False)
+					annot_serialised := annotations_context.serialised
+				end
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
@@ -337,8 +349,8 @@ feature -- Serialisation
 				serialiser := ser
 			end
 			serialiser.reset
-			serialiser.serialise_from_parts (an_archetype, language_context.serialised, description_context.serialised, definition_context.serialised,
-				invariant_context.serialised, terminology_context.serialised, annotations_context.serialised, "")
+			serialiser.serialise_from_parts (an_archetype, lang_serialised, desc_serialised, definition_context.serialised,
+					invs_serialised, terminology_context.serialised, annot_serialised, "")
 
 			Result := serialiser.last_result
 		end
@@ -368,13 +380,13 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	original_language_and_translations_from_terminology (terminology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
+	original_language_and_translations_from_terminology (a_terminology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `terminology'.
 		do
 			create Result.make
-			Result.set_original_language_from_string (terminology.original_language)
-			across terminology.languages_available as langs_csr loop
-				if not langs_csr.item.is_equal (terminology.original_language) then
+			Result.set_original_language_from_string (a_terminology.original_language.code_string)
+			across a_terminology.languages_available as langs_csr loop
+				if not langs_csr.item.is_equal (a_terminology.original_language.code_string) then
 					Result.add_new_translation (langs_csr.item)
 				end
 			end

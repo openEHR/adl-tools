@@ -129,13 +129,13 @@ feature {NONE} -- Initialisation
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		local
-			a_diff_arch: ARCHETYPE
+			a_diff_arch: AUTHORED_ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential (artefact_type, an_id, rm_schema.rm_release, locale_language_short)
-			set_archetype_default_details (a_diff_arch)
+			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
 			differential_archetype := a_diff_arch
 
 			initialise
@@ -153,13 +153,13 @@ feature {NONE} -- Initialisation
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 			Valid_parent: a_parent.is_differential
 		local
-			a_diff_arch: ARCHETYPE
+			a_diff_arch: AUTHORED_ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_archetype)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
-			set_archetype_default_details (a_diff_arch)
+			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
 
@@ -167,6 +167,7 @@ feature {NONE} -- Initialisation
 			save_differential_text
 		ensure
 			Is_specialised: is_specialised
+			Is_archetype: attached {AUTHORED_ARCHETYPE} differential_archetype as auth_diff_arch and then not artefact_type.is_template_or_overlay
 		end
 
 	make_new_template (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; a_lib_source: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
@@ -176,13 +177,13 @@ feature {NONE} -- Initialisation
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 			Valid_parent: a_parent.is_differential
 		local
-			a_diff_arch: ARCHETYPE
+			a_diff_arch: AUTHORED_ARCHETYPE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_template)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
-			set_archetype_default_details (a_diff_arch)
+			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
 
@@ -190,6 +191,7 @@ feature {NONE} -- Initialisation
 			save_differential_text
 		ensure
 			Is_specialised: is_specialised
+			Is_template: attached {AUTHORED_ARCHETYPE} differential_archetype as auth_diff_arch and then artefact_type.is_template_or_overlay
 		end
 
 	make_new_any (an_id: ARCHETYPE_HRID; an_artefact_type: ARTEFACT_TYPE)
@@ -535,7 +537,7 @@ feature -- Artefacts
 			exception_occurred := True
 		end
 
-	flat_archetype: ARCHETYPE
+	flat_archetype: AUTHORED_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -550,7 +552,7 @@ feature -- Artefacts
 			Result.is_flat
 		end
 
-	flat_archetype_with_rm: ARCHETYPE
+	flat_archetype_with_rm: AUTHORED_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -841,7 +843,7 @@ feature {NONE} -- Compilation
 			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
 			Legacy_file_available: file_mgr.has_legacy_flat_file
 		local
-			legacy_flat_archetype: detachable ARCHETYPE
+			legacy_flat_archetype: detachable AUTHORED_ARCHETYPE
 			archetype_comparator: ARCHETYPE_COMPARATOR
 		do
 			clear_cache
@@ -937,10 +939,8 @@ feature {NONE} -- Compilation
 					add_info (ec_parse_i1, <<id.physical_id>>)
 				end
 
-				-- perform post-parse object structure finalisation
-				if version_less_than (diff_arch.adl_version, Adl_id_code_version) then
-					post_parse_151_convert (diff_arch)
-				end
+				-- perform version upgrading if applicable
+				post_parse_151_convert (diff_arch)
 
 				-- perform post-parse object structure finalisation
 				adl_2_engine.post_parse_process (diff_arch, Current)
@@ -960,7 +960,11 @@ feature {NONE} -- Compilation
 		require
 			Compilation_state: compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			adl_2_engine.post_parse_151_convert (an_archetype, Current)
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				if version_less_than (auth_arch.adl_version, Adl_id_code_version) then
+					adl_2_engine.post_parse_151_convert (auth_arch, Current)
+				end
+			end
 		end
 
 	evaluate_suppliers
@@ -1038,7 +1042,6 @@ feature {NONE} -- Compilation
 					if adl_2_engine.validation_passed then
 						compilation_state := Cs_validated_phase_2
 						diff_arch.set_is_valid
-						diff_arch.set_adl_version (latest_adl_version)
 					else
 						compilation_state := Cs_validate_failed
 					end
@@ -1242,11 +1245,19 @@ feature -- Output
 		do
 			if flat_flag then
 				check attached flat_archetype as fa then
-					create {P_ARCHETYPE} dt_arch.make (fa)
+					if attached {AUTHORED_ARCHETYPE} fa as flat_auth_arch then
+						create {P_AUTHORED_ARCHETYPE} dt_arch.make (flat_auth_arch)
+					else
+						create {P_ARCHETYPE} dt_arch.make (fa)
+					end
 				end
 			else
 				check attached differential_archetype as da then
-					create {P_ARCHETYPE} dt_arch.make (da)
+					if attached {AUTHORED_ARCHETYPE} da as diff_auth_arch then
+						create {P_AUTHORED_ARCHETYPE} dt_arch.make (diff_auth_arch)
+					else
+						create {P_ARCHETYPE} dt_arch.make (da)
+					end
 				end
 			end
 
@@ -1282,13 +1293,13 @@ feature -- Editing
 
 	editor_state: detachable ALA_EDITOR_STATE
 
-	flat_archetype_clone: ARCHETYPE
+	flat_archetype_clone: AUTHORED_ARCHETYPE
 			-- produce a clone of the current `flat_archetype'
 		do
 			if attached flat_archetype_clone_cache as facc then
 				Result := facc
 			else
-				create Result.make_from_other (flat_archetype)
+				Result := flat_archetype.deep_twin
 				flat_archetype_clone_cache := Result
 			end
 		ensure
@@ -1331,7 +1342,7 @@ feature -- Editing
 
 feature {NONE} -- Editing
 
-	flat_archetype_clone_cache: detachable ARCHETYPE
+	flat_archetype_clone_cache: detachable AUTHORED_ARCHETYPE
 
 	clear_cache
 		do
@@ -1374,7 +1385,8 @@ feature {NONE} -- Implementation
 			compilation_state >= Cs_validated_phase_2
 		local
 			fillers_index: HASH_TABLE [ARCHETYPE, STRING]
-			diff_arch, flattened_arch: ARCHETYPE
+			diff_arch: ARCHETYPE
+			flattened_arch: AUTHORED_ARCHETYPE
 		do
 			check attached differential_archetype as da then
 				diff_arch := da
@@ -1389,7 +1401,9 @@ feature {NONE} -- Implementation
 					flattened_arch := fa
 				end
 			else
-				flattened_arch := diff_arch.deep_twin
+				check attached {AUTHORED_ARCHETYPE} diff_arch as auth_diff_arch then
+					flattened_arch := auth_diff_arch.deep_twin
+				end
 				flattened_arch.set_generated_flat
 				flattened_arch.set_is_valid
 			end
@@ -1415,22 +1429,11 @@ feature {NONE} -- Implementation
 			flat_archetype_cache_attached: attached flat_archetype_cache
 		end
 
-	flat_archetype_cache: detachable ARCHETYPE
+	flat_archetype_cache: detachable AUTHORED_ARCHETYPE
 			-- archetype generated by flattening process
 
 	last_include_rm: BOOLEAN
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
-
-	set_archetype_default_details (a_diff_arch: ARCHETYPE)
-		require
-			a_diff_arch.is_differential
-		do
-			a_diff_arch.description.put_original_author_item ("name", author_name)
-			a_diff_arch.description.put_original_author_item ("organisation", author_org)
-			a_diff_arch.description.set_lifecycle_state (Resource_lifecycle_states.first)
-			a_diff_arch.description.add_original_language_details
-			a_diff_arch.description.set_copyright (author_copyright)
-		end
 
 	archetype_serialise_engine: ODIN_ENGINE
 		once
