@@ -86,7 +86,9 @@ feature -- Parsing
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
 				if not adl_parser.artefact_type.is_overlay then
-					language_context.set_source (adl_parser.language_text, adl_parser.language_text_start_line)
+					check attached adl_parser.parsed_auth_arch_ref.language_text as lt then
+						language_context.set_source (lt, adl_parser.language_text_start_line)
+					end
 					language_context.parse
 					if not language_context.parse_succeeded then
 						errors.append (language_context.errors)
@@ -103,7 +105,7 @@ feature -- Parsing
 				------------------- description section (optional) ---------------
 				-- parse AUTHORED_RESOURCE.description
 				if not errors.has_errors then
-					if attached adl_parser.description_text as dt and then not dt.is_empty then
+					if attached adl_parser.parsed_auth_arch_ref.description_text as dt and then not dt.is_empty then
 						description_context.set_source (dt, adl_parser.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
@@ -134,7 +136,7 @@ feature -- Parsing
 				------------------- definition section (mandatory) ---------------
 				-- parse ARCHETYPE.definition
 				if not errors.has_errors then
-					check attached adl_parser.definition_text as def_text then
+					check attached adl_parser.parsed_arch_ref.definition_text as def_text then
 						definition_context.set_source (def_text, adl_parser.definition_text_start_line, aca)
 					end
 					definition_context.parse
@@ -146,7 +148,7 @@ feature -- Parsing
 				------------------- rules section (optional) ---------------
 				-- parse ARCHETYPE.rules
 				if not errors.has_errors then
-					if attached adl_parser.rules_text as att_rules_text and then not att_rules_text.is_empty then
+					if attached adl_parser.parsed_arch_ref.rules_text as att_rules_text and then not att_rules_text.is_empty then
 						rules_context.set_source (att_rules_text, adl_parser.rules_text_start_line, aca)
 						rules_context.parse
 						if not rules_context.parse_succeeded then
@@ -160,7 +162,7 @@ feature -- Parsing
 				------------------- terminology section (mandatory) ---------------
 				-- parse ARCHETYPE.terminology
 				if not errors.has_errors then
-					check attached adl_parser.terminology_text as att_term_text then
+					check attached adl_parser.parsed_arch_ref.terminology_text as att_term_text then
 						terminology_context.set_source (att_term_text, adl_parser.terminology_text_start_line)
 					end
 					terminology_context.parse
@@ -172,7 +174,7 @@ feature -- Parsing
 				------------------- annotations section (optional) ---------------
 				-- parse AUTHORED_RESOURCE.annotations
 				if not errors.has_errors then
-					if attached adl_parser.annotations_text as annot_text and then not annot_text.is_empty then
+					if attached adl_parser.parsed_auth_arch_ref.annotations_text as annot_text and then not annot_text.is_empty then
 						annotations_context.set_source (annot_text, adl_parser.annotations_text_start_line)
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
@@ -205,18 +207,18 @@ feature -- Parsing
 								-- build the archetype
 								diff_terminology.set_differential
 								create new_overlay.make (
-									adl_parser.artefact_type,
-									adl_parser.archetype_id,
+									adl_parser.parsed_arch_ref.artefact_type,
+									adl_parser.parsed_arch_ref.archetype_id,
 									definition,
 									diff_terminology
 								)
 
 								-- add optional standard parts
-								if attached adl_parser.parent_archetype_id as att_parent_id then
+								if attached adl_parser.parsed_arch_ref.parent_archetype_id as att_parent_id then
 									new_overlay.set_parent_archetype_id (att_parent_id)
 								end
 
-								if adl_parser.is_generated then
+								if adl_parser.parsed_arch_ref.is_generated then
 									new_overlay.set_is_generated
 								end
 
@@ -245,22 +247,22 @@ feature -- Parsing
 								check attached res_desc end
 								diff_terminology.set_differential
 								create new_diff_arch.make (
-									adl_parser.artefact_type,
-									adl_parser.archetype_id,
-									adl_parser.rm_release,
+									adl_parser.parsed_arch_ref.artefact_type,
+									adl_parser.parsed_arch_ref.archetype_id,
+									adl_parser.parsed_auth_arch_ref.rm_release,
 									olt.original_language,
-									adl_parser.uid,
+									adl_parser.parsed_auth_arch_ref.uid,
 									res_desc,
 									definition,
 									diff_terminology
 								)
 
 								-- add optional standard parts
-								if attached adl_parser.parent_archetype_id as att_parent_id then
+								if attached adl_parser.parsed_arch_ref.parent_archetype_id as att_parent_id then
 									new_diff_arch.set_parent_archetype_id (att_parent_id)
 								end
 
-								if adl_parser.is_generated then
+								if adl_parser.parsed_arch_ref.is_generated then
 									new_diff_arch.set_is_generated
 								end
 
@@ -269,20 +271,20 @@ feature -- Parsing
 								end
 
 								-- version meta-data
-								if valid_standard_version (adl_parser.adl_version) then
-									new_diff_arch.set_adl_version (adl_parser.adl_version)
+								if valid_standard_version (adl_parser.parsed_auth_arch_ref.adl_version) then
+									new_diff_arch.set_adl_version (adl_parser.parsed_auth_arch_ref.adl_version)
 								end
 
-								if valid_standard_version (adl_parser.rm_release) then
-									new_diff_arch.set_rm_release (adl_parser.rm_release)
+								if valid_standard_version (adl_parser.parsed_auth_arch_ref.rm_release) then
+									new_diff_arch.set_rm_release (adl_parser.parsed_auth_arch_ref.rm_release)
 								end
 
-								if adl_parser.is_controlled then
+								if adl_parser.parsed_auth_arch_ref.is_controlled then
 									new_diff_arch.set_is_controlled
 								end
 
 								-- other meta-data
-								if attached adl_parser.other_metadata as omd and then not omd.is_empty then
+								if attached adl_parser.parsed_auth_arch_ref.other_metadata as omd and then not omd.is_empty then
 									across omd as omd_csr loop
 										if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
 											new_diff_arch.put_other_metadata_value (a_key, an_item)

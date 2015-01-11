@@ -61,15 +61,9 @@
 <div class="rhs">
 | <span class="rhs_variable"><a href="#specialised_archetype">specialised_archetype</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#template">template</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#template_overlay">template_overlay</a> </span></div>
+| <span class="rhs_variable"><a href="#template">template</a> </span><span class="rhs_variable"><a href="#template_overlays">template_overlays</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#operational_template">operational_template</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#transitional_archetype">transitional_archetype</a> </span></div>
-<div class="rhs">
-| <span class="rhs_variable"><a href="#transitional_specialised_archetype">transitional_specialised_archetype</a> </span></div>
 <div class="rhs">
 | <span class="token">error </span></div>
 </div>
@@ -104,32 +98,20 @@
 
 <div class="rule">
 <div class="lhs">
+<span class="lhs_variable" id="template_overlays">template_overlays</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#template_overlay">template_overlay</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#template_overlays">template_overlays</a> </span><span class="rhs_variable"><a href="#template_overlay">template_overlay</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
 <span class="lhs_variable" id="operational_template">operational_template</span>: </div>
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#operational_template_marker">operational_template_marker</a> </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span><span class="rhs_variable"><a href="#archetype_id">archetype_id</a> </span><span class="rhs_variable"><a href="#arch_language">arch_language</a> </span><span class="rhs_variable"><a href="#arch_description">arch_description</a> </span><span class="rhs_variable"><a href="#arch_definition">arch_definition</a> </span><span class="rhs_variable"><a href="#arch_rules">arch_rules</a> </span><span class="rhs_variable"><a href="#arch_terminology">arch_terminology</a> </span><span class="rhs_variable"><a href="#arch_annotations">arch_annotations</a> </span><span class="rhs_variable"><a href="#arch_component_terminologies">arch_component_terminologies</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="transitional_specialised_archetype">transitional_specialised_archetype</span>: </div>
-<div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#archetype_marker">archetype_marker</a> </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span><span class="rhs_variable"><a href="#archetype_id">archetype_id</a> </span><span class="rhs_variable"><a href="#arch_specialisation">arch_specialisation</a> </span><span class="rhs_variable"><a href="#arch_concept">arch_concept</a> </span><span class="rhs_variable"><a href="#arch_language">arch_language</a> </span><span class="rhs_variable"><a href="#arch_description">arch_description</a> </span><span class="rhs_variable"><a href="#arch_definition">arch_definition</a> </span><span class="rhs_variable"><a href="#arch_rules">arch_rules</a> </span><span class="rhs_variable"><a href="#arch_terminology">arch_terminology</a> </span><span class="rhs_variable"><a href="#arch_annotations">arch_annotations</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="transitional_archetype">transitional_archetype</span>: </div>
-<div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#archetype_marker">archetype_marker</a> </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span><span class="rhs_variable"><a href="#archetype_id">archetype_id</a> </span><span class="rhs_variable"><a href="#arch_concept">arch_concept</a> </span><span class="rhs_variable"><a href="#arch_language">arch_language</a> </span><span class="rhs_variable"><a href="#arch_description">arch_description</a> </span><span class="rhs_variable"><a href="#arch_definition">arch_definition</a> </span><span class="rhs_variable"><a href="#arch_rules">arch_rules</a> </span><span class="rhs_variable"><a href="#arch_terminology">arch_terminology</a> </span><span class="rhs_variable"><a href="#arch_annotations">arch_annotations</a> </span></div>
-</div>
-
-<div class="rule">
-<div class="lhs">
-<span class="lhs_variable" id="arch_concept">arch_concept</span>: </div>
-<div class="rhs">
-&nbsp; <span class="token">SYM_CONCEPT </span><span class="token">V_CONCEPT_CODE </span></div>
-<div class="rhs">
-| <span class="token">SYM_CONCEPT </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">

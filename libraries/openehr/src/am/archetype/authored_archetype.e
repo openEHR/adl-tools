@@ -20,19 +20,13 @@ inherit
 			has_language, languages_available, has_matching_language_tag, original_language
 		redefine
 			default_create, make_from_other, overlay_differential, set_original_language, reduce_languages_to, add_language, set_is_valid
-		select
-			reduce_languages_to, add_language, set_original_language
 		end
 
 	AUTHORED_RESOURCE
-		rename
-			add_language as resource_add_language,
-			reduce_languages_to as resource_reduce_languages_to,
-			set_original_language as resource_set_original_language
 		undefine
 			make_from_other
 		redefine
-			default_create
+			default_create, add_language, reduce_languages_to, set_original_language
 		end
 
 create
@@ -196,7 +190,7 @@ feature -- Modification
 
 	set_original_language (a_lang: TERMINOLOGY_CODE)
 		do
-			resource_set_original_language (a_lang)
+			precursor {AUTHORED_RESOURCE} (a_lang)
 			precursor {ARCHETYPE} (a_lang)
 		end
 
@@ -263,14 +257,14 @@ feature -- Modification
 	add_language (a_lang_tag: STRING)
 		do
 			precursor {ARCHETYPE} (a_lang_tag)
-			resource_add_language (a_lang_tag)
+			precursor {AUTHORED_RESOURCE} (a_lang_tag)
 		end
 
 	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
 			-- reduce languages to those in the supplied list
 		do
 			precursor {ARCHETYPE} (a_langs)
-			resource_reduce_languages_to (a_langs)
+			precursor {AUTHORED_RESOURCE} (a_langs)
 		end
 
 feature {ARCHETYPE_FLATTENER} -- Flattening
