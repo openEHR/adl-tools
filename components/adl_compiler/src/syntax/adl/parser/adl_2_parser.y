@@ -256,6 +256,7 @@ arch_language: SYM_LANGUAGE V_ODIN_TEXT
 		{
 			convert_odin_language ($2)
 			parsed_auth_arch_ref.set_language_text ($2)
+			parsed_auth_arch_ref.set_language_text_start_line (language_text_start_line)
 			merge_errors (converter_status)
 		}
 	| SYM_LANGUAGE error
@@ -268,6 +269,7 @@ arch_description: SYM_DESCRIPTION V_ODIN_TEXT
 		{ 
 			convert_odin_language ($2)
 			parsed_auth_arch_ref.set_description_text  ($2)
+			parsed_auth_arch_ref.set_description_text_start_line (description_text_start_line)
 			merge_errors (converter_status)
 		}
 	| SYM_DESCRIPTION error
@@ -279,6 +281,7 @@ arch_description: SYM_DESCRIPTION V_ODIN_TEXT
 arch_definition: SYM_DEFINITION V_CADL_TEXT	
 		{
 			parsed_arch_ref.set_definition_text ($2)
+			parsed_arch_ref.set_definition_text_start_line (definition_text_start_line)
 		}
 	| SYM_DEFINITION error
 		{
@@ -290,6 +293,7 @@ arch_rules: -- no rules ok
 	| SYM_RULES V_RULES_TEXT
 		{
 			parsed_arch_ref.set_rules_text ($2)
+			parsed_arch_ref.set_rules_text_start_line (rules_text_start_line)
 		}
 	| SYM_RULES error
 		{
@@ -300,6 +304,7 @@ arch_rules: -- no rules ok
 arch_terminology: SYM_TERMINOLOGY V_ODIN_TEXT
 		{
 			parsed_arch_ref.set_terminology_text ($2)
+			parsed_arch_ref.set_terminology_text_start_line (terminology_text_start_line)
 		}
 	| SYM_TERMINOLOGY error
 		{
@@ -311,6 +316,7 @@ arch_annotations: -- no annotations ok
 	| SYM_ANNOTATIONS V_ODIN_TEXT 
 		{ 
 			parsed_auth_arch.set_annotations_text ($2)
+			parsed_auth_arch_ref.set_annotations_text_start_line (annotations_text_start_line)
 		}
 	| SYM_ANNOTATIONS error
 		{
@@ -321,6 +327,7 @@ arch_annotations: -- no annotations ok
 arch_component_terminologies: SYM_COMPONENT_TERMINOLOGIES V_ODIN_TEXT 
 		{ 
 			parsed_opt.set_component_terminologies_text ($2)
+			parsed_opt.set_component_terminologies_text_start_line (component_terminologies_text_start_line)
 		}
 	| SYM_COMPONENT_TERMINOLOGIES error
 		{
@@ -381,8 +388,6 @@ feature -- Parse Output
 
 	parsed_auth_arch_ref: PARSED_AUTHORED_ARCHETYPE
 
-feature {NONE} -- Implementation 
-
 	parsed_auth_arch: PARSED_AUTHORED_ARCHETYPE
 
 	parsed_overlay: PARSED_ARCHETYPE
@@ -390,6 +395,8 @@ feature {NONE} -- Implementation
 	parsed_template: PARSED_TEMPLATE
 
 	parsed_opt: PARSED_OPT
+
+feature {NONE} -- Implementation 
 
 	set_archetype_id (an_arch_id: STRING)
 		do

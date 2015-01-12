@@ -43,6 +43,11 @@ feature -- Initialization
 			description_text := Void
 			annotations_text := Void
 			component_terminologies_text := Void
+
+			language_text_start_line := 0
+			description_text_start_line := 0
+			annotations_text_start_line := 0
+			component_terminologies_text_start_line := 0
 		end
 
 feature -- Parse Output
@@ -64,6 +69,14 @@ feature -- Parse Output
 	annotations_text: detachable STRING
 
 	component_terminologies_text: detachable STRING
+
+	language_text_start_line: INTEGER
+
+	description_text_start_line: INTEGER
+
+	annotations_text_start_line: INTEGER
+
+	component_terminologies_text_start_line: INTEGER
 
 feature -- Modification 
 
@@ -112,4 +125,24 @@ feature -- Modification
 			component_terminologies_text := a_str
 		end
 
+	set_language_text_start_line (a_line: INTEGER)
+		do
+			language_text_start_line := a_line
+		end
+
+	set_description_text_start_line (a_line: INTEGER)
+		do
+			description_text_start_line := a_line
+		end
+
+	set_annotations_text_start_line (a_line: INTEGER)
+		do
+			annotations_text_start_line := a_line
+		end
+
+	set_component_terminologies_text_start_line (a_line: INTEGER)
+		do
+			component_terminologies_text_start_line := a_line
+		end
+	
 end

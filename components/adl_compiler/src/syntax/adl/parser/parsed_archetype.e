@@ -40,6 +40,10 @@ feature -- Initialization
 			definition_text.wipe_out
 			terminology_text.wipe_out
 			rules_text := Void
+
+			definition_text_start_line := 0
+			rules_text_start_line := 0
+			terminology_text_start_line := 0
 		end
 
 feature -- Parse Output
@@ -57,6 +61,12 @@ feature -- Parse Output
 	rules_text: detachable STRING
 
 	terminology_text: STRING
+
+	definition_text_start_line: INTEGER
+
+	rules_text_start_line: INTEGER
+
+	terminology_text_start_line: INTEGER
 
 feature -- Modification
 
@@ -91,6 +101,21 @@ feature -- Modification
 	set_terminology_text (a_str: STRING)
 		do
 			terminology_text := a_str
+		end
+
+	set_definition_text_start_line (a_line: INTEGER)
+		do
+			definition_text_start_line := a_line
+		end
+
+	set_rules_text_start_line (a_line: INTEGER)
+		do
+			rules_text_start_line := a_line
+		end
+
+	set_terminology_text_start_line (a_line: INTEGER)
+		do
+			terminology_text_start_line := a_line
 		end
 
 	set_is_generated

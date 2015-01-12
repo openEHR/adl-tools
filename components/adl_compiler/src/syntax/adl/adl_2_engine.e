@@ -70,9 +70,12 @@ feature -- Parsing
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
-			new_diff_arch: AUTHORED_ARCHETYPE
-			new_overlay: ARCHETYPE
+			new_overlay: TEMPLATE_OVERLAY
 			tpl_orig_lang: TERMINOLOGY_CODE
+			parsed_overlay: PARSED_ARCHETYPE
+			parsed_auth_arch: PARSED_AUTHORED_ARCHETYPE
+			definition, ovl_definition: C_COMPLEX_OBJECT
+			terminology_tree: DT_COMPLEX_OBJECT
 		do
 			adl_parser.execute (a_text)
 
@@ -87,7 +90,7 @@ feature -- Parsing
 				-- using helper type LANGUAGE_TRANSLATIONS
 				if not adl_parser.artefact_type.is_overlay then
 					check attached adl_parser.parsed_auth_arch_ref.language_text as lt then
-						language_context.set_source (lt, adl_parser.language_text_start_line)
+						language_context.set_source (lt, adl_parser.parsed_auth_arch_ref.language_text_start_line)
 					end
 					language_context.parse
 					if not language_context.parse_succeeded then
@@ -106,7 +109,7 @@ feature -- Parsing
 				-- parse AUTHORED_RESOURCE.description
 				if not errors.has_errors then
 					if attached adl_parser.parsed_auth_arch_ref.description_text as dt and then not dt.is_empty then
-						description_context.set_source (dt, adl_parser.description_text_start_line)
+						description_context.set_source (dt, adl_parser.parsed_auth_arch_ref.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
@@ -137,7 +140,7 @@ feature -- Parsing
 				-- parse ARCHETYPE.definition
 				if not errors.has_errors then
 					check attached adl_parser.parsed_arch_ref.definition_text as def_text then
-						definition_context.set_source (def_text, adl_parser.definition_text_start_line, aca)
+						definition_context.set_source (def_text, adl_parser.parsed_auth_arch_ref.definition_text_start_line, aca)
 					end
 					definition_context.parse
 					if not definition_context.parse_succeeded then
@@ -149,7 +152,7 @@ feature -- Parsing
 				-- parse ARCHETYPE.rules
 				if not errors.has_errors then
 					if attached adl_parser.parsed_arch_ref.rules_text as att_rules_text and then not att_rules_text.is_empty then
-						rules_context.set_source (att_rules_text, adl_parser.rules_text_start_line, aca)
+						rules_context.set_source (att_rules_text, adl_parser.parsed_auth_arch_ref.rules_text_start_line, aca)
 						rules_context.parse
 						if not rules_context.parse_succeeded then
 							errors.append (rules_context.errors)
@@ -163,7 +166,7 @@ feature -- Parsing
 				-- parse ARCHETYPE.terminology
 				if not errors.has_errors then
 					check attached adl_parser.parsed_arch_ref.terminology_text as att_term_text then
-						terminology_context.set_source (att_term_text, adl_parser.terminology_text_start_line)
+						terminology_context.set_source (att_term_text, adl_parser.parsed_auth_arch_ref.terminology_text_start_line)
 					end
 					terminology_context.parse
 					if not terminology_context.parse_succeeded then
@@ -175,7 +178,7 @@ feature -- Parsing
 				-- parse AUTHORED_RESOURCE.annotations
 				if not errors.has_errors then
 					if attached adl_parser.parsed_auth_arch_ref.annotations_text as annot_text and then not annot_text.is_empty then
-						annotations_context.set_source (annot_text, adl_parser.annotations_text_start_line)
+						annotations_context.set_source (annot_text, adl_parser.parsed_auth_arch_ref.annotations_text_start_line)
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
@@ -194,125 +197,196 @@ feature -- Parsing
 
 				------------------- build the archetype --------------					
 				if not errors.has_errors then
-					if attached definition_context.tree as definition and
-						attached terminology_context.tree as terminology_tree
+					check attached definition_context.tree as dct then
+						definition := dct
+					end
+					check attached terminology_context.tree as tct then
+						terminology_tree := tct
+					end
+					-----------------------------------------------------------------------------------------------
+					-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
+					convert_terminology_to_nested (terminology_tree)  -- perform any version upgrade conversions on terminology
+					--
+					-----------------------------------------------------------------------------------------------
+
+					check attached orig_lang_trans end
+					check attached res_desc end
+					if attached {ARCHETYPE_TERMINOLOGY} terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id, True>>) as arch_diff_terminology
+						and then not dt_object_converter.errors.has_errors
 					then
+						Result := build_authored_archetype (adl_parser.parsed_auth_arch_ref, res_desc, orig_lang_trans, definition, rules_context.tree, arch_diff_terminology, annots)
 
-						if adl_parser.artefact_type.is_overlay then
-							create tpl_orig_lang.default_create
-							if attached {ARCHETYPE_TERMINOLOGY}
-								terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<tpl_orig_lang.code_string, definition.node_id, True>>) as diff_terminology
-								and then not dt_object_converter.errors.has_errors
-							then
-								-- build the archetype
-								diff_terminology.set_differential
-								create new_overlay.make (
-									adl_parser.parsed_arch_ref.artefact_type,
-									adl_parser.parsed_arch_ref.archetype_id,
-									definition,
-									diff_terminology
-								)
-
-								-- add optional standard parts
-								if attached adl_parser.parsed_arch_ref.parent_archetype_id as att_parent_id then
-									new_overlay.set_parent_archetype_id (att_parent_id)
+						-- ======================= deal with templates ======================
+						if attached {TEMPLATE} Result as tpl then
+							from adl_parser.parsed_template.overlays.start until adl_parser.parsed_template.overlays.off or errors.has_errors loop
+								parsed_overlay := adl_parser.parsed_template.overlays.item_for_iteration
+								------------------- definition section (mandatory) ---------------
+								-- parse ARCHETYPE.definition
+								check attached parsed_overlay.definition_text as def_text then
+									definition_context.set_source (def_text, parsed_overlay.definition_text_start_line, aca)
 								end
-
-								if adl_parser.parsed_arch_ref.is_generated then
-									new_overlay.set_is_generated
-								end
-
-								if attached rules_context.tree as att_rules_tree then
-									new_overlay.set_rules (att_rules_tree)
-								end
-
-								new_overlay.rebuild
-								Result := new_overlay
-							else
-								errors.add_error (ec_SAON, Void, generator + ".parse")
-								errors.append (dt_object_converter.errors)
-							end
-						else
-							-----------------------------------------------------------------------------------------------
-							-- FIXME: needed on ADL 1.4 style archetypes that have 'items' in the ontology
-							convert_terminology_to_nested (terminology_tree)  -- perform any version upgrade conversions on terminology
-							--
-							-----------------------------------------------------------------------------------------------
-
-							if attached orig_lang_trans as olt and then attached {ARCHETYPE_TERMINOLOGY}
-								terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, True>>) as diff_terminology
-								and then not dt_object_converter.errors.has_errors
-							then
-								-- build the archetype
-								check attached res_desc end
-								diff_terminology.set_differential
-								create new_diff_arch.make (
-									adl_parser.parsed_arch_ref.artefact_type,
-									adl_parser.parsed_arch_ref.archetype_id,
-									adl_parser.parsed_auth_arch_ref.rm_release,
-									olt.original_language,
-									adl_parser.parsed_auth_arch_ref.uid,
-									res_desc,
-									definition,
-									diff_terminology
-								)
-
-								-- add optional standard parts
-								if attached adl_parser.parsed_arch_ref.parent_archetype_id as att_parent_id then
-									new_diff_arch.set_parent_archetype_id (att_parent_id)
-								end
-
-								if adl_parser.parsed_arch_ref.is_generated then
-									new_diff_arch.set_is_generated
-								end
-
-								if attached rules_context.tree as att_rules_tree then
-									new_diff_arch.set_rules (att_rules_tree)
-								end
-
-								-- version meta-data
-								if valid_standard_version (adl_parser.parsed_auth_arch_ref.adl_version) then
-									new_diff_arch.set_adl_version (adl_parser.parsed_auth_arch_ref.adl_version)
-								end
-
-								if valid_standard_version (adl_parser.parsed_auth_arch_ref.rm_release) then
-									new_diff_arch.set_rm_release (adl_parser.parsed_auth_arch_ref.rm_release)
-								end
-
-								if adl_parser.parsed_auth_arch_ref.is_controlled then
-									new_diff_arch.set_is_controlled
-								end
-
-								-- other meta-data
-								if attached adl_parser.parsed_auth_arch_ref.other_metadata as omd and then not omd.is_empty then
-									across omd as omd_csr loop
-										if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-											new_diff_arch.put_other_metadata_value (a_key, an_item)
+								definition_context.parse
+								if not definition_context.parse_succeeded then
+									errors.append (definition_context.errors)
+								else
+									------------------- rules section (optional) ---------------
+									if attached parsed_overlay.rules_text as att_rules_text and then not att_rules_text.is_empty then
+										rules_context.set_source (att_rules_text, parsed_overlay.rules_text_start_line, aca)
+										rules_context.parse
+										if not rules_context.parse_succeeded then
+											errors.append (rules_context.errors)
+										else
+											------------------- terminology section (mandatory) ---------------
+											-- parse ARCHETYPE.terminology
+											check attached parsed_overlay.terminology_text as att_term_text then
+												terminology_context.set_source (att_term_text, parsed_overlay.terminology_text_start_line)
+											end
+											terminology_context.parse
+											if not terminology_context.parse_succeeded then
+												errors.append (terminology_context.errors)
+											else
+												-- ============== create the overlay ================= --
+												if attached {ARCHETYPE_TERMINOLOGY} terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id,
+													<<tpl.original_language.code_string, definition_context.tree.node_id, True>>) as ovl_diff_terminology
+													and then not dt_object_converter.errors.has_errors
+												then
+													check attached definition_context.tree as dct then
+														ovl_definition := dct
+													end
+													new_overlay := build_overlay (parsed_overlay, ovl_definition, rules_context.tree, ovl_diff_terminology)
+												else
+													errors.add_error (ec_SAON, Void, generator + ".parse")
+													errors.append (dt_object_converter.errors)
+												end
+											end
 										end
+									else
+										rules_context.reset
 									end
 								end
-
-								-- descriptive meta-data
-								if attached orig_lang_trans.translations as olt_trans then
-									new_diff_arch.set_translations (olt_trans)
-								end
-
-								if attached annots as att_annots then
-									new_diff_arch.set_annotations (att_annots)
-								end
-
-								new_diff_arch.rebuild
-								Result := new_diff_arch
-							else
-								errors.add_error (ec_SAON, Void, generator + ".parse")
-								errors.append (dt_object_converter.errors)
+								adl_parser.parsed_template.overlays.forth
 							end
 						end
+					else
+						errors.add_error (ec_SAON, Void, generator + ".parse")
+						errors.append (dt_object_converter.errors)
 					end
 				end
 			end
 		ensure
 			attached Result implies Result.is_differential
+		end
+
+
+	build_authored_archetype (a_parsed_auth_arch: PARSED_AUTHORED_ARCHETYPE;
+			a_res_desc: RESOURCE_DESCRIPTION;
+			a_orig_lang_trans: LANGUAGE_TRANSLATIONS;
+			a_definition: C_COMPLEX_OBJECT;
+			a_rules: detachable ARRAYED_LIST [ASSERTION];
+			a_diff_terminology: ARCHETYPE_TERMINOLOGY;
+			a_annots: detachable RESOURCE_ANNOTATIONS): AUTHORED_ARCHETYPE
+		do
+			a_diff_terminology.set_differential
+
+			if a_parsed_auth_arch.artefact_type.is_template then
+				create {TEMPLATE} Result.make (
+					a_parsed_auth_arch.artefact_type,
+					a_parsed_auth_arch.archetype_id,
+					a_parsed_auth_arch.rm_release,
+					a_orig_lang_trans.original_language,
+					a_parsed_auth_arch.uid,
+					a_res_desc,
+					a_definition,
+					a_diff_terminology
+				)
+			else
+				create Result.make (
+					a_parsed_auth_arch.artefact_type,
+					a_parsed_auth_arch.archetype_id,
+					a_parsed_auth_arch.rm_release,
+					a_orig_lang_trans.original_language,
+					a_parsed_auth_arch.uid,
+					a_res_desc,
+					a_definition,
+					a_diff_terminology
+				)
+			end
+
+			-- add optional standard parts
+			if attached a_parsed_auth_arch.parent_archetype_id as att_parent_id then
+				Result.set_parent_archetype_id (att_parent_id)
+			end
+
+			if a_parsed_auth_arch.is_generated then
+				Result.set_is_generated
+			end
+
+			if attached a_rules as att_rules_tree then
+				Result.set_rules (att_rules_tree)
+			end
+
+			-- version meta-data
+			if valid_standard_version (a_parsed_auth_arch.adl_version) then
+				Result.set_adl_version (a_parsed_auth_arch.adl_version)
+			end
+
+			if valid_standard_version (a_parsed_auth_arch.rm_release) then
+				Result.set_rm_release (a_parsed_auth_arch.rm_release)
+			end
+
+			if a_parsed_auth_arch.is_controlled then
+				Result.set_is_controlled
+			end
+
+			-- other meta-data
+			if attached a_parsed_auth_arch.other_metadata as omd and then not omd.is_empty then
+				across omd as omd_csr loop
+					if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
+						Result.put_other_metadata_value (a_key, an_item)
+					end
+				end
+			end
+
+			-- descriptive meta-data
+			if attached a_orig_lang_trans.translations as olt_trans then
+				Result.set_translations (olt_trans)
+			end
+
+			if attached a_annots as att_annots then
+				Result.set_annotations (att_annots)
+			end
+
+			Result.rebuild
+		end
+
+	build_overlay (a_parsed_overlay: PARSED_ARCHETYPE;
+			a_definition: C_COMPLEX_OBJECT;
+			a_rules: detachable ARRAYED_LIST [ASSERTION];
+			a_diff_terminology: ARCHETYPE_TERMINOLOGY): TEMPLATE_OVERLAY
+		do
+			-- build the archetype
+			a_diff_terminology.set_differential
+			create Result.make (
+				a_parsed_overlay.artefact_type,
+				a_parsed_overlay.archetype_id,
+				a_definition,
+				a_diff_terminology
+			)
+
+			-- add optional standard parts
+			if attached a_parsed_overlay.parent_archetype_id as att_parent_id then
+				Result.set_parent_archetype_id (att_parent_id)
+			end
+
+			if a_parsed_overlay.is_generated then
+				Result.set_is_generated
+			end
+
+			if attached a_rules as att_rules_tree then
+				Result.set_rules (att_rules_tree)
+			end
+
+			Result.rebuild
 		end
 
 feature -- Validation
