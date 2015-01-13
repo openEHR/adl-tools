@@ -85,11 +85,13 @@ feature -- Parsing
 			if adl_parser.syntax_error then
 				errors.append (adl_parser.errors)
 			else
+				parsed_auth_arch := adl_parser.parsed_auth_arch_ref
+
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				check attached adl_parser.parsed_auth_arch_ref.language_text as lt then
-					language_context.set_source (lt, adl_parser.parsed_auth_arch_ref.language_text_start_line)
+				check attached parsed_auth_arch.language_text as lt then
+					language_context.set_source (lt, parsed_auth_arch.language_text_start_line)
 				end
 				language_context.parse
 				if not language_context.parse_succeeded then
@@ -106,8 +108,8 @@ feature -- Parsing
 				------------------- description section (optional) ---------------
 				-- parse AUTHORED_RESOURCE.description
 				if not errors.has_errors then
-					if attached adl_parser.parsed_auth_arch_ref.description_text as dt and then not dt.is_empty then
-						description_context.set_source (dt, adl_parser.parsed_auth_arch_ref.description_text_start_line)
+					if attached parsed_auth_arch.description_text as dt and then not dt.is_empty then
+						description_context.set_source (dt, parsed_auth_arch.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
@@ -137,8 +139,8 @@ feature -- Parsing
 				------------------- definition section (mandatory) ---------------
 				-- parse ARCHETYPE.definition
 				if not errors.has_errors then
-					check attached adl_parser.parsed_arch_ref.definition_text as def_text then
-						definition_context.set_source (def_text, adl_parser.parsed_auth_arch_ref.definition_text_start_line, aca)
+					check attached parsed_auth_arch.definition_text as def_text then
+						definition_context.set_source (def_text, parsed_auth_arch.definition_text_start_line, aca)
 					end
 					definition_context.parse
 					if not definition_context.parse_succeeded then
@@ -149,8 +151,8 @@ feature -- Parsing
 				------------------- rules section (optional) ---------------
 				-- parse ARCHETYPE.rules
 				if not errors.has_errors then
-					if attached adl_parser.parsed_arch_ref.rules_text as att_rules_text and then not att_rules_text.is_empty then
-						rules_context.set_source (att_rules_text, adl_parser.parsed_auth_arch_ref.rules_text_start_line, aca)
+					if attached parsed_auth_arch.rules_text as att_rules_text and then not att_rules_text.is_empty then
+						rules_context.set_source (att_rules_text, parsed_auth_arch.rules_text_start_line, aca)
 						rules_context.parse
 						if not rules_context.parse_succeeded then
 							errors.append (rules_context.errors)
@@ -163,8 +165,8 @@ feature -- Parsing
 				------------------- terminology section (mandatory) ---------------
 				-- parse ARCHETYPE.terminology
 				if not errors.has_errors then
-					check attached adl_parser.parsed_arch_ref.terminology_text as att_term_text then
-						terminology_context.set_source (att_term_text, adl_parser.parsed_auth_arch_ref.terminology_text_start_line)
+					check attached parsed_auth_arch.terminology_text as att_term_text then
+						terminology_context.set_source (att_term_text, parsed_auth_arch.terminology_text_start_line)
 					end
 					terminology_context.parse
 					if not terminology_context.parse_succeeded then
@@ -175,8 +177,8 @@ feature -- Parsing
 				------------------- annotations section (optional) ---------------
 				-- parse AUTHORED_RESOURCE.annotations
 				if not errors.has_errors then
-					if attached adl_parser.parsed_auth_arch_ref.annotations_text as annot_text and then not annot_text.is_empty then
-						annotations_context.set_source (annot_text, adl_parser.parsed_auth_arch_ref.annotations_text_start_line)
+					if attached parsed_auth_arch.annotations_text as annot_text and then not annot_text.is_empty then
+						annotations_context.set_source (annot_text, parsed_auth_arch.annotations_text_start_line)
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
@@ -212,7 +214,7 @@ feature -- Parsing
 					if attached {ARCHETYPE_TERMINOLOGY} terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id, True>>) as arch_diff_terminology
 						and then not dt_object_converter.errors.has_errors
 					then
-						Result := build_authored_archetype (adl_parser.parsed_auth_arch_ref, res_desc, orig_lang_trans, definition, rules_context.tree, arch_diff_terminology, annots)
+						Result := build_authored_archetype (parsed_auth_arch, res_desc, orig_lang_trans, definition, rules_context.tree, arch_diff_terminology, annots)
 
 						-- ======================= deal with templates ======================
 						if attached {TEMPLATE} Result as tpl then
@@ -270,7 +272,7 @@ feature -- Parsing
 							end
 
 							-- now create new Archetype descriptors for the overlays
-							
+
 						end
 					else
 						errors.add_error (ec_SAON, Void, generator + ".parse")
