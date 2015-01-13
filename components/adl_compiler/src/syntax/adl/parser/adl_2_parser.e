@@ -350,7 +350,7 @@ end
 
 			parsed_template.reset
 			parsed_arch_ref := parsed_template
-			parsed_auth_arch := parsed_template
+			parsed_auth_arch_ref := parsed_template
 			parsed_arch_ref.set_artefact_type (text)
 			artefact_type := parsed_arch_ref.artefact_type
 		
@@ -364,7 +364,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 157")
 end
 
-			parsed_overlay.reset
+			create parsed_overlay.make
 			parsed_arch_ref := parsed_overlay
 			parsed_arch_ref.set_artefact_type (text)
 			artefact_type := parsed_arch_ref.artefact_type

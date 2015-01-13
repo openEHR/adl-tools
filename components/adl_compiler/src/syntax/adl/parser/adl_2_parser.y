@@ -148,7 +148,7 @@ template_marker: SYM_TEMPLATE
 		{
 			parsed_template.reset
 			parsed_arch_ref := parsed_template
-			parsed_auth_arch := parsed_template
+			parsed_auth_arch_ref := parsed_template
 			parsed_arch_ref.set_artefact_type (text)
 			artefact_type := parsed_arch_ref.artefact_type
 		}
@@ -156,7 +156,7 @@ template_marker: SYM_TEMPLATE
 
 template_overlay_marker: SYM_TEMPLATE_OVERLAY
 		{
-			parsed_overlay.reset
+			create parsed_overlay.make
 			parsed_arch_ref := parsed_overlay
 			parsed_arch_ref.set_artefact_type (text)
 			artefact_type := parsed_arch_ref.artefact_type

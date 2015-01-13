@@ -88,21 +88,19 @@ feature -- Parsing
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				if not adl_parser.artefact_type.is_overlay then
-					check attached adl_parser.parsed_auth_arch_ref.language_text as lt then
-						language_context.set_source (lt, adl_parser.parsed_auth_arch_ref.language_text_start_line)
-					end
-					language_context.parse
-					if not language_context.parse_succeeded then
-						errors.append (language_context.errors)
-					elseif not dt_object_converter.errors.has_errors and
-						attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
-					then
-						orig_lang_trans := lt
-					else
-						errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
-						errors.append (dt_object_converter.errors)
-					end
+				check attached adl_parser.parsed_auth_arch_ref.language_text as lt then
+					language_context.set_source (lt, adl_parser.parsed_auth_arch_ref.language_text_start_line)
+				end
+				language_context.parse
+				if not language_context.parse_succeeded then
+					errors.append (language_context.errors)
+				elseif not dt_object_converter.errors.has_errors and
+					attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
+				then
+					orig_lang_trans := lt
+				else
+					errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
+					errors.append (dt_object_converter.errors)
 				end
 
 				------------------- description section (optional) ---------------
@@ -219,6 +217,7 @@ feature -- Parsing
 						-- ======================= deal with templates ======================
 						if attached {TEMPLATE} Result as tpl then
 							from adl_parser.parsed_template.overlays.start until adl_parser.parsed_template.overlays.off or errors.has_errors loop
+								dt_object_converter.reset
 								parsed_overlay := adl_parser.parsed_template.overlays.item_for_iteration
 								------------------- definition section (mandatory) ---------------
 								-- parse ARCHETYPE.definition
@@ -235,37 +234,43 @@ feature -- Parsing
 										rules_context.parse
 										if not rules_context.parse_succeeded then
 											errors.append (rules_context.errors)
-										else
-											------------------- terminology section (mandatory) ---------------
-											-- parse ARCHETYPE.terminology
-											check attached parsed_overlay.terminology_text as att_term_text then
-												terminology_context.set_source (att_term_text, parsed_overlay.terminology_text_start_line)
-											end
-											terminology_context.parse
-											if not terminology_context.parse_succeeded then
-												errors.append (terminology_context.errors)
-											else
-												-- ============== create the overlay ================= --
-												if attached {ARCHETYPE_TERMINOLOGY} terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id,
-													<<tpl.original_language.code_string, definition_context.tree.node_id, True>>) as ovl_diff_terminology
-													and then not dt_object_converter.errors.has_errors
-												then
-													check attached definition_context.tree as dct then
-														ovl_definition := dct
-													end
-													new_overlay := build_overlay (parsed_overlay, ovl_definition, rules_context.tree, ovl_diff_terminology)
-												else
-													errors.add_error (ec_SAON, Void, generator + ".parse")
-													errors.append (dt_object_converter.errors)
-												end
-											end
 										end
 									else
 										rules_context.reset
 									end
+
+									if not errors.has_errors then
+										------------------- terminology section (mandatory) ---------------
+										-- parse ARCHETYPE.terminology
+										check attached parsed_overlay.terminology_text as att_term_text then
+											terminology_context.set_source (att_term_text, parsed_overlay.terminology_text_start_line)
+										end
+										terminology_context.parse
+										if not terminology_context.parse_succeeded then
+											errors.append (terminology_context.errors)
+										else
+											-- ============== create the overlay ================= --
+											if attached {ARCHETYPE_TERMINOLOGY} terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id,
+												<<tpl.original_language.code_string, definition_context.tree.node_id, True>>) as ovl_diff_terminology
+												and then not dt_object_converter.errors.has_errors
+											then
+												check attached definition_context.tree as dct then
+													ovl_definition := dct
+												end
+												new_overlay := build_overlay (parsed_overlay, ovl_definition, rules_context.tree, ovl_diff_terminology)
+												tpl.add_overlay (new_overlay)
+											else
+												errors.add_error (ec_SAON, Void, generator + ".parse")
+												errors.append (dt_object_converter.errors)
+											end
+										end
+									end
 								end
 								adl_parser.parsed_template.overlays.forth
 							end
+
+							-- now create new Archetype descriptors for the overlays
+							
 						end
 					else
 						errors.add_error (ec_SAON, Void, generator + ".parse")

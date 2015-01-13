@@ -47,6 +47,9 @@ DESCRIPTION	[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*
 DEFINITION	[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*
 ANNOTATIONS	[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*
 COMP_TERMS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Tt][Ee][Rr][Mm][Ii][Nn][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*
+
+TEMPLATE_OVERLAY [Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Oo][Vv][Ee][Rr][Ll][Aa][Yy][ \t\r]*
+
 -------------------------------------------------------------------
 --- START legacy ADL 1.4 support
 ---
@@ -103,7 +106,7 @@ ID_CODE_LEADER id
 				last_token := SYM_ARCHETYPE
 			}
 
-^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Oo][Vv][Ee][Rr][Ll][Aa][Yy][ \t\r\n]+ 		{
+^{TEMPLATE_OVERLAY}\n 		{
 				last_token := SYM_TEMPLATE_OVERLAY
 			}
 
@@ -229,6 +232,7 @@ ID_CODE_LEADER id
 
 
 <IN_ODIN_SECTION>{
+	^{TEMPLATE_OVERLAY}\n |
 	^{DESCRIPTION}\n |
 	^{DEFINITION}\n |
 	^{ANNOTATIONS}\n |
