@@ -145,12 +145,6 @@ feature -- Access
 			create Result.make_empty
 		end
 
-	group_id: STRING
-			-- id of group in file system
-		do
-			Result := file_repository.group_id.out
-		end
-
 feature -- Thumbnail state
 
 	is_source_generated: BOOLEAN

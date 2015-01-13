@@ -42,9 +42,6 @@ feature -- Access
 		deferred
 		end
 
-	group_id: INTEGER
-			-- Id of the group to which this repository belongs.
-
 	errors: ERROR_ACCUMULATOR
 
 feature {ARCHETYPE_LIBRARY} -- Access
@@ -389,7 +386,6 @@ feature {NONE} -- Implementation
 
 invariant
 	timestamp_natural: text_timestamp >= 0
-	group_id_valid: group_id > 0
 
 end
 

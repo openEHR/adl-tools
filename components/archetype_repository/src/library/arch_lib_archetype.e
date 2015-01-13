@@ -177,7 +177,7 @@ feature {NONE} -- Initialisation
 			Valid_id: has_rm_schema_for_archetype_id (an_id)
 			Valid_parent: a_parent.is_differential
 		local
-			a_diff_arch: AUTHORED_ARCHETYPE
+			a_diff_arch: TEMPLATE
 		do
 			make_new_any (an_id, create {ARTEFACT_TYPE}.make_template)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
@@ -191,7 +191,7 @@ feature {NONE} -- Initialisation
 			save_differential_text
 		ensure
 			Is_specialised: is_specialised
-			Is_template: attached {AUTHORED_ARCHETYPE} differential_archetype as auth_diff_arch and then artefact_type.is_template_or_overlay
+			Is_template: attached {TEMPLATE} differential_archetype as auth_diff_arch
 		end
 
 	make_new_any (an_id: ARCHETYPE_HRID; an_artefact_type: ARTEFACT_TYPE)
@@ -243,19 +243,19 @@ feature -- Identification
 			-- type of artefact i.e. archetype, template, template_component, operational_template
 			-- see ARTEFACT_TYPE class
 
-	relative_path: STRING
-			-- a path derived from the semantic path of the nearest folder node + archetype_id
-		local
-			csr: detachable ARCH_LIB_ITEM
-		do
-			create Result.make(0)
-			from csr := parent until attached {ARCH_LIB_MODEL_ITEM} csr or csr = Void loop
-				csr := csr.parent
-			end
-			if attached {ARCH_LIB_MODEL_ITEM} csr as acmn then
-				Result := acmn.path + Semantic_path_separator + id.physical_id
-			end
-		end
+--	relative_path: STRING
+--			-- a path derived from the semantic path of the nearest folder node + archetype_id
+--		local
+--			csr: detachable ARCH_LIB_ITEM
+--		do
+--			create Result.make(0)
+--			from csr := parent until attached {ARCH_LIB_MODEL_ITEM} csr or csr = Void loop
+--				csr := csr.parent
+--			end
+--			if attached {ARCH_LIB_MODEL_ITEM} csr as acmn then
+--				Result := acmn.path + Semantic_path_separator + id.physical_id
+--			end
+--		end
 
 	qualified_name: IMMUTABLE_STRING_8
 		do
@@ -323,16 +323,20 @@ feature -- Identification
 			inspect compilation_state
 			when Cs_validated then
 				if not errors.has_warnings then
-					Result.append("_valid_" + file_mgr.group_id)
+					Result.append("_valid")
 				else
-					Result.append("_warning_" + file_mgr.group_id)
+					Result.append("_warning")
 				end
 			when Cs_validate_failed, cs_suppliers_invalid then
-				Result.append("_parsed_" + file_mgr.group_id)
+				Result.append("_parsed")
 			when Cs_parse_failed, cs_convert_legacy_failed, cs_lineage_invalid then
-				Result.append("_parse_failed_" + file_mgr.group_id)
+				Result.append("_parse_failed")
 			else
-				Result.append("_" + file_mgr.group_id)
+				-- nothing needed
+			end
+
+			if file_mgr.is_adhoc then
+				Result.append("_adhoc")
 			end
 		end
 

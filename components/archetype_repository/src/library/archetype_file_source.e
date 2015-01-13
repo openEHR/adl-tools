@@ -19,32 +19,23 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (dir_name: STRING; a_group_id: INTEGER)
-			-- The `a_group_id', number is used to distinguish archetype library
-			-- archetypes from those found in ad hoc locations
+	make (dir_name: STRING)
 		require
 			dir_name_valid: is_valid_directory (dir_name)
-			group_id_valid: a_group_id > 0
 		do
-			group_id := a_group_id
 			full_path := dir_name
 			create errors.make
 		ensure
 			root_path_set: full_path = dir_name
-			group_id_set: group_id = a_group_id
 		end
 
-	make_adhoc (a_group_id: INTEGER)
+	make_adhoc
 			-- Create empty, to provide a place to add ad hoc archetypes
-		require
-			group_id_valid: a_group_id > 0
 		do
-			group_id := a_group_id
 			create full_path.make_empty
 			create errors.make
 		ensure
 			root_path_set: full_path.is_empty
-			group_id_set: group_id = a_group_id
 		end
 
 feature -- Access

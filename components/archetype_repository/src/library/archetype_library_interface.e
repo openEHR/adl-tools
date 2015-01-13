@@ -23,10 +23,6 @@ create
 
 feature -- Definitions
 
-	Group_id_adhoc: INTEGER = 1
-
-	Group_id_primary: INTEGER = 2
-
 	lib_file_name: STRING = "_repo_lib.idx"
 			-- name of definition file at root point of library, within repository
 
@@ -38,8 +34,8 @@ feature -- Initialisation
 		require
 			dir_name_valid: directory_exists (a_library_path)
 		do
-			create {ARCHETYPE_FILE_SOURCE} source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
-			create {ARCHETYPE_FILE_SOURCE} adhoc_source.make_adhoc (Group_id_adhoc)
+			create {ARCHETYPE_FILE_SOURCE} source.make (file_system.canonical_pathname (a_library_path))
+			create {ARCHETYPE_FILE_SOURCE} adhoc_source.make_adhoc
 			repository_key := a_repository_key
 		end
 
@@ -47,8 +43,8 @@ feature -- Initialisation
 		require
 			dir_name_valid: directory_exists (a_library_path)
 		do
-			create {ARCHETYPE_FILE_SOURCE} source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
-			create {ARCHETYPE_FILE_SOURCE} adhoc_source.make_adhoc (Group_id_adhoc)
+			create {ARCHETYPE_FILE_SOURCE} source.make (file_system.canonical_pathname (a_library_path))
+			create {ARCHETYPE_FILE_SOURCE} adhoc_source.make_adhoc
 			repository_key := a_repository_key
 
 			-- create library definition file
