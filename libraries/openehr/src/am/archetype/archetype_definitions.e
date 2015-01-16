@@ -120,20 +120,23 @@ feature -- Version identification
 			Result := a_ver.starts_with (Adl_14_version)
 		end
 
-	Adl_id_code_version: STRING = "1.5.1"
+	Adl_id_code_version: IMMUTABLE_STRING_8
 			-- version in which new id-codes are present
+		once
+			create Result.make_from_string ("1.5.1")
+		end
 
-	Latest_adl_version: STRING
+	Latest_adl_version: IMMUTABLE_STRING_8
 		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).version_to_build
 		end
 
-	Latest_adl_minor_version: STRING
+	Latest_adl_minor_version: IMMUTABLE_STRING_8
 		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).version_to_minor
 		end
 
-	Latest_adl_major_version: STRING
+	Latest_adl_major_version: IMMUTABLE_STRING_8
 		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).major.out
 		end
