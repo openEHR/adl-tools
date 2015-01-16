@@ -213,19 +213,19 @@ feature -- Commands
 		deferred
 		end
 
-	put_archetype (ala: ARCH_LIB_ARCHETYPE)
+	put_archetype (auth_ala: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- put archetype into `archetype_id_index' and the file-system tree
 		local
 			dir_node: ARCH_LIB_FILESYS_ITEM
 		do
-			archetype_id_index.force (ala, ala.id.physical_id)
-			archetype_ref_index.force (ala, ala.id.semantic_id)
+			archetype_id_index.force (auth_ala, auth_ala.id.physical_id)
+			archetype_ref_index.force (auth_ala, auth_ala.id.semantic_id)
 
 			-- add to file system tree
-			if not ala.is_specialised then
-				dir_node := create_filesys_node_for_path (ala.file_mgr.source_file_path)
-				if not dir_node.has_child (ala) then
-					dir_node.put_child (ala)
+			if not auth_ala.is_specialised then
+				dir_node := create_filesys_node_for_path (auth_ala.file_mgr.source_file_path)
+				if not dir_node.has_child (auth_ala) then
+					dir_node.put_child (auth_ala)
 				end
 			end
 		end
@@ -235,14 +235,14 @@ feature -- Commands
 		require
 			has_archetype_with_id (an_archetype_id.physical_id)
 		do
-			if attached archetype_id_index.item (an_archetype_id.physical_id) as ala then
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} archetype_id_index.item (an_archetype_id.physical_id) as auth_ala then
 				archetype_id_index.remove (an_archetype_id.physical_id)
-				archetype_ref_index.remove (ala.id.semantic_id)
+				archetype_ref_index.remove (auth_ala.id.semantic_id)
 
-				if not ala.is_specialised then
+				if not auth_ala.is_specialised then
 					-- find the archetype in the file system tree
-					if attached filesys_node_for_path (ala.file_mgr.source_file_path) as att_node and then att_node.has_child (ala) then
-						att_node.remove_child (ala)
+					if attached filesys_node_for_path (auth_ala.file_mgr.source_file_path) as att_node and then att_node.has_child (auth_ala) then
+						att_node.remove_child (auth_ala)
 					end
 				end
 			end

@@ -32,10 +32,10 @@ inherit
 create
 	default_create
 
-create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
+create {ADL_14_ENGINE, ARCHETYPE}
 	make
 
-create {P_ARCHETYPE}
+create {ADL_2_ENGINE, ADL_14_ENGINE, P_ARCHETYPE}
 	make_all
 
 create {ARCH_LIB_ARCHETYPE}
@@ -49,8 +49,9 @@ feature -- Initialisation
 		end
 
 	make (an_artefact_type: like artefact_type;
-			an_id: like archetype_id;
+			an_adl_version: like adl_version;
 			an_rm_release: like rm_release;
+			an_id: like archetype_id;
 			an_original_language: like original_language;
 			a_uid: like uid;
 			a_description: like description;
@@ -59,18 +60,21 @@ feature -- Initialisation
 				-- make from pieces, typically obtained by parsing
 		do
 			make_archetype (an_artefact_type, an_id, a_definition, a_terminology)
-			adl_version := 	Latest_adl_version
+			adl_version := an_adl_version
 			rm_release := an_rm_release
 			set_original_language (an_original_language)
 			description := a_description
 			uid := a_uid
 		ensure then
-			Adl_version_set: adl_version = Latest_adl_version
+			Adl_version_set: adl_version = an_adl_version
+			Rm_release_set: rm_release = an_rm_release
 			Original_language_set: original_language = an_original_language
+			Description_set: description = a_description
+			Uid_set: uid = a_uid
 		end
 
 	make_all (an_artefact_type: like artefact_type;
-			an_adl_version: STRING;
+			an_adl_version: like adl_version;
 			an_rm_release: like rm_release;
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
@@ -89,10 +93,9 @@ feature -- Initialisation
 			Translations_valid: attached a_translations as att_trans implies not att_trans.is_empty
 			Rules_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
-			make (an_artefact_type, an_id, an_rm_release, an_original_language, a_uid, a_description, a_definition, a_terminology)
+			make (an_artefact_type, an_adl_version, an_rm_release, an_id, an_original_language, a_uid, a_description, a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
-			adl_version := an_adl_version
 			is_controlled := is_controlled_flag
 			other_metadata := an_other_metadata
 			rules := a_rules
@@ -121,7 +124,9 @@ feature -- Initialisation
 			is_controlled := other.is_controlled
 			adl_version := other.adl_version.twin
 			rm_release := other.rm_release.twin
-			uid := other.uid.twin
+			if attached other.uid as att_other_uid then
+				uid := att_other_uid.twin
+			end
 			set_original_language (other.original_language)
 			if attached other.other_metadata as att_omd then
 				other_metadata := att_omd.deep_twin

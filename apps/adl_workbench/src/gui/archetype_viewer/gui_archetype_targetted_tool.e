@@ -23,6 +23,13 @@ feature -- Access
 	source: detachable ARCH_LIB_ARCHETYPE
 			-- archetype descriptor to which this tool is targetted
 
+	auth_source: detachable ARCH_LIB_AUTHORED_ARCHETYPE
+		do
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} source as att_auth_source then
+				Result := att_auth_source
+			end
+		end
+
 	source_archetype: detachable ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
 		require

@@ -184,9 +184,11 @@ feature {NONE} -- Implementation
 
 			-- tooltip		
 			create tooltip.make_empty
-			tooltip.append (aca.source_file_path)
-			if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
-				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				tooltip.append (auth_aca.source_file_path)
+				if auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated then
+					tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+				end
 			end
 
 			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, Void, pixmap)

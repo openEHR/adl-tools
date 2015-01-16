@@ -65,7 +65,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 			-- record if this archetype is a 1.4 archetype, because if so we need to reprocess
 			-- more junk silently
-			is_adl14_archetype := ara.file_mgr.has_legacy_flat_file
+			is_adl14_archetype := attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.file_mgr.has_legacy_flat_file
 		ensure
 			Flat_ancestor_valid: attached flat_ancestor as fa implies fa.is_flat
 		end

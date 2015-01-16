@@ -132,7 +132,10 @@ feature {NONE} -- Implementation
 		do
 			source.commit
 			gui_agents.refresh_archetype_viewers_agent.call ([source.id.physical_id])
-			gui_agents.console_tool_append_agent.call ([get_msg (ec_arch_editor_commit_notification, <<source.id.physical_id, source.source_file_path>>)])
+			if attached auth_source as att_source then
+				gui_agents.console_tool_append_agent.call ([get_msg (ec_arch_editor_commit_notification,
+					<<att_source.id.physical_id, att_source.source_file_path>>)])
+			end
 		end
 
 	populate_undo_redo_controls

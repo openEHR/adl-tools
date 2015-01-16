@@ -440,7 +440,6 @@ feature -- Commands
 		do
 			test_tool.ev_root_container.show
 			ev_main_vbox.hide
-			do_with_wait_cursor (Current, agent test_tool.populate)
 		end
 
 	close_test_tool
@@ -754,8 +753,10 @@ feature {NONE} -- Tools menu events
 	delete_generated_files (ara: ARCH_LIB_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
-			ara.clean_generated
-			console_tool.append_text (ara.status)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara then
+				auth_ara.clean_generated
+				console_tool.append_text (ara.status)
+			end
 		end
 
 	toggle_adl_roundtripping

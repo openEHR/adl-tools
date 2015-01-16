@@ -71,6 +71,7 @@ feature -- Parsing
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
 			new_flat_arch: AUTHORED_ARCHETYPE
+			adl_ver: STRING
 		do
 			adl_parser.execute (a_text)
 
@@ -203,56 +204,33 @@ feature -- Parsing
 							term_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, False>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
-							check attached res_desc end
-							create new_flat_arch.make (
-								adl_parser.artefact_type,
-								adl_parser.archetype_id,
-								"",
-								olt.original_language,
-								adl_parser.uid,
-								res_desc,	-- may be Void
-								definition,
-								flat_terminology
-							)
-
-							-- add optional parts
-							if attached adl_parser.parent_archetype_id as att_parent_id then
-								new_flat_arch.set_parent_archetype_id (att_parent_id)
-							end
-
-							if attached adl_parser.adl_version as adl_av then
-								new_flat_arch.set_adl_version (adl_av)
+							if attached adl_parser.adl_version as att_av then
+								adl_ver := att_av
 							else
-								new_flat_arch.set_adl_version (latest_adl_version)
+								adl_ver := latest_adl_version
 							end
 
-							if adl_parser.is_controlled then
-								new_flat_arch.set_is_controlled
-							end
+							check attached res_desc end
+							create new_flat_arch.make_all (
+								adl_parser.artefact_type,
+								adl_ver,
+								"",	-- rm_release
+								adl_parser.archetype_id,
+								adl_parser.parent_archetype_id,
+								adl_parser.is_controlled,
+								adl_parser.uid,
+								adl_parser.other_metadata,
+								olt.original_language,
+								orig_lang_trans.translations,
+								res_desc,
+								definition,
+								invariant_context.tree,
+								flat_terminology,
+								annots
+							)
 
 							if adl_parser.is_generated then
 								new_flat_arch.set_is_generated
-							end
-
-							-- other meta-data
-							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
-								across omd as omd_csr loop
-									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-										new_flat_arch.put_other_metadata_value (a_key, an_item)
-									end
-								end
-							end
-
-							if attached orig_lang_trans.translations as olt_trans then
-								new_flat_arch.set_translations (olt_trans)
-							end
-
-							if attached invariant_context.tree as inv_tree then
-								new_flat_arch.set_rules (inv_tree)
-							end
-
-							if attached annots as a then
-								new_flat_arch.set_annotations (a)
 							end
 
 							new_flat_arch.rebuild

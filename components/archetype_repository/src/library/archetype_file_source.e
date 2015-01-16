@@ -96,7 +96,7 @@ feature -- Commands
 	put_archetype_from_file (a_file_path: STRING)
 			-- Add the archetype designated by `a_file_path' to this repository.
 		local
-			ara: ARCH_LIB_ARCHETYPE
+			ara: ARCH_LIB_AUTHORED_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
 		do
 			last_added_archetype := Void
@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			ara: ARCH_LIB_ARCHETYPE
+			ara: ARCH_LIB_AUTHORED_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
 			folder_node: ARCH_LIB_FILESYS_ITEM
   		do
@@ -229,7 +229,7 @@ feature {NONE} -- Implementation
 										folder_node.put_child (ara)
 									end
 								else
-									check attached archetype_id_index.item (arch_id) as att_aca then
+									check attached {ARCH_LIB_AUTHORED_ARCHETYPE} archetype_id_index.item (arch_id) as att_aca then
 										ara := att_aca
 									end
 									ara.file_mgr.add_legacy_archetype (l_full_path)

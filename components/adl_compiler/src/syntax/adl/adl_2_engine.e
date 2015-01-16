@@ -64,7 +64,7 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE): detachable ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE): detachable AUTHORED_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
@@ -284,7 +284,6 @@ feature -- Parsing
 			attached Result implies Result.is_differential
 		end
 
-
 	build_authored_archetype (a_parsed_auth_arch: PARSED_AUTHORED_ARCHETYPE;
 			a_res_desc: RESOURCE_DESCRIPTION;
 			a_orig_lang_trans: LANGUAGE_TRANSLATIONS;
@@ -296,71 +295,45 @@ feature -- Parsing
 			a_diff_terminology.set_differential
 
 			if a_parsed_auth_arch.artefact_type.is_template then
-				create {TEMPLATE} Result.make (
+				create {TEMPLATE} Result.make_all (
 					a_parsed_auth_arch.artefact_type,
-					a_parsed_auth_arch.archetype_id,
+					a_parsed_auth_arch.adl_version,
 					a_parsed_auth_arch.rm_release,
-					a_orig_lang_trans.original_language,
+					a_parsed_auth_arch.archetype_id,
+					a_parsed_auth_arch.parent_archetype_id,
+					a_parsed_auth_arch.is_controlled,
 					a_parsed_auth_arch.uid,
+					a_parsed_auth_arch.other_metadata,
+					a_orig_lang_trans.original_language,
+					a_orig_lang_trans.translations,
 					a_res_desc,
 					a_definition,
-					a_diff_terminology
+					a_rules,
+					a_diff_terminology,
+					a_annots
 				)
 			else
-				create Result.make (
+				create Result.make_all (
 					a_parsed_auth_arch.artefact_type,
-					a_parsed_auth_arch.archetype_id,
+					a_parsed_auth_arch.adl_version,
 					a_parsed_auth_arch.rm_release,
-					a_orig_lang_trans.original_language,
+					a_parsed_auth_arch.archetype_id,
+					a_parsed_auth_arch.parent_archetype_id,
+					a_parsed_auth_arch.is_controlled,
 					a_parsed_auth_arch.uid,
+					a_parsed_auth_arch.other_metadata,
+					a_orig_lang_trans.original_language,
+					a_orig_lang_trans.translations,
 					a_res_desc,
 					a_definition,
-					a_diff_terminology
+					a_rules,
+					a_diff_terminology,
+					a_annots
 				)
-			end
-
-			-- add optional standard parts
-			if attached a_parsed_auth_arch.parent_archetype_id as att_parent_id then
-				Result.set_parent_archetype_id (att_parent_id)
 			end
 
 			if a_parsed_auth_arch.is_generated then
 				Result.set_is_generated
-			end
-
-			if attached a_rules as att_rules_tree then
-				Result.set_rules (att_rules_tree)
-			end
-
-			-- version meta-data
-			if valid_standard_version (a_parsed_auth_arch.adl_version) then
-				Result.set_adl_version (a_parsed_auth_arch.adl_version)
-			end
-
-			if valid_standard_version (a_parsed_auth_arch.rm_release) then
-				Result.set_rm_release (a_parsed_auth_arch.rm_release)
-			end
-
-			if a_parsed_auth_arch.is_controlled then
-				Result.set_is_controlled
-			end
-
-			-- other meta-data
-			if attached a_parsed_auth_arch.other_metadata as omd and then not omd.is_empty then
-				across omd as omd_csr loop
-					if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-						Result.put_other_metadata_value (a_key, an_item)
-					end
-				end
-			end
-
-			-- descriptive meta-data
-			if attached a_orig_lang_trans.translations as olt_trans then
-				Result.set_translations (olt_trans)
-			end
-
-			if attached a_annots as att_annots then
-				Result.set_annotations (att_annots)
 			end
 
 			Result.rebuild

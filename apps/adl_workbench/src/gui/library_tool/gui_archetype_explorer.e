@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
 
-					if aca.file_mgr.is_reference_archetype then
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
 						text.append (aca.semantic_id)
@@ -257,12 +257,14 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip
-					tooltip.append (aca.source_file_path)
-					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
-						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						tooltip.append (auth_aca.source_file_path)
+						if auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated then
+							tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+						end
 					end
 
-					if aca.file_mgr.is_reference_archetype then
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
@@ -334,7 +336,7 @@ feature {NONE} -- Implementation
 					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
 						text.append ("(" + aca.file_mgr.adl_version + ") ")
 					end
-					if aca.file_mgr.is_reference_archetype then
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
 						text.append (aca.semantic_id)
@@ -344,15 +346,17 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip
-					tooltip.append (aca.source_file_path)
-					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
-						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						tooltip.append (auth_aca.source_file_path)
+						if (auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated) then
+							tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+						end
 					end
 
 					-- pixmap
 					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
-					if aca.file_mgr.is_reference_archetype then
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
@@ -595,16 +599,16 @@ feature {NONE} -- Implementation
 			matching_ids: ARRAYED_SET [STRING]
 			in_dir_path: STRING
 		do
-			-- figure out a reasonable path as the path of some other archetype of the same class
-			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
-			if not matching_ids.is_empty then
-				matching_ids.start
-				in_dir_path := file_system.dirname (source.archetype_with_id (matching_ids.item).source_file_path)
-			else
-				in_dir_path := current_library_interface.library_path
-			end
-
 			if attached source as src then
+				-- figure out a reasonable path as the path of some other archetype of the same class
+				matching_ids := src.matching_ids (".*", accn.class_definition.name, Void)
+				if not matching_ids.is_empty then
+					matching_ids.start
+					in_dir_path := file_system.dirname (src.archetype_with_id (matching_ids.item).source_file_path)
+				else
+					in_dir_path := current_library_interface.library_path
+				end
+
 				create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), src)
 				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then

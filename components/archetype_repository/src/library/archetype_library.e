@@ -212,7 +212,7 @@ feature -- Modification
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 		do
-			put_new_archetype (create {ARCH_LIB_ARCHETYPE}.make_new_archetype (an_archetype_id,
+			put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_archetype (an_archetype_id,
 				library_access.source, in_dir_path))
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
@@ -225,7 +225,7 @@ feature -- Modification
 			Valid_parent: parent_aca.is_valid
 		do
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_new_archetype (create {ARCH_LIB_ARCHETYPE}.make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
+				put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
 					library_access.source, in_dir_path))
 			end
 		ensure
@@ -239,7 +239,7 @@ feature -- Modification
 			Valid_parent: parent_aca.is_valid
 		do
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_new_archetype (create {ARCH_LIB_ARCHETYPE}.make_new_template (an_archetype_id, parent_diff_arch,
+				put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_template (an_archetype_id, parent_diff_arch,
 					library_access.source, in_dir_path))
 			end
 		ensure
@@ -284,12 +284,14 @@ feature -- Modification
 				item_index_remove (att_old_id)
 				item_index_put (aca)
 
-				if library_access.adhoc_source.has_archetype_with_id (att_old_id.physical_id) then
-					library_access.adhoc_source.remove_archetype (att_old_id)
-					library_access.adhoc_source.put_archetype (aca)
-				else
-					library_access.source.remove_archetype (att_old_id)
-					library_access.source.put_archetype (aca)
+				if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+					if library_access.adhoc_source.has_archetype_with_id (att_old_id.physical_id) then
+						library_access.adhoc_source.remove_archetype (att_old_id)
+						library_access.adhoc_source.put_archetype (auth_aca)
+					else
+						library_access.source.remove_archetype (att_old_id)
+						library_access.source.put_archetype (auth_aca)
+					end
 				end
 			end
 
@@ -662,13 +664,15 @@ feature {NONE} -- Implementation
 			item_index_put (aca)
 
 			-- add to file system index
-			library_access.source.put_archetype (aca)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				library_access.source.put_archetype (auth_aca)
+			end
 
 			last_added_archetype := aca
 		ensure
 			Last_added_archetype_set: last_added_archetype = aca
 			Archetype_in_index: item_index.item (aca.qualified_key) = aca
-			Archetype_in_archetype_index: has_archetype_with_id (aca.id.physical_id)
+			Archetype_in_archetype_index: attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca implies has_archetype_with_id (auth_aca.id.physical_id)
 		end
 
 	schema_load_counter: INTEGER

@@ -15,10 +15,10 @@ inherit
 create
 	default_create
 
-create {ADL_14_ENGINE, ADL_2_ENGINE, ARCHETYPE}
+create {ADL_14_ENGINE, ARCHETYPE}
 	make
 
-create {P_ARCHETYPE}
+create {ADL_2_ENGINE, P_ARCHETYPE}
 	make_all
 
 create {ARCH_LIB_ARCHETYPE}

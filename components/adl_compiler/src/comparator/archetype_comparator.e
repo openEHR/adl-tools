@@ -34,7 +34,7 @@ create
 
 feature -- Initialisation
 
-	make (an_ancestor_flat: ARCHETYPE; a_flat_target: ARCHETYPE)
+	make (an_ancestor_flat, a_flat_target: AUTHORED_ARCHETYPE)
 			-- create with two archetypes for comparison
 		require
 			Valid_ancestor_archetype: an_ancestor_flat.is_flat
@@ -44,7 +44,7 @@ feature -- Initialisation
 			flat_child := a_flat_target
 		end
 
-	make_create_differential (an_ancestor_flat: ARCHETYPE; a_flat_target: ARCHETYPE)
+	make_create_differential (an_ancestor_flat, a_flat_target: AUTHORED_ARCHETYPE)
 			-- make with a valid specialised child archetype descriptor
 		require
 			Valid_ancestor_archetype: an_ancestor_flat.is_flat
@@ -58,14 +58,14 @@ feature -- Initialisation
 
 feature -- Access
 
-	flat_ancestor: ARCHETYPE
+	flat_ancestor: AUTHORED_ARCHETYPE
 			-- flat form of parent archetype
 
-	flat_child: ARCHETYPE
+	flat_child: AUTHORED_ARCHETYPE
 			-- flat form of child archetype
 
-	differential_output: detachable ARCHETYPE
-			-- generated differential result of calling `
+	differential_output: detachable AUTHORED_ARCHETYPE
+			-- generated differential result of calling `generate_diff'
 
 feature -- Status Report
 
@@ -120,7 +120,7 @@ feature -- Comparison
 		local
 			c_it: C_ITERATOR
 			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
-			diff_child: ARCHETYPE
+			diff_child: AUTHORED_ARCHETYPE
 			term_removal_list, vset_id_codes_list: ARRAYED_SET [STRING]
 			def_id_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			def_at_codes: HASH_TABLE [ARRAYED_LIST [C_TERMINOLOGY_CODE], STRING]

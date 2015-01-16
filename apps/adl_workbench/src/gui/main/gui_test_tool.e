@@ -201,8 +201,7 @@ feature {NONE} -- Initialisation
 			test_status_area.set_minimum_height (status_area_min_height)
 			test_status_area.disable_edit
 
-
-			clear
+			populate
 		end
 
 feature -- Access
@@ -548,18 +547,18 @@ feature {NONE} -- Tests
 				original_differential_text := target.source_text
 
 				-- save source as serialised to $repository/source/new area
-				if diff_dirs_available then
-					orig_fname := file_system.basename (target.source_file_path)
+				if diff_dirs_available and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+					orig_fname := file_system.basename (auth_target.source_file_path)
 					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
 					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
 					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
 
 					-- save source as read in (not serialised) to $repository/source/orig area
-					file_system.copy_file (target.source_file_path, file_system.pathname (diff_dir_source_orig, src_fname))
+					file_system.copy_file (auth_target.source_file_path, file_system.pathname (diff_dir_source_orig, src_fname))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
 					serialised_source_path := file_system.pathname (diff_dir_source_new, src_fname)
-					target.save_differential_as (serialised_source_path, Syntax_type_adl)
+					auth_target.save_differential_as (serialised_source_path, Syntax_type_adl)
 
 					-- for top-level archetypes only, copy above serialised source to $repository/source_flat/orig area as well, using extension .adlx
 					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
@@ -568,8 +567,8 @@ feature {NONE} -- Tests
 				--	end
 
 					-- save a copy of legacy ADL
-					if target.file_mgr.has_legacy_flat_file then
-						target.file_mgr.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
+					if auth_target.file_mgr.has_legacy_flat_file then
+						auth_target.file_mgr.save_legacy_to (file_system.pathname (diff_dir_flat_orig, flat_fname))
 					end
 				end
 			else
@@ -581,17 +580,13 @@ feature {NONE} -- Tests
 			-- if archetype description.other_details contains an item with key "validity", see if the value
 			-- matches the parse result
 		do
-			if regression_test_on then
+			if regression_test_on and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
 				create val_code.make_empty
 
-				if target.file_mgr.other_details.has (Regression_test_key) then
-					check attached target.file_mgr.other_details.item (Regression_test_key) as rtk then
-						val_code := rtk
-					end
-				elseif target.file_mgr.other_details.has (Regression_test_key.as_lower) then
-					check attached target.file_mgr.other_details.item (Regression_test_key.as_lower) as rtk then
-						val_code := rtk
-					end
+				if attached auth_target.file_mgr.other_details.item (Regression_test_key) as rtk then
+					val_code := rtk
+				elseif attached auth_target.file_mgr.other_details.item (Regression_test_key.as_lower) as rtk then
+					val_code := rtk
 				end
 
 				-- check to see if expected regression test result `val_code' (typically some code like "VSONIR" from AOM 1.5 spec)
@@ -631,14 +626,14 @@ feature {NONE} -- Tests
 			orig_fname, diff_fname, flat_fname, flat_path: STRING
 		do
 			Result := Test_failed
-			if target.is_valid then
+			if target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
 				if diff_dirs_available then
-					orig_fname := file_system.basename (target.source_file_path)
+					orig_fname := file_system.basename (auth_target.source_file_path)
 					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
 					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
 
 					flat_path := file_system.pathname (diff_dir_flat_new, flat_fname)
-					target.save_flat_as (flat_path, Syntax_type_adl)
+					auth_target.save_flat_as (flat_path, Syntax_type_adl)
 
 					-- copy above flat file to $repository/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 					-- extensions or else it gets confused)
@@ -663,11 +658,11 @@ feature {NONE} -- Tests
 			orig_fname, diff_fname, regression_flat_path, output_flat_path: STRING
 		do
 			Result := Test_failed
-			if target.is_valid and diff_dirs_available then
-				orig_fname := file_system.basename (target.source_file_path)
+			if diff_dirs_available and target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+				orig_fname := file_system.basename (auth_target.source_file_path)
 				diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
 				output_flat_path := file_system.pathname (diff_dir_source_flat_new, diff_fname)
-				regression_flat_path := extension_replaced (target.source_file_path, file_ext_archetype_flat)
+				regression_flat_path := extension_replaced (auth_target.source_file_path, file_ext_archetype_flat)
 
 				if file_system.file_exists (regression_flat_path) then
 					if file_system.same_binary_files (regression_flat_path, output_flat_path) then
@@ -708,12 +703,12 @@ feature {NONE} -- Tests
 			orig_fname, odin_fname: STRING
 		do
 			Result := Test_failed
-			if target.is_valid then
-				target.save_differential_compiled
-				orig_fname := file_system.basename (target.source_file_path)
+			if target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+				auth_target.save_differential_compiled
+				orig_fname := file_system.basename (auth_target.source_file_path)
 				odin_fname := extension_replaced (orig_fname, File_ext_odin)
 
-				file_system.copy_file (target.file_mgr.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
+				file_system.copy_file (auth_target.file_mgr.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -727,14 +722,14 @@ feature {NONE} -- Tests
 			odin_text: STRING
 		do
 			Result := Test_failed
-			if target.is_valid then
-				odin_text := target.compiled_differential
+			if target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+				odin_text := auth_target.compiled_differential
 				if not odin_text.is_empty then
-					orig_fname := file_system.basename (target.source_file_path)
+					orig_fname := file_system.basename (auth_target.source_file_path)
 					src_fname := extension_replaced (orig_fname, File_ext_archetype_source)
 
 					-- original .adls file, for diffing
-					file_system.copy_file (target.source_file_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, src_fname))
+					file_system.copy_file (auth_target.source_file_path, file_system.pathname (diff_odin_round_trip_source_orig_dir, src_fname))
 
 					-- post-odin round-tripped file
 					create fd.make_create_read_write (file_system.pathname (diff_odin_round_trip_source_new_dir, src_fname))
@@ -791,7 +786,7 @@ feature {NONE} -- Implementation
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		local
 			col_csr: INTEGER
-			icon_key: STRING
+			icon_key, tooltip: STRING
 		do
 			if ari.has_artefacts or ari.is_root then
 				if grid_row_stack.is_empty then
@@ -810,7 +805,12 @@ feature {NONE} -- Implementation
 				icon_key := "archetype/"
 
 				if attached {ARCH_LIB_ARCHETYPE} ari as ala then
-					evx_grid.update_last_row_label_col (1, Void, ala.source_file_path, Void, Void, Void)
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ala as auth_ala then
+						tooltip := auth_ala.source_file_path
+					else
+						create tooltip.make_empty
+					end
+					evx_grid.update_last_row_label_col (1, Void, tooltip, Void, Void, Void)
 					col_csr := first_test_col
 					across tests as tests_csr loop
 						evx_grid.set_last_row_label_col (col_csr, "?", Void, Void, Void, Void)

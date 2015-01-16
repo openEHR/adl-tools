@@ -107,7 +107,7 @@ feature {NONE} -- Implementation
 		end
 
 	validate_metadata
-			-- check meta-data items
+			-- check metadata items
 		do
 			if not valid_standard_version (target.adl_version) then
 				add_error (ec_VARAV, <<target.adl_version>>)

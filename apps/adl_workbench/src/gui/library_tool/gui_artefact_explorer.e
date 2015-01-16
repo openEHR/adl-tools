@@ -179,17 +179,19 @@ feature {NONE} -- Implementation
 
 			add_tool_specific_archetype_menu_items (menu, aca)
 
-			-- remove artefact
-			if not aca.artefact_type.is_overlay then
-				create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (aca))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
-				menu.extend (an_mi)
-			end
-
 			-- add in file submenu
-			create file_menu.make_with_text (get_text (ec_file_menu_text))
-			menu.extend (file_menu)
-			context_menu_add_file_submenu (file_menu, aca)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				-- remove artefact
+				if not aca.artefact_type.is_overlay then
+					create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (auth_aca))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
+					menu.extend (an_mi)
+				end
+
+				create file_menu.make_with_text (get_text (ec_file_menu_text))
+				menu.extend (file_menu)
+				context_menu_add_file_submenu (file_menu, auth_aca)
+			end
 
 			-- add in tree controls
 			create tree_menu.make_with_text (get_text (ec_tree_controls))
@@ -231,14 +233,14 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 		end
 
-	context_menu_add_file_submenu (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE)
+	context_menu_add_file_submenu (a_menu: EV_MENU; aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- creates the context menu for file operations
 		local
 			an_mi: EV_MENU_ITEM
 		do
 			-- edit archetype source in external tool
 			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
-				agent (an_aca: ARCH_LIB_ARCHETYPE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.edit_archetype_source_agent.call ([an_aca])
 					end (aca)
@@ -248,7 +250,7 @@ feature {NONE} -- Implementation
 
 			-- save archetype as ...
 			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, True, True])
 					end (aca)
@@ -258,7 +260,7 @@ feature {NONE} -- Implementation
 
 			-- export archetype as ...
 			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, True, False])
 					end (aca)
@@ -267,7 +269,7 @@ feature {NONE} -- Implementation
 
 			-- export flat archetype as
 			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, False, False])
 					end (aca)
@@ -302,7 +304,7 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	remove_artefact (aca: ARCH_LIB_ARCHETYPE)
+	remove_artefact (aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		local
 			question_dialog: EV_QUESTION_DIALOG
 		do

@@ -172,7 +172,6 @@ feature -- Commands
 	build_subtree (aci: ARCH_LIB_ITEM)
 			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
 		do
-			reset
 			is_building := True
 			call_console_update_action (get_msg_line (ec_compiler_building_subtree, Void))
 			do_subtree (aci, agent check_file_system_currency (False, ?))
@@ -184,7 +183,6 @@ feature -- Commands
 	rebuild_subtree (aci: ARCH_LIB_ITEM)
 			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
 		do
-			reset
 			is_building := True
 			call_console_update_action (get_msg_line (ec_compiler_rebuilding_subtree, Void))
 			do_subtree (aci, agent check_file_system_currency (True, ?))
@@ -257,6 +255,7 @@ feature {NONE} -- Implementation
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
+			is_interrupt_requested := False
 			current_library.do_archetype_lineage(ara, action)
 		end
 
@@ -363,7 +362,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
+	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
 		require
 			has_serialiser_format (a_syntax)
@@ -377,11 +376,11 @@ feature {NONE} -- Implementation
 						build_archetype (ara, 0)
 					end
 
-					if ara.is_valid then
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
 						check attached file_system.pathname (an_export_dir, ara.id.physical_id) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
 							filename := pn + ext
 						end
-						ara.save_flat_as (filename, a_syntax)
+						auth_ara.save_flat_as (filename, a_syntax)
 					end
 				end
 			end

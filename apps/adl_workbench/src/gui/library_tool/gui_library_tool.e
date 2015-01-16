@@ -251,8 +251,8 @@ feature -- Commands
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
-				save_archetype (aca, True, True)
+			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
+				save_archetype (auth_aca, True, True)
 			else
 				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -264,8 +264,8 @@ feature -- Commands
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
-				save_archetype (aca, True, False)
+			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
+				save_archetype (auth_aca, True, False)
 			else
 				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -277,8 +277,8 @@ feature -- Commands
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
-				save_archetype (aca, False, False)
+			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
+				save_archetype (auth_aca, False, False)
 			else
 				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -431,7 +431,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_archetype (aca: ARCH_LIB_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+	save_archetype (aca: ARCH_LIB_AUTHORED_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
 			-- Export differential or flat archetype to a user-specified path
 		local
 			ok_to_write: BOOLEAN
@@ -505,7 +505,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	edit_archetype (aca: ARCH_LIB_ARCHETYPE)
+	edit_archetype (auth_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			question_dialog: EV_QUESTION_DIALOG
@@ -515,15 +515,15 @@ feature {NONE} -- Implementation
 			orig_time_stamp: INTEGER
 		do
 			-- figure out what file to edit
-			path := aca.source_file_path
-			if aca.file_mgr.has_legacy_flat_file then
-				check attached aca.file_mgr.legacy_flat_path as lfp then
+			path := auth_aca.source_file_path
+			if auth_aca.file_mgr.has_legacy_flat_file then
+				check attached auth_aca.file_mgr.legacy_flat_path as lfp then
 					legacy_path := lfp
 				end
-				if aca.has_source_file then
+				if auth_aca.has_source_file then
 					create question_dialog.make_with_text (get_msg_line (ec_edit_which_file_question,
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
-					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.qualified_name>>))
+					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.qualified_name>>))
 					question_dialog.set_buttons (<<get_text (ec_library_edit_differential_button_text), get_text (ec_library_edit_adl14_button_text)>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					if question_dialog.selected_button.is_equal (get_text (ec_library_edit_adl14_button_text)) then
@@ -532,7 +532,7 @@ feature {NONE} -- Implementation
 				else
 					create info_dialog.make_with_text (get_msg_line (ec_edit_legacy_file_info,
 						<<file_system.basename (legacy_path)>>))
-					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.id.physical_id>>))
+					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.id.physical_id>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					path := legacy_path
 				end
@@ -542,7 +542,7 @@ feature {NONE} -- Implementation
 			orig_time_stamp := file_system.file_time_stamp (path)
 			do_system_run_command_synchronous (editor_app_command + " %"" + path + "%"", Void)
 			if file_system.file_time_stamp (path) > orig_time_stamp then
-				gui_agents.select_archetype_agent.call ([aca])
+				gui_agents.select_archetype_agent.call ([auth_aca])
 			end
 		end
 
