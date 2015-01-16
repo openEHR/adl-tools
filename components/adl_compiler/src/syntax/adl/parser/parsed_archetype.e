@@ -19,7 +19,7 @@ inherit
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Create a new Eiffel parser.
@@ -28,22 +28,6 @@ feature -- Initialization
 			create archetype_id.default_create
 			create definition_text.make_empty
 			create terminology_text.make_empty
-		end
-
-	reset
-		do
-			create artefact_type.default_create
-			create archetype_id.default_create
-			parent_archetype_id := Void
-			is_generated := False
-
-			definition_text.wipe_out
-			terminology_text.wipe_out
-			rules_text := Void
-
-			definition_text_start_line := 0
-			rules_text_start_line := 0
-			terminology_text_start_line := 0
 		end
 
 feature -- Parse Output

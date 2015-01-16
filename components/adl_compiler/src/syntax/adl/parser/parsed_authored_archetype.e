@@ -9,50 +9,29 @@ note
 
 class PARSED_AUTHORED_ARCHETYPE
 
-inherit 
+inherit
 	PARSED_ARCHETYPE
 		redefine
-			make, reset
+			make
 		end
 
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Create a new Eiffel parser.
 		do
 			precursor
-			create other_metadata.make (0)
 			create language_text.make_empty
 			create adl_version.make_empty
 			create rm_release.make_empty
 		end
 
-	reset
-		do
-			precursor
-			adl_version.wipe_out
-			rm_release.wipe_out
-			other_metadata.wipe_out
-			uid := Void
-			is_controlled := False
-
-			language_text.wipe_out
-			description_text := Void
-			annotations_text := Void
-			component_terminologies_text := Void
-
-			language_text_start_line := 0
-			description_text_start_line := 0
-			annotations_text_start_line := 0
-			component_terminologies_text_start_line := 0
-		end
-
 feature -- Parse Output
 
-	other_metadata: HASH_TABLE [STRING, STRING]
+	other_metadata: detachable HASH_TABLE [STRING, STRING]
 
 	adl_version: STRING
 
@@ -78,11 +57,19 @@ feature -- Parse Output
 
 	component_terminologies_text_start_line: INTEGER
 
-feature -- Modification 
+feature -- Modification
 
 	put_other_metadata_item (a_key, a_value: STRING)
+		local
+			omd: HASH_TABLE [STRING, STRING]
 		do
-			other_metadata.put (a_value, a_key)
+			if attached other_metadata as att_omd then
+				omd := att_omd
+			else
+				create omd.make (0)
+				other_metadata := omd
+			end
+			omd.put (a_value, a_key)
 		end
 
 	set_is_controlled
@@ -144,5 +131,5 @@ feature -- Modification
 		do
 			component_terminologies_text_start_line := a_line
 		end
-	
+
 end

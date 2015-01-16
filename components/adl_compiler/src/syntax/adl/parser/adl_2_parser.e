@@ -332,7 +332,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 137")
 end
 
-			parsed_auth_arch.reset
+			create parsed_auth_arch.make
 			parsed_arch_ref := parsed_auth_arch
 			parsed_auth_arch_ref := parsed_auth_arch
 			parsed_arch_ref.set_artefact_type (text)
@@ -348,7 +348,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 147")
 end
 
-			parsed_template.reset
+			create parsed_template.make
 			parsed_arch_ref := parsed_template
 			parsed_auth_arch_ref := parsed_template
 			parsed_arch_ref.set_artefact_type (text)
@@ -379,7 +379,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 166")
 end
 
-			parsed_opt.reset
+			create parsed_opt.make
 			parsed_arch_ref := parsed_opt
 			parsed_auth_arch_ref := parsed_opt
 			parsed_arch_ref.set_artefact_type (text)
@@ -1139,7 +1139,6 @@ feature -- Initialization
 		do
 			precursor
 			validator_reset
-			create artefact_type.default_create
 			accept
 		end
 

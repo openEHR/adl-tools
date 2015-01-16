@@ -136,7 +136,7 @@ operational_template: operational_template_marker arch_meta_data archetype_id
 
 archetype_marker: SYM_ARCHETYPE 
 		{
-			parsed_auth_arch.reset
+			create parsed_auth_arch.make
 			parsed_arch_ref := parsed_auth_arch
 			parsed_auth_arch_ref := parsed_auth_arch
 			parsed_arch_ref.set_artefact_type (text)
@@ -146,7 +146,7 @@ archetype_marker: SYM_ARCHETYPE
 
 template_marker: SYM_TEMPLATE
 		{
-			parsed_template.reset
+			create parsed_template.make
 			parsed_arch_ref := parsed_template
 			parsed_auth_arch_ref := parsed_template
 			parsed_arch_ref.set_artefact_type (text)
@@ -165,7 +165,7 @@ template_overlay_marker: SYM_TEMPLATE_OVERLAY
 
 operational_template_marker: SYM_OPERATIONAL_TEMPLATE
 		{
-			parsed_opt.reset
+			create parsed_opt.make
 			parsed_arch_ref := parsed_opt
 			parsed_auth_arch_ref := parsed_opt
 			parsed_arch_ref.set_artefact_type (text)
@@ -357,7 +357,6 @@ feature -- Initialization
 		do
 			precursor
 			validator_reset
-			create artefact_type.default_create
 			accept
 		end
 

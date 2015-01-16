@@ -9,16 +9,16 @@ note
 
 class PARSED_TEMPLATE
 
-inherit 
+inherit
 	PARSED_AUTHORED_ARCHETYPE
 		redefine
-			make, reset
+			make
 		end
 
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Create a new Eiffel parser.
@@ -27,17 +27,11 @@ feature -- Initialization
 			create overlays.make (0)
 		end
 
-	reset
-		do
-			precursor
-			overlays.wipe_out
-		end
-
 feature -- Parse Output
 
 	overlays: ARRAYED_LIST [PARSED_ARCHETYPE]
 
-feature -- Modification 
+feature -- Modification
 
 	add_overlay (an_overlay: PARSED_ARCHETYPE)
 		do

@@ -9,10 +9,10 @@ note
 
 class PARSED_OPT
 
-inherit 
+inherit
 	PARSED_AUTHORED_ARCHETYPE
 		redefine
-			make, reset
+			make
 		end
 
 create
@@ -27,17 +27,11 @@ feature -- Initialization
 			create component_ontologies_text.make (0)
 		end
 
-	reset
-		do
-			precursor
-			component_ontologies_text.wipe_out
-		end
-
 feature -- Parse Output
 
 	component_ontologies_text: STRING
 
-feature -- Modification 
+feature -- Modification
 
 	set_component_ontologies_text (a_str: STRING)
 		do
