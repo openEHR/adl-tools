@@ -134,6 +134,12 @@ feature -- Status Report
 
 feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
+	is_adhoc: BOOLEAN
+			-- True if this is an adhoc archetype
+		do
+			Result := file_repository.is_adhoc
+		end
+
 	is_legacy_out_of_date: BOOLEAN
 		do
 			Result := has_legacy_flat_file and then (is_legacy_file_modified or
@@ -379,6 +385,9 @@ feature {GUI_TEST_TOOL} -- File Operations
 		end
 
 feature {NONE} -- Implementation
+
+	file_repository: ARCHETYPE_LIBRARY_SOURCE
+			-- The repository on which this item is found.
 
 	is_legacy: BOOLEAN
 		do

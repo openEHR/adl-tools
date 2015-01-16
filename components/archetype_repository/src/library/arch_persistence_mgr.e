@@ -112,8 +112,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
 	is_adhoc: BOOLEAN
 			-- True if this is an adhoc archetype
-		do
-			Result := file_repository.is_adhoc
+		deferred
 		end
 
 feature -- File Operations
@@ -127,9 +126,6 @@ feature {NONE} -- Implementation
 
 	source_text_timestamp: INTEGER
 			-- Modification timestamp of source file at last read
-
-	file_repository: ARCHETYPE_LIBRARY_SOURCE
-			-- The repository on which this item is found.
 
 	archetype_serialise_engine: ODIN_ENGINE
 		once
