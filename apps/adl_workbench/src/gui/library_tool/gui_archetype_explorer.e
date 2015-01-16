@@ -239,15 +239,19 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
-						text.append ("(" + aca.file_mgr.adl_version + ") ")
+
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						if display_archetype_source and not auth_aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
+							text.append ("(" + auth_aca.file_mgr.adl_version + ") ")
+						end
+						if  auth_aca.file_mgr.is_reference_archetype then
+							text.append (aci.name.as_upper)
+						else
+							text.append (aca.semantic_id)
+						end
 					end
 
-					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
-						text.append (aci.name.as_upper)
-					else
-						text.append (aca.semantic_id)
-					end
+					-- slot icon
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
@@ -333,14 +337,18 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
-						text.append ("(" + aca.file_mgr.adl_version + ") ")
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						if display_archetype_source and not auth_aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
+							text.append ("(" + auth_aca.file_mgr.adl_version + ") ")
+						end
+						if auth_aca.file_mgr.is_reference_archetype then
+							text.append (aci.name.as_upper)
+						else
+							text.append (aca.semantic_id)
+						end
 					end
-					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
-						text.append (aci.name.as_upper)
-					else
-						text.append (aca.semantic_id)
-					end
+
+					-- slot icon
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
