@@ -10,7 +10,7 @@ note
 class ARTEFACT_TYPE
 
 create
-	default_create, make, make_from_type_name, make_archetype, make_template, make_operational_template
+	default_create, make, make_from_type_name, make_archetype, make_template, make_template_overlay, make_operational_template
 
 feature -- Defnition
 
@@ -55,6 +55,11 @@ feature -- Initialisation
 	make_template
 		do
 			value := template
+		end
+
+	make_template_overlay
+		do
+			value := template_overlay
 		end
 
 feature -- Access

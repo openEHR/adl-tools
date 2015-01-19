@@ -31,6 +31,11 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
+	SHARED_ARCHETYPE_LIBRARIES
+		export
+			{NONE} all
+		end
+
 	EXCEPTIONS
 		rename
 			class_name as exception_class_name
@@ -71,11 +76,11 @@ feature -- Parsing
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
 			new_overlay: TEMPLATE_OVERLAY
-			tpl_orig_lang: TERMINOLOGY_CODE
 			parsed_overlay: PARSED_ARCHETYPE
 			parsed_auth_arch: PARSED_AUTHORED_ARCHETYPE
 			definition, ovl_definition: C_COMPLEX_OBJECT
 			terminology_tree: DT_COMPLEX_OBJECT
+			alto: ARCH_LIB_TEMPLATE_OVERLAY
 		do
 			adl_parser.execute (a_text)
 
@@ -217,7 +222,7 @@ feature -- Parsing
 						Result := build_authored_archetype (parsed_auth_arch, res_desc, orig_lang_trans, definition, rules_context.tree, arch_diff_terminology, annots)
 
 						-- ======================= deal with templates ======================
-						if attached {TEMPLATE} Result as tpl then
+						if attached {TEMPLATE} Result as tpl and attached {ARCH_LIB_TEMPLATE} aca as tpl_aca then
 							from adl_parser.parsed_template.overlays.start until adl_parser.parsed_template.overlays.off or errors.has_errors loop
 								dt_object_converter.reset
 								parsed_overlay := adl_parser.parsed_template.overlays.item_for_iteration
@@ -261,6 +266,10 @@ feature -- Parsing
 												end
 												new_overlay := build_overlay (parsed_overlay, ovl_definition, rules_context.tree, ovl_diff_terminology)
 												tpl.add_overlay (new_overlay)
+
+												-- now we will create a descriptor
+												create alto.make (new_overlay, tpl_aca)
+												current_library.put_new_archetype (alto)
 											else
 												errors.add_error (ec_SAON, Void, generator + ".parse")
 												errors.append (dt_object_converter.errors)

@@ -67,7 +67,12 @@ feature -- Access
 			-- Read `differential_text_converted' and `text_timestamp' from `source_file_path', returning
 			-- the text of the archetype source file, i.e. the differential form.
 		require
-			source_file_available: has_source_file
+			source_available: has_source
+		deferred
+		end
+
+	source_id: STRING
+			-- a reliable identifier for the source
 		deferred
 		end
 
@@ -77,14 +82,13 @@ feature -- Access
 			create Result.make_empty
 		end
 
-	source_file_path: STRING
-			-- Path of differential source file of archetype.
-
 feature -- Thumbnail state
 
 	artefact_type: ARTEFACT_TYPE
 			-- type of artefact i.e. archetype, template, template_component, operational_template
 			-- known in file on disk at least read
+		deferred
+		end
 
 	id: ARCHETYPE_HRID
 			-- Archetype identifier from last file read
@@ -97,18 +101,14 @@ feature -- Thumbnail state
 
 feature -- Status Report
 
+	has_source: BOOLEAN
+		deferred
+		end
+
 	is_source_modified: BOOLEAN
 			-- Should this archetype be recompiled due to changes on the file system?
 		deferred
 		end
-
-	has_source_file: BOOLEAN
-			-- Does the repository have a source-form file for this archetype?
-		do
-			Result := file_system.file_exists (source_file_path)
-		end
-
-feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
 	is_adhoc: BOOLEAN
 			-- True if this is an adhoc archetype

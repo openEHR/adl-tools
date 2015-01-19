@@ -24,7 +24,7 @@ feature {NONE} -- Initialisation
 		require
 			Path_valid: not a_path.is_empty
 		do
-			make_base (arch_thumbnail.archetype_id, arch_thumbnail.artefact_type, arch_thumbnail.adl_version, a_path, a_source, arch_thumbnail.is_generated)
+			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_path, a_source, arch_thumbnail.is_generated)
 			source_text_timestamp := source_file_timestamp
 		ensure
 			file_repository_set: file_repository = a_source
@@ -34,7 +34,7 @@ feature {NONE} -- Initialisation
 		require
 			Path_valid: not a_path.is_empty
 		do
-			make_base (arch_thumbnail.archetype_id, arch_thumbnail.artefact_type, arch_thumbnail.adl_version, a_path, a_source, True)
+			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_path, a_source, True)
 			legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 		ensure
@@ -46,7 +46,7 @@ feature {NONE} -- Initialisation
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 		do
-			make_base (an_id, {ARTEFACT_TYPE}.archetype, latest_adl_version, file_system.pathname (a_directory, an_id.physical_id + File_ext_archetype_source), a_source, False)
+			make_base (an_id, latest_adl_version, file_system.pathname (a_directory, an_id.physical_id + File_ext_archetype_source), a_source, False)
 		ensure
 			file_repository_set: file_repository = a_source
 		end
@@ -96,7 +96,23 @@ feature -- Access
 			other_details := amp.extract_other_details (Result)
 		end
 
+	source_id: STRING
+			-- a reliable identifier for the source
+		do
+			Result := source_file_path
+		end
+
+	source_file_path: STRING
+			-- Path of differential source file of archetype.
+
 feature -- Thumbnail state
+
+	artefact_type: ARTEFACT_TYPE
+			-- type of artefact i.e. archetype, template, template_component, operational_template
+			-- known in file on disk at least read
+		once
+			create Result.make_archetype
+		end
 
 	is_source_generated: BOOLEAN
 			-- True if the source file was generated from the legacy form
@@ -119,6 +135,12 @@ feature -- Thumbnail state
 
 feature -- Status Report
 
+	has_source_file: BOOLEAN
+			-- Does the repository have a source-form file for this archetype?
+		do
+			Result := file_system.file_exists (source_file_path)
+		end
+
 	is_source_modified: BOOLEAN
 			-- Should this archetype be recompiled due to changes on the file system?
 		do
@@ -132,13 +154,18 @@ feature -- Status Report
 			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
 		end
 
-feature {ARCH_LIB_ARCHETYPE} -- Status Report
-
 	is_adhoc: BOOLEAN
 			-- True if this is an adhoc archetype
 		do
 			Result := file_repository.is_adhoc
 		end
+
+	has_source: BOOLEAN
+		do
+			Result := has_source_file
+		end
+
+feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
 	is_legacy_out_of_date: BOOLEAN
 		do
@@ -168,9 +195,8 @@ feature -- File Operations
 				amp.parse (source_file_path)
 			end
 			if amp.passed then
-				if artefact_type.value /= amp.last_archetype.artefact_type then
-					create artefact_type.make (amp.last_archetype.artefact_type)
-				end
+				-- if this check fails for now; need to implement change of artefact type
+				check artefact_type.value = amp.last_archetype.artefact_type end
 
 				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_DIRECTORY
 				-- possible changes:
@@ -448,12 +474,11 @@ feature {NONE} -- Implementation
 			Result > 0
 		end
 
-	make_base (an_id: ARCHETYPE_HRID; an_artefact_type_val: INTEGER; an_adl_version: STRING; a_path: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
+	make_base (an_id: ARCHETYPE_HRID; an_adl_version: STRING; a_path: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
 		do
 			file_repository := a_source
 			source_file_path := a_path
 			is_source_generated := is_generated
-			create artefact_type.make (an_artefact_type_val)
 			id := an_id
 			adl_version := an_adl_version
 		end

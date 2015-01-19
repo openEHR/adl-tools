@@ -127,6 +127,8 @@ feature -- Identification
 	artefact_type: ARTEFACT_TYPE
 			-- type of artefact i.e. archetype, template, template_component, operational_template
 			-- see ARTEFACT_TYPE class
+		deferred
+		end
 
 --	relative_path: STRING
 --			-- a path derived from the semantic path of the nearest folder node + archetype_id
@@ -223,6 +225,12 @@ feature -- Identification
 			if is_adhoc then
 				Result.append("_adhoc")
 			end
+		end
+
+	source_id: STRING
+			-- a reliable identifier for the source
+		do
+			Result := file_mgr.source_id
 		end
 
 feature {ARCHETYPE_LIBRARY} -- Identification
@@ -457,6 +465,20 @@ feature -- Artefacts
 			end
 		end
 
+	is_valid: BOOLEAN
+			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
+			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
+			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
+		do
+			Result := compilation_state = Cs_validated
+		end
+
+	is_valid_differential: BOOLEAN
+			-- True if at least we got to the state of the differential being created / available
+		do
+			Result := compilation_state >= Cs_validated_phase_2
+		end
+
 feature -- Compilation
 
 	compilation_state: INTEGER
@@ -523,20 +545,6 @@ feature -- Compilation
 			Result := Cs_terminal_states.has (compilation_state)
 		end
 
-	is_valid: BOOLEAN
-			-- True if archetype object created and 'is_valid' True. This can be used to check if the archetype has
-			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
-			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
-		do
-			Result := compilation_state = Cs_validated
-		end
-
-	is_valid_differential: BOOLEAN
-			-- True if at least we got to the state of the differential being created / available
-		do
-			Result := compilation_state >= Cs_validated_phase_2
-		end
-
 	compile
 			-- perform as many steps of the compilation process as possible; may be called repeatedly by ARCHETYPE_COMPILER as it
 			-- does initial parsing here, finds dependencies, compiles them, comes back here, etc etc
@@ -548,7 +556,7 @@ feature -- Compilation
 			if not exception_encountered then
 				from until compile_finished loop
 					if attached compile_actions.item (compilation_state) as comp_action then
-						comp_action.call ([])
+						comp_action.call ([Current])
 					else
 						compile_finished := True
 					end
@@ -654,51 +662,17 @@ feature -- Compilation
 			Compilation_state_set: compilation_state = Cs_invalid
 		end
 
-feature {NONE} -- Compilation
+feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
 	compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
-		once ("OBJECT")
+		once
 			create Result.make (0)
-			Result.put (agent initialise, Cs_unread)
-			Result.put (agent
-				do
-					if specialisation_parent.is_valid then
-						compilation_state := Cs_ready_to_parse
-					else
-						compilation_state := cs_lineage_invalid
-						add_error (ec_compile_e1, <<parent_id.physical_id>>)
-					end
-				end , Cs_lineage_known)
-
-			Result.put (agent evaluate_suppliers, Cs_parsed)
-			Result.put (agent validate, Cs_ready_to_validate)
-			Result.put (agent
-				do
-					validate_flat
-				end, Cs_validated_phase_2)
-
-			Result.put (agent
-				do
-					post_compile_actions
-					compile_finished := True
-				end, Cs_validated)
-		end
-
-	compile_rescue
-		do
-		end
-
-	compile_finished: BOOLEAN
-
-	compile_trying_rescue: BOOLEAN
-
-	reset
-			-- reset after exception encountered
-		do
-			status.wipe_out
-			validator_reset
-		ensure
-			Status_cleared: status.is_empty
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.initialise, Cs_unread)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_lineage, Cs_lineage_known)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_suppliers, Cs_parsed)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate, Cs_ready_to_validate)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate_flat, Cs_validated_phase_2)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.post_compile_actions, Cs_validated)
 		end
 
 	initialise
@@ -708,7 +682,7 @@ feature {NONE} -- Compilation
 			compilation_state = Cs_unread
 		do
 			reset
-			if has_source_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
+			if has_source then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
 				if is_specialised then
 					compilation_state := Cs_lineage_known
 				else
@@ -719,6 +693,16 @@ feature {NONE} -- Compilation
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has (compilation_state)
+		end
+
+	evaluate_lineage
+		do
+			if specialisation_parent.is_valid then
+				compilation_state := Cs_ready_to_parse
+			else
+				compilation_state := cs_lineage_invalid
+				add_error (ec_compile_e1, <<parent_id.physical_id>>)
+			end
 		end
 
 	evaluate_suppliers
@@ -836,6 +820,26 @@ feature {NONE} -- Compilation
 		require
 			compilation_state = Cs_validated
 		do
+			compile_finished := True
+		end
+
+feature {NONE} -- Compilation
+
+	compile_rescue
+		do
+		end
+
+	compile_finished: BOOLEAN
+
+	compile_trying_rescue: BOOLEAN
+
+	reset
+			-- reset after exception encountered
+		do
+			status.wipe_out
+			validator_reset
+		ensure
+			Status_cleared: status.is_empty
 		end
 
 	set_compile_attempt_timestamp
@@ -876,21 +880,15 @@ feature -- File Access
 
 	file_mgr: ARCH_PERSISTENCE_MGR
 
-	source_file_path: STRING
-			-- Path of differential source file of archetype.
-		do
-			Result := file_mgr.source_file_path
-		end
-
-	has_source_file: BOOLEAN
-		do
-			Result := file_mgr.has_source_file
-		end
-
 	is_adhoc: BOOLEAN
 			-- True if this is an adhoc archetype
 		do
 			Result := file_mgr.is_adhoc
+		end
+
+	has_source: BOOLEAN
+		do
+			Result := file_mgr.has_source
 		end
 
 feature -- Output
@@ -1004,13 +1002,9 @@ feature {NONE} -- Flattening
 			end
 
 			-- archteype flattening step
-			if is_specialised then
-				check attached specialisation_parent as spec_anc then
-					arch_flattener.execute (spec_anc.flat_archetype, diff_arch)
-				end
-				check attached arch_flattener.arch_flat_out as fa then
-					flattened_arch := fa
-				end
+			if attached specialisation_parent as spec_anc then
+				arch_flattener.execute (spec_anc.flat_archetype, diff_arch)
+				flattened_arch := arch_flattener.arch_flat_out
 			else
 				check attached {AUTHORED_ARCHETYPE} diff_arch as auth_diff_arch then
 					flattened_arch := auth_diff_arch.deep_twin

@@ -177,16 +177,15 @@ feature {NONE} -- Implementation
 				menu.extend (an_mi)
 			end
 
-			add_tool_specific_archetype_menu_items (menu, aca)
-
-			-- add in file submenu
 			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				-- add tool specific items
+				add_tool_specific_archetype_menu_items (menu, auth_aca)
+
+				-- add in file submenu
 				-- remove artefact
-				if not aca.artefact_type.is_overlay then
-					create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (auth_aca))
-					an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
-					menu.extend (an_mi)
-				end
+				create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (auth_aca))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
+				menu.extend (an_mi)
 
 				create file_menu.make_with_text (get_text (ec_file_menu_text))
 				menu.extend (file_menu)
@@ -277,7 +276,7 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- add further menu items specific to descendant tools
 		do
 		end

@@ -207,43 +207,65 @@ feature -- Commands
 
 feature -- Modification
 
-	add_new_non_specialised_archetype (accn: ARCH_LIB_CLASS; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
+	add_new_non_specialised_archetype (an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 		do
-			put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_archetype (an_archetype_id,
+			put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new (an_archetype_id,
 				library_access.source, in_dir_path))
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
 		end
 
-	add_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
+	add_new_specialised_archetype (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		do
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_specialised_archetype (an_archetype_id, parent_diff_arch,
+				put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_specialised (an_archetype_id, parent_diff_arch,
 					library_access.source, in_dir_path))
 			end
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
 		end
 
-	add_new_template (parent_aca: ARCH_LIB_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
+	add_new_template (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		do
 			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_template (an_archetype_id, parent_diff_arch,
+				put_new_archetype (create {ARCH_LIB_TEMPLATE}.make_new_specialised (an_archetype_id, parent_diff_arch,
 					library_access.source, in_dir_path))
 			end
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
+		end
+
+	put_new_archetype (aca: ARCH_LIB_ARCHETYPE)
+			-- put `aca' into the structure and into the library source structure
+		require
+			valid_candidate (aca)
+		do
+			check attached archetype_parent_item (aca) as att_ala then
+				att_ala.put_child (aca)
+			end
+			item_index_put (aca)
+
+			-- add to file system index
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				library_access.source.put_archetype (auth_aca)
+			end
+
+			last_added_archetype := aca
+		ensure
+			Last_added_archetype_set: last_added_archetype = aca
+			Archetype_in_index: item_index.item (aca.qualified_key) = aca
+			Archetype_in_archetype_index: attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca implies has_archetype_with_id (auth_aca.id.physical_id)
 		end
 
 	last_added_archetype: detachable ARCH_LIB_ARCHETYPE
@@ -464,9 +486,9 @@ feature -- Statistics
 feature {NONE} -- Implementation
 
 	item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by LOWER-CASE id. Used during construction of `directory'
+			-- Index of archetype & class nodes, keyed by LOWER-CASE id.
 			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
-			-- For archetype nodes, this will be the physical archetype id.
+			-- For archetypes, this will be the physical archetype id.
 		attribute
 			create Result.make (0)
 		end
@@ -505,6 +527,8 @@ feature {NONE} -- Implementation
 		end
 
 	remove_list: ARRAYED_LIST [ARCHETYPE_HRID]
+			-- list of archetypes to remove from the system because they don't have a valid parent
+			-- class or parent archetype
 		attribute
 			create Result.make (20)
 		end
@@ -516,7 +540,7 @@ feature {NONE} -- Implementation
 					att_parent_ala.put_child (aca)
 					item_index_put (aca)
 				else
-					add_error (ec_arch_cat_dup_archetype, <<aca.source_file_path>>)
+					add_error (ec_arch_cat_dup_archetype, <<aca.source_id>>)
 					remove_list.extend (aca.id)
 				end
 			else
@@ -651,28 +675,6 @@ feature {NONE} -- Implementation
 			item_index.wipe_out
 			item_tree := item_tree_prototype.deep_twin
 			do_all_semantic (agent (ari: attached ARCH_LIB_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
-		end
-
-	put_new_archetype (aca: ARCH_LIB_ARCHETYPE)
-			-- put `aca' into the structure and into the library source structure
-		require
-			valid_candidate (aca)
-		do
-			check attached archetype_parent_item (aca) as att_ala then
-				att_ala.put_child (aca)
-			end
-			item_index_put (aca)
-
-			-- add to file system index
-			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
-				library_access.source.put_archetype (auth_aca)
-			end
-
-			last_added_archetype := aca
-		ensure
-			Last_added_archetype_set: last_added_archetype = aca
-			Archetype_in_index: item_index.item (aca.qualified_key) = aca
-			Archetype_in_archetype_index: attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca implies has_archetype_with_id (auth_aca.id.physical_id)
 		end
 
 	schema_load_counter: INTEGER

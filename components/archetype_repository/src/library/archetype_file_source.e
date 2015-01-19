@@ -189,7 +189,11 @@ feature {NONE} -- Implementation
 								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.physical_id>>, "")
 								else
-									create ara.make (l_full_path, Current, arch_tn)
+									if arch_tn.is_template then
+										create {ARCH_LIB_TEMPLATE} ara.make (l_full_path, Current, arch_tn)
+									else
+										create ara.make (l_full_path, Current, arch_tn)
+									end
 									archetype_id_index.force (ara, ara.id.physical_id)
 									archetype_ref_index.force (ara, ara.id.semantic_id)
 									if not ara.is_specialised then

@@ -52,9 +52,12 @@ feature -- Access
 			create Result.default_create
 		end
 
-	arch_flat_out: detachable AUTHORED_ARCHETYPE
+	arch_flat_out: AUTHORED_ARCHETYPE
 			-- generated flat archetype - logically an overlay of `arch_flat_parent' and `arch_diff_child'
 			-- if the `arch_diff_child' is a template, the dynamic type will be OPERATIONAL_TEMPLATE
+		attribute
+			create Result.default_create
+		end
 
 feature -- Commands
 
@@ -84,15 +87,15 @@ feature -- Commands
 			arch_flat_out.terminology.merge (arch_diff_child.terminology)
 
 			-- any parts that rely on paths have to be done after definition flattening: annotations
-			if attached {AUTHORED_ARCHETYPE} arch_flat_out as auth_arch_flat_out and attached {AUTHORED_ARCHETYPE} arch_diff_child as auth_arch_diff_child then
-				auth_arch_flat_out.merge_annotations_from_resource (auth_arch_diff_child)
+			if attached {AUTHORED_ARCHETYPE} arch_diff_child as auth_arch_diff_child then
+				arch_flat_out.merge_annotations_from_resource (auth_arch_diff_child)
 			end
 
 			arch_flat_out.set_is_valid
 
 			arch_flat_out.rebuild
 		ensure
-			attached arch_flat_out as att_flat and then att_flat.is_flat and then att_flat.is_valid
+			arch_flat_out.is_flat and then arch_flat_out.is_valid
 		end
 
 feature {NONE} -- Implementation
@@ -238,8 +241,6 @@ end
 
 	overlay_ac_node (ac_diff_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform overlays of C_ATTRIBUTE node from differential archetype on corresponding node in flat parent.
-		require
-			attached arch_flat_out
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_output: STRING

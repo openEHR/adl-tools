@@ -545,33 +545,31 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; auth_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- add further menu items specific to descendant tools
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if aca.is_valid then
+			if auth_aca.is_valid then
 				-- create new specialised archetype
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 
 				-- create new template
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 			end
 		end
 
-	create_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE)
+	create_new_specialised_archetype (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
 			if attached source as src then
 				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), parent_aca.id.deep_twin, parent_aca.id, src)
-				check attached proximate_ev_window (ev_root_container) as prox_win then
-					dialog.show_modal_to_window (prox_win)
-				end
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then
 					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
@@ -581,7 +579,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_template (parent_aca: ARCH_LIB_ARCHETYPE)
+	create_new_template (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 			new_id: ARCHETYPE_HRID
@@ -606,21 +604,29 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 			matching_ids: ARRAYED_SET [STRING]
 			in_dir_path: STRING
+			arch_lib_auth_arch: detachable ARCH_LIB_AUTHORED_ARCHETYPE
+			found: BOOLEAN
 		do
 			if attached source as src then
-				-- figure out a reasonable path as the path of some other archetype of the same class
+				-- default creation directory: top of library area
+				in_dir_path := current_library_interface.library_path
+
+				-- try for a better path as the path of some other archetype of the same class
 				matching_ids := src.matching_ids (".*", accn.class_definition.name, Void)
 				if not matching_ids.is_empty then
-					matching_ids.start
-					in_dir_path := file_system.dirname (src.archetype_with_id (matching_ids.item).source_file_path)
-				else
-					in_dir_path := current_library_interface.library_path
+					from matching_ids.start until matching_ids.off or found loop
+						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} src.archetype_with_id (matching_ids.item) as alaa then
+							in_dir_path := file_system.dirname (alaa.source_file_path)
+							found := True
+						end
+						matching_ids.forth
+					end
 				end
 
 				create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), src)
 				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then
-					src.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
+					src.add_new_non_specialised_archetype (dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
 					select_item_in_tree (src.last_added_archetype.id.physical_id)
 				end
