@@ -95,9 +95,7 @@ feature -- Parsing
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				check attached parsed_auth_arch.language_text as lt then
-					language_context.set_source (lt, parsed_auth_arch.language_text_start_line)
-				end
+				language_context.set_source (parsed_auth_arch.language_text, parsed_auth_arch.language_text_start_line)
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
@@ -144,9 +142,7 @@ feature -- Parsing
 				------------------- definition section (mandatory) ---------------
 				-- parse ARCHETYPE.definition
 				if not errors.has_errors then
-					check attached parsed_auth_arch.definition_text as def_text then
-						definition_context.set_source (def_text, parsed_auth_arch.definition_text_start_line, aca)
-					end
+					definition_context.set_source (parsed_auth_arch.definition_text, parsed_auth_arch.definition_text_start_line, aca)
 					definition_context.parse
 					if not definition_context.parse_succeeded then
 						errors.append (definition_context.errors)
@@ -170,9 +166,7 @@ feature -- Parsing
 				------------------- terminology section (mandatory) ---------------
 				-- parse ARCHETYPE.terminology
 				if not errors.has_errors then
-					check attached parsed_auth_arch.terminology_text as att_term_text then
-						terminology_context.set_source (att_term_text, parsed_auth_arch.terminology_text_start_line)
-					end
+					terminology_context.set_source (parsed_auth_arch.terminology_text, parsed_auth_arch.terminology_text_start_line)
 					terminology_context.parse
 					if not terminology_context.parse_succeeded then
 						errors.append (terminology_context.errors)
@@ -228,9 +222,7 @@ feature -- Parsing
 								parsed_overlay := adl_parser.parsed_template.overlays.item_for_iteration
 								------------------- definition section (mandatory) ---------------
 								-- parse ARCHETYPE.definition
-								check attached parsed_overlay.definition_text as def_text then
-									definition_context.set_source (def_text, parsed_overlay.definition_text_start_line, aca)
-								end
+								definition_context.set_source (parsed_overlay.definition_text, parsed_overlay.definition_text_start_line, aca)
 								definition_context.parse
 								if not definition_context.parse_succeeded then
 									errors.append (definition_context.errors)
@@ -249,13 +241,15 @@ feature -- Parsing
 									if not errors.has_errors then
 										------------------- terminology section (mandatory) ---------------
 										-- parse ARCHETYPE.terminology
-										check attached parsed_overlay.terminology_text as att_term_text then
-											terminology_context.set_source (att_term_text, parsed_overlay.terminology_text_start_line)
-										end
+										terminology_context.set_source (parsed_overlay.terminology_text, parsed_overlay.terminology_text_start_line)
 										terminology_context.parse
 										if not terminology_context.parse_succeeded then
 											errors.append (terminology_context.errors)
 										else
+											check attached terminology_context.tree as tct then
+												terminology_tree := tct
+											end
+
 											-- ============== create the overlay ================= --
 											if attached {ARCHETYPE_TERMINOLOGY} terminology_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id,
 												<<tpl.original_language.code_string, definition_context.tree.node_id, True>>) as ovl_diff_terminology
@@ -371,8 +365,8 @@ feature -- Parsing
 				Result.set_is_generated
 			end
 
-			if attached a_rules as att_rules_tree then
-				Result.set_rules (att_rules_tree)
+			if attached a_rules as att_rules then
+				Result.set_rules (att_rules)
 			end
 
 			Result.rebuild

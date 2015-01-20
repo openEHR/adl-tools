@@ -94,10 +94,36 @@ feature -- Access
 		require
 			has_archetype_with_id (an_archetype_id)
 		do
-			if library_access.adhoc_source.has_archetype_with_id (an_archetype_id) then
-				Result := library_access.adhoc_source.archetype_with_id (an_archetype_id)
+			check attached {ARCH_LIB_ARCHETYPE} item_index.item (an_archetype_id.as_lower) as att_ala then
+				Result := att_ala
+			end
+		end
+
+	archetype_matching_ref (an_archetype_ref: STRING): detachable ARCH_LIB_ARCHETYPE
+			-- Return archetype whose id matches `an_archetype_ref'
+		local
+			key_lc: STRING
+		do
+			key_lc := an_archetype_ref.as_lower
+
+			-- assume `an_archetype_ref' is of major version reference form
+			if attached archetype_ref_index.item (key_lc) as att_aca then
+				Result := att_aca
+			-- else try for direct match, or else filler id is compatible with available actual ids
+			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
+			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
+			elseif attached {ARCH_LIB_ARCHETYPE} item_index.item (key_lc) as att_aca then
+				Result := att_aca
+			-- else expensive brute force search
 			else
-				Result := library_access.source.archetype_with_id (an_archetype_id)
+				from item_index.start until item_index.off or attached Result loop
+					if item_index.key_for_iteration.starts_with (key_lc) and then
+						attached {ARCH_LIB_ARCHETYPE} item_index.item_for_iteration as att_aca
+					then
+						Result := att_aca
+					end
+					item_index.forth
+				end
 			end
 		end
 
@@ -109,19 +135,41 @@ feature -- Access
 			Regex_valid: not a_regex.is_empty
 			Rm_type_valid: attached an_rm_type as att_rm_type implies not att_rm_type.is_empty
 			Rm_closure_valid: attached an_rm_closure as att_rm_closure implies not att_rm_closure.is_empty
+		local
+			arch_id: ARCHETYPE_HRID
+			is_candidate: BOOLEAN
+			rm_type, rm_closure: detachable STRING
 		do
-			Result := library_access.source.matching_ids (a_regex, an_rm_type, an_rm_closure)
-		ensure
-			across Result as ids_csr all has_item_with_id (ids_csr.item) end
-		end
+			create Result.make (0)
+			Result.compare_objects
 
-	archetype_matching_ref (an_archetype_ref: STRING): detachable ARCH_LIB_ARCHETYPE
-			-- Return archetype whose id matches `an_archetype_ref'
-		do
-			if attached library_access.source.archetype_matching_ref (an_archetype_ref) as ala then
-				Result := ala
+			if attached an_rm_type as rm_t then
+				rm_type := rm_t.as_lower
+			end
+			if attached an_rm_closure as rm_cl then
+				rm_closure := rm_cl.as_lower
+			end
+
+			regex_matcher.compile (a_regex)
+			if regex_matcher.is_compiled then
+				across item_index as archs_csr loop
+					if attached {ARCH_LIB_ARCHETYPE} archs_csr.item and then regex_matcher.matches (archs_csr.key) then
+						if attached rm_type as rmt then
+							create arch_id.make_from_string (archs_csr.key)
+							is_candidate := rmt.is_equal (arch_id.rm_class.as_lower)
+							if is_candidate and attached rm_closure as rmc then
+								is_candidate := rmc.is_equal (arch_id.rm_package.as_lower)
+							end
+						else
+							is_candidate := True
+						end
+						if is_candidate then
+							Result.extend (archs_csr.key)
+						end
+					end
+				end
 			else
-				Result := library_access.adhoc_source.archetype_matching_ref (an_archetype_ref)
+				Result.extend (get_msg_line (ec_regex_e1, <<a_regex>>))
 			end
 		end
 
@@ -151,8 +199,7 @@ feature -- Status Report
 	has_archetype_with_id (an_archetype_id: STRING): BOOLEAN
 			-- True if the physical id `an_archetype_id' exists in library
 		do
-			Result := library_access.source.has_archetype_with_id (an_archetype_id) or else
-				library_access.adhoc_source.has_archetype_with_id (an_archetype_id)
+			Result := item_index.has (an_archetype_id.as_lower)
 		end
 
 	has_item_with_id (an_id: STRING): BOOLEAN
@@ -171,10 +218,9 @@ feature -- Status Report
 		end
 
 	has_archetype_matching_ref (an_archetype_ref: STRING): BOOLEAN
-			-- Return true if there is an archetype whose id matches
+			-- Return true if there is an archetype whose semantic_id (major version only form) matches `an_archetype_ref'
 		do
-			Result := library_access.source.has_archetype_matching_ref (an_archetype_ref) or else
-				library_access.adhoc_source.has_archetype_matching_ref (an_archetype_ref)
+			Result := attached archetype_matching_ref (an_archetype_ref)
 		end
 
 	has_parent_item (ala: ARCH_LIB_ARCHETYPE): BOOLEAN
@@ -190,6 +236,7 @@ feature -- Commands
 		do
 			reset
 			item_index.wipe_out
+			archetype_ref_index.wipe_out
 			item_tree.wipe_out
 			compile_attempt_count := 0
 			create last_populate_timestamp.make_from_epoch (0)
@@ -493,14 +540,23 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
+	archetype_ref_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+			-- index of archetype descriptors keyed by LOWER-CASE archetype ref (i.e. id with with .vN),
+			-- derived from physical archetype id (i.e. id with full vN.N.N version)
+		attribute
+			create Result.make (0)
+		end
+
 	item_index_put (ala: ARCH_LIB_ARCHETYPE)
 		do
 			item_index.force (ala, ala.qualified_key)
+			archetype_ref_index.force (ala, ala.id.semantic_id.as_lower)
 		end
 
 	item_index_remove (arch_id: ARCHETYPE_HRID)
 		do
 			item_index.remove (arch_id.physical_id.as_lower)
+			archetype_ref_index.remove (arch_id.semantic_id.as_lower)
 		end
 
 	populate_item_index
@@ -736,6 +792,12 @@ feature {NONE} -- Implementation
 					exit_action.call ([node])
 				end
 			end
+		end
+
+	regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+		attribute
+			create Result.make
+			Result.set_case_insensitive (True)
 		end
 
 invariant

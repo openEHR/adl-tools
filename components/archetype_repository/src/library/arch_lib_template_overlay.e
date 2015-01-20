@@ -36,16 +36,18 @@ feature {NONE} -- Initialisation
 
 			-- archetype state
 			parent_ref := an_overlay.parent_archetype_id
+			differential_archetype := an_overlay
 
 			-- create file workflow state
 			create file_mgr.make (id, alt.file_mgr)
 
 			reset
-			compilation_state := Cs_unread
+			compilation_state := cs_ready_to_validate
 		ensure
 			Id_set: id = an_overlay.archetype_id
 			Parent_id_set: parent_ref = an_overlay.parent_archetype_id
-			Compilation_state: compilation_state = Cs_unread
+			Archetype_attached: attached differential_archetype
+			Compilation_state: compilation_state = cs_ready_to_validate
 		end
 
 	make_new (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; alt: ARCH_LIB_TEMPLATE)
@@ -75,6 +77,7 @@ feature {NONE} -- Initialisation
 			Id_set: id = an_id
 			Is_specialised: is_specialised
 			Archetype_attached: attached differential_archetype
+			Compilation_state: compilation_state = Cs_validated
 		end
 
 feature -- Identification
@@ -87,6 +90,21 @@ feature -- Identification
 feature -- Artefacts
 
 	differential_archetype: detachable TEMPLATE_OVERLAY
+
+feature {ARCH_LIB_ARCHETYPE} -- Compilation
+
+	compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
+		once
+			Result := create_compile_actions
+		end
+
+	initialise
+			-- set compilation state at creation, or if editing occurs
+			-- also sets rm_schema reference
+		do
+			reset
+			compilation_state := cs_ready_to_validate
+		end
 
 feature -- File Access
 

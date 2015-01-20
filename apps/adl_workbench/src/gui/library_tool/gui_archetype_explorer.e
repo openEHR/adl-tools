@@ -229,7 +229,7 @@ feature {NONE} -- Implementation
    	semantic_grid_update_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
-			text, tooltip: STRING
+			id_str, text, tooltip: STRING
 			pixmap: detachable EV_PIXMAP
 			col: detachable EV_COLOR
 		do
@@ -239,17 +239,18 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-
+					id_str := aca.semantic_id
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
 						if display_archetype_source and not auth_aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
 							text.append ("(" + auth_aca.file_mgr.adl_version + ") ")
 						end
-						if  auth_aca.file_mgr.is_reference_archetype then
-							text.append (aci.name.as_upper)
-						else
-							text.append (aca.semantic_id)
+						if auth_aca.file_mgr.is_reference_archetype then
+							id_str := aci.name.as_upper
 						end
 					end
+
+					-- id
+					text.append (id_str)
 
 					-- slot icon
 					if aca.has_slots then
@@ -327,7 +328,7 @@ feature {NONE} -- Implementation
    	filesys_grid_update_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
-			text, tooltip: STRING
+			id_str, text, tooltip: STRING
 			pixmap: detachable EV_PIXMAP
 			col: detachable EV_COLOR
 		do
@@ -337,16 +338,18 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
+					id_str := aca.semantic_id
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
 						if display_archetype_source and not auth_aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
 							text.append ("(" + auth_aca.file_mgr.adl_version + ") ")
 						end
 						if auth_aca.file_mgr.is_reference_archetype then
-							text.append (aci.name.as_upper)
-						else
-							text.append (aca.semantic_id)
+							id_str := aci.name.as_upper
 						end
 					end
+
+					-- id
+					text.append (id_str)
 
 					-- slot icon
 					if aca.has_slots then

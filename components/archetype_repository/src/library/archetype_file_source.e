@@ -77,7 +77,6 @@ feature -- Commands
  		do
 			create errors.make
 			archetype_id_index.wipe_out
-			archetype_ref_index.wipe_out
 			create item_tree.make (Archetype_category.twin)
 
 			if is_adhoc then
@@ -195,7 +194,6 @@ feature {NONE} -- Implementation
 										create ara.make (l_full_path, Current, arch_tn)
 									end
 									archetype_id_index.force (ara, ara.id.physical_id)
-									archetype_ref_index.force (ara, ara.id.semantic_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end
@@ -228,7 +226,6 @@ feature {NONE} -- Implementation
 								elseif not archetype_id_index.has (arch_id) then
 									create ara.make (extension_replaced (l_full_path, File_ext_archetype_source), Current, arch_tn)
 									archetype_id_index.force (ara, arch_id)
-									archetype_ref_index.force (ara, ara.id.semantic_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end

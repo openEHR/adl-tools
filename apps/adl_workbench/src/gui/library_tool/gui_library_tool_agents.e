@@ -19,6 +19,8 @@ feature -- Access
 
 	update_explorers_and_select_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_ARCHETYPE]]
 
+	update_archetype_explorer_agent: detachable PROCEDURE [ANY, TUPLE]
+
 feature -- Modification
 
 	set_edit_archetype_source_agent (agt: like edit_archetype_source_agent)
@@ -39,6 +41,11 @@ feature -- Modification
 	set_update_explorers_and_select_agent (agt: like update_explorers_and_select_agent)
 		do
 			update_explorers_and_select_agent := agt
+		end
+
+	set_update_archetype_explorer (agt: like update_archetype_explorer_agent)
+		do
+			update_archetype_explorer_agent := agt
 		end
 
 end

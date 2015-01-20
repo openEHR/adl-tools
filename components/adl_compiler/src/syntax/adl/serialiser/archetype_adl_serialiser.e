@@ -182,9 +182,9 @@ feature -- Serialisation
 
 				arch_kw_str.append (kw_list)
 				arch_kw_str.append_character(')')
-
-				last_result.append (apply_style (arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 			end
+
+			last_result.append (apply_style (arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 
 			last_result.append (create_indent(1) + apply_style (archetype.archetype_id.as_string, STYLE_IDENTIFIER) +
 				format_item(FMT_NEWLINE))

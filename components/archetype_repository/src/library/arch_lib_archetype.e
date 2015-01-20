@@ -665,7 +665,11 @@ feature -- Compilation
 feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
 	compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
-		once
+		deferred
+		end
+
+	create_compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
+		do
 			create Result.make (0)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.initialise, Cs_unread)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_lineage, Cs_lineage_known)
@@ -680,17 +684,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			-- also sets rm_schema reference
 		require
 			compilation_state = Cs_unread
-		do
-			reset
-			if has_source then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
-				if is_specialised then
-					compilation_state := Cs_lineage_known
-				else
-					compilation_state := Cs_ready_to_parse
-				end
-			elseif attached differential_archetype then -- must have been newly created
-				compilation_state := Cs_validated
-			end
+		deferred
 		ensure
 			compilation_state_set: Cs_initial_states.has (compilation_state)
 		end

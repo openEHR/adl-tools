@@ -72,6 +72,7 @@ feature {NONE} -- Implementation
 	do_select_archetype
 		do
 			precursor
+			tool_agents.update_archetype_explorer_agent.call ([])
 			tool_agents.archetype_explorer_select_in_tree_agent.call ([selected_archetype_node.global_artefact_identifier])
 		end
 

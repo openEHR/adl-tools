@@ -48,6 +48,7 @@ feature {NONE} -- Initialisation
 			tool_agents.set_edit_archetype_source_agent (agent edit_archetype)
 			tool_agents.set_save_archetype_agent (agent save_archetype)
 			tool_agents.set_update_explorers_and_select_agent (agent update_explorers_and_select)
+			tool_agents.set_update_archetype_explorer (agent update_archetype_explorer)
 
 			create archetype_explorer.make
 			create template_explorer.make
@@ -331,12 +332,20 @@ feature -- Events
 		end
 
 	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE)
-			-- Populate archetype and template explorers
+			-- Populate archetype and template explorers and select new archetype in the archetype explorer
 		do
 			if attached source as src then
 				archetype_explorer.populate (src)
 				template_explorer.populate (src)
 				archetype_explorer.select_item_in_tree (aca.id.physical_id)
+			end
+		end
+
+	update_archetype_explorer
+			-- Populate archetype and template explorers but don't do any selecting
+		do
+			if attached source as src then
+				archetype_explorer.populate (src)
 			end
 		end
 
