@@ -153,9 +153,9 @@ feature -- Access
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
 				across item_index as archs_csr loop
-					if attached {ARCH_LIB_ARCHETYPE} archs_csr.item and then regex_matcher.matches (archs_csr.key) then
+					if attached {ARCH_LIB_ARCHETYPE} archs_csr.item as ala and then regex_matcher.matches (archs_csr.key) then
+						arch_id := ala.id
 						if attached rm_type as rmt then
-							create arch_id.make_from_string (archs_csr.key)
 							is_candidate := rmt.is_equal (arch_id.rm_class.as_lower)
 							if is_candidate and attached rm_closure as rmc then
 								is_candidate := rmc.is_equal (arch_id.rm_package.as_lower)
@@ -164,7 +164,7 @@ feature -- Access
 							is_candidate := True
 						end
 						if is_candidate then
-							Result.extend (archs_csr.key)
+							Result.extend (arch_id.physical_id)
 						end
 					end
 				end
@@ -569,14 +569,32 @@ feature {NONE} -- Implementation
 
 			clone_item_tree_prototype
 
-			remove_list.wipe_out
+			-- initially, we put all the archetypes from the file source into the library
+			-- this will have the effect of creating the parent_ref index
 			across library_access.source as arch_csr loop
-				try_put_archetype (arch_csr.item)
+				item_index_put (arch_csr.item)
+			end
+
+			-- now we try to connect all archetypes under their parent descriptors
+			remove_list.wipe_out
+			across item_index as item_csr loop
+				if attached {ARCH_LIB_ARCHETYPE} item_csr.item as ala then
+					if attached archetype_parent_item (ala) as att_parent_ala then
+						att_parent_ala.put_child (ala)
+					else
+						if ala.is_specialised then
+							add_error (ec_arch_cat_orphan_archetype, <<ala.semantic_parent_key, ala.qualified_name>>)
+						else
+							add_error (ec_arch_cat_orphan_archetype_e2, <<ala.semantic_parent_key, ala.qualified_name>>)
+						end
+						remove_list.extend (ala.id)
+					end
+				end
 			end
 
 			-- process remove_list
 			across remove_list as rem_item_csr loop
-				library_access.source.remove_archetype (rem_item_csr.item)
+				item_index_remove (rem_item_csr.item)
 			end
 
 			create last_populate_timestamp.make_now

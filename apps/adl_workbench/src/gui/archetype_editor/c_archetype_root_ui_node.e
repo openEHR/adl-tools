@@ -27,7 +27,7 @@ feature -- Access
 	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
 			-- don't produce any RM properties, since node is another archetype
 		do
-			if ui_graph_state.archetype.is_template_or_overlay and not c_attributes.is_empty then
+			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and not c_attributes.is_empty then
 				Result := rm_type.base_class.flat_properties
 			else
 				create Result.make (0)
@@ -58,7 +58,7 @@ feature {NONE} -- Implementation
 
 	display_constraint
 		do
-			if attached arch_node as car and not ui_graph_state.archetype.is_template_or_overlay then
+			if attached arch_node as car and not attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
 				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, car.archetype_ref, Void, Void, c_constraint_colour, Void)
 			end
 		end
@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 		do
 			precursor
 			if attached arch_node as car then
-				if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_matching_ref (car.archetype_ref) as ext_ref_node then
+				if attached current_library.archetype_matching_ref (car.archetype_ref) as ext_ref_node then
 					create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab),
 						agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
 					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 
 	attach_other_ui_node_agents
 		do
-			if c_attributes.is_empty and then ui_graph_state.archetype.is_template_or_overlay and attached ev_grid_row as gr then
+			if c_attributes.is_empty and then attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and attached ev_grid_row as gr then
 				gr.expand_actions.force_extend (agent build_ui_graph)
 				gr.ensure_expandable
 			end

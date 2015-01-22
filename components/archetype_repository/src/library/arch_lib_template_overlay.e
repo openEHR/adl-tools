@@ -23,31 +23,30 @@ create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
 
 feature {NONE} -- Initialisation
 
-	make (an_overlay: TEMPLATE_OVERLAY; alt: ARCH_LIB_TEMPLATE)
-			-- Create using overlay object created by parting template represented by `alt'
+	make (an_id: ARCHETYPE_HRID; a_parent_ref: STRING; alt: ARCH_LIB_TEMPLATE)
+			-- Create empty, with connector to template represented by `alt'
 		require
-			Valid_id: has_rm_schema_for_archetype_id (an_overlay.archetype_id)
+			Valid_id: has_rm_schema_for_archetype_id (an_id)
 		do
 			-- basic state
-			id := an_overlay.archetype_id
+			id := an_id
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
 			create last_compile_attempt_timestamp.make_now
 
 			-- archetype state
-			parent_ref := an_overlay.parent_archetype_id
-			differential_archetype := an_overlay
+			parent_ref := a_parent_ref
 
 			-- create file workflow state
 			create file_mgr.make (id, alt.file_mgr)
 
 			reset
-			compilation_state := cs_ready_to_validate
+			compilation_state := cs_ready_to_parse
+			template := alt
 		ensure
-			Id_set: id = an_overlay.archetype_id
-			Parent_id_set: parent_ref = an_overlay.parent_archetype_id
-			Archetype_attached: attached differential_archetype
-			Compilation_state: compilation_state = cs_ready_to_validate
+			Id_set: id = an_id
+			Parent_id_set: parent_ref = a_parent_ref
+			Compilation_state: compilation_state = cs_ready_to_parse
 		end
 
 	make_new (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; alt: ARCH_LIB_TEMPLATE)
@@ -73,9 +72,9 @@ feature {NONE} -- Initialisation
 
 			reset
 			compilation_state := Cs_validated
+			template := alt
 		ensure
 			Id_set: id = an_id
-			Is_specialised: is_specialised
 			Archetype_attached: attached differential_archetype
 			Compilation_state: compilation_state = Cs_validated
 		end
@@ -88,6 +87,16 @@ feature -- Identification
 		end
 
 feature -- Artefacts
+
+	original_language: TERMINOLOGY_CODE
+			-- obtain original language from owning template
+		do
+			if attached template.differential_archetype as da then
+				Result := da.original_language
+			else
+				create Result
+			end
+		end
 
 	differential_archetype: detachable TEMPLATE_OVERLAY
 
@@ -103,7 +112,11 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			-- also sets rm_schema reference
 		do
 			reset
-			compilation_state := cs_ready_to_validate
+			if attached differential_archetype then
+				compilation_state := cs_ready_to_validate
+			else
+				compilation_state := cs_ready_to_parse
+			end
 		end
 
 feature -- File Access
@@ -136,6 +149,14 @@ feature -- Editing
 
 			-- set revision appropriately
 		end
+
+feature {NONE} -- Implementation
+
+	template: ARCH_LIB_TEMPLATE
+			-- owning template
+
+invariant
+	Is_specialised: is_specialised
 
 end
 

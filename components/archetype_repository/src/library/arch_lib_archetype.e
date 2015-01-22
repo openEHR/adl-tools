@@ -674,6 +674,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.initialise, Cs_unread)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_lineage, Cs_lineage_known)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_suppliers, Cs_parsed)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.parse, Cs_ready_to_parse)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate, Cs_ready_to_validate)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate_flat, Cs_validated_phase_2)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.post_compile_actions, Cs_validated)
@@ -740,6 +741,53 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			end
 		ensure
 			Compilation_state: (<<Cs_suppliers_known, Cs_supplier_loop, Cs_ready_to_validate>>).has (compilation_state)
+		end
+
+	parse
+			-- Parse archetype, in differential form
+			-- Comilation state changes:
+			-- 	parse succeeded: Cs_ready_to_parse --> Cs_parsed
+			-- 	parse failed: Cs_ready_to_parse --> Cs_parse_failed
+		require
+			Initial_state: compilation_state = Cs_ready_to_parse
+			has_source: has_source
+		do
+			add_info (ec_parse_i2, Void)
+			clear_cache
+		 	compilation_state := Cs_parsed
+			if attached {like differential_archetype} adl_2_engine.parse (source_text, Current) as diff_arch then
+				differential_archetype := diff_arch
+
+				-- determine what language to view archetype in
+				if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
+					set_archetype_view_language (diff_arch.original_language.code_string)
+				end
+
+				if is_specialised and then attached diff_arch.parent_archetype_id as da_parent_ref and then not parent_id.physical_id.starts_with (da_parent_ref) then
+					add_warning (ec_parse_w1, <<id.physical_id, parent_id.physical_id, da_parent_ref>>)
+				else
+					add_info (ec_parse_i1, <<id.physical_id>>)
+				end
+
+				-- perform version upgrading if applicable
+				post_parse_151_convert (diff_arch)
+
+				-- perform post-parse object structure finalisation
+				adl_2_engine.post_parse_process (diff_arch, Current)
+			else
+				compilation_state := Cs_parse_failed
+			end
+
+			-- pick up all errors & warnings
+			merge_errors (adl_2_engine.errors)
+			status.prepend (errors.as_string_filtered (True, True, False))
+		ensure
+			Compilation_state: compilation_state = Cs_parsed or compilation_state = Cs_parse_failed
+			Archetype_state: compilation_state = Cs_parsed implies attached differential_archetype
+		end
+
+	post_parse_151_convert (an_archetype: attached like differential_archetype)
+		do
 		end
 
 	validate
@@ -995,12 +1043,14 @@ feature {NONE} -- Flattening
 				diff_arch := da
 			end
 
-			-- archteype flattening step
+			-- archetype flattening step
 			if attached specialisation_parent as spec_anc then
 				arch_flattener.execute (spec_anc.flat_archetype, diff_arch)
-				flattened_arch := arch_flattener.arch_flat_out
+				check attached {like flat_archetype} arch_flattener.arch_flat_out as att_flat then
+					flattened_arch := att_flat
+				end
 			else
-				check attached {AUTHORED_ARCHETYPE} diff_arch as auth_diff_arch then
+				check attached {like flat_archetype} diff_arch as auth_diff_arch then
 					flattened_arch := auth_diff_arch.deep_twin
 				end
 				flattened_arch.set_generated_flat

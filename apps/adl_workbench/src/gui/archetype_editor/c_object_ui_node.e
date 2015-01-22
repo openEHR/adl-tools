@@ -292,7 +292,8 @@ feature {NONE} -- Implementation
 					else
 						create Result.make_empty
 					end
-				else -- it must be an archetype id in a template structure
+				-- it must be an archetype id in a template structure
+				else
 					if display_settings.show_technical_view then
 						Result := a_n.node_id
 					else

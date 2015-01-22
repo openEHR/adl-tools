@@ -39,18 +39,10 @@ create
 %token <STRING> V_VALUE
 
 %token SYM_ARCHETYPE SYM_SPECIALIZE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
-
--------------------------------------------------------------------
---- START legacy ADL 1.4 support
----
-%token SYM_CONCEPT 
----
---- END legacy ADL 1.4 support
--------------------------------------------------------------------
-
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_TERMINOLOGIES
 %token SYM_DESCRIPTION SYM_TERMINOLOGY SYM_RULES
 %token SYM_ADL_VERSION SYM_RM_RELEASE SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_UID
+%token SYM_OVERLAY_TEXTS
 
 %%
 
@@ -62,7 +54,11 @@ input: archetype
 		{
 			accept
 		}
-	| template template_overlays
+	| template
+		{
+			accept
+		}
+	| template_overlay
 		{
 			accept
 		}
@@ -103,6 +99,11 @@ template: template_marker arch_meta_data archetype_id
 		arch_rules
 		arch_terminology
 		arch_annotations
+		template_overlay_texts
+	;
+
+template_overlay_texts: -- nothing OK
+	| SYM_OVERLAY_TEXTS
 	;
 
 template_overlay: template_overlay_marker archetype_id 
@@ -110,19 +111,6 @@ template_overlay: template_overlay_marker archetype_id
 		arch_definition 
 		arch_terminology
 	;
-
-template_overlays: -- no overlays ok
-		{
-		}
-	| template_overlay
-		{
-			parsed_template.add_overlay (parsed_overlay)
-		}
-	| template_overlays template_overlay
-		{
-			parsed_template.add_overlay (parsed_overlay)
-		}
-	; 
 
 operational_template: operational_template_marker arch_meta_data archetype_id 
 		arch_language 
@@ -136,46 +124,31 @@ operational_template: operational_template_marker arch_meta_data archetype_id
 
 archetype_marker: SYM_ARCHETYPE 
 		{
-			create parsed_auth_arch.make
-			parsed_arch_ref := parsed_auth_arch
-			parsed_auth_arch_ref := parsed_auth_arch
-			parsed_arch_ref.set_artefact_type (text)
-			artefact_type := parsed_arch_ref.artefact_type
+			set_artefact_type (text)
 		}
 	;
 
 template_marker: SYM_TEMPLATE
 		{
-			create parsed_template.make
-			parsed_arch_ref := parsed_template
-			parsed_auth_arch_ref := parsed_template
-			parsed_arch_ref.set_artefact_type (text)
-			artefact_type := parsed_arch_ref.artefact_type
+			set_artefact_type (text)
 		}
 	;
 
 template_overlay_marker: SYM_TEMPLATE_OVERLAY
 		{
-			create parsed_overlay.make
-			parsed_arch_ref := parsed_overlay
-			parsed_arch_ref.set_artefact_type (text)
-			artefact_type := parsed_arch_ref.artefact_type
+			set_artefact_type (text)
 		}
 	;
 
 operational_template_marker: SYM_OPERATIONAL_TEMPLATE
 		{
-			create parsed_opt.make
-			parsed_arch_ref := parsed_opt
-			parsed_auth_arch_ref := parsed_opt
-			parsed_arch_ref.set_artefact_type (text)
-			artefact_type := parsed_arch_ref.artefact_type
+			set_artefact_type (text)
 		}
 	;
 
 archetype_id: V_ARCHETYPE_ID 
 		{
-			parsed_arch_ref.set_archetype_id (text)
+			set_archetype_id (text)
 		}
 	;
 
@@ -189,29 +162,29 @@ arch_meta_data_items: arch_meta_data_item
 
 arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 		{
-			parsed_auth_arch_ref.set_adl_version ($3)
+			create adl_version.make_from_string ($3)
 		}
 	-- allow for Oids
 	| SYM_UID '=' V_DOTTED_NUMERIC
 		{
-			parsed_auth_arch_ref.set_uid ($3)
+			create uid.make_from_string ($3)
 		}
 	-- allow for Guids or other kinds of ids
 	| SYM_UID '=' V_VALUE
 		{
-			parsed_auth_arch_ref.set_uid ($3)
+			create uid.make_from_string ($3)
 		}
 	| SYM_RM_RELEASE '=' V_DOTTED_NUMERIC
 		{
-			parsed_auth_arch_ref.set_rm_release ($3)
+			create rm_release.make_from_string ($3)
 		}
 	| SYM_IS_CONTROLLED
 		{
-			parsed_auth_arch_ref.set_is_controlled
+			is_controlled := True
 		}
 	| SYM_IS_GENERATED
 		{
-			parsed_arch_ref.set_is_generated
+			is_generated := True
 		}
 	--
 	-- the following could be better done in the scanner by picking up the entire () section after
@@ -222,26 +195,26 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 	--
 	| V_IDENTIFIER '=' V_IDENTIFIER
 		{
-			parsed_auth_arch_ref.put_other_metadata_item ($1, $3)
+			other_metadata.put ($3, $1)
 		}
 	| V_IDENTIFIER '=' V_VALUE
 		{
-			parsed_auth_arch_ref.put_other_metadata_item ($1, $3)
+			other_metadata.put ($3, $1)
 		}
 	| V_IDENTIFIER
 		{
-			parsed_auth_arch_ref.put_other_metadata_item ($1, "true")
+			other_metadata.put ("true", $1)
 		}
 	| V_VALUE
 		{
-			parsed_auth_arch_ref.put_other_metadata_item ($1, "true")
+			other_metadata.put ("true", $1)
 		}
 	;
 
 arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
 			if archetype_id_checker.valid_id_reference ($2) then
-				parsed_arch_ref.set_parent_archetype_id ($2)
+				parent_archetype_id := $2
 			else
 				abort_with_error (ec_SASID, Void)
 			end
@@ -255,8 +228,7 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 arch_language: SYM_LANGUAGE V_ODIN_TEXT
 		{
 			convert_odin_language ($2)
-			parsed_auth_arch_ref.set_language_text ($2)
-			parsed_auth_arch_ref.set_language_text_start_line (language_text_start_line)
+			language_text := $2
 			merge_errors (converter_status)
 		}
 	| SYM_LANGUAGE error
@@ -268,8 +240,7 @@ arch_language: SYM_LANGUAGE V_ODIN_TEXT
 arch_description: SYM_DESCRIPTION V_ODIN_TEXT 
 		{ 
 			convert_odin_language ($2)
-			parsed_auth_arch_ref.set_description_text  ($2)
-			parsed_auth_arch_ref.set_description_text_start_line (description_text_start_line)
+			description_text := $2
 			merge_errors (converter_status)
 		}
 	| SYM_DESCRIPTION error
@@ -278,10 +249,9 @@ arch_description: SYM_DESCRIPTION V_ODIN_TEXT
 		}
 	;
 		
-arch_definition: SYM_DEFINITION V_CADL_TEXT	
+arch_definition:	SYM_DEFINITION V_CADL_TEXT	
 		{
-			parsed_arch_ref.set_definition_text ($2)
-			parsed_arch_ref.set_definition_text_start_line (definition_text_start_line)
+			definition_text := $2
 		}
 	| SYM_DEFINITION error
 		{
@@ -292,8 +262,7 @@ arch_definition: SYM_DEFINITION V_CADL_TEXT
 arch_rules: -- no rules ok
 	| SYM_RULES V_RULES_TEXT
 		{
-			parsed_arch_ref.set_rules_text ($2)
-			parsed_arch_ref.set_rules_text_start_line (rules_text_start_line)
+			rules_text := $2
 		}
 	| SYM_RULES error
 		{
@@ -303,8 +272,7 @@ arch_rules: -- no rules ok
 
 arch_terminology: SYM_TERMINOLOGY V_ODIN_TEXT
 		{
-			parsed_arch_ref.set_terminology_text ($2)
-			parsed_arch_ref.set_terminology_text_start_line (terminology_text_start_line)
+			terminology_text := $2
 		}
 	| SYM_TERMINOLOGY error
 		{
@@ -315,8 +283,7 @@ arch_terminology: SYM_TERMINOLOGY V_ODIN_TEXT
 arch_annotations: -- no annotations ok
 	| SYM_ANNOTATIONS V_ODIN_TEXT 
 		{ 
-			parsed_auth_arch.set_annotations_text ($2)
-			parsed_auth_arch_ref.set_annotations_text_start_line (annotations_text_start_line)
+			annotations_text := $2
 		}
 	| SYM_ANNOTATIONS error
 		{
@@ -326,8 +293,7 @@ arch_annotations: -- no annotations ok
 		
 arch_component_terminologies: SYM_COMPONENT_TERMINOLOGIES V_ODIN_TEXT 
 		{ 
-			parsed_opt.set_component_terminologies_text ($2)
-			parsed_opt.set_component_terminologies_text_start_line (component_terminologies_text_start_line)
+			component_terminologies_text := $2
 		}
 	| SYM_COMPONENT_TERMINOLOGIES error
 		{
@@ -344,13 +310,13 @@ feature -- Initialization
 		do
 			make_scanner
 			make_parser_skeleton
+			create other_metadata.make (0)
+			create archetype_id.default_create
+			create definition_text.make_empty
+			create terminology_text.make_empty
 			create artefact_type.default_create
-			create parsed_auth_arch.make
-			parsed_arch_ref := parsed_auth_arch
-			parsed_auth_arch_ref := parsed_auth_arch
-			create parsed_template.make
-			create parsed_overlay.make
-			create parsed_opt.make
+			create adl_version.make_empty
+			create rm_release.make_empty
 		end
 
 	reset
@@ -363,6 +329,23 @@ feature -- Initialization
 	execute (in_text:STRING)
 		do
 			reset
+
+			create artefact_type.default_create
+			create adl_version.make_empty
+			create rm_release.make_empty
+			create other_metadata.make (0)
+			create archetype_id.default_create
+			uid := Void
+			parent_archetype_id := Void
+			is_controlled := False
+			is_generated := False
+
+			language_text := Void
+			description_text := Void
+			rules_text := Void
+			annotations_text := Void
+			component_terminologies_text := Void
+
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -381,26 +364,50 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 feature -- Parse Output
 
+	archetype_id: ARCHETYPE_HRID
+
+	other_metadata: HASH_TABLE [STRING, STRING]
+
+	adl_version: STRING
+
+	rm_release: STRING
+
+	uid: detachable HIER_OBJECT_ID
+
+	is_controlled: BOOLEAN
+
+	is_generated: BOOLEAN
+
 	artefact_type: ARTEFACT_TYPE
 
-	parsed_arch_ref: PARSED_ARCHETYPE
+	parent_archetype_id: detachable STRING
 
-	parsed_auth_arch_ref: PARSED_AUTHORED_ARCHETYPE
+	language_text: detachable STRING
 
-	parsed_auth_arch: PARSED_AUTHORED_ARCHETYPE
+	description_text: detachable STRING
 
-	parsed_overlay: PARSED_ARCHETYPE
+	definition_text: STRING
 
-	parsed_template: PARSED_TEMPLATE
+	rules_text: detachable STRING
+	
+	terminology_text: STRING
 
-	parsed_opt: PARSED_OPT
+	annotations_text: detachable STRING
+
+	component_terminologies_text: detachable STRING
 
 feature {NONE} -- Implementation 
+
+	set_artefact_type (an_artefact_type: STRING)
+		do
+			an_artefact_type.right_adjust
+			create artefact_type.make_from_type_name (an_artefact_type)
+		end
 
 	set_archetype_id (an_arch_id: STRING)
 		do
 			if archetype_id_checker.valid_id (an_arch_id) then
-				parsed_arch_ref.set_archetype_id (an_arch_id)
+				create archetype_id.make_from_string (an_arch_id)
 			else
 				abort_with_error (ec_SASID, Void)
 			end

@@ -195,7 +195,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	archetype_id_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+	archetype_id_index: HASH_TABLE [ARCH_LIB_AUTHORED_ARCHETYPE, STRING]
 			-- list of all archetypes found in this directory tree, keyed by MIXED-CASE physical id
 		attribute
 			create Result.make (0)

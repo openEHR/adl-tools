@@ -39,7 +39,11 @@ feature -- Access
 				if differential_view then
 					Result := source.differential_archetype
 				else
-					Result := source.flat_archetype
+					if attached {ARCH_LIB_TEMPLATE} source as alt then
+						Result := alt.operational_template
+					else
+						Result := source.flat_archetype
+					end
 				end
 			else
 				Result := source.flat_archetype_clone

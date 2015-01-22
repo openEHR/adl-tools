@@ -185,18 +185,21 @@ feature {NONE} -- Implementation
 							l_full_path := file_system.pathname (a_path, fn)
 							amp.parse (l_full_path)
 							if amp.passed and then attached amp.last_archetype as arch_tn then
+								arch_id := arch_tn.archetype_id.physical_id
 								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
-									errors.add_error (ec_parse_archetype_e4, <<fn, arch_tn.archetype_id.physical_id>>, "")
-								else
+									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
+								elseif not archetype_id_index.has (arch_id) then
 									if arch_tn.is_template then
 										create {ARCH_LIB_TEMPLATE} ara.make (l_full_path, Current, arch_tn)
 									else
 										create ara.make (l_full_path, Current, arch_tn)
 									end
-									archetype_id_index.force (ara, ara.id.physical_id)
+									archetype_id_index.force (ara, arch_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end
+								else
+									errors.add_error (ec_arch_cat_dup_archetype, <<arch_id>>, "")
 								end
 							else
 								errors.add_error (ec_general, <<amp.error_strings>>, "")
@@ -230,7 +233,7 @@ feature {NONE} -- Implementation
 										folder_node.put_child (ara)
 									end
 								else
-									check attached {ARCH_LIB_AUTHORED_ARCHETYPE} archetype_id_index.item (arch_id) as att_aca then
+									check attached archetype_id_index.item (arch_id) as att_aca then
 										ara := att_aca
 									end
 									ara.file_mgr.add_legacy_archetype (l_full_path)

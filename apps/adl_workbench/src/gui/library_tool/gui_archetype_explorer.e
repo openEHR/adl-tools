@@ -607,7 +607,6 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 			matching_ids: ARRAYED_SET [STRING]
 			in_dir_path: STRING
-			arch_lib_auth_arch: detachable ARCH_LIB_AUTHORED_ARCHETYPE
 			found: BOOLEAN
 		do
 			if attached source as src then

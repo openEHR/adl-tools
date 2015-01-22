@@ -24,8 +24,14 @@ feature -- Initialisation
 					archetype := da
 				end
 			else
-				check attached source.flat_archetype as fa then
-					archetype := fa
+				if attached {ARCH_LIB_TEMPLATE} source as source_tpl then
+					check attached source_tpl.operational_template as opt then
+						archetype := opt
+					end
+				else
+					check attached source.flat_archetype as fa then
+						archetype := fa
+					end
 				end
 			end
 			flat_archetype := source.flat_archetype

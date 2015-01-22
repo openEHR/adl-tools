@@ -72,7 +72,7 @@ feature -- Commands
 			arch_flat_parent := a_flat_parent
 
 			if arch_diff_child.is_template then
-				create {OPERATIONAL_TEMPLATE} arch_flat_out.make_from_other (arch_flat_parent)
+				create {TEMPLATE} arch_flat_out.make_from_other (arch_flat_parent)
 			else
 				arch_flat_out := arch_flat_parent.deep_twin
 			end
@@ -543,6 +543,9 @@ end
 								new_obj := co_child_diff.safe_deep_twin
 								new_obj.set_specialisation_status_redefined
 								ca_output.put_child_left (new_obj, att_slot)
+
+								-- we don't set any override target - the slot-filling has been done above, and we
+								-- don't (of course) override the slot with the filler.
 							else
 								co_override_target := co_override_candidate
 
@@ -575,7 +578,8 @@ end
 								ca_output.put_child (co_override_target)
 							end
 						else
-							check attached co_override_target.parent as ca then
+							-- if there is an override target set, perform an id override
+							if attached co_override_target as att_tgt and then attached att_tgt.parent as ca then
 								ca.replace_node_id (node_id_in_flat_anc, co_child_diff.node_id)
 							end
 						end

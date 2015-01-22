@@ -15,6 +15,9 @@ inherit
 create
 	default_create
 
+create {ARCHETYPE_FLATTENER}
+	make_from_other
+
 create {ADL_14_ENGINE, ARCHETYPE}
 	make
 

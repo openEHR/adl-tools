@@ -36,12 +36,12 @@ feature -- Access
 
 feature -- Commands
 
-	execute (a_template: OPERATIONAL_TEMPLATE; a_filler_index: HASH_TABLE [ARCHETYPE, STRING])
+	execute (a_template: TEMPLATE; a_filler_index: HASH_TABLE [ARCHETYPE, STRING])
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Template_valid: a_template.is_valid and then a_template.is_flat
 		do
-			template := a_template
+			create template.make_from_other (a_template)
 			filler_index := a_filler_index
 
 			overlay_filler_definitions (template, 0)

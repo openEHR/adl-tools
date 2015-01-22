@@ -169,6 +169,11 @@ templates = <
 		["VTVSID"] = <"value set identifier code $1 referenced in value-sets section not defined in terminology">
 		["VTVSMD"] = <"value set member code $1 referenced in value-sets section not defined in flat terminology">
 		["VTVSUQ"] = <"value set member code $1 not unique in value set with id $2">
+
+
+		-- TEMPLATE
+		["VTPIOV"] = <"template $1 overlay $2 has no valid parent and can't be added to library">
+
 	>
 >
 

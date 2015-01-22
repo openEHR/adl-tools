@@ -12,8 +12,8 @@ class ARCH_LIB_AUTHORED_ARCHETYPE
 inherit
 	ARCH_LIB_ARCHETYPE
 		redefine
-			file_mgr, initialise, create_compile_actions, compile_rescue, persistent_type,
-			differential_archetype, flatten
+			file_mgr, initialise, post_parse_151_convert, create_compile_actions, compile_rescue, persistent_type,
+			differential_archetype
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -129,7 +129,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 	create_compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
 		do
 			Result := precursor
-			Result.put (agent {ARCH_LIB_AUTHORED_ARCHETYPE}.parse, Cs_ready_to_parse)
 			Result.put (agent {ARCH_LIB_AUTHORED_ARCHETYPE}.parse_legacy, cs_ready_to_parse_legacy)
 			Result.replace (agent {ARCH_LIB_AUTHORED_ARCHETYPE}.compile_validate_flat, Cs_validated_phase_2)
 		end
@@ -150,49 +149,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			elseif attached differential_archetype then -- must have been newly created
 				compilation_state := Cs_validated
 			end
-		end
-
-	parse
-			-- Parse archetype, in differential form if available, else in legacy flat form.
-			-- Comilation state changes:
-			-- parse succeeded: Cs_ready_to_parse --> Cs_parsed
-			-- parse failed: Cs_ready_to_parse --> Cs_parse_failed
-		require
-			Initial_state: compilation_state = Cs_ready_to_parse
-			has_source_file: has_source_file
-		do
-			add_info (ec_parse_i2, Void)
-			clear_cache
-		 	compilation_state := Cs_parsed
-			if attached {like flat_archetype} adl_2_engine.parse (source_text, Current) as diff_arch then
-				differential_archetype := diff_arch
-
-				-- determine what language to view archetype in
-				if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
-					set_archetype_view_language (diff_arch.original_language.code_string)
-				end
-
-				if is_specialised and then attached diff_arch.parent_archetype_id as da_parent_ref and then not parent_id.physical_id.starts_with (da_parent_ref) then
-					add_warning (ec_parse_w1, <<id.physical_id, parent_id.physical_id, da_parent_ref>>)
-				else
-					add_info (ec_parse_i1, <<id.physical_id>>)
-				end
-
-				-- perform version upgrading if applicable
-				post_parse_151_convert (diff_arch)
-
-				-- perform post-parse object structure finalisation
-				adl_2_engine.post_parse_process (diff_arch, Current)
-			else
-				compilation_state := Cs_parse_failed
-			end
-
-			-- pick up all errors & warnings
-			merge_errors (adl_2_engine.errors)
-			status.prepend (errors.as_string_filtered (True, True, False))
-		ensure
-			Compilation_state: compilation_state = Cs_parsed or compilation_state = Cs_parse_failed
-			Archetype_state: compilation_state = Cs_parsed implies attached differential_archetype
 		end
 
 	parse_legacy
@@ -464,25 +420,6 @@ feature {NONE} -- Output
 	persistent_type: P_AUTHORED_ARCHETYPE
 		do
 			create Result.make_dt (Void)
-		end
-
-feature {NONE} -- Flattening
-
-	flatten (include_rm: BOOLEAN)
-			-- (re)generate flat-form of this archetype
-		local
-			fillers_index: HASH_TABLE [ARCHETYPE, STRING]
-		do
-			precursor (include_rm)
-
-			-- perform template filler substitution
-			if attached {OPERATIONAL_TEMPLATE} flat_archetype_cache as opt then
-				create fillers_index.make (0)
-				across suppliers_index as supp_arch_csr loop
-					fillers_index.put (supp_arch_csr.item.flat_archetype, supp_arch_csr.key)
-				end
-				template_flattener.execute (opt, fillers_index)
-			end
 		end
 
 end
