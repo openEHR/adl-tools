@@ -12,7 +12,7 @@ class P_TEMPLATE_OVERLAY
 inherit
 	P_ARCHETYPE
 		redefine
-			artefact_type
+			artefact_class_type
 		end
 
 create
@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Implementation
 
-	artefact_type: TEMPLATE_OVERLAY
+	artefact_class_type: TEMPLATE_OVERLAY
 		do
 			create Result
 		end

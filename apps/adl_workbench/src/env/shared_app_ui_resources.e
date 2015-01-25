@@ -379,7 +379,7 @@ feature -- Definitions: VCS status
 		end
 
 	Vcs_status_tooltips: HASH_TABLE [STRING, INTEGER]
-		once ("PROCESS")
+		once
 			create Result.make (0)
 			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
 			Result.put (get_text (ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
