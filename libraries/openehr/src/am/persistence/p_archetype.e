@@ -22,11 +22,10 @@ feature -- Initialisation
 		do
 		end
 
-	make (an_archetype: ARCHETYPE)
+	make (an_archetype: like artefact_type)
 			-- basic make routine to guarantee validity on creation
 		do
 			artefact_object_type := an_archetype.generating_type
-			artefact_type := an_archetype.artefact_type.type_name
 			create archetype_id.make (an_archetype.archetype_id)
 			parent_archetype_id := an_archetype.parent_archetype_id
 			create definition.make (an_archetype.definition)
@@ -41,9 +40,6 @@ feature -- Access
 			-- records object model type of the original artefact
 
 	archetype_id: detachable P_ARCHETYPE_HRID
-
-	artefact_type: detachable STRING
-			-- design type of artefact, archetype, template, template-component, etc
 
 	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
@@ -65,25 +61,21 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_archetype: detachable ARCHETYPE
+	create_archetype: detachable like artefact_type
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
-			o_artefact_type: ARTEFACT_TYPE
 			arch_terminology: ARCHETYPE_TERMINOLOGY
 		do
 			if attached archetype_id as att_aid
-				and attached artefact_type as at
 				and attached definition as o_definition
 				and attached terminology as p_terminology
 			then
 				create o_archetype_id.make_from_string (att_aid.physical_id)
-				create o_artefact_type.make_from_type_name (at)
 				create arch_terminology.make_differential ((create {TERMINOLOGY_CODE}.default_create).code_string, o_definition.node_id)
 				p_terminology.populate_terminology (arch_terminology)
 				arch_terminology.finalise_dt
 
 				create Result.make_all (
-					o_artefact_type,
 					o_archetype_id,
 					parent_archetype_id,
 					o_definition.create_c_complex_object,
@@ -105,6 +97,12 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		do
 		end
 
-end
+feature {NONE} -- Implementation
 
+	artefact_type: ARCHETYPE
+		do
+			create Result
+		end
+
+end
 

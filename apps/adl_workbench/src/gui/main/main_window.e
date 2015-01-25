@@ -438,6 +438,7 @@ feature -- Commands
 
 	open_test_tool
 		do
+			test_tool.populate
 			test_tool.ev_root_container.show
 			ev_main_vbox.hide
 		end

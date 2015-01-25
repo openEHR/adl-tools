@@ -11,9 +11,6 @@ class GUI_CLIENTS_SUPPLIERS_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			can_populate, can_repopulate
-		end
 
 	SHARED_ARCHETYPE_LIBRARIES
 		export
@@ -75,18 +72,6 @@ feature -- Access
 	ev_root_container: EV_VERTICAL_BOX
 
 	evx_suppliers_list, evx_clients_list: EVX_TEXT_LIST_CONTROL
-
-feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
 
 feature -- UI Feedback
 

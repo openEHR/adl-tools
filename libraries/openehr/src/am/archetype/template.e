@@ -29,17 +29,27 @@ create {ARCH_LIB_ARCHETYPE}
 
 feature -- Access
 
-	overlays: HASH_TABLE [TEMPLATE_OVERLAY, STRING]
-			-- table of overlays used in this template
+	overlays: ARRAYED_LIST [STRING]
+			-- table of overlay archetype ids used in this template
 		attribute
 			create Result.make (0)
 		end
 
 feature -- Modification
 
-	add_overlay (an_overlay: TEMPLATE_OVERLAY)
+	clear_overlays
 		do
-			overlays.put (an_overlay, an_overlay.archetype_id.physical_id)
+			overlays.wipe_out
+		end
+
+	add_overlay (an_overlay_id: STRING)
+		do
+			overlays.extend (an_overlay_id)
+		end
+
+	set_overlays (an_overlays: like overlays)
+		do
+			overlays := an_overlays
 		end
 
 end

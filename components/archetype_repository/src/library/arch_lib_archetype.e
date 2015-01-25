@@ -26,6 +26,8 @@ inherit
 		end
 
 	SHARED_ARCHETYPE_LIBRARIES
+		export
+			{NONE} all
 		undefine
 			is_equal
 		end
@@ -91,6 +93,14 @@ inherit
 
 feature -- Identification
 
+	artefact_type: IMMUTABLE_STRING_8
+			-- generate a string form of the relevant typename, i.e. 'ARCHETYPE', 'TEMPLATE' etc
+		do
+			Result := artefact_type_from_class (bare_type_name(({like differential_archetype}).name))
+		ensure
+			Is_lower_case: Result.same_string (Result.as_lower) and valid_artefact_type (Result)
+		end
+
 	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 		do
@@ -123,12 +133,6 @@ feature -- Identification
 			-- Archetype id ref from original archetype; this won't usually include on its own the
 			-- full versioning information; the matching process in ARCHETYPE_CATALOG population
 			-- phase has to occur first, and then `parent_id' can be populated.
-
-	artefact_type: ARTEFACT_TYPE
-			-- type of artefact i.e. archetype, template, template_component, operational_template
-			-- see ARTEFACT_TYPE class
-		deferred
-		end
 
 --	relative_path: STRING
 --			-- a path derived from the semantic path of the nearest folder node + archetype_id
@@ -205,7 +209,7 @@ feature -- Identification
 			-- Typical examples: 'archetype_valid_2'
 		do
 			create Result.make_empty
-			Result.append (artefact_type.type_name)
+			Result.append (artefact_type)
 
 			inspect compilation_state
 			when Cs_validated then
@@ -602,7 +606,7 @@ feature -- Compilation
 			last_compile_attempt_timestamp := Time_epoch
 			compilation_state := Cs_unread
 			status.wipe_out
-			editor_state := Void
+			editor_state_cache := Void
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
 			Compiler_state_set: compilation_state = Cs_unread
@@ -918,6 +922,26 @@ feature -- Conversion
 			Result.is_differential
 		end
 
+feature -- Visualisation
+
+	select_archetype (differential_view, editing_enabled: BOOLEAN): ARCHETYPE
+			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `editing_enabled'
+		require
+			is_valid
+		do
+			if not editing_enabled then
+				if differential_view then
+					check attached differential_archetype as da then
+						Result := da
+					end
+				else
+					Result := flat_archetype
+				end
+			else
+				Result := flat_archetype_clone
+			end
+		end
+
 feature -- File Access
 
 	file_mgr: ARCH_PERSISTENCE_MGR
@@ -992,17 +1016,15 @@ feature -- Editing
 			Result.is_flat
 		end
 
-	has_editor_state: BOOLEAN
+	editor_state: ALA_EDITOR_STATE
 		do
-			Result := attached editor_state
+			if attached editor_state_cache as att_esc then
+				Result := att_esc
+			else
+				create Result.make (Current)
+				editor_state_cache := Result
+			end
 		end
-
-	set_editor_state (a_context: ALA_EDITOR_STATE)
-		do
-			editor_state := a_context
-		end
-
-	editor_state: detachable ALA_EDITOR_STATE
 
 	commit
 			-- commit modified flat clone to archetype as new differential
@@ -1013,14 +1035,16 @@ feature {NONE} -- Editing
 
 	flat_archetype_clone_cache: detachable like flat_archetype
 
+	editor_state_cache: detachable ALA_EDITOR_STATE
+
 	clear_cache
 		do
 			flat_archetype_cache := Void
 			flat_archetype_clone_cache := Void
 			slot_id_index_cache := Void
 			flat_slot_id_index_cache := Void
-			if has_editor_state then
-				editor_state.on_commit
+			if attached editor_state_cache as att_esc then
+				att_esc.on_commit
 			end
 		end
 

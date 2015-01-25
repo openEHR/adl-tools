@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
- class ARCHETYPE
+class ARCHETYPE
 
 inherit
 	ARCHETYPE_DEFINITIONS
@@ -50,16 +50,14 @@ feature -- Initialisation
 
 	default_create
 		do
-			make_empty_differential (create {ARTEFACT_TYPE}.make_archetype, create {ARCHETYPE_HRID}.default_create, default_language)
+			make_empty_differential (create {ARCHETYPE_HRID}.default_create, default_language)
 		end
 
-	make (an_artefact_type: like artefact_type;
-			an_id: like archetype_id;
+	make (an_id: like archetype_id;
 			a_definition: like definition;
 			a_terminology: like terminology)
 				-- make from pieces, typically obtained by parsing
 		do
-			artefact_type := an_artefact_type
 			archetype_id := an_id
 			definition := a_definition
 			terminology := a_terminology
@@ -68,7 +66,6 @@ feature -- Initialisation
 
 			set_terminology_agents
 		ensure
-			Artefact_type_set: artefact_type = an_artefact_type
 			Id_set: archetype_id = an_id
 			Definition_set: definition = a_definition
 			Terminology_set: terminology = a_terminology
@@ -77,8 +74,7 @@ feature -- Initialisation
 			Not_generated: not is_generated
 		end
 
-	make_all (an_artefact_type: like artefact_type;
-			an_id: like archetype_id;
+	make_all (an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
 			a_definition: like definition;
 			a_rules: like rules;
@@ -87,11 +83,10 @@ feature -- Initialisation
 		require
 			Invariants_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
-			make (an_artefact_type, an_id, a_definition, a_terminology)
+			make (an_id, a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
 			rules := a_rules
 		ensure
-			Artefact_type_set: artefact_type = an_artefact_type
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
 			Definition_set: definition = a_definition
@@ -114,7 +109,7 @@ feature -- Initialisation
 			if other.has_rules then
 				other_rules := other.rules.deep_twin
 			end
-			make_all (other.artefact_type.twin, other.archetype_id.deep_twin, other_parent_arch_id,
+			make_all (other.archetype_id.deep_twin, other_parent_arch_id,
 					other.definition.deep_twin, other_rules, other.terminology.deep_twin)
 			is_generated := other.is_generated
 			is_valid := other.is_valid
@@ -127,12 +122,11 @@ feature -- Initialisation
 
 feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 
-	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language_str: STRING)
+	make_empty_differential (an_id: like archetype_id; an_original_language_str: STRING)
 			-- make a new differential form archetype
 		require
 			Language_valid: not an_original_language_str.is_empty
 		do
-			artefact_type := an_artefact_type
 			archetype_id := an_id
 			create terminology.make_differential_empty (an_original_language_str, 0)
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
@@ -140,7 +134,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			is_valid := True
 			is_differential := True
 		ensure
-			Artefact_type_set: artefact_type = an_artefact_type
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language_str)
 			Not_specialised: not is_specialised
@@ -150,12 +143,11 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			Is_differential: is_differential
 		end
 
-	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_original_language_str: STRING)
+	make_empty_differential_child (spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_original_language_str: STRING)
 			-- make a new differential form archetype as a child of `a_parent'
 		require
 			Language_valid: not an_original_language_str.is_empty
 		do
-			artefact_type := an_artefact_type
 			archetype_id := an_id
 			create terminology.make_differential_empty (an_original_language_str, spec_depth)
 			create definition.make (an_id.rm_class, terminology.concept_code.twin)
@@ -164,7 +156,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			is_differential := True
 			parent_archetype_id := a_parent_id
 		ensure
-			Artefact_type_set: artefact_type = an_artefact_type
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language_str)
 			Not_generated: not is_generated
@@ -175,6 +166,15 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 		end
 
 feature -- Access
+
+	artefact_type: IMMUTABLE_STRING_8
+			-- generate artefact type name e.g. "archetype", "template", from formal typename,
+			-- i.e. 'AUTHORED_ARCHETYPE', 'TEMPLATE' etc
+		do
+			Result := artefact_type_from_class (generating_type)
+		ensure
+			Is_lower_case: Result.same_string (Result.as_lower) and valid_artefact_type (Result)
+		end
 
 	original_language:  TERMINOLOGY_CODE
 			-- original language of the archetype, derived from the terminology
@@ -190,9 +190,6 @@ feature -- Access
 		end
 
 	archetype_id: ARCHETYPE_HRID
-
-	artefact_type: ARTEFACT_TYPE
-			-- design type of artefact, archetype, template, template-component, etc
 
 	parent_archetype_id: detachable STRING
 			-- reference to specialisation parent of this archetype, typically in
@@ -518,18 +515,6 @@ feature -- Status Report
 			Result := definition.has_attribute_path (a_path)
 		end
 
-	is_template: BOOLEAN
-			-- True if `artefact_type' is a template
-		do
-			Result := artefact_type.is_template
-		end
-
-	is_template_or_overlay: BOOLEAN
-			-- True if `artefact_type' is a template
-		do
-			Result := artefact_type.is_template_or_overlay
-		end
-
 feature -- Status Setting
 
 	set_differential
@@ -827,13 +812,6 @@ feature -- Modification
 			archetype_id := an_id
 		end
 
-	set_artefact_type_from_string (s: STRING)
-		require
-			(create {ARTEFACT_TYPE}).valid_type_name(s)
-		do
-			create artefact_type.make_from_type_name(s)
-		end
-
 	set_parent_archetype_id (an_id: like parent_archetype_id)
 		do
 			parent_archetype_id := an_id
@@ -930,9 +908,6 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 			Differential_valid: a_diff.is_differential
 			Valid_specialisation_relationship: a_diff.specialisation_depth = specialisation_depth + 1
 		do
-			-- take on the artefact type of the differential
-			create artefact_type.make (a_diff.artefact_type.value)
-
 			-- identifiers
 			archetype_id := a_diff.archetype_id.deep_twin
 			parent_archetype_id := a_diff.parent_archetype_id

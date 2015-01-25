@@ -19,21 +19,7 @@ feature -- Initialisation
 			source := aca
 			in_differential_view := differential_view_flag
 			rm_schema := an_rm_schema
-			if differential_view_flag then
-				check attached source.differential_archetype as da then
-					archetype := da
-				end
-			else
-				if attached {ARCH_LIB_TEMPLATE} source as source_tpl then
-					check attached source_tpl.operational_template as opt then
-						archetype := opt
-					end
-				else
-					check attached source.flat_archetype as fa then
-						archetype := fa
-					end
-				end
-			end
+			archetype := aca.select_archetype (differential_view_flag, False)
 			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype.terminology
 		end

@@ -26,6 +26,7 @@ feature {NONE} -- Initialisation
 		do
 			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_path, a_source, arch_thumbnail.is_generated)
 			source_text_timestamp := source_file_timestamp
+			last_artefact_type := arch_thumbnail.artefact_type
 		ensure
 			file_repository_set: file_repository = a_source
 		end
@@ -37,6 +38,7 @@ feature {NONE} -- Initialisation
 			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_path, a_source, True)
 			legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
+			last_artefact_type := arch_thumbnail.artefact_type
 		ensure
 			file_repository_set: file_repository = a_source
 		end
@@ -107,12 +109,9 @@ feature -- Access
 
 feature -- Thumbnail state
 
-	artefact_type: ARTEFACT_TYPE
+	last_artefact_type: detachable STRING
 			-- type of artefact i.e. archetype, template, template_component, operational_template
 			-- known in file on disk at least read
-		once
-			create Result.make_archetype
-		end
 
 	is_source_generated: BOOLEAN
 			-- True if the source file was generated from the legacy form
@@ -196,7 +195,11 @@ feature -- File Operations
 			end
 			if amp.passed then
 				-- if this check fails for now; need to implement change of artefact type
-				check artefact_type.value = amp.last_archetype.artefact_type end
+				if attached last_artefact_type as att_lav then
+					check att_lav.is_equal (amp.last_archetype.artefact_type) end
+				else
+					last_artefact_type := amp.last_archetype.artefact_type
+				end
 
 				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_DIRECTORY
 				-- possible changes:

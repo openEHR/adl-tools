@@ -12,17 +12,12 @@ class SHARED_ARCHETYPE_FLATTENER
 feature -- Access
 
 	arch_flattener: ARCHETYPE_FLATTENER
-		once ("PROCESS")
+		once
 			create Result
 		end
 
 	rm_flattener: RM_FLATTENER
-		once ("PROCESS")
-			create Result
-		end
-
-	template_flattener: TEMPLATE_FLATTENER
-		once ("PROCESS")
+		once
 			create Result
 		end
 

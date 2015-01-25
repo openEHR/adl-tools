@@ -202,7 +202,7 @@ feature {NONE} -- Implementation
 			-- openEHR-EHR-ENTRY.any.v1
 			-- openEHR-EHR-ENTRY.any.v22
 			-- openEHR-EHR-ENTRY.any-thing.v22
-		once ("PROCESS")
+		once
 			create Result.make
 			Result.compile ((create {ARCHETYPE_HRID}).Adl14_id_regex)
 		end
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-rc.2
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-alpha.105
-		once ("PROCESS")
+		once
 			create Result.make
 			Result.compile ((create {ARCHETYPE_HRID}).Id_matcher_regex)
 		end
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0
-		once ("PROCESS")
+		once
 			create Result.make
 			Result.compile ((create {ARCHETYPE_HRID}).Id_reference_matcher_regex)
 		end

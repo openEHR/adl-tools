@@ -170,6 +170,64 @@ feature -- Comparison
 			Result.put ("_and_", '&')
 		end
 
+feature -- Enumerations
+
+	aft_archetype: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("archetype")
+	 	end
+
+	aft_template: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("template")
+	 	end
+
+	aft_temlate_overlay: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("template_overlay")
+	 	end
+
+	aft_operational_template: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("operational_template")
+	 	end
+
+	artefact_types_table: HASH_TABLE [IMMUTABLE_STRING_8, IMMUTABLE_STRING_8]
+			-- table of formal class typenames like "AUTHORED_ARCHETYPE" to artefact types, e.g. "archetype" etc
+			-- Defines the correspondence between the AOM class name and the first keyword in an ADL file for
+			-- each kind of artefact
+		once
+			create Result.make(0)
+			Result.extend(aft_archetype, bare_type_name (({AUTHORED_ARCHETYPE}).name))
+			Result.extend(aft_template, bare_type_name (({TEMPLATE}).name))
+			Result.extend(aft_temlate_overlay, bare_type_name (({TEMPLATE_OVERLAY}).name))
+			Result.extend(aft_operational_template, bare_type_name (({OPERATIONAL_TEMPLATE}).name))
+		end
+
+	artefact_types: ARRAYED_LIST [IMMUTABLE_STRING_8]
+			-- list of archetype type names: "archetype", "template" etc
+		once
+			create Result.make(0)
+			Result.compare_objects
+			across artefact_types_table as at_csr loop
+				Result.extend (at_csr.item)
+			end
+		end
+
+	artefact_type_from_class (a_class_name: STRING): IMMUTABLE_STRING_8
+		require
+			artefact_types_table.has (a_class_name)
+		do
+			check attached artefact_types_table.item (a_class_name) as att_aft then
+				Result := att_aft
+			end
+		end
+
+	valid_artefact_type (an_artefact_type: STRING): BOOLEAN
+		do
+			Result := artefact_types.has (an_artefact_type)
+		end
+
 	c_object_constraint_types: HASH_TABLE [STRING, STRING]
 			-- C_OBJECT meanings keyed by class-names (meanings are message tags to be converted to
 			-- natural language via calls to get_text ())

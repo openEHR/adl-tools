@@ -12,18 +12,11 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			file_mgr, flat_archetype, differential_archetype, artefact_type
+			select_archetype, file_mgr, flat_archetype, differential_archetype, serialise_object, persistent_type
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
 	make_new_specialised, make
-
-feature -- Identification
-
-	artefact_type: ARTEFACT_TYPE
-		once
-			create Result.make_template
-		end
 
 feature -- Artefacts
 
@@ -42,11 +35,54 @@ feature -- Artefacts
 		require
 			compilation_state = Cs_validated
 		do
-			if operational_template_cache = Void then
-				expand
+			if operational_template_cache = Void or last_include_rm then
+				expand (False)
 			end
 			check attached operational_template_cache as fac then
 				Result := fac
+			end
+		end
+
+	operational_template_with_rm: OPERATIONAL_TEMPLATE
+			-- inheritance-flattened form of archetype
+		require
+			compilation_state = Cs_validated
+		do
+			if operational_template_cache = Void or not last_include_rm then
+				expand (True)
+			end
+			check attached operational_template_cache as fac then
+				Result := fac
+			end
+		end
+
+	operational_template_serialised (include_rm: BOOLEAN): STRING
+			-- The serialised text of the flat form of the archetype
+		require
+			compilation_state = Cs_validated
+		do
+			if include_rm then
+				Result := adl_2_engine.serialise (operational_template_with_rm, Syntax_type_adl, current_archetype_language)
+			else
+				Result := adl_2_engine.serialise (operational_template, Syntax_type_adl, current_archetype_language)
+			end
+		end
+
+feature -- Visualisation
+
+	select_archetype (differential_view, editing_enabled: BOOLEAN): ARCHETYPE
+			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `editing_enabled'
+		do
+			if not editing_enabled then
+				if differential_view then
+					check attached differential_archetype as da then
+						Result := da
+					end
+				else
+					Result := operational_template
+				end
+			else
+				Result := flat_archetype_clone
 			end
 		end
 
@@ -66,21 +102,53 @@ feature -- File Access
 
 feature {NONE} -- Flattening
 
-	expand
+	expand (include_rm: BOOLEAN)
 			-- expand by substitution of all references with their structures
 		local
-			fillers_index: HASH_TABLE [ARCHETYPE, STRING]
+			fillers_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+			opt_generator: TEMPLATE_FLATTENER
 		do
 			-- perform template filler substitution
 			create fillers_index.make (0)
 			across suppliers_index as supp_arch_csr loop
-				fillers_index.put (supp_arch_csr.item.flat_archetype, supp_arch_csr.key)
+				fillers_index.put (supp_arch_csr.item, supp_arch_csr.key)
 			end
-			template_flattener.execute (flat_archetype, fillers_index)
-			operational_template_cache := template_flattener.template
+			create opt_generator
+			opt_generator.execute (if include_rm then flat_archetype_with_rm else flat_archetype end, fillers_index)
+			operational_template_cache := opt_generator.opt
+
+			last_include_rm := include_rm
 		end
 
 	operational_template_cache: detachable OPERATIONAL_TEMPLATE
+
+feature -- Output
+
+	serialise_object (flat_flag: BOOLEAN; a_format: STRING): STRING
+			-- serialise internal structure in a brute-force object way, using
+			-- format like ODIN, XML, JSON etc
+		local
+			dt_arch: DT_CONVERTIBLE
+		do
+			if flat_flag then
+				create {P_OPERATIONAL_TEMPLATE} dt_arch.make (operational_template)
+			else
+				check attached differential_archetype as da then
+					create {like persistent_type} dt_arch.make (da)
+				end
+			end
+
+			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
+			archetype_serialise_engine.serialise (a_format, False, True)
+			Result := archetype_serialise_engine.serialised
+		end
+
+feature {NONE} -- Output
+
+	persistent_type: P_TEMPLATE
+		do
+			create Result.make_dt (Void)
+		end
 
 end
 

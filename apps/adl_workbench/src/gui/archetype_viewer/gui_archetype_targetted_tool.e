@@ -12,10 +12,8 @@ deferred class
 
 inherit
 	GUI_TOOL
-		rename
-			populate as gui_tool_populate
 		redefine
-			is_populated, source
+			is_populated, source, populate, can_populate, can_repopulate
 		end
 
 feature -- Access
@@ -30,39 +28,23 @@ feature -- Access
 			end
 		end
 
-	source_archetype: detachable ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
+	source_archetype: ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view' and `editing_enabled'
 		require
 			is_populated
 		do
-			if not editing_enabled then
-				if differential_view then
-					Result := source.differential_archetype
-				else
-					if attached {ARCH_LIB_TEMPLATE} source as alt then
-						Result := alt.operational_template
-					else
-						Result := source.flat_archetype
-					end
-				end
-			else
-				Result := source.flat_archetype_clone
+			check attached source as att_source then
+				Result := att_source.select_archetype (differential_view, editing_enabled)
 			end
 		end
 
-	source_ui_graph: detachable ARCHETYPE_UI_GRAPH_ROOT
+	source_ui_graph: ARCHETYPE_UI_GRAPH_ROOT
 			-- display / editor context, loaded with archetype for display, or a clone, for editing
 		require
 			is_populated
 		do
-			if not editing_enabled then
-				if differential_view then
-					Result := source.editor_state.differential_ui_graph
-				else
-					Result := source.editor_state.flat_ui_graph
-				end
-			else
-				Result := source.editor_state.editor_ui_graph
+			check attached source as att_source then
+				Result := att_source.editor_state.select_ui_graph (differential_view, editing_enabled)
 			end
 		end
 
@@ -88,18 +70,24 @@ feature -- Status Report
 			Result := precursor and attached selected_language
 		end
 
+	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
+
 feature -- Commands
 
-	populate (a_source: attached like source; differential_view_flag: BOOLEAN; a_selected_language: STRING)
+	populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING])
 			-- populate the control by creating it from scratch
-		require
-			can_populate (a_source)
 		do
-			differential_view := differential_view_flag
-			selected_language := a_selected_language
-			gui_tool_populate (a_source)
-		ensure
-			is_populated
+			differential_view := a_params.diff_view
+			selected_language := a_params.a_lang
+			precursor (a_source, a_params)
 		end
 
 	repopulate_with_language (a_selected_language: STRING)

@@ -212,7 +212,6 @@ feature -- Parsing
 
 							check attached res_desc end
 							create new_flat_arch.make_all (
-								adl_parser.artefact_type,
 								adl_ver,
 								"",	-- rm_release
 								adl_parser.archetype_id,

@@ -14,7 +14,7 @@ inherit
 
 	P_ARCHETYPE
 		redefine
-			make_dt, make, create_archetype
+			make_dt, make, create_archetype, artefact_type
 		end
 
 create
@@ -30,8 +30,7 @@ feature -- Initialisation
 			create description.default_create
 		end
 
-	make (an_archetype: AUTHORED_ARCHETYPE)
-			-- basic make routine to guarantee validity on creation
+	make (an_archetype: like artefact_type)
 		do
 			precursor (an_archetype)
 			make_from_other (an_archetype)
@@ -44,13 +43,6 @@ feature -- Initialisation
 			end
 
 			other_metadata := an_archetype.other_metadata
-
-			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt and then attached opt.component_terminologies then
-				create component_terminologies.make(0)
-				across opt.component_terminologies as opt_comp_onts_csr loop
-					component_terminologies.put (create {P_ARCHETYPE_TERMINOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
-				end
-			end
 		end
 
 feature -- Access
@@ -65,26 +57,21 @@ feature -- Access
 
 	uid: detachable STRING
 
-	component_terminologies: detachable HASH_TABLE [P_ARCHETYPE_TERMINOLOGY, STRING]
-
 feature -- Factory
 
-	create_archetype: detachable AUTHORED_ARCHETYPE
+	create_archetype: detachable like artefact_type
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
-			o_artefact_type: ARTEFACT_TYPE
 			arch_terminology: ARCHETYPE_TERMINOLOGY
 			o_uid: detachable HIER_OBJECT_ID
 		do
 			if attached archetype_id as att_aid
-				and attached artefact_type as at
 				and attached original_language as o_original_language
 				and attached description as o_description
 				and attached definition as o_definition
 				and attached terminology as p_terminology
 			then
 				create o_archetype_id.make_from_string (att_aid.physical_id)
-				create o_artefact_type.make_from_type_name (at)
 				if attached uid as att_uid then
 					create o_uid.make_from_string (att_uid)
 				end
@@ -94,7 +81,6 @@ feature -- Factory
 				arch_terminology.finalise_dt
 
 				create Result.make_all (
-					o_artefact_type,
 					adl_version,
 					rm_release,
 					o_archetype_id,
@@ -117,6 +103,12 @@ feature -- Factory
 			end
 		end
 
-end
+feature {NONE} -- Implementation
 
+	artefact_type: AUTHORED_ARCHETYPE
+		do
+			create Result
+		end
+
+end
 

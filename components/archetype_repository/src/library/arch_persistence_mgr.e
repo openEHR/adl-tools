@@ -84,12 +84,6 @@ feature -- Access
 
 feature -- Thumbnail state
 
-	artefact_type: ARTEFACT_TYPE
-			-- type of artefact i.e. archetype, template, template_component, operational_template
-			-- known in file on disk at least read
-		deferred
-		end
-
 	id: ARCHETYPE_HRID
 			-- Archetype identifier from last file read
 

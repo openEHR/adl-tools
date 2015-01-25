@@ -45,11 +45,10 @@ feature -- Initialisation
 
 	default_create
 		do
-			make_empty_differential (create {ARTEFACT_TYPE}.make_archetype, create {ARCHETYPE_HRID}.default_create, "1.0.0", default_language)
+			make_empty_differential (create {ARCHETYPE_HRID}.default_create, "1.0.0", default_language)
 		end
 
-	make (an_artefact_type: like artefact_type;
-			an_adl_version: like adl_version;
+	make (an_adl_version: like adl_version;
 			an_rm_release: like rm_release;
 			an_id: like archetype_id;
 			an_original_language: like original_language;
@@ -59,7 +58,7 @@ feature -- Initialisation
 			a_terminology: like terminology)
 				-- make from pieces, typically obtained by parsing
 		do
-			make_archetype (an_artefact_type, an_id, a_definition, a_terminology)
+			make_archetype (an_id, a_definition, a_terminology)
 			adl_version := an_adl_version
 			rm_release := an_rm_release
 			set_original_language (an_original_language)
@@ -73,8 +72,7 @@ feature -- Initialisation
 			Uid_set: uid = a_uid
 		end
 
-	make_all (an_artefact_type: like artefact_type;
-			an_adl_version: like adl_version;
+	make_all (an_adl_version: like adl_version;
 			an_rm_release: like rm_release;
 			an_id: like archetype_id;
 			a_parent_archetype_id: like parent_archetype_id;
@@ -93,7 +91,7 @@ feature -- Initialisation
 			Translations_valid: attached a_translations as att_trans implies not att_trans.is_empty
 			Rules_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
-			make (an_artefact_type, an_adl_version, an_rm_release, an_id, an_original_language, a_uid, a_description, a_definition, a_terminology)
+			make (an_adl_version, an_rm_release, an_id, an_original_language, a_uid, a_description, a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
 			is_controlled := is_controlled_flag
@@ -101,7 +99,6 @@ feature -- Initialisation
 			rules := a_rules
 			annotations := an_annotations
 		ensure
-			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = an_adl_version
 			Rm_release_set: rm_release = an_rm_release
 			Is_controlled_set: is_controlled = is_controlled_flag
@@ -147,11 +144,11 @@ feature -- Initialisation
 
 feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 
-	make_empty_differential (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_rm_release, an_original_lang_str: STRING)
+	make_empty_differential (an_id: like archetype_id; an_rm_release, an_original_lang_str: STRING)
 			-- make a new differential form archetype
 		do
 			create original_language.make (ts.default_language_code_set, an_original_lang_str)
-			make_empty_differential_archetype (an_artefact_type, an_id, an_original_lang_str)
+			make_empty_differential_archetype (an_id, an_original_lang_str)
 			create adl_version.make_from_string (Latest_adl_version)
 			rm_release := an_rm_release
 			create description.default_create
@@ -160,11 +157,11 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			Rm_release_set: rm_release = an_rm_release
 		end
 
-	make_empty_differential_child (an_artefact_type: ARTEFACT_TYPE; spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_rm_release, an_original_lang_str: STRING)
+	make_empty_differential_child (spec_depth: INTEGER; an_id: like archetype_id; a_parent_id, an_rm_release, an_original_lang_str: STRING)
 			-- make a new differential form archetype as a child of `a_parent'
 		do
 			create original_language.make (ts.default_language_code_set, an_original_lang_str)
-			make_empty_differential_child_archetype (an_artefact_type, spec_depth, an_id, a_parent_id, an_original_lang_str)
+			make_empty_differential_child_archetype (spec_depth, an_id, a_parent_id, an_original_lang_str)
 			create adl_version.make_from_string (Latest_adl_version)
 			rm_release := an_rm_release
 			create description.default_create
@@ -307,9 +304,5 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 				end
 			end
 		end
-
-invariant
-	Description_valid: not artefact_type.is_overlay implies attached description
-	Translations_valid: artefact_type.is_overlay implies not attached description
 
 end

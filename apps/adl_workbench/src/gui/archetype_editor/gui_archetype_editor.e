@@ -12,8 +12,8 @@ class GUI_ARCHETYPE_EDITOR
 inherit
 	GUI_ARCHETYPE_TOOL
 		redefine
-			make, do_populate, can_populate,
-			can_edit, enable_edit, disable_edit,
+			make, do_populate,
+			can_edit, enable_edit, disable_edit, attach_gui_context,
 			add_editing_controls, on_set_primary_source
 		end
 
@@ -42,11 +42,6 @@ feature {NONE}-- Initialization
 		end
 
 feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
 
 	can_edit: BOOLEAN
 			-- True if this tool has editing capability
@@ -111,20 +106,10 @@ feature {NONE} -- Implementation
 		end
 
 	attach_gui_context
-		local
-			gui_context: detachable ALA_EDITOR_STATE
 		do
 			check attached source as src then
-				if not source.has_editor_state then
-					create gui_context.make (src)
-					source.set_editor_state (gui_context)
-				elseif attached {ALA_EDITOR_STATE} source.editor_state as gc then
-					gui_context := gc
-				end
 				check attached undo_redo_chain end
-				check attached gui_context as gc then
-					gc.set_editable (undo_redo_chain)
-				end
+				src.editor_state.set_editable (undo_redo_chain)
 			end
 		end
 

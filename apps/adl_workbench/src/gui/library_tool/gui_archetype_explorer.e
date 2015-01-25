@@ -51,7 +51,6 @@ feature {NONE} -- Initialisation
 	make
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
-			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_overlay, {ARTEFACT_TYPE}.template>>
 			make_tree_control
 			tool_agents.set_archetype_explorer_select_in_tree_agent (agent select_item_in_tree)
 
@@ -199,8 +198,7 @@ feature {NONE} -- Implementation
    	ev_semantic_grid_populate_enter (aci: ARCH_LIB_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
-			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_LIB_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value))) then
+			if not aci.is_root and (aci.subtree_artefact_total > 0 or else show_entire_ontology or else attached {ARCH_LIB_ARCHETYPE} aci) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
 					gui_semantic_grid.add_row (aci)
@@ -219,9 +217,7 @@ feature {NONE} -- Implementation
 
    	ev_semantic_grid_populate_exit (aci: ARCH_LIB_ITEM)
    		do
-			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-				(attached {ARCH_LIB_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type.value)))
-			then
+			if not aci.is_root and (aci.subtree_artefact_total > 0 or else show_entire_ontology or else attached {ARCH_LIB_ARCHETYPE} aci) then
 				ev_tree_item_stack.remove
 			end
 		end
@@ -277,12 +273,12 @@ feature {NONE} -- Implementation
 		 	 		tooltip.append (acc.qualified_name + "%N" + acc.class_definition.description)
 					text.append (aci.name)
 					col := archetype_rm_type_color
-	 				text.append (" [" + acc.subtree_artefact_count (artefact_types).out + "]")
+	 				text.append (" [" + acc.subtree_artefact_total.out + "]")
 
 	 			elseif attached {ARCH_LIB_PACKAGE_ITEM} aci as accl then
 	 				text.append (accl.qualified_name)
 					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
-	 				text.append (" [" + accl.subtree_artefact_count (artefact_types).out + "]")
+	 				text.append (" [" + accl.subtree_artefact_total.out + "]")
 				end
 
 				-- pixmap
@@ -374,7 +370,7 @@ feature {NONE} -- Implementation
 	 			elseif attached {ARCH_LIB_FILESYS_ITEM} aci as acfsn then
 	 				text.append (acfsn.name)
 					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
-	 				text.append (" (" + acfsn.subtree_artefact_count (artefact_types).out + ")")
+	 				text.append (" (" + acfsn.subtree_artefact_total.out + ")")
 
 				end
 

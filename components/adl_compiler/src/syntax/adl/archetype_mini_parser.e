@@ -153,14 +153,12 @@ feature {NONE} -- Implementation
 			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
 			-- specialisation status and if specialised, specialisation parent
 		local
-			artefact_types: ARTEFACT_TYPE
 			id_bad: BOOLEAN
 			arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
 			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
 			parent_id_str: detachable STRING
 			lpos, rpos: INTEGER
 		do
-			create artefact_types.default_create
 			create adl_ver.make_empty
 
 			-- first line
@@ -188,7 +186,7 @@ feature {NONE} -- Implementation
 			arch_artefact_type_name.right_adjust
 
 			-- now line[1] should contain only the artefact type, e.g. 'archetype', 'template'
-			if artefact_types.valid_type_name (arch_artefact_type_name) then
+			if valid_artefact_type (arch_artefact_type_name) then
 
 				-- get line 2 - should be archetype id
 				if archetype_id_checker.valid_id (lines[2]) then

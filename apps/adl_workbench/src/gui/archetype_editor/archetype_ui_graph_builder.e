@@ -89,9 +89,9 @@ feature -- Visitor
 		do
 			-- if we are in a template, put a new UI graph context object on the stack, because the
 			-- C_ARCHETYPE_ROOT will be expanded, rather than just a reference
-			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as arch then
+			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as opt then
 				new_ui_graph_state := ui_graph_state.twin
-				new_ui_graph_state.set_flat_terminology (current_library.archetype_matching_ref (a_node.archetype_ref).flat_archetype.terminology)
+				new_ui_graph_state.set_flat_terminology (opt.component_terminology (a_node.node_id))
 				ui_graph_state_stack.extend (new_ui_graph_state)
 			end
 			create ui_node.make (a_node, ui_graph_state)
@@ -109,7 +109,7 @@ feature -- Visitor
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			obj_node_stack.remove
-			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as arch then
+			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
 				ui_graph_state_stack.remove
 			end
 		end

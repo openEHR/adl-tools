@@ -14,9 +14,6 @@ class
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			can_populate, can_repopulate
-		end
 
 create
 	make
@@ -50,18 +47,6 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	ev_root_container: EV_CELL
-
-feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
 
 feature {NONE} -- Implementation
 

@@ -227,6 +227,7 @@ feature -- Parsing
 							-- (from previous compilation)
 							if attached {TEMPLATE} new_auth_arch as tpl and attached {ARCH_LIB_TEMPLATE} aca as tpl_aca then
 								tpl_aca.clear_overlays
+								tpl.clear_overlays
 								create amp
 								across adl_parser.overlays as overlays_csr loop -- or errors.has_errors loop								
 									-- need to do a small amount of parsing on the top of each overlay to get the archetype id and parent id
@@ -276,7 +277,6 @@ feature -- Parsing
 
 			if adl_parser.artefact_type.is_template then
 				create {TEMPLATE} Result.make_all (
-					adl_parser.artefact_type,
 					adl_parser.adl_version,
 					adl_parser.rm_release,
 					adl_parser.archetype_id,
@@ -294,7 +294,6 @@ feature -- Parsing
 				)
 			else
 				create Result.make_all (
-					adl_parser.artefact_type,
 					adl_parser.adl_version,
 					adl_parser.rm_release,
 					adl_parser.archetype_id,
@@ -326,7 +325,6 @@ feature -- Parsing
 			-- build the archetype
 			a_diff_terminology.set_differential
 			create Result.make (
-				adl_parser.artefact_type,
 				adl_parser.archetype_id,
 				a_definition,
 				a_diff_terminology
@@ -490,7 +488,7 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
-			lang_serialised, desc_serialised, rules_serialised, annot_serialised, comp_onts_serialised: STRING
+			lang_serialised, desc_serialised, rules_serialised, terminology_serialised, annot_serialised, comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
@@ -523,6 +521,7 @@ feature -- Serialisation
 			-- terminology section
 			terminology_context.set_tree (an_archetype.terminology.dt_representation)
 			terminology_context.serialise (a_format, False, False)
+			terminology_serialised := terminology_context.serialised
 
 			-- annotations section
 			create annot_serialised.make_empty
@@ -550,7 +549,7 @@ feature -- Serialisation
 			end
 			serialiser.reset
 			serialiser.serialise_from_parts (an_archetype, lang_serialised, desc_serialised, definition_context.serialised,
-					rules_serialised, terminology_context.serialised, annot_serialised, comp_onts_serialised)
+					rules_serialised, terminology_serialised, annot_serialised, comp_onts_serialised)
 
 			Result := serialiser.last_result
 		end

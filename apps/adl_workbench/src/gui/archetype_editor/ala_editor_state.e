@@ -54,6 +54,22 @@ feature -- Access
 
 	editor_ui_graph: detachable ARCHETYPE_UI_GRAPH_ROOT
 
+	select_ui_graph (differential_view, editing_enabled: BOOLEAN): ARCHETYPE_UI_GRAPH_ROOT
+			-- display / editor context, loaded with archetype for display, or a clone, for editing
+		do
+			if not editing_enabled then
+				if differential_view then
+					Result := differential_ui_graph
+				else
+					Result := flat_ui_graph
+				end
+			else
+				check attached editor_ui_graph as att_graph then
+					Result := att_graph
+				end
+			end
+		end
+
 feature -- Commands
 
 	on_commit

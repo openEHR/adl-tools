@@ -149,24 +149,12 @@ feature {NONE} -- Implementation
 			precursor
 			if attached source as src and attached selected_language as sel_lang then
 				if src.is_valid then
-					-- pre-populate the description and node-map controls, or else populate the validity control and show it
-					description_controls.populate (src, differential_view, sel_lang)
-					definition_control.populate (src, differential_view, sel_lang)
 					ev_notebook.select_item (tabs_index_item (default_tool_tab))
 				else
 					ev_notebook.select_item (validity_report_control.ev_root_container)
 				end
 				set_tab_appearance
 				set_view_tab_texts
-			end
-		end
-
-	attach_gui_context
-		do
-			check attached source as src then
-				if not src.has_editor_state then
-					src.set_editor_state (create {ALA_EDITOR_STATE}.make (src))
-				end
 			end
 		end
 

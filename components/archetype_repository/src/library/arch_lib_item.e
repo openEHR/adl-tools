@@ -86,13 +86,13 @@ feature -- Access
 			Result.append (name)
 		end
 
-   	subtree_artefact_count (artefact_types: ARRAY [INTEGER]): INTEGER
+   	subtree_artefact_count (an_artefact_types: ARRAY [IMMUTABLE_STRING_8]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
    		local
 			i: INTEGER
 		do
- 			from i := artefact_types.lower until i > artefact_types.upper loop
- 				Result := Result + subtree_artefact_counts.item (artefact_types[i])
+ 			from i := an_artefact_types.lower until i > an_artefact_types.upper loop
+ 				Result := Result + subtree_artefact_counts.item (an_artefact_types[i])
  				i := i + 1
  			end
 		end
@@ -254,19 +254,16 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 	parent: detachable ARCH_LIB_ITEM
 			-- parent node
 
-	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
+	subtree_artefact_counts: HASH_TABLE [INTEGER, IMMUTABLE_STRING_8]
 			-- counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
-		local
-			atf_types: ARRAYED_LIST [INTEGER]
 		do
 			if attached subtree_artefact_counts_cache as sacc then
 				Result := sacc
 			else
 				-- create empty set of counters
 				create Result.make(0)
-				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
-				across atf_types as atf_types_csr loop
+				across artefact_types as atf_types_csr loop
 					Result.put (0, atf_types_csr.item)
 				end
 
@@ -280,7 +277,7 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 									child_csr.item.subtree_artefact_counts.item (subtree_counts_csr.key), subtree_counts_csr.key)
 						end
 						if attached {ARCH_LIB_ARCHETYPE} child_csr.item as ara then
-							Result.replace (Result.item (ara.artefact_type.value) + 1, ara.artefact_type.value)
+							Result.replace (Result.item (ara.artefact_type) + 1, ara.artefact_type)
 						end
 					end
 				end
@@ -288,7 +285,7 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 			end
 		end
 
-	subtree_artefact_counts_cache: detachable HASH_TABLE [INTEGER, INTEGER]
+	subtree_artefact_counts_cache: detachable HASH_TABLE [INTEGER, IMMUTABLE_STRING_8]
 			-- stored counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
 

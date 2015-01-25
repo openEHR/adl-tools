@@ -300,13 +300,13 @@ feature -- Visitor
 			last_result.append (create_indent (depth))
 
 			-- in flat mode; output '%T TYPE[archetype_id] <occurrences>%N'
-			if a_node.has_attributes then
+			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
 				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
 				-- here might be in differential form, and have no component_ontologies aet up
-				terminologies.extend (current_library.archetype_matching_ref (a_node.archetype_ref).flat_archetype.terminology)
+				terminologies.extend (opt.component_terminology (a_node.node_id))
 
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-				last_result.append (apply_style ("[" + a_node.archetype_ref + "]", STYLE_TERM_REF))
+				last_result.append (apply_style ("[" + a_node.node_id + "]", STYLE_TERM_REF))
 				last_result.append (format_item (FMT_SPACE))
 			-- else it is in source mode, there are no children
 			-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences>%N'
@@ -324,7 +324,7 @@ feature -- Visitor
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
-			if a_node.has_attributes then
+			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
 				terminologies.remove
 			end
 		end

@@ -110,7 +110,7 @@ feature -- Serialisation
 
 			-- title
 			s := format_item (FMT_START_TITLE).twin
-			s.replace_substring_all ("$title", archetype.artefact_type.type_name + " " + archetype.archetype_id.physical_id)
+			s.replace_substring_all ("$title", archetype.artefact_type + " " + archetype.archetype_id.physical_id)
 			s.append (format_item(FMT_END_TITLE))
 
 			-- meta-data
@@ -127,7 +127,7 @@ feature -- Serialisation
 		local
 			arch_kw_str, kw_list: STRING
 		do
-			arch_kw_str := archetype.artefact_type.type_name.twin
+			arch_kw_str := archetype.artefact_type
 
 			if attached {AUTHORED_ARCHETYPE} archetype as auth_arch then
 				arch_kw_str.append (" (")

@@ -24,29 +24,24 @@ feature -- Definitions
 
 feature -- Access
 
-	template: OPERATIONAL_TEMPLATE
+	opt: OPERATIONAL_TEMPLATE
 		attribute
 			create Result.default_create
 		end
 
-	filler_index: HASH_TABLE [ARCHETYPE, STRING]
-		attribute
-			create Result.make (0)
-		end
-
 feature -- Commands
 
-	execute (a_template: TEMPLATE; a_filler_index: HASH_TABLE [ARCHETYPE, STRING])
+	execute (a_template: TEMPLATE; a_filler_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING])
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Template_valid: a_template.is_valid and then a_template.is_flat
 		do
-			create template.make_from_other (a_template)
+			create opt.make_from_other (a_template)
 			filler_index := a_filler_index
 
-			overlay_filler_definitions (template, 0)
+			overlay_filler_definitions (opt, 0)
 			overlay_filler_terminologies
-			template.rebuild
+			opt.rebuild
 		end
 
 feature {NONE} -- Implementation
@@ -71,7 +66,7 @@ end
 					end
 
 					-- prevent cycling due to inclusion of current archetype (FIXME: won't catch indirect recursion)
-					if not matched_arch.archetype_id.physical_id.is_equal (template.archetype_id.physical_id) then
+					if not matched_arch.archetype_id.physical_id.is_equal (opt.archetype_id.physical_id) then
 						create supp_flat_arch.make_from_other (matched_arch)
 						supp_arch_root_cco := supp_flat_arch.definition
 
@@ -107,9 +102,16 @@ end
 			flat_terms: ARCHETYPE_TERMINOLOGY
 		do
 			across filler_index as filler_csr loop
-				flat_terms := filler_csr.item.terminology
-				template.add_component_terminology (flat_terms, filler_csr.key)
+				if attached {ARCH_LIB_TEMPLATE} filler_csr.item as altpl then
+					opt.merge_component_terminologies (altpl.operational_template)
+				end
+				opt.add_component_terminology (filler_csr.item.flat_archetype.terminology, filler_csr.key)
 			end
+		end
+
+	filler_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+		attribute
+			create Result.make (0)
 		end
 
 end

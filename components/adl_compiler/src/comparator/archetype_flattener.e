@@ -71,7 +71,7 @@ feature -- Commands
 			arch_diff_child := a_diff_child
 			arch_flat_parent := a_flat_parent
 
-			if arch_diff_child.is_template then
+			if attached {TEMPLATE} arch_diff_child then
 				create {TEMPLATE} arch_flat_out.make_from_other (arch_flat_parent)
 			else
 				arch_flat_out := arch_flat_parent.deep_twin

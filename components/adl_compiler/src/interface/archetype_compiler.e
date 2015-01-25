@@ -293,7 +293,7 @@ feature {NONE} -- Implementation
 						ara.check_compilation_currency
 						if not ara.is_in_terminal_compilation_state then
 							if not compiler_quiet then
-								call_console_update_action (get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>))
+								call_console_update_action (get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.as_upper, ara.id.physical_id>>))
 							end
 
 							-- first phase
@@ -327,12 +327,12 @@ feature {NONE} -- Implementation
 						elseif global_error_reporting_level = Error_type_debug then
 							if ara.is_valid then
 								if not ara.errors.is_empty then
-									build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+									build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
 								else
-									build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
+									build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.as_upper, ara.id.physical_id>>)
 								end
 							else
-								build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+								build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
 							end
 							call_debug_update_action (build_status, dependency_depth)
 						end

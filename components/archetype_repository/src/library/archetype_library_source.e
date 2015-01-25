@@ -62,7 +62,7 @@ feature {ARCHETYPE_LIBRARY} -- Access
 			-- count of artefacts designated as templates or template_components
 		do
 			across archetype_id_index as arch_csr loop
-				if arch_csr.item.artefact_type.is_template_or_overlay then
+				if attached {ARCH_LIB_TEMPLATE} arch_csr.item then
 					Result := Result + 1
 				end
 			end

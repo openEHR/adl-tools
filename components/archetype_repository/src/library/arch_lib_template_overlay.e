@@ -63,7 +63,7 @@ feature {NONE} -- Initialisation
 			create last_compile_attempt_timestamp.make_now
 
 			-- archetype state
-			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
+			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
 
@@ -77,13 +77,6 @@ feature {NONE} -- Initialisation
 			Id_set: id = an_id
 			Archetype_attached: attached differential_archetype
 			Compilation_state: compilation_state = Cs_validated
-		end
-
-feature -- Identification
-
-	artefact_type: ARTEFACT_TYPE
-		once
-			create Result.make_template_overlay
 		end
 
 feature -- Artefacts

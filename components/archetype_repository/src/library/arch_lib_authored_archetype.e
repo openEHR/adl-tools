@@ -60,7 +60,7 @@ feature {NONE} -- Initialisation
 			make_new_any (an_id)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
-			create a_diff_arch.make_empty_differential (artefact_type, an_id, rm_schema.rm_release, locale_language_short)
+			create a_diff_arch.make_empty_differential (an_id, rm_schema.rm_release, locale_language_short)
 			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
 			differential_archetype := a_diff_arch
 
@@ -85,7 +85,7 @@ feature {NONE} -- Initialisation
 			make_new_any (an_id)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
-			create a_diff_arch.make_empty_differential_child (artefact_type, a_parent.specialisation_depth + 1, an_id,
+			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id,
 				a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
 			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
 			differential_archetype := a_diff_arch
@@ -106,13 +106,6 @@ feature {NONE} -- Initialisation
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
 			create last_compile_attempt_timestamp.make_now
-		end
-
-feature -- Identification
-
-	artefact_type: ARTEFACT_TYPE
-		once
-			create Result.make_archetype
 		end
 
 feature -- Artefacts
@@ -369,8 +362,8 @@ feature {GUI_TEST_TOOL} -- File Access
 				archetype_serialise_engine.set_source (odin_text, 1)
 				archetype_serialise_engine.parse
 				if archetype_serialise_engine.parse_succeeded then
-					if attached {P_ARCHETYPE} archetype_serialise_engine.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
-						if attached {ARCHETYPE} p_archetype.create_archetype as an_arch then
+					if attached {like persistent_type} archetype_serialise_engine.tree.as_object (({like persistent_type}).type_id, <<>>) as p_archetype then
+						if attached {like differential_archetype} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
 							Result := adl_2_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
 						end
@@ -401,9 +394,7 @@ feature -- Editing
 
 			differential_archetype.clear_is_generated
 			file_mgr.set_is_source_generated (False)
-			if attached editor_state as gc then
-				gc.on_commit
-			end
+			editor_state.on_commit
 			save_differential_text
 			create last_modify_timestamp.make_now
 

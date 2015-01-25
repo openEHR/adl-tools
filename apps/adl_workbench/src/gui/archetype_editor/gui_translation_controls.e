@@ -13,7 +13,7 @@ class GUI_TRANSLATION_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, can_edit, disable_edit, enable_edit
+			can_edit, disable_edit, enable_edit
 		end
 
 	ADL_2_TERM_CODE_TOOLS
@@ -100,16 +100,6 @@ feature -- Access
 	translated_text: STRING
 
 feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
 
 	can_edit: BOOLEAN
 			-- True if this tool has editing capability

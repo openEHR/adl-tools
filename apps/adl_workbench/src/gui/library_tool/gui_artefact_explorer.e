@@ -86,9 +86,6 @@ feature {NONE} -- Implementation
 	semantic_grid_row_map: HASH_TABLE [EV_GRID_ROW, STRING]
 			-- list of semantic EV_GRID rows, keyed by artefact id
 
-	artefact_types: ARRAY [INTEGER]
-			-- types of artefact in this view
-
 	ev_tree_item_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
@@ -125,6 +122,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_select_archetype
+			-- the action that will occur after a short delay after user selection (left-click) of a tree node
 		do
 			check attached selected_archetype_node as aca then
 				selection_history.set_selected_item (aca)
@@ -322,9 +320,6 @@ feature {NONE} -- Implementation
 				question_dialog.destroy
 			end
 		end
-
-invariant
-	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types (artefact_types)
 
 end
 

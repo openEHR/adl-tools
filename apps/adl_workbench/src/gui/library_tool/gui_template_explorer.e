@@ -30,7 +30,6 @@ feature {NONE} -- Initialisation
 	make
 		do
 			make_tree_control
-			artefact_types := <<{ARTEFACT_TYPE}.template>>
 
 			clear
 
@@ -89,8 +88,8 @@ feature {NONE} -- Implementation
 		do
 			rm_schema := ara.rm_schema
 
-			-- make sure it is a template of some kind
-			if artefact_types.has (ara.artefact_type.value) then
+			-- make sure it is a template
+			if attached {ARCH_LIB_TEMPLATE} ara then
 				-- if it is compiled & valid, display its flat filler structure
 				if semantic_grid_row_map.has (ara.qualified_name) and then attached semantic_grid_row_map.item (ara.qualified_name) as gr then
 					if ara.is_valid then

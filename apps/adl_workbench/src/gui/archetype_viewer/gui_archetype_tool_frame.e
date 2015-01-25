@@ -20,6 +20,9 @@ deferred class GUI_ARCHETYPE_TOOL_FRAME
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
 
 	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
 		export
@@ -159,6 +162,18 @@ feature -- Access
 
 	ev_notebook: EV_NOTEBOOK
 
+feature -- Status Report
+
+	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
+		do
+			Result := True
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated
+		end
+
 feature -- Events
 
 	on_select_notebook
@@ -172,17 +187,25 @@ feature -- Events
 
 				-- remember the tab, unless it's the error tab and the archetype is invalid, which means it was
 				-- automatically chosen
-				if source.is_valid then
+				if src.is_valid then
 					set_default_tool_tab (tool_tab_text_to_id (ev_notebook.item_tab (att_sel_item).text))
 				end
 
 				-- update content if out of date in any way
-				if arch_tool.can_populate (src) and then tool_populate_required (arch_tool) then
-					do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, differential_view, sel_lang))
-				elseif arch_tool.can_repopulate and sel_lang /= arch_tool.selected_language then
-					do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (sel_lang))
-				elseif arch_tool.can_repopulate  and then tool_repopulate_required (arch_tool) then
-					do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate)
+				if tool_populate_required (arch_tool) then
+					if arch_tool.can_populate (src, [differential_view, sel_lang]) then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, [differential_view, sel_lang]))
+					else
+						arch_tool.clear
+					end
+				elseif arch_tool.can_repopulate then
+					if sel_lang /= arch_tool.selected_language then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (sel_lang))
+					elseif tool_repopulate_required (arch_tool) then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate)
+					end
+				elseif src /= arch_tool.source then
+					arch_tool.clear
 				end
 			end
 		end
@@ -297,7 +320,7 @@ feature {NONE} -- Implementation
 	attach_gui_context
 		require
 			attached source
-		deferred
+		do
 		end
 
 	text_widget_handler: EVX_TEXT_WIDGET_HANDLER
@@ -365,7 +388,7 @@ feature {NONE} -- Implementation
 		do
 			if attached source as src then
 				Result := src /= an_arch_tool.source or						-- different archetype chosen
-					not attached src.editor_state or							-- gui refresh forced by explicit recompile request
+					not attached src.differential_archetype or				-- gui refresh forced by explicit recompile request
 					differential_view /= an_arch_tool.differential_view	or	-- user has changed from flat to diff view or v.v.
 					not an_arch_tool.is_populated							-- some tools are pre-populated
 			end
