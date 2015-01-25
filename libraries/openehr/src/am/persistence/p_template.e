@@ -12,7 +12,7 @@ class P_TEMPLATE
 inherit
 	P_AUTHORED_ARCHETYPE
 		redefine
-			make, artefact_type, create_archetype
+			make, artefact_class_type, create_archetype
 		end
 
 create
@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make (an_archetype: like artefact_type)
+	make (an_archetype: like artefact_class_type)
 		do
 			precursor (an_archetype)
 			overlays :=  an_archetype.overlays
@@ -32,7 +32,7 @@ feature -- Access
 
 feature -- Factory
 
-	create_archetype: detachable like artefact_type
+	create_archetype: detachable like artefact_class_type
 		do
 			Result := precursor
 			if attached overlays as att_overlays then
@@ -42,7 +42,7 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	artefact_type: TEMPLATE
+	artefact_class_type: TEMPLATE
 		do
 			create Result
 		end

@@ -12,7 +12,7 @@ class P_OPERATIONAL_TEMPLATE
 inherit
 	P_AUTHORED_ARCHETYPE
 		redefine
-			make, create_archetype, artefact_type
+			make, create_archetype, artefact_class_type
 		end
 
 create
@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make (an_archetype: like artefact_type)
+	make (an_archetype: like artefact_class_type)
 		do
 			precursor (an_archetype)
 
@@ -38,7 +38,7 @@ feature -- Access
 
 feature -- Factory
 
-	create_archetype: detachable like artefact_type
+	create_archetype: detachable like artefact_class_type
 		local
 			arch_terminology: ARCHETYPE_TERMINOLOGY
 		do
@@ -55,7 +55,7 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	artefact_type: OPERATIONAL_TEMPLATE
+	artefact_class_type: OPERATIONAL_TEMPLATE
 		do
 			create Result
 		end

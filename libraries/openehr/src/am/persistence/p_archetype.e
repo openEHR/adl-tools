@@ -22,9 +22,10 @@ feature -- Initialisation
 		do
 		end
 
-	make (an_archetype: like artefact_type)
+	make (an_archetype: like artefact_class_type)
 			-- basic make routine to guarantee validity on creation
 		do
+			artefact_type := an_archetype.artefact_type
 			artefact_object_type := an_archetype.generating_type
 			create archetype_id.make (an_archetype.archetype_id)
 			parent_archetype_id := an_archetype.parent_archetype_id
@@ -35,6 +36,12 @@ feature -- Initialisation
 		end
 
 feature -- Access
+
+	artefact_type: STRING
+			-- records artefact type of the original artefact
+		attribute
+			create Result.make_empty
+		end
 
 	artefact_object_type: detachable STRING
 			-- records object model type of the original artefact
@@ -61,7 +68,7 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_archetype: detachable like artefact_type
+	create_archetype: detachable like artefact_class_type
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
 			arch_terminology: ARCHETYPE_TERMINOLOGY
@@ -99,7 +106,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	artefact_type: ARCHETYPE
+	artefact_class_type: ARCHETYPE
 		do
 			create Result
 		end

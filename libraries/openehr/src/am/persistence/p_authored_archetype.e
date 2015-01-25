@@ -14,7 +14,7 @@ inherit
 
 	P_ARCHETYPE
 		redefine
-			make_dt, make, create_archetype, artefact_type
+			make_dt, make, create_archetype, artefact_class_type
 		end
 
 create
@@ -30,7 +30,7 @@ feature -- Initialisation
 			create description.default_create
 		end
 
-	make (an_archetype: like artefact_type)
+	make (an_archetype: like artefact_class_type)
 		do
 			precursor (an_archetype)
 			make_from_other (an_archetype)
@@ -59,7 +59,7 @@ feature -- Access
 
 feature -- Factory
 
-	create_archetype: detachable like artefact_type
+	create_archetype: detachable like artefact_class_type
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
 			arch_terminology: ARCHETYPE_TERMINOLOGY
@@ -105,7 +105,7 @@ feature -- Factory
 
 feature {NONE} -- Implementation
 
-	artefact_type: AUTHORED_ARCHETYPE
+	artefact_class_type: AUTHORED_ARCHETYPE
 		do
 			create Result
 		end
