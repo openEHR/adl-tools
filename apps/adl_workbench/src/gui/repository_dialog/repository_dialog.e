@@ -923,7 +923,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				-- checkout other branch
 				if a_rep_if.available_branches.count > 1 then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_checkout_branch), agent repository_checkout_branch (a_rep_if))
-					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 			    	menu.extend (an_mi)
 				end
 			end
