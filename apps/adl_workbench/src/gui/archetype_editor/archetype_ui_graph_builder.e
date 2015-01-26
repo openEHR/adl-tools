@@ -97,7 +97,7 @@ feature -- Visitor
 			create ui_node.make (a_node, ui_graph_state)
 			obj_node_stack.extend (ui_node)
 
-			-- if no attributes on the stack, this is actually a root node of a subtree being lazy created
+			-- if no attributes on the stack, this is node is the root node of a subtree being lazy created
 			if attr_node_stack.is_empty then
 				root_node := ui_node
 			else

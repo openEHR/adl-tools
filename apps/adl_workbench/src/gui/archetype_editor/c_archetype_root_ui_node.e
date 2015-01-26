@@ -69,6 +69,7 @@ feature {NONE} -- Implementation
 		do
 			precursor
 			if attached arch_node as car then
+				-- menu option to display the archetype for this reference in a new tab
 				if attached current_library.archetype_matching_ref (car.archetype_ref) as ext_ref_node then
 					create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab),
 						agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
@@ -80,23 +81,24 @@ feature {NONE} -- Implementation
 
 	attach_other_ui_node_agents
 		do
-			if c_attributes.is_empty and then attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and attached ev_grid_row as gr then
-				gr.expand_actions.force_extend (agent build_ui_graph)
+			if c_attributes.is_empty and attached ev_grid_row as gr and attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as opt then
+				gr.expand_actions.force_extend (agent lazy_build_ui_graph)
 				gr.ensure_expandable
 			end
 		end
 
-	build_ui_graph
+	lazy_build_ui_graph
+			-- build some more UI graph from the current node, out to the next layer of C_ARCHEYTYPE_ROOT UI nodes
 		local
 			false_root_ui_node: C_COMPLEX_OBJECT_UI_NODE
-			a_c_iterator: OG_CONTENT_ITERATOR
+			og_iterator: OG_CONTENT_ITERATOR
 			c_ui_graph_builder: ARCHETYPE_UI_GRAPH_BUILDER
 		do
 			if c_attributes.is_empty and then attached arch_node as car and attached evx_grid as att_evx_grid then
 				-- build more UI graph down to and including the next reachable C_ARCHETYPE_ROOTs
 				create c_ui_graph_builder.make (ui_graph_state)
-				create a_c_iterator.make (car.representation, c_ui_graph_builder)
-				a_c_iterator.do_until_surface_plus_one (
+				create og_iterator.make (car.representation, c_ui_graph_builder)
+				og_iterator.do_until_surface_plus_one (
 					agent (an_og_node: OG_NODE): BOOLEAN
 						do
 							Result := not attached {C_ARCHETYPE_ROOT} an_og_node.content_item

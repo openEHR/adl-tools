@@ -103,63 +103,63 @@ feature -- Display
 
 feature -- Modification
 
-	put_c_attribute (a_node: C_ATTRIBUTE_UI_NODE)
+	put_c_attribute (ca_ui_node: C_ATTRIBUTE_UI_NODE)
 			-- add a new attribute node
 		require
-			attached a_node.arch_node as child_a_n and then not c_attributes.has (child_a_n.rm_attribute_path)
+			attached ca_ui_node.arch_node as child_a_n and then not c_attributes.has (child_a_n.rm_attribute_path)
 		do
-			if attached a_node.arch_node as child_a_n then
-				c_attributes.put (a_node, child_a_n.rm_attribute_path)
-				a_node.set_parent (Current)
+			if attached ca_ui_node.arch_node as child_a_n then
+				c_attributes.put (ca_ui_node, child_a_n.rm_attribute_path)
+				ca_ui_node.set_parent (Current)
 			end
 		end
 
-	put_c_attribute_tuple (a_node: C_ATTRIBUTE_TUPLE_UI_NODE)
+	put_c_attribute_tuple (ca_tuple_ui_node: C_ATTRIBUTE_TUPLE_UI_NODE)
 			-- add a new attribute_tuple node
 		do
-			c_attribute_tuples.extend (a_node)
-			a_node.set_parent (Current)
+			c_attribute_tuples.extend (ca_tuple_ui_node)
+			ca_tuple_ui_node.set_parent (Current)
 		end
 
 feature {C_ATTRIBUTE_UI_NODE} -- Modification
 
-	convert_rm_property_to_constraint (a_property_context: C_ATTRIBUTE_UI_NODE)
-			-- move RM property `a_property_context' to `c_attributes'
+	convert_rm_property_to_constraint (ca_ui_node: C_ATTRIBUTE_UI_NODE)
+			-- move RM property `ca_ui_node' to `c_attributes'
 			-- and add its archetype node as a child attribute of the current archetype node
 		require
-			Context_is_constraint: not a_property_context.is_rm
-			Rm_attributes_validity: rm_attributes.has (a_property_context.rm_property.name)
-			C_attributes_valid: not c_attributes.has (a_property_context.rm_property.name)
-			Not_already_in_archetype: context_property_not_in_archetype (a_property_context)
+			Context_is_constraint: not ca_ui_node.is_rm
+			Rm_attributes_validity: rm_attributes.has (ca_ui_node.rm_property.name)
+			C_attributes_valid: not c_attributes.has (ca_ui_node.rm_property.name)
+			Not_already_in_archetype: context_property_not_in_archetype (ca_ui_node)
 		do
-			c_attributes.force (a_property_context, a_property_context.rm_property.name)
-			rm_attributes.remove (a_property_context.rm_property.name)
-			check attached arch_node as a_n and attached a_property_context.arch_node as prop_a_n then
+			c_attributes.force (ca_ui_node, ca_ui_node.rm_property.name)
+			rm_attributes.remove (ca_ui_node.rm_property.name)
+			check attached arch_node as a_n and attached ca_ui_node.arch_node as prop_a_n then
 				a_n.put_attribute (prop_a_n)
 			end
 		ensure
-			Moved_to_c_attributes: c_attributes.item (a_property_context.rm_property.name) = a_property_context
-			Removed_from_rm_properties: not rm_attributes.has (a_property_context.rm_property.name)
-			Added_to_archetpe: context_property_in_archetype (a_property_context)
+			Moved_to_c_attributes: c_attributes.item (ca_ui_node.rm_property.name) = ca_ui_node
+			Removed_from_rm_properties: not rm_attributes.has (ca_ui_node.rm_property.name)
+			Added_to_archetpe: context_property_in_archetype (ca_ui_node)
 		end
 
-	convert_constraint_to_rm_property (a_property_context: C_ATTRIBUTE_UI_NODE)
-			-- move constraint property `a_property_context' to `rm_attributes'
+	convert_constraint_to_rm_property (ca_ui_node: C_ATTRIBUTE_UI_NODE)
+			-- move constraint property `ca_ui_node' to `rm_attributes'
 		require
-			Context_is_constraint: not a_property_context.is_rm
-			Rm_attributes_validity: not rm_attributes.has (a_property_context.rm_property.name)
-			C_attributes_validity: c_attributes.has (a_property_context.rm_property.name)
-			Exists_in_archetype: context_property_in_archetype (a_property_context)
+			Context_is_constraint: not ca_ui_node.is_rm
+			Rm_attributes_validity: not rm_attributes.has (ca_ui_node.rm_property.name)
+			C_attributes_validity: c_attributes.has (ca_ui_node.rm_property.name)
+			Exists_in_archetype: context_property_in_archetype (ca_ui_node)
 		do
-			rm_attributes.force (a_property_context, a_property_context.rm_property.name)
-			c_attributes.remove (a_property_context.rm_property.name)
-			check attached arch_node as a_n and attached a_property_context.arch_node as prop_a_n then
+			rm_attributes.force (ca_ui_node, ca_ui_node.rm_property.name)
+			c_attributes.remove (ca_ui_node.rm_property.name)
+			check attached arch_node as a_n and attached ca_ui_node.arch_node as prop_a_n then
 				a_n.remove_attribute (prop_a_n)
 			end
 		ensure
-			Moved_to_rm_attributes: rm_attributes.item (a_property_context.rm_property.name) = a_property_context
-			Removed_from_c_attributes: not c_attributes.has (a_property_context.rm_property.name)
-			Removed_from_archetpe: context_property_not_in_archetype (a_property_context)
+			Moved_to_rm_attributes: rm_attributes.item (ca_ui_node.rm_property.name) = ca_ui_node
+			Removed_from_c_attributes: not c_attributes.has (ca_ui_node.rm_property.name)
+			Removed_from_archetpe: context_property_not_in_archetype (ca_ui_node)
 		end
 
 feature {NONE} -- Implementation
