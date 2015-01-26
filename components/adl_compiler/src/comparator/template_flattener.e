@@ -31,16 +31,14 @@ feature -- Access
 
 feature -- Commands
 
-	execute (a_template: TEMPLATE; a_filler_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING])
+	execute (a_template: TEMPLATE)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Template_valid: a_template.is_valid and then a_template.is_flat
 		do
 			create opt.make_from_other (a_template)
-			filler_index := a_filler_index
 
 			overlay_filler_definitions (opt, 0)
-			overlay_filler_terminologies
 			opt.rebuild
 		end
 
@@ -70,6 +68,11 @@ end
 						create supp_flat_arch.make_from_other (matched_arch)
 						supp_arch_root_cco := supp_flat_arch.definition
 
+						-- add the terminology of this archetype to the OPT component_terminologies
+						if not opt.has_component_terminology (supp_flat_arch.archetype_id.physical_id) then
+							opt.add_component_terminology (supp_flat_arch.terminology, supp_flat_arch.archetype_id.physical_id)
+						end
+
 						-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
 						-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
 						-- flat definition structure from the supplier archetype
@@ -94,24 +97,6 @@ end
 					end
 				end
 			end
-		end
-
-	overlay_filler_terminologies
-			-- process `template_ontology_overlay_list' to overlay target terminologies.
-		local
-			flat_terms: ARCHETYPE_TERMINOLOGY
-		do
-			across filler_index as filler_csr loop
-				if attached {ARCH_LIB_TEMPLATE} filler_csr.item as altpl then
-					opt.merge_component_terminologies (altpl.operational_template)
-				end
-				opt.add_component_terminology (filler_csr.item.flat_archetype.terminology, filler_csr.key)
-			end
-		end
-
-	filler_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
-		attribute
-			create Result.make (0)
 		end
 
 end

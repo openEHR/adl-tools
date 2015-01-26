@@ -105,16 +105,10 @@ feature {NONE} -- Flattening
 	expand (include_rm: BOOLEAN)
 			-- expand by substitution of all references with their structures
 		local
-			fillers_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
 			opt_generator: TEMPLATE_FLATTENER
 		do
-			-- perform template filler substitution
-			create fillers_index.make (0)
-			across suppliers_index as supp_arch_csr loop
-				fillers_index.put (supp_arch_csr.item, supp_arch_csr.key)
-			end
 			create opt_generator
-			opt_generator.execute (if include_rm then flat_archetype_with_rm else flat_archetype end, fillers_index)
+			opt_generator.execute (if include_rm then flat_archetype_with_rm else flat_archetype end)
 			operational_template_cache := opt_generator.opt
 
 			last_include_rm := include_rm
