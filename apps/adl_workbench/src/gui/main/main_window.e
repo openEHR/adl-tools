@@ -157,9 +157,6 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_all_key), get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_all_key), get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_archetypes_menu_build_subtree_text), Void, agent build_subtree)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_archetypes_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
-			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_html_key), get_text (ec_archetypes_menu_export_html_text), Void, agent export_library (syntax_type_adl_html))
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_json_key), get_text (ec_archetypes_menu_export_json_text), Void, agent export_library (syntax_type_json))
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_yaml_key), get_text (ec_archetypes_menu_export_yaml_text), Void, agent export_library (syntax_type_yaml))
@@ -305,8 +302,6 @@ feature {NONE} -- Initialization
 
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_refresh_key), key_r, True, False, False)
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_interrupt_build_key), key_escape, False, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_subtree_key), key_f7, True, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_subtree_key), key_f7, True, False, False)
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_all_key), key_f7, False, False, True)
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_all_key), key_f7, False, False, False)
 
@@ -575,24 +570,6 @@ feature {NONE} -- Library events
 		do
 			console_tool.show
 			do_build_action (agent archetype_compiler.rebuild_all)
-		end
-
-	build_subtree
-			-- Build the subsystem below the currently selected node.
-		do
-			console_tool.show
-			if library_tool.selection_history.has_selected_item and then attached library_tool.selected_item as sel_item then
-				do_build_action (agent archetype_compiler.build_subtree (sel_item))
-			end
-		end
-
-	rebuild_subtree
-			-- Force rebuilding of the whole subsystem below the currently selected node.
-		do
-			console_tool.show
-			if library_tool.selection_history.has_selected_item and then attached library_tool.selected_item as sel_item then
-				do_build_action (agent archetype_compiler.rebuild_subtree (sel_item))
-			end
 		end
 
 	compile_toggle
@@ -1261,7 +1238,7 @@ feature {NONE} -- Build commands
 		do
 			if not build_started then
 				evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
+					get_text (ec_menu_archetypes_export_html_key)>>)
 				evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
 				build_started := True
 				do_with_wait_cursor (Current, action)

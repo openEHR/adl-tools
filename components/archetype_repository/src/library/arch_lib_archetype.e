@@ -686,20 +686,31 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
 	initialise
 			-- set compilation state at creation, or if editing occurs
-			-- also sets rm_schema reference
 		require
 			compilation_state = Cs_unread
-		deferred
+		do
+			reset
+			if has_source then
+				if is_specialised then
+					compilation_state := Cs_lineage_known
+				else
+					compilation_state := Cs_ready_to_parse
+				end
+			elseif attached differential_archetype then -- must have been newly created
+				compilation_state := Cs_validated
+			end
 		ensure
 			compilation_state_set: Cs_initial_states.has (compilation_state)
 		end
 
 	evaluate_lineage
+		require
+			Initial_state: compilation_state = Cs_lineage_known
 		do
 			if specialisation_parent.is_valid then
 				compilation_state := Cs_ready_to_parse
 			else
-				compilation_state := cs_lineage_invalid
+				compilation_state := Cs_lineage_invalid
 				add_error (ec_compile_e1, <<parent_id.physical_id>>)
 			end
 		end
@@ -791,6 +802,8 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 		end
 
 	post_parse_151_convert (an_archetype: attached like differential_archetype)
+		require
+			Initial_state: compilation_state = Cs_parsed
 		do
 		end
 

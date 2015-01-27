@@ -72,9 +72,6 @@ feature -- Access
 
 feature -- Status
 
-	is_full_build_completed: BOOLEAN
-			-- True if last attempt to build the whole system succeeded
-
 	is_building: BOOLEAN
 			-- is building underway?
 
@@ -125,70 +122,24 @@ feature -- Modification
 
 feature -- Commands
 
-	reset
-		do
-			if not is_interrupt_requested then
-				total_count := 0
-				valid_count := 0
-				warning_count := 0
-				error_count := 0
-			end
-		end
-
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
-			reset
-			is_full_build_completed := False
-			is_building := True
+			start_run (False)
 			call_console_update_action (get_msg_line (ec_compiler_building_system, Void))
 			do_all (agent check_file_system_currency (False, ?))
 			do_all (agent build_archetype (?, 0))
-			is_full_build_completed := not is_interrupt_requested
-			is_building := False
-			call_console_update_action (get_msg_line (ec_compiler_finished_building_system, Void))
-			if is_full_build_completed then
-				call_full_compile_visual_update_action
-			end
+			finish_run
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
-			reset
-			is_full_build_completed := False
-			is_building := True
+			start_run (True)
 			call_console_update_action(get_msg_line (ec_compiler_rebuilding_system, Void))
 			do_all (agent check_file_system_currency (True, ?))
 			do_all (agent build_archetype (?, 0))
-			is_full_build_completed := not is_interrupt_requested
-			is_building := False
-			call_console_update_action (get_msg_line (ec_compiler_finished_rebuilding_system, Void))
-			if is_full_build_completed then
-				call_full_compile_visual_update_action
-			end
-		end
-
-	build_subtree (aci: ARCH_LIB_ITEM)
-			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
-		do
-			is_building := True
-			call_console_update_action (get_msg_line (ec_compiler_building_subtree, Void))
-			do_subtree (aci, agent check_file_system_currency (False, ?))
-			do_subtree (aci, agent build_archetype (?, 0))
-			is_building := False
-			call_console_update_action (get_msg_line (ec_compiler_finished_building_subtree, Void))
-		end
-
-	rebuild_subtree (aci: ARCH_LIB_ITEM)
-			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
-		do
-			is_building := True
-			call_console_update_action (get_msg_line (ec_compiler_rebuilding_subtree, Void))
-			do_subtree (aci, agent check_file_system_currency (True, ?))
-			do_subtree (aci, agent build_archetype (?, 0))
-			call_console_update_action (get_msg_line (ec_compiler_finished_rebuilding_subtree, Void))
-			is_building := False
+			finish_run
 		end
 
 	build_lineage (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
@@ -218,21 +169,16 @@ feature -- Commands
 			call_console_update_action (get_msg_line (ec_compiler_export, <<a_syntax, an_export_dir>>))
 			do_all (agent export_archetype (an_export_dir, a_syntax, False, ?))
 			call_console_update_action (get_msg_line (ec_compiler_finished_export, Void))
+			is_interrupt_requested := False
 		end
 
 	build_and_export_all (an_export_dir, a_syntax: STRING)
 			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from the whole system, building each archetype as necessary.
 		do
-			is_full_build_completed := False
-			is_building := True
-			reset
+			start_run (True)
 			call_console_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax, an_export_dir>>))
 			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
-			is_full_build_completed := not is_interrupt_requested
-			is_building := False
-			if is_full_build_completed then
-				call_full_compile_visual_update_action
-			end
+			finish_run
 		end
 
 feature {NONE} -- Implementation
@@ -240,14 +186,12 @@ feature {NONE} -- Implementation
 	do_all (action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
-			is_interrupt_requested := False
 			current_library.do_all_archetypes (action)
 		end
 
 	do_subtree (subtree: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
-			is_interrupt_requested := False
 			current_library.do_archetypes (subtree, action)
 		end
 
@@ -255,8 +199,7 @@ feature {NONE} -- Implementation
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
-			is_interrupt_requested := False
-			current_library.do_archetype_lineage(ara, action)
+			current_library.do_archetype_lineage (ara, action)
 		end
 
 	check_file_system_currency (from_scratch: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
@@ -326,7 +269,7 @@ feature {NONE} -- Implementation
 
 						elseif global_error_reporting_level = Error_type_debug then
 							if ara.is_valid then
-								if not ara.errors.is_empty then
+								if ara.errors.has_warnings then
 									build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
 								else
 									build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.as_upper, ara.id.physical_id>>)
@@ -362,7 +305,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_AUTHORED_ARCHETYPE)
+	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
 			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
 		require
 			has_serialiser_format (a_syntax)
@@ -458,6 +401,30 @@ feature {NONE} -- Implementation
 				error_count := error_count + 1
 			end
 		end
+
+	start_run (reset_stats: BOOLEAN)
+		do
+			if reset_stats then
+				total_count := 0
+				valid_count := 0
+				warning_count := 0
+				error_count := 0
+			end
+			is_interrupt_requested := False
+			is_building := True
+		end
+
+	finish_run
+		do
+			if not is_interrupt_requested then
+				call_full_compile_visual_update_action
+			end
+			is_interrupt_requested := False
+			is_building := False
+			call_console_update_action (get_msg_line (ec_compiler_finished_building_system, Void))
+		end
+
+	is_building_all: BOOLEAN
 
 end
 

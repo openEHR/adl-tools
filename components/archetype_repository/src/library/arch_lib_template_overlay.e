@@ -41,12 +41,12 @@ feature {NONE} -- Initialisation
 			create file_mgr.make (id, alt.file_mgr)
 
 			reset
-			compilation_state := cs_ready_to_parse
+			compilation_state := Cs_lineage_known
 			template := alt
 		ensure
 			Id_set: id = an_id
 			Parent_id_set: parent_ref = a_parent_ref
-			Compilation_state: compilation_state = cs_ready_to_parse
+			Compilation_state: compilation_state = Cs_lineage_known
 		end
 
 	make_new (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; alt: ARCH_LIB_TEMPLATE)
@@ -98,18 +98,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 	compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
 		once
 			Result := create_compile_actions
-		end
-
-	initialise
-			-- set compilation state at creation, or if editing occurs
-			-- also sets rm_schema reference
-		do
-			reset
-			if attached differential_archetype then
-				compilation_state := cs_ready_to_validate
-			else
-				compilation_state := cs_ready_to_parse
-			end
 		end
 
 feature -- File Access

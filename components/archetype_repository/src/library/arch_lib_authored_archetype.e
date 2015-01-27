@@ -128,19 +128,12 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
 	initialise
 			-- set compilation state at creation, or if editing occurs
-			-- also sets rm_schema reference
 		do
-			reset
 			if file_mgr.is_legacy_out_of_date then
+				reset
 				compilation_state := Cs_ready_to_parse_legacy
-			elseif has_source then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
-				if is_specialised then
-					compilation_state := Cs_lineage_known
-				else
-					compilation_state := Cs_ready_to_parse
-				end
-			elseif attached differential_archetype then -- must have been newly created
-				compilation_state := Cs_validated
+			else
+				precursor
 			end
 		end
 

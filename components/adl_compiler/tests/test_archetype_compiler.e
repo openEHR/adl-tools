@@ -25,20 +25,17 @@ feature -- Test routines
 			create errors.make_empty
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
-			assert_equal (False, archetype_compiler.is_full_build_completed)
 
 			archetype_compiler.set_archetype_visual_update_action (agent on_archetype_update)
 			archetype_compiler.build_all
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
-			assert_equal (True, archetype_compiler.is_full_build_completed)
 			assert_equal (current_library.archetype_count, current_library.compile_attempt_count)
 			assert_equal ("", errors)
 
 			archetype_compiler.rebuild_all
 			assert_equal (False, archetype_compiler.is_interrupt_requested)
 			assert_equal (False, archetype_compiler.is_building)
-			assert_equal (True, archetype_compiler.is_full_build_completed)
 			assert_equal (current_library.archetype_count, current_library.compile_attempt_count)
 			assert_equal ("", errors)
 		end
