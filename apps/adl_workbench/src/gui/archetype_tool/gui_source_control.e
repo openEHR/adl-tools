@@ -13,7 +13,7 @@ class
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			enable_edit, disable_edit
+			enable_edit, disable_edit, can_populate, can_repopulate
 		end
 
 	OPERATOR_TYPES
@@ -70,6 +70,18 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
+		do
+			Result := True
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated
+		end
 
 feature -- Commands
 
