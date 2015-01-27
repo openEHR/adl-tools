@@ -199,15 +199,16 @@ feature -- Commands
 			create processing.make_last_in_document (document, "xml-stylesheet", "type=%"text/xsl%" href=%"ArchetypeRepositoryReport.xsl%"")
 			create root.make_root (document, "archetype-repository-report", ns)
 
-			create_category_element := agent (parent: XML_ELEMENT; description: STRING; count: INTEGER)
-				local
-					e: XML_ELEMENT
-					a: XML_ATTRIBUTE
-				do
-					create e.make_last (parent, "category", parent.namespace)
-					create a.make_last ("description", parent.namespace, description, e)
-					create a.make_last ("count", parent.namespace, count.out, e)
-				end
+			create_category_element :=
+				agent (parent: XML_ELEMENT; description: STRING; count: INTEGER)
+					local
+						e: XML_ELEMENT
+						a: XML_ATTRIBUTE
+					do
+						create e.make_last (parent, "category", parent.namespace)
+						create a.make_last ("description", parent.namespace, description, e)
+						create a.make_last ("count", parent.namespace, count.out, e)
+					end
 
 			create statistics_element.make_last (root, "statistics", ns)
 			create_category_element.call ([statistics_element, "Total Archetypes", current_library.archetype_count])
