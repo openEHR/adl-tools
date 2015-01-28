@@ -12,15 +12,50 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			select_archetype, file_mgr, flat_archetype, differential_archetype, serialise_object, persistent_type
+			select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised, serialise_object, signal_from_scratch, persistent_type
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
 	make_new_specialised, make
 
+feature -- Definitions
+
+	Source_template_overlay_divider: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("-------------------------------------------------------------%N")
+		end
+
+	Overlay_differential_not_available: STRING = "Overlay differential_serialised not generated for "
+
 feature -- Artefacts
 
 	differential_archetype: detachable TEMPLATE
+
+	differential_serialised: detachable STRING
+			-- serialise differential archetype to its file in its source form, even if not compiling
+			-- this might fail because the serialiser might try to do something that an invalid archetype
+			-- can't support
+		local
+			exception_occurred: BOOLEAN
+		do
+			if not exception_occurred then
+				if attached differential_archetype as da then
+					Result := adl_2_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+
+					-- append overlay texts
+					across overlays as overlays_csr loop
+						Result.append (Source_template_overlay_divider)
+						if attached overlays_csr.item.differential_serialised as ovl_str then
+							Result.append (ovl_str)
+						else
+							Result.append (Overlay_differential_not_available + overlays_csr.item.id.physical_id)
+						end
+					end
+				end
+			end
+		rescue
+			exception_occurred := True
+		end
 
 	flat_archetype: TEMPLATE
 			-- inheritance-flattened form of archetype
@@ -68,6 +103,15 @@ feature -- Artefacts
 			end
 		end
 
+	signal_from_scratch
+			-- signal rebuild from scratch; this rebuilds from existing differential
+		do
+			precursor
+			overlays.wipe_out
+		ensure then
+			Overlays_cleared: overlays.is_empty
+		end
+
 feature -- Visualisation
 
 	select_archetype (differential_view, editing_enabled: BOOLEAN): ARCHETYPE
@@ -93,10 +137,12 @@ feature -- File Access
 	clear_overlays
 		do
 			file_mgr.clear_overlays
+			overlays.wipe_out
 		end
 
-	add_overlay (an_ovl_adl_text, an_archetype_id: STRING)
+	add_overlay (an_overlay_descriptor: ARCH_LIB_TEMPLATE_OVERLAY; an_ovl_adl_text, an_archetype_id: STRING)
 		do
+			overlays.extend (an_overlay_descriptor)
 			file_mgr.add_overlay (an_ovl_adl_text, an_archetype_id)
 		end
 
@@ -142,6 +188,13 @@ feature {NONE} -- Output
 	persistent_type: P_TEMPLATE
 		do
 			create Result.make_dt (Void)
+		end
+
+feature {NONE} -- Implementation
+
+	overlays: ARRAYED_LIST [ARCH_LIB_TEMPLATE_OVERLAY]
+		attribute
+			create Result.make (0)
 		end
 
 end

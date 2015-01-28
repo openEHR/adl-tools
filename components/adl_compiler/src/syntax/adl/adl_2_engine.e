@@ -229,22 +229,22 @@ feature -- Parsing
 								tpl_aca.clear_overlays
 								tpl.clear_overlays
 								create amp
-								across adl_parser.overlays as overlays_csr loop -- or errors.has_errors loop								
+								across adl_parser.overlay_adl_texts as overlay_texts_csr loop -- or errors.has_errors loop								
 									-- need to do a small amount of parsing on the top of each overlay to get the archetype id and parent id
-									amp.parse_from_text (overlays_csr.item, tpl_aca.id.physical_id + " @overlay " + overlays_csr.target_index.out)
+									amp.parse_from_text (overlay_texts_csr.item, tpl_aca.id.physical_id + " @overlay " + overlay_texts_csr.target_index.out)
 									if not amp.has_errors and attached amp.last_archetype as arch_thumbnail then
 										-- now create a descriptor for this overlay
 										if not current_library.has_archetype_with_id (arch_thumbnail.archetype_id.physical_id) then
 											if attached arch_thumbnail.parent_archetype_id as att_parent_id and then current_library.has_archetype_matching_ref (att_parent_id) then
 												create arch_lib_tpl_ovl.make (arch_thumbnail.archetype_id, att_parent_id, tpl_aca)
 												current_library.put_new_archetype (arch_lib_tpl_ovl)
+												tpl_aca.add_overlay (arch_lib_tpl_ovl, overlay_texts_csr.item, arch_thumbnail.archetype_id.physical_id)
 											else
 												errors.add_error (ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
 											end
 										else
 											-- possibly check if the parent has changed
 										end
-										tpl_aca.add_overlay (overlays_csr.item, arch_thumbnail.archetype_id.physical_id)
 									else
 										errors.add_error (ec_STOV, Void, generator + ".parse")
 									end

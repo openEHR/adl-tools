@@ -386,6 +386,8 @@ feature -- Commands
 		local
 			missing_external_tools: ARRAYED_SET [STRING]
 			missing_external_tools_msg: STRING
+			backup_xml_rules_file: STRING
+			info_dialog: EV_INFORMATION_DIALOG
 		do
 			Precursor
 
@@ -425,6 +427,17 @@ feature -- Commands
 			-- if no AOM profiles yet available, ask user to configure
 			if not directory_exists (aom_profile_directory) or not aom_profiles_access.found_valid_profiles then
 				configure_aom_profiles
+			end
+
+			-- if sample XML rules file is newer than current one, backup current, copy over sample and tell user
+			if file_system.file_time_stamp (xml_rules_sample_file_path) > file_system.file_time_stamp (xml_rules_file_path) then
+				backup_xml_rules_file := xml_rules_file_path + ".bak"
+				file_system.copy_file (xml_rules_file_path, backup_xml_rules_file)
+				file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
+				console_tool.append_text (get_msg (ec_copy_file_with_backup, <<xml_rules_sample_file_path, xml_rules_file_path, backup_xml_rules_file>>))
+
+				create info_dialog.make_with_text (get_msg (ec_xml_rules_file_update_msg, <<xml_rules_file_path, backup_xml_rules_file>>))
+				info_dialog.show_modal_to_window (Current)
 			end
 
 			console_tool.append_text (app_root.error_strings)

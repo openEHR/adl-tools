@@ -595,8 +595,7 @@ feature -- Compilation
 		end
 
 	signal_from_scratch
-			-- signal rebuild from scratch; this rebuilds from existing differential; it only uses legacy if no
-			-- differential yet available. This is because changes in legacy will be detected independently
+			-- signal rebuild from scratch; this rebuilds from existing differential
 		do
 			if compile_attempted then
 				current_library.decrement_compile_attempt_count
@@ -605,8 +604,7 @@ feature -- Compilation
 			clear_cache
 			last_compile_attempt_timestamp := Time_epoch
 			compilation_state := Cs_unread
-			status.wipe_out
-			editor_state_cache := Void
+			reset
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
 			Compiler_state_set: compilation_state = Cs_unread
@@ -1059,6 +1057,7 @@ feature {NONE} -- Editing
 			if attached editor_state_cache as att_esc then
 				att_esc.on_commit
 			end
+			editor_state_cache := Void
 		end
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation

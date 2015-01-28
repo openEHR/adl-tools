@@ -12,6 +12,7 @@ templates = <
 	["en"] = <
 		-- basics
 		["to_be_implemented"] = <"Not implemented in this release">
+		["copy_file_with_backup"] = <"Copying file $1 to $2, backing up original to $3">
 
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">
@@ -35,6 +36,7 @@ templates = <
 		["export_xml"] = <"Export as XML">
 		["tree_controls"] = <"Tree control">
 		["status"] = <"Status">
+		["xml_rules_file_update_msg"] = <"XML rules file is out of date; copying new master to $1,%Nbacking up original to $2 (local modifications will need to be re-applied)">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["remove_library_cfg"] = <"Removing invalid configuration (error: $1)">

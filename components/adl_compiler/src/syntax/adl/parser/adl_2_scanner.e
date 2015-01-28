@@ -719,7 +719,7 @@ end
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
-				overlays.extend (str_)
+				overlay_adl_texts.extend (str_)
 				in_lineno := in_lineno + 1
 	
 else
@@ -829,7 +829,7 @@ end
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
-				overlays.extend (str_)
+				overlay_adl_texts.extend (str_)
 				last_token := SYM_OVERLAY_TEXTS
 				set_start_condition (INITIAL)
 	
@@ -1567,7 +1567,7 @@ feature {NONE} -- Initialization
 			create str_.make_empty
 			create a_text.make_empty
 			create last_string_value.make_empty
-			create overlays.make (0)
+			create overlay_adl_texts.make (0)
 		end
 
 feature -- Initialization
@@ -1578,7 +1578,7 @@ feature -- Initialization
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
-			overlays.wipe_out
+			overlay_adl_texts.wipe_out
 		end
 
 feature -- Access
@@ -1614,7 +1614,7 @@ feature -- Access
 
 	component_terminologies_text_start_line: INTEGER
 
-	overlays: ARRAYED_LIST [STRING]
+	overlay_adl_texts: ARRAYED_LIST [STRING]
 
 feature {NONE} -- Constants
 

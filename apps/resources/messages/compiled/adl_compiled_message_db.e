@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (901)
+			create message_table.make (903)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -315,6 +315,7 @@ feature -- Initialisation
 			message_table.put ("External tool $1 not found on local system; repository operations limited to local access", ec_repository_tool_unavailable)
 			message_table.put ("For missing external tools, see Help menu > External tools", ec_external_tools_help_text)
 			message_table.put ("Not implemented in this release", ec_to_be_implemented)
+			message_table.put ("Copying file $1 to $2, backing up original to $3", ec_copy_file_with_backup)
 			message_table.put ("Display", ec_display_in_active_tab)
 			message_table.put ("Retarget to this class", ec_retarget_to_this_class)
 			message_table.put ("Display in new tab", ec_display_in_new_tab)
@@ -336,6 +337,7 @@ feature -- Initialisation
 			message_table.put ("Export as XML", ec_export_xml)
 			message_table.put ("Tree control", ec_tree_controls)
 			message_table.put ("Status", ec_status)
+			message_table.put ("XML rules file is out of date; copying new master to $1,%Nbacking up original to $2 (local modifications will need to be re-applied)", ec_xml_rules_file_update_msg)
 			message_table.put ("Removing invalid configuration (error: $1)", ec_remove_library_cfg)
 			message_table.put ("Library error: $1", ec_library_cfg_error)
 			message_table.put ("Configuration $1 not known in library configurations", ec_invalid_library_cfg)
