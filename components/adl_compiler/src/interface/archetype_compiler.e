@@ -48,7 +48,9 @@ create
 
 feature -- Definitions
 
-	max_dependency_depth: INTEGER = 20
+	Max_dependency_depth: INTEGER = 20
+
+	Progress_increment_percent: INTEGER = 3
 
 feature {NONE} -- Initialisation
 
@@ -84,7 +86,7 @@ feature -- Status Setting
 			-- Cancel building immediately.
 		do
 			is_interrupt_requested := True
-			call_console_update_action ("************* interrupted *************%N")
+			call_console_update_action (get_text (ec_compiler_interrupted))
 		ensure
 			interrupted: is_interrupt_requested
 		end
@@ -118,6 +120,13 @@ feature -- Modification
 			archetype_visual_update_action := a_routine
 		ensure
 			archetype_visual_update_action_set: archetype_visual_update_action = a_routine
+		end
+
+	set_progress_agents (a_initialise_progress_agt: attached like initialise_progress_agt; a_set_progress_current_val_agt: attached like set_progress_current_val_agt)
+			-- set agents that will be called during compilation and export runs
+		do
+			initialise_progress_agt := a_initialise_progress_agt
+			set_progress_current_val_agt := a_set_progress_current_val_agt
 		end
 
 feature -- Commands
@@ -163,22 +172,32 @@ feature -- Commands
 			is_building := False
 		end
 
-	export_all (an_export_dir, a_syntax: STRING)
+	export_all (an_export_dir, a_syntax: STRING; compile_first, export_flat, with_rm: BOOLEAN;
+		a_initialise_progress_agt: like initialise_progress_agt; a_set_progress_current_val_agt: like set_progress_current_val_agt)
 			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
+		local
+			old_initialise_progress_agt: like initialise_progress_agt
+			old_set_progress_current_val_agt: like set_progress_current_val_agt
 		do
+			old_initialise_progress_agt := initialise_progress_agt
+			old_set_progress_current_val_agt := set_progress_current_val_agt
+
+			initialise_progress_agt := a_initialise_progress_agt
+			set_progress_current_val_agt := a_set_progress_current_val_agt
+
+			if compile_first then
+				build_all
+			end
+
+			start_progress_export
 			call_console_update_action (get_msg_line (ec_compiler_export, <<a_syntax, an_export_dir>>))
-			do_all (agent export_archetype (an_export_dir, a_syntax, False, ?))
+			do_all (agent export_archetype (an_export_dir, a_syntax, export_flat, with_rm, ?))
 			call_console_update_action (get_msg_line (ec_compiler_finished_export, Void))
 			is_interrupt_requested := False
-		end
 
-	build_and_export_all (an_export_dir, a_syntax: STRING)
-			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from the whole system, building each archetype as necessary.
-		do
-			start_run (True)
-			call_console_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax, an_export_dir>>))
-			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
-			finish_run
+			finish_progress
+			initialise_progress_agt := old_initialise_progress_agt
+			set_progress_current_val_agt := old_set_progress_current_val_agt
 		end
 
 feature {NONE} -- Implementation
@@ -298,14 +317,14 @@ feature {NONE} -- Implementation
 			if attached exception_trace as et then
 				exc_trace_str := et
 			else
-				create exc_trace_str.make_from_string ("(Exception trace not available)")
+				create exc_trace_str.make_from_string (get_text (ec_compiler_exception_trace_unavailable))
 			end
 			call_console_update_action (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end
 
-	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
+	export_archetype (an_export_dir, a_syntax: STRING; export_flat, with_rm: BOOLEAN; ara: ARCH_LIB_ARCHETYPE)
 			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
 		require
 			has_serialiser_format (a_syntax)
@@ -315,15 +334,16 @@ feature {NONE} -- Implementation
 		do
 			if not exception_encountered  then
 				if not is_interrupt_requested then
-					if build_too then
-						build_archetype (ara, 0)
-					end
-
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
 						check attached file_system.pathname (an_export_dir, ara.id.physical_id) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
 							filename := pn + ext
 						end
-						auth_ara.save_flat_as (filename, a_syntax)
+						if export_flat then
+							auth_ara.save_flat_as (filename, a_syntax)
+						else
+							auth_ara.save_differential_as (filename, a_syntax)
+						end
+						update_progress
 					end
 				end
 			end
@@ -368,7 +388,7 @@ feature {NONE} -- Implementation
 			if attached archetype_visual_update_action as ua then
 				ua.call ([ara])
 			end
-			update_compilation_status.call ([total_count, valid_count, warning_count, error_count])
+		--	update_compilation_status.call ([total_count, valid_count, warning_count, error_count])
 		end
 
 	full_compile_visual_update_action: detachable PROCEDURE [ANY, TUPLE]
@@ -387,19 +407,24 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
+	initialise_progress_agt: detachable PROCEDURE [ANY, TUPLE[STRING, INTEGER]]
+
+	set_progress_current_val_agt: detachable PROCEDURE [ANY, TUPLE[INTEGER]]
+
 	update_counts (ara: ARCH_LIB_ARCHETYPE)
 			-- update compilation counts
 		do
 			total_count := total_count + 1
 			if ara.is_valid then
+				valid_count := valid_count + 1
 				if not ara.errors.is_empty then
 					warning_count := warning_count + 1
-				else
-					valid_count := valid_count + 1
 				end
 			else
 				error_count := error_count + 1
 			end
+
+			update_progress
 		end
 
 	start_run (reset_stats: BOOLEAN)
@@ -412,6 +437,7 @@ feature {NONE} -- Implementation
 			end
 			is_interrupt_requested := False
 			is_building := True
+			start_progress
 		end
 
 	finish_run
@@ -421,7 +447,51 @@ feature {NONE} -- Implementation
 			end
 			is_interrupt_requested := False
 			is_building := False
-			call_console_update_action (get_msg_line (ec_compiler_finished_building_system, Void))
+			finish_progress
+			call_console_update_action (get_msg_line (ec_compiler_finished_building_system, <<total_count.out, valid_count.out, warning_count.out, error_count.out>>))
+		end
+
+	progress_count: INTEGER
+
+	progress_increment: INTEGER
+
+	start_progress
+		do
+			progress_count := 0
+			if attached initialise_progress_agt as att_init_agt then
+				progress_increment := (current_library.archetype_count * progress_increment_percent / 100).ceiling
+				att_init_agt.call ([get_text (ec_compile_label_text), current_library.archetype_count])
+			end
+		end
+
+	start_progress_export
+		require
+			valid_count > 0
+		do
+			progress_count := 0
+			if attached initialise_progress_agt as att_init_agt then
+				progress_increment := (valid_count * progress_increment_percent / 100).ceiling
+				att_init_agt.call ([get_text (ec_export_label_text), valid_count])
+			end
+		end
+
+	update_progress
+		do
+			if progress_increment > 0 then
+				progress_count := progress_count + 1
+				if attached set_progress_current_val_agt as att_set_val_agt then
+					if progress_count \\ progress_increment = 0 then
+						att_set_val_agt.call ([progress_count])
+					end
+				end
+			end
+		end
+
+	finish_progress
+		do
+			if attached set_progress_current_val_agt as att_set_val_agt then
+				att_set_val_agt.call ([0])
+			end
 		end
 
 	is_building_all: BOOLEAN

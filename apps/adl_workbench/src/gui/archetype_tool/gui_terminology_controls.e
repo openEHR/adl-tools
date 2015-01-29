@@ -330,7 +330,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_PRIMITIVE_OBJECT} a_c_node then
 				-- ignore
-			elseif attached {C_ARCHETYPE_ROOT} a_c_node as co and then not terminology.has_id_code (co.node_id)then
+			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car and then not is_id_code (car.node_id)then
 				check attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
 					terminology_stack.remove
 				end

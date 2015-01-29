@@ -50,6 +50,8 @@ feature {NONE} -- Initialisation
 			tool_agents.set_update_explorers_and_select_agent (agent update_explorers_and_select)
 			tool_agents.set_update_archetype_explorer (agent update_archetype_explorer)
 
+			archetype_compiler.set_progress_agents (agent initialise_progress_agt, agent set_progress_bar_current_value)
+
 			create archetype_explorer.make
 			create template_explorer.make
 			create metrics_viewer.make
@@ -95,21 +97,26 @@ feature {NONE} -- Initialisation
 			ev_notebook.selection_actions.extend (agent on_select_notebook)
 
 			-- ------------------------ compiler status -----------------------------
-			create ev_status_hb
-			ev_root_container.extend (ev_status_hb)
-			ev_root_container.disable_item_expand (ev_status_hb)
+--			create ev_status_hb
+--			ev_root_container.extend (ev_status_hb)
+--			ev_root_container.disable_item_expand (ev_status_hb)
 
-			create ev_status_label.make_with_text (get_text (ec_library_compile_status_text))
-			ev_status_hb.extend (ev_status_label)
-			ev_status_hb.disable_item_expand (ev_status_label)
+--			create ev_status_label.make_with_text (get_text (ec_library_compile_status_text))
+--			ev_status_hb.extend (ev_status_label)
+--			ev_status_hb.disable_item_expand (ev_status_label)
 
-			create ev_status_text.default_create
-			ev_status_hb.extend (ev_status_text)
-			ev_status_hb.disable_item_expand (ev_status_text)
+--			create ev_status_text.default_create
+--			ev_status_hb.extend (ev_status_text)
+--			ev_status_hb.disable_item_expand (ev_status_text)
 
-			create ev_status_dummy_text.default_create
-			ev_status_hb.extend (ev_status_dummy_text)
+--			create ev_status_dummy_text.default_create
+--			ev_status_hb.extend (ev_status_dummy_text)
 
+			-- progress control
+			create ev_progress_bar.default_create
+			ev_progress_bar.set_foreground_color (Progress_bar_colour)
+			ev_root_container.extend (ev_progress_bar)
+			ev_root_container.disable_item_expand (ev_progress_bar)
 
 			-- set up tool / sub-tool structures
 			add_sub_tool (archetype_explorer)
@@ -188,25 +195,25 @@ feature -- Commands
 			template_explorer.update_rm_icons_setting
 		end
 
-	update_compilation_status (a_total, valid_count, warn_count, err_count: INTEGER)
-			-- update the compilation status text
-		do
-			if a_total \\ 10 = 0 then
-				status_text.wipe_out
-				status_text.append (a_total.out)
-				if valid_count > 0 or warn_count > 0 or err_count > 0 then
-					status_text.append (" (")
-					status_text.append (valid_count.out)
-					status_text.append (", ")
-					status_text.append (warn_count.out)
-					status_text.append (", ")
-					status_text.append (err_count.out)
-					status_text.append_character (')')
-				end
-				ev_status_text.set_text (status_text)
-				ev_status_text.refresh_now
-			end
-		end
+--	update_compilation_status (a_total, valid_count, warn_count, err_count: INTEGER)
+--			-- update the compilation status text
+--		do
+--			if a_total \\ 10 = 0 then
+--				status_text.wipe_out
+--				status_text.append (a_total.out)
+--				if valid_count > 0 or warn_count > 0 or err_count > 0 then
+--					status_text.append (" (")
+--					status_text.append (valid_count.out)
+--					status_text.append (", ")
+--					status_text.append (warn_count.out)
+--					status_text.append (", ")
+--					status_text.append (err_count.out)
+--					status_text.append_character (')')
+--				end
+--				ev_status_text.set_text (status_text)
+--				ev_status_text.refresh_now
+--			end
+--		end
 
 	show
 		do
@@ -358,11 +365,11 @@ feature {NONE} -- Implementation
 
 	ev_notebook: EV_NOTEBOOK
 
-	ev_status_hb: EV_HORIZONTAL_BOX
+--	ev_status_hb: EV_HORIZONTAL_BOX
 
-	ev_status_label: EV_LABEL
+--	ev_status_label: EV_LABEL
 
-	ev_status_text, ev_status_dummy_text: EV_LABEL
+--	ev_status_text, ev_status_dummy_text: EV_LABEL
 
 	do_clear
 		do
@@ -370,7 +377,7 @@ feature {NONE} -- Implementation
 			stats_viewer.clear
 			archetype_explorer.clear
 			ev_notebook.select_item (archetype_explorer.ev_root_container)
-			ev_status_text.set_text ("")
+--			ev_status_text.set_text ("")
 		end
 
 	do_populate
@@ -412,6 +419,18 @@ feature {NONE} -- Implementation
 		end
 
 	gui_mini_tool_bar: EVX_TOOL_BAR
+
+	ev_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
+
+	initialise_progress_agt (a_label: STRING; a_val: INTEGER)
+		do
+			ev_progress_bar.value_range.resize_exactly (0, a_val)
+		end
+
+	set_progress_bar_current_value (a_val: INTEGER)
+		do
+			ev_progress_bar.set_value (a_val)
+		end
 
 	rotate_view_button: detachable EV_TOOL_BAR_BUTTON
 

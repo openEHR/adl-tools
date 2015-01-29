@@ -261,6 +261,7 @@ feature {NONE} -- Initialization
 			ev_notebook_terminology_settings_vb.extend (evx_terminology_settings.ev_root_container)
 			gui_controls.extend (evx_terminology_settings)
 
+
 			-- ============ Ok/Cancel buttons ============
 			create evx_ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (evx_ok_cancel_buttons.ev_root_container)

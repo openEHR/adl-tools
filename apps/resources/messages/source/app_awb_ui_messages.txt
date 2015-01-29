@@ -304,12 +304,7 @@ templates = <
 		["menu_archetypes_key"] = <"Archetypes">
 		["menu_archetypes_build_all_key"] = <"Archetypes>Build All">
 		["menu_archetypes_rebuild_all_key"] = <"Archetypes>Rebuild All">
-		["menu_archetypes_build_subtree_key"] = <"Archetypes>Build Subtree">
-		["menu_archetypes_rebuild_subtree_key"] = <"Archetypes>Rebuild Subtree">
-		["menu_archetypes_export_html_key"] = <"Archetypes>Export Library as HTML">
-		["menu_archetypes_export_json_key"] = <"Archetypes>Export Library as JSON">
-		["menu_archetypes_export_yaml_key"] = <"Archetypes>Export Library as YAML">
-		["menu_archetypes_export_xml_key"] = <"Archetypes>Export Library as XML">
+		["menu_archetypes_export_library_key"] = <"Archetypes>Export Library">
 		["menu_archetypes_report_key"] = <"Archetypes>Library Report">
 		["menu_archetypes_interrupt_build_key"] = <"Archetypes>Interrupt Build">
 		["menu_archetypes_refresh_key"] = <"Archetypes>Refresh">
@@ -361,15 +356,10 @@ templates = <
 		["archetypes_menu_text"] = <"&Archetypes">
 		["archetypes_menu_build_all_text"] = <"&Build All">
 		["archetypes_menu_rebuild_all_text"] = <"Rebuild &All">
-		["archetypes_menu_build_subtree_text"] = <"Build Sub&tree">
-		["archetypes_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
 		["archetypes_menu_interrupt_text"] = <"&Interrupt Build">
 		["archetypes_menu_refresh_text"] = <"Re&fresh Library">
-		["archetypes_menu_export_html_text"] = <"Export Library as &HTML...">
-		["archetypes_menu_export_json_text"] = <"Export Library as &JSON...">
-		["archetypes_menu_export_yaml_text"] = <"Export Library as &YAML...">
-		["archetypes_menu_export_xml_text"] = <"Export Library as &XML...">
-		["archetypes_menu_export_report_text"] = <"&Export Library Report...">
+		["archetypes_menu_export_library_text"] = <"Export &Library ...">
+		["archetypes_menu_export_report_text"] = <"Export Library &Report...">
 		["archetypes_menu_configure_text"] = <"&Configure Repositories...">
 
 		["rm_schemas_menu_text"] = <"&RM Schemas">
@@ -415,17 +405,33 @@ templates = <
 
 		["config_dialog_warning"] = <"Configuration warning">
 
+		-- EXPORT_DIALOG
+		["export_library_dialog_title"] = <"Export Library">
 		["export_errors_stats_requires_build_text"] = <"Compile system (F7) and display statistics before generating error report">
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
 		["export_library_report_replace_info"] = <"Exported report to $1">
 		["export_library_report_replace_err"] = <"Failed to export report to $1">
 		["export_question"] = <"Only successfully built archetypes can be exported to $1.%N%NDo you want to build each archetype before exporting it?">
+		["export_description"] = <"Export archetypes in a specific format to the file system">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 		["build_and_export_all"] = <"Yes, Build and Export All">
 		["export_only_built"] = <"No, Export only the built ones">
 		["export_in_format_dialog_title"] = <"Export library in $1 format">
 		["compile_before_serialising"] = <"Must compile before serialising">
+		["export_compile_first_text"] = <"Compile all archetypes first?">
+		["export_compile_first_tooltip"] = <"Select to force full compile before export; otherwise, %Nonly currently compiled archetypes will be exported">
+		["export_format_text"] = <"Export format: ">
+		["export_format_tooltip"] = <"Select export format">
+		["export_directory"] = <"Export directory: ">
+
+		["export_differential_text"] = <"Differential">
+		["export_flat_text"] = <"Flat">
+		["export_button_text"] = <"Export">
+
+		["export_label_text"] = <"Exporting: ">
+		["compile_label_text"] = <"Compiling: ">
+
 		["no_diff_tool"] = <"No diff tool must be configured; see Options">
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on library first">
 		["populating_directory_start"] = <"Populating from directories in $1 library configuration...">

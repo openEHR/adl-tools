@@ -24,7 +24,15 @@ feature -- Syntax Elements
 
 	Archetype_slot_closed: STRING = "closed"
 
-feature -- Definitions
+	Tuple_left_delimiter: CHARACTER = '['
+
+	Tuple_right_delimiter: CHARACTER = ']'
+
+	Generated_flag_string: STRING = "generated"
+
+	Adl_version_string: STRING = "adl_version"
+
+feature -- File and artefact types
 
 	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.
@@ -60,10 +68,6 @@ feature -- Definitions
 
 	Default_aom_profile_name: STRING = "unknown"
 
-	Tuple_left_delimiter: CHARACTER = '['
-
-	Tuple_right_delimiter: CHARACTER = ']'
-
 	Archetype_category: IMMUTABLE_STRING_8
 		once
 			create Result.make_from_string ("archetypes")
@@ -74,11 +78,17 @@ feature -- Definitions
 			create Result.make_from_string ("templates")
 		end
 
-feature -- Keywords
+feature -- Export Types
 
-	Generated_flag_string: STRING = "generated"
-
-	Adl_version_string: STRING = "adl_version"
+	export_formats: ARRAYED_SET [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (syntax_type_odin)
+			Result.extend (syntax_type_xml)
+			Result.extend (syntax_type_json)
+			Result.extend (syntax_type_yaml)
+		end
 
 feature -- Archetype identifiers
 

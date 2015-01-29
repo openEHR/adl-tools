@@ -23,22 +23,13 @@ templates = <
 		["compiler_finished_status"] = <"=============== finished $1 ===============">
 
 		["compiler_building_system"] = <"=============== building system ===============">
-		["compiler_finished_building_system"] = <"=============== finished building system ===============">
+		["compiler_finished_building_system"] = <"==== finished building system: $1 total; $2 valid; $3 warnings; $4 errors ====">
 
 		["compiler_rebuilding_system"] = <"=============== rebuilding system from scratch ===============">
-		["compiler_finished_rebuilding_system"] = <"=============== finished rebuilding system from scratch ===============">
-
-		["compiler_building_subtree"] = <"=============== building sub-tree ===============">
-		["compiler_finished_building_subtree"] = <"=============== finished building sub-tree ===============">
-
-		["compiler_rebuilding_subtree"] = <"=============== rebuilding sub-tree from scratch ===============">
-		["compiler_finished_rebuilding_subtree"] = <"=============== finished rebuilding sub-tree from scratch ===============">
+		["compiler_finished_rebuilding_system"] = <"==== finished rebuilding system: $1 total; $2 valid; $3 warnings; $4 errors ====">
 
 		["compiler_export"] = <"=============== exporting built library as $1 to $2 ===============">
 		["compiler_finished_export"] = <"=============== finished library export ===============">
-
-		["compiler_build_and_export"] = <"=============== building library and exporting as $1 to $2 ===============">
-		["compiler_finished_build_and_export"] = <"=============== finished library build and export ==============">
 
 		["compiler_compiling_archetype"] = <"------------- compiling $1 ---- $2 -------------">
 		["compiler_already_attempted_failed"] = <"------------- $1 ---- $2 (already attempted - FAILED) -------------%N$2">
@@ -48,6 +39,8 @@ templates = <
 		["compile_exception"] = <"EXCEPTION in build of archetype $1; details = $2; stack = $3">
 		["export_exception"] = <"EXCEPTION in export of archetype $1; details = $2; stack = $3">
 		["compiler_infinite_regress"] = <"Infinite compilation dependency loop detected on archetype $1; descent depth = $2; quitting">
+		["compiler_interrupted"] = <"************* interrupted *************%N">
+		["compiler_exception_trace_unavailable"] = <"(Exception trace not available)">
 
 		-- ADL2_ENGINE
 		["deserialise_e1"] = <"Object deserialisation from ODIN failed; type = $1">

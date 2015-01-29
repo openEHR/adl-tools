@@ -157,10 +157,7 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_all_key), get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_all_key), get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_html_key), get_text (ec_archetypes_menu_export_html_text), Void, agent export_library (syntax_type_adl_html))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_json_key), get_text (ec_archetypes_menu_export_json_text), Void, agent export_library (syntax_type_json))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_yaml_key), get_text (ec_archetypes_menu_export_yaml_text), Void, agent export_library (syntax_type_yaml))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_xml_key), get_text (ec_archetypes_menu_export_xml_text), Void, agent export_library (syntax_type_xml))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_library_key), get_text (ec_archetypes_menu_export_library_text), Void, agent export_library)
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_report_key), get_text (ec_archetypes_menu_export_report_text), Void, agent export_library_report)
 			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item_disabled (get_text (ec_menu_archetypes_interrupt_build_key), get_text (ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
@@ -237,7 +234,6 @@ feature {NONE} -- Initialization
 			archetype_compiler.set_console_update_action (agent compiler_console_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 			archetype_compiler.set_full_compile_visual_update_action (agent library_tool.on_full_compile)
-			archetype_compiler.set_update_compilation_status (agent library_tool.update_compilation_status)
 
 			-- accelerators
 			initialise_accelerators
@@ -601,37 +597,13 @@ feature {NONE} -- Library events
 			archetype_compiler.signal_interrupt
 		end
 
-	export_library (a_syntax: STRING)
+	export_library
 			-- Generate serialised form of flat archetypes into `export_library'/syntax.
-		require
-			Serialise_format_valid: has_archetype_native_serialiser_format (a_syntax) or has_dt_serialiser_format (a_syntax)
 		local
-			question_dialog: EV_QUESTION_DIALOG
-			yes_text, no_text, cancel_text, export_dir: STRING
+			export_dialog: EXPORT_DIALOG
 		do
-			create question_dialog.make_with_text (get_msg_line (ec_export_question, <<a_syntax>>))
-			question_dialog.set_title (get_msg (ec_export_in_format_dialog_title, <<a_syntax>>))
-			yes_text := get_text (ec_build_and_export_all)
-			no_text := get_text (ec_export_only_built)
-			cancel_text := get_msg_line (ec_cancel_button_text, Void)
-			question_dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
-
-			question_dialog.set_default_cancel_button (question_dialog.button (cancel_text))
-			question_dialog.show_modal_to_window (Current)
-
-			if not question_dialog.selected_button.same_string (cancel_text) then
-				export_dir := file_system.pathname (file_system.pathname (export_directory, current_library_name), a_syntax)
-				file_system.recursive_create_directory (export_dir)
-				if not file_system.directory_exists (export_dir) then
-					info_feedback (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
-				else
-					if question_dialog.selected_button.same_string (yes_text) then
-						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
-					elseif question_dialog.selected_button.same_string (no_text) then
-						do_build_action (agent archetype_compiler.export_all (export_dir, a_syntax))
-					end
-				end
-			end
+			create export_dialog.make
+			export_dialog.show_modal_to_window (Current)
 		end
 
 	export_library_report
@@ -1251,14 +1223,14 @@ feature {NONE} -- Build commands
 		do
 			if not build_started then
 				evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_export_html_key)>>)
+					get_text (ec_menu_archetypes_export_library_key)>>)
 				evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
 				build_started := True
 				do_with_wait_cursor (Current, action)
 			end
 
 			evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
+					get_text (ec_menu_archetypes_export_library_key)>>)
 			evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
 		end
 
