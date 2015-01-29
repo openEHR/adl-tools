@@ -193,21 +193,21 @@ feature -- Definitions: Colours
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	archetype_rm_type_redefined_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT-MEDIUM GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	archetype_rm_type_color: EV_COLOR
 			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0, 0, 0x99)
 		end
 
@@ -221,14 +221,14 @@ feature -- Definitions: Colours
 	rm_type_color: EV_COLOR
 			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
 		end
 
 	rm_attribute_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- VERY DARK GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
 			-- create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
@@ -236,83 +236,83 @@ feature -- Definitions: Colours
 	rm_runtime_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	rm_infrastructure_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- LIGHT GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
 		end
 
 	Archetype_constraint_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- RED
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 	Binding_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	At_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- RED
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 	Ac_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- FOREST GREEN
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0, 0x66, 0)
 		end
 
 	Id_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- DARK BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
 		end
 
 	Id_code_color_inherited: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	Repository_remote_proxy_color: EV_COLOR
 			-- foreground colour for displaying remote proxy entry in repo list in the UI
 			-- DARK GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	Ev_grid_text_link_colour: EV_COLOR
 			-- foreground colour for links in EV_GRID
 			-- BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
 	Url_color: EV_COLOR
 			-- foreground colour for links in EV_GRID
 			-- BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
 	Default_bg_color: EV_COLOR
 			-- default background colour
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xff, 0xff, 0xff)
 		end
 
@@ -323,7 +323,12 @@ feature -- Definitions: Colours
 
 	Off_white_background_color: EV_COLOR
 		once
-			create Result.make_with_8_bit_rgb (255, 255, 248)
+			create Result.make_with_8_bit_rgb (0xff, 0xff, 0xff)
+		end
+
+	Progress_bar_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
 feature -- Definitions: Fonts
