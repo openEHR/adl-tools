@@ -307,18 +307,12 @@ feature -- Events
 			if attached source as src then
 				if ev_notebook.selected_item.data = metrics_viewer then
 					if src.can_build_statistics then
-						src.build_detailed_statistics
-						if not attached metrics_viewer.last_populate_timestamp or else metrics_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
-							metrics_viewer.populate (src)
-						end
+						metrics_viewer.populate (src)
 					end
 				elseif ev_notebook.selected_item.data = stats_viewer then
 					if src.can_build_statistics then
-						src.build_detailed_statistics
-						if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
-							across src.stats as stats_csr loop
-								stats_viewer.populate (stats_csr.item, True)
-							end
+						across src.statistics as stats_csr loop
+							stats_viewer.populate (stats_csr.item, True)
 						end
 					end
 				end
@@ -422,7 +416,7 @@ feature {NONE} -- Implementation
 
 	ev_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
 
-	initialise_progress_agt (a_label: STRING; a_val: INTEGER)
+	initialise_progress_agt (a_val: INTEGER)
 		do
 			ev_progress_bar.value_range.resize_exactly (0, a_val)
 		end

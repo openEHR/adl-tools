@@ -231,9 +231,10 @@ feature {NONE} -- Initialization
 			evx_menu_bar.menu_item (get_text (ec_menu_view_new_archetype_tool_key)).select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
-			archetype_compiler.set_console_update_action (agent compiler_console_update)
-			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
-			archetype_compiler.set_full_compile_visual_update_action (agent library_tool.on_full_compile)
+			archetype_compiler.set_console_update_agent (agent compiler_console_update)
+			archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
+			archetype_compiler.set_build_complete_visual_update_agent (agent library_tool.on_full_compile)
+			archetype_compiler.set_state_change_listener (agent populate_compile_button)
 
 			-- accelerators
 			initialise_accelerators
@@ -529,7 +530,7 @@ feature {NONE} -- AOM profiles events
 feature {NONE} -- Library events
 
 	repository_dialog: REPOSITORY_DIALOG
-		once ("PROCESS")
+		once
 			create Result
 		end
 
@@ -571,6 +572,7 @@ feature {NONE} -- Library events
 			-- Build the whole system.
 		do
 			console_tool.show
+			archetype_compiler.setup_build ([False])
 			do_build_action (agent archetype_compiler.build_all)
 		end
 
@@ -578,14 +580,17 @@ feature {NONE} -- Library events
 			-- Force the whole system to rebuild.
 		do
 			console_tool.show
-			do_build_action (agent archetype_compiler.rebuild_all)
+			archetype_compiler.setup_build ([True])
+			do_build_action (agent archetype_compiler.build_all)
 		end
 
 	compile_toggle
 			-- start or stop current compilation
 		do
 			if archetype_compiler.is_building then
-				interrupt_build
+				archetype_compiler.interrupt_build
+			elseif archetype_compiler.is_interrupted then
+				archetype_compiler.resume_build
 			else
 				build_all
 			end
@@ -594,16 +599,19 @@ feature {NONE} -- Library events
 	interrupt_build
 			-- Cancel the build currently in progress.
 		do
-			archetype_compiler.signal_interrupt
+			archetype_compiler.interrupt_build
 		end
 
 	export_library
-			-- Generate serialised form of flat archetypes into `export_library'/syntax.
+			-- Generate serialised form of flat archetypes onto file system
 		local
 			export_dialog: EXPORT_DIALOG
 		do
 			create export_dialog.make
 			export_dialog.show_modal_to_window (Current)
+
+			-- repopulate library tool, since export dialog may have caused a compilation
+			library_tool.repopulate
 		end
 
 	export_library_report
@@ -1207,17 +1215,17 @@ feature {NONE} -- Implementation
 
 	populate_compile_button
 		do
-			if not archetype_compiler.is_building then
-				compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
-			else
+			if archetype_compiler.is_building then
 				compile_button.set_pixmap (get_icon_pixmap ("tool/pause"))
+			else
+				compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
 			end
 		end
 
 feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
-			-- Perform `action', with an wait mouse cursor and disabling the build menus, until done.
+			-- Perform `action', with a wait mouse cursor and disabling the build menus, until done.
 		local
 			build_started: BOOLEAN
 		do
@@ -1237,7 +1245,6 @@ feature {NONE} -- Build commands
 	compiler_console_update (a_msg: STRING)
 			-- Update GUI with progress on build.
 		do
-			populate_compile_button
 			console_tool.append_text (a_msg)
 		end
 
@@ -1280,9 +1287,13 @@ feature {NONE} -- GUI Widgets
 		end
 
 	ev_main_vbox, ev_root_vbox: EV_VERTICAL_BOX
+
 	viewer_main_cell: EV_CELL
+
 	evx_menu_bar: EVX_MENU_BAR
+
 	arch_libraries_combo: EV_COMBO_BOX
+
 	compile_button: EV_TOOL_BAR_BUTTON
 
 end

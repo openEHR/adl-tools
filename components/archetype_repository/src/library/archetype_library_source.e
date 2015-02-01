@@ -52,22 +52,6 @@ feature {ARCHETYPE_LIBRARY} -- Access
 			create Result.make (Archetype_category.twin)
 		end
 
-	archetype_count: INTEGER
-			-- Count of all archetype descriptors in directory.
-		do
-			Result := archetype_id_index.count
-		end
-
-	template_count: INTEGER
-			-- count of artefacts designated as templates or template_components
-		do
-			across archetype_id_index as arch_csr loop
-				if attached {ARCH_LIB_TEMPLATE} arch_csr.item then
-					Result := Result + 1
-				end
-			end
-		end
-
 	archetype_with_id (an_id: STRING): ARCH_LIB_ARCHETYPE
 			-- get the archetype with physical id `an_id'
 		require

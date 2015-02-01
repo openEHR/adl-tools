@@ -429,8 +429,8 @@ templates = <
 		["export_flat_text"] = <"Flat">
 		["export_button_text"] = <"Export">
 
-		["export_label_text"] = <"Exporting: ">
-		["compile_label_text"] = <"Compiling: ">
+		["export_input_settings"] = <"Input Settings">
+		["export_output_settings"] = <"Output Settings">
 
 		["no_diff_tool"] = <"No diff tool must be configured; see Options">
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on library first">

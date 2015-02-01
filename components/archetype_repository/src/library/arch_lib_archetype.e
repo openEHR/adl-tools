@@ -597,9 +597,6 @@ feature -- Compilation
 	signal_from_scratch
 			-- signal rebuild from scratch; this rebuilds from existing differential
 		do
-			if compile_attempted then
-				current_library.decrement_compile_attempt_count
-			end
 			differential_archetype := Void
 			clear_cache
 			last_compile_attempt_timestamp := Time_epoch
@@ -902,9 +899,6 @@ feature {NONE} -- Compilation
 	set_compile_attempt_timestamp
 			-- Set `compile_attempt_timestamp'
 		do
-			if not compile_attempted then
-				current_library.update_compile_attempt_count
-			end
 			create last_compile_attempt_timestamp.make_now
 		end
 

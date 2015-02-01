@@ -212,9 +212,9 @@ feature -- Commands
 
 			create statistics_element.make_last (root, "statistics", ns)
 			create_category_element.call ([statistics_element, "Total Archetypes", current_library.archetype_count])
-			create_category_element.call ([statistics_element, "Specialised Archetypes", current_library.library_metrics.item (specialised_archetype_count)])
-			create_category_element.call ([statistics_element, "Archetypes with slots", current_library.library_metrics.item (client_archetype_count)])
-			create_category_element.call ([statistics_element, "Archetypes used by others", current_library.library_metrics.item (supplier_archetype_count)])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", current_library.metrics.item (specialised_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes with slots", current_library.metrics.item (client_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes used by others", current_library.metrics.item (supplier_archetype_count)])
 
 			from err_type := categories.lower until err_type = categories.upper loop
 				err_type := err_type + 1

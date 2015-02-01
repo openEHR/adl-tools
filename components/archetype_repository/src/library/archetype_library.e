@@ -30,7 +30,7 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_LIBRARY
@@ -182,9 +182,6 @@ feature -- Access
 			end
 		end
 
-	last_stats_build_timestamp: DATE_TIME
-			-- timestamp of stats build
-
 	last_populate_timestamp: DATE_TIME
 			-- timestamp of last populate or repopulate
 
@@ -238,7 +235,10 @@ feature -- Commands
 			item_index.wipe_out
 			archetype_ref_index.wipe_out
 			item_tree.wipe_out
-			compile_attempt_count := 0
+
+			archetype_count := 0
+			template_count := 0
+
 			create last_populate_timestamp.make_from_epoch (0)
 			reset_statistics
 		end
@@ -443,92 +443,245 @@ feature -- Traversal
 			lineage.do_all (action)
 		end
 
-feature -- Metrics
+feature -- Basic Metrics
 
 	archetype_count: INTEGER
 			-- Count of all archetype descriptors in directory.
-		do
-			Result := library_access.source.archetype_count
-		end
 
 	template_count: INTEGER
 			-- count of artefacts designated as templates or template_components
-		do
-			Result := library_access.source.template_count
-		end
 
 	compile_attempt_count: INTEGER
 			-- Count of archetypes for which compiling has been attempted.
-
-	update_compile_attempt_count
-			-- Increment the count of archetypes for which parsing has been attempted.
-		require
-			can_increment: compile_attempt_count < archetype_count
 		do
-			compile_attempt_count := compile_attempt_count + 1
-		ensure
-			incremented: compile_attempt_count = old compile_attempt_count + 1
+			if compile_activity_timestamp > basic_statistics_timestamp then
+				recompute_basic_statistics
+			end
+			Result := compile_attempt_counter
 		end
 
-	decrement_compile_attempt_count
-			-- Decrement the count of archetypes for which parsing has been attempted.
-		require
-			can_decrement: compile_attempt_count > 0
+	compile_valid_count: INTEGER
+			-- Count of archetypes which successfully compile
 		do
-			compile_attempt_count := compile_attempt_count - 1
-		ensure
-			decremented: compile_attempt_count = old compile_attempt_count - 1
+			if compile_activity_timestamp > basic_statistics_timestamp then
+				recompute_basic_statistics
+			end
+			Result := compile_valid_counter
 		end
 
-feature -- Statistics
+	compile_warnings_count: INTEGER
+			-- Count of archetypes for which compiling has been attempted.
+		do
+			if compile_activity_timestamp > basic_statistics_timestamp then
+				recompute_basic_statistics
+			end
+			Result := compile_warnings_counter
+		end
+
+	compile_errors_count: INTEGER
+			-- Count of archetypes for which compiling has been attempted.
+		do
+			if compile_activity_timestamp > basic_statistics_timestamp then
+				recompute_basic_statistics
+			end
+			Result := compile_errors_counter
+		end
+
+	notify_compile_activity
+			-- routine to update `compile_activity_timestamp' due to compilation activity
+		do
+			create compile_activity_timestamp.make_now
+		end
+
+feature {NONE} -- Basic Metrics
+
+	recompute_basic_statistics
+			-- recompute `compile_attempt_counter', `compile_valid_counter', `compile_warnings_counter', `compile_errors_counter'
+			-- called by `compile_attempt_count' etc if any compilation activity is more recent than last compute time
+		do
+			compile_attempt_counter := 0
+			compile_valid_counter := 0
+			compile_warnings_counter := 0
+			compile_errors_counter := 0
+
+			do_all_archetypes (
+				agent (ala: ARCH_LIB_ARCHETYPE)
+					do
+						if ala.compile_attempted then
+							compile_attempt_counter := compile_attempt_counter + 1
+						end
+						if ala.is_valid then
+							compile_valid_counter := compile_valid_counter + 1
+							if ala.has_warnings then
+								compile_warnings_counter := compile_warnings_counter + 1
+							end
+						else
+							compile_errors_counter := compile_errors_counter + 1
+						end
+					end
+			)
+
+			basic_statistics_timestamp.make_now
+		end
+
+	compile_attempt_counter: INTEGER
+			-- Count of archetypes for which compiling has been attempted.
+
+	compile_valid_counter: INTEGER
+			-- Count of archetypes which successfully compile
+
+	compile_warnings_counter: INTEGER
+			-- Count of archetypes for which compiling has been attempted.
+
+	compile_errors_counter: INTEGER
+			-- Count of archetypes for which compiling has been attempted.
+
+	basic_statistics_timestamp: DATE_TIME
+			-- timestamp of last call to `recompute_basic_statistics'
+		attribute
+			create Result.make_from_epoch (0)
+		end
+
+	compile_activity_timestamp: DATE_TIME
+			-- timestamp of last call to `recompute_basic_statistics'
+		attribute
+			create Result.make_from_epoch (0)
+		end
+
+feature -- Statistical Report
+
+	last_statistics_build_timestamp: DATE_TIME
+			-- timestamp of stats build
+		attribute
+			Result := time_epoch
+		end
 
 	has_statistics: BOOLEAN
 			-- True if stats have been computed
 		do
-			Result := last_stats_build_timestamp > time_epoch
+			Result := last_statistics_build_timestamp > time_epoch
 		end
 
 	can_build_statistics: BOOLEAN
+			-- True if a build attempt has been made on all archetypes
 		do
 			Result := compile_attempt_count = archetype_count
 		end
 
-	library_metrics: HASH_TABLE [INTEGER, STRING]
+	statistics: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
+			-- (a single archetype library can contain archetypes of multiple RMs)
+		require
+			can_build_statistics
+		do
+			if compile_activity_timestamp > last_statistics_build_timestamp then
+				build_statistics
+			end
+			Result := statistics_cache
+		end
+
+	metrics: HASH_TABLE [INTEGER, STRING]
+			-- set of key/value pairs, with keys from `Library_metric_names'
+			-- populated by call to `build_statistics'
+		require
+			can_build_statistics
+		do
+			if compile_activity_timestamp > last_statistics_build_timestamp then
+				build_statistics
+			end
+			Result := metrics_cache
+		end
 
 	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
 			-- some archetypes have more than one binding, so could appear in more than one list
+		require
+			can_build_statistics
+		do
+			if compile_activity_timestamp > last_statistics_build_timestamp then
+				build_statistics
+			end
+			Result := terminology_bindings_statistics_cache
+		end
+
+feature {NONE} -- Statistical Report
+
+	statistics_cache: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+		attribute
+			create Result.make (0)
+		end
+
+	metrics_cache: HASH_TABLE [INTEGER, STRING]
+		attribute
+			create Result.make (0)
+		end
+
+	terminology_bindings_statistics_cache: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+		attribute
+			create Result.make (0)
+		end
+
+	build_statistics
+			-- perform new build of `statistics' and `metrics'
+		require
+			can_build_statistics
+		do
+			reset_statistics
+			do_all_archetypes (agent gather_statistics)
+			metrics_cache.put (archetype_count, Total_archetype_count)
+			create last_statistics_build_timestamp.make_now
+		end
 
 	reset_statistics
 			-- Reset counters to zero.
 		do
-			create terminology_bindings_statistics.make (0)
-			create stats.make (0)
-			create library_metrics.make (Library_metric_names.count)
+			create terminology_bindings_statistics_cache.make (0)
+			create statistics_cache.make (0)
+			create metrics_cache.make (Library_metric_names.count)
 			Library_metric_names.do_all (
 				agent (metric_name: STRING)
 					do
-						library_metrics.put (0, metric_name)
+						metrics_cache.put (0, metric_name)
 					end
 			)
-			create last_stats_build_timestamp.make_from_epoch (0)
+			create last_statistics_build_timestamp.make_from_epoch (0)
 		end
 
-	build_detailed_statistics
-		require
-			can_build_statistics
+	gather_statistics (aca: ARCH_LIB_ARCHETYPE)
+			-- Update statistics counters from `aca'
+		local
+			terminologies: ARRAYED_LIST [STRING]
 		do
-			if last_stats_build_timestamp < last_populate_timestamp then
-				reset_statistics
-				do_all_archetypes (agent gather_statistics)
-				library_metrics.put (archetype_count, Total_archetype_count)
-				create last_stats_build_timestamp.make_now
+			if aca.is_specialised then
+				metrics_cache.force (metrics_cache.item (specialised_archetype_count) + 1, specialised_archetype_count)
+			end
+			if aca.has_slots then
+				metrics_cache.force (metrics_cache.item (client_archetype_count) + 1, client_archetype_count)
+			end
+			if aca.is_supplier then
+				metrics_cache.force (metrics_cache.item (supplier_archetype_count) + 1, supplier_archetype_count)
+			end
+
+			-- RM stats
+			if aca.is_valid then
+				metrics_cache.force (metrics_cache.item (valid_archetype_count) + 1, valid_archetype_count)
+
+				terminologies := aca.differential_archetype.terminology.terminologies_available
+				across terminologies as terminologies_csr loop
+					if not terminology_bindings_statistics_cache.has (terminologies_csr.item) then
+						terminology_bindings_statistics_cache.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies_csr.item)
+					end
+					terminology_bindings_statistics_cache.item (terminologies_csr.item).extend (aca.qualified_name)
+				end
+
+				aca.generate_statistics (True)
+				if statistics_cache.has (aca.rm_schema.schema_id) then
+					statistics_cache.item (aca.rm_schema.schema_id).merge (aca.statistical_analyser.stats)
+				else
+					statistics_cache.put (aca.statistical_analyser.stats.duplicate, aca.rm_schema.schema_id)
+				end
 			end
 		end
-
-	stats: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
-			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
-			-- (a single logical archetpe repository can contain archetypes of multiple RMs)
 
 feature {NONE} -- Implementation
 
@@ -551,12 +704,20 @@ feature {NONE} -- Implementation
 		do
 			item_index.force (ala, ala.qualified_key)
 			archetype_ref_index.force (ala, ala.id.semantic_id.as_lower)
+			archetype_count := archetype_count + 1
+			if attached {ARCH_LIB_TEMPLATE} ala then
+				template_count := template_count + 1
+			end
 		end
 
 	item_index_remove (arch_id: ARCHETYPE_HRID)
 		do
+			if attached {ARCH_LIB_TEMPLATE} item_index.item (arch_id.physical_id.as_lower) then
+				template_count := template_count - 1
+			end
 			item_index.remove (arch_id.physical_id.as_lower)
 			archetype_ref_index.remove (arch_id.semantic_id.as_lower)
+			archetype_count := archetype_count - 1
 		end
 
 	populate_item_index
@@ -630,8 +791,8 @@ feature {NONE} -- Implementation
 	item_tree: ARCH_LIB_ARTEFACT_TYPE_ITEM
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
-			-- an inheritance tree of first degree descendants of the LOCATABLE class.
-			-- The contents of the structure consist of archetypes found in the reference and
+			-- an inheritance tree of first degree descendants of the LOCATABLE class. The
+			-- contents of the structure consist of archetypes found in the reference and
 			-- working repositories, and are subsequently attached into the structure.
 			-- Archetypes opened adhoc are also grafted here.
 		attribute
@@ -758,42 +919,6 @@ feature {NONE} -- Implementation
 			-- debug indenter
 		once
 			create Result.make_empty
-		end
-
-	gather_statistics (aca: ARCH_LIB_ARCHETYPE)
-			-- Update statistics counters from `aca'
-		local
-			terminologies: ARRAYED_LIST [STRING]
-		do
-			if aca.is_specialised then
-				library_metrics.force (library_metrics.item (specialised_archetype_count) + 1, specialised_archetype_count)
-			end
-			if aca.has_slots then
-				library_metrics.force (library_metrics.item (client_archetype_count) + 1, client_archetype_count)
-			end
-			if aca.is_supplier then
-				library_metrics.force (library_metrics.item (supplier_archetype_count) + 1, supplier_archetype_count)
-			end
-
-			-- RM stats
-			if aca.is_valid then
-				library_metrics.force (library_metrics.item (valid_archetype_count) + 1, valid_archetype_count)
-
-				terminologies := aca.differential_archetype.terminology.terminologies_available
-				across terminologies as terminologies_csr loop
-					if not terminology_bindings_statistics.has (terminologies_csr.item) then
-						terminology_bindings_statistics.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies_csr.item)
-					end
-					terminology_bindings_statistics.item (terminologies_csr.item).extend (aca.qualified_name)
-				end
-
-				aca.generate_statistics (True)
-				if stats.has (aca.rm_schema.schema_id) then
-					stats.item (aca.rm_schema.schema_id).merge (aca.statistical_analyser.stats)
-				else
-					stats.put (aca.statistical_analyser.stats.duplicate, aca.rm_schema.schema_id)
-				end
-			end
 		end
 
 	do_subtree (node: ARCH_LIB_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ITEM]])
