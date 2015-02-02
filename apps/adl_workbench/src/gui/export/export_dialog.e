@@ -31,6 +31,10 @@ feature -- Definitions
 
 	Min_width_in_chars: INTEGER = 160
 
+	Flat_path_segment_name: STRING = "flat"
+
+	Differential_path_segment_name: STRING = "differential"
+
 feature {NONE} -- Initialization
 
 	make
@@ -107,6 +111,7 @@ feature {NONE} -- Initialization
 			-- ============ output directory ============
 			create evx_dir_setter.make_linked (get_text (ec_export_directory_text),
 				agent :STRING do Result := user_export_directory end, agent set_user_export_directory, Void, Void, 0)
+			evx_dir_setter.add_explore_button (agent show_in_system_explorer, get_icon_pixmap ("tool/magnifier"))
 			evx_output_frame.extend (evx_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_dir_setter)
 
@@ -211,11 +216,15 @@ feature -- Access
 		end
 
 	user_export_directory: STRING
-		attribute
-			Result := file_system.pathname (file_system.pathname (export_directory, current_library_name), export_format)
+		do
+			if attached custom_user_export_directory as att_user_dir then
+				Result := att_user_dir
+			else
+				Result := export_generation_directory (export_format, export_flat)
+			end
 		end
 
-	custom_user_export_directory: BOOLEAN
+	custom_user_export_directory: detachable STRING
 			-- True if user has changed export dir
 
 	compile_all_first: BOOLEAN
@@ -245,8 +254,9 @@ feature -- Events
 			export_flat := not a_flag
 			if not export_flat and user_rm_flattening_on then
 				user_rm_flattening_on := False
-				evx_flatten_with_rm_cb.populate
 			end
+			execution_state := es_initial
+			do_populate
 		end
 
 	set_compile_all_first (val: BOOLEAN)
@@ -265,24 +275,23 @@ feature -- Events
 			user_rm_flattening_on := a_flag
 			if user_rm_flattening_on and not export_flat then
 				export_flat := True
-				evx_diff_flat_rb.populate
 			end
+			execution_state := es_initial
+			do_populate
 		end
 
 	set_user_export_directory (a_dir: STRING)
 		do
-			user_export_directory := a_dir
-			custom_user_export_directory := True
+			custom_user_export_directory := a_dir
 			execution_state := es_initial
+			do_populate
 		end
 
 	set_export_format (a_str: STRING)
 		do
 			export_format := a_str
-			if not custom_user_export_directory then
-				user_export_directory := file_system.pathname (file_system.pathname (export_directory, current_library_name), export_format)
-			end
 			execution_state := es_initial
+			do_populate
 		end
 
 feature {NONE} -- Implementation
@@ -313,6 +322,7 @@ feature {NONE} -- Implementation
 		do
 			execution_state := es_initial
 			ev_console.set_text ("")
+			custom_user_export_directory := Void
 		end
 
 	do_execute
@@ -399,7 +409,7 @@ feature {NONE} -- Implementation
 	update_console (a_text: STRING)
 		do
 			ev_console.append_text (a_text)
---			ev_console.scroll_to_end
+			ev_console.scroll_to_end
 		end
 
 	ev_cell_1, ev_cell_2: EV_CELL

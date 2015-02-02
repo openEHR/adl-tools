@@ -113,7 +113,7 @@ templates = <
 		["repository_status_installed"] = <"Installed">
 		["repository_status_install"] = <"Install">
 
-		["archetype_library_grid_name_col_tooltip"] = <"%N-------------%NRemote source:%N%TURL: $1%N%Tcustodian: $2">
+		["archetype_library_grid_name_col_tooltip"] = <"%N----%NRemote source:%N%TURL: $1%N%Tcustodian: $2">
 		["repository_clone_dir_confirm_text"] = <"About to clone repository $1 from $2 in $3; proceed?">
 
 		-- REPOSITORY_COMMIT_DIALOG
@@ -436,9 +436,9 @@ templates = <
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on library first">
 		["populating_directory_start"] = <"Populating from directories in $1 library configuration...">
 		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Library menu">
-		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
-		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
-		["compiler_no_dadl_text"] = <"===================== No ODIN (.odin) text available =======================">
+		["compiler_no_flat_text"] = <"==== No flat (.adlf) text available ">
+		["compiler_no_source_text"] = <"==== No source (.adls) text available ">
+		["compiler_no_dadl_text"] = <"==== No ODIN (.odin) text available ">
 		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
 		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
 		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
