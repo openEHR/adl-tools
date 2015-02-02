@@ -104,8 +104,8 @@ feature -- Commands
 				verbose_output := True
 			end
 			if not app_root.has_errors then
-				archetype_compiler.set_console_update_action (agent console_update)
-				archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+				archetype_compiler.set_console_update_agent (agent console_update)
+				archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
 
 				-- now process command line
 				if opts.show_config then
