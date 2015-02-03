@@ -29,6 +29,9 @@ templates = <
 		["format_switch_desc"] = <"output format for generated files">
 		["format_switch_arg_desc"] = <"file formats: json, adl, odin, yaml, xml (default = adl)">
 
+		["output_dir_switch_desc"] = <"output directory for serialised files">
+		["output_dir_switch_arg_desc"] = <"output directory for serialised files">
+
 		["cfg_switch_desc"] = <"output default configuration file location">
 		["cfg_switch_arg_desc"] = <".cfg file path">
 
@@ -52,6 +55,7 @@ templates = <
 		["no_matching_ids_err"] = <"No archetype ids matching pattern '$1' in library $2 (use -s to see current config)%N">
 		["lib_does_not_exist_err"] = <"No library with name '$1' (use -s to see all libraries)%N">
 		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2%N">
+		["invalid_output_directory"] = <"Could not create output directory '$1'%N">
 		["invalid_action_err"] = <"Invalid action '$1'; valid actions: $2%N">
 		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)%N">
 

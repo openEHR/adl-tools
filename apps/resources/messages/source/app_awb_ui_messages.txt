@@ -86,11 +86,11 @@ templates = <
 		["repository_grid_edit_col_title"] = <"Edit">
 
 		["repository_add_new_library_here"] = <"Add new library here">
-		["repository_add_new_library"] = <"Add new library">
-		["repository_vcs_pull"] = <"Pull changes from remote and merge">
-		["repository_vcs_commit"] = <"Commit local changes">
-		["repository_vcs_push"] = <"Push changes to remote">
-		["repository_vcs_fetch"] = <"Fetch updates from remote into local index">
+		["repository_add_new_library"] = <"Add new library...">
+		["repository_vcs_pull_menu_item"] = <"Pull and/or merge changes from remote">
+		["repository_vcs_commit_menu_item"] = <"Commit local changes...">
+		["repository_vcs_push_menu_item"] = <"Push changes to remote">
+		["repository_vcs_fetch_menu_item"] = <"Fetch updates from remote into local index">
 		["repository_svn_update"] = <"SVN update">
 
 		["repository_url_label"] = <"Remote URL: ">
@@ -142,10 +142,10 @@ templates = <
 		["repository_clone_here_tooltip"] = <"Check this box to create a new clone of the remote repository;%Nleave unchecked if you already have a local clone/checkout.">
 
 		["repository_forget_confirm_text"] = <"Forget repository $1 in configuration (doesn't change anything on system)?">
-		["repository_forget_menu_text"] = <"Forget">
+		["repository_forget_menu_text"] = <"Forget...">
 
 		["repository_checkout_dialog_title"] = <"Repository Checkout">
-		["repository_checkout_branch"] = <"Checkout Branch">
+		["repository_checkout_branch_menu_item"] = <"Checkout Branch...">
 		["repository_checkout_branch_dialog_header_label"] = <"Checkout new branch locally">
 		["repository_checkout_branch_combo_label"] = <"Checkout: ">
 		["repository_checkout_branch_combo_tooltip"] = <"Checkout a different branch from selection">

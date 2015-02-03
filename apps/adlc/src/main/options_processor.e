@@ -87,6 +87,7 @@ feature -- Definitions
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (library_switch, get_text (ec_library_switch_desc), False, False, library_switch_arg, get_text (ec_library_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text (ec_action_switch_desc), False, False, action_switch_arg, Actions_string, False))
 
@@ -103,7 +104,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
 														switch_of_name (quiet_switch), switch_of_name (format_switch),
-														switch_of_name (action_switch)>>, True))
+														switch_of_name (action_switch), switch_of_name (output_dir_switch)>>, True))
 		end
 
 	quiet_switch: STRING = "q|quiet"
@@ -123,6 +124,9 @@ feature -- Definitions
 
 	cfg_switch: STRING = "cfg"
 	cfg_switch_arg_name: STRING = "file path"
+
+	output_dir_switch: STRING = "o|output_dir"
+	output_dir_switch_arg_name: STRING = "output directory"
 
 	non_switched_argument_name: STRING = "id_pattern"
 			--  <Precursor>
@@ -162,6 +166,7 @@ feature {NONE} -- Initialization
 				show_config := has_option (show_config_switch)
 				list_archetypes := has_option (list_archetypes_switch)
 				display_archetypes := has_option (display_archetypes_switch)
+				write_to_file_system := has_option (output_dir_switch)
 			end
 		end
 
@@ -207,6 +212,16 @@ feature -- Access
 			end
 		end
 
+	output_dir: detachable STRING
+			-- output directory to write files to
+		require
+			is_successful: is_successful
+		once
+			if has_option (output_dir_switch) and then attached option_of_name (output_dir_switch) as opt and then opt.has_value then
+				Result := opt.value
+			end
+		end
+
 	archetype_id_pattern: STRING
 		do
 			Result := value
@@ -226,6 +241,9 @@ feature -- Status Report
 
 	display_archetypes: BOOLEAN
 			-- True for -d switch to list archetypes in user friendly format
+
+	write_to_file_system: BOOLEAN
+			-- True if -o switch used to specify an output directory
 
 feature {NONE} -- Usage
 
