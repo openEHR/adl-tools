@@ -5,7 +5,7 @@ Name "ADL Workbench"
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION "1.5"
+!define VERSION "2.0"
 !define COMPANY "openEHR Foundation"
 !define URL www.openehr.org
 
@@ -53,14 +53,14 @@ InstallDir "$PROGRAMFILES\openEHR\ADL Workbench"
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 1.5.1.0
+VIProductVersion 2.0.5.0
 VIAddVersionKey ProductName "openEHR ADL Workbench"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2014 openEHR Foundation"
+VIAddVersionKey LegalCopyright "Copyright 2003-2015 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 

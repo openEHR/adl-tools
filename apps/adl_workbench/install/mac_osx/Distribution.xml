@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <installer-gui-script minSpecVersion="2">
     <title>ADL Workbench</title>
-    <product id="org.openehr.adl_workbench" version="1.5.1"/>
+    <product id="org.openehr.adl_workbench" version="2.0.5"/>
     <organization>org.openehr</organization>
     <options customize="never" require-scripts="false"/>
     <!-- Documents displayed at various steps -->
