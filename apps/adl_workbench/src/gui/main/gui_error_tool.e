@@ -38,7 +38,7 @@ inherit
 			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
-	STRING_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		end
@@ -98,7 +98,7 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	extend_and_select (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	extend_and_select (ara: ARCH_LIB_ARCHETYPE)
 			-- Add a node representing the errors or warnings of the archetype, if any.
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -114,19 +114,14 @@ feature -- Commands
 					cat_row := cat
 				end
 
-				from
-					row_idx := 0
-					i := 1
-				until
-					i /= 1
-				loop
+				from row_idx := 0; i := 1 until i /= 1 loop
 					row_idx := row_idx + 1
 
 					if row_idx <= cat_row.subrow_count then
 						row := cat_row.subrow (row_idx)
 						row.collapse
 
-						if attached {ARCH_LIB_ARCHETYPE_ITEM} row.data as other then
+						if attached {ARCH_LIB_ARCHETYPE} row.data as other then
 							i := ara.id.three_way_comparison (other.id)
 						end
 					else
@@ -204,21 +199,22 @@ feature -- Commands
 			create processing.make_last_in_document (document, "xml-stylesheet", "type=%"text/xsl%" href=%"ArchetypeRepositoryReport.xsl%"")
 			create root.make_root (document, "archetype-repository-report", ns)
 
-			create_category_element := agent (parent: XML_ELEMENT; description: STRING; count: INTEGER)
-				local
-					e: XML_ELEMENT
-					a: XML_ATTRIBUTE
-				do
-					create e.make_last (parent, "category", parent.namespace)
-					create a.make_last ("description", parent.namespace, description, e)
-					create a.make_last ("count", parent.namespace, count.out, e)
-				end
+			create_category_element :=
+				agent (parent: XML_ELEMENT; description: STRING; count: INTEGER)
+					local
+						e: XML_ELEMENT
+						a: XML_ATTRIBUTE
+					do
+						create e.make_last (parent, "category", parent.namespace)
+						create a.make_last ("description", parent.namespace, description, e)
+						create a.make_last ("count", parent.namespace, count.out, e)
+					end
 
 			create statistics_element.make_last (root, "statistics", ns)
 			create_category_element.call ([statistics_element, "Total Archetypes", current_library.archetype_count])
-			create_category_element.call ([statistics_element, "Specialised Archetypes", current_library.library_metrics.item (specialised_archetype_count)])
-			create_category_element.call ([statistics_element, "Archetypes with slots", current_library.library_metrics.item (client_archetype_count)])
-			create_category_element.call ([statistics_element, "Archetypes used by others", current_library.library_metrics.item (supplier_archetype_count)])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", current_library.metrics.item (specialised_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes with slots", current_library.metrics.item (client_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes used by others", current_library.metrics.item (supplier_archetype_count)])
 
 			from err_type := categories.lower until err_type = categories.upper loop
 				err_type := err_type + 1
@@ -233,7 +229,7 @@ feature -- Commands
 						from i := 0 until i = row.subrow_count loop
 							i := i + 1
 
-							if attached {ARCH_LIB_ARCHETYPE_ITEM} row.subrow (i).data as ara then
+							if attached {ARCH_LIB_ARCHETYPE} row.subrow (i).data as ara then
 								create archetype_element.make_last (category_element, "archetype", ns)
 								create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
@@ -343,21 +339,17 @@ feature {NONE} -- Implementation
 			category_row_attached: attached categories [err_type]
 		end
 
-	remove_archetype_row_if_in_wrong_category (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	remove_archetype_row_if_in_wrong_category (ara: ARCH_LIB_ARCHETYPE)
 			-- Remove the row representing `ara' from `grid' if it is under the wrong category.
 		local
 			cat_row, row: detachable EV_GRID_ROW
 			row_idx: INTEGER
 		do
-			from
-				row_idx := ev_grid.row_count
-			until
-				row_idx = 0
-			loop
+			from row_idx := ev_grid.row_count until row_idx = 0 loop
 				row := ev_grid.row (row_idx)
 				row_idx := row_idx - 1
 
-				if attached {ARCH_LIB_ARCHETYPE_ITEM} row.data as other then
+				if attached {ARCH_LIB_ARCHETYPE} row.data as other then
 					if ara.id.is_equal (other.id) then
 						row_idx := 0
 						cat_row := row.parent_row
@@ -398,7 +390,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_LIB_ARCHETYPE_EDITABLE} ev_ti.data as aca then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_LIB_ARCHETYPE} ev_ti.data as aca then
 				create menu
 				create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
@@ -415,7 +407,7 @@ feature {NONE} -- Implementation
 	display_context_selected_archetype_in_active_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
-			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} ev_ti.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE} ev_ti.data as aca then
 				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
@@ -423,7 +415,7 @@ feature {NONE} -- Implementation
 	display_context_selected_archetype_in_new_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
-			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} ev_ti.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE} ev_ti.data as aca then
 				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 			end
 		end

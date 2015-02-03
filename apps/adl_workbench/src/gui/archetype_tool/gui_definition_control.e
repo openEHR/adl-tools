@@ -12,7 +12,7 @@ class GUI_DEFINITION_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, can_populate, can_repopulate, do_display, disable_edit, enable_edit
+			can_edit, do_display, disable_edit, enable_edit
 		end
 
 create
@@ -71,7 +71,7 @@ feature -- Initialisation
 			create evx_view_detail_radio.make (get_text (ec_domain_detail_button_text), get_text (ec_technical_detail_button_text),
 				get_text (ec_domain_detail_button_tooltip), get_text (ec_technical_detail_button_tooltip),
 				agent :BOOLEAN do Result := not show_technical_view end,
-				agent update_show_technical_view, 0, 0)
+				agent update_show_technical_view, 0, 0, False)
 			evx_view_detail_frame.extend (evx_view_detail_radio.ev_root_container, False)
 			gui_controls.extend (evx_view_detail_radio)
 
@@ -247,16 +247,6 @@ feature -- Status Report
 
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
-
-	can_populate (a_source: like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
 
 	can_edit: BOOLEAN
 			-- True if this tool has editing capability

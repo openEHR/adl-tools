@@ -10,7 +10,7 @@ note
 class ARTEFACT_TYPE
 
 create
-	default_create, make, make_from_type_name, make_archetype, make_template, make_operational_template
+	default_create, make, make_from_type_name, make_archetype, make_template, make_template_overlay, make_operational_template
 
 feature -- Defnition
 
@@ -55,6 +55,11 @@ feature -- Initialisation
 	make_template
 		do
 			value := template
+		end
+
+	make_template_overlay
+		do
+			value := template_overlay
 		end
 
 feature -- Access
@@ -106,13 +111,19 @@ feature -- Access
 feature -- Status report
 
 	is_template: BOOLEAN
-			-- True if any type other than `archetype'
+			-- True if value is `template'
 		do
-			Result := value /= archetype
+			Result := value = template
+		end
+
+	is_template_or_overlay: BOOLEAN
+			-- True if value is `template' or `template_overlay'
+		do
+			Result := value = template or value = template_overlay
 		end
 
 	is_overlay: BOOLEAN
-			-- True if any type other than `template_overlay'
+			-- True if value is `template_overlay'
 		do
 			Result := value = template_overlay
 		end

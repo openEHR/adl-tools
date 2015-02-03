@@ -21,6 +21,7 @@ templates = <
 		["SAIV"] = <"Syntax error in invariant section">
 		["SAON"] = <"Syntax error in terminology section">
 		["SAAN"] = <"Syntax error in annotations section">
+		["STOV"] = <"Syntax error in template overlays">
 
 		["SDSF"] = <"Syntax error: differential syntax not allowed in top-level archetype">
 		["SDINV"] = <"Syntax error: invalid ODIN section; error: $1">

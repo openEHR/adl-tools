@@ -64,13 +64,14 @@ feature -- Access
 
 feature -- Parsing
 
-	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM): detachable ARCHETYPE
+	parse (a_text: STRING; aca: ARCH_LIB_ARCHETYPE): detachable AUTHORED_ARCHETYPE
 			-- parse text as legacy flat archetype. If successful, `archetype' contains the parse structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
 			orig_lang_trans: detachable LANGUAGE_TRANSLATIONS
-			new_flat_arch: ARCHETYPE
+			new_flat_arch: AUTHORED_ARCHETYPE
+			adl_ver: STRING
 		do
 			adl_parser.execute (a_text)
 
@@ -83,9 +84,7 @@ feature -- Parsing
 				------------------- ADL 'language' section (mandatory) ---------------
 				-- parse AUTHORED_RESOURCE.original_language & translations
 				-- using helper type LANGUAGE_TRANSLATIONS
-				check attached adl_parser.language_text as lt then
-					language_context.set_source (lt, adl_parser.language_text_start_line)
-				end
+				language_context.set_source (adl_parser.language_text, adl_parser.language_text_start_line)
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
@@ -205,55 +204,32 @@ feature -- Parsing
 							term_tree.as_object (({ARCHETYPE_TERMINOLOGY}).type_id, <<olt.original_language.code_string, definition.node_id, False>>) as flat_terminology
 							and then not dt_object_converter.errors.has_errors
 						then
-							create new_flat_arch.make (
-								adl_parser.artefact_type,
-								adl_parser.archetype_id,
-								"",
-								olt.original_language,
-								adl_parser.uid,
-								res_desc,	-- may be Void
-								definition,
-								flat_terminology
-							)
-
-							-- add optional parts
-							if attached adl_parser.parent_archetype_id as att_parent_id then
-								new_flat_arch.set_parent_archetype_id (att_parent_id)
-							end
-
-							if attached adl_parser.adl_version as adl_av then
-								new_flat_arch.set_adl_version (adl_av)
+							if attached adl_parser.adl_version as att_av then
+								adl_ver := att_av
 							else
-								new_flat_arch.set_adl_version (latest_adl_version)
+								adl_ver := latest_adl_version
 							end
 
-							if adl_parser.is_controlled then
-								new_flat_arch.set_is_controlled
-							end
+							check attached res_desc end
+							create new_flat_arch.make_all (
+								adl_ver,
+								"",	-- rm_release
+								adl_parser.archetype_id,
+								adl_parser.parent_archetype_id,
+								adl_parser.is_controlled,
+								adl_parser.uid,
+								adl_parser.other_metadata,
+								olt.original_language,
+								orig_lang_trans.translations,
+								res_desc,
+								definition,
+								invariant_context.tree,
+								flat_terminology,
+								annots
+							)
 
 							if adl_parser.is_generated then
 								new_flat_arch.set_is_generated
-							end
-
-							-- other meta-data
-							if attached adl_parser.other_metadata as omd and then not omd.is_empty then
-								across omd as omd_csr loop
-									if attached omd_csr.key as a_key and attached omd_csr.item as an_item then
-										new_flat_arch.add_other_metadata_value (a_key, an_item)
-									end
-								end
-							end
-
-							if attached orig_lang_trans.translations as olt_trans then
-								new_flat_arch.set_translations (olt_trans)
-							end
-
-							if attached invariant_context.tree as inv_tree then
-								new_flat_arch.set_rules (inv_tree)
-							end
-
-							if attached annots as a then
-								new_flat_arch.set_annotations (a)
 							end
 
 							new_flat_arch.rebuild
@@ -271,21 +247,7 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_151_convert (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE_ITEM)
-		local
-			proc: AOM_151_CONVERTER
-		do
-			if attached post_parse_151_converter as pcp then
-				proc := pcp
-				proc.initialise (an_arch, aca)
-			else
-				create proc.make (an_arch, aca)
-				post_parse_151_converter := proc
-			end
-			proc.execute
-		end
-
-	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE_ITEM)
+	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
 		local
 			proc: AOM_POST_PARSE_PROCESSOR
 		do
@@ -299,74 +261,6 @@ feature -- Validation
 			proc.execute
 		end
 
-	phase_1_validate (aca: ARCH_LIB_ARCHETYPE_ITEM)
-		local
-			proc: AOM_PHASE_1_VALIDATOR
-		do
-			validation_passed := False
-			if attached phase_1_validator as pv then
-				proc := pv
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				phase_1_validator := proc
-			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
-		end
-
-	phase_2_validate (aca: ARCH_LIB_ARCHETYPE_ITEM)
-		local
-			proc: AOM_PHASE_2_VALIDATOR
-		do
-			validation_passed := False
-			if attached phase_2_validator as pv then
-				proc := pv
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				phase_2_validator := proc
-			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
-		end
-
-	phase_3_validate (aca: ARCH_LIB_ARCHETYPE_ITEM)
-		local
-			proc: AOM_PHASE_3_VALIDATOR
-		do
-			validation_passed := False
-			if attached phase_3_validator as pv then
-				proc := pv
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				phase_3_validator := proc
-			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
-		end
-
-	post_compile_process (aca: ARCH_LIB_ARCHETYPE_ITEM)
-		local
-			proc: AOM_POST_COMPILE_PROCESSOR
-		do
-			if attached post_compile_processor as pcp then
-				proc := pcp
-				proc.initialise (aca)
-			else
-				create proc.initialise (aca)
-				post_compile_processor := proc
-			end
-			proc.execute
-		end
-
-	validation_passed: BOOLEAN
-			-- result of last validation
-
 feature -- Serialisation
 
 	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING): STRING
@@ -375,24 +269,33 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
+			lang_serialised, desc_serialised, invs_serialised, annot_serialised: STRING
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
 		do
-			-- language section
-			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			language_context.serialise (a_format, False, False)
+			create lang_serialised.make_empty
+			create desc_serialised.make_empty
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				-- language section
+				language_context.set_tree (auth_arch.orig_lang_translations.dt_representation)
+				language_context.serialise (a_format, False, False)
+				lang_serialised := language_context.serialised
 
-			-- description section
-			description_context.set_tree (an_archetype.description.dt_representation)
-			description_context.serialise (a_format, False, False)
+				-- description section
+				description_context.set_tree (auth_arch.description.dt_representation)
+				description_context.serialise (a_format, False, False)
+				desc_serialised := description_context.serialised
+			end
 
 			-- definition section
 			definition_context.set_tree (an_archetype.definition)
 			definition_context.serialise (an_archetype, a_format, a_lang)
 
 			-- rules section
+			create invs_serialised.make_empty
 			if an_archetype.has_rules then
 				invariant_context.set_tree (an_archetype.rules)
 				invariant_context.serialise (a_format)
+				invs_serialised := invariant_context.serialised
 			end
 
 			-- terminology section
@@ -409,9 +312,13 @@ feature -- Serialisation
 			end
 
 			-- annotations section
-			if an_archetype.has_annotations then
-				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-				annotations_context.serialise (a_format, False, False)
+			create annot_serialised.make_empty
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
+				if auth_arch.has_annotations then
+					annotations_context.set_tree (auth_arch.annotations.dt_representation)
+					annotations_context.serialise (a_format, False, False)
+					annot_serialised := annotations_context.serialised
+				end
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
@@ -419,8 +326,8 @@ feature -- Serialisation
 				serialiser := ser
 			end
 			serialiser.reset
-			serialiser.serialise_from_parts (an_archetype, language_context.serialised, description_context.serialised, definition_context.serialised,
-				invariant_context.serialised, terminology_context.serialised, annotations_context.serialised, "")
+			serialiser.serialise_from_parts (an_archetype, lang_serialised, desc_serialised, definition_context.serialised,
+					invs_serialised, terminology_context.serialised, annot_serialised, "")
 
 			Result := serialiser.last_result
 		end
@@ -444,49 +351,19 @@ feature {NONE} -- Implementation
 
 	annotations_context: ODIN_ENGINE
 
-	post_parse_151_converter: detachable AOM_151_CONVERTER
-		note
-			option: stable
-		attribute
-		end
-
 	post_parse_processor: detachable AOM_POST_PARSE_PROCESSOR
 		note
 			option: stable
 		attribute
 		end
 
-	phase_1_validator: detachable AOM_PHASE_1_VALIDATOR
-		note
-			option: stable
-		attribute
-		end
-
-	phase_2_validator: detachable AOM_PHASE_2_VALIDATOR
-		note
-			option: stable
-		attribute
-		end
-
-	phase_3_validator: detachable AOM_PHASE_3_VALIDATOR
-		note
-			option: stable
-		attribute
-		end
-
-	post_compile_processor: detachable AOM_POST_COMPILE_PROCESSOR
-		note
-			option: stable
-		attribute
-		end
-
-	original_language_and_translations_from_terminology (terminology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
+	original_language_and_translations_from_terminology (a_terminology: ARCHETYPE_TERMINOLOGY): LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `terminology'.
 		do
 			create Result.make
-			Result.set_original_language_from_string (terminology.original_language)
-			across terminology.languages_available as langs_csr loop
-				if not langs_csr.item.is_equal (terminology.original_language) then
+			Result.set_original_language_from_string (a_terminology.original_language.code_string)
+			across a_terminology.languages_available as langs_csr loop
+				if not langs_csr.item.is_equal (a_terminology.original_language.code_string) then
 					Result.add_new_translation (langs_csr.item)
 				end
 			end

@@ -10,8 +10,6 @@ note
 class P_ARCHETYPE
 
 inherit
-	AUTHORED_RESOURCE
-
 	DT_CONVERTIBLE
 
 create
@@ -22,77 +20,42 @@ feature -- Initialisation
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		do
-			create adl_version.make_empty
-			create rm_release.make_empty
 		end
 
-	make (an_archetype: ARCHETYPE)
+	make (an_archetype: like artefact_class_type)
 			-- basic make routine to guarantee validity on creation
 		do
+			artefact_type := an_archetype.artefact_type
 			artefact_object_type := an_archetype.generating_type
-
-			make_from_other (an_archetype)
-
 			create archetype_id.make (an_archetype.archetype_id)
-
-			adl_version := an_archetype.adl_version
-			rm_release := an_archetype.rm_release
-			artefact_type := an_archetype.artefact_type.type_name
-
 			parent_archetype_id := an_archetype.parent_archetype_id
-
-			is_generated := an_archetype.is_generated
-
-			if attached an_archetype.uid as uv then
-				uid := uv.value
-			end
-
-			other_metadata := an_archetype.other_metadata
-
 			create definition.make (an_archetype.definition)
-
 			rules := an_archetype.rules
-
 			create terminology.make (an_archetype.terminology)
-
-			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt and then attached opt.component_terminologies then
-				create component_terminologies.make(0)
-				across opt.component_terminologies as opt_comp_onts_csr loop
-					component_terminologies.put (create {P_ARCHETYPE_TERMINOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
-				end
-			end
+			is_generated := an_archetype.is_generated
 		end
 
 feature -- Access
+
+	artefact_type: STRING
+			-- records artefact type of the original artefact
+		attribute
+			create Result.make_empty
+		end
 
 	artefact_object_type: detachable STRING
 			-- records object model type of the original artefact
 
 	archetype_id: detachable P_ARCHETYPE_HRID
 
-	other_metadata: detachable HASH_TABLE [STRING, STRING]
-
-	adl_version: STRING
-			-- ADL version of this archetype
-
-	rm_release: STRING
-			-- RM release on which definition of this archetype is based
-
-	artefact_type: detachable STRING
-			-- design type of artefact, archetype, template, template-component, etc
-
 	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
-
-	uid: detachable STRING
 
 	definition: detachable P_C_COMPLEX_OBJECT
 
 	rules: detachable ARRAYED_LIST [ASSERTION]
 
 	terminology: detachable P_ARCHETYPE_TERMINOLOGY
-
-	component_terminologies: detachable HASH_TABLE [P_ARCHETYPE_TERMINOLOGY, STRING]
 
 feature -- Status Report
 
@@ -105,46 +68,26 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_archetype: detachable ARCHETYPE
+	create_archetype: detachable like artefact_class_type
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
-			o_artefact_type: ARTEFACT_TYPE
 			arch_terminology: ARCHETYPE_TERMINOLOGY
-			o_uid: detachable HIER_OBJECT_ID
 		do
 			if attached archetype_id as att_aid
-				and attached artefact_type as at
-				and attached original_language as o_original_language
-				and attached description as o_description
 				and attached definition as o_definition
 				and attached terminology as p_terminology
 			then
 				create o_archetype_id.make_from_string (att_aid.physical_id)
-				create o_artefact_type.make_from_type_name (at)
-				if attached uid as att_uid then
-					create o_uid.make_from_string (att_uid)
-				end
-
-				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)
+				create arch_terminology.make_differential ((create {TERMINOLOGY_CODE}.default_create).code_string, o_definition.node_id)
 				p_terminology.populate_terminology (arch_terminology)
 				arch_terminology.finalise_dt
 
 				create Result.make_all (
-					o_artefact_type,
-					adl_version,
-					rm_release,
 					o_archetype_id,
 					parent_archetype_id,
-					is_controlled,
-					o_uid,
-					other_metadata,
-					o_original_language,
-					translations,
-					o_description,
 					o_definition.create_c_complex_object,
 					rules,
-					arch_terminology,
-					annotations
+					arch_terminology
 				)
 
 				if is_generated then
@@ -161,6 +104,12 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		do
 		end
 
-end
+feature {NONE} -- Implementation
 
+	artefact_class_type: ARCHETYPE
+		do
+			create Result
+		end
+
+end
 

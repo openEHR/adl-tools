@@ -13,7 +13,7 @@ class GUI_ANNOTATIONS_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, can_populate, can_repopulate
+			can_edit, can_populate, can_repopulate, source_archetype
 		end
 
 create
@@ -47,6 +47,14 @@ feature -- Access
 
 	ev_root_container: EV_GRID_KBD_MOUSE
 
+	source_archetype: AUTHORED_ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view'
+		do
+			check attached {AUTHORED_ARCHETYPE} precursor as auth_arch then
+				Result := auth_arch
+			end
+		end
+
 feature -- Status Report
 
 	can_edit: BOOLEAN
@@ -55,14 +63,15 @@ feature -- Status Report
 			Result := True
 		end
 
-	can_populate (a_source: attached like source): BOOLEAN
+	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
 		do
-			Result := a_source.is_valid
+			Result := a_source.is_valid and then attached {AUTHORED_ARCHETYPE} a_source.select_archetype (a_params.diff_view, editing_enabled)
 		end
 
 	can_repopulate: BOOLEAN
 		do
-			Result := is_populated and source.is_valid
+			Result := attached source as att_source and then
+				att_source.is_valid and then attached {AUTHORED_ARCHETYPE} att_source.select_archetype (differential_view, editing_enabled)
 		end
 
 feature -- Commands

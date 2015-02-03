@@ -127,10 +127,6 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu (get_text (ec_menu_file_key), get_text (ec_file_menu_text))
 			evx_menu_bar.add_menu_item (get_text (ec_menu_file_open_key), get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_save_as_key), get_text (ec_file_menu_save_as_text), Void, agent library_tool.save_source_archetype_as)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_export_key), get_text (ec_file_menu_export_text), Void, agent library_tool.export_source_archetype_as)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_export_flat_key), get_text (ec_file_menu_export_flat_as_text), Void, agent library_tool.export_flat_archetype_as)
-			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item (get_text (ec_menu_file_exit_key), "E&xit", Void, agent exit_app)
 
 			-- ================== Edit menu ==================
@@ -161,13 +157,7 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_all_key), get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_all_key), get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_archetypes_menu_build_subtree_text), Void, agent build_subtree)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_archetypes_menu_rebuild_subtree_text), Void, agent rebuild_subtree)
-			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_html_key), get_text (ec_archetypes_menu_export_html_text), Void, agent export_library (syntax_type_adl_html))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_json_key), get_text (ec_archetypes_menu_export_json_text), Void, agent export_library (syntax_type_json))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_yaml_key), get_text (ec_archetypes_menu_export_yaml_text), Void, agent export_library (syntax_type_yaml))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_xml_key), get_text (ec_archetypes_menu_export_xml_text), Void, agent export_library (syntax_type_xml))
+			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_library_key), get_text (ec_archetypes_menu_export_library_text), Void, agent export_library)
 			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_report_key), get_text (ec_archetypes_menu_export_report_text), Void, agent export_library_report)
 			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item_disabled (get_text (ec_menu_archetypes_interrupt_build_key), get_text (ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
@@ -234,7 +224,6 @@ feature {NONE} -- Initialization
 			create_new_rm_schema_explorer
 			create_new_console_tool
 			create_new_error_tool
-		--	create_new_test_tool
 			archetype_viewers.create_new_tool
 
 			-- set up anything else dependent on docking
@@ -242,9 +231,10 @@ feature {NONE} -- Initialization
 			evx_menu_bar.menu_item (get_text (ec_menu_view_new_archetype_tool_key)).select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
-			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
-			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
-			archetype_compiler.set_full_compile_visual_update_action (agent library_tool.on_full_compile)
+			archetype_compiler.set_console_update_agent (agent compiler_console_update)
+			archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
+			archetype_compiler.set_build_complete_visual_update_agent (agent library_tool.on_full_compile)
+			archetype_compiler.set_state_change_listener (agent populate_compile_button)
 
 			-- accelerators
 			initialise_accelerators
@@ -309,8 +299,6 @@ feature {NONE} -- Initialization
 
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_refresh_key), key_r, True, False, False)
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_interrupt_build_key), key_escape, False, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_subtree_key), key_f7, True, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_subtree_key), key_f7, True, False, False)
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_all_key), key_f7, False, False, True)
 			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_all_key), key_f7, False, False, False)
 
@@ -379,9 +367,6 @@ feature {NONE} -- Initialization
 					console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<user_docking_layout_file_path>>))
 				end
 			end
-
-			-- Splitter layout
-			initialise_splitter (test_tool.ev_root_container, test_split_position)
 		rescue
 			docking_exception := True
 		end
@@ -398,6 +383,7 @@ feature -- Commands
 		local
 			missing_external_tools: ARRAYED_SET [STRING]
 			missing_external_tools_msg: STRING
+			backup_xml_rules_file: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do
 			Precursor
@@ -421,8 +407,7 @@ feature -- Commands
 					missing_external_tools_msg.append (get_msg_line (ec_repository_tool_unavailable, <<tool_names_csr.item>>))
 				end
 				missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
-				create info_dialog.make_with_text (missing_external_tools_msg)
-				info_dialog.show_modal_to_window (Current)
+				info_feedback (missing_external_tools_msg)
 			end
 
 			-- if some RM schemas now found, set up a repository if necessary
@@ -432,7 +417,7 @@ feature -- Commands
 					configure_repositories
 				else
 					populate_arch_libraries_combo
-					refresh_archetype_library (True)
+					display_archetype_library (False)
 				end
 			end
 
@@ -441,15 +426,26 @@ feature -- Commands
 				configure_aom_profiles
 			end
 
+			-- if sample XML rules file is newer than current one, backup current, copy over sample and tell user
+			if file_system.file_time_stamp (xml_rules_sample_file_path) > file_system.file_time_stamp (xml_rules_file_path) then
+				backup_xml_rules_file := xml_rules_file_path + ".bak"
+				file_system.copy_file (xml_rules_file_path, backup_xml_rules_file)
+				file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
+				console_tool.append_text (get_msg (ec_copy_file_with_backup, <<xml_rules_sample_file_path, xml_rules_file_path, backup_xml_rules_file>>))
+
+				create info_dialog.make_with_text (get_msg (ec_xml_rules_file_update_msg, <<xml_rules_file_path, backup_xml_rules_file>>))
+				info_dialog.show_modal_to_window (Current)
+			end
+
 			console_tool.append_text (app_root.error_strings)
 			console_tool.append_text (rm_schemas_access.error_strings)
 		end
 
 	open_test_tool
 		do
+			test_tool.populate
 			test_tool.ev_root_container.show
 			ev_main_vbox.hide
-			do_with_wait_cursor (Current, agent test_tool.populate)
 		end
 
 	close_test_tool
@@ -468,7 +464,6 @@ feature -- Commands
 				set_app_y_position (y_position)
 			end
 			set_app_maximised (is_maximized)
-			set_test_split_position (test_tool.ev_root_container.split_position)
 			set_last_exec_app_version (app_version.out)
 
 			app_cfg.save
@@ -535,7 +530,7 @@ feature {NONE} -- AOM profiles events
 feature {NONE} -- Library events
 
 	repository_dialog: REPOSITORY_DIALOG
-		once ("PROCESS")
+		once
 			create Result
 		end
 
@@ -556,7 +551,7 @@ feature {NONE} -- Library events
 			if repository_dialog.current_library_changed then
 				console_tool.clear
 				if has_libraries then
-					refresh_archetype_library (True)
+					display_archetype_library (True)
 				else
 					library_tool.clear
 				end
@@ -570,47 +565,32 @@ feature {NONE} -- Library events
 				console_tool.clear
 				set_current_library_name (arch_libraries_combo.text)
 			end
-			refresh_archetype_library (False)
+			display_archetype_library (False)
 		end
 
 	build_all
 			-- Build the whole system.
 		do
 			console_tool.show
+			archetype_compiler.setup_build ([False])
 			do_build_action (agent archetype_compiler.build_all)
 		end
 
 	rebuild_all
 			-- Force the whole system to rebuild.
 		do
-			error_tool.clear
 			console_tool.show
-			do_build_action (agent archetype_compiler.rebuild_all)
-		end
-
-	build_subtree
-			-- Build the subsystem below the currently selected node.
-		do
-			console_tool.show
-			if library_tool.selection_history.has_selected_item and then attached library_tool.selected_item as sel_item then
-				do_build_action (agent archetype_compiler.build_subtree (sel_item))
-			end
-		end
-
-	rebuild_subtree
-			-- Force rebuilding of the whole subsystem below the currently selected node.
-		do
-			console_tool.show
-			if library_tool.selection_history.has_selected_item and then attached library_tool.selected_item as sel_item then
-				do_build_action (agent archetype_compiler.rebuild_subtree (sel_item))
-			end
+			archetype_compiler.setup_build ([True])
+			do_build_action (agent archetype_compiler.build_all)
 		end
 
 	compile_toggle
 			-- start or stop current compilation
 		do
 			if archetype_compiler.is_building then
-				interrupt_build
+				archetype_compiler.interrupt_build
+			elseif archetype_compiler.is_interrupted then
+				archetype_compiler.resume_build
 			else
 				build_all
 			end
@@ -619,42 +599,19 @@ feature {NONE} -- Library events
 	interrupt_build
 			-- Cancel the build currently in progress.
 		do
-			archetype_compiler.signal_interrupt
+			archetype_compiler.interrupt_build
 		end
 
-	export_library (a_syntax: STRING)
-			-- Generate serialised form of flat archetypes into `export_library'/syntax.
-		require
-			Serialise_format_valid: has_archetype_native_serialiser_format (a_syntax) or has_dt_serialiser_format (a_syntax)
+	export_library
+			-- Generate serialised form of flat archetypes onto file system
 		local
-			question_dialog: EV_QUESTION_DIALOG
-			yes_text, no_text, cancel_text, export_dir: STRING
-			info_dialog: EV_INFORMATION_DIALOG
+			export_dialog: EXPORT_DIALOG
 		do
-			create question_dialog.make_with_text (get_msg_line (ec_export_question, <<a_syntax>>))
-			question_dialog.set_title (get_msg (ec_export_in_format_dialog_title, <<a_syntax>>))
-			yes_text := get_text (ec_build_and_export_all)
-			no_text := get_text (ec_export_only_built)
-			cancel_text := get_msg_line (ec_cancel_button_text, Void)
-			question_dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
+			create export_dialog.make
+			export_dialog.show_modal_to_window (Current)
 
-			question_dialog.set_default_cancel_button (question_dialog.button (cancel_text))
-			question_dialog.show_modal_to_window (Current)
-
-			if not question_dialog.selected_button.same_string (cancel_text) then
-				export_dir := file_system.pathname (export_directory, a_syntax)
-				file_system.recursive_create_directory (export_dir)
-				if not file_system.directory_exists (export_dir) then
-					create info_dialog.make_with_text (get_msg_line (ec_could_not_create_file_text, <<export_dir>>))
-					info_dialog.show_modal_to_window (Current)
-				else
-					if question_dialog.selected_button.same_string (yes_text) then
-						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
-					elseif question_dialog.selected_button.same_string (no_text) then
-						do_build_action (agent archetype_compiler.export_all (export_dir, a_syntax))
-					end
-				end
-			end
+			-- repopulate library tool, since export dialog may have caused a compilation
+			library_tool.repopulate
 		end
 
 	export_library_report
@@ -665,7 +622,6 @@ feature {NONE} -- Library events
 			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 			xml_name: STRING
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			if current_library.has_statistics then
 				create save_dialog
@@ -705,15 +661,14 @@ feature {NONE} -- Library events
 					end
 				end
 			else
-				create info_dialog.make_with_text (get_text (ec_export_errors_stats_requires_build_text))
-				info_dialog.show_modal_to_window (Current)
+				info_feedback (get_text (ec_export_errors_stats_requires_build_text))
 			end
 		end
 
 	refresh_directory
 			-- reload current directory
 		do
-			refresh_archetype_library (True)
+			display_archetype_library (True)
 		end
 
 feature {NONE} -- XML Menu events
@@ -744,7 +699,9 @@ feature {NONE} -- Tools menu events
 			if dialog.has_changed_navigator_options and has_current_library then
 				save_resources
 				library_tool.populate (current_library)
-				test_tool.populate
+				if test_tool.ev_root_container.is_displayed then
+					test_tool.populate
+				end
 			end
 		end
 
@@ -760,15 +717,17 @@ feature {NONE} -- Tools menu events
 		do
 			if has_current_library then
 				do_with_wait_cursor (Current, agent current_library.do_all_archetypes (agent delete_generated_files))
-				refresh_archetype_library (True)
+				display_archetype_library (True)
 			end
 		end
 
-	delete_generated_files (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	delete_generated_files (ara: ARCH_LIB_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
-			ara.clean_generated
-			console_tool.append_text (ara.status)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara then
+				auth_ara.clean_generated
+				console_tool.append_text (ara.status)
+			end
 		end
 
 	toggle_adl_roundtripping
@@ -822,12 +781,12 @@ feature -- RM Schemas Events
 				else
 					rm_schema_explorer.populate (rm_schemas_access)
 					if has_current_library then
-						refresh_archetype_library (True)
+						display_archetype_library (True)
 					end
 				end
 			elseif rm_schema_dialog.has_changed_schema_dir then
 				rm_schema_explorer.populate (rm_schemas_access)
-				refresh_archetype_library (True)
+				display_archetype_library (True)
 			end
 		end
 
@@ -835,7 +794,7 @@ feature -- RM Schemas Events
 			-- user-initiated reload
 		do
 			rm_schemas_access.reload_schemas
-			refresh_archetype_library (True)
+			display_archetype_library (True)
 			rm_schema_explorer.populate (rm_schemas_access)
 		end
 
@@ -1012,17 +971,14 @@ feature -- Archetype viewers
 			create Result.make (docking_manager)
 		end
 
-	display_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	display_archetype (aca: ARCH_LIB_ARCHETYPE)
 		do
 			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
-			if attached aca.last_compile_attempt_timestamp then
-				error_tool.extend_and_select (aca)
-			end
 			archetype_viewers.populate_active_tool (aca)
 			archetype_viewers.active_tool.on_select_notebook
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			archetype_viewers.create_new_tool
 			display_archetype (aca)
@@ -1048,7 +1004,7 @@ feature -- Archetype editors
 			)
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			archetype_editors.create_new_tool
 			archetype_editors.active_tool.enable_edit
@@ -1056,7 +1012,7 @@ feature -- Archetype editors
 			archetype_editors.active_tool.on_select_notebook
 		end
 
-	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE_EDITABLE): BOOLEAN
+	archetype_has_editor (aca: ARCH_LIB_ARCHETYPE): BOOLEAN
 		do
 			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.physical_id)
 		end
@@ -1201,13 +1157,13 @@ feature {NONE} -- Implementation
 			console_tool.append_text (get_msg (ec_cfg_file_i1, <<user_config_file_path>>))
 		end
 
-	refresh_archetype_library (refresh_from_source: BOOLEAN)
+	display_archetype_library (refresh_from_source: BOOLEAN)
 			-- Rebuild archetype library & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (Current, agent do_refresh_archetype_library (refresh_from_source))
+			do_with_wait_cursor (Current, agent do_display_archetype_library (refresh_from_source))
 		end
 
-	do_refresh_archetype_library (refresh_from_source: BOOLEAN)
+	do_display_archetype_library (refresh_from_source: BOOLEAN)
 			-- refresh current archetype library - revert to uncompiled state for all archetypes.
 			-- If `refresh_from_source' is true, then re-read files from library source location as well
 		do
@@ -1259,54 +1215,43 @@ feature {NONE} -- Implementation
 
 	populate_compile_button
 		do
-			if not archetype_compiler.is_building then
-				compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
-			else
+			if archetype_compiler.is_building then
 				compile_button.set_pixmap (get_icon_pixmap ("tool/pause"))
+			else
+				compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
 			end
 		end
 
 feature {NONE} -- Build commands
 
 	do_build_action (action: PROCEDURE [ANY, TUPLE])
-			-- Perform `action', with an wait mouse cursor and disabling the build menus, until done.
+			-- Perform `action', with a wait mouse cursor and disabling the build menus, until done.
 		local
 			build_started: BOOLEAN
 		do
 			if not build_started then
 				evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
+					get_text (ec_menu_archetypes_export_library_key)>>)
 				evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
 				build_started := True
 				do_with_wait_cursor (Current, action)
 			end
 
 			evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_build_subtree_key), get_text (ec_menu_archetypes_rebuild_subtree_key), get_text (ec_menu_archetypes_export_html_key)>>)
+					get_text (ec_menu_archetypes_export_library_key)>>)
 			evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
-		rescue
-			retry
 		end
 
-	compiler_global_gui_update (a_msg: STRING)
+	compiler_console_update (a_msg: STRING)
 			-- Update GUI with progress on build.
 		do
-			populate_compile_button
 			console_tool.append_text (a_msg)
-		--	ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (a_msg: STRING; aca: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (aca: ARCH_LIB_ARCHETYPE)
 			-- Update GUI with progress on build.
 		do
-			if not a_msg.is_empty then
-				console_tool.append_text (indented (a_msg, create {STRING}.make_filled ('%T', dependency_depth)))
-			end
-
 			library_tool.update_tree_node (aca)
-			test_tool.do_row_for_item (aca)
-			error_tool.extend_and_select (aca)
-
 			ev_application.process_events
 		end
 
@@ -1342,9 +1287,13 @@ feature {NONE} -- GUI Widgets
 		end
 
 	ev_main_vbox, ev_root_vbox: EV_VERTICAL_BOX
+
 	viewer_main_cell: EV_CELL
+
 	evx_menu_bar: EVX_MENU_BAR
+
 	arch_libraries_combo: EV_COMBO_BOX
+
 	compile_button: EV_TOOL_BAR_BUTTON
 
 end

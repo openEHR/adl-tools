@@ -12,6 +12,7 @@ templates = <
 	["en"] = <
 		-- basics
 		["to_be_implemented"] = <"Not implemented in this release">
+		["copy_file_with_backup"] = <"Copying file $1 to $2, backing up original to $3">
 
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">
@@ -35,6 +36,7 @@ templates = <
 		["export_xml"] = <"Export as XML">
 		["tree_controls"] = <"Tree control">
 		["status"] = <"Status">
+		["xml_rules_file_update_msg"] = <"XML rules file is out of date; copying new master to $1,%Nbacking up original to $2 (local modifications will need to be re-applied)">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["remove_library_cfg"] = <"Removing invalid configuration (error: $1)">
@@ -111,7 +113,7 @@ templates = <
 		["repository_status_installed"] = <"Installed">
 		["repository_status_install"] = <"Install">
 
-		["archetype_library_grid_name_col_tooltip"] = <"%N-------------%NRemote source:%N%TURL: $1%N%Tcustodian: $2">
+		["archetype_library_grid_name_col_tooltip"] = <"%N----%NRemote source:%N%TURL: $1%N%Tcustodian: $2">
 		["repository_clone_dir_confirm_text"] = <"About to clone repository $1 from $2 in $3; proceed?">
 
 		-- REPOSITORY_COMMIT_DIALOG
@@ -169,6 +171,8 @@ templates = <
 		["adl_serialisation_level_tooltip"] = <"Which version of the ADL syntax to use when saving archetypes.">
 		["error_reporting_level_text"] = <"Error Reporting Level:">
 		["error_reporting_level_tooltip"] = <"Select the level of parser messages to display. All levels >= this level displayed.">
+		["compiler_quiet_text"] = <"Quiet mode">
+		["compiler_quiet_tooltip"] = <"Reduce compiler output to a minimum regardless of error-reporting level.">
 		["rm_flattening_text"] = <"RM flattening on">
 		["rm_flattening_tooltip"] = <"Include RM attribute existence and cardinality in flattened archetypes.">
 		["validation_strict_text"] = <"Validation Strict">
@@ -300,13 +304,8 @@ templates = <
 		["menu_archetypes_key"] = <"Archetypes">
 		["menu_archetypes_build_all_key"] = <"Archetypes>Build All">
 		["menu_archetypes_rebuild_all_key"] = <"Archetypes>Rebuild All">
-		["menu_archetypes_build_subtree_key"] = <"Archetypes>Build Subtree">
-		["menu_archetypes_rebuild_subtree_key"] = <"Archetypes>Rebuild Subtree">
-		["menu_archetypes_export_html_key"] = <"Archetypes>Export HTML">
-		["menu_archetypes_export_json_key"] = <"Archetypes>Export JSON">
-		["menu_archetypes_export_yaml_key"] = <"Archetypes>Export YAML">
-		["menu_archetypes_export_xml_key"] = <"Archetypes>Export XML">
-		["menu_archetypes_report_key"] = <"Archetypes>Report">
+		["menu_archetypes_export_library_key"] = <"Archetypes>Export Library">
+		["menu_archetypes_report_key"] = <"Archetypes>Library Report">
 		["menu_archetypes_interrupt_build_key"] = <"Archetypes>Interrupt Build">
 		["menu_archetypes_refresh_key"] = <"Archetypes>Refresh">
 		["menu_archetypes_configure_key"] = <"Archetypes>Configure">
@@ -357,15 +356,10 @@ templates = <
 		["archetypes_menu_text"] = <"&Archetypes">
 		["archetypes_menu_build_all_text"] = <"&Build All">
 		["archetypes_menu_rebuild_all_text"] = <"Rebuild &All">
-		["archetypes_menu_build_subtree_text"] = <"Build Sub&tree">
-		["archetypes_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
 		["archetypes_menu_interrupt_text"] = <"&Interrupt Build">
 		["archetypes_menu_refresh_text"] = <"Re&fresh Library">
-		["archetypes_menu_export_html_text"] = <"Export as &HTML...">
-		["archetypes_menu_export_json_text"] = <"Export as &JSON...">
-		["archetypes_menu_export_yaml_text"] = <"Export as &YAML...">
-		["archetypes_menu_export_xml_text"] = <"Export as &XML...">
-		["archetypes_menu_export_report_text"] = <"&Export Library Report...">
+		["archetypes_menu_export_library_text"] = <"Export &Library ...">
+		["archetypes_menu_export_report_text"] = <"Export Library &Report...">
 		["archetypes_menu_configure_text"] = <"&Configure Repositories...">
 
 		["rm_schemas_menu_text"] = <"&RM Schemas">
@@ -411,24 +405,40 @@ templates = <
 
 		["config_dialog_warning"] = <"Configuration warning">
 
+		-- EXPORT_DIALOG
+		["export_library_dialog_title"] = <"Export Library">
 		["export_errors_stats_requires_build_text"] = <"Compile system (F7) and display statistics before generating error report">
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
 		["export_library_report_replace_info"] = <"Exported report to $1">
 		["export_library_report_replace_err"] = <"Failed to export report to $1">
 		["export_question"] = <"Only successfully built archetypes can be exported to $1.%N%NDo you want to build each archetype before exporting it?">
+		["export_description"] = <"Export archetypes in a specific format to the file system">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 		["build_and_export_all"] = <"Yes, Build and Export All">
 		["export_only_built"] = <"No, Export only the built ones">
 		["export_in_format_dialog_title"] = <"Export library in $1 format">
 		["compile_before_serialising"] = <"Must compile before serialising">
+		["export_compile_first_text"] = <"Compile all archetypes first?">
+		["export_compile_first_tooltip"] = <"Select to force full compile before export; otherwise, %Nonly currently compiled archetypes will be exported">
+		["export_format_text"] = <"Export format: ">
+		["export_format_tooltip"] = <"Select export format">
+		["export_directory"] = <"Export directory: ">
+
+		["export_differential_text"] = <"Differential">
+		["export_flat_text"] = <"Flat">
+		["export_button_text"] = <"Export">
+
+		["export_input_settings"] = <"Input Settings">
+		["export_output_settings"] = <"Output Settings">
+
 		["no_diff_tool"] = <"No diff tool must be configured; see Options">
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on library first">
 		["populating_directory_start"] = <"Populating from directories in $1 library configuration...">
 		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Library menu">
-		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
-		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
-		["compiler_no_dadl_text"] = <"===================== No ODIN (.odin) text available =======================">
+		["compiler_no_flat_text"] = <"==== No flat (.adlf) text available ">
+		["compiler_no_source_text"] = <"==== No source (.adls) text available ">
+		["compiler_no_dadl_text"] = <"==== No ODIN (.odin) text available ">
 		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
 		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
 		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
@@ -437,6 +447,8 @@ templates = <
 		["xml_14_not_available_message"] = <"XML based on ADL 1.4 available in next release">
 
 		-- GUI_LIBRARY_TOOL
+		["no_archetype_selected"] = <"No archetype selected">
+
 		["adl_14_files"] = <"ADL 1.4 files">
 		["adl_2_source_files"] = <"ADL 2 source files">
 
@@ -457,6 +469,8 @@ templates = <
 		["remove_dialog_title"] = <"Remove artefact confirmation">
 		["remove_artefact_question"] = <"Remove $1? WARNING: really removes from the file system!">
 		["remove_artefact"] = <"Remove from system">
+
+		["library_compile_status_text"] = <"Progress: ">
 
 		-- GUI_PATH_MAP_CONTROL
 		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">
@@ -692,6 +706,8 @@ templates = <
 		["resource_orig_res_label_text"] = <"Original%NResource%NURIs">
 		["terminology_label_text"] = <"Terminology mappings">
 		["refset_bindings_label_text"] = <"Refset bindings">
+
+		["references_tab_text"] = <"References">
 
 		["other_details_label_text"] = <"    Other%N    Details: ">
 		["other_details_tab_text"] = <"Other Details">

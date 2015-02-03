@@ -48,6 +48,9 @@ feature {NONE} -- Initialisation
 			tool_agents.set_edit_archetype_source_agent (agent edit_archetype)
 			tool_agents.set_save_archetype_agent (agent save_archetype)
 			tool_agents.set_update_explorers_and_select_agent (agent update_explorers_and_select)
+			tool_agents.set_update_archetype_explorer (agent update_archetype_explorer)
+
+			archetype_compiler.set_progress_agents (agent initialise_progress_agt, agent set_progress_bar_current_value)
 
 			create archetype_explorer.make
 			create template_explorer.make
@@ -57,21 +60,28 @@ feature {NONE} -- Initialisation
 			-- create widgets
 			create ev_root_container
 
-			-- connect widgets
-			ev_root_container.extend (archetype_explorer.ev_root_container)
-			ev_root_container.extend (template_explorer.ev_root_container)
-			ev_root_container.extend (metrics_viewer.ev_root_container)
-			ev_root_container.extend (stats_viewer.ev_root_container)
+			-- ------------------------ main notebook -----------------------------
+			create ev_notebook
+			ev_root_container.extend (ev_notebook)
 
-			-- visual characteristics
-			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text (ec_library_archetype_tab_text))
-			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
+			-- archetype explorer tab
+			ev_notebook.extend (archetype_explorer.ev_root_container)
+			ev_notebook.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
+			ev_notebook.set_item_text (archetype_explorer.ev_root_container, get_text (ec_library_archetype_tab_text))
 
-			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text (ec_library_template_tab_text))
+			-- template explorer tab
+			ev_notebook.extend (template_explorer.ev_root_container)
+			ev_notebook.set_item_text (template_explorer.ev_root_container, get_text (ec_library_template_tab_text))
 
-			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text (ec_library_metrics_tab_text))
-			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text (ec_library_stats_tab_text))
-			set_stats_metric_tab_appearance
+			-- metrics viewer tab
+			ev_notebook.extend (metrics_viewer.ev_root_container)
+			ev_notebook.set_item_text (metrics_viewer.ev_root_container, get_text (ec_library_metrics_tab_text))
+
+			-- statistics viewer tab
+			ev_notebook.extend (stats_viewer.ev_root_container)
+			ev_notebook.set_item_text (stats_viewer.ev_root_container, get_text (ec_library_stats_tab_text))
+
+			set_tabs_appearance
 
 			-- docking pane mini-toolbar with rotate-view button
 			create gui_mini_tool_bar.make
@@ -84,7 +94,29 @@ feature {NONE} -- Initialisation
 			end
 
 			-- set events: select a notebook tab
-			ev_root_container.selection_actions.extend (agent on_select_notebook)
+			ev_notebook.selection_actions.extend (agent on_select_notebook)
+
+			-- ------------------------ compiler status -----------------------------
+--			create ev_status_hb
+--			ev_root_container.extend (ev_status_hb)
+--			ev_root_container.disable_item_expand (ev_status_hb)
+
+--			create ev_status_label.make_with_text (get_text (ec_library_compile_status_text))
+--			ev_status_hb.extend (ev_status_label)
+--			ev_status_hb.disable_item_expand (ev_status_label)
+
+--			create ev_status_text.default_create
+--			ev_status_hb.extend (ev_status_text)
+--			ev_status_hb.disable_item_expand (ev_status_text)
+
+--			create ev_status_dummy_text.default_create
+--			ev_status_hb.extend (ev_status_dummy_text)
+
+			-- progress control
+			create ev_progress_bar.default_create
+			ev_progress_bar.set_foreground_color (Progress_bar_colour)
+			ev_root_container.extend (ev_progress_bar)
+			ev_root_container.disable_item_expand (ev_progress_bar)
 
 			-- set up tool / sub-tool structures
 			add_sub_tool (archetype_explorer)
@@ -98,12 +130,12 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	ev_root_container: EV_NOTEBOOK
+	ev_root_container: EV_VERTICAL_BOX
 
-	matching_ids (a_key: STRING): ARRAYED_SET [STRING]
+	matching_ids (a_regex: STRING): ARRAYED_SET [STRING]
 		do
-			if attached source then
-				Result := source.matching_ids (a_key, Void, Void)
+			if attached source as src then
+				Result := src.matching_ids (a_regex, Void, Void)
 			else
 				create Result.make(0)
 			end
@@ -131,7 +163,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	update_tree_node (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	update_tree_node (aca: ARCH_LIB_ARCHETYPE)
 		do
 			archetype_explorer.update_tree_node_for_archetype (aca)
 			template_explorer.update_tree_node_for_archetype (aca)
@@ -162,6 +194,26 @@ feature -- Commands
 			archetype_explorer.update_rm_icons_setting
 			template_explorer.update_rm_icons_setting
 		end
+
+--	update_compilation_status (a_total, valid_count, warn_count, err_count: INTEGER)
+--			-- update the compilation status text
+--		do
+--			if a_total \\ 10 = 0 then
+--				status_text.wipe_out
+--				status_text.append (a_total.out)
+--				if valid_count > 0 or warn_count > 0 or err_count > 0 then
+--					status_text.append (" (")
+--					status_text.append (valid_count.out)
+--					status_text.append (", ")
+--					status_text.append (warn_count.out)
+--					status_text.append (", ")
+--					status_text.append (err_count.out)
+--					status_text.append_character (')')
+--				end
+--				ev_status_text.set_text (status_text)
+--				ev_status_text.refresh_now
+--			end
+--		end
 
 	show
 		do
@@ -204,25 +256,40 @@ feature -- Commands
 
 	save_source_archetype_as
 			-- Save source (differential) archetype to a user-specified path
+		local
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
-				save_archetype (aca, True, True)
+			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
+				save_archetype (auth_aca, True, True)
+			else
+				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
 
 	export_source_archetype_as
 			-- Export source archetype to a user-specified path
+		local
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
-				save_archetype (aca, True, False)
+			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
+				save_archetype (auth_aca, True, False)
+			else
+				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
 
 	export_flat_archetype_as
 			-- Export flat archetype to a user-specified path
+		local
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if selection_history.has_validated_selected_archetype and attached selection_history.selected_archetype as aca then
-				save_archetype (aca, False, False)
+			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
+				save_archetype (auth_aca, False, False)
+			else
+				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
 
@@ -238,20 +305,14 @@ feature -- Events
 	on_select_notebook
 		do
 			if attached source as src then
-				if ev_root_container.selected_item.data = metrics_viewer then
+				if ev_notebook.selected_item.data = metrics_viewer then
 					if src.can_build_statistics then
-						src.build_detailed_statistics
-						if not attached metrics_viewer.last_populate_timestamp or else metrics_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
-							metrics_viewer.populate (src)
-						end
+						metrics_viewer.populate (src)
 					end
-				elseif ev_root_container.selected_item.data = stats_viewer then
+				elseif ev_notebook.selected_item.data = stats_viewer then
 					if src.can_build_statistics then
-						src.build_detailed_statistics
-						if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < src.last_stats_build_timestamp then
-							across src.stats as stats_csr loop
-								stats_viewer.populate (stats_csr.item, True)
-							end
+						across src.statistics as stats_csr loop
+							stats_viewer.populate (stats_csr.item, True)
 						end
 					end
 				end
@@ -261,18 +322,18 @@ feature -- Events
 	on_full_compile
 			-- actions to execute when a complete compile has been done
 		do
-			set_stats_metric_tab_appearance
+			set_tabs_appearance
 		end
 
 	on_rotate_view
 		do
-			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_root_container.selected_item.data as lib_tool and attached source then
+			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_notebook.selected_item.data as lib_tool and attached source then
 				lib_tool.on_rotate_view
 			end
 		end
 
-	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE_ITEM)
-			-- Populate archetype and template explorers
+	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE)
+			-- Populate archetype and template explorers and select new archetype in the archetype explorer
 		do
 			if attached source as src then
 				archetype_explorer.populate (src)
@@ -281,14 +342,36 @@ feature -- Events
 			end
 		end
 
+	update_archetype_explorer
+			-- Populate archetype and template explorers but don't do any selecting
+		do
+			if attached source as src then
+				archetype_explorer.populate (src)
+			end
+		end
+
 feature {NONE} -- Implementation
+
+	status_text: STRING
+		once
+			create Result.make (20)
+		end
+
+	ev_notebook: EV_NOTEBOOK
+
+--	ev_status_hb: EV_HORIZONTAL_BOX
+
+--	ev_status_label: EV_LABEL
+
+--	ev_status_text, ev_status_dummy_text: EV_LABEL
 
 	do_clear
 		do
 			metrics_viewer.clear
 			stats_viewer.clear
 			archetype_explorer.clear
-			ev_root_container.select_item (archetype_explorer.ev_root_container)
+			ev_notebook.select_item (archetype_explorer.ev_root_container)
+--			ev_status_text.set_text ("")
 		end
 
 	do_populate
@@ -308,7 +391,7 @@ feature {NONE} -- Implementation
 						archetype_explorer.set_semantic_view
 					end
 					template_explorer.populate (src)
-					set_stats_metric_tab_appearance
+					set_tabs_appearance
 					on_select_notebook
 					go_to_selected_item
 				end
@@ -331,6 +414,18 @@ feature {NONE} -- Implementation
 
 	gui_mini_tool_bar: EVX_TOOL_BAR
 
+	ev_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
+
+	initialise_progress_agt (a_val: INTEGER)
+		do
+			ev_progress_bar.value_range.resize_exactly (0, a_val)
+		end
+
+	set_progress_bar_current_value (a_val: INTEGER)
+		do
+			ev_progress_bar.set_value (a_val)
+		end
+
 	rotate_view_button: detachable EV_TOOL_BAR_BUTTON
 
 	archetype_explorer: GUI_ARCHETYPE_EXPLORER
@@ -341,24 +436,24 @@ feature {NONE} -- Implementation
 
 	stats_viewer: GUI_ARCHETYPE_STATISTICAL_REPORT
 
-	set_stats_metric_tab_appearance
+	set_tabs_appearance
 			-- set visual appearance of stats & metric tab according to whether there are errors or not
 		do
-			if attached source and then source.can_build_statistics then
-				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
-				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
+			if attached source as src and then source.can_build_statistics then
+				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
+				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
-				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
-				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
+				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
+				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
 			end
-			if attached source and then source.template_count > 0 then
-				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog"))
+			if attached source as src and then src.template_count > 0 then
+				ev_notebook.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog"))
 			else
-				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog_grey"))
+				ev_notebook.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog_grey"))
 			end
 		end
 
-	save_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM; diff_flag, native_format_flag: BOOLEAN)
+	save_archetype (aca: ARCH_LIB_AUTHORED_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
 			-- Export differential or flat archetype to a user-specified path
 		local
 			ok_to_write: BOOLEAN
@@ -383,7 +478,7 @@ feature {NONE} -- Implementation
 				create save_dialog
 				save_dialog.set_title (dialog_title)
 				save_dialog.set_file_name (name)
-				save_dialog.set_start_directory (current_work_directory)
+				save_dialog.set_start_directory (last_user_save_directory)
 
 				-- ask the user what format
 				across format_list as formats_csr loop
@@ -399,7 +494,7 @@ feature {NONE} -- Implementation
 					name := save_dialog.file_name.as_string_8
 					if not name.is_empty then
 						-- finalise the file path & create a handle
-						set_current_work_directory (file_system.dirname (name))
+						set_last_user_save_directory (file_system.dirname (name))
 						format := format_list [save_dialog.selected_filter_index]
 						ext := archetype_file_extension (diff_flag, format)
 						if not file_system.has_extension (name, ext) then
@@ -432,7 +527,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	edit_archetype (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	edit_archetype (auth_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			question_dialog: EV_QUESTION_DIALOG
@@ -442,15 +537,15 @@ feature {NONE} -- Implementation
 			orig_time_stamp: INTEGER
 		do
 			-- figure out what file to edit
-			path := aca.source_file_path
-			if aca.file_mgr.has_legacy_flat_file then
-				check attached aca.file_mgr.legacy_flat_path as lfp then
+			path := auth_aca.source_file_path
+			if auth_aca.file_mgr.has_legacy_flat_file then
+				check attached auth_aca.file_mgr.legacy_flat_path as lfp then
 					legacy_path := lfp
 				end
-				if aca.has_source_file then
+				if auth_aca.has_source_file then
 					create question_dialog.make_with_text (get_msg_line (ec_edit_which_file_question,
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
-					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.qualified_name>>))
+					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.qualified_name>>))
 					question_dialog.set_buttons (<<get_text (ec_library_edit_differential_button_text), get_text (ec_library_edit_adl14_button_text)>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					if question_dialog.selected_button.is_equal (get_text (ec_library_edit_adl14_button_text)) then
@@ -459,7 +554,7 @@ feature {NONE} -- Implementation
 				else
 					create info_dialog.make_with_text (get_msg_line (ec_edit_legacy_file_info,
 						<<file_system.basename (legacy_path)>>))
-					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<aca.id.physical_id>>))
+					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.id.physical_id>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					path := legacy_path
 				end
@@ -469,7 +564,7 @@ feature {NONE} -- Implementation
 			orig_time_stamp := file_system.file_time_stamp (path)
 			do_system_run_command_synchronous (editor_app_command + " %"" + path + "%"", Void)
 			if file_system.file_time_stamp (path) > orig_time_stamp then
-				gui_agents.select_archetype_agent.call ([aca])
+				gui_agents.select_archetype_agent.call ([auth_aca])
 			end
 		end
 

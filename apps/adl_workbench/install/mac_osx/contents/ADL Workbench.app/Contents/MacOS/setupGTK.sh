@@ -69,7 +69,7 @@ Password, then press Return: ' 2>/dev/null
 		echo
 
 		DMG="$HOME/Downloads/XQuartz.dmg"
-		curl "http://xquartz-dl.macosforge.org/SL/XQuartz-2.7.5.dmg" -o "$DMG"
+		curl "http://xquartz-dl.macosforge.org/SL/XQuartz-2.7.7.dmg" -o "$DMG"
 		TMPMOUNT=`mktemp -d /tmp/XQuartz.XXXX`
 		hdiutil attach "$DMG" -mountpoint "$TMPMOUNT"
 		sudo installer -verbose -pkg "$TMPMOUNT/XQuartz.pkg" -target /

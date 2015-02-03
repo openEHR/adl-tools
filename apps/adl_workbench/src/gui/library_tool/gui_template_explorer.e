@@ -30,7 +30,6 @@ feature {NONE} -- Initialisation
 	make
 		do
 			make_tree_control
-			artefact_types := <<{ARTEFACT_TYPE}.template>>
 
 			clear
 
@@ -39,7 +38,7 @@ feature {NONE} -- Initialisation
 
 feature -- Commands
 
-	update_tree_node_for_archetype (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	update_tree_node_for_archetype (ara: ARCH_LIB_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		local
 			an_id: STRING
@@ -72,6 +71,7 @@ feature {NONE} -- Implementation
 	do_select_archetype
 		do
 			precursor
+			tool_agents.update_archetype_explorer_agent.call ([])
 			tool_agents.archetype_explorer_select_in_tree_agent.call ([selected_archetype_node.global_artefact_identifier])
 		end
 
@@ -81,15 +81,15 @@ feature {NONE} -- Implementation
 			gui_semantic_grid.resize_columns_to_content
 		end
 
-   	ev_tree_node_populate (ara: ARCH_LIB_ARCHETYPE_ITEM)
+   	ev_tree_node_populate (ara: ARCH_LIB_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
    		local
 			og_iterator: OG_ITERATOR
 		do
 			rm_schema := ara.rm_schema
 
-			-- make sure it is a template of some kind
-			if artefact_types.has (ara.artefact_type.value) then
+			-- make sure it is a template
+			if attached {ARCH_LIB_TEMPLATE} ara then
 				-- if it is compiled & valid, display its flat filler structure
 				if semantic_grid_row_map.has (ara.qualified_name) and then attached semantic_grid_row_map.item (ara.qualified_name) as gr then
 					if ara.is_valid then
@@ -166,7 +166,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attach_node (str: STRING; pixmap: EV_PIXMAP; aca: ARCH_LIB_ARCHETYPE_ITEM)
+	attach_node (str: STRING; pixmap: EV_PIXMAP; aca: ARCH_LIB_ARCHETYPE)
 			-- attach a archetype/template node into the tree
 		local
 			tooltip: STRING
@@ -184,9 +184,11 @@ feature {NONE} -- Implementation
 
 			-- tooltip		
 			create tooltip.make_empty
-			tooltip.append (aca.source_file_path)
-			if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
-				tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				tooltip.append (auth_aca.source_file_path)
+				if auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated then
+					tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+				end
 			end
 
 			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, Void, pixmap)
@@ -195,7 +197,7 @@ feature {NONE} -- Implementation
    	semantic_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the icon appropriate to the item attached to `node'.
 		do
- 			if attached {ARCH_LIB_CLASS_ITEM} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
+ 			if attached {ARCH_LIB_CLASS} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
 				gli.set_pixmap (library_node_pixmap (acc))
 			end
 		end

@@ -177,6 +177,15 @@ feature -- Modification
 			end
 		end
 
+	remove_language (a_lang_tag: STRING)
+		require
+			has_language (a_lang_tag)
+		do
+			items.remove (a_lang_tag)
+		ensure
+			not items.has (a_lang_tag)
+		end
+
 feature {DT_OBJECT_CONVERTER} -- Serialisation
 
 	persistent_attributes: ARRAYED_LIST [STRING]

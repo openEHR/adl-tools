@@ -13,10 +13,14 @@ note
 class ARCHETYPE_COMPILER
 
 inherit
+	BUILD_MANAGER
+		redefine
+			notify_build_activity, build_args_type
+		end
+
 	SHARED_ARCHETYPE_LIBRARIES
 		export
-			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
+			{NONE} all
 		end
 
 	SHARED_ADL_APP_RESOURCES
@@ -48,7 +52,7 @@ create
 
 feature -- Definitions
 
-	max_dependency_depth: INTEGER = 20
+	Max_dependency_depth: INTEGER = 20
 
 feature {NONE} -- Initialisation
 
@@ -56,196 +60,94 @@ feature {NONE} -- Initialisation
 		do
 		end
 
-feature -- Access
+feature -- Notifications
 
-	full_compile_visual_update_action: detachable PROCEDURE [ANY, TUPLE]
-			-- Called after complete build
-
-	global_visual_update_action: detachable PROCEDURE [ANY, TUPLE[STRING]]
-			-- Called after global processing to perform GUI updates
-
-	archetype_visual_update_action: detachable PROCEDURE [ANY, TUPLE [STRING, ARCH_LIB_ARCHETYPE_ITEM, INTEGER]]
-			-- Called after processing each archetype (to perform GUI updates during processing).
-
-feature -- Status
-
-	is_full_build_completed: BOOLEAN
-			-- True if last attempt to build the whole system succeeded
-
-	is_building: BOOLEAN
-			-- is building underway?
-
-	is_interrupt_requested: BOOLEAN
-			-- Should building be cancelled immediately?
-
-feature -- Status Setting
-
-	signal_interrupt
-			-- Cancel building immediately.
+	set_update_compilation_status (a_update_compilation_status_agt: attached like update_compilation_status)
 		do
-			is_interrupt_requested := True
-			call_global_visual_update_action ("************* interrupted *************%N")
-		ensure
-			interrupted: is_interrupt_requested
+			update_compilation_status := a_update_compilation_status_agt
 		end
 
-feature -- Modification
-
-	set_full_compile_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE])
-			-- Set `full_compile_visual_update_action'.
+	set_archetype_visual_update_agent (a_routine: attached like archetype_visual_update_agent)
+			-- Set `archetype_visual_update_agent'.
 		do
-			full_compile_visual_update_action := a_routine
+			archetype_visual_update_agent := a_routine
 		ensure
-			full_compile_visual_update_action_set: full_compile_visual_update_action = a_routine
-		end
-
-	set_global_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE[STRING]])
-			-- Set `global_visual_update_action'.
-		do
-			global_visual_update_action := a_routine
-		ensure
-			global_visual_update_action_set: global_visual_update_action = a_routine
-		end
-
-	set_archetype_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE [STRING, ARCH_LIB_ARCHETYPE_ITEM, INTEGER]])
-			-- Set `archetype_visual_update_action'.
-		do
-			archetype_visual_update_action := a_routine
-		ensure
-			archetype_visual_update_action_set: archetype_visual_update_action = a_routine
+			archetype_visual_update_agent_set: archetype_visual_update_agent = a_routine
 		end
 
 feature -- Commands
 
-	build_all
-			-- Build the whole system, but not artefacts that seem to be built already.
-		do
-			is_full_build_completed := False
-			is_building := True
-			call_global_visual_update_action (get_msg_line ("compiler_building_system", Void))
-			do_all (agent check_file_system_currency (False, ?))
-			do_all (agent build_archetype (?, 0))
-			is_full_build_completed := not is_interrupt_requested
-			is_building := False
-			call_global_visual_update_action (get_msg_line ("compiler_finished_building_system", Void))
-			if is_full_build_completed then
-				call_full_compile_visual_update_action
-			end
-		end
-
-	rebuild_all
-			-- Rebuild the whole system from scratch, regardless of previous attempts.
-		do
-			is_full_build_completed := False
-			is_building := True
-			call_global_visual_update_action(get_msg_line (ec_compiler_rebuilding_system, Void))
-			do_all (agent check_file_system_currency (True, ?))
-			do_all (agent build_archetype (?, 0))
-			is_full_build_completed := not is_interrupt_requested
-			is_building := False
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_rebuilding_system, Void))
-			if is_full_build_completed then
-				call_full_compile_visual_update_action
-			end
-		end
-
-	build_subtree (aci: ARCH_LIB_ITEM)
-			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
-		do
-			is_building := True
-			call_global_visual_update_action (get_msg_line (ec_compiler_building_subtree, Void))
-			do_subtree (aci, agent check_file_system_currency (False, ?))
-			do_subtree (aci, agent build_archetype (?, 0))
-			is_building := False
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_building_subtree, Void))
-		end
-
-	rebuild_subtree (aci: ARCH_LIB_ITEM)
-			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
-		do
-			is_building := True
-			call_global_visual_update_action (get_msg_line (ec_compiler_rebuilding_subtree, Void))
-			do_subtree (aci, agent check_file_system_currency (True, ?))
-			do_subtree (aci, agent build_archetype (?, 0))
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_rebuilding_subtree, Void))
-			is_building := False
-		end
-
-	build_lineage (ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	build_lineage (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 			-- dependency depth indicates how many dependency relationships away from original artefact
+		local
+			prev_state: INTEGER
 		do
-			is_building := True
-			do_lineage (ara, agent check_file_system_currency (False, ?))
-			do_lineage (ara, agent build_archetype (?, dependency_depth))
-			is_building := False
+			prev_state := execution_state
+			change_state_to (es_building)
+			current_library.do_archetype_lineage (ara, agent check_file_system_currency (?))
+			current_library.do_archetype_lineage (ara, agent build_archetype (?, dependency_depth))
+			change_state_to (prev_state)
+			notify_build_activity
 		end
 
-	rebuild_lineage (ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
-			-- Rebuild the archetypes in the lineage containing `ara'.
-			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
+feature {NONE} -- Build State
+
+	from_scratch: BOOLEAN
+			-- build parameter indicating to rebuild all archetypes from scratch
+
+feature {NONE} -- Commands
+
+	console_start_progress_message: STRING
 		do
-			is_building := True
-			do_lineage (ara, agent check_file_system_currency (True, ?))
-			do_lineage (ara, agent build_archetype (?, dependency_depth))
-			is_building := False
+			Result := get_text (ec_compiler_building_system)
 		end
 
-	export_all (an_export_dir, a_syntax: STRING)
-			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
+	console_finish_progress_message: STRING
 		do
-			call_global_visual_update_action (get_msg_line (ec_compiler_export, <<a_syntax>>))
-			do_all (agent export_archetype (an_export_dir, a_syntax, False, ?))
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_export, <<a_syntax, an_export_dir>>))
+			Result := get_msg (ec_compiler_finished_building_system, <<current_library.archetype_count.out,
+					current_library.compile_valid_count.out, current_library.compile_warnings_count.out,
+					current_library.compile_errors_count.out>>)
 		end
 
-	build_and_export_all (an_export_dir, a_syntax: STRING)
-			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from the whole system, building each archetype as necessary.
+	console_interrupted_message: STRING
 		do
-			is_full_build_completed := False
-			is_building := True
-			call_global_visual_update_action (get_msg_line (ec_compiler_build_and_export, <<a_syntax>>))
-			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
-			is_full_build_completed := not is_interrupt_requested
-			is_building := False
-			call_global_visual_update_action (get_msg_line (ec_compiler_finished_build_and_export, <<a_syntax, an_export_dir>>))
+			Result := get_text (ec_compiler_interrupted)
+		end
+
+	do_setup_build (args: like build_args_type)
+			-- set up specific build parameters
+		do
+			from_scratch := args.from_scratch
+			artefact_count := current_library.archetype_count
+		end
+
+	do_build_all
+			-- Build the whole system, but not artefacts that seem to be built already.
+		do
+			current_library.do_all_archetypes (agent check_file_system_currency (?))
+			current_library.do_all_archetypes (agent build_archetype (?, 0))
+		end
+
+	notify_build_activity
+			-- generate any notifications to tell other parts of the system that compilation has occurred
+		do
+			current_library.notify_compile_activity
 		end
 
 feature {NONE} -- Implementation
 
-	do_all (action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]])
-			-- Perform `action' on the sub-system at and below `subtree'.
-		do
-			is_interrupt_requested := False
-			current_library.do_all_archetypes (action)
-		end
-
-	do_subtree (subtree: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]])
-			-- Perform `action' on the sub-system at and below `subtree'.
-		do
-			is_interrupt_requested := False
-			current_library.do_archetypes (subtree, action)
-		end
-
-	do_lineage (ara: ARCH_LIB_ARCHETYPE_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_ITEM]])
-			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
-			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
-		do
-			is_interrupt_requested := False
-			current_library.do_archetype_lineage(ara, action)
-		end
-
-	check_file_system_currency (from_scratch: BOOLEAN; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	check_file_system_currency (ara: ARCH_LIB_ARCHETYPE)
 			-- check archetype for anything that would require recompilation:
 			-- * editing changes, including anything that might cause reparenting
 			-- * user request to start from scratch
 		do
-			if not is_interrupt_requested then
+			if not is_interrupted then
 				if ara.compile_attempted then
 					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
-						if ara.ontology_location_changed then
+						if ara.semantic_location_changed then
 							current_library.update_archetype_id (ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
@@ -257,19 +159,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_archetype (ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
+	build_archetype (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		local
 			exception_encountered: BOOLEAN
 			build_status, exc_trace_str: STRING
 		do
+			create build_status.make_empty
 			if dependency_depth <= max_dependency_depth then
-				if not is_interrupt_requested then
+				if not is_interrupted then
 					if not exception_encountered then
 						ara.check_compilation_currency
 						if not ara.is_in_terminal_compilation_state then
-							build_status := get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
-							call_archetype_visual_update_action (build_status, ara, dependency_depth)
+							if not compiler_quiet then
+								call_console_update_agent (get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.as_upper, ara.id.physical_id>>))
+							end
 
 							-- first phase
 							ara.compile
@@ -280,90 +184,91 @@ feature {NONE} -- Implementation
 								across ara.suppliers_index as suppliers_csr loop
 									-- allow supplier loops, so avoid cycling back into current archetype
 									if suppliers_csr.item /= ara then
-										build_lineage (suppliers_csr.item, dependency_depth+1)
+										build_lineage (suppliers_csr.item, dependency_depth + 1)
 									end
 								end
 
-								-- continue compilation - remaining steps after suppliers compilation
-								ara.signal_suppliers_compiled
-								ara.compile
+								-- continue compilation - remaining steps after suppliers compilation; we check
+								-- that the archetype was not already compiled due to being in a supplier lineage
+								if ara.compilation_state /= cs_validated then
+									ara.signal_suppliers_compiled
+									ara.compile
+								end
 							end
-							build_status := ara.errors.as_string
 
-						elseif ara.is_valid then
-							if not ara.errors.is_empty then
-								build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
-							else
-								build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id>>)
+							call_archetype_visual_update_agent (ara)
+							update_progress
+
+							if global_error_reporting_level = Error_type_debug then
+								call_debug_update_agent (ara.errors.as_string, dependency_depth)
 							end
-						else
-							build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.type_name.as_upper, ara.id.physical_id, ara.error_strings>>)
+
+						elseif global_error_reporting_level = Error_type_debug then
+							if ara.is_valid then
+								if ara.errors.has_warnings then
+									build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
+								else
+									build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.as_upper, ara.id.physical_id>>)
+								end
+							else
+								build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
+							end
+							call_debug_update_agent (build_status, dependency_depth)
 						end
-						call_archetype_visual_update_action (build_status, ara, dependency_depth)
 					else
 						ara.signal_exception
-						call_archetype_visual_update_action (ara.error_strings, ara, dependency_depth)
+						call_archetype_visual_update_agent (ara)
+						if global_error_reporting_level = Error_type_debug then
+							call_debug_update_agent (ara.error_strings, dependency_depth)
+						end
 					end
 				end
 			else
 				ara.signal_exception
-				call_archetype_visual_update_action (get_msg_line (ec_compiler_infinite_regress, <<ara.id.physical_id, dependency_depth.out>>), ara, dependency_depth)
+				call_archetype_visual_update_agent (ara)
+				call_console_update_agent (get_msg_line (ec_compiler_infinite_regress, <<ara.id.physical_id, dependency_depth.out>>))
 			end
 		rescue
 			if attached exception_trace as et then
 				exc_trace_str := et
 			else
-				create exc_trace_str.make_from_string ("(Exception trace not available)")
+				create exc_trace_str.make_from_string (get_text (ec_compiler_exception_trace_unavailable))
 			end
-			call_global_visual_update_action (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
+			call_console_update_agent (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end
 
-	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_LIB_ARCHETYPE_ITEM)
-			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
-		require
-			has_serialiser_format (a_syntax)
-		local
-			filename: STRING
-		do
-			if not is_interrupt_requested then
-				if build_too then
-					build_archetype (ara, 0)
-				end
+	archetype_visual_update_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
+			-- Called after processing each archetype (to perform GUI updates during processing).
 
-				if ara.is_valid then
-					check attached file_system.pathname (an_export_dir, ara.id.physical_id) as pn and then attached archetype_file_extensions.item (a_syntax) as ext then
-						filename := pn + ext
-					end
-					ara.save_flat_as (filename, a_syntax)
-					call_archetype_visual_update_action (ara.status, ara, 0)
-				end
+	call_debug_update_agent (a_msg: STRING; dependency_depth: INTEGER)
+			-- Call `console_update_agent', with a build status of an archetype, indented according to its dependency level
+		do
+			if attached console_update_agent as ua then
+				ua.call ([create {STRING}.make_filled ('%T', dependency_depth) + a_msg])
 			end
 		end
 
-	call_full_compile_visual_update_action
-			-- Call `full_compile_visual_update_action', if it is attached.
+	call_archetype_visual_update_agent (ara: ARCH_LIB_ARCHETYPE)
+			-- Call `archetype_visual_update_agent', if it is attached.
 		do
-			if attached full_compile_visual_update_action as ua then
-				ua.call ([])
+			if attached archetype_visual_update_agent as ua then
+				ua.call ([ara])
 			end
+		--	update_compilation_status.call ([total_count, valid_count, warning_count, error_count])
 		end
 
-	call_global_visual_update_action (a_msg: STRING)
-			-- Call `global_visual_update_action', if it is attached.
-		do
-			if attached global_visual_update_action as ua then
-				ua.call ([a_msg])
-			end
+	update_compilation_status: detachable PROCEDURE [ANY, TUPLE [a_total, a_valid_count, a_warn_count, an_err_count: INTEGER]]
+			-- update the compilation status text
+		note
+			option: stable
+		attribute
 		end
 
-	call_archetype_visual_update_action (a_msg: STRING; ara: ARCH_LIB_ARCHETYPE_ITEM; dependency_depth: INTEGER)
-			-- Call `archetype_visual_update_action', if it is attached.
+	build_args_type: TUPLE [from_scratch: BOOLEAN]
 		do
-			if attached archetype_visual_update_action as ua then
-				ua.call ([a_msg, ara, dependency_depth])
-			end
+			create Result
 		end
 
 end

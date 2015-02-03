@@ -193,21 +193,21 @@ feature -- Definitions: Colours
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	archetype_rm_type_redefined_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT-MEDIUM GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	archetype_rm_type_color: EV_COLOR
 			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0, 0, 0x99)
 		end
 
@@ -221,14 +221,14 @@ feature -- Definitions: Colours
 	rm_type_color: EV_COLOR
 			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
 		end
 
 	rm_attribute_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- VERY DARK GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
 			-- create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
@@ -236,83 +236,83 @@ feature -- Definitions: Colours
 	rm_runtime_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	rm_infrastructure_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- LIGHT GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
 		end
 
 	Archetype_constraint_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- RED
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 	Binding_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	At_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- RED
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 	Ac_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- FOREST GREEN
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0, 0x66, 0)
 		end
 
 	Id_code_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
 			-- DARK BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
 		end
 
 	Id_code_color_inherited: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x80, 0x80, 0x80)
 		end
 
 	Repository_remote_proxy_color: EV_COLOR
 			-- foreground colour for displaying remote proxy entry in repo list in the UI
 			-- DARK GREY
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	Ev_grid_text_link_colour: EV_COLOR
 			-- foreground colour for links in EV_GRID
 			-- BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
 	Url_color: EV_COLOR
 			-- foreground colour for links in EV_GRID
 			-- BLUE
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
 	Default_bg_color: EV_COLOR
 			-- default background colour
-		once ("PROCESS")
+		once
 			create Result.make_with_8_bit_rgb (0xff, 0xff, 0xff)
 		end
 
@@ -323,7 +323,12 @@ feature -- Definitions: Colours
 
 	Off_white_background_color: EV_COLOR
 		once
-			create Result.make_with_8_bit_rgb (255, 255, 248)
+			create Result.make_with_8_bit_rgb (0xff, 0xff, 0xff)
+		end
+
+	Progress_bar_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (0x33, 0x33, 0xff)
 		end
 
 feature -- Definitions: Fonts
@@ -379,7 +384,7 @@ feature -- Definitions: VCS status
 		end
 
 	Vcs_status_tooltips: HASH_TABLE [STRING, INTEGER]
-		once ("PROCESS")
+		once
 			create Result.make (0)
 			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
 			Result.put (get_text (ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
@@ -437,7 +442,7 @@ feature -- Access
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
-			if attached {ARCH_LIB_CLASS_ITEM} ara as acc then
+			if attached {ARCH_LIB_CLASS} ara as acc then
 				Result := rm_type_pixmap (acc.class_definition)
 			else
 				Result := get_icon_pixmap ("archetype/" + ara.group_name)
@@ -474,10 +479,27 @@ feature -- Application Switches
 		end
 
 	set_last_user_selected_directory (a_path: STRING)
-			-- set the directory where archetypes are currently being opened and saved.
+			-- set user chosen directory.
 		do
 			if not a_path.is_empty then
 				app_cfg.put_string_value ("/file_system/last_user_selected_directory", a_path)
+			end
+		end
+
+	last_user_save_directory: STRING
+			-- most recently chosen save directory, usually via a directory chooser control
+		do
+			Result := app_cfg.string_value ("/file_system/last_user_save_directory")
+			if Result.is_empty then
+				Result := execution_environment.root_directory_name
+			end
+		end
+
+	set_last_user_save_directory (a_path: STRING)
+			-- set the directory for ad hoc saving
+		do
+			if not a_path.is_empty then
+				app_cfg.put_string_value ("/file_system/last_user_save_directory", a_path)
 			end
 		end
 

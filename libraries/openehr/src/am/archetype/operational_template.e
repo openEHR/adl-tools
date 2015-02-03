@@ -10,21 +10,13 @@ note
 class OPERATIONAL_TEMPLATE
 
 inherit
-	ARCHETYPE
+	AUTHORED_ARCHETYPE
 		redefine
-			make_flat_specialised, annotated_path
+			annotated_path
 		end
 
 create
-	make_flat_specialised
-
-feature -- Initialisation
-
-	make_flat_specialised (a_diff, a_flat_parent: ARCHETYPE)
-		do
-			precursor (a_diff, a_flat_parent)
-			create artefact_type.make_operational_template
-		end
+	default_create, make_from_other
 
 feature -- Access
 
@@ -35,6 +27,24 @@ feature -- Access
 			create Result.make (0)
 		end
 
+	component_terminology (an_archetype_id: STRING): ARCHETYPE_TERMINOLOGY
+			-- terminology for `an_archetype_id'
+		require
+			has_component_terminology (an_archetype_id)
+		do
+			check attached component_terminologies.item (an_archetype_id) as att_terminology then
+				Result := att_terminology
+			end
+		end
+
+feature -- Access
+
+	has_component_terminology (an_archetype_id: STRING): BOOLEAN
+			-- True if there is a component terminology for `an_archetype_id'
+		do
+			Result := component_terminologies.has (an_archetype_id)
+		end
+
 feature -- Modification
 
 	add_component_terminology (a_terminology: ARCHETYPE_TERMINOLOGY; an_archetype_id: STRING)
@@ -43,6 +53,12 @@ feature -- Modification
 			Terminology_is_flat: a_terminology.is_flat
 		do
 			component_terminologies.put (a_terminology, an_archetype_id)
+		end
+
+	merge_component_terminologies (other_opt: OPERATIONAL_TEMPLATE)
+			-- merge component terminologies from `other_opt'
+		do
+			component_terminologies.merge (other_opt.component_terminologies)
 		end
 
 feature -- Modification

@@ -25,12 +25,12 @@ create
 
 feature -- Initialisation
 
-	make (an_adl_version, an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: STRING; is_differential_flag, is_generated_flag: BOOLEAN)
+	make (an_adl_version, an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: IMMUTABLE_STRING_8; is_differential_flag, is_generated_flag: BOOLEAN)
 		do
 			adl_version := an_adl_version
 			create archetype_id.make_from_string (an_id)
 			archetype_id_is_old_style := id_is_old_style_flag
-			artefact_type := (create {ARTEFACT_TYPE}).type_name_to_type (artefact_type_str)
+			artefact_type := artefact_type_str
 			is_differential := is_differential_flag
 			is_generated := is_generated_flag
 		end
@@ -42,7 +42,7 @@ feature -- Access
 	adl_version: STRING
 			-- ADL version of this archetype
 
-	artefact_type: INTEGER
+	artefact_type: STRING
 			-- design type of artefact, archetype, template, template-component, etc
 
 	parent_archetype_id: detachable STRING
@@ -61,7 +61,7 @@ feature -- Status Report
 	is_template: BOOLEAN
 			-- True if `artefact_type' is any type other than archetype
 		do
-			Result := artefact_type = (create {ARTEFACT_TYPE}).template
+			Result := artefact_type.is_equal (aft_template)
 		end
 
 	is_specialised: BOOLEAN

@@ -72,7 +72,7 @@ feature -- Access
 
 feature -- Status Report
 
-	can_populate (a_source: like source): BOOLEAN
+	can_populate (a_source: attached like source; a_params: detachable TUPLE): BOOLEAN
 		do
 			Result := True
 		end
@@ -119,10 +119,10 @@ feature -- Commands
 			not is_populated
 		end
 
-	populate (a_source: attached like source)
+	populate (a_source: attached like source; a_params: detachable TUPLE)
 			-- populate the control by creating it from scratch
 		require
-			can_populate (a_source)
+			can_populate (a_source, a_params)
 		do
 			clear
 			source := a_source

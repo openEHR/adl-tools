@@ -14,25 +14,17 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_LIB_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+	make (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
 			source := aca
 			in_differential_view := differential_view_flag
 			rm_schema := an_rm_schema
-			if differential_view_flag then
-				check attached source.differential_archetype as da then
-					archetype := da
-				end
-			else
-				check attached source.flat_archetype as fa then
-					archetype := fa
-				end
-			end
+			archetype := aca.select_archetype (differential_view_flag, False)
 			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype.terminology
 		end
 
-	make_editable (aca: ARCH_LIB_ARCHETYPE_EDITABLE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		do
 			source := aca
 			in_differential_view := False
@@ -41,7 +33,7 @@ feature -- Initialisation
 			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype_clone.terminology
 			undo_redo_chain := an_undo_redo_chain
-			if attached aca.specialisation_ancestor as par_aca then
+			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype
 			end
 		ensure
@@ -50,11 +42,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	source: ARCH_LIB_ARCHETYPE_EDITABLE
+	source: ARCH_LIB_ARCHETYPE
 
 	archetype: ARCHETYPE
 
-	flat_archetype: ARCHETYPE
+	flat_archetype: AUTHORED_ARCHETYPE
 
 	parent_archetype: detachable ARCHETYPE
 

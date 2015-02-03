@@ -22,11 +22,11 @@ feature -- Access
 	console_tool_append_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent to update global console
 
-	select_archetype_agent, select_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_EDITABLE]]
+	select_archetype_agent, select_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
 
-	edit_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE_EDITABLE]]
+	edit_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
 
-	archetype_has_editor_agent: detachable FUNCTION [ANY, TUPLE [ARCH_LIB_ARCHETYPE_EDITABLE], BOOLEAN]
+	archetype_has_editor_agent: detachable FUNCTION [ANY, TUPLE [ARCH_LIB_ARCHETYPE], BOOLEAN]
 
 	select_class_agent, select_class_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_CLASS]]
 

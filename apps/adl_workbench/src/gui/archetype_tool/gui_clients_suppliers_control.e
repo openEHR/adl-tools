@@ -11,9 +11,6 @@ class GUI_CLIENTS_SUPPLIERS_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			can_populate, can_repopulate
-		end
 
 	SHARED_ARCHETYPE_LIBRARIES
 		export
@@ -76,18 +73,6 @@ feature -- Access
 
 	evx_suppliers_list, evx_clients_list: EVX_TEXT_LIST_CONTROL
 
-feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
-
 feature -- UI Feedback
 
 	visual_update_action: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER]]
@@ -119,7 +104,7 @@ feature {NONE} -- Implementation
 	build_supplier_ids
 			-- populate the ADL tree control by creating it from scratch
 		local
-			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM
+			csr_ala: detachable ARCH_LIB_ARCHETYPE
 		do
 			if attached source as src then
 				-- add C_ARCHETYPE_ROOTs to suppliers
@@ -129,11 +114,11 @@ feature {NONE} -- Implementation
 
 				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
 				if not differential_view and src.is_specialised then
-					from csr_ala := src.specialisation_ancestor until csr_ala = Void loop
+					from csr_ala := src.specialisation_parent until csr_ala = Void loop
 						across src.suppliers_index as id_csr loop
 							supplier_ids.extend (id_csr.key)
 						end
-						csr_ala := csr_ala.specialisation_ancestor
+						csr_ala := csr_ala.specialisation_parent
 					end
 				end
 			end
@@ -144,7 +129,7 @@ feature {NONE} -- Implementation
 	build_client_ids
 			-- populate the ADL tree control by creating it from scratch
 		local
-			csr_ala: detachable ARCH_LIB_ARCHETYPE_ITEM
+			csr_ala: detachable ARCH_LIB_ARCHETYPE
 		do
 			if attached source as src then
 				-- add C_ARCHETYPE_ROOTs to clients
@@ -156,13 +141,13 @@ feature {NONE} -- Implementation
 
 				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
 				if not differential_view and src.is_specialised then
-					from csr_ala := src.specialisation_ancestor until csr_ala = Void loop
+					from csr_ala := src.specialisation_parent until csr_ala = Void loop
 						if attached csr_ala.clients_index as att_clients then
 							across att_clients as id_csr loop
 								client_ids.extend (id_csr.item)
 							end
 						end
-						csr_ala := csr_ala.specialisation_ancestor
+						csr_ala := csr_ala.specialisation_parent
 					end
 				end
 			end
@@ -204,7 +189,7 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
+			if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
 				create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent (gui_agents.select_archetype_in_new_tool_agent).call ([ext_ref_node]))
 				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
 				a_menu.extend (an_mi)

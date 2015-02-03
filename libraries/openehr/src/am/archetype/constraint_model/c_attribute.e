@@ -348,6 +348,15 @@ feature -- Status Report
 			Result := differential_path /= Void
 		end
 
+	has_any_differential_path: BOOLEAN
+			-- True if this node has a contracted path anywhere in its path
+		do
+			Result := has_differential_path
+			if not Result and then attached parent as cco and then attached cco.parent as att_ca then
+				Result := att_ca.has_any_differential_path
+			end
+		end
+
 	has_child_with_id (a_node_id: STRING): BOOLEAN
 			-- has a child node with id a_node_id
 		require
@@ -526,18 +535,19 @@ feature -- Modification
 			has_child_with_id (an_obj.node_id)
 		end
 
-	put_child_left (an_obj, before_obj: C_OBJECT)
+	put_child_left (a_new_obj, before_obj: C_OBJECT)
 			-- insert a new child node before another node
 		require
-			Object_valid: valid_new_child (an_obj)
+			Object_valid: valid_new_child (a_new_obj)
 			Before_obj_valid: has_child (before_obj)
 		do
-			representation.put_child_left (an_obj.representation, before_obj.representation)
+			representation.put_child_left (a_new_obj.representation, before_obj.representation)
 			children.go_i_th (children.index_of (before_obj, 1))
-			children.put_left (an_obj)
-			an_obj.set_parent(Current)
+			children.put_left (a_new_obj)
+			a_new_obj.set_parent (Current)
 		ensure
-			has_child_with_id (an_obj.node_id)
+			Child_added: has_child (a_new_obj)
+			Parent_set: a_new_obj.parent = Current
 		end
 
 	put_child_right (a_new_obj, after_obj: C_OBJECT)
@@ -551,61 +561,65 @@ feature -- Modification
 			children.put_right (a_new_obj)
 			a_new_obj.set_parent (Current)
 		ensure
-			has_child_with_id (a_new_obj.node_id)
+			Child_added: has_child (a_new_obj)
+			Parent_set: a_new_obj.parent = Current
 		end
 
-	put_sibling_child (an_obj: C_OBJECT; to_right: BOOLEAN)
+	put_sibling_child (a_new_obj: C_OBJECT; to_right: BOOLEAN)
 			-- put a new child node after any sibling that is already there 'sibling' is defined
 			-- as an object with a node_id with the same parent as the node_id of `an_obj';
 			-- usually it is a specialised node id with a common parent, but may be a top level id
 			-- put `an_obj' at end if no sibling found
 		require
-			Object_valid: valid_new_child (an_obj)
+			Object_valid: valid_new_child (a_new_obj)
 		local
 			parent_id: STRING
 			siblings: ARRAYED_LIST [C_OBJECT]
 		do
-			parent_id := specialised_code_base (an_obj.node_id)
+			parent_id := specialised_code_base (a_new_obj.node_id)
 			siblings := children_matching_id (parent_id)
 			if not siblings.is_empty then
 				if to_right then
-					put_child_right (an_obj, siblings.last)
+					put_child_right (a_new_obj, siblings.last)
 				else
-					put_child_left (an_obj, siblings.first)
+					put_child_left (a_new_obj, siblings.first)
 				end
 			else
-				put_child (an_obj)
+				put_child (a_new_obj)
 			end
 		ensure
-			has_child_with_id (an_obj.node_id)
+			Child_added: has_child (a_new_obj)
+			Parent_set: a_new_obj.parent = Current
 		end
 
 	replace_child_by_id (an_obj: C_OBJECT; an_id: STRING)
 			-- replace node with id `an_id' by `an_obj'
 		require
-			Object_valid: valid_replacement_child (an_obj)
+			Object_valid: valid_child_object (an_obj)
 			Id_valid: has_child_with_id (an_id)
 		do
 			children.go_i_th (children.index_of (child_with_id (an_id), 1))
 			children.replace (an_obj)
 			representation.replace_child_by_id (an_obj.representation, an_id)
-			an_obj.set_parent(Current)
+			an_obj.set_parent (Current)
 		ensure
-			has_child_with_id (an_obj.node_id)
+			Child_added: has_child (an_obj)
+			Parent_set: an_obj.parent = Current
 		end
 
 	replace_child_by_rm_type_name (an_obj: C_OBJECT)
-			-- replace node with rm_type_name `a_type_name' by `an_obj'
+			-- replace node with same rm_type_name as `an_obj' by `an_obj'
 		require
 			Attribute_validity: is_single
-			Object_valid: valid_replacement_child (an_obj)
+			Object_valid: valid_child_object (an_obj)
 		do
-			representation.replace_child_by_id (an_obj.representation, child_with_rm_type_name(an_obj.rm_type_name).representation.node_key)
-			children.go_i_th (children.index_of (child_with_rm_type_name(an_obj.rm_type_name), 1))
+			representation.replace_child_by_id (an_obj.representation, child_with_rm_type_name (an_obj.rm_type_name).representation.node_key)
+			children.go_i_th (children.index_of (child_with_rm_type_name (an_obj.rm_type_name), 1))
 			children.replace (an_obj)
-			an_obj.set_parent(Current)
+			an_obj.set_parent (Current)
 		ensure
-			has_child_with_id (an_obj.node_id)
+			Child_added: has_child (an_obj)
+			Parent_set: an_obj.parent = Current
 		end
 
 	remove_child (an_obj: C_OBJECT)
@@ -614,7 +628,9 @@ feature -- Modification
 			Object_valid: has_child (an_obj)
 		do
 			representation.remove_child_by_id (an_obj.node_id)
-			children.prune_all(an_obj)
+			children.prune_all (an_obj)
+		ensure
+			not has_child (an_obj)
 		end
 
 	remove_child_by_id (an_id: STRING)
@@ -635,14 +651,15 @@ feature -- Modification
 		do
 			children.wipe_out
 			representation.remove_all_children
+		ensure
+			not has_children
 		end
 
 	replace_node_id (old_id, new_id: STRING)
 			-- replace old_id with new_id in relevant child node, and also in attribute parent list
 		require
-			New_id_valid: not has_child_with_id (new_id)
+			New_id_valid: not new_id.is_empty and not has_child_with_id (new_id)
 			Old_id_valid: has_child_with_id (old_id)
-			New_id_valid: not new_id.is_empty
 		do
 			if not old_id.same_string (new_id) then
 				representation.replace_node_id (old_id, new_id)
@@ -675,12 +692,6 @@ feature -- Validation
 			-- test an_obj for addition as a new child node (including for replacement)
 		do
 			Result := valid_child_object (an_obj) and not has_child_with_id (an_obj.node_id) or else attached {C_PRIMITIVE_OBJECT} an_obj
-		end
-
-	valid_replacement_child (an_obj: C_OBJECT): BOOLEAN
-			-- test an_obj for addition as a new child node (including for replacement)
-		do
-			Result := valid_child_object (an_obj) and has_child_with_id (an_obj.node_id)
 		end
 
 	valid_child_object (an_obj: C_OBJECT): BOOLEAN

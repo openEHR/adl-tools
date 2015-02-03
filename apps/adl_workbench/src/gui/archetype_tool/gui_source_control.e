@@ -13,7 +13,7 @@ class
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			enable_edit, disable_edit
+			enable_edit, disable_edit, can_populate, can_repopulate
 		end
 
 	OPERATOR_TYPES
@@ -71,6 +71,18 @@ feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
 
+feature -- Status Report
+
+	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
+		do
+			Result := True
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated
+		end
+
 feature -- Commands
 
 	enable_edit
@@ -101,7 +113,7 @@ feature {NONE} -- Implementation
 
 	adl_14_source_text: detachable STRING
 		do
-			if source.file_mgr.has_legacy_flat_file and then attached source.file_mgr.legacy_flat_text_original as ft then
+			if attached auth_source as att_source and then att_source.file_mgr.has_legacy_flat_file and then attached att_source.file_mgr.legacy_flat_text_original as ft then
 				Result := ft
 			end
 		end
@@ -110,7 +122,7 @@ feature {NONE} -- Implementation
 
 	adl_14_converted_text: detachable STRING
 		do
-			if source.file_mgr.has_legacy_flat_file and then attached source.file_mgr.legacy_flat_text as legacy_conv_text then
+			if attached auth_source as att_source and then att_source.file_mgr.has_legacy_flat_file and then attached att_source.file_mgr.legacy_flat_text as legacy_conv_text then
 				Result := legacy_conv_text
 			end
 		end
@@ -122,8 +134,8 @@ feature {NONE} -- Implementation
 			-- following check has to also look at adl_version since that reflects most recently read file
 			-- if the version is 1.4, then the 1.4 file was read for the most recent parse, even if the
 			-- 1.5 file was subsequently created as a result, but before this routine gets called.
-			if source.has_source_file and not source.file_mgr.adl_version.is_equal (Adl_14_version) then
-				Result := source.file_mgr.source_text_original
+			if attached auth_source as att_source and then att_source.has_source_file and then not att_source.file_mgr.adl_version.is_equal (Adl_14_version) then
+				Result := att_source.file_mgr.source_text_original
 			end
 		end
 
@@ -131,11 +143,11 @@ feature {NONE} -- Implementation
 
 	adl_converted_text: detachable STRING
 		do
-			if source.file_mgr.is_text_converted then
-				if attached source.differential_archetype then
-					Result := source.differential_serialised
-				elseif source.has_source_file then
-					Result := source.source_text
+			if attached auth_source as att_source and then att_source.file_mgr.is_text_converted then
+				if attached auth_source.differential_archetype then
+					Result := auth_source.differential_serialised
+				elseif auth_source.has_source_file then
+					Result := auth_source.source_text
 				end
 			end
 		end
@@ -216,7 +228,7 @@ feature {NONE} -- Implementation
 			-- save the final serialised result as the new source. Useful to correct any formatting, occasionally causes
 			-- minor syntax upgrading
 		do
-			if attached source as att_source then
+			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
@@ -228,7 +240,7 @@ feature {NONE} -- Implementation
 	save_adl_converted_source
 			-- save the intermediate converted 1.5 source which contains ADL 1.5.1 modifications on ADL 1.5 old style source
 		do
-			if attached source as att_source then
+			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
@@ -241,7 +253,7 @@ feature {NONE} -- Implementation
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
 			-- and then select the archetype in the catalogue to force a recompile
 		do
-			if attached source as att_source then
+			if attached auth_source as att_source then
 				att_source.save_text_to_differential_file (a_text)
 				att_source.signal_source_edited
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
@@ -254,7 +266,7 @@ feature {NONE} -- Implementation
 			-- save what is in a 1.4 editor pane to the 1.4 file
 			-- and then select the archetype in the catalogue to force a recompile
 		do
-			if attached source as att_source then
+			if attached auth_source as att_source then
 				att_source.save_text_to_legacy_file (a_text)
 				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
 				gui_agents.select_archetype_agent.call ([att_source])

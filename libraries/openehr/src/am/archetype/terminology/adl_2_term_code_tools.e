@@ -214,6 +214,27 @@ feature -- Access
 			Valid_result: is_valid_code (Result)
 		end
 
+	code_ancestor_level (a_code: STRING): INTEGER
+			-- determine the specialisation level at which `a_code' was originally defined in the
+			-- specialisation hierarchy. For example:
+			--	id22		=> 0	(introduced at level 0)
+			--	id22.1		=> 0	(introduced at level 0)
+			--	id22.0.1	=> 0	(introduced at level 0)
+			--	id0.4		=> 1	(introduced at level 1)
+			--	id0.4.1		=> 1	(introduced at level 1)
+			--	id0.4.0.1	=> 1	(introduced at level 1)
+			--	id0.0.0.1	=> 3	(introduced at level 3)
+		require
+			Code_valid: is_valid_code (a_code)
+		local
+			i: INTEGER
+		do
+			from i := leader_length (a_code) + 1 until i > a_code.count or not a_code.substring (i, i + Zero_leader.count - 1).is_equal (Zero_leader) loop
+				i := i + Zero_leader.count
+				Result := Result + 1
+			end
+		end
+
 	specialisation_status_from_code (a_code: STRING; a_depth: INTEGER): INTEGER
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
@@ -233,7 +254,7 @@ feature -- Access
 			--		at0.1.1 at depth 4 ==> ss_inherited
 			--		at9.0.0.1 at depth 5 ==> ss_inherited
 		require
-			Code_valid: is_valid_code(a_code)
+			Code_valid: is_valid_code (a_code)
 			Depth_valid: a_depth >= 0
 		local
 			code_defined_in_this_level: BOOLEAN
@@ -275,7 +296,7 @@ feature -- Access
 			lpos, rpos, depth_count: INTEGER
 		do
 			spec_depth := specialisation_depth_from_code (a_code)
-			code_num_part := a_code.substring (leader_length (a_code)+1, a_code.count)
+			code_num_part := a_code.substring (leader_length (a_code) + 1, a_code.count)
 
 			-- determine left hand position
 			from

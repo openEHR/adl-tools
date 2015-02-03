@@ -51,7 +51,6 @@ feature {NONE} -- Initialisation
 	make
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
-			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_overlay, {ARTEFACT_TYPE}.template>>
 			make_tree_control
 			tool_agents.set_archetype_explorer_select_in_tree_agent (agent select_item_in_tree)
 
@@ -94,7 +93,7 @@ feature -- Commands
 			end
 		end
 
-	update_tree_node_for_archetype (aca: ARCH_LIB_ARCHETYPE_ITEM)
+	update_tree_node_for_archetype (aca: ARCH_LIB_ARCHETYPE)
 			-- update Library tree node with changes in compilation status
 		do
 			-- update semantic grid
@@ -191,7 +190,7 @@ feature {NONE} -- Implementation
 	do_populate_filesys_grid
 		do
 			-- populate filesys grid on demand
-	 		source.do_all_filesys (agent ev_filesys_grid_populate_enter, agent ev_filesys_grid_populate_exit)
+	 		source.do_all_source (agent ev_filesys_grid_populate_enter, agent ev_filesys_grid_populate_exit)
 			gui_filesys_grid.ev_grid.expand_all (agent ev_filesys_tree_expand)
 			gui_filesys_grid.resize_columns_to_content
 		end
@@ -199,8 +198,7 @@ feature {NONE} -- Implementation
    	ev_semantic_grid_populate_enter (aci: ARCH_LIB_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
-			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca and then artefact_types.has (aca.artefact_type.value))) then
+			if not aci.is_root and (aci.subtree_artefact_total > 0 or else show_entire_ontology or else attached {ARCH_LIB_ARCHETYPE} aci) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
 					gui_semantic_grid.add_row (aci)
@@ -219,9 +217,7 @@ feature {NONE} -- Implementation
 
    	ev_semantic_grid_populate_exit (aci: ARCH_LIB_ITEM)
    		do
-			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-				(attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca and then artefact_types.has (aca.artefact_type.value)))
-			then
+			if not aci.is_root and (aci.subtree_artefact_total > 0 or else show_entire_ontology or else attached {ARCH_LIB_ARCHETYPE} aci) then
 				ev_tree_item_stack.remove
 			end
 		end
@@ -229,7 +225,7 @@ feature {NONE} -- Implementation
    	semantic_grid_update_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
-			text, tooltip: STRING
+			id_str, text, tooltip: STRING
 			pixmap: detachable EV_PIXMAP
 			col: detachable EV_COLOR
 		do
@@ -237,40 +233,52 @@ feature {NONE} -- Implementation
 				create text.make_empty
 				create tooltip.make_empty
 
-				if attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca then -- archetype / template node
+				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
-						text.append ("(" + aca.file_mgr.adl_version + ") ")
+					id_str := aca.semantic_id
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						if display_archetype_source and not auth_aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
+							text.append ("(" + auth_aca.file_mgr.adl_version + ") ")
+						end
+						if auth_aca.file_mgr.is_reference_archetype then
+							id_str := aci.name.as_upper
+						end
 					end
-					if aca.file_mgr.is_reference_archetype then
-						text.append (aci.name.as_upper)
-					else
-						text.append (aca.semantic_id)
-					end
+
+					-- id
+					text.append (id_str)
+
+					-- slot icon
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
 
-					-- tooltip
-					tooltip.append (aca.source_file_path)
-					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
-						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+					if aca.has_children then
+						text.append (" [" + aca.subtree_artefact_total.out + "]")
 					end
 
-					if aca.file_mgr.is_reference_archetype then
+					-- tooltip
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						tooltip.append (auth_aca.source_file_path)
+						if auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated then
+							tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+						end
+					end
+
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
-	 			elseif attached {ARCH_LIB_CLASS_ITEM} aci as acc then
+	 			elseif attached {ARCH_LIB_CLASS} aci as acc then
 		 	 		tooltip.append (acc.qualified_name + "%N" + acc.class_definition.description)
 					text.append (aci.name)
 					col := archetype_rm_type_color
-	 				text.append (" (" + acc.subtree_artefact_count (artefact_types).out + ")")
+	 				text.append (" [" + acc.subtree_artefact_total.out + "]")
 
 	 			elseif attached {ARCH_LIB_PACKAGE_ITEM} aci as accl then
 	 				text.append (accl.qualified_name)
 					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
-	 				text.append (" (" + accl.subtree_artefact_count (artefact_types).out + ")")
+	 				text.append (" [" + accl.subtree_artefact_total.out + "]")
 				end
 
 				-- pixmap
@@ -316,7 +324,7 @@ feature {NONE} -- Implementation
    	filesys_grid_update_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
-			text, tooltip: STRING
+			id_str, text, tooltip: STRING
 			pixmap: detachable EV_PIXMAP
 			col: detachable EV_COLOR
 		do
@@ -324,37 +332,45 @@ feature {NONE} -- Implementation
 				create text.make_empty
 				create tooltip.make_empty
 
-				if attached {ARCH_LIB_ARCHETYPE_ITEM} aci as aca then -- archetype / template node
+				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
-					if display_archetype_source and not aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
-						text.append ("(" + aca.file_mgr.adl_version + ") ")
+					id_str := aca.semantic_id
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						if display_archetype_source and not auth_aca.file_mgr.adl_version.starts_with (Latest_adl_minor_version) then
+							text.append ("(" + auth_aca.file_mgr.adl_version + ") ")
+						end
+						if auth_aca.file_mgr.is_reference_archetype then
+							id_str := aci.name.as_upper
+						end
 					end
-					if aca.file_mgr.is_reference_archetype then
-						text.append (aci.name.as_upper)
-					else
-						text.append (aca.semantic_id)
-					end
+
+					-- id
+					text.append (id_str)
+
+					-- slot icon
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
 
 					-- tooltip
-					tooltip.append (aca.source_file_path)
-					if aca.file_mgr.has_legacy_flat_file and aca.file_mgr.is_source_generated then
-						tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+						tooltip.append (auth_aca.source_file_path)
+						if (auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated) then
+							tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+						end
 					end
 
 					-- pixmap
 					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
-					if aca.file_mgr.is_reference_archetype then
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
 						col := archetype_rm_type_color
 					end
 
 	 			elseif attached {ARCH_LIB_FILESYS_ITEM} aci as acfsn then
 	 				text.append (acfsn.name)
 					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
-	 				text.append (" (" + acfsn.subtree_artefact_count (artefact_types).out + ")")
+	 				text.append (" (" + acfsn.subtree_artefact_total.out + ")")
 
 				end
 
@@ -368,9 +384,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selected_class_node: detachable ARCH_LIB_CLASS_ITEM
+	selected_class_node: detachable ARCH_LIB_CLASS
 
-	select_class_with_delay (acc: ARCH_LIB_CLASS_ITEM)
+	select_class_with_delay (acc: ARCH_LIB_CLASS)
 		do
 			selected_class_node := acc
 			delayed_select_class_agent.set_interval (300)
@@ -419,7 +435,7 @@ feature {NONE} -- Implementation
 
 	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
-			Result := (attached {ARCH_LIB_CLASS_ITEM} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
+			Result := (attached {ARCH_LIB_CLASS} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
 				attached {ARCH_LIB_PACKAGE_ITEM} ev_grid_row.data) and
 	 			ev_grid_row.is_expandable
 		end
@@ -434,9 +450,9 @@ feature {NONE} -- Implementation
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
 			-- handler for any button, which causes a selection of the node
 		do
-			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay  (aca)
-			elseif attached {ARCH_LIB_CLASS_ITEM} an_ev_grid_item.row.data as accn then
+			elseif attached {ARCH_LIB_CLASS} an_ev_grid_item.row.data as accn then
 				select_class_with_delay (accn)
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
@@ -447,9 +463,9 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				if attached an_ev_grid_item then
-					if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
+					if attached {ARCH_LIB_ARCHETYPE} an_ev_grid_item.row.data as aca then
 						build_archetype_node_context_menu (aca)
-					elseif attached {ARCH_LIB_CLASS_ITEM} an_ev_grid_item.row.data as accn then
+					elseif attached {ARCH_LIB_CLASS} an_ev_grid_item.row.data as accn then
 						build_class_node_context_menu (accn)
 					else
 						build_default_context_menu
@@ -459,7 +475,7 @@ feature {NONE} -- Implementation
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
 
-	build_class_node_context_menu (accn: ARCH_LIB_CLASS_ITEM)
+	build_class_node_context_menu (accn: ARCH_LIB_CLASS)
 			-- creates the context menu for a right click action for an ARCH_CAT_CLASS_NODE node
 		local
 			menu, tree_menu: EV_MENU
@@ -495,17 +511,17 @@ feature {NONE} -- Implementation
 			menu.show
 		end
 
-	display_context_selected_class_in_active_tool (accn: ARCH_LIB_CLASS_ITEM)
+	display_context_selected_class_in_active_tool (accn: ARCH_LIB_CLASS)
 		do
 			gui_agents.select_class_agent.call ([accn.class_definition])
 		end
 
-	display_context_selected_class_in_new_tool (accn: ARCH_LIB_CLASS_ITEM)
+	display_context_selected_class_in_new_tool (accn: ARCH_LIB_CLASS)
 		do
 			gui_agents.select_class_in_new_tool_agent.call ([accn.class_definition])
 		end
 
-	display_context_selected_class_in_rm_schema_tool (accn: ARCH_LIB_CLASS_ITEM)
+	display_context_selected_class_in_rm_schema_tool (accn: ARCH_LIB_CLASS)
 		do
 			gui_agents.select_class_in_rm_schema_tool_agent.call ([accn.class_definition.globally_qualified_path])
 		end
@@ -520,7 +536,7 @@ feature {NONE} -- Implementation
 				gli.select_actions.block
 				gli.enable_select
 				if not gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) and
-					attached {ARCH_LIB_ARCHETYPE_EDITABLE} current_library.archetype_with_id (ari_global_id) as ala
+					attached {ARCH_LIB_ARCHETYPE} current_library.archetype_with_id (ari_global_id) as ala
 				then
 					gui_agents.select_archetype_agent.call ([ala])
 				end
@@ -528,33 +544,31 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; auth_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- add further menu items specific to descendant tools
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if aca.is_valid then
+			if auth_aca.is_valid then
 				-- create new specialised archetype
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 
 				-- create new template
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 			end
 		end
 
-	create_new_specialised_archetype (parent_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	create_new_specialised_archetype (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 		do
 			if attached source as src then
 				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), parent_aca.id.deep_twin, parent_aca.id, src)
-				check attached proximate_ev_window (ev_root_container) as prox_win then
-					dialog.show_modal_to_window (prox_win)
-				end
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then
 					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
@@ -564,7 +578,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_template (parent_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	create_new_template (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 			new_id: ARCHETYPE_HRID
@@ -584,26 +598,33 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS_ITEM)
+	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 			matching_ids: ARRAYED_SET [STRING]
 			in_dir_path: STRING
+			found: BOOLEAN
 		do
-			-- figure out a reasonable path as the path of some other archetype of the same class
-			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
-			if not matching_ids.is_empty then
-				matching_ids.start
-				in_dir_path := file_system.dirname (source.archetype_with_id (matching_ids.item).source_file_path)
-			else
-				in_dir_path := current_library_interface.library_path
-			end
-
 			if attached source as src then
+				-- default creation directory: top of library area
+				in_dir_path := current_library_interface.library_path
+
+				-- try for a better path as the path of some other archetype of the same class
+				matching_ids := src.matching_ids (".*", accn.class_definition.name, Void)
+				if not matching_ids.is_empty then
+					from matching_ids.start until matching_ids.off or found loop
+						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} src.archetype_with_id (matching_ids.item) as alaa then
+							in_dir_path := file_system.dirname (alaa.source_file_path)
+							found := True
+						end
+						matching_ids.forth
+					end
+				end
+
 				create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), src)
 				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if dialog.is_valid then
-					src.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
+					src.add_new_non_specialised_archetype (dialog.archetype_id, dialog.archetype_directory)
 					populate (src)
 					select_item_in_tree (src.last_added_archetype.id.physical_id)
 				end

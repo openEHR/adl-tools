@@ -107,6 +107,8 @@ feature -- Access
 	other_contributors: detachable ARRAYED_LIST [STRING]
 			-- Other contributors to the resource, probably listed in “name <email>” form
 
+	references: detachable HASH_TABLE [STRING, STRING]
+
 	other_details: detachable HASH_TABLE [STRING, STRING]
 
 	parent_resource: detachable AUTHORED_RESOURCE
@@ -497,6 +499,38 @@ feature -- Modification
 			key_removed: attached other_details as od and then not od.has (a_key)
 		end
 
+	put_references_item (a_key, a_value: STRING)
+			-- Add the key, value pair to `references'. Will replace any
+			-- existing value for the same key
+		require
+			Key_valid: not a_key.is_empty
+		local
+			dets: attached like references
+		do
+			if attached references as att_od then
+				dets := att_od
+			else
+				create dets.make (0)
+				references := dets
+			end
+
+			dets.force (a_value, a_key)
+		ensure
+			references_attached: attached references as od and then od.item (a_key) = a_value
+		end
+
+	remove_references_item (a_key: STRING)
+			-- Remove the key, value pair from `references'.
+		require
+			Key_valid: not a_key.is_empty
+		do
+			if attached references as att_od then
+				att_od.remove (a_key)
+			end
+		ensure
+			key_removed: attached references as od and then not od.has (a_key)
+		end
+
 	set_parent_resource (a_res: AUTHORED_RESOURCE)
 			-- set parent_resource
 		do
@@ -525,6 +559,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.extend ("resource_package_uri")
 			Result.extend ("details")
 			Result.extend ("lifecycle_state")
+			Result.extend ("references")
 			Result.extend ("other_details")
 		end
 

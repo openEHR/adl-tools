@@ -289,7 +289,13 @@ feature {NONE} -- Implementation
 			-- a default instance can't be anchored!
 		do
 			Result := generator
-			Result.remove_tail (("_ED_CONTEXT").count)
+			Result.remove_tail (ui_node_class_name_tail.count)
+		end
+
+	ui_node_class_name_tail: STRING
+		once
+			Result := bare_type_name (({ANY_UI_NODE}).name)
+			Result.remove_head (bare_type_name (({ANY}).name).count)
 		end
 
 end

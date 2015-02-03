@@ -38,19 +38,22 @@ feature -- Access
 			-- A proper release build done by the SConstruct will have a non-zero revision number.
 			-- The SConstruct automatically reverts its change, after it has finished building.
 
-	beta: STRING = "11"
+	beta: IMMUTABLE_STRING_8
 			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
-
-	version_to_minor: STRING
-			-- The version as a string of the form "major.minor".
-		do
-			Result := major.out + "." + minor.out
+		once
+			create Result.make_from_string ("11")
 		end
 
-	version_to_build: STRING
+	version_to_minor: IMMUTABLE_STRING_8
 			-- The version as a string of the form "major.minor".
 		do
-			Result := major.out + "." + minor.out + "." + build.out
+			create Result.make_from_string (major.out + "." + minor.out)
+		end
+
+	version_to_build: IMMUTABLE_STRING_8
+			-- The version as a string of the form "major.minor".
+		do
+			create Result.make_from_string (major.out + "." + minor.out + "." + build.out)
 		end
 
 	out: STRING

@@ -39,18 +39,10 @@ create
 %token <STRING> V_VALUE
 
 %token SYM_ARCHETYPE SYM_SPECIALIZE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
-
--------------------------------------------------------------------
---- START legacy ADL 1.4 support
----
-%token SYM_CONCEPT 
----
---- END legacy ADL 1.4 support
--------------------------------------------------------------------
-
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_TERMINOLOGIES
 %token SYM_DESCRIPTION SYM_TERMINOLOGY SYM_RULES
 %token SYM_ADL_VERSION SYM_RM_RELEASE SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_UID
+%token SYM_OVERLAY_TEXTS
 
 %%
 
@@ -74,20 +66,6 @@ input: archetype
 		{
 			accept
 		}
--------------------------------------------------------------------
---- START legacy ADL 1.4 support
----
-	| transitional_archetype
-		{
-			accept
-		}
-	| transitional_specialised_archetype
-		{
-			accept
-		}
----
---- END legacy ADL 1.4 support
--------------------------------------------------------------------
 	| error
 		{
 			abort_with_error (ec_SUNK, Void)
@@ -121,11 +99,15 @@ template: template_marker arch_meta_data archetype_id
 		arch_rules
 		arch_terminology
 		arch_annotations
+		template_overlay_texts
 	;
 
-template_overlay: template_overlay_marker arch_meta_data archetype_id 
+template_overlay_texts: -- nothing OK
+	| SYM_OVERLAY_TEXTS
+	;
+
+template_overlay: template_overlay_marker archetype_id 
 	   	arch_specialisation
-		arch_language 
 		arch_definition 
 		arch_terminology
 	;
@@ -139,41 +121,6 @@ operational_template: operational_template_marker arch_meta_data archetype_id
 		arch_annotations
 		arch_component_terminologies
 	;
-
--------------------------------------------------------------------
---- START legacy ADL 1.4 support
----
-transitional_specialised_archetype: archetype_marker arch_meta_data archetype_id 
-	   	arch_specialisation
-		arch_concept 
-		arch_language 
-		arch_description 
-		arch_definition 
-		arch_rules
-		arch_terminology
-		arch_annotations
-	;
-
-transitional_archetype: archetype_marker arch_meta_data archetype_id 
-		arch_concept 
-		arch_language 
-		arch_description 
-		arch_definition 
-		arch_rules
-		arch_terminology
-		arch_annotations
-	;
-
-arch_concept: SYM_CONCEPT V_CONCEPT_CODE
-		{
-		}
-	| SYM_CONCEPT error
-		{
-		}
-	;
----
---- END legacy ADL 1.4 support
--------------------------------------------------------------------
 
 archetype_marker: SYM_ARCHETYPE 
 		{
@@ -215,7 +162,7 @@ arch_meta_data_items: arch_meta_data_item
 
 arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 		{
-			adl_version.copy ($3)
+			create adl_version.make_from_string ($3)
 		}
 	-- allow for Oids
 	| SYM_UID '=' V_DOTTED_NUMERIC
@@ -229,7 +176,7 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 		}
 	| SYM_RM_RELEASE '=' V_DOTTED_NUMERIC
 		{
-			rm_release.copy ($3)
+			create rm_release.make_from_string ($3)
 		}
 	| SYM_IS_CONTROLLED
 		{
@@ -366,7 +313,6 @@ feature -- Initialization
 			create other_metadata.make (0)
 			create archetype_id.default_create
 			create definition_text.make_empty
-			create language_text.make_empty
 			create terminology_text.make_empty
 			create artefact_type.default_create
 			create adl_version.make_empty
@@ -385,19 +331,17 @@ feature -- Initialization
 			reset
 
 			create artefact_type.default_create
-			adl_version.wipe_out
-			rm_release.wipe_out
-			other_metadata.wipe_out
+			create adl_version.make_empty
+			create rm_release.make_empty
+			create other_metadata.make (0)
 			create archetype_id.default_create
 			uid := Void
 			parent_archetype_id := Void
 			is_controlled := False
 			is_generated := False
 
-			language_text.wipe_out
+			language_text := Void
 			description_text := Void
-			definition_text.wipe_out
-			terminology_text.wipe_out
 			rules_text := Void
 			annotations_text := Void
 			component_terminologies_text := Void
@@ -438,9 +382,7 @@ feature -- Parse Output
 
 	parent_archetype_id: detachable STRING
 
-	concept: detachable STRING
-
-	language_text: STRING
+	language_text: detachable STRING
 
 	description_text: detachable STRING
 

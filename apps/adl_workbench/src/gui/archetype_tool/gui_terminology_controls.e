@@ -12,7 +12,7 @@ class GUI_TERMINOLOGY_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, enable_edit, disable_edit, do_display, can_populate, can_repopulate
+			can_edit, enable_edit, disable_edit, do_display
 		end
 
 	ADL_2_TERM_CODE_TOOLS
@@ -110,16 +110,6 @@ feature -- Access
 
 feature -- Status Report
 
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
-
 	can_edit: BOOLEAN
 			-- True if this tool has editing capability
 		do
@@ -179,7 +169,12 @@ feature {NONE} -- Implementation
 	terminology: ARCHETYPE_TERMINOLOGY
 			-- access to ontology of selected archetype
 		do
-			Result := source_archetype.terminology
+			Result := terminology_stack.item
+		end
+
+	terminology_stack: ARRAYED_STACK [ARCHETYPE_TERMINOLOGY]
+		attribute
+			create Result.make (0)
 		end
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
@@ -196,11 +191,15 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_language end
 
+			terminology_stack.extend (source_archetype.terminology)
+
 			terminologies := terminology.terminologies_available
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			do_populate_id_terms
 			do_populate_values
+
+			terminology_stack.remove
 		end
 
 	do_populate_id_terms
@@ -254,6 +253,18 @@ feature {NONE} -- Implementation
 				end
 			elseif attached {C_PRIMITIVE_OBJECT} a_c_node then
 				-- ignore
+
+			elseif attached {C_ARCHETYPE_ROOT} a_c_node as co and then not is_id_code (co.node_id) then
+				populate_c_archetype_root_row_data (co.node_id)
+
+				check attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+					terminology_stack.extend (opt.component_terminology (co.node_id))
+				end
+
+				check attached evx_id_terms_grid.last_row as lr then
+					ev_parent_rows.extend (lr)
+				end
+
 			elseif attached {C_OBJECT} a_c_node as co and then terminology.has_id_code (co.node_id) then
 				populate_id_term_row_data (co.node_id)
 				check attached evx_id_terms_grid.last_row as lr then
@@ -319,9 +330,33 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_PRIMITIVE_OBJECT} a_c_node then
 				-- ignore
+			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car and then not is_id_code (car.node_id)then
+				check attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+					terminology_stack.remove
+				end
+				ev_parent_rows.remove
 			elseif attached {C_OBJECT} a_c_node as co and then terminology.has_id_code (co.node_id) then
 				ev_parent_rows.remove
 			end
+		end
+
+	populate_c_archetype_root_row_data (an_archetype_id: STRING)
+			-- populate a row that corresponds to a C_ARCHETYPE_ROOT node in flat form, whose id is an archetypoe_id
+		local
+			ev_row: EV_GRID_ROW
+		do
+			check attached selected_language end
+
+			if ev_parent_rows.is_empty then
+				evx_id_terms_grid.add_row (an_archetype_id)
+			else
+				evx_id_terms_grid.add_sub_row (ev_parent_rows.item, an_archetype_id)
+			end
+			check attached evx_id_terms_grid.last_row as lr then
+				ev_row := lr
+			end
+
+			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, an_archetype_id, Void, Void, Id_code_color, get_icon_pixmap ("archetype/term_rel_part_of"))
 		end
 
 	ev_parent_rows: ARRAYED_STACK [EV_GRID_ROW]
@@ -512,6 +547,7 @@ feature {NONE} -- Implementation
 		end
 
 	update_term_text (a_node_id: STRING; an_ev_row: EV_GRID_ROW)
+			-- action to perform if text for an id-code is edited by user
 		local
 			arch_term: ARCHETYPE_TERM
 			old_text: STRING
@@ -531,6 +567,7 @@ feature {NONE} -- Implementation
 		end
 
 	update_term_description (a_node_id: STRING; an_ev_row: EV_GRID_ROW)
+			-- action to perform if description for an id-code is edited by user
 		local
 			arch_term: ARCHETYPE_TERM
 			old_text: STRING

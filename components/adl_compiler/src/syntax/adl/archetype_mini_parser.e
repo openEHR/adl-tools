@@ -42,82 +42,47 @@ feature -- Commands
 		require
 			path_valid: file_system.file_exists (a_full_path)
 		local
-			lines: LIST [STRING]
-			artefact_types: ARTEFACT_TYPE
-			id_bad: BOOLEAN
-			arch_is_differential, arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
-			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
-			parent_id_str: detachable STRING
-			lpos, rpos: INTEGER
+			arch_is_differential: BOOLEAN
 		do
 			reset
-			create artefact_types.default_create
-			create adl_ver.make_empty
-
 			-- determine from the path whether it is a differential (source form) archetype
 			arch_is_differential := file_system.has_extension (a_full_path, File_ext_archetype_source)
 
 			-- read first 5 non-blank lines, returned left- and right-adjusted (whitespace-stripped)
 			file_context.set_target (a_full_path)
 			file_context.read_n_lines(5)
-			lines := file_context.line_buf
 
-			-- first line
-			create arch_artefact_type_name.make_empty
-			if lines[1].has ('(') then
-				is_generated := lines[1].has_substring (Generated_flag_string)
+			parse_lines (file_context.line_buf, a_full_path, arch_is_differential)
+		end
 
-				-- extract ADL version
-				if lines[1].has_substring (Adl_version_string) then
-					lpos := lines[1].substring_index (Adl_version_string, 1) + Adl_version_string.count
-					lpos := lines[1].index_of ('=', lpos) + 1
-					from rpos := lpos until lines[1].item (rpos) = ')' or lines[1].item (rpos) = ';' or else rpos > lines[1].count loop
-						rpos := rpos + 1
-					end
-					adl_ver := lines[1].substring (lpos, rpos-1)
-					adl_ver.left_adjust
-					adl_ver.right_adjust
+	parse_from_text (an_adl_text, an_arch_source_id: STRING)
+			-- do a mini parse from `an_adl_text'
+		local
+			line_str: STRING
+			start_pos, eol_pos: INTEGER
+			lines: ARRAYED_LIST [STRING]
+		do
+			reset
+			create lines.make (0)
+			from
+				start_pos := 1
+				eol_pos := 1
+			until
+				lines.count = 4 or eol_pos = 0 or start_pos > an_adl_text.count
+			loop
+				eol_pos := an_adl_text.index_of ('%N', start_pos)
+				line_str := an_adl_text.substring (start_pos, eol_pos - 1)
+				line_str.left_adjust
+				line_str.right_adjust
+				if not line_str.is_empty then
+					lines.extend (line_str)
 				end
-				arch_artefact_type_name := lines[1].substring (1, lines[1].index_of ('(', 1) - 1)
-				arch_artefact_type_name.right_adjust
+				start_pos := eol_pos + 1
 			end
-
-			-- now line[1] should contain only the artefact type, e.g. 'archetype', 'template'
-			if artefact_types.valid_type_name (arch_artefact_type_name) then
-
-				-- get line 2 - should be archetype id
-				if archetype_id_checker.valid_id (lines[2]) then
-					 -- ok
-				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
-					arch_id_is_old_style := True
-				else -- something wrong with the id
-					id_bad := True
-					add_error (ec_parse_archetype_e8, <<a_full_path, lines[2]>>)
-				end
-
-				if not id_bad then
-					archetype_id_str := lines[2].twin
-
-					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
-					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
-						if archetype_id_parser.valid_id_reference (lines[4]) then
-							parent_id_str := lines[4].twin
-						elseif old_archetype_id_pattern_regex.matches (lines[4]) then
-							parent_id_str := lines[4].twin
-							arch_parent_id_is_old_style := True
-						else
-							-- something wrong with the parent id
-							add_error (ec_parse_archetype_e10, <<a_full_path, lines[4]>>)
-						end
-					end
-
-					create last_archetype.make (adl_ver, archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
-					if attached parent_id_str as pid_str then
-						last_archetype.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
-					end
-				end
+			if lines.count = 4 then
+				parse_lines (lines, an_arch_source_id, True)
 			else
-				add_error (ec_parse_archetype_e9, <<a_full_path, lines[2]>>)
+				-- TODO - do some error handling
 			end
 		end
 
@@ -182,6 +147,81 @@ feature {NONE} -- Implementation
 	archetype_id_parser: ARCHETYPE_HRID_PARSER
 		once
 			create Result.make
+		end
+
+	parse_lines (lines: LIST [STRING]; source_id: STRING; arch_is_differential: BOOLEAN)
+			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
+			-- specialisation status and if specialised, specialisation parent
+		local
+			id_bad: BOOLEAN
+			arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
+			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
+			parent_id_str: detachable STRING
+			lpos, rpos: INTEGER
+		do
+			create adl_ver.make_empty
+
+			-- first line
+			create arch_artefact_type_name.make_empty
+			if lines[1].has ('(') then
+				is_generated := lines[1].has_substring (Generated_flag_string)
+
+				-- extract ADL version
+				if lines[1].has_substring (Adl_version_string) then
+					lpos := lines[1].substring_index (Adl_version_string, 1) + Adl_version_string.count
+					lpos := lines[1].index_of ('=', lpos) + 1
+					from rpos := lpos until lines[1].item (rpos) = ')' or lines[1].item (rpos) = ';' or else rpos > lines[1].count loop
+						rpos := rpos + 1
+					end
+					adl_ver := lines[1].substring (lpos, rpos-1)
+					adl_ver.left_adjust
+					adl_ver.right_adjust
+				end
+				rpos := lines[1].index_of ('(', 1) - 1
+			else
+				rpos := lines[1].count
+			end
+
+			arch_artefact_type_name := lines[1].substring (1, rpos)
+			arch_artefact_type_name.right_adjust
+
+			-- now line[1] should contain only the artefact type, e.g. 'archetype', 'template'
+			if valid_artefact_type (arch_artefact_type_name) then
+
+				-- get line 2 - should be archetype id
+				if archetype_id_checker.valid_id (lines[2]) then
+					 -- ok
+				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
+					arch_id_is_old_style := True
+				else -- something wrong with the id
+					id_bad := True
+					add_error (ec_parse_archetype_e8, <<source_id, lines[2]>>)
+				end
+
+				if not id_bad then
+					archetype_id_str := lines[2].twin
+
+					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
+					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
+						if archetype_id_parser.valid_id_reference (lines[4]) then
+							parent_id_str := lines[4].twin
+						elseif old_archetype_id_pattern_regex.matches (lines[4]) then
+							parent_id_str := lines[4].twin
+							arch_parent_id_is_old_style := True
+						else
+							-- something wrong with the parent id
+							add_error (ec_parse_archetype_e10, <<source_id, lines[4]>>)
+						end
+					end
+
+					create last_archetype.make (adl_ver, archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
+					if attached parent_id_str as pid_str then
+						last_archetype.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
+					end
+				end
+			else
+				add_error (ec_parse_archetype_e9, <<source_id, lines[2]>>)
+			end
 		end
 
 end

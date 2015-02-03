@@ -2428,14 +2428,14 @@ feature -- Initialization
 			accept
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE_ITEM)
+	execute (in_text:STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE)
 		do
 			reset
 
 			target_descriptor := aca
 			rm_schema := aca.rm_schema
 			if target_descriptor.is_specialised then
-				flat_ancestor := target_descriptor.specialisation_ancestor.flat_archetype
+				flat_ancestor := target_descriptor.specialisation_parent.flat_archetype
  			end
 
 			source_start_line := a_source_start_line
@@ -2468,7 +2468,7 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
-	target_descriptor: detachable ARCH_LIB_ARCHETYPE_ITEM
+	target_descriptor: detachable ARCH_LIB_ARCHETYPE
 		note
 			option: stable
 		attribute

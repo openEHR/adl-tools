@@ -24,7 +24,15 @@ feature -- Syntax Elements
 
 	Archetype_slot_closed: STRING = "closed"
 
-feature -- Definitions
+	Tuple_left_delimiter: CHARACTER = '['
+
+	Tuple_right_delimiter: CHARACTER = ']'
+
+	Generated_flag_string: STRING = "generated"
+
+	Adl_version_string: STRING = "adl_version"
+
+feature -- File and artefact types
 
 	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.
@@ -60,15 +68,27 @@ feature -- Definitions
 
 	Default_aom_profile_name: STRING = "unknown"
 
-	Tuple_left_delimiter: CHARACTER = '['
+	Archetype_category: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("archetypes")
+		end
 
-	Tuple_right_delimiter: CHARACTER = ']'
+	Template_category: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("templates")
+		end
 
-feature -- Keywords
+feature -- Export Types
 
-	Generated_flag_string: STRING = "generated"
-
-	Adl_version_string: STRING = "adl_version"
+	export_formats: ARRAYED_SET [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (syntax_type_odin)
+			Result.extend (syntax_type_xml)
+			Result.extend (syntax_type_json)
+			Result.extend (syntax_type_yaml)
+		end
 
 feature -- Archetype identifiers
 
@@ -110,20 +130,23 @@ feature -- Version identification
 			Result := a_ver.starts_with (Adl_14_version)
 		end
 
-	Adl_id_code_version: STRING = "1.5.1"
+	Adl_id_code_version: IMMUTABLE_STRING_8
 			-- version in which new id-codes are present
+		once
+			create Result.make_from_string ("1.5.1")
+		end
 
-	Latest_adl_version: STRING
+	Latest_adl_version: IMMUTABLE_STRING_8
 		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).version_to_build
 		end
 
-	Latest_adl_minor_version: STRING
+	Latest_adl_minor_version: IMMUTABLE_STRING_8
 		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).version_to_minor
 		end
 
-	Latest_adl_major_version: STRING
+	Latest_adl_major_version: IMMUTABLE_STRING_8
 		once ("PROCESS")
 			Result := (create {OPENEHR_VERSION}).major.out
 		end
@@ -155,6 +178,64 @@ feature -- Comparison
 			Result.put ("_lt_", '<')
 			Result.put ("_gt_", '>')
 			Result.put ("_and_", '&')
+		end
+
+feature -- Enumerations
+
+	aft_archetype: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("archetype")
+	 	end
+
+	aft_template: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("template")
+	 	end
+
+	aft_temlate_overlay: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("template_overlay")
+	 	end
+
+	aft_operational_template: IMMUTABLE_STRING_8
+		once
+	 		create Result.make_from_string ("operational_template")
+	 	end
+
+	artefact_types_table: HASH_TABLE [IMMUTABLE_STRING_8, IMMUTABLE_STRING_8]
+			-- table of formal class typenames like "AUTHORED_ARCHETYPE" to artefact types, e.g. "archetype" etc
+			-- Defines the correspondence between the AOM class name and the first keyword in an ADL file for
+			-- each kind of artefact
+		once
+			create Result.make(0)
+			Result.extend(aft_archetype, bare_type_name (({AUTHORED_ARCHETYPE}).name))
+			Result.extend(aft_template, bare_type_name (({TEMPLATE}).name))
+			Result.extend(aft_temlate_overlay, bare_type_name (({TEMPLATE_OVERLAY}).name))
+			Result.extend(aft_operational_template, bare_type_name (({OPERATIONAL_TEMPLATE}).name))
+		end
+
+	artefact_types: ARRAYED_LIST [IMMUTABLE_STRING_8]
+			-- list of archetype type names: "archetype", "template" etc
+		once
+			create Result.make(0)
+			Result.compare_objects
+			across artefact_types_table as at_csr loop
+				Result.extend (at_csr.item)
+			end
+		end
+
+	artefact_type_from_class (a_class_name: STRING): IMMUTABLE_STRING_8
+		require
+			artefact_types_table.has (a_class_name)
+		do
+			check attached artefact_types_table.item (a_class_name) as att_aft then
+				Result := att_aft
+			end
+		end
+
+	valid_artefact_type (an_artefact_type: STRING): BOOLEAN
+		do
+			Result := artefact_types.has (an_artefact_type)
 		end
 
 	c_object_constraint_types: HASH_TABLE [STRING, STRING]

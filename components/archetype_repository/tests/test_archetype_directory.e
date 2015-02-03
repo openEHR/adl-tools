@@ -41,7 +41,7 @@ feature {NONE} -- Events
 
 				set_error_reporting_level (Error_type_error)
 				use_current_library (True)
-				test_library := current_library_interface.primary_source.full_path
+				test_library := current_library_interface.source.full_path
 			end
 		end
 
@@ -85,7 +85,7 @@ feature -- Test routines
 		note
 			testing: "covers/{ARCHETYPE_LIBRARY}.populate"
 		do
-			assert_equal (test_library, current_library.library_access.primary_source.full_path)
+			assert_equal (test_library, current_library.library_access.source.full_path)
 			assert_equal (0, current_library.compile_attempt_count)
 		--	assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 		end

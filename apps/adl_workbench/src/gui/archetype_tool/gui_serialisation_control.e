@@ -13,7 +13,7 @@ class
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, ev_root_container
+			ev_root_container
 		end
 
 	STRING_UTILITIES
@@ -110,18 +110,6 @@ feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
 
-feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
-		end
-
 feature {NONE} -- Implementation
 
 	ev_serialised_rich_text: EV_RICH_TEXT
@@ -149,7 +137,11 @@ feature {NONE} -- Implementation
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
 				if not differential_view then
-					s := source.flat_serialised (ev_flatten_with_rm_cb.is_selected)
+					if attached {ARCH_LIB_TEMPLATE} source as tpl_source then
+						s := tpl_source.operational_template_serialised (ev_flatten_with_rm_cb.is_selected)
+					else
+						s := source.flat_serialised (ev_flatten_with_rm_cb.is_selected)
+					end
 				elseif attached source.differential_serialised as sda then
 					s := sda
 				else

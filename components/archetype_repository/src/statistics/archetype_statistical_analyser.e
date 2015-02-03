@@ -22,7 +22,7 @@ create
 
 feature -- Initialisation
 
-	make (a_target_descriptor: ARCH_LIB_ARCHETYPE_ITEM; in_differential_mode: BOOLEAN)
+	make (a_target_descriptor: ARCH_LIB_ARCHETYPE; in_differential_mode: BOOLEAN)
 		require
 			a_target_descriptor.is_valid
 		do
@@ -39,7 +39,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	target_descriptor: ARCH_LIB_ARCHETYPE_ITEM
+	target_descriptor: ARCH_LIB_ARCHETYPE
 			-- target descriptor
 
 	target: ARCHETYPE
@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 							-- this is the case of constraint at a path, as found in specialised archetypes -
 							-- it is an attribute for a different RM object type
 							create apa.make_from_string (ca.rm_attribute_path)
-							flat_parent := target_descriptor.specialisation_ancestor.flat_archetype
+							flat_parent := target_descriptor.specialisation_parent.flat_archetype
 
 							path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
 							if flat_parent.has_attribute_path (path_in_flat) then

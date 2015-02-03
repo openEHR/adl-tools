@@ -10,13 +10,6 @@ note
 deferred class ARCH_LIB_ITEM
 
 inherit
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		undefine
-			is_equal
-		end
-
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -93,14 +86,22 @@ feature -- Access
 			Result.append (name)
 		end
 
-   	subtree_artefact_count (artefact_types: ARRAY [INTEGER]): INTEGER
+   	subtree_artefact_count (an_artefact_types: ARRAY [IMMUTABLE_STRING_8]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
    		local
 			i: INTEGER
 		do
- 			from i := artefact_types.lower until i > artefact_types.upper loop
- 				Result := Result + subtree_artefact_counts.item (artefact_types[i])
+ 			from i := an_artefact_types.lower until i > an_artefact_types.upper loop
+ 				Result := Result + subtree_artefact_counts.item (an_artefact_types[i])
  				i := i + 1
+ 			end
+		end
+
+   	subtree_artefact_total: INTEGER
+   			-- number of artefacts below this node of any type
+		do
+ 			across subtree_artefact_counts as count_csr loop
+ 				Result := Result + count_csr.item
  			end
 		end
 
@@ -113,6 +114,27 @@ feature -- Access
 					c.forth
 				end
 				Result := c.item
+			end
+		end
+
+	child_with_name (a_name: STRING): like children.item
+		require
+			has_child_with_name (a_name)
+		do
+			check attached children as c then
+				from c.start until c.off or c.item.name.same_string (a_name) loop
+					c.forth
+				end
+				Result := c.item
+			end
+		end
+
+	first_child: detachable like children.item
+		do
+			check attached children as c then
+				if not c.is_empty then
+					Result := c.first
+				end
 			end
 		end
 
@@ -156,12 +178,14 @@ feature -- Status Report
 		require
 			Lower_case_key: a_key.as_lower.same_string (a_key)
 		do
-			Result := attached children as c and then c.there_exists (
-				agent (a_child: like children.item; key: STRING):BOOLEAN
-					do
-						Result := a_child.qualified_key.same_string (key)
-					end (?, a_key)
-			)
+			Result := attached children as c and then across c as child_csr some child_csr.item.qualified_key.same_string (a_key) end
+		end
+
+	has_child_with_name (a_key: STRING): BOOLEAN
+		require
+			Lower_case_key: a_key.as_lower.same_string (a_key)
+		do
+			Result := attached children as c and then across c as child_csr some child_csr.item.name.same_string (a_key) end
 		end
 
    	has_matching_children (test_agt: FUNCTION [ANY, TUPLE [ARCH_LIB_ITEM], BOOLEAN]): BOOLEAN
@@ -171,9 +195,11 @@ feature -- Status Report
  				across c as child_csr some test_agt.item ([child_csr.item]) end
 		end
 
-feature {ARCHETYPE_LIBRARY} -- Modification
+feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 
 	put_child (a_child: like children.item)
+		require
+			a_child /= Current and then not has_child (a_child)
 		local
 			att_children: attached like children
 		do
@@ -218,27 +244,26 @@ feature -- Comparison
 			Result := qualified_name < other.qualified_name
 		end
 
-feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
+feature {ARCH_LIB_ITEM} -- Implementation
 
-	children: detachable SORTED_TWO_WAY_LIST [ARCH_LIB_ITEM]
+	children: detachable FAST_SORTED_TWO_WAY_LIST [ARCH_LIB_ITEM]
 			-- list of child nodes
+
+feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 
 	parent: detachable ARCH_LIB_ITEM
 			-- parent node
 
-	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
+	subtree_artefact_counts: HASH_TABLE [INTEGER, IMMUTABLE_STRING_8]
 			-- counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
-		local
-			atf_types: ARRAYED_LIST [INTEGER]
 		do
 			if attached subtree_artefact_counts_cache as sacc then
 				Result := sacc
 			else
 				-- create empty set of counters
 				create Result.make(0)
-				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
-				across atf_types as atf_types_csr loop
+				across artefact_types as atf_types_csr loop
 					Result.put (0, atf_types_csr.item)
 				end
 
@@ -251,8 +276,8 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 							Result.replace (subtree_counts_csr.item +
 									child_csr.item.subtree_artefact_counts.item (subtree_counts_csr.key), subtree_counts_csr.key)
 						end
-						if attached {ARCH_LIB_ARCHETYPE_ITEM} child_csr.item as ara then
-							Result.replace (Result.item (ara.artefact_type.value) + 1, ara.artefact_type.value)
+						if attached {ARCH_LIB_ARCHETYPE} child_csr.item as ara then
+							Result.replace (Result.item (ara.artefact_type) + 1, ara.artefact_type)
 						end
 					end
 				end
@@ -260,7 +285,7 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 			end
 		end
 
-	subtree_artefact_counts_cache: detachable HASH_TABLE [INTEGER, INTEGER]
+	subtree_artefact_counts_cache: detachable HASH_TABLE [INTEGER, IMMUTABLE_STRING_8]
 			-- stored counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
 

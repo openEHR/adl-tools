@@ -55,7 +55,7 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_OBJECT)
 			-- populate fields not already populated from creation of a C_XXX instance
 		do
-			a_c_o.set_node_id (node_id)
+			a_c_o.set_root_node_id (node_id)
 			if attached occurrences as occ then
 				a_c_o.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_from_string (occ))
 			end

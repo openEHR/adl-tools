@@ -15,13 +15,7 @@ note
 deferred class AOM_VALIDATOR
 
 inherit
-	AUTHORED_RESOURCE_VALIDATOR
-		rename
-			initialise as initialise_authored_resource,
-			target as arch_diff_child
-		redefine
-			arch_diff_child
-		end
+	ANY_VALIDATOR
 
 	SHARED_ARCHETYPE_LIBRARIES
 		export
@@ -30,34 +24,19 @@ inherit
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (ara: ARCH_LIB_ARCHETYPE_ITEM)
-			-- set target_descriptor
-			-- initialise reporting variables
-		require
-			valid_candidate: is_validation_candidate (ara)
+	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
-			rm_schema := ara.rm_schema
-			child_desc := ara
-			check attached child_desc.differential_archetype as da then
-				initialise_authored_resource (da)
-			end
+			rm_schema := an_rm_schema
+			arch_diff_child := an_arch_diff_child
+			arch_flat_parent := an_arch_flat_parent
+
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
 				aom_profile := aom_p
 			end
 
-			-- set flat_ancestor
-			if child_desc.is_specialised then
-				arch_flat_anc := child_desc.specialisation_ancestor.flat_archetype
- 			end
+			reset
 		ensure
-			target_descriptor_set: child_desc = ara
-			flat_ancestor_set: ara.is_specialised implies attached arch_flat_anc
-		end
-
-feature -- Status Report
-
-	is_validation_candidate (ara: ARCH_LIB_ARCHETYPE_ITEM): BOOLEAN
-		deferred
+			arch_diff_child_set: arch_diff_child = an_arch_diff_child
 		end
 
 feature {NONE} -- Implementation
@@ -65,11 +44,8 @@ feature {NONE} -- Implementation
 	arch_diff_child: ARCHETYPE
 			-- differential archetype being validated
 
-	arch_flat_anc: detachable ARCHETYPE
+	arch_flat_parent: detachable ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
-
-	child_desc: ARCH_LIB_ARCHETYPE_ITEM
-			-- differential archetype being validated
 
 	terminology: ARCHETYPE_TERMINOLOGY
 			-- The terminology of the current archetype.

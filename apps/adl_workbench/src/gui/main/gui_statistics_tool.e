@@ -65,7 +65,7 @@ feature {NONE} -- Implementation
 				<<get_msg (ec_summary_list_metric_col_title, Void),
 				get_msg (ec_summary_list_total_col_title, Void)>>
 			)
-			populate_ev_multi_list_from_hash (ev_stats_mlist, source.library_metrics)
+			populate_ev_multi_list_from_hash (ev_stats_mlist, source.metrics)
 			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)
 
 			-- do terminology bindings statistics

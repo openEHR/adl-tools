@@ -84,7 +84,7 @@ feature -- Definitions
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
 
-	Bug_reporter_url: STRING = "https://github.com/openEHR/adl-tools/issues"
+	Bug_reporter_url: STRING = "https://openehr.atlassian.net/browse/AWBPR"
 			-- The URL to ADL Workbench's problem reporter.
 
 	Source_url: STRING = "https://github.com/openEHR/adl-tools.git"
@@ -165,6 +165,9 @@ feature -- Application Switches
 	archetype_view_language: STRING
 		do
 			Result := app_cfg.string_value ("/general/archetype_view_language")
+			if Result.is_empty then
+				Result := Default_language
+			end
 		end
 
 	set_archetype_view_language (a_lang: STRING)
@@ -384,6 +387,18 @@ feature -- Application Switches
 			app_cfg.put_boolean_value ("/compiler/validation_strict", flag)
 		end
 
+	compiler_quiet: BOOLEAN
+			-- Is quiet reporting mode on?
+		do
+			Result := app_cfg.boolean_value ("/compiler/compiler_quiet")
+		end
+
+	set_compiler_quiet (flag: BOOLEAN)
+			-- Set flag for quiet mode
+		do
+			app_cfg.put_boolean_value ("/compiler/compiler_quiet", flag)
+		end
+
 	rm_flattening_on: BOOLEAN
 			-- Set RM flattening on?
 		do
@@ -440,6 +455,17 @@ feature -- Application Switches
 			path_not_empty: not a_path.is_empty
 		do
 			app_cfg.put_string_value ("/file_system/export_directory", a_path)
+		end
+
+	export_generation_directory (an_export_format: STRING; export_flat_flag: BOOLEAN): STRING
+			-- generate an export path of the form
+			-- 	export_dir_root/format/diff_or_flat
+			--	e.g.
+			--	
+		do
+			Result := file_system.pathname (
+				file_system.pathname (file_system.pathname (export_directory, current_library_name), an_export_format),
+				if export_flat_flag then "flat" else "differential" end)
 		end
 
 	html_export_directory: STRING

@@ -12,7 +12,7 @@ class GUI_INTERFACE_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, do_display
+			do_display
 		end
 
 	SHARED_ARCHETYPE_LIBRARIES
@@ -108,18 +108,6 @@ feature -- Access
 			else
 				create Result.make_empty
 			end
-		end
-
-feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := is_populated and source.is_valid
 		end
 
 feature -- Commands

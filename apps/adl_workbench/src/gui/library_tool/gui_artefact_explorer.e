@@ -58,7 +58,7 @@ feature -- Commands
 			gui_semantic_grid.resize_columns_to_content
 		end
 
-	update_tree_node_for_archetype (ara: attached ARCH_LIB_ARCHETYPE_ITEM)
+	update_tree_node_for_archetype (ara: attached ARCH_LIB_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		deferred
 		end
@@ -86,9 +86,6 @@ feature {NONE} -- Implementation
 	semantic_grid_row_map: HASH_TABLE [EV_GRID_ROW, STRING]
 			-- list of semantic EV_GRID rows, keyed by artefact id
 
-	artefact_types: ARRAY [INTEGER]
-			-- types of artefact in this view
-
 	ev_tree_item_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
@@ -96,9 +93,9 @@ feature {NONE} -- Implementation
    		deferred
    		end
 
-	selected_archetype_node: detachable ARCH_LIB_ARCHETYPE_EDITABLE
+	selected_archetype_node: detachable ARCH_LIB_ARCHETYPE
 
-	select_archetype_with_delay (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	select_archetype_with_delay (aca: ARCH_LIB_ARCHETYPE)
 		do
 			selected_archetype_node := aca
 			if selection_history.selected_item /= aca then
@@ -125,6 +122,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_select_archetype
+			-- the action that will occur after a short delay after user selection (left-click) of a tree node
 		do
 			check attached selected_archetype_node as aca then
 				selection_history.set_selected_item (aca)
@@ -135,7 +133,7 @@ feature {NONE} -- Implementation
 	grid_item_select_handler (an_ev_grid_item: EV_GRID_ITEM)
 			-- left-click selection handler
 		do
-			if attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
+			if attached {ARCH_LIB_ARCHETYPE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay (aca)
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
@@ -145,14 +143,14 @@ feature {NONE} -- Implementation
 			-- right click context maenu handler
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
-				if attached an_ev_grid_item and then attached {ARCH_LIB_ARCHETYPE_EDITABLE} an_ev_grid_item.row.data as aca then
+				if attached an_ev_grid_item and then attached {ARCH_LIB_ARCHETYPE} an_ev_grid_item.row.data as aca then
 					build_archetype_node_context_menu (aca)
 				end
 			end
 			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
 
-	build_archetype_node_context_menu (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	build_archetype_node_context_menu (aca: ARCH_LIB_ARCHETYPE)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		local
 			menu, tree_menu, file_menu: EV_MENU
@@ -177,19 +175,20 @@ feature {NONE} -- Implementation
 				menu.extend (an_mi)
 			end
 
-			add_tool_specific_archetype_menu_items (menu, aca)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
+				-- add tool specific items
+				add_tool_specific_archetype_menu_items (menu, auth_aca)
 
-			-- remove artefact
-			if not aca.artefact_type.is_overlay then
-				create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (aca))
+				-- add in file submenu
+				-- remove artefact
+				create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
 				menu.extend (an_mi)
-			end
 
-			-- add in file submenu
-			create file_menu.make_with_text (get_text (ec_file_menu_text))
-			menu.extend (file_menu)
-			context_menu_add_file_submenu (file_menu, aca)
+				create file_menu.make_with_text (get_text (ec_file_menu_text))
+				menu.extend (file_menu)
+				context_menu_add_file_submenu (file_menu, auth_aca)
+			end
 
 			-- add in tree controls
 			create tree_menu.make_with_text (get_text (ec_tree_controls))
@@ -231,15 +230,14 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 		end
 
-	context_menu_add_file_submenu (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	context_menu_add_file_submenu (a_menu: EV_MENU; aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- creates the context menu for file operations
 		local
-			tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			-- edit archetype source in external tool
 			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.edit_archetype_source_agent.call ([an_aca])
 					end (aca)
@@ -249,7 +247,7 @@ feature {NONE} -- Implementation
 
 			-- save archetype as ...
 			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, True, True])
 					end (aca)
@@ -259,7 +257,7 @@ feature {NONE} -- Implementation
 
 			-- export archetype as ...
 			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, True, False])
 					end (aca)
@@ -268,7 +266,7 @@ feature {NONE} -- Implementation
 
 			-- export flat archetype as
 			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
-				agent (an_aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						tool_agents.save_archetype_agent.call ([an_aca, False, False])
 					end (aca)
@@ -276,22 +274,22 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 			-- add further menu items specific to descendant tools
 		do
 		end
 
-	display_archetype_in_active_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	display_archetype_in_active_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			gui_agents.select_archetype_agent.call ([aca])
 		end
 
-	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 		end
 
-	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
 			gui_agents.edit_archetype_in_new_tool_agent.call ([aca])
 		end
@@ -303,7 +301,7 @@ feature {NONE} -- Implementation
 		attribute
 		end
 
-	remove_artefact (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	remove_artefact (aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		local
 			question_dialog: EV_QUESTION_DIALOG
 		do
@@ -315,16 +313,13 @@ feature {NONE} -- Implementation
 				if question_dialog.selected_button.same_string (get_text (ec_yes_response)) then
 					src.remove_artefact (aca)
 					aca.remove_file
-					check attached aca.specialisation_ancestor as att_anc then
+					check attached aca.specialisation_parent as att_anc then
 						tool_agents.update_explorers_and_select_agent.call ([att_anc])
 					end
 				end
 				question_dialog.destroy
 			end
 		end
-
-invariant
-	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types (artefact_types)
 
 end
 

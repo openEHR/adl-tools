@@ -187,8 +187,20 @@ feature -- Modification
 			sibling_order_set: attached sibling_order as sib_ord and then (sib_ord.is_after and sib_ord.sibling_node_id.is_equal (a_node_id))
 		end
 
+feature {C_OBJECT} -- Modification
+
 	set_node_id (an_object_id: STRING)
 		require
+			Object_id_valid: not an_object_id.is_empty
+		do
+			representation.set_node_id (an_object_id)
+		end
+
+feature -- Modification
+
+	set_root_node_id (an_object_id: STRING)
+		require
+			Is_root: is_root
 			Object_id_valid: not an_object_id.is_empty
 		do
 			representation.set_node_id (an_object_id)

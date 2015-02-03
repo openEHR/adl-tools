@@ -1,13 +1,13 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Validator for AUTHORED_RESOURCE objects"
-	keywords:    "archetype"
+	keywords:    "resource, validation"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-deferred class AUTHORED_RESOURCE_VALIDATOR
+class AUTHORED_RESOURCE_VALIDATOR
 
 inherit
 	ANY_VALIDATOR
@@ -17,12 +17,8 @@ inherit
 			{NONE} all
 		end
 
-	EXCEPTIONS
-		rename
-			class_name as exception_class_name
-		export
-			{NONE} all
-		end
+create
+	initialise
 
 feature {NONE} -- Initialisation
 
@@ -41,13 +37,31 @@ feature -- Access
 	target: AUTHORED_RESOURCE
 			-- target of this validator
 
+feature -- Commands
+
 	validate
-			-- True if all structures obey their invariants
 		do
-			if target.original_language = Void then
+			reset
+			validate_original_language
+			if passed then
+				validate_translations
+				validate_description
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	validate_original_language
+			-- True if `original_language' is not still set on the fake default value
+		do
+			if target.original_language.code_string.is_equal (ts.Non_existent_language) then
 				add_error (ec_VDEOL, Void)
 			end
+		end
 
+	validate_translations
+			-- True if `translations' structures obey their invariants
+		do
 			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
 			if attached target.translations as tgt_trans then
 				from
@@ -61,7 +75,11 @@ feature -- Access
 					add_error (ec_VTRLA, <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
 				end
 			end
+		end
 
+	validate_description
+			-- True if `description' structures obey their invariants
+		do
 			-- check that RESOURCE_DESCRIPTION.details items match their Hash keys
 			if attached target.description as tgt_desc then
 				from

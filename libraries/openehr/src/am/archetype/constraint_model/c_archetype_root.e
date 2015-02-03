@@ -43,6 +43,8 @@ feature -- Initialisation
 feature -- Access
 
 	archetype_ref: STRING
+			-- an archetype reference, which could occasionally be a full archetype ID, but is normally
+			-- only a reference down to the major version.
 
 	flat_path: STRING
 			-- generate the flattened path to the filling node, using an_archetype_ref

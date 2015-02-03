@@ -23,10 +23,6 @@ create
 
 feature -- Definitions
 
-	Group_id_adhoc: INTEGER = 1
-
-	Group_id_primary: INTEGER = 2
-
 	lib_file_name: STRING = "_repo_lib.idx"
 			-- name of definition file at root point of library, within repository
 
@@ -38,11 +34,8 @@ feature -- Initialisation
 		require
 			dir_name_valid: directory_exists (a_library_path)
 		do
-			create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
-
-			-- create adhoc file source, in case it is ever needed - allows user to open any archetype file
-			-- outside library and attach it to the library for the duration of the session
-			create adhoc_source.make (Group_id_adhoc)
+			create {ARCHETYPE_FILE_SOURCE} source.make (file_system.canonical_pathname (a_library_path))
+			create {ARCHETYPE_FILE_SOURCE} adhoc_source.make_adhoc
 			repository_key := a_repository_key
 		end
 
@@ -50,11 +43,8 @@ feature -- Initialisation
 		require
 			dir_name_valid: directory_exists (a_library_path)
 		do
-			create {ARCHETYPE_INDEXED_FILE_LIBRARY_IMP} primary_source.make (file_system.canonical_pathname (a_library_path), Group_id_primary)
-
-			-- create adhoc file source, in case it is ever needed - allows user to open any archetype file
-			-- outside library and attach it to the library for the duration of the session
-			create adhoc_source.make (Group_id_adhoc)
+			create {ARCHETYPE_FILE_SOURCE} source.make (file_system.canonical_pathname (a_library_path))
+			create {ARCHETYPE_FILE_SOURCE} adhoc_source.make_adhoc
 			repository_key := a_repository_key
 
 			-- create library definition file
@@ -82,7 +72,7 @@ feature -- Access
 	library_path: STRING
 			-- directory path of library
 		do
-			Result := primary_source.full_path
+			Result := source.full_path
 		end
 
 	library_definition_file_path: STRING
@@ -103,15 +93,11 @@ feature -- Access
 	repository_key: STRING
 			-- unique key of the repository to which this library belongs
 
-	primary_source: ARCHETYPE_INDEXED_LIBRARY_I
+	source: ARCHETYPE_LIBRARY_SOURCE
 			-- primary physical artefact source
 
-	adhoc_source: ARCHETYPE_ADHOC_FILE_SOURCE
-			-- An additional 'source' where archetypes may be found, but not necessarily classified
-			-- under any structure - used e.g. to represent the file local system where isolated archetypes
-			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
-			-- archetypes keyed by path on the file system. They are not merged onto the directory
-			-- but 'grafted' - a simpler operation.
+	adhoc_source: ARCHETYPE_LIBRARY_SOURCE
+			-- artefact source for adhoc use loads from anywhere in a medium
 
 feature -- Status Report
 

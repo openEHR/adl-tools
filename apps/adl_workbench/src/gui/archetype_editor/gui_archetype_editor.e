@@ -12,8 +12,8 @@ class GUI_ARCHETYPE_EDITOR
 inherit
 	GUI_ARCHETYPE_TOOL
 		redefine
-			make, do_populate, can_populate,
-			can_edit, enable_edit, disable_edit,
+			make, do_populate,
+			can_edit, enable_edit, disable_edit, attach_gui_context,
 			add_editing_controls, on_set_primary_source
 		end
 
@@ -42,11 +42,6 @@ feature {NONE}-- Initialization
 		end
 
 feature -- Status Report
-
-	can_populate (a_source: attached like source): BOOLEAN
-		do
-			Result := a_source.is_valid
-		end
 
 	can_edit: BOOLEAN
 			-- True if this tool has editing capability
@@ -111,20 +106,10 @@ feature {NONE} -- Implementation
 		end
 
 	attach_gui_context
-		local
-			gui_context: detachable ALA_EDITOR_STATE
 		do
 			check attached source as src then
-				if not source.has_gui_context then
-					create gui_context.make (src)
-					source.set_gui_context (gui_context)
-				elseif attached {ALA_EDITOR_STATE} source.gui_context as gc then
-					gui_context := gc
-				end
 				check attached undo_redo_chain end
-				check attached gui_context as gc then
-					gc.set_editable (undo_redo_chain)
-				end
+				src.editor_state.set_editable (undo_redo_chain)
 			end
 		end
 
@@ -132,7 +117,10 @@ feature {NONE} -- Implementation
 		do
 			source.commit
 			gui_agents.refresh_archetype_viewers_agent.call ([source.id.physical_id])
-			gui_agents.console_tool_append_agent.call ([get_msg (ec_arch_editor_commit_notification, <<source.id.physical_id, source.source_file_path>>)])
+			if attached auth_source as att_source then
+				gui_agents.console_tool_append_agent.call ([get_msg (ec_arch_editor_commit_notification,
+					<<att_source.id.physical_id, att_source.source_file_path>>)])
+			end
 		end
 
 	populate_undo_redo_controls

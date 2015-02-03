@@ -895,28 +895,28 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				-- VCS fetch
 				if rep_sync_status = vcs_status_sync_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_fetch), agent repository_vcs_fetch (a_rep_if))
-					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS pull
 				if rep_sync_status = vcs_status_pull_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull), agent repository_vcs_pull (a_rep_if))
-					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS commit
 				if rep_sync_status = vcs_status_files_not_committed then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_commit), agent repository_vcs_commit (a_rep_if))
-					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS push
 				if rep_sync_status = vcs_status_push_required then
 					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_push), agent repository_vcs_push (a_rep_if))
-					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
+					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 

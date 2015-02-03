@@ -31,7 +31,7 @@ create
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	make (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
@@ -43,7 +43,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			initialise (a_target, ara)
 		end
 
-	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE_ITEM)
+	initialise (a_target: ARCHETYPE; ara: ARCH_LIB_ARCHETYPE)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -58,14 +58,14 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			end
 			target := a_target
 			if ara.is_specialised then
-				flat_ancestor := ara.specialisation_ancestor.flat_archetype
+				flat_ancestor := ara.specialisation_parent.flat_archetype
 			else
 				flat_ancestor := Void
 			end
 
 			-- record if this archetype is a 1.4 archetype, because if so we need to reprocess
 			-- more junk silently
-			is_adl14_archetype := ara.file_mgr.has_legacy_flat_file
+			is_adl14_archetype := attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.file_mgr.has_legacy_flat_file
 		ensure
 			Flat_ancestor_valid: attached flat_ancestor as fa implies fa.is_flat
 		end
@@ -119,13 +119,13 @@ feature {NONE} -- Implementation
 
 	update_lifecycle_state
 		do
-			if attached target.description as att_desc then
-				if not valid_resource_lifecycle_state (att_desc.lifecycle_state) and then
-					attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (att_desc.lifecycle_state)
+			if attached {AUTHORED_ARCHETYPE} target as auth_arch then
+				if not valid_resource_lifecycle_state (auth_arch.description.lifecycle_state) and then
+					attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (auth_arch.description.lifecycle_state)
 				then
-					att_desc.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (att_desc.lifecycle_state))
+					auth_arch.description.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (auth_arch.description.lifecycle_state))
 				else
-					att_desc.set_lifecycle_state (Initial_resource_lifecycle_state)
+					auth_arch.description.set_lifecycle_state (Initial_resource_lifecycle_state)
 				end
 			end
 		end

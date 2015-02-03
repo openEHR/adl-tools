@@ -47,6 +47,11 @@ DESCRIPTION	[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*
 DEFINITION	[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*
 ANNOTATIONS	[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*
 COMP_TERMS	[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Tt][Ee][Rr][Mm][Ii][Nn][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*
+
+TEMPLATE_OVERLAY [Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Oo][Vv][Ee][Rr][Ll][Aa][Yy][ \t\r]*
+
+TEMPLATE_OVERLAY_SPLIT_LINE "-"{20,}[ \t\r]*
+
 -------------------------------------------------------------------
 --- START legacy ADL 1.4 support
 ---
@@ -60,7 +65,7 @@ ID_CODE_LEADER id
 -------------------------------------------------------------------
 
 --------------- Options --------------
-%x IN_ODIN_SECTION IN_CADL_SECTION IN_RULES_SECTION
+%x IN_ODIN_SECTION IN_CADL_SECTION IN_RULES_SECTION IN_TEMPLATE_OVERLAYS_SECTION
 %option outfile="adl_2_scanner.e"
 
 %%
@@ -70,6 +75,13 @@ ID_CODE_LEADER id
 [ \t\r]+		-- Ignore separators
 \n+				in_lineno := in_lineno + text_count
 
+
+----------/** Overlay split line **/----------------------------------------------------
+
+^{TEMPLATE_OVERLAY_SPLIT_LINE}\n	{	-- Overlay split line
+		in_lineno := in_lineno + 1
+		set_start_condition (IN_TEMPLATE_OVERLAYS_SECTION)
+}
 
 ----------/** comments **/-----------------------------------------------
 
@@ -103,7 +115,7 @@ ID_CODE_LEADER id
 				last_token := SYM_ARCHETYPE
 			}
 
-^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Oo][Vv][Ee][Rr][Ll][Aa][Yy][ \t\r\n]+ 		{
+^{TEMPLATE_OVERLAY}\n 		{
 				last_token := SYM_TEMPLATE_OVERLAY
 			}
 
@@ -193,11 +205,6 @@ ID_CODE_LEADER id
 -------------------------------------------------------------------
 --- START legacy ADL 1.4 support
 ---
-^[Cc][Oo][Nn][Cc][Ee][Pp][Tt][ \t\r]*\n 				{
-				last_token := SYM_CONCEPT
-				in_lineno := in_lineno + 1
-			}
-
 ^{ADL_14_COMP_ONTS}\n {
 				last_token := SYM_COMPONENT_TERMINOLOGIES
 				set_start_condition (IN_ODIN_SECTION)
@@ -229,6 +236,7 @@ ID_CODE_LEADER id
 
 
 <IN_ODIN_SECTION>{
+	^{TEMPLATE_OVERLAY_SPLIT_LINE}\n	|
 	^{DESCRIPTION}\n |
 	^{DEFINITION}\n |
 	^{ANNOTATIONS}\n |
@@ -250,13 +258,16 @@ ID_CODE_LEADER id
 
 				set_start_condition (INITIAL)
 			}
+
 	\n 		{ -- LF
 				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
 			}
+
 	[^\n]+ { -- any text on line with no LF
-				in_buffer.append_string(text)
+				in_buffer.append_string (text)
 			}
+
 	<<EOF>> {
 				-- get the ODIN section sorted out
 				last_token := V_ODIN_TEXT
@@ -306,6 +317,29 @@ ID_CODE_LEADER id
 	}
 }
 
+<IN_TEMPLATE_OVERLAYS_SECTION> {
+	^{TEMPLATE_OVERLAY_SPLIT_LINE}\n	{	-- Overlay split line
+				create str_.make (in_buffer.count)
+				str_.append_string (in_buffer)
+				in_buffer.wipe_out
+				overlay_adl_texts.extend (str_)
+				in_lineno := in_lineno + 1
+	}
+
+	^[ \t]*[^\n]*\n {			-- match <anything> \n
+				in_buffer.append_string (text)
+				in_lineno := in_lineno + 1
+	}
+
+	<<EOF>>		{
+				create str_.make (in_buffer.count)
+				str_.append_string (in_buffer)
+				in_buffer.wipe_out
+				overlay_adl_texts.extend (str_)
+				last_token := SYM_OVERLAY_TEXTS
+				set_start_condition (INITIAL)
+	}
+}
 
 ----------/* V_DOTTED_NUMERIC any length of n.n.n... with at least 2 segments */ -------------------------------------------------
 {DOTTED_NUMERIC_STR} {
@@ -356,6 +390,7 @@ feature {NONE} -- Initialization
 			create str_.make_empty
 			create a_text.make_empty
 			create last_string_value.make_empty
+			create overlay_adl_texts.make (0)
 		end
 
 feature -- Initialization
@@ -366,6 +401,7 @@ feature -- Initialization
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
+			overlay_adl_texts.wipe_out
 		end
 
 feature -- Access
@@ -400,6 +436,8 @@ feature -- Access
 	annotations_text_start_line: INTEGER
 
 	component_terminologies_text_start_line: INTEGER
+
+	overlay_adl_texts: ARRAYED_LIST [STRING]
 
 feature {NONE} -- Constants
 

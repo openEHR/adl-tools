@@ -76,6 +76,7 @@ feature -- Access
 			Result.extend(Cs_lineage_known)
 			Result.extend(Cs_ready_to_parse)
 			Result.extend(Cs_ready_to_parse_legacy)
+			Result.extend(Cs_ready_to_validate) -- possible for template overlays
 			Result.extend(Cs_validated) -- possible due to new in-memory creation
 		end
 

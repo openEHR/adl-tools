@@ -61,7 +61,7 @@ feature -- Commands
 			add_new_tool (new_tool)
 		end
 
-	populate_active_tool (aca: ARCH_LIB_ARCHETYPE_EDITABLE)
+	populate_active_tool (aca: ARCH_LIB_ARCHETYPE)
 			-- Populate content from visual controls.
 		do
 			if not has_tools then

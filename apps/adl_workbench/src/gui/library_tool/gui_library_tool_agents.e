@@ -11,13 +11,15 @@ class GUI_LIBRARY_TOOL_AGENTS
 
 feature -- Access
 
-	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca:ARCH_LIB_ARCHETYPE_ITEM]]
+	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_AUTHORED_ARCHETYPE]]
 
-	save_archetype_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_ARCHETYPE_ITEM; diff_flag, native_format_flag: BOOLEAN]]
+	save_archetype_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_AUTHORED_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN]]
 
 	archetype_explorer_select_in_tree_agent: detachable PROCEDURE [ANY, TUPLE [key: STRING]]
 
-	update_explorers_and_select_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_ARCHETYPE_ITEM]]
+	update_explorers_and_select_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_ARCHETYPE]]
+
+	update_archetype_explorer_agent: detachable PROCEDURE [ANY, TUPLE]
 
 feature -- Modification
 
@@ -39,6 +41,11 @@ feature -- Modification
 	set_update_explorers_and_select_agent (agt: like update_explorers_and_select_agent)
 		do
 			update_explorers_and_select_agent := agt
+		end
+
+	set_update_archetype_explorer (agt: like update_archetype_explorer_agent)
+		do
+			update_archetype_explorer_agent := agt
 		end
 
 end
