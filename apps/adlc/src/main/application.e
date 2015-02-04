@@ -100,12 +100,12 @@ feature -- Commands
 			lib_name, full_output_dir, full_path: STRING
 		do
 			if opts.is_verbose then
-				print_stdout ("Initialising... %N")
+				std_out.put_string ("Initialising... %N")
 				verbose_output := True
 			end
 			app_root.initialise_app
 			if opts.is_verbose then
-				print_stderr (app_root.error_strings)
+				std_err.put_string (app_root.error_strings)
 			end
 			if not app_root.has_errors then
 				archetype_compiler.set_console_update_agent (agent console_update)
@@ -114,21 +114,24 @@ feature -- Commands
 				-- now process command line
 				if opts.show_config then
 					-- location of .cfg file
-					print_stdout (get_msg (ec_config_file_location, <<app_cfg.file_path>>))
+					std_out.put_string (get_msg (ec_config_file_location, <<app_cfg.file_path>>))
+
+					-- XML rules file
+					std_out.put_string (get_msg (ec_xml_rules_file_location, <<xml_rules_file_path>>))
 
 					-- RM schemas info
-					print_stdout ("%N" + get_text (ec_rm_schemas_info_text))
+					std_out.put_string ("%N" + get_text (ec_rm_schemas_info_text))
 					across rm_schemas_access.valid_top_level_schemas as loaded_schemas_csr loop
-						print_stdout ("%T" + loaded_schemas_csr.key + "%N")
+						std_out.put_string ("%T" + loaded_schemas_csr.key + "%N")
 					end
 
 					-- repository & library info
-					print_stdout ("%N" + get_text (ec_repos_info_text))
+					std_out.put_string ("%N" + get_text (ec_repos_info_text))
 					across archetype_repository_interfaces as rep_interfaces_csr loop
-						print_stdout ("%T" + rep_interfaces_csr.item.local_directory + "%N")
+						std_out.put_string ("%T" + rep_interfaces_csr.item.local_directory + "%N")
 						across rep_interfaces_csr.item.library_interfaces as lib_interfaces_csr loop
 							lib_name := lib_interfaces_csr.item.key
-							print_stdout ("%T%T" + if lib_name.is_equal (current_library_name) then "* " else "  " end + lib_name + "%N")
+							std_out.put_string ("%T%T" + if lib_name.is_equal (current_library_name) then "* " else "  " end + lib_name + "%N")
 						end
 					end
 				else
@@ -137,10 +140,10 @@ feature -- Commands
 						if has_library (att_lib) then
 							set_current_library_name (att_lib)
 							if opts.is_verbose then
-								print_stdout ("Using library " + att_lib + "%N")
+								std_out.put_string ("Using library " + att_lib + "%N")
 							end
 						else
-							print_stderr (get_msg (ec_lib_does_not_exist_err, <<att_lib>>))
+							std_err.put_string (get_msg (ec_lib_does_not_exist_err, <<att_lib>>))
 							finished := True
 						end
 					end
@@ -150,9 +153,9 @@ feature -- Commands
 
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
-						print_stdout (get_msg (ec_archs_list_text, <<current_library_name>>))
+						std_out.put_string (get_msg (ec_archs_list_text, <<current_library_name>>))
 						current_library.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
-						print_stdout (get_text (ec_archs_list_text_end))
+						std_out.put_string (get_text (ec_archs_list_text_end))
 
 					else
 						-- check if valid action specified
@@ -160,7 +163,7 @@ feature -- Commands
 							action := a
 						end
 						if not opts.Actions.has (action) then
-							print_stderr (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
+							std_err.put_string (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
 						else
 							if not finished then
 								if valid_regex (opts.archetype_id_pattern) then
@@ -168,12 +171,12 @@ feature -- Commands
 									matched_archetype_ids := current_library.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
 										if verbose_output then
-											print_stderr (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
+											std_err.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
 										end
 									else
 										if action.is_equal (opts.List_action) then
 											across matched_archetype_ids as arch_ids_csr loop
-												print_stdout (arch_ids_csr.item + "%N")
+												std_out.put_string (arch_ids_csr.item + "%N")
 											end
 										else
 											-- record flat option
@@ -184,7 +187,7 @@ feature -- Commands
 												if has_serialiser_format (of) then
 													output_format := of
 												else
-													print_stderr (get_msg (ec_invalid_serialisation_format_err, <<of, archetype_all_serialiser_formats_string>>))
+													std_err.put_string (get_msg (ec_invalid_serialisation_format_err, <<of, archetype_all_serialiser_formats_string>>))
 													finished := True
 												end
 											end
@@ -199,11 +202,11 @@ feature -- Commands
 												end
 												file_system.recursive_create_directory (full_output_dir)
 												if not file_system.directory_exists (full_output_dir) then
-													print_stderr (get_msg (ec_invalid_output_directory, <<full_output_dir>>))
+													std_err.put_string (get_msg (ec_invalid_output_directory, <<full_output_dir>>))
 													finished := True
 												else
 													if verbose_output then
-														print_stdout ("Serialising to " + full_output_dir + "%N")
+														std_out.put_string ("Serialising to " + full_output_dir + "%N")
 													end
 												end
 											end
@@ -216,7 +219,7 @@ feature -- Commands
 
 														-- process action
 														if action.is_equal (opts.Validate_action) then
-															print_stderr (alaa.status)
+															std_err.put_string (alaa.status)
 
 														elseif action.is_equal (opts.Serialise_action) or action.is_equal (opts.Serialise_action_alt_sp) then
 															if alaa.is_valid then
@@ -234,13 +237,13 @@ feature -- Commands
 
 																-- write to std out
 																else
-																	print_stdout (alaa.serialise_object (use_flat_source, output_format) + "%N")
+																	std_out.put_string (alaa.serialise_object (use_flat_source, output_format) + "%N")
 																end
 															else
-																print_stderr (get_msg (ec_archetype_not_valid, <<alaa.id.as_string>>))
+																std_err.put_string (get_msg (ec_archetype_not_valid, <<alaa.id.as_string>>))
 															end
 														else
-															print_stderr (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
+															std_err.put_string (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
 														end
 													end
 												end
@@ -248,19 +251,19 @@ feature -- Commands
 										end
 									end
 								else
-									io.put_string (get_msg_line ("regex_e1", <<opts.archetype_id_pattern>>))
+									std_err.put_string (get_msg_line ("regex_e1", <<opts.archetype_id_pattern>>))
 								end
 							end
 						end
 					end
 				end
 			else
-				io.put_string (app_root.errors.as_string)
-				print (app_root.error_strings)
+				std_err.put_string (app_root.errors.as_string)
+				std_err.put_string (app_root.error_strings)
 				across rm_schemas_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
-						io.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
-						io.put_string (schemas_csr.item.errors.as_string)
+						std_err.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
+						std_err.put_string (schemas_csr.item.errors.as_string)
 					end
 				end
 			end
@@ -273,6 +276,7 @@ feature {NONE} -- Implementation
 	opts: OPTIONS_PROCESSOR
 		once
 			create Result.make
+			Result.set_is_usage_verbose (True)
 			Result.set_is_usage_displayed_on_error (True)
 		end
 
@@ -280,7 +284,7 @@ feature {NONE} -- Implementation
 			-- Update UI with progress on build.
 		do
 			if verbose_output then
-				print (msg)
+				std_out.put_string (msg)
 			end
 		end
 
@@ -288,7 +292,7 @@ feature {NONE} -- Implementation
 			-- Update UI with progress on build.
 		do
 			if verbose_output or ara.is_in_terminal_compilation_state and then not ara.is_valid then
-				print (ara.error_strings)
+				std_out.put_string (ara.error_strings)
 			end
 		end
 
@@ -310,13 +314,13 @@ feature {NONE} -- Implementation
 					leader.append_character ('+')
 					leader.append_string ("--")
 					leader.append_character (' ')
-					io.put_string (leader)
-					io.put_string (aci.name)
-					io.new_line
+					std_out.put_string (leader)
+					std_out.put_string (aci.name)
+					std_out.new_line
 				end
 			elseif attached {ARCH_LIB_ARCHETYPE} aci then
-				io.put_string (aci.qualified_key)
-				io.new_line
+				std_out.put_string (aci.qualified_key)
+				std_out.new_line
 			end
 		end
 

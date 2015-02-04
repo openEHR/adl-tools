@@ -53,17 +53,10 @@ inherit
 		export
 			{NONE} all
 		undefine
-			app_cfg_initialise, Default_application_name, Application_developer_name, app_cfg
+			app_cfg_initialise, Default_application_name, Application_developer_name, Fallback_application_name, app_cfg
 		end
 
 feature -- Initialisation
-
-	set_application_developer_name (a_name: STRING)
-			-- override the default of "openEHR" for the developer (i.e. vendor) name; this
-			-- name is what gets used in the user's app config path, install directory and so on
-		do
-			application_developer_name.make_from_string (a_name)
-		end
 
 	initialise_shell
 		once

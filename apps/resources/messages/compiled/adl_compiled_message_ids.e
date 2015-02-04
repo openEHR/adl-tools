@@ -285,6 +285,7 @@ feature -- Definitions
 		ec_id_pattern_arg_description: STRING = "id_pattern_arg_description"
 		ec_id_patter_arg_type: STRING = "id_patter_arg_type"
 		ec_config_file_location: STRING = "config_file_location"
+		ec_xml_rules_file_location: STRING = "xml_rules_file_location"
 		ec_repos_info_text: STRING = "repos_info_text"
 		ec_current_lib_info_text: STRING = "current_lib_info_text"
 		ec_rm_schemas_info_text: STRING = "rm_schemas_info_text"

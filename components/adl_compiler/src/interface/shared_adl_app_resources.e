@@ -12,7 +12,7 @@ class SHARED_ADL_APP_RESOURCES
 inherit
 	SHARED_BMM_APP_RESOURCES
 		redefine
-			app_cfg_initialise, Application_developer_name, app_cfg
+			app_cfg_initialise, Application_developer_name, Fallback_application_name
 		end
 
 	ARCHETYPE_DEFINITIONS
@@ -61,24 +61,6 @@ feature -- Definitions
 	Fallback_application_name: STRING
 		once ("PROCESS")
 			Result := "adl_workbench"
-		end
-
-	Fallback_user_config_file_directory: STRING
-			-- This default directory can be used as a fallback rather than forcing every related app to have its
-			-- own .cfg file, with essentially the same information (configured directories etc).
-			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
-		do
-			if attached execution_environment.home_directory_name as hd then
-				Result := file_system.pathname (file_system.pathname (hd, application_developer_name), Fallback_application_name)
-			else
-				Result := file_system.current_working_directory
-			end
-		end
-
-	Fallback_user_config_file_path: STRING
-			-- Full path to alternate resource configuration file.
-		do
-			Result := file_system.pathname (Fallback_user_config_file_directory, Fallback_application_name + User_config_file_extension)
 		end
 
 	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
@@ -142,22 +124,6 @@ feature -- Initialisation
 			-- do some once-off initialisation - attach a listener to config file loaded
 		do
 			app_cfg.add_refresh_listener (agent resources_refresh_from_file)
-		end
-
-feature -- Access
-
-	app_cfg: CONFIG_FILE_ACCESS
-			-- accessor object for application config file
-		once ("PROCESS")
-			Result := app_cfg_cell.item
-			if file_system.file_exists (user_config_file_path) then
-				Result.initialise (user_config_file_path)
-			elseif file_system.file_exists (fallback_user_config_file_path) then
-				Result.initialise (fallback_user_config_file_path)
-			else
-				Result.initialise_create (user_config_file_path)
-			end
-			app_cfg_initialise
 		end
 
 feature -- Application Switches
