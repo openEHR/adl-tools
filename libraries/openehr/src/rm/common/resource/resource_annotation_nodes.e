@@ -54,7 +54,9 @@ feature -- Modification
 				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
 			end
 			across an_annotations.items as annots_csr loop
-				items.item (a_path).items.force (annots_csr.item, annots_csr.key)
+				if attached items.item (a_path) as att_item then
+					att_item.items.force (annots_csr.item, annots_csr.key)
+				end
 			end
 		end
 
@@ -62,10 +64,11 @@ feature -- Modification
 			-- add an annotation consisting of key `annot_key' & `annot_content' at path `a_path';
 			-- replace any existing at same path
 		do
-			if not items.has (a_path) then
+			if items.has (a_path) and then attached items.item (a_path) as att_item then
+				att_item.add_item (annot_key, annot_content)
+			else
 				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
 			end
-			items.item (a_path).add_item (annot_key, annot_content)
 		end
 
 end

@@ -87,9 +87,9 @@ feature -- Events
 	on_select_archetype_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if attached {GUI_RM_TARGETTED_TOOL} ev_notebook.selected_item.data as rm_tool and attached source as s then
-				if s /= rm_tool.source and rm_tool.can_populate (s) then
-					rm_tool.populate (s)
+			if attached ev_notebook.selected_item as att_sel_item and then attached {GUI_RM_TARGETTED_TOOL} att_sel_item.data as rm_tool then
+				if safe_source /= rm_tool.safe_source and rm_tool.can_populate (safe_source) then
+					rm_tool.populate (safe_source)
 				end
 			end
 		end

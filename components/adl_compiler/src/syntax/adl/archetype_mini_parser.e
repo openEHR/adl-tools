@@ -20,6 +20,9 @@ inherit
 		end
 
 	ANY_VALIDATOR
+		redefine
+			reset
+		end
 
 feature -- Definitions
 
@@ -35,6 +38,13 @@ feature -- Access
 	is_generated: BOOLEAN
 
 feature -- Commands
+
+	reset
+			-- initialise reporting variables
+		do
+			precursor
+			last_archetype := Void
+		end
 
 	parse (a_full_path: STRING)
 			-- perform quick parse of lines down to 'concept' line or EOF, and obtain archetype_id,
@@ -158,6 +168,7 @@ feature {NONE} -- Implementation
 			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
 			parent_id_str: detachable STRING
 			lpos, rpos: INTEGER
+			arch_tn: ARCHETYPE_THUMBNAIL
 		do
 			create adl_ver.make_empty
 
@@ -214,9 +225,10 @@ feature {NONE} -- Implementation
 						end
 					end
 
-					create last_archetype.make (adl_ver, archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
+					create arch_tn.make (adl_ver, archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
+					last_archetype := arch_tn
 					if attached parent_id_str as pid_str then
-						last_archetype.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
+						arch_tn.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
 					end
 				end
 			else

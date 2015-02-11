@@ -132,11 +132,16 @@ feature -- Modification
 
 	merge_annotation_items (a_lang_tag: STRING; a_path: STRING; ann_items: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `ann_items' at key `a_path'; replace any existing at same path
+		local
+			ann_item: RESOURCE_ANNOTATION_NODES
 		do
-			if not items.has (a_lang_tag) then
-				items.put (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
+			if attached items.item (a_lang_tag) as att_ann_item then
+				ann_item := att_ann_item
+			else
+				create ann_item.make
+				items.put (ann_item, a_lang_tag)
 			end
-			items.item(a_lang_tag).merge_items_at_node(a_path, ann_items)
+			ann_item.merge_items_at_node(a_path, ann_items)
 		end
 
 	merge (other: RESOURCE_ANNOTATIONS)

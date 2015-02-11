@@ -33,10 +33,13 @@ feature -- Initialisation
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 			Object_id_valid: not an_object_id.is_empty
+		local
+			rep: attached like representation_cache
 		do
 			rm_type_name := a_rm_type_name
-			create representation_cache.make (an_object_id)
-			representation_cache.set_content (Current)
+			create rep.make (an_object_id)
+			rep.set_content (Current)
+			representation_cache := rep
 		ensure
 			Any_allowed: any_allowed
 		end
@@ -189,8 +192,8 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append (rm_type_name + "[" + representation.node_id + "] ")
-			if attached occurrences then
-				Result.append (occurrences.as_string)
+			if attached occurrences as att_occ then
+				Result.append (att_occ.as_string)
 			end
 		end
 

@@ -32,7 +32,10 @@ feature -- Access
 			Result := "catalogue"
 		end
 
-	selection_history: detachable ARCHETYPE_LIBRARY_SELECTION_HISTORY
+	selection_history: ARCHETYPE_LIBRARY_SELECTION_HISTORY
+		attribute
+			create Result.make
+		end
 
 	selected_item: detachable ARCH_LIB_ITEM
 		do

@@ -81,14 +81,14 @@ feature -- Modification
 		end
 
 invariant
-	Other_reference_range_validity: other_reference_ranges /= Void implies not other_reference_ranges.is_empty
+	Other_reference_range_validity: attached other_reference_ranges as att_orr implies not att_orr.is_empty
 	Is_simple_validity: (normal_range = Void and other_reference_ranges = Void and normal_status = Void) implies is_simple
 --	Normal_status_validity: normal_status /= Void implies normal_status.is_simple
 --	Normal_status_symbol_validity: normal_status /= Void implies terminology(Terminology_id_openehr).
 --		has_code_for_group_id(Group_id_normal_status, normal_status.symbol.defining_code)
 
 --	Normal_status_validity: normal_status /= Void implies code_set(Code_set_id_normal_statuses).has_code(normal_status)
-	Normal_range_and_status_consistency: (normal_range /= Void and normal_status /= Void) implies (normal_status.code_string.is_equal("N") xor not normal_range.has(Current))
+	Normal_range_and_status_consistency: (attached normal_range as att_nr and attached normal_status as att_ns) implies (att_ns.code_string.is_equal("N") xor not att_nr.has(Current))
 
 end
 

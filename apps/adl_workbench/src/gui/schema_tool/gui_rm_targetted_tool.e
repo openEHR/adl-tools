@@ -24,7 +24,7 @@ feature -- Access
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
 			-- docked panes or similar
 		do
-			Result := source.schema_id
+			Result := safe_source.schema_id
 		end
 
 end

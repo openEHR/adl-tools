@@ -362,7 +362,7 @@ feature -- Events
 
 	on_close
 		do
-			gui_agents.close_test_tool_agent.call ([])
+			gui_agents.call_close_test_tool_agent
 		end
 
 	archetype_test_go
@@ -443,6 +443,8 @@ feature {NONE} -- Commands
 		do
 			reset_output_directories
 			remove_unused_codes := evx_remove_unused_codes_cb.is_selected
+
+			archetype_compiler.setup_build ([True])
 
 			last_tested_archetypes_count := 0
 			from row_csr := 1 until row_csr > evx_grid.row_count or test_stop_requested loop
@@ -528,7 +530,6 @@ feature {NONE} -- Tests
 
 			Result := test_failed
 			if not target.compile_attempted then
-				archetype_compiler.setup_build ([True])
 				archetype_compiler.build_lineage (target, 0)
 			end
 			if target.is_valid then
@@ -627,7 +628,7 @@ feature {NONE} -- Tests
 			orig_fname, diff_fname, flat_fname, flat_path: STRING
 		do
 			Result := Test_failed
-			if target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target and then auth_target.is_valid then
 				if diff_dirs_available then
 					orig_fname := file_system.basename (auth_target.source_file_path)
 					diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
@@ -659,7 +660,7 @@ feature {NONE} -- Tests
 			orig_fname, diff_fname, regression_flat_path, output_flat_path: STRING
 		do
 			Result := Test_failed
-			if diff_dirs_available and target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+			if diff_dirs_available and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target and then auth_target.is_valid then
 				orig_fname := file_system.basename (auth_target.source_file_path)
 				diff_fname := extension_replaced (orig_fname, File_ext_archetype_adl_diff)
 				output_flat_path := file_system.pathname (diff_dir_source_flat_new, diff_fname)
@@ -683,15 +684,15 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		do
 			Result := Test_failed
-			if target.is_valid then
-				if original_differential_text.count = target.source_text.count then
-					if original_differential_text.same_string (target.source_text) then
+			if attached target as att_target and then att_target.is_valid then
+				if original_differential_text.count = att_target.source_text.count then
+					if original_differential_text.same_string (att_target.source_text) then
 						Result := Test_passed
 					else
 						test_status.append (get_msg_line ("Test_arch_compare_i1", <<>>))
 					end
 				else
-					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.source_text.count.out>>))
+					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, att_target.source_text.count.out>>))
 				end
 			else
 				Result := test_not_applicable
@@ -704,7 +705,7 @@ feature {NONE} -- Tests
 			orig_fname, odin_fname: STRING
 		do
 			Result := Test_failed
-			if target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target and then auth_target.is_valid then
 				auth_target.save_differential_compiled
 				orig_fname := file_system.basename (auth_target.source_file_path)
 				odin_fname := extension_replaced (orig_fname, File_ext_odin)
@@ -723,7 +724,7 @@ feature {NONE} -- Tests
 			odin_text: STRING
 		do
 			Result := Test_failed
-			if target.is_valid and attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target then
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target and then auth_target.is_valid then
 				odin_text := auth_target.compiled_differential
 				if not odin_text.is_empty then
 					orig_fname := file_system.basename (auth_target.source_file_path)

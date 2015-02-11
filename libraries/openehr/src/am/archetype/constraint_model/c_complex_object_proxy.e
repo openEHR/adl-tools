@@ -26,11 +26,14 @@ feature -- Initialisation
 			rm_type_name_valid: not a_rm_type_name.is_empty
 			object_id_valid: not an_object_id.is_empty
 			path_valid: not a_path.is_empty
+		local
+			rep: attached like representation_cache
 		do
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
-			create representation_cache.make (an_object_id, a_path)
-			representation_cache.set_content (Current)
+			create rep.make (an_object_id, a_path)
+			rep.set_content (Current)
+			representation_cache := rep
 		ensure
 			Use_target_occurrences: use_target_occurrences
 		end

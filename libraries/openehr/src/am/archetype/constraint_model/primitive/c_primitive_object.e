@@ -139,8 +139,8 @@ feature -- Output
 		do
 			create Result.make (0)
 			Result.append (constraint_as_string)
-			if attached assumed_value then
-				Result.append ("; " + assumed_value.out)
+			if attached assumed_value as att_av then
+				Result.append ("; " + att_av.out)
 			end
 		end
 

@@ -76,7 +76,6 @@ feature -- Initialisation
 			Valid_specialisation_depth: at_specialisation_depth >= 0
 		do
 			make_differential (an_original_lang_str, new_root_id_code_at_level (at_specialisation_depth))
-			add_language (an_original_lang_str)
 			initialise_term_definitions (create {ARCHETYPE_TERM}.make (concept_code))
 		ensure
 			Primary_language_set: original_language.code_string.is_equal (an_original_lang_str)
@@ -90,16 +89,18 @@ feature -- Initialisation
 	make_dt (make_args: detachable ARRAY [ANY])
 			-- assumed args are <<original_language, concept_code, differential_flag>>
 		do
-			if attached {STRING} make_args[1] as str then
-				create original_language.make (ts.default_language_code_set, str)
-			end
-			if attached {STRING} make_args[2] as a_concept_code and then is_valid_root_id_code (a_concept_code) then
-				concept_code := a_concept_code
-			else
-				concept_code := Root_id_code_top_level
-			end
-			if attached {BOOLEAN} make_args[3] as differential_flag then
-				is_differential := differential_flag
+			if attached make_args as att_arr_any then
+				if attached {STRING} att_arr_any[1] as str then
+					create original_language.make (ts.default_language_code_set, str)
+				end
+				if attached {STRING} att_arr_any[2] as a_concept_code and then is_valid_root_id_code (a_concept_code) then
+					concept_code := a_concept_code
+				else
+					concept_code := Root_id_code_top_level
+				end
+				if attached {BOOLEAN} att_arr_any[3] as differential_flag then
+					is_differential := differential_flag
+				end
 			end
 		end
 
@@ -241,6 +242,16 @@ feature -- Access (computed)
 			across languages_available as langs_csr all Result.has (langs_csr.item) end
 		end
 
+	term_definitions_for_language (a_language: STRING): HASH_TABLE [ARCHETYPE_TERM, STRING]
+			-- extract the table of terms for language `a_language'
+		require
+			has_language (a_language)
+		do
+			check attached term_definitions.item (a_language) as att_terms then
+				Result := att_terms
+			end
+		end
+
 	term_binding (a_terminology, a_key: STRING): URI
 			-- retrieve the term binding from terminology `a_terminology' for code `a_key'
 		require
@@ -257,7 +268,7 @@ feature -- Access (computed)
 			Terminology_valid: has_terminology_extract (a_terminology)
 			Term_code_valid: has_terminology_extract_code (a_terminology, a_code)
 		do
-			check attached terminology_extracts.item (a_terminology) as textrs and then attached textrs.item (a_code) as term then
+			check attached terminology_extracts as att_tex and then attached att_tex.item (a_terminology) as att_ex_terms and then attached att_ex_terms.item (a_code) as term then
 				Result := term
 			end
 		end
@@ -402,7 +413,7 @@ feature -- Status Report
 	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
 			-- true if there is a term binding for internal code or archetype path `a_key' in `a_terminology'
 		do
-			Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key)
+			Result := term_bindings.has (a_terminology) and then term_bindings_for_terminology (a_terminology).has (a_key)
 		end
 
 	has_terminology_extract (a_terminology: STRING): BOOLEAN
@@ -530,11 +541,14 @@ feature -- Modification
 		require
 			Valid_archetype: is_differential
 			Valid_concept_term: is_valid_root_id_code (a_term.code)
+		local
+			terms_list: HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
-			term_definitions.put (create {HASH_TABLE [ARCHETYPE_TERM, STRING]}.make (0), original_language.code_string)
-			term_definitions.item (original_language.code_string).put (a_term, a_term.code)
+			create terms_list.make (0)
+			term_definitions.put (terms_list, original_language.code_string)
+			terms_list.put (a_term, a_term.code)
 		ensure
-			Term_definitions_populated: term_definitions.item (original_language.code_string).item (concept_code) = a_term
+			Term_definitions_populated: term_definition (original_language.code_string, concept_code) = a_term
 		end
 
 	create_added_id_definition (a_text, a_description: STRING)
@@ -633,7 +647,7 @@ feature -- Modification
 			Local_code_valid: has_code (a_code)
 			Already_added: has_term_binding (a_terminology_id, a_code)
 		do
-			term_bindings.item (a_terminology_id).replace (a_binding, a_code)
+			term_bindings_for_terminology (a_terminology_id).replace (a_binding, a_code)
 			term_binding_map_cache := Void
 		ensure
 			Binding_added: has_term_binding (a_terminology_id, a_code)
@@ -696,7 +710,7 @@ feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 			if has_any_term_binding (a_code) then
 				across terminologies as terminologies_csr loop
 					if term_bindings.has (terminologies_csr.item) and then
-						term_bindings.item (terminologies_csr.item).has (a_code)
+						term_bindings_for_terminology (terminologies_csr.item).has (a_code)
 					then
 						remove_term_binding (a_code, terminologies_csr.item)
 					end
@@ -712,8 +726,8 @@ feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 		require
 			Has_binding: has_term_binding (a_terminology, a_code)
 		do
-			term_bindings.item (a_terminology).remove (a_code)
-			if term_bindings.item (a_terminology).count = 0 then
+			term_bindings_for_terminology (a_terminology).remove (a_code)
+			if term_bindings_for_terminology (a_terminology).count = 0 then
 				term_bindings.remove (a_terminology)
 			end
 			term_binding_map_cache := Void
@@ -755,7 +769,7 @@ feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 		local
 			trans_term: ARCHETYPE_TERM
 		do
-			term_definitions.item (original_language.code_string).force (a_term, a_term.code)
+			term_definitions_for_language (original_language.code_string).force (a_term, a_term.code)
 
 			-- make copies in other languages
 			trans_term := a_term.create_translated_term (original_language.code_string)
@@ -785,7 +799,7 @@ feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			if a_language.is_equal (original_language.code_string) and replace_translations then
 				put_new_definition (a_term) -- replace all translations as well
 			else
-				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
+				term_definitions_for_language (a_language).replace (a_term, a_term.code) -- just do this translation
 			end
 			clear_cache
 		end
@@ -797,12 +811,17 @@ feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			Code_depth_valid: specialisation_depth_from_code (a_code) <= specialisation_depth
 			Term_codes_identical: across a_terms as a_terms_csr all a_terms_csr.item.code.is_equal (a_code) end
 			Languages_identical: across languages_available as langs_csr all a_terms.has (langs_csr.item) end
+		local
+			term_tbl: HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
 			across a_terms as a_terms_csr loop
-				if not term_definitions.has (a_terms_csr.key) then
-					term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_terms_csr.key)
+				if attached term_definitions.item (a_terms_csr.key) as att_terms then
+					term_tbl := att_terms
+				else
+					create term_tbl.make(0)
+					term_definitions.put (term_tbl, a_terms_csr.key)
 				end
-				term_definitions.item (a_terms_csr.key).force (a_terms_csr.item, a_code)
+				term_tbl.force (a_terms_csr.item, a_code)
 			end
 			update_highest_codes (a_code)
 			clear_cache
@@ -1069,8 +1088,8 @@ feature {NONE} -- Flattening
 					code_in_parent := code_at_level (a_value_set.id, spec_depth)
 				end
 
-				if value_sets.has (code_in_parent) then
-					parent_code_set := value_sets.item (code_in_parent).members
+				if attached value_sets.item (code_in_parent) as att_vs then
+					parent_code_set := att_vs.members
 					value_sets.remove (code_in_parent)
 				end
 			end

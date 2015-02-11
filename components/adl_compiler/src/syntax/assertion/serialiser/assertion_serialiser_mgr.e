@@ -21,7 +21,7 @@ feature -- Initialisation
 	make (a_target: ARRAYED_LIST [ASSERTION]; format: STRING)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
-			Format_valid: has_assertion_serialiser_format(format)
+			Format_valid: has_assertion_serialiser_format (format)
 		do
 			serialiser := assertion_serialiser_for_format (format)
 			target := a_target
@@ -51,7 +51,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	serialiser: detachable ASSERTION_SERIALISER
+	serialiser: ASSERTION_SERIALISER
 
 	target: ARRAYED_LIST [ASSERTION]
 

@@ -51,8 +51,8 @@ feature -- Access
 			-- effective value or value set of single constraint in tuple_constraint, mediated by terminology
 			-- to expand an ac-code
 		do
-			if is_valid_value_set_code (constraint) then
-				Result := value_set_extractor.item ([constraint])
+			if is_valid_value_set_code (constraint) and attached value_set_extractor as att_agt then
+				Result := att_agt.item ([constraint])
 			else
 				create Result.make (0)
 				Result.compare_objects

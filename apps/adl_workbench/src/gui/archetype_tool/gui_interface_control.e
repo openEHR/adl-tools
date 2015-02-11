@@ -203,7 +203,7 @@ feature {NONE} -- Implementation
 
 			-- first column: path
 			if show_natural_language then
-				path_str := source.flat_archetype.annotated_path (a_path, selected_language, True)
+				path_str := safe_source.flat_archetype.annotated_path (a_path, selected_language, True)
 			else
 				path_str := a_path
 			end

@@ -30,9 +30,9 @@ feature -- Initialization
 		terminology_file_path := file_system.pathname (file_system.pathname (terminology_directory, "en"), terminology_filename)
 		if file_system.file_exists (terminology_file_path) then
 			xml_doc := deserialize_text (terminology_file_path)
-			if attached xml_doc then
+			if attached xml_doc as att_xml_doc then
 				create value_set_processor
-				xml_doc.process_children_recursive (value_set_processor)
+				att_xml_doc.process_children_recursive (value_set_processor)
 			end
 		else
 			init_failed := True

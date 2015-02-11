@@ -73,8 +73,8 @@ feature -- Commands
 			ann_path: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
-			if target.has_annotations then
-				across target.annotations.items as annots_csr loop
+			if attached target.annotations as att_targ_annots then
+				across att_targ_annots.items as annots_csr loop
 					across annots_csr.item.items as annots_for_lang_csr loop
 						ann_path := annots_for_lang_csr.key
 						create apa.make_from_string (ann_path)

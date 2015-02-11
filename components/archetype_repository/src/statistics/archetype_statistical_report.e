@@ -50,6 +50,15 @@ feature -- Access
 			create Result.make (0)
 		end
 
+	archetype_metrics_item (a_key: STRING): STATISTICAL_DATUM
+		require
+			Archetype_metric_names.has (a_key)
+		do
+			check attached archetype_metrics.item (a_key) as att_item then
+				Result := att_item
+			end
+		end
+
 	archetype_metrics_list: HASH_TABLE [LIST [STRING], STRING]
 		do
 			create Result.make (0)
@@ -97,7 +106,9 @@ feature -- Modification
 		require
 			archetype_metrics.has (a_metric_name)
 		do
-			archetype_metrics.item (a_metric_name).update (a_val)
+			check attached archetype_metrics.item (a_metric_name) as att_metric then
+				att_metric.update (a_val)
+			end
 		end
 
 	merge (other: like Current)
@@ -109,15 +120,17 @@ feature -- Modification
 		do
 			-- archetype metrics table
 			across other.archetype_metrics as metrics_csr loop
-				archetype_metrics.item (metrics_csr.key).merge (metrics_csr.item)
+				if attached archetype_metrics.item (metrics_csr.key) as att_metrics then
+					att_metrics.merge (metrics_csr.item)
+				end
 			end
 
 			-- rm class table
 			across other.rm_grouped_class_table as other_grouped_table_csr loop
 				if rm_grouped_class_table.has (other_grouped_table_csr.key) and then attached rm_grouped_class_table.item (other_grouped_table_csr.key) as rm_class_table then
 					across other_grouped_table_csr.item as other_table_csr loop
-						if rm_class_table.has (other_table_csr.key) then
-							merged_class_stats := rm_class_table.item (other_table_csr.key).deep_twin
+						if rm_class_table.has (other_table_csr.key) and then attached rm_class_table.item (other_table_csr.key) as att_rm_class then
+							merged_class_stats := att_rm_class.deep_twin
 							merged_class_stats.merge (other_table_csr.item)
 							rm_class_table.force (merged_class_stats, other_table_csr.key)
 						else

@@ -105,15 +105,14 @@ feature -- Status Report
 	has_type_substitution (an_aom_type, an_rm_type: STRING): BOOLEAN
 			-- is there a type substitution for `an_aom_type', `an_rm_type'?
 		do
-			Result := attached aom_rm_type_substitutions as type_subs and then
-				type_subs.has (an_aom_type) and then
-				type_subs.item (an_aom_type).is_case_insensitive_equal (an_rm_type)
+			Result := attached aom_rm_type_substitutions as att_type_subs and then
+				attached att_type_subs.item (an_aom_type) as att_type_subs_item and then att_type_subs_item.is_case_insensitive_equal (an_rm_type)
 		end
 
 	has_any_type_substitution (an_aom_type: STRING): BOOLEAN
 			-- is there any type substitution for `an_aom_type'?
 		do
-			Result := attached aom_rm_type_substitutions as type_subs and then type_subs.has (an_aom_type)
+			Result := attached aom_rm_type_substitutions as att_type_subs and then att_type_subs.has (an_aom_type)
 		end
 
 	has_lifecycle_state_mapping (a_state_name: STRING): BOOLEAN

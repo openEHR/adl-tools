@@ -457,7 +457,7 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_language end
 
-			term_def := source.flat_archetype.terminology.term_definition (selected_language, a_code)
+			term_def := safe_source.flat_archetype.terminology.term_definition (selected_language, a_code)
 			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, a_code, Void, Void, key_item_colour, Void)
 			check attached evx_values_grid.last_row as lr then
 				ev_row := lr
@@ -481,10 +481,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	terminologies: detachable ARRAYED_SET [STRING]
-		note
-			option: stable
+	terminologies: ARRAYED_SET [STRING]
 		attribute
+			create Result.make (0)
 		end
 
 	term_definition_header: ARRAY [STRING]
@@ -500,7 +499,6 @@ feature {NONE} -- Implementation
 			al.append (archetype_term_keys)
 
 			-- terminology names
-			check attached terminologies end
 			al.append (terminologies)
 
 			Result := al.to_array

@@ -174,7 +174,9 @@ feature {NONE} -- Implementation
 
 	active_tool_docking_pane: SD_CONTENT
 		do
-			Result := docking_tools.item (active_tool_id).docking_pane
+			check attached docking_tools.item (active_tool_id) as att_tool then
+				Result := att_tool.docking_pane
+			end
 		end
 
 	has_tool (a_tool_id: INTEGER): BOOLEAN
@@ -204,7 +206,7 @@ feature {NONE} -- Implementation
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
 			docking_tools.put ([a_gui_tool, docking_pane], active_tool_id)
 		ensure
-			Tool_added_to_index: docking_tools.has (active_tool_id) and then docking_tools.item (active_tool_id).tool = a_gui_tool
+			Tool_added_to_index: docking_tools.has (active_tool_id) and then attached docking_tools.item (active_tool_id) as att_tool and then att_tool.tool = a_gui_tool
 		end
 
 	remove_tool (a_tool_id: INTEGER)
@@ -232,10 +234,12 @@ feature {NONE} -- Implementation
 				end
 
 				-- destroy the docking pane and archetype tool controls
-				docking_pane := docking_tools.item (a_tool_id).docking_pane
-				docking_pane.close
-				docking_pane.destroy
-				docking_tools.remove (a_tool_id)
+				if attached docking_tools.item (a_tool_id) as att_tool then
+					docking_pane := att_tool.docking_pane
+					docking_pane.close
+					docking_pane.destroy
+					docking_tools.remove (a_tool_id)
+				end
 			end
 		ensure
 			old tools_count > 1 implies not has_tool (a_tool_id)

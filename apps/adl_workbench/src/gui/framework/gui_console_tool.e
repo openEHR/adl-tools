@@ -48,7 +48,9 @@ feature -- Commands
 	show
 			-- make visible
 		do
-			docking_pane.show
+			if attached docking_pane as att_dp then
+				att_dp.show
+			end
 		end
 
 feature -- Modification

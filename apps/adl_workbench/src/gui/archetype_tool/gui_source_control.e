@@ -113,7 +113,9 @@ feature {NONE} -- Implementation
 
 	adl_14_source_text: detachable STRING
 		do
-			if attached auth_source as att_source and then att_source.file_mgr.has_legacy_flat_file and then attached att_source.file_mgr.legacy_flat_text_original as ft then
+			if attached auth_source as att_source and then att_source.file_mgr.has_legacy_flat_file and then
+				attached att_source.file_mgr.legacy_flat_text_original as ft
+			then
 				Result := ft
 			end
 		end
@@ -122,7 +124,9 @@ feature {NONE} -- Implementation
 
 	adl_14_converted_text: detachable STRING
 		do
-			if attached auth_source as att_source and then att_source.file_mgr.has_legacy_flat_file and then attached att_source.file_mgr.legacy_flat_text as legacy_conv_text then
+			if attached auth_source as att_source and then att_source.file_mgr.has_legacy_flat_file and then
+				attached att_source.file_mgr.legacy_flat_text as legacy_conv_text
+			then
 				Result := legacy_conv_text
 			end
 		end
@@ -134,7 +138,9 @@ feature {NONE} -- Implementation
 			-- following check has to also look at adl_version since that reflects most recently read file
 			-- if the version is 1.4, then the 1.4 file was read for the most recent parse, even if the
 			-- 1.5 file was subsequently created as a result, but before this routine gets called.
-			if attached auth_source as att_source and then att_source.has_source_file and then not att_source.file_mgr.adl_version.is_equal (Adl_14_version) then
+			if attached auth_source as att_source and then att_source.has_source_file and then
+				not att_source.file_mgr.adl_version.is_equal (Adl_14_version)
+			then
 				Result := att_source.file_mgr.source_text_original
 			end
 		end
@@ -144,10 +150,10 @@ feature {NONE} -- Implementation
 	adl_converted_text: detachable STRING
 		do
 			if attached auth_source as att_source and then att_source.file_mgr.is_text_converted then
-				if attached auth_source.differential_archetype then
-					Result := auth_source.differential_serialised
-				elseif auth_source.has_source_file then
-					Result := auth_source.source_text
+				if attached att_source.differential_archetype then
+					Result := att_source.differential_serialised
+				elseif att_source.has_source_file then
+					Result := att_source.source_text
 				end
 			end
 		end
@@ -156,8 +162,8 @@ feature {NONE} -- Implementation
 
 	adl_current_serialised_text: detachable STRING
 		do
-			if source.is_valid_differential and then attached source.differential_serialised as sda then
-				 Result := sda
+			if safe_source.is_valid_differential then
+				 Result := safe_source.differential_serialised
 			end
 		end
 
@@ -231,9 +237,9 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
-				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
+				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
+				gui_agents.call_select_archetype_agent (att_source)
+				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
 		end
 
@@ -243,9 +249,9 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
-				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
+				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
+				gui_agents.call_select_archetype_agent (att_source)
+				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
 		end
 
@@ -256,9 +262,9 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_text_to_differential_file (a_text)
 				att_source.signal_source_edited
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
-				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
+				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
+				gui_agents.call_select_archetype_agent (att_source)
+				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
 		end
 
@@ -268,9 +274,9 @@ feature {NONE} -- Implementation
 		do
 			if attached auth_source as att_source then
 				att_source.save_text_to_legacy_file (a_text)
-				gui_agents.console_tool_append_agent.call (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
-				gui_agents.select_archetype_agent.call ([att_source])
-				gui_agents.refresh_archetype_editors_agent.call ([att_source.id.physical_id])
+				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
+				gui_agents.call_select_archetype_agent (att_source)
+				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
 		end
 

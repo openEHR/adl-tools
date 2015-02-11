@@ -55,8 +55,8 @@ feature -- Processing
 				current_group := attr_vals.item ("name")
 
 			elseif e.name.is_equal ("concept") and attached attr_vals.item ("id") as val_id and attached attr_vals.item ("rubric") as val_rubric then
-				check attached current_group as cg and attached current_language as cl then
-					current_terminology.add_term (val_id, val_rubric, cg, cl)
+				check attached current_terminology as ct and attached current_group as cg and attached current_language as cl then
+					ct.add_term (val_id, val_rubric, cg, cl)
 				end
 			end
 		end

@@ -61,7 +61,7 @@ feature -- Commands
 		do
 			create new_tool.make
 			add_new_tool (new_tool)
-			active_tool_docking_pane.focus_in_actions.extend (agent do gui_agents.history_set_active_agent.call ([active_tool]) end)
+			active_tool_docking_pane.focus_in_actions.extend (agent do gui_agents.call_history_set_active_agent (active_tool) end)
 		end
 
 	populate_active_tool (a_class_def: BMM_CLASS)

@@ -59,8 +59,8 @@ feature -- Conversion
 		end
 
 invariant
-	Range_is_simple: (range.lower_unbounded or else range.lower.is_simple) and
-						(range.upper_unbounded or else range.upper.is_simple)
+	Range_is_simple: (range.lower_unbounded or else attached range.lower as att_lower and then att_lower.is_simple) and
+						(range.upper_unbounded or else attached range.upper as att_upper and then att_upper.is_simple)
 
 end
 

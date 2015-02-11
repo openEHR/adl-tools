@@ -37,7 +37,7 @@ feature -- Access
 
 	class_definition: BMM_CLASS
 
-	bmm_schema: detachable BMM_SCHEMA
+	bmm_schema: BMM_SCHEMA
 
 	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact

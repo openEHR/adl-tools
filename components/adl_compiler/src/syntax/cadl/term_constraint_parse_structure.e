@@ -120,24 +120,30 @@ feature -- Factory
 			not is_local
 		local
 			new_at_code, uri_str: STRING
+			parse_str: attached like last_converted_local
+			bindings_str: attached like last_converted_local_bindings
+			map_str: attached like last_converted_binding_map
 		do
-			create last_converted_local.make_local
-			create last_converted_local_bindings.make (0)
-			create last_converted_binding_map.make (0)
+			create parse_str.make_local
+			last_converted_local := last_converted_local
+			create bindings_str.make (0)
+			last_converted_local_bindings := bindings_str
+			create map_str.make (0)
+			last_converted_binding_map := map_str
 			across codes as codes_csr loop
 				-- generate at-code in new structure
 				new_at_code := at_code_generator.item ([])
-				last_converted_local.add_code (new_at_code)
+				parse_str.add_code (new_at_code)
 
 				-- if this code is the assumed one, write the at-code in to new structure
 				if attached assumed_code as att_ac and then att_ac.is_equal (codes_csr.item) then
-					last_converted_local.set_assumed_code (new_at_code)
+					parse_str.set_assumed_code (new_at_code)
 				end
 
 				-- create a binding entry
 				uri_str := uri_for_terminology_code_string (terminology_id, codes_csr.item)
-				last_converted_local_bindings.put (create {URI}.make_from_string (uri_str), new_at_code)
-				last_converted_binding_map.put (new_at_code, codes_csr.item)
+				bindings_str.put (create {URI}.make_from_string (uri_str), new_at_code)
+				map_str.put (new_at_code, codes_csr.item)
 			end
 		end
 

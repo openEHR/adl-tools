@@ -523,9 +523,8 @@ feature {NONE} -- Implementation
 	 				create apa.make_from_string (old_path)
 	 				if not apa.is_phantom_path_at_level (spec_depth - 1) then
 		 				path_in_flat := apa.path_at_level (spec_depth - 1)
-		 				check attached arch_flat_parent end
-		 				if arch_flat_parent.has_path (path_in_flat) then
-		 					parent_ca_in_anc_flat := arch_flat_parent.attribute_at_path (path_in_flat)
+		 				if attached arch_flat_parent as att_flat_parent and then att_flat_parent.has_path (path_in_flat) then
+		 					parent_ca_in_anc_flat := att_flat_parent.attribute_at_path (path_in_flat)
 
 		 					-- we look for a single child of same RM type as in parent, typically something
 		 					-- like DV_CODED_TEXT with an internal redefinition. However, there are some other
@@ -585,7 +584,10 @@ feature {NONE} -- Implementation
 	 			else
 		 			id_code := target.create_new_id_code
 	 			end
-				c_obj.parent.replace_node_id (c_obj.node_id, id_code)
+
+	 			check attached c_obj.parent as att_parent_ca then
+					att_parent_ca.replace_node_id (c_obj.node_id, id_code)
+	 			end
 
 				-- fix any matching use nodes with this path; primarily where the path contains a segment
 				-- for e.g. Observation/data which has no object id in some ADL 1.4 archetypes
@@ -658,23 +660,25 @@ feature {NONE} -- Implementation
 			-- iterate list of C_C_Os that have attribute_tuples
 			across target.tuple_parent_index as tuples_cco_csr loop
 				-- iterate C_C_O's C_ATTRIBUTE_TUPLEs
-				across tuples_cco_csr.item.attribute_tuples as c_attr_tuples_csr loop
-					-- C_A_T's C_ATTRIBUTEs
-					across c_attr_tuples_csr.item.members as c_attr_csr loop
-						if c_attr_csr.item.has_children and then attached {C_TERMINOLOGY_CODE} c_attr_csr.item.first_child then
-							vset.wipe_out
-							-- iterate C_OBJECTs in this C_ATTRIBUTE; should all be of same AOM meta-type
-							across c_attr_csr.item.children as c_obj_csr loop
-								if attached {C_TERMINOLOGY_CODE} c_obj_csr.item as ctc and then ctc.is_constraint_value_code then
-									vset.extend (ctc.constraint.twin)
+				if attached tuples_cco_csr.item.attribute_tuples as att_attr_tuples then
+					across att_attr_tuples as c_attr_tuples_csr loop
+						-- C_A_T's C_ATTRIBUTEs
+						across c_attr_tuples_csr.item.members as c_attr_csr loop
+							if c_attr_csr.item.has_children and then attached {C_TERMINOLOGY_CODE} c_attr_csr.item.first_child then
+								vset.wipe_out
+								-- iterate C_OBJECTs in this C_ATTRIBUTE; should all be of same AOM meta-type
+								across c_attr_csr.item.children as c_obj_csr loop
+									if attached {C_TERMINOLOGY_CODE} c_obj_csr.item as ctc and then ctc.is_constraint_value_code then
+										vset.extend (ctc.constraint.twin)
+									end
 								end
+				 				-- create a definition for the new code; here we obtain an approximate definition for it from
+								-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
+								if not vset.is_empty then
+									target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (tuples_cco_csr.item))
+					 				target.terminology.put_value_set (create {VALUE_SET}.make (target.terminology.last_new_definition_code, vset))
+					 			end
 							end
-			 				-- create a definition for the new code; here we obtain an approximate definition for it from
-							-- obtain the nearest id-code that is defined in the terminology, to use in creating a definition
-							if not vset.is_empty then
-								target.terminology.merge_new_constraint_definition_and_translations (create_new_terms_from_proximal (tuples_cco_csr.item))
-				 				target.terminology.put_value_set (create {VALUE_SET}.make (target.terminology.last_new_definition_code, vset))
-				 			end
 						end
 					end
 				end

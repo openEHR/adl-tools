@@ -21,12 +21,8 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		do
 			target_descriptor := aca
 			rm_schema := aca.rm_schema
-			check attached aca.differential_archetype as da then
-				target := da
-			end
-			check attached aca.flat_archetype as fa then
-				target_flat := fa
-			end
+			target := aca.safe_differential_archetype
+			target_flat := aca.flat_archetype
 		ensure
 			Target_flat_is_flat: target_flat.is_flat
 			Target_is_differential: target.is_differential

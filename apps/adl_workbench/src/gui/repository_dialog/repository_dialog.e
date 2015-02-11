@@ -494,7 +494,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 						<<repo_name, a_rem_proxy.remote_url, repo_install_dialog.local_directory>>))
 					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 					verify_dialog.show_modal_to_window (Current)
-					if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+					if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
 						do_clone_repository (repo_install_dialog.local_directory, a_rem_proxy)
 					end
 				end
@@ -520,7 +520,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			create col_tooltip.make_from_string (a_lib_if.library_path)
 			if a_lib_if.is_remote then
 				col_icon := get_icon_pixmap ("tool/archetype_library_remote")
-				if attached a_lib_if.library_definition.remote as att_rem then
+				if attached a_lib_if.library_definition as att_lib_def and then attached att_lib_def.remote as att_rem then
 					col_tooltip.append (get_msg (ec_archetype_library_grid_name_col_tooltip, <<att_rem.url, att_rem.custodian>>))
 				end
 			else
@@ -1041,7 +1041,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			create verify_dialog.make_with_text (get_msg (ec_repository_forget_confirm_text, <<a_rep_if.key>>))
 			verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 			verify_dialog.show_modal_to_window (Current)
-			if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+			if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
 				do_with_wait_cursor (Current, agent do_repository_forget (a_rep_if))
 			end
 		end

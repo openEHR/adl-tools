@@ -116,7 +116,7 @@ feature -- Commands
 				-- and then select corresponding tree node, but with events off. If no
 				-- class tool available, treat as if it were a first tme request for this class
 				-- and do a normal tree node select
-				if gui_agents.show_tool_with_artefact_agent.item ([id]) then
+				if gui_agents.call_show_tool_with_artefact_agent (id) then
 					row.select_actions.block
 					row.enable_select
 					row.select_actions.resume
@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			across source.valid_top_level_schemas as rm_sch_csr loop
+			across safe_source.valid_top_level_schemas as rm_sch_csr loop
 				populate_schema (rm_sch_csr.item)
 			end
 			gui_grid.resize_columns_to_content
@@ -238,7 +238,7 @@ feature {NONE} -- Implementation
 
 			-- context menu
 			gui_grid.add_last_row_pointer_button_press_actions (1, agent class_node_handler (ev_class_row, ?, ?, ?))
-			gui_grid.add_last_row_pointer_button_press_actions (1, agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
+			gui_grid.add_last_row_pointer_button_press_actions (1, agent do gui_agents.call_history_set_active_agent (ultimate_parent_tool) end)
 			gui_grid.add_last_row_select_actions (1, agent select_class_with_delay (a_class_def))
 
 			-- do any descendants in same package
@@ -351,7 +351,7 @@ feature {NONE} -- Implementation
 		do
 			a_row.enable_select
 			if attached {BMM_CLASS} a_row.data as a_class_def then
-				gui_agents.select_class_agent.call ([a_class_def])
+				gui_agents.call_select_class_agent (a_class_def)
 			end
 		end
 
@@ -359,7 +359,7 @@ feature {NONE} -- Implementation
 		do
 			a_row.enable_select
 			if attached {BMM_CLASS} a_row.data as a_class_def then
-				gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
+				gui_agents.call_select_class_in_new_tool_agent (a_class_def)
 			end
 		end
 
@@ -367,7 +367,7 @@ feature {NONE} -- Implementation
 		do
 			a_row.enable_select
 			if attached {BMM_SCHEMA} a_row.data as a_bmm then
-				gui_agents.select_rm_agent.call ([a_bmm])
+				gui_agents.call_select_rm_agent (a_bmm)
 			end
 		end
 
@@ -375,32 +375,36 @@ feature {NONE} -- Implementation
 		do
 			a_row.enable_select
 			if attached {BMM_SCHEMA} a_row.data as a_bmm then
-				gui_agents.select_rm_in_new_tool_agent.call ([a_bmm])
+				gui_agents.call_select_rm_in_new_tool_agent (a_bmm)
 			end
 		end
 
 	do_edit_schema (a_schema_id: STRING)
-			-- launch external editor with schema, or info box if none defined
+			-- launch edit dialog
+		local
+			orig_time_stamp: INTEGER
 		do
-			check attached source.all_schemas.item (a_schema_id) as sch and then attached sch.meta_data.item (metadata_schema_path) as sch_p then
-				execution_environment.launch (text_editor_command + " %"" + sch_p + "%"")
+			if attached source as src and then attached src.all_schemas.item (a_schema_id) as sch
+				and then attached sch.meta_data.item (metadata_schema_path) as sch_path
+			then
+				orig_time_stamp := file_system.file_time_stamp (sch_path)
+				do_system_run_command_synchronous (text_editor_command + " %"" + sch_path + "%"", Void)
+				if file_system.file_time_stamp (sch_path) > orig_time_stamp then
+					src.reload_schemas
+					populate (src, Void)
+				end
 			end
 		end
 
 	do_export_as_xml (a_schema_id: STRING)
 			-- export schema as XML
 		local
-			schema_desc: SCHEMA_DESCRIPTOR
 			serialise_engine: ODIN_ENGINE
 			path: STRING
 			fd: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 		do
-			if source.all_schemas.has (a_schema_id) then
-				check attached source.all_schemas.item (a_schema_id) as sd then
-					schema_desc := sd
-				end
-
+			if attached safe_source.all_schemas.item (a_schema_id) as schema_desc then
 				create serialise_engine.make
 				serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
 				serialise_engine.serialise (syntax_type_xml, False, False)
@@ -410,9 +414,7 @@ feature {NONE} -- Implementation
 				save_dialog.set_file_name (schema_desc.schema_id + ".xml")
 				save_dialog.set_start_directory (export_directory)
 				save_dialog.filters.extend (["*.xml", get_msg (ec_save_schema_as, <<"XML">>)])
-				check attached proximate_ev_window (ev_root_container) as prox_win then
-					save_dialog.show_modal_to_window (prox_win)
-				end
+				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				path := save_dialog.file_name.as_string_8
 
 				if not path.is_empty then
@@ -445,7 +447,7 @@ feature {NONE} -- Implementation
 						delayed_select_class_agent.set_interval (0)
 						check attached selected_class_def as scd then
 							selection_history.set_selected_item (scd)
-							gui_agents.select_class_agent.call ([scd])
+							gui_agents.call_select_class_agent (scd)
 						end
 					end
 			)

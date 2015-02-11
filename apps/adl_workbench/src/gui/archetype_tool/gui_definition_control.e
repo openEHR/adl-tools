@@ -438,7 +438,10 @@ feature {NONE} -- Implementation
 
 	evx_view_detail_frame, evx_rm_property_visibility_frame, evx_rendering_frame: EVX_FRAME_CONTROL
 
-	rm_schema: detachable BMM_SCHEMA
+	rm_schema: BMM_SCHEMA
+		attribute
+			create Result.default_create
+		end
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
@@ -459,7 +462,7 @@ feature {NONE} -- Implementation
 
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
 			-- tree expanding stops)
-			rm_schema := source.rm_schema
+			rm_schema := safe_source.rm_schema
 			if attached rm_schema.archetype_parent_class then
 				visualise_descendants_class := rm_schema.archetype_parent_class
 			elseif attached rm_schema.archetype_visualise_descendants_of then

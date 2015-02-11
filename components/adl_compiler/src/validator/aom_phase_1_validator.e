@@ -110,19 +110,13 @@ feature {NONE} -- Implementation
 
 			-- if specialised according to declaration of parent archetype id
 			elseif arch_diff_child.is_specialised then
-				if attached arch_flat_parent as att_flat_parent then
-					if arch_diff_child.specialisation_depth /= att_flat_parent.specialisation_depth + 1 then
-						add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
-					end
- 				else
+				if arch_diff_child.specialisation_depth /= arch_flat_parent.specialisation_depth + 1 then
 					add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
 				end
 
 			else -- not specialised
 				if specialisation_depth_from_code (arch_diff_child.concept_id) /= 0 then
  					add_error (ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
-				elseif attached arch_flat_parent then
- 					add_error (ec_VACSDpar, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
  				end
 			end
 		end
@@ -359,7 +353,7 @@ feature {NONE} -- Implementation
 				end
 				across vsets_csr.item.members as vset_at_codes_csr loop
 					-- check if at-code exists
-					if not (terminology.has_value_code (vset_at_codes_csr.item) or else attached arch_flat_parent as att_fa and then att_fa.terminology.has_code (vset_at_codes_csr.item)) then
+					if not (terminology.has_value_code (vset_at_codes_csr.item) or else arch_diff_child.is_specialised and then  arch_flat_parent.terminology.has_code (vset_at_codes_csr.item)) then
 						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
 
 					-- check if at-code duplicated
@@ -389,7 +383,7 @@ feature {NONE} -- Implementation
 				across bindings_for_terminology_csr.item as bindings_csr loop
 					arch_code := bindings_csr.key
 					if not (is_valid_code (arch_code) and then
-						(terminology.has_code (arch_code) or attached arch_flat_parent as att_fa and then att_fa.terminology.has_code (arch_code)) or else
+						(terminology.has_code (arch_code) or else arch_diff_child.is_specialised and then arch_flat_parent.terminology.has_code (arch_code)) or else
 						arch_diff_child.has_path (arch_code))
 					then
 						add_error (ec_VTBK, <<arch_code>>)

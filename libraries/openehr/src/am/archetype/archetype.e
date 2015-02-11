@@ -106,8 +106,8 @@ feature -- Initialisation
 			if attached other.parent_archetype_id as other_pid then
 				other_parent_arch_id := other_pid.deep_twin
 			end
-			if other.has_rules then
-				other_rules := other.rules.deep_twin
+			if attached other.rules as att_other_rules then
+				other_rules := att_other_rules.deep_twin
 			end
 			make_all (other.archetype_id.deep_twin, other_parent_arch_id,
 					other.definition.deep_twin, other_rules, other.terminology.deep_twin)
@@ -590,24 +590,31 @@ feature -- Validation
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING])
 					local
 						og_path: OG_PATH
+						al_ac: ARRAYED_LIST [ARCHETYPE_CONSTRAINT]
 					do
 						-- if it's a differential path, get the id-codes from the path
 						if attached {C_ATTRIBUTE} a_c_node as ca and then attached ca.differential_path as diff_path then
 							create og_path.make_from_string (diff_path)
 							across og_path as path_csr loop
 								if path_csr.item.is_addressable and is_id_code (path_csr.item.object_id) then
-									if not idx.has (path_csr.item.object_id) then
-										idx.put (create {ARRAYED_LIST [ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
+									if attached idx.item (path_csr.item.object_id) as att_al_ac then
+										al_ac := att_al_ac
+									else
+										create al_ac.make(0)
+										idx.put (al_ac, path_csr.item.object_id)
 									end
-									idx.item (path_csr.item.object_id).extend (ca)
+									al_ac.extend (ca)
 								end
 							end
 						elseif attached {C_OBJECT} a_c_node as co then
 							if is_id_code (co.node_id) then
-								if not idx.has (co.node_id) then
-									idx.put (create {ARRAYED_LIST [ARCHETYPE_CONSTRAINT]}.make(0), co.node_id)
+								if attached idx.item (co.node_id) as att_al_ac then
+									al_ac := att_al_ac
+								else
+									create al_ac.make(0)
+									idx.put (al_ac, co.node_id)
 								end
-								idx.item (co.node_id).extend (co)
+								al_ac.extend (co)
 							end
 						end
 					end (?, ?, Result))
@@ -678,12 +685,17 @@ feature -- Validation
 			create def_it.make (definition)
 			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING])
+					local
+						al_ccop: ARRAYED_LIST[C_COMPLEX_OBJECT_PROXY]
 					do
 						if attached {C_COMPLEX_OBJECT_PROXY} a_c_node as air then
-							if not idx.has (air.target_path) then
-								idx.put (create {ARRAYED_LIST[C_COMPLEX_OBJECT_PROXY]}.make(0), air.target_path)
+							if attached idx.item (air.target_path) as att_al_ccop then
+								al_ccop := att_al_ccop
+							else
+								create al_ccop.make(0)
+								idx.put (al_ccop, air.target_path)
 							end
-							idx.item (air.target_path).extend (air)
+							al_ccop.extend (air)
 						end
 					end (?, ?, Result))
 		end
@@ -698,12 +710,17 @@ feature -- Validation
 			create def_it.make (definition)
 			def_it.do_all_on_entry (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
+					local
+						al_car: ARRAYED_LIST [C_ARCHETYPE_ROOT]
 					do
 						if attached {C_ARCHETYPE_ROOT} a_c_node as car then
-							if not idx.has (car.archetype_ref) then
-								idx.put (create {ARRAYED_LIST [C_ARCHETYPE_ROOT]}.make(0), car.archetype_ref)
+							if attached idx.item (car.archetype_ref) as att_al_car then
+								al_car := att_al_car
+							else
+								create al_car.make(0)
+								idx.put (al_car, car.archetype_ref)
 							end
-							idx.item (car.archetype_ref).extend (car)
+							al_car.extend (car)
 						end
 					end (?, ?, Result))
 		end
@@ -715,18 +732,23 @@ feature -- Validation
 			def_it: EXPR_ITERATOR
 		do
 			create Result.make (0)
-			if has_rules then
-				across rules as inv_csr loop
+			if attached rules as att_rules then
+				across att_rules as inv_csr loop
 					create def_it.make (inv_csr.item)
 					def_it.do_all (
 						agent (a_node: EXPR_ITEM; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING])
+							local
+								al_exleaf: ARRAYED_LIST[EXPR_LEAF]
 							do
 								if attached {EXPR_LEAF} a_node as el then
 									if el.is_archetype_definition_ref and attached {STRING} el.item as tgt_path then
-										if not idx.has (tgt_path) then
-											idx.put (create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+										if attached idx.item (tgt_path) as att_al_exleaf then
+											al_exleaf := att_al_exleaf
+										else
+											create al_exleaf.make(0)
+											idx.put (al_exleaf, tgt_path)
 										end
-										idx.item (tgt_path).extend (el)
+										al_exleaf.extend (el)
 									end
 								end
 							end (?, ?, Result),
@@ -836,11 +858,16 @@ feature -- Modification
 
 	add_rule (an_inv: ASSERTION)
 			-- add a new invariant
+		local
+			rules_list: ARRAYED_LIST [ASSERTION]
 		do
-			if rules = Void then
-				create rules.make(0)
+			if attached rules as att_rules then
+				rules_list := att_rules
+			else
+				create rules_list.make(0)
+				rules := rules_list
 			end
-			rules.extend(an_inv)
+			rules_list.extend(an_inv)
 		end
 
 	rebuild
@@ -964,32 +991,32 @@ feature {ARCH_LIB_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
 				if root_cco.has_attribute_path (ca.path) then
 					ca2 := root_cco.attribute_at_path (ca.path)
 					if not ca2.has_differential_path then
-						debug("compress")
-							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
-						end
-						if not ca2.parent.is_root then
+debug("compress")
+	io.put_string ("Compressing path at ATTR " + ca.path + "%N")
+end
+						if attached ca2.parent as att_co and then not att_co.is_root then
 							ca2.set_differential_path_to_here
 						end
 					else
-						debug("compress")
-							io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")
-						end
+debug("compress")
+	io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")
+end
 					end
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then
 					if root_cco.has_object_path (co.path) then
 						co2 := root_cco.object_at_path (co.path)
-						if not co2.parent.has_differential_path then
+						if attached co2.parent as att_ca and then not att_ca.has_differential_path then
 debug("compress")
 	io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
 end
-							co2.parent.set_differential_path_to_here
+							att_ca.set_differential_path_to_here
 						end
 					else
-		debug("compress")
-			io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
-		end
+debug("compress")
+	io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
+end
 					end
 				end
 			end
@@ -1082,8 +1109,8 @@ feature {NONE} -- Implementation
 
 	get_value_set (ac_code: STRING): ARRAYED_LIST [STRING]
 		do
-			if terminology.value_sets.has (ac_code) then
-				Result := terminology.value_sets.item (ac_code).members
+			if attached terminology.value_sets.item (ac_code) as att_vs then
+				Result := att_vs.members
 			else
 				create Result.make (0)
 				Result.compare_objects
@@ -1098,7 +1125,7 @@ feature {NONE} -- Implementation
 
 invariant
 	Concept_valid: concept_id.is_equal (terminology.concept_code)
-	Invariants_valid: attached rules implies not rules.is_empty
+	Invariants_valid: attached rules as att_rules implies not att_rules.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_class.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and attached parent_archetype_id)
 

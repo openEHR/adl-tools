@@ -61,6 +61,13 @@ feature -- Access
 	other_details: detachable HASH_TABLE [STRING, STRING]
 			-- Any other meta-data
 
+feature -- Status Report
+
+	has_other_details (a_key: STRING): BOOLEAN
+		do
+			Result := attached other_details as att_od and then att_od.has (a_key)
+		end
+
 feature -- Modification
 
 	set_language (a_lang: TERMINOLOGY_CODE)
@@ -113,28 +120,37 @@ feature -- Modification
 		end
 
 	put_other_details_item (a_key, a_value: STRING)
-			-- set key=value pair into other_details
+			-- put the key, value pair to other_details
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
+		local
+			od: attached like other_details
 		do
-			if other_details = Void then
-				create other_details.make (0)
+			if attached other_details as att_od then
+				od := att_od
+			else
+				create od.make(0)
+				other_details := od
 			end
-			other_details.force (a_value, a_key)
+			od.force (a_value, a_key)
+		ensure
+			Other_details_set: attached other_details as att_od and then attached att_od.item(a_key) as att_od_item and then att_od_item = a_value
 		end
 
 	remove_other_details_item (a_key: STRING)
 			-- remove item with key `a_key' from other_details
 		require
-			Key_valid: other_details.has (a_key)
+			Key_valid: has_other_details (a_key)
 		do
-			other_details.remove (a_key)
-			if other_details.is_empty then
-				other_details := Void
+			if attached other_details as att_od then
+				att_od.remove (a_key)
+				if att_od.is_empty then
+					other_details := Void
+				end
 			end
 		ensure
-			old other_details.count = 1 implies not attached other_details
+			attached old other_details as att_old_od and then att_old_od.count = 1 implies other_details = Void
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

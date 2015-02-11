@@ -12,7 +12,8 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised, serialise_object, signal_from_scratch, persistent_type
+			select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
+			serialise_object, select_serialised_archetype, signal_from_scratch, persistent_type
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -31,13 +32,14 @@ feature -- Artefacts
 
 	differential_archetype: detachable TEMPLATE
 
-	differential_serialised: detachable STRING
+	differential_serialised: STRING
 			-- serialise differential archetype to its file in its source form, even if not compiling
 			-- this might fail because the serialiser might try to do something that an invalid archetype
 			-- can't support
 		local
 			exception_occurred: BOOLEAN
 		do
+			create Result.make_empty
 			if not exception_occurred then
 				if attached differential_archetype as da then
 					Result := adl_2_engine.serialise (da, Syntax_type_adl, current_archetype_language)
@@ -119,14 +121,22 @@ feature -- Visualisation
 		do
 			if not editing_enabled then
 				if differential_view then
-					check attached differential_archetype as da then
-						Result := da
-					end
+					Result := safe_differential_archetype
 				else
 					Result := operational_template
 				end
 			else
 				Result := flat_archetype_clone
+			end
+		end
+
+	select_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
+			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `with_rm'
+		do
+			if differential_view then
+				Result := differential_serialised
+			else
+				Result := operational_template_serialised (with_rm)
 			end
 		end
 
@@ -173,9 +183,7 @@ feature -- Output
 			if flat_flag then
 				create {P_OPERATIONAL_TEMPLATE} dt_arch.make (operational_template)
 			else
-				check attached differential_archetype as da then
-					create {like persistent_type} dt_arch.make (da)
-				end
+				create {like persistent_type} dt_arch.make (safe_differential_archetype)
 			end
 
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)

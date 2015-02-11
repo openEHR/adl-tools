@@ -149,7 +149,7 @@ feature -- Events
 			if attached source then
 				repopulate
 				-- reflect change to other editor tools
-				gui_agents.update_all_tools_rm_icons_setting_agent.call ([])
+				gui_agents.call_update_all_tools_rm_icons_setting_agent
 			end
 		end
 
@@ -207,7 +207,7 @@ feature -- Commands
 
  			-- populate the tree
 			refresh_row (gui_grid.ev_grid.row (1))
-			source.do_supplier_closure (not differential_view, agent continue_rm_property,
+			safe_source.do_supplier_closure (not differential_view, agent continue_rm_property,
 					agent enter_rm_property, agent exit_rm_property)
 		end
 
@@ -226,15 +226,15 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- for use in icon switching
- 			rm_publisher := source.bmm_schema.rm_publisher.as_lower
- 			rm_closure := source.bmm_schema.schema_name.as_lower
+ 			rm_publisher := safe_source.bmm_schema.rm_publisher.as_lower
+ 			rm_closure := safe_source.bmm_schema.schema_name.as_lower
 
  			-- populate the tree
 			create ev_grid_rm_row_stack.make (0)
 			create ev_grid_rm_row_removals_stack.make (0)
 
 			populate_root_node
-			source.do_supplier_closure (not differential_view, agent continue_rm_property,
+			safe_source.do_supplier_closure (not differential_view, agent continue_rm_property,
 					agent enter_rm_property, agent exit_rm_property)
 
 			gui_grid.set_column_titles (Definition_grid_col_names.linear_representation)
@@ -296,8 +296,8 @@ feature {NONE} -- Implementation
 	continue_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; depth: INTEGER): BOOLEAN
 			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
 		do
-			if attached last_property_grid_row then
-				if last_property_grid_row.subrow (1).subrow_count > 0 then
+			if attached last_property_grid_row as gr then
+				if gr.subrow (1).subrow_count > 0 then
 					Result := True
 				else
 					Result := depth < ev_closure_depth_spin_button.value
@@ -569,7 +569,7 @@ feature {NONE} -- Implementation
 
 	tree_recurse_node (a_row: EV_GRID_ROW): BOOLEAN
 		do
-			Result := a_row.parent.depth_in_tree (a_row.index) < ev_closure_depth_spin_button.value or else a_row.is_expandable
+			Result := attached a_row.parent as att_parent_row and then att_parent_row.depth_in_tree (a_row.index) < ev_closure_depth_spin_button.value or else a_row.is_expandable
 		end
 
 end

@@ -9,7 +9,44 @@ note
 
 class GUI_LIBRARY_TOOL_AGENTS
 
-feature -- Access
+feature -- Command
+
+	call_edit_archetype_source_agent (aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+		do
+			if attached edit_archetype_source_agent as att_agt then
+				att_agt.call ([aca])
+			end
+		end
+
+	call_save_archetype_agent (aca: ARCH_LIB_AUTHORED_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+		do
+			if attached save_archetype_agent as att_agt then
+				att_agt.call ([aca, diff_flag, native_format_flag])
+			end
+		end
+
+	call_archetype_explorer_select_in_tree_agent (key: STRING)
+		do
+			if attached archetype_explorer_select_in_tree_agent as att_agt then
+				att_agt.call ([key])
+			end
+		end
+
+	call_update_explorers_and_select_agent (aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+		do
+			if attached update_explorers_and_select_agent as att_agt then
+				att_agt.call ([aca])
+			end
+		end
+
+	call_update_archetype_explorer_agent
+		do
+			if attached update_archetype_explorer_agent as att_agt then
+				att_agt.call ([])
+			end
+		end
+
+feature {NONE} -- Implementation
 
 	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_AUTHORED_ARCHETYPE]]
 

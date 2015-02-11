@@ -133,62 +133,63 @@ feature {NONE} -- Implementation
 			ev_arch_stats_frame.set_minimum_height ((ev_arch_stats_list.count + 3) * ev_arch_stats_list.row_height)
 
 			-- breakdown grid
-			across source.rm_grouped_class_table as class_table_csr loop
-				-- populate RM breakdown notebook tabs
-				create ev_rm_grid
-				ev_rm_grid.enable_tree
-				ev_rm_breakdown_nb.extend (ev_rm_grid)
-				ev_rm_breakdown_nb.set_item_text (ev_rm_grid, class_table_csr.key)
+			if attached source as src then
+				across src.rm_grouped_class_table as class_table_csr loop
+					-- populate RM breakdown notebook tabs
+					create ev_rm_grid
+					ev_rm_grid.enable_tree
+					ev_rm_breakdown_nb.extend (ev_rm_grid)
+					ev_rm_breakdown_nb.set_item_text (ev_rm_grid, class_table_csr.key)
 
-				-- column names
-				ev_rm_grid.insert_new_column (Grid_model_element_name_col)
-				ev_rm_grid.column (Grid_model_element_name_col).set_title (get_msg (ec_statistics_grid_model_element_name_col_title, Void))
-				ev_rm_grid.insert_new_column (Grid_model_element_total_col)
-				ev_rm_grid.column (Grid_model_element_total_col).set_title (get_msg (ec_statistics_grid_model_element_count_col_title, Void))
+					-- column names
+					ev_rm_grid.insert_new_column (Grid_model_element_name_col)
+					ev_rm_grid.column (Grid_model_element_name_col).set_title (get_msg (ec_statistics_grid_model_element_name_col_title, Void))
+					ev_rm_grid.insert_new_column (Grid_model_element_total_col)
+					ev_rm_grid.column (Grid_model_element_total_col).set_title (get_msg (ec_statistics_grid_model_element_count_col_title, Void))
 
-				across class_table_csr.item as rm_class_stats_csr loop
-					-- class name in col 1
-					create gli.make_with_text (rm_class_stats_csr.item.rm_class_name)
-					if rm_class_stats_csr.item.is_archetype_root_class then
-						gli.text.append (" *")
-					end
-					class_def := source.bmm_schema.class_definition (rm_class_stats_csr.item.rm_class_name)
-					gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.type_category))
-					gli.set_data (class_def)
-					gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
-					ev_rm_grid.set_item (Grid_model_element_name_col, ev_rm_grid.row_count + 1, gli)
-					class_row := gli.row
-
-					-- class count in col 2
-					create gli.make_with_text (rm_class_stats_csr.item.rm_class_count.out)
-					class_row.set_item (Grid_model_element_total_col, gli)
-
-					-- attributes in subrows col 1 and 2
-					across rm_class_stats_csr.item.rm_attributes as rm_attributes_csr loop
-						class_row.insert_subrow (class_row.subrow_count+1)
-						attr_row := class_row.subrow (class_row.subrow_count)
-
-						create gli.make_with_text (rm_attributes_csr.key)
-						if attached class_def.flat_properties.item (rm_attributes_csr.key) as prop_def then
-							gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_def.multiplicity_key_string))	-- pixmap
+					across class_table_csr.item as rm_class_stats_csr loop
+						-- class name in col 1
+						create gli.make_with_text (rm_class_stats_csr.item.rm_class_name)
+						if rm_class_stats_csr.item.is_archetype_root_class then
+							gli.text.append (" *")
 						end
-						attr_row.set_item (Grid_model_element_name_col, gli)
+						class_def := src.bmm_schema.class_definition (rm_class_stats_csr.item.rm_class_name)
+						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.type_category))
+						gli.set_data (class_def)
+						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
+						ev_rm_grid.set_item (Grid_model_element_name_col, ev_rm_grid.row_count + 1, gli)
+						class_row := gli.row
 
-						create gli.make_with_text (rm_attributes_csr.item.out)
-						attr_row.set_item (Grid_model_element_total_col, gli)
+						-- class count in col 2
+						create gli.make_with_text (rm_class_stats_csr.item.rm_class_count.out)
+						class_row.set_item (Grid_model_element_total_col, gli)
+
+						-- attributes in subrows col 1 and 2
+						across rm_class_stats_csr.item.rm_attributes as rm_attributes_csr loop
+							class_row.insert_subrow (class_row.subrow_count+1)
+							attr_row := class_row.subrow (class_row.subrow_count)
+
+							create gli.make_with_text (rm_attributes_csr.key)
+							if attached class_def.flat_properties.item (rm_attributes_csr.key) as prop_def then
+								gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_def.multiplicity_key_string))	-- pixmap
+							end
+							attr_row.set_item (Grid_model_element_name_col, gli)
+
+							create gli.make_with_text (rm_attributes_csr.item.out)
+							attr_row.set_item (Grid_model_element_total_col, gli)
+						end
 					end
+
+					-- resize grid cols properly
+					Grid_column_ids.do_all (
+						agent (i: INTEGER; a_grid: EV_GRID)
+							do
+								a_grid.column (i).resize_to_content
+								a_grid.column(i).set_width ((a_grid.column (i).width * 1.1).ceiling)
+							end (?, ev_rm_grid)
+					)
 				end
-
-				-- resize grid cols properly
-				Grid_column_ids.do_all (
-					agent (i: INTEGER; a_grid: EV_GRID)
-						do
-							a_grid.column (i).resize_to_content
-							a_grid.column(i).set_width ((a_grid.column (i).width * 1.1).ceiling)
-						end (?, ev_rm_grid)
-				)
 			end
-
 		end
 
 	class_node_handler (gli: EV_GRID_LABEL_ITEM; x,y, button: INTEGER)
@@ -214,15 +215,15 @@ feature {NONE} -- Implementation
 	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
-			gui_agents.select_class_agent.call ([a_class_def])
-			gui_agents.history_update_agent.call([])
+			gui_agents.call_select_class_agent (a_class_def)
+			gui_agents.call_history_update_agent
 		end
 
 	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
-			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
-			gui_agents.history_update_agent.call([])
+			gui_agents.call_select_class_in_new_tool_agent (a_class_def)
+			gui_agents.call_history_update_agent
 		end
 
 end

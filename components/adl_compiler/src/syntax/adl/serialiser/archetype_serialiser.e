@@ -20,10 +20,9 @@ feature -- Serialisation
 
 feature {NONE} -- Access
 
-	archetype: detachable ARCHETYPE
-		note
-			option: stable
+	archetype: ARCHETYPE
 		attribute
+			create Result.default_create
 		end
 
 end

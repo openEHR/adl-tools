@@ -28,7 +28,9 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		do
 			rm_schema := an_rm_schema
 			arch_diff_child := an_arch_diff_child
-			arch_flat_parent := an_arch_flat_parent
+			if attached an_arch_flat_parent as att_flat then
+				arch_flat_parent := an_arch_flat_parent
+			end
 
 			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
 				aom_profile := aom_p
@@ -44,8 +46,11 @@ feature {NONE} -- Implementation
 	arch_diff_child: ARCHETYPE
 			-- differential archetype being validated
 
-	arch_flat_parent: detachable ARCHETYPE
+	arch_flat_parent: ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
+		attribute
+			create Result.default_create
+		end
 
 	terminology: ARCHETYPE_TERMINOLOGY
 			-- The terminology of the current archetype.
@@ -85,7 +90,7 @@ feature {NONE} -- Implementation
 			excludes := a_slot.excludes
 			if not includes.is_empty and not includes.first.matches_any and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
-					if attached {STRING} includes.item.regex_constraint.constraint_regex as a_regex then
+					if attached includes.item.regex_constraint as att_regex and then attached {STRING} att_regex.constraint_regex as a_regex then
 						create regex_matcher.make
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)
@@ -97,7 +102,7 @@ feature {NONE} -- Implementation
 				end
 			elseif not excludes.is_empty and not excludes.first.matches_any and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
-					if attached {STRING} excludes.item.regex_constraint.constraint_regex as a_regex then
+					if attached excludes.item.regex_constraint as att_regex and then attached {STRING} att_regex.constraint_regex as a_regex then
 						create regex_matcher.make
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)

@@ -66,7 +66,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			flat_properties := source.flat_properties
+			flat_properties := safe_source.flat_properties
 			create anc_classes.make(0)
 			anc_classes.compare_objects
 
@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 
 						-- property type
 						create gli.make_with_text (props_csr.item.type.as_display_type_string)
-						prop_class := source.bmm_schema.class_definition (props_csr.item.type.base_class.name)
+						prop_class := safe_source.bmm_schema.class_definition (props_csr.item.type.base_class.name)
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
 						gli.set_data (prop_class)
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))

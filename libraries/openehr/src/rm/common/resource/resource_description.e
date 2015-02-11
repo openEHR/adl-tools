@@ -148,14 +148,19 @@ feature -- Status Report
 			Result := attached details and not details.is_empty
 		end
 
-	has_ip_acknowledgement (a_key: STRING): BOOLEAN
+	has_ip_acknowledgements (a_key: STRING): BOOLEAN
 		do
 			Result := attached ip_acknowledgements as att_ack and then att_ack.has (a_key)
 		end
 
-	has_conversion_detail (a_key: STRING): BOOLEAN
+	has_conversion_details (a_key: STRING): BOOLEAN
 		do
 			Result := attached conversion_details as att_cd and then att_cd.has (a_key)
+		end
+
+	has_other_contributors (a_key: STRING): BOOLEAN
+		do
+			Result := attached other_contributors as att_oc and then att_oc.has (a_key)
 		end
 
 feature -- Comparison
@@ -289,30 +294,35 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
+		local
+			ipa: attached like ip_acknowledgements
 		do
-			if not attached ip_acknowledgements then
-				create ip_acknowledgements.make (0)
+			if attached ip_acknowledgements as att_ipa then
+				ipa := att_ipa
+			else
+				create ipa.make (0)
+				ip_acknowledgements := ipa
 			end
-			ip_acknowledgements.force (a_value, a_key)
+			ipa.force (a_value, a_key)
 		ensure
-			Item_added: attached ip_acknowledgements as att_ack and then att_ack.item (a_key) = a_value
+			Item_added: attached ip_acknowledgements as att_ipa and then att_ipa.item (a_key) = a_value
 		end
 
 	remove_ip_acknowledgements_item (a_key: STRING)
 			-- remove the key, value pair from `ip_acknowledgements'
 		require
-			Key_valid: ip_acknowledgements.has (a_key)
+			Key_valid: has_ip_acknowledgements (a_key)
 			Ip_acknowledgements_exists: attached ip_acknowledgements
 		do
-			if attached ip_acknowledgements as ack then
-				ack.remove (a_key)
-				if ack.is_empty then
+			if attached ip_acknowledgements as att_ipa then
+				att_ipa.remove (a_key)
+				if att_ipa.is_empty then
 					ip_acknowledgements := Void
 				end
 			end
 		ensure
-			Item_removed: not has_ip_acknowledgement (a_key)
-			If_last_then_removed: old ip_acknowledgements.count = 1 implies not attached ip_acknowledgements
+			Item_removed: not has_ip_acknowledgements (a_key)
+			If_last_then_removed: attached old ip_acknowledgements as att_old_ipa and then att_old_ipa.count = 1 implies not attached ip_acknowledgements
 		end
 
 	clear_ip_acknowledgements
@@ -328,11 +338,16 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
+		local
+			cd: attached like conversion_details
 		do
-			if not attached conversion_details as att_cd then
-				create conversion_details.make (0)
+			if attached conversion_details as att_cd then
+				cd := att_cd
+			else
+				create cd.make (0)
+				conversion_details := cd
 			end
-			conversion_details.force (a_value, a_key)
+			cd.force (a_value, a_key)
 		ensure
 			Item_added: attached conversion_details as att_cd and then att_cd.item (a_key) = a_value
 		end
@@ -340,17 +355,17 @@ feature -- Modification
 	remove_conversion_details_item (a_key: STRING)
 			-- remove the key, value pair from `conversion_details'
 		require
-			Key_valid: conversion_details.has (a_key)
+			Key_valid: has_conversion_details (a_key)
 		do
-			if attached conversion_details as cd then
-				cd.remove (a_key)
-				if cd.is_empty then
+			if attached conversion_details as att_cd then
+				att_cd.remove (a_key)
+				if att_cd.is_empty then
 					conversion_details := Void
 				end
 			end
 		ensure
-			Item_removed: not has_conversion_detail (a_key)
-			If_last_then_removed: old conversion_details.count = 1 implies not attached conversion_details
+			Item_removed: not has_conversion_details (a_key)
+			If_last_then_removed: attached old conversion_details as att_old_cd and then att_old_cd.count = 1 implies not attached conversion_details
 		end
 
 	clear_conversion_details
@@ -365,31 +380,38 @@ feature -- Modification
 			-- add a_contributor to `add_other_contributor' at position `at_pos', or end if i is 0
 		require
 			Contributor_valid: not a_contributor.is_empty
-			Valid_max_index: attached other_contributors implies at_pos <= other_contributors.count
+			Valid_max_index: attached other_contributors as att_oc implies at_pos <= att_oc.count
+		local
+			oc: attached like other_contributors
 		do
-			if other_contributors = Void then
-				create other_contributors.make(0)
-				other_contributors.compare_objects
+			if attached other_contributors as att_oc then
+				oc := att_oc
+			else
+				create oc.make(0)
+				oc.compare_objects
+				other_contributors := oc
 			end
 			if at_pos > 0 then
-				other_contributors.go_i_th (at_pos)
-				other_contributors.put_left (a_contributor)
+				oc.go_i_th (at_pos)
+				oc.put_left (a_contributor)
 			else
-				other_contributors.extend (a_contributor)
+				oc.extend (a_contributor)
 			end
 		ensure
-			Other_contributor_set: other_contributors.has (a_contributor)
-			Insert_position: at_pos > 0 implies other_contributors.i_th (at_pos) = a_contributor
+			attached other_contributors as att_oc and then (att_oc.has (a_contributor) and
+				at_pos > 0 implies att_oc.i_th (at_pos) = a_contributor)
 		end
 
 	remove_other_contributor (a_contributor: STRING)
 			-- add a_contributor to add_other_contributor
 		require
-			Contributor_valid: other_contributors.has (a_contributor)
+			Contributor_valid: has_other_contributors (a_contributor)
 		do
-			other_contributors.prune_all (a_contributor)
+			if attached other_contributors as att_oc then
+				att_oc.prune_all (a_contributor)
+			end
 		ensure
-			Other_contributor_set: not other_contributors.has (a_contributor)
+			Other_contributor_set: not has_other_contributors (a_contributor)
 		end
 
 	clear_other_contributors
@@ -407,7 +429,7 @@ feature -- Modification
 		do
 			create resource_package_uri.make_from_string (a_uri)
 		ensure
-			Archetype_package_uri_set: resource_package_uri.out.is_equal(a_uri)
+			Archetype_package_uri_set: attached resource_package_uri as att_rpu and then att_rpu.out.is_equal (a_uri)
 		end
 
 	clear_resource_package_uri
@@ -450,7 +472,9 @@ feature -- Modification
 		require
 			New_lang_valid: not details.has(a_new_lang)
 		do
-			add_detail (details.item (original_language.code_string).translated_copy (a_new_lang))
+			if attached details.item (original_language.code_string) as att_details then
+				add_detail (att_details.translated_copy (a_new_lang))
+			end
 		end
 
 	remove_detail, remove_language (a_lang: STRING)
@@ -566,11 +590,11 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	Original_author_valid: not original_author.is_empty
 	Lifecycle_state_valid: not lifecycle_state.is_empty
-	Parent_resource_valid: attached parent_resource implies parent_resource.description = Current
-	Language_valid: attached parent_resource implies details.linear_representation.for_all
-		(agent (rdi: RESOURCE_DESCRIPTION_ITEM):BOOLEAN do Result := parent_resource.languages_available.has(rdi.language.code_string) end)
+	Parent_resource_valid: attached parent_resource as att_pr implies att_pr.description = Current
+	Language_valid: attached parent_resource as att_pr implies details.linear_representation.for_all
+		(agent (rdi: RESOURCE_DESCRIPTION_ITEM; auth_res: AUTHORED_RESOURCE): BOOLEAN do Result := auth_res.languages_available.has (rdi.language.code_string) end (?, att_pr))
 	Copyright_valid: attached copyright as att_copyright implies not att_copyright.is_empty
-	Ip_acknowledgements_valid: attached ip_acknowledgements as att_ack implies not att_ack.is_empty
+	Ip_acknowledgements_valid: attached ip_acknowledgements as att_ipa implies not att_ipa.is_empty
 
 end
 

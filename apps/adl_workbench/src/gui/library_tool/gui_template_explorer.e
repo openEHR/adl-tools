@@ -71,8 +71,8 @@ feature {NONE} -- Implementation
 	do_select_archetype
 		do
 			precursor
-			tool_agents.update_archetype_explorer_agent.call ([])
-			tool_agents.archetype_explorer_select_in_tree_agent.call ([selected_archetype_node.global_artefact_identifier])
+			tool_agents.call_update_archetype_explorer_agent
+			tool_agents.call_archetype_explorer_select_in_tree_agent (selected_archetype_node.global_artefact_identifier)
 		end
 
 	do_populate
@@ -104,7 +104,7 @@ feature {NONE} -- Implementation
 						og_iterator.do_all (agent ev_node_build_enter_action, agent ev_node_build_exit_action)
 						ev_tree_item_stack.remove
 					else
-						if attached {EV_GRID_LABEL_ITEM} semantic_grid_row_map.item (ara.qualified_name).item (1) as gli then
+						if attached {EV_GRID_LABEL_ITEM} gr.item (1) as gli then
 							gli.set_pixmap (library_node_pixmap (ara))
 						end
 					end

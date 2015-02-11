@@ -98,11 +98,11 @@ feature -- Parsing
 					language_context.parse
 					if not language_context.parse_succeeded then
 						errors.append (language_context.errors)
-					elseif not dt_object_converter.errors.has_errors and
-						attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
-					then
-						orig_lang_trans := lt
-						orig_lang := orig_lang_trans.original_language.code_string
+					elseif not dt_object_converter.errors.has_errors and attached language_context.tree as att_tree then
+						if attached {LANGUAGE_TRANSLATIONS} att_tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt then
+							orig_lang_trans := lt
+							orig_lang := orig_lang_trans.original_language.code_string
+						end
 					else
 						errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
 						errors.append (dt_object_converter.errors)
@@ -186,10 +186,10 @@ feature -- Parsing
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
-						elseif not dt_object_converter.errors.has_errors and
-							attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann
-						then
-							annots := res_ann
+						elseif not dt_object_converter.errors.has_errors and attached annotations_context.tree as att_tree then
+							if attached {RESOURCE_ANNOTATIONS} att_tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann then
+								annots := res_ann
+							end
 						else
 							errors.add_error (ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
 							errors.append (dt_object_converter.errors)
@@ -232,7 +232,7 @@ feature -- Parsing
 								across adl_parser.overlay_adl_texts as overlay_texts_csr loop -- or errors.has_errors loop								
 									-- need to do a small amount of parsing on the top of each overlay to get the archetype id and parent id
 									amp.parse_from_text (overlay_texts_csr.item, tpl_aca.id.physical_id + " @overlay " + overlay_texts_csr.target_index.out)
-									if not amp.has_errors and attached amp.last_archetype as arch_thumbnail then
+									if not amp.has_errors and then attached amp.last_archetype as arch_thumbnail then
 										-- now create a descriptor for this overlay
 										if not current_library.has_archetype_with_id (arch_thumbnail.archetype_id.physical_id) then
 											if attached arch_thumbnail.parent_archetype_id as att_parent_id and then current_library.has_archetype_matching_ref (att_parent_id) then
@@ -387,21 +387,17 @@ feature -- Validation
 		local
 			proc: AOM_PHASE_1_VALIDATOR
 			flat_parent: detachable ARCHETYPE
-			diff_child: ARCHETYPE
 		do
 			validation_passed := False
-			check attached aca.differential_archetype as da then
-				diff_child := da
-			end
 			if attached aca.specialisation_parent as spec_parent then
 				flat_parent := spec_parent.flat_archetype
  			end
 
 			if attached phase_1_validator as pv then
 				proc := pv
-				proc.initialise (diff_child, flat_parent, aca.rm_schema)
+				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.rm_schema)
 			else
-				create proc.initialise (diff_child, flat_parent, aca.rm_schema)
+				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.rm_schema)
 				phase_1_validator := proc
 			end
 			proc.validate
@@ -413,13 +409,9 @@ feature -- Validation
 		local
 			proc: AOM_PHASE_2_VALIDATOR
 			flat_parent: detachable ARCHETYPE
-			diff_child: ARCHETYPE
 			flat_parent_slot_fillers_index: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
 			validation_passed := False
-			check attached aca.differential_archetype as da then
-				diff_child := da
-			end
 			if attached aca.specialisation_parent as spec_parent then
 				flat_parent := spec_parent.flat_archetype
 				flat_parent_slot_fillers_index := spec_parent.flat_slot_fillers_index
@@ -427,9 +419,9 @@ feature -- Validation
 
 			if attached phase_2_validator as pv then
 				proc := pv
-				proc.initialise (diff_child, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
+				proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
 			else
-				create proc.initialise (diff_child, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
+				create proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
 				phase_2_validator := proc
 			end
 			proc.validate
@@ -441,21 +433,17 @@ feature -- Validation
 		local
 			proc: AOM_PHASE_3_VALIDATOR
 			flat_parent: detachable ARCHETYPE
-			diff_child: ARCHETYPE
 		do
 			validation_passed := False
-			check attached aca.differential_archetype as da then
-				diff_child := da
-			end
 			if attached aca.specialisation_parent as spec_parent then
 				flat_parent := spec_parent.flat_archetype
  			end
 
 			if attached phase_3_validator as pv then
 				proc := pv
-				proc.initialise (diff_child, flat_parent, aca.flat_archetype, aca.rm_schema)
+				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.rm_schema)
 			else
-				create proc.initialise (diff_child, flat_parent, aca.flat_archetype, aca.rm_schema)
+				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.rm_schema)
 				phase_3_validator := proc
 			end
 			proc.validate
@@ -526,8 +514,8 @@ feature -- Serialisation
 			-- annotations section
 			create annot_serialised.make_empty
 			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
-				if auth_arch.has_annotations then
-					annotations_context.set_tree (auth_arch.annotations.dt_representation)
+				if attached auth_arch.annotations as att_ann then
+					annotations_context.set_tree (att_ann.dt_representation)
 					annotations_context.serialise (a_format, False, False)
 					annot_serialised := annotations_context.serialised
 				end

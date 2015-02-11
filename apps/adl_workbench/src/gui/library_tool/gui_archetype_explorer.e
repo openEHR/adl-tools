@@ -99,9 +99,9 @@ feature -- Commands
 			-- update semantic grid
 			if semantic_grid_row_map.has (aca.qualified_name) and then attached semantic_grid_row_map.item (aca.qualified_name) as gr then
 				semantic_grid_update_row (gr, True)
-			elseif attached aca.old_id then
-				if semantic_grid_row_map.has (aca.old_id.physical_id) then
-					semantic_grid_row_map.replace_key (aca.qualified_name, aca.old_id.physical_id)
+			elseif attached aca.old_id as att_old_id then
+				if semantic_grid_row_map.has (att_old_id.physical_id) then
+					semantic_grid_row_map.replace_key (aca.qualified_name, att_old_id.physical_id)
 					if attached semantic_grid_row_map.item (aca.qualified_name) as gr then
 						semantic_grid_update_row (gr, True)
 					end
@@ -111,9 +111,9 @@ feature -- Commands
 			-- update filesys grid
 			if filesys_grid_row_map.has (aca.qualified_name) and then attached filesys_grid_row_map.item (aca.qualified_name) as gr then
 				filesys_grid_update_row (gr, True)
-			elseif attached aca.old_id then
-				if filesys_grid_row_map.has (aca.old_id.physical_id) then
-					filesys_grid_row_map.replace_key (aca.qualified_name, aca.old_id.physical_id)
+			elseif attached aca.old_id as att_old_id then
+				if filesys_grid_row_map.has (att_old_id.physical_id) then
+					filesys_grid_row_map.replace_key (aca.qualified_name, att_old_id.physical_id)
 					if attached filesys_grid_row_map.item (aca.qualified_name) as gr then
 						filesys_grid_update_row (gr, True)
 					end
@@ -179,7 +179,7 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			-- populate semantic grid by default
-	 		source.do_all_semantic (agent ev_semantic_grid_populate_enter, agent ev_semantic_grid_populate_exit)
+	 		safe_source.do_all_semantic (agent ev_semantic_grid_populate_enter, agent ev_semantic_grid_populate_exit)
 			gui_semantic_grid.ev_grid.expand_all (agent ev_semantic_tree_expand)
 			gui_semantic_grid.resize_columns_to_content
 			if gui_filesys_grid.ev_grid.is_displayed then
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 	do_populate_filesys_grid
 		do
 			-- populate filesys grid on demand
-	 		source.do_all_source (agent ev_filesys_grid_populate_enter, agent ev_filesys_grid_populate_exit)
+	 		safe_source.do_all_source (agent ev_filesys_grid_populate_enter, agent ev_filesys_grid_populate_exit)
 			gui_filesys_grid.ev_grid.expand_all (agent ev_filesys_tree_expand)
 			gui_filesys_grid.resize_columns_to_content
 		end
@@ -402,7 +402,7 @@ feature {NONE} -- Implementation
 						delayed_select_class_agent.set_interval (0)
 						check attached selected_class_node as scn then
 							selection_history.set_selected_item (scn)
-							gui_agents.select_class_agent.call ([scn.class_definition])
+							gui_agents.call_select_class_agent (scn.class_definition)
 						end
 					end
 			)
@@ -455,7 +455,7 @@ feature {NONE} -- Implementation
 			elseif attached {ARCH_LIB_CLASS} an_ev_grid_item.row.data as accn then
 				select_class_with_delay (accn)
 			end
-			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+			gui_agents.call_history_set_active_agent (ultimate_parent_tool)
 		end
 
 	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
@@ -472,7 +472,7 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
-			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+			gui_agents.call_history_set_active_agent (ultimate_parent_tool)
 		end
 
 	build_class_node_context_menu (accn: ARCH_LIB_CLASS)
@@ -513,17 +513,17 @@ feature {NONE} -- Implementation
 
 	display_context_selected_class_in_active_tool (accn: ARCH_LIB_CLASS)
 		do
-			gui_agents.select_class_agent.call ([accn.class_definition])
+			gui_agents.call_select_class_agent (accn.class_definition)
 		end
 
 	display_context_selected_class_in_new_tool (accn: ARCH_LIB_CLASS)
 		do
-			gui_agents.select_class_in_new_tool_agent.call ([accn.class_definition])
+			gui_agents.call_select_class_in_new_tool_agent (accn.class_definition)
 		end
 
 	display_context_selected_class_in_rm_schema_tool (accn: ARCH_LIB_CLASS)
 		do
-			gui_agents.select_class_in_rm_schema_tool_agent.call ([accn.class_definition.globally_qualified_path])
+			gui_agents.call_select_class_in_rm_schema_tool_agent (accn.class_definition.globally_qualified_path)
 		end
 
 	select_item_in_grid (an_ev_grid_row: EV_GRID_ROW; ari_global_id: STRING)
@@ -535,10 +535,10 @@ feature {NONE} -- Implementation
 			if attached {EV_GRID_LABEL_ITEM} an_ev_grid_row.item (1) as gli then
 				gli.select_actions.block
 				gli.enable_select
-				if not gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) and
+				if not gui_agents.call_show_tool_with_artefact_agent (ari_global_id) and
 					attached {ARCH_LIB_ARCHETYPE} current_library.archetype_with_id (ari_global_id) as ala
 				then
-					gui_agents.select_archetype_agent.call ([ala])
+					gui_agents.call_select_archetype_agent (ala)
 				end
 				gli.select_actions.resume
 			end
@@ -583,19 +583,17 @@ feature {NONE} -- Implementation
 			dialog: NEW_ARCHETYPE_DIALOG
 			new_id: ARCHETYPE_HRID
 		do
-			if attached source as src then
-				new_id := parent_aca.id.deep_twin
-				new_id.set_concept_id ("t_" + new_id.concept_id)
-				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), new_id, parent_aca.id, src)
-				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				if dialog.is_valid then
-					src.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
-					check attached src.last_added_archetype as att_arch then
-						tool_agents.update_explorers_and_select_agent.call ([att_arch])
-					end
+			new_id := parent_aca.id.deep_twin
+			new_id.set_concept_id ("t_" + new_id.concept_id)
+			create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), new_id, parent_aca.id, safe_source)
+			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			if dialog.is_valid then
+				safe_source.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
+				check attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source.last_added_archetype as att_arch then
+					tool_agents.call_update_explorers_and_select_agent (att_arch)
 				end
-				dialog.destroy
 			end
+			dialog.destroy
 		end
 
 	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS)
@@ -605,31 +603,29 @@ feature {NONE} -- Implementation
 			in_dir_path: STRING
 			found: BOOLEAN
 		do
-			if attached source as src then
-				-- default creation directory: top of library area
-				in_dir_path := current_library_interface.library_path
+			-- default creation directory: top of library area
+			in_dir_path := current_library_interface.library_path
 
-				-- try for a better path as the path of some other archetype of the same class
-				matching_ids := src.matching_ids (".*", accn.class_definition.name, Void)
-				if not matching_ids.is_empty then
-					from matching_ids.start until matching_ids.off or found loop
-						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} src.archetype_with_id (matching_ids.item) as alaa then
-							in_dir_path := file_system.dirname (alaa.source_file_path)
-							found := True
-						end
-						matching_ids.forth
+			-- try for a better path as the path of some other archetype of the same class
+			matching_ids := safe_source.matching_ids (".*", accn.class_definition.name, Void)
+			if not matching_ids.is_empty then
+				from matching_ids.start until matching_ids.off or found loop
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source.archetype_with_id (matching_ids.item) as alaa then
+						in_dir_path := file_system.dirname (alaa.source_file_path)
+						found := True
 					end
+					matching_ids.forth
 				end
-
-				create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), src)
-				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				if dialog.is_valid then
-					src.add_new_non_specialised_archetype (dialog.archetype_id, dialog.archetype_directory)
-					populate (src)
-					select_item_in_tree (src.last_added_archetype.id.physical_id)
-				end
-				dialog.destroy
 			end
+
+			create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), safe_source)
+			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			if dialog.is_valid then
+				safe_source.add_new_non_specialised_archetype (dialog.archetype_id, dialog.archetype_directory)
+				populate (safe_source)
+				select_item_in_tree (safe_source.last_added_archetype.id.physical_id)
+			end
+			dialog.destroy
 		end
 
 end

@@ -71,11 +71,11 @@ feature {NONE} -- Implementation
 	do_validate_occ_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if attached ca.cardinality and then not ca.cardinality.interval.upper_unbounded then
-					if ca.aggregate_occurrences_lower_sum > ca.cardinality.interval.upper then
-						add_warning (ec_WACMCL, <<ca.path, ca.aggregate_occurrences_lower_sum.out, ca.cardinality.interval.upper.out>>)
-					elseif ca.minimum_child_count > ca.cardinality.interval.upper then
-						add_error (ec_VACMCO, <<ca.path, ca.minimum_child_count.out, ca.cardinality.interval.upper.out>>)
+				if attached ca.cardinality as att_card and then not att_card.interval.upper_unbounded then
+					if ca.aggregate_occurrences_lower_sum > att_card.interval.upper then
+						add_warning (ec_WACMCL, <<ca.path, ca.aggregate_occurrences_lower_sum.out, att_card.interval.upper.out>>)
+					elseif ca.minimum_child_count > att_card.interval.upper then
+						add_error (ec_VACMCO, <<ca.path, ca.minimum_child_count.out, att_card.interval.upper.out>>)
 					end
 				end
 			end

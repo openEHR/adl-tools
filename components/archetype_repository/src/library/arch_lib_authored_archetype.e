@@ -147,7 +147,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 		local
 			legacy_flat_archetype: attached like differential_archetype
 			archetype_comparator: ARCHETYPE_COMPARATOR
-			legacy_flat_text: STRING
+			legacy_flat_text, ser_text: STRING
 		do
 			if is_specialised and not specialisation_parent.is_valid then
 				compilation_state := cs_lineage_invalid
@@ -186,8 +186,9 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 						id := differential_archetype.archetype_id
 
 						-- save text to diff file
-						if attached differential_serialised as txt then
-							save_text_to_differential_file (txt)
+						ser_text := differential_serialised
+						if not ser_text.is_empty then
+							save_text_to_differential_file (ser_text)
 						end
 					else
 						-- perform post-parse object structure finalisation
@@ -203,8 +204,9 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 						id := differential_archetype.archetype_id
 
 						-- save text to diff file
-						if attached differential_serialised as txt then
-							save_text_to_differential_file (txt)
+						ser_text := differential_serialised
+						if not ser_text.is_empty then
+							save_text_to_differential_file (ser_text)
 						end
 					end
 				else
@@ -266,9 +268,8 @@ feature -- File Access
 		local
 			ftext: STRING
 		do
-			if attached differential_serialised as txt then
-				ftext := txt
-			else
+			ftext := differential_serialised
+			if ftext.is_empty then
 				ftext := source_text
 			end
 			file_mgr.save_source_text (ftext)
@@ -354,8 +355,8 @@ feature {GUI_TEST_TOOL} -- File Access
 				-- parse the ODIN to DT then materialise to AOM
 				archetype_serialise_engine.set_source (odin_text, 1)
 				archetype_serialise_engine.parse
-				if archetype_serialise_engine.parse_succeeded then
-					if attached {like persistent_type} archetype_serialise_engine.tree.as_object (({like persistent_type}).type_id, <<>>) as p_archetype then
+				if archetype_serialise_engine.parse_succeeded and attached archetype_serialise_engine.tree as att_tree then
+					if attached {like persistent_type} att_tree.as_object (({like persistent_type}).type_id, <<>>) as p_archetype then
 						if attached {like differential_archetype} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
 							Result := adl_2_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)

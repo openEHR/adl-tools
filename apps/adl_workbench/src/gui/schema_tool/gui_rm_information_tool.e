@@ -53,7 +53,7 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
 			rm_stats: HASH_TABLE [INTEGER, STRING]
 		do
-			source.generate_statistics
+			safe_source.generate_statistics
 
 			-- column names
 			ev_root_container.insert_new_column (Grid_metric_name_col)
@@ -61,15 +61,14 @@ feature {NONE} -- Implementation
 			ev_root_container.insert_new_column (Grid_metric_count_col)
 			ev_root_container.column (Grid_metric_count_col).set_title (get_msg (ec_rm_info_grid_count_col_title, Void))
 
-			rm_stats := source.statistics_table
-			from rm_stats.start until rm_stats.off loop
+			rm_stats := safe_source.statistics_table
+			across rm_stats as rm_stats_csr loop
 				-- class name in col 1
-				create gli.make_with_text (rm_stats.key_for_iteration)
+				create gli.make_with_text (rm_stats_csr.key)
 				ev_root_container.set_item (Grid_metric_name_col, ev_root_container.row_count + 1, gli)
 
-				create gli.make_with_text (rm_stats.item_for_iteration.out)
+				create gli.make_with_text (rm_stats_csr.item.out)
 				ev_root_container.set_item (Grid_metric_count_col, ev_root_container.row_count, gli)
-				rm_stats.forth
 			end
 
 			-- resize grid cols properly

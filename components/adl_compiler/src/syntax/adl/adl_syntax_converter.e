@@ -212,8 +212,8 @@ feature -- ADL 2 conversions
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
 		do
-			if dt.has_attribute (attr_name) then
-				across dt.attribute_node (attr_name).children as dt_objs_csr loop
+			if dt.has_attribute (attr_name) and then attached dt.attribute_node (attr_name) as att_dt_attr then
+				across att_dt_attr.children as dt_objs_csr loop
 					if attached {DT_COMPLEX_OBJECT} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
 						attached dt_co.attribute_node ("items") as dt_attr
 					then
@@ -238,8 +238,8 @@ feature -- ADL 2 conversions
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
 		do
-			if dt.has_attribute (attr_name) then
-				across dt.attribute_node (attr_name).children as dt_objs_csr loop
+			if dt.has_attribute (attr_name) and then attached dt.attribute_node (attr_name) as att_dt_attr then
+				across att_dt_attr.children as dt_objs_csr loop
 					if attached {DT_COMPLEX_OBJECT} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
 						attached dt_co.attribute_node ("items") as dt_attr
 					then

@@ -244,7 +244,7 @@ feature -- Modification
 			end
 			o_metadata.force (a_value, a_key)
 		ensure
-			other_metadata.item (a_key) = a_value
+			attached other_metadata as att_omd and then attached att_omd.item (a_key) as att_omd_item and then att_omd_item = a_value
 		end
 
 	put_other_metadata_flag (a_key: STRING)
@@ -253,7 +253,7 @@ feature -- Modification
 		do
 			put_other_metadata_value (a_key, (True).out)
 		ensure
-			other_metadata.item (a_key).is_equal ((True).out)
+			attached other_metadata as att_omd and then attached att_omd.item (a_key) as att_md_item and then att_md_item.is_equal ((True).out)
 		end
 
 	add_language (a_lang_tag: STRING)

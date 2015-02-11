@@ -131,22 +131,12 @@ feature {NONE} -- Implementation
 
 	do_populate
 		local
-			syntax_type: detachable STRING
+			syntax_type: STRING
 			s: STRING
 		do
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
-				if not differential_view then
-					if attached {ARCH_LIB_TEMPLATE} source as tpl_source then
-						s := tpl_source.operational_template_serialised (ev_flatten_with_rm_cb.is_selected)
-					else
-						s := source.flat_serialised (ev_flatten_with_rm_cb.is_selected)
-					end
-				elseif attached source.differential_serialised as sda then
-					s := sda
-				else
-					create s.make_empty
-				end
+				s := safe_source.select_serialised_archetype (differential_view, ev_flatten_with_rm_cb.is_selected)
 			else
 				if ev_serialise_odin_rb.is_selected then
 					syntax_type := Syntax_type_adl
@@ -156,9 +146,10 @@ feature {NONE} -- Implementation
 					syntax_type := Syntax_type_json
 				elseif ev_serialise_yaml_rb.is_selected then
 					syntax_type := Syntax_type_yaml
+				else
+					create syntax_type.make_empty
 				end
-				check attached syntax_type end
-				s := source.serialise_object (not differential_view, syntax_type)
+				s := safe_source.serialise_object (not differential_view, syntax_type)
 			end
 			populate_serialised_rich_text (s)
 		end

@@ -87,7 +87,7 @@ feature -- Visitor
 		end
 
 invariant
-	Tag_valid: attached tag implies not tag.is_empty
+	Tag_valid: attached tag as att_tag implies not att_tag.is_empty
 
 end
 

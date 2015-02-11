@@ -85,7 +85,7 @@ feature {NONE} -- Initialization
 			-- ============ parent archetype id data entry control ============
 			if attached parent_archetype_id as pid then
 				create parent_archetype_id_ctl.make_readonly (pid, get_text (ec_parent_archetype_id_label_text),
-					agent (a_parent_id: like parent_archetype_id):STRING do Result := a_parent_id.concept_id end (pid)
+					agent (a_parent_id: attached like parent_archetype_id):STRING do Result := a_parent_id.concept_id end (pid)
 				)
 				ev_root_container.extend (parent_archetype_id_ctl.ev_root_container)
 				ev_root_container.disable_item_expand (parent_archetype_id_ctl.ev_root_container)

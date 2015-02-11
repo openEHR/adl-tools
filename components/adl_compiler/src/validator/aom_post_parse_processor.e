@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 				if not valid_resource_lifecycle_state (auth_arch.description.lifecycle_state) and then
 					attached aom_profile as att_ap and then att_ap.has_lifecycle_state_mapping (auth_arch.description.lifecycle_state)
 				then
-					auth_arch.description.set_lifecycle_state (aom_profile.aom_lifecycle_mapping (auth_arch.description.lifecycle_state))
+					auth_arch.description.set_lifecycle_state (att_ap.aom_lifecycle_mapping (auth_arch.description.lifecycle_state))
 				else
 					auth_arch.description.set_lifecycle_state (Initial_resource_lifecycle_state)
 				end
@@ -178,14 +178,14 @@ feature {NONE} -- Implementation
 			co_parent: C_COMPLEX_OBJECT
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca and then (attached ca.existence or attached ca.cardinality) then
-				if target.is_specialised then
+				if attached flat_ancestor as att_flat_anc then
 					create apa.make (a_c_node.og_path)
 
-					if not apa.is_phantom_path_at_level (flat_ancestor.specialisation_depth) then
-						ca_path_in_flat := apa.path_at_level (flat_ancestor.specialisation_depth)
+					if not apa.is_phantom_path_at_level (att_flat_anc.specialisation_depth) then
+						ca_path_in_flat := apa.path_at_level (att_flat_anc.specialisation_depth)
 
-						if flat_ancestor.has_attribute_path (ca_path_in_flat) then
-							ca_in_flat_anc := flat_ancestor.attribute_at_path (ca_path_in_flat)
+						if att_flat_anc.has_attribute_path (ca_path_in_flat) then
+							ca_in_flat_anc := att_flat_anc.attribute_at_path (ca_path_in_flat)
 
 							-- if existence or cardinality are set, they are the reference comparisons
 							if attached ca_in_flat_anc.existence as ccd_ex then

@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_archetype_node as aca then
 				selection_history.set_selected_item (aca)
-				gui_agents.select_archetype_agent.call ([aca])
+				gui_agents.call_select_archetype_agent (aca)
 			end
 		end
 
@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 			if attached {ARCH_LIB_ARCHETYPE} an_ev_grid_item.row.data as aca then
 				select_archetype_with_delay (aca)
 			end
-			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+			gui_agents.call_history_set_active_agent (ultimate_parent_tool)
 		end
 
 	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 					build_archetype_node_context_menu (aca)
 				end
 			end
-			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+			gui_agents.call_history_set_active_agent (ultimate_parent_tool)
 		end
 
 	build_archetype_node_context_menu (aca: ARCH_LIB_ARCHETYPE)
@@ -169,7 +169,7 @@ feature {NONE} -- Implementation
 			menu.extend (an_mi)
 
 			-- edit archetype in visual editor
-			if aca.is_valid and not gui_agents.archetype_has_editor_agent.item ([aca]) then -- only offer editor if there is not already one running for this archetype
+			if aca.is_valid and not gui_agents.call_archetype_has_editor_agent (aca) then -- only offer editor if there is not already one running for this archetype
 				create an_mi.make_with_text_and_action (get_text (ec_edit), agent edit_archetype_in_new_tool (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
 				menu.extend (an_mi)
@@ -239,7 +239,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.edit_archetype_source_agent.call ([an_aca])
+						tool_agents.call_edit_archetype_source_agent (an_aca)
 					end (aca)
 			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.save_archetype_agent.call ([an_aca, True, True])
+						tool_agents.call_save_archetype_agent (an_aca, True, True)
 					end (aca)
 			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
@@ -259,7 +259,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.save_archetype_agent.call ([an_aca, True, False])
+						tool_agents.call_save_archetype_agent (an_aca, True, False)
 					end (aca)
 			)
 			a_menu.extend (an_mi)
@@ -268,7 +268,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.save_archetype_agent.call ([an_aca, False, False])
+						tool_agents.call_save_archetype_agent (an_aca, False, False)
 					end (aca)
 			)
 			a_menu.extend (an_mi)
@@ -281,17 +281,17 @@ feature {NONE} -- Implementation
 
 	display_archetype_in_active_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
-			gui_agents.select_archetype_agent.call ([aca])
+			gui_agents.call_select_archetype_agent (aca)
 		end
 
 	display_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
-			gui_agents.select_archetype_in_new_tool_agent.call ([aca])
+			gui_agents.call_select_archetype_in_new_tool_agent (aca)
 		end
 
 	edit_archetype_in_new_tool (aca: ARCH_LIB_ARCHETYPE)
 		do
-			gui_agents.edit_archetype_in_new_tool_agent.call ([aca])
+			gui_agents.call_edit_archetype_in_new_tool_agent (aca)
 		end
 
 	delayed_select_archetype_agent_cache: detachable EV_TIMEOUT
@@ -310,11 +310,11 @@ feature {NONE} -- Implementation
 				question_dialog.set_title (get_text (ec_remove_dialog_title))
 				question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				if question_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+				if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
 					src.remove_artefact (aca)
 					aca.remove_file
-					check attached aca.specialisation_parent as att_anc then
-						tool_agents.update_explorers_and_select_agent.call ([att_anc])
+					check attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca.specialisation_parent as att_anc then
+						tool_agents.call_update_explorers_and_select_agent (att_anc)
 					end
 				end
 				question_dialog.destroy

@@ -56,14 +56,19 @@ feature -- Access
 	library_definition: detachable ARCHETYPE_LIBRARY_DEFINITION
 		require
 			has_library_path
+		local
+			ldfa: attached like library_definition_file_access
 		do
 			if attached library_definition_cache as att_local_def then
 				Result := att_local_def
 			else
-				if not attached library_definition_file_access then
-					create library_definition_file_access.make_load (library_definition_file_path)
+				if attached library_definition_file_access as att_ldfa then
+					ldfa := att_ldfa
+				else
+					create ldfa.make_load (library_definition_file_path)
+					library_definition_file_access := ldfa
 				end
-				if attached library_definition_file_access.object as att_obj then
+				if attached ldfa.object as att_obj then
 					Result := att_obj
 				end
 			end
@@ -122,7 +127,7 @@ feature -- Status Report
 	is_remote: BOOLEAN
 			-- True if the definition file contains a 'remote_copy' section
 		do
-			Result := attached library_definition.remote
+			Result := attached library_definition as att_lib_def and then attached att_lib_def.remote
 		end
 
 feature -- Validation
@@ -130,7 +135,11 @@ feature -- Validation
 	errors: ERROR_ACCUMULATOR
 			-- obtain any errors from definition file load
 		do
-			Result := library_definition_file_access.errors
+			if attached library_definition_file_access as att_ldfa then
+				Result := att_ldfa.errors
+			else
+				create Result.make
+			end
 		end
 
 feature {ARCHETYPE_LIBRARY_INTERFACES} -- Commands
@@ -138,17 +147,24 @@ feature {ARCHETYPE_LIBRARY_INTERFACES} -- Commands
 	reload_library_definition
 			-- reload definition file
 		do
-			library_definition_file_access.load
+			if attached library_definition_file_access as att_ldfa then
+				att_ldfa.load
+			end
 			library_definition_cache := Void
 		end
 
 	save_library_definition (a_def: ARCHETYPE_LIBRARY_DEFINITION)
 			-- save `a_def' to library definition file
+		local
+			ldfa: attached like library_definition_file_access
 		do
-			if not attached library_definition_file_access then
-				create library_definition_file_access.make_load (library_definition_file_path)
+			if attached library_definition_file_access as att_ldfa then
+				ldfa := att_ldfa
+			else
+				create ldfa.make_load (library_definition_file_path)
+				library_definition_file_access := ldfa
 			end
-			library_definition_file_access.save (a_def)
+			ldfa.save (a_def)
 		end
 
 feature {SHARED_ARCHETYPE_LIBRARIES} -- Commands

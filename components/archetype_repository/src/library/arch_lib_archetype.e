@@ -364,22 +364,32 @@ feature {ARCH_LIB_ARCHETYPE} -- Relationships
 
 	add_slot_owner (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
+		local
+			so_idx: attached like slot_owners_index
 		do
-			if not attached slot_owners_index then
-				create slot_owners_index.make (0)
-				slot_owners_index.compare_objects
+			if attached slot_owners_index as att_so_idx then
+				so_idx := att_so_idx
+			else
+				create so_idx.make (0)
+				so_idx.compare_objects
+				slot_owners_index := so_idx
 			end
-			slot_owners_index.extend (an_archetype_id)
+			so_idx.extend (an_archetype_id)
 		end
 
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that references this archetype
+		local
+			cl_idx: attached like clients_index
 		do
-			if not attached clients_index then
-				create clients_index.make (0)
-				clients_index.compare_objects
+			if attached clients_index as att_cl_idx then
+				cl_idx := att_cl_idx
+			else
+				create cl_idx.make (0)
+				cl_idx.compare_objects
+				clients_index := cl_idx
 			end
-			clients_index.extend (an_archetype_id)
+			cl_idx.extend (an_archetype_id)
 		end
 
 feature -- Artefacts
@@ -396,28 +406,37 @@ feature -- Artefacts
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
 
+	safe_differential_archetype: attached like differential_archetype
+			-- attached form of `differential_archetype' after parsing
+		do
+			check attached differential_archetype as da then
+				Result := da
+			end
+		end
+
 	display_language: STRING
 			-- generate a valid language to display this archetype in, either the current_language
 			-- or the primary language of this archetype, if it doesn't support the current language
 		do
 			if is_valid then
-				if differential_archetype.has_language (archetype_view_language) then
+				if safe_differential_archetype.has_language (archetype_view_language) then
 					Result := archetype_view_language
 				else
-					Result := differential_archetype.original_language.code_string
+					Result := safe_differential_archetype.original_language.code_string
 				end
 			else
 				Result := archetype_view_language
 			end
 		end
 
-	differential_serialised: detachable STRING
+	differential_serialised: STRING
 			-- serialise differential archetype to its file in its source form, even if not compiling
 			-- this might fail because the serialiser might try to do something that an invalid archetype
 			-- can't support
 		local
 			exception_occurred: BOOLEAN
 		do
+			create Result.make_empty
 			if not exception_occurred then
 				if attached differential_archetype as da then
 					Result := adl_2_engine.serialise (da, Syntax_type_adl, current_archetype_language)
@@ -936,14 +955,24 @@ feature -- Visualisation
 		do
 			if not editing_enabled then
 				if differential_view then
-					check attached differential_archetype as da then
-						Result := da
-					end
+					Result := safe_differential_archetype
 				else
 					Result := flat_archetype
 				end
 			else
 				Result := flat_archetype_clone
+			end
+		end
+
+	select_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
+			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `with_rm'
+		require
+			is_valid
+		do
+			if differential_view then
+				Result := differential_serialised
+			else
+				Result := flat_serialised (with_rm)
 			end
 		end
 
@@ -976,9 +1005,7 @@ feature -- Output
 			if flat_flag then
 				create {like persistent_type} dt_arch.make (flat_archetype)
 			else
-				check attached differential_archetype as da then
-					create {like persistent_type} dt_arch.make (da)
-				end
+				create {like persistent_type} dt_arch.make (safe_differential_archetype)
 			end
 
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
@@ -999,8 +1026,20 @@ feature -- Statistics
 			-- generate statistics in differential or flat mode
 		require
 			is_valid
+		local
+			tgt_arch: ARCHETYPE
 		do
-			create statistical_analyser.make (Current, in_differential_mode)
+			if in_differential_mode then
+				tgt_arch := safe_differential_archetype
+			else
+				tgt_arch := flat_archetype
+			end
+
+			if attached specialisation_parent as att_sp then
+				create statistical_analyser.make_specialised (tgt_arch, att_sp.flat_archetype, rm_schema)
+			else
+				create statistical_analyser.make (tgt_arch, rm_schema)
+			end
 			statistical_analyser.analyse
 		end
 
@@ -1066,21 +1105,16 @@ feature {NONE} -- Flattening
 		require
 			compilation_state >= Cs_validated_phase_2
 		local
-			diff_arch: like differential_archetype
 			flattened_arch: like flat_archetype
 		do
-			check attached differential_archetype as da then
-				diff_arch := da
-			end
-
 			-- archetype flattening step
 			if attached specialisation_parent as spec_anc then
-				arch_flattener.execute (spec_anc.flat_archetype, diff_arch)
+				arch_flattener.execute (spec_anc.flat_archetype, safe_differential_archetype)
 				check attached {like flat_archetype} arch_flattener.arch_flat_out as att_flat then
 					flattened_arch := att_flat
 				end
 			else
-				check attached {like flat_archetype} diff_arch as auth_diff_arch then
+				check attached {like flat_archetype} safe_differential_archetype as auth_diff_arch then
 					flattened_arch := auth_diff_arch.deep_twin
 				end
 				flattened_arch.set_generated_flat
@@ -1113,13 +1147,12 @@ feature {NONE} -- Implementation
 		require
 			attached differential_archetype
 		do
-			check attached differential_archetype end
-			if differential_archetype.has_language (archetype_view_language) then
+			if safe_differential_archetype.has_language (archetype_view_language) then
 				Result := archetype_view_language
-			elseif differential_archetype.has_matching_language_tag (archetype_view_language) then
-				Result := differential_archetype.matching_language_tag (archetype_view_language)
+			elseif safe_differential_archetype.has_matching_language_tag (archetype_view_language) then
+				Result := safe_differential_archetype.matching_language_tag (archetype_view_language)
 			else
-				Result := differential_archetype.original_language.code_string
+				Result := safe_differential_archetype.original_language.code_string
 			end
 		end
 
@@ -1143,8 +1176,8 @@ feature {NONE} -- Implementation
 				if not includes.is_empty and not includes.first.matches_any then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						across includes as includes_csr loop
-							if attached {STRING} includes_csr.item.regex_constraint.constraint_regex as a_regex then
-								add_slot_ids (Result, current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+							if attached includes_csr.item.regex_constraint as att_c_str and then attached {STRING} att_c_str.constraint_regex as att_regex then
+								add_slot_ids (Result, current_library.matching_ids (att_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
@@ -1154,8 +1187,8 @@ feature {NONE} -- Implementation
 					add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
-							if attached {STRING} excludes_csr.item.regex_constraint.constraint_regex as a_regex then
-								across current_library.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_package) as ids_csr loop
+							if attached excludes_csr.item.regex_constraint as att_c_str and then attached {STRING} att_c_str.constraint_regex as att_regex then
+								across current_library.matching_ids (att_regex, slots_csr.item.rm_type_name, id.rm_package) as ids_csr loop
 									Result.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
@@ -1166,10 +1199,10 @@ feature {NONE} -- Implementation
 				end
 
 				-- if it's the differential, post the results in the reverse indexes
-				if an_archetype.is_differential then
-					across Result.item (slots_csr.item.path) as ids_csr loop
+				if an_archetype.is_differential and attached Result.item (slots_csr.item.path) as att_slots then
+					across att_slots as ids_csr loop
 						ala := current_library.archetype_with_id (ids_csr.item)
-						if not attached ala.slot_owners_index or else not ala.slot_owners_index.has (id.physical_id) then
+						if not attached ala.slot_owners_index as att_soi or else not att_soi.has (id.physical_id) then
 							ala.add_slot_owner (id.physical_id)
 						end
 					end
@@ -1180,10 +1213,10 @@ feature {NONE} -- Implementation
 	add_slot_ids (idx: HASH_TABLE [ARRAYED_SET[STRING], STRING]; a_list: ARRAYED_SET [STRING]; a_slot_path: STRING)
 			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
-			if not idx.has (a_slot_path) then
-				idx.force (a_list, a_slot_path)
+			if attached idx.item (a_slot_path) as att_set then
+				att_set.merge (a_list)
 			else
-				idx.item (a_slot_path).merge (a_list)
+				idx.force (a_list, a_slot_path)
 			end
 		end
 

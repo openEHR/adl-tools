@@ -22,17 +22,16 @@ feature -- Access
 	source: detachable BMM_CLASS
 			-- class definition to which this tool is targetted
 
-	rm_schema: detachable BMM_SCHEMA
-		note
-			option: stable
+	rm_schema: BMM_SCHEMA
 		attribute
+			create Result.default_create
 		end
 
 	tool_artefact_id: STRING
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
 			-- docked panes or similar
 		do
-			Result := source.global_artefact_identifier
+			Result := safe_source.global_artefact_identifier
 		end
 
 feature -- Status Report
@@ -77,15 +76,15 @@ feature {NONE} -- Implementation
 	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
-			gui_agents.select_class_agent.call ([a_class_def])
-			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+			gui_agents.call_select_class_agent (a_class_def)
+			gui_agents.call_history_set_active_agent (ultimate_parent_tool)
 		end
 
 	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
 			selection_history.set_selected_item (a_class_def)
-			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
-			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+			gui_agents.call_select_class_in_new_tool_agent (a_class_def)
+			gui_agents.call_history_set_active_agent (ultimate_parent_tool)
 		end
 
 end

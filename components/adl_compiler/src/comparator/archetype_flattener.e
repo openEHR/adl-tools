@@ -283,8 +283,8 @@ end
 					ca_output.set_specialisation_status_redefined
 				else
 					-- all attributes: overlay the attribute existence if that has been changed
-					if attached ca_diff.existence then
-						ca_output.set_existence (ca_diff.existence.deep_twin)
+					if attached ca_diff.existence as att_ex then
+						ca_output.set_existence (att_ex.deep_twin)
 						ca_output.set_specialisation_status_redefined
 					end
 
@@ -306,8 +306,8 @@ end
 					-- if a container attribute then do a merge
 					elseif ca_diff.is_multiple then
 						-- overlay the cardinality if that was changed
-						if attached ca_diff.cardinality then
-							ca_output.set_cardinality (ca_diff.cardinality.deep_twin)
+						if attached ca_diff.cardinality as att_card then
+							ca_output.set_cardinality (att_card.deep_twin)
 							ca_output.set_specialisation_status_redefined
 						end
 						-- for container attributes in the source archetype, we build a merge list to properly deal with 'after'
@@ -697,8 +697,8 @@ end
 	flatten_rules
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
-			if arch_diff_child.has_rules then
-				across arch_diff_child.rules as rules_csr loop
+			if attached arch_diff_child.rules as att_rules then
+				across att_rules as rules_csr loop
 					arch_flat_out.add_rule (rules_csr.item.deep_twin)
 				end
 			end

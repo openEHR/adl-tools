@@ -34,10 +34,13 @@ feature -- Initialisation
 			-- make representing a single-valued attribute with attr name and optional existence
 		require
 			a_name_valid: not a_name.is_empty
+		local
+			rep: attached like representation_cache
 		do
 			existence := an_existence
-			create representation_cache.make_single (a_name)
-			representation_cache.set_content (Current)
+			create rep.make_single (a_name)
+			rep.set_content (Current)
+			representation_cache := rep
 		ensure
 			Any_allowed: any_allowed
 			Is_single: not is_multiple
@@ -48,11 +51,14 @@ feature -- Initialisation
 			-- make representing a container attribute with attr name & optional existence and cardinality
 		require
 			a_name_valid: not a_name.is_empty
+		local
+			rep: attached like representation_cache
 		do
 			existence := an_existence
 			cardinality := a_cardinality
-			create representation_cache.make_multiple (a_name)
-			representation_cache.set_content (Current)
+			create rep.make_multiple (a_name)
+			rep.set_content (Current)
+			representation_cache := rep
 		ensure
 			Any_allowed: any_allowed
 			Is_multiple: is_multiple
@@ -114,8 +120,8 @@ feature -- Access
 			-- C_ATTRIBUTE to stand as a 'path-compressed' replacement for a string of C_COMPLEX_OBJECT/
 			-- C_ATTRIBUTE constraint objects
 		do
-			if representation.has_differential_path then
-				Result := representation.differential_path.as_string
+			if attached representation.differential_path as att_dp then
+				Result := att_dp.as_string
 			end
 		end
 
@@ -150,8 +156,8 @@ feature -- Access
 			-- calculate sum of all occurrences lower bounds; where no occurrences are stated, 0 is assumed
 		do
 			across children as c_obj_csr loop
-				if attached c_obj_csr.item.occurrences then
-					Result := Result + c_obj_csr.item.occurrences.lower
+				if attached c_obj_csr.item.occurrences as att_occ then
+					Result := Result + att_occ.lower
 				end
 			end
 		end
@@ -174,7 +180,7 @@ feature -- Access
 			found_opt_obj: BOOLEAN
 		do
 			across children as c_obj_csr loop
-				if attached c_obj_csr.item.occurrences and then c_obj_csr.item.occurrences.lower > 0 then
+				if attached c_obj_csr.item.occurrences as att_occ and then att_occ.lower > 0 then
 					Result := Result + 1
 				else
 					found_opt_obj := True
@@ -321,19 +327,19 @@ feature -- Status Report
 			-- True if this attribute is multiple and ordered;
 			-- if no cardinality, assume it is ordered; should really be checked in the RM schema
 		do
-			Result := is_multiple and then cardinality.is_ordered
+			Result := is_multiple and then attached cardinality as att_card and then att_card.is_ordered
 		end
 
 	is_prohibited: BOOLEAN
 			-- True if occurrences set to {0} i.e. prohibited
 		do
-			Result := attached existence and existence.is_prohibited
+			Result := attached existence as att_ex and then att_ex.is_prohibited
 		end
 
 	is_mandatory: BOOLEAN
 			-- True if occurrences set to {1} i.e. prohibited
 		do
-			Result := attached existence and existence.is_mandatory
+			Result := attached existence as att_ex and then att_ex.is_mandatory
 		end
 
 	is_leaf_parent: BOOLEAN
@@ -515,9 +521,11 @@ feature -- Modification
 		require
 			not has_differential_path
 		do
-			representation.set_differential_path (representation.parent.path)
-			if not parent.is_root then
-				reparent_to_root
+			if attached representation.parent as att_rep_parent then
+				representation.set_differential_path (att_rep_parent.path)
+				if attached parent as att_parent and then not att_parent.is_root then
+					reparent_to_root
+				end
 			end
 		ensure
 			Differential_path_set: differential_path /= Void
@@ -727,7 +735,7 @@ feature {NONE} -- Implementation
 	reparent_to_root
 			-- reparent this node to the root node, removing intervening orphaned nodes on the way
 		local
-			csr: detachable ARCHETYPE_CONSTRAINT
+			csr: ARCHETYPE_CONSTRAINT
 		do
 			if attached parent as p then
 debug("compress")
@@ -735,7 +743,7 @@ debug("compress")
 		") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
 end
 				p.remove_attribute (Current)
-				from csr := p until csr.parent = Void loop
+				from csr := p until not attached csr.parent loop
 					if attached {C_COMPLEX_OBJECT} csr.parent as cco and attached {C_ATTRIBUTE} csr as ca then
 						if not ca.has_children then
 debug("compress")
@@ -753,7 +761,9 @@ end
 							ca.remove_child (cco)
 						end
 					end
-					csr := csr.parent
+					if attached csr.parent as att_parent then
+						csr := att_parent
+					end
 				end
 				if attached {C_COMPLEX_OBJECT} csr as cco then
 debug("compress")
@@ -783,7 +793,7 @@ invariant
 	Children_occurrences_lower_sum_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies aggregate_occurrences_lower_sum <= att_card.interval.upper
 	Children_orphans_validity: (attached cardinality as att_card and then not att_card.interval.upper_unbounded) implies minimum_child_count <= att_card.interval.upper
 	Differential_path_valid: attached differential_path as att_diff_path implies not att_diff_path.is_empty
-	Alternatives_valid: not is_multiple implies children.for_all (agent (co: C_OBJECT): BOOLEAN do Result := co.occurrences.upper <= 1 end)
+	Alternatives_valid: not is_multiple implies across children as child_csr all not attached child_csr.item.occurrences as att_occ or else att_occ.upper <= 1 end
 	Has_differential_path_valid: differential_path = Void xor has_differential_path
 
 end

@@ -28,11 +28,11 @@ feature -- Initialisation
 			Rm_closure_name_valid: not an_rm_closure_name.is_empty
 		do
 			bmm_schema := a_bmm_schema
-			qualified_name := publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name)
+			qualified_name := publisher_qualified_rm_closure_name (a_bmm_schema.rm_publisher, an_rm_closure_name)
 			name := an_rm_closure_name
 			group_name := "model_group"
 		ensure
-			ontological_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name))
+			ontological_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (a_bmm_schema.rm_publisher, an_rm_closure_name))
 			display_name_set: name = an_rm_closure_name
 			Schema_set: bmm_schema = a_bmm_schema
 		end

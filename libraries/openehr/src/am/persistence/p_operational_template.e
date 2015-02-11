@@ -21,13 +21,16 @@ create
 feature -- Initialisation
 
 	make (an_archetype: like artefact_class_type)
+		local
+			cpt: attached like component_terminologies
 		do
 			precursor (an_archetype)
 
 			if attached an_archetype.component_terminologies then
-				create component_terminologies.make(0)
+				create cpt.make(0)
+				component_terminologies := cpt
 				across an_archetype.component_terminologies as opt_comp_onts_csr loop
-					component_terminologies.put (create {P_ARCHETYPE_TERMINOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
+					cpt.put (create {P_ARCHETYPE_TERMINOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
 				end
 			end
 		end
@@ -42,14 +45,14 @@ feature -- Factory
 		local
 			arch_terminology: ARCHETYPE_TERMINOLOGY
 		do
-			Result := precursor
-			if attached component_terminologies as att_terminologies then
+			if attached precursor as att_arch and attached component_terminologies as att_terminologies then
 				across att_terminologies as terminologies_csr loop
-					create arch_terminology.make_differential (terminologies_csr.item.original_language, Result.definition.node_id)
+					create arch_terminology.make_differential (terminologies_csr.item.original_language, att_arch.definition.node_id)
 					terminologies_csr.item.populate_terminology (arch_terminology)
 					arch_terminology.finalise_dt
-					Result.add_component_terminology (arch_terminology, terminologies_csr.key)
+					att_arch.add_component_terminology (arch_terminology, terminologies_csr.key)
 				end
+				Result := att_arch
 			end
 		end
 

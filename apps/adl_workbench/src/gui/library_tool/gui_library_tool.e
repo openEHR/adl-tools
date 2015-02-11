@@ -239,13 +239,13 @@ feature -- Commands
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
-						source.add_adhoc_archetype (fname)
-						if not source.has_errors and attached source.last_added_archetype as arch then
+						safe_source.add_adhoc_archetype (fname)
+						if not safe_source.has_errors and attached safe_source.last_added_archetype as arch then
 							selection_history.set_selected_item (arch)
 							show
 							repopulate
 						else
-							gui_agents.console_tool_append_agent.call ([source.error_strings])
+							gui_agents.call_console_tool_append_agent (safe_source.error_strings)
 						end
 					end
 				else
@@ -304,12 +304,12 @@ feature -- Events
 
 	on_select_notebook
 		do
-			if attached source as src then
-				if ev_notebook.selected_item.data = metrics_viewer then
+			if attached source as src and attached ev_notebook.selected_item as sel_item and then attached sel_item.data as att_data then
+				if att_data = metrics_viewer then
 					if src.can_build_statistics then
 						metrics_viewer.populate (src)
 					end
-				elseif ev_notebook.selected_item.data = stats_viewer then
+				elseif att_data = stats_viewer then
 					if src.can_build_statistics then
 						across src.statistics as stats_csr loop
 							stats_viewer.populate (stats_csr.item, True)
@@ -327,7 +327,7 @@ feature -- Events
 
 	on_rotate_view
 		do
-			if attached {GUI_LIBRARY_TARGETTED_TOOL} ev_notebook.selected_item.data as lib_tool and attached source then
+			if attached ev_notebook.selected_item as att_sel_item and then attached {GUI_LIBRARY_TARGETTED_TOOL} att_sel_item.data as lib_tool and is_populated then
 				lib_tool.on_rotate_view
 			end
 		end
@@ -439,7 +439,7 @@ feature {NONE} -- Implementation
 	set_tabs_appearance
 			-- set visual appearance of stats & metric tab according to whether there are errors or not
 		do
-			if attached source as src and then source.can_build_statistics then
+			if attached source as src and then src.can_build_statistics then
 				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
 				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
@@ -490,7 +490,7 @@ feature {NONE} -- Implementation
 
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 
-				if not save_dialog.selected_button_name.is_equal (ev_cancel) then
+				if attached save_dialog.selected_button_name as save_sel_btn and then not save_sel_btn.is_equal (ev_cancel) then
 					name := save_dialog.file_name.as_string_8
 					if not name.is_empty then
 						-- finalise the file path & create a handle
@@ -509,7 +509,7 @@ feature {NONE} -- Implementation
 							question_dialog.set_title (get_msg (ec_save_archetype_as_type, <<format.as_upper>>))
 							question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 							question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-							ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
+							ok_to_write := attached question_dialog.selected_button as q_sel_btn and then q_sel_btn.same_string (get_text (ec_yes_response))
 						end
 						if ok_to_write then
 							if diff_flag then
@@ -517,7 +517,7 @@ feature {NONE} -- Implementation
 							else
 								aca.save_flat_as (name, format)
 							end
-							gui_agents.console_tool_append_agent.call ([aca.status])
+							gui_agents.call_console_tool_append_agent (aca.status)
 						end
 					end
 				end
@@ -548,7 +548,7 @@ feature {NONE} -- Implementation
 					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.qualified_name>>))
 					question_dialog.set_buttons (<<get_text (ec_library_edit_differential_button_text), get_text (ec_library_edit_adl14_button_text)>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-					if question_dialog.selected_button.is_equal (get_text (ec_library_edit_adl14_button_text)) then
+					if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.is_equal (get_text (ec_library_edit_adl14_button_text)) then
 						path := legacy_path
 					end
 				else
@@ -564,7 +564,7 @@ feature {NONE} -- Implementation
 			orig_time_stamp := file_system.file_time_stamp (path)
 			do_system_run_command_synchronous (editor_app_command + " %"" + path + "%"", Void)
 			if file_system.file_time_stamp (path) > orig_time_stamp then
-				gui_agents.select_archetype_agent.call ([auth_aca])
+				gui_agents.call_select_archetype_agent (auth_aca)
 			end
 		end
 

@@ -135,7 +135,7 @@ feature -- Output
 
 	as_string: STRING
 		do
-			create Result.make(0)
+			create Result.make (0)
 			Result.append (value)
 		end
 
@@ -149,11 +149,11 @@ feature {DV_TEXT} -- Implementation
 invariant
 	Value_valid: not value.is_empty and then not
 		(value.has(CR) or value.has(LF))
-	Mappings_valid: mappings /= void implies not mappings.is_empty
-	Formatting_valid: formatting /= void implies not formatting.is_empty
+	Mappings_valid: attached mappings as att_mappings implies not att_mappings.is_empty
+	Formatting_valid: attached formatting as att_formatting implies not att_formatting.is_empty
 
-	Language_valid: code_set(Code_set_id_languages).has(language)
-	Encoding_valid: code_set(Code_set_id_character_sets).has(encoding)
+	Language_valid: code_set (Code_set_id_languages).has (language)
+	Encoding_valid: code_set (Code_set_id_character_sets).has (encoding)
 
 end
 

@@ -237,8 +237,8 @@ c_complex_object_head: c_complex_object_id c_occurrences
 				object_nodes.extend ($1)
 debug ("ADL_parse")
 	io.put_string (indent + "PUSH create OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "] ")
-	if $2 /= Void then
-		io.put_string ("; occurrences=(" + $2.as_string + ")") 
+	if attached $2 as att_occ then
+		io.put_string ("; occurrences=(" + att_occ.as_string + ")") 
 	end
 	io.new_line
 	indent.append ("%T")
@@ -2396,8 +2396,8 @@ feature -- Initialization
 
 			target_descriptor := aca
 			rm_schema := aca.rm_schema
-			if target_descriptor.is_specialised then
-				flat_ancestor := target_descriptor.specialisation_parent.flat_archetype
+			if attached target_descriptor.specialisation_parent as spec_parent then
+				flat_ancestor := spec_parent.flat_archetype
  			end
 
 			source_start_line := a_source_start_line
@@ -2475,18 +2475,19 @@ feature {NONE} -- Implementation
 			if an_attr.has_child_with_id (an_obj.node_id) then
 				err_code := ec_VCOSU
 			elseif an_attr.is_single then
-				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
+				if attached an_obj.occurrences as att_occ and then (att_occ.upper_unbounded or att_occ.upper > 1) then
 					err_code := ec_VACSO
 				else
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
-						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and
-						an_obj.occurrences.upper > an_attr.cardinality.interval.upper then
+				if attached an_attr.cardinality as att_card and then not att_card.interval.upper_unbounded and then
+						attached an_obj.occurrences as att_occ and then not att_occ.upper_unbounded and then
+						att_occ.upper > att_card.interval.upper 
+				then
 					err_code := ec_VACMCU
-					ar.extend (an_obj.occurrences.upper.out)
-					ar.extend (an_attr.cardinality.interval.upper.out)
+					ar.extend (att_occ.upper.out)
+					ar.extend (att_card.interval.upper.out)
 				else
 					Result := True
 				end

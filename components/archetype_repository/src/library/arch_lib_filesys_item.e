@@ -62,11 +62,16 @@ feature -- Access
 feature -- Modification
 
 	put_child (a_child: like child_with_qualified_key)
+		local
+			ala_list: attached like children
 		do
-			if children = Void then
-				create children.make
+			if attached children as att_children then
+				ala_list := att_children
+			else
+				create ala_list.make
+				children := ala_list
 			end
-			children.extend (a_child)
+			ala_list.extend (a_child)
 			if attached {ARCH_LIB_FILESYS_ITEM} a_child then
 				a_child.set_parent (Current)
 			end

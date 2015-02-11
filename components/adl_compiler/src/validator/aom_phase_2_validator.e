@@ -100,7 +100,7 @@ feature {NONE} -- Implementation
 						if arch_diff_child.has_object_path (arch_path) then
 							object_at_matching_path := arch_diff_child.object_at_path (arch_path)
 						end
-					elseif attached arch_flat_parent and then attached arch_flat_parent.matching_path (ref_path_csr.key) as p then
+					elseif attached arch_flat_parent.matching_path (ref_path_csr.key) as p then
 						arch_path := p
 						if arch_flat_parent.has_object_path (arch_path) then
 							object_at_matching_path := arch_flat_parent.object_at_path (arch_path)
@@ -444,21 +444,21 @@ end
 			bmm_enum: BMM_ENUMERATION [COMPARABLE]
 		do
 			if attached {C_OBJECT} a_c_node as co then
-				if not co.is_root then -- now check if this object a valid type of its owning attribute
-					if arch_diff_child.is_specialised and then co.parent.has_differential_path then
-						check attached co.parent.differential_path as diff_path then
+				if attached co.parent as att_parent_ca then -- now check if this object a valid type of its owning attribute
+					if att_parent_ca.has_differential_path then
+						check attached att_parent_ca.differential_path as diff_path then
 							create apa.make_from_string (diff_path)
 						end
 						attr_rm_type_in_flat_anc := arch_flat_parent.object_at_path (apa.path_at_level (arch_flat_parent.specialisation_depth)).rm_type_name
 					else
-						attr_rm_type_in_flat_anc := co.parent.parent.rm_type_name
+						attr_rm_type_in_flat_anc := att_parent_ca.parent.rm_type_name
 					end
 
 					if not invalid_types.has (attr_rm_type_in_flat_anc) then
 						if rm_schema.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
-							rm_attr_type := rm_schema.effective_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name)
+							rm_attr_type := rm_schema.effective_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name)
 
-							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, co.rm_type_name) then
+							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) then
 
 								-- check if the property type is an enumeration and if the archetype node rm_type_name is
 								-- a compatible primitive type
@@ -468,7 +468,7 @@ end
 										if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
 											if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
 												add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-													rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, c_int.single_value.out>>)
+													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
 											else
 												c_int.set_rm_type_name (rm_attr_type)
 												c_int.set_enumerated_type_constraint
@@ -477,7 +477,7 @@ end
 										elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
 											if not across c_str.constraint as str_vals_csr all bmm_enum_str.item_values.has (str_vals_csr.item) end then
 												add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-													rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name, c_str.single_value>>)
+													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.single_value>>)
 											else
 												c_str.set_rm_type_name (rm_attr_type)
 												c_str.set_enumerated_type_constraint
@@ -486,36 +486,36 @@ end
 										else
 											-- error - unsupported subtype of BMM_ENUMERATION
 											add_error (ec_VCORMEN, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-												rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
+												rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 
 										end
 
 									else
 										-- RM property type is an enumerated type, but current node RM type doesn't conform
 										add_error (ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-											rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
+											rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 									end
 
 								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
 								-- has a String field (within some other kind of DATE class)
 								elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
 									add_info (ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-										rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
+										rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 									co.set_rm_type_name (rm_attr_type)
 								else
 									add_error (ec_VCORMT, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-										rm_attr_type, attr_rm_type_in_flat_anc, co.parent.rm_attribute_name>>)
+										rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 									invalid_types.extend (co.rm_type_name)
 								end
 							end
 						else
-							add_error (ec_VCARM, <<co.parent.rm_attribute_name, arch_diff_child.annotated_path (co.parent.path, display_language, True),
+							add_error (ec_VCARM, <<att_parent_ca.rm_attribute_name, arch_diff_child.annotated_path (att_parent_ca.path, display_language, True),
 								attr_rm_type_in_flat_anc>>)
 						end
 					end
 				end
 			elseif attached {C_ATTRIBUTE} a_c_node as ca then
-				if arch_diff_child.is_specialised and then ca.has_differential_path then
+				if ca.has_differential_path then
 					check attached ca.differential_path as diff_path then
 						create apa.make_from_string (diff_path)
 					end
@@ -543,25 +543,26 @@ end
 					end
 					if ca.is_multiple then
 						-- RM also has container property here
-						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def then
-							if attached ca.cardinality as ca_card and then not rm_cont_prop_def.cardinality.contains (ca_card.interval) then
-								if rm_cont_prop_def.cardinality.is_equal (ca_card.interval) then
-									if validation_strict then
+						if attached ca.cardinality as ca_card then
+							if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def then
+								if not rm_cont_prop_def.cardinality.contains (ca_card.interval) then
+									if rm_cont_prop_def.cardinality.is_equal (ca_card.interval) then
+										if validation_strict then
+											add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+												ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
+										else
+											add_warning (ec_WCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+												ca_card.interval.as_string>>)
+											ca.remove_cardinality
+										end
+									else
 										add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 											ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
-									else
-										add_warning (ec_WCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
-											ca_card.interval.as_string>>)
-										ca.remove_cardinality
 									end
-								else
-									add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
-										ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 								end
+							else -- archetype has multiple attribute but RM does not
+								add_error (ec_VCAMm, <<arch_diff_child.annotated_path (ca.path, display_language, True), ca_card.as_string>>)
 							end
-						else -- archetype has multiple attribute but RM does not
-							add_error (ec_VCAMm, <<arch_diff_child.annotated_path (ca.path, display_language, True),
-								ca.cardinality.as_string>>)
 						end
 
 					-- archetype attribute is single-valued, but RM has a container attribute

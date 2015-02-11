@@ -250,12 +250,12 @@ feature {NONE} -- Initialisation
 			create evx_trans_author.make_linked (get_text (ec_translator_label_text),
 				agent : detachable HASH_TABLE [STRING, STRING]
 					do
-						if source_archetype.has_translations then
-							Result := translation_details.author
+						if attached translation_details as att_td then
+							Result := att_td.author
 						end
 					end,
-				agent (a_key, a_val: STRING) do if source_archetype.has_translations then translation_details.put_author_item (a_key, a_val) end end,
-				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
+				agent (a_key, a_val: STRING) do if attached translation_details as att_td then att_td.put_author_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached translation_details as att_td then att_td.remove_author_item (a_key) end end,
 				undo_redo_chain, 0, min_entry_control_width_in_chars, False, Void)
 			gui_controls.extend (evx_trans_author)
 			evx_trans_languages_combo.add_linked_control (evx_trans_author)
@@ -263,9 +263,9 @@ feature {NONE} -- Initialisation
 
 			-- translator accreditation - multi-line text field
 			create evx_trans_accreditation_text.make_linked (get_text (ec_accreditation_label_text),
-				agent :detachable STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
-				agent (a_str: STRING) do translation_details.set_accreditation (a_str) end,
-				agent do translation_details.clear_accreditation end,
+				agent : detachable STRING do if attached translation_details as att_td then Result := att_td.accreditation end end,
+				agent (a_str: STRING) do if attached translation_details as att_td then att_td.set_accreditation (a_str) end end,
+				agent do if attached translation_details as att_td then att_td.clear_accreditation end end,
 				undo_redo_chain, 0, 0, False)
 			gui_controls.extend (evx_trans_accreditation_text)
 			ev_trans_author_accreditation_vbox.extend (evx_trans_accreditation_text.ev_root_container)
@@ -273,9 +273,9 @@ feature {NONE} -- Initialisation
 
 			-- translator other_details - Hash
 			create evx_trans_other_details.make_linked (get_text (ec_translator_other_details_label_text),
-				agent :detachable HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
-				agent (a_key, a_val: STRING) do if source_archetype.has_translations then translation_details.put_other_details_item (a_key, a_val) end end,
-				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
+				agent : detachable HASH_TABLE [STRING, STRING] do if attached translation_details as att_td then Result := att_td.other_details end end,
+				agent (a_key, a_val: STRING) do if attached translation_details as att_td then att_td.put_other_details_item (a_key, a_val) end end,
+				agent (a_key: STRING) do if attached translation_details as att_td then att_td.remove_other_details_item (a_key) end end,
 				undo_redo_chain, 0, min_entry_control_width_in_chars, False, Void)
 			gui_controls.extend (evx_trans_other_details)
 			evx_trans_languages_combo.add_linked_control (evx_trans_other_details)
@@ -295,7 +295,7 @@ feature {NONE} -- Initialisation
 			-- purpose - mutli-line String
 			create evx_purpose_text.make_linked (get_text (ec_purpose_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.purpose end end,
-				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
+				agent (a_str: STRING) do if attached description_details as dd then dd.set_purpose (a_str) end end,
 				Void, undo_redo_chain, 3, 0, True)
 			gui_controls.extend (evx_purpose_text)
 			evx_details_frame.extend (evx_purpose_text.ev_root_container, False)
@@ -303,8 +303,8 @@ feature {NONE} -- Initialisation
 			-- use - mutli-line String
 			create evx_use_text.make_linked (get_text (ec_use_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.use end end,
-				agent (a_str: STRING) do description_details.set_use (a_str) end,
-				agent do description_details.clear_use end,
+				agent (a_str: STRING) do if attached description_details as dd then dd.set_use (a_str) end end,
+				agent do if attached description_details as dd then dd.clear_use end end,
 				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_use_text)
 			evx_details_frame.extend (evx_use_text.ev_root_container, True)
@@ -312,8 +312,8 @@ feature {NONE} -- Initialisation
 			-- misuse - mutli-line String
 			create evx_misuse_text.make_linked (get_text (ec_misuse_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.misuse end end,
-				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
-				agent do description_details.clear_misuse end,
+				agent (a_str: STRING) do if attached description_details as dd then dd.set_misuse (a_str) end end,
+				agent do if attached description_details as dd then dd.clear_misuse end end,
 				undo_redo_chain, 0, 0, True)
 			gui_controls.extend (evx_misuse_text)
 			evx_details_frame.extend (evx_misuse_text.ev_root_container, True)
@@ -321,8 +321,8 @@ feature {NONE} -- Initialisation
 			-- keywords list
 			create evx_keywords_list.make_linked (get_text (ec_keywords_label_text),
 				agent :detachable DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
-				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
-				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
+				agent (a_str: STRING; i: INTEGER) do if attached description_details as dd then dd.add_keyword (a_str, i) end end,
+				agent (a_str: STRING) do if attached description_details as dd then dd.remove_keyword (a_str) end end,
 				undo_redo_chain, 0, 25, False)
 			gui_controls.extend (evx_keywords_list)
 			ev_details_hbox.extend (evx_keywords_list.ev_root_container)

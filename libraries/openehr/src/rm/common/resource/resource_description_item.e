@@ -87,7 +87,7 @@ feature -- Access
 			-- i.e. contexts in which it should not be used.
 
 	original_resource_uri: detachable HASH_TABLE [STRING, STRING]
-			-- URI of precursor resource of archetype, e.g. natural language
+			-- URIs of precursor resource of archetype, e.g. natural language
 			-- document, semi-formal description
 
 	other_details:  detachable HASH_TABLE [STRING, STRING]
@@ -97,7 +97,17 @@ feature -- Status Report
 
 	has_keyword (a_keyword: STRING): BOOLEAN
 		do
-			Result := attached keywords and then keywords.has (a_keyword)
+			Result := attached keywords as att_kw and then att_kw.has (a_keyword)
+		end
+
+	has_original_resource_uri (a_key: STRING): BOOLEAN
+		do
+			Result := attached original_resource_uri as att_oru and then att_oru.has (a_key)
+		end
+
+	has_other_details (a_key: STRING): BOOLEAN
+		do
+			Result := attached other_details as att_od and then att_od.has (a_key)
 		end
 
 feature -- Modification
@@ -152,21 +162,26 @@ feature -- Modification
 			-- add a_keyword to `keywords' at position `i', or end if i is 0
 		require
 			Keyword_valid: not has_keyword (a_keyword)
-			Valid_max_index: attached keywords implies i <= keywords.count
+			Valid_max_index: attached keywords as att_kw implies i <= att_kw.count
+		local
+			kw: attached like keywords
 		do
-			if not attached keywords then
-				create keywords.make(0)
-				keywords.compare_objects
+			if attached keywords as att_kw then
+				kw := att_kw
+			else
+				create kw.make(0)
+				kw.compare_objects
+				keywords := kw
 			end
 			if i > 0 then
-				keywords.go_i_th (i)
-				keywords.put_left (a_keyword)
+				kw.go_i_th (i)
+				kw.put_left (a_keyword)
 			else
-				keywords.extend (a_keyword)
+				kw.extend (a_keyword)
 			end
 		ensure
-			Keyword_added: keywords.has (a_keyword)
-			Insert_position: i > 0 implies keywords.i_th (i) = a_keyword
+			Keyword_added: has_keyword (a_keyword)
+			Insert_position: i > 0 implies attached keywords as att_kw and then att_kw.i_th (i) = a_keyword
 		end
 
 	remove_keyword (a_keyword: STRING)
@@ -174,7 +189,9 @@ feature -- Modification
 		require
 			Contributor_valid: has_keyword (a_keyword)
 		do
-			keywords.prune (a_keyword)
+			if attached keywords as att_kw then
+				att_kw.prune (a_keyword)
+			end
 		ensure
 			Keyword_removed: not has_keyword (a_keyword)
 		end
@@ -184,26 +201,33 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
+		local
+			od: attached like other_details
 		do
-			if other_details = Void then
-				create other_details.make(0)
+			if attached other_details as att_od then
+				od := att_od
+			else
+				create od.make(0)
+				other_details := od
 			end
-			other_details.force (a_value, a_key)
+			od.force (a_value, a_key)
 		ensure
-			Other_details_set: other_details.item(a_key) = a_value
+			Other_details_set: attached other_details as att_od and then attached att_od.item(a_key) as att_od_item and then att_od_item = a_value
 		end
 
 	remove_other_details_item (a_key: STRING)
 			-- remove item with key `a_key' from other_details
 		require
-			Key_valid: other_details.has (a_key)
+			Key_valid: has_other_details (a_key)
 		do
-			other_details.remove (a_key)
-			if other_details.is_empty then
-				other_details := Void
+			if attached other_details as att_od then
+				att_od.remove (a_key)
+				if att_od.is_empty then
+					other_details := Void
+				end
 			end
 		ensure
-			old other_details.count = 1 implies other_details = Void
+			attached old other_details as att_old_od and then att_old_od.count = 1 implies other_details = Void
 		end
 
 	put_original_resource_uri_item (a_key, a_value: STRING)
@@ -211,27 +235,33 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
+		local
+			oru: attached like original_resource_uri
 		do
-			if original_resource_uri = Void then
-				create original_resource_uri.make (0)
+			if attached original_resource_uri as att_oru then
+				oru := att_oru
+			else
+				create oru.make (0)
+				original_resource_uri := oru
 			end
-			-- original_resource_uri.put(create {URI}.make_from_string(a_value), a_key)
-			original_resource_uri.put (a_value, a_key)
+			oru.put (a_value, a_key)
 		ensure
-			Original_resource_uri_added: original_resource_uri.item (a_key) = a_value
+			Original_resource_uri_added: attached original_resource_uri as att_oru and then attached att_oru.item (a_key) as att_oru_item and then att_oru_item = a_value
 		end
 
 	remove_original_resource_uri_item (a_key: STRING)
 			-- remove item with key `a_key' from `original_resource_uri'
 		require
-			Key_valid: original_resource_uri.has (a_key)
+			Key_valid: has_original_resource_uri (a_key)
 		do
-			original_resource_uri.remove (a_key)
-			if other_details.is_empty then
-				original_resource_uri := Void
+			if attached original_resource_uri as att_oru then
+				att_oru.remove (a_key)
+				if att_oru.is_empty then
+					original_resource_uri := Void
+				end
 			end
 		ensure
-			old original_resource_uri.count = 1 implies original_resource_uri = Void
+			attached old original_resource_uri as att_old_oru and then att_old_oru.count = 1 implies original_resource_uri = Void
 		end
 
 feature -- Copying
@@ -291,8 +321,8 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	language_valid: code_set (code_set_id_languages).has(language)
 	purpose_valid: not purpose.is_empty
-	use_valid: use /= Void implies not use.is_empty
-	misuse_valid: misuse /= Void implies not misuse.is_empty
+	use_valid: attached use as att_use implies not att_use.is_empty
+	misuse_valid: attached misuse as att_misuse implies not att_misuse.is_empty
 
 end
 

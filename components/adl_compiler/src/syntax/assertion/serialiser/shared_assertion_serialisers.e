@@ -23,12 +23,14 @@ feature -- Access
 			end
 		end
 
-	assertion_serialiser_for_format (a_format: STRING): detachable ASSERTION_SERIALISER
+	assertion_serialiser_for_format (a_format: STRING): ASSERTION_SERIALISER
 			-- get a specific ADL serialiser
 		require
-			Format_valid: has_assertion_serialiser_format(a_format)
+			Format_valid: has_assertion_serialiser_format (a_format)
 		do
-			Result := assertion_serialisers.item (a_format)
+			check attached assertion_serialisers.item (a_format) as att_ser then
+				Result := att_ser
+			end
 		end
 
 feature -- Status Report

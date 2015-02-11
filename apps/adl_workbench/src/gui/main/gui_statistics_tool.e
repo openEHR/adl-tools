@@ -65,11 +65,11 @@ feature {NONE} -- Implementation
 				<<get_msg (ec_summary_list_metric_col_title, Void),
 				get_msg (ec_summary_list_total_col_title, Void)>>
 			)
-			populate_ev_multi_list_from_hash (ev_stats_mlist, source.metrics)
+			populate_ev_multi_list_from_hash (ev_stats_mlist, safe_source.metrics)
 			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)
 
 			-- do terminology bindings statistics
-			across source.terminology_bindings_statistics as stats_csr loop
+			across safe_source.terminology_bindings_statistics as stats_csr loop
 				from ev_term_bindings_info_list.start until ev_term_bindings_info_list.off or
 					ev_term_bindings_info_list.item.first.is_equal (stats_csr.key)
 				loop

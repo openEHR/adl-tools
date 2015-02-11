@@ -165,14 +165,14 @@ feature -- Comparison
 			-- now remove inherited subtrees
 			across inherited_subtree_list as subtree_csr loop
 				if attached {C_OBJECT} subtree_csr.item as co then
-					if attached co.parent then
-						co.parent.remove_child (co)
+					if attached co.parent as att_co_parent then
+						att_co_parent.remove_child (co)
 					else
 						-- co must be the parent, which means the entire definition is a copy of that from
 						-- the parent archetype
 					end
-				elseif attached {C_ATTRIBUTE} subtree_csr.item as c_attr then
-					c_attr.parent.remove_attribute (c_attr)
+				elseif attached {C_ATTRIBUTE} subtree_csr.item as c_attr and then attached c_attr.parent as att_parent_co then
+					att_parent_co.remove_attribute (c_attr)
 				end
 			end
 
@@ -288,7 +288,7 @@ feature {NONE} -- Implementation
 				-- and its flat ancestor counterpart CCO has attributes. We use the `is_c_complex_object_type' to make sure both objects really
 				-- are C_COMPLEX_OBJECTs to discount them being C_ARCHETYPE_ROOTs
 				if node_congruent and is_c_complex_object_type (co_child) and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf and then
-					(co_child.is_root or else co_child.parent.is_path_compressible and cco_pf.has_attributes)
+					(not attached co_child.parent as att_co_parent or else att_co_parent.is_path_compressible and cco_pf.has_attributes)
 				then
 					co_child.set_is_path_compressible
 				end

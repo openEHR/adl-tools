@@ -59,7 +59,7 @@ feature -- Status Report
 	has_validated_selected_archetype: BOOLEAN
 			-- Has a valid archetype been selected?
 		do
-			Result := attached selected_archetype and then selected_archetype.is_valid
+			Result := attached selected_archetype as att_sel_arch and then att_sel_arch.is_valid
 		end
 
 	has_selected_class: BOOLEAN

@@ -71,14 +71,15 @@ feature -- Modification
 	add_new_translation (a_lang: STRING)
 			-- add a blank translation object for a_lang
 		local
-			a_trans: TRANSLATION_DETAILS
+			trans_tbl: attached like translations
 		do
-			if not attached translations then
-				create translations.make(0)
+			if attached translations as att_trans_tbl then
+				trans_tbl := att_trans_tbl
+			else
+				create trans_tbl.make(0)
+				translations := trans_tbl
 			end
-
-			create a_trans.make_from_language(a_lang)
-			translations.put (a_trans, a_lang)
+			trans_tbl.put (create {TRANSLATION_DETAILS}.make_from_language (a_lang), a_lang)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

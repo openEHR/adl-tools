@@ -88,10 +88,10 @@ feature -- Parsing
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
-				elseif not dt_object_converter.errors.has_errors and
-					attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
-				then
-					orig_lang_trans := lt
+				elseif not dt_object_converter.errors.has_errors and attached language_context.tree as att_tree then
+					if attached {LANGUAGE_TRANSLATIONS} att_tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt then
+						orig_lang_trans := lt
+					end
 				else
 					errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
 					errors.append (dt_object_converter.errors)
@@ -179,10 +179,10 @@ feature -- Parsing
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
-						elseif not dt_object_converter.errors.has_errors and
-							attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann
-						then
-							annots := res_ann
+						elseif not dt_object_converter.errors.has_errors and attached annotations_context.tree as att_tree then
+							if attached {RESOURCE_ANNOTATIONS} att_tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann then
+								annots := res_ann
+							end
 						else
 							errors.add_error (ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
 							errors.append (dt_object_converter.errors)
@@ -314,8 +314,8 @@ feature -- Serialisation
 			-- annotations section
 			create annot_serialised.make_empty
 			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
-				if auth_arch.has_annotations then
-					annotations_context.set_tree (auth_arch.annotations.dt_representation)
+				if attached auth_arch.annotations as att_ann then
+					annotations_context.set_tree (att_ann.dt_representation)
 					annotations_context.serialise (a_format, False, False)
 					annot_serialised := annotations_context.serialised
 				end

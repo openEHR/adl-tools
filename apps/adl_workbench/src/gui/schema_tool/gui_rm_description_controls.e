@@ -92,22 +92,22 @@ feature {NONE} -- Implementation
 
 			create gli.make_with_text ("rm_publisher")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (source.rm_publisher)
+			create gli.make_with_text (safe_source.rm_publisher)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("schema_name")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (source.schema_name)
+			create gli.make_with_text (safe_source.schema_name)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("rm_release")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (source.rm_release)
+			create gli.make_with_text (safe_source.rm_release)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("schema_id")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (source.schema_id)
+			create gli.make_with_text (safe_source.schema_id)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			-- schema documentation attributes
@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 
 			create gli.make_with_text ("schema_author")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (source.schema_author)
+			create gli.make_with_text (safe_source.schema_author)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("schema_contributors")
@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 
 			create gli.make_with_text ("schema_lifecycle_state")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (source.schema_lifecycle_state)
+			create gli.make_with_text (safe_source.schema_lifecycle_state)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("schema_description")

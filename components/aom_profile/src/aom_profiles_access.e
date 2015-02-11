@@ -121,14 +121,14 @@ feature -- Validation
 						check attached prof_descs_csr.item.profile as prf then
 							a_profile := prf
 						end
-						if not profiles.has (a_profile.profile_name) then
+						if attached profiles.item (a_profile.profile_name) as att_prof then
+							add_error (ec_aom_profile_duplicate_found, <<a_profile.file_path, att_prof.file_path>>)
+						else
 							profiles.put (a_profile, a_profile.profile_name)
 							profile_descriptors.put (prof_descs_csr.item, a_profile.profile_name)
 							across a_profile.rm_schema_ids as schema_ids_csr loop
 								profiles_for_rm_schemas.put (a_profile, schema_ids_csr.item)
 							end
-						else
-							add_error (ec_aom_profile_duplicate_found, <<a_profile.file_path, profiles.item (a_profile.profile_name).file_path>>)
 						end
 					else
 						merge_errors (prof_descs_csr.item.errors)

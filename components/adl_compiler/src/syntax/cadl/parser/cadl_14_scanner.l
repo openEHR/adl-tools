@@ -557,19 +557,19 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 
 				odin_parser_error.wipe_out
 				odin_parser.execute (str_, source_start_line + in_lineno)
-				if not odin_parser.syntax_error then
-					if odin_parser.output.is_typed then
-						tid := dynamic_type_from_string(odin_parser.output.im_type_name)
+				if not odin_parser.syntax_error and attached odin_parser.output as att_output then
+					if att_output.is_typed then
+						tid := dynamic_type_from_string (att_output.im_type_name)
 						if tid >= 0 then
-							if attached {C_DV_QUANTITY} odin_parser.output.as_object(tid, Void) as cdt then
+							if attached {C_DV_QUANTITY} att_output.as_object(tid, Void) as cdt then
 								last_c_dv_quantity_value := cdt
 								last_token := V_C_DV_QUANTITY
 							else
-								odin_parser_error.add_error (ec_VDTCV, <<odin_parser.output.im_type_name>>, "")
+								odin_parser_error.add_error (ec_VDTCV, <<att_output.im_type_name>>, "")
 								last_token := ERR_C_DV_QUANTITY
 							end
 						else
-							odin_parser_error.add_error (ec_VDTTU, <<odin_parser.output.im_type_name>>, "")
+							odin_parser_error.add_error (ec_VDTTU, <<att_output.im_type_name>>, "")
 							last_token := ERR_C_DV_QUANTITY
 						end
 					else

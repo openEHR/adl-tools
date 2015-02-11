@@ -22,21 +22,23 @@ feature -- Initialisation
 
 	make (a_cco: C_COMPLEX_OBJECT)
 		local
-			attr_tuples: ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
+			p_c_attr_tuples: ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
+			p_c_attr_list: ARRAYED_LIST [P_C_ATTRIBUTE]
 		do
 			precursor (a_cco)
 			if a_cco.has_attributes then
-				create attributes.make (0)
+				create p_c_attr_list.make (0)
+				attributes := p_c_attr_list
 				across a_cco.attributes as ca_csr loop
-					attributes.extend (create {P_C_ATTRIBUTE}.make (ca_csr.item))
+					p_c_attr_list.extend (create {P_C_ATTRIBUTE}.make (ca_csr.item))
 				end
 
-				if a_cco.has_attribute_tuples then
-					create attr_tuples.make (0)
-					across a_cco.attribute_tuples as ca_tuple_csr loop
-						attr_tuples.extend (create {P_C_ATTRIBUTE_TUPLE}.make (ca_tuple_csr.item))
+				if attached a_cco.attribute_tuples as att_attr_tuples then
+					create p_c_attr_tuples.make (0)
+					across att_attr_tuples as ca_tuple_csr loop
+						p_c_attr_tuples.extend (create {P_C_ATTRIBUTE_TUPLE}.make (ca_tuple_csr.item))
 					end
-					attribute_tuples := attr_tuples
+					attribute_tuples := p_c_attr_tuples
 				end
 			end
 		end

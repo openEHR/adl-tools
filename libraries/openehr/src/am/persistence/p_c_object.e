@@ -28,8 +28,8 @@ feature -- Initialisation
 		do
 			rm_type_name := a_co.rm_type_name
 			node_id := a_co.node_id
-			if attached a_co.occurrences then
-				occurrences := a_co.occurrences.as_string
+			if attached a_co.occurrences as att_occ then
+				occurrences := att_occ.as_string
 			end
 			sibling_order := a_co.sibling_order
 		end

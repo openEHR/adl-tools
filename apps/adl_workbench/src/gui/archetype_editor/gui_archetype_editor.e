@@ -115,11 +115,11 @@ feature {NONE} -- Implementation
 
 	do_commit
 		do
-			source.commit
-			gui_agents.refresh_archetype_viewers_agent.call ([source.id.physical_id])
+			safe_source.commit
+			gui_agents.call_refresh_archetype_viewers_agent (source.id.physical_id)
 			if attached auth_source as att_source then
-				gui_agents.console_tool_append_agent.call ([get_msg (ec_arch_editor_commit_notification,
-					<<att_source.id.physical_id, att_source.source_file_path>>)])
+				gui_agents.call_console_tool_append_agent (get_msg (ec_arch_editor_commit_notification,
+					<<att_source.id.physical_id, att_source.source_file_path>>))
 			end
 		end
 

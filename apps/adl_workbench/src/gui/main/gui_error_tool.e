@@ -314,8 +314,8 @@ feature {NONE} -- Implementation
 				until
 					i = err_type
 				loop
-					if categories [i] /= Void then
-						row_idx := categories [i].index
+					if attached categories [i] as att_cat then
+						row_idx := att_cat.index
 					end
 
 					i := i - 1
@@ -354,13 +354,13 @@ feature {NONE} -- Implementation
 						row_idx := 0
 						cat_row := row.parent_row
 
-						if cat_row /= categories [ara.compiler_error_type] then
-							if cat_row.subrow_count > 1 then
+						if attached cat_row as att_cat_row and then att_cat_row /= categories [ara.compiler_error_type] then
+							if att_cat_row.subrow_count > 1 then
 								ev_grid.remove_row (row.index)
 							else
-								ev_grid.remove_row (cat_row.index)
+								ev_grid.remove_row (att_cat_row.index)
 
-								if attached {INTEGER_REF} cat_row.data as i then
+								if attached {INTEGER_REF} att_cat_row.data as i then
 									categories [i.item] := Void
 								end
 							end
@@ -408,7 +408,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_LIB_ARCHETYPE} ev_ti.data as aca then
-				gui_agents.select_archetype_agent.call ([aca])
+				gui_agents.call_select_archetype_agent (aca)
 			end
 		end
 
@@ -416,7 +416,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_LIB_ARCHETYPE} ev_ti.data as aca then
-				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
+				gui_agents.call_select_archetype_in_new_tool_agent (aca)
 			end
 		end
 

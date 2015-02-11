@@ -35,8 +35,8 @@ feature -- Factory
 	create_archetype: detachable like artefact_class_type
 		do
 			Result := precursor
-			if attached overlays as att_overlays then
-				Result.set_overlays (att_overlays)
+			if attached Result as att_p_tpl and attached overlays as att_overlays then
+				att_p_tpl.set_overlays (att_overlays)
 			end
 		end
 

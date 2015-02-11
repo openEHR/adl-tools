@@ -63,17 +63,18 @@ feature -- Definitions
 			Result := get_text (ec_arch_stats_ac_code_bindings_text)
 		end
 
-	Archetype_metric_names: ARRAY [STRING]
+	Archetype_metric_names: ARRAYED_LIST [STRING]
 		once
-			Result := <<Object_node_count,
-				Archetypable_node_count,
-				Archetype_data_value_node_count,
-				Id_code_count,
-				At_code_count,
-				Ac_code_count,
-				At_code_bindings_count,
-				Ac_code_bindings_count
-			>>
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (Object_node_count)
+			Result.extend (Archetypable_node_count)
+			Result.extend (Archetype_data_value_node_count)
+			Result.extend (Id_code_count)
+			Result.extend (At_code_count)
+			Result.extend (Ac_code_count)
+			Result.extend (At_code_bindings_count)
+			Result.extend (Ac_code_bindings_count)
 		end
 
 	Total_archetype_count: STRING

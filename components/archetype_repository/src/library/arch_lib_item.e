@@ -148,7 +148,9 @@ feature -- Access
 	new_cursor: ITERATION_CURSOR [like children.item]
 			-- Fresh cursor associated with current structure
 		do
-			Result := children.new_cursor
+			check attached children as att_children then
+				Result := att_children.new_cursor
+			end
 		end
 
 feature -- Status Report
@@ -268,8 +270,8 @@ feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
 				end
 
 				-- aggregate child counts and local count
-				if has_children then
-					across children as child_csr loop
+				if attached children as att_children then
+					across att_children as child_csr loop
 						-- FIXME: the following is technically naughty, since it creates a dependency on a descendant type, but
 						-- the code reduction seems worth it
 						across Result as subtree_counts_csr loop

@@ -33,9 +33,7 @@ feature -- Access
 		require
 			is_populated
 		do
-			check attached source as att_source then
-				Result := att_source.select_archetype (differential_view, editing_enabled)
-			end
+			Result := safe_source.select_archetype (differential_view, editing_enabled)
 		end
 
 	source_ui_graph: ARCHETYPE_UI_GRAPH_ROOT
@@ -77,7 +75,7 @@ feature -- Status Report
 
 	can_repopulate: BOOLEAN
 		do
-			Result := is_populated and source.is_valid
+			Result := attached source as src and then src.is_valid
 		end
 
 feature -- Commands

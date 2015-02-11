@@ -31,6 +31,16 @@ feature -- Access
 	source: detachable ANY
 			-- source object to which this tool is targetted
 
+	safe_source: attached like source
+			-- attached form for convenient use when populated
+		require
+			is_populated
+		do
+			check attached source as att_source then
+				Result := att_source
+			end
+		end
+
 	ev_root_container: EV_CONTAINER
 		deferred
 		end
@@ -55,7 +65,10 @@ feature -- Access
 		deferred
 		end
 
-	selection_history: detachable SELECTION_HISTORY
+	selection_history: SELECTION_HISTORY
+		attribute
+			create Result.make
+		end
 
 	selected_item: detachable IDENTIFIED_TOOL_ARTEFACT
 		require
@@ -249,14 +262,19 @@ feature {GUI_TOOL} -- Implementation
 	add_sub_tool (a_tool: GUI_TOOL)
 		require
 			not has_sub_tool (a_tool)
+		local
+			tools_list: LIST [GUI_TOOL]
 		do
-			if not attached sub_tools then
-				create {ARRAYED_LIST [GUI_TOOL]} sub_tools.make (0)
+			if attached sub_tools as att_sub_tools then
+				tools_list := att_sub_tools
+			else
+				create {ARRAYED_LIST [GUI_TOOL]} tools_list.make (0)
+				sub_tools := tools_list
 			end
-			sub_tools.extend (a_tool)
+			tools_list.extend (a_tool)
 			a_tool.set_parent_tool (Current)
-			if attached selection_history then
-				a_tool.set_selection_history (selection_history)
+			if attached selection_history as sel_hist then
+				a_tool.set_selection_history (sel_hist)
 			end
 		end
 

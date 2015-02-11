@@ -11,7 +11,7 @@ note
 class
 	GUI_AGENTS
 
-feature -- Access
+feature {NONE} -- Access
 
 	history_update_agent: detachable PROCEDURE [ANY, TUPLE]
 			-- agent to update history toolbar (left & right arrow controls)
@@ -22,7 +22,9 @@ feature -- Access
 	console_tool_append_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent to update global console
 
-	select_archetype_agent, select_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
+	select_archetype_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
+
+	select_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
 
 	edit_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
 
@@ -49,6 +51,138 @@ feature -- Access
 
 	close_test_tool_agent: detachable PROCEDURE [ANY, TUPLE]
 			-- agent to close test tool
+
+feature -- Command
+
+	call_history_update_agent
+		do
+			if attached history_update_agent as att_agt then
+				att_agt.call ([])
+			end
+		end
+
+	call_history_set_active_agent (a_gui_tool: GUI_TOOL)
+			-- agent to set a GUI_TOOL as active for history, then update history toolbar (left & right arrow controls)
+		do
+			if attached history_set_active_agent as att_agt then
+				att_agt.call ([a_gui_tool])
+			end
+		end
+
+	call_console_tool_append_agent (a_str: STRING)
+		do
+			if attached console_tool_append_agent as att_agt then
+				att_agt.call ([a_str])
+			end
+		end
+
+	call_select_archetype_agent (ala: ARCH_LIB_ARCHETYPE)
+		do
+			if attached select_archetype_agent as att_agt then
+				att_agt.call ([ala])
+			end
+		end
+
+	call_select_archetype_in_new_tool_agent (ala: ARCH_LIB_ARCHETYPE)
+		do
+			if attached select_archetype_in_new_tool_agent as att_agt then
+				att_agt.call ([ala])
+			end
+		end
+
+	call_edit_archetype_in_new_tool_agent (ala: ARCH_LIB_ARCHETYPE)
+		do
+			if attached edit_archetype_in_new_tool_agent as att_agt then
+				att_agt.call ([ala])
+			end
+		end
+
+	call_archetype_has_editor_agent (ala: ARCH_LIB_ARCHETYPE): BOOLEAN
+		do
+			if attached archetype_has_editor_agent as att_agt then
+				Result := att_agt.item ([ala])
+			end
+		end
+
+	call_select_class_agent (a_class_def: BMM_CLASS)
+		do
+			if attached select_class_agent as att_agt then
+				att_agt.call ([a_class_def])
+			end
+		end
+
+	call_select_class_in_new_tool_agent (a_class_def: BMM_CLASS)
+		do
+			if attached select_class_in_new_tool_agent as att_agt then
+				att_agt.call ([a_class_def])
+			end
+		end
+
+	call_select_rm_agent (a_schema: BMM_SCHEMA)
+		do
+			if attached select_rm_agent as att_agt then
+				att_agt.call ([a_schema])
+			end
+		end
+
+	call_select_rm_in_new_tool_agent (a_schema: BMM_SCHEMA)
+		do
+			if attached select_rm_in_new_tool_agent as att_agt then
+				att_agt.call ([a_schema])
+			end
+		end
+
+	call_select_class_in_rm_schema_tool_agent (a_str: STRING)
+			-- agent to update global console
+		do
+			if attached select_class_in_rm_schema_tool_agent as att_agt then
+				att_agt.call ([a_str])
+			end
+		end
+
+	call_update_all_tools_rm_icons_setting_agent
+		do
+			if attached update_all_tools_rm_icons_setting_agent as att_agt then
+				att_agt.call ([])
+			end
+		end
+
+	call_refresh_archetype_viewers_agent (archetype_id: READABLE_STRING_8)
+		do
+			if attached refresh_archetype_viewers_agent as att_agt then
+				att_agt.call ([archetype_id])
+			end
+		end
+
+	call_refresh_archetype_editors_agent (archetype_id: READABLE_STRING_8)
+		do
+			if attached refresh_archetype_editors_agent as att_agt then
+				att_agt.call ([archetype_id])
+			end
+		end
+
+	call_select_archetype_from_gui_data_agent (ui_control: EV_ANY)
+		do
+			if attached select_archetype_from_gui_data_agent as att_agt then
+				att_agt.call ([ui_control])
+			end
+		end
+
+	call_show_tool_with_artefact_agent (an_id: STRING): BOOLEAN
+			-- if there is a live tool with artefact with id = `an_id' then show it and return True
+		do
+			if attached show_tool_with_artefact_agent as att_agt then
+				Result := att_agt.item ([an_id])
+			end
+		end
+
+	call_close_test_tool_agent
+			-- agent to close test tool
+		do
+			if attached close_test_tool_agent as att_agt then
+				att_agt.call ([])
+			end
+		end
 
 feature -- Modification
 

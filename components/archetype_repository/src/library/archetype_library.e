@@ -271,10 +271,8 @@ feature -- Modification
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		do
-			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_specialised (an_archetype_id, parent_diff_arch,
+			put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_specialised (an_archetype_id, parent_aca.safe_differential_archetype,
 					library_access.source, in_dir_path))
-			end
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
 		end
@@ -285,10 +283,8 @@ feature -- Modification
 			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		do
-			check attached parent_aca.differential_archetype as parent_diff_arch then
-				put_new_archetype (create {ARCH_LIB_TEMPLATE}.make_new_specialised (an_archetype_id, parent_diff_arch,
+			put_new_archetype (create {ARCH_LIB_TEMPLATE}.make_new_specialised (an_archetype_id, parent_aca.safe_differential_archetype,
 					library_access.source, in_dir_path))
-			end
 		ensure
 			has_item_with_id (an_archetype_id.physical_id)
 		end
@@ -364,13 +360,15 @@ feature -- Modification
 				end
 			end
 
-			aca.parent.remove_child (aca)
-			archetype_parent_item (aca).put_child (aca)
-			aca.clear_old_semantic_parent_name
+			if attached aca.parent as old_aca_parent and attached archetype_parent_item (aca) as new_aca_parent then
+				old_aca_parent.remove_child (aca)
+				new_aca_parent.put_child (aca)
+				aca.clear_old_semantic_parent_name
+			end
 		ensure
 			Node_added_to_archetype_index: has_archetype_with_id (aca.id.physical_id)
 			Node_added_to_ontology_index: has_item_with_id (aca.id.physical_id)
-			Node_parent_set: aca.parent.qualified_name.is_equal (aca.semantic_parent_id)
+			Node_parent_set: attached aca.parent as aca_parent implies aca_parent.qualified_name.is_equal (aca.semantic_parent_id)
 		end
 
 	remove_artefact (aca: ARCH_LIB_ARCHETYPE)
@@ -650,7 +648,7 @@ feature {NONE} -- Statistical Report
 	gather_statistics (aca: ARCH_LIB_ARCHETYPE)
 			-- Update statistics counters from `aca'
 		local
-			terminologies: ARRAYED_LIST [STRING]
+			stats: ARRAYED_LIST[STRING]
 		do
 			if aca.is_specialised then
 				metrics_cache.force (metrics_cache.item (specialised_archetype_count) + 1, specialised_archetype_count)
@@ -665,20 +663,23 @@ feature {NONE} -- Statistical Report
 			-- RM stats
 			if aca.is_valid then
 				metrics_cache.force (metrics_cache.item (valid_archetype_count) + 1, valid_archetype_count)
-
-				terminologies := aca.differential_archetype.terminology.terminologies_available
-				across terminologies as terminologies_csr loop
-					if not terminology_bindings_statistics_cache.has (terminologies_csr.item) then
-						terminology_bindings_statistics_cache.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies_csr.item)
+				across aca.safe_differential_archetype.terminology.terminologies_available as terminologies_csr loop
+					if attached terminology_bindings_statistics_cache.item (terminologies_csr.item) as att_stats then
+						stats := att_stats
+					else
+						create stats.make(0)
+						terminology_bindings_statistics_cache.put (stats, terminologies_csr.item)
 					end
-					terminology_bindings_statistics_cache.item (terminologies_csr.item).extend (aca.qualified_name)
+					stats.extend (aca.qualified_name)
 				end
 
 				aca.generate_statistics (True)
-				if statistics_cache.has (aca.rm_schema.schema_id) then
-					statistics_cache.item (aca.rm_schema.schema_id).merge (aca.statistical_analyser.stats)
-				else
-					statistics_cache.put (aca.statistical_analyser.stats.duplicate, aca.rm_schema.schema_id)
+				if attached aca.statistical_analyser as att_sa then
+					if attached statistics_cache.item (aca.rm_schema.schema_id) as att_item then
+						att_item.merge (att_sa.stats)
+					else
+						statistics_cache.put (att_sa.stats.duplicate, aca.rm_schema.schema_id)
+					end
 				end
 			end
 		end

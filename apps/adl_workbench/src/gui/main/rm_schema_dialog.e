@@ -304,7 +304,7 @@ feature {NONE} -- Implementation
 			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
-	add_schema_publisher_grid_rows (a_schema_desc: SCHEMA_DESCRIPTOR; parent_row: detachable EV_GRID_ROW)
+	add_schema_publisher_grid_rows (a_schema_desc: SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW)
 			-- add rows for `schema_id' and its children, recursively
 		local
 			gli: EV_GRID_LABEL_ITEM

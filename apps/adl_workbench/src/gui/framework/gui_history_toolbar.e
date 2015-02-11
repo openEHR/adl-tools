@@ -128,9 +128,9 @@ feature -- Events
 	on_back
 			-- Go back to the last archetype previously selected.
 		do
-			if has_active_tool and then active_tool.is_selection_history_enabled and then active_tool.selection_history.has_previous then
-				active_tool.selection_history.back
-				active_tool.go_to_selected_item
+			if attached active_tool as att_tool and then att_tool.is_selection_history_enabled and then att_tool.selection_history.has_previous then
+				att_tool.selection_history.back
+				att_tool.go_to_selected_item
 				populate
 			end
 		end
@@ -138,9 +138,9 @@ feature -- Events
 	on_forward
 			-- Go forth to the next archetype previously selected.
 		do
-			if has_active_tool and then active_tool.is_selection_history_enabled and then active_tool.selection_history.has_next then
-				active_tool.selection_history.forth
-				active_tool.go_to_selected_item
+			if attached active_tool as att_tool and then att_tool.is_selection_history_enabled and then att_tool.selection_history.has_next then
+				att_tool.selection_history.forth
+				att_tool.go_to_selected_item
 				populate
 			end
 		end
@@ -153,7 +153,7 @@ feature -- Events
 
 	populate
 		do
-			if has_active_tool and then active_tool.selection_history.has_previous then
+			if attached active_tool as att_tool and then att_tool.selection_history.has_previous then
 				evx_menu_bar.enable_menu_items (<<"History>Back">>)
 				back_button.enable_sensitive
 			else
@@ -161,7 +161,7 @@ feature -- Events
 				back_button.disable_sensitive
 			end
 
-			if has_active_tool and then active_tool.selection_history.has_next then
+			if attached active_tool as att_tool and then att_tool.selection_history.has_next then
 				evx_menu_bar.enable_menu_items (<<"History>Forward">>)
 				forward_button.enable_sensitive
 			else
@@ -179,9 +179,11 @@ feature {MAIN_WINDOW} -- Widgets
 
 	go_to_history_item (an_id: STRING)
 		do
-			active_tool.selection_history.go_to (an_id)
-			active_tool.go_to_selected_item
-			populate
+			if attached active_tool as att_tool then
+				att_tool.selection_history.go_to (an_id)
+				att_tool.go_to_selected_item
+				populate
+			end
 		end
 
 	evx_menu_bar: EVX_MENU_BAR

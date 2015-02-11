@@ -271,7 +271,7 @@ feature {NONE} -- Events
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			selected_language := ev_language_combo.text.as_string_8
-			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool then
+			if attached ev_notebook.selected_item as att_sel_item and then attached {GUI_ARCHETYPE_TARGETTED_TOOL} att_sel_item.data as arch_tool then
 				arch_tool.repopulate_with_language (selected_language)
 			end
 		end
@@ -299,15 +299,15 @@ feature {NONE} -- Implementation
 			select_view (differential_view)
 
 			-- populate parts of archetype_hrid
-			ev_archetype_hrid_namespace.set_text (source.id.namespace_string)
-			ev_archetype_hrid_qualified_rm_class.set_text (source.id.qualified_rm_class)
-			ev_archetype_hrid_concept_id.set_text (source.id.concept_id)
-			ev_archetype_hrid_version_id.set_text (source.id.version_id)
+			ev_archetype_hrid_namespace.set_text (safe_source.id.namespace_string)
+			ev_archetype_hrid_qualified_rm_class.set_text (safe_source.id.qualified_rm_class)
+			ev_archetype_hrid_concept_id.set_text (safe_source.id.concept_id)
+			ev_archetype_hrid_version_id.set_text (safe_source.id.version_id)
 
 			populate_primary_source_indicator
-			if source.is_valid then
+			if safe_source.is_valid then
 				-- lifecycle state
-				if attached {AUTHORED_ARCHETYPE} source.differential_archetype as auth_arch then
+				if attached {AUTHORED_ARCHETYPE} safe_source.differential_archetype as auth_arch then
 					ev_archetype_lifecycle_state.set_text (auth_arch.description.lifecycle_state)
 					ev_adl_version_text.set_text (auth_arch.adl_version)
 				end

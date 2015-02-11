@@ -72,8 +72,8 @@ feature -- Access
 	current_revision: STRING
 			-- Current revision if revision_history exists else "(uncontrolled)".
 		do
-			if has_revision_history then
-				Result := revision_history.most_recent_version
+			if attached revision_history as att_rev_hist then
+				Result := att_rev_hist.most_recent_version
 			else
 				Result := uncontrolled_revision_name.twin
 			end
@@ -98,10 +98,20 @@ feature -- Access
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
-			Lang_valid: has_translations and then translations.has (a_lang)
+			Lang_valid: attached translations as att_trans and then att_trans.has (a_lang)
 		do
-			if attached translations as trans then
-				Result := trans.item (a_lang)
+			if attached translations as att_trans then
+				Result := att_trans.item (a_lang)
+			end
+		end
+
+	annotations_at_path (a_lang, a_path: STRING): detachable RESOURCE_ANNOTATION_NODE_ITEMS
+			-- Obtain annotation at `a_path'
+		require
+			has_annotations_at_path:  has_annotations_at_path (a_lang, a_path)
+		do
+			if attached annotations as att_ann then
+				Result := att_ann.annotations_at_path (a_lang, a_path)
 			end
 		end
 
@@ -129,10 +139,10 @@ feature -- Status Report
 			Result := attached annotations
 		end
 
-	has_annotation_at_path (a_lang, a_path: STRING): BOOLEAN
+	has_annotations_at_path (a_lang, a_path: STRING): BOOLEAN
 			-- True if `a_path' is found in  `annotations'
 		do
-			Result := has_annotations and then annotations.has_language (a_lang) and then annotations.has_annotation_at_path (a_lang, a_path)
+			Result := attached annotations as att_ann and then att_ann.has_language (a_lang) and then att_ann.has_annotation_at_path (a_lang, a_path)
 		end
 
 	has_path (a_path: STRING): BOOLEAN
@@ -164,7 +174,7 @@ feature -- Modification
 		local
 			a_trans: TRANSLATION_DETAILS
 		do
-			create a_trans.make_from_language(a_lang_tag)
+			create a_trans.make_from_language (a_lang_tag)
 			a_trans.put_author_item ("name", "unknown")
 			add_translation (a_trans)
 		end
@@ -173,11 +183,16 @@ feature -- Modification
 			-- add a translation for a_lang
 		require
 			Translation_valid: not languages_available.has(a_trans.language.code_string)
+		local
+			trans: attached like translations
 		do
-			if translations = Void then
-				create translations.make(0)
+			if attached translations as att_trans then
+				trans := att_trans
+			else
+				create trans.make(0)
+				translations := trans
 			end
-			translations.put (a_trans, a_trans.language.code_string)
+			trans.put (a_trans, a_trans.language.code_string)
 			languages_available_cache.wipe_out
 		ensure
 			languages_available.has (a_trans.language.code_string)
@@ -193,11 +208,19 @@ feature -- Modification
 
 	merge_annotations (a_lang_tag: STRING; a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at same path
+		local
+			annots: RESOURCE_ANNOTATIONS
 		do
-			if not annotations.has_language (a_lang_tag) then
-				annotations.add_annotation_table (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
+			if attached annotations as att_annot then
+				annots := att_annot
+			else
+				create annots.make_dt (Void)
+				annotations := annots
 			end
-			annotations.merge_annotation_items (a_lang_tag, a_path, an_annotations)
+			if not annots.has_language (a_lang_tag) then
+				annots.add_annotation_table (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
+			end
+			annots.merge_annotation_items (a_lang_tag, a_path, an_annotations)
 		end
 
 	set_annotations (an_annotations: RESOURCE_ANNOTATIONS)
@@ -286,8 +309,8 @@ invariant
 	Original_language_valid: ts.code_set (ts.Code_set_id_languages).has (original_language)
 	Revision_history_valid: is_controlled xor revision_history = Void
 	Current_revision_valid: not is_controlled implies current_revision.is_equal (Uncontrolled_revision_name)
-	Translations_valid: has_translations implies (not translations.is_empty and
-		not translations.has (original_language.code_string))
+	Translations_valid: attached translations as att_trans implies (not att_trans.is_empty and
+		not att_trans.has (original_language.code_string))
 --	Description_valid: has_translations implies (description.details.for_all
 --		(agent (d:RESOURCE_DESCRIPTION_ITEM):BOOLEAN do translations.has_key(d.language.code_string) end))
 

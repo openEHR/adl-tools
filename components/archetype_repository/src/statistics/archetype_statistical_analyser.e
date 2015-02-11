@@ -18,32 +18,34 @@ inherit
 		end
 
 create
-	make
+	make, make_specialised
 
 feature -- Initialisation
 
-	make (a_target_descriptor: ARCH_LIB_ARCHETYPE; in_differential_mode: BOOLEAN)
-		require
-			a_target_descriptor.is_valid
+	make (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
-			target_descriptor := a_target_descriptor
-			check attached a_target_descriptor.differential_archetype as diff_arch and attached a_target_descriptor.flat_archetype as flat_arch then
-				if in_differential_mode then
-					target := diff_arch
-				else
-					target := flat_arch
-				end
-			end
-			create stats.make (target_descriptor.rm_schema)
+			target := an_archetype
+			rm_schema := an_rm_schema
+			create stats.make (rm_schema)
+		end
+
+	make_specialised (an_archetype: ARCHETYPE; a_flat_parent: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+		require
+			a_flat_parent.is_flat
+		do
+			make (an_archetype, an_rm_schema)
+			flat_parent := a_flat_parent
 		end
 
 feature -- Access
 
-	target_descriptor: ARCH_LIB_ARCHETYPE
-			-- target descriptor
-
 	target: ARCHETYPE
 			-- differential archetype
+
+	flat_parent: detachable ARCHETYPE
+
+	rm_schema: BMM_SCHEMA
+			-- schema for the `target'			
 
 	stats: ARCHETYPE_STATISTICAL_REPORT
 
@@ -77,9 +79,9 @@ feature -- Commands
 			create def_it.make (target.definition)
 			def_it.do_all (agent node_enter, agent node_exit)
 
-			stats.archetype_metrics.item (Object_node_count).update (total_node_count)
-			stats.archetype_metrics.item (Archetypable_node_count).update (locatable_node_count)
-			stats.archetype_metrics.item (Archetype_data_value_node_count).update (data_value_node_count)
+			stats.archetype_metrics_item (Object_node_count).update (total_node_count)
+			stats.archetype_metrics_item (Archetypable_node_count).update (locatable_node_count)
+			stats.archetype_metrics_item (Archetype_data_value_node_count).update (data_value_node_count)
 		end
 
 feature {NONE} -- Implementation
@@ -89,7 +91,6 @@ feature {NONE} -- Implementation
 			stat_accums: ARRAYED_LIST [RM_CLASS_STATISTICS]
 			a_class_stat_accum, an_attr_stat_accum: RM_CLASS_STATISTICS
 			apa: ARCHETYPE_PATH_ANALYSER
-			flat_parent: ARCHETYPE
 			ca, ca_parent_flat: C_ATTRIBUTE
 			path_in_flat: STRING
 			co_type_name: STRING
@@ -101,12 +102,12 @@ feature {NONE} -- Implementation
 				total_node_count := total_node_count + 1
 
 				-- capture LOCATABLE node count
-				if attached target_descriptor.rm_schema.archetype_parent_class as apc and then
-					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, apc)
+				if attached rm_schema.archetype_parent_class as apc and then
+					rm_schema.is_descendant_of (co.rm_type_name, apc)
 				then
 					locatable_node_count := locatable_node_count + 1
-				elseif attached target_descriptor.rm_schema.archetype_data_value_parent_class as dvpc and then
-					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, dvpc)
+				elseif attached rm_schema.archetype_data_value_parent_class as dvpc and then
+					rm_schema.is_descendant_of (co.rm_type_name, dvpc)
 				then
 					data_value_node_count := data_value_node_count + 1
 				end
@@ -120,19 +121,20 @@ feature {NONE} -- Implementation
 						ca := attrs_csr.item
 						if not ca.has_differential_path then
 							a_class_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
-						else
+						elseif attached flat_parent as att_flat_parent then
 							-- this is the case of constraint at a path, as found in specialised archetypes -
 							-- it is an attribute for a different RM object type
 							create apa.make_from_string (ca.rm_attribute_path)
-							flat_parent := target_descriptor.specialisation_parent.flat_archetype
 
-							path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
-							if flat_parent.has_attribute_path (path_in_flat) then
-								ca_parent_flat := flat_parent.attribute_at_path (path_in_flat)
-								co_type_name := ca_parent_flat.parent.rm_type_name
-								is_root_flag := ca_parent_flat.parent.is_root
+							path_in_flat := apa.path_at_level (att_flat_parent.specialisation_depth)
+							if att_flat_parent.has_attribute_path (path_in_flat) then
+								ca_parent_flat := att_flat_parent.attribute_at_path (path_in_flat)
+								check attached ca_parent_flat.parent as att_parent_co then
+									co_type_name := att_parent_co.rm_type_name
+									is_root_flag := att_parent_co.is_root
+								end
 							else
-								bmm_class_def := target_descriptor.rm_schema.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
+								bmm_class_def := rm_schema.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
 								co_type_name := bmm_class_def.name
 								is_root_flag := False
 							end

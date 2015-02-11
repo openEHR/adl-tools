@@ -19,45 +19,48 @@ feature -- Initialisation
 
 	make (a_ca: C_ATTRIBUTE)
 			-- make from C_ATTRIBUTE
+		local
+			p_c_objs: ARRAYED_LIST [P_C_OBJECT]
 		do
 			rm_attribute_name := a_ca.rm_attribute_name
 			differential_path := a_ca.differential_path
 			is_multiple := a_ca.is_multiple
-			if attached a_ca.existence then
-				existence := a_ca.existence.as_string
+			if attached a_ca.existence as att_ex then
+				existence := att_ex.as_string
 			end
-			if attached a_ca.cardinality then
-				cardinality := a_ca.cardinality.as_string
+			if attached a_ca.cardinality as att_card then
+				cardinality := att_card.as_string
 			end
-			if a_ca.has_children then
-				create children.make (0)
-				across a_ca.children as c_objs_csr loop
+			if attached a_ca.children as att_children then
+				create p_c_objs.make (0)
+				children := p_c_objs
+				across att_children as c_objs_csr loop
 					if attached {C_ARCHETYPE_ROOT} c_objs_csr.item as c_ar then
-						children.extend (create {P_C_ARCHETYPE_ROOT}.make(c_ar))
+						p_c_objs.extend (create {P_C_ARCHETYPE_ROOT}.make(c_ar))
 					elseif attached {C_COMPLEX_OBJECT} c_objs_csr.item as c_co then
-						children.extend (create {P_C_COMPLEX_OBJECT}.make(c_co))
+						p_c_objs.extend (create {P_C_COMPLEX_OBJECT}.make(c_co))
 					elseif attached {ARCHETYPE_SLOT} c_objs_csr.item as a_s then
-						children.extend (create {P_ARCHETYPE_SLOT}.make(a_s))
+						p_c_objs.extend (create {P_ARCHETYPE_SLOT}.make(a_s))
 					elseif attached {C_COMPLEX_OBJECT_PROXY} c_objs_csr.item as a_ir then
-						children.extend (create {P_C_COMPLEX_OBJECT_PROXY}.make(a_ir))
+						p_c_objs.extend (create {P_C_COMPLEX_OBJECT_PROXY}.make(a_ir))
 					elseif attached {C_INTEGER} c_objs_csr.item as c_po then
-						children.extend (create {P_C_INTEGER}.make(c_po))
+						p_c_objs.extend (create {P_C_INTEGER}.make(c_po))
 					elseif attached {C_REAL} c_objs_csr.item as c_po then
-						children.extend (create {P_C_REAL}.make(c_po))
+						p_c_objs.extend (create {P_C_REAL}.make(c_po))
 					elseif attached {C_DATE} c_objs_csr.item as c_po then
-						children.extend (create {P_C_DATE}.make(c_po))
+						p_c_objs.extend (create {P_C_DATE}.make(c_po))
 					elseif attached {C_TIME} c_objs_csr.item as c_po then
-						children.extend (create {P_C_TIME}.make(c_po))
+						p_c_objs.extend (create {P_C_TIME}.make(c_po))
 					elseif attached {C_DATE_TIME} c_objs_csr.item as c_po then
-						children.extend (create {P_C_DATE_TIME}.make(c_po))
+						p_c_objs.extend (create {P_C_DATE_TIME}.make(c_po))
 					elseif attached {C_DURATION} c_objs_csr.item as c_po then
-						children.extend (create {P_C_DURATION}.make(c_po))
+						p_c_objs.extend (create {P_C_DURATION}.make(c_po))
 					elseif attached {C_BOOLEAN} c_objs_csr.item as c_po then
-						children.extend (create {P_C_BOOLEAN}.make(c_po))
+						p_c_objs.extend (create {P_C_BOOLEAN}.make(c_po))
 					elseif attached {C_TERMINOLOGY_CODE} c_objs_csr.item as c_po then
-						children.extend (create {P_C_TERMINOLOGY_CODE}.make(c_po))
+						p_c_objs.extend (create {P_C_TERMINOLOGY_CODE}.make(c_po))
 					elseif attached {C_STRING} c_objs_csr.item as c_po then
-						children.extend (create {P_C_STRING}.make(c_po))
+						p_c_objs.extend (create {P_C_STRING}.make(c_po))
 					end
 				end
 			end
@@ -103,8 +106,8 @@ feature -- Factory
 				Result.set_differential_path (dp)
 			end
 
-			if attached children then
-				across children as p_c_objs_csr loop
+			if attached children as att_children then
+				across att_children as p_c_objs_csr loop
 					if attached {P_C_ARCHETYPE_ROOT} p_c_objs_csr.item as p_c_ar then
 						Result.put_child (p_c_ar.create_c_archetype_root)
 					elseif attached {P_C_COMPLEX_OBJECT} p_c_objs_csr.item as p_c_co then

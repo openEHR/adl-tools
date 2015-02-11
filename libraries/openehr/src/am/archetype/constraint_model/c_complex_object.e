@@ -33,10 +33,13 @@ feature -- Initialisation
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 			Object_id_valid: is_valid_id_code (an_object_id)
+		local
+			rep: attached like representation_cache
 		do
 			rm_type_name := a_rm_type_name
-			create representation_cache.make (an_object_id)
-			representation_cache.set_content (Current)
+			create rep.make (an_object_id)
+			rep.set_content (Current)
+			representation_cache := rep
 		ensure
 			Any_allowed: any_allowed
 		end
@@ -295,8 +298,8 @@ feature -- Modification
 				from att_tuples.start until att_tuples.item.is_comparable_to (a_tuple) or att_tuples.off loop
 					att_tuples.forth
 				end
-				check not att_tuples.off then
-					attribute_tuples.replace (a_tuple)
+				if not att_tuples.off then
+					att_tuples.replace (a_tuple)
 				end
 			end
 		end

@@ -52,7 +52,7 @@ feature -- Status Report
 
 	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
 		do
-			Result := valid_time_constraint_replacements.item (an_other_pattern.as_upper).has (a_pattern.as_upper)
+			Result := attached valid_time_constraint_replacements.item (an_other_pattern.as_upper) as att_rep and then att_rep.has (a_pattern.as_upper)
 		end
 
 end

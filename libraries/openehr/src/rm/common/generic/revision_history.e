@@ -17,8 +17,11 @@ class REVISION_HISTORY
 
 feature -- Access
 
-	items: detachable LIST [REVISION_HISTORY_ITEM]
+	items: ARRAYED_LIST [REVISION_HISTORY_ITEM]
 			-- Complete history of items
+		attribute
+			create Result.make (0)
+		end
 
 	item_count: INTEGER
 			-- number of entries in revision history

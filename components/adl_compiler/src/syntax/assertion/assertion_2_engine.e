@@ -66,16 +66,19 @@ feature {NONE} -- Implementation
 	assign_parser_result
 			-- override in descendants to get around limitations in gobo parsers not being able
 			-- to be componentised
+		local
+			new_tree: ARRAYED_LIST [ASSERTION]
 		do
 			if attached {ARRAYED_LIST [ASSERTION]} parser.output as al then
 				tree := al
 			-- FIXME: the following is needed while the ADL parsers remain void-unsafe, since
 			-- the type ARRAYED [LIST] in the parser is actually detachable ARRAYED_LIST [detachable ASSERION]
 			elseif attached {ARRAYED_LIST [detachable ASSERTION]} parser.output as det_al then
-				create tree.make (0)
+				create new_tree.make (0)
+				tree := new_tree
 				across det_al as det_al_csr loop
 					if attached det_al_csr.item as inv then
-						tree.extend (inv)
+						new_tree.extend (inv)
 					end
 				end
 			end
