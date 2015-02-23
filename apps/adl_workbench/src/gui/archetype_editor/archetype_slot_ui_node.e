@@ -49,19 +49,19 @@ feature -- Display
 			-- add closed indicator in constraint column
 			if attached arch_node as a_n and attached ev_grid_row as gr then
 				if a_n.is_closed then
-					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, Void, c_constraint_colour, Void)
+					a_gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, Void, c_constraint_colour, Void)
 				else
 					-- create child nodes for includes & excludes
 					if a_n.has_substantive_includes then
 						across a_n.includes as includes_csr loop
-							evx_grid.add_sub_row (gr, includes_csr.item)
+							a_gui_grid.add_sub_row (gr, includes_csr.item)
 
 							-- put pixmap on RM col
-							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, c_node_font,
+							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, c_node_font,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_include"))
 
 							-- put blank text in constraint col
-							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
+							a_gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
 
 							-- remember the association
 							assertions_index.extend (includes_csr.item)
@@ -73,14 +73,14 @@ feature -- Display
 
 					elseif a_n.has_substantive_excludes then
 						across a_n.excludes as excludes_csr loop
-							evx_grid.add_sub_row (gr, excludes_csr.item)
+							a_gui_grid.add_sub_row (gr, excludes_csr.item)
 
 							-- put pixmap on RM col
-							evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void, Void,
+							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void, Void,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_exclude"))
 
 							-- put blank text in constraint col
-							evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
+							a_gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
 
 							-- remember the association
 							assertions_index.extend (excludes_csr.item)
@@ -99,10 +99,12 @@ feature -- Display
 			precursor (ui_settings)
 
 			-- iterate through the assertions
-			across assertions_index as assn_csr loop
-				evx_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
-				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_node_font, c_object_colour, Void)
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, Void, c_constraint_colour, Void)
+			if attached evx_grid as att_evx_grid then
+				across assertions_index as assn_csr loop
+					att_evx_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_node_font, c_object_colour, Void)
+					att_evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, Void, c_constraint_colour, Void)
+				end
 			end
 		end
 
@@ -164,7 +166,7 @@ feature {NONE} -- Implementation
 			slot_match_ids.compare_objects
 			if attached arch_node as a_n and then a_n.has_substantive_includes then
 				across a_n.includes as slot_includes_csr loop
-					if attached {STRING} slot_includes_csr.item.regex_constraint.constraint_regex as a_regex then
+					if attached slot_includes_csr.item.regex_constraint as att_regex and then attached {STRING} att_regex.constraint_regex as a_regex then
 						slot_match_ids.merge (current_library.matching_ids (a_regex, a_n.rm_type_name, Void))
 					end
 				end
@@ -177,7 +179,7 @@ feature {NONE} -- Implementation
 				-- ensure we have only a unique set
 				across slot_match_ids as slot_match_ids_csr loop
 					if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_with_id (slot_match_ids_csr.item) as aca then
-						create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([aca]))
+						create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent gui_agents.call_select_archetype_in_new_tool_agent (aca))
 						an_mi.set_pixmap (get_icon_pixmap ("archetype/" + aca.group_name))
 						context_slot_sub_menu.extend (an_mi)
 					end

@@ -33,24 +33,24 @@ feature -- Display
 
 			-- create a new row
 			check attached parent.ev_grid_row as parent_gr then
-				evx_grid.add_sub_row (parent_gr, Current)
+				a_gui_grid.add_sub_row (parent_gr, Current)
 			end
-			check attached evx_grid.last_row as lr then
+			check attached a_gui_grid.last_row as lr then
 				ev_grid_row := lr
 			end
 
 			-- rm_name col
-			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, Void, c_attribute_colour,
+			a_gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, Void, c_attribute_colour,
 				get_icon_pixmap ("rm/generic/c_attribute"))
 
 			-- set meaning column empty
-			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
+			a_gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 
 			-- update tooltip in RM column
-		--	evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
+		--	a_gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)
 
 			-- set constraint column
-			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, Void, c_constraint_colour, Void)
+			a_gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, Void, c_constraint_colour, Void)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -83,7 +83,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if attached arch_node as c_attr_tuple then
+			if attached arch_node as c_attr_tuple and attached {AUTHORED_ARCHETYPE} ui_graph_state.archetype as auth_arch then
 				across c_attr_tuple.members as c_attrs_csr loop
 					p := c_attrs_csr.item.path
 
@@ -95,10 +95,12 @@ feature {NONE} -- Implementation
 					end
 
 					-- append any annotations
-					if attached {AUTHORED_ARCHETYPE} ui_graph_state.archetype as auth_arch and then auth_arch.has_annotation_at_path (display_settings.language, p) then
+					if auth_arch.has_annotations_at_path (display_settings.language, p) and then
+						attached auth_arch.annotations_at_path (display_settings.language, p) as att_ann
+					then
 						Result.append (get_text (ec_annotations_text) + ":%N")
 						Result.append ("%T")
-						Result.append (auth_arch.annotations.annotations_at_path (display_settings.language, p).as_string)
+						Result.append (att_ann.as_string)
 					end
 
 					if not c_attrs_csr.is_last then

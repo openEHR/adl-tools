@@ -31,15 +31,15 @@ feature -- Display
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
 			evx_grid := a_gui_grid
-			check attached parent.ev_grid_row as parent_gr then
-				evx_grid.add_sub_row (parent_gr, arch_node)
+			check attached parent as att_parent and then attached att_parent.ev_grid_row as parent_gr then
+				a_gui_grid.add_sub_row (parent_gr, arch_node)
 			end
-			check attached evx_grid.last_row as lr then
+			check attached a_gui_grid.last_row as lr then
 				ev_grid_row := lr
 			end
 
-			left_operand_ed_context.prepare_display_in_grid (evx_grid)
-			right_operand_ed_context.prepare_display_in_grid (evx_grid)
+			left_operand_ed_context.prepare_display_in_grid (a_gui_grid)
+			right_operand_ed_context.prepare_display_in_grid (a_gui_grid)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
