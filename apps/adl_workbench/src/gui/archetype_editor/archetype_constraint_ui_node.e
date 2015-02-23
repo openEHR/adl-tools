@@ -102,13 +102,15 @@ feature -- Display
 			if attached arch_node as a_n and then a_n.is_root then
 				evx_grid.add_row (Current)
 			else
-				check attached parent.ev_grid_row as parent_gr then
+				check attached parent as att_parent and then attached att_parent.ev_grid_row as parent_gr then
 					evx_grid.add_sub_row (parent_gr, Current)
 				end
 			end
 			check attached evx_grid.last_row as lr then
 				ev_grid_row := lr
 			end
+		ensure then
+			evx_grid = a_gui_grid
 		end
 
 feature -- Modification
@@ -145,8 +147,8 @@ feature {NONE} -- Implementation
 			p: STRING
 			bindings: HASH_TABLE [URI, STRING]
 		do
-			if not is_rm then
-				p := arch_node.path
+			if attached arch_node as a_n then
+				p := a_n.path
 				Result := ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance then
 					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  specialisation_status_name (specialisation_status))
@@ -170,11 +172,12 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				if attached arch_node as a_n and then attached {AUTHORED_ARCHETYPE} ui_graph_state.archetype as auth_arch and then
-					auth_arch.has_annotation_at_path (display_settings.language, a_n.path)
+				if attached {AUTHORED_ARCHETYPE} ui_graph_state.archetype as auth_arch and then
+					auth_arch.has_annotations_at_path (display_settings.language, a_n.path) and then
+					attached auth_arch.annotations_at_path (display_settings.language, a_n.path) as att_ann
 				then
 					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
-					Result.append (auth_arch.annotations.annotations_at_path (display_settings.language, a_n.path).as_string)
+					Result.append (att_ann.as_string)
 				end
 			else
 				Result := path
