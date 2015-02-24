@@ -95,7 +95,9 @@ feature {NONE} -- Implementation
 	attach_to_tree (a_node: EXPR_ITEM; an_ed_node: EXPR_ITEM_UI_NODE)
 		do
 			if expr_stack.is_empty then
-				root_node.set_expression_context (an_ed_node)
+				check attached root_node as att_rn then
+					att_rn.set_expression_context (an_ed_node)
+				end
 			elseif attached {EXPR_BINARY_OP_UI_NODE} expr_stack.item as bin_op_ctxt and attached {EXPR_BINARY_OPERATOR} a_node.parent as binop then
 				if a_node = binop.left_operand then
 					bin_op_ctxt.set_left_operand_ed_context (an_ed_node)

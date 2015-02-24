@@ -108,7 +108,9 @@ feature -- Status Report
 	is_shown_in_grid: BOOLEAN
 			-- True if this node is included in the grid tree; False if it is there but hidden
 		do
-			Result := ev_grid_row.is_show_requested
+			check attached ev_grid_row as gr then
+				Result := gr.is_show_requested
+			end
 		end
 
 	is_rm: BOOLEAN
@@ -138,8 +140,8 @@ feature -- Display
 			is_prepared
 		do
 			display_settings := ui_settings
-			check attached ev_grid_row as gr then
-				evx_grid.set_last_row (gr)
+			check attached evx_grid as att_evx_grid and attached ev_grid_row as gr then
+				att_evx_grid.set_last_row (gr)
 			end
 			is_displayed := True
 		ensure
@@ -148,7 +150,9 @@ feature -- Display
 
 	hide_in_grid
 		do
-			ev_grid_row.hide
+			check attached ev_grid_row as gr then
+				gr.hide
+			end
 		ensure
 			not is_shown_in_grid
 		end
@@ -161,8 +165,8 @@ feature -- Display
 --			end
 
 			-- the following opens out a row and its children
-			check attached ev_grid_row as gr then
-				evx_grid.ev_grid.ensure_visible (gr)
+			check attached evx_grid as att_evx_grid and attached ev_grid_row as gr then
+				att_evx_grid.ev_grid.ensure_visible (gr)
 				gr.show
 			end
 		ensure
@@ -266,7 +270,7 @@ feature {NONE} -- Implementation
 			if attached a_ccp.value_set_expanded as cl then
 				across cl as codes_csr loop
 					Result.append_string (term_string (Local_terminology_id, codes_csr.item))
-					if a_ccp.has_assumed_value and then a_ccp.assumed_value.is_equal (codes_csr.item) then
+					if attached a_ccp.assumed_value as att_av and then att_av.is_equal (codes_csr.item) then
 						Result.append (" (" + get_text (ec_assumed_text) + ")")
 					end
 					if not codes_csr.is_last then

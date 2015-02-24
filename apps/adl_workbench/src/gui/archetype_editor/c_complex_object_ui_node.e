@@ -183,7 +183,7 @@ feature {NONE} -- Implementation
 	expand_to_rm (ui_settings: GUI_DEFINITION_SETTINGS)
 			--  (if this is an RM node) or else go do the work
 		do
-			if is_rm and ev_grid_row.subrow_count = 0 then
+			if is_rm and ev_grid_row /= Void and then ev_grid_row.subrow_count = 0 then
 				-- if there are any candidate properties to be displayed given the current UI settings,
 				-- then set an expand-actions event; if not, get rid of any previously set event
 				if can_show_rm_properties then
@@ -202,9 +202,9 @@ feature {NONE} -- Implementation
 		do
 			-- if we entered here due to lazy load event, get rid of the lazy load
 			-- for previously expanded RM nodes, remove lazy-expand event
-			if is_rm and ev_grid_row.subrow_count = 0 then
-				ev_grid_row.expand_actions.wipe_out
-				ev_grid_row.ensure_non_expandable
+			if is_rm and attached ev_grid_row as ev_gr and then ev_gr.subrow_count = 0 then
+				ev_gr.expand_actions.wipe_out
+				ev_gr.ensure_non_expandable
 			end
 
 			-- process the properties, which may involve simply hiding ones that are currently visible
@@ -264,8 +264,8 @@ feature {NONE} -- Implementation
 				-- because there may be changes deeper under the node
 				c_attr_ed_node.display_in_grid (ui_settings)
 
-			elseif rm_attributes.has (an_rm_prop.name) then
-				rm_attributes.item (an_rm_prop.name).hide_in_grid
+			elseif attached rm_attributes.item (an_rm_prop.name) as att_rm_attr then
+				att_rm_attr.hide_in_grid
 			end
 		end
 

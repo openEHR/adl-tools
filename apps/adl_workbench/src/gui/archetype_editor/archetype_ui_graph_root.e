@@ -89,9 +89,9 @@ feature {C_ARCHETYPE_ROOT_UI_NODE} -- Implementation
 			assn_iterator: EXPR_VISITOR_ITERATOR
 			assn_ui_graph_builder: ASSERTION_UI_GRAPH_BUILDER
 		do
-			if ui_graph_state.archetype.has_rules then
+			if attached ui_graph_state.archetype.rules as att_rules then
 				create assn_ui_graph_builder.make (ui_graph_state)
-				across ui_graph_state.archetype.rules as inv_csr loop
+				across att_rules as inv_csr loop
 					create assn_iterator.make (inv_csr.item, assn_ui_graph_builder)
 					assn_iterator.do_all
 					check attached assn_ui_graph_builder.root_node as rn then
