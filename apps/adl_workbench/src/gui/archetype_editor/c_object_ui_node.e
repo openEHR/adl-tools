@@ -109,14 +109,14 @@ feature -- Display
 		do
 			precursor (ui_settings)
 
-			if attached arch_node as a_n then
+			if attached arch_node as a_n and attached evx_grid as att_evx_grid then
 				-- RM name & meaning columns
 				if display_settings.show_technical_view then
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
-					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
 		 		else
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
-					evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 				end
 
 				-- card/occ column
@@ -134,7 +134,7 @@ feature -- Display
 						c_occ_colour := c_attribute_colour
 					end
 				end
-				evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
+				att_evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
 
 				-- constraint column
 				display_constraint
@@ -148,7 +148,7 @@ feature -- Display
 						s.append ("before")
 					end
 					s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
-					evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
+					att_evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
 				end
 			end
 		end
@@ -423,7 +423,7 @@ feature {NONE} -- Context menu
 
 	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS)
 		do
-			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
+			gui_agents.call_select_class_in_new_tool_agent (a_class_def)
 		end
 
 	ui_offer_refine_constraint
