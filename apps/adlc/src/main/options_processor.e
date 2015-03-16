@@ -33,7 +33,7 @@ inherit
 			{NONE} all
 		end
 
-	ADL_COMPILED_MESSAGE_IDS
+	ADL_MESSAGES_IDS
 		export
 			{NONE} all
 		end

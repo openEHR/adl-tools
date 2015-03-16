@@ -31,22 +31,23 @@
 		</library>
 		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
-		<library name="app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
-		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
-		<library name="odin" location="$EOMF\library\odin\odin.ecf"/>
-		<library name="bmm" location="$EOMF\library\bmm\bmm.ecf"/>
+
+		<library name="eomf_basic" location="$EOMF\library\basic\eomf_basic.ecf"/>
+		<library name="eomf_file_system" location="$EOMF\library\file_system\eomf_file_system.ecf"/>
+		<library name="eomf_messages" location="$EOMF\library\messages\eomf_messages.ecf"/>
+		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
+		<library name="eomf_parsing" location="$EOMF\library\parsing\eomf_parsing.ecf"/>
+		<library name="eomf_external_tools" location="$EOMF\library\external_tools\eomf_external_tools.ecf"/>
+		<library name="eomf_object_graph" location="$EOMF\library\object_graph\eomf_object_graph.ecf"/>
+		<library name="eomf_data_tree" location="$EOMF\library\data_tree\eomf_data_tree.ecf"/>
+		<library name="eomf_odin" location="$EOMF\library\odin\eomf_odin.ecf"/>
+		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf"/>
 
 		<library name="iso8601" location="$EIFFEL_HUB\iso8601\src\iso8601.ecf"/>
 		<library name="error_message" location="$EIFFEL_HUB\error_message\src\error_message.ecf"/>
 
 		<cluster name="app" location="..\src\main\" recursive="true"/>
 		<cluster name="app_env" location="..\src\env\" recursive="true"/>
-
-		<cluster name="app_resources" location="$EOMF\library\app_resources\">
-			<option>
-				<assertions precondition="true"/>
-			</option>
-		</cluster>
 
 		<cluster name="adl_messages" location="..\..\resources\messages\compiled\"/>
 

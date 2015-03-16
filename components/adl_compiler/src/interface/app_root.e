@@ -74,7 +74,6 @@ feature -- Initialisation
 			message_db.add_table (create {DT_MESSAGES_DB}.make)
 			message_db.add_table (create {ODIN_MESSAGES_DB}.make)
 			message_db.add_table (create {BMM_MESSAGES_DB}.make)
-			message_db.add_table (create {EVX_MESSAGES_DB}.make)
 			message_db.add_table (create {GENERAL_MESSAGES_DB}.make)
 
 			-- set up XML serialiser rules file
