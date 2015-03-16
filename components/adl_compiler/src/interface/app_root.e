@@ -70,7 +70,7 @@ feature -- Initialisation
 			dt_object_converter.add_obj_to_dt_agent (agent (a_tc: CODE_PHRASE): DT_PRIMITIVE_OBJECT do create Result.make_anonymous (a_tc.as_terminology_code) end, ({CODE_PHRASE}).type_id)
 
 			-- add in ADL error message DB to main message DB
-			message_db.add_table (create {ADL_COMPILED_MESSAGE_DB}.make)
+			message_db.add_table (create {ADL_MESSAGES_DB}.make)
 			message_db.add_table (create {DT_MESSAGES_DB}.make)
 			message_db.add_table (create {ODIN_MESSAGES_DB}.make)
 			message_db.add_table (create {BMM_MESSAGES_DB}.make)

@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_COMPILED_MESSAGE_IDS
+class ADL_MESSAGES_IDS
 
 feature -- Definitions
 		ec_terminology_init_failed: STRING = "terminology_init_failed"

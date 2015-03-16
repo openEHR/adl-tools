@@ -7,10 +7,10 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ADL_COMPILED_MESSAGE_DB
+class ADL_MESSAGES_DB
 
 inherit
-	ADL_COMPILED_MESSAGE_IDS
+	ADL_MESSAGES_IDS
 
 	MESSAGE_DB
 		redefine
