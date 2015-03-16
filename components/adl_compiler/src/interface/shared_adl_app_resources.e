@@ -35,7 +35,17 @@ inherit
 			{NONE} all
 		end
 
-	EOMF_COMPILED_MESSAGE_IDS
+	GENERAL_MESSAGES_IDS
+		export
+			{NONE} all
+		end
+
+	ODIN_MESSAGES_IDS
+		export
+			{NONE} all
+		end
+
+	BMM_MESSAGES_IDS
 		export
 			{NONE} all
 		end

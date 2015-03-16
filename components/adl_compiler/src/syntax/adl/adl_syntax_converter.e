@@ -320,7 +320,7 @@ feature -- ADL 2 conversions
 			-- Extract revision information from other_details and write it into `arch_id'
 			--  ["revision"] = <"0.0.1-alpha">
 		local
-			ver_str, ver_sts_str: STRING
+			ver_sts_str: STRING
 			rpos: INTEGER
 		do
 			if attached a_res_desc.attribute_node_at_path ("other_details") as dt_attr_od then

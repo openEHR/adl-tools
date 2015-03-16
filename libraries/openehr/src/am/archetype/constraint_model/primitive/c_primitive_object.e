@@ -35,7 +35,7 @@ feature -- Initialisaiton
 feature -- Access
 
 	constraint: ANY
-			-- single constraint represented by this object
+			-- single constraint represented by this object; redefine in descendants.
 
 	aom_builtin_type: STRING
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types

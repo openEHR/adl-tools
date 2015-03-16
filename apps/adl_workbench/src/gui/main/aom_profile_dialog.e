@@ -234,8 +234,6 @@ feature {NONE} -- Implementation
 	populate_grid
 			-- Set the grid from shared settings.
 		local
-			i: INTEGER
-			row: EV_GRID_ROW
 			aom_profile: AOM_PROFILE
 			prf_name: STRING
 			rm_schemas_list, terminologies: STRING

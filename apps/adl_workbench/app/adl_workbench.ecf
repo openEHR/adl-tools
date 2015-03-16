@@ -54,23 +54,7 @@
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
 		<setting name="concurrency" value="thread"/>
-		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
-		<library name="eomf_bmm" location="$EOMF\library\bmm\bmm.ecf">
-			<option>
-				<assertions precondition="true" postcondition="true"/>
-			</option>
-		</library>
-		<library name="eomf_external_tools" location="$EOMF\library\external_tools\external_tools.ecf"/>
-		<library name="eomf_gui" location="$EOMF\library\gui\eomf_gui.ecf">
-			<option>
-				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
-			</option>
-		</library>
-		<library name="eomf_odin" location="$EOMF\library\odin\odin.ecf">
-			<option>
-				<assertions precondition="true"/>
-			</option>
-		</library>
+
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel-safe.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical-safe.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse-safe.ecf"/>
@@ -91,8 +75,26 @@
 		<library name="ise_vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
 		<library name="ise_xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="ise_xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
+
 		<library name="iso8601" location="$EIFFEL_HUB\iso8601\src\iso8601.ecf"/>
 		<library name="error_message" location="$EIFFEL_HUB\error_message\src\error_message.ecf"/>
+
+		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
+		<library name="eomf_messages" location="$EOMF\library\messages\eomf_messages.ecf"/>
+		<library name="eomf_external_tools" location="$EOMF\library\external_tools\eomf_external_tools.ecf"/>
+		<library name="eomf_gui" location="$EOMF\library\gui\eomf_gui.ecf">
+			<option>
+				<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
+			</option>
+		</library>
+		<library name="eomf_basic" location="$EOMF\library\basic\eomf_basic.ecf"/>
+		<library name="eomf_file_system" location="$EOMF\library\file_system\eomf_file_system.ecf"/>
+		<library name="eomf_parsing" location="$EOMF\library\parsing\eomf_parsing.ecf"/>
+		<library name="eomf_object_graph" location="$EOMF\library\object_graph\eomf_object_graph.ecf"/>
+		<library name="eomf_data_tree" location="$EOMF\library\data_tree\eomf_data_tree.ecf"/>
+		<library name="eomf_odin" location="$EOMF\library\odin\eomf_odin.ecf"/>
+		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf"/>
+
 		<cluster name="adl_components" location="..\..\..\components\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" supplier_precondition="true"/>
@@ -115,8 +117,6 @@
 				<assertions precondition="true"/>
 			</option>
 		</cluster>
-		<cluster name="eomf_gui_resources" location="$EOMF\library\gui_app_resources\"/>
-		<cluster name="eomf_resources" location="$EOMF\library\app_resources\"/>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>

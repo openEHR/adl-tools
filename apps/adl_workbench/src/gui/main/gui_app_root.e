@@ -38,6 +38,9 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			if not is_destroyed then
+				if attached {ICON_RESOURCES_COMPILED} icon_resources.item as comp_icon_resources then
+					comp_icon_resources.add_icons (create {APP_ICON_RESOURCES})
+				end
 				create splash.make_with_shadow
 				post_launch_actions.extend_kamikaze (agent app_launch)
 				launch

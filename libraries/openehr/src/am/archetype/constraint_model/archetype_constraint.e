@@ -10,7 +10,7 @@ note
 deferred class ARCHETYPE_CONSTRAINT
 
 inherit
-	VISITABLE
+	OG_VISITABLE
 
 	ADL_2_TERM_CODE_TOOLS
 		export

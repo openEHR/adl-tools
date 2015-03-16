@@ -71,7 +71,11 @@ feature -- Initialisation
 
 			-- add in ADL error message DB to main message DB
 			message_db.add_table (create {ADL_COMPILED_MESSAGE_DB}.make)
-			message_db.add_table (create {EOMF_COMPILED_MESSAGE_DB}.make)
+			message_db.add_table (create {DT_MESSAGES_DB}.make)
+			message_db.add_table (create {ODIN_MESSAGES_DB}.make)
+			message_db.add_table (create {BMM_MESSAGES_DB}.make)
+			message_db.add_table (create {EVX_MESSAGES_DB}.make)
+			message_db.add_table (create {GENERAL_MESSAGES_DB}.make)
 
 			-- set up XML serialiser rules file
 			set_xml_load_rules_agent
