@@ -50,8 +50,8 @@ feature -- Initialization
 							use_current_library (False)
 
 							print (get_text (ec_rep_populate_progress_info) + "%N")
-							app_root.archetype_compiler.set_console_update_action (agent compiler_global_gui_update)
-							app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+							app_root.archetype_compiler.set_console_update_agent (agent compiler_global_gui_update)
+							app_root.archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
 							app_root.archetype_compiler.build_all
 						else
 							print (get_text (ec_libs_not_found_info) + "%N")
@@ -75,7 +75,7 @@ feature -- Initialization
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE_ITEM)
+	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE)
 			-- Update UI with progress on build.
 		do
 			print (ara.status)

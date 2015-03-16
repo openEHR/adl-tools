@@ -81,7 +81,7 @@ feature -- Notifications
 
 	set_progress_agents (a_initialise_progress_agent: attached like initialise_progress_agent;
 		a_set_progress_current_val_agent: attached like set_progress_current_val_agent)
-			-- set agents that will be called during compilation and export runs
+			-- set agents that will be called during a build run
 		do
 			old_initialise_progress_agent := initialise_progress_agent
 			old_set_progress_current_val_agent := set_progress_current_val_agent

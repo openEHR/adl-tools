@@ -2,7 +2,7 @@ note
 	component:   "openEHR ADL Tools"
 	description: "[
 				 Archetype compiler interface. This object knows how to compile a system of archetypes
-				 found in the ARCHETYPE_CATALOG.
+				 found in the ARCHETYPE_LIBRARY.
 				 ]"
 	keywords:    "compiler, archetype, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -68,7 +68,8 @@ feature -- Notifications
 		end
 
 	set_archetype_visual_update_agent (a_routine: attached like archetype_visual_update_agent)
-			-- Set `archetype_visual_update_agent'.
+			-- Set `archetype_visual_update_agent' to `a_routine'. This is an agent that will be called
+			-- whenever an archetype compilation is attempted. Can be used to
 		do
 			archetype_visual_update_agent := a_routine
 		ensure
@@ -272,6 +273,3 @@ feature {NONE} -- Implementation
 		end
 
 end
-
-
-
