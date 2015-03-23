@@ -56,6 +56,9 @@ feature {NONE} -- Initialization
 				app_root.initialise_app
 				process_graphical_events
 				create main_window
+
+				message_db.add_table (create {EVX_MESSAGES_DB}.make)
+
 				main_window.show
 				splash.hide
 			else
