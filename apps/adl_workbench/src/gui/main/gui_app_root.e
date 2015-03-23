@@ -41,6 +41,7 @@ feature {NONE} -- Initialization
 				if attached {ICON_RESOURCES_COMPILED} icon_resources.item as comp_icon_resources then
 					comp_icon_resources.add_icons (create {APP_ICON_RESOURCES})
 				end
+				message_db.add_table (create {EVX_MESSAGES_DB}.make)
 				create splash.make_with_shadow
 				post_launch_actions.extend_kamikaze (agent app_launch)
 				launch
@@ -56,8 +57,6 @@ feature {NONE} -- Initialization
 				app_root.initialise_app
 				process_graphical_events
 				create main_window
-
-				message_db.add_table (create {EVX_MESSAGES_DB}.make)
 
 				main_window.show
 				splash.hide
