@@ -147,6 +147,10 @@ ID_CODE_LEADER id
 				last_token := SYM_UID
 			}
 
+[Bb][Uu][Ii][Ll][Dd]_[Uu][Ii][Dd] 		{
+				last_token := SYM_BUILD_UID
+			}
+
 ^[Ss][Pp][Ee][Cc][Ii][Aa][Ll][Ii][SsZz][Ee][ \t\r]*\n 	{
 				last_token := SYM_SPECIALIZE
 				in_lineno := in_lineno + 1

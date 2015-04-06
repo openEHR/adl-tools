@@ -40,9 +40,13 @@ feature {P_AUTHORED_ARCHETYPE} -- Initialisation
 			description := a_copy.description
 			revision_history := a_copy.revision_history
 			annotations := a_copy.annotations
+			uid := other.uid
 		end
 
 feature -- Access
+
+	uid: detachable HIER_OBJECT_ID
+			-- Unique identifier of the family of archetypes having the same interface identifier (same major version).
 
 	original_language: TERMINOLOGY_CODE
 			-- Language in which this resource was initially authored. Although there
@@ -153,6 +157,11 @@ feature -- Status Report
 		end
 
 feature -- Modification
+
+	set_uid (a_uid: STRING)
+		do
+			create uid.make_from_string (a_uid)
+		end
 
 	set_original_language (a_lang: TERMINOLOGY_CODE)
 		do

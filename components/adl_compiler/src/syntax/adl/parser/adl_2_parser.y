@@ -41,7 +41,7 @@ create
 %token SYM_ARCHETYPE SYM_SPECIALIZE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_TERMINOLOGIES
 %token SYM_DESCRIPTION SYM_TERMINOLOGY SYM_RULES
-%token SYM_ADL_VERSION SYM_RM_RELEASE SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_UID
+%token SYM_ADL_VERSION SYM_RM_RELEASE SYM_IS_CONTROLLED SYM_IS_GENERATED SYM_BUILD_UID SYM_UID
 %token SYM_OVERLAY_TEXTS
 
 %%
@@ -173,6 +173,10 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 	| SYM_UID '=' V_VALUE
 		{
 			create uid.make_from_string ($3)
+		}
+	| SYM_BUILD_UID '=' V_VALUE
+		{
+			create build_uid.make_from_string ($3)
 		}
 	| SYM_RM_RELEASE '=' V_DOTTED_NUMERIC
 		{
@@ -336,6 +340,7 @@ feature -- Initialization
 			create other_metadata.make (0)
 			create archetype_id.default_create
 			uid := Void
+			build_uid := Void
 			parent_archetype_id := Void
 			is_controlled := False
 			is_generated := False
@@ -373,6 +378,8 @@ feature -- Parse Output
 	rm_release: STRING
 
 	uid: detachable HIER_OBJECT_ID
+
+	build_uid: detachable HIER_OBJECT_ID
 
 	is_controlled: BOOLEAN
 

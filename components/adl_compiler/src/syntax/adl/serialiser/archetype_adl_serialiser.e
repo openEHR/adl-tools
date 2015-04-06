@@ -170,6 +170,14 @@ feature -- Serialisation
 					kw_list.append (symbol (SYM_UID)  + "=" + a_uid.out)
 				end
 
+				-- build_uid
+				if attached auth_arch.build_uid as a_uid then
+					if not kw_list.is_empty then
+						kw_list.append ("; ")
+					end
+					kw_list.append (symbol (SYM_BUILD_UID)  + "=" + a_uid.out)
+				end
+
 				-- other metadata
 				if attached auth_arch.other_metadata as omd then
 					across omd as omd_csr loop

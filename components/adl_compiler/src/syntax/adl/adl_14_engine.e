@@ -218,6 +218,7 @@ feature -- Parsing
 								adl_parser.parent_archetype_id,
 								adl_parser.is_controlled,
 								adl_parser.uid,
+								Void,
 								adl_parser.other_metadata,
 								olt.original_language,
 								orig_lang_trans.translations,

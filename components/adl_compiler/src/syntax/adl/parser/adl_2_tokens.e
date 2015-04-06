@@ -72,6 +72,8 @@ feature -- Access
 				Result := "SYM_IS_CONTROLLED"
 			when SYM_IS_GENERATED then
 				Result := "SYM_IS_GENERATED"
+			when SYM_BUILD_UID then
+				Result := "SYM_BUILD_UID"
 			when SYM_UID then
 				Result := "SYM_UID"
 			when SYM_OVERLAY_TEXTS then
@@ -107,7 +109,8 @@ feature -- Token codes
 	SYM_RM_RELEASE: INTEGER = 279
 	SYM_IS_CONTROLLED: INTEGER = 280
 	SYM_IS_GENERATED: INTEGER = 281
-	SYM_UID: INTEGER = 282
-	SYM_OVERLAY_TEXTS: INTEGER = 283
+	SYM_BUILD_UID: INTEGER = 282
+	SYM_UID: INTEGER = 283
+	SYM_OVERLAY_TEXTS: INTEGER = 284
 
 end

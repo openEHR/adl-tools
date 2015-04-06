@@ -53,6 +53,7 @@ feature -- Initialisation
 			an_id: like archetype_id;
 			an_original_language: like original_language;
 			a_uid: like uid;
+			a_build_uid: like build_uid;
 			a_description: like description;
 			a_definition: like definition;
 			a_terminology: like terminology)
@@ -64,12 +65,14 @@ feature -- Initialisation
 			set_original_language (an_original_language)
 			description := a_description
 			uid := a_uid
+			build_uid := a_build_uid
 		ensure then
 			Adl_version_set: adl_version = an_adl_version
 			Rm_release_set: rm_release = an_rm_release
 			Original_language_set: original_language = an_original_language
 			Description_set: description = a_description
 			Uid_set: uid = a_uid
+			Build_uid_set: build_uid = a_build_uid
 		end
 
 	make_all (an_adl_version: like adl_version;
@@ -78,6 +81,7 @@ feature -- Initialisation
 			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
 			a_uid: like uid;
+			a_build_uid: like build_uid;
 			an_other_metadata: like other_metadata;
 			an_original_language: like original_language;
 			a_translations: like translations;
@@ -91,7 +95,7 @@ feature -- Initialisation
 			Translations_valid: attached a_translations as att_trans implies not att_trans.is_empty
 			Rules_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
-			make (an_adl_version, an_rm_release, an_id, an_original_language, a_uid, a_description, a_definition, a_terminology)
+			make (an_adl_version, an_rm_release, an_id, an_original_language, a_uid, a_build_uid, a_description, a_definition, a_terminology)
 			parent_archetype_id := a_parent_archetype_id
 			translations := a_translations
 			is_controlled := is_controlled_flag
@@ -123,6 +127,9 @@ feature -- Initialisation
 			rm_release := other.rm_release.twin
 			if attached other.uid as att_other_uid then
 				uid := att_other_uid.twin
+			end
+			if attached other.build_uid as att_other_uid then
+				build_uid := att_other_uid.twin
 			end
 			set_original_language (other.original_language)
 			if attached other.other_metadata as att_omd then
@@ -172,9 +179,10 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 
 feature -- Access
 
-	uid: detachable HIER_OBJECT_ID
-			-- optional UID identifier of this artefact
-			-- FIXME: should really be in AUTHORED_RESOURCE
+	build_uid: detachable HIER_OBJECT_ID
+			-- Unique identifier of this archetype artefact instance. A new identifier is assigned every
+			-- time the content is changed by a tool. Used by tools to distinguish different revisions and/or
+			-- interim snapshots of the same artefact.
 
 	adl_version: STRING
 			-- Semver.org compatible version of ADL/AOM used in this archetype
@@ -220,9 +228,9 @@ feature -- Modification
 			rm_release := a_ver
 		end
 
-	set_uid (a_uid: STRING)
+	set_build_uid (a_build_uid: STRING)
 		do
-			create uid.make_from_string (a_uid)
+			create build_uid.make_from_string (a_build_uid)
 		end
 
 	set_other_metadata (a_metadata: like other_metadata)
@@ -283,8 +291,8 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 
 			if attached {AUTHORED_ARCHETYPE} a_diff as att_auth_diff then
 				-- identifiers
-				if attached att_auth_diff.uid as att_uid then
-					uid := att_uid.deep_twin
+				if attached att_auth_diff.build_uid as att_uid then
+					build_uid := att_uid.deep_twin
 				end
 
 				-- flatten other_metadata so that child archetype values overwrite any parent values with same key;

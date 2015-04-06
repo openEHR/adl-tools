@@ -74,6 +74,9 @@ feature -- Status report
 			Result := attached occurrences as att_occ and then not att_occ.upper_unbounded and then att_occ.upper = 1
 		end
 
+	is_deprecated: BOOLEAN
+			-- True if this node is deprecated within its model
+
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -185,6 +188,12 @@ feature -- Modification
 			create sibling_order.make_after (a_node_id)
 		ensure
 			sibling_order_set: attached sibling_order as sib_ord and then (sib_ord.is_after and sib_ord.sibling_node_id.is_equal (a_node_id))
+		end
+
+	set_is_deprecated (a_val: BOOLEAN)
+			-- set `is_deprecated'
+		do
+			is_deprecated := a_val
 		end
 
 feature {C_OBJECT} -- Modification

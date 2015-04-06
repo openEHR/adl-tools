@@ -10,7 +10,10 @@ note
 class P_AUTHORED_ARCHETYPE
 
 inherit
-	AUTHORED_RESOURCE
+	P_AUTHORED_RESOURCE
+		rename
+			make as make_auth_res
+		end
 
 	P_ARCHETYPE
 		redefine
@@ -33,13 +36,13 @@ feature -- Initialisation
 	make (an_archetype: like artefact_class_type)
 		do
 			precursor (an_archetype)
-			make_from_other (an_archetype)
+			make_auth_res (an_archetype)
 
 			adl_version := an_archetype.adl_version
 			rm_release := an_archetype.rm_release
 
-			if attached an_archetype.uid as uv then
-				uid := uv.value
+			if attached an_archetype.build_uid as uv then
+				build_uid := uv.value
 			end
 
 			other_metadata := an_archetype.other_metadata
@@ -55,7 +58,7 @@ feature -- Access
 	rm_release: STRING
 			-- RM release on which definition of this archetype is based
 
-	uid: detachable STRING
+	build_uid: detachable STRING
 
 feature -- Factory
 
@@ -63,10 +66,10 @@ feature -- Factory
 		local
 			o_archetype_id: detachable ARCHETYPE_HRID
 			arch_terminology: ARCHETYPE_TERMINOLOGY
-			o_uid: detachable HIER_OBJECT_ID
+			o_uid, o_build_uid: detachable HIER_OBJECT_ID
+			o_original_language: TERMINOLOGY_CODE
 		do
 			if attached archetype_id as att_aid
-				and attached original_language as o_original_language
 				and attached description as o_description
 				and attached definition as o_definition
 				and attached terminology as p_terminology
@@ -75,8 +78,12 @@ feature -- Factory
 				if attached uid as att_uid then
 					create o_uid.make_from_string (att_uid)
 				end
+				if attached build_uid as att_uid then
+					create o_build_uid.make_from_string (att_uid)
+				end
 
-				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)
+				create o_original_language.make_from_string (original_language)
+				create arch_terminology.make_differential (o_original_language.code_string, o_definition.node_id)
 				p_terminology.populate_terminology (arch_terminology)
 				arch_terminology.finalise_dt
 
@@ -87,6 +94,7 @@ feature -- Factory
 					parent_archetype_id,
 					is_controlled,
 					o_uid,
+					o_build_uid,
 					other_metadata,
 					o_original_language,
 					translations,
