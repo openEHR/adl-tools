@@ -40,31 +40,30 @@ feature -- Display
 			attr_str: STRING
 		do
 			display_settings := ui_settings
-			check attached ev_grid_row as gr then
-				evx_grid.set_last_row (gr)
-			end
-			is_displayed := True
-
-			if attached arch_node as a_n and then attached a_n.parent as parent_ca then
-				create attr_str.make_empty
-				if parent_ca.has_differential_path then
-					if display_settings.show_technical_view then
-						attr_str.append (parent_ca.rm_attribute_path)
+			if attached evx_grid as att_evx_grid and attached ev_grid_row as gr then
+				att_evx_grid.set_last_row (gr)
+				if attached arch_node as a_n and then attached a_n.parent as parent_ca then
+					create attr_str.make_empty
+					if parent_ca.has_differential_path then
+						if display_settings.show_technical_view then
+							attr_str.append (parent_ca.rm_attribute_path)
+						else
+							attr_str.append (ui_graph_state.flat_archetype.annotated_path (parent_ca.rm_attribute_path, display_settings.language, True))
+						end
+						attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+						attr_str.remove_head (1)
 					else
-						attr_str.append (ui_graph_state.flat_archetype.annotated_path (parent_ca.rm_attribute_path, display_settings.language, True))
+						attr_str.append (parent_ca.rm_attribute_name)
 					end
-					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
-					attr_str.remove_head (1)
-				else
-					attr_str.append (parent_ca.rm_attribute_name)
-				end
-				if display_settings.show_technical_view then
-					attr_str.append (": " + a_n.rm_type_name)
-				end
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, c_node_font, c_object_colour, Void)
+					if display_settings.show_technical_view then
+						attr_str.append (": " + a_n.rm_type_name)
+					end
+					att_evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, Void, c_node_font, c_object_colour, Void)
 
-				-- constraint value
-				display_constraint
+					-- constraint value
+					display_constraint
+				end
+				is_displayed := True
 			end
 		end
 
@@ -84,7 +83,7 @@ feature {NONE} -- Implementation
 		local
 			s: STRING
 		do
-			if attached arch_node as a_n then
+			if attached arch_node as a_n and attached evx_grid as att_evx_grid then
 				if attached {C_TERMINOLOGY_CODE} a_n as ctc then
 					s := c_terminology_code_str (ctc)
 				elseif a_n.is_enumerated_type_constraint then
@@ -92,7 +91,7 @@ feature {NONE} -- Implementation
 				else
 					s := a_n.as_string
 				end
-				evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, Void, c_constraint_colour, Void)
+				att_evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, s, Void, Void, c_constraint_colour, Void)
 			end
 		end
 

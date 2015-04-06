@@ -33,12 +33,14 @@ feature -- Display
 			evx_grid := a_gui_grid
 
 			-- create a new row
-			evx_grid.add_row (arch_node)
-			check attached evx_grid.last_row as lr then
+			a_gui_grid.add_row (arch_node)
+			check attached a_gui_grid.last_row as lr then
 				ev_grid_row := lr
 			end
 
-			expression_context.prepare_display_in_grid (evx_grid)
+			if attached expression_context as att_ec then
+				att_ec.prepare_display_in_grid (a_gui_grid)
+			end
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -46,25 +48,26 @@ feature -- Display
 			s: STRING
 		do
 			precursor (ui_settings)
-			expression_context.display_in_grid (ui_settings)
-
-			create s.make_empty
-			if attached arch_node.tag as a_n_tag then
-				s.append (a_n_tag)
+			if attached evx_grid as att_evx_grid and attached expression_context as att_ec then
+				att_ec.display_in_grid (ui_settings)
+				create s.make_empty
+				if attached arch_node.tag as a_n_tag then
+					s.append (a_n_tag)
+				end
+				check attached ev_grid_row as gr then
+					att_evx_grid.set_last_row (gr)
+				end
+				att_evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, Void, c_meaning_colour, c_pixmap)
+				att_evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, Void, c_meaning_colour, Void)
 			end
-			check attached ev_grid_row as gr then
-				evx_grid.set_last_row (gr)
-			end
-			evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, Void, c_meaning_colour, c_pixmap)
-			evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, Void, c_meaning_colour, Void)
 		end
 
 feature -- Modification
 
-	set_expression_context (an_ed_context: like expression_context)
+	set_expression_context (an_ed_context: attached like expression_context)
 		do
 			expression_context := an_ed_context
-			expression_context.set_parent (Current)
+			an_ed_context.set_parent (Current)
 		end
 
 feature {EXPR_ITEM_UI_NODE} -- Implementation
@@ -73,7 +76,9 @@ feature {EXPR_ITEM_UI_NODE} -- Implementation
 			-- generate useful string representatoin for meaning column
 		do
 			create Result.make_empty
-			Result.append (expression_context.meaning)
+			if attached expression_context as att_ec then
+				Result.append (att_ec.meaning)
+			end
 		end
 
 	c_pixmap: EV_PIXMAP
