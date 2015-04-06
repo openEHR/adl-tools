@@ -27,7 +27,7 @@ feature -- Access
 
 feature -- Modification
 
-	add_item (a_tag, an_item: attached STRING)
+	add_item (a_tag, an_item: STRING)
 			-- add `an_item' at key `a_tag'; replace any existing at the same tag
 		do
 			items.force (an_item, a_tag)
@@ -35,7 +35,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- generate a multi-line string of the form
 			-- 	tag1: val1
 			-- 	tag2: val2

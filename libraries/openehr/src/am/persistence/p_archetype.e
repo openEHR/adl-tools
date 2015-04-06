@@ -26,7 +26,6 @@ feature -- Initialisation
 			-- basic make routine to guarantee validity on creation
 		do
 			artefact_type := an_archetype.artefact_type
-			artefact_object_type := an_archetype.generating_type
 			create archetype_id.make (an_archetype.archetype_id)
 			parent_archetype_id := an_archetype.parent_archetype_id
 			create definition.make (an_archetype.definition)
@@ -42,9 +41,6 @@ feature -- Access
 		attribute
 			create Result.make_empty
 		end
-
-	artefact_object_type: detachable STRING
-			-- records object model type of the original artefact
 
 	archetype_id: detachable P_ARCHETYPE_HRID
 

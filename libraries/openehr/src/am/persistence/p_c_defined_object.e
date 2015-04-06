@@ -11,7 +11,30 @@ deferred class P_C_DEFINED_OBJECT
 
 inherit
 	P_C_OBJECT
+		redefine
+			make, populate_c_instance
+		end
+
+feature -- Initialisation
+
+	make (a_co: C_DEFINED_OBJECT)
+		do
+			precursor (a_co)
+			is_frozen := a_co.is_frozen
+		end
+
+feature -- Access
+
+	is_frozen: BOOLEAN
+
+feature -- Factory
+
+	populate_c_instance (a_co: C_DEFINED_OBJECT)
+			-- populate fields not already populated from creation of a C_XXX instance
+		do
+			precursor (a_co)
+			a_co.set_is_frozen (is_frozen)
+		end
 
 end
-
 

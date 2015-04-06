@@ -23,19 +23,19 @@ feature -- Initialisation
 	make (a_car: C_ARCHETYPE_ROOT)
 		do
 			precursor (a_car)
-			archetype_id := a_car.archetype_ref
+			archetype_ref := a_car.archetype_ref
 		end
 
 feature -- Access
 
-	archetype_id: STRING
+	archetype_ref: STRING
 			-- filler or referenced archetype id
 
 feature -- Factory
 
 	create_c_archetype_root: C_ARCHETYPE_ROOT
 		do
-			create Result.make (rm_type_name, node_id, archetype_id)
+			create Result.make (rm_type_name, node_id, archetype_ref)
 			populate_c_instance (Result)
 		end
 

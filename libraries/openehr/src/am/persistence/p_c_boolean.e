@@ -28,6 +28,8 @@ feature -- Initialisation
 
 feature -- Access
 
+	constraint: ARRAYED_LIST [BOOLEAN]
+
     assumed_value: BOOLEAN_REF
     		-- FIXME: only needed because 7.3 compiler fails to correctly infer type from predecessor
 
@@ -44,10 +46,6 @@ feature -- Factory
 			a_c_o.set_constraint (constraint)
 			precursor (a_c_o)
 		end
-
-feature -- Access
-
-	constraint: ARRAYED_LIST [BOOLEAN]
 
 end
 

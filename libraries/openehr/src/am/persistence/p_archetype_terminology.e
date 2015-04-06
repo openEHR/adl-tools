@@ -52,11 +52,8 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	term_bindings: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	term_bindings: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
-		attribute
-			create Result.make (0)
-		end
 
 	value_sets: detachable HASH_TABLE [VALUE_SET, STRING]
 			-- table of value set relationships keyed by ac-code
@@ -76,16 +73,18 @@ feature -- Factory
 			a_terminology.set_original_language (create {TERMINOLOGY_CODE}.make_from_string (original_language))
 			a_terminology.set_term_definitions (term_definitions)
 
-			create tb_ont.make (0)
-			across term_bindings as term_bindings_csr loop
-				tb_p_ont := term_bindings_csr.item
-				create tb_ont_code_table.make (0)
-				tb_ont.put (tb_ont_code_table, term_bindings_csr.key)
-				across tb_p_ont as p_term_bindings_csr loop
-					tb_ont_code_table.put (create {URI}.make_from_string (p_term_bindings_csr.item), p_term_bindings_csr.key)
+			if attached term_bindings as att_tb then
+				create tb_ont.make (0)
+				across att_tb as term_bindings_csr loop
+					tb_p_ont := term_bindings_csr.item
+					create tb_ont_code_table.make (0)
+					tb_ont.put (tb_ont_code_table, term_bindings_csr.key)
+					across tb_p_ont as p_term_bindings_csr loop
+						tb_ont_code_table.put (create {URI}.make_from_string (p_term_bindings_csr.item), p_term_bindings_csr.key)
+					end
 				end
+				a_terminology.set_term_bindings (tb_ont)
 			end
-			a_terminology.set_term_bindings (tb_ont)
 
 			if attached terminology_extracts as t_ext then
 				a_terminology.set_terminology_extracts (t_ext)

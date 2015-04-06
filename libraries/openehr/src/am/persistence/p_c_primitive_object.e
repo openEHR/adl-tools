@@ -21,12 +21,17 @@ feature -- Initialisation
 		do
 			precursor (a_c_do)
 			assumed_value := a_c_do.assumed_value
+			is_enumerated_type_constraint := a_c_do.is_enumerated_type_constraint
 		end
 
 feature -- Access
 
     assumed_value: detachable ANY
             -- value to be assumed if none sent in data
+
+feature -- Status Report
+
+	is_enumerated_type_constraint: BOOLEAN
 
 feature -- Factory
 
@@ -40,6 +45,9 @@ feature -- Factory
 			precursor (a_c_o)
 			if attached assumed_value as av then
 				a_c_o.set_assumed_value (av)
+			end
+			if is_enumerated_type_constraint then
+				a_c_o.set_enumerated_type_constraint
 			end
 		end
 

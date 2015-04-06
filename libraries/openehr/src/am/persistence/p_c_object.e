@@ -32,6 +32,7 @@ feature -- Initialisation
 				occurrences := att_occ.as_string
 			end
 			sibling_order := a_co.sibling_order
+			is_deprecated := a_co.is_deprecated
 		end
 
 feature -- Access
@@ -50,18 +51,23 @@ feature -- Access
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
 			-- on specialised nodes
 
+feature -- Status Report
+
+	is_deprecated: BOOLEAN
+
 feature -- Factory
 
-	populate_c_instance (a_c_o: C_OBJECT)
+	populate_c_instance (a_co: C_OBJECT)
 			-- populate fields not already populated from creation of a C_XXX instance
 		do
-			a_c_o.set_root_node_id (node_id)
+			a_co.set_root_node_id (node_id)
 			if attached occurrences as occ then
-				a_c_o.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_from_string (occ))
+				a_co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_from_string (occ))
 			end
 			if attached sibling_order as so then
-				a_c_o.set_sibling_order (so)
+				a_co.set_sibling_order (so)
 			end
+			a_co.set_is_deprecated (is_deprecated)
 		end
 
 end
