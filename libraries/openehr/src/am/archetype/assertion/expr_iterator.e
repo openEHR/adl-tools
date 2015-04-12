@@ -20,18 +20,18 @@ create
 
 feature -- Initialisation
 
-	make (a_target: EXPR_ITEM)
+	make (a_target: RULE_ELEMENT)
 		do
 			target := a_target
 		end
 
 feature -- Access
 
-	target: EXPR_ITEM
+	target: RULE_ELEMENT
 
 feature -- Traversal
 
-	do_all (node_enter_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]; node_exit_action: detachable PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
+	do_all (node_enter_action: PROCEDURE[ANY, TUPLE[RULE_ELEMENT, INTEGER]]; node_exit_action: detachable PROCEDURE[ANY, TUPLE[RULE_ELEMENT, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
 		do
 			depth := 0
@@ -40,7 +40,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_all_nodes (a_target: EXPR_ITEM; node_enter_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]; node_exit_action: detachable PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
+	do_all_nodes (a_target: RULE_ELEMENT; node_enter_action: PROCEDURE[ANY, TUPLE[RULE_ELEMENT, INTEGER]]; node_exit_action: detachable PROCEDURE[ANY, TUPLE[RULE_ELEMENT, INTEGER]])
 		do
 			depth := depth + 1
 			node_enter_action.call ([a_target, depth])

@@ -10,17 +10,9 @@ note
 deferred class EXPR_ITEM_UI_NODE
 
 inherit
-	ANY_UI_NODE
+	RULE_ELEMENT_UI_NODE
 		redefine
-			arch_node
-		end
-
-feature -- Definitions
-
-	Pixmap_path: STRING
-			-- path to pixmaps for assertion elements, including final '/'
-		once
-		 	Result := "am" + resource_path_separator + "assertion" + resource_path_separator
+			arch_node, parent
 		end
 
 feature -- Access
@@ -29,26 +21,6 @@ feature -- Access
 			-- assertion item being edited
 
 	parent: detachable EXPR_ITEM_UI_NODE
-
-feature -- Modification
-
-	set_parent (a_node: like parent)
-		do
-			parent := a_node
-		end
-
-feature {EXPR_ITEM_UI_NODE} -- Implementation
-
-	meaning: STRING
-			-- generate useful string representatoin for meaning column
-		deferred
-		end
-
-	specialisation_status: INTEGER
-			-- specialisation status of archetype node in this context object
-		do
-			Result := Ss_added
-		end
 
 end
 

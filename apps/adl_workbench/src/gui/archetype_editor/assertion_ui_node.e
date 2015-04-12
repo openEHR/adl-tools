@@ -10,7 +10,7 @@ note
 class ASSERTION_UI_NODE
 
 inherit
-	EXPR_ITEM_UI_NODE
+	RULE_ELEMENT_UI_NODE
 		redefine
 			arch_node, prepare_display_in_grid, display_in_grid
 		end
@@ -23,7 +23,7 @@ feature -- Access
 	arch_node: detachable ASSERTION
 			-- assertion being edited
 
-	expression_context: detachable EXPR_ITEM_UI_NODE
+	expression_context: detachable RULE_ELEMENT_UI_NODE
 			-- the editor context for `arch_node'.expression
 
 feature -- Display
@@ -70,7 +70,7 @@ feature -- Modification
 			an_ed_context.set_parent (Current)
 		end
 
-feature {EXPR_ITEM_UI_NODE} -- Implementation
+feature {RULE_ELEMENT_UI_NODE} -- Implementation
 
 	meaning: STRING
 			-- generate useful string representatoin for meaning column

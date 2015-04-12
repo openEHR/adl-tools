@@ -2,12 +2,10 @@ note
 	component:   "openEHR ADL Tools"
 	description: "ADL assertion"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "initial"
-
 
 class ASSERTION
 
@@ -19,7 +17,7 @@ inherit
 			{NONE} all
 		end
 
-	EXPR_ITEM
+	RULE_STATEMENT
 
 create
 	make
