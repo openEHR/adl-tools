@@ -40,7 +40,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: Integer
+	value: INTEGER
 			-- Actual value of this instance
 
 feature -- Output
