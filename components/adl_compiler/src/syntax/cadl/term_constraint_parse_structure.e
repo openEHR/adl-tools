@@ -125,7 +125,7 @@ feature -- Factory
 			map_str: attached like last_converted_binding_map
 		do
 			create parse_str.make_local
-			last_converted_local := last_converted_local
+			last_converted_local := parse_str
 			create bindings_str.make (0)
 			last_converted_local_bindings := bindings_str
 			create map_str.make (0)
