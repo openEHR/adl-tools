@@ -164,6 +164,19 @@ feature -- Status Report
 			Result := has_source_file
 		end
 
+	can_save_to_legacy_file: BOOLEAN
+			-- True if legacy file exists and can e written to
+		local
+			fd: PLAIN_TEXT_FILE
+		do
+			if has_legacy_flat_file then
+				check attached legacy_flat_path as lfp then
+					create fd.make_with_name (lfp)
+					Result := fd.is_writable
+				end
+			end
+		end
+
 feature {ARCH_LIB_ARCHETYPE} -- Status Report
 
 	is_legacy_out_of_date: BOOLEAN

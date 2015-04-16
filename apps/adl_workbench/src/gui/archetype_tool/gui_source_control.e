@@ -271,12 +271,21 @@ feature {NONE} -- Implementation
 	save_adl_14_source_editor_text (a_text: STRING)
 			-- save what is in a 1.4 editor pane to the 1.4 file
 			-- and then select the archetype in the catalogue to force a recompile
+		local
+			err_dlg: EV_INFORMATION_DIALOG
 		do
 			if attached auth_source as att_source then
-				att_source.save_text_to_legacy_file (a_text)
-				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
-				gui_agents.call_select_archetype_agent (att_source)
-				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
+				if att_source.can_save_to_legacy_file then
+					att_source.save_text_to_legacy_file (a_text)
+					gui_agents.call_console_tool_append_agent (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
+					gui_agents.call_select_archetype_agent (att_source)
+					gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
+				else
+					check attached att_source.file_mgr.legacy_flat_path as lfp then
+						create err_dlg.make_with_text (get_msg (ec_could_not_write_to_file, <<lfp>>))
+						err_dlg.show_modal_to_window (proximate_ev_window (ev_root_container))
+					end
+				end
 			end
 		end
 

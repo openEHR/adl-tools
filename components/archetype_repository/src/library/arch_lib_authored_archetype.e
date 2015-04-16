@@ -309,6 +309,8 @@ feature -- File Access
 
 	save_text_to_legacy_file (a_text: STRING)
 			-- save `a_text' to the legacy file if it exists
+		require
+			can_save_to_legacy_file
 		do
 			file_mgr.save_text_to_legacy_file (a_text)
 			signal_source_edited
@@ -324,6 +326,12 @@ feature -- File Access
 			-- remove the source file from the file system
 		do
 			file_mgr.remove_source_file
+		end
+
+	can_save_to_legacy_file: BOOLEAN
+			-- True if legacy file exists and can e written to
+		do
+			Result := file_mgr.can_save_to_legacy_file
 		end
 
 feature {MAIN_WINDOW} -- File Access

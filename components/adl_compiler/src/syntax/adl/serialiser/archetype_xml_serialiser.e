@@ -18,11 +18,6 @@ inherit
 			{NONE} all
 		end
 
-	XML_TOOLS
-		export
-			{NONE} all
-		end
-
 	XML_SERIALISER_DEFINITIONS
 		export
 			{NONE} all

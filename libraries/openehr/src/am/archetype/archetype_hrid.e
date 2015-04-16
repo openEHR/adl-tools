@@ -3,11 +3,10 @@ note
 
 	description: "[
 				 Multi-axial human readable archetype identifier of the form:
-				 		qualified_rm_class.domain_concept.version
+				 		[namespace::]qualified_rm_class.domain_concept.version
 				 	where:
 				 		qualified_rm_class	= rm_publisher-closure_name-rm_class
-				 		domain_concept = string name of concept, including specialised parts
-				 						 separated by '-'s
+				 		domain_concept = string name of concept, including specialised parts separated by '-'s
 				 		version = string
 				 ]"
 	keywords:    "archetype"
