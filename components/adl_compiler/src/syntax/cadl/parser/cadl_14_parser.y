@@ -696,11 +696,11 @@ assertions: assertion
 
 assertion: any_identifier ':' boolean_node
 		{
-			create $$.make ($3, $1)
+			create $$.make_with_tag ($3, $1)
 		}
 	| boolean_node
 		{
-			create $$.make ($1, Void)
+			create $$.make ($1)
 		}
 	-- 
 	-- TODO: redesign path referencing mechanism for constraints on archetype
@@ -708,7 +708,7 @@ assertion: any_identifier ':' boolean_node
 	--
 	| arch_outer_constraint_expr
 		{
-			create $$.make ($1, Void)
+			create $$.make ($1)
 		}
 	| any_identifier ':' error
 		{

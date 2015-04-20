@@ -20,14 +20,22 @@ inherit
 	RULE_STATEMENT
 
 create
-	make
+	make, make_with_tag
 
 feature -- Initialisation
 
-	make (an_expr: EXPR_ITEM; a_tag: detachable STRING)
+	make (an_expr: EXPR_ITEM)
+			-- make assertion with an expression and an optional tag
+   		do
+			expression := an_expr
+			an_expr.set_parent (Current)
+			type := op_type_boolean
+		end
+
+	make_with_tag (an_expr: EXPR_ITEM; a_tag: STRING)
 			-- make assertion with an expression and an optional tag
 		require
-			Tag_valid: attached a_tag implies not a_tag.is_empty
+			Tag_valid: not a_tag.is_empty
    		do
 			tag := a_tag
 			expression := an_expr

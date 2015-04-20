@@ -89,9 +89,9 @@ feature -- Factory
 	create_assertion (an_expr: EXPR_ITEM; a_tag: STRING): ASSERTION
 			-- make assertion with an expression and an optional tag
 		require
-			Tag_valid: a_tag /= Void implies not a_tag.is_empty
+			Tag_valid: not a_tag.is_empty
    		do
-			create Result.make(an_expr, a_tag)
+			create Result.make_with_tag(an_expr, a_tag)
 		end
 
 end

@@ -509,7 +509,7 @@ end
 								end
 							end
 						else
-							add_error (ec_VCARM, <<att_parent_ca.rm_attribute_name, arch_diff_child.annotated_path (att_parent_ca.path, display_language, True),
+							add_error (ec_VCARM, <<att_parent_ca.rm_attribute_name, arch_diff_child.annotated_path (co.path, display_language, True),
 								attr_rm_type_in_flat_anc>>)
 						end
 					end

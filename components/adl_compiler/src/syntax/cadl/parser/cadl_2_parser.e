@@ -2181,7 +2181,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_2_parser.y' at line 817")
 end
 
-			create yyval8.make (yyvs21.item (yyvsp21), yyvs4.item (yyvsp4))
+			create yyval8.make_with_tag (yyvs21.item (yyvsp21), yyvs4.item (yyvsp4))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -2204,7 +2204,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_2_parser.y' at line 821")
 end
 
-			create yyval8.make (yyvs21.item (yyvsp21), Void)
+			create yyval8.make (yyvs21.item (yyvsp21))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -2225,7 +2225,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_2_parser.y' at line 829")
 end
 
-			create yyval8.make (yyvs23.item (yyvsp23), Void)
+			create yyval8.make (yyvs23.item (yyvsp23))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
