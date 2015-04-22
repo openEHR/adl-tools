@@ -8,42 +8,34 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 
-class RESOURCE_ANNOTATION_NODE_ITEMS
+class RESOURCE_ANNOTATION_VALUE_TABLE
+
+inherit
+	HASH_TABLE [STRING, STRING]
 
 create
 	make
 
-feature -- initialisation
-
-	make
-		do
-			create items.make (0)
-		end
-
-feature -- Access
-
-	items: HASH_TABLE [STRING, STRING]
-			-- List of tagged values
-
 feature -- Modification
 
-	add_item (a_tag, an_item: STRING)
+	add_value (a_tag, a_value: STRING)
 			-- add `an_item' at key `a_tag'; replace any existing at the same tag
 		do
-			items.force (an_item, a_tag)
+			force (a_value, a_tag)
 		end
 
 feature -- Output
 
-	as_string: STRING
+	values_as_string: STRING
 			-- generate a multi-line string of the form
 			-- 	tag1: val1
 			-- 	tag2: val2
 			-- etc
 		do
 			create Result.make_empty
-			across items as items_csr loop
-				Result.append (items_csr.key + ": " + items_csr.item + "%N")
+			from start until off loop
+				Result.append (key_for_iteration + ": " + item_for_iteration + "%N")
+				forth
 			end
 		end
 

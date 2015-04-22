@@ -515,15 +515,13 @@ feature -- Serialisation
 
 			-- annotations section
 			create annot_serialised.make_empty
-			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch then
-				if attached auth_arch.annotations as att_ann then
-					annotations_context.set_tree (att_ann.dt_representation)
-					annotations_context.serialise (a_format, False, False)
-					annot_serialised := annotations_context.serialised
-				end
+			if attached {AUTHORED_ARCHETYPE} an_archetype as auth_arch and then attached auth_arch.annotations as att_ann then
+				annotations_context.set_tree (att_ann.dt_representation)
+				annotations_context.serialise (a_format, False, False)
+				annot_serialised := annotations_context.serialised
 			end
 
-			-- OPT only: component_ontologies section
+			-- OPT only: component_terminologies section
 			create comp_onts_serialised.make_empty
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
 				create comp_onts_helper.make

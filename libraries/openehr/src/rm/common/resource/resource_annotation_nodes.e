@@ -7,68 +7,75 @@ note
 	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class RESOURCE_ANNOTATION_NODES
+class RESOURCE_ANNOTATION_PATH_TABLE
 
 create
-	make
+	make, make_empty
 
-feature -- initialisation
+feature -- Initialisation
 
-	make
+	make (a_path_table: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING])
 		do
-			create items.make (0)
+			path_table := a_path_table
+		end
+
+	make_empty
+		do
+			create path_table.make (0)
 		end
 
 feature -- Access
 
-	items: HASH_TABLE [RESOURCE_ANNOTATION_NODE_ITEMS, STRING]
-			-- List of form:
-			-- {{tag, value}+, path}
+	path_table: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 
-	item_at_path (a_path: STRING): detachable RESOURCE_ANNOTATION_NODE_ITEMS
-			-- Return annotations at `a_path' from `items'
+	values_at_path (a_path: STRING): detachable HASH_TABLE [STRING, STRING]
+			-- Return annotations at `a_path' from `values'
 		do
-			Result := items.item (a_path)
+			Result := path_table.item (a_path)
 		end
 
 feature -- Status Report
 
 	has_path (a_path: STRING): BOOLEAN
-			-- True if `a_path' found in `items'
+			-- True if `a_path' found in `values'
 		do
-			Result := items.has (a_path)
+			Result := path_table.has (a_path)
 		end
 
 feature -- Modification
 
-	replace_items_at_node (a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
+	replace_values_at_path (a_path: STRING; a_values: HASH_TABLE [STRING, STRING])
 			-- add `an_annotations' at key `a_path'; replace any existing at that path
 		do
-			items.force (an_annotations, a_path)
+			path_table.force (a_values, a_path)
 		end
 
-	merge_items_at_node (a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
+	merge_values_at_path (a_path: STRING; a_values: HASH_TABLE [STRING, STRING])
 			-- add `an_annotations' at key `a_path' to existing annotations
 		do
-			if not items.has (a_path) then
-				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
+			if not path_table.has (a_path) then
+				path_table.put (create {HASH_TABLE [STRING, STRING]}.make (0), a_path)
 			end
-			across an_annotations.items as annots_csr loop
-				if attached items.item (a_path) as att_item then
-					att_item.items.force (annots_csr.item, annots_csr.key)
+			if attached path_table.item (a_path) as val_table then
+				across a_values as values_csr loop
+					val_table.force (values_csr.item, values_csr.key)
 				end
 			end
 		end
 
-	add_item_at_node (a_path, annot_key, annot_content: STRING)
+	add_value_at_path (a_path, annot_key, annot_content: STRING)
 			-- add an annotation consisting of key `annot_key' & `annot_content' at path `a_path';
 			-- replace any existing at same path
+		local
+			val_table: HASH_TABLE [STRING, STRING]
 		do
-			if items.has (a_path) and then attached items.item (a_path) as att_item then
-				att_item.add_item (annot_key, annot_content)
+			if path_table.has (a_path) and then attached path_table.item (a_path) as att_item then
+				val_table := att_item
 			else
-				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
+				create val_table.make (0)
+				path_table.put (val_table, a_path)
 			end
+			val_table.force (annot_content, annot_key)
 		end
 
 end

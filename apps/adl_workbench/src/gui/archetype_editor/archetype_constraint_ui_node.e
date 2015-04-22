@@ -144,7 +144,7 @@ feature {NONE} -- Implementation
 	node_tooltip_str: STRING
 			-- generate a tooltip for this node
 		local
-			p: STRING
+			p, annots: STRING
 			bindings: HASH_TABLE [URI, STRING]
 		do
 			if attached arch_node as a_n then
@@ -177,7 +177,11 @@ feature {NONE} -- Implementation
 					attached auth_arch.annotations_at_path (display_settings.language, a_n.path) as att_ann
 				then
 					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
-					Result.append (att_ann.as_string)
+					create annots.make_empty
+					across att_ann as ann_vals_csr loop
+						annots.append (ann_vals_csr.key + ": " + ann_vals_csr.item + "%N")
+					end
+					Result.append (annots)
 				end
 			else
 				Result := path

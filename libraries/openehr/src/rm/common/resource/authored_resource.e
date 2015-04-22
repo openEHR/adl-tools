@@ -109,13 +109,13 @@ feature -- Access
 			end
 		end
 
-	annotations_at_path (a_lang, a_path: STRING): detachable RESOURCE_ANNOTATION_NODE_ITEMS
+	annotations_at_path (a_lang, a_path: STRING): detachable HASH_TABLE [STRING, STRING]
 			-- Obtain annotation at `a_path'
 		require
 			has_annotations_at_path:  has_annotations_at_path (a_lang, a_path)
 		do
 			if attached annotations as att_ann then
-				Result := att_ann.annotations_at_path (a_lang, a_path)
+				Result := att_ann.annotations_at_path_in_lang (a_lang, a_path)
 			end
 		end
 
@@ -215,7 +215,7 @@ feature -- Modification
 			languages_available_cache.wipe_out
 		end
 
-	merge_annotations (a_lang_tag: STRING; a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
+	merge_annotations (a_lang_tag: STRING; a_path: STRING; an_annotations: HASH_TABLE [STRING, STRING])
 			-- add `an_annotations' at key `a_path'; replace any existing at same path
 		local
 			annots: RESOURCE_ANNOTATIONS
@@ -227,7 +227,7 @@ feature -- Modification
 				annotations := annots
 			end
 			if not annots.has_language (a_lang_tag) then
-				annots.add_annotation_table (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
+				annots.add_annotation_table (create {RESOURCE_ANNOTATION_PATH_TABLE}.make_empty, a_lang_tag)
 			end
 			annots.merge_annotation_items (a_lang_tag, a_path, an_annotations)
 		end

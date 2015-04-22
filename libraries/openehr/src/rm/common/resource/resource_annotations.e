@@ -50,44 +50,46 @@ feature -- Initialisation
 
 feature -- Access
 
-	items: HASH_TABLE [RESOURCE_ANNOTATION_NODES, STRING]
-			-- list of annotation tables, keyed by language. Annotations may be present for only one or
+	documentation: HASH_TABLE [HASH_TABLE [HASH_TABLE [STRING, STRING], STRING], STRING]
+			-- documentary annotations, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
 		attribute
 			create Result.make (0)
 		end
 
 	matching_language_tag (a_lang_tag: STRING): STRING
-			-- The actual language tag e.g. "en-GB" matching `a_lang_tag' in `items'
+			-- The actual language tag e.g. "en-GB" matching `a_lang_tag' in `documentation'
 		require
 			has_matching_language_tag (a_lang_tag)
 		do
-			if items.has (a_lang_tag) then
+			if documentation.has (a_lang_tag) then
 				Result := a_lang_tag
 			else
-				from items.start until items.off or language_tag_has_language (items.key_for_iteration, a_lang_tag) loop
-					items.forth
+				from documentation.start until documentation.off or language_tag_has_language (documentation.key_for_iteration, a_lang_tag) loop
+					documentation.forth
 				end
-				Result := items.key_for_iteration
+				Result := documentation.key_for_iteration
 			end
 		end
 
-	annotations_at_path (a_lang, a_path: STRING): detachable RESOURCE_ANNOTATION_NODE_ITEMS
-			-- Get annotations for `a_lang' at `a_path' from `items'
+	annotations_at_path_in_lang (a_lang, a_path: STRING): detachable HASH_TABLE [STRING, STRING]
+			-- Get annotations for `a_lang' at `a_path' from `documentation'
 		require
 			has_annotation_at_path (a_lang, a_path)
 		do
-			if attached items.item (a_lang) as item_at_lang then
-				Result := item_at_lang.item_at_path (a_path)
+			if attached documentation.item (a_lang) as lang_table then
+				Result := (create {RESOURCE_ANNOTATION_PATH_TABLE}.make (lang_table)).values_at_path (a_path)
 			end
 		end
 
-	node_table_for_language (a_lang: STRING): detachable RESOURCE_ANNOTATION_NODES
-			-- Get annotations for `a_lang' at `a_path' from `items'
+	path_table_for_language (a_lang: STRING): detachable RESOURCE_ANNOTATION_PATH_TABLE
+			-- Get annotations for `a_lang' at `a_path' from `documentation'
 		require
 			has_language (a_lang)
 		do
-			Result := items.item (a_lang)
+			if documentation.has (a_lang) and then attached documentation.item (a_lang) as path_table_ht then
+				create Result.make (path_table_ht)
+			end
 		end
 
 feature -- Status Report
@@ -95,7 +97,7 @@ feature -- Status Report
 	has_language (a_lang_tag: STRING): BOOLEAN
 			-- True if either original_language or translations has a_lang_tag
 		do
-			Result := items.has (a_lang_tag)
+			Result := documentation.has (a_lang_tag)
 		end
 
 	has_matching_language_tag (a_lang_tag: STRING): BOOLEAN
@@ -103,55 +105,55 @@ feature -- Status Report
 			-- since this section is only optionally populated with respect to languages, or has a matching tag, e.g.
 			-- "en-GB"
 		do
-			Result := items.has (a_lang_tag) or else
-				items.current_keys.there_exists (agent language_tag_has_language (?, a_lang_tag))
+			Result := documentation.has (a_lang_tag) or else
+				documentation.current_keys.there_exists (agent language_tag_has_language (?, a_lang_tag))
 		end
 
 	has_annotation_at_path (a_lang, a_path: STRING): BOOLEAN
-			-- True if `a_path' is found in  `items' for `a_lang'
+			-- True if `a_path' is found in  `documentation' for `a_lang'
 		do
-			if items.has (a_lang) and then attached items.item (a_lang) as item_at_lang then
-				Result := item_at_lang.has_path (a_path)
+			if documentation.has (a_lang) and then attached documentation.item (a_lang) as lang_table then
+				Result := (create {RESOURCE_ANNOTATION_PATH_TABLE}.make (lang_table)).has_path (a_path)
 			end
 		end
 
 	has_any_annotation_at_path (a_path: STRING): BOOLEAN
-			-- True if `a_path' is found in `items' for any language
+			-- True if `a_path' is found in `documentation' for any language
 		do
-			Result := across items as anns_for_lang_csr some anns_for_lang_csr.item.items.has (a_path) end
+			Result := across documentation as anns_for_lang_csr some anns_for_lang_csr.item.has (a_path) end
 		end
 
 feature -- Modification
 
-	add_annotation_table (an_annot_table: RESOURCE_ANNOTATION_NODES; a_lang: STRING)
+	add_annotation_table (an_annot_table: RESOURCE_ANNOTATION_PATH_TABLE; a_lang: STRING)
 		require
 			not has_language (a_lang)
 		do
-			items.put (an_annot_table, a_lang)
+			documentation.put (an_annot_table.path_table, a_lang)
 		end
 
-	merge_annotation_items (a_lang_tag: STRING; a_path: STRING; ann_items: RESOURCE_ANNOTATION_NODE_ITEMS)
+	merge_annotation_items (a_lang_tag: STRING; a_path: STRING; value_table: HASH_TABLE [STRING, STRING])
 			-- add `ann_items' at key `a_path'; replace any existing at same path
 		local
-			ann_item: RESOURCE_ANNOTATION_NODES
+			path_table: RESOURCE_ANNOTATION_PATH_TABLE
 		do
-			if attached items.item (a_lang_tag) as att_ann_item then
-				ann_item := att_ann_item
+			if attached documentation.item (a_lang_tag) as lang_table then
+				create path_table.make (lang_table)
 			else
-				create ann_item.make
-				items.put (ann_item, a_lang_tag)
+				create path_table.make_empty
+				documentation.put (path_table.path_table, a_lang_tag)
 			end
-			ann_item.merge_items_at_node(a_path, ann_items)
+			path_table.merge_values_at_path (a_path, value_table)
 		end
 
 	merge (other: RESOURCE_ANNOTATIONS)
 			-- merge annotations in `other' to current
 		do
 			-- iterate on languages
-			across other.items as other_items_csr loop
+			across other.documentation as other_lang_table loop
 				-- iterate on paths
-				across other_items_csr.item.items as paths_csr loop
-					merge_annotation_items (other_items_csr.key, paths_csr.key, paths_csr.item)
+				across other_lang_table.item as paths_csr loop
+					merge_annotation_items (other_lang_table.key, paths_csr.key, paths_csr.item)
 				end
 			end
 		end
@@ -165,9 +167,9 @@ feature -- Modification
 		do
 			create old_og_path.make_from_string (old_path)
 			create new_og_path.make_from_string (new_path)
-			across items as anns_for_lang_csr loop
+			across documentation as anns_for_lang_csr loop
 				create conv_paths.make (0)
-				across anns_for_lang_csr.item.items as annots_csr loop
+				across anns_for_lang_csr.item as annots_csr loop
 					create annot_path.make_from_string (annots_csr.key)
 					if annots_csr.key.is_equal (old_path) then
 						conv_paths.put (new_path, old_path)
@@ -177,7 +179,7 @@ feature -- Modification
 					end
 				end
 				across conv_paths as conv_paths_csr loop
-					anns_for_lang_csr.item.items.replace_key (conv_paths_csr.item, conv_paths_csr.key)
+					anns_for_lang_csr.item.replace_key (conv_paths_csr.item, conv_paths_csr.key)
 				end
 			end
 		end
@@ -186,22 +188,17 @@ feature -- Modification
 		require
 			has_language (a_lang_tag)
 		do
-			items.remove (a_lang_tag)
+			documentation.remove (a_lang_tag)
 		ensure
-			not items.has (a_lang_tag)
+			not documentation.has (a_lang_tag)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Serialisation
 
-	persistent_attributes: ARRAYED_LIST [STRING]
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
-			create Result.make (0)
-			Result.compare_objects
-			Result.extend ("items")
 		end
 
 end
-
-

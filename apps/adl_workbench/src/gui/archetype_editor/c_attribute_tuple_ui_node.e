@@ -79,7 +79,7 @@ feature {NONE} -- Implementation
 	node_tooltip_str: STRING
 			-- generate a tooltip for this node
 		local
-			p: STRING
+			p, annots: STRING
 		do
 			create Result.make_empty
 
@@ -99,8 +99,12 @@ feature {NONE} -- Implementation
 						attached auth_arch.annotations_at_path (display_settings.language, p) as att_ann
 					then
 						Result.append (get_text (ec_annotations_text) + ":%N")
-						Result.append ("%T")
-						Result.append (att_ann.as_string)
+
+						create annots.make_empty
+						across att_ann as ann_vals_csr loop
+							annots.append (ann_vals_csr.key + ": " + ann_vals_csr.item + "%N")
+						end
+						Result.append ("%T" + annots)
 					end
 
 					if not c_attrs_csr.is_last then

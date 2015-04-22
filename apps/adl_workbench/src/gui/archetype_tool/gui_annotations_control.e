@@ -110,8 +110,6 @@ feature {NONE} -- Implementation
 			-- populate the ADL tree control by creating it from scratch
 		local
 			lang_key: STRING
-			anns_by_path: HASH_TABLE [RESOURCE_ANNOTATION_NODE_ITEMS, STRING]
-			ann_list: HASH_TABLE [STRING, STRING]
 			gli: EV_GRID_LABEL_ITEM
 			path_row, ann_row: EV_GRID_ROW
 		do
@@ -121,34 +119,31 @@ feature {NONE} -- Implementation
 				lang_key := source_archetype.annotations.matching_language_tag (selected_language)
 
 				-- populate grid
-				anns_by_path := source_archetype.annotations.node_table_for_language (lang_key).items
-				from anns_by_path.start until anns_by_path.off loop
-					-- put the path in the first column
-					create gli.make_with_text (source_archetype.annotated_path (anns_by_path.key_for_iteration, selected_language, True))
-					ev_root_container.set_item (Grid_path_col, ev_root_container.row_count + 1, gli)
-					path_row := gli.row
+				if attached source_archetype.annotations.path_table_for_language (lang_key) as path_tbl then
+					across path_tbl.path_table as val_tbl_csr loop
+						-- put the path in the first column
+						create gli.make_with_text (source_archetype.annotated_path (val_tbl_csr.key, selected_language, True))
+						ev_root_container.set_item (Grid_path_col, ev_root_container.row_count + 1, gli)
+						path_row := gli.row
 
-					-- for each item in the annotations list, add a sub-row with the key in col 2 and the value in col 3
-					ann_list := anns_by_path.item_for_iteration.items
-					from ann_list.start until ann_list.off loop
+						-- for each item in the annotations list, add a sub-row with the key in col 2 and the value in col 3
+						across val_tbl_csr.item as val_csr loop
 
-						-- create a new sub row
-						path_row.insert_subrow (path_row.subrow_count + 1)
+							-- create a new sub row
+							path_row.insert_subrow (path_row.subrow_count + 1)
 
-						-- get the sub row
-						ann_row := path_row.subrow (path_row.subrow_count)
-						create gli.make_with_text (ann_list.key_for_iteration)
-						ann_row.set_item (Grid_ann_key_col, gli)
+							-- get the sub row
+							ann_row := path_row.subrow (path_row.subrow_count)
+							create gli.make_with_text (val_csr.key)
+							ann_row.set_item (Grid_ann_key_col, gli)
 
-						create gli.make_with_text (ann_list.item_for_iteration)
-						ann_row.set_item (Grid_ann_value_col, gli)
-
-						ann_list.forth
+							create gli.make_with_text (val_csr.item)
+							ann_row.set_item (Grid_ann_value_col, gli)
+						end
+						if path_row.is_expandable then
+							path_row.expand
+						end
 					end
-					if path_row.is_expandable then
-						path_row.expand
-					end
-					anns_by_path.forth
 				end
 
 				-- put names on columns
