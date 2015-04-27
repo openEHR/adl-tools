@@ -736,7 +736,7 @@ feature -- Validation
 				across att_rules as inv_csr loop
 					create def_it.make (inv_csr.item)
 					def_it.do_all (
-						agent (a_node: EXPR_ITEM; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING])
+						agent (a_node: RULE_ELEMENT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING])
 							local
 								al_exleaf: ARRAYED_LIST[EXPR_LEAF]
 							do

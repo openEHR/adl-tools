@@ -20,7 +20,7 @@ feature -- Access
 	arch_node: detachable EXPR_ITEM
 			-- assertion item being edited
 
-	parent: detachable EXPR_ITEM_UI_NODE
+	parent: detachable RULE_ELEMENT_UI_NODE
 
 end
 

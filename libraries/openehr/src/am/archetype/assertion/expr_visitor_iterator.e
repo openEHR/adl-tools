@@ -37,12 +37,12 @@ feature {NONE} -- Implementation
 
 	visitor: EXPR_VISITOR
 
-	node_enter_action (a_node: EXPR_ITEM; indent_level: INTEGER)
+	node_enter_action (a_node: RULE_ELEMENT; indent_level: INTEGER)
 		do
 			a_node.enter_subtree (visitor, indent_level)
 		end
 
-	node_exit_action (a_node: EXPR_ITEM; indent_level: INTEGER)
+	node_exit_action (a_node: RULE_ELEMENT; indent_level: INTEGER)
 		do
 			a_node.exit_subtree (visitor, indent_level)
 		end
