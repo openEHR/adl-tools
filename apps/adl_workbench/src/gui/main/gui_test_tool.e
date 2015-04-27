@@ -323,8 +323,6 @@ feature -- Commands
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
-		require
-			has_current_library
 		local
 			col_titles: ARRAYED_LIST [STRING]
 		do

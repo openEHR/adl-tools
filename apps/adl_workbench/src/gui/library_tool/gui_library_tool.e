@@ -382,7 +382,7 @@ feature {NONE} -- Implementation
 			docking_pane.set_short_title (get_text (ec_library_tool_title))
 			docking_pane.set_long_title (get_text (ec_library_tool_title) + " " + current_library_name)
 			if attached source as src then
-				if src.archetype_count = 0 then
+				if src.archetype_count = 0 and not show_entire_ontology then
 					create info_dialog.make_with_text (get_text (ec_library_no_archetypes_found))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				else

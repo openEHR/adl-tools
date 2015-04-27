@@ -389,7 +389,7 @@ feature -- Commands
 			Precursor
 
 			-- if no RM schemas yet available, ask user to configure
-			if not directory_exists (rm_schema_directory) or not rm_schemas_access.found_valid_schemas then
+			if not rm_schemas_access.found_valid_schemas then
 				set_rm_schemas
 			end
 

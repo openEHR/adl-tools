@@ -64,7 +64,7 @@ feature {NONE} -- Initialisation
 			-- Initialize `Current'.
 		do
 			create gui_controls.make (0)
-			last_populated_rm_schema_dir := rm_schema_directory.twin
+			last_populated_rm_schema_dir := rm_schema_directories.last.twin
 
 			Precursor {EV_DIALOG}
 
@@ -100,7 +100,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ RM schema directory getter ============
-			create rm_dir_setter.make_linked (get_text (ec_rm_schema_dir_text), agent :STRING do Result := rm_schema_directory end, agent on_set_rm_schema_dir, Void, Void, 0)
+			create rm_dir_setter.make_linked (get_text (ec_rm_schema_dir_text), agent :STRING do Result := rm_schema_directories.last end, agent on_add_rm_schema_dir, Void, Void, 0)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
 			gui_controls.extend (rm_dir_setter)
@@ -177,7 +177,7 @@ feature -- Events
 			-- directory browse button (multiple times). We do it here because the user might have also set the
 			-- directory by directly typing in the directory text box (in which case there is no other event to
 			-- link this call to)
-			on_set_rm_schema_dir (rm_dir_setter.data_control_text)
+			on_add_rm_schema_dir (rm_dir_setter.data_control_text)
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_rm_schema_dir) then
@@ -185,8 +185,8 @@ feature -- Events
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
-				if not last_populated_rm_schema_dir.same_string (rm_schema_directory) and directory_exists (last_populated_rm_schema_dir) then
-					set_rm_schema_directory (last_populated_rm_schema_dir)
+				if not rm_schema_directories.has (last_populated_rm_schema_dir) and directory_exists (last_populated_rm_schema_dir) then
+					add_rm_schema_directory (last_populated_rm_schema_dir)
 					has_changed_schema_dir := True
 				end
 				reset_rm_schemas_load_list
@@ -206,15 +206,18 @@ feature -- Events
 			end
 		end
 
-	on_set_rm_schema_dir (new_rm_dir: STRING)
+	on_add_rm_schema_dir (new_rm_dir: STRING)
 			-- Let the user browse for the directory where RM schemas are found.
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
+			schema_dirs: ARRAYED_LIST [STRING]
 		do
 			if not new_rm_dir.same_string (last_populated_rm_schema_dir) and directory_exists (new_rm_dir) then
 				ok_cancel_buttons.disable_sensitive
-				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
+				schema_dirs := rm_schema_directories
+				schema_dirs.extend (new_rm_dir)
+				rm_schemas_access.initialise_with_load_list (schema_dirs, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
 					create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_contains_no_valid_schemas, <<new_rm_dir>>))
 					error_dialog.show_modal_to_window (Current)

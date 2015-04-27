@@ -91,6 +91,7 @@ feature -- Initialisation
 		local
 			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
 			dead_repos: ARRAYED_LIST [STRING]
+			dead_schema_dirs: ARRAYED_LIST [STRING]
 		once
 			-- set error reporting level in billboard and all error accumulator objects
 			set_global_error_reporting_level (error_reporting_level)
@@ -109,20 +110,30 @@ feature -- Initialisation
 			--
 			-- set up the RM schemas
 			--
-			if rm_schema_directory.is_empty then
-				set_rm_schema_directory (Default_rm_schema_directory)
+			if rm_schema_directories.is_empty then
+				add_rm_schema_directory (Default_rm_schema_directory)
 			end
-			if file_system.directory_exists (rm_schema_directory) then
-				rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
-				if not rm_schemas_access.found_valid_schemas then
-					if repository_resources.is_empty then
-						add_warning (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
-					else
-						add_error (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string, rm_schema_directory>>)
-					end
+			create dead_schema_dirs.make (0)
+			dead_schema_dirs.compare_objects
+
+			-- get rid of any non-existent schema directories
+			across rm_schema_directories as sch_dirs loop
+				if not file_system.directory_exists (sch_dirs.item) then
+					add_warning (ec_bmm_schema_dir_not_valid, <<sch_dirs.item>>)
+					dead_schema_dirs.extend (sch_dirs.item)
 				end
-			else
-				add_error (ec_bmm_schema_dir_not_valid, <<rm_schema_directory>>)
+			end
+			across dead_schema_dirs as dead_sch_csr loop
+				rm_schema_directories.prune_all (dead_sch_csr.item)
+			end
+
+			rm_schemas_access.initialise_with_load_list (rm_schema_directories, rm_schemas_load_list)
+			if not rm_schemas_access.found_valid_schemas then
+				if repository_resources.is_empty then
+					add_warning (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string>>)
+				else
+					add_error (ec_bmm_schemas_config_not_valid, <<rm_schemas_access.schemas_load_list_string>>)
+				end
 			end
 
 			--

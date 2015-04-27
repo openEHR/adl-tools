@@ -65,7 +65,9 @@ feature -- Commands
 
 	update_rm_icons_setting
 		do
-			repopulate
+			if can_repopulate then
+				repopulate
+			end
 		end
 
 	select_item_in_tree (ari_global_id: STRING)
