@@ -584,6 +584,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.extend ("details")
 			Result.extend ("lifecycle_state")
 			Result.extend ("references")
+			Result.extend ("conversion_details")
 			Result.extend ("other_details")
 		end
 

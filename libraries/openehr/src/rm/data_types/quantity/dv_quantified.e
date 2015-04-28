@@ -47,7 +47,7 @@ feature -- Comparison
 			end
 		end
 
-	valid_magnitude_status(s: STRING): BOOLEAN
+	valid_magnitude_status (s: STRING): BOOLEAN
 			-- Test whether a string value is one of the valid
 			-- values for the magnitude_status attribute.
 		do
