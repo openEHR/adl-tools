@@ -20,6 +20,8 @@ feature -- Initialisation
 		end
 
 	set_editable (an_undo_redo_chain: UNDO_REDO_CHAIN)
+		require
+			target.is_valid
 		do
 			if not attached editor_ui_graph then
 				create editor_ui_graph.make_editable (target, target.rm_schema, an_undo_redo_chain)

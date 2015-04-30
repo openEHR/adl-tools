@@ -15,6 +15,8 @@ create
 feature -- Initialisation
 
 	make (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+		require
+			aca.is_valid
 		do
 			source := aca
 			in_differential_view := differential_view_flag
@@ -25,6 +27,8 @@ feature -- Initialisation
 		end
 
 	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+		require
+			aca.is_valid
 		do
 			source := aca
 			in_differential_view := False

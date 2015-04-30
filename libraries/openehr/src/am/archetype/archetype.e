@@ -63,8 +63,8 @@ feature -- Initialisation
 			terminology := a_terminology
 			is_dirty := True
 			is_differential := a_terminology.is_differential
-
 			set_terminology_agents
+			extract_highest_added_id_codes
 		ensure
 			Id_set: archetype_id = an_id
 			Definition_set: definition = a_definition
@@ -134,6 +134,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			is_valid := True
 			is_differential := True
 			set_terminology_agents
+			extract_highest_added_id_codes
 		ensure
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language_str)
@@ -157,6 +158,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			is_differential := True
 			parent_archetype_id := a_parent_id
 			set_terminology_agents
+			extract_highest_added_id_codes
 		ensure
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language_str)

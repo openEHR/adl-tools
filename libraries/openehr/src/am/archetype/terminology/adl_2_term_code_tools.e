@@ -492,7 +492,7 @@ feature -- Factory
 		end
 
 	new_added_id_code_at_level (at_level: INTEGER; a_highest_code: INTEGER): STRING
-			-- generate a new code of the form 'idN'. a_highest_code contains highest id code already in use in the
+			-- generate a new code of the form 'idN'. `a_highest_code' contains highest id code already in use in the
 			-- calling context; the returned code will be unique with respect to this set.
 		do
 			Result := new_added_code_at_level (Id_code_leader, at_level, a_highest_code)

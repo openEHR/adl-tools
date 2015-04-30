@@ -107,7 +107,7 @@ feature {NONE} -- Implementation
 
 	attach_gui_context
 		do
-			check attached source as src then
+			if attached source as src and then src.is_valid then
 				check attached undo_redo_chain end
 				src.editor_state.set_editable (undo_redo_chain)
 			end
