@@ -48,7 +48,7 @@ feature {NONE} -- Initialisation
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 		do
-			make_base (an_id, latest_adl_version, file_system.pathname (a_directory, an_id.physical_id + File_ext_archetype_source), a_source, False)
+			make_base (an_id, latest_adl_version, file_system.pathname (a_directory, an_id.as_filename + File_ext_archetype_source), a_source, False)
 		ensure
 			file_repository_set: file_repository = a_source
 		end

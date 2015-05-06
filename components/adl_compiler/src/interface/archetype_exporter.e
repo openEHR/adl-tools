@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 				if not is_interrupted then
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
 						check attached archetype_file_extensions.item (syntax) as ext then
-							filename := file_system.pathname (export_dir, ara.id.physical_id) + ext
+							filename := file_system.pathname (export_dir, ara.id.as_filename) + ext
 						end
 						if export_flat then
 							auth_ara.save_flat_as (filename, syntax)
