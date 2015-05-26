@@ -22,7 +22,7 @@ feature -- Initialisaiton
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
 		do
-			rm_type_name := aom_builtin_type
+			rm_type_name := constrained_typename
 			set_node_id (Primitive_node_id)
 		end
 
@@ -37,7 +37,7 @@ feature -- Access
 	constraint: ANY
 			-- single constraint represented by this object; redefine in descendants.
 
-	aom_builtin_type: STRING
+	constrained_typename: STRING
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
 		do
@@ -85,7 +85,7 @@ feature -- Comparison
 			-- Returns True if:
 			--	aom_builtin_type is identical (same as rm_type_name, except when rm_type_name has ben overridden)
 		do
-			Result := aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type)
+			Result := constrained_typename.is_case_insensitive_equal (other.constrained_typename)
 		end
 
 feature -- Status Report

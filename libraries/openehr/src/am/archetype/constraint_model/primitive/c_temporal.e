@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_congruent_to, aom_builtin_type, assumed_value, prototype_value, valid_value, as_string, c_conforms_to
+			c_congruent_to, constrained_typename, assumed_value, prototype_value, valid_value, as_string, c_conforms_to
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -104,7 +104,7 @@ feature -- Access
 		deferred
 		end
 
-	aom_builtin_type: STRING
+	constrained_typename: STRING
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
 		do
@@ -167,7 +167,7 @@ feature -- Comparison
 	c_congruent_to (other: like Current): BOOLEAN
 			-- True if Current and `other' are semantically the same
 		do
-			if not attached occurrences and node_id.is_equal (other.node_id) and aom_builtin_type.is_case_insensitive_equal (other.aom_builtin_type) and
+			if not attached occurrences and node_id.is_equal (other.node_id) and constrained_typename.is_case_insensitive_equal (other.constrained_typename) and
 				constraint.count = other.constraint.count and then
 					across constraint as ivl_csr all
 						other.constraint.i_th (ivl_csr.cursor_index).is_equal (ivl_csr.item)
