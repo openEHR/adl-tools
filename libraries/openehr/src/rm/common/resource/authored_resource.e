@@ -250,13 +250,14 @@ feature -- Modification
 			end
 		end
 
-	set_authoring_default_details (an_author_name, an_author_org, a_lifecycle_state, a_copyright: STRING)
+	set_authoring_default_details (an_author_name, an_author_org, a_lifecycle_state, a_copyright, a_licence: STRING)
 		do
 			description.put_original_author_item ("name", an_author_name)
 			description.put_original_author_item ("organisation", an_author_org)
 			description.set_lifecycle_state (a_lifecycle_state)
 			description.add_original_language_details
 			description.set_copyright (a_copyright)
+			description.set_licence (a_licence)
 		end
 
 feature -- Status setting

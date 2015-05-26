@@ -133,6 +133,11 @@ feature -- Definitions
 			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
 		end
 
+	Default_author_licence: STRING_32
+		once ("PROCESS")
+			Result := "Creative Commons CC-BY 4.0 unported <http://creativecommons.org/>"
+		end
+
 feature -- Initialisation
 
 	app_cfg_initialise
@@ -557,6 +562,25 @@ feature -- Application Switches
 			value_not_empty: not a_value.is_empty
 		do
 			app_cfg.put_string_value ("/authoring/author_copyright", a_value)
+		end
+
+	author_licence: STRING
+			-- default licence string to insert into newly created archetype description section
+		do
+			Result := app_cfg.string_value ("/authoring/author_licence")
+			if Result.is_empty then
+				Result := Default_author_licence.twin
+			end
+		ensure
+			not Result.is_empty
+		end
+
+	set_author_licence (a_value: STRING)
+			-- Set `author_licence'
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_string_value ("/authoring/author_licence", a_value)
 		end
 
 	adl_roundtripping: BOOLEAN

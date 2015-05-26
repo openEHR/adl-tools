@@ -61,7 +61,7 @@ feature {NONE} -- Initialisation
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential (an_id, rm_schema.rm_release, locale_language_short)
-			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
+			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright, author_licence)
 			differential_archetype := a_diff_arch
 
 			reset
@@ -87,7 +87,7 @@ feature {NONE} -- Initialisation
 
 			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id,
 				a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
-			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright)
+			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright, author_licence)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
 
