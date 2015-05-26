@@ -136,9 +136,6 @@ feature -- Display
 				end
 				att_evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
 
-				-- constraint column
-				display_constraint
-
 				-- sibling order column
 				if ui_graph_state.in_differential_view and then attached a_n.sibling_order then
 					create s.make_empty
@@ -151,6 +148,9 @@ feature -- Display
 					att_evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
 				end
 			end
+
+			-- constraint column
+			display_constraint
 		end
 
 feature -- Modification

@@ -580,6 +580,8 @@ feature {NONE} -- Implementation
 					agent repopulate,
 					agent arch_term.set_description (utf32_to_utf8 (att_editable.text)),
 					agent repopulate)
+
+				gui_agents.call_refresh_archetype_editors_agent (source_archetype.archetype_id.as_string)
 			end
 
 		end

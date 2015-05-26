@@ -263,6 +263,7 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
 			local_show_technical_view := True
 			local_show_rm_data_properties := True
+			local_show_rm_multiplicities := True
 			local_show_codes := True
 		end
 
