@@ -6,8 +6,6 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
-	void_safety: "initial"
-
 
 class OPERATOR_KIND
 

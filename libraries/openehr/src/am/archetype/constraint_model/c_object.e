@@ -34,6 +34,11 @@ feature -- Access
 		end
 
 	occurrences: detachable MULTIPLICITY_INTERVAL
+			-- Occurrences of this object node in the data, under the owning attribute. Upper limit
+			-- can only be greater than 1 if owning attribute has a cardinality of more than 1.
+			-- Only set if it overrides the parent archetype in the case of specialised archetypes,
+			-- or else the occurrences inferred from the underlying reference model existence and/or
+			-- cardinality of the containing attribute.
 
 	occurrences_key_string: STRING
 			-- generate a string of the form "_multiple", "_multiple_optional" or "_optional" or ""

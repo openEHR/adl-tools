@@ -1,13 +1,13 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-					Constrainer type for instances of TERMINOLOGY_CODE. The primary expression of the
-					constraint is in the property `tuple_constraint', and comes in 3 variations:
+					Constrainer type for instances of TERMINOLOGY_CODE. The `constraint' attribute can contain:
 						* a single at-code
 						* a single ac-code, representing a value-set that is defined in the archetype terminology
-						* a list of at- and/or ac-codes, representing the possibilities of a tuple constraint
-					The last possibility above is enabled by the merge_tuple routine, which enables the constraint
-					of another single-valued C_TERMINOLOGY_CODE to be merged with the current one.
+
+					If there is an assumed value for the ac-code case above, the assumed_value attribute contains a 
+					single at-code, which must come from the list of at-codes defined as the internal value set for 
+					the ac-code.	
 				 ]"
 	keywords:    "archetype, terminology"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -48,7 +48,7 @@ feature -- Access
 			-- single at- or ac-code
 
 	value_set_expanded: ARRAYED_LIST [STRING]
-			-- effective value or value set of single constraint in tuple_constraint, mediated by terminology
+			-- effective value or value set of single constraint in `constraint', mediated by terminology
 			-- to expand an ac-code
 		do
 			if is_valid_value_set_code (constraint) and attached value_set_extractor as att_agt then
