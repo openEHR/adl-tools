@@ -27,7 +27,11 @@ feature -- Initialisation
 
 	make (an_adl_version, an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: IMMUTABLE_STRING_8; is_differential_flag, is_generated_flag: BOOLEAN)
 		do
-			adl_version := an_adl_version
+			if valid_standard_version (an_adl_version) then
+				adl_version := an_adl_version
+			else
+				adl_version := adl_14_version
+			end
 			create archetype_id.make_from_string (an_id)
 			archetype_id_is_old_style := id_is_old_style_flag
 			artefact_type := artefact_type_str
