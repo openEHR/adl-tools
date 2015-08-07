@@ -872,6 +872,10 @@ boolean_leaf: boolean_literal
 			end
 			$$ := $1
 		}
+	| boolean_unop_expr
+		{
+			$$ := $1
+		}
 	| '(' boolean_node ')'
 		{
 			$$ := $2
