@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_validate_structure_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- perform validation of node against reference model.
+			-- perform validation of paths against flat parent.
 		local
 			apa: ARCHETYPE_PATH_ANALYSER
 			flat_anc_path: STRING
@@ -373,7 +373,7 @@ feature {NONE} -- Implementation
 			--
 			-- Are all `constraint_bindings' valid, i.e.
 			-- for atomic bindings:
-			-- 		is every term mentioned in the constraint_definitions?
+			-- 		is every term mentioned in the term_definitions?
 			--
 		local
 			binding_target_code, arch_code, terminology_id: STRING

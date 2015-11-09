@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Representation of an archetype repository on some medium such as a file system."
+	description: "Representation of an archetype library on some medium such as a file system."
 	keywords:    "archetype, ADL, file system, library"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
