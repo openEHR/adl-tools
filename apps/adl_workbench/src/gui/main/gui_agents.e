@@ -36,7 +36,7 @@ feature {NONE} -- Access
 
 	select_class_in_rm_schema_tool_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
-	update_all_tools_rm_icons_setting_agent: detachable PROCEDURE [ANY, TUPLE]
+	update_all_tools_use_rm_pixmaps_setting_agent: detachable PROCEDURE [ANY, TUPLE]
 
 	refresh_archetype_viewers_agent: detachable PROCEDURE [ANY, TUPLE [archetype_id: READABLE_STRING_8]]
 
@@ -51,6 +51,15 @@ feature {NONE} -- Access
 
 	close_test_tool_agent: detachable PROCEDURE [ANY, TUPLE]
 			-- agent to close test tool
+
+	on_toggle_use_rm_pixmaps_agent: detachable PROCEDURE [ANY, TUPLE[BOOLEAN, BOOLEAN]]
+			-- agent to call when 'use_rm_pixmaps' setting is changed
+
+	on_toggle_view_all_classes_agent: detachable PROCEDURE [ANY, TUPLE[BOOLEAN, BOOLEAN]]
+			-- agent to call when 'show all classes' UI option is toggled
+
+	save_resources_agent: detachable PROCEDURE [ANY, TUPLE]
+			-- save resources file
 
 feature -- Command
 
@@ -140,13 +149,6 @@ feature -- Command
 			end
 		end
 
-	call_update_all_tools_rm_icons_setting_agent
-		do
-			if attached update_all_tools_rm_icons_setting_agent as att_agt then
-				att_agt.call ([])
-			end
-		end
-
 	call_refresh_archetype_viewers_agent (archetype_id: READABLE_STRING_8)
 		do
 			if attached refresh_archetype_viewers_agent as att_agt then
@@ -180,6 +182,34 @@ feature -- Command
 			-- agent to close test tool
 		do
 			if attached close_test_tool_agent as att_agt then
+				att_agt.call ([])
+			end
+		end
+
+	call_on_toggle_use_rm_pixmaps_agent (a_flag, save_options_file_flag: BOOLEAN)
+		do
+			if attached on_toggle_use_rm_pixmaps_agent as att_agt then
+				att_agt.call ([a_flag, save_options_file_flag])
+			end
+		end
+
+	call_update_all_tools_use_rm_pixmaps_setting_agent
+		do
+			if attached update_all_tools_use_rm_pixmaps_setting_agent as att_agt then
+				att_agt.call ([])
+			end
+		end
+
+	call_on_toggle_view_all_classes_agent (a_flag, save_options_file_flag: BOOLEAN)
+		do
+			if attached on_toggle_view_all_classes_agent as att_agt then
+				att_agt.call ([a_flag, save_options_file_flag])
+			end
+		end
+
+	call_save_resources_agent
+		do
+			if attached save_resources_agent as att_agt then
 				att_agt.call ([])
 			end
 		end
@@ -246,11 +276,6 @@ feature -- Modification
 			select_rm_in_new_tool_agent := an_agent
 		end
 
-	set_update_all_tools_rm_icons_setting_agent (an_agent: like update_all_tools_rm_icons_setting_agent)
-		do
-			update_all_tools_rm_icons_setting_agent := an_agent
-		end
-
 	set_refresh_archetype_viewers_agent (an_agent: like refresh_archetype_viewers_agent)
 		do
 			refresh_archetype_viewers_agent := an_agent
@@ -274,6 +299,26 @@ feature -- Modification
 	set_close_test_tool_agent (an_agent: like close_test_tool_agent)
 		do
 			close_test_tool_agent := an_agent
+		end
+
+	set_on_toggle_use_rm_pixmaps_agent (an_agent: like on_toggle_use_rm_pixmaps_agent)
+		do
+			on_toggle_use_rm_pixmaps_agent := an_agent
+		end
+
+	set_update_all_tools_use_rm_pixmaps_setting_agent (an_agent: like update_all_tools_use_rm_pixmaps_setting_agent)
+		do
+			update_all_tools_use_rm_pixmaps_setting_agent := an_agent
+		end
+
+	set_on_toggle_view_all_classes_agent (an_agent: like on_toggle_view_all_classes_agent)
+		do
+			on_toggle_view_all_classes_agent := an_agent
+		end
+
+	set_save_resources_agent (an_agent: like save_resources_agent)
+		do
+			save_resources_agent := an_agent
 		end
 
 end

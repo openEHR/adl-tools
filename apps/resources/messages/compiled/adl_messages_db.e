@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (905)
+			create message_table.make (906)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -684,6 +684,7 @@ feature -- Initialisation
 			message_table.put ("Save Archetype", ec_save_archetype_title)
 			message_table.put ("Export Archetype", ec_export_archetype_title)
 			message_table.put ("Cycle through available views of artefacts", ec_library_mini_toolbar_view_rotate)
+			message_table.put ("View all RM classes", ec_library_mini_toolbar_view_all_classes)
 			message_table.put ("Error adding archetype to library: $1", ec_library_add_new_archetype_error)
 			message_table.put ("Remove artefact confirmation", ec_remove_dialog_title)
 			message_table.put ("Remove $1? WARNING: really removes from the file system!", ec_remove_artefact_question)

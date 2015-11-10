@@ -669,6 +669,7 @@ feature -- Definitions
 		ec_save_archetype_title: STRING = "save_archetype_title"
 		ec_export_archetype_title: STRING = "export_archetype_title"
 		ec_library_mini_toolbar_view_rotate: STRING = "library_mini_toolbar_view_rotate"
+		ec_library_mini_toolbar_view_all_classes: STRING = "library_mini_toolbar_view_all_classes"
 		ec_library_add_new_archetype_error: STRING = "library_add_new_archetype_error"
 		ec_remove_dialog_title: STRING = "remove_dialog_title"
 		ec_remove_artefact_question: STRING = "remove_artefact_question"

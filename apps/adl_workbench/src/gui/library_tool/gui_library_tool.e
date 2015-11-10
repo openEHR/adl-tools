@@ -1,6 +1,9 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Combined control for viewing archetype and template artefacts in 2 trees"
+	description: "[
+				 Combined control containing archetype and template artefacts tree views, metrics and 
+				 statistics viewers, and various micro-controls along the top.
+				 ]"
 	keywords:    "ADL, archetype, template, UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -83,9 +86,19 @@ feature {NONE} -- Initialisation
 
 			set_tabs_appearance
 
-			-- docking pane mini-toolbar with rotate-view button
+			-- docking pane mini-toolbar
 			create gui_mini_tool_bar.make
 			gui_mini_tool_bar.add_tool_bar
+
+			-- add view all classes button (class tree shows classes with no archetypes when active)
+			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_all_classes_active"), get_icon_pixmap ("tool/view_all_classes_inactive"),
+				get_text (ec_library_mini_toolbar_view_all_classes), agent on_view_all_classes)
+			check attached gui_mini_tool_bar.last_tool_bar_button as tbb then
+				view_all_classes_button := tbb
+				gui_mini_tool_bar.activate_tool_bar_button (tbb)
+			end
+
+			-- add rotate-view button
 			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_rotate_active"), get_icon_pixmap ("tool/view_rotate_inactive"),
 				get_text (ec_library_mini_toolbar_view_rotate), agent on_rotate_view)
 			check attached gui_mini_tool_bar.last_tool_bar_button as tbb then
@@ -189,7 +202,7 @@ feature -- Commands
 			end
 		end
 
-	update_rm_icons_setting
+	update_use_rm_pixmaps_setting
 		do
 			archetype_explorer.update_rm_icons_setting
 			template_explorer.update_rm_icons_setting
@@ -326,10 +339,17 @@ feature -- Events
 		end
 
 	on_rotate_view
+			-- rotate the view seen in the main grid area to the next available view
 		do
 			if attached ev_notebook.selected_item as att_sel_item and then attached {GUI_LIBRARY_TARGETTED_TOOL} att_sel_item.data as lib_tool and is_populated then
 				lib_tool.on_rotate_view
 			end
+		end
+
+	on_view_all_classes
+			-- toggle show all classes in RM in main grid area
+		do
+			gui_agents.call_on_toggle_view_all_classes_agent (not show_entire_ontology, True)
 		end
 
 	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE)
@@ -427,6 +447,8 @@ feature {NONE} -- Implementation
 		end
 
 	rotate_view_button: detachable EV_TOOL_BAR_BUTTON
+
+	view_all_classes_button: detachable EV_TOOL_BAR_BUTTON
 
 	archetype_explorer: GUI_ARCHETYPE_EXPLORER
 

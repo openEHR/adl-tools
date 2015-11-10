@@ -151,7 +151,7 @@ feature -- Commands
 			end
 		end
 
-	update_rm_icons_setting
+	update_use_rm_pixmaps_setting
 			-- call this routine if rm_icons setting changed elsewhere in tool
 		do
 			if closure_view.can_repopulate then

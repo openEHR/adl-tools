@@ -76,8 +76,8 @@ feature -- UI Feedback
 
 feature -- Commands
 
-	update_rm_icons_setting
-			-- call this routine if rm_icons setting changed elsewhere in tool
+	update_use_rm_pixmaps_setting
+			-- call this routine if use_rm_pixmaps setting changed elsewhere in tool
 		do
 			if definition_control.can_repopulate then
 				definition_control.repopulate

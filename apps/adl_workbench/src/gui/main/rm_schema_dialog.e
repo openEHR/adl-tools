@@ -64,7 +64,8 @@ feature {NONE} -- Initialisation
 			-- Initialize `Current'.
 		do
 			create gui_controls.make (0)
-			last_populated_rm_schema_dir := rm_schema_directories.last.twin
+
+			create last_rm_schema_dirs.make (0)
 
 			Precursor {EV_DIALOG}
 
@@ -100,7 +101,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ RM schema directory getter ============
-			create rm_dir_setter.make_linked (get_text (ec_rm_schema_dir_text), agent :STRING do Result := rm_schema_directories.last end, agent on_add_rm_schema_dir, Void, Void, 0)
+			create rm_dir_setter.make_linked (get_text (ec_rm_schema_dir_text), agent :ARRAYED_LIST[STRING] do Result := rm_schema_directories end, agent on_set_rm_schema_dirs, Void, Void, 0)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
 			gui_controls.extend (rm_dir_setter)
@@ -141,7 +142,7 @@ feature -- Status
 	has_changed_schema_load_list: BOOLEAN
 			-- Schema load list has changed; should refresh
 
-	has_changed_schema_dir: BOOLEAN
+	has_changed_schema_dirs: BOOLEAN
 			-- Schema load directory has changed; should refresh
 
 feature -- Commands
@@ -173,62 +174,45 @@ feature -- Events
 		local
 			error_dialog: EV_INFORMATION_DIALOG
 		do
-			-- we do this call again, even though it might have alredy been executed due to the user using the
-			-- directory browse button (multiple times). We do it here because the user might have also set the
-			-- directory by directly typing in the directory text box (in which case there is no other event to
-			-- link this call to)
-			on_add_rm_schema_dir (rm_dir_setter.data_control_text)
-
-			-- case where the directory no longer exists or is readable
-			if not directory_exists (last_populated_rm_schema_dir) then
-				create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_not_valid, <<last_populated_rm_schema_dir>>))
-				error_dialog.show_modal_to_window (Current)
-			else
-				hide
-				if not rm_schema_directories.has (last_populated_rm_schema_dir) and directory_exists (last_populated_rm_schema_dir) then
-					add_rm_schema_directory (last_populated_rm_schema_dir)
-					has_changed_schema_dir := True
-				end
-				reset_rm_schemas_load_list
+			if not rm_schema_directories.is_equal (last_rm_schema_dirs) then
+				set_rm_schema_directories (last_rm_schema_dirs)
+				has_changed_schema_dirs := True
 			end
+			hide
+			reset_rm_schemas_load_list
 		end
 
 	on_cancel
 			-- Set shared settings from the dialog widgets.
-		local
-			error_dialog: EV_INFORMATION_DIALOG
 		do
-			if not directory_exists (last_populated_rm_schema_dir) then
-				create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_not_valid, <<last_populated_rm_schema_dir>>))
-				error_dialog.show_modal_to_window (Current)
-			else
-				hide
-			end
+			hide
 		end
 
-	on_add_rm_schema_dir (new_rm_dir: STRING)
+	on_set_rm_schema_dirs (an_rm_schema_dirs: ARRAYED_LIST[STRING])
 			-- Let the user browse for the directory where RM schemas are found.
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			schema_dirs: ARRAYED_LIST [STRING]
+			dir_list_str: STRING
 		do
-			if not new_rm_dir.same_string (last_populated_rm_schema_dir) and directory_exists (new_rm_dir) then
-				ok_cancel_buttons.disable_sensitive
-				schema_dirs := rm_schema_directories
-				schema_dirs.extend (new_rm_dir)
-				rm_schemas_access.initialise_with_load_list (schema_dirs, rm_schemas_load_list)
-				if not rm_schemas_access.found_valid_schemas then
-					create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_contains_no_valid_schemas, <<new_rm_dir>>))
-					error_dialog.show_modal_to_window (Current)
+			has_changed_schema_dirs := False
+			ok_cancel_buttons.disable_sensitive
+			last_rm_schema_dirs := an_rm_schema_dirs
+			rm_schemas_access.initialise_with_load_list (last_rm_schema_dirs, rm_schemas_load_list)
+			if not rm_schemas_access.found_valid_schemas then
+				create dir_list_str.make_empty
+				across last_rm_schema_dirs as dir_csr loop
+					dir_list_str.append (dir_csr.item)
+					if not dir_csr.is_last then
+						dir_list_str.append (", ")
+					end
 				end
-				populate_grid
-				ok_cancel_buttons.enable_sensitive
-				last_populated_rm_schema_dir := new_rm_dir
+				create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_contains_no_valid_schemas, <<dir_list_str>>))
+				error_dialog.show_modal_to_window (Current)
 			end
+			populate_grid
+			ok_cancel_buttons.enable_sensitive
 		end
-
-	last_populated_rm_schema_dir: STRING
 
 feature {NONE} -- Implementation
 
@@ -420,9 +404,11 @@ feature {NONE} -- Implementation
 
 	grid: EV_GRID_KBD_MOUSE
 
+	last_rm_schema_dirs: ARRAYED_LIST[STRING]
+
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	rm_dir_setter: EVX_DIRECTORY_SETTER
+	rm_dir_setter: EVX_DIRECTORY_LIST
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 

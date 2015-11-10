@@ -149,7 +149,7 @@ feature -- Events
 			if attached source then
 				repopulate
 				-- reflect change to other editor tools
-				gui_agents.call_update_all_tools_rm_icons_setting_agent
+				gui_agents.call_update_all_tools_use_rm_pixmaps_setting_agent
 			end
 		end
 

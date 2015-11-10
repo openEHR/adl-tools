@@ -270,12 +270,18 @@ feature {NONE} -- Initialization
 			gui_agents.set_select_class_in_rm_schema_tool_agent (agent select_class_in_rm_schema_tool)
 			gui_agents.set_select_rm_agent (agent display_rm)
 			gui_agents.set_select_rm_in_new_tool_agent (agent display_rm_in_new_tool)
-			gui_agents.set_update_all_tools_rm_icons_setting_agent (agent update_all_tools_rm_icons_setting)
+
 			gui_agents.set_refresh_archetype_viewers_agent (agent refresh_archetype_viewers)
 			gui_agents.set_refresh_archetype_editors_agent (agent refresh_archetype_editors)
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
 			gui_agents.set_close_test_tool_agent (agent close_test_tool)
+
+			gui_agents.set_on_toggle_use_rm_pixmaps_agent (agent on_toggle_use_rm_pixmaps)
+			gui_agents.set_update_all_tools_use_rm_pixmaps_setting_agent (agent update_all_tools_use_rm_pixmaps_setting)
+			gui_agents.set_on_toggle_view_all_classes_agent (agent on_toggle_view_all_classes)
+
+			gui_agents.set_save_resources_agent (agent save_resources)
 		end
 
 	initialise_accelerators
@@ -689,27 +695,41 @@ feature {NONE} -- Tools menu events
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
+		end
 
-			if dialog.has_changed_ui_options then
+	on_toggle_use_rm_pixmaps (a_flag, save_resources_file_flag: BOOLEAN)
+			-- the 'use_rm_pixmaps' setting says whether to use RM-specific icons or generic ones
+		do
+			set_use_rm_pixmaps (a_flag)
+			if save_resources_file_flag then
 				save_resources
-				if archetype_viewers.has_tools then
-					update_all_tools_rm_icons_setting
-				end
 			end
-			if dialog.has_changed_navigator_options and has_current_library then
+			if archetype_viewers.has_tools then
+				update_all_tools_use_rm_pixmaps_setting
+			end
+		end
+
+	update_all_tools_use_rm_pixmaps_setting
+		do
+			archetype_viewers.do_all_tools (agent (a_tool: GUI_ARCHETYPE_VIEWER) do a_tool.update_use_rm_pixmaps_setting end)
+			class_tools.do_all_tools (agent (a_tool: GUI_CLASS_TOOL) do a_tool.update_use_rm_pixmaps_setting end)
+			library_tool.update_use_rm_pixmaps_setting
+		end
+
+	on_toggle_view_all_classes (a_flag, save_resources_file_flag: BOOLEAN)
+			-- the 'view all classes' setting says whether to display all RM classes in the
+			-- archetype explorer, or only those for which there are archetypes
+		do
+			set_show_entire_ontology (a_flag)
+			if save_resources_file_flag then
 				save_resources
+			end
+			if has_current_library then
 				library_tool.populate (current_library)
 				if test_tool.ev_root_container.is_displayed then
 					test_tool.populate
 				end
 			end
-		end
-
-	update_all_tools_rm_icons_setting
-		do
-			archetype_viewers.do_all_tools (agent (a_tool: GUI_ARCHETYPE_VIEWER) do a_tool.update_rm_icons_setting end)
-			class_tools.do_all_tools (agent (a_tool: GUI_CLASS_TOOL) do a_tool.update_rm_icons_setting end)
-			library_tool.update_rm_icons_setting
 		end
 
 	clean_generated_files
@@ -784,7 +804,7 @@ feature -- RM Schemas Events
 						display_archetype_library (True)
 					end
 				end
-			elseif rm_schema_dialog.has_changed_schema_dir then
+			elseif rm_schema_dialog.has_changed_schema_dirs then
 				rm_schema_explorer.populate (rm_schemas_access)
 				display_archetype_library (True)
 			end

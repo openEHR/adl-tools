@@ -11,6 +11,7 @@ class APP_ICON_RESOURCES
 inherit
 	APPLICATION_ICON_RESOURCES
 
+
 feature -- Access
 
 	icon_load_agents: HASH_TABLE [FUNCTION [ANY, TUPLE, EV_PIXMAP], STRING]
@@ -484,6 +485,8 @@ feature -- Access
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_PUSH_REQUIRED}.make).to_pixmap end, "tool/vcs_push_required")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_SYNC_REQUIRED}.make).to_pixmap end, "tool/vcs_sync_required")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VCS_UP_TO_DATE}.make).to_pixmap end, "tool/vcs_up_to_date")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VIEW_ALL_CLASSES_ACTIVE}.make).to_pixmap end, "tool/view_all_classes_active")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VIEW_ALL_CLASSES_INACTIVE}.make).to_pixmap end, "tool/view_all_classes_inactive")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VIEW_ROTATE_ACTIVE}.make).to_pixmap end, "tool/view_rotate_active")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_VIEW_ROTATE_INACTIVE}.make).to_pixmap end, "tool/view_rotate_inactive")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_WARNINGS}.make).to_pixmap end, "tool/warnings")

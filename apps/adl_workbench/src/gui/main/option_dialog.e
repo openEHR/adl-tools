@@ -30,6 +30,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 feature {NONE} -- Initialization
 
 	create_interface_objects
@@ -155,9 +162,9 @@ feature {NONE} -- Initialization
 			gui_controls.extend (evx_display_source_cb)
 
 			-- use RM pixmaps
-			create evx_use_rm_icons_cb.make (get_text (ec_use_rm_icons_text), get_text (ec_use_rm_icons_tooltip), agent use_rm_pixmaps)
-			ev_notebook_ui_settings_1_vb.extend (evx_use_rm_icons_cb.ev_data_control)
-			gui_controls.extend (evx_use_rm_icons_cb)
+			create evx_use_rm_pixmaps_cb.make (get_text (ec_use_rm_icons_text), get_text (ec_use_rm_icons_tooltip), agent use_rm_pixmaps)
+			ev_notebook_ui_settings_1_vb.extend (evx_use_rm_pixmaps_cb.ev_data_control)
+			gui_controls.extend (evx_use_rm_pixmaps_cb)
 
 			-- Show flat form by default
 			create evx_show_flat_form.make (get_text (ec_show_flat_form_text),
@@ -283,17 +290,10 @@ feature {NONE} -- Initialization
 			-- add another button to OK/cancel button row to enable edit of options file
 			evx_ok_cancel_buttons.add_button (get_text (ec_option_dialog_edit_file_text), agent on_edit_options_file)
 			enable_edit
-			old_show_entire_ontology := show_entire_ontology
 			do_populate
 		end
 
 feature -- Status
-
-	has_changed_ui_options: BOOLEAN
-			-- Has the user OK'ed changes?
-
-	has_changed_navigator_options: BOOLEAN
-			-- True if some option has changed that would require the navigator to be redrawn
 
 	has_edited_options_file: BOOLEAN
 			-- True if options file was updated directly by user
@@ -326,17 +326,17 @@ feature -- Events
 				set_error_reporting_level (global_error_reporting_level)
 
 				-- GUI options
-				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
 				set_expand_definition_tree (evx_expand_definition_tree_cb.is_selected)
 				set_show_line_numbers (evx_show_line_numbers_cb.is_selected)
 				set_show_flat_form (evx_show_flat_form.is_selected)
 				set_display_archetype_source (evx_display_source_cb.is_selected)
-				set_use_rm_pixmaps (evx_use_rm_icons_cb.is_selected)
-				set_show_entire_ontology (evx_show_all_classes_cb.is_selected)
-				if show_entire_ontology /= old_show_entire_ontology then
-					has_changed_navigator_options := True
-				else
-					has_changed_navigator_options := False
+
+				if evx_use_rm_pixmaps_cb.is_selected /= old_use_rm_pixmaps then
+					gui_agents.call_on_toggle_use_rm_pixmaps_agent (evx_use_rm_pixmaps_cb.is_selected, False)
+				end
+
+				if evx_show_all_classes_cb.is_selected /= old_show_entire_ontology then
+					gui_agents.call_on_toggle_view_all_classes_agent (evx_show_all_classes_cb.is_selected, False)
 				end
 				set_default_tool_tab (Tool_tab_reverse_index.item (evx_tool_tab_cob.data_control_text))
 
@@ -345,6 +345,9 @@ feature -- Events
 
 				-- terminology template URIs
 				set_terminology_settings (terminology_settings)
+
+				-- save resources file
+				gui_agents.call_save_resources_agent
 			end
 		end
 
@@ -376,7 +379,10 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	old_show_entire_ontology: BOOLEAN
-			-- value of show_entire_ontology prior to setting by optin dialog
+			-- value of show_entire_ontology prior to setting by option dialog
+
+	old_use_rm_pixmaps: BOOLEAN
+			-- value of use_rm_icons prior to setting by option dialog
 
 	do_populate
 			-- Set the dialog widgets from shared settings.
@@ -408,7 +414,7 @@ feature {NONE} -- Implementation
 
 	evx_quiet_mode_cb, evx_validation_strict_cb, evx_rm_flattening_cb, evx_expand_definition_tree_cb, evx_show_line_numbers_cb: EVX_CHECK_BOX_CONTROL
 
-	evx_display_source_cb, evx_show_all_classes_cb, evx_use_rm_icons_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
+	evx_display_source_cb, evx_show_all_classes_cb, evx_use_rm_pixmaps_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
 
 	evx_auth_name_text, evx_auth_org_text, evx_auth_copyright_text: EVX_SINGLE_LINE_TEXT_CONTROL
 

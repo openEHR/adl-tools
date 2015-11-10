@@ -464,6 +464,7 @@ templates = <
 		["save_archetype_title"] = <"Save Archetype">
 		["export_archetype_title"] = <"Export Archetype">
 		["library_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
+		["library_mini_toolbar_view_all_classes"] = <"View all RM classes">
 		["library_add_new_archetype_error"] = <"Error adding archetype to library: $1">
 
 		["remove_dialog_title"] = <"Remove artefact confirmation">
