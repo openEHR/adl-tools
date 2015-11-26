@@ -28,16 +28,6 @@ feature -- Status Report
 		deferred
 		end
 
-	is_frozen: BOOLEAN
-			-- True if this node cannot be redefined in a specialisation descendant
-
-feature -- Modification
-
-	set_is_frozen (a_val: BOOLEAN)
-		do
-			is_frozen := a_val
-		end
-
 end
 
 
