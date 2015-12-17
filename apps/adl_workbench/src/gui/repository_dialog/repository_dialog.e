@@ -241,6 +241,9 @@ feature -- Access
 
 	original_current_library_selected: STRING
 			-- value of `current_library_name' on entry
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Status
 
