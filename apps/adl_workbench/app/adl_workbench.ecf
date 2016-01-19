@@ -19,6 +19,7 @@
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
 			<debug name="dt" enabled="false"/>
+			<debug name="dt-types" enabled="false"/>
 			<debug name="exclude list" enabled="false"/>
 			<debug name="flatten" enabled="false"/>
 			<debug name="gelex" enabled="false"/>

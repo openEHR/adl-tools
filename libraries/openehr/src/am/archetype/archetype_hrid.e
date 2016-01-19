@@ -397,7 +397,6 @@ feature -- Access
 			if version_status /= vs_released then
 				Result.append (version_status_symbol_text (version_status))
 				if build_count > 0 then
-					Result.append_character (Axis_separator)
 					Result.append (build_count.out)
 				else
 					-- need to remove trailing '.'
