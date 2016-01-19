@@ -407,12 +407,6 @@ feature -- Iteration
 
 feature -- Comparison
 
-	c_congruent_to (other: like Current): BOOLEAN
-			-- True if this node on its own (ignoring any subparts) expresses no additional constraints than `other'.
-		do
-			Result := existence = Void and ((is_single and other.is_single) or (is_multiple and other.is_multiple and cardinality = Void))
-		end
-
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
@@ -420,6 +414,12 @@ feature -- Comparison
 			--	existence
 		do
 			Result := existence_conforms_to (other) and ((is_single and other.is_single) or else (is_multiple and cardinality_conforms_to (other)))
+		end
+
+	c_congruent_to (other: like Current): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses no additional constraints than `other'.
+		do
+			Result := existence = Void and ((is_single and other.is_single) or (is_multiple and other.is_multiple and cardinality = Void))
 		end
 
 	existence_conforms_to (other: like Current): BOOLEAN

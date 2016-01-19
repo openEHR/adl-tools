@@ -83,7 +83,7 @@ feature -- Comparison
 			-- `other' is typically in a flat archetype
 			-- Used to determine if path segments can be compressed;
 			-- Returns True if:
-			--	aom_builtin_type is identical (same as rm_type_name, except when rm_type_name has ben overridden)
+			--	aom_builtin_type is identical (same as rm_type_name, except when rm_type_name has been overridden)
 		do
 			Result := constrained_typename.is_case_insensitive_equal (other.constrained_typename)
 		end

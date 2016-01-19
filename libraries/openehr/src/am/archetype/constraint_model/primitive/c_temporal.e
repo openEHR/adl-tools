@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_congruent_to, constrained_typename, assumed_value, prototype_value, valid_value, as_string, c_conforms_to
+			c_conforms_to, c_congruent_to, constrained_typename, assumed_value, prototype_value, valid_value, as_string
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -151,7 +151,8 @@ feature -- Comparison
 			-- True if this node is a strict subset of `other'
 		do
 			if node_id_conforms_to (other) and occurrences_conforms_to (other) and
-				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name])) and
+				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
+				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name])) and
 					across constraint as ivl_csr all
 						across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
 					end

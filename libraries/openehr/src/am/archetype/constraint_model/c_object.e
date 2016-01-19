@@ -131,18 +131,18 @@ feature -- Comparison
 			Result := codes_conformant (node_id, other.node_id)
 		end
 
-	valid_occurrences (occ: MULTIPLICITY_INTERVAL): BOOLEAN
-			-- check if `occ' is valid to be set as occurrences on this object
-		do
-			Result := attached parent as p and then p.is_single implies occ.upper <= 1
-		end
-
 	node_reuse_congruent (other: like Current): BOOLEAN
 			-- True if this node is the sole re-using node of the corresponding node in the flat
 		do
 			Result := node_id_conforms_to (other) and
 				(is_root or else
 				attached parent as p and then p.child_reuse_count (other.node_id) = 1)
+		end
+
+	valid_occurrences (occ: MULTIPLICITY_INTERVAL): BOOLEAN
+			-- check if `occ' is valid to be set as occurrences on this object
+		do
+			Result := attached parent as p and then p.is_single implies occ.upper <= 1
 		end
 
 feature -- Modification
