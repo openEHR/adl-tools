@@ -35,7 +35,7 @@ feature -- Initialisation
 
 	make (an_archetype: like artefact_class_type)
 		do
-			precursor (an_archetype)
+			precursor {P_ARCHETYPE} (an_archetype)
 			make_auth_res (an_archetype)
 
 			adl_version := an_archetype.adl_version
