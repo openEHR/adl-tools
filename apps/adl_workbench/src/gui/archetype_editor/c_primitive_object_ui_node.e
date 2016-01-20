@@ -12,7 +12,7 @@ class C_PRIMITIVE_OBJECT_UI_NODE
 inherit
 	C_OBJECT_UI_NODE
 		redefine
-			arch_node, prepare_display_in_grid, is_prepared, rm_type_text, display_constraint
+			arch_node, rm_type_text, display_constraint
 		end
 
 create
@@ -22,28 +22,6 @@ feature -- Access
 
 	arch_node: detachable C_PRIMITIVE_OBJECT
 			-- archetype node being edited
-
-feature -- Display
-
-	prepare_display_in_grid (a_gui_grid: EVX_GRID)
-		do
-			evx_grid := a_gui_grid
-
-			-- re-use parent row
-			check attached parent as p and then attached p.ev_grid_row as lr then
-				ev_grid_row := lr
-			end
-		end
-
-feature -- _status Report
-
-	is_prepared: BOOLEAN
-			-- True if grid row connections are valid - in this case, the grid row is the same
-			-- one as the parent
-		do
-			Result := attached evx_grid and attached ev_grid_row as gr and then
-				(attached parent as p implies (gr = p.ev_grid_row))
-		end
 
 feature {NONE} -- Implementation
 
