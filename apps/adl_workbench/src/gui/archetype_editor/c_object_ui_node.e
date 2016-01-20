@@ -280,15 +280,19 @@ feature {NONE} -- Implementation
 		do
 			if attached arch_node as a_n then
 				if is_id_code (a_n.node_id) then
-					if ui_graph_state.flat_terminology.has_id_code (a_n.node_id) then
-						node_id_str := ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
-						if display_settings.show_codes then
-							Result := annotated_code (a_n.node_id, node_id_str, " ")
+					if not a_n.node_id.is_equal (Primitive_node_id) then
+						if ui_graph_state.flat_terminology.has_id_code (a_n.node_id) then
+							node_id_str := ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text
+							if display_settings.show_codes then
+								Result := annotated_code (a_n.node_id, node_id_str, " ")
+							else
+								Result := node_id_str
+							end
+						elseif display_settings.show_codes then
+							Result := a_n.node_id
 						else
-							Result := node_id_str
+							create Result.make_empty
 						end
-					elseif display_settings.show_codes then
-						Result := a_n.node_id
 					else
 						create Result.make_empty
 					end
