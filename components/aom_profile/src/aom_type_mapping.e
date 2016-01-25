@@ -34,7 +34,7 @@ feature -- Identification
 
 feature -- Access (attributes from file)
 
-	property_mappings: HASH_TABLE [AOM_PROPERTY_MAPPING, STRING]
+	property_mappings: detachable HASH_TABLE [AOM_PROPERTY_MAPPING, STRING]
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
 feature -- Validation

@@ -145,11 +145,13 @@ feature -- Validation
 									add_error (ec_ARP_invalid_class_mapping, <<type_mappings_csr.item.source_class_name,
 										rm_class_name, sch.schema_id>>)
 								else
-									across type_mappings_csr.item.property_mappings as property_mappings_csr loop
-										if not sch.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
-											add_error (ec_ARP_invalid_property_mapping, <<type_mappings_csr.item.source_class_name,
-												property_mappings_csr.item.source_property_name,
-												rm_class_name, property_mappings_csr.item.target_property_name, sch.schema_id>>)
+									if attached type_mappings_csr.item.property_mappings as prop_mappings then
+										across prop_mappings as property_mappings_csr loop
+											if not sch.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
+												add_error (ec_ARP_invalid_property_mapping, <<type_mappings_csr.item.source_class_name,
+													property_mappings_csr.item.source_property_name,
+													rm_class_name, property_mappings_csr.item.target_property_name, sch.schema_id>>)
+											end
 										end
 									end
 								end
