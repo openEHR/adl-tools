@@ -7,7 +7,7 @@ note
 
 					If there is an assumed value for the ac-code case above, the assumed_value attribute contains a 
 					single at-code, which must come from the list of at-codes defined as the internal value set for 
-					the ac-code.	
+					the ac-code.
 				 ]"
 	keywords:    "archetype, terminology"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -60,6 +60,16 @@ feature -- Access
 			end
 		ensure
 			Result.object_comparison
+		end
+
+	value_set_binding: ARRAYED_LIST [URI]
+			-- bindings if any
+		do
+			if is_valid_value_set_code (constraint) and attached value_set_binding_extractor as att_agt then
+				Result := att_agt.item ([constraint])
+			else
+				create Result.make (0)
+			end
 		end
 
 	prototype_value: TERMINOLOGY_CODE
@@ -148,6 +158,11 @@ feature {C_TERMINOLOGY_CODE, ARCHETYPE} -- Modification
 	set_value_set_extractor (an_agent: attached like value_set_extractor)
 		do
 			value_set_extractor := an_agent
+		end
+
+	set_value_set_binding_extractor (an_agent: attached like value_set_binding_extractor)
+		do
+			value_set_binding_extractor := an_agent
 		end
 
 feature {AOM_151_CONVERTER} -- Modification
@@ -247,6 +262,12 @@ feature {NONE} -- Implementation
 		end
 
 	value_set_extractor: detachable FUNCTION [ANY, TUPLE [ac_code: STRING], ARRAYED_LIST [STRING]]
+		note
+			option: stable
+		attribute
+		end
+
+	value_set_binding_extractor: detachable FUNCTION [ANY, TUPLE [ac_code: STRING], ARRAYED_LIST [URI]]
 		note
 			option: stable
 		attribute

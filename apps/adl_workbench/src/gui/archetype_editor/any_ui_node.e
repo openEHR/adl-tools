@@ -265,10 +265,14 @@ feature {NONE} -- Implementation
 			--	term1
 			--	term2 (assumed)
 			--	term3
+		local
+			vset_exp: ARRAYED_LIST [STRING]
 		do
 			create Result.make_empty
-			if attached a_ccp.value_set_expanded as cl then
-				across cl as codes_csr loop
+			-- show inline value set if available
+			vset_exp := a_ccp.value_set_expanded
+			if not vset_exp.is_empty then
+				across vset_exp as codes_csr loop
 					Result.append_string (term_string (Local_terminology_id, codes_csr.item))
 					if attached a_ccp.assumed_value as att_av and then att_av.is_equal (codes_csr.item) then
 						Result.append (" (" + get_text (ec_assumed_text) + ")")
@@ -276,6 +280,11 @@ feature {NONE} -- Implementation
 					if not codes_csr.is_last then
 						Result.append_string ("%N")
 					end
+				end
+			-- otherwise try to show value set binding references
+			else
+				across a_ccp.value_set_binding as bnd_csr loop
+					Result.append (bnd_csr.item.as_string + "%N")
 				end
 			end
 		end

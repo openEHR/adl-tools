@@ -1106,11 +1106,13 @@ feature {NONE} -- Implementation
 					do
 						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
 							ctc.set_value_set_extractor (agent get_value_set)
+							ctc.set_value_set_binding_extractor (agent get_value_set_binding)
 						end
 					end)
 		end
 
 	get_value_set (ac_code: STRING): ARRAYED_LIST [STRING]
+			-- get value set from archetype terminology if it exists
 		do
 			if attached terminology.value_sets.item (ac_code) as att_vs then
 				Result := att_vs.members
@@ -1118,6 +1120,12 @@ feature {NONE} -- Implementation
 				create Result.make (0)
 				Result.compare_objects
 			end
+		end
+
+	get_value_set_binding (ac_code: STRING): ARRAYED_LIST [URI]
+			-- get value set bindings from archetype terminology if they exist
+		do
+			Result := terminology.term_bindings_for_key (ac_code).linear_representation
 		end
 
 	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
