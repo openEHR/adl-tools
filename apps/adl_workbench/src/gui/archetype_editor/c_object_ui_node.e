@@ -278,6 +278,7 @@ feature {NONE} -- Implementation
 		local
 			node_id_str: STRING
 		do
+			create Result.make_empty
 			if attached arch_node as a_n then
 				if is_id_code (a_n.node_id) then
 					if not a_n.node_id.is_equal (Primitive_node_id) then
@@ -290,11 +291,7 @@ feature {NONE} -- Implementation
 							end
 						elseif display_settings.show_codes then
 							Result := a_n.node_id
-						else
-							create Result.make_empty
 						end
-					else
-						create Result.make_empty
 					end
 				-- it must be an archetype id in a template structure
 				else
@@ -304,8 +301,9 @@ feature {NONE} -- Implementation
 						Result := (create {ARCHETYPE_HRID}.make_from_string (a_n.node_id)).concept_id
 					end
 				end
-			else
-				create Result.make_empty
+				if Result.is_empty then
+					Result.append (a_n.rm_type_name)
+				end
 			end
 		end
 
