@@ -50,10 +50,10 @@ feature -- Definitions: Archetype viewer
 
 	Definition_grid_col_rm_name: INTEGER = 1
 	Definition_grid_col_meaning: INTEGER = 2
-	Definition_grid_col_existence: INTEGER = 3
-	Definition_grid_col_card_occ: INTEGER = 4
-	Definition_grid_col_sibling_order: INTEGER = 5
-	Definition_grid_col_constraint: INTEGER = 6
+	Definition_grid_col_existence: INTEGER = 4
+	Definition_grid_col_card_occ: INTEGER = 5
+	Definition_grid_col_sibling_order: INTEGER = 6
+	Definition_grid_col_constraint: INTEGER = 3
 	Definition_grid_col_max: INTEGER
 		once ("PROCESS")
 			Result := Definition_grid_col_constraint
@@ -64,10 +64,10 @@ feature -- Definitions: Archetype viewer
 			create Result.make (0)
 			Result.put (get_text (ec_definition_grid_col_rm_name_text), Definition_grid_col_rm_name)
 			Result.put (get_text (ec_definition_grid_col_meaning_text), Definition_grid_col_meaning)
+			Result.put (get_text (ec_definition_grid_col_constraint_text), Definition_grid_col_constraint)
 			Result.put (get_text (ec_definition_grid_col_existence_text), Definition_grid_col_existence)
 			Result.put (get_text (ec_definition_grid_col_card_occ_text), Definition_grid_col_card_occ)
 			Result.put (get_text (ec_definition_grid_col_sibling_order_text), Definition_grid_col_sibling_order)
-			Result.put (get_text (ec_definition_grid_col_constraint_text), Definition_grid_col_constraint)
 		end
 
 	Rules_grid_col_expr_type: INTEGER = 1
