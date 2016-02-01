@@ -115,7 +115,7 @@ feature -- Display
 					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
 					att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
 		 		else
-					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_display_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
 					att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 				end
 
@@ -301,9 +301,17 @@ feature {NONE} -- Implementation
 						Result := (create {ARCHETYPE_HRID}.make_from_string (a_n.node_id)).concept_id
 					end
 				end
-				if Result.is_empty then
-					Result.append (a_n.rm_type_name)
-				end
+			end
+		end
+
+	node_display_text: STRING
+			-- show `node_id_text' unless empty, in which case show `rm_type_name'
+		local
+			node_id_str: STRING
+		do
+			Result := node_id_text
+			if Result.is_empty and then attached arch_node as a_n then
+				Result := a_n.rm_type_name
 			end
 		end
 
