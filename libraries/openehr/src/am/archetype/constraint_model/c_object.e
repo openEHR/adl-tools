@@ -55,6 +55,21 @@ feature -- Access
 			end
 		end
 
+	effective_occurrences (rm_attr_prop_mult: FUNCTION [ANY, TUPLE[STRING, STRING], MULTIPLICITY_INTERVAL]): MULTIPLICITY_INTERVAL
+			-- evaluate effective occurrences, using the RM when no occurrences constraint exists.
+			-- In this case, the upper limit of the RM's owning attribute is used to provide a value.
+			-- `rm_attr_prop_mult' is a function that knows how to compute effective object multiplicity
+			-- by looking at the owning RM property.
+		do
+			if attached occurrences as att_occ then
+				Result := att_occ
+			elseif attached parent as att_ca and then attached att_ca.parent as att_co then
+				Result := rm_attr_prop_mult (att_co.rm_type_name, att_ca.rm_attribute_name)
+			else
+				create Result.default_create
+			end
+		end
+
 	parent: detachable C_ATTRIBUTE
 		note
 			option: transient
@@ -71,12 +86,6 @@ feature -- Status report
 			-- True if occurrences set to {0} i.e. prohibited
 		do
 			Result := attached occurrences as occ and then occ.is_prohibited
-		end
-
-	is_occurrences_upper_one: BOOLEAN
-			-- True if occurrences exists, and max set to 1
-		do
-			Result := attached occurrences as att_occ and then not att_occ.upper_unbounded and then att_occ.upper = 1
 		end
 
 	is_deprecated: BOOLEAN

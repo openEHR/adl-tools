@@ -1109,7 +1109,7 @@ feature {NONE} -- Flattening
 		do
 			-- archetype flattening step
 			if attached specialisation_parent as spec_anc then
-				arch_flattener.execute (spec_anc.flat_archetype, safe_differential_archetype)
+				arch_flattener.execute (spec_anc.flat_archetype, safe_differential_archetype, rm_schema)
 				check attached {like flat_archetype} arch_flattener.arch_flat_out as att_flat then
 					flattened_arch := att_flat
 				end

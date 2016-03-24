@@ -61,7 +61,7 @@ feature -- Access
 
 feature -- Commands
 
-	execute (a_flat_parent: AUTHORED_ARCHETYPE; a_diff_child: ARCHETYPE)
+	execute (a_flat_parent: AUTHORED_ARCHETYPE; a_diff_child: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Parent_valid: a_flat_parent.is_valid and then a_flat_parent.is_flat
@@ -70,6 +70,8 @@ feature -- Commands
 		do
 			arch_diff_child := a_diff_child
 			arch_flat_parent := a_flat_parent
+
+			rm_schema := an_rm_schema
 
 			if attached {TEMPLATE} arch_diff_child then
 				create {TEMPLATE} arch_flat_out.make_from_other (arch_flat_parent)
@@ -99,6 +101,12 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	rm_schema: BMM_SCHEMA
+			-- utility reference to RM schema used for validation & flattening
+		attribute
+			create Result
+		end
 
 	expand_c_proxy_objects
 			-- if there are overrides in the specialised child that are located at use_node positions, we
@@ -552,8 +560,8 @@ end
 								-- determine if clone needed: we don't clone if:
 								--	* override target has max occurrences = 1 set OR
 								--	* child diff obj being processed is sole child of its parent, and has max occurrences = 1
-								clone_needed := not (co_override_target.is_occurrences_upper_one or
-									ca_diff.aggregate_occurrences_upper_is_one (node_id_in_flat_anc))
+								clone_needed := not (co_override_target.effective_occurrences (agent rm_schema.property_object_multiplicity).upper = 1 or
+									ca_diff.aggregate_occurrences_upper_is_one (node_id_in_flat_anc, agent rm_schema.property_object_multiplicity))
 							end
 
 						-- REDEFINE: node with parent node_id only available in flat ancestor - this means that in the flat output,

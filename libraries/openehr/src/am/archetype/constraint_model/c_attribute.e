@@ -162,15 +162,17 @@ feature -- Access
 			end
 		end
 
-	aggregate_occurrences_upper_is_one (an_ancestor_node_id: STRING): BOOLEAN
+	aggregate_occurrences_upper_is_one (an_ancestor_node_id: STRING; rm_attr_prop_mult: FUNCTION [ANY, TUPLE[STRING, STRING], MULTIPLICITY_INTERVAL]): BOOLEAN
 			-- sum of all occurrences upper bound of children of `an_ancestor_node_id' under this node
 			-- is 1. For example, if this C_ATTRIBUTE node in a differential archetype has one child
 			-- id4.0.1, with occurrences.upper = 1, for ancestor id id4, then Result = True.
+			-- `rm_attr_prop_mult' is a function that knows how to compute effective object multiplicity
+			-- by looking at the owning RM property.
 		local
 			matching_children: ARRAYED_LIST [C_OBJECT]
 		do
 			matching_children := children_matching_id (an_ancestor_node_id)
-			Result := matching_children.count = 1 and matching_children.first.is_occurrences_upper_one
+			Result := matching_children.count = 1 and matching_children.first.effective_occurrences (rm_attr_prop_mult).upper = 1
 		end
 
 	minimum_child_count: INTEGER

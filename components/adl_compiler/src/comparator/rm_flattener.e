@@ -70,16 +70,7 @@ feature {NONE} -- Implementation
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
 				-- so it is set from the enclosing attribute cardinality if a container, or set to RM existence if not a container
 				if co.occurrences = Void and attached co.parent as att_ca and then attached att_ca.parent as att_co then
-					rm_attr_desc := rm_schema.property_definition (att_co.rm_type_name, att_ca.rm_attribute_name)
-					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-						if cont_prop.cardinality.upper_unbounded then
-							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
-						else
-							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded (0, cont_prop.cardinality.upper))
-						end
-					else
-						co.set_occurrences (rm_attr_desc.existence)
-					end
+					co.set_occurrences (rm_schema.property_object_multiplicity (att_co.rm_type_name, att_ca.rm_attribute_name))
 				end
 			end
 		end
