@@ -81,6 +81,7 @@ feature {NONE}-- Initialization
 			-- flatten radio button
 			create ev_flatten_with_rm_cb
 			ev_flatten_with_rm_cb.set_text (get_msg (ec_flatten_with_rm_cb_text, Void))
+			ev_flatten_with_rm_cb.select_actions.extend (agent do set_rm_flattening_on (ev_flatten_with_rm_cb.is_selected) end)
 			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
 			ev_flatten_with_rm_cb.set_tooltip (get_msg (ec_flatten_with_rm_cb_tooltip, Void))
 			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
