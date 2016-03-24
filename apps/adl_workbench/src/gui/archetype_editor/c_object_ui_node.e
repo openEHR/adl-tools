@@ -311,7 +311,7 @@ feature {NONE} -- Implementation
 		do
 			Result := node_id_text
 			if Result.is_empty and then attached arch_node as a_n then
-				Result := a_n.rm_type_name
+				Result := "(" + a_n.rm_type_name + ")"
 			end
 		end
 
