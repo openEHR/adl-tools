@@ -445,7 +445,7 @@ feature {ANY_UI_NODE} -- Implementation
 				-- FIXME: not yet dealing with slot filler or use_archetype redefinition, which needs
 				-- a redefined code, not a new code
 				check attached co_create_params.ext_ref as arch_id then
-					create car.make (rm_type_name, arch_id, new_code)
+					create car.make (rm_type_name, new_code, arch_id)
 				end
 				create {C_ARCHETYPE_ROOT_UI_NODE} Result.make (car, ui_graph_state)
 
