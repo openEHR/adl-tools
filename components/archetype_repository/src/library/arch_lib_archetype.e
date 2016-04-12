@@ -314,8 +314,8 @@ feature -- Relationships
 
 	specialisation_parent: detachable ARCH_LIB_ARCHETYPE
 		do
-			if attached {ARCH_LIB_ARCHETYPE} parent as aca then
-				Result := aca
+			if attached {ARCH_LIB_ARCHETYPE} parent as ala then
+				Result := ala
 			end
 		end
 
@@ -720,6 +720,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 	evaluate_lineage
 		require
 			Initial_state: compilation_state = Cs_lineage_known
+			Is_specialised: is_specialised
 		do
 			if specialisation_parent.is_valid then
 				compilation_state := Cs_ready_to_parse

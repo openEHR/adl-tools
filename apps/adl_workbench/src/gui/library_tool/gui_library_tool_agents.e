@@ -32,10 +32,10 @@ feature -- Command
 			end
 		end
 
-	call_update_explorers_and_select_agent (aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+	call_update_explorers_and_select_agent (ali_id: STRING)
 		do
 			if attached update_explorers_and_select_agent as att_agt then
-				att_agt.call ([aca])
+				att_agt.call ([ali_id])
 			end
 		end
 
@@ -54,7 +54,7 @@ feature {NONE} -- Implementation
 
 	archetype_explorer_select_in_tree_agent: detachable PROCEDURE [ANY, TUPLE [key: STRING]]
 
-	update_explorers_and_select_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_ARCHETYPE]]
+	update_explorers_and_select_agent: detachable PROCEDURE [ANY, TUPLE [ali_id: STRING]]
 
 	update_archetype_explorer_agent: detachable PROCEDURE [ANY, TUPLE]
 

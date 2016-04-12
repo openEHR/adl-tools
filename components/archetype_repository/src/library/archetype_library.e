@@ -377,15 +377,15 @@ feature -- Modification
 			new_id_valid: has_archetype_with_id (aca.id.physical_id)
 			Semantic_parent_exists: has_item_with_id (aca.id.physical_id)
 		do
-			if aca.is_specialised and attached aca.parent as att_parent then
+			if attached aca.parent as att_parent then
 				att_parent.remove_child (aca)
 			end
 			item_index_remove (aca.id)
 
 			if aca.is_adhoc then
-				library_access.source.remove_archetype (aca.id)
-			else
 				library_access.adhoc_source.remove_archetype (aca.id)
+			else
+				library_access.source.remove_archetype (aca.id)
 			end
 		ensure
 			Node_removed_from_archetype_index: not has_archetype_with_id (aca.id.physical_id)

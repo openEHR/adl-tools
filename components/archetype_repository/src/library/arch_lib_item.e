@@ -86,6 +86,9 @@ feature -- Access
 			Result.append (name)
 		end
 
+	parent: detachable ARCH_LIB_ITEM
+			-- parent node
+
    	subtree_artefact_count (an_artefact_types: ARRAY [IMMUTABLE_STRING_8]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
    		local
@@ -252,9 +255,6 @@ feature {ARCH_LIB_ITEM} -- Implementation
 			-- list of child nodes
 
 feature {ARCH_LIB_ITEM, ARCHETYPE_LIBRARY} -- Implementation
-
-	parent: detachable ARCH_LIB_ITEM
-			-- parent node
 
 	subtree_artefact_counts: HASH_TABLE [INTEGER, IMMUTABLE_STRING_8]
 			-- counter of archetype child objects, keyed by artefact type,

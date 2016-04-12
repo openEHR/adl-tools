@@ -15,7 +15,7 @@ inherit
 			make as make_tree_control
 		redefine
 			on_rotate_view, add_tool_specific_archetype_menu_items, grid_item_select_handler,
-				grid_item_event_handler, repopulate, do_clear, do_select_archetype
+				grid_item_event_handler, repopulate, do_clear, do_select_archetype, remove_item_in_tree
 		end
 
 	BMM_DEFINITIONS
@@ -139,6 +139,24 @@ feature -- Commands
 				end
 				gui_filesys_grid.ev_grid.ensure_visible (grid_row)
 				select_item_in_grid (grid_row, ari_global_id)
+			end
+		end
+
+	remove_item_in_tree (ari_global_id: STRING)
+			-- remove node with global node id `ari_global_id' from tree
+		do
+			if semantic_grid_row_map.has (ari_global_id) then
+				check attached semantic_grid_row_map.item (ari_global_id) as gr and then attached {EV_GRID_ROW} gr.parent_row as att_p then
+				--	att_p.remove_subrow (gr)
+					gui_semantic_grid.ev_grid.remove_row (gr.index)
+				end
+				semantic_grid_row_map.remove (ari_global_id)
+			end
+			if filesys_grid_row_map.has (ari_global_id) then
+				check attached filesys_grid_row_map.item (ari_global_id) as gr and then attached {EV_GRID_ROW} gr.parent_row as att_p then
+					att_p.remove_subrow (gr)
+				end
+				filesys_grid_row_map.remove (ari_global_id)
 			end
 		end
 
@@ -590,7 +608,7 @@ feature {NONE} -- Implementation
 			if dialog.is_valid then
 				safe_source.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
 				check attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source.last_added_archetype as att_arch then
-					tool_agents.call_update_explorers_and_select_agent (att_arch)
+					tool_agents.call_update_explorers_and_select_agent (att_arch.id.as_string)
 				end
 			end
 			dialog.destroy

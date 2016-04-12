@@ -352,13 +352,13 @@ feature -- Events
 			gui_agents.call_on_toggle_view_all_classes_agent (not show_entire_ontology, True)
 		end
 
-	update_explorers_and_select (aca: ARCH_LIB_ARCHETYPE)
+	update_explorers_and_select (ali_id: STRING)
 			-- Populate archetype and template explorers and select new archetype in the archetype explorer
 		do
 			if attached source as src then
 				archetype_explorer.populate (src)
 				template_explorer.populate (src)
-				archetype_explorer.select_item_in_tree (aca.id.physical_id)
+				archetype_explorer.select_item_in_tree (ali_id)
 			end
 		end
 

@@ -75,6 +75,11 @@ feature -- Commands
 		deferred
 		end
 
+	remove_item_in_tree (ari_global_id: STRING)
+			-- remove node with global node id `ari_global_id' from tree
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	do_clear
@@ -315,8 +320,9 @@ feature {NONE} -- Implementation
 				if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
 					src.remove_artefact (aca)
 					aca.remove_file
-					check attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca.specialisation_parent as att_anc then
-						tool_agents.call_update_explorers_and_select_agent (att_anc)
+					if attached aca.parent as att_parent then
+						remove_item_in_tree (aca.global_artefact_identifier)
+						tool_agents.call_update_explorers_and_select_agent (att_parent.global_artefact_identifier)
 					end
 				end
 				question_dialog.destroy
