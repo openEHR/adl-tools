@@ -161,6 +161,12 @@ feature {NONE} -- Implementation
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 					end
+
+					-- documentation, if there is any
+					if attached rm_element.documentation as bmm_node_doc then
+						Result.append ("%N%N" + get_text (ec_bmm_documentation_text) + "%N")
+						Result.append ("%T" + bmm_node_doc + "%N")
+					end
 				end
 
 				-- path-based bindings

@@ -158,6 +158,9 @@ feature {NONE} -- Implementation
 				-- populate class row
 				create gli.make_with_text (a_class_def.as_type_string)
 				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
+				if attached a_class_def.documentation as bmm_class_doc then
+					gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_class_doc)
+				end
 				gli.set_data (a_class_def)
 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 				ev_grid.set_item (Grid_declared_in_col, ev_grid.row_count + 1, gli)
@@ -177,6 +180,9 @@ feature {NONE} -- Implementation
 							gli.set_foreground_color (rm_attribute_color)
 						end
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + props_csr.item.multiplicity_key_string))
+						if attached props_csr.item.documentation as bmm_prop_doc then
+							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_doc)
+						end
 						ev_grid.set_item (Grid_property_col, ev_grid.row_count + 1, gli)
 						property_row := gli.row
 
@@ -185,6 +191,9 @@ feature {NONE} -- Implementation
 						prop_class := safe_source.bmm_schema.class_definition (props_csr.item.type.base_class.name)
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
 						gli.set_data (prop_class)
+						if attached prop_class.documentation as bmm_prop_class_doc then
+							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
+						end
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 						property_row.set_item (Grid_property_type_col, gli)
 					end
