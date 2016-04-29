@@ -1125,7 +1125,12 @@ feature {NONE} -- Implementation
 	get_value_set_binding (ac_code: STRING): ARRAYED_LIST [URI]
 			-- get value set bindings from archetype terminology if they exist
 		do
-			Result := terminology.term_bindings_for_key (ac_code).linear_representation
+			if terminology.has_any_term_binding (ac_code) then
+				Result := terminology.term_bindings_for_key (ac_code).linear_representation
+			else
+				create Result.make (0)
+				Result.compare_objects
+			end
 		end
 
 	reduce_languages_to (a_langs: ARRAYED_SET [STRING])
