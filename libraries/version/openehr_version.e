@@ -27,7 +27,7 @@ feature -- Access
 	minor: INTEGER = 0
 			-- The minor version number: manually incremented, or else reset to 0 when `major' changes.
 
-	build: INTEGER = 5
+	build: INTEGER = 6
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
 	revision: INTEGER = 0
