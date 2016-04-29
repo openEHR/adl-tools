@@ -38,6 +38,7 @@ feature -- Initialisation
 feature -- Access
 
 	component_terminologies: detachable HASH_TABLE [P_ARCHETYPE_TERMINOLOGY, STRING]
+			-- terminologies of constituent archetypes, keyed by archetype id
 
 feature -- Factory
 
