@@ -301,7 +301,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {C_OBJECT} a_c_node as co_child then
 				if specialisation_depth_from_code (co_child.node_id) <= flat_ancestor.specialisation_depth -- node from previous level
-					or else is_refined_code (co_child.node_id)  -- from current level, refined
+					or else is_redefined_code (co_child.node_id)  -- from current level, refined
 				then
 					create apa.make_from_string (a_c_node.path)
 					Result := flat_ancestor.has_object_path (apa.path_at_level (flat_ancestor.specialisation_depth))

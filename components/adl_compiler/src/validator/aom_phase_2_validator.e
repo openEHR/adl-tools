@@ -359,7 +359,7 @@ end
 
 					-- is it an overlay or new node; if overlay, then check it
 					if specialisation_depth_from_code (c_obj.node_id) <= arch_flat_parent.specialisation_depth or else 	-- node with node_id from previous level OR
-						is_refined_code (c_obj.node_id) 						-- node id refined (i.e. not new)
+						is_redefined_code (c_obj.node_id) 						-- node id refined (i.e. not new)
 					then
 						-- either the path can't in principle exist in the flat ancestor (phantom path) or
 						-- else it might be possible, but not actually exist. Only if it actually exists is

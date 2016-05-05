@@ -1045,7 +1045,7 @@ feature {NONE} -- Implementation
 							-- need to avoid at-codes in archetypes not yet converted or fully converted
 							if is_id_code (co.node_id) and not co.node_id.starts_with (Fake_adl_14_node_id_base) and then specialisation_depth_from_code (co.node_id) = specialisation_depth then
 								code_idx := code_index_at_level (co.node_id, specialisation_depth)
-								if is_refined_code (co.node_id) then
+								if is_redefined_code (co.node_id) then
 									parent_node_id := specialised_code_base (co.node_id)
 									if not highest_redefined_id_codes.has (parent_node_id) then
 										highest_redefined_id_codes.put (code_idx, parent_node_id)
@@ -1058,6 +1058,18 @@ feature {NONE} -- Implementation
 							end
 						end
 					end)
+
+			-- now check against terminology highest codes, since terminology may contain junk codes due to earlier node
+			-- deletions or hand-editing
+			highest_added_id_code := highest_added_id_code.max (terminology.highest_id_code)
+
+			across highest_redefined_id_codes as codes_csr loop
+				if terminology.highest_redefined_code_index.has (codes_csr.key) and then
+					codes_csr.item < terminology.highest_redefined_code_index.item (codes_csr.key)
+				then
+					highest_redefined_id_codes.replace (codes_csr.item, codes_csr.key)
+				end
+			end
 		end
 
 	highest_added_id_code: INTEGER

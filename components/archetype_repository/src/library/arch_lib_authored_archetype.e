@@ -385,17 +385,15 @@ feature -- Editing
 
 			-- do diff on flat_archetype_clone
 			if attached specialisation_parent as parent_aca then
-				create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype_clone)
+				create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype_editable)
 				check attached {like flat_archetype} archetype_comparator.differential_output as diff_out then
 					differential_archetype := diff_out
 				end
 			else
-				differential_archetype := flat_archetype_clone
+				differential_archetype := flat_archetype_editable.deep_twin
 				differential_archetype.set_differential
 			end
-
-			differential_archetype.clear_is_generated
-			file_mgr.set_is_source_generated (False)
+			clear_is_generated
 			editor_state.on_commit
 			save_differential_text
 			create last_modify_timestamp.make_now
@@ -406,6 +404,20 @@ feature -- Editing
 			-- set revision appropriately
 		ensure then
 			Differential_is_primary: not file_mgr.is_source_generated and not differential_archetype.is_generated
+		end
+
+	clear_is_generated
+			-- clear `is_generated` marker from differential archetype and file representation as well
+		do
+			differential_archetype.clear_is_generated
+			file_mgr.set_is_source_generated (False)
+		end
+
+	clear_flat_archetype
+			-- clear flat archetype caches due to changes to differential
+		do
+			flat_archetype_editable_cache := Void
+			flat_archetype_cache := Void
 		end
 
 feature {NONE} -- Output

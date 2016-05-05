@@ -306,8 +306,6 @@ feature {NONE} -- Implementation
 
 	node_display_text: STRING
 			-- show `node_id_text' unless empty, in which case show `rm_type_name'
-		local
-			node_id_str: STRING
 		do
 			Result := node_id_text
 			if Result.is_empty and then attached arch_node as a_n then

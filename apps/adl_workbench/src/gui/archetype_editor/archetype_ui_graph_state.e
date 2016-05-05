@@ -33,9 +33,9 @@ feature -- Initialisation
 			source := aca
 			in_differential_view := False
 			rm_schema := an_rm_schema
-			archetype := source.flat_archetype_clone
+			archetype := source.flat_archetype_editable
 			flat_archetype := source.flat_archetype
-			flat_terminology := source.flat_archetype_clone.terminology
+			flat_terminology := archetype.terminology
 			undo_redo_chain := an_undo_redo_chain
 			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype

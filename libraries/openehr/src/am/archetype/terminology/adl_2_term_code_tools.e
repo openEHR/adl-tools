@@ -111,6 +111,11 @@ feature -- Definitions
 
 	Primitive_node_code_number: STRING = "9999"
 
+	Temp_new_id_code: IMMUTABLE_STRING_8
+		do
+			create Result.make_from_string ("id111111")
+		end
+
 	Primitive_node_id: STRING
 			-- special 'id9999' code that identifies all terminal primitive objects
 		once
@@ -337,7 +342,7 @@ feature -- Access
 			-- "at4.3", the result is "3"
 		require
 			code_valid: is_valid_code (a_code)
-			not_root_code: is_refined_code (a_code)
+			not_root_code: is_redefined_code (a_code)
 		do
 			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
 		end
@@ -399,7 +404,7 @@ feature -- Comparison
 			Result := Any_code_regex_matcher.recognizes (a_code)
 		end
 
-	is_refined_code (a_code: STRING): BOOLEAN
+	is_redefined_code (a_code: STRING): BOOLEAN
 			-- a code has been specialised if there is a non-zero code index anywhere above the last index
 			-- e.g. at0.0.1 -> False
 			--      at1.0.1 -> True

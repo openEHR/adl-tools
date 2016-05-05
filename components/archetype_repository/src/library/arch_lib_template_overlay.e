@@ -115,7 +115,7 @@ feature -- Editing
 
 			-- do diff on flat_archetype_clone
 			check attached specialisation_parent as parent_aca then
-				create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype_clone)
+				create archetype_comparator.make_create_differential (parent_aca.flat_archetype, flat_archetype_editable)
 			end
 --			differential_archetype := archetype_comparator.differential_output
 

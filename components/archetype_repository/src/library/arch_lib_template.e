@@ -126,7 +126,7 @@ feature -- Visualisation
 					Result := operational_template
 				end
 			else
-				Result := flat_archetype_clone
+				Result := flat_archetype_editable
 			end
 		end
 

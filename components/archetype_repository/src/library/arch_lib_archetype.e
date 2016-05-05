@@ -961,7 +961,7 @@ feature -- Visualisation
 					Result := flat_archetype
 				end
 			else
-				Result := flat_archetype_clone
+				Result := flat_archetype_editable
 			end
 		end
 
@@ -1048,14 +1048,14 @@ feature -- Statistics
 
 feature -- Editing
 
-	flat_archetype_clone: like flat_archetype
+	flat_archetype_editable: like flat_archetype
 			-- produce a clone of the current `flat_archetype'
 		do
-			if attached flat_archetype_clone_cache as facc then
+			if attached flat_archetype_editable_cache as facc then
 				Result := facc
 			else
 				Result := flat_archetype.deep_twin
-				flat_archetype_clone_cache := Result
+				flat_archetype_editable_cache := Result
 			end
 		ensure
 			Result.is_flat
@@ -1078,14 +1078,14 @@ feature -- Editing
 
 feature {NONE} -- Editing
 
-	flat_archetype_clone_cache: detachable like flat_archetype
+	flat_archetype_editable_cache: detachable like flat_archetype
 
 	editor_state_cache: detachable ALA_EDITOR_STATE
 
 	clear_cache
 		do
 			flat_archetype_cache := Void
-			flat_archetype_clone_cache := Void
+			flat_archetype_editable_cache := Void
 			slot_id_index_cache := Void
 			flat_slot_id_index_cache := Void
 			if attached editor_state_cache as att_esc then
@@ -1130,7 +1130,10 @@ feature {NONE} -- Flattening
 			flat_archetype_cache := flattened_arch
 			last_include_rm := include_rm
 		ensure
-			flat_archetype_cache_attached: attached flat_archetype_cache
+			Flat_archetype_cache_attached: attached flat_archetype_cache
+			Flat_is_flat: flat_archetype.is_flat
+			Flat_is_generated: flat_archetype.is_generated
+			Flat_is_valid: flat_archetype.is_valid
 		end
 
 	flat_archetype_cache: detachable like flat_archetype

@@ -602,8 +602,8 @@ feature -- Modification
 			new_term: ARCHETYPE_TERM
 			high_code: INTEGER
 		do
-			if highest_refined_code_index.has (a_parent_code) then
-				high_code := highest_refined_code_index [a_parent_code]
+			if highest_redefined_code_index.has (a_parent_code) then
+				high_code := highest_redefined_code_index [a_parent_code]
 			end
 			create new_term.make_all (new_refined_code_at_level (a_parent_code, specialisation_depth, high_code), a_text, a_description)
 			put_new_definition (new_term)
@@ -846,8 +846,8 @@ feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 		local
 			high_code: INTEGER
 		do
-			if highest_refined_code_index.has (a_parent_code) then
-				high_code := highest_refined_code_index [a_parent_code]
+			if highest_redefined_code_index.has (a_parent_code) then
+				high_code := highest_redefined_code_index [a_parent_code]
 			end
 			last_new_definition_code := new_refined_code_at_level (a_parent_code, specialisation_depth, high_code)
 			across a_terms as terms_csr loop
@@ -867,9 +867,9 @@ feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			put_definition_and_translations (a_terms, last_new_definition_code)
 		end
 
-feature {ARCHETYPE_TERMINOLOGY} -- Modification
+feature {ARCHETYPE, ARCHETYPE_TERMINOLOGY} -- Modification
 
-	highest_refined_code_index: HASH_TABLE [INTEGER, STRING]
+	highest_redefined_code_index: HASH_TABLE [INTEGER, STRING]
 			-- Table of current highest code keyed by its parent code, for all specialised codes
 			-- in this terminology at its level of specialisation.
 			-- For example the entry for key 'id7' could be 5, meaning that current top child
@@ -877,6 +877,9 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
         attribute
             create Result.make (0)
         end
+
+	highest_id_code: INTEGER
+			-- highest added id code at the level of this terminology; 0 if none so far
 
 	highest_value_code: INTEGER
 			-- highest added term code at the level of this terminology; 0 if none so far
@@ -894,15 +897,17 @@ feature {ARCHETYPE_TERMINOLOGY} -- Modification
 			idx: INTEGER
 			parent_code: STRING
 		do
-			if is_refined_code (a_code) then
+			if is_redefined_code (a_code) then
 				parent_code := specialised_code_base (a_code)
 				idx := specialised_code_tail (a_code).to_integer
-				if idx > highest_refined_code_index [parent_code] then
-					highest_refined_code_index [parent_code] := idx
+				if idx > highest_redefined_code_index [parent_code] then
+					highest_redefined_code_index [parent_code] := idx
 				end
 			elseif specialisation_depth_from_code (a_code) = specialisation_depth then
 				idx := code_index_at_level (a_code, specialisation_depth)
-				if is_value_code (a_code) then
+				if is_id_code (a_code) then
+					highest_id_code := highest_id_code.max (idx)
+				elseif is_value_code (a_code) then
 					highest_value_code := highest_value_code.max (idx)
 				elseif is_value_set_code (a_code) then
 					highest_value_set_code := highest_value_set_code.max (idx)
@@ -1056,7 +1061,7 @@ feature {NONE} -- Flattening
 			spec_depth, code_anc_spec_level: INTEGER
 		do
 			-- determine for parent code that might exist in this flat terminology
-			if is_refined_code (a_child_code) then
+			if is_redefined_code (a_child_code) then
 				code_in_parent := a_child_code
 				code_anc_spec_level := code_ancestor_level (code_in_parent)
 				from spec_depth := specialisation_depth until spec_depth <= code_anc_spec_level or has_term_binding (a_terminology_id, code_in_parent) loop
@@ -1080,7 +1085,7 @@ feature {NONE} -- Flattening
 			parent_code_set: detachable ARRAYED_LIST [STRING]
 		do
 			-- determine for parent code that might exist in this flat terminology
-			if is_refined_code (a_value_set.id) then
+			if is_redefined_code (a_value_set.id) then
 				code_in_parent := a_value_set.id
 				code_anc_spec_level := code_ancestor_level (code_in_parent)
 				from spec_depth := specialisation_depth until spec_depth <= code_anc_spec_level or value_sets.has (code_in_parent) loop
