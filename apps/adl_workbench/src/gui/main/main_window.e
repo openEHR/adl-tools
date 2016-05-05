@@ -273,6 +273,7 @@ feature {NONE} -- Initialization
 
 			gui_agents.set_refresh_archetype_viewers_agent (agent refresh_archetype_viewers)
 			gui_agents.set_refresh_archetype_editors_agent (agent refresh_archetype_editors)
+			gui_agents.set_refresh_all_archetype_editors_agent (agent refresh_all_archetype_editors)
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
 			gui_agents.set_close_test_tool_agent (agent close_test_tool)
@@ -816,6 +817,7 @@ feature -- RM Schemas Events
 			rm_schemas_access.reload_schemas
 			display_archetype_library (True)
 			rm_schema_explorer.populate (rm_schemas_access)
+			refresh_all_archetype_editors
 		end
 
 feature {NONE} -- Help events
@@ -1012,7 +1014,7 @@ feature -- Archetype editors
 		end
 
 	refresh_archetype_editors (an_archetype_id: READABLE_STRING_8)
-			-- repopulate all editors of archetype with `an_archetype_id'
+			-- repopulate editors of archetype targetted to archetype `an_archetype_id'
 		do
 			archetype_editors.do_all_tools (
 				agent (a_tool: GUI_ARCHETYPE_EDITOR; an_id: READABLE_STRING_8)
@@ -1021,6 +1023,17 @@ feature -- Archetype editors
 							a_tool.repopulate
 						end
 					end (?, an_archetype_id)
+			)
+		end
+
+	refresh_all_archetype_editors
+			-- repopulate all editors of archetype
+		do
+			archetype_editors.do_all_tools (
+				agent (a_tool: GUI_ARCHETYPE_EDITOR)
+					do
+						a_tool.repopulate
+					end
 			)
 		end
 

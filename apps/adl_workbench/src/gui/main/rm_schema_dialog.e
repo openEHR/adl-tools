@@ -35,6 +35,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	EVX_UTILITIES
 		export
 			{NONE} all
@@ -65,7 +72,7 @@ feature {NONE} -- Initialisation
 		do
 			create gui_controls.make (0)
 
-			create last_rm_schema_dirs.make (0)
+			last_rm_schema_dirs := rm_schema_directories
 
 			Precursor {EV_DIALOG}
 
@@ -165,6 +172,7 @@ feature -- Commands
 			reset_rm_schemas_load_list
 			rm_schemas_access.reload_schemas
 			do_populate
+			gui_agents.call_refresh_all_archetype_editors_agent
 		end
 
 feature -- Events
