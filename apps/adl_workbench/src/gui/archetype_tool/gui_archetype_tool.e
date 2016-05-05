@@ -107,6 +107,14 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+	link_sub_tools
+		do
+			add_sub_tool (description_controls)
+			add_sub_tool (definition_control)
+			add_sub_tool (terminology_controls)
+			add_sub_tool (annotations_control)
+		end
+
 	do_clear
 			-- Wipe out content from visual controls.
 		do

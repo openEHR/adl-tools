@@ -278,6 +278,15 @@ feature {GUI_TOOL} -- Implementation
 			end
 		end
 
+	do_all_sub_tools (tool_agt: PROCEDURE [ANY, TUPLE[GUI_TOOL]])
+		do
+			if attached sub_tools as att_sub_tools then
+				across att_sub_tools as tool_csr loop
+					tool_agt.call ([tool_csr.item])
+				end
+			end
+		end
+
 	set_parent_tool (a_tool: GUI_TOOL)
 		do
 			parent_tool := a_tool

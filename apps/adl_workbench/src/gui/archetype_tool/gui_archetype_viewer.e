@@ -12,7 +12,7 @@ class GUI_ARCHETYPE_VIEWER
 inherit
 	GUI_ARCHETYPE_TOOL
 		redefine
-			make, do_clear, do_populate, set_differential_tab_texts, set_flat_tab_texts
+			make, do_clear, do_populate, set_differential_tab_texts, set_flat_tab_texts, link_sub_tools
 		end
 
 	EV_SHARED_APPLICATION
@@ -83,6 +83,8 @@ feature {NONE}-- Initialization
 			set_view_tab_texts
 
 			ev_root_container.set_data (Current)
+
+			link_sub_tools
 		end
 
 feature -- UI Feedback
@@ -132,6 +134,18 @@ feature {NONE} -- Implementation
 			create serialisation_control.make
 		end
 
+	link_sub_tools
+		do
+			precursor
+			add_sub_tool (interface_map_control)
+			add_sub_tool (slot_map_control)
+			add_sub_tool (clients_suppliers_control)
+			add_sub_tool (source_control)
+			add_sub_tool (serialisation_control)
+			add_sub_tool (validity_report_control)
+			add_sub_tool (statistical_information_control)
+		end
+
 	do_clear
 			-- Wipe out content from visual controls.
 		do
@@ -148,6 +162,14 @@ feature {NONE} -- Implementation
 		do
 			precursor
 			if attached source as src and attached selected_language as sel_lang then
+				do_all_sub_tools (
+					agent (a_tool: GUI_TOOL)
+						do
+							if attached {GUI_ARCHETYPE_TARGETTED_TOOL} a_tool as an_arch_tool and then an_arch_tool.is_populated then
+								repopulate_tool (an_arch_tool)
+							end
+						end
+				)
 				if src.is_valid then
 					ev_notebook.select_item (tabs_index_item (default_tool_tab))
 				else
@@ -185,8 +207,9 @@ feature {NONE} -- Implementation
 		end
 
 	set_tab_appearance
-			-- set visual appearance of validity tab according to whether there are errors or not
+			-- set visual appearance of tabs according to current state of archetype
 		do
+			-- set visual appearance of validity tab according to whether there are errors or not
 			if not attached source as src or else (src.is_valid and then not src.has_warnings) then
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/errors_grey"))
 			else

@@ -185,28 +185,13 @@ feature -- Events
 				-- do anything required when tool becomes visible again
 				arch_tool.on_selected
 
-				-- remember the tab, unless it's the error tab and the archetype is invalid, which means it was
-				-- automatically chosen
+				-- remember the tab, unless it's the error tab and the archetype is invalid, which means it was automatically chosen
 				if src.is_valid then
 					set_default_tool_tab (tool_tab_text_to_id (ev_notebook.item_tab (att_sel_item).text))
 				end
 
 				-- update content if out of date in any way
-				if tool_populate_required (arch_tool) then
-					if arch_tool.can_populate (src, [differential_view, sel_lang]) then
-						do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, [differential_view, sel_lang]))
-					else
-						arch_tool.clear
-					end
-				elseif arch_tool.can_repopulate then
-					if sel_lang /= arch_tool.selected_language then
-						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (sel_lang))
-					elseif tool_repopulate_required (arch_tool) then
-						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate)
-					end
-				elseif src /= arch_tool.source then
-					arch_tool.clear
-				end
+				repopulate_tool (arch_tool)
 			end
 		end
 
@@ -279,7 +264,7 @@ feature {NONE} -- Events
 feature {NONE} -- Implementation
 
 	do_clear
-			-- Wipe out content from visual controls.
+			-- clear content from archetype tool frame
 		do
 			ev_archetype_hrid_namespace.remove_text
 			ev_archetype_hrid_qualified_rm_class.remove_text
@@ -294,6 +279,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
+			-- populate content in archetype tool frame
 		do
 			attach_gui_context
 			select_view (differential_view)
@@ -403,6 +389,28 @@ feature {NONE} -- Implementation
 				Result :=
 					an_arch_tool.last_populate_timestamp < src.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
 					an_arch_tool.last_populate_timestamp < src.last_modify_timestamp				-- source modified more recently than last populate
+			end
+		end
+
+	repopulate_tool (arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL)
+			-- repopulate a tool
+		do
+			if attached source as src and attached selected_language as sel_lang then
+				if tool_populate_required (arch_tool) then
+					if arch_tool.can_populate (src, [differential_view, sel_lang]) then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, [differential_view, sel_lang]))
+					else
+						arch_tool.clear
+					end
+				elseif arch_tool.can_repopulate then
+					if sel_lang /= arch_tool.selected_language then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (sel_lang))
+					elseif tool_repopulate_required (arch_tool) then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate)
+					end
+				elseif src /= arch_tool.source then
+					arch_tool.clear
+				end
 			end
 		end
 

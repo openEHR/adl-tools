@@ -39,6 +39,8 @@ feature {NONE}-- Initialization
 			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
 
 			ev_root_container.set_data (Current)
+
+			link_sub_tools
 		end
 
 feature -- Status Report
@@ -118,7 +120,7 @@ feature {NONE} -- Implementation
 			safe_source.commit
 			gui_agents.call_refresh_archetype_viewers_agent (source.id.physical_id)
 			if attached auth_source as att_source then
-				gui_agents.call_console_tool_append_agent (get_msg (ec_arch_editor_commit_notification,
+				gui_agents.call_console_tool_append_agent (get_msg_line (ec_arch_editor_commit_notification,
 					<<att_source.id.physical_id, att_source.source_file_path>>))
 			end
 		end
