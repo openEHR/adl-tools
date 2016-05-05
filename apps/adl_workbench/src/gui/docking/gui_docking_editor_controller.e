@@ -103,12 +103,11 @@ feature -- Commands
 
 	clear_all_tools_content
 		do
-			from docking_tools.start until docking_tools.off loop
-				docking_tools.item_for_iteration.docking_pane.set_long_title ("")
-				docking_tools.item_for_iteration.docking_pane.set_short_title ("")
-				docking_tools.item_for_iteration.docking_pane.set_pixmap (Editor_pixmap)
-				docking_tools.item_for_iteration.tool.clear
-				docking_tools.forth
+			across docking_tools as tool loop
+				tool.item.docking_pane.set_long_title ("")
+				tool.item.docking_pane.set_short_title ("")
+				tool.item.docking_pane.set_pixmap (Editor_pixmap)
+				tool.item.tool.clear
 			end
 		end
 
@@ -216,33 +215,29 @@ feature {NONE} -- Implementation
 			docking_pane: SD_CONTENT
 			keys: ARRAYED_LIST [INTEGER]
 		do
-			if tools_count > 1 then
-				-- work out a sensible value for new current_archetype_tool_id
-				create keys.make_from_array (docking_tools.current_keys)
-				from keys.start until keys.off or keys.item = a_tool_id loop
-					keys.forth
-				end
-				if keys.isfirst then
-					if keys.count = 1 then
-						active_tool_id := 0
-					else
-						active_tool_id := keys.i_th (2)
-					end
-				else
-					keys.back
-					active_tool_id := keys.item
-				end
-
-				-- destroy the docking pane and archetype tool controls
-				if attached docking_tools.item (a_tool_id) as att_tool then
-					docking_pane := att_tool.docking_pane
-					docking_pane.close
-					docking_pane.destroy
-					docking_tools.remove (a_tool_id)
-				end
+			-- work out a sensible value for new current_archetype_tool_id
+			create keys.make_from_array (docking_tools.current_keys)
+			from keys.start until keys.off or keys.item = a_tool_id loop
+				keys.forth
 			end
-		ensure
-			old tools_count > 1 implies not has_tool (a_tool_id)
+			if keys.isfirst then
+				if keys.count = 1 then
+					active_tool_id := 0
+				else
+					active_tool_id := keys.i_th (keys.count - 1)
+				end
+			else
+				keys.back
+				active_tool_id := keys.item
+			end
+
+			-- destroy the docking pane and archetype tool controls
+			if attached docking_tools.item (a_tool_id) as att_tool then
+				docking_pane := att_tool.docking_pane
+				docking_pane.close
+				docking_pane.destroy
+				docking_tools.remove (a_tool_id)
+			end
 		end
 
 	select_tool (a_tool_id: INTEGER)
