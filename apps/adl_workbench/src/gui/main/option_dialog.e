@@ -279,6 +279,8 @@ feature {NONE} -- Initialization
 		do
 			precursor
 
+			old_use_rm_pixmaps := use_rm_pixmaps
+
 			set_minimum_width (700)
 			set_title (get_text (ec_option_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
@@ -314,7 +316,6 @@ feature -- Events
 				set_test_diff_directory (evx_test_files_dir_setter.data_control_text)
 
 				-- tool commands
-
 				set_editor_app_command (evx_adl_editor_dir_setter.data_control_text)
 				set_difftool_command (evx_diff_tool_dir_setter.data_control_text)
 
