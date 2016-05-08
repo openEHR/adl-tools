@@ -278,8 +278,6 @@ feature {NONE} -- Initialization
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
 			gui_agents.set_close_test_tool_agent (agent close_test_tool)
 
-			gui_agents.set_on_toggle_use_rm_pixmaps_agent (agent on_toggle_use_rm_pixmaps)
-			gui_agents.set_update_all_tools_use_rm_pixmaps_setting_agent (agent update_all_tools_use_rm_pixmaps_setting)
 			gui_agents.set_on_toggle_view_all_classes_agent (agent on_toggle_view_all_classes)
 
 			gui_agents.set_save_resources_agent (agent save_resources)
@@ -696,25 +694,6 @@ feature {NONE} -- Tools menu events
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
-		end
-
-	on_toggle_use_rm_pixmaps (a_flag, save_resources_file_flag: BOOLEAN)
-			-- the 'use_rm_pixmaps' setting says whether to use RM-specific icons or generic ones
-		do
-			set_use_rm_pixmaps (a_flag)
-			if save_resources_file_flag then
-				save_resources
-			end
-			if archetype_viewers.has_tools then
-				update_all_tools_use_rm_pixmaps_setting
-			end
-		end
-
-	update_all_tools_use_rm_pixmaps_setting
-		do
-			archetype_viewers.do_all_tools (agent (a_tool: GUI_ARCHETYPE_VIEWER) do a_tool.update_use_rm_pixmaps_setting end)
-			class_tools.do_all_tools (agent (a_tool: GUI_CLASS_TOOL) do a_tool.update_use_rm_pixmaps_setting end)
-			library_tool.update_use_rm_pixmaps_setting
 		end
 
 	on_toggle_view_all_classes (a_flag, save_resources_file_flag: BOOLEAN)

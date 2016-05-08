@@ -78,7 +78,7 @@ feature {NONE}-- Initialization
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_yaml_rb)
 
-			-- flatten radio button
+			-- include RM check button
 			create ev_flatten_with_rm_cb
 			ev_flatten_with_rm_cb.set_text (get_msg (ec_flatten_with_rm_cb_text, Void))
 			ev_flatten_with_rm_cb.select_actions.extend (agent do set_rm_flattening_on (ev_flatten_with_rm_cb.is_selected) end)
@@ -172,13 +172,17 @@ feature {NONE} -- Implementation
 		do
 			ev_serialise_adl_rb.set_text (syntax_type_adl.as_upper)
 			ev_serialise_adl_rb.set_tooltip (get_msg (ec_show_adl_serialisation_tooltip, <<latest_adl_version>>))
+
 			ev_serialise_odin_rb.set_text (syntax_type_odin.as_upper)
 			ev_serialise_odin_rb.set_tooltip (get_msg (ec_show_dadl_serialisation_tooltip, <<latest_adl_version>>))
+
 			ev_serialise_xml_rb.set_text (syntax_type_xml.as_upper)
 			ev_serialise_xml_rb.set_tooltip (get_msg (ec_show_xml_serialisation_tooltip, <<latest_adl_version>>))
+
 			ev_serialise_json_rb.set_text (syntax_type_json.as_upper)
 			ev_serialise_json_rb.set_tooltip (get_msg (ec_show_json_serialisation_tooltip, <<latest_adl_version>>))
-			ev_serialise_yaml_rb.set_text (syntax_type_yaml)
+			
+			ev_serialise_yaml_rb.set_text (syntax_type_yaml.as_upper)
 			ev_serialise_yaml_rb.set_tooltip (get_msg (ec_show_yaml_serialisation_tooltip, <<latest_adl_version>>))
 		end
 

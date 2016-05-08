@@ -93,7 +93,7 @@ feature -- Display
 				attach_other_ui_node_agents
 			else
 				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, Void, parent.rm_attribute_colour,
-					rm_type_pixmap (rm_type))
+					rm_type_pixmap (rm_type, not display_settings.show_technical_view))
 			end
 			evx_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 
@@ -109,43 +109,47 @@ feature -- Display
 		do
 			precursor (ui_settings)
 
-			if attached arch_node as a_n and attached evx_grid as att_evx_grid then
-				-- RM name & meaning columns
-				if display_settings.show_technical_view then
-					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
-					att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
-		 		else
-					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_display_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
-					att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
-				end
-
-				-- card/occ column
-				create s.make_empty
-				c_occ_colour := c_constraint_colour
-				if attached a_n.occurrences as att_occ then
-					if not att_occ.is_prohibited then
-						s.append (att_occ.as_string)
-					else
-						s.append (get_text (ec_occurrences_removed_text))
+			if attached evx_grid as att_evx_grid then
+				if attached arch_node as a_n then
+					-- RM name & meaning columns
+					if display_settings.show_technical_view then
+						att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+						att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
+			 		else
+						att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_display_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+						att_evx_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void, Void)
 					end
-				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
-					check attached a_n.parent as att_ca then
-						s := att_ca.default_child_occurrences.as_string
-						c_occ_colour := c_attribute_colour
-					end
-				end
-				att_evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
 
-				-- sibling order column
-				if ui_graph_state.in_differential_view and then attached a_n.sibling_order then
+					-- card/occ column
 					create s.make_empty
-					if a_n.sibling_order.is_after then
-						s.append ("after")
-					else
-						s.append ("before")
+					c_occ_colour := c_constraint_colour
+					if attached a_n.occurrences as att_occ then
+						if not att_occ.is_prohibited then
+							s.append (att_occ.as_string)
+						else
+							s.append (get_text (ec_occurrences_removed_text))
+						end
+					elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
+						check attached a_n.parent as att_ca then
+							s := att_ca.default_child_occurrences.as_string
+							c_occ_colour := c_attribute_colour
+						end
 					end
-					s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
-					att_evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
+					att_evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
+
+					-- sibling order column
+					if ui_graph_state.in_differential_view and then attached a_n.sibling_order then
+						create s.make_empty
+						if a_n.sibling_order.is_after then
+							s.append ("after")
+						else
+							s.append ("before")
+						end
+						s.append ("%N" + local_term_string (a_n.sibling_order.sibling_node_id))
+						att_evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
+					end
+				else
+					att_evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, Void, Void, rm_type_pixmap (rm_type, not display_settings.show_technical_view))
 				end
 			end
 
@@ -344,7 +348,7 @@ feature {NONE} -- Implementation
 		do
 			create pixmap_key.make_empty
 			if attached arch_node as a_n then
-				if use_rm_pixmaps then
+				if not display_settings.show_technical_view then
 					pixmap_key := rm_type_pixmap_key (rm_type.base_class)
 				end
 

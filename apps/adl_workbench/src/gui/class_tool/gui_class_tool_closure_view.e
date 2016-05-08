@@ -91,6 +91,7 @@ feature -- Initialisation
 			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
+			use_rm_pixmaps := True
 			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_if_properties_button_text),
 				get_text (ec_show_rm_if_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_infrastructure_properties end, agent update_include_rm_infrastructure_properties)
@@ -141,15 +142,15 @@ feature -- Status Report
 
 	include_rm_infrastructure_properties: BOOLEAN
 
+	use_rm_pixmaps: BOOLEAN
+
 feature -- Events
 
 	update_use_rm_pixmaps (a_flag: BOOLEAN)
 		do
-			set_use_rm_pixmaps (a_flag)
+			use_rm_pixmaps := a_flag
 			if attached source then
 				repopulate
-				-- reflect change to other editor tools
-				gui_agents.call_update_all_tools_use_rm_pixmaps_setting_agent
 			end
 		end
 
@@ -286,7 +287,7 @@ feature {NONE} -- Implementation
 			if attached gui_grid.last_row as lr and attached source as src then
 				ev_grid_rm_row_stack.extend (lr)
 				ev_grid_rm_row_removals_stack.extend (False)
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.name, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.name, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src, use_rm_pixmaps))
 				if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 		 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
 		 	 	end
@@ -391,7 +392,7 @@ feature {NONE} -- Implementation
 
 						-- ======== class node =========					
 						gui_grid.add_sub_row (ev_prop_row, bmm_class)
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class))
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
 
 						check attached gui_grid.last_row as lr then
 							ev_class_row := lr
@@ -530,14 +531,14 @@ feature {NONE} -- Implementation
 			if replace_mode then
 				gui_grid.remove_sub_rows (a_class_grid_row)
 				gui_grid.set_last_row (a_class_grid_row)
-				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def))
+				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
 				gui_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				check attached a_class_grid_row.parent_row as pr then
 					gui_grid.add_sub_row (pr, bmm_subtype_def)
 				end
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
 				if attached gui_grid.last_row as lr then
 					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 	 	 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
@@ -562,7 +563,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {BMM_CLASS} a_row.data as bmm_class then
 				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
-					gli.set_pixmap (rm_type_pixmap (bmm_class))
+					gli.set_pixmap (rm_type_pixmap (bmm_class, use_rm_pixmaps))
 				end
 			end
 		end

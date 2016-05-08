@@ -161,11 +161,6 @@ feature {NONE} -- Initialization
 			ev_notebook_ui_settings_1_vb.extend (evx_display_source_cb.ev_data_control)
 			gui_controls.extend (evx_display_source_cb)
 
-			-- use RM pixmaps
-			create evx_use_rm_pixmaps_cb.make (get_text (ec_use_rm_icons_text), get_text (ec_use_rm_icons_tooltip), agent use_rm_pixmaps)
-			ev_notebook_ui_settings_1_vb.extend (evx_use_rm_pixmaps_cb.ev_data_control)
-			gui_controls.extend (evx_use_rm_pixmaps_cb)
-
 			-- Show flat form by default
 			create evx_show_flat_form.make (get_text (ec_show_flat_form_text),
 				get_text (ec_show_flat_form_tooltip), agent show_flat_form)
@@ -279,8 +274,6 @@ feature {NONE} -- Initialization
 		do
 			precursor
 
-			old_use_rm_pixmaps := use_rm_pixmaps
-
 			set_minimum_width (700)
 			set_title (get_text (ec_option_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
@@ -332,10 +325,6 @@ feature -- Events
 				set_show_flat_form (evx_show_flat_form.is_selected)
 				set_display_archetype_source (evx_display_source_cb.is_selected)
 
-				if evx_use_rm_pixmaps_cb.is_selected /= old_use_rm_pixmaps then
-					gui_agents.call_on_toggle_use_rm_pixmaps_agent (evx_use_rm_pixmaps_cb.is_selected, False)
-				end
-
 				if evx_show_all_classes_cb.is_selected /= old_show_entire_ontology then
 					gui_agents.call_on_toggle_view_all_classes_agent (evx_show_all_classes_cb.is_selected, False)
 				end
@@ -382,9 +371,6 @@ feature {NONE} -- Implementation
 	old_show_entire_ontology: BOOLEAN
 			-- value of show_entire_ontology prior to setting by option dialog
 
-	old_use_rm_pixmaps: BOOLEAN
-			-- value of use_rm_icons prior to setting by option dialog
-
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
@@ -415,7 +401,7 @@ feature {NONE} -- Implementation
 
 	evx_quiet_mode_cb, evx_validation_strict_cb, evx_rm_flattening_cb, evx_expand_definition_tree_cb, evx_show_line_numbers_cb: EVX_CHECK_BOX_CONTROL
 
-	evx_display_source_cb, evx_show_all_classes_cb, evx_use_rm_pixmaps_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
+	evx_display_source_cb, evx_show_all_classes_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
 
 	evx_auth_name_text, evx_auth_org_text, evx_auth_copyright_text: EVX_SINGLE_LINE_TEXT_CONTROL
 

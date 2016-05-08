@@ -421,7 +421,8 @@ feature -- Access
 			end
 		end
 
-	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER): EV_PIXMAP
+	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER; use_rm_pixmaps: BOOLEAN): EV_PIXMAP
+			-- generate an RM pixmap for RM type `a_type_spec'
 		local
 			pixmap_key: STRING
 		do
@@ -443,7 +444,7 @@ feature -- Access
 		do
 			create pixmap_key.make_empty
 			if attached {ARCH_LIB_CLASS} ara as acc then
-				Result := rm_type_pixmap (acc.class_definition)
+				Result := rm_type_pixmap (acc.class_definition, True)
 			else
 				Result := get_icon_pixmap ("archetype/" + ara.group_name)
 			end
@@ -736,19 +737,6 @@ feature -- Application Switches
 			-- Set flag for whether to display markers indicating archetype authoring form.
 		do
 			app_cfg.put_boolean_value ("/gui/display_archetype_source", flag)
-		end
-
-	use_rm_pixmaps: BOOLEAN
-			-- if True, substitute RM pixmaps, if any found, below icon directory, during
-			-- archetype definition visualisation
-		do
-			Result := if app_cfg.has_resource ("/gui/use_rm_pixmaps") then app_cfg.boolean_value ("/gui/use_rm_pixmaps") else True end
-		end
-
-	set_use_rm_pixmaps (flag: BOOLEAN)
-			--
-		do
-			app_cfg.put_boolean_value ("/gui/use_rm_pixmaps", flag)
 		end
 
 	text_editor_command: STRING
