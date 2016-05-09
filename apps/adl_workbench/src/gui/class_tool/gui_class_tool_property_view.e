@@ -92,8 +92,10 @@ feature {NONE} -- Implementation
 			-- grid columns
 			ev_grid.insert_new_column (Grid_declared_in_col)
 			ev_grid.column (Grid_declared_in_col).set_title (get_text (ec_property_grid_declared_in_col_title))
+
 			ev_grid.insert_new_column (Grid_property_col)
 			ev_grid.column (Grid_property_col).set_title (get_text (ec_property_grid_property_col_title))
+
 			ev_grid.insert_new_column (Grid_property_type_col)
 			ev_grid.column (Grid_property_type_col).set_title (get_text (ec_property_grid_property_type_col_title))
 
@@ -111,8 +113,10 @@ feature {NONE} -- Implementation
 			-- grid columns
 			ev_grid.insert_new_column (Grid_enum_name_col)
 			ev_grid.column (Grid_enum_name_col).set_title (get_text (ec_enumeration_grid_enum_name_col_title))
+
 			ev_grid.insert_new_column (Grid_enum_value_col)
 			ev_grid.column (Grid_enum_value_col).set_title (get_text (ec_enumeration_grid_enum_value_col_title))
+
 			ev_grid.insert_new_column (Grid_enum_dummy_col)
 
 			-- add the rows
@@ -179,7 +183,7 @@ feature {NONE} -- Implementation
 						else
 							gli.set_foreground_color (rm_attribute_color)
 						end
-						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + props_csr.item.multiplicity_key_string))
+						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + props_csr.item.multiplicity_key_string))
 						if attached props_csr.item.documentation as bmm_prop_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_doc)
 						end
@@ -189,7 +193,7 @@ feature {NONE} -- Implementation
 						-- property type
 						create gli.make_with_text (props_csr.item.type.as_display_type_string)
 						prop_class := safe_source.bmm_schema.class_definition (props_csr.item.type.base_class.name)
-						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
+						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_class.type_category))
 						gli.set_data (prop_class)
 						if attached prop_class.documentation as bmm_prop_class_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)

@@ -43,8 +43,16 @@ feature -- Definitions
 		end
 
 	Icon_rm_dir: STRING = "rm"
+			-- location of all RM icons
+
+	Icon_rm_generic_dir: STRING
+			-- location of generic RM icons
+		do
+			Result := Icon_rm_dir + resource_path_separator + "generic"
+		end
 
 	Icon_am_dir: STRING = "am"
+			-- location of all AOM icons
 
 feature -- Definitions: Archetype viewer
 
@@ -416,7 +424,7 @@ feature -- Access
 				-- now try icon key based on publisher and model name
 				Result := Icon_rm_dir + resource_path_separator + a_class_def.bmm_schema.rm_publisher + {ARCHETYPE_HRID}.Section_separator_string + a_class_def.bmm_schema.schema_name + resource_path_separator + a_class_def.name
 				if not has_icon_pixmap (Result) then
-					create Result.make_empty
+					Result.wipe_out
 				end
 			end
 		end

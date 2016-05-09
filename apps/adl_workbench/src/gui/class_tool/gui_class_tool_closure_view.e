@@ -377,7 +377,7 @@ feature {NONE} -- Implementation
 						end
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
 						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, rm_node_path.as_string,
-							Void, col, get_icon_pixmap ("rm/generic/" + a_bmm_prop.multiplicity_key_string))
+							Void, col, get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + a_bmm_prop.multiplicity_key_string))
 
 						-- existence
 						gui_grid.set_last_row_label_col (Definition_grid_col_existence, a_bmm_prop.existence.as_string, Void, Void, col, Void)
@@ -468,9 +468,9 @@ feature {NONE} -- Implementation
 			across a_substitutions as subs_csr loop
 				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, True))
 				if rm_schema.class_definition (subs_csr.item).is_abstract then
-					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
+					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + "class_abstract"))
 				else
-					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
+					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + "class_concrete"))
 				end
 	    		chg_sub_menu.extend (an_mi)
 			end

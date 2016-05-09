@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "am/added/c_attribute.multiple.optional"
+			key := "am/added/c_attribute.multiple_optional"
 			make_with_size (16, 16)
 			fill_memory
 		end

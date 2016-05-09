@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_AM_ADDED_ARCHETYPE_EXTERNAL_REF_MULTIPLE_OPTIONAL
+class ICON_AM_ADDED_ARCHETYPE_EXTERNAL_REF_SINGLE_MANDATORY
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "am/added/archetype_external_ref.multiple_optional"
+			key := "am/added/archetype_external_ref.single_mandatory"
 			make_with_size (16, 16)
 			fill_memory
 		end

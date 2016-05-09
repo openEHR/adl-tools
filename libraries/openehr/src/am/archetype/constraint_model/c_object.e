@@ -40,33 +40,33 @@ feature -- Access
 			-- or else the occurrences inferred from the underlying reference model existence and/or
 			-- cardinality of the containing attribute.
 
-	occurrences_key_string: STRING
-			-- generate a string of the form "_multiple", "_multiple_optional" or "_optional" or ""
-			-- representing the occurrences, useful as a key to variant pixmaps, files etc.
-		do
-			create Result.make_empty
-			if attached occurrences as occ then
-				if occ.upper > 1 or occ.upper_unbounded then
-					Result.append ("_multiple")
-				end
-				if occ.is_optional then
-					Result.append ("_optional")
-				end
-			end
-		end
-
 	effective_occurrences (rm_attr_prop_mult: FUNCTION [ANY, TUPLE[STRING, STRING], MULTIPLICITY_INTERVAL]): MULTIPLICITY_INTERVAL
 			-- evaluate effective occurrences, using the RM when no occurrences constraint exists.
 			-- In this case, the upper limit of the RM's owning attribute is used to provide a value.
 			-- `rm_attr_prop_mult' is a function that knows how to compute effective object multiplicity
 			-- by looking at the owning RM property.
+		local
+			occ_lower: INTEGER
 		do
 			if attached occurrences as att_occ then
 				Result := att_occ
-			elseif attached parent as att_ca and then attached att_ca.parent as att_co then
-				Result := rm_attr_prop_mult (att_co.rm_type_name, att_ca.rm_attribute_name)
+			elseif attached parent as att_ca then
+				if attached att_ca.existence as att_ex then
+					occ_lower := att_ex.lower
+				end
+				if attached att_ca.cardinality as att_card then
+					if att_card.interval.upper_unbounded then
+						create Result.make_upper_unbounded (occ_lower)
+					else
+						create Result.make_bounded (occ_lower, att_card.interval.upper)
+					end
+				elseif attached att_ca.parent as att_co then
+					Result := rm_attr_prop_mult (att_co.rm_type_name, att_ca.rm_attribute_name)
+				else
+					create Result.make_upper_unbounded (occ_lower)
+				end
 			else
-				create Result.default_create
+				create Result.make_open
 			end
 		end
 

@@ -130,10 +130,8 @@ feature -- Display
 							s.append (get_text (ec_occurrences_removed_text))
 						end
 					elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
-						check attached a_n.parent as att_ca then
-							s := att_ca.default_child_occurrences.as_string
-							c_occ_colour := c_attribute_colour
-						end
+						s := a_n.effective_occurrences (agent (ui_graph_state.rm_schema).property_object_multiplicity).as_string
+						c_occ_colour := c_attribute_colour
 					end
 					att_evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
 
@@ -344,7 +342,7 @@ feature {NONE} -- Implementation
 	c_pixmap: EV_PIXMAP
 			-- find a pixmap for any C_OBJECT node
 		local
-			pixmap_key, c_type_occ_str: STRING
+			pixmap_key, pixmap_cand_key, c_type_occ_str: STRING
 		do
 			create pixmap_key.make_empty
 			if attached arch_node as a_n then
@@ -353,11 +351,19 @@ feature {NONE} -- Implementation
 				end
 
 				if pixmap_key.is_empty then
-					c_type_occ_str := a_n.generating_type + a_n.occurrences_key_string
-					if has_icon_pixmap (c_type_occ_str) then
-						pixmap_key := Icon_am_dir + resource_path_separator + "added" + resource_path_separator + c_type_occ_str
+					if attached {C_PRIMITIVE_OBJECT} a_n then
+						c_type_occ_str := bare_type_name (({C_PRIMITIVE_OBJECT}).name)
 					else
-						pixmap_key := Icon_am_dir  + resource_path_separator + "added" + resource_path_separator + a_n.generating_type
+						c_type_occ_str := a_n.generating_type
+					end
+					c_type_occ_str.append ("." +
+							a_n.effective_occurrences (agent (ui_graph_state.rm_schema).property_object_multiplicity).as_quantifier_text)
+					pixmap_key := Icon_am_dir + resource_path_separator + "added" + resource_path_separator
+					pixmap_cand_key := pixmap_key + c_type_occ_str
+					if has_icon_pixmap (pixmap_cand_key) then
+						pixmap_key := pixmap_cand_key
+					else
+						pixmap_key.append (a_n.generating_type)
 					end
 				end
 
