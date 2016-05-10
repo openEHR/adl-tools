@@ -61,7 +61,7 @@ feature -- Access
 						create Result.make_bounded (occ_lower, att_card.interval.upper)
 					end
 				elseif attached att_ca.parent as att_co then
-					Result := rm_attr_prop_mult (att_co.rm_type_name, att_ca.rm_attribute_name)
+					Result := rm_attr_prop_mult (att_co.rm_type_name, att_ca.rm_attribute_path)
 				else
 					create Result.make_upper_unbounded (occ_lower)
 				end
