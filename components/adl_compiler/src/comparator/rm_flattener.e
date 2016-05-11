@@ -69,8 +69,8 @@ feature {NONE} -- Implementation
 			elseif attached {C_OBJECT} a_c_node as co then
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
 				-- so it is set from the enclosing attribute cardinality if a container, or set to RM existence if not a container
-				if co.occurrences = Void and attached co.parent as att_ca and then attached att_ca.parent as att_co then
-					co.set_occurrences (rm_schema.property_object_multiplicity (att_co.rm_type_name, att_ca.rm_attribute_name))
+				if not attached co.occurrences then
+					co.set_occurrences (co.effective_occurrences (agent rm_schema.property_object_multiplicity))
 				end
 			end
 		end
