@@ -18,10 +18,6 @@ feature -- Access
 			-- create pixmap table from pixmap classes
 		once
 			create Result.make (0)
-			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_EXTERNAL_REF_MULTIPLE_MANDATORY}.make).to_pixmap end, "am/added/archetype_external_ref.multiple_mandatory")
-			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_EXTERNAL_REF_MULTIPLE_OPTIONAL}.make).to_pixmap end, "am/added/archetype_external_ref.multiple_optional")
-			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_EXTERNAL_REF_SINGLE_MANDATORY}.make).to_pixmap end, "am/added/archetype_external_ref.single_mandatory")
-			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_EXTERNAL_REF_SINGLE_OPTIONAL}.make).to_pixmap end, "am/added/archetype_external_ref.single_optional")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_SLOT_MULTIPLE_MANDATORY}.make).to_pixmap end, "am/added/archetype_slot.multiple_mandatory")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_SLOT_MULTIPLE_OPTIONAL}.make).to_pixmap end, "am/added/archetype_slot.multiple_optional")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_SLOT_SINGLE_MANDATORY}.make).to_pixmap end, "am/added/archetype_slot.single_mandatory")
@@ -29,7 +25,10 @@ feature -- Access
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_SLOT_EXCLUDE}.make).to_pixmap end, "am/added/archetype_slot_exclude")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ARCHETYPE_SLOT_INCLUDE}.make).to_pixmap end, "am/added/archetype_slot_include")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_ASSERTION}.make).to_pixmap end, "am/added/assertion")
-			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ARCHETYPE_ROOT}.make).to_pixmap end, "am/added/c_archetype_root")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ARCHETYPE_RLOT_SINGLE_MANDATORY}.make).to_pixmap end, "am/added/c_archetype_rlot.single_mandatory")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ARCHETYPE_ROOT_MULTIPLE_MANDATORY}.make).to_pixmap end, "am/added/c_archetype_root.multiple_mandatory")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ARCHETYPE_ROOT_MULTIPLE_OPTIONAL}.make).to_pixmap end, "am/added/c_archetype_root.multiple_optional")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ARCHETYPE_ROOT_SINGLE_OPTIONAL}.make).to_pixmap end, "am/added/c_archetype_root.single_optional")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ATTRIBUTE_MULTIPLE_MANDATORY}.make).to_pixmap end, "am/added/c_attribute.multiple_mandatory")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ATTRIBUTE_MULTIPLE_OPTIONAL}.make).to_pixmap end, "am/added/c_attribute.multiple_optional")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_AM_ADDED_C_ATTRIBUTE_SINGLE_MANDATORY}.make).to_pixmap end, "am/added/c_attribute.single_mandatory")
