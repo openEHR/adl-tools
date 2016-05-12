@@ -225,7 +225,6 @@ feature -- Comparison
 					term_removal_list.extend (codes_csr.item)
 				end
 			end
-
 			across term_removal_list as terms_csr loop
 				diff_child.terminology.remove_definition (terms_csr.item)
 			end

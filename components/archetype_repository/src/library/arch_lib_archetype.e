@@ -1,13 +1,12 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Descriptor of an archetype in a catalogue of archetypes. The class provides the 
+				 Descriptor of an archetype in a library of archetypes. The class provides the 
 				 compiler functionality on a per-artefact level. A formal compilation state machine model
 				 is used here, so that any artefact is in a known state in the process.
 				 
-				 Some complications still exist due to the presence of a) ADL 1.4 'legacy' archetypes and
-				 b) ADL 1.5 archetypes not yet converted to modern ADL 1.5.1 format. These should be 
-				 progressively removed.
+				 Some complications still exist due to the presence of ADL 1.4 'legacy' archetypes. 
+				 These should be progressively removed.
 				 ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"

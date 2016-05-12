@@ -187,8 +187,6 @@ feature {NONE} -- Implementation
 
 	filesys_node_for_path (a_file_path: STRING): detachable ARCH_LIB_FILESYS_ITEM
 			-- find a terminal file system node that corresponds to the path `a_file_path'
-		require
-			real_file_path: is_valid_path (a_file_path)
 		local
 			dir_node: ARCH_LIB_FILESYS_ITEM
 			ala_path_key: STRING
@@ -230,7 +228,7 @@ feature {NONE} -- Implementation
 			-- recursively create nodes in local file system tree that corresponds to the path `a_file_path'
 			-- if the path exists, no node creation will occur, and the existing matching node will be returned
 		require
-			real_file_path: is_valid_path (a_file_path) and then a_file_path.starts_with (full_path)
+			real_file_path: a_file_path.starts_with (full_path)
 		local
 			dir_node, new_dir_node: ARCH_LIB_FILESYS_ITEM
 			ala_path_key, path, node_full_path: STRING

@@ -66,7 +66,7 @@ feature -- Definitions
 			-- 	will match string of form N.M.P
 
 	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|-alpha)(\.[0-9]+)?)?"
-			-- Regex for ADL 1.5 release version
+			-- Regex for ADL 2 release version
 			-- 	will match string of form vN.M.P with or without -rc.N, +alpha.N at the end
 
 	version_reference_regex: STRING = "v[0-9]+(\.[0-9]+){0,2}"
@@ -189,7 +189,7 @@ feature -- Initialisation
 
 	make_from_string (a_str: STRING)
 			-- make from a string full identifier that is recognised by either
-			-- the ADL 1.4 id matcher or the ADL 1.5 id matcher
+			-- the ADL 1.4 id matcher or the ADL 2 id matcher
 		require
 			Valid_id: valid_id (a_str)
 		do
@@ -207,7 +207,7 @@ feature -- Initialisation
 
 	make_from_string_reference (a_str: STRING)
 			-- make from a string identifier that is recognised by either
-			-- the ADL 1.4 id matcher or the ADL 1.5 id reference matcher, which
+			-- the ADL 1.4 id matcher or the ADL 2 id reference matcher, which
 			-- treats version numbers after the major version as optional
 		require
 			Valid_id_ref: valid_id_reference (a_str)
@@ -418,7 +418,7 @@ feature -- Access
 feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
-			-- True if `an_id' is either a valid ADL 1.4 id or 1.5 id
+			-- True if `an_id' is either a valid ADL 1.4 id or 2 id
 		do
 			Result := id_parser.valid_id (an_id)
 		end
@@ -569,7 +569,7 @@ feature {NONE} -- Implementation
 		end
 
 	release_version_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
-			-- Pattern matcher for ADL 1.5 release version
+			-- Pattern matcher for ADL 2 release version
 			-- 	will match string of form N.M.P
 		once ("PROCESS")
 			create Result.make

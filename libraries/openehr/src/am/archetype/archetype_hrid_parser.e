@@ -68,17 +68,17 @@ feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
 		do
-			Result := adl15_id_regex_matcher.recognizes (an_id) or else adl14_id_regex_matcher.recognizes (an_id)
+			Result := adl2_id_regex_matcher.recognizes (an_id) or else adl14_id_regex_matcher.recognizes (an_id)
 		end
 
 	valid_id_reference (a_ref: STRING): BOOLEAN
 		do
-			Result := adl15_id_reference_regex_matcher.recognizes (a_ref) or else adl14_id_regex_matcher.recognizes (a_ref)
+			Result := adl2_id_reference_regex_matcher.recognizes (a_ref) or else adl14_id_regex_matcher.recognizes (a_ref)
 		end
 
 	is_adl14_id: BOOLEAN
 
-	is_adl15_id: BOOLEAN
+	is_adl2_id: BOOLEAN
 
 feature -- Commands
 
@@ -89,8 +89,8 @@ feature -- Commands
 			local_hrid, ver_str, sym: STRING
 		do
 			reset
-			if adl15_id_regex_matcher.matches (an_id) then
-				is_adl15_id := True
+			if adl2_id_regex_matcher.matches (an_id) then
+				is_adl2_id := True
 
 				-- look for namespace in first section
 				ns_idx := an_id.substring_index ({ARCHETYPE_HRID}.namespace_separator, 1)
@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 			version_status := 0
 			commit_number := 0
 			is_adl14_id := False
-			is_adl15_id := False
+			is_adl2_id := False
 		end
 
 	adl14_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
@@ -207,7 +207,7 @@ feature {NONE} -- Implementation
 			Result.compile ((create {ARCHETYPE_HRID}).Adl14_id_regex)
 		end
 
-	adl15_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	adl2_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 archetype ids, with optional namespace;
 			-- 	will match ids like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1
@@ -219,7 +219,7 @@ feature {NONE} -- Implementation
 			Result.compile ((create {ARCHETYPE_HRID}).Id_matcher_regex)
 		end
 
-	adl15_id_reference_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	adl2_id_reference_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 archetype id references, with optional namespace and optional versioning;
 			-- 	will match ids like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1

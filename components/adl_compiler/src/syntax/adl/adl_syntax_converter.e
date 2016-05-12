@@ -317,7 +317,9 @@ feature -- ADL 2 conversions
 		end
 
 	update_adl2_hrid_from_adl14_revision (arch_id: ARCHETYPE_HRID; a_res_desc: DT_COMPLEX_OBJECT)
-			-- Extract revision information from other_details and write it into `arch_id'
+			-- Extract revision information from other_details of ADL14 archetype and write it
+			-- into `arch_id', the achetype identifier of an ADL2 archetype.
+			-- Typical ADL1.4 revision information:
 			--  ["revision"] = <"0.0.1-alpha">
 		local
 			ver_sts_str: STRING

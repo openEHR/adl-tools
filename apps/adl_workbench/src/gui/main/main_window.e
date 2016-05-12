@@ -877,6 +877,7 @@ feature -- Docking controls
 			-- Tool bar content
 
 	show_tool_with_artefact_agent (an_id: STRING): BOOLEAN
+			-- make a particular tool pane visible
 		do
 			Result := class_tools.show_docking_pane_by_tool_artefact_id (an_id) or else archetype_viewers.show_docking_pane_by_tool_artefact_id (an_id)
 		end

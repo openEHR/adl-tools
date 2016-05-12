@@ -545,7 +545,7 @@ feature {NONE} -- Implementation
 		end
 
 	select_item_in_grid (an_ev_grid_row: EV_GRID_ROW; ari_global_id: STRING)
-			-- if an archetype tool already exists with this id, then cause it to be shown
+			-- if an archetype tool already exists with `ari_global_id', then cause it to be shown
 			-- and then select corresponding tree node, but with events off. If no
 			-- archetype tool available, treat as if it were a first time request for this archetype
 			-- and do a normal tree node select
@@ -554,7 +554,7 @@ feature {NONE} -- Implementation
 				gli.select_actions.block
 				gli.enable_select
 				if not gui_agents.call_show_tool_with_artefact_agent (ari_global_id) and
-					attached {ARCH_LIB_ARCHETYPE} current_library.archetype_with_id (ari_global_id) as ala
+					current_library.has_archetype_with_id (ari_global_id) and then attached {ARCH_LIB_ARCHETYPE} current_library.archetype_with_id (ari_global_id) as ala
 				then
 					gui_agents.call_select_archetype_agent (ala)
 				end
