@@ -230,7 +230,7 @@ feature -- File Operations
 					parent_id := amp.last_archetype.parent_archetype_id
 				end
 			else
-				status :=  get_msg_line (ec_general, <<amp.error_strings>>)
+				status := get_msg_line (ec_general, <<amp.error_strings>>)
 			end
 		end
 

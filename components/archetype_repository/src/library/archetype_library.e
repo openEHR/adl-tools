@@ -351,10 +351,10 @@ feature -- Modification
 
 				if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
 					if library_access.adhoc_source.has_archetype_with_id (att_old_id.physical_id) then
-						library_access.adhoc_source.remove_archetype (att_old_id)
+						library_access.adhoc_source.remove_archetype (att_old_id.physical_id)
 						library_access.adhoc_source.put_archetype (auth_aca)
 					else
-						library_access.source.remove_archetype (att_old_id)
+						library_access.source.remove_archetype (att_old_id.physical_id)
 						library_access.source.put_archetype (auth_aca)
 					end
 				end
@@ -383,9 +383,9 @@ feature -- Modification
 			item_index_remove (aca.id)
 
 			if aca.is_adhoc then
-				library_access.adhoc_source.remove_archetype (aca.id)
+				library_access.adhoc_source.remove_archetype (aca.id.physical_id)
 			else
-				library_access.source.remove_archetype (aca.id)
+				library_access.source.remove_archetype (aca.id.physical_id)
 			end
 		ensure
 			Node_removed_from_archetype_index: not has_archetype_with_id (aca.id.physical_id)
@@ -605,16 +605,20 @@ feature -- Statistical Report
 feature {NONE} -- Statistical Report
 
 	statistics_cache: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+			-- statistics reports keyed by RM schema id
 		attribute
 			create Result.make (0)
 		end
 
 	metrics_cache: HASH_TABLE [INTEGER, STRING]
+			-- overall metrics, keyed by metric category
 		attribute
 			create Result.make (0)
 		end
 
 	terminology_bindings_statistics_cache: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			-- table of terminology stats of archetypes in this library, keyed by
+			-- terminology id
 		attribute
 			create Result.make (0)
 		end

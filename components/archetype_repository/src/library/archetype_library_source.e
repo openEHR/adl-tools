@@ -132,13 +132,13 @@ feature -- Commands
 			end
 		end
 
-	remove_archetype (an_archetype_id: ARCHETYPE_HRID)
+	remove_archetype (an_arch_phys_id: STRING)
 			-- remove archetype from `archetype_id_index' and from the file-system tree
 		require
-			has_archetype_with_id (an_archetype_id.physical_id)
+			has_archetype_with_id (an_arch_phys_id)
 		do
-			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} archetype_id_index.item (an_archetype_id.physical_id) as auth_ala then
-				archetype_id_index.remove (an_archetype_id.physical_id)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} archetype_id_index.item (an_arch_phys_id) as auth_ala then
+				archetype_id_index.remove (an_arch_phys_id)
 
 				if not auth_ala.is_specialised then
 					-- find the archetype in the file system tree
