@@ -338,7 +338,7 @@ feature {NONE} -- Implementation
 					add_error (ec_VACDF, <<code, term_constraints_csr.item.path>>)
 				elseif attached term_constraints_csr.item.assumed_value as att_av then
 					if attached terminology.value_sets.item (code) as vset and then not vset.has_member_code (att_av) then
-						add_error (ec_VATDA, <<att_av, term_constraints_csr.item.path, code>>)
+						add_error (ec_VATDA, <<att_av, code, term_constraints_csr.item.path>>)
 					end
 				end
 			end

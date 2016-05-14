@@ -28,6 +28,7 @@ templates = <
 		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition section">
 		["VOLT"] = <"original language $1 not defined in terminology">
 		["VATCD"] = <"code $1 specialisation depth greater than that of archetype $2">
+		["VATDA"] = <"assumed value code $1 not included in value set $2 of constraint at path $3">
 		["VATID"] = <"node id-code $1 at path $2 not defined in flat terminology">
 		["VATDF"] = <"value code $1 referenced in definition at path $2 not defined in flat terminology">
 		["VASID"] = <"specialised archetype id not based on specialisation parent archetype id">
@@ -40,7 +41,6 @@ templates = <
 		["VRDLA"] = <"resource detail key '$1' does not match resource detail item language '$2'">
 
 		-- terminology
-		["VATDA"] = <"value code $1 used as assumed value in definition at path $2 not defined in value set for $3">
 		["VTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
 		["VCBK"] = <"term binding key $1 must be a valid value-set id code">
 		["VATCV"] = <"Invalid id-code $1 found in terminology definitions; code format must follow regex $2">
@@ -128,7 +128,7 @@ templates = <
 		["VTPNC"] = <"$1 object node at path $2 tuple constraint $3 does not conform to counterpart at path $4 in parent">
 
 		-- terminology-related validity
-		["VTSD"] = <"code $1 in terminology more specialised than archetype">
+		["VTSD"] = <"code $1 in terminology has different specialisation level than archetype">
 		["VTLC"] = <"code $1 in terminology not present in language $2">
 		["VTCBU"] = <"expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1">
 		["VTTBC"] = <"expecting TERMINOLOGY_CODE, e.g. [terminology_id::code]">
