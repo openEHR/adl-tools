@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (906)
+			create message_table.make (907)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -322,6 +322,7 @@ feature -- Initialisation
 			message_table.put ("Display class", ec_display_class)
 			message_table.put ("Show in RM explorer", ec_show_class_in_rm)
 			message_table.put ("Edit source", ec_edit_source)
+			message_table.put ("Show in file system", ec_show_in_explorer)
 			message_table.put ("Edit", ec_edit)
 			message_table.put ("Create new archetype", ec_create_new_archetype)
 			message_table.put ("Create new child archetype", ec_create_new_child_archetype)

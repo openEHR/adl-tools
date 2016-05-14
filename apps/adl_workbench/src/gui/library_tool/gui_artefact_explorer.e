@@ -252,6 +252,16 @@ feature {NONE} -- Implementation
 			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 			a_menu.extend (an_mi)
 
+			-- show file in OS explorer
+			create an_mi.make_with_text_and_action (get_text (ec_show_in_explorer),
+				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+					do
+						show_in_system_explorer (file_system.dirname (an_aca.file_mgr.source_file_path))
+					end (aca)
+			)
+			an_mi.set_pixmap (get_icon_pixmap ("tool/file_system"))
+			a_menu.extend (an_mi)
+
 			-- save archetype as ...
 			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)

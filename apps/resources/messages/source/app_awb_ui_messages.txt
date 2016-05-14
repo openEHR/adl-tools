@@ -21,6 +21,7 @@ templates = <
 		["display_class"] = <"Display class">
 		["show_class_in_rm"] = <"Show in RM explorer">
 		["edit_source"] = <"Edit source">
+		["show_in_explorer"] = <"Show in file system">
 		["edit"] = <"Edit">
 		["create_new_archetype"] = <"Create new archetype">
 		["create_new_child_archetype"] = <"Create new child archetype">

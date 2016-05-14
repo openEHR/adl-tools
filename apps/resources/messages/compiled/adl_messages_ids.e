@@ -307,6 +307,7 @@ feature -- Definitions
 		ec_display_class: STRING = "display_class"
 		ec_show_class_in_rm: STRING = "show_class_in_rm"
 		ec_edit_source: STRING = "edit_source"
+		ec_show_in_explorer: STRING = "show_in_explorer"
 		ec_edit: STRING = "edit"
 		ec_create_new_archetype: STRING = "create_new_archetype"
 		ec_create_new_child_archetype: STRING = "create_new_child_archetype"
