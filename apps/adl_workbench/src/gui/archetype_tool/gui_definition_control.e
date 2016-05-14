@@ -200,6 +200,12 @@ feature -- Status Report
 			end
 		end
 
+	effective_show_rm_inheritance: BOOLEAN
+			-- compute effective setting for showing RM inheritance
+		do
+			Result := show_rm_inheritance and safe_source.is_specialised or editing_enabled
+		end
+
 	show_technical_view: BOOLEAN
 		do
 			if editing_enabled then
@@ -475,7 +481,7 @@ feature {NONE} -- Implementation
 
 			check attached selected_language end
 			create ui_settings.make (selected_language,
-				show_codes, show_rm_inheritance or editing_enabled, show_technical_view, show_rm_multiplicities,
+				show_codes, effective_show_rm_inheritance, show_technical_view, show_rm_multiplicities,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- populate the main definition grid
@@ -545,7 +551,7 @@ feature {NONE} -- Implementation
 			evx_definition_grid.ev_grid.lock_update
 
 			check attached selected_language end
-			create ui_settings.make (selected_language, show_codes, show_rm_inheritance or editing_enabled, show_technical_view,
+			create ui_settings.make (selected_language, show_codes, effective_show_rm_inheritance, show_technical_view,
 				show_rm_multiplicities, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
