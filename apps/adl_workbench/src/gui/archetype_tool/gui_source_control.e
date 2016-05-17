@@ -277,7 +277,8 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				if att_source.can_save_to_legacy_file then
 					att_source.save_text_to_legacy_file (a_text)
-					gui_agents.call_console_tool_append_agent (get_msg (ec_saved_14_source_msg, <<att_source.source_file_path>>))
+					gui_agents.call_console_tool_append_agent (get_msg (ec_saved_14_source_msg,
+						<<if attached att_source.file_mgr.legacy_flat_path as fp then fp else "" end>>))
 					gui_agents.call_select_archetype_agent (att_source)
 					gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 				else
