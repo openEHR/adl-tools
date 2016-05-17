@@ -24,7 +24,9 @@ feature {NONE} -- Initialisation
 		require
 			Path_valid: not a_path.is_empty
 		do
-			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_path, a_source, arch_thumbnail.is_generated)
+			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_source, arch_thumbnail.is_generated)
+			source_file_path := a_path
+			file_directory := file_system.dirname (a_path)
 			source_text_timestamp := source_file_timestamp
 			last_artefact_type := arch_thumbnail.artefact_type
 		ensure
@@ -35,8 +37,10 @@ feature {NONE} -- Initialisation
 		require
 			Path_valid: not a_path.is_empty
 		do
-			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_path, a_source, True)
-			legacy_flat_path := extension_replaced (a_path, File_ext_archetype_adl14)
+			make_base (arch_thumbnail.archetype_id, arch_thumbnail.adl_version, a_source, True)
+			create source_file_path.make_empty
+			legacy_flat_path := a_path
+			file_directory := file_system.dirname (a_path)
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 			last_artefact_type := arch_thumbnail.artefact_type
 		ensure
@@ -48,7 +52,9 @@ feature {NONE} -- Initialisation
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
 		do
-			make_base (an_id, latest_adl_version, file_system.pathname (a_directory, an_id.as_filename + File_ext_archetype_source), a_source, False)
+			file_directory := a_directory
+			source_file_path := file_system.pathname (a_directory, an_id.as_filename + File_ext_archetype_source)
+			make_base (an_id, latest_adl_version, a_source, False)
 		ensure
 			file_repository_set: file_repository = a_source
 		end
@@ -107,6 +113,26 @@ feature -- Access
 	source_file_path: STRING
 			-- Path of differential source file of archetype.
 
+	file_directory: STRING
+			-- Directory of archetype.
+
+	file_paths_string: STRING
+			-- generate a string containing the source file path and/or ADL 1.4 path,
+			-- suitable for tooltips, console logging etc
+		do
+			create Result.make_empty
+			if has_source_file then
+				Result.append (source_file_path)
+			end
+			if attached legacy_flat_path as lfp then
+				if has_source_file then
+					Result.append_character ('%N')
+				end
+				Result.append (lfp)
+				Result.append (" (ADL 1.4)")
+			end
+		end
+
 feature -- Thumbnail state
 
 	last_artefact_type: detachable STRING
@@ -137,7 +163,7 @@ feature -- Status Report
 	has_source_file: BOOLEAN
 			-- Does the repository have a source-form file for this archetype?
 		do
-			Result := file_system.file_exists (source_file_path)
+			Result := not source_file_path.is_empty and then file_system.file_exists (source_file_path)
 		end
 
 	is_source_modified: BOOLEAN
@@ -299,6 +325,18 @@ feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
 		end
 
 feature {ARCH_LIB_ARCHETYPE} -- Commands
+
+	update_id (an_id: ARCHETYPE_HRID)
+			-- Update `source_filepath' using `an_id'.
+		require
+			Is_legacy: has_legacy_flat_file
+		do
+			old_id := id
+			id := an_id
+			if attached legacy_flat_path as lfp then
+				source_file_path := file_system.pathname (file_system.dirname (lfp), an_id.as_filename + File_ext_archetype_source)
+			end
+		end
 
 	has_differential_compiled_file: BOOLEAN
 			-- Does the compile generated area have a differential file for this archetype from a previous compile?
@@ -490,10 +528,9 @@ feature {NONE} -- Implementation
 			Result > 0
 		end
 
-	make_base (an_id: ARCHETYPE_HRID; an_adl_version: STRING; a_path: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
+	make_base (an_id: ARCHETYPE_HRID; an_adl_version: STRING; a_source: ARCHETYPE_LIBRARY_SOURCE; is_generated: BOOLEAN)
 		do
 			file_repository := a_source
-			source_file_path := a_path
 			is_source_generated := is_generated
 			id := an_id
 			adl_version := an_adl_version

@@ -360,7 +360,9 @@ feature -- Modification
 				end
 			end
 
-			if attached aca.parent as old_aca_parent and attached archetype_parent_item (aca) as new_aca_parent then
+			if attached aca.parent as old_aca_parent and then attached archetype_parent_item (aca) as new_aca_parent and then
+				old_aca_parent /= new_aca_parent
+			then
 				old_aca_parent.remove_child (aca)
 				new_aca_parent.put_child (aca)
 				aca.clear_old_semantic_parent_name
@@ -368,7 +370,7 @@ feature -- Modification
 		ensure
 			Node_added_to_archetype_index: has_archetype_with_id (aca.id.physical_id)
 			Node_added_to_ontology_index: has_item_with_id (aca.id.physical_id)
-			Node_parent_set: attached aca.parent as aca_parent implies aca_parent.qualified_name.is_equal (aca.semantic_parent_id)
+			Node_parent_set: attached aca.parent as aca_parent implies aca_parent.qualified_name.is_case_insensitive_equal (aca.semantic_parent_id)
 		end
 
 	remove_artefact (aca: ARCH_LIB_ARCHETYPE)

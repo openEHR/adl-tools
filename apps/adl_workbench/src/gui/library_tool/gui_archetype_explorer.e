@@ -275,16 +275,14 @@ feature {NONE} -- Implementation
 						text.append (" [" + aca.subtree_artefact_total.out + "]")
 					end
 
-					-- tooltip
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
-						tooltip.append (auth_aca.source_file_path)
-						if auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated then
-							tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
-						end
-					end
+						-- tooltip
+						tooltip.append (auth_aca.file_mgr.file_paths_string)
 
-					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca and then auth_aca.file_mgr.is_reference_archetype then
-						col := archetype_rm_type_color
+						-- colour reference archetypes using RM colours
+						if auth_aca.file_mgr.is_reference_archetype then
+							col := archetype_rm_type_color
+						end
 					end
 
 	 			elseif attached {ARCH_LIB_CLASS} aci as acc then
@@ -372,10 +370,7 @@ feature {NONE} -- Implementation
 
 					-- tooltip
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
-						tooltip.append (auth_aca.source_file_path)
-						if (auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated) then
-							tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
-						end
+						tooltip.append (auth_aca.file_mgr.file_paths_string)
 					end
 
 					-- pixmap

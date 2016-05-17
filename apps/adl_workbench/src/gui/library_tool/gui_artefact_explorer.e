@@ -256,7 +256,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_show_in_explorer),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						show_in_system_explorer (file_system.dirname (an_aca.file_mgr.source_file_path))
+						show_in_system_explorer (file_system.dirname (an_aca.file_mgr.file_directory))
 					end (aca)
 			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/file_system"))

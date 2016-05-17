@@ -76,7 +76,7 @@ feature -- Commands
 			folder_node: ARCH_LIB_FILESYS_ITEM
  		do
 			create errors.make
-			archetype_id_index.wipe_out
+			arch_phys_id_index.wipe_out
 			create item_tree.make (Archetype_category.twin)
 
 			if is_adhoc then
@@ -108,7 +108,7 @@ feature -- Commands
 					errors.add_error (ec_parse_archetype_e11, <<a_file_path, pid>>, "")
 				elseif not has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id) then
 					errors.add_error (ec_parse_archetype_e4, <<a_file_path, arch_thumbnail.archetype_id.physical_id>>, "")
-				elseif not archetype_id_index.has (arch_thumbnail.archetype_id.physical_id) then
+				elseif not arch_phys_id_index.has (arch_thumbnail.archetype_id.physical_id) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (a_file_path)) then
 						create ara.make (extension_replaced (a_file_path, File_ext_archetype_source), Current, arch_thumbnail)
 					else
@@ -153,6 +153,8 @@ feature {NONE} -- Implementation
 			fn, l_full_path, arch_id: STRING
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
+			arch_semantic_ids: HASH_TABLE [ARCH_LIB_AUTHORED_ARCHETYPE, STRING]
+			semantic_id: STRING
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			ara: ARCH_LIB_AUTHORED_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
@@ -177,6 +179,10 @@ feature {NONE} -- Implementation
 				folder_stack.item.put_child (folder_node)
 				folder_stack.put (folder_node)
 
+				-- keep track of archetype interface ids for ADL2 archetypes, so that we can compare ADL 1.4
+				-- archetypes to them to know if we are doubling up or not.
+				create arch_semantic_ids.make (0)
+
 				-- deal with differential files; can be generated from legacy, or may be the primary artefact
 				across fs_node_names as fs_node_names_csr loop
 					fn := fs_node_names_csr.item
@@ -188,13 +194,14 @@ feature {NONE} -- Implementation
 								arch_id := arch_tn.archetype_id.physical_id
 								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
-								elseif not archetype_id_index.has (arch_id) then
+								elseif not arch_phys_id_index.has (arch_id) then
 									if arch_tn.is_template then
 										create {ARCH_LIB_TEMPLATE} ara.make (l_full_path, Current, arch_tn)
 									else
 										create ara.make (l_full_path, Current, arch_tn)
 									end
-									archetype_id_index.force (ara, arch_id)
+									arch_phys_id_index.force (ara, arch_id)
+									arch_semantic_ids.put (ara, arch_tn.archetype_id.semantic_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end
@@ -222,18 +229,25 @@ feature {NONE} -- Implementation
 								arch_id := arch_tn.archetype_id.physical_id
 								if arch_tn.archetype_id_is_old_style then
 									errors.add_error (ec_parse_archetype_e7, <<fn, arch_id>>, "")
+
 								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style and attached arch_tn.parent_archetype_id as pid then
 									errors.add_error (ec_parse_archetype_e11, <<fn, pid>>, "")
+
 								elseif not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
-								elseif not archetype_id_index.has (arch_id) then
-									create ara.make (extension_replaced (l_full_path, File_ext_archetype_source), Current, arch_tn)
-									archetype_id_index.force (ara, arch_id)
+
+								-- here we check for an exact match first (physical_id) and then a match on semantic_id (down to major ver).
+								-- The reason for this is that in a previous compilation, an ADL 1.4 archetype that contains revision meta-data
+								-- in its 'other_details' section will ahve been saved as some other version, and the physical id won't match
+								-- the default parsed id of the original ADL 1.4 file.
+								elseif not arch_semantic_ids.has (arch_tn.archetype_id.semantic_id) then
+									create ara.make_legacy (l_full_path, Current, arch_tn)
+									arch_phys_id_index.force (ara, arch_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
 									end
 								else
-									check attached archetype_id_index.item (arch_id) as att_aca then
+									check attached arch_semantic_ids.item (arch_tn.archetype_id.semantic_id) as att_aca then
 										ara := att_aca
 									end
 									ara.file_mgr.add_legacy_archetype (l_full_path)

@@ -17,7 +17,7 @@ inherit
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
-	make, make_new, make_new_specialised
+	make, make_new, make_new_specialised, make_legacy
 
 feature {NONE} -- Initialisation
 
@@ -26,6 +26,7 @@ feature {NONE} -- Initialisation
 		require
 			Path_valid: not a_path.is_empty
 			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
+			Thumbnail_valid: not arch_thumbnail.is_legacy
 		do
 			create status.make_empty
 			create last_modify_timestamp.make_from_epoch (0)
@@ -38,11 +39,32 @@ feature {NONE} -- Initialisation
 			compilation_state := Cs_unread
 
 			-- create file workflow state
-			if arch_thumbnail.is_legacy then
-				create file_mgr.make_legacy (arch_thumbnail, a_path, a_repository)
-			else
-				create file_mgr.make (arch_thumbnail, a_path, a_repository)
+			create file_mgr.make (arch_thumbnail, a_path, a_repository)
+		ensure
+			id_set: id = arch_thumbnail.archetype_id
+			parent_id_set: arch_thumbnail.is_specialised implies parent_ref = arch_thumbnail.parent_archetype_id
+			Compilation_state: compilation_state = Cs_unread
+		end
+
+	make_legacy (a_path: STRING; a_repository: ARCHETYPE_LIBRARY_SOURCE; arch_thumbnail: ARCHETYPE_THUMBNAIL)
+			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
+		require
+			Path_valid: not a_path.is_empty
+			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
+			Thumbnail_valid: arch_thumbnail.is_legacy
+		do
+			create status.make_empty
+			create last_modify_timestamp.make_from_epoch (0)
+
+			-- basic state
+			id := arch_thumbnail.archetype_id
+			if arch_thumbnail.is_specialised then
+				parent_ref := arch_thumbnail.parent_archetype_id
 			end
+			compilation_state := Cs_unread
+
+			-- create file workflow state
+			create file_mgr.make_legacy (arch_thumbnail, a_path, a_repository)
 		ensure
 			id_set: id = arch_thumbnail.archetype_id
 			parent_id_set: arch_thumbnail.is_specialised implies parent_ref = arch_thumbnail.parent_archetype_id
@@ -111,6 +133,17 @@ feature {NONE} -- Initialisation
 feature -- Artefacts
 
 	differential_archetype: detachable AUTHORED_ARCHETYPE
+
+feature -- Identification
+
+	set_id (an_id: like id)
+			-- set `id' and update file paths appropriately
+		do
+			id := an_id
+			file_mgr.update_id (id)
+		ensure
+			Id_set: id = an_id
+		end
 
 feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
@@ -181,15 +214,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 						check attached {like flat_archetype} archetype_comparator.differential_output as att_diff then
 							differential_archetype := att_diff
 						end
-
-						-- the id may have changed due to conversion processing, which picks up ADL 1.4 revision
-						id := differential_archetype.archetype_id
-
-						-- save text to diff file
-						ser_text := differential_serialised
-						if not ser_text.is_empty then
-							save_text_to_differential_file (ser_text)
-						end
 					else
 						-- perform post-parse object structure finalisation
 						post_parse_151_convert (flat_arch)
@@ -199,15 +223,14 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 						flat_arch.set_differential
 						flat_arch.set_is_generated
 						differential_archetype := flat_arch
+					end
+					-- the id may have changed due to conversion processing, which picks up ADL 1.4 revision
+					set_id (differential_archetype.archetype_id)
 
-						-- the id may have changed due to conversion processing, which picks up ADL 1.4 revision
-						id := differential_archetype.archetype_id
-
-						-- save text to diff file
-						ser_text := differential_serialised
-						if not ser_text.is_empty then
-							save_text_to_differential_file (ser_text)
-						end
+					-- save text to diff file
+					ser_text := differential_serialised
+					if not ser_text.is_empty then
+						save_text_to_differential_file (ser_text)
 					end
 				else
 				 	compilation_state := Cs_convert_legacy_failed

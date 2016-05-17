@@ -217,6 +217,8 @@ feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 			att_children.extend (a_child)
 			a_child.set_parent (Current)
 			reset_subtree_artefact_count
+		ensure
+			has_child (a_child)
 		end
 
 	remove_child (a_child: like children.item)
@@ -224,9 +226,12 @@ feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 			has_child (a_child)
 		do
 			check attached children as c then
+				c.start
 				c.prune (a_child)
 			end
 			reset_subtree_artefact_count
+		ensure
+			not has_child (a_child)
 		end
 
 	wipe_out

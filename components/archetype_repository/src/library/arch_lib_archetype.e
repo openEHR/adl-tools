@@ -116,6 +116,12 @@ feature -- Identification
 			Result := file_mgr.old_id
 		end
 
+	id_changed: BOOLEAN
+			-- return True if id was changed by any recent action
+		do
+			Result := attached old_id as att_old_id and then not att_old_id.physical_id.same_string (id.physical_id)
+		end
+
 	parent_id: like id
 			-- Archetype identifier of specialisation parent archtype matched in this repository that has
 			-- an id matching the interface id reference (i.e. archetype id down to major version) in
@@ -195,7 +201,7 @@ feature -- Identification
 			Result := qualified_name
 		end
 
-	semantic_location_changed: BOOLEAN
+	semantic_parent_changed: BOOLEAN
 			-- True if changed due to external editing require a move of this archetype in ontology
 			-- cleared by calling `clear_old_semantic_parent_name'
 		do
@@ -658,15 +664,6 @@ feature -- Compilation
 		ensure
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
 		end
-
---	signal_differential_edited
---			-- signal event of differential in-memory being changed by editing at UI
---		do
---			compilation_state := cs_ready_to_validate
---			clear_cache
---		ensure
---			Compilation_state_set: compilation_state = Cs_ready_to_validate
---		end
 
 	signal_exception
 			-- signal exception caught by compiler during call to some routine here;

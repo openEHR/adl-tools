@@ -148,7 +148,7 @@ feature {NONE} -- Implementation
 				if ara.compile_attempted then
 					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
-						if ara.semantic_location_changed then
+						if ara.semantic_parent_changed then
 							current_library.update_archetype_id (ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
@@ -178,6 +178,11 @@ feature {NONE} -- Implementation
 
 							-- first phase
 							ara.compile
+
+							-- check for id change due to compilation
+							if ara.id_changed then
+								current_library.update_archetype_id (ara)
+							end
 
 							-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
 							-- external references) to compile first

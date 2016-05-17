@@ -57,7 +57,7 @@ feature {ARCHETYPE_LIBRARY} -- Access
 		require
 			has_archetype_with_id (an_id)
 		do
-			check attached archetype_id_index.item (an_id) as aca then
+			check attached arch_phys_id_index.item (an_id) as aca then
 				Result := aca
 			end
 		end
@@ -98,7 +98,7 @@ feature -- Status Report
 	has_archetype_with_id (an_archetype_id: STRING): BOOLEAN
 			-- True if `an_archetype_id' exists in index
 		do
-			Result := archetype_id_index.has (an_archetype_id)
+			Result := arch_phys_id_index.has (an_archetype_id)
 		end
 
 feature -- Iteration
@@ -106,7 +106,7 @@ feature -- Iteration
 	new_cursor: TABLE_ITERATION_CURSOR [ARCH_LIB_ARCHETYPE, STRING]
 			-- Fresh cursor associated with current structure
 		do
-			Result := archetype_id_index.new_cursor
+			Result := arch_phys_id_index.new_cursor
 		end
 
 feature -- Commands
@@ -117,15 +117,15 @@ feature -- Commands
 		end
 
 	put_archetype (auth_ala: ARCH_LIB_AUTHORED_ARCHETYPE)
-			-- put archetype into `archetype_id_index' and the file-system tree
+			-- put archetype into `arch_phys_id_index' and the file-system tree
 		local
 			dir_node: ARCH_LIB_FILESYS_ITEM
 		do
-			archetype_id_index.force (auth_ala, auth_ala.id.physical_id)
+			arch_phys_id_index.force (auth_ala, auth_ala.id.physical_id)
 
 			-- add to file system tree
 			if not auth_ala.is_specialised then
-				dir_node := create_filesys_node_for_path (auth_ala.file_mgr.source_file_path)
+				dir_node := create_filesys_node_for_path (auth_ala.source_file_path)
 				if not dir_node.has_child (auth_ala) then
 					dir_node.put_child (auth_ala)
 				end
@@ -133,16 +133,16 @@ feature -- Commands
 		end
 
 	remove_archetype (an_arch_phys_id: STRING)
-			-- remove archetype from `archetype_id_index' and from the file-system tree
+			-- remove archetype from `arch_phys_id_index' and from the file-system tree
 		require
 			has_archetype_with_id (an_arch_phys_id)
 		do
-			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} archetype_id_index.item (an_arch_phys_id) as auth_ala then
-				archetype_id_index.remove (an_arch_phys_id)
+			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} arch_phys_id_index.item (an_arch_phys_id) as auth_ala then
+				arch_phys_id_index.remove (an_arch_phys_id)
 
 				if not auth_ala.is_specialised then
 					-- find the archetype in the file system tree
-					if attached filesys_node_for_path (auth_ala.file_mgr.source_file_path) as att_node and then att_node.has_child (auth_ala) then
+					if attached filesys_node_for_path (auth_ala.source_file_path) as att_node and then att_node.has_child (auth_ala) then
 						att_node.remove_child (auth_ala)
 					end
 				end
@@ -156,8 +156,8 @@ feature -- Commands
 			hasnt_path: not has_path (a_full_path)
 		deferred
 		ensure
-			added_1_or_none: (0 |..| 1).has (archetype_id_index.count - old archetype_id_index.count)
-			has_path: archetype_id_index.count > old archetype_id_index.count implies has_path (a_full_path)
+			added_1_or_none: (0 |..| 1).has (arch_phys_id_index.count - old arch_phys_id_index.count)
+			has_path: arch_phys_id_index.count > old arch_phys_id_index.count implies has_path (a_full_path)
 		end
 
 	read_text_from_file (a_full_path: STRING)
@@ -179,7 +179,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	archetype_id_index: HASH_TABLE [ARCH_LIB_AUTHORED_ARCHETYPE, STRING]
+	arch_phys_id_index: HASH_TABLE [ARCH_LIB_AUTHORED_ARCHETYPE, STRING]
 			-- list of all archetypes found in this directory tree, keyed by MIXED-CASE physical id
 		attribute
 			create Result.make (0)
