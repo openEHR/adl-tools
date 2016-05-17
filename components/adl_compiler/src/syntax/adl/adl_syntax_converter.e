@@ -269,7 +269,7 @@ feature -- ADL 2 conversions
 	convert_adl14_metadata_to_adl2 (a_res_desc: DT_COMPLEX_OBJECT)
 			-- convert items that are in RESOURCE_DESCRIPTION.other_details to ADL 2 locations
 			-- other_details = <
-			--  ["references"] = <"String">					=>	(no change)
+			--  ["references"] = <"String">					=>	/references (hash table structure)
 			--  ["MD5-CAM-1.0.1"] = <"String">				=>	(no change)
 			--  ["licence"] = <"String">					=>	/licence
 			--  ["custodian_organisation"] = <"String">		=>	/custodian_organisation
@@ -281,6 +281,8 @@ feature -- ADL 2 conversions
 			-- >
 		local
 			dt_attr: DT_ATTRIBUTE
+			dt_prim_obj: DT_PRIMITIVE_OBJECT
+			orig_ref_strs: LIST [STRING]
 		do
 			if attached a_res_desc.attribute_node_at_path ("other_details") as dt_attr_od then
 				if dt_attr_od.has_child_with_id ("licence") and then attached dt_attr_od.child_with_id ("licence") as dt_obj then
@@ -312,6 +314,21 @@ feature -- ADL 2 conversions
 					create dt_attr.make_single ("original_publisher")
 					dt_attr.put_child (dt_obj)
 					a_res_desc.put_attribute (dt_attr)
+				end
+				if dt_attr_od.has_child_with_id ("references") and then attached dt_attr_od.child_with_id ("references") as dt_obj then
+					if attached {DT_PRIMITIVE_OBJECT} dt_obj as att_dt_po and then attached {STRING} att_dt_po.value as orig_refs_str then
+						dt_attr_od.remove_child (dt_obj)
+						create dt_attr.make_container ("references")
+						orig_ref_strs := orig_refs_str.split ('%N')
+						across orig_ref_strs as orig_ref_strs_csr loop
+							orig_ref_strs_csr.item.adjust
+							if not orig_ref_strs_csr.item.is_empty then
+								create dt_prim_obj.make_identified (orig_ref_strs_csr.item, (dt_attr.child_count + 1).out)
+								dt_attr.put_child (dt_prim_obj)
+							end
+						end
+						a_res_desc.put_attribute (dt_attr)
+					end
 				end
 			end
 		end
