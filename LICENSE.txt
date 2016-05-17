@@ -1,27 +1,17 @@
 
-ADL - Archetype Description Language Toolkit
---------------------------------------------
+Archetype Definition Language (ADL) Workbench
+---------------------------------------------
 
-VERSION
-	Last Change: $Date: 2010-08-28 17:07:39 +0100 (Sat, 28 Aug 2010) $
+Copyright 2003-2016 openEHR Foundation <http://www.openEHR.org>
 
-AUTHORS 
-	Thomas Beale, Sam Heard
-	Ocean Informatics <www.OceanInformatics.biz>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-COPYRIGHT
-	The software, including all files in this directory and subdirectories 
-	is copyrighted to Ocean Informatics Pty Ltd, Australia, 2003, 2004.
+    http://www.apache.org/licenses/LICENSE-2.0
 
-	The source code is licensed under the Mozilla triple licence. See the
-	files mpl-tri-license-txt.txt, MPL-1.1.txt, gpl.txt and lgpl.txt in this
-	archive.
-
-	The ADL language specification document is copyright to The openEHR 
-	Foundation, and licensed for open use according to the copyright notice
-	appearing in the front of the document.
-
-USE
-	The archetype files, GUI validator, and PDF manual can all be freely
-	distributed provided they are kept intact, and are accompanied by this
-	file. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
