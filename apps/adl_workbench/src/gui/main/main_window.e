@@ -393,11 +393,6 @@ feature -- Commands
 		do
 			Precursor
 
-			-- if no RM schemas yet available, ask user to configure
-			if not rm_schemas_access.found_valid_schemas then
-				set_rm_schemas
-			end
-
 			-- if no repository access tool (git, svn etc), notify user
 			create missing_external_tools.make (0)
 			missing_external_tools.compare_objects
@@ -413,6 +408,11 @@ feature -- Commands
 				end
 				missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
 				info_feedback (missing_external_tools_msg)
+			end
+
+			-- if no RM schemas yet available, ask user to configure
+			if not rm_schemas_access.found_valid_schemas then
+				set_rm_schemas
 			end
 
 			-- if some RM schemas now found, set up a repository if necessary
