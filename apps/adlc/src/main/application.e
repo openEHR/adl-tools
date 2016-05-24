@@ -215,11 +215,14 @@ feature -- Commands
 											if not finished then
 												across matched_archetype_ids as arch_ids_csr loop
 													if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_ids_csr.item) as alaa then
-														archetype_compiler.build_lineage (alaa, 0)
 
 														-- process action
+														std_err.put_string ("--------- " + alaa.id.as_string + " ---------%N")
+														archetype_compiler.build_lineage (alaa, 0)
+
 														if action.is_equal (opts.Validate_action) then
-															std_err.put_string (alaa.status)
+															-- no need to do anything; gui output agent will generate errors
+															-- std_err.put_string (alaa.status)
 
 														elseif action.is_equal (opts.Serialise_action) or action.is_equal (opts.Serialise_action_alt_sp) then
 															if alaa.is_valid then
