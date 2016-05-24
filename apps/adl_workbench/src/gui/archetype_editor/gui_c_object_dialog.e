@@ -50,6 +50,8 @@ feature {NONE} -- Initialization
 			create old_params.make (an_old_aom_type, an_old_rm_type, an_occurrences_default.as_string, term_definition_mandatory)
 			create new_params.make (an_old_aom_type.twin, an_old_rm_type.twin, an_occurrences_default.as_string, term_definition_mandatory)
 
+			archetype := an_archetype
+
 			create aom_types.make (0)
 			aom_types.compare_objects
 			aom_types.append (a_aom_types)
@@ -59,7 +61,6 @@ feature {NONE} -- Initialization
 
 			rm_types := an_rm_types
 
-			archetype := an_archetype
 			display_settings := a_display_settings
 
 			default_create
@@ -323,7 +324,7 @@ feature {NONE} -- Implementation
 			if attached arch_ext_ref_list_cache as att_cache then
 				Result := att_cache
 			else
-				Result := current_library.matching_ids (".*", new_params.rm_type, Void)
+				Result := current_library.subsumption_set (new_params.rm_type, archetype.archetype_id)
 				arch_ext_ref_list_cache := Result
 			end
 		end

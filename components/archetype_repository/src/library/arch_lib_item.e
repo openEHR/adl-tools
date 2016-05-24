@@ -149,7 +149,7 @@ feature -- Access
 		end
 
 	new_cursor: ITERATION_CURSOR [like children.item]
-			-- Fresh cursor associated with current structure
+			-- Fresh cursor associated with `children' of curren node
 		do
 			check attached children as att_children then
 				Result := att_children.new_cursor

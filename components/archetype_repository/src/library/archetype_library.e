@@ -10,11 +10,7 @@ note
 				 archetyping capability, such as the openEHR class LOCATABLE or the 13606 class
 				 RECORD_COMPONENT (which class it is is marked in the .bmm schema for the relevant
 				 reference model).
-				 
-				 The contents of the structure consist of archetypes found in the reference and
-				 working repositories, and are subsequently attached into the structure.
-				 Archetypes opened adhoc are also grafted here.
-				 
+				 				 
 				 The library is populated at startup, using the source repository paths stored in a
 				 configuration file or elsewhere.
 				 
@@ -77,11 +73,7 @@ feature {NONE} -- Initialisation
 		do
 			library_access := a_lib_access
 			clear
-			if not item_tree_prototype.has_children then
-				initialise_item_tree_prototype
-				clone_item_tree_prototype
-				schema_load_counter := rm_schemas_access.load_count
-			end
+			initialise_item_tree
 		end
 
 feature -- Access
@@ -127,14 +119,56 @@ feature -- Access
 			end
 		end
 
-	matching_ids (a_regex: STRING; an_rm_type, an_rm_closure: detachable STRING): ARRAYED_SET [STRING]
-			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
-			-- we assume that the regex itself does not contain an rm type. Matching using `an_tm_type' and
-			-- `an_rm_closure' is done in lower case. Any case may be supplied for these two
+	subsumption_set (an_rm_type: STRING; an_archetype_id: ARCHETYPE_HRID): ARRAYED_SET [STRING]
+			-- generate list of archetype ids that are in the archetype subsumption hierarchy under `an_rm_type'
+			-- and `an_rm_package', from the RM schema to which `an_archetype_id' belongs.
+			-- The strategy is to find the node corresponding to the class name and get all archetypes
+			-- below it.
+		require
+			Rm_type_valid: not an_rm_type.is_empty
+		local
+			arch_id: ARCHETYPE_HRID
+			is_candidate: BOOLEAN
+			rm_type: STRING
+			rm_schema: BMM_SCHEMA
+			class_node: detachable ARCH_LIB_CLASS
+		do
+			create Result.make (0)
+			Result.compare_objects
+
+			-- get the RM schema for the archetype_id
+			rm_schema := rm_schema_for_archetype_id (an_archetype_id)
+
+			-- find the class node
+			from item_index.start until item_index.off or attached class_node loop
+				if attached {ARCH_LIB_CLASS} item_index.item_for_iteration as alc then
+					if alc.bmm_schema = rm_schema then
+						if alc.class_definition.name.is_case_insensitive_equal (an_rm_type) then
+							class_node := alc
+						end
+					end
+				end
+				item_index.forth
+			end
+
+			if attached class_node as att_class then
+				do_archetypes (att_class,
+					agent (ala: ARCH_LIB_ARCHETYPE; ids: ARRAYED_SET [STRING])
+						do
+							ids.extend (ala.id.physical_id)
+						end (?, Result)
+				)
+			end
+		end
+
+	matching_ids (a_regex: STRING; an_rm_type, an_rm_package: detachable STRING): ARRAYED_SET [STRING]
+			-- generate list of archetype ids that lexically match the regex pattern and optional rm_type. If rm_type is supplied,
+			-- we assume that the regex itself does not contain an rm type. Matching using `an_rm_type' and
+			-- `an_rm_package' is done in lower case. Any case may be supplied for these two
 		require
 			Regex_valid: not a_regex.is_empty
 			Rm_type_valid: attached an_rm_type as att_rm_type implies not att_rm_type.is_empty
-			Rm_closure_valid: attached an_rm_closure as att_rm_closure implies not att_rm_closure.is_empty
+			Rm_closure_valid: attached an_rm_package as att_rm_closure implies not att_rm_closure.is_empty
 		local
 			arch_id: ARCHETYPE_HRID
 			is_candidate: BOOLEAN
@@ -146,7 +180,7 @@ feature -- Access
 			if attached an_rm_type as rm_t then
 				rm_type := rm_t.as_lower
 			end
-			if attached an_rm_closure as rm_cl then
+			if attached an_rm_package as rm_cl then
 				rm_closure := rm_cl.as_lower
 			end
 
@@ -319,10 +353,6 @@ feature -- Modification
 		require
 			path_valid: valid_adhoc_path (a_path)
 		do
-			if item_index.is_empty then
-				clone_item_tree_prototype
-			end
-
 			errors.wipe_out
 			library_access.adhoc_source.put_archetype_from_file (a_path)
 			errors.append (library_access.adhoc_source.errors)
@@ -730,12 +760,7 @@ feature {NONE} -- Implementation
 	populate_item_index
 			-- Rebuild `archetype_index' and `item_index' from source repositories.
 		do
-			-- re-initialise the class tree if the schema has been reloaded since last time
-			if schema_load_counter < rm_schemas_access.load_count then
-				initialise_item_tree_prototype
-			end
-
-			clone_item_tree_prototype
+			initialise_item_tree
 
 			-- initially, we put all the archetypes from the file source into the library
 			-- this will have the effect of creating the parent_ref index
@@ -798,23 +823,14 @@ feature {NONE} -- Implementation
 	item_tree: ARCH_LIB_ARTEFACT_TYPE_ITEM
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
-			-- an inheritance tree of first degree descendants of the LOCATABLE class. The
-			-- contents of the structure consist of archetypes found in the reference and
-			-- working repositories, and are subsequently attached into the structure.
+			-- an inheritance tree of first degree descendants of the LOCATABLE class.
 			-- Archetypes opened adhoc are also grafted here.
 		attribute
 			create Result.make (Archetype_category)
 		end
 
-	item_tree_prototype: ARCH_LIB_ARTEFACT_TYPE_ITEM
-			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository
-			-- We use a CELL here because we only want one of these shared between all instances
-		once
-			create Result.make (Archetype_category)
-		end
-
-	initialise_item_tree_prototype
-			-- rebuild `semantic_item_tree_prototype'
+	initialise_item_tree
+			-- rebuild `item_tree'
 		local
 			closure_node: ARCH_LIB_PACKAGE_ITEM
 			rm_closure_name, qualified_rm_closure_key: STRING
@@ -824,7 +840,7 @@ feature {NONE} -- Implementation
 			removed: BOOLEAN
 			bmm_schema: BMM_SCHEMA
 		do
-			item_tree_prototype.wipe_out
+			item_tree.wipe_out
 			across rm_schemas_access.valid_top_level_schemas as top_level_schemas_csr loop
 				bmm_schema := top_level_schemas_csr.item
 				across bmm_schema.archetype_rm_closure_packages as rm_closure_packages_csr loop
@@ -832,13 +848,13 @@ feature {NONE} -- Implementation
 					qualified_rm_closure_key := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
 
 					-- create new model node if not already in existence
-					if item_tree_prototype.has_child_with_qualified_key (qualified_rm_closure_key) and then
-						attached {ARCH_LIB_PACKAGE_ITEM} item_tree_prototype.child_with_qualified_key (qualified_rm_closure_key) as mn
+					if item_tree.has_child_with_qualified_key (qualified_rm_closure_key) and then
+						attached {ARCH_LIB_PACKAGE_ITEM} item_tree.child_with_qualified_key (qualified_rm_closure_key) as mn
 					then
 						closure_node := mn
 					else
 						create closure_node.make (rm_closure_name, bmm_schema)
-						item_tree_prototype.put_child (closure_node)
+						item_tree.put_child (closure_node)
 					end
 
 					-- obtain the top-most classes from the package structure; they might not always be in the top-most package
@@ -893,34 +909,27 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+
+			-- write the ARCH_LIB_CLASS nodes from the tree into the index
+			item_index.wipe_out
+			do_all_semantic (agent (ari: attached ARCH_LIB_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
 		end
 
-	add_child_nodes (an_rm_closure_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_LIB_MODEL_ITEM)
+	add_child_nodes (an_rm_package_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_LIB_MODEL_ITEM)
 			-- populate child nodes of a node in library with immediate descendants of classes in `class_list'
-			-- put each node into `item_index', keyed by `an_rm_closure_name' + '-' + `class_list.item.name',
+			-- put each node into `item_index', keyed by `an_rm_package_name' + '-' + `class_list.item.name',
 			-- which will match with corresponding part of archetype identifier
 		local
 			children: ARRAYED_LIST [BMM_CLASS]
 			class_node: ARCH_LIB_CLASS
 		do
 			across class_list as class_list_csr loop
-				create class_node.make (an_rm_closure_name, class_list_csr.item)
+				create class_node.make (an_rm_package_name, class_list_csr.item)
 				a_parent_node.put_child (class_node)
 				children := class_list_csr.item.immediate_descendants
-				add_child_nodes (an_rm_closure_name, children, class_node)
+				add_child_nodes (an_rm_package_name, children, class_node)
 			end
 		end
-
-	clone_item_tree_prototype
-			-- clone `item_tree_prototype' for use in an `item_tree'
-		do
-			item_index.wipe_out
-			item_tree := item_tree_prototype.deep_twin
-			do_all_semantic (agent (ari: attached ARCH_LIB_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
-		end
-
-	schema_load_counter: INTEGER
-			-- track loading of schemas; when changed, re-intialise the ontology prototype
 
 	shifter: STRING
 			-- debug indenter
