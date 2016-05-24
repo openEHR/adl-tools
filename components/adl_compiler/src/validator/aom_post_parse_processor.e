@@ -38,7 +38,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			create rm_schema.make ("test", "test", "1.0")
+			create rm_schema.default_create
 			create att_c_terminology_code_type_mapping
 			initialise (a_target, ara)
 		end

@@ -60,7 +60,7 @@ feature {NONE} -- Implementation
 
 	rm_schema: BMM_SCHEMA
 		attribute
-			create Result.make (unknown_value, unknown_value, unknown_value)
+			create Result.default_create
 		end
 
 	aom_profile: detachable AOM_PROFILE
