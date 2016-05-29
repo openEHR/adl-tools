@@ -793,9 +793,9 @@ feature {NONE} -- Implementation
 						att_parent_ala.put_child (ala)
 					else
 						if ala.is_specialised then
-							add_error (ec_arch_cat_orphan_archetype, <<ala.semantic_parent_key, ala.file_mgr.source_file_path>>)
+							add_error (ec_arch_cat_orphan_archetype, <<ala.semantic_parent_key, ala.file_mgr.file_paths_string>>)
 						else
-							add_error (ec_arch_cat_orphan_archetype_e2, <<ala.semantic_parent_key, ala.file_mgr.source_file_path>>)
+							add_error (ec_arch_cat_orphan_archetype_e2, <<ala.semantic_parent_key, ala.file_mgr.file_paths_string>>)
 						end
 						remove_list.extend (ala.id)
 					end
@@ -824,14 +824,14 @@ feature {NONE} -- Implementation
 					att_parent_ala.put_child (aca)
 					item_index_put (aca)
 				else
-					add_error (ec_arch_cat_dup_archetype, <<aca.file_mgr.source_file_path>>)
+					add_error (ec_arch_cat_dup_archetype, <<aca.file_mgr.file_paths_string>>)
 					remove_list.extend (aca.id)
 				end
 			else
 				if aca.is_specialised then
-					add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_key, aca.file_mgr.source_file_path>>)
+					add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_key, aca.file_mgr.file_paths_string>>)
 				else
-					add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_key, aca.file_mgr.source_file_path>>)
+					add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_key, aca.file_mgr.file_paths_string>>)
 				end
 				remove_list.extend (aca.id)
 			end
