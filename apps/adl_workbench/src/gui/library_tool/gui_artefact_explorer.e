@@ -328,7 +328,7 @@ feature {NONE} -- Implementation
 				question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
-					src.remove_artefact (aca)
+					src.remove_archetype (aca)
 					aca.remove_file
 					if attached aca.parent as att_parent then
 						remove_item_in_tree (aca.global_artefact_identifier)

@@ -387,7 +387,7 @@ feature {GUI_TEST_TOOL} -- File Access
 				archetype_serialise_engine.set_source (odin_text, 1)
 				archetype_serialise_engine.parse
 				if archetype_serialise_engine.parse_succeeded and attached archetype_serialise_engine.tree as att_tree then
-					if attached {like persistent_type} att_tree.as_object (({like persistent_type}).type_id, <<>>) as p_archetype then
+					if attached {like persistent_type} att_tree.as_object (({like persistent_type}).type_id, Void) as p_archetype then
 						if attached {like differential_archetype} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
 							Result := adl_2_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)

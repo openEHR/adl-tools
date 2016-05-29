@@ -368,17 +368,19 @@ feature -- Modification
 			end
 		end
 
-	update_archetype_id (aca: ARCH_LIB_ARCHETYPE)
-			-- move `ara' in tree according to its current and old ids
+	rename_archetype (aca: ARCH_LIB_ARCHETYPE)
+			-- rename `ara' in tree and other indexes according to its current and old ids. There must be nothing at its new id.
 		require
 			old_id_valid: attached aca.old_id as old_id and then has_archetype_with_id (old_id.physical_id) and then archetype_with_id (old_id.physical_id) = aca
 			new_id_valid: not has_archetype_with_id (aca.id.physical_id)
 			semantic_parent_exists: has_item_with_id (aca.semantic_parent_id)
 		do
 			if attached aca.old_id as att_old_id then
+				-- move it in this library
 				item_index_remove (att_old_id)
 				item_index_put (aca)
 
+				-- move it in the file_system index
 				if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
 					if library_access.adhoc_source.has_archetype_with_id (att_old_id.physical_id) then
 						library_access.adhoc_source.remove_archetype (att_old_id.physical_id)
@@ -390,6 +392,7 @@ feature -- Modification
 				end
 			end
 
+			-- fix parent child connections
 			if attached aca.parent as old_aca_parent and then attached archetype_parent_item (aca) as new_aca_parent and then
 				old_aca_parent /= new_aca_parent
 			then
@@ -399,15 +402,29 @@ feature -- Modification
 			end
 		ensure
 			Node_added_to_archetype_index: has_archetype_with_id (aca.id.physical_id)
-			Node_added_to_ontology_index: has_item_with_id (aca.id.physical_id)
+			Node_added_to_semantic_index: has_item_with_id (aca.id.physical_id)
 			Node_parent_set: attached aca.parent as aca_parent implies aca_parent.qualified_name.is_case_insensitive_equal (aca.semantic_parent_id)
 		end
 
-	remove_artefact (aca: ARCH_LIB_ARCHETYPE)
+	move_archetype (aca: ARCH_LIB_ARCHETYPE)
+			-- move `ara' in tree and other indexes according to its current and old ids. Anything at the target id will be replaced
+		require
+			old_id_valid: attached aca.old_id as old_id and then has_archetype_with_id (old_id.physical_id) and then archetype_with_id (old_id.physical_id) = aca
+			semantic_parent_exists: has_item_with_id (aca.semantic_parent_id)
+		do
+			-- if there is something there at the new id, remove it
+			if has_archetype_with_id (aca.id.physical_id) then
+				remove_archetype (archetype_with_id (aca.id.physical_id))
+			end
+
+			rename_archetype (aca)
+		end
+
+	remove_archetype (aca: ARCH_LIB_ARCHETYPE)
 			-- remove `aca' from indexes
 		require
-			new_id_valid: has_archetype_with_id (aca.id.physical_id)
-			Semantic_parent_exists: has_item_with_id (aca.id.physical_id)
+			Id_valid: has_archetype_with_id (aca.id.physical_id)
+			Semantic_parent_exists: has_item_with_id (aca.semantic_parent_id)
 		do
 			if attached aca.parent as att_parent then
 				att_parent.remove_child (aca)

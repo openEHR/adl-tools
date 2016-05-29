@@ -149,7 +149,7 @@ feature {NONE} -- Implementation
 					if ara.file_mgr.is_source_modified then
 						ara.signal_source_edited
 						if ara.semantic_parent_changed then
-							current_library.update_archetype_id (ara)
+							current_library.rename_archetype (ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
 						end
@@ -179,9 +179,9 @@ feature {NONE} -- Implementation
 							-- first phase
 							ara.compile
 
-							-- check for id change due to compilation
+							-- check for id change due to compilation of ADL 1.4 archetype
 							if ara.id_changed then
-								current_library.update_archetype_id (ara)
+								current_library.move_archetype (ara)
 							end
 
 							-- second phase - needed if there are suppliers (i.e. slot-fillers or plain

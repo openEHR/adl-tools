@@ -240,7 +240,7 @@ feature -- File Operations
 					last_artefact_type := amp.last_archetype.artefact_type
 				end
 
-				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_DIRECTORY
+				-- check for changes in id or parent id that might mean this node has to be moved in ARCHETYPE_LIBRARY
 				-- possible changes:
 				-- 	* parent_id changed
 				-- 	* changed from specialised to non-specialised
