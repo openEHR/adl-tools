@@ -62,7 +62,7 @@ feature {ARCHETYPE_LIBRARY} -- Access
 			end
 		end
 
-	last_added_archetype: detachable ARCH_LIB_ARCHETYPE
+	last_added_archetype: detachable ARCH_LIB_AUTHORED_ARCHETYPE
 			-- archetype added by last call to `put_archetype_from_file'
 
 feature -- Validation

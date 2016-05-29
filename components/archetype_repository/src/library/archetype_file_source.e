@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 										folder_node.put_child (ara)
 									end
 								else
-									errors.add_error (ec_arch_cat_dup_archetype, <<arch_id>>, "")
+									errors.add_error (ec_arch_cat_dup_archetype, <<arch_full_path>>, "")
 								end
 							else
 								errors.add_error (ec_general, <<amp.error_strings>>, "")

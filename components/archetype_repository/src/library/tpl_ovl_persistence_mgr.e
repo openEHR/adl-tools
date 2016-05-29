@@ -33,9 +33,7 @@ feature -- Access
 	source_id: STRING
 			-- a reliable identifier for the source
 		do
-			create Result.make_from_string (tpl_pers_mgr.source_id)
-			Result.append (": ")
-			Result.append (id.physical_id)
+			create Result.make_from_string (tpl_pers_mgr.source_id + ": " + id.physical_id)
 		end
 
 feature -- Thumbnail state

@@ -788,14 +788,14 @@ feature {NONE} -- Implementation
 			-- now we try to connect all archetypes under their parent descriptors
 			remove_list.wipe_out
 			across item_index as item_csr loop
-				if attached {ARCH_LIB_ARCHETYPE} item_csr.item as ala then
+				if attached {ARCH_LIB_AUTHORED_ARCHETYPE} item_csr.item as ala then
 					if attached archetype_parent_item (ala) as att_parent_ala then
 						att_parent_ala.put_child (ala)
 					else
 						if ala.is_specialised then
-							add_error (ec_arch_cat_orphan_archetype, <<ala.semantic_parent_key, ala.qualified_name>>)
+							add_error (ec_arch_cat_orphan_archetype, <<ala.semantic_parent_key, ala.file_mgr.source_file_path>>)
 						else
-							add_error (ec_arch_cat_orphan_archetype_e2, <<ala.semantic_parent_key, ala.qualified_name>>)
+							add_error (ec_arch_cat_orphan_archetype_e2, <<ala.semantic_parent_key, ala.file_mgr.source_file_path>>)
 						end
 						remove_list.extend (ala.id)
 					end
@@ -817,21 +817,21 @@ feature {NONE} -- Implementation
 			create Result.make (20)
 		end
 
-	try_put_archetype (aca: ARCH_LIB_ARCHETYPE)
+	try_put_archetype (aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 		do
 			if attached archetype_parent_item (aca) as att_parent_ala then
 				if not has_item_with_id (aca.qualified_key) then
 					att_parent_ala.put_child (aca)
 					item_index_put (aca)
 				else
-					add_error (ec_arch_cat_dup_archetype, <<aca.source_id>>)
+					add_error (ec_arch_cat_dup_archetype, <<aca.file_mgr.source_file_path>>)
 					remove_list.extend (aca.id)
 				end
 			else
 				if aca.is_specialised then
-					add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_key, aca.qualified_name>>)
+					add_error (ec_arch_cat_orphan_archetype, <<aca.semantic_parent_key, aca.file_mgr.source_file_path>>)
 				else
-					add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_key, aca.qualified_name>>)
+					add_error (ec_arch_cat_orphan_archetype_e2, <<aca.semantic_parent_key, aca.file_mgr.source_file_path>>)
 				end
 				remove_list.extend (aca.id)
 			end
