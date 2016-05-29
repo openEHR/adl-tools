@@ -114,9 +114,9 @@ create
 
 %type <C_COMPLEX_OBJECT> c_complex_object c_complex_object_id c_complex_object_head
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
-%type <C_OBJECT> c_non_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 %type <C_ATTRIBUTE> c_attribute_head
+%type <C_OBJECT> c_object c_terminal_object
 
 %type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
@@ -229,6 +229,9 @@ c_complex_object_head: c_complex_object_id c_occurrences
 
 			if rm_schema.has_class_definition ($1.rm_type_name) then
 				object_nodes.extend ($1)
+				if not c_attrs.is_empty then
+					safe_put_c_attribute_child ($1)
+				end
 debug ("ADL_parse")
 	io.put_string (indent + "PUSH create OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "] ")
 	if $2 /= Void then
@@ -308,21 +311,22 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 	;
 
 
-
 ------------------------- node types -----------------------
 
-c_object: c_non_primitive_object 
+c_object: c_complex_object
 		{
-			safe_put_c_attribute_child ($1)
+			$$ := $1
+			-- safe_put_c_attribute_child was called when the C_COMPLEX_OBJECT block was entered
 		}
-	| sibling_order c_non_primitive_object 
+	| c_terminal_object
 		{
+			$$ := $1
+			safe_put_c_attribute_child ($$)
+		}
+	| sibling_order c_object
+		{
+			$$ := $2
 			$2.set_sibling_order ($1)
-			safe_put_c_attribute_child ($2)
-		}
-	| c_primitive_object
-		{
-			safe_put_c_attribute_child ($1)
 		}
 	| error		
 		{
@@ -330,11 +334,10 @@ c_object: c_non_primitive_object
 		}
 	;
 
-c_non_primitive_object: c_complex_object 
-		{
-			$$ := $1
-		}
-	| c_archetype_root 
+--
+-- C_OBJECTs that do not have recursive internal structure from a parsing point of view
+--
+c_terminal_object: c_archetype_root 
 		{
 			$$ := $1
 		}
@@ -346,8 +349,11 @@ c_non_primitive_object: c_complex_object
 		{
 			$$ := $1
 		}
+	| c_primitive_object
+		{
+			$$ := $1
+		}
 	;
-
 
 --
 -- The first two forms below correspond to source archetypes, which have no body under a C_ARCHETYPE_ROOT

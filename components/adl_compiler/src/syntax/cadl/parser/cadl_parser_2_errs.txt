@@ -44,14 +44,14 @@ rule 11 sibling_order -> SYM_BEFORE V_ID_CODE
 rule 12 c_complex_object_body -> c_any
 rule 13 c_complex_object_body -> c_attribute_defs
 rule 14 c_complex_object_body -> error
-rule 15 c_object -> c_non_primitive_object
-rule 16 c_object -> sibling_order c_non_primitive_object
-rule 17 c_object -> c_primitive_object
+rule 15 c_object -> c_complex_object
+rule 16 c_object -> c_terminal_object
+rule 17 c_object -> sibling_order c_object
 rule 18 c_object -> error
-rule 19 c_non_primitive_object -> c_complex_object
-rule 20 c_non_primitive_object -> c_archetype_root
-rule 21 c_non_primitive_object -> c_complex_object_proxy
-rule 22 c_non_primitive_object -> archetype_slot
+rule 19 c_terminal_object -> c_archetype_root
+rule 20 c_terminal_object -> c_complex_object_proxy
+rule 21 c_terminal_object -> archetype_slot
+rule 22 c_terminal_object -> c_primitive_object
 rule 23 c_archetype_root -> SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences
 rule 24 c_archetype_root -> SYM_USE_ARCHETYPE type_identifier error
 rule 25 c_complex_object_proxy -> SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
@@ -447,84 +447,84 @@ assertions (0) on left: 69 70, on right: 2 66 68 70
 c_includes (1) on left: 65 66, on right: 28
 c_excludes (2) on left: 67 68, on right: 28
 assertion (3) on left: 71 72 73 74, on right: 69 70
-c_archetype_root (4) on left: 23 24, on right: 20
-c_complex_object_proxy (5) on left: 25 26 27, on right: 21
+c_archetype_root (4) on left: 23 24, on right: 19
+c_complex_object_proxy (5) on left: 25 26 27, on right: 20
 type_identifier (6) on left: 203 204, on right: 7 8 9 23 24 25 26 31 32 33 201
-sibling_order (7) on left: 10 11, on right: 16
+sibling_order (7) on left: 10 11, on right: 17
 multiplicity (8) on left: 135 136 137 138, on right: 124 125 126 127 128 129 130 131 133
 existence (9) on left: 120 121, on right: 119
 cardinality (10) on left: 124 125 126 127 128 129 130 131, on right: 123
 c_occurrences (11) on left: 132 133 134, on right: 6 23 25 26 30
 c_existence (12) on left: 118 119, on right: 52 53
 c_cardinality (13) on left: 122 123, on right: 52 53
-c_complex_object (14) on left: 4 5, on right: 1 19
+c_complex_object (14) on left: 4 5, on right: 1 15
 c_complex_object_id (15) on left: 7 8 9, on right: 6
 c_complex_object_head (16) on left: 6, on right: 4 5
-c_primitive_object (17) on left: 35 36 37 38 39 40 41 42 43, on right: 17 63 64 84 85
-c_non_primitive_object (18) on left: 19 20 21 22, on right: 15 16
-c_archetype_slot_id (19) on left: 31 32 33 34, on right: 30
-c_archetype_slot_head (20) on left: 30, on right: 28 29
-archetype_slot (21) on left: 28 29, on right: 22
-c_attribute_head (22) on left: 52 53, on right: 49 50 51
-boolean_node (23) on left: 75 76, on right: 71 72 82 89 91
-boolean_expr (24) on left: 77 78, on right: 76
-boolean_leaf (25) on left: 79 80 81 82 83, on right: 75 91
-arithmetic_leaf (26) on left: 101 102, on right: 99 103
-boolean_unop_expr (27) on left: 87 88 89 90, on right: 77 81
-boolean_binop_expr (28) on left: 91, on right: 78
-arithmetic_relop_expr (29) on left: 98, on right: 83
-arithmetic_arith_binop_expr (30) on left: 103, on right: 100
-arch_outer_constraint_expr (31) on left: 84, on right: 73
-boolean_constraint (32) on left: 85 86, on right: 80
-arithmetic_value (33) on left: 104 105 106, on right: 101
-boolean_literal (34) on left: 96 97, on right: 79
-arithmetic_node (35) on left: 99 100, on right: 98 102 103
-integer_value (36) on left: 210 211 212, on right: 104 135 137 139 143 213 214 215 216 217 218 219 220 221 222 223 224
-real_value (37) on left: 228 229 230, on right: 105 145 149 231 232 233 234 235 236 237 238 239 240 241 242
-boolean_value (38) on left: 246 247, on right: 199 248 249 250
-date_value (39) on left: 251, on right: 152 156 252 253 254 255 256 257 258 259 260 261 262 263
-date_time_value (40) on left: 283, on right: 166 170 284 285 286 287 288 289 290 291 292 293 294 295
-time_value (41) on left: 267, on right: 159 163 268 269 270 271 272 273 274 275 276 277 278 279
-duration_value (42) on left: 299, on right: 173 175 179 300 301 302 303 304 305 306 307 308 309 310 311
-any_identifier (43) on left: 201 202, on right: 71 74
-string_value (44) on left: 205, on right: 185
-string_list (45) on left: 206 207 208 209, on right: 183 207 208
-integer_list (46) on left: 213 214 215, on right: 140 214
-real_list (47) on left: 231 232 233, on right: 146 232
-boolean_list (48) on left: 248 249 250, on right: 198 249
-date_list (49) on left: 252 253 254, on right: 153 253
-time_list (50) on left: 268 269 270, on right: 160 269
-date_time_list (51) on left: 284 285 286, on right: 167 285
-duration_list (52) on left: 300 301 302, on right: 176 301
-integer_interval (53) on left: 216 217 218 219 220 221 222 223 224, on right: 141 225 226 227
-real_interval (54) on left: 234 235 236 237 238 239 240 241 242, on right: 147 243 244 245
-time_interval (55) on left: 271 272 273 274 275 276 277 278 279, on right: 161 280 281 282
-date_interval (56) on left: 255 256 257 258 259 260 261 262 263, on right: 154 264 265 266
-date_time_interval (57) on left: 287 288 289 290 291 292 293 294 295, on right: 168 296 297 298
-duration_interval (58) on left: 303 304 305 306 307 308 309 310 311, on right: 172 177 312 313 314
-integer_interval_list (59) on left: 225 226 227, on right: 142 226
-real_interval_list (60) on left: 243 244 245, on right: 148 244
-time_interval_list (61) on left: 280 281 282, on right: 162 281
-date_interval_list (62) on left: 264 265 266, on right: 155 265
-date_time_interval_list (63) on left: 296 297 298, on right: 169 297
-duration_interval_list (64) on left: 312 313 314, on right: 178 313
-arithmetic_binop_symbol (65) on left: 113 114 115 116 117, on right: 103
-relational_binop_symbol (66) on left: 107 108 109 110 111 112, on right: 98
-boolean_binop_symbol (67) on left: 92 93 94 95, on right: 91
-c_boolean (68) on left: 196 197 198 199 200, on right: 43 199 200
-c_string (69) on left: 182 183 184 185 186, on right: 41 185 186
-c_date_time (70) on left: 165 166 167 168 169 170 171, on right: 39 170 171
-c_duration (71) on left: 172 173 174 175 176 177 178 179 180 181, on right: 40 179 180
-c_date (72) on left: 151 152 153 154 155 156 157, on right: 37 156 157
-c_time (73) on left: 158 159 160 161 162 163 164, on right: 38 163 164
-c_real (74) on left: 145 146 147 148 149 150, on right: 36 149 150
-c_integer (75) on left: 139 140 141 142 143 144, on right: 35 143 144
-c_terminology_code (76) on left: 187 188 189 190 191 192 193 194 195, on right: 42 86
-input (77) on left: 1 2 3
-c_complex_object_body (78) on left: 12 13 14, on right: 4
-c_any (79) on left: 44, on right: 12 56
-c_attribute_defs (80) on left: 45 46, on right: 13 46
-c_object (81) on left: 15 16 17 18, on right: 54 55
+c_primitive_object (17) on left: 35 36 37 38 39 40 41 42 43, on right: 22 63 64 84 85
+c_archetype_slot_id (18) on left: 31 32 33 34, on right: 30
+c_archetype_slot_head (19) on left: 30, on right: 28 29
+archetype_slot (20) on left: 28 29, on right: 21
+c_attribute_head (21) on left: 52 53, on right: 49 50 51
+c_object (22) on left: 15 16 17 18, on right: 17 54 55
+c_terminal_object (23) on left: 19 20 21 22, on right: 16
+boolean_node (24) on left: 75 76, on right: 71 72 82 89 91
+boolean_expr (25) on left: 77 78, on right: 76
+boolean_leaf (26) on left: 79 80 81 82 83, on right: 75 91
+arithmetic_leaf (27) on left: 101 102, on right: 99 103
+boolean_unop_expr (28) on left: 87 88 89 90, on right: 77 81
+boolean_binop_expr (29) on left: 91, on right: 78
+arithmetic_relop_expr (30) on left: 98, on right: 83
+arithmetic_arith_binop_expr (31) on left: 103, on right: 100
+arch_outer_constraint_expr (32) on left: 84, on right: 73
+boolean_constraint (33) on left: 85 86, on right: 80
+arithmetic_value (34) on left: 104 105 106, on right: 101
+boolean_literal (35) on left: 96 97, on right: 79
+arithmetic_node (36) on left: 99 100, on right: 98 102 103
+integer_value (37) on left: 210 211 212, on right: 104 135 137 139 143 213 214 215 216 217 218 219 220 221 222 223 224
+real_value (38) on left: 228 229 230, on right: 105 145 149 231 232 233 234 235 236 237 238 239 240 241 242
+boolean_value (39) on left: 246 247, on right: 199 248 249 250
+date_value (40) on left: 251, on right: 152 156 252 253 254 255 256 257 258 259 260 261 262 263
+date_time_value (41) on left: 283, on right: 166 170 284 285 286 287 288 289 290 291 292 293 294 295
+time_value (42) on left: 267, on right: 159 163 268 269 270 271 272 273 274 275 276 277 278 279
+duration_value (43) on left: 299, on right: 173 175 179 300 301 302 303 304 305 306 307 308 309 310 311
+any_identifier (44) on left: 201 202, on right: 71 74
+string_value (45) on left: 205, on right: 185
+string_list (46) on left: 206 207 208 209, on right: 183 207 208
+integer_list (47) on left: 213 214 215, on right: 140 214
+real_list (48) on left: 231 232 233, on right: 146 232
+boolean_list (49) on left: 248 249 250, on right: 198 249
+date_list (50) on left: 252 253 254, on right: 153 253
+time_list (51) on left: 268 269 270, on right: 160 269
+date_time_list (52) on left: 284 285 286, on right: 167 285
+duration_list (53) on left: 300 301 302, on right: 176 301
+integer_interval (54) on left: 216 217 218 219 220 221 222 223 224, on right: 141 225 226 227
+real_interval (55) on left: 234 235 236 237 238 239 240 241 242, on right: 147 243 244 245
+time_interval (56) on left: 271 272 273 274 275 276 277 278 279, on right: 161 280 281 282
+date_interval (57) on left: 255 256 257 258 259 260 261 262 263, on right: 154 264 265 266
+date_time_interval (58) on left: 287 288 289 290 291 292 293 294 295, on right: 168 296 297 298
+duration_interval (59) on left: 303 304 305 306 307 308 309 310 311, on right: 172 177 312 313 314
+integer_interval_list (60) on left: 225 226 227, on right: 142 226
+real_interval_list (61) on left: 243 244 245, on right: 148 244
+time_interval_list (62) on left: 280 281 282, on right: 162 281
+date_interval_list (63) on left: 264 265 266, on right: 155 265
+date_time_interval_list (64) on left: 296 297 298, on right: 169 297
+duration_interval_list (65) on left: 312 313 314, on right: 178 313
+arithmetic_binop_symbol (66) on left: 113 114 115 116 117, on right: 103
+relational_binop_symbol (67) on left: 107 108 109 110 111 112, on right: 98
+boolean_binop_symbol (68) on left: 92 93 94 95, on right: 91
+c_boolean (69) on left: 196 197 198 199 200, on right: 43 199 200
+c_string (70) on left: 182 183 184 185 186, on right: 41 185 186
+c_date_time (71) on left: 165 166 167 168 169 170 171, on right: 39 170 171
+c_duration (72) on left: 172 173 174 175 176 177 178 179 180 181, on right: 40 179 180
+c_date (73) on left: 151 152 153 154 155 156 157, on right: 37 156 157
+c_time (74) on left: 158 159 160 161 162 163 164, on right: 38 163 164
+c_real (75) on left: 145 146 147 148 149 150, on right: 36 149 150
+c_integer (76) on left: 139 140 141 142 143 144, on right: 35 143 144
+c_terminology_code (77) on left: 187 188 189 190 191 192 193 194 195, on right: 42 86
+input (78) on left: 1 2 3
+c_complex_object_body (79) on left: 12 13 14, on right: 4
+c_any (80) on left: 44, on right: 12 56
+c_attribute_defs (81) on left: 45 46, on right: 13 46
 c_attribute_def (82) on left: 47 48, on right: 45 46
 c_attribute (83) on left: 49 50 51, on right: 47
 c_attribute_tuple (84) on left: 57, on right: 48
@@ -5409,14 +5409,14 @@ state 349
 	c_complex_object_id  ->  . type_identifier   (rule 9)
 	sibling_order  ->  . SYM_AFTER V_ID_CODE   (rule 10)
 	sibling_order  ->  . SYM_BEFORE V_ID_CODE   (rule 11)
-	c_object  ->  . c_non_primitive_object   (rule 15)
-	c_object  ->  . sibling_order c_non_primitive_object   (rule 16)
-	c_object  ->  . c_primitive_object   (rule 17)
+	c_object  ->  . c_complex_object   (rule 15)
+	c_object  ->  . c_terminal_object   (rule 16)
+	c_object  ->  . sibling_order c_object   (rule 17)
 	c_object  ->  . error   (rule 18)
-	c_non_primitive_object  ->  . c_complex_object   (rule 19)
-	c_non_primitive_object  ->  . c_archetype_root   (rule 20)
-	c_non_primitive_object  ->  . c_complex_object_proxy   (rule 21)
-	c_non_primitive_object  ->  . archetype_slot   (rule 22)
+	c_terminal_object  ->  . c_archetype_root   (rule 19)
+	c_terminal_object  ->  . c_complex_object_proxy   (rule 20)
+	c_terminal_object  ->  . archetype_slot   (rule 21)
+	c_terminal_object  ->  . c_primitive_object   (rule 22)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences   (rule 23)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier error   (rule 24)
 	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH   (rule 25)
@@ -5663,10 +5663,11 @@ state 349
 	c_complex_object_id	go to state 20
 	c_complex_object_head	go to state 21
 	c_primitive_object	go to state 433
-	c_non_primitive_object	go to state 434
-	c_archetype_slot_id	go to state 435
-	c_archetype_slot_head	go to state 436
-	archetype_slot	go to state 437
+	c_archetype_slot_id	go to state 434
+	c_archetype_slot_head	go to state 435
+	archetype_slot	go to state 436
+	c_object	go to state 437
+	c_terminal_object	go to state 438
 	integer_value	go to state 117
 	real_value	go to state 118
 	boolean_value	go to state 119
@@ -5703,8 +5704,7 @@ state 349
 	c_real	go to state 150
 	c_integer	go to state 151
 	c_terminology_code	go to state 152
-	c_any	go to state 438
-	c_object	go to state 439
+	c_any	go to state 439
 	c_attribute_values	go to state 440
 
 
@@ -6546,17 +6546,17 @@ state 427
 
 state 428
 
-	c_non_primitive_object  ->  c_archetype_root .   (rule 20)
+	c_terminal_object  ->  c_archetype_root .   (rule 19)
 
-	$default	reduce using rule 20 (c_non_primitive_object)
+	$default	reduce using rule 19 (c_terminal_object)
 
 
 
 state 429
 
-	c_non_primitive_object  ->  c_complex_object_proxy .   (rule 21)
+	c_terminal_object  ->  c_complex_object_proxy .   (rule 20)
 
-	$default	reduce using rule 21 (c_non_primitive_object)
+	$default	reduce using rule 20 (c_terminal_object)
 
 
 
@@ -6581,11 +6581,17 @@ state 431
 	c_complex_object_id  ->  . type_identifier V_ROOT_ID_CODE   (rule 7)
 	c_complex_object_id  ->  . type_identifier V_ID_CODE   (rule 8)
 	c_complex_object_id  ->  . type_identifier   (rule 9)
-	c_object  ->  sibling_order . c_non_primitive_object   (rule 16)
-	c_non_primitive_object  ->  . c_complex_object   (rule 19)
-	c_non_primitive_object  ->  . c_archetype_root   (rule 20)
-	c_non_primitive_object  ->  . c_complex_object_proxy   (rule 21)
-	c_non_primitive_object  ->  . archetype_slot   (rule 22)
+	sibling_order  ->  . SYM_AFTER V_ID_CODE   (rule 10)
+	sibling_order  ->  . SYM_BEFORE V_ID_CODE   (rule 11)
+	c_object  ->  . c_complex_object   (rule 15)
+	c_object  ->  . c_terminal_object   (rule 16)
+	c_object  ->  . sibling_order c_object   (rule 17)
+	c_object  ->  sibling_order . c_object   (rule 17)
+	c_object  ->  . error   (rule 18)
+	c_terminal_object  ->  . c_archetype_root   (rule 19)
+	c_terminal_object  ->  . c_complex_object_proxy   (rule 20)
+	c_terminal_object  ->  . archetype_slot   (rule 21)
+	c_terminal_object  ->  . c_primitive_object   (rule 22)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences   (rule 23)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier error   (rule 24)
 	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH   (rule 25)
@@ -6598,53 +6604,294 @@ state 431
 	c_archetype_slot_id  ->  . SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE SYM_CLOSED   (rule 32)
 	c_archetype_slot_id  ->  . SYM_ALLOW_ARCHETYPE type_identifier   (rule 33)
 	c_archetype_slot_id  ->  . SYM_ALLOW_ARCHETYPE error   (rule 34)
+	c_primitive_object  ->  . c_integer   (rule 35)
+	c_primitive_object  ->  . c_real   (rule 36)
+	c_primitive_object  ->  . c_date   (rule 37)
+	c_primitive_object  ->  . c_time   (rule 38)
+	c_primitive_object  ->  . c_date_time   (rule 39)
+	c_primitive_object  ->  . c_duration   (rule 40)
+	c_primitive_object  ->  . c_string   (rule 41)
+	c_primitive_object  ->  . c_terminology_code   (rule 42)
+	c_primitive_object  ->  . c_boolean   (rule 43)
+	c_integer  ->  . integer_value   (rule 139)
+	c_integer  ->  . integer_list   (rule 140)
+	c_integer  ->  . integer_interval   (rule 141)
+	c_integer  ->  . integer_interval_list   (rule 142)
+	c_integer  ->  . c_integer ';' integer_value   (rule 143)
+	c_integer  ->  . c_integer ';' error   (rule 144)
+	c_real  ->  . real_value   (rule 145)
+	c_real  ->  . real_list   (rule 146)
+	c_real  ->  . real_interval   (rule 147)
+	c_real  ->  . real_interval_list   (rule 148)
+	c_real  ->  . c_real ';' real_value   (rule 149)
+	c_real  ->  . c_real ';' error   (rule 150)
+	c_date  ->  . V_ISO8601_DATE_CONSTRAINT_PATTERN   (rule 151)
+	c_date  ->  . date_value   (rule 152)
+	c_date  ->  . date_list   (rule 153)
+	c_date  ->  . date_interval   (rule 154)
+	c_date  ->  . date_interval_list   (rule 155)
+	c_date  ->  . c_date ';' date_value   (rule 156)
+	c_date  ->  . c_date ';' error   (rule 157)
+	c_time  ->  . V_ISO8601_TIME_CONSTRAINT_PATTERN   (rule 158)
+	c_time  ->  . time_value   (rule 159)
+	c_time  ->  . time_list   (rule 160)
+	c_time  ->  . time_interval   (rule 161)
+	c_time  ->  . time_interval_list   (rule 162)
+	c_time  ->  . c_time ';' time_value   (rule 163)
+	c_time  ->  . c_time ';' error   (rule 164)
+	c_date_time  ->  . V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN   (rule 165)
+	c_date_time  ->  . date_time_value   (rule 166)
+	c_date_time  ->  . date_time_list   (rule 167)
+	c_date_time  ->  . date_time_interval   (rule 168)
+	c_date_time  ->  . date_time_interval_list   (rule 169)
+	c_date_time  ->  . c_date_time ';' date_time_value   (rule 170)
+	c_date_time  ->  . c_date_time ';' error   (rule 171)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval   (rule 172)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_value   (rule 173)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN   (rule 174)
+	c_duration  ->  . duration_value   (rule 175)
+	c_duration  ->  . duration_list   (rule 176)
+	c_duration  ->  . duration_interval   (rule 177)
+	c_duration  ->  . duration_interval_list   (rule 178)
+	c_duration  ->  . c_duration ';' duration_value   (rule 179)
+	c_duration  ->  . c_duration ';' error   (rule 180)
+	c_duration  ->  . V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR   (rule 181)
+	c_string  ->  . V_STRING   (rule 182)
+	c_string  ->  . string_list   (rule 183)
+	c_string  ->  . V_REGEXP   (rule 184)
+	c_string  ->  . c_string ';' string_value   (rule 185)
+	c_string  ->  . c_string ';' error   (rule 186)
+	c_terminology_code  ->  . V_VALUE_SET_REF   (rule 187)
+	c_terminology_code  ->  . V_VALUE_SET_REF_ASSUMED   (rule 188)
+	c_terminology_code  ->  . V_VALUE_DEF   (rule 189)
+	c_terminology_code  ->  . V_EXPANDED_VALUE_SET_DEF   (rule 190)
+	c_terminology_code  ->  . V_EXTERNAL_VALUE_SET_DEF   (rule 191)
+	c_terminology_code  ->  . ERR_VALUE_SET_MISSING_CODES   (rule 192)
+	c_terminology_code  ->  . ERR_VALUE_SET_DEF_DUP_CODE   (rule 193)
+	c_terminology_code  ->  . ERR_VALUE_SET_DEF_ASSUMED   (rule 194)
+	c_terminology_code  ->  . ERR_VALUE_SET_DEF   (rule 195)
+	c_boolean  ->  . SYM_TRUE   (rule 196)
+	c_boolean  ->  . SYM_FALSE   (rule 197)
+	c_boolean  ->  . boolean_list   (rule 198)
+	c_boolean  ->  . c_boolean ';' boolean_value   (rule 199)
+	c_boolean  ->  . c_boolean ';' error   (rule 200)
 	type_identifier  ->  . V_TYPE_IDENTIFIER   (rule 203)
 	type_identifier  ->  . V_GENERIC_TYPE_IDENTIFIER   (rule 204)
+	string_list  ->  . V_STRING ',' V_STRING   (rule 206)
+	string_list  ->  . string_list ',' V_STRING   (rule 207)
+	string_list  ->  . string_list ',' SYM_LIST_CONTINUE   (rule 208)
+	string_list  ->  . V_STRING ',' SYM_LIST_CONTINUE   (rule 209)
+	integer_value  ->  . V_INTEGER   (rule 210)
+	integer_value  ->  . '+' V_INTEGER   (rule 211)
+	integer_value  ->  . '-' V_INTEGER   (rule 212)
+	integer_list  ->  . integer_value ',' integer_value   (rule 213)
+	integer_list  ->  . integer_list ',' integer_value   (rule 214)
+	integer_list  ->  . integer_value ',' SYM_LIST_CONTINUE   (rule 215)
+	integer_interval  ->  . SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM   (rule 216)
+	integer_interval  ->  . SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM   (rule 217)
+	integer_interval  ->  . SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM   (rule 218)
+	integer_interval  ->  . SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM   (rule 219)
+	integer_interval  ->  . SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM   (rule 220)
+	integer_interval  ->  . SYM_INTERVAL_DELIM SYM_LE integer_value SYM_INTERVAL_DELIM   (rule 221)
+	integer_interval  ->  . SYM_INTERVAL_DELIM SYM_GT integer_value SYM_INTERVAL_DELIM   (rule 222)
+	integer_interval  ->  . SYM_INTERVAL_DELIM SYM_GE integer_value SYM_INTERVAL_DELIM   (rule 223)
+	integer_interval  ->  . SYM_INTERVAL_DELIM integer_value SYM_INTERVAL_DELIM   (rule 224)
+	integer_interval_list  ->  . integer_interval ',' integer_interval   (rule 225)
+	integer_interval_list  ->  . integer_interval_list ',' integer_interval   (rule 226)
+	integer_interval_list  ->  . integer_interval ',' SYM_LIST_CONTINUE   (rule 227)
+	real_value  ->  . V_REAL   (rule 228)
+	real_value  ->  . '+' V_REAL   (rule 229)
+	real_value  ->  . '-' V_REAL   (rule 230)
+	real_list  ->  . real_value ',' real_value   (rule 231)
+	real_list  ->  . real_list ',' real_value   (rule 232)
+	real_list  ->  . real_value ',' SYM_LIST_CONTINUE   (rule 233)
+	real_interval  ->  . SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM   (rule 234)
+	real_interval  ->  . SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM   (rule 235)
+	real_interval  ->  . SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM   (rule 236)
+	real_interval  ->  . SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM   (rule 237)
+	real_interval  ->  . SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM   (rule 238)
+	real_interval  ->  . SYM_INTERVAL_DELIM SYM_LE real_value SYM_INTERVAL_DELIM   (rule 239)
+	real_interval  ->  . SYM_INTERVAL_DELIM SYM_GT real_value SYM_INTERVAL_DELIM   (rule 240)
+	real_interval  ->  . SYM_INTERVAL_DELIM SYM_GE real_value SYM_INTERVAL_DELIM   (rule 241)
+	real_interval  ->  . SYM_INTERVAL_DELIM real_value SYM_INTERVAL_DELIM   (rule 242)
+	real_interval_list  ->  . real_interval ',' real_interval   (rule 243)
+	real_interval_list  ->  . real_interval_list ',' real_interval   (rule 244)
+	real_interval_list  ->  . real_interval ',' SYM_LIST_CONTINUE   (rule 245)
+	boolean_value  ->  . SYM_TRUE   (rule 246)
+	boolean_value  ->  . SYM_FALSE   (rule 247)
+	boolean_list  ->  . boolean_value ',' boolean_value   (rule 248)
+	boolean_list  ->  . boolean_list ',' boolean_value   (rule 249)
+	boolean_list  ->  . boolean_value ',' SYM_LIST_CONTINUE   (rule 250)
+	date_value  ->  . V_ISO8601_EXTENDED_DATE   (rule 251)
+	date_list  ->  . date_value ',' date_value   (rule 252)
+	date_list  ->  . date_list ',' date_value   (rule 253)
+	date_list  ->  . date_value ',' SYM_LIST_CONTINUE   (rule 254)
+	date_interval  ->  . SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM   (rule 255)
+	date_interval  ->  . SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM   (rule 256)
+	date_interval  ->  . SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM   (rule 257)
+	date_interval  ->  . SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM   (rule 258)
+	date_interval  ->  . SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM   (rule 259)
+	date_interval  ->  . SYM_INTERVAL_DELIM SYM_LE date_value SYM_INTERVAL_DELIM   (rule 260)
+	date_interval  ->  . SYM_INTERVAL_DELIM SYM_GT date_value SYM_INTERVAL_DELIM   (rule 261)
+	date_interval  ->  . SYM_INTERVAL_DELIM SYM_GE date_value SYM_INTERVAL_DELIM   (rule 262)
+	date_interval  ->  . SYM_INTERVAL_DELIM date_value SYM_INTERVAL_DELIM   (rule 263)
+	date_interval_list  ->  . date_interval ',' date_interval   (rule 264)
+	date_interval_list  ->  . date_interval_list ',' date_interval   (rule 265)
+	date_interval_list  ->  . date_interval ',' SYM_LIST_CONTINUE   (rule 266)
+	time_value  ->  . V_ISO8601_EXTENDED_TIME   (rule 267)
+	time_list  ->  . time_value ',' time_value   (rule 268)
+	time_list  ->  . time_list ',' time_value   (rule 269)
+	time_list  ->  . time_value ',' SYM_LIST_CONTINUE   (rule 270)
+	time_interval  ->  . SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM   (rule 271)
+	time_interval  ->  . SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM   (rule 272)
+	time_interval  ->  . SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM   (rule 273)
+	time_interval  ->  . SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM   (rule 274)
+	time_interval  ->  . SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM   (rule 275)
+	time_interval  ->  . SYM_INTERVAL_DELIM SYM_LE time_value SYM_INTERVAL_DELIM   (rule 276)
+	time_interval  ->  . SYM_INTERVAL_DELIM SYM_GT time_value SYM_INTERVAL_DELIM   (rule 277)
+	time_interval  ->  . SYM_INTERVAL_DELIM SYM_GE time_value SYM_INTERVAL_DELIM   (rule 278)
+	time_interval  ->  . SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM   (rule 279)
+	time_interval_list  ->  . time_interval ',' time_interval   (rule 280)
+	time_interval_list  ->  . time_interval_list ',' time_interval   (rule 281)
+	time_interval_list  ->  . time_interval ',' SYM_LIST_CONTINUE   (rule 282)
+	date_time_value  ->  . V_ISO8601_EXTENDED_DATE_TIME   (rule 283)
+	date_time_list  ->  . date_time_value ',' date_time_value   (rule 284)
+	date_time_list  ->  . date_time_list ',' date_time_value   (rule 285)
+	date_time_list  ->  . date_time_value ',' SYM_LIST_CONTINUE   (rule 286)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM   (rule 287)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM   (rule 288)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM   (rule 289)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM   (rule 290)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM   (rule 291)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM SYM_LE date_time_value SYM_INTERVAL_DELIM   (rule 292)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_INTERVAL_DELIM   (rule 293)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM SYM_GE date_time_value SYM_INTERVAL_DELIM   (rule 294)
+	date_time_interval  ->  . SYM_INTERVAL_DELIM date_time_value SYM_INTERVAL_DELIM   (rule 295)
+	date_time_interval_list  ->  . date_time_interval ',' date_time_interval   (rule 296)
+	date_time_interval_list  ->  . date_time_interval_list ',' date_time_interval   (rule 297)
+	date_time_interval_list  ->  . date_time_interval ',' SYM_LIST_CONTINUE   (rule 298)
+	duration_value  ->  . V_ISO8601_DURATION   (rule 299)
+	duration_list  ->  . duration_value ',' duration_value   (rule 300)
+	duration_list  ->  . duration_list ',' duration_value   (rule 301)
+	duration_list  ->  . duration_value ',' SYM_LIST_CONTINUE   (rule 302)
+	duration_interval  ->  . SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM   (rule 303)
+	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM   (rule 304)
+	duration_interval  ->  . SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM   (rule 305)
+	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM   (rule 306)
+	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM   (rule 307)
+	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_LE duration_value SYM_INTERVAL_DELIM   (rule 308)
+	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_GT duration_value SYM_INTERVAL_DELIM   (rule 309)
+	duration_interval  ->  . SYM_INTERVAL_DELIM SYM_GE duration_value SYM_INTERVAL_DELIM   (rule 310)
+	duration_interval  ->  . SYM_INTERVAL_DELIM duration_value SYM_INTERVAL_DELIM   (rule 311)
+	duration_interval_list  ->  . duration_interval ',' duration_interval   (rule 312)
+	duration_interval_list  ->  . duration_interval_list ',' duration_interval   (rule 313)
+	duration_interval_list  ->  . duration_interval ',' SYM_LIST_CONTINUE   (rule 314)
 
+	'-'	shift, and go to state 2
+	'+'	shift, and go to state 3
+	SYM_BEFORE	shift, and go to state 422
+	SYM_AFTER	shift, and go to state 423
 	SYM_USE_NODE	shift, and go to state 424
 	SYM_ALLOW_ARCHETYPE	shift, and go to state 425
 	SYM_USE_ARCHETYPE	shift, and go to state 426
+	SYM_FALSE	shift, and go to state 93
+	SYM_TRUE	shift, and go to state 94
+	SYM_INTERVAL_DELIM	shift, and go to state 95
+	V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR	shift, and go to state 96
+	V_ISO8601_DURATION_CONSTRAINT_PATTERN	shift, and go to state 97
+	V_ISO8601_DATE_CONSTRAINT_PATTERN	shift, and go to state 98
+	V_ISO8601_TIME_CONSTRAINT_PATTERN	shift, and go to state 99
+	V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN	shift, and go to state 100
+	V_ISO8601_DURATION	shift, and go to state 101
+	V_ISO8601_EXTENDED_DATE_TIME	shift, and go to state 102
+	V_ISO8601_EXTENDED_TIME	shift, and go to state 103
+	V_ISO8601_EXTENDED_DATE	shift, and go to state 104
+	V_REGEXP	shift, and go to state 105
+	ERR_VALUE_SET_DEF	shift, and go to state 106
+	ERR_VALUE_SET_DEF_DUP_CODE	shift, and go to state 107
+	ERR_VALUE_SET_MISSING_CODES	shift, and go to state 108
+	ERR_VALUE_SET_DEF_ASSUMED	shift, and go to state 109
+	V_EXTERNAL_VALUE_SET_DEF	shift, and go to state 110
+	V_EXPANDED_VALUE_SET_DEF	shift, and go to state 111
+	V_VALUE_SET_REF_ASSUMED	shift, and go to state 112
+	V_VALUE_DEF	shift, and go to state 113
+	V_VALUE_SET_REF	shift, and go to state 114
+	V_STRING	shift, and go to state 115
 	V_GENERIC_TYPE_IDENTIFIER	shift, and go to state 11
 	V_TYPE_IDENTIFIER	shift, and go to state 12
+	V_REAL	shift, and go to state 13
+	V_INTEGER	shift, and go to state 14
+	error	shift, and go to state 477
 
 	c_archetype_root	go to state 428
 	c_complex_object_proxy	go to state 429
 	type_identifier	go to state 430
+	sibling_order	go to state 431
 	c_complex_object	go to state 432
 	c_complex_object_id	go to state 20
 	c_complex_object_head	go to state 21
-	c_non_primitive_object	go to state 477
-	c_archetype_slot_id	go to state 435
-	c_archetype_slot_head	go to state 436
-	archetype_slot	go to state 437
+	c_primitive_object	go to state 433
+	c_archetype_slot_id	go to state 434
+	c_archetype_slot_head	go to state 435
+	archetype_slot	go to state 436
+	c_object	go to state 478
+	c_terminal_object	go to state 438
+	integer_value	go to state 117
+	real_value	go to state 118
+	boolean_value	go to state 119
+	date_value	go to state 120
+	date_time_value	go to state 121
+	time_value	go to state 122
+	duration_value	go to state 123
+	string_list	go to state 124
+	integer_list	go to state 125
+	real_list	go to state 126
+	boolean_list	go to state 127
+	date_list	go to state 128
+	time_list	go to state 129
+	date_time_list	go to state 130
+	duration_list	go to state 131
+	integer_interval	go to state 132
+	real_interval	go to state 133
+	time_interval	go to state 134
+	date_interval	go to state 135
+	date_time_interval	go to state 136
+	duration_interval	go to state 137
+	integer_interval_list	go to state 138
+	real_interval_list	go to state 139
+	time_interval_list	go to state 140
+	date_interval_list	go to state 141
+	date_time_interval_list	go to state 142
+	duration_interval_list	go to state 143
+	c_boolean	go to state 144
+	c_string	go to state 145
+	c_date_time	go to state 146
+	c_duration	go to state 147
+	c_date	go to state 148
+	c_time	go to state 149
+	c_real	go to state 150
+	c_integer	go to state 151
+	c_terminology_code	go to state 152
 
 
 
 state 432
 
-	c_non_primitive_object  ->  c_complex_object .   (rule 19)
-
-	$default	reduce using rule 19 (c_non_primitive_object)
-
-
-
-state 433
-
-	c_object  ->  c_primitive_object .   (rule 17)
-
-	$default	reduce using rule 17 (c_object)
-
-
-
-state 434
-
-	c_object  ->  c_non_primitive_object .   (rule 15)
+	c_object  ->  c_complex_object .   (rule 15)
 
 	$default	reduce using rule 15 (c_object)
 
 
 
-state 435
+state 433
+
+	c_terminal_object  ->  c_primitive_object .   (rule 22)
+
+	$default	reduce using rule 22 (c_terminal_object)
+
+
+
+state 434
 
 	c_archetype_slot_head  ->  c_archetype_slot_id . c_occurrences   (rule 30)
 	c_occurrences  ->  .   (rule 132)
@@ -6655,42 +6902,50 @@ state 435
 
 	$default	reduce using rule 132 (c_occurrences)
 
-	c_occurrences	go to state 478
+	c_occurrences	go to state 479
 
 
 
-state 436
+state 435
 
 	archetype_slot  ->  c_archetype_slot_head . SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK   (rule 28)
 	archetype_slot  ->  c_archetype_slot_head .   (rule 29)
 
-	SYM_MATCHES	shift, and go to state 479
+	SYM_MATCHES	shift, and go to state 480
 
 	$default	reduce using rule 29 (archetype_slot)
 
 
 
+state 436
+
+	c_terminal_object  ->  archetype_slot .   (rule 21)
+
+	$default	reduce using rule 21 (c_terminal_object)
+
+
+
 state 437
 
-	c_non_primitive_object  ->  archetype_slot .   (rule 22)
+	c_attribute_values  ->  c_object .   (rule 54)
 
-	$default	reduce using rule 22 (c_non_primitive_object)
+	$default	reduce using rule 54 (c_attribute_values)
 
 
 
 state 438
 
-	c_attribute_values  ->  c_any .   (rule 56)
+	c_object  ->  c_terminal_object .   (rule 16)
 
-	$default	reduce using rule 56 (c_attribute_values)
+	$default	reduce using rule 16 (c_object)
 
 
 
 state 439
 
-	c_attribute_values  ->  c_object .   (rule 54)
+	c_attribute_values  ->  c_any .   (rule 56)
 
-	$default	reduce using rule 54 (c_attribute_values)
+	$default	reduce using rule 56 (c_attribute_values)
 
 
 
@@ -6704,14 +6959,14 @@ state 440
 	c_complex_object_id  ->  . type_identifier   (rule 9)
 	sibling_order  ->  . SYM_AFTER V_ID_CODE   (rule 10)
 	sibling_order  ->  . SYM_BEFORE V_ID_CODE   (rule 11)
-	c_object  ->  . c_non_primitive_object   (rule 15)
-	c_object  ->  . sibling_order c_non_primitive_object   (rule 16)
-	c_object  ->  . c_primitive_object   (rule 17)
+	c_object  ->  . c_complex_object   (rule 15)
+	c_object  ->  . c_terminal_object   (rule 16)
+	c_object  ->  . sibling_order c_object   (rule 17)
 	c_object  ->  . error   (rule 18)
-	c_non_primitive_object  ->  . c_complex_object   (rule 19)
-	c_non_primitive_object  ->  . c_archetype_root   (rule 20)
-	c_non_primitive_object  ->  . c_complex_object_proxy   (rule 21)
-	c_non_primitive_object  ->  . archetype_slot   (rule 22)
+	c_terminal_object  ->  . c_archetype_root   (rule 19)
+	c_terminal_object  ->  . c_complex_object_proxy   (rule 20)
+	c_terminal_object  ->  . archetype_slot   (rule 21)
+	c_terminal_object  ->  . c_primitive_object   (rule 22)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences   (rule 23)
 	c_archetype_root  ->  . SYM_USE_ARCHETYPE type_identifier error   (rule 24)
 	c_complex_object_proxy  ->  . SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH   (rule 25)
@@ -6919,7 +7174,7 @@ state 440
 	SYM_FALSE	shift, and go to state 93
 	SYM_TRUE	shift, and go to state 94
 	SYM_INTERVAL_DELIM	shift, and go to state 95
-	SYM_END_CBLOCK	shift, and go to state 480
+	SYM_END_CBLOCK	shift, and go to state 481
 	V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR	shift, and go to state 96
 	V_ISO8601_DURATION_CONSTRAINT_PATTERN	shift, and go to state 97
 	V_ISO8601_DATE_CONSTRAINT_PATTERN	shift, and go to state 98
@@ -6944,7 +7199,7 @@ state 440
 	V_TYPE_IDENTIFIER	shift, and go to state 12
 	V_REAL	shift, and go to state 13
 	V_INTEGER	shift, and go to state 14
-	error	shift, and go to state 481
+	error	shift, and go to state 477
 
 	c_archetype_root	go to state 428
 	c_complex_object_proxy	go to state 429
@@ -6954,10 +7209,11 @@ state 440
 	c_complex_object_id	go to state 20
 	c_complex_object_head	go to state 21
 	c_primitive_object	go to state 433
-	c_non_primitive_object	go to state 434
-	c_archetype_slot_id	go to state 435
-	c_archetype_slot_head	go to state 436
-	archetype_slot	go to state 437
+	c_archetype_slot_id	go to state 434
+	c_archetype_slot_head	go to state 435
+	archetype_slot	go to state 436
+	c_object	go to state 482
+	c_terminal_object	go to state 438
 	integer_value	go to state 117
 	real_value	go to state 118
 	boolean_value	go to state 119
@@ -6994,7 +7250,6 @@ state 440
 	c_real	go to state 150
 	c_integer	go to state 151
 	c_terminology_code	go to state 152
-	c_object	go to state 482
 
 
 
@@ -7360,13 +7615,21 @@ state 476
 
 state 477
 
-	c_object  ->  sibling_order c_non_primitive_object .   (rule 16)
+	c_object  ->  error .   (rule 18)
 
-	$default	reduce using rule 16 (c_object)
+	$default	reduce using rule 18 (c_object)
 
 
 
 state 478
+
+	c_object  ->  sibling_order c_object .   (rule 17)
+
+	$default	reduce using rule 17 (c_object)
+
+
+
+state 479
 
 	c_archetype_slot_head  ->  c_archetype_slot_id c_occurrences .   (rule 30)
 
@@ -7374,7 +7637,7 @@ state 478
 
 
 
-state 479
+state 480
 
 	archetype_slot  ->  c_archetype_slot_head SYM_MATCHES . SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK   (rule 28)
 
@@ -7382,19 +7645,11 @@ state 479
 
 
 
-state 480
+state 481
 
 	c_attribute  ->  c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SYM_END_CBLOCK .   (rule 49)
 
 	$default	reduce using rule 49 (c_attribute)
-
-
-
-state 481
-
-	c_object  ->  error .   (rule 18)
-
-	$default	reduce using rule 18 (c_object)
 
 
 

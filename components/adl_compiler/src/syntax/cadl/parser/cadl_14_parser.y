@@ -235,6 +235,9 @@ c_complex_object_head: c_complex_object_id c_occurrences
 
 			if rm_schema.has_class_definition ($1.rm_type_name) then
 				object_nodes.extend ($1)
+				if not c_attrs.is_empty then
+					safe_put_c_attribute_child ($1)
+				end
 debug ("ADL_parse")
 	io.put_string (indent + "PUSH create OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "] ")
 	if attached $2 as att_occ then
@@ -316,7 +319,10 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 
 ------------------------- node types -----------------------
 
-c_object: c_non_primitive_object 
+c_object: c_complex_object
+		{
+		}
+	| c_non_primitive_object 
 		{
 			safe_put_c_attribute_child ($1)
 		}
@@ -339,11 +345,7 @@ c_object: c_non_primitive_object
 		}
 	;
 
-c_non_primitive_object: c_complex_object 
-		{
-			$$ := $1
-		}
-	| c_complex_object_proxy 
+c_non_primitive_object: c_complex_object_proxy 
 		{
 			$$ := $1
 		}
