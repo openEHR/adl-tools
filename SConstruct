@@ -111,7 +111,7 @@ for target in COMMAND_LINE_TARGETS:
 			s = os.path.dirname(s)
 
 if downloads and len(adl_workbench) > 0:
-	license = 'apps/adl_workbench/doc/LICENSE.txt'
+	license = 'LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
