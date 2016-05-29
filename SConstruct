@@ -62,22 +62,22 @@ if platform == 'windows':
 	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
 	versioned_targets += [adl_parser]
 
-eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
-adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
+# eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
+# adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
 
 ###################################################################################################
 # Define how to build the ADL compiler static library and its test C language wrapper.
 
-make = ['make']
-libs = []
-include = env.EiffelSpecPath('studio', 'include')
+# make = ['make']
+# libs = []
+# include = env.EiffelSpecPath('studio', 'include')
 
-if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
-	make = ['nmake', '/nologo']
-	libs = ['ws2_32']
+# if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
+#	make = ['nmake', '/nologo']
+#	libs = ['ws2_32']
 
-adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', adl_compiler, [make + ['cecil']], chdir = 1)
-env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
+#adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', adl_compiler, [make + ['cecil']], chdir = 1)
+#env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
 
 ###################################################################################################
 # Define how to generate the terminology and reference model schemas directories.
@@ -116,13 +116,12 @@ if downloads and len(adl_workbench) > 0:
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
-	vim = 'components/adl_compiler/etc/vim'
 	testscripts = 'apps/adlc/test'
 	install = 'apps/adl_workbench/install/' + platform
 
 	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles]
 
-	for root in [vim, install, testscripts]:
+	for root in [install, testscripts]:
 		for dir, dirnames, filenames in os.walk(root):
 			if '.git' in dirnames: dirnames.remove('.git')
 			adl_workbench_installer_sources += [os.path.join(dir, filename) for filename in filenames]
@@ -151,7 +150,7 @@ if downloads and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [terminology, rm_schemas, aom_profiles, vim, testscripts]:
+			for root in [terminology, rm_schemas, aom_profiles, testscripts]:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
@@ -188,7 +187,7 @@ if downloads and len(adl_workbench) > 0:
 		def copy_mac_osx_installer_sources(target, source, env):
 			copy_tree(install, downloads)
 
-			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles, vim, testscripts]:
+			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, terminology, rm_schemas, aom_profiles, testscripts]:
 				copy_tree(src, pkg_contents)
 
 			substitutions = 's|\&|\&amp;|;'
