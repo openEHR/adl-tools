@@ -50,7 +50,7 @@ templates = <
 		["validate_e1"] = <"specialisation parent is missing">
 		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
 
-		-- ARCH_CAT_ARCHETYPE
+		-- ARCH_LIB_ARCHETYPE
 		["clean_generated_file"] = <"Removing generated file $1">
 		["compile_e1"] = <"specialisation parent $1 failed to validate">
 		["parse_i1"] = <"Archetype $1 --> parsed ok">
@@ -60,11 +60,14 @@ templates = <
 		["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
 		["compile_e2"] = <"component artefact $1 failed to validate">
 
-		-- ARCHETYPE_CATALOGUE
+		-- ARCHETYPE_LIBRARY
 		["arch_cat_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
 		["arch_cat_orphan_archetype_e2"] = <"No class node matching $1 found for archetype $2; incorrect id?">
 		["arch_cat_dup_archetype"] = <"Duplicate archetype $1">
 		["regex_e1"] = <"Invalid regular expression $1">
+		["renamed_old_adls_filename"] = <"ADL2 archetype filename $1 missing 3-part version; renamed to $2">
+		["old_and_new_adls_filename"] = <"ADL2 archetype files $1 and $2 both exist; manual fix required (only latter should exist)">
+		["faulty_old_adls_filename"] = <"ADL2 archetype filename $1 missing 3-part version; no thumbnail generated; faulty? - ignored">
 
 		-- ADL_SYNTAX_CONTERTER
 		["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">

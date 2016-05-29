@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (907)
+			create message_table.make (910)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -65,6 +65,9 @@ feature -- Initialisation
 			message_table.put ("No class node matching $1 found for archetype $2; incorrect id?", ec_arch_cat_orphan_archetype_e2)
 			message_table.put ("Duplicate archetype $1", ec_arch_cat_dup_archetype)
 			message_table.put ("Invalid regular expression $1", ec_regex_e1)
+			message_table.put ("ADL2 archetype filename $1 missing 3-part version; renamed to $2", ec_renamed_old_adls_filename)
+			message_table.put ("ADL2 archetype files $1 and $2 both exist; manual fix required (only latter should exist)", ec_old_and_new_adls_filename)
+			message_table.put ("ADL2 archetype filename $1 missing 3-part version; no thumbnail generated; faulty? - ignored", ec_faulty_old_adls_filename)
 			message_table.put ("Syntax element upgraded: --$1-- changed to --$2--", ec_syntax_upgraded_i1)
 			message_table.put ("Invalid archetype filename $1", ec_invalid_filename_e1)
 			message_table.put ("Archetype saved to $2", ec_save_as_i1)

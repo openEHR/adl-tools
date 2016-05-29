@@ -150,7 +150,7 @@ feature {NONE} -- Implementation
 	get_archetypes_in_folder (a_path: STRING)
 			-- Add archetype and folder meta-data nodes to `archetypes' list, and call recursively to folders below
 		local
-			fn, l_full_path, arch_id: STRING
+			fn, new_arch_fn, arch_full_path, adl_full_path, new_full_path, arch_id: STRING
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			arch_semantic_ids: HASH_TABLE [ARCH_LIB_AUTHORED_ARCHETYPE, STRING]
@@ -159,6 +159,7 @@ feature {NONE} -- Implementation
 			ara: ARCH_LIB_AUTHORED_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
 			folder_node: ARCH_LIB_FILESYS_ITEM
+			keep: BOOLEAN
   		do
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'a_parent_node.item.full_path'
@@ -187,18 +188,57 @@ feature {NONE} -- Implementation
 				across fs_node_names as fs_node_names_csr loop
 					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
-						if adl_differential_filename_pattern_regex.matches (fn) then
-							l_full_path := file_system.pathname (a_path, fn)
-							amp.parse (l_full_path)
+
+						-- FIXME: legacy ADL 1.4 & LEGACY ADL 1.5 files
+						-- if we match old-style generated .adls file with just .vN rather than .vN.M.P
+						-- and there is a .adl file of the same name in the same directory, delete
+						-- the .adls file.
+						if adl_old_differential_filename_pattern_regex.matches (fn) then
+							keep := False
+							arch_full_path := file_system.pathname (a_path, fn)
+							amp.parse (arch_full_path)
+
+							-- .adls file generated from a .adl (1.4) file
+							if amp.is_generated then
+								-- if a .ald file of this name exists, delete the generated .adls file (it will be regenerated) - IGNORE
+								if file_system.file_exists (extension_replaced (arch_full_path, File_ext_archetype_adl14)) then
+									file_system.delete_file (arch_full_path)
+								end
+							-- not generated; has thumbnail
+							elseif attached amp.last_archetype as arch_tn then
+								new_arch_fn := arch_tn.archetype_id.as_filename + File_ext_archetype_source
+								new_full_path := file_system.pathname (a_path, new_arch_fn)
+								-- perform a rename - KEEP
+								if not file_system.file_exists (new_full_path) then
+									file_system.rename_file (arch_full_path, new_full_path)
+									errors.add_warning (ec_renamed_old_adls_filename, <<arch_full_path, new_full_path>>, "")
+									fn := new_arch_fn
+									keep := True
+								else
+									-- both a new and an old version exist; needs manual intervention - IGNORE
+									errors.add_warning (ec_old_and_new_adls_filename, <<arch_full_path, new_full_path>>, "")
+								end
+							-- something wrong with the file - no thumbnail - IGNORE
+							else
+								errors.add_warning (ec_faulty_old_adls_filename, <<arch_full_path>>, "")
+							end
+						else
+							keep := True
+						end
+
+						-- normal .adls file
+						if keep and adl_differential_filename_pattern_regex.matches (fn) then
+							arch_full_path := file_system.pathname (a_path, fn)
+							amp.parse (arch_full_path)
 							if amp.passed and then attached amp.last_archetype as arch_tn then
 								arch_id := arch_tn.archetype_id.physical_id
 								if not has_rm_schema_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
 								elseif not arch_phys_id_index.has (arch_id) then
 									if arch_tn.is_template then
-										create {ARCH_LIB_TEMPLATE} ara.make (l_full_path, Current, arch_tn)
+										create {ARCH_LIB_TEMPLATE} ara.make (arch_full_path, Current, arch_tn)
 									else
-										create ara.make (l_full_path, Current, arch_tn)
+										create ara.make (arch_full_path, Current, arch_tn)
 									end
 									arch_phys_id_index.force (ara, arch_id)
 									arch_semantic_ids.put (ara, arch_tn.archetype_id.semantic_id)
@@ -219,12 +259,12 @@ feature {NONE} -- Implementation
 				across fs_node_names as fs_node_names_csr loop
 					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
-						l_full_path := file_system.pathname (a_path, fn)
-						if file_system.directory_exists (l_full_path) then
+						arch_full_path := file_system.pathname (a_path, fn)
+						if file_system.directory_exists (arch_full_path) then
 							dir_name_index.extend (fn)
 						elseif adl_legacy_flat_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
-							amp.parse (l_full_path)
+							amp.parse (arch_full_path)
 							if amp.passed and then attached amp.last_archetype as arch_tn then
 								arch_id := arch_tn.archetype_id.physical_id
 								if arch_tn.archetype_id_is_old_style then
@@ -241,7 +281,7 @@ feature {NONE} -- Implementation
 								-- in its 'other_details' section will ahve been saved as some other version, and the physical id won't match
 								-- the default parsed id of the original ADL 1.4 file.
 								elseif not arch_semantic_ids.has (arch_tn.archetype_id.semantic_id) then
-									create ara.make_legacy (l_full_path, Current, arch_tn)
+									create ara.make_legacy (arch_full_path, Current, arch_tn)
 									arch_phys_id_index.force (ara, arch_id)
 									if not ara.is_specialised then
 										folder_node.put_child (ara)
@@ -250,7 +290,7 @@ feature {NONE} -- Implementation
 									check attached arch_semantic_ids.item (arch_tn.archetype_id.semantic_id) as att_aca then
 										ara := att_aca
 									end
-									ara.file_mgr.add_legacy_archetype (l_full_path)
+									ara.file_mgr.add_legacy_archetype (arch_full_path)
 								end
 							else
 								errors.add_error (ec_general, <<amp.error_strings>>, "")
@@ -304,6 +344,15 @@ feature {NONE} -- Implementation
 			create Result.make
 			Result.set_case_insensitive (True)
 			Result.compile (".*\" + File_ext_archetype_source + "$")
+		end
+
+	adl_old_differential_filename_pattern_regex: RX_PCRE_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".vN.adls", which are
+			-- now replaced with ".vN.M.P.adls"
+		once
+			create Result.make
+			Result.set_case_insensitive (True)
+			Result.compile (".*\.v[0-9]+\" + File_ext_archetype_source + "$")
 		end
 
 invariant
