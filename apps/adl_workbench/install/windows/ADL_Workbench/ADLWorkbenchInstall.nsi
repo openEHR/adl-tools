@@ -49,7 +49,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-InstallDir "$PROGRAMFILES\openEHR\ADL Workbench"
+InstallDir "$PROGRAMFILES64\openEHR\ADL Workbench"
 CRCCheck on
 XPStyle on
 ShowInstDetails show
@@ -60,7 +60,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2015 openEHR Foundation"
+VIAddVersionKey LegalCopyright "Copyright 2003-2016 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
