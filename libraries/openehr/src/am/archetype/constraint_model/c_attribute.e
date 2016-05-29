@@ -515,7 +515,8 @@ feature -- Modification
 			children.extend (an_obj)
 			an_obj.set_parent(Current)
 		ensure
-			has_child_with_id (an_obj.node_id)
+			Child_added: has_child_with_id (an_obj.node_id)
+			Parent_set: an_obj.parent = Current
 		end
 
 	put_child_left (a_new_obj, before_obj: C_OBJECT)
