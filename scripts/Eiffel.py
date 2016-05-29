@@ -130,10 +130,12 @@ def ec_emitter(target, source, env):
 	else:
 		ec_target = ""
 
-	if len(source) == 0:
-		print '****** ERROR! No source .ecf file specified: cannot build ' + ec_target
+	"""
 	elif not env.Detect(env['EC']):
 		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
+	"""
+	if len(source) == 0:
+		print '****** ERROR! No source .ecf file specified: cannot build ' + ec_target
 	else:
 		ecf = str(source[0])
 		ec_path = os.getcwd()
@@ -334,7 +336,7 @@ def environment_variable(env, var):
 			result = 'linux-x86'
 	elif var == 'ISE_C_COMPILER':
 		if env['PLATFORM'] == 'win32':
-			result = 'msc'
+			result = 'mingw'
 		else:
 			result = 'gcc'
 	elif var == 'ISE_EIFFEL':
@@ -351,6 +353,7 @@ def classes_in_cluster(env, cluster):
 
 	for root, dirnames, filenames in os.walk(cluster):
 		if '.svn' in dirnames: dirnames.remove('.svn')
+		if '.git' in dirnames: dirnames.remove('.git')
 		result += env.Glob(root + '/*.e')
 
 	return result
