@@ -89,7 +89,7 @@ feature -- Notifications
 			set_progress_current_val_agent := a_set_progress_current_val_agent
 		end
 
-	set_state_change_listener (an_agent: PROCEDURE [ANY, TUPLE])
+	set_new_state_change_listener (an_agent: PROCEDURE [ANY, TUPLE])
 		do
 			old_state_change_listener := state_change_listener
 			state_change_listener := an_agent

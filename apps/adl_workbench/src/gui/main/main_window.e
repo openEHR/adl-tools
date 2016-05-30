@@ -234,7 +234,7 @@ feature {NONE} -- Initialization
 			archetype_compiler.set_console_update_agent (agent compiler_console_update)
 			archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
 			archetype_compiler.set_build_complete_visual_update_agent (agent library_tool.on_full_compile)
-			archetype_compiler.set_state_change_listener (agent populate_compile_button)
+			archetype_compiler.set_new_state_change_listener (agent populate_compile_button)
 
 			-- accelerators
 			initialise_accelerators
@@ -1145,6 +1145,7 @@ feature -- Clipboard
 feature {NONE} -- Implementation
 
 	info_feedback (a_message: STRING)
+			-- a function to generate an interactive UI information feedback
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do

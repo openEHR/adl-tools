@@ -166,11 +166,11 @@ feature {NONE} -- Initialization
 
 			-- set up agents in compiler and exporter
 			archetype_compiler.set_progress_agents (agent initialise_progress_bar, agent set_progress_bar_current_value)
-			archetype_compiler.set_state_change_listener (agent evx_export_button.populate)
+			archetype_compiler.set_new_state_change_listener (agent evx_export_button.populate)
 			archetype_compiler.set_console_update_agent (agent update_console)
 
 			archetype_exporter.set_progress_agents (agent initialise_progress_bar, agent set_progress_bar_current_value)
-			archetype_exporter.set_state_change_listener (agent evx_export_button.populate)
+			archetype_exporter.set_new_state_change_listener (agent evx_export_button.populate)
 			archetype_exporter.set_console_update_agent (agent update_console)
 
 			-- any other setup
@@ -446,6 +446,7 @@ feature {NONE} -- Implementation
 		end
 
 	archetype_compiler: ARCHETYPE_COMPILER
+			-- create own copy of archetype compiler
 		once
 			create Result.make
 		end

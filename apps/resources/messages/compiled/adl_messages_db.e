@@ -935,5 +935,5 @@ feature -- Initialisation
 			message_table.put ("Text", ec_id_terms_grid_col_text_text)
 			message_table.put ("Description", ec_id_terms_grid_col_member_code_text)
 			message_table.put ("Convert to subtype", ec_context_menu_convert_node_to_subtype)
-end	
+end
 end

@@ -758,6 +758,7 @@ feature {NONE} -- Implementation
 	evx_progress_counter: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	info_feedback_agent: PROCEDURE [ANY, TUPLE [STRING]]
+			-- a function to generate an interactive UI information feedback
 
 	call_info_feedback_agent (a_message: attached STRING)
 		do
