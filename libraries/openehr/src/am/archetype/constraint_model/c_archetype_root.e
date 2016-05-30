@@ -68,10 +68,13 @@ feature -- Comparison
 
 feature -- Modification
 
-	convert_to_flat (a_matched_archetype_id: STRING)
+	convert_to_flat (a_matched_archetype_id: ARCHETYPE_HRID)
 			-- write `a_matched_archetype_id' (that is known to match `archetype_ref') into node_id
+			-- and also write the RM class name from `a_matched_archetype_id' into `rm_type_name',
+			-- since it might be different.
 		do
-			set_node_id (a_matched_archetype_id)
+			set_node_id (a_matched_archetype_id.physical_id)
+			set_rm_type_name (a_matched_archetype_id.rm_class)
 		end
 
 feature {C_ATTRIBUTE} -- Modification

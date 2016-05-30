@@ -84,7 +84,7 @@ debug ("overlay")
 	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
 	" with " + xref_idx_csr.key + "%N")
 end
-								c_arch_roots_csr.item.convert_to_flat (matched_arch.archetype_id.physical_id)
+								c_arch_roots_csr.item.convert_to_flat (matched_arch.archetype_id)
 								across supp_arch_root_cco.attributes as attrs_csr loop
 									c_arch_roots_csr.item.put_attribute (attrs_csr.item)
 debug ("overlay")
