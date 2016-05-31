@@ -217,6 +217,8 @@ if downloads and len(adl_workbench) > 0:
 			if pkg_name == '11': pkg_name = 'for Lion'
 			if pkg_name == '12': pkg_name = 'for Mountain Lion'
 			if pkg_name == '13': pkg_name = 'for Mavericks'
+			if pkg_name == '14': pkg_name = 'for Yosemite'
+			if pkg_name == '15': pkg_name = 'for El Capitan'
 
 		pkg_name = 'ADL Workbench ' + pkg_name
 
