@@ -240,7 +240,15 @@ feature -- Commands
 
 																-- write to std out
 																else
-																	std_out.put_string (alaa.serialise_object (use_flat_source, output_format) + "%N")
+																	if output_format.same_string (Syntax_type_adl) then
+																		if use_flat_source then
+																			std_out.put_string (alaa.flat_serialised (False))
+																		else
+																			std_out.put_string (alaa.differential_serialised)
+																		end
+																	else
+																		std_out.put_string (alaa.serialise_object (use_flat_source, output_format) + "%N")
+																	end
 																end
 															else
 																std_err.put_string (get_msg (ec_archetype_not_valid, <<alaa.id.as_string>>))
