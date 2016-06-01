@@ -540,17 +540,22 @@ end
 					-- ===================== Logical REDEFINE: child node id is specialised in this level ========================
 					elseif ca_flat_parent.has_child_with_id (node_id_in_flat_anc) then
 
+						-- the clone_needed flag is set to True if a clone of the sub-tree of the corresponding node in the
+						-- flat parent is to be created in the output, prior to overlay by the diff child structure
 						clone_needed := False
 
 						-- REDEFINE: node with parent node_id still available in flat output
 						if ca_output.has_child_with_id (node_id_in_flat_anc) then
 							co_override_candidate := ca_output.child_with_id (node_id_in_flat_anc)
 
-							-- --------- REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add filler --------
-							if attached {C_ARCHETYPE_ROOT} co_child_diff and attached {ARCHETYPE_SLOT} co_override_candidate as att_slot then
+							-- --------- REDEFINE of ARCHETYPE_SLOT by C_ARCHETYPE_ROOT: ALWAYS add --------
+							-- --------- REDEFINE of empty C_COMPLEX_OBJECT by C_ARCHETYPE_ROOT: ALWAYS add --------
+							if attached {C_ARCHETYPE_ROOT} co_child_diff and (attached {ARCHETYPE_SLOT} co_override_candidate or
+								attached {C_COMPLEX_OBJECT} co_override_candidate and not attached {C_ARCHETYPE_ROOT} co_override_candidate)
+							then
 								new_obj := co_child_diff.safe_deep_twin
 								new_obj.set_specialisation_status_redefined
-								ca_output.put_child_left (new_obj, att_slot)
+								ca_output.put_child_left (new_obj, co_override_candidate)
 
 								-- we don't set any override target - the slot-filling has been done above, and we
 								-- don't (of course) override the slot with the filler.
