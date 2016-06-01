@@ -315,7 +315,7 @@ feature -- Initialisation
 			message_table.put ("Archetype $1 not validated (run with '-a validate' to see errors)%N", ec_archetype_not_valid)
 			message_table.put ("------------ Archetypes in library '$1 --------------'%N", ec_archs_list_text)
 			message_table.put ("-----------------------------------------------------%N", ec_archs_list_text_end)
-			message_table.put ("External tool $1 not found on local system; repository operations limited to local access.%N(Recommendation: install Git for any platform from https://git-scm.com/)", ec_repository_tool_unavailable)
+			message_table.put ("External tool $1 not found on local system; repository operations limited to local access.%N(Recommendation on Windows: install Git for any platform from https://git-scm.com/)", ec_repository_tool_unavailable)
 			message_table.put ("For missing external tools, see Help menu > External tools", ec_external_tools_help_text)
 			message_table.put ("Not implemented in this release", ec_to_be_implemented)
 			message_table.put ("Copying file $1 to $2, backing up original to $3", ec_copy_file_with_backup)
@@ -935,5 +935,5 @@ feature -- Initialisation
 			message_table.put ("Text", ec_id_terms_grid_col_text_text)
 			message_table.put ("Description", ec_id_terms_grid_col_member_code_text)
 			message_table.put ("Convert to subtype", ec_context_menu_convert_node_to_subtype)
-end
+end	
 end
