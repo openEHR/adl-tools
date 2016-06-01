@@ -393,21 +393,9 @@ feature -- Commands
 		do
 			Precursor
 
-			-- if no repository access tool (git, svn etc), notify user
-			create missing_external_tools.make (0)
-			missing_external_tools.compare_objects
-			across archetype_repository_interfaces as repos_csr loop
-				if repos_csr.item.is_checkout_area and then not repos_csr.item.has_repository_tool then
-					missing_external_tools.extend (repos_csr.item.repository_type)
-				end
-			end
-			if not missing_external_tools.is_empty then
-				create missing_external_tools_msg.make_empty
-				across missing_external_tools as tool_names_csr loop
-					missing_external_tools_msg.append (get_msg_line (ec_repository_tool_unavailable, <<tool_names_csr.item>>))
-				end
-				missing_external_tools_msg.append (get_text (ec_external_tools_help_text))
-				info_feedback (missing_external_tools_msg)
+			-- check if git is available
+			if not system_has_command ({EXTERNAL_TOOL_DEFINITIONS}.Git_tool_name) then
+				info_feedback (get_msg_line (ec_repository_tool_unavailable, <<{EXTERNAL_TOOL_DEFINITIONS}.Git_tool_name>>))
 			end
 
 			-- if no RM schemas yet available, ask user to configure
