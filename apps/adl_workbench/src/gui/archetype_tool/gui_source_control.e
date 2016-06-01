@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
-				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
+				gui_agents.call_console_tool_append_agent (get_msg_line (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.call_select_archetype_agent (att_source)
 				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
@@ -262,7 +262,7 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_text_to_differential_file (a_text)
 				att_source.signal_source_edited
-				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_source_msg, <<att_source.source_file_path>>))
+				gui_agents.call_console_tool_append_agent (get_msg_line (ec_saved_source_msg, <<att_source.source_file_path>>))
 				gui_agents.call_select_archetype_agent (att_source)
 				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
@@ -277,7 +277,7 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				if att_source.can_save_to_legacy_file then
 					att_source.save_text_to_legacy_file (a_text)
-					gui_agents.call_console_tool_append_agent (get_msg (ec_saved_14_source_msg,
+					gui_agents.call_console_tool_append_agent (get_msg_line (ec_saved_14_source_msg,
 						<<if attached att_source.file_mgr.legacy_flat_path as fp then fp else "" end>>))
 					gui_agents.call_select_archetype_agent (att_source)
 					gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
