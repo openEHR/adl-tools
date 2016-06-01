@@ -581,9 +581,9 @@ feature -- Status Setting
 feature -- Validation
 
 	id_codes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
-			-- table of {list<node>, code} for at-codes that identify nodes in archetype
-			-- for later checking in ontology. Doesn't include id-codes.
-			-- (note that there are other uses of term codes from the ontology, which is
+			-- table of {list<node>, code} for id-codes that identify nodes in archetype
+			-- for later checking in terminology.
+			-- (note that there are other uses of term codes from the terminology, which is
 			-- why this attribute is not just called 'term_codes_xref_table')
 		local
 			def_it: C_ITERATOR
@@ -611,7 +611,7 @@ feature -- Validation
 								end
 							end
 						elseif attached {C_OBJECT} a_c_node as co then
-							if is_id_code (co.node_id) then
+							if is_id_code (co.node_id) and not co.node_id.same_string (Primitive_node_id) then
 								if attached idx.item (co.node_id) as att_al_ac then
 									al_ac := att_al_ac
 								else
@@ -629,6 +629,7 @@ feature -- Validation
 			-- in C_TERMINOLOGY_CODE types
 			-- keys are either local codes, e.g. "at44" or fully qualified non-local code strings
 			-- e.g. "openehr::233", "snomedct_20100601::20000349" etc
+			-- Doesn't include id-codes.
 		local
 			def_it: C_ITERATOR
 		do
