@@ -13,7 +13,7 @@ inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
 			select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
-			serialise_object, select_serialised_archetype, signal_from_scratch, persistent_type
+			serialise_object, select_serialised_archetype, signal_from_scratch, persistent_type, clear_cache
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -189,6 +189,14 @@ feature -- Output
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
 			archetype_serialise_engine.serialise (a_format, False, True)
 			Result := archetype_serialise_engine.serialised
+		end
+
+feature {NONE} -- Editing
+
+	clear_cache
+		do
+			precursor
+			operational_template_cache := Void
 		end
 
 feature {NONE} -- Output
