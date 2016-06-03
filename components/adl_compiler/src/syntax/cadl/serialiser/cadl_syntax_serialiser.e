@@ -193,6 +193,8 @@ feature -- Visitor
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
+		local
+			p: STRING
 		do
 			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
 			if not a_node.is_second_order_constrained then
@@ -308,6 +310,7 @@ feature -- Visitor
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 				last_result.append (apply_style ("[" + a_node.node_id + "]", STYLE_TERM_REF))
 				last_result.append (format_item (FMT_SPACE))
+
 			-- else it is in source mode, there are no children
 			-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences>%N'
 			else
@@ -318,6 +321,14 @@ feature -- Visitor
 
 			last_result.append (format_item (FMT_SPACE))
 			serialise_occurrences(a_node, depth)
+
+			-- for OPTs, output a 'matches { -- comment here'
+			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
+				last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				last_result.append (symbol (SYM_START_CBLOCK))
+				serialise_comment (a_node)
+			end
+
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
@@ -325,6 +336,12 @@ feature -- Visitor
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
+				-- output '%T}%N'
+				last_result.append (create_indent (depth))
+				last_result.append (symbol (SYM_END_CBLOCK))
+				last_result.append (format_item(FMT_NEWLINE))
+
+				-- pop terminology of current OPT off stack
 				terminologies.remove
 			end
 		end
