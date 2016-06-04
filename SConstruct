@@ -14,7 +14,7 @@ if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
 if ARGUMENTS.get('git', 0):
        for dir in ['.', '../reference-models', '../terminology', '../EOMF', '../eiffelhub/iso8601']:
-               os.popen('git --git-dir=' + os.path.abspath(dir + '/.git') + ' pull')
+               os.popen('git -C ' + os.path.abspath(dir) + ' pull')
 
 ###################################################################################################
 # Define how to build the parser classes, using the Gobo tools.
