@@ -42,7 +42,7 @@ feature -- Access
 
 	node_id: STRING
 		attribute
-			create Result.make_from_string (Primitive_node_id)
+			create Result.make_from_string (unknown_value)
 		end
 
 	occurrences: detachable STRING
