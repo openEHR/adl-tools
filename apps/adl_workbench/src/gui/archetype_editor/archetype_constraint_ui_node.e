@@ -148,6 +148,7 @@ feature {NONE} -- Implementation
 			bindings: HASH_TABLE [URI, STRING]
 		do
 			if attached arch_node as a_n then
+				-- display path
 				p := a_n.path
 				Result := ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance then

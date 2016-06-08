@@ -29,6 +29,7 @@ feature {NONE}-- Initialization
 		do
 			-- set up shared agents
 			tool_agents.set_path_select_action_agent (agent select_path_item_from_path)
+			tool_agents.set_path_copy_action_agent (agent copy_path_to_clipbpoard)
 
 			precursor
 
@@ -111,6 +112,12 @@ feature -- UI Feedback
 				end
 				interface_map_control.select_path (a_path)
 			end
+		end
+
+	copy_path_to_clipbpoard (a_path: STRING)
+			-- When the user presses ctrl-C on row in path map, copy it to clipboard
+		do
+			ev_application.clipboard.set_text (a_path)
 		end
 
 feature {NONE} -- Events

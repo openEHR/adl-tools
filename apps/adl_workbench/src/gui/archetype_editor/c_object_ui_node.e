@@ -294,6 +294,8 @@ feature {NONE} -- Implementation
 						elseif display_settings.show_codes then
 							Result := a_n.node_id
 						end
+					else
+						-- nothing special to do
 					end
 				-- it must be an archetype id in a template structure
 				else
@@ -436,6 +438,17 @@ feature {NONE} -- Context menu
 					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
 					context_menu.extend (an_mi)
 				end
+			end
+
+			-- add menu item for copying path to clipboard
+			if attached arch_node as a_n and attached tool_agents.path_select_action_agent then
+				create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_copy_path),
+					agent (path_str: STRING)
+						do
+							tool_agents.path_copy_action_agent.call ([path_str])
+						end (a_n.path)
+				)
+				context_menu.extend (an_mi)
 			end
 		end
 

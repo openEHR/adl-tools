@@ -547,6 +547,7 @@ templates = <
 		["menu_option_display_code"] = <"Display code in terminology">
 		["object_context_menu_convert"] = <"Convert to constraint ...">
 		["object_context_menu_display_path"] = <"Display path in path map">
+		["object_context_menu_copy_path"] = <"Copy path to clipboard">
 		["object_context_menu_delete"] = <"Delete node">
 		["object_context_menu_refine"] = <"Refine constraint">
 

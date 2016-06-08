@@ -113,7 +113,7 @@ feature -- Access
 feature -- Commands
 
 	select_path (a_path: STRING)
-			-- select path `a_path' in ADL 1.5 control
+			-- select path `a_path' in ADL 2 control
 		local
 			search_path: STRING
 		do

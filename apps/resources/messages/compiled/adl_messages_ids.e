@@ -733,6 +733,7 @@ feature -- Definitions
 		ec_menu_option_display_code: STRING = "menu_option_display_code"
 		ec_object_context_menu_convert: STRING = "object_context_menu_convert"
 		ec_object_context_menu_display_path: STRING = "object_context_menu_display_path"
+		ec_object_context_menu_copy_path: STRING = "object_context_menu_copy_path"
 		ec_object_context_menu_delete: STRING = "object_context_menu_delete"
 		ec_object_context_menu_refine: STRING = "object_context_menu_refine"
 		ec_attribute_context_menu_add_child: STRING = "attribute_context_menu_add_child"

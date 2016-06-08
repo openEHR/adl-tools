@@ -13,6 +13,8 @@ feature -- Access
 
 	path_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
+	path_copy_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+
 	id_code_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
 feature -- Modification
@@ -25,6 +27,11 @@ feature -- Modification
 	set_path_select_action_agent (agt: like path_select_action_agent)
 		do
 			path_select_action_agent := agt
+		end
+
+	set_path_copy_action_agent (agt: like path_copy_action_agent)
+		do
+			path_copy_action_agent := agt
 		end
 
 end
