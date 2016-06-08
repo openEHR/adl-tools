@@ -596,7 +596,7 @@ end
 				add_error (ec_VCORM, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True)>>)
 				invalid_types.extend (co.rm_type_name)
 				Result := False
-			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+			elseif attached {C_ATTRIBUTE} a_c_node then
 				-- nothing special to do
 			end
 		end
