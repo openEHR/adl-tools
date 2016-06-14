@@ -59,7 +59,7 @@ feature {NONE} -- Initialization
 				create main_window
 
 				main_window.show
-				splash.hide
+				splash.destroy
 			else
 				io.put_string (app_root.errors.as_string)
 			end
