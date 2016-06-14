@@ -283,9 +283,11 @@ feature {NONE} -- Implementation
 					co_child.set_specialisation_status_inherited
 				end
 
-				-- mark this node as path_compressible if it is congruent, it's a CCO redefining a CCO, its parent C_ATTR is path-compressible
-				-- and its flat ancestor counterpart CCO has attributes. We use the `is_c_complex_object_type' to make sure both objects really
-				-- are C_COMPLEX_OBJECTs to discount them being C_ARCHETYPE_ROOTs
+				-- mark this node as path_compressible if:
+				--   it is congruent AND
+				--   it's a CCO redefining a CCO AND
+				--   if it is not the root node, its parent C_ATTR is path-compressible AND and its flat ancestor counterpart CCO has attributes.
+				-- We use `is_c_complex_object_type' to make sure both objects really are C_COMPLEX_OBJECTs to discount them being C_ARCHETYPE_ROOTs
 				if node_congruent and is_c_complex_object_type (co_child) and attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_pf and then
 					(not attached co_child.parent as att_co_parent or else att_co_parent.is_path_compressible and cco_pf.has_attributes)
 				then
