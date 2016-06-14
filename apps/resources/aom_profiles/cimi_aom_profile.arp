@@ -61,4 +61,5 @@ aom_rm_type_substitutions = <
 	["ISO8601_TIME"] = <"String">
 	["ISO8601_DURATION"] = <"String">
 	["REAL"] = <"Double">
+	["INTEGER"] = <"Integer64">
 >

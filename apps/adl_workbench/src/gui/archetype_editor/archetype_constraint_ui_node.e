@@ -214,21 +214,25 @@ feature {NONE} -- Implementation
 	aom_types_for_rm_type (an_rm_type: BMM_CLASSIFIER): ARRAYED_SET [STRING]
 			-- list of possible C_OBJECT concrete descendants that can be used on a node of type `an_rm_type'
 		local
-			rm_class_name: STRING
+			rm_class_name, rm_type_key: STRING
 		do
+			create Result.make (0)
+			Result.compare_objects
+
 			rm_class_name := an_rm_type.base_class.name
 
 			-- add AOM constraint types for RM primitive types
 			-- FIXME: in Eiffel 7.3 replace with reflection generated set of C_PRIMITIVE_OBJECT descendant type names
 			if an_rm_type.base_class.is_primitive_type then
-				Result := c_primitive_subtypes
-
-			-- deal with mapped types in AOM profile
---			elseif  then
+				rm_type_key := rm_class_name.as_lower
+				if attached ui_graph_state.aom_profile as att_aom_profile and then
+					att_aom_profile.rm_aom_primitive_type_mappings.has (rm_type_key) and then attached
+						att_aom_profile.rm_aom_primitive_type_mappings.item (rm_type_key) as c_p_type
+				then
+					Result.extend (c_p_type)
+				end
 
 			else
-				create Result.make (0)
-				Result.compare_objects
 				Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))
 				Result.extend (bare_type_name(({ARCHETYPE_SLOT}).name))
 				Result.extend (bare_type_name(({C_ARCHETYPE_ROOT}).name))

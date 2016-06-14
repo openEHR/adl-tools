@@ -12,7 +12,7 @@ class C_DURATION
 inherit
 	C_TEMPORAL [ISO8601_DURATION]
 		redefine
-			valid_value, assumed_value
+			valid_value, assumed_value, enter_subtree, exit_subtree
 		end
 
 create
@@ -122,6 +122,22 @@ feature -- Status Report
 	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
 		do
 			Result := valid_duration_constraint_replacement (a_pattern, an_other_pattern)
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_duration (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_duration (Current, depth)
 		end
 
 end

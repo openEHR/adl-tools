@@ -20,7 +20,7 @@ class C_TIME
 inherit
 	C_TEMPORAL [ISO8601_TIME]
 		redefine
-			assumed_value
+			assumed_value, enter_subtree, exit_subtree
 		end
 
 create
@@ -53,6 +53,22 @@ feature -- Status Report
 	valid_pattern_constraint_replacement (a_pattern, an_other_pattern: STRING): BOOLEAN
 		do
 			Result := attached valid_time_constraint_replacements.item (an_other_pattern.as_upper) as att_rep and then att_rep.has (a_pattern.as_upper)
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_time (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_time (Current, depth)
 		end
 
 end

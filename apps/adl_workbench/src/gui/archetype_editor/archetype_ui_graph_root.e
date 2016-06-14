@@ -82,11 +82,6 @@ feature {C_ARCHETYPE_ROOT_UI_NODE} -- Implementation
 			end
 		end
 
-	c_object_ui_graph_test (an_og_node: OG_NODE): BOOLEAN
-		do
-			Result := not attached {C_ARCHETYPE_ROOT} an_og_node.content_item
-		end
-
 	build_assertion_ui_graphs
 			-- build `assertion_ui_graphs'
 		local

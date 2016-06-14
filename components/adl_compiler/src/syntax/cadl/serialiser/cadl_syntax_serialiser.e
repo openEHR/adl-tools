@@ -23,7 +23,7 @@ inherit
 			start_archetype_slot, end_archetype_slot,
 			start_c_complex_object_proxy,
 			start_c_archetype_root, end_c_archetype_root,
-			start_c_primitive_object
+			start_c_primitive_object, start_c_terminology_code, start_c_string
 		end
 
 	CADL_2_TOKENS
@@ -193,8 +193,6 @@ feature -- Visitor
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
-		local
-			p: STRING
 		do
 			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
 			if not a_node.is_second_order_constrained then
@@ -357,15 +355,29 @@ feature -- Visitor
 			-- ignore objs which are under c_attribute_tuples
 			if not a_node.is_second_order_constrained then
 				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
-				if attached {C_STRING} a_node as c_str and then attached c_str.constraint then
-					last_result.append (apply_style (c_str.as_string_clean (agent clean), STYLE_VALUE))
-					last_object_inline := True
-				elseif attached {C_TERMINOLOGY_CODE} a_node as ctc then
-					serialise_c_terminology_code (ctc, depth)
-				else
-					last_result.append (apply_style (a_node.as_string, STYLE_VALUE))
-					last_object_inline := True
-				end
+				last_result.append (apply_style (a_node.as_string, STYLE_VALUE))
+				last_object_inline := True
+			end
+		end
+
+	start_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
+			-- start serialising an C_TERMINOLOGY_CODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
+				serialise_c_terminology_code (a_node, depth)
+			end
+		end
+
+	start_c_string (a_node: C_STRING; depth: INTEGER)
+			-- start serialising a C_STRING
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
+				last_result.append (apply_style (a_node.as_string_clean (agent clean), STYLE_VALUE))
+				last_object_inline := True
 			end
 		end
 

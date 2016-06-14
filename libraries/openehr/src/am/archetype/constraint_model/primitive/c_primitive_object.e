@@ -12,7 +12,7 @@ deferred class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			default_create, out, enter_subtree, exit_subtree, c_conforms_to, c_congruent_to
+			default_create, out, c_conforms_to, c_congruent_to
 		end
 
 feature -- Initialisaiton
@@ -156,22 +156,6 @@ feature -- Output
 	out: STRING
 		do
 			Result := as_string
-		end
-
-feature -- Visitor
-
-	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at start of block for this node
-		do
-			precursor (visitor, depth)
-			visitor.start_c_primitive_object (Current, depth)
-		end
-
-	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
-			-- perform action at end of block for this node
-		do
-			precursor (visitor, depth)
-			visitor.end_c_primitive_object (Current, depth)
 		end
 
 feature {NONE} -- Implementation

@@ -173,7 +173,7 @@ feature -- Status Report
 
 	any_allowed: BOOLEAN
 			-- True if any value allowed ('*' received in parsed input)
-			-- i.e. no attributes
+			-- i.e. no attributes and not is_prohibited
 		do
 			Result := attributes.is_empty and not is_prohibited
 		end

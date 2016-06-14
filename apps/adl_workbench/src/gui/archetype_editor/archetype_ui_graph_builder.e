@@ -12,6 +12,8 @@ class ARCHETYPE_UI_GRAPH_BUILDER
 inherit
 	C_VISITOR
 		redefine
+			start_c_boolean, start_c_integer, start_c_real, start_c_date, start_c_date_time,
+			start_c_time, start_c_duration, start_c_string, start_c_terminology_code,
 			end_c_archetype_root,
 			end_c_complex_object,
 			end_c_attribute
@@ -171,9 +173,109 @@ feature -- Visitor
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
-			-- enter an C_PRIMITIVE_OBJECT
+		do
+		end
+
+	start_c_boolean (a_node: C_BOOLEAN; depth: INTEGER)
+			-- enter a C_BOOLEAN
 		local
-			ui_node: C_PRIMITIVE_OBJECT_UI_NODE
+			ui_node: C_BOOLEAN_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_integer (a_node: C_INTEGER; depth: INTEGER)
+			-- enter an C_INTEGER
+		local
+			ui_node: C_INTEGER_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_real (a_node: C_REAL; depth: INTEGER)
+			-- enter a C_REAL
+		local
+			ui_node: C_REAL_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_date (a_node: C_DATE; depth: INTEGER)
+			-- enter a C_DATE
+		local
+			ui_node: C_DATE_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_date_time (a_node: C_DATE_TIME; depth: INTEGER)
+			-- enter a C_DATE_TIME
+		local
+			ui_node: C_DATE_TIME_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_time(a_node: C_TIME; depth: INTEGER)
+			-- enter a C_TIME
+		local
+			ui_node: C_TIME_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_duration (a_node: C_DURATION; depth: INTEGER)
+			-- enter an C_DURATION
+		local
+			ui_node: C_DURATION_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_string (a_node: C_STRING; depth: INTEGER)
+			-- enter an C_STRING
+		local
+			ui_node: C_STRING_UI_NODE
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				create ui_node.make (a_node, ui_graph_state)
+				attr_node_stack.item.attach_child (ui_node)
+			end
+		end
+
+	start_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
+			-- enter an C_TERMINOLOGY_CODE
+		local
+			ui_node: C_TERMINOLOGY_CODE_UI_NODE
 		do
 			-- ignore objs which are under c_attribute_tuples
 			if not a_node.is_second_order_constrained then

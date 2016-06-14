@@ -320,42 +320,34 @@ feature -- Factory
 			pattern_set: Result.pattern_constraint = a_pattern
 		end
 
-	c_primitive_types: ARRAYED_SET [STRING]
-			-- a set of
-		once
-			create Result.make (0)
-			Result.compare_objects
-			Result.merge (c_primitive_defaults.current_keys)
-		end
+--	c_primitive_defaults: HASH_TABLE [FUNCTION [ANY, TUPLE, C_PRIMITIVE_OBJECT], STRING]
+--			-- a set of C_PRIMITIVE default creator agents, keyed by their type name
+--		once
+--			create Result.make (0)
 
-	c_primitive_defaults: HASH_TABLE [FUNCTION [ANY, TUPLE, C_PRIMITIVE_OBJECT], STRING]
-			-- a set of C_PRIMTIVE default creator agents, keyed by their type name
-		once
-			create Result.make (0)
+--			Result.put (agent create_c_string_make_from_regexp (".+"), bare_type_name (({C_STRING}).name))
+--			Result.put (agent create_c_boolean_make_true_false, bare_type_name (({C_BOOLEAN}).name))
 
-			Result.put (agent create_c_string_make_from_regexp (".+"), bare_type_name (({C_STRING}).name))
-			Result.put (agent create_c_boolean_make_true_false, bare_type_name (({C_BOOLEAN}).name))
+--			Result.put (agent create_c_integer_make_bounded (0, 1, True, True), bare_type_name (({C_INTEGER}).name))
+--			Result.put (agent create_c_real_make_bounded (0.0, 1.0, True, True), bare_type_name (({C_REAL}).name))
 
-			Result.put (agent create_c_integer_make_bounded (0, 1, True, True), bare_type_name (({C_INTEGER}).name))
-			Result.put (agent create_c_real_make_bounded (0.0, 1.0, True, True), bare_type_name (({C_REAL}).name))
-			Result.put (agent create_c_real_make_bounded (0.0, 1.0, True, True), bare_type_name ("C_DOUBLE"))
+--			Result.put (agent create_c_duration_make_from_pattern ("P1Y"), bare_type_name (({C_DURATION}).name))
+--			Result.put (agent create_c_date_time_make_lower_unbounded ("2000-01-01T12:00:00"), bare_type_name (({C_DATE_TIME}).name))
+--			Result.put (agent create_c_time_make_lower_unbounded ("12:00:00"), bare_type_name (({C_TIME}).name))
+--			Result.put (agent create_c_date_make_lower_unbounded ("2000-01-01"), bare_type_name (({C_DATE}).name))
 
-			Result.put (agent create_c_duration_make_from_pattern ("P1Y"), bare_type_name (({C_DURATION}).name))
-			Result.put (agent create_c_date_time_make_lower_unbounded ("2000-01-01T12:00:00"), bare_type_name (({C_DATE_TIME}).name))
-			Result.put (agent create_c_time_make_lower_unbounded ("12:00:00"), bare_type_name (({C_TIME}).name))
-			Result.put (agent create_c_date_make_lower_unbounded ("2000-01-01"), bare_type_name (({C_DATE}).name))
+--			Result.put (agent create_c_terminology_code ("ac1"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
+--		end
 
-			Result.put (agent create_c_terminology_code ("ac1"), bare_type_name (({C_TERMINOLOGY_CODE}).name))
-		end
-
-	create_default_c_primitive (rm_type: STRING): C_PRIMITIVE_OBJECT
-		require
-			c_primitive_types.has ("C_" + rm_type)
-		do
-			check attached c_primitive_defaults.item ("C_" + rm_type) as p_agt then
-				Result := p_agt.item ([])
-			end
-		end
+--	create_c_primitive_by_name (an_aom_type_name: STRING): C_PRIMITIVE_OBJECT
+--			-- create a C_PRIMITIVE_OBJECT from `an_aom_type_name'
+--		require
+--			c_primitive_defaults.has (an_aom_type_name)
+--		do
+--			check attached c_primitive_defaults.item (an_aom_type_name) as att_c_p_agt then
+--				Result := att_c_p_agt.item ([])
+--			end
+--		end
 
 	create_c_terminology_code (a_code: STRING): C_TERMINOLOGY_CODE
 			-- Make from string of form "terminology_id::code, code, ... [; code]".

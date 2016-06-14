@@ -9,6 +9,13 @@ note
 
 class ARCHETYPE_UI_GRAPH_STATE
 
+inherit
+	SHARED_AOM_PROFILES_ACCESS
+		export
+			{NONE} all;
+			{ANY} is_deep_equal, standard_is_equal, deep_copy, deep_twin, twin
+		end
+
 create
 	make, make_editable
 
@@ -24,6 +31,9 @@ feature -- Initialisation
 			archetype := aca.select_archetype (differential_view_flag, False)
 			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype.terminology
+			if aom_profiles_access.has_profile_for_rm_schema (an_rm_schema.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm_schema.schema_id)
+			end
 		end
 
 	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
@@ -37,6 +47,9 @@ feature -- Initialisation
 			flat_archetype := source.flat_archetype
 			flat_terminology := archetype.terminology
 			undo_redo_chain := an_undo_redo_chain
+			if aom_profiles_access.has_profile_for_rm_schema (an_rm_schema.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm_schema.schema_id)
+			end
 			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype
 			end
@@ -61,6 +74,8 @@ feature -- Access
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
 	rm_schema: BMM_SCHEMA
+
+	aom_profile: detachable AOM_PROFILE
 
 feature -- Status Report
 

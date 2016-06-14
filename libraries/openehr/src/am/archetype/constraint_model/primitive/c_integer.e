@@ -12,7 +12,7 @@ class C_INTEGER
 inherit
 	C_ORDERED [INTEGER]
 		redefine
-			assumed_value, as_enumeration_string
+			assumed_value, enter_subtree, exit_subtree, as_enumeration_string
 		end
 
 create
@@ -59,6 +59,22 @@ feature -- Output
 					Result.append (", ")
 				end
 			end
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_integer (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_integer (Current, depth)
 		end
 
 end

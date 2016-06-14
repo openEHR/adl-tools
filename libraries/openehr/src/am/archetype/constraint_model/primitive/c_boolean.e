@@ -13,7 +13,7 @@ class C_BOOLEAN
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, c_congruent_to, c_conforms_to
+			default_create, constraint, assumed_value, enter_subtree, exit_subtree, c_congruent_to, c_conforms_to
 		end
 
 create
@@ -114,6 +114,22 @@ feature -- Comparison
 			Result := precursor (other, rm_type_conformance_checker) and
 				constraint.count < other.constraint.count and
 				across constraint as val_csr all other.constraint.has (val_csr.item) end
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_boolean (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_boolean (Current, depth)
 		end
 
 feature {NONE} -- Implementation

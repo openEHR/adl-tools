@@ -21,7 +21,7 @@ inherit
 	C_PRIMITIVE_OBJECT
 		redefine
 			default_create, constraint, assumed_value, c_congruent_to, c_conforms_to, set_constraint,
-			as_string
+			as_string, enter_subtree, exit_subtree
 		end
 
 	OPENEHR_DEFINITIONS
@@ -271,6 +271,22 @@ feature {NONE} -- Implementation
 		note
 			option: stable
 		attribute
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_terminology_code (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_terminology_code (Current, depth)
 		end
 
 end

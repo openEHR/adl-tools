@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Abstract constrainer type for instances of comparable primitive types"
 	keywords:    "archetype, comparable"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013- openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class C_ORDERED [G -> COMPARABLE create default_create end]

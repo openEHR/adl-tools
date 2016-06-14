@@ -432,10 +432,32 @@ feature {ANY_UI_NODE} -- Implementation
 				new_code := ui_graph_state.archetype.create_new_id_code
 			end
 
-			if c_primitive_subtypes.has (co_create_params.aom_type) then
-				check attached c_primitive_defaults.item (co_create_params.aom_type) as c_prim_agt then
-					create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (c_prim_agt.item ([]), ui_graph_state)
-				end
+			if co_create_params.aom_type.is_equal (bare_type_name(({C_BOOLEAN}).name)) then
+				create {C_BOOLEAN_UI_NODE} Result.make (create {C_BOOLEAN}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_INTEGER}).name)) then
+				create {C_INTEGER_UI_NODE} Result.make (create {C_INTEGER}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_REAL}).name)) then
+				create {C_REAL_UI_NODE} Result.make (create {C_REAL}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_DATE}).name)) then
+				create {C_DATE_UI_NODE} Result.make (create {C_DATE}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_DATE_TIME}).name)) then
+				create {C_DATE_TIME_UI_NODE} Result.make (create {C_DATE_TIME}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_TIME}).name)) then
+				create {C_TIME_UI_NODE} Result.make (create {C_TIME}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_DURATION}).name)) then
+				create {C_DURATION_UI_NODE} Result.make (create {C_DURATION}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_STRING}).name)) then
+				create {C_STRING_UI_NODE} Result.make (create {C_STRING}.default_create, ui_graph_state)
+
+			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_TERMINOLOGY_CODE}).name)) then
+				create {C_TERMINOLOGY_CODE_UI_NODE} Result.make (create {C_TERMINOLOGY_CODE}.default_create, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_COMPLEX_OBJECT}).name)) then
 				create cco.make (rm_type_name, new_code)
@@ -460,8 +482,7 @@ feature {ANY_UI_NODE} -- Implementation
 				end
 			else
 				-- Should never get here
-				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make (create {C_STRING}.make_regex_any, ui_graph_state)
-
+				create {C_STRING_UI_NODE} Result.make (create {C_STRING}.make_regex_any, ui_graph_state)
 			end
 
 			-- set occurrences if overridden from default
@@ -477,9 +498,55 @@ feature {ANY_UI_NODE} -- Implementation
 			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 		require
 			is_rm
+		local
+			rm_type_key, aom_type: STRING
 		do
 			if a_bmm_type.base_class.is_primitive_type then
-				create {C_PRIMITIVE_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+				rm_type_key := a_bmm_type.base_class.name.as_lower
+
+				-- if there is an AOM_PROFILE, use the RM prim type => AOM type mapping found there
+				if attached ui_graph_state.aom_profile as att_aom_profile and then
+					att_aom_profile.rm_aom_primitive_type_mappings.has (rm_type_key) and then attached
+						att_aom_profile.rm_aom_primitive_type_mappings.item (rm_type_key) as c_p_type
+				then
+					aom_type := c_p_type
+
+				-- use standard RM prim type => AOM type mapping
+				else
+					check attached c_primitive_subtypes.item (rm_type_key) as att_aom_type then
+						aom_type := att_aom_type
+					end
+				end
+				if aom_type.is_equal (bare_type_name(({C_BOOLEAN}).name)) then
+					create {C_BOOLEAN_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_INTEGER}).name)) then
+					create {C_INTEGER_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_REAL}).name)) then
+					create {C_REAL_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_DATE}).name)) then
+					create {C_DATE_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_DATE_TIME}).name)) then
+					create {C_DATE_TIME_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_TIME}).name)) then
+					create {C_TIME_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_DURATION}).name)) then
+					create {C_DURATION_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_STRING}).name)) then
+					create {C_STRING_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+				elseif aom_type.is_equal (bare_type_name(({C_TERMINOLOGY_CODE}).name)) then
+					create {C_TERMINOLOGY_CODE_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+				else
+					-- should never get here
+					create {C_STRING_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+				end
 			else
 				create {C_COMPLEX_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 			end
@@ -554,7 +621,7 @@ feature {NONE} -- Context menu
 					context_menu.extend (types_sub_menu)
 				end
 			end
-			
+
 			-- add menu item for copying path to clipboard
 			if attached arch_node as a_n and attached tool_agents.path_select_action_agent then
 				create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_copy_path),

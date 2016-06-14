@@ -92,6 +92,114 @@ feature -- Visitor
 		do
 		end
 
+	start_c_boolean (a_node: C_BOOLEAN; depth: INTEGER)
+			-- enter a C_BOOLEAN
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_boolean (a_node: C_BOOLEAN; depth: INTEGER)
+			-- exit a C_BOOLEAN
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_integer (a_node: C_INTEGER; depth: INTEGER)
+			-- enter a C_INTEGER
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_integer (a_node: C_INTEGER; depth: INTEGER)
+			-- exit a C_INTEGER
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_real (a_node: C_REAL; depth: INTEGER)
+			-- enter a C_REAL
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_real (a_node: C_REAL; depth: INTEGER)
+			-- exit a C_REAL
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_date (a_node: C_DATE; depth: INTEGER)
+			-- enter a C_DATE
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_date (a_node: C_DATE; depth: INTEGER)
+			-- exit a C_DATE
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_date_time (a_node: C_DATE_TIME; depth: INTEGER)
+			-- enter a C_DATE_TIME
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_date_time (a_node: C_DATE_TIME; depth: INTEGER)
+			-- exit a C_DATE_TIME
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_time (a_node: C_TIME; depth: INTEGER)
+			-- enter a C_TIME
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_time (a_node: C_TIME; depth: INTEGER)
+			-- exit a C_TIME
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_duration (a_node: C_DURATION; depth: INTEGER)
+			-- enter a C_DURATION
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_duration (a_node: C_DURATION; depth: INTEGER)
+			-- exit a C_DURATION
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_string (a_node: C_STRING; depth: INTEGER)
+			-- enter an C_STRING
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_string (a_node: C_STRING; depth: INTEGER)
+			-- exit a C_STRING
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
+	start_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
+			-- enter a C_TERMINOLOGY_CODE
+		do
+			start_c_primitive_object (a_node, depth)
+		end
+
+	end_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
+			-- exit a C_TERMINOLOGY_CODE
+		do
+			end_c_primitive_object (a_node, depth)
+		end
+
 	do_rm_class (a_bmm_class: BMM_CLASS; a_c_object: C_OBJECT; depth: INTEGER)
 			-- enter a BMM_CLASS_DEFINITION
 		do

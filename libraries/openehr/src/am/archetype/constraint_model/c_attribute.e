@@ -275,9 +275,9 @@ feature -- Access
 feature -- Status Report
 
 	any_allowed: BOOLEAN
-			-- Is any value allowed ('*' received in parsed input) - i.e. no children?
+			-- Is any value allowed ('*' received in parsed input) - i.e. no children and not is_prohibited?
 		do
-			Result := children.is_empty
+			Result := children.is_empty and not is_prohibited
 		end
 
 	has_children: BOOLEAN
@@ -330,7 +330,7 @@ feature -- Status Report
 		end
 
 	has_any_differential_path: BOOLEAN
-			-- True if this node has a contracted path anywhere in its path
+			-- True if this node has a compressed path anywhere in its path
 		do
 			Result := has_differential_path
 			if not Result and then attached parent as cco and then attached cco.parent as att_ca then

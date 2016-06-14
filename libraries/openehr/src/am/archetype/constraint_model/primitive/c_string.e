@@ -21,7 +21,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, make, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string, as_enumeration_string
+			default_create, make, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string, as_enumeration_string, enter_subtree, exit_subtree
 		end
 
 create
@@ -279,6 +279,22 @@ feature {NONE} -- Implementation
 					Result.append (strings_csr.item)
 				end
 			end
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_string (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_string (Current, depth)
 		end
 
 end

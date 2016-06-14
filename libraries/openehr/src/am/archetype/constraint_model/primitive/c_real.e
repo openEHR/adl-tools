@@ -12,7 +12,7 @@ class C_REAL
 inherit
 	C_ORDERED [REAL]
 		redefine
-			assumed_value, format_value
+			assumed_value, enter_subtree, exit_subtree, format_value
 		end
 
 create
@@ -35,6 +35,22 @@ feature -- Conversion
 	format_value (a_val: REAL): STRING
 		do
 			Result := format_real (a_val)
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.start_c_real (Current, depth)
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			precursor (visitor, depth)
+			visitor.end_c_real (Current, depth)
 		end
 
 end

@@ -42,6 +42,8 @@ feature -- Initialisation
 		do
 			reset
 			create profile_name.make_from_string (Default_aom_profile_name)
+			create rm_aom_primitive_type_mappings.make (0)
+			rm_aom_primitive_type_mappings.merge (c_primitive_subtypes)
 			create rm_schema_pattern.make_empty
 			create rm_schema_ids.make (0)
 			create file_path.make_empty
@@ -80,6 +82,15 @@ feature -- Access (attributes from file)
 			-- position in the archetype.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
+	rm_primitive_type_equivalences: detachable HASH_TABLE [STRING, STRING]
+			-- Equivalences of RM primitive types to in-built set of primitive types
+			-- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
+			-- Typical entries:
+			--  value		key
+			--	"Real"		"Double"
+			--	"Integer"	"Integer64"
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
+
 	aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
 			-- list of mappings of lifecycle state names used in archetypes to AOM lifecycle state
 			-- names. value = AOM lifecycle state; key = source lifecycle state
@@ -99,6 +110,10 @@ feature -- Access
 
 	rm_schema_ids: ARRAYED_LIST [STRING]
 			-- list of rm schemas matched by `rm_schema_patterns'
+
+	rm_aom_primitive_type_mappings: HASH_TABLE [STRING, STRING]
+			-- Mapping from RM primitive types to AOM C_PRIMITIVE_OBJECT descendant type for this schema
+			-- Assumed primitive types and their C_XX mappings for all schemas are in `c_primitive_subtypes'
 
 feature -- Status Report
 
@@ -190,11 +205,24 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			-- Finalisation work: evaluate rm schema regexes
 		local
 			lc_aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
+			default_rm_type_key: STRING
 		do
 			if rm_schemas_access.load_attempted then
 				get_regex_matches (rm_schema_pattern)
 			else
 				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
+			end
+
+			-- merge default RM/AOM primitive type mappings into those found in AOM profile
+			if attached rm_primitive_type_equivalences as att_rm_prim_type_eqs then
+				across att_rm_prim_type_eqs as rm_prim_types_csr loop
+					default_rm_type_key := rm_prim_types_csr.item.as_lower
+					if rm_aom_primitive_type_mappings.has (default_rm_type_key) and then
+						attached rm_aom_primitive_type_mappings.item (default_rm_type_key) as aom_type
+					then
+						rm_aom_primitive_type_mappings.put (aom_type, rm_prim_types_csr.key.as_lower)
+					end
+				end
 			end
 
 			-- convert lifecycle states table to all lower case
