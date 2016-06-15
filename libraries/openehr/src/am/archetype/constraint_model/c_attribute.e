@@ -42,7 +42,6 @@ feature -- Initialisation
 			rep.set_content (Current)
 			representation_cache := rep
 		ensure
-			Any_allowed: any_allowed
 			Is_single: not is_multiple
 			Existence_set: existence = an_existence
 		end
@@ -60,7 +59,6 @@ feature -- Initialisation
 			rep.set_content (Current)
 			representation_cache := rep
 		ensure
-			Any_allowed: any_allowed
 			Is_multiple: is_multiple
 			Existence_set: existence = an_existence
 			Cardinality_set: cardinality = a_cardinality
