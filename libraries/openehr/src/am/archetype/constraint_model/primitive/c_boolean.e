@@ -17,9 +17,9 @@ inherit
 		end
 
 create
-	make, make_true, make_false, make_true_false, default_create
+	make, make_true, make_false, make_true_false, make_example, default_create
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	default_create
 			-- set `rm_type_name'
@@ -47,6 +47,11 @@ feature -- Initialisation
 			default_create
 			constraint.extend (False)
 			constraint.extend (True)
+		end
+
+	make_example
+		do
+			make_true_false
 		end
 
 feature -- Access

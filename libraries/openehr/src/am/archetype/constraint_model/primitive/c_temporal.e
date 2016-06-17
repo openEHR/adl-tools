@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_conforms_to, c_congruent_to, constrained_typename, assumed_value, prototype_value, valid_value, as_string
+			c_conforms_to, c_congruent_to, assumed_value, prototype_value, valid_value, as_string --, constrained_typename
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -27,7 +27,7 @@ inherit
 			default_create, out
 		end
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make_string_interval (a_lower_str, an_upper_str: detachable STRING)
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
@@ -104,12 +104,12 @@ feature -- Access
 		deferred
 		end
 
-	constrained_typename: STRING
-			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
-			-- it is not true.
-		do
-			Result := bare_type_name (({G}).name)
-		end
+--	constrained_typename: STRING
+--			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+--			-- it is not true.
+--		do
+--			Result := bare_type_name (({G}).name)
+--		end
 
 	assumed_value: detachable ISO8601_TYPE
 

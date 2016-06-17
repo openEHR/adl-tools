@@ -256,15 +256,15 @@ feature -- Enumerations
 		once ("PROCESS")
 			create Result.make (0)
 			Result.compare_objects
-			Result.extend (bare_type_name(({C_INTEGER}).name), "integer")
-			Result.extend (bare_type_name(({C_REAL}).name), "real")
-			Result.extend (bare_type_name(({C_BOOLEAN}).name), "boolean")
-			Result.extend (bare_type_name(({C_STRING}).name), "string")
-			Result.extend (bare_type_name(({C_DATE}).name), "date")
-			Result.extend (bare_type_name(({C_TIME}).name), "time")
-			Result.extend (bare_type_name(({C_DATE_TIME}).name), "date_time")
-			Result.extend (bare_type_name(({C_DURATION}).name), "duration")
-			Result.extend (bare_type_name(({C_TERMINOLOGY_CODE}).name), "terminology_code")
+			Result.extend (bare_type_name(({C_INTEGER}).name), "INTEGER")
+			Result.extend (bare_type_name(({C_REAL}).name), "REAL")
+			Result.extend (bare_type_name(({C_BOOLEAN}).name), "BOOLEAN")
+			Result.extend (bare_type_name(({C_STRING}).name), "STRING")
+			Result.extend (bare_type_name(({C_DATE}).name), "DATE")
+			Result.extend (bare_type_name(({C_TIME}).name), "TIME")
+			Result.extend (bare_type_name(({C_DATE_TIME}).name), "DATE_TIME")
+			Result.extend (bare_type_name(({C_DURATION}).name), "DURATION")
+			Result.extend (bare_type_name(({C_TERMINOLOGY_CODE}).name), "TERMINOLOGY_CODE")
 		end
 
 	occurrences_default_list: HASH_TABLE [MULTIPLICITY_INTERVAL, STRING]

@@ -18,10 +18,15 @@ inherit
 create
 	make, make_interval, make_value, make_value_list,
 	make_from_pattern, make_pattern_with_range_string,
-	make_pattern_with_range,
+	make_pattern_with_range, make_example,
 	default_create
 
 feature {NONE} -- Initialisation
+
+	make_example
+		do
+			make_from_pattern ("PDTHMS")
+		end
 
 	make_pattern_with_range_string (a_pattern, a_lower_str, an_upper_str: detachable STRING; include_lower, include_upper: BOOLEAN)
 			-- Create from an ISO8601-based pattern, together with two ISO8601 strings representing an interval.

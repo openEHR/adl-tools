@@ -444,7 +444,7 @@ end
 			bmm_enum: BMM_ENUMERATION [COMPARABLE]
 		do
 			if attached {C_OBJECT} a_c_node as co then
-				if attached co.parent as att_parent_ca then -- now check if this object a valid type of its owning attribute
+				if attached co.parent as att_parent_ca then -- now check if this object is a valid type of its owning attribute
 					if att_parent_ca.has_differential_path then
 						check attached att_parent_ca.differential_path as diff_path then
 							create apa.make_from_string (diff_path)
@@ -458,7 +458,12 @@ end
 						if rm_schema.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
 							rm_attr_type := rm_schema.effective_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name)
 
-							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) then
+							-- check for exact conformance, or else type equivalance, which occurs with primitive types, e.g. the AOM 'REAL' type
+							-- will match RM 'Real', 'Real32', 'Real64', and 'Double' types if these equivalences are encoded into the AOM_PROFILE
+							-- rm_aom_primitive_type_equivalences table.
+							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) and
+								not has_rm_aom_type_mapping (rm_attr_type, co.generator)
+							then
 
 								-- check if the property type is an enumeration and if the archetype node rm_type_name is
 								-- a compatible primitive type

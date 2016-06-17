@@ -15,7 +15,7 @@ inherit
 			default_create, out, c_conforms_to, c_congruent_to
 		end
 
-feature -- Initialisaiton
+feature {NONE} -- Initialisation
 
 	default_create
 			-- set `rm_type_name'
@@ -30,6 +30,10 @@ feature -- Initialisaiton
 		do
 			default_create
 			constraint := a_constraint
+		end
+
+	make_example
+		deferred
 		end
 
 feature -- Access

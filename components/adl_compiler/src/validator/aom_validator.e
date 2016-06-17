@@ -77,6 +77,12 @@ feature {NONE} -- Implementation
 			Result := attached aom_profile as aom_p and then aom_p.has_type_substitution (an_aom_type, an_rm_type)
 		end
 
+	has_rm_aom_type_mapping (an_rm_type, an_aom_type: STRING): BOOLEAN
+			-- is there a type equivalence between `an_aom_type' and `an_rm_type' according to the AOM_PROFILE?
+		do
+			Result := attached aom_profile as aom_p and then aom_p.has_rm_aom_primitive_type_mapping (an_rm_type, an_aom_type)
+		end
+
 	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)
 		require

@@ -16,7 +16,14 @@ inherit
 		end
 
 create
-	make, make_interval, make_value, make_value_list, default_create
+	make, make_interval, make_value, make_value_list, make_example, default_create
+
+feature {NONE} -- Initialisation
+
+	make_example
+		do
+			make_interval (create {PROPER_INTERVAL[REAL]}.make_bounded (0.0, 1.0, True, True))
+		end
 
 feature -- Access
 

@@ -32,14 +32,19 @@ inherit
 		end
 
 create
-	make, default_create
+	make, make_example, default_create
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	default_create
 		do
 			precursor {C_PRIMITIVE_OBJECT}
 			create constraint.make_empty
+		end
+
+	make_example
+		do
+			default_create
 		end
 
 feature -- Access

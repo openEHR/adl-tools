@@ -114,6 +114,7 @@ feature -- Access
 	rm_aom_primitive_type_mappings: HASH_TABLE [STRING, STRING]
 			-- Mapping from RM primitive types to AOM C_PRIMITIVE_OBJECT descendant type for this schema
 			-- Assumed primitive types and their C_XX mappings for all schemas are in `c_primitive_subtypes'
+			-- Keyed by RM type upper case
 
 feature -- Status Report
 
@@ -134,6 +135,28 @@ feature -- Status Report
 			-- is there an AOM lifecycle state for `a_state_name'?
 		do
 			Result := attached aom_lifecycle_mappings as att_ls and then att_ls.has (a_state_name.as_lower)
+		end
+
+	has_rm_aom_primitive_type_mapping (an_rm_type, an_aom_type: STRING): BOOLEAN
+			-- is there a type equivalence for `an_aom_type', `an_rm_type'?
+		do
+			Result := attached rm_aom_primitive_type_mappings.item (an_rm_type.as_upper) as att_type_eq_type and then att_type_eq_type.is_case_insensitive_equal (an_aom_type)
+		end
+
+	has_aom_primitive_type_mapping_for_rm_type (an_rm_type: STRING): BOOLEAN
+			-- is there a type equivalence for `an_rm_type'?
+		do
+			Result := rm_aom_primitive_type_mappings.has (an_rm_type.as_upper)
+		end
+
+	aom_primitive_type_mapping_for_rm_type (an_rm_type: STRING): STRING
+			-- Return the a type equivalence for `an_aom_type', `an_rm_type'?
+		require
+			has_aom_primitive_type_mapping_for_rm_type (an_rm_type)
+		do
+			check attached rm_aom_primitive_type_mappings.item (an_rm_type.as_upper) as att_type_eq_type then
+				Result := att_type_eq_type
+			end
 		end
 
 feature -- Validation
@@ -216,11 +239,11 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			-- merge default RM/AOM primitive type mappings into those found in AOM profile
 			if attached rm_primitive_type_equivalences as att_rm_prim_type_eqs then
 				across att_rm_prim_type_eqs as rm_prim_types_csr loop
-					default_rm_type_key := rm_prim_types_csr.item.as_lower
+					default_rm_type_key := rm_prim_types_csr.item.as_upper
 					if rm_aom_primitive_type_mappings.has (default_rm_type_key) and then
 						attached rm_aom_primitive_type_mappings.item (default_rm_type_key) as aom_type
 					then
-						rm_aom_primitive_type_mappings.put (aom_type, rm_prim_types_csr.key.as_lower)
+						rm_aom_primitive_type_mappings.put (aom_type, rm_prim_types_csr.key.as_upper)
 					end
 				end
 			end

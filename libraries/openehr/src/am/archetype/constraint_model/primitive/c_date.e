@@ -24,7 +24,14 @@ inherit
 		end
 
 create
-	make, make_interval, make_value, make_value_list, make_string_interval, make_from_pattern, default_create
+	make, make_interval, make_value, make_value_list, make_string_interval, make_from_pattern, make_example, default_create
+
+feature {NONE} -- Initialisation
+
+	make_example
+		do
+			make_from_pattern (valid_date_constraint_patterns.first)
+		end
 
 feature -- Access
 

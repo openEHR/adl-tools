@@ -15,7 +15,7 @@ inherit
 			default_create, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
 		end
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	default_create
 		do

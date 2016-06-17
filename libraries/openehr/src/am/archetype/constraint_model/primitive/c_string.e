@@ -25,7 +25,7 @@ inherit
 		end
 
 create
-	make, make_value, make_value_list, make_regex_any, default_create
+	make, make_value, make_value_list, make_regex_any, make_example, default_create
 
 feature -- Definitions
 
@@ -37,7 +37,7 @@ feature -- Definitions
 
 	Invalid_regex_message: STRING = "invalid regex"
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	default_create
 			-- set `rm_type_name'
@@ -87,6 +87,11 @@ feature -- Initialization
 		do
 			precursor (a_constraint)
 			constraint.compare_objects
+		end
+
+	make_example
+		do
+			make_regex_any
 		end
 
 feature -- Access

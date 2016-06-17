@@ -59,10 +59,10 @@ aom_rm_type_mappings = <
 --
 
 aom_rm_type_substitutions = <
-	["ISO8601_DATE"] = <"String">
-	["ISO8601_DATE_TIME"] = <"String">
-	["ISO8601_TIME"] = <"String">
-	["ISO8601_DURATION"] = <"String">
+	["DATE"] = <"String">
+	["DATE_TIME"] = <"String">
+	["TIME"] = <"String">
+	["DURATION"] = <"String">
 	["CODE_PHRASE"] = <"DV_CODED_TEXT">
 	["INTEGER"] = <"Real">
 >
