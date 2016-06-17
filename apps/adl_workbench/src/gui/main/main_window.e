@@ -387,7 +387,6 @@ feature -- Commands
 	show
 		local
 			missing_external_tools: ARRAYED_SET [STRING]
-			missing_external_tools_msg: STRING
 			backup_xml_rules_file: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do

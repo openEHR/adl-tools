@@ -127,9 +127,6 @@ feature -- Access
 		require
 			Rm_type_valid: not an_rm_type.is_empty
 		local
-			arch_id: ARCHETYPE_HRID
-			is_candidate: BOOLEAN
-			rm_type: STRING
 			rm_schema: BMM_SCHEMA
 			class_node: detachable ARCH_LIB_CLASS
 		do

@@ -66,8 +66,8 @@ templates = <
 
 		["refresh_vcs_button_text"] = <"VCS Refresh">
 		["refresh_vcs_button_tooltip"] = <"Refresh repository statuses in this dialog from version control system">
-		["repository_dir_button_text"] = <"Add Repository">
-		["repository_dir_button_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
+		["repository_dir_text"] = <"Local path: ">
+		["repository_dir_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
 		["repository_dir_not_repository"] = <"Directory $1 exists but is not an archetype repository (no $2 file found)">

@@ -192,7 +192,7 @@ feature {NONE} -- Initialisation
 			ev_hbox_repo_controls.disable_item_expand (refresh_vcs_button.ev_button)
 
 			--  new repository button
-			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_button_text), get_text (ec_repository_dir_button_tooltip), agent on_add_repository, Void)
+			create new_repo_button.make (Void, Void, get_text (ec_repository_dir_text), get_text (ec_repository_dir_tooltip), agent on_add_repository, Void)
 			ev_hbox_repo_controls.extend (new_repo_button.ev_button)
 			ev_hbox_repo_controls.disable_item_expand (new_repo_button.ev_button)
 
