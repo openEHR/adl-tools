@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 			-- create a node for `a_class_def'
  		do
 			create Result
-			Result.set_text (a_class_def.name)
+			Result.set_text (a_class_def.type_signature)
 			Result.set_data (a_class_def)
 			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 		end
@@ -79,14 +79,13 @@ feature {NONE} -- Implementation
    		local
 			a_ti: EV_TREE_ITEM
 		do
-			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
-				a_ti := create_node (a_class_def.ancestors.item_for_iteration)
+			across a_class_def.ancestors as ancs_csr loop
+				a_ti := create_node (ancs_csr.item)
 	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
-				populate_ancestor_nodes (a_class_def.ancestors.item_for_iteration)
+				populate_ancestor_nodes (ancs_csr.item)
 				ev_tree_item_stack.remove
-				a_class_def.ancestors.forth
 			end
 		end
 

@@ -42,7 +42,7 @@ feature {NONE} -- Implementation
 
 	rm_type_text: STRING
 		do
-			Result := rm_type.as_type_string
+			Result := rm_type.type_name
 		end
 
 end

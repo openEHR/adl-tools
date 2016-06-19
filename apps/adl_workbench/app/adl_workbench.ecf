@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-14-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-14-0 http://www.eiffel.com/developers/xml/configuration-1-14-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-15-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-15-0 http://www.eiffel.com/developers/xml/configuration-1-15-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
 	<target name="adl_workbench">
 		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/\.git$</exclude>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="initialization" syntax="standard" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" is_obsolete_routine_type="true" void_safety="initialization" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
@@ -60,7 +60,7 @@
 		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf"/>
 		<library name="eomf_data_tree" location="$EOMF\library\data_tree\eomf_data_tree.ecf">
 			<option>
-				<assertions precondition="true"/>
+				<assertions precondition="true" check="true"/>
 			</option>
 		</library>
 		<library name="eomf_external_tools" location="$EOMF\library\external_tools\eomf_external_tools.ecf"/>

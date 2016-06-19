@@ -319,7 +319,7 @@ feature {NONE} -- Implementation
 
 	rm_type_text: STRING
 		do
-			Result := rm_type.base_class.name
+			Result := rm_type.base_class.type_name
 		end
 
 	c_object_colour: EV_COLOR

@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_conforms_to, c_congruent_to, assumed_value, prototype_value, valid_value, as_string --, constrained_typename
+			c_conforms_to, c_congruent_to, assumed_value, prototype_value, valid_value, as_string
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -103,13 +103,6 @@ feature -- Access
 			valid_string (a_str)
 		deferred
 		end
-
---	constrained_typename: STRING
---			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
---			-- it is not true.
---		do
---			Result := bare_type_name (({G}).name)
---		end
 
 	assumed_value: detachable ISO8601_TYPE
 
