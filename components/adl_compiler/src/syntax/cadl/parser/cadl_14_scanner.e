@@ -75,477 +75,362 @@ feature {NONE} -- Implementation
 	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
-if yy_act <= 70 then
-if yy_act <= 35 then
-if yy_act <= 18 then
-if yy_act <= 9 then
-if yy_act <= 5 then
-if yy_act <= 3 then
-if yy_act <= 2 then
-if yy_act = 1 then
+			inspect yy_act
+when 1 then
 --|#line 82 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 82")
 end
 -- Ignore separators
-else
+when 2 then
 --|#line 83 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 83")
 end
 in_lineno := in_lineno + text_count
-end
-else
+when 3 then
 --|#line 88 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 88")
 end
 -- Ignore comments
-end
-else
-if yy_act = 4 then
+when 4 then
 --|#line 89 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 89")
 end
 in_lineno := in_lineno + 1
-else
+when 5 then
 --|#line 93 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 93")
 end
 last_token := Minus_code
-end
-end
-else
-if yy_act <= 7 then
-if yy_act = 6 then
+when 6 then
 --|#line 94 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 94")
 end
 last_token := Plus_code
-else
+when 7 then
 --|#line 95 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 95")
 end
 last_token := Star_code
-end
-else
-if yy_act = 8 then
+when 8 then
 --|#line 96 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 96")
 end
 last_token := Slash_code
-else
+when 9 then
 --|#line 97 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 97")
 end
 last_token := Caret_code
-end
-end
-end
-else
-if yy_act <= 14 then
-if yy_act <= 12 then
-if yy_act <= 11 then
-if yy_act = 10 then
+when 10 then
 --|#line 98 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 98")
 end
 last_token := Equal_code
-else
+when 11 then
 --|#line 99 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 99")
 end
 last_token := Dot_code
-end
-else
+when 12 then
 --|#line 100 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 100")
 end
 last_token := Semicolon_code
-end
-else
-if yy_act = 13 then
+when 13 then
 --|#line 101 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 101")
 end
 last_token := Comma_code
-else
+when 14 then
 --|#line 102 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 102")
 end
 last_token := Colon_code
-end
-end
-else
-if yy_act <= 16 then
-if yy_act = 15 then
+when 15 then
 --|#line 103 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 103")
 end
 last_token := Exclamation_code
-else
+when 16 then
 --|#line 104 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 104")
 end
 last_token := Left_parenthesis_code
-end
-else
-if yy_act = 17 then
+when 17 then
 --|#line 105 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 105")
 end
 last_token := Right_parenthesis_code
-else
+when 18 then
 --|#line 106 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 106")
 end
 last_token := Dollar_code
-end
-end
-end
-end
-else
-if yy_act <= 27 then
-if yy_act <= 23 then
-if yy_act <= 21 then
-if yy_act <= 20 then
-if yy_act = 19 then
+when 19 then
 --|#line 108 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 108")
 end
 last_token := Question_mark_code
-else
+when 20 then
 --|#line 110 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 110")
 end
 last_token := SYM_INTERVAL_DELIM
-end
-else
+when 21 then
 --|#line 112 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 112")
 end
 last_token := Left_bracket_code
-end
-else
-if yy_act = 22 then
+when 22 then
 --|#line 113 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 113")
 end
 last_token := Right_bracket_code
-else
+when 23 then
 --|#line 115 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 115")
 end
 last_token := SYM_START_CBLOCK
-end
-end
-else
-if yy_act <= 25 then
-if yy_act = 24 then
+when 24 then
 --|#line 116 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 116")
 end
 last_token := SYM_END_CBLOCK
-else
+when 25 then
 --|#line 118 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 118")
 end
 last_token := SYM_GE
-end
-else
-if yy_act = 26 then
+when 26 then
 --|#line 119 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 119")
 end
 last_token := SYM_LE
-else
+when 27 then
 --|#line 120 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 120")
 end
 last_token := SYM_NE
-end
-end
-end
-else
-if yy_act <= 31 then
-if yy_act <= 29 then
-if yy_act = 28 then
+when 28 then
 --|#line 122 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 122")
 end
 last_token := SYM_LT
-else
+when 29 then
 --|#line 123 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 123")
 end
 last_token := SYM_GT
-end
-else
-if yy_act = 30 then
+when 30 then
 --|#line 125 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 125")
 end
 last_token := SYM_MODULO
-else
+when 31 then
 --|#line 126 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 126")
 end
 last_token := SYM_DIV
-end
-end
-else
-if yy_act <= 33 then
-if yy_act = 32 then
+when 32 then
 --|#line 128 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 128")
 end
 last_token := SYM_ELLIPSIS
-else
+when 33 then
 --|#line 129 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 129")
 end
 last_token := SYM_LIST_CONTINUE
-end
-else
-if yy_act = 34 then
+when 34 then
 --|#line 133 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 133")
 end
 last_token := SYM_MATCHES
-else
+when 35 then
 --|#line 135 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 135")
 end
 last_token := SYM_MATCHES
-end
-end
-end
-end
-end
-else
-if yy_act <= 53 then
-if yy_act <= 44 then
-if yy_act <= 40 then
-if yy_act <= 38 then
-if yy_act <= 37 then
-if yy_act = 36 then
+when 36 then
 --|#line 139 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 139")
 end
 last_token := SYM_THEN
-else
+when 37 then
 --|#line 141 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 141")
 end
 last_token := SYM_ELSE
-end
-else
+when 38 then
 --|#line 143 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 143")
 end
 last_token := SYM_AND
-end
-else
-if yy_act = 39 then
+when 39 then
 --|#line 145 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 145")
 end
 last_token := SYM_OR
-else
+when 40 then
 --|#line 147 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 147")
 end
 last_token := SYM_XOR
-end
-end
-else
-if yy_act <= 42 then
-if yy_act = 41 then
+when 41 then
 --|#line 149 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 149")
 end
 last_token := SYM_NOT
-else
+when 42 then
 --|#line 151 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 151")
 end
 last_token := SYM_IMPLIES
-end
-else
-if yy_act = 43 then
+when 43 then
 --|#line 153 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 153")
 end
 last_token := SYM_TRUE
-else
+when 44 then
 --|#line 155 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 155")
 end
 last_token := SYM_FALSE
-end
-end
-end
-else
-if yy_act <= 49 then
-if yy_act <= 47 then
-if yy_act <= 46 then
-if yy_act = 45 then
+when 45 then
 --|#line 157 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 157")
 end
 last_token := SYM_FORALL
-else
+when 46 then
 --|#line 159 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 159")
 end
 last_token := SYM_EXISTS
-end
-else
+when 47 then
 --|#line 163 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 163")
 end
 last_token := SYM_EXISTENCE
-end
-else
-if yy_act = 48 then
+when 48 then
 --|#line 165 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 165")
 end
 last_token := SYM_OCCURRENCES
-else
+when 49 then
 --|#line 167 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 167")
 end
 last_token := SYM_CARDINALITY
-end
-end
-else
-if yy_act <= 51 then
-if yy_act = 50 then
+when 50 then
 --|#line 169 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 169")
 end
 last_token := SYM_ORDERED
-else
+when 51 then
 --|#line 171 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 171")
 end
 last_token := SYM_UNORDERED
-end
-else
-if yy_act = 52 then
+when 52 then
 --|#line 173 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 173")
 end
 last_token := SYM_UNIQUE
-else
+when 53 then
 --|#line 175 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 175")
 end
 last_token := SYM_USE_NODE
-end
-end
-end
-end
-else
-if yy_act <= 62 then
-if yy_act <= 58 then
-if yy_act <= 56 then
-if yy_act <= 55 then
-if yy_act = 54 then
+when 54 then
 --|#line 177 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 177")
 end
 last_token := SYM_ALLOW_ARCHETYPE
-else
+when 55 then
 --|#line 179 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 179")
 end
 last_token := SYM_INCLUDE
-end
-else
+when 56 then
 --|#line 181 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 181")
 end
 last_token := SYM_EXCLUDE
-end
-else
-if yy_act = 57 then
+when 57 then
 --|#line 183 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 183")
 end
 last_token := SYM_AFTER
-else
+when 58 then
 --|#line 185 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 185")
 end
 last_token := SYM_BEFORE
-end
-end
-else
-if yy_act <= 60 then
-if yy_act = 59 then
+when 59 then
 --|#line 187 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 187")
 end
 last_token := SYM_CLOSED
-else
+when 60 then
 --|#line 191 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 191")
@@ -554,9 +439,7 @@ end
 		last_token := V_ROOT_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
 	
-end
-else
-if yy_act = 61 then
+when 61 then
 --|#line 197 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 197")
@@ -565,7 +448,7 @@ end
 		last_token := V_ID_CODE
 		last_string_value := text_substring (2, text_count - 1)
 	
-else
+when 62 then
 --|#line 204 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 204")
@@ -574,13 +457,7 @@ end
 		last_token := V_ID_CODE_STR
 		last_string_value := text
 	
-end
-end
-end
-else
-if yy_act <= 66 then
-if yy_act <= 64 then
-if yy_act = 63 then
+when 63 then
 --|#line 213 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 213")
@@ -590,7 +467,7 @@ end
 		last_string_value := str_.substring (str_.substring_index ("::", 1) + 2, str_.count)
 		last_token := V_REUSED_ID_CODE
 	
-else
+when 64 then
 --|#line 221 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 221")
@@ -599,9 +476,7 @@ end
 		last_token := V_VALUE_SET_REF
 		last_string_value := text_substring (2, text_count - 1)
 	
-end
-else
-if yy_act = 65 then
+when 65 then
 --|#line 242 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 242")
@@ -613,7 +488,7 @@ end
 		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
 		is_assumed_code := False
 	
-else
+when 66 then
 --|#line 251 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 251")
@@ -632,11 +507,7 @@ end
 			set_start_condition (INITIAL)
 		end
 	
-end
-end
-else
-if yy_act <= 68 then
-if yy_act = 67 then
+when 67 then
 --|#line 266 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 266")
@@ -654,21 +525,19 @@ end
 			set_start_condition (INITIAL)
 		end
 	
-else
+when 68 then
 --|#line 281 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 281")
 end
 in_lineno := in_lineno + text_count
-end
-else
-if yy_act = 69 then
+when 69 then
 --|#line 284 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 284")
 end
 in_lineno := in_lineno + 1
-else
+when 70 then
 --|#line 286 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 286")
@@ -695,20 +564,7 @@ end
 		end
 		set_start_condition (INITIAL)
 	
-end
-end
-end
-end
-end
-end
-else
-if yy_act <= 105 then
-if yy_act <= 88 then
-if yy_act <= 79 then
-if yy_act <= 75 then
-if yy_act <= 73 then
-if yy_act <= 72 then
-if yy_act = 71 then
+when 71 then
 --|#line 309 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 309")
@@ -717,7 +573,7 @@ end
 			last_token := ERR_VALUE_SET_DEF
 			set_start_condition (INITIAL)
 	
-else
+when 72 then
 --|#line 319 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 319")
@@ -726,8 +582,7 @@ end
 		last_token := ERR_VALUE_SET_MISSING_CODES
 		err_str := text
 	
-end
-else
+when 73 then
 --|#line 335 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 335")
@@ -739,9 +594,7 @@ end
 		last_term_constraint_parse_structure_value.set_terminology_id (str_.substring (1, str_.index_of (':', 1)-1))
 		is_assumed_code := False
 	
-end
-else
-if yy_act = 74 then
+when 74 then
 --|#line 344 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 344")
@@ -760,7 +613,7 @@ end
 			set_start_condition (INITIAL)
 		end
 	
-else
+when 75 then
 --|#line 359 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 359")
@@ -778,25 +631,19 @@ end
 			set_start_condition (INITIAL)
 		end
 	
-end
-end
-else
-if yy_act <= 77 then
-if yy_act = 76 then
+when 76 then
 --|#line 374 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 374")
 end
 in_lineno := in_lineno + text_count
-else
+when 77 then
 --|#line 377 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 377")
 end
 in_lineno := in_lineno + 1
-end
-else
-if yy_act = 78 then
+when 78 then
 --|#line 379 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 379")
@@ -823,7 +670,7 @@ end
 		end
 		set_start_condition (INITIAL)
 	
-else
+when 79 then
 --|#line 402 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 402")
@@ -832,14 +679,7 @@ end
 			last_token := ERR_VALUE_SET_DEF
 			set_start_condition (INITIAL)
 	
-end
-end
-end
-else
-if yy_act <= 84 then
-if yy_act <= 82 then
-if yy_act <= 81 then
-if yy_act = 80 then
+when 80, 81, 82 then
 --|#line 411 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 411")
@@ -848,28 +688,7 @@ end
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
 		
-else
---|#line 412 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 412")
-end
-
-				last_token := V_ISO8601_EXTENDED_DATE_TIME
-				last_string_value := text
-		
-end
-else
---|#line 413 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 413")
-end
-
-				last_token := V_ISO8601_EXTENDED_DATE_TIME
-				last_string_value := text
-		
-end
-else
-if yy_act = 83 then
+when 83, 84 then
 --|#line 420 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 420")
@@ -878,20 +697,7 @@ end
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
 		
-else
---|#line 421 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 421")
-end
-
-				last_token := V_ISO8601_EXTENDED_TIME
-				last_string_value := text
-		
-end
-end
-else
-if yy_act <= 86 then
-if yy_act = 85 then
+when 85, 86 then
 --|#line 428 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 428")
@@ -900,18 +706,7 @@ end
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
 		
-else
---|#line 429 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 429")
-end
-
-				last_token := V_ISO8601_EXTENDED_DATE
-				last_string_value := text
-		
-end
-else
-if yy_act = 87 then
+when 87, 88 then
 --|#line 436 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 436")
@@ -920,25 +715,7 @@ end
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			
-else
---|#line 437 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 437")
-end
-
-				last_token := V_ISO8601_DURATION
-				last_string_value := text
-			
-end
-end
-end
-end
-else
-if yy_act <= 97 then
-if yy_act <= 93 then
-if yy_act <= 91 then
-if yy_act <= 90 then
-if yy_act = 89 then
+when 89 then
 --|#line 444 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 444")
@@ -947,7 +724,7 @@ end
 				last_token := V_ISO8601_DURATION
 				last_string_value := convert_non_conforming_duration(text)
 			
-else
+when 90 then
 --|#line 456 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 456")
@@ -956,8 +733,7 @@ end
 				last_token := V_ISO8601_DATE_CONSTRAINT_PATTERN
 				last_string_value := text
 			
-end
-else
+when 91 then
 --|#line 466 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 466")
@@ -966,9 +742,7 @@ end
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text_substring(2, text_count)
 			
-end
-else
-if yy_act = 92 then
+when 92 then
 --|#line 471 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 471")
@@ -977,7 +751,7 @@ end
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			
-else
+when 93 then
 --|#line 481 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 481")
@@ -987,11 +761,7 @@ end
 				last_string_value := text
 				last_string_value.put('T', last_string_value.index_of(' ', 1))
 			
-end
-end
-else
-if yy_act <= 95 then
-if yy_act = 94 then
+when 94 then
 --|#line 487 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 487")
@@ -1000,7 +770,7 @@ end
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 			
-else
+when 95 then
 --|#line 498 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 498")
@@ -1010,9 +780,7 @@ end
 				unread_character(last_string_value.item(last_string_value.count)) -- put back the last character 
 				last_string_value := text
 			
-end
-else
-if yy_act = 96 then
+when 96 then
 --|#line 507 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 507")
@@ -1021,7 +789,7 @@ end
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
 			
-else
+when 97 then
 --|#line 523 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 523")
@@ -1030,13 +798,7 @@ end
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			
-end
-end
-end
-else
-if yy_act <= 101 then
-if yy_act <= 99 then
-if yy_act = 98 then
+when 98 then
 --|#line 530 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 530")
@@ -1045,7 +807,7 @@ end
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			
-else
+when 99 then
 --|#line 536 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 536")
@@ -1054,9 +816,7 @@ end
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			
-end
-else
-if yy_act = 100 then
+when 100 then
 --|#line 542 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 542")
@@ -1064,7 +824,7 @@ end
  -- match up to next > not followed by a '}' or '>' 
  				in_buffer.append_string (text)
  			
-else
+when 101 then
 --|#line 546 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 546")
@@ -1110,11 +870,7 @@ end
 				in_buffer.wipe_out
 				set_start_condition (INITIAL)
  			
-end
-end
-else
-if yy_act <= 103 then
-if yy_act = 102 then
+when 102 then
 --|#line 588 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 588")
@@ -1122,7 +878,7 @@ end
  -- match up to next '}' not preceded by a '>'
  				in_buffer.append_string (text)
   			
-else
+when 103 then
 --|#line 598 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 598")
@@ -1131,9 +887,7 @@ end
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
 			
-end
-else
-if yy_act = 104 then
+when 104 then
 --|#line 604 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 604")
@@ -1142,7 +896,7 @@ end
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
 			
-else
+when 105 then
 --|#line 610 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 610")
@@ -1152,18 +906,7 @@ end
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
 			
-end
-end
-end
-end
-end
-else
-if yy_act <= 123 then
-if yy_act <= 114 then
-if yy_act <= 110 then
-if yy_act <= 108 then
-if yy_act <= 107 then
-if yy_act = 106 then
+when 106 then
 --|#line 617 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 617")
@@ -1172,7 +915,7 @@ end
 			last_token := V_ATTRIBUTE_IDENTIFIER
 			last_string_value := text
 		
-else
+when 107 then
 --|#line 623 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 623")
@@ -1181,8 +924,7 @@ end
 			last_token := V_ABS_PATH
 			last_string_value := text
 		
-end
-else
+when 108 then
 --|#line 629 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 629")
@@ -1191,9 +933,7 @@ end
 			last_token := V_REL_PATH
 			last_string_value := text
 		
-end
-else
-if yy_act = 109 then
+when 109 then
 --|#line 635 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 635")
@@ -1203,7 +943,7 @@ end
 				set_start_condition (IN_REGEXP1)
 				in_buffer.append_character ('/')
 			
-else
+when 110 then
 --|#line 642 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 642")
@@ -1211,11 +951,7 @@ end
  		-- match segment consisting of non / or [
 				in_buffer.append_string (text)
 	
-end
-end
-else
-if yy_act <= 112 then
-if yy_act = 111 then
+when 111 then
 --|#line 646 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 646")
@@ -1223,7 +959,7 @@ end
  		-- match [] segment
 				in_buffer.append_string (text)
 	
-else
+when 112 then
 --|#line 650 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 650")
@@ -1231,9 +967,7 @@ end
  		-- match segment ending in quoted slashes '\/'
 				in_buffer.append_string (text)
 	
-end
-else
-if yy_act = 113 then
+when 113 then
 --|#line 654 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 654")
@@ -1248,7 +982,7 @@ end
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
 	
-else
+when 114 then
 --|#line 666 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 666")
@@ -1257,14 +991,7 @@ end
  				last_token := V_REGEXP
  				last_string_value := text
 			
-end
-end
-end
-else
-if yy_act <= 119 then
-if yy_act <= 117 then
-if yy_act <= 116 then
-if yy_act = 115 then
+when 115 then
 --|#line 673 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 673")
@@ -1273,7 +1000,7 @@ end
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
 			
-else
+when 116 then
 --|#line 678 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 678")
@@ -1290,8 +1017,7 @@ end
 					last_integer_value := in_buffer.to_integer
 					in_buffer.wipe_out
 			
-end
-else
+when 117, 118 then
 --|#line 693 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 693")
@@ -1300,18 +1026,7 @@ end
 						last_token := V_REAL
 						last_real_value := text.to_real
 			
-end
-else
-if yy_act = 118 then
---|#line 694 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 694")
-end
-
-						last_token := V_REAL
-						last_real_value := text.to_real
-			
-else
+when 119, 120, 121 then
 --|#line 698 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 698")
@@ -1330,51 +1045,7 @@ end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
 			
-end
-end
-else
-if yy_act <= 121 then
-if yy_act = 120 then
---|#line 699 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 699")
-end
-
-						last_token := V_REAL
-						str_ := text
-						nb_ := text_count
-						from i_ := 1 until i_ > nb_ loop
-							char_ := str_.item (i_)
-							if char_ /= '_' then
-								in_buffer.append_character (char_)
-							end
-							i_ := i_ + 1
-						end
-						last_real_value := in_buffer.to_real
-						in_buffer.wipe_out
-			
-else
---|#line 700 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 700")
-end
-
-						last_token := V_REAL
-						str_ := text
-						nb_ := text_count
-						from i_ := 1 until i_ > nb_ loop
-							char_ := str_.item (i_)
-							if char_ /= '_' then
-								in_buffer.append_character (char_)
-							end
-							i_ := i_ + 1
-						end
-						last_real_value := in_buffer.to_real
-						in_buffer.wipe_out
-			
-end
-else
-if yy_act = 122 then
+when 122 then
 --|#line 720 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 720")
@@ -1383,7 +1054,7 @@ end
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
 			
-else
+when 123 then
 --|#line 725 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 725")
@@ -1394,29 +1065,19 @@ end
 				end
 				set_start_condition (IN_STR)
 			
-end
-end
-end
-end
-else
-if yy_act <= 132 then
-if yy_act <= 128 then
-if yy_act <= 126 then
-if yy_act <= 125 then
-if yy_act = 124 then
+when 124 then
 --|#line 733 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 733")
 end
 in_buffer.append_character ('\')
-else
+when 125 then
 --|#line 735 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 735")
 end
 in_buffer.append_character ('"')
-end
-else
+when 126 then
 --|#line 737 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 737")
@@ -1424,15 +1085,13 @@ end
 
 				in_buffer.append_string (text)
 	
-end
-else
-if yy_act = 127 then
+when 127 then
 --|#line 741 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 741")
 end
 in_buffer.append_string (text)
-else
+when 128 then
 --|#line 743 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 743")
@@ -1441,11 +1100,7 @@ end
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			
-end
-end
-else
-if yy_act <= 130 then
-if yy_act = 129 then
+when 129 then
 --|#line 748 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 748")
@@ -1461,7 +1116,7 @@ end
 				last_string_value := str_
 				set_start_condition (INITIAL)
 			
-else
+when 130 then
 --|#line 759 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 759")
@@ -1470,89 +1125,64 @@ end
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
 			
-end
-else
-if yy_act = 131 then
+when 131 then
 --|#line 768 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 768")
 end
 last_token := V_CHARACTER; last_character_value := text_item (2)
-else
+when 132 then
 --|#line 770 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 770")
 end
 last_token := V_CHARACTER; last_character_value := '%N'
-end
-end
-end
-else
-if yy_act <= 136 then
-if yy_act <= 134 then
-if yy_act = 133 then
+when 133 then
 --|#line 771 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 771")
 end
 last_token := V_CHARACTER; last_character_value := '%R'
-else
+when 134 then
 --|#line 772 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 772")
 end
 last_token := V_CHARACTER; last_character_value := '%T'
-end
-else
-if yy_act = 135 then
+when 135 then
 --|#line 773 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 773")
 end
 last_token := V_CHARACTER; last_character_value := '%''
-else
+when 136 then
 --|#line 774 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 774")
 end
 last_token := V_CHARACTER; last_character_value := '%H'
-end
-end
-else
-if yy_act <= 138 then
-if yy_act = 137 then
+when 137, 138 then
 --|#line 776 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 776")
 end
 last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
-else
---|#line 777 "cadl_14_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 777")
-end
-last_token := ERR_CHARACTER	-- Catch-all rules (no backing up)
-end
-else
-if yy_act = 139 then
+when 139 then
 --|#line 781 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 781")
 end
 ;
-else
+when 140 then
 --|#line 0 "cadl_14_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_14_scanner.l' at line 0")
 end
 default_action
-end
-end
-end
-end
-end
-end
-end
+			else
+				last_token := yyError_token
+				fatal_error ("fatal scanner internal error: no action found")
+			end
 		end
 
 	yy_execute_eof_action (yy_sc: INTEGER)
@@ -1611,10 +1241,34 @@ feature {NONE} -- Table templates
 			yy_nxt_template_4 (an_array)
 			yy_nxt_template_5 (an_array)
 			yy_nxt_template_6 (an_array)
+			yy_nxt_template_7 (an_array)
+			yy_nxt_template_8 (an_array)
+			yy_nxt_template_9 (an_array)
+			yy_nxt_template_10 (an_array)
+			yy_nxt_template_11 (an_array)
+			yy_nxt_template_12 (an_array)
+			yy_nxt_template_13 (an_array)
+			yy_nxt_template_14 (an_array)
+			yy_nxt_template_15 (an_array)
+			yy_nxt_template_16 (an_array)
+			yy_nxt_template_17 (an_array)
+			yy_nxt_template_18 (an_array)
+			yy_nxt_template_19 (an_array)
+			yy_nxt_template_20 (an_array)
+			yy_nxt_template_21 (an_array)
+			yy_nxt_template_22 (an_array)
+			yy_nxt_template_23 (an_array)
+			yy_nxt_template_24 (an_array)
+			yy_nxt_template_25 (an_array)
+			yy_nxt_template_26 (an_array)
+			yy_nxt_template_27 (an_array)
+			yy_nxt_template_28 (an_array)
+			yy_nxt_template_29 (an_array)
 			Result := yy_fixed_array (an_array)
 		end
 
 	yy_nxt_template_1 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #1 of template for `yy_nxt'.
 		do
 			yy_array_subcopy (an_array, <<
 			    0,   14,   15,   16,   15,   15,   17,   18,   19,   20,
@@ -1637,8 +1291,14 @@ feature {NONE} -- Table templates
 			  196,   95,  196,  196,  102,   96,  102,  102,  706,   96,
 			  206,  207,  129,  301,   79,   80,   81,   82,   83,   79,
 			   80,   81,   82,   83,   97,   98,   99,   97,   98,   97,
-			   97,   97,   97,   97,   97,   97,   97,   97,  100,  101,
+			   97,   97,   97,   97,   97,   97,   97,   97,  100,  101, yy_Dummy>>,
+			1, 200, 0)
+		end
 
+	yy_nxt_template_2 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #2 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			   97,  101,  101,  101,  101,  101,  101,   97,   97,   97,
 			   97,   97,   97,  101,  101,  101,  101,  101,  101,  101,
 			  101,  101,  101,  101,  101,  101,  101,  101,  101,  101,
@@ -1659,8 +1319,14 @@ feature {NONE} -- Table templates
 			  127,  195,  128,  199,  199,  199,  131,  134,  649,  171,
 			  125,  132,  123,  123,  443,  123,  648,  123,  123,  135,
 			  123,  636,  133,  136,  137,  138,  123,  123,  170,  123,
-			  139,  123,  123,  209,  123,  417,  125,  171,  214,  163,
+			  139,  123,  123,  209,  123,  417,  125,  171,  214,  163, yy_Dummy>>,
+			1, 200, 200)
+		end
 
+	yy_nxt_template_3 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #3 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  140,  125,  163,  123,  123,  205,  123,  164,  202,  202,
 			  125,  339,  137,  138,  165,  125,  142,  141,  139,  250,
 			  250,  250,  250,  250,  250,  248,  151,  125,  140,  143,
@@ -1681,8 +1347,14 @@ feature {NONE} -- Table templates
 			  173,  163,  123,  123,  165,  123,  164,  163,  418,  229,
 			  163,  195,  229,  165,  170,  164,  174,  176,  374,  172,
 			  220,  230,  165,  220,  452,  348,  125,  175,  173,  177,
-			  170,  163,  232,  178,  163,  183,  566,  348,  447,  164,
+			  170,  163,  232,  178,  163,  183,  566,  348,  447,  164, yy_Dummy>>,
+			1, 200, 400)
+		end
 
+	yy_nxt_template_4 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #4 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  170,  447,  340,  421,  174,  176,  165,  123,  123,  170,
 			  123,  163,  410,  410,  163,  175,  410,  177,  170,  164,
 			  374,  178,  233,  183,  163,  163,  165,  163,  163,  179,
@@ -1703,8 +1375,14 @@ feature {NONE} -- Table templates
 			  218,  563,  219,  219,  219,  219,  219,  219,  219,  219,
 			  219,  219,  219,  219,  219,  219,  219,  219,  219,  219,
 			  219,  219,  219,  219,  219,  238,  251,  251,  251,  251,
-			  251,  251,  255,  255,  255,  255,  255,  255,  123,  123,
+			  251,  251,  255,  255,  255,  255,  255,  255,  123,  123, yy_Dummy>>,
+			1, 200, 600)
+		end
 
+	yy_nxt_template_5 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #5 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  239,  123,  252,  116,  240,  117,  241,  253,  253,  253,
 			  253,  253,  253,  343,  219,  246,  123,  123,  223,  123,
 			  123,  123,  125,  123,  123,  123,  587,  123,  123,  123,
@@ -1726,10 +1404,11 @@ feature {NONE} -- Table templates
 			  125,  123,  225,  275,  225,  715,  125,  146,  144,  276,
 			  284,  224,  274,  278,  294,  278,  765,  125,  715,  223,
 			  603,  284,  125,  149,  146,  124,  124,  124,  124,  124, yy_Dummy>>,
-			1, 1000, 0)
+			1, 200, 800)
 		end
 
-	yy_nxt_template_2 (an_array: ARRAY [INTEGER])
+	yy_nxt_template_6 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #6 of template for `yy_nxt'.
 		do
 			yy_array_subcopy (an_array, <<
 			  124,  296,  279,  715,  718,  146,  280,  603,  284,  281,
@@ -1752,8 +1431,14 @@ feature {NONE} -- Table templates
 			  342,  165,  765,  195,  765,  765,  308,  309,  342,  342,
 			  311,  342,  199,  199,  199,  170,  312,  170,  163,  765,
 			  310,  163,  313,  218,  163,  765,  164,  163,  303,  303,
-			  303,  170,  164,  165,  765,  309,  765,  170,  311,  165,
+			  303,  170,  164,  165,  765,  309,  765,  170,  311,  165, yy_Dummy>>,
+			1, 200, 1000)
+		end
 
+	yy_nxt_template_7 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #7 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  765,  765,  765,  163,  312,  765,  163,  765,  310,  163,
 			  313,  164,  163,  163,  195,  314,  163,  164,  165,  765,
 			  765,  164,  765,  163,  165,  269,  163,  315,  165,  170,
@@ -1774,8 +1459,14 @@ feature {NONE} -- Table templates
 			  325,  723,  328,  329,  123,  123,  765,  123,  230,  331,
 			  765,  170,  765,  170,  723,  765,  330,  765,  326,  232,
 			  195,  765,  170,  765,  170,  765,  327,  765,  125,  723,
-			  328,  329,  372,  372,  372,  372,  372,  331,  344,  345,
+			  328,  329,  372,  372,  372,  372,  372,  331,  344,  345, yy_Dummy>>,
+			1, 200, 1200)
+		end
 
+	yy_nxt_template_8 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #8 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  345,  345,  345,  345,  330,  217,  217,  229,  217,  233,
 			  229,  353,  354,  354,  354,  354,  354,  354,  361,  230,
 			  361,  765,  765,  362,  362,  362,  362,  362,  362,  765,
@@ -1796,8 +1487,14 @@ feature {NONE} -- Table templates
 			  123,  765,  765,  765,  765,  346,  346,  346,  346,  346,
 			  346,  346,  346,  346,  346,  346,  125,  123,  123,  765,
 			  123,  125,  765,  765,  375,  119,  765,  123,  123,  645,
-			  123,  123,  123,  765,  123,  123,  123,  376,  123,  123,
+			  123,  123,  123,  765,  123,  123,  123,  376,  123,  123, yy_Dummy>>,
+			1, 200, 1400)
+		end
 
+	yy_nxt_template_9 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #9 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  123,  125,  123,  765,  123,  123,  645,  123,  765,  765,
 			  645,  125,  375,  123,  123,  125,  123,  377,  378,  125,
 			  765,  347,  348,  125,  347,  376,  673,  380,  125,  123,
@@ -1818,8 +1515,14 @@ feature {NONE} -- Table templates
 			  395,  765,  765,  125,  396,  396,  396,  396,  396,  396,
 			  123,  123,  125,  123,  765,  665,  666,  665,  666,  123,
 			  123,  765,  123,  765,  765,  765,  397,  397,  397,  397,
-			  397,  397,  765,  394,  125,  398,  398,  398,  398,  398,
+			  397,  397,  765,  394,  125,  398,  398,  398,  398,  398, yy_Dummy>>,
+			1, 200, 1600)
+		end
 
+	yy_nxt_template_10 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #10 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  398,  765,  765,  125,  124,  124,  124,  124,  124,  124,
 			  399,  765,  399,  765,  667,  394,  124,  124,  124,  124,
 			  124,  124,  123,  123,  394,  123,  123,  123,  765,  123,
@@ -1841,10 +1544,11 @@ feature {NONE} -- Table templates
 			  163,  163,  163,  765,  163,  164,  765,  164,  419,  164,
 			  765,  125,  165,  765,  165,  765,  165,  420,  422,  123,
 			  123,  765,  123,  163,  765,  765,  163,  170,  170,  170, yy_Dummy>>,
-			1, 1000, 1000)
+			1, 200, 1800)
 		end
 
-	yy_nxt_template_3 (an_array: ARRAY [INTEGER])
+	yy_nxt_template_11 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #11 of template for `yy_nxt'.
 		do
 			yy_array_subcopy (an_array, <<
 			  423,  164,  163,  425,  163,  163,  419,  163,  165,  115,
@@ -1867,8 +1571,14 @@ feature {NONE} -- Table templates
 			  164,  765,  164,  165,  436,  165,  765,  165,  560,  165,
 			  451,  451,  451,  451,  451,  451,  435,  765,  765,  560,
 			  760,  170,  438,  170,  492,  163,  765,  437,  163,  561,
-			  765,  765,  436,  164,  439,  678,  765,  440,  765,  170,
+			  765,  765,  436,  164,  439,  678,  765,  440,  765,  170, yy_Dummy>>,
+			1, 200, 2000)
+		end
 
+	yy_nxt_template_12 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #12 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  165,  170,  765,  170,  435,  170,  163,  560,  765,  163,
 			  438,  765,  765,  765,  164,  437,  163,  612,  765,  163,
 			  444,  165,  439,  444,  164,  440,  765,  765,  612,  765,
@@ -1889,8 +1599,14 @@ feature {NONE} -- Table templates
 			  123,  123,  123,  765,  123,  459,  123,  123,  765,  123,
 			  123,  123,  765,  123,  123,  123,  765,  123,  751,  123,
 			  123,  125,  123,  123,  123,  125,  123,  765,  123,  123,
-			  125,  123,  765,  765,  125,  751,  765,  765,  125,  751,
+			  125,  123,  765,  765,  125,  751,  765,  765,  125,  751, yy_Dummy>>,
+			1, 200, 2200)
+		end
 
+	yy_nxt_template_13 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #13 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  465,  123,  123,  125,  123,  765,  468,  125,  466,  467,
 			  765,  765,  125,  765,  752,  472,  473,  765,  123,  123,
 			  470,  123,  765,  751,  471,  125,  123,  123,  465,  123,
@@ -1911,8 +1627,14 @@ feature {NONE} -- Table templates
 			  124,  613,  694,  765,  282,  124,  765,  124,  765,  765,
 			  124,  765,  613,  694,  765,  765,  279,  482,  123,  123,
 			  125,  123,  613,  765,  765,  765,  124,  765,  124,  765,
-			  765,  765,  282,  124,  397,  397,  397,  397,  397,  397,
+			  765,  765,  282,  124,  397,  397,  397,  397,  397,  397, yy_Dummy>>,
+			1, 200, 2400)
+		end
 
+	yy_nxt_template_14 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #14 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  613,  765,  125,  486,  486,  486,  486,  486,  486,  483,
 			  123,  123,  765,  123,  123,  123,  765,  123,  124,  123,
 			  123,  765,  123,  123,  123,  493,  123,  412,  412,  412,
@@ -1933,8 +1655,14 @@ feature {NONE} -- Table templates
 			  765,  765,  765,  765,  164,  765,  502,  445,  170,  765,
 			  170,  165,  503,  765,  765,  765,  765,  506,  447,  508,
 			  765,  507,  765,  163,  163,  509,  163,  163,  170,  736,
-			  170,  164,  164,  765,  163,  765,  765,  163,  165,  165,
+			  170,  164,  164,  765,  163,  765,  765,  163,  165,  165, yy_Dummy>>,
+			1, 200, 2600)
+		end
 
+	yy_nxt_template_15 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #15 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  736,  510,  164,  163,  765,  765,  163,  170,  448,  165,
 			  736,  164,  512,  509,  765,  511,  163,  163,  165,  163,
 			  163,  765,  765,  765,  164,  164,  737,  765,  736,  510,
@@ -1956,10 +1684,11 @@ feature {NONE} -- Table templates
 			  526,  526,  526,  526,  526,  526,  360,  360,  360,  360,
 			  360,  360,  527,  528,  528,  528,  528,  528,  529,  529,
 			  529,  529,  529,  529,  456,  456,  456,  456,  456,  456, yy_Dummy>>,
-			1, 1000, 2000)
+			1, 200, 2800)
 		end
 
-	yy_nxt_template_4 (an_array: ARRAY [INTEGER])
+	yy_nxt_template_16 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #16 of template for `yy_nxt'.
 		do
 			yy_array_subcopy (an_array, <<
 			  765,  765,  765,  450,  367,  530,  530,  530,  530,  530,
@@ -1982,8 +1711,14 @@ feature {NONE} -- Table templates
 			  554,  554,  554,  554,  765,  553,  765,  552,  742,  765,
 			  765,  551,  765,  124,  765,  765,  125,  484,  484,  484,
 			  484,  484,  484,  765,  765,  486,  486,  486,  486,  486,
-			  486,  123,  123,  553,  123,  552,  765,  394,  765,  765,
+			  486,  123,  123,  553,  123,  552,  765,  394,  765,  765, yy_Dummy>>,
+			1, 200, 3000)
+		end
 
+	yy_nxt_template_17 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #17 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  765,  124,  765,  765,  765,  555,  765,  124,  123,  123,
 			  765,  123,  765,  123,  123,  125,  123,  586,  586,  586,
 			  586,  586,  586,  557,  411,  562,  562,  562,  562,  562,
@@ -2004,8 +1739,14 @@ feature {NONE} -- Table templates
 			  574,  433,  765,  517,  517,  517,  517,  517,  517,  170,
 			  170,  575,  591,  591,  591,  591,  591,  591,  571,  170,
 			  170,  123,  123,  576,  123,  765,  572,  573,  574,  170,
-			  170,  765,  163,  163,  765,  163,  163,  765,  765,  575,
+			  170,  765,  163,  163,  765,  163,  163,  765,  765,  575, yy_Dummy>>,
+			1, 200, 3200)
+		end
 
+	yy_nxt_template_18 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #18 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  164,  164,  765,  765,  765,  125,  765,  165,  165,  163,
 			  765,  576,  163,  163,  756,  163,  163,  164,  163,  163,
 			  765,  164,  163,  164,  165,  578,  765,  164,  165,  577,
@@ -2026,8 +1767,14 @@ feature {NONE} -- Table templates
 			  765,  765,  588,  593,  593,  593,  593,  593,  593,  594,
 			  594,  594,  594,  594,  594,  765,  589,  123,  123,  765,
 			  123,  531,  595,  595,  595,  595,  595,  595,  597,  597,
-			  597,  597,  597,  597,  123,  123,  765,  123,  765,  123,
+			  597,  597,  597,  597,  123,  123,  765,  123,  765,  123, yy_Dummy>>,
+			1, 200, 3400)
+		end
 
+	yy_nxt_template_19 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #19 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  123,  125,  123,  765,  252,  598,  123,  123,  765,  123,
 			  123,  123,  765,  123,  123,  123,  765,  123,  125,  765,
 			  765,  765,  599,  125,  123,  123,  765,  123,  765,  765,
@@ -2048,8 +1795,14 @@ feature {NONE} -- Table templates
 			  765,  123,  123,  165,  123,  611,  610,  504,  619,  619,
 			  619,  619,  619,  765,  163,  765,  618,  163,  499,  765,
 			  163,  765,  164,  163,  765,  125,  765,  765,  164,  165,
-			  163,  642,  765,  163,  765,  165,  765,  765,  164,  170,
+			  163,  642,  765,  163,  765,  165,  765,  765,  164,  170, yy_Dummy>>,
+			1, 200, 3600)
+		end
 
+	yy_nxt_template_20 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #20 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  163,  765,  620,  163,  618,  165,  163,  765,  164,  163,
 			  123,  123,  765,  123,  164,  165,  765,  765,  765,  642,
 			  163,  165,  621,  163,  765,  170,  765,  765,  164,  163,
@@ -2071,10 +1824,11 @@ feature {NONE} -- Table templates
 			  634,  533,  533,  533,  533,  533,  533,  637,  637,  637,
 			  637,  637,  637,  638,  638,  638,  638,  638,  638,  123,
 			  123,  765,  123,  765,  531,  639,  639,  639,  639,  639, yy_Dummy>>,
-			1, 1000, 3000)
+			1, 200, 3800)
 		end
 
-	yy_nxt_template_5 (an_array: ARRAY [INTEGER])
+	yy_nxt_template_21 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #21 of template for `yy_nxt'.
 		do
 			yy_array_subcopy (an_array, <<
 			  639,  123,  123,  765,  123,  123,  123,  765,  123,  123,
@@ -2097,8 +1851,14 @@ feature {NONE} -- Table templates
 			  164,  163,  765,  765,  765,  765,  164,  165,  765,  765,
 			  170,  765,  765,  165,  657,  587,  170,  631,  631,  631,
 			  631,  631,  631,  765,  658,  765,  170,  170,  765,  765,
-			  659,  633,  633,  633,  633,  633,  633,  765,  765,  765,
+			  659,  633,  633,  633,  633,  633,  633,  765,  765,  765, yy_Dummy>>,
+			1, 200, 4000)
+		end
 
+	yy_nxt_template_22 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #22 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  765,  765,  657,  170,  765,  765,  765,  765,  765,  170,
 			  123,  123,  658,  123,  588,  765,  765,  765,  659,  633,
 			  633,  633,  633,  633,  633,  660,  660,  660,  660,  660,
@@ -2119,8 +1879,14 @@ feature {NONE} -- Table templates
 			  765,  765,  765,  765,  170,  765,  170,  765,  765,  684,
 			  123,  123,  765,  123,  765,  682,  765,  681,  765,  765,
 			  170,  662,  662,  662,  662,  662,  662,  683,  765,  170,
-			  765,  170,  765,  170,  125,  765,  765,  684,  685,  685,
+			  765,  170,  765,  170,  125,  765,  765,  684,  685,  685, yy_Dummy>>,
+			1, 200, 4200)
+		end
 
+	yy_nxt_template_23 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #23 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  685,  685,  685,  685,  686,  686,  686,  686,  686,  686,
 			  538,  538,  538,  538,  538,  538,  687,  687,  687,  687,
 			  687,  687,  688,  688,  688,  688,  688,  688,  689,  689,
@@ -2141,8 +1907,14 @@ feature {NONE} -- Table templates
 			  123,  765,  123,  707,  708,  708,  708,  708,  708,  704,
 			  163,  163,  765,  163,  163,  765,  765,  765,  164,  164,
 			  765,  163,  765,  125,  163,  165,  165,  667,  765,  164,
-			  765,  702,  123,  123,  765,  123,  165,  704,  765,  765,
+			  765,  702,  123,  123,  765,  123,  165,  704,  765,  765, yy_Dummy>>,
+			1, 200, 4400)
+		end
 
+	yy_nxt_template_24 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #24 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  765,  765,  709,  713,  713,  713,  713,  713,  713,  123,
 			  123,  765,  123,  765,  123,  123,  125,  123,  765,  702,
 			  710,  170,  170,  765,  765,  711,  765,  765,  765,  765,
@@ -2163,8 +1935,14 @@ feature {NONE} -- Table templates
 			  123,  123,  125,  123,  164,  765,  765,  170,  725,  765,
 			  735,  165,  765,  729,  765,  738,  739,  739,  739,  739,
 			  739,  739,  765,  765,  125,  732,  740,  740,  740,  740,
-			  740,  740,  765,  765,  170,  765,  765,  765,  735,  765,
+			  740,  740,  765,  765,  170,  765,  765,  765,  735,  765, yy_Dummy>>,
+			1, 200, 4600)
+		end
 
+	yy_nxt_template_25 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #25 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  765,  765,  765,  738,  765,  765,  765,  170,  743,  743,
 			  743,  743,  743,  743,  728,  728,  728,  728,  728,  728,
 			  749,  749,  749,  749,  749,  749,  753,  753,  753,  753,
@@ -2186,10 +1964,11 @@ feature {NONE} -- Table templates
 			   88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
 			   88,   88,   88,   88,   88,   88,   91,   91,   91,   91,
 			   91,   91,   91,   91,   91,   91,   91,   91,   91,   91, yy_Dummy>>,
-			1, 1000, 4000)
+			1, 200, 4800)
 		end
 
-	yy_nxt_template_6 (an_array: ARRAY [INTEGER])
+	yy_nxt_template_26 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #26 of template for `yy_nxt'.
 		do
 			yy_array_subcopy (an_array, <<
 			   91,   91,   91,   91,   91,   91,   91,   91,   91,   91,
@@ -2212,8 +1991,14 @@ feature {NONE} -- Table templates
 			  194,  765,  194,  194,  194,  194,  194,  194,  194,  194,
 			  194,  194,  194,  194,  194,  194,  194,  194,  194,  194,
 			  765,  194,  194,  194,  194,  204,  204,  204,  204,  204,
-			  204,  204,  204,  204,  204,  204,  204,  204,  204,  204,
+			  204,  204,  204,  204,  204,  204,  204,  204,  204,  204, yy_Dummy>>,
+			1, 200, 5000)
+		end
 
+	yy_nxt_template_27 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #27 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  204,  204,  204,  204,  204,  204,  204,  204,  204,  204,
 			  204,  208,  208,  208,  208,  208,  208,  208,  208,  208,
 			  208,  208,  208,  208,  208,  208,  208,  208,  208,  208,
@@ -2234,8 +2019,14 @@ feature {NONE} -- Table templates
 			  111,  111,  111,  111,  111,  111,  111,  111,  111,  111,
 			  111,  111,  111,  111,  111,  111,  111,  111,  111,  111,
 			  111,  111,  111,  111,  111,  115,  115,  115,  765,  765,
-			  115,  115,  115,  115,  115,  115,  115,  115,  765,  115,
+			  115,  115,  115,  115,  115,  115,  115,  115,  765,  115, yy_Dummy>>,
+			1, 200, 5200)
+		end
 
+	yy_nxt_template_28 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #28 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  115,  115,  257,  765,  765,  257,  257,  257,  257,  257,
 			  257,  257,  257,  257,  257,  257,  765,  765,  257,  257,
 			  257,  206,  206,  206,  206,  206,  206,  206,  206,  765,
@@ -2256,8 +2047,14 @@ feature {NONE} -- Table templates
 			  303,  303,  303,  765,  303,  303,  303,  346,  346,  346,
 			  346,  346,  346,  346,  346,  346,  346,  346,  346,  346,
 			  346,  346,  346,  346,  346,  346,  346,  346,  346,  346,
-			  346,  346,  346,  650,  765,  765,  765,  650,  650,  765,
+			  346,  346,  346,  650,  765,  765,  765,  650,  650,  765, yy_Dummy>>,
+			1, 200, 5400)
+		end
 
+	yy_nxt_template_29 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #29 of template for `yy_nxt'.
+		do
+			yy_array_subcopy (an_array, <<
 			  765,  650,  650,  650,  650,  650,  650,  650,  765,  765,
 			  650,  650,  650,   13,  765,  765,  765,  765,  765,  765,
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
@@ -2270,7 +2067,7 @@ feature {NONE} -- Table templates
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
 
 			  765,  765,  765,  765, yy_Dummy>>,
-			1, 704, 5000)
+			1, 104, 5600)
 		end
 
 	yy_chk_template: SPECIAL [INTEGER]
@@ -2285,10 +2082,34 @@ feature {NONE} -- Table templates
 			yy_chk_template_4 (an_array)
 			yy_chk_template_5 (an_array)
 			yy_chk_template_6 (an_array)
+			yy_chk_template_7 (an_array)
+			yy_chk_template_8 (an_array)
+			yy_chk_template_9 (an_array)
+			yy_chk_template_10 (an_array)
+			yy_chk_template_11 (an_array)
+			yy_chk_template_12 (an_array)
+			yy_chk_template_13 (an_array)
+			yy_chk_template_14 (an_array)
+			yy_chk_template_15 (an_array)
+			yy_chk_template_16 (an_array)
+			yy_chk_template_17 (an_array)
+			yy_chk_template_18 (an_array)
+			yy_chk_template_19 (an_array)
+			yy_chk_template_20 (an_array)
+			yy_chk_template_21 (an_array)
+			yy_chk_template_22 (an_array)
+			yy_chk_template_23 (an_array)
+			yy_chk_template_24 (an_array)
+			yy_chk_template_25 (an_array)
+			yy_chk_template_26 (an_array)
+			yy_chk_template_27 (an_array)
+			yy_chk_template_28 (an_array)
+			yy_chk_template_29 (an_array)
 			Result := yy_fixed_array (an_array)
 		end
 
 	yy_chk_template_1 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #1 of template for `yy_chk'.
 		do
 			yy_array_subcopy (an_array, <<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -2311,8 +2132,14 @@ feature {NONE} -- Table templates
 			   76,   10,   76,   76,  102,    9,  102,  102,  693,   10,
 			   84,   84,   38,  160,    3,    3,    3,    3,    3,    4,
 			    4,    4,    4,    4,   11,   11,   11,   11,   11,   11,
-			   11,   11,   11,   11,   11,   11,   11,   11,   11,   11,
+			   11,   11,   11,   11,   11,   11,   11,   11,   11,   11, yy_Dummy>>,
+			1, 200, 0)
+		end
 
+	yy_chk_template_2 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #2 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			   11,   11,   11,   11,   11,   11,   11,   11,   11,   11,
 			   11,   11,   11,   11,   11,   11,   11,   11,   11,   11,
 			   11,   11,   11,   11,   11,   11,   11,   11,   11,   11,
@@ -2333,8 +2160,14 @@ feature {NONE} -- Table templates
 			   37,   81,   37,   79,   79,   79,   39,   42,  613,   58,
 			   44,   41,   45,   45,  339,   45,  612,   46,   46,   42,
 			   46,  594,   41,   43,   44,   44,   47,   47,   58,   47,
-			   44,   49,   49,  208,   49,  301,   45,   58,  213,   60,
+			   44,   49,   49,  208,   49,  301,   45,   58,  213,   60, yy_Dummy>>,
+			1, 200, 200)
+		end
 
+	yy_chk_template_3 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #3 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			   45,   46,   60,   51,   51,  204,   51,   60,   82,   82,
 			   47,  339,   44,   44,   60,   49,   47,   46,   44,  116,
 			  116,  116,  116,  116,  116,  588,   49,   51,   45,   47,
@@ -2355,8 +2188,14 @@ feature {NONE} -- Table templates
 			   59,   63,  124,  124,   62,  124,   63,   65,  303,  101,
 			   65,  200,  101,   63,   59,   65,   61,   62,  374,   59,
 			  220,  101,   65,  220,  364,  351,  124,   61,   59,   62,
-			   61,   64,  101,   63,   64,   65,  500,  346,  447,   64,
+			   61,   64,  101,   63,   64,   65,  500,  346,  447,   64, yy_Dummy>>,
+			1, 200, 400)
+		end
 
+	yy_chk_template_4 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #4 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			   62,  447,  341,  307,   61,   62,   64,  126,  126,   63,
 			  126,   66,  297,  410,   66,   61,  410,   62,   65,   66,
 			  257,   63,  101,   65,   67,   68,   66,   67,   68,   64,
@@ -2377,8 +2216,14 @@ feature {NONE} -- Table templates
 			   89,  495,   89,   89,   89,   89,   89,   89,   89,   89,
 			   89,   89,   89,   89,   89,   89,   89,   89,   89,   89,
 			   89,   89,   89,   89,   89,  109,  117,  117,  117,  117,
-			  117,  117,  119,  119,  119,  119,  119,  119,  127,  127,
+			  117,  117,  119,  119,  119,  119,  119,  119,  127,  127, yy_Dummy>>,
+			1, 200, 600)
+		end
 
+	yy_chk_template_5 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #5 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  109,  127,  117,  120,  109,  120,  109,  120,  120,  120,
 			  120,  120,  120,  224,   89,  360,  128,  128,  223,  128,
 			  129,  129,  127,  129,  130,  130,  527,  130,  131,  131,
@@ -2400,10 +2245,11 @@ feature {NONE} -- Table templates
 			  147,  152,   96,  142,   95,  705,  156,  147,  149,  143,
 			  146,   94,  141,  145,  154,  145,  145,  149,  705,   93,
 			  548,  147,  152,  147,  149,  150,  150,  150,  150,  150, yy_Dummy>>,
-			1, 1000, 0)
+			1, 200, 800)
 		end
 
-	yy_chk_template_2 (an_array: ARRAY [INTEGER])
+	yy_chk_template_6 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #6 of template for `yy_chk'.
 		do
 			yy_array_subcopy (an_array, <<
 			  150,  156,  145,  705,  707,  147,  145,  548,  149,  145,
@@ -2426,8 +2272,14 @@ feature {NONE} -- Table templates
 			  218,  175,    0,  334,    0,    0,  171,  172,  342,  342,
 			  174,  342,  332,  332,  332,  172,  175,  174,  176,    0,
 			  173,  176,  175,  218,  177,    0,  176,  177,  789,  789,
-			  789,  173,  177,  176,  342,  172,    0,  175,  174,  177,
+			  789,  173,  177,  176,  342,  172,    0,  175,  174,  177, yy_Dummy>>,
+			1, 200, 1000)
+		end
 
+	yy_chk_template_7 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #7 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    0,    0,  178,  175,    0,  178,    0,  173,  179,
 			  175,  178,  179,  181,  336,  176,  181,  179,  178,    0,
 			    0,  181,    0,  180,  179,  178,  180,  177,  181,  176,
@@ -2448,8 +2300,14 @@ feature {NONE} -- Table templates
 			  187,  716,  189,  190,  260,  260,    0,  260,  227,  192,
 			    0,  192,    0,  189,  716,    0,  191,    0,  188,  227,
 			  338,    0,  190,    0,  191,    0,  189,    0,  260,  716,
-			  189,  190,  254,  254,  254,  254,  254,  192,  225,  225,
+			  189,  190,  254,  254,  254,  254,  254,  192,  225,  225, yy_Dummy>>,
+			1, 200, 1200)
+		end
 
+	yy_chk_template_8 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #8 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  225,  225,  225,  225,  191,  214,  214,  229,  214,  227,
 			  229,  237,  237,  237,  237,  237,  237,  237,  246,  229,
 			  246,    0,    0,  246,  246,  246,  246,  246,  246,    0,
@@ -2470,8 +2328,14 @@ feature {NONE} -- Table templates
 			  259,    0,    0,    0,    0,  231,  231,  231,  231,  231,
 			  231,  231,  231,  231,  231,  231,  258,  261,  261,    0,
 			  261,  259,    0,    0,  258,  253,    0,  262,  262,  609,
-			  262,  263,  263,    0,  263,  264,  264,  259,  264,  265,
+			  262,  263,  263,    0,  263,  264,  264,  259,  264,  265, yy_Dummy>>,
+			1, 200, 1400)
+		end
 
+	yy_chk_template_9 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #9 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  265,  261,  265,    0,  266,  266,  609,  266,    0,    0,
 			  609,  262,  258,  267,  267,  263,  267,  261,  262,  264,
 			    0,  347,  347,  265,  347,  259,  645,  264,  266,  268,
@@ -2492,8 +2356,14 @@ feature {NONE} -- Table templates
 			  280,    0,    0,  280,  281,  281,  281,  281,  281,  281,
 			  282,  282,  281,  282,    0,  638,  638,  638,  638,  283,
 			  283,    0,  283,    0,    0,    0,  282,  282,  282,  282,
-			  282,  282,    0,  281,  282,  283,  283,  283,  283,  283,
+			  282,  282,    0,  281,  282,  283,  283,  283,  283,  283, yy_Dummy>>,
+			1, 200, 1600)
+		end
 
+	yy_chk_template_10 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #10 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  283,    0,    0,  283,  284,  284,  284,  284,  284,  284,
 			  285,    0,  285,  285,  638,  282,  286,  286,  286,  286,
 			  286,  286,  287,  287,  283,  287,  289,  289,    0,  289,
@@ -2515,10 +2385,11 @@ feature {NONE} -- Table templates
 			  310,  311,  309,    0,  311,  310,    0,  309,  304,  311,
 			    0,  402,  310,    0,  309,    0,  311,  305,  308,  379,
 			  379,    0,  379,  312,    0,    0,  312,  304,  305,  308, yy_Dummy>>,
-			1, 1000, 1000)
+			1, 200, 1800)
 		end
 
-	yy_chk_template_3 (an_array: ARRAY [INTEGER])
+	yy_chk_template_11 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #11 of template for `yy_chk'.
 		do
 			yy_array_subcopy (an_array, <<
 			  309,  312,  313,  311,  314,  313,  304,  314,  312,  773,
@@ -2541,8 +2412,14 @@ feature {NONE} -- Table templates
 			  327,    0,  328,  325,  324,  326,    0,  327,  491,  328,
 			  363,  363,  363,  363,  363,  363,  323,    0,    0,  491,
 			  754,  323,  326,  324,  651,  329,    0,  325,  329,  491,
-			    0,    0,  324,  329,  327,  651,    0,  328,    0,  325,
+			    0,    0,  324,  329,  327,  651,    0,  328,    0,  325, yy_Dummy>>,
+			1, 200, 2000)
+		end
 
+	yy_chk_template_12 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #12 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  329,  326,    0,  327,  323,  328,  330,  491,    0,  330,
 			  326,    0,    0,    0,  330,  325,  331,  560,    0,  331,
 			  344,  330,  327,  344,  331,  328,    0,    0,  560,    0,
@@ -2563,8 +2440,14 @@ feature {NONE} -- Table templates
 			  375,  376,  376,    0,  376,  370,  377,  377,    0,  377,
 			  378,  378,    0,  378,  381,  381,    0,  381,  747,  382,
 			  382,  375,  382,  383,  383,  376,  383,    0,  384,  384,
-			  377,  384,    0,    0,  378,  747,    0,    0,  381,  747,
+			  377,  384,    0,    0,  378,  747,    0,    0,  381,  747, yy_Dummy>>,
+			1, 200, 2200)
+		end
 
+	yy_chk_template_13 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #13 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  375,  387,  387,  382,  387,    0,  378,  383,  376,  377,
 			    0,    0,  384,    0,  748,  383,  384,    0,  386,  386,
 			  381,  386,    0,  747,  382,  387,  389,  389,  375,  389,
@@ -2585,8 +2468,14 @@ feature {NONE} -- Table templates
 			  393,  561,  676,    0,  396,  400,    0,  395,    0,    0,
 			  393,    0,  561,  676,    0,    0,  396,  393,  397,  397,
 			  405,  397,  561,    0,    0,    0,  393,    0,  393,    0,
-			    0,    0,  396,  400,  397,  397,  397,  397,  397,  397,
+			    0,    0,  396,  400,  397,  397,  397,  397,  397,  397, yy_Dummy>>,
+			1, 200, 2400)
+		end
 
+	yy_chk_template_14 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #14 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  561,    0,  397,  401,  401,  401,  401,  401,  401,  397,
 			  406,  406,    0,  406,  407,  407,    0,  407,  401,  408,
 			  408,    0,  408,  409,  409,  412,  409,  412,  412,  412,
@@ -2607,8 +2496,14 @@ feature {NONE} -- Table templates
 			    0,    0,    0,    0,  427,    0,  419,  444,  423,    0,
 			  424,  427,  420,    0,    0,    0,    0,  422,  444,  424,
 			    0,  423,    0,  428,  429,  426,  428,  429,  425,  730,
-			  426,  428,  429,    0,  430,    0,    0,  430,  428,  429,
+			  426,  428,  429,    0,  430,    0,    0,  430,  428,  429, yy_Dummy>>,
+			1, 200, 2600)
+		end
 
+	yy_chk_template_15 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #15 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  730,  427,  430,  431,    0,    0,  431,  427,  444,  430,
 			  730,  431,  429,  426,    0,  428,  432,  434,  431,  432,
 			  434,    0,    0,    0,  432,  434,  731,    0,  730,  427,
@@ -2630,10 +2525,11 @@ feature {NONE} -- Table templates
 			  450,  450,  450,  450,  450,  450,  451,  451,  451,  451,
 			  451,  451,  452,  452,  452,  452,  452,  452,  454,  454,
 			  454,  454,  454,  454,  455,  455,  455,  455,  455,  455, yy_Dummy>>,
-			1, 1000, 2000)
+			1, 200, 2800)
 		end
 
-	yy_chk_template_4 (an_array: ARRAY [INTEGER])
+	yy_chk_template_16 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #16 of template for `yy_chk'.
 		do
 			yy_array_subcopy (an_array, <<
 			    0,    0,    0,  449,  454,  456,  456,  456,  456,  456,
@@ -2656,8 +2552,14 @@ feature {NONE} -- Table templates
 			  482,  482,  482,  482,    0,  480,    0,  479,  737,    0,
 			    0,  478,    0,  482,    0,    0,  483,  484,  484,  484,
 			  484,  484,  484,    0,    0,  486,  486,  486,  486,  486,
-			  486,  488,  488,  480,  488,  479,    0,  483,    0,    0,
+			  486,  488,  488,  480,  488,  479,    0,  483,    0,    0, yy_Dummy>>,
+			1, 200, 3000)
+		end
 
+	yy_chk_template_17 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #17 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,  482,    0,    0,    0,  484,    0,  486,  490,  490,
 			    0,  490,    0,  489,  489,  488,  489,  526,  526,  526,
 			  526,  526,  526,  488,  493,  493,  493,  493,  493,  493,
@@ -2678,8 +2580,14 @@ feature {NONE} -- Table templates
 			  509,  517,    0,  517,  517,  517,  517,  517,  517,  506,
 			  507,  510,  531,  531,  531,  531,  531,  531,  506,  508,
 			  509,  546,  546,  510,  546,    0,  507,  508,  509,  511,
-			  510,    0,  512,  513,    0,  512,  513,    0,    0,  510,
+			  510,    0,  512,  513,    0,  512,  513,    0,    0,  510, yy_Dummy>>,
+			1, 200, 3200)
+		end
 
+	yy_chk_template_18 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #18 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  512,  513,    0,    0,    0,  546,    0,  512,  513,  514,
 			    0,  510,  514,  515,  752,  518,  515,  514,  518,  519,
 			    0,  515,  519,  518,  514,  513,    0,  519,  515,  512,
@@ -2700,8 +2608,14 @@ feature {NONE} -- Table templates
 			    0,    0,  528,  534,  534,  534,  534,  534,  534,  535,
 			  535,  535,  535,  535,  535,    0,  529,  540,  540,    0,
 			  540,  530,  536,  536,  536,  536,  536,  536,  539,  539,
-			  539,  539,  539,  539,  542,  542,    0,  542,    0,  544,
+			  539,  539,  539,  539,  542,  542,    0,  542,    0,  544, yy_Dummy>>,
+			1, 200, 3400)
+		end
 
+	yy_chk_template_19 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #19 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  544,  540,  544,    0,  539,  540,  545,  545,    0,  545,
 			  547,  547,    0,  547,  549,  549,    0,  549,  542,    0,
 			    0,    0,  542,  544,  550,  550,    0,  550,    0,    0,
@@ -2722,8 +2636,14 @@ feature {NONE} -- Table templates
 			    0,  601,  601,  568,  601,  559,  558,  569,  569,  569,
 			  569,  569,  569,    0,  572,    0,  568,  572,  565,    0,
 			  573,    0,  572,  573,    0,  601,    0,    0,  573,  572,
-			  574,  601,    0,  574,    0,  573,    0,    0,  574,  568,
+			  574,  601,    0,  574,    0,  573,    0,    0,  574,  568, yy_Dummy>>,
+			1, 200, 3600)
+		end
 
+	yy_chk_template_20 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #20 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  575,    0,  572,  575,  568,  574,  576,    0,  575,  576,
 			  598,  598,    0,  598,  576,  575,    0,    0,    0,  601,
 			  578,  576,  574,  578,    0,  572,    0,    0,  578,  577,
@@ -2745,10 +2665,11 @@ feature {NONE} -- Table templates
 			  591,  593,  593,  593,  593,  593,  593,  595,  595,  595,
 			  595,  595,  595,  596,  596,  596,  596,  596,  596,  599,
 			  599,    0,  599,    0,  590,  597,  597,  597,  597,  597, yy_Dummy>>,
-			1, 1000, 3000)
+			1, 200, 3800)
 		end
 
-	yy_chk_template_5 (an_array: ARRAY [INTEGER])
+	yy_chk_template_21 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #21 of template for `yy_chk'.
 		do
 			yy_array_subcopy (an_array, <<
 			  597,  604,  604,    0,  604,  605,  605,    0,  605,  606,
@@ -2771,8 +2692,14 @@ feature {NONE} -- Table templates
 			  629,  630,    0,    0,    0,    0,  630,  629,    0,    0,
 			  625,    0,    0,  630,  627,  631,  626,  631,  631,  631,
 			  631,  631,  631,    0,  629,    0,  627,  628,    0,    0,
-			  630,  632,  632,  632,  632,  632,  632,    0,    0,    0,
+			  630,  632,  632,  632,  632,  632,  632,    0,    0,    0, yy_Dummy>>,
+			1, 200, 4000)
+		end
 
+	yy_chk_template_22 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #22 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    0,  627,  629,    0,    0,    0,    0,    0,  630,
 			  671,  671,  629,  671,  631,    0,    0,    0,  630,  633,
 			  633,  633,  633,  633,  633,  634,  634,  634,  634,  634,
@@ -2793,8 +2720,14 @@ feature {NONE} -- Table templates
 			    0,    0,    0,    0,  655,    0,  656,    0,    0,  658,
 			  674,  674,    0,  674,    0,  656,    0,  655,    0,    0,
 			  657,  661,  661,  661,  661,  661,  661,  657,    0,  658,
-			    0,  659,    0,  682,  674,    0,    0,  658,  662,  662,
+			    0,  659,    0,  682,  674,    0,    0,  658,  662,  662, yy_Dummy>>,
+			1, 200, 4200)
+		end
 
+	yy_chk_template_23 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #23 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  662,  662,  662,  662,  663,  663,  663,  663,  663,  663,
 			  664,  664,  664,  664,  664,  664,  665,  665,  665,  665,
 			  665,  665,  666,  666,  666,  666,  666,  666,  668,  668,
@@ -2815,8 +2748,14 @@ feature {NONE} -- Table templates
 			  690,    0,  690,  696,  696,  696,  696,  696,  696,  692,
 			  697,  698,    0,  697,  698,    0,    0,    0,  697,  698,
 			    0,  699,    0,  690,  699,  697,  698,  688,    0,  699,
-			    0,  690,  702,  702,    0,  702,  699,  692,    0,    0,
+			    0,  690,  702,  702,    0,  702,  699,  692,    0,    0, yy_Dummy>>,
+			1, 200, 4400)
+		end
 
+	yy_chk_template_24 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #24 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    0,  697,  701,  701,  701,  701,  701,  701,  703,
 			  703,    0,  703,    0,  704,  704,  702,  704,    0,  690,
 			  698,  697,  698,    0,    0,  699,    0,    0,    0,    0,
@@ -2837,8 +2776,14 @@ feature {NONE} -- Table templates
 			  735,  735,  729,  735,  738,    0,    0,  725,  719,    0,
 			  729,  738,    0,  721,    0,  732,  733,  733,  733,  733,
 			  733,  733,    0,    0,  735,  725,  734,  734,  734,  734,
-			  734,  734,    0,    0,  732,    0,    0,    0,  729,    0,
+			  734,  734,    0,    0,  732,    0,    0,    0,  729,    0, yy_Dummy>>,
+			1, 200, 4600)
+		end
 
+	yy_chk_template_25 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #25 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    0,    0,  732,    0,    0,    0,  738,  739,  739,
 			  739,  739,  739,  739,  743,  743,  743,  743,  743,  743,
 			  744,  744,  744,  744,  744,  744,  749,  749,  749,  749,
@@ -2860,10 +2805,11 @@ feature {NONE} -- Table templates
 			  768,  768,  768,  768,  768,  768,  768,  768,  768,  768,
 			  768,  768,  768,  768,  768,  768,  769,  769,  769,  769,
 			  769,  769,  769,  769,  769,  769,  769,  769,  769,  769, yy_Dummy>>,
-			1, 1000, 4000)
+			1, 200, 4800)
 		end
 
-	yy_chk_template_6 (an_array: ARRAY [INTEGER])
+	yy_chk_template_26 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #26 of template for `yy_chk'.
 		do
 			yy_array_subcopy (an_array, <<
 			  769,  769,  769,  769,  769,  769,  769,  769,  769,  769,
@@ -2886,8 +2832,14 @@ feature {NONE} -- Table templates
 			  778,    0,  778,  778,  778,  778,  778,  778,  778,  778,
 			  778,  778,  778,  778,  778,  778,  778,  778,  778,  778,
 			    0,  778,  778,  778,  778,  779,  779,  779,  779,  779,
-			  779,  779,  779,  779,  779,  779,  779,  779,  779,  779,
+			  779,  779,  779,  779,  779,  779,  779,  779,  779,  779, yy_Dummy>>,
+			1, 200, 5000)
+		end
 
+	yy_chk_template_27 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #27 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  779,  779,  779,  779,  779,  779,  779,  779,  779,  779,
 			  779,  780,  780,  780,  780,  780,  780,  780,  780,  780,
 			  780,  780,  780,  780,  780,  780,  780,  780,  780,  780,
@@ -2908,8 +2860,14 @@ feature {NONE} -- Table templates
 			  786,  786,  786,  786,  786,  786,  786,  786,  786,  786,
 			  786,  786,  786,  786,  786,  786,  786,  786,  786,  786,
 			  786,  786,  786,  786,  786,  787,  787,  787,    0,    0,
-			  787,  787,  787,  787,  787,  787,  787,  787,    0,  787,
+			  787,  787,  787,  787,  787,  787,  787,  787,    0,  787, yy_Dummy>>,
+			1, 200, 5200)
+		end
 
+	yy_chk_template_28 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #28 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			  787,  787,  788,    0,    0,  788,  788,  788,  788,  788,
 			  788,  788,  788,  788,  788,  788,    0,    0,  788,  788,
 			  788,  790,  790,  790,  790,  790,  790,  790,  790,    0,
@@ -2930,8 +2888,14 @@ feature {NONE} -- Table templates
 			  795,  795,  795,    0,  795,  795,  795,  796,  796,  796,
 			  796,  796,  796,  796,  796,  796,  796,  796,  796,  796,
 			  796,  796,  796,  796,  796,  796,  796,  796,  796,  796,
-			  796,  796,  796,  798,    0,    0,    0,  798,  798,    0,
+			  796,  796,  796,  798,    0,    0,    0,  798,  798,    0, yy_Dummy>>,
+			1, 200, 5400)
+		end
 
+	yy_chk_template_29 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #29 of template for `yy_chk'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,  798,  798,  798,  798,  798,  798,  798,    0,    0,
 			  798,  798,  798,  765,  765,  765,  765,  765,  765,  765,
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
@@ -2944,13 +2908,26 @@ feature {NONE} -- Table templates
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
 
 			  765,  765,  765,  765, yy_Dummy>>,
-			1, 704, 5000)
+			1, 104, 5600)
 		end
 
 	yy_base_template: SPECIAL [INTEGER]
 			-- Template for `yy_base'
+		local
+			an_array: ARRAY [INTEGER]
 		once
-			Result := yy_fixed_array (<<
+			create an_array.make_filled (0, 0, 798)
+			yy_base_template_1 (an_array)
+			yy_base_template_2 (an_array)
+			yy_base_template_3 (an_array)
+			yy_base_template_4 (an_array)
+			Result := yy_fixed_array (an_array)
+		end
+
+	yy_base_template_1 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #1 of template for `yy_base'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    0,    0,   88,   93,   75,   77,   69,   70,   99,
 			  103,  183,    0, 1077, 5613,  105, 1073, 1036, 1052, 5613,
 			   84,    0, 5613, 5613, 5613, 5613, 1039,  101, 1028,  260,
@@ -2971,8 +2948,14 @@ feature {NONE} -- Table templates
 			  103,  843, 5613,  298,  882,    0,  875, 1078, 1080, 1084,
 			  823, 1103, 1122, 1138, 1124, 1144, 1176, 1182, 1201, 1207,
 			 1221, 1211, 1265, 1242, 1246, 1292, 1296, 1298, 1302, 1320,
-			 1329, 1331, 1318, 5613,  872, 5613,  506, 5613, 5613,  658,
+			 1329, 1331, 1318, 5613,  872, 5613,  506, 5613, 5613,  658, yy_Dummy>>,
+			1, 200, 0)
+		end
 
+	yy_base_template_2 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #2 of template for `yy_base'.
+		do
+			yy_array_subcopy (an_array, <<
 			  564,  674,  749, 1026,  388, 5613,  817,  502,  376,  815,
 			  438,  808, 5613,  370, 1403, 5613, 5613,  828, 1155, 5613,
 			  578,  776,  788,  815,  810, 1380,  153, 1354,  739, 1405,
@@ -2993,8 +2976,14 @@ feature {NONE} -- Table templates
 			  781, 2042, 2256, 2152,  523, 2266, 2276, 2296, 2282, 2302,
 			 2308, 2321, 2327, 2333,  550, 2355, 2359, 2364, 2368, 1987,
 			 1885, 2372, 2377, 2381, 2386, 1003, 2416, 2399, 2266, 2424,
-			 2436, 2453, 2445, 2509, 2432, 2502, 2515, 2576, 2465, 2492,
+			 2436, 2453, 2445, 2509, 2432, 2502, 2515, 2576, 2465, 2492, yy_Dummy>>,
+			1, 200, 200)
+		end
 
+	yy_base_template_3 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #3 of template for `yy_base'.
+		do
+			yy_array_subcopy (an_array, <<
 			 2532, 2585, 1955, 2468, 1011, 2554, 2608, 2612, 2617, 2621,
 			  611,  674, 2609, 2647,  882, 2656, 2669,  101,  493, 2693,
 			 2695, 2630, 2704, 2715, 2717, 2735, 2737, 2754, 2781, 2782,
@@ -3015,8 +3004,14 @@ feature {NONE} -- Table templates
 			 2188, 2532, 3694,  840, 3704, 3723,  416, 3647, 3746, 3749,
 			  419, 3644, 3772, 3778, 3788, 3798, 3804, 3827, 3818, 3838,
 			 3844, 3868, 3872, 3858, 3891, 3893, 3894, 3919,  408, 3930,
-			 3937, 3947,  807, 3953,  366, 3959, 3965, 3977, 3808, 3987,
+			 3937, 3947,  807, 3953,  366, 3959, 3965, 3977, 3808, 3987, yy_Dummy>>,
+			1, 200, 400)
+		end
 
+	yy_base_template_4 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #4 of template for `yy_base'.
+		do
+			yy_array_subcopy (an_array, <<
 			 3731, 3759, 3881,  981, 3999, 4003, 4007, 4012, 4016, 1560,
 			 4025, 4038,  361,  353,    0,  324,  888, 4047, 4045, 4055,
 			 4078, 4084, 4094, 4103, 4104, 4117, 4123, 4133, 4134, 4150,
@@ -3037,13 +3032,27 @@ feature {NONE} -- Table templates
 			 5613, 4844, 4855, 4861, 4867, 5613, 4907, 4933, 4959, 4985,
 			 5011, 5037, 4877, 2000, 5062, 5083, 5108, 5133, 5158, 5184,
 			 5210, 5236, 5262, 5287, 5312, 5333, 5358, 5376, 5395, 1165,
-			 5420, 5446, 5471, 5497, 5523, 5541, 5566, 4884, 5587, yy_Dummy>>)
+			 5420, 5446, 5471, 5497, 5523, 5541, 5566, 4884, 5587, yy_Dummy>>,
+			1, 199, 600)
 		end
 
 	yy_def_template: SPECIAL [INTEGER]
 			-- Template for `yy_def'
+		local
+			an_array: ARRAY [INTEGER]
 		once
-			Result := yy_fixed_array (<<
+			create an_array.make_filled (0, 0, 798)
+			yy_def_template_1 (an_array)
+			yy_def_template_2 (an_array)
+			yy_def_template_3 (an_array)
+			yy_def_template_4 (an_array)
+			Result := yy_fixed_array (an_array)
+		end
+
+	yy_def_template_1 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #1 of template for `yy_def'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,  765,    1,  766,  766,  767,  767,  768,  768,  769,
 			  769,  765,   11,  765,  765,  765,  765,  765,  770,  765,
 			  771,  772,  765,  765,  765,  765,  765,  765,  773,  765,
@@ -3064,8 +3073,14 @@ feature {NONE} -- Table templates
 			  775,  776,  765,  765,  765,  789,  777,  777,  777,  777,
 			  765,  777,  777,  777,  777,  777,  777,  777,  777,  777,
 			  777,  777,  777,  777,  777,  777,  777,  777,  777,  777,
-			  777,  777,  777,  765,  778,  765,  765,  765,  765,  778,
+			  777,  777,  777,  765,  778,  765,  765,  765,  765,  778, yy_Dummy>>,
+			1, 200, 0)
+		end
 
+	yy_def_template_2 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #2 of template for `yy_def'.
+		do
+			yy_array_subcopy (an_array, <<
 			  778,  778,  778,  778,  779,  765,  790,  779,  780,  791,
 			  780,  790,  765,  781,  782,  765,  765,  214,  792,  765,
 			  765,  765,  765,  765,  793,  765,  783,  783,  765,  765,
@@ -3086,8 +3101,14 @@ feature {NONE} -- Table templates
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
 			  765,  765,  765,  765,  788,  774,  774,  774,  774,  774,
 			  774,  774,  774,  774,  774,  765,  774,  774,  774,  774,
-			  774,  774,  765,  145,  148,  393,  393,  774,  145,  765,
+			  774,  774,  765,  145,  148,  393,  393,  774,  145,  765, yy_Dummy>>,
+			1, 200, 200)
+		end
 
+	yy_def_template_3 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #3 of template for `yy_def'.
+		do
+			yy_array_subcopy (an_array, <<
 			  397,  397,  774,  774,  765,  774,  774,  774,  774,  774,
 			  765,  775,  775,  775,  775,  775,  775,  775,  765,  777,
 			  777,  765,  777,  777,  777,  777,  777,  777,  777,  777,
@@ -3108,8 +3129,14 @@ feature {NONE} -- Table templates
 			  765,  765,  775,  765,  775,  775,  775,  765,  777,  765,
 			  765,  777,  777,  777,  777,  777,  777,  777,  777,  777,
 			  777,  777,  777,  777,  777,  777,  765,  765,  765,  765,
-			  765,  765,  765,  765,  765,  765,  765,  765,  774,  774,
+			  765,  765,  765,  765,  765,  765,  765,  765,  774,  774, yy_Dummy>>,
+			1, 200, 400)
+		end
 
+	yy_def_template_4 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #4 of template for `yy_def'.
+		do
+			yy_array_subcopy (an_array, <<
 			  774,  774,  774,  765,  774,  774,  774,  774,  774,  765,
 			  774,  774,  765,  765,  797,  765,  765,  765,  777,  765,
 			  777,  777,  777,  777,  777,  777,  777,  777,  777,  777,
@@ -3130,13 +3157,25 @@ feature {NONE} -- Table templates
 			  765,  765,  765,  765,  765,    0,  765,  765,  765,  765,
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
 			  765,  765,  765,  765,  765,  765,  765,  765,  765,  765,
-			  765,  765,  765,  765,  765,  765,  765,  765,  765, yy_Dummy>>)
+			  765,  765,  765,  765,  765,  765,  765,  765,  765, yy_Dummy>>,
+			1, 199, 600)
 		end
 
 	yy_ec_template: SPECIAL [INTEGER]
 			-- Template for `yy_ec'
+		local
+			an_array: ARRAY [INTEGER]
 		once
-			Result := yy_fixed_array (<<
+			create an_array.make_filled (0, 0, 256)
+			yy_ec_template_1 (an_array)
+			yy_ec_template_2 (an_array)
+			Result := yy_fixed_array (an_array)
+		end
+
+	yy_ec_template_1 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #1 of template for `yy_ec'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
 			    3,    1,    1,    4,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -3157,14 +3196,21 @@ feature {NONE} -- Table templates
 			   85,   85,   85,   85,   85,   85,   85,   85,   85,   85,
 			   85,   85,   85,   85,   85,   85,   85,   85,   85,   85,
 			   85,   85,   85,   85,   85,   85,   85,   85,   85,   85,
-			   85,   85,    1,    1,   86,   86,   86,   86,   86,   86,
+			   85,   85,    1,    1,   86,   86,   86,   86,   86,   86, yy_Dummy>>,
+			1, 200, 0)
+		end
 
+	yy_ec_template_2 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #2 of template for `yy_ec'.
+		do
+			yy_array_subcopy (an_array, <<
 			   86,   86,   86,   86,   86,   86,   86,   86,   86,   86,
 			   86,   86,   86,   86,   86,   86,   86,   86,   86,   86,
 			   86,   86,   86,   86,   87,   88,   88,   88,   88,   88,
 			   88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
 			   89,   90,   90,   90,   90,   90,   90,   90,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
+			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>,
+			1, 57, 200)
 		end
 
 	yy_meta_template: SPECIAL [INTEGER]
@@ -3185,8 +3231,21 @@ feature {NONE} -- Table templates
 
 	yy_accept_template: SPECIAL [INTEGER]
 			-- Template for `yy_accept'
+		local
+			an_array: ARRAY [INTEGER]
 		once
-			Result := yy_fixed_array (<<
+			create an_array.make_filled (0, 0, 765)
+			yy_accept_template_1 (an_array)
+			yy_accept_template_2 (an_array)
+			yy_accept_template_3 (an_array)
+			yy_accept_template_4 (an_array)
+			Result := yy_fixed_array (an_array)
+		end
+
+	yy_accept_template_1 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #1 of template for `yy_accept'.
+		do
+			yy_array_subcopy (an_array, <<
 			    0,    0,    0,    0,    0,  110,  110,    0,    0,    0,
 			    0,    0,    0,  141,  139,    1,    2,   15,  123,   18,
 			  139,   16,   17,    7,    6,   13,    5,   11,    8,  115,
@@ -3207,8 +3266,14 @@ feature {NONE} -- Table templates
 			    0,    0,  114,    0,    0,    0,  106,  106,  106,  106,
 			    0,  106,  106,  106,  106,  106,  106,  106,  106,  106,
 			  106,  106,  106,  106,  106,  106,   39,  106,  106,  106,
-			  106,  106,  106,  109,  127,  129,  128,  125,  124,  126,
+			  106,  106,  106,  109,  127,  129,  128,  125,  124,  126, yy_Dummy>>,
+			1, 200, 0)
+		end
 
+	yy_accept_template_2 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #2 of template for `yy_accept'.
+		do
+			yy_array_subcopy (an_array, <<
 			  127,  127,  127,  127,  110,  113,    0,  110,    0,    0,
 			    0,  111,  112,    0,    0,  102,  100,  100,    0,  101,
 			    0,    0,    0,   68,    0,    0,    0,    0,   76,    0,
@@ -3229,8 +3294,14 @@ feature {NONE} -- Table templates
 			  121,    0,  121,    0,    0,    0,  117,    0,    0,    0,
 			  120,  115,    0,    0,  104,  103,  103,  103,  103,  103,
 			   37,  103,  103,  103,  103,    0,  103,  103,  103,  103,
-			  103,  103,    0,  103,   87,  103,  103,  103,  103,    0,
+			  103,  103,    0,  103,   87,  103,  103,  103,  103,    0, yy_Dummy>>,
+			1, 200, 200)
+		end
 
+	yy_accept_template_3 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #3 of template for `yy_accept'.
+		do
+			yy_array_subcopy (an_array, <<
 			   87,   87,   87,   36,    0,   43,  103,  103,  103,  103,
 			   73,    0,    0,    0,    0,    0,    0,    0,    0,  106,
 			  106,    0,  106,  106,  106,   37,  106,  106,  106,  106,
@@ -3251,8 +3322,14 @@ feature {NONE} -- Table templates
 			    0,    0,    0,    0,    0,    0,    0,    0,  106,    0,
 			    0,   58,  106,   59,  106,  106,   46,  106,  106,  106,
 			  106,  106,  106,   52,  106,  106,    0,    0,  107,    0,
-			  118,    0,  121,    0,   86,    0,    0,  119,  103,  103,
+			  118,    0,  121,    0,   86,    0,    0,  119,  103,  103, yy_Dummy>>,
+			1, 200, 400)
+		end
 
+	yy_accept_template_4 (an_array: ARRAY [INTEGER])
+			-- Fill chunk #4 of template for `yy_accept'.
+		do
+			yy_array_subcopy (an_array, <<
 			   56,  103,   45,    0,   42,   55,   34,  103,   50,    0,
 			  103,  103,    0,    0,    0,    0,    0,    0,  106,    0,
 			  106,   56,  106,   45,   42,   55,   34,  106,   50,  106,
@@ -3270,7 +3347,8 @@ feature {NONE} -- Table templates
 			    0,    0,  106,    0,    0,   54,    0,    0,   54,    0,
 			   81,    0,    0,    0,    0,    0,   81,    0,    0,    0,
 			    0,    0,    0,    0,   80,   93,   94,    0,    0,    0,
-			   80,    0,   80,    0,    0,    0, yy_Dummy>>)
+			   80,    0,   80,    0,    0,    0, yy_Dummy>>,
+			1, 166, 600)
 		end
 
 feature {NONE} -- Constants
