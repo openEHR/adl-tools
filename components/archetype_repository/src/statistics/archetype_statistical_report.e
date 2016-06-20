@@ -17,9 +17,9 @@ create
 
 feature -- Initialisation
 
-	make (a_bmm_schema: BMM_SCHEMA)
+	make (an_rm: BMM_MODEL)
 		do
-			bmm_schema :=  a_bmm_schema
+			ref_model :=  an_rm
 			Archetype_metric_names.do_all (
 				agent (metric_name: STRING)
 					do
@@ -31,12 +31,12 @@ feature -- Initialisation
 			-- no 'LOCATABLE' or equivalent class declared, create a default table. Additionally create a
 			-- primitive types table (for nodes that archetype RM types like String, Integer etc), since this can
 			-- always be detected
-			if attached bmm_schema.archetype_parent_class as apc then
+			if attached ref_model.archetype_parent_class as apc then
 				rm_grouped_class_table.put (default_rm_class_table, apc)
 			else
 				rm_grouped_class_table.put (default_rm_class_table, "Any")
 			end
-			if attached bmm_schema.archetype_data_value_parent_class as dvpc then
+			if attached ref_model.archetype_data_value_parent_class as dvpc then
 				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), dvpc)
 			end
 			rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), Rm_primitive_group_key)
@@ -74,7 +74,7 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	bmm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 
 feature -- Modification
 
@@ -82,12 +82,12 @@ feature -- Modification
 		local
 			rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 		do
-			if bmm_schema.is_primitive_type (a_stat_accum.rm_class_name) and then attached rm_grouped_class_table.item (Rm_primitive_group_key) as rgct_prim then
+			if ref_model.is_primitive_type (a_stat_accum.rm_class_name) and then attached rm_grouped_class_table.item (Rm_primitive_group_key) as rgct_prim then
 				rm_class_table := rgct_prim
-			elseif attached bmm_schema.archetype_parent_class as apc and then bmm_schema.is_descendant_of (a_stat_accum.rm_class_name, apc) and then
+			elseif attached ref_model.archetype_parent_class as apc and then ref_model.is_descendant_of (a_stat_accum.rm_class_name, apc) and then
 				attached rm_grouped_class_table.item (apc) as rgct_apc then
 				rm_class_table := rgct_apc
-			elseif attached bmm_schema.archetype_data_value_parent_class as dvpc and then bmm_schema.is_descendant_of (a_stat_accum.rm_class_name, dvpc) and then
+			elseif attached ref_model.archetype_data_value_parent_class as dvpc and then ref_model.is_descendant_of (a_stat_accum.rm_class_name, dvpc) and then
 				attached rm_grouped_class_table.item (dvpc) as rgct_dvpc then
 				rm_class_table := rgct_dvpc
 			else
@@ -114,7 +114,7 @@ feature -- Modification
 	merge (other: like Current)
 			-- merge another stats report into this one, creating aggregated statistics
 		require
-			other.bmm_schema = bmm_schema
+			other.ref_model = ref_model
 		local
 			merged_class_stats: RM_CLASS_STATISTICS
 		do
@@ -146,9 +146,9 @@ feature -- Modification
 feature -- Copying
 
 	duplicate: like Current
-			-- safe duplicate with full copies of states, but reference copy of `bmm_schema'
+			-- safe duplicate with full copies of states, but reference copy of `ref_model'
 		do
-			create Result.make (bmm_schema)
+			create Result.make (ref_model)
 			Result.archetype_metrics.copy (archetype_metrics.deep_twin)
 			Result.rm_grouped_class_table.copy (rm_grouped_class_table.deep_twin)
 		end

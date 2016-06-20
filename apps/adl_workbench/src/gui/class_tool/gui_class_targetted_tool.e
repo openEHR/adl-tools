@@ -22,7 +22,7 @@ feature -- Access
 	source: detachable BMM_CLASS
 			-- class definition to which this tool is targetted
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 		attribute
 			create Result.default_create
 		end
@@ -47,8 +47,8 @@ feature -- Commands
 		do
 			differential_view := differential_view_flag
 			gui_tool_populate (a_source)
-			check attached a_source.bmm_schema as sch then
-				rm_schema := sch
+			check attached a_source.bmm_model as mod then
+				ref_model := mod
 			end
 		end
 

@@ -22,14 +22,14 @@ create
 
 feature -- Initialisation
 
-	make (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (an_archetype: ARCHETYPE; an_rm: BMM_MODEL)
 		do
 			target := an_archetype
-			rm_schema := an_rm_schema
-			create stats.make (rm_schema)
+			ref_model := an_rm
+			create stats.make (ref_model)
 		end
 
-	make_specialised (an_archetype: ARCHETYPE; a_flat_parent: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make_specialised (an_archetype: ARCHETYPE; a_flat_parent: ARCHETYPE; an_rm_schema: BMM_MODEL)
 		require
 			a_flat_parent.is_flat
 		do
@@ -43,9 +43,6 @@ feature -- Access
 			-- differential archetype
 
 	flat_parent: detachable ARCHETYPE
-
-	rm_schema: BMM_SCHEMA
-			-- schema for the `target'			
 
 	stats: ARCHETYPE_STATISTICAL_REPORT
 
@@ -86,6 +83,9 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
+	ref_model: BMM_MODEL
+			-- schema for the `target'			
+
 	node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			stat_accums: ARRAYED_LIST [RM_CLASS_STATISTICS]
@@ -102,12 +102,12 @@ feature {NONE} -- Implementation
 				total_node_count := total_node_count + 1
 
 				-- capture LOCATABLE node count
-				if attached rm_schema.archetype_parent_class as apc and then
-					rm_schema.is_descendant_of (co.rm_type_name, apc)
+				if attached ref_model.archetype_parent_class as apc and then
+					ref_model.is_descendant_of (co.rm_type_name, apc)
 				then
 					locatable_node_count := locatable_node_count + 1
-				elseif attached rm_schema.archetype_data_value_parent_class as dvpc and then
-					rm_schema.is_descendant_of (co.rm_type_name, dvpc)
+				elseif attached ref_model.archetype_data_value_parent_class as dvpc and then
+					ref_model.is_descendant_of (co.rm_type_name, dvpc)
 				then
 					data_value_node_count := data_value_node_count + 1
 				end
@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 									is_root_flag := att_parent_co.is_root
 								end
 							else
-								bmm_class_def := rm_schema.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
+								bmm_class_def := ref_model.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
 								co_type_name := bmm_class_def.name
 								is_root_flag := False
 							end

@@ -30,16 +30,16 @@ create
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm: BMM_MODEL)
 		local
 			an_auth_flat_parent: detachable AUTHORED_ARCHETYPE
 		do
-			precursor (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
+			precursor (an_arch_diff_child, an_arch_flat_parent, an_rm)
 			if attached {AUTHORED_ARCHETYPE} an_arch_diff_child as auth_arch then
 				if attached {AUTHORED_ARCHETYPE} an_arch_flat_parent as auth_arch_flat_parent then
 					an_auth_flat_parent := auth_arch_flat_parent
 				end
-				create auth_arch_validator.initialise (auth_arch, an_auth_flat_parent, an_rm_schema)
+				create auth_arch_validator.initialise (auth_arch, an_auth_flat_parent, an_rm)
 			else
 				create auth_arch_validator.default_create
 			end
@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 				across supp_csr.item as car_csr loop
 					create filler_id.make_from_string (car_csr.item.archetype_ref)
 					if not (car_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
-						rm_schema.type_conforms_to (filler_id.rm_class, car_csr.item.rm_type_name))
+						ref_model.type_conforms_to (filler_id.rm_class, car_csr.item.rm_type_name))
 					then
 						add_error (ec_VARXTV, <<car_csr.item.path, car_csr.item.archetype_ref, car_csr.item.rm_type_name>>)
 					end

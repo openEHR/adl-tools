@@ -21,34 +21,34 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+	make (aca: ARCH_LIB_ARCHETYPE; an_rm: BMM_MODEL; differential_view_flag: BOOLEAN)
 		require
 			aca.is_valid
 		do
 			source := aca
 			in_differential_view := differential_view_flag
-			rm_schema := an_rm_schema
+			ref_model := an_rm
 			archetype := aca.select_archetype (differential_view_flag, False)
 			flat_archetype := source.flat_archetype
 			flat_terminology := source.flat_archetype.terminology
-			if aom_profiles_access.has_profile_for_rm_schema (an_rm_schema.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm_schema.schema_id)
+			if aom_profiles_access.has_profile_for_rm_schema (an_rm.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm.schema_id)
 			end
 		end
 
-	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm: BMM_MODEL; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		require
 			aca.is_valid
 		do
 			source := aca
 			in_differential_view := False
-			rm_schema := an_rm_schema
+			ref_model := an_rm
 			archetype := source.flat_archetype_editable
 			flat_archetype := source.flat_archetype
 			flat_terminology := archetype.terminology
 			undo_redo_chain := an_undo_redo_chain
-			if aom_profiles_access.has_profile_for_rm_schema (an_rm_schema.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm_schema.schema_id)
+			if aom_profiles_access.has_profile_for_rm_schema (an_rm.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm.schema_id)
 			end
 			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype
@@ -73,7 +73,7 @@ feature -- Access
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 
 	aom_profile: detachable AOM_PROFILE
 

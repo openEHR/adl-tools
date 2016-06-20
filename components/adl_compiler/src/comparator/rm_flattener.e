@@ -27,7 +27,7 @@ feature -- Access
 
 feature -- Commands
 
-	execute (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	execute (an_archetype: ARCHETYPE; an_rm: BMM_MODEL)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Archetype_valid: an_archetype.is_valid and then an_archetype.is_flat
@@ -35,7 +35,7 @@ feature -- Commands
 			def_it: C_ITERATOR
 		do
 			archetype := an_archetype
-			rm_schema := an_rm_schema
+			ref_model := an_rm
 
 			create def_it.make (archetype.definition)
 			def_it.do_all (agent rm_node_flatten_enter, agent rm_node_flatten_exit)
@@ -43,7 +43,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 			-- utility reference to RM schema used for validation & flattening
 		attribute
 			create Result
@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 			rm_attr_desc: BMM_PROPERTY [BMM_TYPE]
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca and then attached ca.parent as att_co then
-				rm_attr_desc := rm_schema.property_definition (att_co.rm_type_name, ca.rm_attribute_name)
+				rm_attr_desc := ref_model.property_definition (att_co.rm_type_name, ca.rm_attribute_name)
 				if ca.existence = Void then
 					ca.set_existence (rm_attr_desc.existence)
 				end
@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
 				-- so it is set from the enclosing attribute cardinality if a container, or set to RM existence if not a container
 				if not attached co.occurrences then
-					co.set_occurrences (co.effective_occurrences (agent rm_schema.property_object_multiplicity))
+					co.set_occurrences (co.effective_occurrences (agent ref_model.property_object_multiplicity))
 				end
 			end
 		end

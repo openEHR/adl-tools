@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_RM_SCHEMA_EXPLORER
+class GUI_REF_MODEL_EXPLORER
 
 inherit
 	STRING_UTILITIES
@@ -170,13 +170,13 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			across safe_source.valid_top_level_schemas as rm_sch_csr loop
-				populate_schema (rm_sch_csr.item)
+			across safe_source.valid_models as rm_csr loop
+				populate_schema (rm_csr.item)
 			end
 			gui_grid.resize_columns_to_content
 		end
 
-	populate_schema (a_schema: BMM_SCHEMA)
+	populate_schema (a_schema: BMM_MODEL)
 		local
 			pkg_row: EV_GRID_ROW
 		do
@@ -290,7 +290,7 @@ feature {NONE} -- Implementation
 			menu, tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL} ev_ti.data as bmm_sch then
 				create menu
 
 				create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_context_selected_rm_in_active_tool (ev_ti))
@@ -335,7 +335,7 @@ feature {NONE} -- Implementation
 			gui_grid.ev_grid.expand_tree (a_schema_node,
 				agent (a_row: attached EV_GRID_ROW): BOOLEAN
 					do
-						Result := attached {BMM_SCHEMA} a_row.data or
+						Result := attached {BMM_MODEL} a_row.data or
 							attached {BMM_PACKAGE} a_row.data and then
 							not gui_grid.has_matching_sub_row (a_row, agent (a_tn: EV_GRID_ROW): BOOLEAN do Result := attached {BMM_CLASS} a_tn.data end)
 					end
@@ -366,7 +366,7 @@ feature {NONE} -- Implementation
 	display_context_selected_rm_in_active_tool (a_row: EV_GRID_ROW)
 		do
 			a_row.enable_select
-			if attached {BMM_SCHEMA} a_row.data as a_bmm then
+			if attached {BMM_MODEL} a_row.data as a_bmm then
 				gui_agents.call_select_rm_agent (a_bmm)
 			end
 		end
@@ -374,7 +374,7 @@ feature {NONE} -- Implementation
 	display_context_selected_rm_in_new_tool (a_row: EV_GRID_ROW)
 		do
 			a_row.enable_select
-			if attached {BMM_SCHEMA} a_row.data as a_bmm then
+			if attached {BMM_MODEL} a_row.data as a_bmm then
 				gui_agents.call_select_rm_in_new_tool_agent (a_bmm)
 			end
 		end

@@ -24,15 +24,15 @@ inherit
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_rm: BMM_MODEL)
 		do
-			rm_schema := an_rm_schema
+			ref_model := an_rm
 			arch_diff_child := an_arch_diff_child
 			if attached an_arch_flat_parent as att_flat then
 				arch_flat_parent := an_arch_flat_parent
 			end
 
-			if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id) as aom_p then
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (ref_model.schema_id) as aom_p then
 				aom_profile := aom_p
 			end
 
@@ -58,7 +58,7 @@ feature {NONE} -- Implementation
 			Result := arch_diff_child.terminology
 		end
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 		attribute
 			create Result.default_create
 		end

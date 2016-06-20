@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 			base_pixmap_name, slot_pixmap_name: STRING
 		do
 			if not display_settings.show_technical_view and attached arch_node as a_n then
-				base_pixmap_name := Icon_rm_dir + resource_path_separator + ui_graph_state.rm_schema.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
+				base_pixmap_name := Icon_rm_dir + resource_path_separator + ui_graph_state.ref_model.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
 				create slot_pixmap_name.make_empty
 				slot_pixmap_name.append (base_pixmap_name)
 				slot_pixmap_name.append ("_slot")

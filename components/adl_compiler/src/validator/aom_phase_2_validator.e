@@ -37,9 +37,9 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
 	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE;
 			a_flat_parent_slot_fillers_index: detachable like flat_parent_slot_fillers_index;
-			an_rm_schema: BMM_SCHEMA; a_display_language: STRING)
+			an_rm: BMM_MODEL; a_display_language: STRING)
 		do
-			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
+			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm)
 			display_language := a_display_language
 			if attached a_flat_parent_slot_fillers_index as att_sid then
 				flat_parent_slot_fillers_index := att_sid
@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 						-- if it was a partial match, we have to obtain the real RM type by going into the RM
 						if ap.count < ref_path_csr.key.count then
 							tail_path := ref_path_csr.key.substring (ap.count+1, ref_path_csr.key.count)
-							bmm_class := rm_schema.class_definition (arch_rm_type_name)
+							bmm_class := ref_model.class_definition (arch_rm_type_name)
 							create og_tail_path.make_from_string (tail_path)
 							og_tail_path.start
 							if bmm_class.has_property_path (og_tail_path) then
@@ -184,7 +184,7 @@ end
 				ca_path_in_flat := apa.path_at_level (arch_flat_parent.specialisation_depth)
 				ca_in_flat_anc := arch_flat_parent.attribute_at_path (ca_path_in_flat)
 
-				if not ca_child_diff.c_conforms_to (ca_in_flat_anc, agent rm_schema.type_conforms_to) then
+				if not ca_child_diff.c_conforms_to (ca_in_flat_anc, agent ref_model.type_conforms_to) then
 					if ca_child_diff.is_single and not ca_in_flat_anc.is_single then
 						add_error (ec_VSAM1, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True)>>)
 
@@ -286,10 +286,10 @@ end
 				-------------------------------------------------------------------------------------------------------
 				if passed then
 					-- Now evaluate c_conforms_to() function
-					if not co_child_diff.c_conforms_to (co_in_flat_anc, agent rm_schema.type_conforms_to) then
+					if not co_child_diff.c_conforms_to (co_in_flat_anc, agent ref_model.type_conforms_to) then
 
 						-- RM type non-conformance was the reason
-						if not rm_schema.type_conforms_to (co_child_diff.rm_type_name, co_in_flat_anc.rm_type_name) then
+						if not ref_model.type_conforms_to (co_child_diff.rm_type_name, co_in_flat_anc.rm_type_name) then
 							add_error (ec_VSONCT, <<co_child_annotated_path, co_child_diff.rm_type_name, co_flat_anc_annotated_path, co_in_flat_anc.rm_type_name>>)
 
 						-- occurrences non-conformance was the reason
@@ -315,7 +315,7 @@ end
 							across child_tuples as child_tuples_csr loop
 								if cco_flat.has_comparable_attribute_tuple (child_tuples_csr.item) then
 									comparable_flat_tuple := cco_flat.comparable_attribute_tuple (child_tuples_csr.item)
-									if not child_tuples_csr.item.c_conforms_to (comparable_flat_tuple, agent rm_schema.type_conforms_to) then
+									if not child_tuples_csr.item.c_conforms_to (comparable_flat_tuple, agent ref_model.type_conforms_to) then
 										add_error (ec_VTPNC, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature, co_flat_anc_annotated_path>>)
 									end
 								else
@@ -455,20 +455,20 @@ end
 					end
 
 					if not invalid_types.has (attr_rm_type_in_flat_anc) then
-						if rm_schema.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
-							rm_attr_type := rm_schema.effective_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name)
+						if ref_model.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
+							rm_attr_type := ref_model.effective_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name)
 
 							-- check for exact conformance, or else type equivalance, which occurs with primitive types, e.g. the AOM 'REAL' type
 							-- will match RM 'Real', 'Real32', 'Real64', and 'Double' types if these equivalences are encoded into the AOM_PROFILE
 							-- rm_aom_primitive_type_equivalences table.
-							if not rm_schema.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) and
+							if not ref_model.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) and
 								not has_rm_aom_type_mapping (rm_attr_type, co.generator)
 							then
 
 								-- check if the property type is an enumeration and if the archetype node rm_type_name is
 								-- a compatible primitive type
-								if rm_schema.enumeration_types.has (rm_attr_type) then
-									bmm_enum := rm_schema.enumeration_definition (rm_attr_type)
+								if ref_model.enumeration_types.has (rm_attr_type) then
+									bmm_enum := ref_model.enumeration_definition (rm_attr_type)
 									if bmm_enum.underlying_type_name.is_case_insensitive_equal (co.rm_type_name) then
 										if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
 											if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
@@ -528,10 +528,10 @@ end
 				else
 					attr_rm_type_in_flat_anc := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
-				if not rm_schema.has_property (attr_rm_type_in_flat_anc, ca.rm_attribute_name) then
+				if not ref_model.has_property (attr_rm_type_in_flat_anc, ca.rm_attribute_name) then
 					add_error (ec_VCARM, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True), attr_rm_type_in_flat_anc>>)
 				else
-					rm_prop_def := rm_schema.property_definition (attr_rm_type_in_flat_anc, ca.rm_attribute_name)
+					rm_prop_def := ref_model.property_definition (attr_rm_type_in_flat_anc, ca.rm_attribute_name)
 					if attached ca.existence as ca_ex then
 						if not rm_prop_def.existence.contains (ca_ex) then
 							if not arch_diff_child.is_specialised and rm_prop_def.existence.is_equal (ca_ex) then
@@ -595,7 +595,7 @@ end
 			-- Return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
 		do
 			Result := True
-			if attached {C_OBJECT} a_c_node as co and then not rm_schema.has_class_definition (co.rm_type_name) and then
+			if attached {C_OBJECT} a_c_node as co and then not ref_model.has_class_definition (co.rm_type_name) and then
 				not invalid_types.has (co.rm_type_name) and then not has_any_type_substitution (co.rm_type_name)
 			then
 				add_error (ec_VCORM, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True)>>)

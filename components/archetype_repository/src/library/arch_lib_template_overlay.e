@@ -26,7 +26,7 @@ feature {NONE} -- Initialisation
 	make (an_id: ARCHETYPE_HRID; a_parent_ref: STRING; alt: ARCH_LIB_TEMPLATE)
 			-- Create empty, with connector to template represented by `alt'
 		require
-			Valid_id: has_rm_schema_for_archetype_id (an_id)
+			Valid_id: has_rm_for_archetype_id (an_id)
 		do
 			-- basic state
 			id := an_id
@@ -52,7 +52,7 @@ feature {NONE} -- Initialisation
 	make_new (an_id: ARCHETYPE_HRID; a_parent: ARCHETYPE; alt: ARCH_LIB_TEMPLATE)
 			-- Create a new overlay in template represented by `alt'
 		require
-			Valid_id: has_rm_schema_for_archetype_id (an_id)
+			Valid_id: has_rm_for_archetype_id (an_id)
 			Valid_parent: a_parent.is_differential
 		local
 			a_diff_arch: attached like differential_archetype

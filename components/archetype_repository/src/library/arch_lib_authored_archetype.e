@@ -25,7 +25,7 @@ feature {NONE} -- Initialisation
 			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
 		require
 			Path_valid: not a_path.is_empty
-			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
+			Valid_id: has_rm_for_archetype_id (arch_thumbnail.archetype_id)
 			Thumbnail_valid: not arch_thumbnail.is_legacy
 		do
 			create status.make_empty
@@ -50,7 +50,7 @@ feature {NONE} -- Initialisation
 			-- Create for the archetype described by `arch_thumbnail', stored at `a_full_path', belonging to `a_repository'.
 		require
 			Path_valid: not a_path.is_empty
-			Valid_id: has_rm_schema_for_archetype_id (arch_thumbnail.archetype_id)
+			Valid_id: has_rm_for_archetype_id (arch_thumbnail.archetype_id)
 			Thumbnail_valid: arch_thumbnail.is_legacy
 		do
 			create status.make_empty
@@ -75,14 +75,14 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id', belonging to `a_lib_source'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
-			Valid_id: has_rm_schema_for_archetype_id (an_id)
+			Valid_id: has_rm_for_archetype_id (an_id)
 		local
 			a_diff_arch: attached like differential_archetype
 		do
 			make_new_any (an_id)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
-			create a_diff_arch.make_empty_differential (an_id, rm_schema.rm_release, locale_language_short)
+			create a_diff_arch.make_empty_differential (an_id, ref_model.rm_release, locale_language_short)
 			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright, author_licence)
 			differential_archetype := a_diff_arch
 
@@ -99,7 +99,7 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_lib_source'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
-			Valid_id: has_rm_schema_for_archetype_id (an_id)
+			Valid_id: has_rm_for_archetype_id (an_id)
 			Valid_parent: a_parent.is_differential
 		local
 			a_diff_arch: attached like differential_archetype
@@ -108,7 +108,7 @@ feature {NONE} -- Initialisation
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
 			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id,
-				a_parent.archetype_id.semantic_id, rm_schema.rm_release, locale_language_short)
+				a_parent.archetype_id.semantic_id, ref_model.rm_release, locale_language_short)
 			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright, author_licence)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id

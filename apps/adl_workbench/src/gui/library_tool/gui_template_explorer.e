@@ -61,7 +61,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	rm_schema: detachable BMM_SCHEMA
+	ref_model: detachable BMM_MODEL
 			-- schema of root template
 		note
 			option: stable
@@ -86,7 +86,7 @@ feature {NONE} -- Implementation
    		local
 			og_iterator: OG_ITERATOR
 		do
-			rm_schema := ara.rm_schema
+			ref_model := ara.ref_model
 
 			-- make sure it is a template
 			if attached {ARCH_LIB_TEMPLATE} ara then
@@ -143,7 +143,7 @@ feature {NONE} -- Implementation
 						check attached gui_semantic_grid.last_row as lr then
 							ev_tree_item_stack.extend (lr)
 							gui_semantic_grid.set_last_row_label_col (1, ca_path, Void, Void, Void, get_icon_pixmap ("archetype/" +
-								rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
+								ref_model.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 						end
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and then attached source as src and then attached src.archetype_matching_ref (car.archetype_ref) as ara then

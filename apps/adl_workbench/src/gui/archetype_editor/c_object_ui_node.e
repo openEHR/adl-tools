@@ -35,7 +35,7 @@ feature -- Initialisation
 			create internal_ref_for_rm_type.make (0)
 			precursor (an_arch_node, an_ed_context)
 			set_arch_node_in_ancestor
-			rm_type := ui_graph_state.rm_schema.create_bmm_type_from_name (arch_node.rm_type_name)
+			rm_type := ui_graph_state.ref_model.create_bmm_type_from_name (arch_node.rm_type_name)
 		end
 
 feature -- Access
@@ -80,12 +80,12 @@ feature -- Display
 				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, Void, c_pixmap)
 
 				-- add 'power expander' action to logical C_OBJECT leaf nodes
-				if attached ui_graph_state.rm_schema.archetype_parent_class as apc then
+				if attached ui_graph_state.ref_model.archetype_parent_class as apc then
 					visualise_descendants_class := apc
-				elseif attached ui_graph_state.rm_schema.archetype_visualise_descendants_of as avdo then
+				elseif attached ui_graph_state.ref_model.archetype_visualise_descendants_of as avdo then
 					visualise_descendants_class := avdo
 				end
-				if attached visualise_descendants_class as vdc and then ui_graph_state.rm_schema.is_descendant_of (arch_node.rm_type_name, vdc) then
+				if attached visualise_descendants_class as vdc and then ui_graph_state.ref_model.is_descendant_of (arch_node.rm_type_name, vdc) then
 					gr.expand_actions.force_extend (agent power_expand)
 				end
 
@@ -130,7 +130,7 @@ feature -- Display
 							s.append (get_text (ec_occurrences_removed_text))
 						end
 					elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
-						s := a_n.effective_occurrences (agent (ui_graph_state.rm_schema).property_object_multiplicity).as_string
+						s := a_n.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_string
 						c_occ_colour := c_attribute_colour
 					end
 					att_evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
@@ -359,7 +359,7 @@ feature {NONE} -- Implementation
 						c_type_occ_str := a_n.generating_type
 					end
 					c_type_occ_str.append ("." +
-							a_n.effective_occurrences (agent (ui_graph_state.rm_schema).property_object_multiplicity).as_quantifier_text)
+							a_n.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_quantifier_text)
 					pixmap_key := Icon_am_dir + resource_path_separator + "added" + resource_path_separator
 					pixmap_cand_key := pixmap_key + c_type_occ_str
 					if has_icon_pixmap (pixmap_cand_key) then
@@ -467,7 +467,7 @@ feature {NONE} -- Context menu
 			a_term: ARCHETYPE_TERM
 		do
 			if attached arch_node_in_ancestor as parent_a_n then
-				spec_parent_rm_class := ui_graph_state.rm_schema.class_definition (parent_a_n.rm_type_name)
+				spec_parent_rm_class := ui_graph_state.ref_model.class_definition (parent_a_n.rm_type_name)
 				rm_type_substitutions := spec_parent_rm_class.all_descendants.deep_twin
 				rm_type_substitutions.extend (rm_type.base_class.name)
 

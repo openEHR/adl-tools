@@ -33,9 +33,9 @@ feature -- Initialisation
 			create internal_ref_for_rm_type.make (0)
 			set_arch_node_in_ancestor
 			if an_arch_node.has_differential_path then
-				rm_property := ui_graph_state.rm_schema.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
+				rm_property := ui_graph_state.ref_model.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
 			else
-				rm_property := ui_graph_state.rm_schema.property_definition (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_name)
+				rm_property := ui_graph_state.ref_model.property_definition (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_name)
 			end
 			create children.make(0)
 		end
@@ -421,7 +421,7 @@ feature {ANY_UI_NODE} -- Implementation
 			occ: MULTIPLICITY_INTERVAL
 			rm_type_spec: BMM_CLASS
 		do
-			rm_type_spec := ui_graph_state.rm_schema.class_definition (co_create_params.rm_type)
+			rm_type_spec := ui_graph_state.ref_model.class_definition (co_create_params.rm_type)
 			rm_type_name := co_create_params.rm_type
 
 			-- first figure out if a new code definition is needed
@@ -610,7 +610,7 @@ feature {NONE} -- Context menu
 
 					-- add more items for all subtypes
 					across rm_property.type.base_class.all_descendants as subs_csr loop
-						rm_class_def := ui_graph_state.rm_schema.class_definition (subs_csr.item)
+						rm_class_def := ui_graph_state.ref_model.class_definition (subs_csr.item)
 						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
 						if rm_class_def.is_abstract then
 							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))

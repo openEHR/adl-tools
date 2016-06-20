@@ -132,7 +132,7 @@ feature -- Events
 			if source.has_item_with_id (archetype_id.physical_id) then
 				create error_dialog.make_with_text (get_msg (ec_duplicate_archetype_id_err_msg, <<archetype_id.physical_id>>))
 				error_dialog.show_modal_to_window (Current)
-			elseif not has_rm_schema_for_archetype_id (archetype_id) then
+			elseif not has_rm_for_archetype_id (archetype_id) then
 				create error_dialog.make_with_text (get_msg (ec_model_access_e7, <<archetype_id.qualified_rm_closure>>))
 				error_dialog.show_modal_to_window (Current)
 			else

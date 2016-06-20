@@ -25,16 +25,16 @@ feature {NONE} -- Initialisation
 	default_create
 		do
 			create target.default_create
-			create rm_schema.default_create
+			create ref_model.default_create
 			reset
 		end
 
-	initialise (a_target: like target; an_arch_flat_parent: like arch_flat_parent; an_rm_schema: BMM_SCHEMA)
+	initialise (a_target: like target; an_arch_flat_parent: like arch_flat_parent; an_rm: BMM_MODEL)
 			-- set target and initialise reporting variables
 		do
 			initialise_resource (a_target)
 			arch_flat_parent := an_arch_flat_parent
-			rm_schema := an_rm_schema
+			ref_model := an_rm
 		ensure
 			target_set: target = a_target
 			arch_flat_parent = an_arch_flat_parent
@@ -47,7 +47,7 @@ feature -- Access
 
 	arch_flat_parent: detachable AUTHORED_ARCHETYPE
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 
 feature -- Commands
 
@@ -84,7 +84,7 @@ feature -- Commands
 							if not (target.has_path (ann_path) or else attached arch_flat_parent as att_fa and then att_fa.has_path (ann_path)) then
 								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
 							end
-						elseif not rm_schema.has_property_path (target.definition.rm_type_name, ann_path) then
+						elseif not ref_model.has_property_path (target.definition.rm_type_name, ann_path) then
 							add_error (ec_VRANP2, <<annots_csr.key, ann_path>>)
 						end
 

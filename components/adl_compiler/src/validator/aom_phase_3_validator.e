@@ -22,11 +22,11 @@ create
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_arch_flat: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (an_arch_diff_child: ARCHETYPE; an_arch_flat_parent: detachable ARCHETYPE; an_arch_flat: ARCHETYPE; an_rm: BMM_MODEL)
 			-- set target_descriptor
 			-- initialise reporting variables
 		do
-			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm_schema)
+			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm)
 			target_flat := an_arch_flat
 		end
 

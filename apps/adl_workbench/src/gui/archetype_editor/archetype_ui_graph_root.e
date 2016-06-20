@@ -14,21 +14,21 @@ create
 
 feature -- Initialisation
 
-	make (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+	make (aca: ARCH_LIB_ARCHETYPE; an_rm: BMM_MODEL; differential_view_flag: BOOLEAN)
 		require
 			aca.is_valid
 		do
 			source := aca
-			create ui_graph_state.make (source, an_rm_schema, differential_view_flag)
+			create ui_graph_state.make (source, an_rm, differential_view_flag)
 			build_ui_graph
 		end
 
-	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+	make_editable (aca: ARCH_LIB_ARCHETYPE; an_rm: BMM_MODEL; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		require
 			aca.is_valid
 		do
 			source := aca
-			create ui_graph_state.make_editable (source, an_rm_schema, an_undo_redo_chain)
+			create ui_graph_state.make_editable (source, an_rm, an_undo_redo_chain)
 			build_ui_graph
 		end
 

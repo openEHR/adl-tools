@@ -67,10 +67,10 @@ feature {NONE} -- Implementation
 		local
 			gli: EV_GRID_LABEL_ITEM
 			str: STRING
-			source_schema: BMM_SCHEMA
+			ref_model: BMM_MODEL
 		do
 			check attached source as s then
-				source_schema := s
+				ref_model := s
 			end
 
 			ev_grid.wipe_out
@@ -122,7 +122,7 @@ feature {NONE} -- Implementation
 			create gli.make_with_text ("schema_contributors")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
 			create str.make_empty
-			across source_schema.schema_contributors as contribs_csr loop
+			across ref_model.schema_contributors as contribs_csr loop
 				if contribs_csr.target_index > 1 then
 					str.append (",%N")
 				end
@@ -150,14 +150,14 @@ feature {NONE} -- Implementation
 
 			create gli.make_with_text ("archetype_parent_class")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			if attached source_schema.archetype_parent_class as apc then
+			if attached ref_model.archetype_parent_class as apc then
 				create gli.make_with_text (apc)
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end
 
 			create gli.make_with_text ("archetype_data_value_parent_class")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			if attached source_schema.archetype_data_value_parent_class as dvpc then
+			if attached ref_model.archetype_data_value_parent_class as dvpc then
 				create gli.make_with_text (dvpc)
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end
@@ -165,7 +165,7 @@ feature {NONE} -- Implementation
 			create gli.make_with_text ("archetype_rm_closure_packages")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
 			create str.make_empty
-			across source_schema.archetype_rm_closure_packages as rm_closures_csr loop
+			across ref_model.archetype_rm_closure_packages as rm_closures_csr loop
 				if rm_closures_csr.target_index > 1 then
 					str.append (",%N")
 				end
@@ -173,7 +173,7 @@ feature {NONE} -- Implementation
 			end
 			create gli.make_with_text (str)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
-			ev_grid.row (ev_grid.row_count).set_height (ev_grid.row (ev_grid.row_count).height * source_schema.archetype_rm_closure_packages.count)
+			ev_grid.row (ev_grid.row_count).set_height (ev_grid.row (ev_grid.row_count).height * ref_model.archetype_rm_closure_packages.count)
 
 			-- resize grid cols properly
 			Grid_column_ids.do_all (

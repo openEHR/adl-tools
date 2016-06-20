@@ -24,7 +24,7 @@ feature -- Initialisation
 			target.is_valid
 		do
 			if not attached editor_ui_graph then
-				create editor_ui_graph.make_editable (target, target.rm_schema, an_undo_redo_chain)
+				create editor_ui_graph.make_editable (target, target.ref_model, an_undo_redo_chain)
 			end
 		ensure
 			attached editor_ui_graph
@@ -39,7 +39,7 @@ feature -- Access
 			if attached differential_ui_graph_cache as ddcc then
 				Result := ddcc
 			else
-				create Result.make (target, target.rm_schema, True)
+				create Result.make (target, target.ref_model, True)
 				differential_ui_graph_cache := Result
 			end
 		end
@@ -49,7 +49,7 @@ feature -- Access
 			if attached flat_ui_graph_cache as fdcc then
 				Result := fdcc
 			else
-				create Result.make (target, target.rm_schema, False)
+				create Result.make (target, target.ref_model, False)
 				flat_ui_graph_cache := Result
 			end
 		end

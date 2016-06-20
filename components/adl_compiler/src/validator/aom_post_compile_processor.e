@@ -20,7 +20,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 			aca.is_valid
 		do
 			target_descriptor := aca
-			rm_schema := aca.rm_schema
+			ref_model := aca.ref_model
 			target := aca.safe_differential_archetype
 			target_flat := aca.flat_archetype
 		ensure
@@ -38,7 +38,7 @@ feature -- Access
 	target_flat: ARCHETYPE
 		-- flat_parent of `target'
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 
 feature -- Commands
 
@@ -67,7 +67,7 @@ feature {NONE} -- Implementation
 					-- if it was a partial match, we have to obtain the real RM type by going into the RM
 					if arch_path.count < ref_path_csr.key.count then
 						tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)
-						bmm_class := rm_schema.class_definition (ref_rm_type_name)
+						bmm_class := ref_model.class_definition (ref_rm_type_name)
 						if attached bmm_class.property_definition_at_path (create {OG_PATH}.make_from_string (tail_path)) as bmm_prop then
 							ref_rm_type_name := bmm_prop.type.base_class.name
 						end

@@ -363,9 +363,9 @@ feature -- Validation
 
 			if attached post_parse_151_converter as pcp then
 				proc := pcp
-				proc.initialise (an_arch, flat_parent, aca.rm_schema)
+				proc.initialise (an_arch, flat_parent, aca.ref_model)
 			else
-				create proc.make (an_arch, flat_parent, aca.rm_schema)
+				create proc.make (an_arch, flat_parent, aca.ref_model)
 				post_parse_151_converter := proc
 			end
 			proc.execute
@@ -397,9 +397,9 @@ feature -- Validation
 
 			if attached phase_1_validator as pv then
 				proc := pv
-				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.rm_schema)
+				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
 			else
-				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.rm_schema)
+				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
 				phase_1_validator := proc
 			end
 			proc.validate
@@ -421,9 +421,9 @@ feature -- Validation
 
 			if attached phase_2_validator as pv then
 				proc := pv
-				proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
+				proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.ref_model, aca.display_language)
 			else
-				create proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.rm_schema, aca.display_language)
+				create proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.ref_model, aca.display_language)
 				phase_2_validator := proc
 			end
 			proc.validate
@@ -443,9 +443,9 @@ feature -- Validation
 
 			if attached phase_3_validator as pv then
 				proc := pv
-				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.rm_schema)
+				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			else
-				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.rm_schema)
+				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 				phase_3_validator := proc
 			end
 			proc.validate

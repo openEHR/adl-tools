@@ -61,7 +61,7 @@ feature -- Commands
 			add_new_tool (new_tool)
 		end
 
-	populate_active_tool (an_rm: BMM_SCHEMA)
+	populate_active_tool (an_rm: BMM_MODEL)
 			-- Populate content from visual controls.
 		do
 			if not has_tools then

@@ -29,7 +29,7 @@ feature {NONE} -- Implementation
 			if attached evx_grid as att_evx_grid then
 				if attached arch_node as a_n then
 					if a_n.is_enumerated_type_constraint then
-						s := a_n.as_enumeration_string (ui_graph_state.rm_schema.enumeration_definition (a_n.rm_type_name).name_map)
+						s := a_n.as_enumeration_string (ui_graph_state.ref_model.enumeration_definition (a_n.rm_type_name).name_map)
 					else
 						s := a_n.as_string
 					end

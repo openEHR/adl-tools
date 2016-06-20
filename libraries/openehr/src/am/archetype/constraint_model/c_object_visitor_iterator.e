@@ -21,13 +21,13 @@ create
 feature -- Initialisation
 
 	make (a_target: attached C_COMPLEX_OBJECT; a_visitor: C_VISITOR;
-			differential_view_flag, update_rm_nodes_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
+			differential_view_flag, update_rm_nodes_flag: BOOLEAN; a_bmm_model: BMM_MODEL)
 		do
 			target := a_target
 			visitor := a_visitor
 			update_rm_nodes := update_rm_nodes_flag
 			differential_view := differential_view_flag
-			rm_schema := an_rm_schema
+			bmm_model := a_bmm_model
 		end
 
 feature -- Access
@@ -36,7 +36,7 @@ feature -- Access
 
 	visitor: C_VISITOR
 
-	rm_schema: BMM_SCHEMA
+	bmm_model: BMM_MODEL
 
 feature -- Status Report
 
@@ -89,12 +89,12 @@ feature {NONE} -- Implementation
 
 			-- deal with RM visitor functions
 			if update_rm_nodes and then attached {C_OBJECT} a_target as co then
-				if rm_schema.has_class_definition (co.rm_type_name) then
-					visitor.do_rm_class (rm_schema.class_definition (co.rm_type_name), co, depth)
+				if ref_model.has_class_definition (co.rm_type_name) then
+					visitor.do_rm_class (bmm_model.class_definition (co.rm_type_name), co, depth)
 					if differential_view then
-						props := rm_schema.class_definition (co.rm_type_name).properties
+						props := bmm_model.class_definition (co.rm_type_name).properties
 					else
-						props := rm_schema.class_definition (co.rm_type_name).flat_properties
+						props := bmm_model.class_definition (co.rm_type_name).flat_properties
 					end
 					across props as props_csr loop
 						visitor.do_rm_property (props_csr.item, co, depth)

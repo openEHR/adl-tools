@@ -17,7 +17,7 @@ inherit
 
 feature -- Access
 
-	source: detachable BMM_SCHEMA
+	source: detachable BMM_MODEL
 			-- archetype to which this tool is targetted
 
 	tool_artefact_id: STRING

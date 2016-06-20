@@ -32,7 +32,7 @@ feature {NONE} -- Access
 
 	select_class_agent, select_class_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_CLASS]]
 
-	select_rm_agent, select_rm_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
+	select_rm_agent, select_rm_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_MODEL]]
 
 	select_class_in_rm_schema_tool_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
@@ -124,14 +124,14 @@ feature -- Command
 			end
 		end
 
-	call_select_rm_agent (a_schema: BMM_SCHEMA)
+	call_select_rm_agent (a_schema: BMM_MODEL)
 		do
 			if attached select_rm_agent as att_agt then
 				att_agt.call ([a_schema])
 			end
 		end
 
-	call_select_rm_in_new_tool_agent (a_schema: BMM_SCHEMA)
+	call_select_rm_in_new_tool_agent (a_schema: BMM_MODEL)
 		do
 			if attached select_rm_in_new_tool_agent as att_agt then
 				att_agt.call ([a_schema])

@@ -193,7 +193,7 @@ feature {NONE} -- Implementation
 
 						-- property type
 						create gli.make_with_text (props_csr.item.type.type_signature)
-						prop_class := safe_source.bmm_schema.class_definition (props_csr.item.type.base_class.name)
+						prop_class := safe_source.bmm_model.class_definition (props_csr.item.type.base_class.name)
 						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_class.type_category))
 						gli.set_data (prop_class)
 						if attached prop_class.documentation as bmm_prop_class_doc then

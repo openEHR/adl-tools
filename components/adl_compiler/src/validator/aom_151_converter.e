@@ -69,26 +69,26 @@ feature -- Definitions
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 
-	make (a_target: AUTHORED_ARCHETYPE; a_flat_parent: detachable AUTHORED_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (a_target: AUTHORED_ARCHETYPE; a_flat_parent: detachable AUTHORED_ARCHETYPE; an_rm: BMM_MODEL)
 			-- set target_descriptor
 			-- initialise reporting variables
 			-- a_parser_context may contain unhandled structures needed in this stage
 		require
 			Sub_151_version: version_less_than (a_target.adl_version, Adl_id_code_version)
 		do
-			initialise (a_target, a_flat_parent, an_rm_schema)
+			initialise (a_target, a_flat_parent, an_rm)
 		ensure
 			attached arch_flat_parent as aaf implies aaf.is_flat
 		end
 
-	initialise (a_target: AUTHORED_ARCHETYPE; a_flat_parent: detachable AUTHORED_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	initialise (a_target: AUTHORED_ARCHETYPE; a_flat_parent: detachable AUTHORED_ARCHETYPE; an_rm: BMM_MODEL)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
 			Sub_151_version: version_less_than (a_target.adl_version, Adl_id_code_version)
 		do
 			target := a_target
-			rm_schema := an_rm_schema
+			ref_model := an_rm
 			arch_flat_parent := a_flat_parent
 			if attached arch_flat_parent as afp then
 				afp.rebuild
@@ -105,7 +105,7 @@ feature -- Access
 
 	arch_flat_parent: detachable AUTHORED_ARCHETYPE
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 
 	Execution_state: INTEGER
 			-- has value of one of the Es_* constants
@@ -150,7 +150,7 @@ feature -- Commands
 				target.set_adl_version (latest_adl_version)
 
 				-- if there is a version available for rm_release, use it
-				rm_pub_key := rm_schema.rm_publisher.as_lower
+				rm_pub_key := ref_model.rm_publisher.as_lower
 				if Rm_releases.has (rm_pub_key) and then attached Rm_releases.item (rm_pub_key) as att_rel_str then
 					target.set_rm_release (att_rel_str)
 				end
@@ -546,7 +546,7 @@ feature {NONE} -- Implementation
 
 				 			elseif parent_ca_in_anc_flat.child_count = 1 then
 					 			-- case where a single RM conformant type redefines an RM parent type
-				 				if rm_schema.type_conforms_to (c_obj.rm_type_name, parent_ca_in_anc_flat.children.first.rm_type_name) then
+				 				if ref_model.type_conforms_to (c_obj.rm_type_name, parent_ca_in_anc_flat.children.first.rm_type_name) then
 			 						parent_id_code := parent_ca_in_anc_flat.children.first.node_id
 			 						if parent_ca_in_anc_flat.is_single then
 			 							-- id code not needed in terminology; create one locally

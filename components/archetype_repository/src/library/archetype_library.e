@@ -35,7 +35,7 @@ inherit
 	SHARED_ARCHETYPE_RM_ACCESS
 		export
 			{NONE} all;
-			{ANY} has_rm_schema_for_archetype_id
+			{ANY} has_rm_for_archetype_id
 		end
 
 	ANY_VALIDATOR
@@ -127,19 +127,19 @@ feature -- Access
 		require
 			Rm_type_valid: not an_rm_type.is_empty
 		local
-			rm_schema: BMM_SCHEMA
+			rm: BMM_MODEL
 			class_node: detachable ARCH_LIB_CLASS
 		do
 			create Result.make (0)
 			Result.compare_objects
 
 			-- get the RM schema for the archetype_id
-			rm_schema := rm_schema_for_archetype_id (an_archetype_id)
+			rm := rm_for_archetype_id (an_archetype_id)
 
 			-- find the class node
 			from item_index.start until item_index.off or attached class_node loop
 				if attached {ARCH_LIB_CLASS} item_index.item_for_iteration as alc then
-					if alc.bmm_schema = rm_schema then
+					if alc.bmm_model = rm then
 						if alc.class_definition.name.is_case_insensitive_equal (an_rm_type) then
 							class_node := alc
 						end
@@ -288,7 +288,7 @@ feature -- Modification
 	add_new_non_specialised_archetype (an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		require
-			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
+			Valid_id: has_rm_for_archetype_id (an_archetype_id)
 		do
 			put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new (an_archetype_id,
 				library_access.source, in_dir_path))
@@ -299,7 +299,7 @@ feature -- Modification
 	add_new_specialised_archetype (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
-			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
+			Valid_id: has_rm_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		do
 			put_new_archetype (create {ARCH_LIB_AUTHORED_ARCHETYPE}.make_new_specialised (an_archetype_id, parent_aca.safe_differential_archetype,
@@ -311,7 +311,7 @@ feature -- Modification
 	add_new_template (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE; an_archetype_id: ARCHETYPE_HRID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		require
-			Valid_id: has_rm_schema_for_archetype_id (an_archetype_id)
+			Valid_id: has_rm_for_archetype_id (an_archetype_id)
 			Valid_parent: parent_aca.is_valid
 		do
 			put_new_archetype (create {ARCH_LIB_TEMPLATE}.make_new_specialised (an_archetype_id, parent_aca.safe_differential_archetype,
@@ -725,10 +725,10 @@ feature {NONE} -- Statistical Report
 
 				aca.generate_statistics (True)
 				if attached aca.statistical_analyser as att_sa then
-					if attached statistics_cache.item (aca.rm_schema.schema_id) as att_item then
+					if attached statistics_cache.item (aca.ref_model.schema_id) as att_item then
 						att_item.merge (att_sa.stats)
 					else
-						statistics_cache.put (att_sa.stats.duplicate, aca.rm_schema.schema_id)
+						statistics_cache.put (att_sa.stats.duplicate, aca.ref_model.schema_id)
 					end
 				end
 			end
@@ -852,11 +852,11 @@ feature {NONE} -- Implementation
 			supp_class_list: ARRAYED_LIST [BMM_CLASS]
 			root_classes: ARRAYED_SET [BMM_CLASS]
 			removed: BOOLEAN
-			bmm_schema: BMM_SCHEMA
+			bmm_schema: BMM_MODEL
 		do
 			item_tree.wipe_out
-			across rm_schemas_access.valid_top_level_schemas as top_level_schemas_csr loop
-				bmm_schema := top_level_schemas_csr.item
+			across ref_models_access.valid_models as models_csr loop
+				bmm_schema := models_csr.item
 				across bmm_schema.archetype_rm_closure_packages as rm_closure_packages_csr loop
 					rm_closure_name := package_base_name (rm_closure_packages_csr.item)
 					qualified_rm_closure_key := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)

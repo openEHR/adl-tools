@@ -445,7 +445,7 @@ feature {NONE} -- Implementation
 
 	evx_view_detail_frame, evx_rm_property_visibility_frame, evx_rendering_frame: EVX_FRAME_CONTROL
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 		attribute
 			create Result.default_create
 		end
@@ -469,11 +469,11 @@ feature {NONE} -- Implementation
 
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
 			-- tree expanding stops)
-			rm_schema := safe_source.rm_schema
-			if attached rm_schema.archetype_parent_class then
-				visualise_descendants_class := rm_schema.archetype_parent_class
-			elseif attached rm_schema.archetype_visualise_descendants_of then
-				visualise_descendants_class := rm_schema.archetype_visualise_descendants_of
+			ref_model := safe_source.ref_model
+			if attached ref_model.archetype_parent_class then
+				visualise_descendants_class := ref_model.archetype_parent_class
+			elseif attached ref_model.archetype_visualise_descendants_of then
+				visualise_descendants_class := ref_model.archetype_visualise_descendants_of
 			end
 
 			-- populate peripheral controls
@@ -495,7 +495,7 @@ feature {NONE} -- Implementation
 					agent (a_row: EV_GRID_ROW; vis_desc_class: STRING): BOOLEAN
 						do
 							if attached {C_OBJECT_UI_NODE} a_row.data as co_ed_ctx then
-								Result := not co_ed_ctx.is_rm and rm_schema.is_descendant_of (co_ed_ctx.rm_type.base_class.name, vis_desc_class)
+								Result := not co_ed_ctx.is_rm and ref_model.is_descendant_of (co_ed_ctx.rm_type.base_class.name, vis_desc_class)
 							end
 						end (?, vis_desc_cl)
 				)

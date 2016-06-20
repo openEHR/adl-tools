@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 			ev_rm_vbox.extend (ev_rm_breakdown_frame)
 
 			ev_root_container.extend (ev_rm_vbox)
-			ev_root_container.set_item_text (ev_rm_vbox, source.bmm_schema.schema_id)
+			ev_root_container.set_item_text (ev_rm_vbox, source.ref_model.schema_id)
 
 			-----------------------------------
 			-- populate data
@@ -153,7 +153,7 @@ feature {NONE} -- Implementation
 						if rm_class_stats_csr.item.is_archetype_root_class then
 							gli.text.append (" *")
 						end
-						class_def := src.bmm_schema.class_definition (rm_class_stats_csr.item.rm_class_name)
+						class_def := src.ref_model.class_definition (rm_class_stats_csr.item.rm_class_name)
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.type_category))
 						gli.set_data (class_def)
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))

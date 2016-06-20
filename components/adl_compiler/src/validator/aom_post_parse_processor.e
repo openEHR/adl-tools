@@ -38,7 +38,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			create rm_schema.default_create
+			create ref_model.default_create
 			create att_c_terminology_code_type_mapping
 			initialise (a_target, ara)
 		end
@@ -49,10 +49,10 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		require
 			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
-			if rm_schema /= ara.rm_schema then
-				rm_schema := ara.rm_schema
-				if aom_profiles_access.has_profile_for_rm_schema (rm_schema.schema_id) then
-					aom_profile := aom_profiles_access.profile_for_rm_schema (rm_schema.schema_id)
+			if ref_model /= ara.ref_model then
+				ref_model := ara.ref_model
+				if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
 				end
 				set_domain_type_mappings
 			end
@@ -77,7 +77,7 @@ feature -- Access
 
 	flat_ancestor: detachable ARCHETYPE
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 
 	aom_profile: detachable AOM_PROFILE
 
@@ -204,9 +204,9 @@ feature {NONE} -- Implementation
 					co_parent := cp
 				end
 				if ca.has_differential_path then
-					rm_prop_def := rm_schema.property_definition_at_path (co_parent.rm_type_name, ca.rm_attribute_path)
+					rm_prop_def := ref_model.property_definition_at_path (co_parent.rm_type_name, ca.rm_attribute_path)
 				else
-					rm_prop_def := rm_schema.property_definition (co_parent.rm_type_name, ca.rm_attribute_name)
+					rm_prop_def := ref_model.property_definition (co_parent.rm_type_name, ca.rm_attribute_name)
 				end
 				if not attached ref_existence then
 					ref_existence := rm_prop_def.existence

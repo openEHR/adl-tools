@@ -21,25 +21,25 @@ create
 
 feature -- Initialisation
 
-	make (an_rm_closure_name: STRING; a_bmm_schema: BMM_SCHEMA)
+	make (an_rm_closure_name: STRING; a_bmm_model: BMM_MODEL)
 			-- create to represent a RM closure package, e.g. 'EHR', 'DEMOGRAPHIC' etc - these are
 			-- packages whose reachability closure provide the classes for archetyping in that closure
 		require
 			Rm_closure_name_valid: not an_rm_closure_name.is_empty
 		do
-			bmm_schema := a_bmm_schema
-			qualified_name := publisher_qualified_rm_closure_name (a_bmm_schema.rm_publisher, an_rm_closure_name)
+			bmm_model := a_bmm_model
+			qualified_name := publisher_qualified_rm_closure_name (a_bmm_model.rm_publisher, an_rm_closure_name)
 			name := an_rm_closure_name
 			group_name := "model_group"
 		ensure
-			ontological_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (a_bmm_schema.rm_publisher, an_rm_closure_name))
-			display_name_set: name = an_rm_closure_name
-			Schema_set: bmm_schema = a_bmm_schema
+			Semantic_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (a_bmm_model.rm_publisher, an_rm_closure_name))
+			Display_name_set: name = an_rm_closure_name
+			Model_set: bmm_model = a_bmm_model
 		end
 
 feature -- Access
 
-	bmm_schema: detachable BMM_SCHEMA
+	bmm_model: detachable BMM_MODEL
 
 	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact

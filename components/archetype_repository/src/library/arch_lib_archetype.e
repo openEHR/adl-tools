@@ -100,10 +100,10 @@ feature -- Identification
 			Is_lower_case: Result.same_string (Result.as_lower) and valid_artefact_type (Result)
 		end
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 			-- set if this archetype has a valid package-class_name
 		do
-			Result := rm_schema_for_archetype_id (id)
+			Result := rm_for_archetype_id (id)
 		end
 
 	id: ARCHETYPE_HRID
@@ -1033,9 +1033,9 @@ feature -- Statistics
 			end
 
 			if attached specialisation_parent as att_sp then
-				create statistical_analyser.make_specialised (tgt_arch, att_sp.flat_archetype, rm_schema)
+				create statistical_analyser.make_specialised (tgt_arch, att_sp.flat_archetype, ref_model)
 			else
-				create statistical_analyser.make (tgt_arch, rm_schema)
+				create statistical_analyser.make (tgt_arch, ref_model)
 			end
 			statistical_analyser.analyse
 		end
@@ -1106,7 +1106,7 @@ feature {NONE} -- Flattening
 		do
 			-- archetype flattening step
 			if attached specialisation_parent as spec_anc then
-				arch_flattener.execute (spec_anc.flat_archetype, safe_differential_archetype, rm_schema)
+				arch_flattener.execute (spec_anc.flat_archetype, safe_differential_archetype, ref_model)
 				check attached {like flat_archetype} arch_flattener.arch_flat_out as att_flat then
 					flattened_arch := att_flat
 				end
@@ -1120,7 +1120,7 @@ feature {NONE} -- Flattening
 
 			-- if requested, do RM flattening		
 			if rm_flattening_on and include_rm then
-				rm_flattener.execute (flattened_arch, rm_schema)
+				rm_flattener.execute (flattened_arch, ref_model)
 			end
 
 			flat_archetype_cache := flattened_arch

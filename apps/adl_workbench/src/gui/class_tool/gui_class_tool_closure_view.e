@@ -227,8 +227,8 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- for use in icon switching
- 			rm_publisher := safe_source.bmm_schema.rm_publisher.as_lower
- 			rm_closure := safe_source.bmm_schema.schema_name.as_lower
+ 			rm_publisher := safe_source.bmm_model.rm_publisher.as_lower
+ 			rm_closure := safe_source.bmm_model.schema_name.as_lower
 
  			-- populate the tree
 			create ev_grid_rm_row_stack.make (0)
@@ -467,7 +467,7 @@ feature {NONE} -- Implementation
 			create chg_sub_menu.make_with_text (get_text (ec_context_menu_convert_node_to_subtype))
 			across a_substitutions as subs_csr loop
 				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, True))
-				if rm_schema.class_definition (subs_csr.item).is_abstract then
+				if ref_model.class_definition (subs_csr.item).is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + "class_abstract"))
 				else
 					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + "class_concrete"))
@@ -523,7 +523,7 @@ feature {NONE} -- Implementation
 		local
 			bmm_subtype_def: BMM_CLASS
 		do
-			bmm_subtype_def := rm_schema.class_definition (a_subtype)
+			bmm_subtype_def := ref_model.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
 			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli and then attached gli.tooltip as tt then
 				create rm_node_path.make_from_string (utf32_to_utf8 (tt))

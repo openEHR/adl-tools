@@ -227,7 +227,7 @@ c_complex_object_head: c_complex_object_id c_occurrences
 				$1.set_occurrences (att_occ)
 			end
 
-			if rm_schema.has_class_definition ($1.rm_type_name) then
+			if ref_model.has_class_definition ($1.rm_type_name) then
 				object_nodes.extend ($1)
 				if not c_attrs.is_empty then
 					safe_put_c_attribute_child ($1)
@@ -609,8 +609,8 @@ c_attribute_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 		{
 			rm_attribute_name := $1
 			if not object_nodes.item.has_attribute (rm_attribute_name) then
-				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
-					rm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
+				if ref_model.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
+					rm_prop_def := ref_model.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
 					if rm_prop_def.is_container then
 						create $$.make_multiple (rm_attribute_name, $2, $3)
 						c_attrs.put ($$)
@@ -653,8 +653,8 @@ end
 
 			if not object_nodes.item.has_attribute ($1) then
 				-- check RM to see if path is valid, and if it is a container
-				if rm_schema.has_property_path (object_nodes.item.rm_type_name, $1) then
-					rm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, $1)
+				if ref_model.has_property_path (object_nodes.item.rm_type_name, $1) then
+					rm_prop_def := ref_model.property_definition_at_path (object_nodes.item.rm_type_name, $1)
 					if rm_prop_def.is_container then
 						create $$.make_multiple (rm_attribute_name, $2, $3)
 						$$.set_differential_path (parent_path_str)
@@ -2443,7 +2443,7 @@ feature -- Initialization
 			reset
 
 			target_descriptor := aca
-			rm_schema := aca.rm_schema
+			ref_model := aca.ref_model
 			if target_descriptor.is_specialised then
 				flat_ancestor := target_descriptor.specialisation_parent.flat_archetype
  			end
@@ -2487,7 +2487,7 @@ feature {NONE} -- Implementation
 	flat_ancestor: detachable ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
 
-	rm_schema: BMM_SCHEMA
+	ref_model: BMM_MODEL
 		attribute
 			create Result.default_create
 		end

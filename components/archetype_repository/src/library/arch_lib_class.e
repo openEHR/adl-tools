@@ -24,12 +24,12 @@ feature -- Initialisation
 			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
 		do
 			class_definition := a_class_desc
-			bmm_schema := class_definition.bmm_schema
-			qualified_name := bmm_schema.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out + class_definition.name
+			bmm_model := class_definition.bmm_model
+			qualified_name := bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out + class_definition.name
 			name := class_definition.name
 			group_name := class_definition.type_category
 		ensure
-			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out +  class_definition.name)
+			qualified_name_set: qualified_name.is_equal (bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out +  class_definition.name)
 			display_name_set: name = class_definition.name
 		end
 
@@ -37,7 +37,7 @@ feature -- Access
 
 	class_definition: BMM_CLASS
 
-	bmm_schema: BMM_SCHEMA
+	bmm_model: BMM_MODEL
 
 	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact

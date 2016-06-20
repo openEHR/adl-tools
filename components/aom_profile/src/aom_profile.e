@@ -163,7 +163,7 @@ feature -- Validation
 
 	validate
 		local
-			sch: BMM_SCHEMA
+			sch: BMM_MODEL
 			rm_class_name: STRING
 		do
 			if profile_name.is_equal (Default_aom_profile_name) then
@@ -175,8 +175,8 @@ feature -- Validation
 				if attached aom_rm_type_mappings as aom_tm then
 					-- check that all type mappings are found in all mentioned schemas
 					across rm_schema_ids as schemas_csr loop
-						if has_rm_schema_for_id (schemas_csr.item) then
-							sch := rm_schema_for_id (schemas_csr.item)
+						if has_ref_model_for_id (schemas_csr.item) then
+							sch := ref_model_for_id (schemas_csr.item)
 							across aom_tm as type_mappings_csr loop
 								rm_class_name := type_mappings_csr.item.target_class_name
 								if not sch.has_class_definition (type_mappings_csr.item.target_class_name) then
@@ -230,7 +230,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			lc_aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
 			default_rm_type_key: STRING
 		do
-			if rm_schemas_access.load_attempted then
+			if ref_models_access.load_attempted then
 				get_regex_matches (rm_schema_pattern)
 			else
 				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
@@ -261,7 +261,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 	get_regex_matches (a_regex: STRING)
 			-- Finalisation work: evaluate rm schema regexes
 		require
-			rm_schemas_access.load_attempted
+			ref_models_access.load_attempted
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do

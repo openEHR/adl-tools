@@ -221,7 +221,7 @@ feature {NONE} -- Initialization
 			-- set up docking & tools
 			create internal_docking_manager.make (viewer_main_cell, Current)
 			create_new_library_tool
-			create_new_rm_schema_explorer
+			create_new_ref_model_explorer
 			create_new_console_tool
 			create_new_error_tool
 			archetype_viewers.create_new_tool
@@ -398,13 +398,13 @@ feature -- Commands
 			end
 
 			-- if no RM schemas yet available, ask user to configure
-			if not rm_schemas_access.found_valid_schemas then
+			if not ref_models_access.found_valid_models then
 				set_rm_schemas
 			end
 
 			-- if some RM schemas now found, set up a repository if necessary
-			if rm_schemas_access.found_valid_schemas then
-				rm_schema_explorer.populate (rm_schemas_access)
+			if ref_models_access.found_valid_models then
+				ref_model_explorer.populate (ref_models_access)
 				if archetype_repository_interfaces.is_empty or archetype_library_interfaces.is_empty then
 					configure_repositories
 				else
@@ -430,7 +430,7 @@ feature -- Commands
 			end
 
 			console_tool.append_text (app_root.error_strings)
-			console_tool.append_text (rm_schemas_access.error_strings)
+			console_tool.append_text (ref_models_access.error_strings)
 		end
 
 	open_test_tool
@@ -762,17 +762,17 @@ feature -- RM Schemas Events
 			populate_arch_libraries_combo
 			if rm_schema_dialog.has_changed_schema_load_list then
 				console_tool.clear
-				rm_schemas_access.reload_schemas
-				if not rm_schemas_access.found_valid_schemas then
-					console_tool.append_text (rm_schemas_access.error_strings)
+				ref_models_access.reload_schemas
+				if not ref_models_access.found_valid_models then
+					console_tool.append_text (ref_models_access.error_strings)
 				else
-					rm_schema_explorer.populate (rm_schemas_access)
+					ref_model_explorer.populate (ref_models_access)
 					if has_current_library then
 						display_archetype_library (True)
 					end
 				end
 			elseif rm_schema_dialog.has_changed_schema_dirs then
-				rm_schema_explorer.populate (rm_schemas_access)
+				ref_model_explorer.populate (ref_models_access)
 				display_archetype_library (True)
 			end
 		end
@@ -780,9 +780,9 @@ feature -- RM Schemas Events
 	reload_schemas
 			-- user-initiated reload
 		do
-			rm_schemas_access.reload_schemas
+			ref_models_access.reload_schemas
 			display_archetype_library (True)
-			rm_schema_explorer.populate (rm_schemas_access)
+			ref_model_explorer.populate (ref_models_access)
 			refresh_all_archetype_editors
 		end
 
@@ -837,7 +837,7 @@ feature -- Address Bar control
 		once ("PROCESS")
 			create Result.make (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
 			Result.add_client_control (library_tool)
-			Result.add_client_control (rm_schema_explorer)
+			Result.add_client_control (ref_model_explorer)
 		end
 
 feature -- Docking controls
@@ -871,32 +871,32 @@ feature -- Docking controls
 
 feature -- RM Schema explorer
 
-	rm_schema_explorer: GUI_RM_SCHEMA_EXPLORER
+	ref_model_explorer: GUI_REF_MODEL_EXPLORER
 		once ("PROCESS")
 			create Result.make
 		end
 
-	create_new_rm_schema_explorer
+	create_new_ref_model_explorer
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg (ec_reference_models_docking_area_title, Void))
+			create a_docking_pane.make_with_widget_title_pixmap (ref_model_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg (ec_reference_models_docking_area_title, Void))
 			docking_manager.contents.extend (a_docking_pane)
-			rm_schema_explorer.set_docking_pane (a_docking_pane)
+			ref_model_explorer.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title (get_msg (ec_reference_models_docking_area_title, Void))
 			a_docking_pane.set_short_title (get_msg (ec_reference_models_docking_area_title, Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
-			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
-			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
-			a_docking_pane.focus_in_actions.extend (agent history_bar.set_active_tool (rm_schema_explorer))
+			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (ref_model_explorer))
+			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (ref_model_explorer))
+			a_docking_pane.focus_in_actions.extend (agent history_bar.set_active_tool (ref_model_explorer))
 		end
 
 	select_class_in_rm_schema_tool (a_key: STRING)
 			-- display a particular class in the RM schema tool
 		do
-			if rm_schema_explorer.valid_item_id (a_key) then
-				rm_schema_explorer.select_item_by_id (a_key)
+			if ref_model_explorer.valid_item_id (a_key) then
+				ref_model_explorer.select_item_by_id (a_key)
 			end
 		end
 
@@ -907,13 +907,13 @@ feature -- RM tools
 			create Result.make (docking_manager)
 		end
 
-	display_rm_in_new_tool (an_rm: BMM_SCHEMA)
+	display_rm_in_new_tool (an_rm: BMM_MODEL)
 		do
 			rm_tools.create_new_tool
 			rm_tools.populate_active_tool (an_rm)
 		end
 
-	display_rm (an_rm: BMM_SCHEMA)
+	display_rm (an_rm: BMM_MODEL)
 			-- display a class selected in some tool
 		do
 			rm_tools.populate_active_tool (an_rm)
