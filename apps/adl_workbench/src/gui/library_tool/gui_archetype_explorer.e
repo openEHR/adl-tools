@@ -293,7 +293,7 @@ feature {NONE} -- Implementation
 
 	 			elseif attached {ARCH_LIB_PACKAGE_ITEM} aci as accl then
 	 				text.append (accl.qualified_name)
-					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_schema.schema_id>>))
+					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_model.schema_id>>))
 	 				text.append (" [" + accl.subtree_artefact_total.out + "]")
 				end
 
