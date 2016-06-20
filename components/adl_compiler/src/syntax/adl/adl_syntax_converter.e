@@ -327,7 +327,15 @@ feature -- ADL 2 conversions
 								dt_attr.put_child (dt_prim_obj)
 							end
 						end
-						a_res_desc.put_attribute (dt_attr)
+						if dt_attr.child_count > 0 then
+							a_res_desc.put_attribute (dt_attr)
+						end
+					end
+				end
+				-- if there is nothing left inside the other_details DT_ATTR, remove from its parent
+				if dt_attr_od.child_count = 0 then
+					check attached dt_attr_od.parent as dt_parent_obj then
+						dt_parent_obj.remove_attribute ("other_details")
 					end
 				end
 			end
