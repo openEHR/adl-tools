@@ -52,6 +52,20 @@ aom_rm_type_mappings = <
 >
 
 ----------------------------------------------------------------------------------------
+-- Equivalences of RM primitive types to in-built set of primitive types
+-- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
+
+rm_primitive_type_equivalences = <
+	["Octet"] = <"Integer">
+	["Double"] = <"Real">
+	["Integer64"] = <"Integer">
+	["ISO8601_DATE"] = <"Date">
+	["ISO8601_DATE_TIME"] = <"Date_time">
+	["ISO8601_TIME"] = <"Time">
+	["ISO8601_DURATION"] = <"Duration">
+>
+
+----------------------------------------------------------------------------------------
 -- Allowed substitutions from AOM built-in types to RM types. AOM type on the left can be used
 -- as a constrainer type for the RM type on the right, even though they are not equivalents.
 -- Useful to deal with two problems: stringified values and numeric type promotions, e.g. 
@@ -65,19 +79,6 @@ aom_rm_type_substitutions = <
 	["DURATION"] = <"String">
 	["CODE_PHRASE"] = <"DV_CODED_TEXT">
 	["INTEGER"] = <"Real">
->
-
-----------------------------------------------------------------------------------------
--- Equivalences of RM primitive types to in-built set of primitive types
--- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
-
-rm_primitive_type_equivalences = <
-	["Double"] = <"Real">
-	["Integer64"] = <"Integer">
-	["ISO8601_DATE"] = <"Date">
-	["ISO8601_DATE_TIME"] = <"Date_time">
-	["ISO8601_TIME"] = <"Time">
-	["ISO8601_DURATION"] = <"Duration">
 >
 
 ----------------------------------------------------------------------------------------

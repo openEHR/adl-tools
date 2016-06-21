@@ -65,20 +65,9 @@ aom_rm_type_substitutions = <
 ----------------------------------------------------------------------------------------
 -- Equivalences of RM primitive types to in-built set of primitive types
 -- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
--- Assumed primitive types and their C_XX mappings are as follows:
---    Boolean 			=> C_BOOLEAN
---    String  			=> C_STRING
---    Integer  			=> C_INTEGER
---    Real  			=> C_REAL
---    Date  			=> C_DATE
---    Time  			=> C_TIME
---    Date_time			=> C_DATE_TIME
---    Duration 			=> C_DURATION
---    Terminology_code 	=> C_TERMINOLOGY_CODE
---
--- All other equivalences need to be stated.
 
 rm_primitive_type_equivalences = <
+	["Octet"] = <"Integer">
 	["Double"] = <"Real">
 	["Integer64"] = <"Integer">
 	["ISO8601_DATE"] = <"Date">
