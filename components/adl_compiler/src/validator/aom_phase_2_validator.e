@@ -442,6 +442,7 @@ end
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY [BMM_TYPE]
 			bmm_enum: BMM_ENUMERATION [COMPARABLE]
+			vcormt_fail: BOOLEAN
 		do
 			if attached {C_OBJECT} a_c_node as co then
 				if attached co.parent as att_parent_ca then -- now check if this object is a valid type of its owning attribute
@@ -458,56 +459,65 @@ end
 						if ref_model.has_property (attr_rm_type_in_flat_anc, co.parent.rm_attribute_name) then
 							rm_attr_type := ref_model.effective_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name)
 
-							-- check for exact conformance, or else type equivalance, which occurs with primitive types, e.g. the AOM 'REAL' type
-							-- will match RM 'Real', 'Real32', 'Real64', and 'Double' types if these equivalences are encoded into the AOM_PROFILE
-							-- rm_aom_primitive_type_equivalences table.
-							if not ref_model.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) and
-								not has_rm_aom_type_mapping (rm_attr_type, co.generator)
-							then
+							-- check for exact conformance, if not, check for various kinds of exceptions on C_PRIMITIVE_OBJECTs
+							if not ref_model.ms_conformant_property_type (attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, co.rm_type_name) then
+								if attached {C_PRIMITIVE_OBJECT} co as cpo then
 
-								-- check if the property type is an enumeration and if the archetype node rm_type_name is
-								-- a compatible primitive type
-								if ref_model.enumeration_types.has (rm_attr_type) then
-									bmm_enum := ref_model.enumeration_definition (rm_attr_type)
-									if bmm_enum.underlying_type_name.is_case_insensitive_equal (co.rm_type_name) then
-										if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
-											if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
-												add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
-											else
-												c_int.set_rm_type_name (rm_attr_type)
-												c_int.set_enumerated_type_constraint
-											end
+									-- check for type equivalance, which occurs with primitive types, e.g. the AOM 'REAL' type
+									-- will match RM 'Real', 'Real32', 'Real64', and 'Double' types if these equivalences are encoded into the AOM_PROFILE
+									-- rm_aom_primitive_type_equivalences table. If one is found, that type is written into the C_PRIMITIVE_OBJECT.rm_type_name
+									if has_rm_aom_type_mapping (rm_attr_type, co.generator) then
+										co.set_rm_type_name (rm_attr_type)
 
-										elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
-											if not across c_str.constraint as str_vals_csr all bmm_enum_str.item_values.has (str_vals_csr.item) end then
-												add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.single_value>>)
+									-- check if the property type is an enumeration and if the archetype node rm_type_name is
+									-- a compatible primitive type
+									elseif ref_model.enumeration_types.has (rm_attr_type) then
+										bmm_enum := ref_model.enumeration_definition (rm_attr_type)
+										if bmm_enum.underlying_type_name.is_case_insensitive_equal (co.rm_type_name) then
+											if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
+												if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
+													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
+												else
+													c_int.set_rm_type_name (rm_attr_type)
+													c_int.set_enumerated_type_constraint
+												end
+
+											elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
+												if not across c_str.constraint as str_vals_csr all bmm_enum_str.item_values.has (str_vals_csr.item) end then
+													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.single_value>>)
+												else
+													c_str.set_rm_type_name (rm_attr_type)
+													c_str.set_enumerated_type_constraint
+												end
+
 											else
-												c_str.set_rm_type_name (rm_attr_type)
-												c_str.set_enumerated_type_constraint
+												-- error - unsupported subtype of BMM_ENUMERATION
+												add_error (ec_VCORMEN, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 											end
 
 										else
-											-- error - unsupported subtype of BMM_ENUMERATION
-											add_error (ec_VCORMEN, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+											-- RM property type is an enumerated type, but current node RM type doesn't conform
+											add_error (ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 												rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
-
 										end
 
-									else
-										-- RM property type is an enumerated type, but current node RM type doesn't conform
-										add_error (ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+									-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
+									-- has a String field (within some other kind of DATE class)
+									elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
+										add_info (ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 											rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
-									end
+										co.set_rm_type_name (rm_attr_type)
 
-								-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
-								-- has a String field (within some other kind of DATE class)
-								elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
-									add_info (ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-										rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
-									co.set_rm_type_name (rm_attr_type)
+									else
+										vcormt_fail := True
+									end
 								else
+									vcormt_fail := True
+								end
+								if vcormt_fail then
 									add_error (ec_VCORMT, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 										rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 									invalid_types.extend (co.rm_type_name)
