@@ -121,8 +121,8 @@ feature -- Commands
 
 					-- RM schemas info
 					std_out.put_string ("%N" + get_text (ec_rm_schemas_info_text))
-					across rm_schemas_access.valid_top_level_schemas as loaded_schemas_csr loop
-						std_out.put_string ("%T" + loaded_schemas_csr.key + "%N")
+					across ref_models_access.valid_models as loaded_rms_csr loop
+						std_out.put_string ("%T" + loaded_rms_csr.key + "%N")
 					end
 
 					-- repository & library info
@@ -271,7 +271,7 @@ feature -- Commands
 			else
 				std_err.put_string (app_root.errors.as_string)
 				std_err.put_string (app_root.error_strings)
-				across rm_schemas_access.all_schemas as schemas_csr loop
+				across ref_models_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
 						std_err.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
 						std_err.put_string (schemas_csr.item.errors.as_string)
