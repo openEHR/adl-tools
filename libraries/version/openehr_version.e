@@ -41,7 +41,7 @@ feature -- Access
 	beta: IMMUTABLE_STRING_8
 			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
 		once
-			create Result.make_from_string ("11")
+			create Result.make_from_string ("12")
 		end
 
 	version_to_minor: IMMUTABLE_STRING_8
