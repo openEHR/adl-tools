@@ -610,22 +610,22 @@ feature -- Modification
 			last_new_definition_code := new_term.code
 		end
 
-	put_term_binding (a_binding: URI; a_terminology_id, a_code: STRING)
+	put_term_binding (a_binding: URI; a_terminology_id, a_key: STRING)
 			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_term_code.terminology
 		require
-			Local_code_valid: has_code (a_code)
-			Not_already_added: not has_term_binding (a_terminology_id, a_code)
+			Key_valid: is_valid_code (a_key) implies has_code (a_key)
+			Not_already_added: not has_term_binding (a_terminology_id, a_key)
 		do
 			if not has_term_bindings (a_terminology_id) then
 				term_bindings.put (create {HASH_TABLE [URI, STRING]}.make(0), a_terminology_id)
 			end
 			if attached term_bindings.item (a_terminology_id) as bindings then
-				bindings.put (a_binding, a_code)
+				bindings.put (a_binding, a_key)
 			end
 			term_binding_map_cache := Void
 		ensure
-			Binding_added: has_term_binding (a_terminology_id, a_code)
+			Binding_added: has_term_binding (a_terminology_id, a_key)
 		end
 
 	replace_term_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
@@ -641,16 +641,16 @@ feature -- Modification
 			end
 		end
 
-	replace_term_binding (a_binding: URI; a_terminology_id, a_code: STRING)
+	replace_term_binding (a_binding: URI; a_terminology_id, a_key: STRING)
 			-- replaces existing a term binding to local code a_code, in group a_terminology
 		require
-			Local_code_valid: has_code (a_code)
-			Already_added: has_term_binding (a_terminology_id, a_code)
+			Key_valid: is_valid_code (a_key) implies has_code (a_key)
+			Already_added: has_term_binding (a_terminology_id, a_key)
 		do
-			term_bindings_for_terminology (a_terminology_id).replace (a_binding, a_code)
+			term_bindings_for_terminology (a_terminology_id).replace (a_binding, a_key)
 			term_binding_map_cache := Void
 		ensure
-			Binding_added: has_term_binding (a_terminology_id, a_code)
+			Binding_added: has_term_binding (a_terminology_id, a_key)
 		end
 
 	replicate_term_definition (an_old_code, a_new_code: STRING)
@@ -721,29 +721,29 @@ feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 			not has_code (a_code)
 		end
 
-	remove_term_binding (a_code, a_terminology: STRING)
-			-- remove term binding to local code in group a_terminology
+	remove_term_binding (a_key, a_terminology: STRING)
+			-- remove term binding to local code or key in group a_terminology
 		require
-			Has_binding: has_term_binding (a_terminology, a_code)
+			Has_binding: has_term_binding (a_terminology, a_key)
 		do
-			term_bindings_for_terminology (a_terminology).remove (a_code)
+			term_bindings_for_terminology (a_terminology).remove (a_key)
 			if term_bindings_for_terminology (a_terminology).count = 0 then
 				term_bindings.remove (a_terminology)
 			end
 			term_binding_map_cache := Void
 		ensure
-			Binding_removed: not has_term_binding (a_terminology, a_code)
+			Binding_removed: not has_term_binding (a_terminology, a_key)
 		end
 
-	remove_term_bindings (a_code: STRING)
-			-- remove term binding to local code in all terminologies
+	remove_term_bindings (a_key: STRING)
+			-- remove term binding to local code or path in all terminologies
 		local
 			terminologies_to_remove: ARRAYED_LIST [STRING]
 		do
 			create terminologies_to_remove.make (0)
 			across term_bindings as bindings_csr loop
-				if bindings_csr.item.has (a_code) then
-					bindings_csr.item.remove (a_code)
+				if bindings_csr.item.has (a_key) then
+					bindings_csr.item.remove (a_key)
 					if bindings_csr.item.is_empty then
 						terminologies_to_remove.extend (bindings_csr.key)
 					end
@@ -1051,29 +1051,35 @@ feature {ARCHETYPE_TERMINOLOGY} -- Flattening
 
 feature {NONE} -- Flattening
 
-	merge_specialised_term_binding (a_binding: URI; a_terminology_id, a_child_code: STRING)
-			-- merge the binding a_code/a_binding into this terminology, if necessary
-			-- removing any existing binding to a parent code of `a_child_code'
+	merge_specialised_term_binding (a_binding: URI; a_terminology_id, a_child_binding_key: STRING)
+			-- merge the binding a_child_binding_key/a_binding into this terminology, if necessary
+			-- removing any existing binding to a parent code of `a_child_binding_key'
 		require
-			not has_term_binding (a_terminology_id, a_child_code)
+			not has_term_binding (a_terminology_id, a_child_binding_key)
 		local
 			code_in_parent: STRING
 			spec_depth, code_anc_spec_level: INTEGER
 		do
 			-- determine for parent code that might exist in this flat terminology
-			if is_redefined_code (a_child_code) then
-				code_in_parent := a_child_code
-				code_anc_spec_level := code_ancestor_level (code_in_parent)
-				from spec_depth := specialisation_depth until spec_depth <= code_anc_spec_level or has_term_binding (a_terminology_id, code_in_parent) loop
-					spec_depth := spec_depth - 1
-					code_in_parent := code_at_level (a_child_code, spec_depth)
+			if is_valid_code (a_child_binding_key) then
+				if is_redefined_code (a_child_binding_key) then
+					code_in_parent := a_child_binding_key
+					code_anc_spec_level := code_ancestor_level (code_in_parent)
+					from spec_depth := specialisation_depth until spec_depth <= code_anc_spec_level or has_term_binding (a_terminology_id, code_in_parent) loop
+						spec_depth := spec_depth - 1
+						code_in_parent := code_at_level (a_child_binding_key, spec_depth)
+					end
+
+					if has_term_binding (a_terminology_id, code_in_parent) then
+						remove_term_binding (code_in_parent, a_terminology_id)
+					end
 				end
 
-				if has_term_binding (a_terminology_id, code_in_parent) then
-					remove_term_binding (code_in_parent, a_terminology_id)
-				end
+			-- it must be a path - see if there is already a binding for this path
+			elseif has_term_binding (a_terminology_id, a_child_binding_key) then
+				remove_term_binding (a_child_binding_key, a_terminology_id)
 			end
-			put_term_binding (a_binding, a_terminology_id, a_child_code)
+			put_term_binding (a_binding, a_terminology_id, a_child_binding_key)
 		end
 
 	merge_specialised_value_set (a_value_set: VALUE_SET)

@@ -376,17 +376,22 @@ feature {NONE} -- Implementation
 			-- 		is every term mentioned in the term_definitions?
 			--
 		local
-			binding_target_code, arch_code, terminology_id: STRING
+			binding_target_code, binding_key, terminology_id: STRING
 		do
 			across terminology.term_bindings as bindings_for_terminology_csr loop
 				terminology_id := bindings_for_terminology_csr.key
 				across bindings_for_terminology_csr.item as bindings_csr loop
-					arch_code := bindings_csr.key
-					if not (is_valid_code (arch_code) and then
-						(terminology.has_code (arch_code) or else arch_diff_child.is_specialised and then arch_flat_parent.terminology.has_code (arch_code)) or else
-						arch_diff_child.has_path (arch_code))
-					then
-						add_error (ec_VTBK, <<arch_code>>)
+					binding_key := bindings_csr.key
+
+					-- if it is not a code, it must be a path that is valid in archetype or at least RM for the archetyped class
+					if not is_valid_code (binding_key) and then not (arch_diff_child.has_path (binding_key) or else ref_model.has_property_path (arch_diff_child.definition.rm_type_name, binding_key)) then
+						add_error (ec_VTTBK, <<binding_key>>)
+
+					-- it must be code; check it exists
+					elseif is_valid_code (binding_key) and then not (terminology.has_code (binding_key) or else arch_diff_child.is_specialised and then arch_flat_parent.terminology.has_code (binding_key)) then
+						add_error (ec_VTTBK, <<binding_key>>)
+
+					-- key is valid; check validity of RHS
 					else
 						binding_target_code := terminology_code_from_uri (bindings_csr.item.as_string)
 						if ts.has_terminology (terminology_id) then
