@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (911)
+			create message_table.make (912)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -170,8 +170,8 @@ feature -- Initialisation
 			message_table.put ("Supplier loop detected: $1 has itself as supplier at path $2", ec_VSUP)
 			message_table.put ("translations key '$1' does not match translation item language '$2'", ec_VTRLA)
 			message_table.put ("resource detail key '$1' does not match resource detail item language '$2'", ec_VRDLA)
-			message_table.put ("term binding key $1 must either be valid term code or valid path in flat archetype", ec_VTBK)
-			message_table.put ("term binding key $1 must be a valid value-set id code", ec_VCBK)
+			message_table.put ("term binding key $1 must either be valid term code or valid path in flat archetype", ec_VTTBK)
+			message_table.put ("term binding key $1 must be a valid value-set id code", ec_VTCBK)
 			message_table.put ("Invalid id-code $1 found in terminology definitions; code format must follow regex $2", ec_VATCV)
 			message_table.put ("Annotation at language $1 has invalid archetype path $2", ec_VRANP1)
 			message_table.put ("Annotation at language $1 has invalid reference model path $2", ec_VRANP2)
@@ -364,6 +364,7 @@ feature -- Initialisation
 			message_table.put ("Create a new repository (creates repository definition file in selected directory)?", ec_repository_create_new_question_text)
 			message_table.put ("VCS Refresh", ec_refresh_vcs_button_text)
 			message_table.put ("Refresh repository statuses in this dialog from version control system", ec_refresh_vcs_button_tooltip)
+			message_table.put ("New repository", ec_repository_new_text)
 			message_table.put ("Local path: ", ec_repository_dir_text)
 			message_table.put ("Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.", ec_repository_dir_tooltip)
 			message_table.put ("Directory $1 either doesn't exist, or already configured as a repository", ec_repository_dir_invalid)

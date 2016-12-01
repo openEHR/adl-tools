@@ -66,6 +66,7 @@ templates = <
 
 		["refresh_vcs_button_text"] = <"VCS Refresh">
 		["refresh_vcs_button_tooltip"] = <"Refresh repository statuses in this dialog from version control system">
+		["repository_new_text"] = <"New repository">
 		["repository_dir_text"] = <"Local path: ">
 		["repository_dir_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
