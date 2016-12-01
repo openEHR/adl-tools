@@ -150,11 +150,10 @@ feature {NONE} -- Implementation
 	get_archetypes_in_folder (a_path: STRING)
 			-- Add archetype and folder meta-data nodes to `archetypes' list, and call recursively to folders below
 		local
-			fn, new_arch_fn, arch_full_path, adl_full_path, new_full_path, arch_id: STRING
+			fn, new_arch_fn, arch_full_path, new_full_path, arch_id: STRING
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			arch_semantic_ids: HASH_TABLE [ARCH_LIB_AUTHORED_ARCHETYPE, STRING]
-			semantic_id: STRING
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			ara: ARCH_LIB_AUTHORED_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER

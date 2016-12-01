@@ -179,8 +179,6 @@ feature -- Events
 
 	on_ok
 			-- Set shared settings from the dialog widgets.
-		local
-			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not rm_schema_directories.is_equal (last_rm_schema_dirs) then
 				set_rm_schema_directories (last_rm_schema_dirs)
