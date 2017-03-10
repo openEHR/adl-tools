@@ -319,7 +319,7 @@ feature -- Access
 		end
 
 	display_semantic_id: STRING
-			-- namespace + domain concept part of archetype id + version; for AL 1.4 ids that are specialised, only include
+			-- namespace + domain concept part of archetype id + version; for ADL 1.4 ids that are specialised, only include
 			-- the last piece of `concept_id' after the last '-'
 		do
 			create Result.make_empty
