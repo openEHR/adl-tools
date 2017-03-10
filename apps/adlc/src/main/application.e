@@ -315,18 +315,30 @@ feature {NONE} -- Implementation
 			-- FIXME: at some point, implement a proper graphical tree in character graphics
 			-- not using fixed length source strings!
 		local
-			leader: STRING
+			id_str, src: STRING
 		do
 			node_depth := node_depth + 1
 			if user_friendly_list_output then
 				if attached {ARCH_LIB_CLASS} aci as accn and then accn.has_artefacts or else attached {ARCH_LIB_ARCHETYPE} aci then
-					create leader.make_empty
-					leader := spaces.substring (1, 4 * node_depth)
-					leader.append_character ('+')
-					leader.append_string ("--")
-					leader.append_character (' ')
-					std_out.put_string (leader)
-					std_out.put_string (aci.name)
+					std_out.put_string (spaces.substring (1, 4 * node_depth) + "+-- ")
+
+					-- here we want to determine if we have a 'reference archetype', which is occurs in
+					-- some archetype libraries. A reference archetype is considered to be like a class
+					-- in the reference model, so we want to output it in upper case, in the same way
+					-- the ADL Workbench does.
+					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aci as auth_aca then
+						-- generate source text, this will set the 'reference_archetype'
+						-- flag in the archetype descriptor
+						src := auth_aca.file_mgr.source_text
+						if auth_aca.file_mgr.is_reference_archetype then
+							id_str := aci.name.as_upper
+						else
+							id_str := aci.name
+						end
+					else
+						id_str := aci.name
+					end
+					std_out.put_string (id_str)
 					std_out.new_line
 				end
 			elseif attached {ARCH_LIB_ARCHETYPE} aci then
