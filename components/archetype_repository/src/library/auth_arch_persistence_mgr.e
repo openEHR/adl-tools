@@ -101,7 +101,7 @@ feature -- Access
 
 			-- extract other details
 			create amp
-			set_other_details_metadata (amp.extract_other_details (Result))
+			other_details := amp.extract_other_details (Result)
 		end
 
 	source_id: STRING
@@ -142,9 +142,17 @@ feature -- Thumbnail state
 	is_source_generated: BOOLEAN
 			-- True if the source file was generated from the legacy form
 
+	other_details: HASH_TABLE [STRING, STRING]
+			-- 'other_details' part of archetype description section, containing regression code, MD5 etc
+		attribute
+			create Result.make (0)
+		end
+
 	is_reference_archetype: BOOLEAN
 			-- True if archetype has path description/other_details["model_level"] = "reference"
-			-- WARNING: only set properly after `source_text' or `legacy_text' called
+		do
+			Result := attached other_details.item ("model_level") as mlmd and then mlmd.is_equal ("reference")
+		end
 
 	adl_version: STRING
 			-- ADL version of the most recently read differential text file
@@ -289,7 +297,7 @@ feature -- File Management (Legacy)
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 
 			create amp
-			set_other_details_metadata (amp.extract_other_details (Result))
+			other_details := amp.extract_other_details (Result)
 		end
 
 feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
@@ -526,13 +534,6 @@ feature {NONE} -- Implementation
 			is_source_generated := is_generated
 			id := an_id
 			adl_version := an_adl_version
-		end
-
-	set_other_details_metadata (an_other_details: HASH_TABLE [STRING, STRING])
-			-- set any meta-data found in other_details
-		do
-			-- True if archetype has path description/other_details["model_level"] = "reference"
-			is_reference_archetype := attached an_other_details.item ("model_level") as mlmd and then mlmd.is_equal ("reference")
 		end
 
 invariant
