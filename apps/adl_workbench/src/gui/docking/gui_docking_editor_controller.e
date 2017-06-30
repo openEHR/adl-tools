@@ -6,9 +6,9 @@ note
 				 puts its own 'tools' in which are not editors.
 				 ]"
 	keywords:    "GUI, docking"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class GUI_DOCKING_EDITOR_CONTROLLER
@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 			-- find out what the current last editor in the docking panel is, before making a new one
 			last_ed := docking_manager_last_tool
 			active_tool_id := docking_tools.count + 1
-			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + active_tool_id.out)
+			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + active_tool_id.out, docking_manager)
 			docking_pane.close_request_actions.extend (agent remove_tool (active_tool_id))
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.editor)

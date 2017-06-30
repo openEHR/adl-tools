@@ -219,7 +219,6 @@ feature {NONE} -- Initialization
 			set_menu_bar (evx_menu_bar.ev_menu_bar)
 
 			-- set up docking & tools
-			create internal_docking_manager.make (viewer_main_cell, Current)
 			create_new_library_tool
 			create_new_ref_model_explorer
 			create_new_console_tool
@@ -368,7 +367,7 @@ feature {NONE} -- Initialization
 					console_tool.append_text (get_msg_line (ec_no_docking_file_found, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 				end
 
-				if attached docking_file_to_use and then not internal_docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
+				if attached docking_file_to_use and then not docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
 					console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<user_docking_layout_file_path>>))
 				end
 			end
@@ -462,7 +461,7 @@ feature -- Commands
 			if test_tool.ev_root_container.is_show_requested then
 				close_test_tool
 			end
-			if not internal_docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
+			if not docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
 				console_tool.append_text (get_msg_line (ec_write_docking_file_failed, <<user_docking_layout_file_path>>))
 			end
 
@@ -841,24 +840,6 @@ feature -- Address Bar control
 
 feature -- Docking controls
 
-	docking_manager: SD_DOCKING_MANAGER
-			-- Attached `manager'
-		require
-			not_void: docking_manager_set
-		local
-			l_result: like internal_docking_manager
-		do
-			l_result := internal_docking_manager
-			check attached l_result end
-			Result := l_result
-		end
-
-	docking_manager_set: BOOLEAN
-			-- If `internal_docking_manager' has been set?
-		do
-			Result := attached internal_docking_manager
-		end
-
 	tool_bar_content: detachable SD_TOOL_BAR_CONTENT
 			-- Tool bar content
 
@@ -879,7 +860,7 @@ feature -- RM Schema explorer
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (ref_model_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg (ec_reference_models_docking_area_title, Void))
+			create a_docking_pane.make_with_widget_title_pixmap (ref_model_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg (ec_reference_models_docking_area_title, Void), docking_manager)
 			docking_manager.contents.extend (a_docking_pane)
 			ref_model_explorer.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title (get_msg (ec_reference_models_docking_area_title, Void))
@@ -929,7 +910,7 @@ feature -- library tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (library_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg (ec_library_tool_title, Void))
+			create a_docking_pane.make_with_widget_title_pixmap (library_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg (ec_library_tool_title, Void), docking_manager)
 			if attached library_tool.mini_tool_bar then
 				a_docking_pane.set_mini_toolbar (library_tool.mini_tool_bar)
 			end
@@ -1059,7 +1040,7 @@ feature -- Test tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), get_text (ec_test_tool_title))
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), get_text (ec_test_tool_title), docking_manager)
 			docking_manager.contents.extend (a_docking_pane)
 			a_docking_pane.set_long_title (get_text (ec_test_tool_title))
 			a_docking_pane.set_short_title (get_text (ec_test_tool_title))
@@ -1078,7 +1059,7 @@ feature -- Console Tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), get_text (ec_console_tool_title))
+			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), get_text (ec_console_tool_title), docking_manager)
 			console_tool.set_docking_pane (docking_pane)
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
@@ -1102,7 +1083,7 @@ feature -- Error Tool
 
 	create_new_error_tool
 		do
-			create error_docking_pane.make_with_widget_title_pixmap (error_tool.ev_grid, get_icon_pixmap ("tool/errors"), get_text (ec_error_tool_title))
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.ev_grid, get_icon_pixmap ("tool/errors"), get_text (ec_error_tool_title), docking_manager)
 			docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			error_docking_pane.set_long_title (get_msg (ec_error_tool_title, Void))
@@ -1263,8 +1244,11 @@ feature {NONE} -- Build commands
 
 feature {NONE} -- GUI Widgets
 
-	internal_docking_manager: detachable SD_DOCKING_MANAGER
+	docking_manager: SD_DOCKING_MANAGER
 			-- Docking manager
+		once
+			create Result.make (viewer_main_cell, Current)
+		end
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

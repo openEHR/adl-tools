@@ -267,7 +267,7 @@ end
 					if attached arch_flat_parent.object_at_path (air_p.path) as cpf then
 						co_in_flat_anc := cpf
 					else
-						add_error (ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type, co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
+						add_error (ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type.name, co_flat_anc_annotated_path, co_in_flat_anc.generating_type.name>>)
 					end
 
 				-- a C_COMPLEX_OBJECT with any_allowed = True to be redefined into anything. (Basic conformance - RM type, occurrences - checked below)
@@ -276,8 +276,8 @@ end
 
 				-- else the AOM meta-types must be the same
 				elseif dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
-					add_error (ec_VSONT, <<co_child_diff.rm_type_name, co_child_annotated_path, co_child_diff.generating_type, co_in_flat_anc.rm_type_name,
-						co_flat_anc_annotated_path, co_in_flat_anc.generating_type>>)
+					add_error (ec_VSONT, <<co_child_diff.rm_type_name, co_child_annotated_path, co_child_diff.generating_type.name, co_in_flat_anc.rm_type_name,
+						co_flat_anc_annotated_path, co_in_flat_anc.generating_type.name>>)
 				end
 
 
@@ -372,7 +372,7 @@ end
 								flat_anc_obj := arch_flat_parent.object_at_path (flat_anc_path)
 								if c_obj.is_prohibited then
 									if dynamic_type (c_obj) /= dynamic_type (flat_anc_obj) then
-										add_error (ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type, flat_anc_obj.generating_type>>)
+										add_error (ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type.name, flat_anc_obj.generating_type.name>>)
 									elseif not flat_anc_obj.node_id.is_equal (c_obj.node_id) then
 										add_error (ec_VSONPI, <<co_child_annotated_path, flat_anc_obj.node_id>>)
 									end
