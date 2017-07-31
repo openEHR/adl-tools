@@ -313,6 +313,15 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 \[\"[^\]\r\t\n"]+\"\]		 out_buffer.append (text)
 
+----------/* regex character classes */ ---------------------------------------------
+-- good enough matcher for character classes found in regexes found in ADL 1.4
+--
+
+\[[^\]\[\r\n]+\] {
+		out_buffer.append (text)
+	}
+
+
 ----------/* ADL 1.5 archetype id */ -------------------------------------------------
 {ARCHETYPE_ID} {
 		out_buffer.append (text)
@@ -363,10 +372,12 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 ----------/* all other text */ -------------------------------------------------
 
 ^{WHITESPACE}[^[" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace
+-- ^{WHITESPACE}[^" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	}
 
 [^[" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace
+-- [^" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	}
 
