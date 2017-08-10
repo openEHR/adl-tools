@@ -148,10 +148,16 @@ feature -- Comparison
 		do
 			if precursor (other, rm_type_conformance_checker) then
 				if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
-					this_vset := value_set_expanded
+					-- firstly, check if the other value-set is empty, which means there is no value-set, i.e. no constraint
+					-- which means that this object's value set automatically conforms.
 					other_vset := other.value_set_expanded
-					Result := codes_conformant (constraint, other.constraint) and then
-						across this_vset as vset_csr all other_vset.has (vset_csr.item) end
+					if not other_vset.is_empty then
+						this_vset := value_set_expanded
+						Result := codes_conformant (constraint, other.constraint) and then
+							across this_vset as vset_csr all other_vset.has (vset_csr.item) end
+					else
+						Result := True
+					end
 				else
 					Result := codes_conformant (constraint, other.constraint)
 				end

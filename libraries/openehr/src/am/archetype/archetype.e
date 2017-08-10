@@ -1125,7 +1125,8 @@ feature {NONE} -- Implementation
 		end
 
 	get_value_set (ac_code: STRING): ARRAYED_LIST [STRING]
-			-- get value set from archetype terminology if it exists
+			-- get value set from archetype terminology if it exists;
+			-- else return an empty set which means 'any'
 		do
 			if attached terminology.value_sets.item (ac_code) as att_vs then
 				Result := att_vs.members
