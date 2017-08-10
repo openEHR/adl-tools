@@ -356,7 +356,7 @@ feature {NONE} -- Implementation
 					if attached {C_PRIMITIVE_OBJECT} a_n then
 						c_type_occ_str := bare_type_name (({C_PRIMITIVE_OBJECT}).name)
 					else
-						c_type_occ_str := a_n.generating_type
+						c_type_occ_str := a_n.generating_type.name
 					end
 					c_type_occ_str.append ("." +
 							a_n.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_quantifier_text)
@@ -365,7 +365,7 @@ feature {NONE} -- Implementation
 					if has_icon_pixmap (pixmap_cand_key) then
 						pixmap_key := pixmap_cand_key
 					else
-						pixmap_key.append (a_n.generating_type)
+						pixmap_key.append (a_n.generating_type.name)
 					end
 				end
 

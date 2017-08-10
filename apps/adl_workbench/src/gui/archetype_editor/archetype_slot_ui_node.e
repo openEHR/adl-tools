@@ -58,7 +58,7 @@ feature -- Display
 
 							-- put pixmap on RM col
 							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, c_node_font,
-								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_include"))
+								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type.name + "_include"))
 
 							-- put blank text in constraint col
 							a_gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
@@ -77,7 +77,7 @@ feature -- Display
 
 							-- put pixmap on RM col
 							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void, Void,
-								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type + "_exclude"))
+								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type.name + "_exclude"))
 
 							-- put blank text in constraint col
 							a_gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, Void, c_constraint_colour, Void)
