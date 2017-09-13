@@ -3,9 +3,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Stream rewriter for ADL 1.4 and transitional ADL 1.5 archetypes containing old style 0-filled at- and ac-codes"
 	keywords:    "transformation, archetype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2014- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_14_2_REWRITER
@@ -178,11 +178,16 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	}
+
+	.|\n	|
+	<<EOF>>	{	-- Catch-all rules (no backing up)
+				set_start_condition (INITIAL)
+	}
 }
 
 ---------/* V_VALUE_SET_DEF of form */ ------------
 -- [local::code, -- comment
---		     	  code, -- comment
+--	     	  code, -- comment
 --			  code] -- comment
 --
 -- Form with assumed value
@@ -217,6 +222,11 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
 	}
+
+	.|\n	|
+	<<EOF>>	{	-- Catch-all rules (no backing up)
+				set_start_condition (INITIAL)
+	}
 }
 
 ---------/* terminology codes in terminology bindings */ ------------
@@ -232,7 +242,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 ---------/* V_VALUE_SET_DEF of non-local codes */ ------------
 -- [terminology_id::code, -- comment
---		     	  code, -- comment
+--		   	  code, -- comment
 --			  code] -- comment
 --
 -- Form with assumed value
@@ -267,6 +277,11 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 	\] 			{
 		out_buffer.append (text)
 		set_start_condition (INITIAL)
+	}
+
+	.|\n	|
+	<<EOF>>	{	-- Catch-all rules (no backing up)
+				set_start_condition (INITIAL)
 	}
 }
 
@@ -372,18 +387,16 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 ----------/* all other text */ -------------------------------------------------
 
 ^{WHITESPACE}[^[" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace
--- ^{WHITESPACE}[^" \t\r\n]+{WHITESPACE_CHAR}*	{		-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	}
 
 [^[" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace
--- [^" \t\r\n]+{WHITESPACE_CHAR}*	{						-- read non '[' non-space characters followed by whitespace
 		out_buffer.append (text)
 	}
 
 --------------------------------------------------------------------------------
 <<EOF>>			terminate
-.				;
+(.|\n)			-- ignore unmatched chars
 
 
 %%

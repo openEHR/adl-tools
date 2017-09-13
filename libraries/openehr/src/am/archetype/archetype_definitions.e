@@ -2,9 +2,9 @@
 	component:   "openEHR ADL Tools"
 	description: "Basic archetype definitions"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_DEFINITIONS

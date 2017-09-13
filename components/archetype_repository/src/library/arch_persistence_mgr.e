@@ -21,9 +21,9 @@ note
 	             	  	=> in-memory form (ARCH_LIB_ARCHETYPE) form is more up to date until resynchronisation achieved
 	             ]"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2014- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class ARCH_PERSISTENCE_MGR

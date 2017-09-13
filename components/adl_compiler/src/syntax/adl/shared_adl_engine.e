@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Shared access to ADL15_ENGINE"
 	keywords:    "ADL, parser, serialiser"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 

@@ -4,9 +4,9 @@ note
 				 Directory representation of a file-system archetype repository.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2006- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_FILE_SOURCE
@@ -110,7 +110,10 @@ feature -- Commands
 					errors.add_error (ec_parse_archetype_e4, <<a_file_path, arch_thumbnail.archetype_id.physical_id>>, "")
 				elseif not arch_phys_id_index.has (arch_thumbnail.archetype_id.physical_id) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (a_file_path)) then
-						create ara.make (extension_replaced (a_file_path, File_ext_archetype_source), Current, arch_thumbnail)
+						create ara.make_legacy (a_file_path, Current, arch_thumbnail)
+
+						-- we need to fake the file path to look as if it is the .adls file path
+						ara.set_id (arch_thumbnail.archetype_id)
 					else
 						create ara.make (a_file_path, Current, arch_thumbnail)
 					end

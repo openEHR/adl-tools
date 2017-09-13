@@ -5,9 +5,9 @@ note
 				 which are considered as standalone files.
 				 ]"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2014- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class AUTH_ARCH_PERSISTENCE_MGR
@@ -45,6 +45,7 @@ feature {NONE} -- Initialisation
 			last_artefact_type := arch_thumbnail.artefact_type
 		ensure
 			file_repository_set: file_repository = a_source
+			legacy_flat_path_set: legacy_flat_path = a_path
 		end
 
 	make_new_archetype (an_id: ARCHETYPE_HRID; a_source: ARCHETYPE_LIBRARY_SOURCE; a_directory: STRING)
@@ -333,8 +334,8 @@ feature {ARCH_LIB_ARCHETYPE} -- Commands
 		do
 			old_id := id
 			id := an_id
-			if attached legacy_flat_path as lfp then
-				source_file_path := file_system.pathname (file_system.dirname (lfp), an_id.as_filename + File_ext_archetype_source)
+			check attached legacy_flat_path as lfp then
+				source_file_path := archetype_source_file_path_from_id (lfp, an_id)
 			end
 		end
 

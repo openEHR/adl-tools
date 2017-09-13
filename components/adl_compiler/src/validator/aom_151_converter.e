@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Perform post parse conversion of the AOM structure to upgrade archetype to ADL 1.5.1."
 	keywords:    "ADL, AOM"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class AOM_151_CONVERTER
@@ -63,7 +63,7 @@ feature -- Definitions
 	Rm_releases: HASH_TABLE [STRING, STRING]
 		once
 			create Result.make (0)
-			Result.put ("1.0.2", "openehr")
+			Result.put ("1.0.3", "openehr")
 			Result.put ("1.0.0", "cen")
 		end
 

@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Shared application resources for any ADL application, GUI or non-GUI"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- openEHR Foundation <http://www.openehr.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class SHARED_ADL_APP_RESOURCES
@@ -593,6 +593,14 @@ feature -- Application Switches
 			-- Set flag for adl_15_roundtripping
 		do
 			app_cfg.put_boolean_value ("/compiler/adl_roundtripping", flag)
+		end
+
+feature -- Conversion
+
+	archetype_source_file_path_from_id (a_path: STRING; an_id: ARCHETYPE_HRID): STRING
+			-- Update `source_filepath' using `an_id'.
+		do
+			Result := file_system.pathname (file_system.dirname (a_path), an_id.as_filename + File_ext_archetype_source)
 		end
 
 feature {NONE} -- Cached Settings
