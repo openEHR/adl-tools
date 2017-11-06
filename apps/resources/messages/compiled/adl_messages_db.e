@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (912)
+			create message_table.make (915)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -289,6 +289,9 @@ feature -- Initialisation
 			message_table.put ("show current configuration and defaults", ec_show_config_switch_desc)
 			message_table.put ("generate list of archetypes in current library (use for further processing)", ec_list_archetypes_switch_desc)
 			message_table.put ("generate list of archetypes in current library in user-friendly format", ec_display_archetypes_switch_desc)
+			message_table.put ("generate list of reference models", ec_list_rms_switch_desc)
+			message_table.put ("display reference model in user-friendly format", ec_display_rm_switch_desc)
+			message_table.put ("reference model name", ec_display_rm_switch_arg_desc)
 			message_table.put ("output format for generated files", ec_format_switch_desc)
 			message_table.put ("file formats: json, adl, odin, yaml, xml (default = adl)", ec_format_switch_arg_desc)
 			message_table.put ("output directory for serialised files", ec_output_dir_switch_desc)

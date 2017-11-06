@@ -24,8 +24,12 @@ templates = <
 		["show_config_switch_desc"] = <"show current configuration and defaults">
 		["list_archetypes_switch_desc"] = <"generate list of archetypes in current library (use for further processing)">
 		["display_archetypes_switch_desc"] = <"generate list of archetypes in current library in user-friendly format">
+		["list_rms_switch_desc"] = <"generate list of reference models">
 
 		-- command line options with arguments
+		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
+		["display_rm_switch_arg_desc"] = <"reference model name">
+
 		["format_switch_desc"] = <"output format for generated files">
 		["format_switch_arg_desc"] = <"file formats: json, adl, odin, yaml, xml (default = adl)">
 

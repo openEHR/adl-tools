@@ -5,6 +5,8 @@ note
 				   
 					USAGE:
 					   adlc -s [-q]
+					   adlc -r [-q]
+					   adlc -R <reference model name> [-q]
 					   adlc -b <library name> -l [-q]
 					   adlc -b <library name> -d [-q]
 					   adlc <id_pattern> -b <library name> [--flat] [--cfg <file path>] [-q] [-f <format>] -a <action> [-o <output_dir>]
@@ -15,6 +17,10 @@ note
 					   -q --quiet             : suppress verbose feedback, including configuration information on startup (Optional)
 					      --flat              : use flat form of archetype[s] for actions, e.g. path extraction etc (Optional)
 					   -s --show_config       : show current configuration and defaults
+
+					   -r --list_rms          : generate list of reference models.
+					   -R --display_rms		  : generate view of reference models user-friendly format
+
 					   -l --list_archetypes   : generate list of archetypes in current library (use for further processing)
 					   -d --display_archetypes: generate list of archetypes in current library in user-friendly format
 					   -b --library           : library to use
@@ -134,6 +140,17 @@ feature -- Commands
 							std_out.put_string ("%T%T" + if lib_name.is_equal (current_library_name) then "* " else "  " end + lib_name + "%N")
 						end
 					end
+
+				elseif opts.list_rms then
+					across ref_models_access.valid_models as loaded_rms_csr loop
+						std_out.put_string (loaded_rms_csr.key + "%N")
+					end
+
+				elseif attached opts.display_rm as rm then
+					if ref_models_access.valid_models.has (rm) and then attached ref_models_access.valid_models.item (rm) as an_rm then
+						populate_rm (an_rm)
+					end
+
 				else
 					-- process library
 					if attached opts.library as att_lib then
@@ -367,5 +384,50 @@ feature {NONE} -- Implementation
  			Result := regex_matcher.is_compiled
  		end
 
+	populate_rm (an_rm: BMM_MODEL)
+		do
+			across an_rm.packages as pkgs_csr loop
+ 				populate_rm_packages (pkgs_csr.item)
+			end
+		end
+
+	populate_rm_packages (a_pkg: BMM_PACKAGE)
+		do
+			std_out.put_string (spaces.substring (1, 4 * rm_depth) + a_pkg.name + "%N")
+
+			rm_depth := rm_depth + 1
+
+			-- do the classes
+			across a_pkg.classes as classes_csr loop
+ 				-- only do top classes in each package; if this class has an ancestor in the same package,
+ 				-- don't do this class, it will get taken care of via the parent
+ 				if not across classes_csr.item.ancestors as anc_csr some anc_csr.item.package = a_pkg end then
+	 				populate_rm_classes (classes_csr.item)
+	 			end
+			end
+
+			-- do the child packages
+			across a_pkg.packages as pkgs_csr loop
+ 				populate_rm_packages (pkgs_csr.item)
+			end
+
+			rm_depth := rm_depth - 1
+		end
+
+	populate_rm_classes (a_class_def: BMM_CLASS)
+		do
+			std_out.put_string (spaces.substring (1, 4 * rm_depth) + a_class_def.type_signature + "%N")
+
+			-- do any descendants in same package
+			rm_depth := rm_depth + 1
+			across a_class_def.immediate_descendants as imm_descs_csr loop
+				if imm_descs_csr.item.package_path.same_string (a_class_def.package_path) then
+					populate_rm_classes (imm_descs_csr.item)
+				end
+			end
+			rm_depth := rm_depth - 1
+		end
+
+	rm_depth: INTEGER
 
 end
