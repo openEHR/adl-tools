@@ -15,7 +15,7 @@ profile_name = <"openEHR">
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_pattern = <"openehr_ehr_extract_.*|openehr_rm_.*|openehr_adltest_.*">
+rm_schema_pattern = <"openehr_ehr_extract_.*|openehr_rm_.*|openehr_adltest_.*|openehr_proc_.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
