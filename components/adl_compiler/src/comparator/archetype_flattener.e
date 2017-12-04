@@ -465,8 +465,9 @@ end
 					end
 					co_list.forth
 				else
-					-- set the co_output_insert_pos to the last item in the flat under this attribute - i.e. the child archetype
-					-- object nodes will be merged after the end of the existing ones in the flat
+					-- set the co_output_insert_pos to the last item in the flat under this attribute -
+					-- i.e. the child archetype object nodes will be merged after the end of the existing
+					-- ones in the flat
 					co_output_csr := ca_output.children.last
 					add_merge_desc (start_pos, co_list.count, co_output_csr, False)
 					after_pending := False
