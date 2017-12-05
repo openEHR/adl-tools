@@ -312,12 +312,10 @@ feature {NONE} -- Implementation
 			-- enter a BMM_PROPERTY
 		local
 			ev_parent_class_row, ev_prop_row, ev_class_row: EV_GRID_ROW
-			prop_str, type_str: STRING
-			has_type_subs: BOOLEAN
+			prop_str, type_str, tooltip_str: STRING
+			has_type_subs, show_prop, ignore: BOOLEAN
 			bmm_class: BMM_CLASS
 			col: EV_COLOR
-			show_prop: BOOLEAN
-			ignore: BOOLEAN
 		do
 			if not ev_grid_rm_row_removals_stack.item then -- don't do anything if descending into a removed subtree
 				-- first of all work out whether we want this property
@@ -352,13 +350,13 @@ feature {NONE} -- Implementation
 					if show_prop then
 						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes						
 						prop_str := a_bmm_prop.name.twin
-						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.type as bmm_cont_type then
+						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.bmm_type as bmm_cont_type then
 							bmm_class := bmm_cont_type.base_type.base_class
 							prop_str.append (": " + bmm_cont_type.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
 						else
-							bmm_class := a_bmm_prop.type.base_class
+							bmm_class := a_bmm_prop.bmm_type.base_class
 						end
-						type_str := bmm_class.type_signature
+						type_str := a_bmm_prop.bmm_type.type_signature
 						has_type_subs := bmm_class.has_descendants
 
 						-- ======== property node =========
@@ -390,9 +388,12 @@ feature {NONE} -- Implementation
 						-- add tree expand handler to this node
 						ev_prop_row.expand_actions.force_extend (agent property_node_expand_handler (ev_prop_row))
 
-						-- ======== class node =========					
+						-- ======== class node =========
+						tooltip_str := rm_node_path.as_string + "%N"
+						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.bmm_type.generating_type.name))
+
 						gui_grid.add_sub_row (ev_prop_row, bmm_class)
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, tooltip_str, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
 
 						check attached gui_grid.last_row as lr then
 							ev_class_row := lr

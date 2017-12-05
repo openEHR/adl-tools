@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 							og_tail_path.start
 							if bmm_class.has_property_path (og_tail_path) then
 								check attached bmm_class.property_definition_at_path (og_tail_path) as bmm_prop then
-									ref_rm_type_name := bmm_prop.type.base_class.name
+									ref_rm_type_name := bmm_prop.bmm_type.base_class.name
 								end
 							else
 								add_error (ec_VRRLPRM, <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
