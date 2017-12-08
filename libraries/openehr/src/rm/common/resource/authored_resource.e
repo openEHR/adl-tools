@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Abstract model of an informational resource / artefact created by a (usually) human author."
 	keywords:    "resource, document"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class AUTHORED_RESOURCE

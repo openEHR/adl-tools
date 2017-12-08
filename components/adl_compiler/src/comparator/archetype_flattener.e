@@ -7,9 +7,9 @@ note
 				 implemented in AOM_PHASE_*_VALIDATORs, and defined by the openEHR ADL 2 specification.
 		         ]"
 	keywords:    "archetype, comparison, constraint model"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2008- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2008- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_FLATTENER

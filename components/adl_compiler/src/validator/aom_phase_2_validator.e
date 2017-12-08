@@ -5,9 +5,9 @@ note
 				 of specialised archetypes.
 		         ]"
 	keywords:    "constraint model, AOM, ADL"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class AOM_PHASE_2_VALIDATOR
@@ -505,7 +505,7 @@ end
 										end
 
 									-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
-									-- has a String field (within some other kind of DATE class)
+									-- has a String field (possibly within some other kind of DATE class)
 									elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
 										add_info (ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 											rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)

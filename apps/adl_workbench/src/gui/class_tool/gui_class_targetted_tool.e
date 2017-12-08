@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "General model of a GUI tool whose data source is an BMM_CLASS_DEFINITION"
 	keywords:    "statistics, archteype"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class GUI_CLASS_TARGETTED_TOOL
