@@ -60,7 +60,11 @@
 		</capability>
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
 		<library name="eomf_basic" location="$EOMF\library\basic\eomf_basic.ecf"/>
-		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf"/>
+		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true"/>
+			</option>
+		</library>
 		<library name="eomf_data_tree" location="$EOMF\library\data_tree\eomf_data_tree.ecf">
 			<option>
 				<assertions precondition="true" check="true"/>

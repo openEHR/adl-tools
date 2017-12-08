@@ -79,6 +79,8 @@ aom_rm_type_substitutions = <
 	["DURATION"] = <"String">
 	["CODE_PHRASE"] = <"DV_CODED_TEXT">
 	["INTEGER"] = <"Real">
+	["REAL"] = <"Double">
+	["Real"] = <"Double">
 >
 
 ----------------------------------------------------------------------------------------

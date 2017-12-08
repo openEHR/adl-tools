@@ -34,22 +34,22 @@ archetype_visualise_descendants_of = <"ITEM">
 -- mappings from AOM built-in types used for RM types
 --
 
-aom_rm_type_mappings = <
-	["TERMINOLOGY_CODE"] = <
-		source_class_name = <"TERMINOLOGY_CODE">
-		target_class_name = <"CODED_TEXT">
-		property_mappings = <
-			["terminology_id"] = <
-				source_property_name = <"terminology_id">
-				target_property_name = <"terminology_id">
-			>
-			["code_string"] = <
-				source_property_name = <"code_string">
-				target_property_name = <"code">
-			>
-		>
-	>
->
+-- aom_rm_type_mappings = <
+-- 	["TERMINOLOGY_CODE"] = <
+-- 		source_class_name = <"TERMINOLOGY_CODE">
+-- 		target_class_name = <"CODED_TEXT">
+-- 		property_mappings = <
+-- 			["terminology_id"] = <
+-- 				source_property_name = <"terminology_id">
+-- 				target_property_name = <"terminology_id">
+-- 			>
+-- 			["code_string"] = <
+-- 				source_property_name = <"code_string">
+-- 				target_property_name = <"code">
+-- 			>
+-- 		>
+-- 	>
+-- >
 
 ----------------------------------------------------------------------------------------
 -- allowed substitutions from AOM built-in types to RM types
@@ -60,6 +60,7 @@ aom_rm_type_substitutions = <
 	["ISO8601_DATE_TIME"] = <"String">
 	["ISO8601_TIME"] = <"String">
 	["ISO8601_DURATION"] = <"String">
+	["CODE_PHRASE"] = <"CODED_TEXT">
 	["REAL"] = <"Double">
 	["INTEGER"] = <"Integer64">
 >

@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Class map control - visualise property view of a class, including flattening."
 	keywords:    "archetype, ADL, gui"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_CLASS_TOOL_CLOSURE_VIEW
@@ -374,7 +374,11 @@ feature {NONE} -- Implementation
 							col := rm_attribute_color
 						end
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, rm_node_path.as_string,
+
+						tooltip_str := rm_node_path.as_string + "%N"
+						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.generating_type.name))
+
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, tooltip_str,
 							Void, col, get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + a_bmm_prop.multiplicity_key_string))
 
 						-- existence
@@ -390,7 +394,7 @@ feature {NONE} -- Implementation
 
 						-- ======== class node =========
 						tooltip_str := rm_node_path.as_string + "%N"
-						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.bmm_type.generating_type.name))
+						tooltip_str.append ("BMM meta-type: " + bare_type_name (bmm_class.generating_type.name))
 
 						gui_grid.add_sub_row (ev_prop_row, bmm_class)
 						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, tooltip_str, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))

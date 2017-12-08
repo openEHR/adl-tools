@@ -1,0 +1,94 @@
+-- 
+-- 	component:   openEHR Archetype Project
+-- 	description: Archetype profile for openEHR RM schemas
+-- 	keywords:    reference model, meta-model, archetypes
+--	author:      Thomas Beale <thomas.beale@OceanInformatics.com>
+--	support:     http://www.openehr.org/issues/browse/AWB
+-- 	copyright:   Copyright (c) 2013- openEHR Foundation
+-- 	license:     See end of file
+-- 
+
+profile_name = <"MSO">
+
+----------------------------------------------------------------------------------------
+-- id or PERL regex based on id Reference Models to which this profile applies. 
+-- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
+-- publisher, model name, model release as defined in .bmm files.
+--
+rm_schema_pattern = <"(visumpoint_maritime|wolandscat).*">
+
+----------------------------------------------------------------------------------------
+-- id of terminologies and code sets to use
+--
+terminology_profile = <
+	terminology_issuer = <"visumpoint">
+	code_sets_issuer = <"visumpoint">
+>
+
+----------------------------------------------------------------------------------------
+-- The effect of this attribute in visualisation is to generate the most natural tree or
+-- grid-based view of an archetype definition, from the semantic viewpoint.
+--
+-- archetype_visualise_descendants_of = <"ITEM">
+
+----------------------------------------------------------------------------------------
+-- mappings from AOM built-in types used for RM types
+--
+aom_rm_type_mappings = <
+	["TERMINOLOGY_CODE"] = <
+		source_class_name = <"TERMINOLOGY_CODE">
+		target_class_name = <"TerminologyCode">
+		property_mappings = <
+			["terminology_id"] = <
+				source_property_name = <"terminology_id">
+				target_property_name = <"namespace">
+			>
+			["code_string"] = <
+				source_property_name = <"code_string">
+				target_property_name = <"conceptId">
+			>
+		>
+	>
+--	["ISO8601_DATE"] = <
+--		source_class_name = <"ISO8601_DATE">
+--		target_class_name = <"Date">
+--	>
+--	["ISO8601_TIME"] = <
+--		source_class_name = <"ISO8601_TIME">
+--		target_class_name = <"Time">
+--	>
+--	["ISO8601_DATE_TIME"] = <
+--		source_class_name = <"ISO8601_DATE_TIME">
+--		target_class_name = <"DateTime">
+--	>
+--	["ISO8601_DURATION"] = <
+--		source_class_name = <"ISO8601_DURATION">
+--		target_class_name = <"Duration">
+--	>
+>
+
+----------------------------------------------------------------------------------------
+-- allowed substitutions from AOM built-in types to RM types
+--
+
+aom_rm_type_substitutions = <
+	["DATE"] = <"String">
+	["DATE_TIME"] = <"String">
+	["TIME"] = <"String">
+	["DURATION"] = <"String">
+	["Integer"] = <"Double">
+>
+
+----------------------------------------------------------------------------------------
+-- Equivalences of RM primitive types to in-built set of primitive types
+-- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
+
+rm_primitive_type_equivalences = <
+	["Octet"] = <"Integer">
+	["Double"] = <"Real">
+	["Integer64"] = <"Integer">
+	["ISO8601_DATE"] = <"Date">
+	["ISO8601_DATE_TIME"] = <"Date_time">
+	["ISO8601_TIME"] = <"Time">
+	["ISO8601_DURATION"] = <"Duration">
+>

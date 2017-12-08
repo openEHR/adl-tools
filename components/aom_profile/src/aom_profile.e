@@ -5,9 +5,9 @@ note
 				 given arhetype developing organisation.
 				 ]"
 	keywords:    "ADL, archetype, aom, profile"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class AOM_PROFILE
@@ -77,7 +77,7 @@ feature -- Access (attributes from file)
 
 	aom_rm_type_substitutions: detachable HASH_TABLE [STRING, STRING]
 			-- allowed type substitutions: Actual RM type names keyed by AOM built-in types which can
-			-- subsitute for them in an archetype. E.g. <value = "String", key = "ISO8601_DATE"> means
+			-- substitute for them in an archetype. E.g. <value = "String", key = "ISO8601_DATE"> means
 			-- that if RM property TYPE.some_property is of type String, an ISO8601_DATE is allowed at that
 			-- position in the archetype.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
@@ -120,9 +120,26 @@ feature -- Status Report
 
 	has_type_substitution (an_aom_type, an_rm_type: STRING): BOOLEAN
 			-- is there a type substitution for `an_aom_type', `an_rm_type'?
+		local
+			a_key: STRING
+			finished: BOOLEAN
 		do
-			Result := attached aom_rm_type_substitutions as att_type_subs and then
-				attached att_type_subs.item (an_aom_type) as att_type_subs_item and then att_type_subs_item.is_case_insensitive_equal (an_rm_type)
+			if attached aom_rm_type_substitutions as att_type_subs then
+				from
+					a_key := an_aom_type
+				until
+					Result or finished
+				loop
+					if attached att_type_subs.item (a_key) as att_type_subs_item then
+						Result := att_type_subs_item.is_case_insensitive_equal (an_rm_type)
+						if not Result then
+							a_key := att_type_subs_item
+						end
+					else
+						finished := True
+					end
+				end
+			end
 		end
 
 	has_any_type_substitution (an_aom_type: STRING): BOOLEAN
@@ -140,7 +157,8 @@ feature -- Status Report
 	has_rm_aom_primitive_type_mapping (an_rm_type, an_aom_type: STRING): BOOLEAN
 			-- is there a type equivalence for `an_aom_type', `an_rm_type'?
 		do
-			Result := attached rm_aom_primitive_type_mappings.item (an_rm_type.as_upper) as att_type_eq_type and then att_type_eq_type.is_case_insensitive_equal (an_aom_type)
+			Result := attached rm_aom_primitive_type_mappings.item (an_rm_type.as_upper) as att_type_eq_type and then
+			att_type_eq_type.is_case_insensitive_equal (an_aom_type)
 		end
 
 	has_aom_primitive_type_mapping_for_rm_type (an_rm_type: STRING): BOOLEAN
