@@ -86,7 +86,7 @@ terminology = 'terminology'
 rm_schemas = 'rm_schemas'
 aom_profiles = 'aom_profiles'
 
-env.Install(terminology, env.Glob('../terminology/openEHR_RM/RM/Release-1.0.2/*'))
+env.Install(terminology, env.Glob('../terminology/openEHR_RM/*'))
 
 for dir, dirnames, filenames in os.walk('../reference-models/models'):
 	if '.git' in dirnames: dirnames.remove('.git')
