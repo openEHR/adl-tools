@@ -878,10 +878,6 @@ boolean_leaf: boolean_literal
 			end
 			$$ := $1
 		}
-	| boolean_unop_expr
-		{
-			$$ := $1
-		}
 	| '(' boolean_node ')'
 		{
 			$$ := $2
@@ -1721,6 +1717,11 @@ type_identifier: V_TYPE_IDENTIFIER
 	| V_GENERIC_TYPE_IDENTIFIER
 		{
 			$$ := $1
+
+			-- add type to type system, if possible
+			if not ref_model.known_type_name ($$) and ref_model.candidate_generic_type_name ($$) then
+				ref_model.add_effective_type_from_name ($$)
+			end
 		}
 	;
 
