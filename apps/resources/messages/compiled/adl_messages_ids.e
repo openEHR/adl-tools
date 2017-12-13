@@ -2,9 +2,9 @@ note
 	component:   "Eiffel Object Modelling Framework"
 	description: "Generated class from message text files"
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2013- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_MESSAGES_IDS
@@ -326,6 +326,8 @@ feature -- Definitions
 		ec_edit_source_schema: STRING = "edit_source_schema"
 		ec_expand_packages: STRING = "expand_packages"
 		ec_export_as_xml: STRING = "export_as_xml"
+		ec_export_as_json: STRING = "export_as_json"
+		ec_export_as_odin: STRING = "export_as_odin"
 		ec_export_xml: STRING = "export_xml"
 		ec_tree_controls: STRING = "tree_controls"
 		ec_status: STRING = "status"

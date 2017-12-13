@@ -449,6 +449,7 @@ feature -- Access
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_HISTORY_FORWARD}.make).to_pixmap end, "tool/history_forward")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_ICON_HELP_EXAMPLE}.make).to_pixmap end, "tool/icon_help_example")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_INFO}.make).to_pixmap end, "tool/info")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_JSON}.make).to_pixmap end, "tool/json")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_MAGNIFIER}.make).to_pixmap end, "tool/magnifier")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_METRICS}.make).to_pixmap end, "tool/metrics")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_TOOL_METRICS_GREY}.make).to_pixmap end, "tool/metrics_grey")

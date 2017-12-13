@@ -2,9 +2,9 @@ note
 	component:   "Eiffel Object Modelling Framework"
 	description: "Generated class from message text files"
 	keywords:    "Internationalisation, I18N, Localisation, L10N, command line"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ADL_MESSAGES_DB
@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (915)
+			create message_table.make (917)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -341,6 +341,8 @@ feature -- Initialisation
 			message_table.put ("Edit source schema", ec_edit_source_schema)
 			message_table.put ("Expand packages", ec_expand_packages)
 			message_table.put ("Export as XML...", ec_export_as_xml)
+			message_table.put ("Export as JSON...", ec_export_as_json)
+			message_table.put ("Export as ODIN...", ec_export_as_odin)
 			message_table.put ("Export as XML", ec_export_xml)
 			message_table.put ("Tree control", ec_tree_controls)
 			message_table.put ("Status", ec_status)

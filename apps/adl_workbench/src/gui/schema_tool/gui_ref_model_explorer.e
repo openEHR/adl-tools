@@ -27,6 +27,13 @@ inherit
 			source, go_to_selected_item
 		end
 
+	SHARED_DT_SERIALISERS
+		export
+			{NONE} all;
+			{ANY} has_dt_serialiser_format
+		end
+
+
 create
 	make
 
@@ -305,9 +312,18 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_as_xml), agent do_export_as_xml (bmm_sch.schema_id))
+				create an_mi.make_with_text_and_action (get_text (ec_export_as_xml), agent do_schema_export (bmm_sch.schema_id, syntax_type_xml))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
 				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (get_text (ec_export_as_json), agent do_schema_export (bmm_sch.schema_id, syntax_type_json))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/json"))
+				menu.extend (an_mi)
+
+--
+-- FIXME: for now this doesn't execute properly due to the old BOOLEAN/BOOLEAN_REF problem in DT_PRIMITIVE_OBJECT
+--				create an_mi.make_with_text_and_action (get_text (ec_export_as_odin), agent do_schema_export (bmm_sch.schema_id, syntax_type_odin))
+--				menu.extend (an_mi)
 
 				-- tree controls
 				create tree_menu.make_with_text (get_text (ec_tree_controls))
@@ -396,8 +412,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_export_as_xml (a_schema_id: STRING)
-			-- export schema as XML
+	do_schema_export (a_schema_id, a_syntax_type: STRING)
+			-- export schema in a specified format
+		require
+			Format_valid: has_dt_serialiser_format (a_syntax_type)
 		local
 			serialise_engine: ODIN_ENGINE
 			path: STRING
@@ -407,7 +425,7 @@ feature {NONE} -- Implementation
 			if attached safe_source.all_schemas.item (a_schema_id) as schema_desc then
 				create serialise_engine.make
 				serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
-				serialise_engine.serialise (syntax_type_xml, False, False)
+				serialise_engine.serialise (a_syntax_type, False, False)
 
 				create save_dialog
 				save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
