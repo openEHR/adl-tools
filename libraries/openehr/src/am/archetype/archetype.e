@@ -519,6 +519,17 @@ feature -- Status Report
 			Result := definition.has_attribute_path (a_path)
 		end
 
+	has_rm_type_path (rm_type: STRING): BOOLEAN
+			-- has at least one path to C_OBJECT nodes which has type `rm_type'
+		do
+			Result := not all_paths_filtered (
+				agent (ac: ARCHETYPE_CONSTRAINT; an_rm_type: STRING): BOOLEAN
+					do
+						Result := attached {C_OBJECT} ac as co and then co.rm_type_name.is_equal (an_rm_type)
+					end (?, rm_type)
+			).is_empty
+		end
+
 feature -- Status Setting
 
 	set_differential
