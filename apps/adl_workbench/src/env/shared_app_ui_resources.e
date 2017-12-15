@@ -58,13 +58,13 @@ feature -- Definitions: Archetype viewer
 
 	Definition_grid_col_rm_name: INTEGER = 1
 	Definition_grid_col_meaning: INTEGER = 2
+	Definition_grid_col_constraint: INTEGER = 3
 	Definition_grid_col_existence: INTEGER = 4
 	Definition_grid_col_card_occ: INTEGER = 5
 	Definition_grid_col_sibling_order: INTEGER = 6
-	Definition_grid_col_constraint: INTEGER = 3
 	Definition_grid_col_max: INTEGER
 		once ("PROCESS")
-			Result := Definition_grid_col_constraint
+			Result := Definition_grid_col_sibling_order
 		end
 
 	Definition_grid_col_names: HASH_TABLE [STRING, INTEGER]
