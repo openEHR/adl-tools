@@ -100,6 +100,9 @@ feature -- Display
 			-- add context menu
 			build_context_menu
 			evx_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent context_menu_event_handler)
+
+			-- set up constraint
+			prepare_constraint
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -272,6 +275,10 @@ feature -- Modification
 feature {NONE} -- Implementation
 
 	display_constraint
+		do
+		end
+
+	prepare_constraint
 		do
 		end
 
@@ -469,7 +476,7 @@ feature {NONE} -- Context menu
 			if attached arch_node_in_ancestor as parent_a_n then
 				spec_parent_rm_class := ui_graph_state.ref_model.class_definition (parent_a_n.rm_type_name)
 				rm_type_substitutions := spec_parent_rm_class.all_descendants.deep_twin
-				rm_type_substitutions.extend (rm_type.base_class.name)
+				rm_type_substitutions.extend (rm_type.base_class.type_name)
 
 				if attached parent_a_n.occurrences as parent_a_n_occ then
 					def_occ := parent_a_n_occ
@@ -477,7 +484,7 @@ feature {NONE} -- Context menu
 					def_occ := parent.default_occurrences
 				end
 
-				create dialog.make (aom_types_for_rm_type (spec_parent_rm_class), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
+				create dialog.make (aom_types_for_rm_type (spec_parent_rm_class), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.type_name,
 					def_occ, ui_graph_state.archetype, display_settings)
 
 				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
@@ -499,8 +506,8 @@ feature {NONE} -- Context menu
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
 			rm_type_substitutions := rm_type.base_class.all_descendants.deep_twin
-			rm_type_substitutions.extend (rm_type.base_class.name)
-			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.name,
+			rm_type_substitutions.extend (rm_type.base_class.type_name)
+			create dialog.make (aom_types_for_rm_type (rm_type), rm_type_substitutions, arch_node_aom_type, rm_type.base_class.type_name,
 				parent.default_occurrences, ui_graph_state.archetype, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then
