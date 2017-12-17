@@ -1,10 +1,10 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Populate ontology controls in ADL editor"
+	description: "Populate archetype explorer in ADL editor"
 	keywords:    "ADL, archetype, template, UI"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2004-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2004- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_ARCHETYPE_EXPLORER
@@ -52,7 +52,7 @@ feature {NONE} -- Initialisation
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			make_tree_control
-			tool_agents.set_archetype_explorer_select_in_tree_agent (agent select_item_in_tree)
+			library_tool_agents.set_archetype_explorer_select_in_tree_agent (agent select_item_in_tree)
 
 			-- filesys EV_GRID
 			create gui_filesys_grid.make (True, True, True, True)
@@ -512,7 +512,7 @@ feature {NONE} -- Implementation
 			menu.extend (an_mi)
 
 			-- create a new non-specialised archetype
-			create an_mi.make_with_text_and_action (get_msg (ec_create_new_archetype, Void), agent create_new_non_specialised_archetype (accn))
+			create an_mi.make_with_text_and_action (get_msg (ec_create_new_archetype, Void), agent library_tool_agents.call_create_new_non_specialised_archetype_agent (accn, Void))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
@@ -564,81 +564,15 @@ feature {NONE} -- Implementation
 		do
 			if auth_aca.is_valid then
 				-- create new specialised archetype
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent create_new_specialised_archetype (auth_aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent library_tool_agents.call_create_new_specialised_archetype_agent (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 
 				-- create new template
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent create_new_template (auth_aca))
+				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent library_tool_agents.call_create_new_template_agent (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 			end
-		end
-
-	create_new_specialised_archetype (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
-		local
-			dialog: NEW_ARCHETYPE_DIALOG
-		do
-			if attached source as src then
-				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), parent_aca.id.deep_twin, parent_aca.id, src)
-				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				if dialog.is_valid then
-					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
-					populate (src)
-					select_item_in_tree (src.last_added_archetype.id.physical_id)
-				end
-				dialog.destroy
-			end
-		end
-
-	create_new_template (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
-		local
-			dialog: NEW_ARCHETYPE_DIALOG
-			new_id: ARCHETYPE_HRID
-		do
-			new_id := parent_aca.id.deep_twin
-			new_id.set_concept_id ("t_" + new_id.concept_id)
-			create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), new_id, parent_aca.id, safe_source)
-			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-			if dialog.is_valid then
-				safe_source.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
-				check attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source.last_added_archetype as att_arch then
-					tool_agents.call_update_explorers_and_select_agent (att_arch.id.as_string)
-				end
-			end
-			dialog.destroy
-		end
-
-	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS)
-		local
-			dialog: NEW_ARCHETYPE_DIALOG
-			matching_ids: ARRAYED_SET [STRING]
-			in_dir_path: STRING
-			found: BOOLEAN
-		do
-			-- default creation directory: top of library area
-			in_dir_path := current_library_interface.library_path
-
-			-- try for a better path as the path of some other archetype of the same class
-			matching_ids := safe_source.matching_ids (".*", accn.class_definition.name, Void)
-			if not matching_ids.is_empty then
-				from matching_ids.start until matching_ids.off or found loop
-					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source.archetype_with_id (matching_ids.item) as alaa then
-						in_dir_path := file_system.dirname (alaa.source_file_path)
-						found := True
-					end
-					matching_ids.forth
-				end
-			end
-
-			create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), safe_source)
-			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-			if dialog.is_valid then
-				safe_source.add_new_non_specialised_archetype (dialog.archetype_id, dialog.archetype_directory)
-				populate (safe_source)
-				select_item_in_tree (safe_source.last_added_archetype.id.physical_id)
-			end
-			dialog.destroy
 		end
 
 end

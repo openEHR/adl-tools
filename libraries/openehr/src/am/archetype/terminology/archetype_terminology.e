@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "ADL Terminology class"
 	keywords:    "archetype, ontology, terminology"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_TERMINOLOGY
@@ -64,8 +64,8 @@ feature -- Initialisation
 			create original_language.make (ts.default_language_code_set, an_original_lang_str)
 			is_differential := True
 		ensure
-			concept_code_set: concept_code.is_equal (a_concept_code)
-			original_language_set: original_language.code_string.is_equal (an_original_lang_str)
+			Concept_code_set: concept_code.is_equal (a_concept_code)
+			Original_language_set: original_language.code_string.is_equal (an_original_lang_str)
 			Is_differential: is_differential
 		end
 
@@ -285,8 +285,6 @@ feature -- Access (computed)
 
 	term_bindings_for_key (a_key: STRING): HASH_TABLE [URI, STRING]
 			-- retrieve the term bindings for a key (code or path) as a table of bound terms keyed by terminology_id
-		require
-			Terminology_valid: has_any_term_binding (a_key)
 		do
 			create Result.make (0)
 			across term_bindings as bindings_for_terminology_csr loop
@@ -547,6 +545,7 @@ feature -- Modification
 			create terms_list.make (0)
 			term_definitions.put (terms_list, original_language.code_string)
 			terms_list.put (a_term, a_term.code)
+			sync_stored_properties
 		ensure
 			Term_definitions_populated: term_definition (original_language.code_string, concept_code) = a_term
 		end
@@ -810,7 +809,7 @@ feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification
 			Code_new: not has_code (a_code)
 			Code_depth_valid: specialisation_depth_from_code (a_code) <= specialisation_depth
 			Term_codes_identical: across a_terms as a_terms_csr all a_terms_csr.item.code.is_equal (a_code) end
-			Languages_identical: across languages_available as langs_csr all a_terms.has (langs_csr.item) end
+			Languages_covered: across languages_available as langs_csr all a_terms.has (langs_csr.item) end
 		local
 			term_tbl: HASH_TABLE [ARCHETYPE_TERM, STRING]
 		do
@@ -924,6 +923,82 @@ feature {ARCHETYPE} -- Modification
 
 	new_id_code_agt: detachable FUNCTION [ARCHETYPE, TUPLE, STRING]
 			-- agent to obtain new id code at the specialisation level of this archetype
+
+	import_terms (old_concept_code: STRING; a_codes: ARRAYED_LIST[STRING]; codes_xref: HASH_TABLE [STRING, STRING]; a_terminology: ARCHETYPE_TERMINOLOGY)
+			-- import terms, bindings and value_sets from `a_terminology', according to codes listed in `a_definition_codes',
+			-- which are from `a_terminology'.
+			-- The terms will be added under new codes.
+		require
+			Sane_terminology: a_terminology /= Current
+			Codes_value_comparison: a_codes.object_comparison
+		local
+			terms_for_code: HASH_TABLE [ARCHETYPE_TERM, STRING]
+			new_code: STRING
+			vset: VALUE_SET
+		do
+			-- extract term for the provided concept code from a_terminology, and rewrite their
+			-- codes to be the concept_code of this terminology
+			terms_for_code := a_terminology.term_definitions_for_code (old_concept_code).deep_twin
+			across terms_for_code as terms_csr loop
+				terms_csr.item.set_code (concept_code)
+				if has_language (terms_csr.key) then
+					replace_definition (terms_csr.key, terms_csr.item, False)
+				end
+			end
+
+			-- terminology bindings for concept code
+			across a_terminology.term_bindings_for_key (old_concept_code) as binding_csr loop
+				put_term_binding (binding_csr.item, binding_csr.key, concept_code)
+			end
+			a_codes.prune (old_concept_code)
+
+			-- Now process rest of term definitions
+			across a_codes as codes_csr loop
+				-- not all codes from list necessarily have a terminology definition
+				if a_terminology.has_code (codes_csr.item) then
+					terms_for_code := a_terminology.term_definitions_for_code (codes_csr.item).deep_twin
+
+					-- if the codes have been mapped already in the archetype (due to depth change),
+					-- write it into each term in the extracted set
+					if attached codes_xref.item (codes_csr.item) as nc then
+						new_code := nc
+						across terms_for_code as def_terms_csr loop
+							def_terms_csr.item.set_code (new_code)
+						end
+					else
+						new_code := codes_csr.item
+					end
+
+					-- now write these terms into this terminology
+					put_definition_and_translations (terms_for_code, new_code)
+
+					-- terminology bindings
+					across a_terminology.term_bindings_for_key (codes_csr.item) as binding_csr loop
+						put_term_binding (binding_csr.item, binding_csr.key, new_code)
+					end
+				end
+			end
+
+			-- extract value sets, rewrite codes then import
+			across a_terminology.value_sets as other_value_sets_csr loop
+				if a_codes.has (other_value_sets_csr.item.id) then
+					vset := other_value_sets_csr.item.deep_twin
+					check attached codes_xref.item (other_value_sets_csr.item.id) as mapped_code then
+						vset.set_id (mapped_code)
+					end
+
+					-- now rewrite the at-codes
+					across vset.members as vset_csr loop
+						check attached codes_xref.item (vset_csr.item) as mapped_code then
+							vset.members.replace (mapped_code)
+						end
+					end
+					put_value_set (vset)
+				end
+			end
+
+			sync_stored_properties
+		end
 
 feature {ARCHETYPE, P_ARCHETYPE_TERMINOLOGY} -- Modification
 

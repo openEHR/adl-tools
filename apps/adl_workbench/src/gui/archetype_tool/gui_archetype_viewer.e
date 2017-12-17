@@ -28,8 +28,8 @@ feature {NONE}-- Initialization
 	make
 		do
 			-- set up shared agents
-			tool_agents.set_path_select_action_agent (agent select_path_item_from_path)
-			tool_agents.set_path_copy_action_agent (agent copy_path_to_clipbpoard)
+			archetype_tool_agents.set_path_select_action_agent (agent select_path_item_from_path)
+			archetype_tool_agents.set_path_copy_action_agent (agent copy_path_to_clipbpoard)
 
 			precursor
 

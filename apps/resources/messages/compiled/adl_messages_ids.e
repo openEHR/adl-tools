@@ -742,6 +742,7 @@ feature -- Definitions
 		ec_object_context_menu_copy_path: STRING = "object_context_menu_copy_path"
 		ec_object_context_menu_delete: STRING = "object_context_menu_delete"
 		ec_object_context_menu_refine: STRING = "object_context_menu_refine"
+		ec_object_context_menu_new_archetype: STRING = "object_context_menu_new_archetype"
 		ec_attribute_context_menu_add_child: STRING = "attribute_context_menu_add_child"
 		ec_include_text: STRING = "include_text"
 		ec_exclude_text: STRING = "exclude_text"

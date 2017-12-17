@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (917)
+			create message_table.make (918)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -757,6 +757,7 @@ feature -- Initialisation
 			message_table.put ("Copy path to clipboard", ec_object_context_menu_copy_path)
 			message_table.put ("Delete node", ec_object_context_menu_delete)
 			message_table.put ("Refine constraint", ec_object_context_menu_refine)
+			message_table.put ("New archetype based on this sub-tree", ec_object_context_menu_new_archetype)
 			message_table.put ("Add new child node", ec_attribute_context_menu_add_child)
 			message_table.put ("[includes]", ec_include_text)
 			message_table.put ("[excludes]", ec_exclude_text)

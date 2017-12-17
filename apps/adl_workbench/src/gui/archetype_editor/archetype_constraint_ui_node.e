@@ -20,6 +20,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_LIBRARY_TOOL_AGENTS
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	c_node_fonts: HASH_TABLE [EV_FONT, INTEGER]

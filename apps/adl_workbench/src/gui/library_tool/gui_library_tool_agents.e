@@ -46,7 +46,28 @@ feature -- Command
 			end
 		end
 
-feature {NONE} -- Implementation
+	call_create_new_non_specialised_archetype_agent (accn: ARCH_LIB_CLASS; an_arch_agent: detachable PROCEDURE [ANY, TUPLE[ARCHETYPE]])
+		do
+			if attached create_new_non_specialised_archetype_agent as att_agt then
+				att_agt.call ([accn, an_arch_agent])
+			end
+		end
+
+	call_create_new_specialised_archetype_agent (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+		do
+			if attached create_new_specialised_archetype_agent as att_agt then
+				att_agt.call ([parent_aca])
+			end
+		end
+
+	call_create_new_template_agent (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+		do
+			if attached create_new_template_agent as att_agt then
+				att_agt.call ([parent_aca])
+			end
+		end
+
+feature -- Access
 
 	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_LIB_AUTHORED_ARCHETYPE]]
 
@@ -57,6 +78,15 @@ feature {NONE} -- Implementation
 	update_explorers_and_select_agent: detachable PROCEDURE [ANY, TUPLE [ali_id: STRING]]
 
 	update_archetype_explorer_agent: detachable PROCEDURE [ANY, TUPLE]
+
+	create_new_non_specialised_archetype_agent: detachable PROCEDURE [ANY, TUPLE [accn: ARCH_LIB_CLASS; an_arch_agent: detachable PROCEDURE [ANY, TUPLE[ARCHETYPE]]]]
+			-- create a new archetype, with an optional agent to post-process the archetype
+
+	create_new_specialised_archetype_agent: detachable PROCEDURE [ANY, TUPLE[parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE]]
+			-- create a new specialised archetype, given a parent archetype descriptor
+
+	create_new_template_agent: detachable PROCEDURE [ANY, TUPLE [parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE]]
+			-- create a new template, given an archetype descriptor
 
 feature -- Modification
 
@@ -83,6 +113,21 @@ feature -- Modification
 	set_update_archetype_explorer (agt: like update_archetype_explorer_agent)
 		do
 			update_archetype_explorer_agent := agt
+		end
+
+	set_create_new_non_specialised_archetype_agent (an_agent: like create_new_non_specialised_archetype_agent)
+		do
+			create_new_non_specialised_archetype_agent := an_agent
+		end
+
+	set_create_new_specialised_archetype_agent (an_agent: like create_new_specialised_archetype_agent)
+		do
+			create_new_specialised_archetype_agent := an_agent
+		end
+
+	set_create_new_template_agent (an_agent: like create_new_template_agent)
+		do
+			create_new_template_agent := an_agent
 		end
 
 end

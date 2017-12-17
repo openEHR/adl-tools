@@ -138,12 +138,10 @@ feature -- Access
 
 			-- find the class node
 			from item_index.start until item_index.off or attached class_node loop
-				if attached {ARCH_LIB_CLASS} item_index.item_for_iteration as alc then
-					if alc.bmm_model = rm then
-						if alc.class_definition.name.is_case_insensitive_equal (an_rm_type) then
-							class_node := alc
-						end
-					end
+				if attached {ARCH_LIB_CLASS} item_index.item_for_iteration as alc and then
+					alc.bmm_model = rm and then alc.class_definition.name.is_case_insensitive_equal (an_rm_type)
+				then
+					class_node := alc
 				end
 				item_index.forth
 			end
@@ -155,6 +153,19 @@ feature -- Access
 							ids.extend (ala.id.physical_id)
 						end (?, Result)
 				)
+			end
+		end
+
+	class_for_definition (a_class_def: BMM_CLASS): detachable ARCH_LIB_CLASS
+			-- find the class node for `a_class_def'.
+		do
+			from item_index.start until item_index.off or attached Result loop
+				if attached {ARCH_LIB_CLASS} item_index.item_for_iteration as alc and then
+					alc.class_definition = a_class_def
+				then
+					Result := alc
+				end
+				item_index.forth
 			end
 		end
 
@@ -737,9 +748,9 @@ feature {NONE} -- Statistical Report
 feature {NONE} -- Implementation
 
 	item_index: HASH_TABLE [ARCH_LIB_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by LOWER-CASE id.
+			-- Index of archetype & class nodes, keyed by lower-case id.
 			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
-			-- For archetypes, this will be the physical archetype id.
+			-- For archetypes, this will be the physical archetype id (with 3-part version)
 		attribute
 			create Result.make (0)
 		end

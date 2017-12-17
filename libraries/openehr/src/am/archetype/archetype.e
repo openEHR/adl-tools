@@ -937,6 +937,40 @@ feature -- Modification
 			end
 		end
 
+	import_definition (a_def: C_COMPLEX_OBJECT; a_terminology: ARCHETYPE_TERMINOLOGY)
+			-- set the definition to be a copy of `a_def'; use `_terminology' to supply
+			-- the terms
+		local
+			all_codes: ARRAYED_LIST[STRING]
+			codes_xref: HASH_TABLE [STRING, STRING]
+			old_root_code, new_concept_code: STRING
+		do
+			create codes_xref.make (0)
+
+			set_definition (a_def.safe_deep_twin)
+
+			-- recode the definition to appropriate codes for this level archetype if necessary
+			if specialisation_depth_from_code (definition.node_id) /= specialisation_depth then
+				-- TODO: recode
+			end
+
+			-- add an entry in codes xref to correct concept code (the one that will become id1)
+			new_concept_code := new_root_id_code_at_level (specialisation_depth)
+			codes_xref.put (definition.node_id, new_concept_code)
+			old_root_code := definition.node_id
+			definition.set_root_node_id (new_concept_code)
+
+			-- import terms from `a_terminology'
+			create all_codes.make (0)
+			all_codes.compare_objects
+			all_codes.append (create {ARRAYED_LIST[STRING]}.make_from_array (id_codes_index.current_keys))
+			all_codes.append (create {ARRAYED_LIST[STRING]}.make_from_array (value_codes_index.current_keys))
+			all_codes.append (create {ARRAYED_LIST[STRING]}.make_from_array (term_constraints_index.current_keys))
+			terminology.import_terms (old_root_code, all_codes, codes_xref, a_terminology)
+
+			rebuild
+		end
+
 feature {ARCHETYPE_FLATTENER} -- Flattening
 
 	overlay_differential (a_diff: ARCHETYPE)

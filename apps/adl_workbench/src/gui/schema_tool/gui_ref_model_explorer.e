@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Combined control for viewing archetype and template artefacts in 2 trees"
 	keywords:    "ADL, archetype, template, UI"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_REF_MODEL_EXPLORER
@@ -33,6 +33,10 @@ inherit
 			{ANY} has_dt_serialiser_format
 		end
 
+	ODIN_DEFINITIONS
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -320,10 +324,8 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (get_icon_pixmap ("tool/json"))
 				menu.extend (an_mi)
 
---
--- FIXME: for now this doesn't execute properly due to the old BOOLEAN/BOOLEAN_REF problem in DT_PRIMITIVE_OBJECT
---				create an_mi.make_with_text_and_action (get_text (ec_export_as_odin), agent do_schema_export (bmm_sch.schema_id, syntax_type_odin))
---				menu.extend (an_mi)
+				create an_mi.make_with_text_and_action (get_text (ec_export_as_odin), agent do_schema_export (bmm_sch.schema_id, syntax_type_odin))
+				menu.extend (an_mi)
 
 				-- tree controls
 				create tree_menu.make_with_text (get_text (ec_tree_controls))
@@ -418,7 +420,7 @@ feature {NONE} -- Implementation
 			Format_valid: has_dt_serialiser_format (a_syntax_type)
 		local
 			serialise_engine: ODIN_ENGINE
-			path: STRING
+			path, file_ext: STRING
 			fd: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 		do
@@ -427,11 +429,14 @@ feature {NONE} -- Implementation
 				serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
 				serialise_engine.serialise (a_syntax_type, False, False)
 
+				check attached odin_serialiser_file_extensions.item(a_syntax_type) as fx then
+					file_ext := fx
+				end
 				create save_dialog
 				save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
-				save_dialog.set_file_name (schema_desc.schema_id + ".xml")
+				save_dialog.set_file_name (schema_desc.schema_id + file_ext)
 				save_dialog.set_start_directory (export_directory)
-				save_dialog.filters.extend (["*.xml", get_msg (ec_save_schema_as, <<"XML">>)])
+				save_dialog.filters.extend (["*" + file_ext, get_msg (ec_save_schema_as, <<a_syntax_type.tail (a_syntax_type.count-1)>>)])
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				path := save_dialog.file_name.as_string_8
 

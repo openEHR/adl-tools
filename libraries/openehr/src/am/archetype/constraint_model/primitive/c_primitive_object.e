@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Abstract parent type for primitive types in Archetype Object Model."
 	keywords:    "ADL"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class C_PRIMITIVE_OBJECT
@@ -45,7 +45,7 @@ feature -- Access
 			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
 			-- it is not true.
 		do
-			Result := generating_type
+			Result := generating_type.name
 			Result.remove_head (2)
 		end
 
@@ -129,7 +129,7 @@ feature -- Modification
 			is_enumerated_type_constraint := True
 		end
 
-feature {P_C_PRIMITIVE_OBJECT} -- Modification
+feature -- Modification
 
 	set_constraint (a_constraint: like constraint)
 		do

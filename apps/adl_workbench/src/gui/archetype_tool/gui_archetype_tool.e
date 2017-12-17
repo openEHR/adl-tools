@@ -27,7 +27,7 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- set up shared agents
-			tool_agents.set_id_code_select_action_agent (agent select_id_code_in_terminology_view)
+			archetype_tool_agents.set_id_code_select_action_agent (agent select_id_code_in_terminology_view)
 
 			create tabs_index.make (0)
 

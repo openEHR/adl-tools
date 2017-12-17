@@ -410,25 +410,23 @@ feature {NONE} -- Context menu
 				create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code),
 					agent (node_id_str: STRING)
 						do
-							tool_agents.id_code_select_action_agent.call ([node_id_str])
+							archetype_tool_agents.id_code_select_action_agent.call ([node_id_str])
 						end (a_n.node_id)
 				)
 				context_menu.extend (an_mi)
-			end
 
-			if not ui_graph_state.editing_enabled then
-				-- add menu item for displaying path in path map
-				if attached arch_node as a_n and attached tool_agents.path_select_action_agent then
-					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_display_path),
-						agent (path_str: STRING)
-							do
-								tool_agents.path_select_action_agent.call ([path_str])
-							end (a_n.path)
-					)
-					context_menu.extend (an_mi)
-				end
-			else
-				if attached arch_node as a_n then
+				if not ui_graph_state.editing_enabled then
+					-- add menu item for displaying path in path map
+					if attached archetype_tool_agents.path_select_action_agent then
+						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_display_path),
+							agent (path_str: STRING)
+								do
+									archetype_tool_agents.path_select_action_agent.call ([path_str])
+								end (a_n.path)
+						)
+						context_menu.extend (an_mi)
+					end
+				else
 					if not a_n.is_root then
 						if a_n.specialisation_status /= ss_added then
 							-- add menu item to refine constraint
@@ -440,21 +438,38 @@ feature {NONE} -- Context menu
 							context_menu.extend (an_mi)
 						end
 					end
-				elseif not is_root and then not parent.parent.is_rm and parent.is_rm then
-					-- add menu item for 'convert to constraint'
-					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
+				end
+
+				-- add menu item to create new archetype based on current node
+				if
+				attached {C_COMPLEX_OBJECT} a_n as cco and attached rm_type.base_class as bmm_class_def and then
+					attached current_library.class_for_definition (bmm_class_def) as arch_lib_class
+				then
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_new_archetype),
+						agent library_tool_agents.call_create_new_non_specialised_archetype_agent (arch_lib_class,
+							agent (an_arch: ARCHETYPE; a_def: C_COMPLEX_OBJECT; a_terminology: ARCHETYPE_TERMINOLOGY)
+								do
+									an_arch.import_definition (a_def, a_terminology)
+								end (?, cco, ui_graph_state.archetype.terminology)
+						)
+					)
 					context_menu.extend (an_mi)
 				end
-			end
 
-			-- add menu item for copying path to clipboard
-			if attached arch_node as a_n and attached tool_agents.path_select_action_agent then
-				create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_copy_path),
-					agent (path_str: STRING)
-						do
-							tool_agents.path_copy_action_agent.call ([path_str])
-						end (a_n.path)
-				)
+				-- add menu item for copying path to clipboard
+				if attached archetype_tool_agents.path_select_action_agent then
+					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_copy_path),
+						agent (path_str: STRING)
+							do
+								archetype_tool_agents.path_copy_action_agent.call ([path_str])
+							end (a_n.path)
+					)
+					context_menu.extend (an_mi)
+				end
+
+			elseif ui_graph_state.editing_enabled and not is_root and then not parent.parent.is_rm and parent.is_rm then
+				-- add menu item for 'convert to constraint'
+				create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
 				context_menu.extend (an_mi)
 			end
 		end

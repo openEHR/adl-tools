@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Composite control for viewing archetype or template artefacts"
 	keywords:    "ADL, archetype, template, UI"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class GUI_ARTEFACT_EXPLORER
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.call_edit_archetype_source_agent (an_aca)
+						library_tool_agents.call_edit_archetype_source_agent (an_aca)
 					end (aca)
 			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
@@ -266,7 +266,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.call_save_archetype_agent (an_aca, True, True)
+						library_tool_agents.call_save_archetype_agent (an_aca, True, True)
 					end (aca)
 			)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
@@ -276,7 +276,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.call_save_archetype_agent (an_aca, True, False)
+						library_tool_agents.call_save_archetype_agent (an_aca, True, False)
 					end (aca)
 			)
 			a_menu.extend (an_mi)
@@ -285,7 +285,7 @@ feature {NONE} -- Implementation
 			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
-						tool_agents.call_save_archetype_agent (an_aca, False, False)
+						library_tool_agents.call_save_archetype_agent (an_aca, False, False)
 					end (aca)
 			)
 			a_menu.extend (an_mi)
@@ -332,7 +332,7 @@ feature {NONE} -- Implementation
 					aca.remove_file
 					if attached aca.parent as att_parent then
 						remove_item_in_tree (aca.global_artefact_identifier)
-						tool_agents.call_update_explorers_and_select_agent (att_parent.global_artefact_identifier)
+						library_tool_agents.call_update_explorers_and_select_agent (att_parent.global_artefact_identifier)
 					end
 				end
 				question_dialog.destroy

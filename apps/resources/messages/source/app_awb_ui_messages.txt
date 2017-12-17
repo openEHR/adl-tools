@@ -553,6 +553,7 @@ templates = <
 		["object_context_menu_copy_path"] = <"Copy path to clipboard">
 		["object_context_menu_delete"] = <"Delete node">
 		["object_context_menu_refine"] = <"Refine constraint">
+		["object_context_menu_new_archetype"] = <"New archetype based on this sub-tree">
 
 		["attribute_context_menu_add_child"] = <"Add new child node">
 

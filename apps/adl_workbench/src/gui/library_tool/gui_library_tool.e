@@ -5,9 +5,9 @@ note
 				 statistics viewers, and various micro-controls along the top.
 				 ]"
 	keywords:    "ADL, archetype, template, UI"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_LIBRARY_TOOL
@@ -48,10 +48,13 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			tool_agents.set_edit_archetype_source_agent (agent edit_archetype)
-			tool_agents.set_save_archetype_agent (agent save_archetype)
-			tool_agents.set_update_explorers_and_select_agent (agent update_explorers_and_select)
-			tool_agents.set_update_archetype_explorer (agent update_archetype_explorer)
+			library_tool_agents.set_edit_archetype_source_agent (agent edit_archetype)
+			library_tool_agents.set_save_archetype_agent (agent save_archetype)
+			library_tool_agents.set_update_explorers_and_select_agent (agent update_explorers_and_select)
+			library_tool_agents.set_update_archetype_explorer (agent update_archetype_explorer)
+			library_tool_agents.set_create_new_non_specialised_archetype_agent (agent create_new_non_specialised_archetype)
+			library_tool_agents.set_create_new_specialised_archetype_agent (agent create_new_specialised_archetype)
+			library_tool_agents.set_create_new_template_agent (agent create_new_template)
 
 			archetype_compiler.set_progress_agents (agent initialise_progress_agt, agent set_progress_bar_current_value)
 
@@ -587,6 +590,85 @@ feature {NONE} -- Implementation
 			do_system_run_command_synchronous (editor_app_command + " %"" + path + "%"", Void)
 			if file_system.file_time_stamp (path) > orig_time_stamp then
 				gui_agents.call_select_archetype_agent (auth_aca)
+			end
+		end
+
+	create_new_non_specialised_archetype (accn: ARCH_LIB_CLASS; an_arch_agent: detachable PROCEDURE [ANY, TUPLE[ARCHETYPE]])
+		local
+			dialog: NEW_ARCHETYPE_DIALOG
+			match_ids: ARRAYED_SET [STRING]
+			in_dir_path: STRING
+			found: BOOLEAN
+		do
+			if attached source as src then
+				-- default creation directory: top of library area
+				in_dir_path := src.library_access.library_path
+
+				-- try for a better path as the path of some other archetype of the same class
+				match_ids := src.matching_ids (".*", accn.class_definition.name, Void)
+				if not match_ids.is_empty then
+					from match_ids.start until match_ids.off or found loop
+						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} src.archetype_with_id (match_ids.item) as alaa then
+							in_dir_path := file_system.dirname (alaa.source_file_path)
+							found := True
+						end
+						match_ids.forth
+					end
+				end
+
+				-- display dialog for naming, file system location
+				create dialog.make (in_dir_path, create {ARCHETYPE_HRID}.make_new (accn.qualified_name), src)
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if dialog.is_valid then
+					src.add_new_non_specialised_archetype (dialog.archetype_id, dialog.archetype_directory)
+
+					if attached src.last_added_archetype as new_arch_lib_arch then
+						-- execute agent on archetype, if passed
+						if attached an_arch_agent as arch_agent and attached new_arch_lib_arch.differential_archetype as new_arch then
+							an_arch_agent.call ([new_arch])
+							new_arch_lib_arch.commit
+						end
+						archetype_explorer.populate (src)
+						library_tool_agents.call_archetype_explorer_select_in_tree_agent (new_arch_lib_arch.id.physical_id)
+					end
+				end
+				dialog.destroy
+			end
+		end
+
+	create_new_specialised_archetype (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+		local
+			dialog: NEW_ARCHETYPE_DIALOG
+		do
+			if attached source as src then
+				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), parent_aca.id.deep_twin, parent_aca.id, src)
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if dialog.is_valid then
+					src.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
+					archetype_explorer.populate (src)
+					library_tool_agents.call_archetype_explorer_select_in_tree_agent (src.last_added_archetype.id.physical_id)
+				end
+				dialog.destroy
+			end
+		end
+
+	create_new_template (parent_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
+		local
+			dialog: NEW_ARCHETYPE_DIALOG
+			new_id: ARCHETYPE_HRID
+		do
+			if attached source as src then
+				new_id := parent_aca.id.deep_twin
+				new_id.set_concept_id ("t_" + new_id.concept_id)
+				create dialog.make_specialised (file_system.dirname (parent_aca.source_file_path), new_id, parent_aca.id, src)
+				dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if dialog.is_valid then
+					src.add_new_template (parent_aca, dialog.archetype_id, dialog.archetype_directory)
+					check attached {ARCH_LIB_AUTHORED_ARCHETYPE} src.last_added_archetype as att_arch then
+						library_tool_agents.call_update_explorers_and_select_agent (att_arch.id.as_string)
+					end
+				end
+				dialog.destroy
 			end
 		end
 
