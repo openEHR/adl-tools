@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Generic visitor class for C_xxx class objects"
 	keywords:    "visitor, constraint model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 deferred class C_VISITOR

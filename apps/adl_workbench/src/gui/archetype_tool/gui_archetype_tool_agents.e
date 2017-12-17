@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Agents required to specify definition tree context menu actions"
 	keywords:    "archetype, definition, gui"
-	author:      "Thomas Beale"
-	support:     "http://www.openehr.org/issues/browse/AWBPR"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_ARCHETYPE_TOOL_AGENTS

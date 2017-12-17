@@ -7,7 +7,6 @@ note
 	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-
 class
 	SHARED_GUI_AGENTS
 
