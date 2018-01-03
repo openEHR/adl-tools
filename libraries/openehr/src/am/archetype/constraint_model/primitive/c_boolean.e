@@ -3,9 +3,9 @@ note
 	description: "Constrainer type for instances of BOOLEAN"
 	keywords:    "archetype, boolean, data"
 	design:      "openEHR Common Archetype Model 0.2"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class C_BOOLEAN
@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	make, make_true, make_false, make_true_false, make_example, default_create
+	make, make_true, make_false, make_true_false, make_example, default_create, make_identified_default
 
 feature {NONE} -- Initialisation
 
@@ -75,6 +75,12 @@ feature -- Access
 
 feature -- Status Report
 
+	any_allowed: BOOLEAN
+			-- True if any value allowed - only type is constrained
+		do
+			Result := constraint.is_empty
+		end
+
 	is_single_value: BOOLEAN
 			-- true if constraint is a single value
 		do
@@ -95,7 +101,7 @@ feature -- Status Report
 
 	valid_value (a_value: BOOLEAN): BOOLEAN
 		do
-			Result := constraint.has (a_value)
+			Result := any_allowed or else constraint.has (a_value)
 		end
 
 	valid_assumed_value (a_value: BOOLEAN_REF): BOOLEAN

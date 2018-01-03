@@ -352,33 +352,19 @@ feature -- Visitor
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising an C_PRIMITIVE_OBJECT
 		do
-			-- ignore objs which are under c_attribute_tuples
-			if not a_node.is_second_order_constrained then
-				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
-				last_result.append (apply_style (a_node.as_string, STYLE_VALUE))
-				last_object_inline := True
-			end
+			do_any_c_primitive_object (a_node, depth, agent serialise_c_primitive (a_node))
 		end
 
 	start_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
 			-- start serialising an C_TERMINOLOGY_CODE
 		do
-			-- ignore objs which are under c_attribute_tuples
-			if not a_node.is_second_order_constrained then
-				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
-				serialise_c_terminology_code (a_node, depth)
-			end
+			do_any_c_primitive_object (a_node, depth, agent serialise_c_terminology_code (a_node))
 		end
 
 	start_c_string (a_node: C_STRING; depth: INTEGER)
 			-- start serialising a C_STRING
 		do
-			-- ignore objs which are under c_attribute_tuples
-			if not a_node.is_second_order_constrained then
-				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to C_ATTRIBUTE
-				last_result.append (apply_style (a_node.as_string_clean (agent clean), STYLE_VALUE))
-				last_object_inline := True
-			end
+			do_any_c_primitive_object (a_node, depth, agent serialise_c_string (a_node))
 		end
 
 	serialise_occurrences (a_node: C_OBJECT; depth: INTEGER)
@@ -450,7 +436,17 @@ feature {NONE} -- Implementation
 			last_result.append (format_item (FMT_SPACE))
 		end
 
-	serialise_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
+	serialise_c_primitive (a_node: C_PRIMITIVE_OBJECT)
+		do
+			last_result.append (apply_style (a_node.as_string, STYLE_VALUE))
+		end
+
+	serialise_c_string (a_node: C_STRING)
+		do
+			last_result.append (apply_style (a_node.as_string_clean (agent clean), STYLE_VALUE))
+		end
+
+	serialise_c_terminology_code (a_node: C_TERMINOLOGY_CODE)
 		do
 			-- output the actual constraint value
 			last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
@@ -462,7 +458,6 @@ feature {NONE} -- Implementation
 				last_coded_constraint_comment.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 					safe_comment (terminology.term_definition (language, a_node.constraint).text), STYLE_COMMENT))
 			end
-			last_object_inline := True
 		end
 
 	last_object_inline: BOOLEAN
@@ -496,6 +491,49 @@ feature {NONE} -- Implementation
 			if terminology.has_id_code (a_node.node_id) then
 				last_result.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
 					safe_comment (terminology.term_definition (language, a_node.node_id).text), STYLE_COMMENT))
+			end
+		end
+
+	do_any_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER; constraint_agt: PROCEDURE [ANY, TUPLE])
+			-- serailse any kind of C_PRIMITIVE_OBJECT with a constraint serialising agent
+		do
+			-- ignore objs which are under c_attribute_tuples
+			if not a_node.is_second_order_constrained then
+				if a_node.any_allowed or a_node.is_identified then
+					-- indent, rm_type_name, node_id
+					last_result.append (create_indent (depth))
+					serialise_type_node_id (a_node, depth)
+
+					-- output occurrences
+					serialise_occurrences(a_node, depth)
+				end
+
+				-- output the constraint, if there is one
+				if not a_node.any_allowed then
+					if a_node.is_identified then
+						-- output 'matches {'
+						last_result.append (apply_style (symbol (SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
+						last_result.append (symbol (SYM_START_CBLOCK))
+					else
+						-- remove last newline due to C_ATTRIBUTE
+						last_result.remove_tail (format_item(FMT_NEWLINE).count)
+					end
+
+					-- output the constraint string
+					constraint_agt.call ([])
+
+					-- output '}'
+					if a_node.is_identified then
+						last_result.append (symbol (SYM_END_CBLOCK))
+					end
+				end
+
+				if a_node.is_identified then
+					last_result.append (format_item(FMT_NEWLINE))
+				else
+					-- mark as inline
+					last_object_inline := True
+				end
 			end
 		end
 

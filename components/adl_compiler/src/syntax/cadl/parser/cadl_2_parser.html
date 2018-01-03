@@ -84,11 +84,11 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_complex_object_id">c_complex_object_id</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ROOT_ID_CODE </span></div>
+&nbsp; <span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">V_ROOT_ID_CODE </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
+| <span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+| <span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span></div>
 </div>
 
 <div class="rule">
@@ -117,6 +117,8 @@
 <div class="rhs">
 &nbsp; <span class="rhs_variable"><a href="#c_complex_object">c_complex_object</a> </span></div>
 <div class="rhs">
+| <span class="rhs_variable"><a href="#c_regular_primitive_object">c_regular_primitive_object</a> </span></div>
+<div class="rhs">
 | <span class="rhs_variable"><a href="#c_terminal_object">c_terminal_object</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#sibling_order">sibling_order</a> </span><span class="rhs_variable"><a href="#c_object">c_object</a> </span></div>
@@ -141,18 +143,18 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_archetype_root">c_archetype_root</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_EXT_REF </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
+&nbsp; <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">V_EXT_REF </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
 <div class="rhs">
-| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">error </span></div>
+| <span class="token">SYM_USE_ARCHETYPE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
 <span class="lhs_variable" id="c_complex_object_proxy">c_complex_object_proxy</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
+&nbsp; <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">V_ID_CODE </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
 <div class="rhs">
-| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
+| <span class="token">SYM_USE_NODE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">V_ABS_PATH </span></div>
 <div class="rhs">
 | <span class="token">SYM_USE_NODE </span><span class="token">error </span></div>
 </div>
@@ -177,13 +179,22 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_archetype_slot_id">c_archetype_slot_id</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span></div>
+&nbsp; <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">V_ID_CODE </span></div>
 <div class="rhs">
-| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span><span class="token">V_ID_CODE </span><span class="token">SYM_CLOSED </span></div>
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span><span class="token">V_ID_CODE </span><span class="token">SYM_CLOSED </span></div>
 <div class="rhs">
-| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+| <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="rhs_variable"><a href="#complex_type_id">complex_type_id</a> </span></div>
 <div class="rhs">
 | <span class="token">SYM_ALLOW_ARCHETYPE </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="c_regular_primitive_object">c_regular_primitive_object</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_PRIMITIVE_TYPE_ID </span><span class="token">V_ID_CODE </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span><span class="token">SYM_MATCHES </span><span class="token">SYM_START_CBLOCK </span><span class="rhs_variable"><a href="#c_primitive_object">c_primitive_object</a> </span><span class="token">SYM_END_CBLOCK </span></div>
+<div class="rhs">
+| <span class="token">V_PRIMITIVE_TYPE_ID </span><span class="token">V_ID_CODE </span><span class="rhs_variable"><a href="#c_occurrences">c_occurrences</a> </span></div>
 </div>
 
 <div class="rule">
@@ -249,7 +260,7 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_attribute_head">c_attribute_head</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span><span class="rhs_variable"><a href="#c_existence">c_existence</a> </span><span class="rhs_variable"><a href="#c_cardinality">c_cardinality</a> </span></div>
+&nbsp; <span class="token">V_ATTRIBUTE_ID </span><span class="rhs_variable"><a href="#c_existence">c_existence</a> </span><span class="rhs_variable"><a href="#c_cardinality">c_cardinality</a> </span></div>
 <div class="rhs">
 | <span class="token">V_ABS_PATH </span><span class="rhs_variable"><a href="#c_existence">c_existence</a> </span><span class="rhs_variable"><a href="#c_cardinality">c_cardinality</a> </span></div>
 </div>
@@ -276,9 +287,9 @@
 <div class="lhs">
 <span class="lhs_variable" id="c_tuple_attr_ids">c_tuple_attr_ids</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+&nbsp; <span class="token">V_ATTRIBUTE_ID </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#c_tuple_attr_ids">c_tuple_attr_ids</a> </span><span class="literal_token">&#44; </span><span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+| <span class="rhs_variable"><a href="#c_tuple_attr_ids">c_tuple_attr_ids</a> </span><span class="literal_token">&#44; </span><span class="token">V_ATTRIBUTE_ID </span></div>
 </div>
 
 <div class="rule">
@@ -337,13 +348,13 @@
 <div class="lhs">
 <span class="lhs_variable" id="assertion">assertion</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#any_identifier">any_identifier</a> </span><span class="literal_token">&#58; </span><span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span></div>
+&nbsp; <span class="rhs_variable"><a href="#any_id">any_id</a> </span><span class="literal_token">&#58; </span><span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#boolean_node">boolean_node</a> </span></div>
 <div class="rhs">
 | <span class="rhs_variable"><a href="#arch_outer_constraint_expr">arch_outer_constraint_expr</a> </span></div>
 <div class="rhs">
-| <span class="rhs_variable"><a href="#any_identifier">any_identifier</a> </span><span class="literal_token">&#58; </span><span class="token">error </span></div>
+| <span class="rhs_variable"><a href="#any_id">any_id</a> </span><span class="literal_token">&#58; </span><span class="token">error </span></div>
 </div>
 
 <div class="rule">
@@ -753,20 +764,20 @@
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="any_identifier">any_identifier</span>: </div>
+<span class="lhs_variable" id="any_id">any_id</span>: </div>
 <div class="rhs">
-&nbsp; <span class="rhs_variable"><a href="#type_identifier">type_identifier</a> </span></div>
+&nbsp; <span class="token">V_TYPE_ID </span></div>
 <div class="rhs">
-| <span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+| <span class="token">V_ATTRIBUTE_ID </span></div>
 </div>
 
 <div class="rule">
 <div class="lhs">
-<span class="lhs_variable" id="type_identifier">type_identifier</span>: </div>
+<span class="lhs_variable" id="complex_type_id">complex_type_id</span>: </div>
 <div class="rhs">
-&nbsp; <span class="token">V_TYPE_IDENTIFIER </span></div>
+&nbsp; <span class="token">V_TYPE_ID </span></div>
 <div class="rhs">
-| <span class="token">V_GENERIC_TYPE_IDENTIFIER </span></div>
+| <span class="token">V_GENERIC_TYPE_ID </span></div>
 </div>
 
 <div class="rule">

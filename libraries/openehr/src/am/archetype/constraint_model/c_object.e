@@ -210,11 +210,9 @@ feature -- Modification
 			is_deprecated := a_val
 		end
 
-feature {C_OBJECT} -- Modification
-
 	set_node_id (an_object_id: STRING)
 		require
-			Object_id_valid: not an_object_id.is_empty
+			Object_id_valid: is_valid_id_code (an_object_id)
 		do
 			representation.set_node_id (an_object_id)
 		end

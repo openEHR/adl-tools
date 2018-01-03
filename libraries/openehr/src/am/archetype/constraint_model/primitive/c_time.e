@@ -10,7 +10,7 @@ note
 				 	yyyy-XX-XX - month and day not allowed
 				 ]"
 	keywords:    "archetype, time"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
@@ -24,7 +24,7 @@ inherit
 		end
 
 create
-	make, make_interval, make_value, make_value_list, make_string_interval, make_from_pattern, make_example, default_create
+	make, make_interval, make_value, make_value_list, make_string_interval, make_from_pattern, make_example, default_create, make_identified_default
 
 feature {NONE} -- Initialisation
 

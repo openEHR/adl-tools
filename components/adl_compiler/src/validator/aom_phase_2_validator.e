@@ -445,7 +445,8 @@ end
 			vcormt_fail: BOOLEAN
 		do
 			if attached {C_OBJECT} a_c_node as co then
-				if attached co.parent as att_parent_ca then -- now check if this object is a valid type of its owning attribute
+				-- now check if this object is a valid type of its owning attribute
+				if attached co.parent as att_parent_ca then
 					if att_parent_ca.has_differential_path then
 						check attached att_parent_ca.differential_path as diff_path then
 							create apa.make_from_string (diff_path)

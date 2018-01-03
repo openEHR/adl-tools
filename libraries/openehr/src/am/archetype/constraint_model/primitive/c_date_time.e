@@ -3,7 +3,7 @@ note
 	description: "Constrainer type for instances of DATE_TIME"
 	keywords:    "archetype, date, data"
 	design:      "openEHR Common Archetype Model 0.2"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	make, make_interval, make_value, make_value_list, make_string_interval, make_from_pattern, make_example, default_create
+	make, make_interval, make_value, make_value_list, make_string_interval, make_from_pattern, make_example, default_create, make_identified_default
 
 feature {NONE} -- Initialisation
 

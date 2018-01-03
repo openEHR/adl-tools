@@ -3,9 +3,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:	 "ADL"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class CADL_2_PARSER
@@ -31,11 +31,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ADL_APP_RESOURCES
-		export
-			{NONE} all
-		end
-
 	SHARED_COMPILER_BILLBOARD
 		export
 			{NONE} all
@@ -57,7 +52,7 @@ create
 
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
-%token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
+%token <STRING> V_TYPE_ID V_PRIMITIVE_TYPE_ID V_GENERIC_TYPE_ID V_ATTRIBUTE_ID V_FEATURE_CALL_ID V_STRING
 %token <STRING> V_ROOT_ID_CODE V_ID_CODE V_ID_CODE_STR V_EXT_REF 
 %token <STRING> V_VALUE_SET_REF V_VALUE_DEF V_VALUE_SET_REF_ASSUMED
 %token <TERM_CONSTRAINT_PARSE_STRUCTURE> V_EXPANDED_VALUE_SET_DEF V_EXTERNAL_VALUE_SET_DEF
@@ -104,7 +99,7 @@ create
 %type <C_ARCHETYPE_ROOT> c_archetype_root
 %type <C_COMPLEX_OBJECT_PROXY> c_complex_object_proxy
 
-%type <STRING> type_identifier
+%type <STRING> complex_type_id
 %type <SIBLING_ORDER> sibling_order
 
 %type <MULTIPLICITY_INTERVAL> multiplicity existence
@@ -113,7 +108,7 @@ create
 %type <detachable CARDINALITY> c_cardinality
 
 %type <C_COMPLEX_OBJECT> c_complex_object c_complex_object_id c_complex_object_head
-%type <C_PRIMITIVE_OBJECT> c_primitive_object
+%type <C_PRIMITIVE_OBJECT> c_primitive_object c_regular_primitive_object
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 %type <C_ATTRIBUTE> c_attribute_head
 %type <C_OBJECT> c_object c_terminal_object
@@ -131,7 +126,7 @@ create
 %type <ISO8601_DATE_TIME> date_time_value
 %type <ISO8601_TIME> time_value
 %type <ISO8601_DURATION> duration_value
-%type <STRING> any_identifier
+%type <STRING> any_id
 %type <STRING> string_value
 %type <URI> uri_value
 
@@ -210,7 +205,8 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 		}
 	| c_complex_object_head
 		{
-			-- ok in case where occurrences or node_id is being redefined in a specialised archetype or template
+			-- used to: establish a more specific RM type; and for redefinition of occurrences or node_id 
+			-- in a specialised archetype or template
 			debug ("ADL_parse")
 				io.put_string (indent + "POP OBJECT_NODE " + $1.rm_type_name + " [id=" + $1.node_id + "]%N") 
 				indent.remove_tail (1)
@@ -246,7 +242,7 @@ end
 		}
 	;
 
-c_complex_object_id: type_identifier V_ROOT_ID_CODE
+c_complex_object_id: complex_type_id V_ROOT_ID_CODE
 		{
 			if object_nodes.is_empty then
 				create $$.make ($1, $2)
@@ -254,7 +250,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 				abort_with_error (ec_VARND, <<$2, Id_code_regex_pattern>>)
 			end
 		}
-	| type_identifier V_ID_CODE
+	| complex_type_id V_ID_CODE
 		{
 			if not object_nodes.is_empty then
 				create $$.make ($1, $2)
@@ -265,7 +261,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 ----------------------------------------------------------------------------
 -- START Support transitional ADL 1.5 archetypes containing nodes with no codes
 --
-	| type_identifier
+	| complex_type_id
 		{
 			if valid_standard_version (target_descriptor.file_mgr.adl_version) and then 
 				version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty 
@@ -318,6 +314,11 @@ c_object: c_complex_object
 			$$ := $1
 			-- safe_put_c_attribute_child was called when the C_COMPLEX_OBJECT block was entered
 		}
+	| c_regular_primitive_object
+		{
+			$$ := $1
+			-- safe_put_c_attribute_child was called when the C_PRIMITIVE_OBJECT block was entered
+		}
 	| c_terminal_object
 		{
 			$$ := $1
@@ -363,7 +364,7 @@ c_terminal_object: c_archetype_root
 -- id12,archetype_ref
 --
 
-c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences 
+c_archetype_root: SYM_USE_ARCHETYPE complex_type_id V_EXT_REF c_occurrences 
 		{
 			id_code := $3.substring (1, $3.index_of (',', 1) - 1)
 			archetype_ref := $3.substring ($3.index_of (',', 1) + 1, $3.count)
@@ -376,13 +377,13 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier V_EXT_REF c_occurrences
 				abort_with_error (ec_SUAIDI, <<$3>>)
 			end
 		}
-	| SYM_USE_ARCHETYPE type_identifier error
+	| SYM_USE_ARCHETYPE complex_type_id error
 		{
 			abort_with_error (ec_SUAID, Void)
 		}
 	;
 
-c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_ABS_PATH
+c_complex_object_proxy: SYM_USE_NODE complex_type_id V_ID_CODE c_occurrences V_ABS_PATH
 		{
 			create $$.make ($2, $3, $5)
 			if attached $4 as att_occ then
@@ -405,7 +406,7 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 --------------------------------------------------------------------
 --- START LEGACY ADL 1.4
 ---
-	| SYM_USE_NODE type_identifier c_occurrences V_ABS_PATH
+	| SYM_USE_NODE complex_type_id c_occurrences V_ABS_PATH
 		{
 			if version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty then
 				create $$.make ($2, new_fake_node_id, $4)
@@ -419,7 +420,7 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 ---
 --- END LEGACY ADL 1.4
 --------------------------------------------------------------------
---	| SYM_USE_NODE type_identifier
+--	| SYM_USE_NODE complex_type_id
 --		{
 --			abort_with_error (ec_VCOID, <<$2, c_attrs.item.path>>)
 --		}
@@ -467,11 +468,11 @@ c_archetype_slot_head: c_archetype_slot_id c_occurrences
 		}
 	;
 
-c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
+c_archetype_slot_id: SYM_ALLOW_ARCHETYPE complex_type_id V_ID_CODE
 		{
 			create $$.make ($2, $3)
 		}
-	| SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE SYM_CLOSED
+	| SYM_ALLOW_ARCHETYPE complex_type_id V_ID_CODE SYM_CLOSED
 		{
 			create $$.make ($2, $3)
 			$$.set_closed
@@ -479,7 +480,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 ----------------------------------------------------------------------------
 -- START Support transitional ADL 1.5 archetypes containing nodes with no id-codes
 --
-	| SYM_ALLOW_ARCHETYPE type_identifier
+	| SYM_ALLOW_ARCHETYPE complex_type_id
 		{
 			if version_less_than (target_descriptor.file_mgr.adl_version, Adl_id_code_version) and not object_nodes.is_empty then
 				create $$.make ($2, new_fake_node_id)
@@ -495,6 +496,63 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 			abort_with_error (ec_SUAS, Void)
 		}
 	;
+
+----------------------------------------------------------------------------
+-- C_PRIMITIVE_OBJECTs expressed with regular syntax, and an id
+--
+
+c_regular_primitive_object: V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+		{ 
+			$$ := $6
+			$$.set_node_id ($2)
+
+			if attached $3 as att_occ then
+				$$.set_occurrences (att_occ)
+			end
+
+			safe_put_c_attribute_child ($$)
+
+			debug ("ADL_parse")
+				io.put_string (indent + "Regular primitive OBJECT_NODE with constraint " + $$.rm_type_name + " [id=" + $$.node_id + "]%N") 
+				if $3 /= Void then
+					io.put_string ("; occurrences=(" + $3.as_string + ")") 
+				end
+				io.new_line
+			end
+		}
+	| V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences
+		{
+			-- have to figure out which kind of C_PRIMITIVE_OBJECT to create
+			if attached aom_profile as aomp then
+				aom_type := aomp.aom_primitive_type ($1)
+			else
+				check attached c_primitive_subtypes.item ($1.as_upper) as aomt then
+					aom_type := aomt
+				end
+			end
+			check attached c_primitive_subtype_creator_agents.item (aom_type) as c_prim_agt then
+				$$ := c_prim_agt.item ([$2])
+			end
+
+			if attached $3 as att_occ then
+				$$.set_occurrences (att_occ)
+			end
+
+			safe_put_c_attribute_child ($$)
+
+			debug ("ADL_parse")
+				io.put_string (indent + "Regular primitive OBJECT_NODE " + $$.rm_type_name + " [id=" + $$.node_id + "]%N") 
+				if $3 /= Void then
+					io.put_string ("; occurrences=(" + $3.as_string + ")") 
+				end
+				io.new_line
+			end
+		}
+	;
+
+----------------------------------------------------------------------------
+-- Anonymous C_PRIMITIVE_OBJECTs
+--
 
 c_primitive_object: c_integer 
 		{
@@ -605,7 +663,7 @@ c_attribute: c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SY
 		}
 	;
 
-c_attribute_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
+c_attribute_head: V_ATTRIBUTE_ID c_existence c_cardinality
 		{
 			rm_attribute_name := $1
 			if not object_nodes.item.has_attribute (rm_attribute_name) then
@@ -725,7 +783,7 @@ c_attribute_tuple: '[' c_tuple_attr_ids ']' SYM_MATCHES SYM_START_CBLOCK c_objec
 		}
 	;
 
-c_tuple_attr_ids: V_ATTRIBUTE_IDENTIFIER
+c_tuple_attr_ids: V_ATTRIBUTE_ID
 		{
 			create ca_tuple.make
 			ca_tuple.put_member (create {C_ATTRIBUTE}.make_single ($1, Void))
@@ -735,7 +793,7 @@ c_tuple_attr_ids: V_ATTRIBUTE_IDENTIFIER
 				io.put_string (indent + "add C_ATTR_TUPLE id " + $1 + "%N") 
 			end
 		}
-	| c_tuple_attr_ids ',' V_ATTRIBUTE_IDENTIFIER
+	| c_tuple_attr_ids ',' V_ATTRIBUTE_ID
 		{
 			ca_tuple.put_member (create {C_ATTRIBUTE}.make_single ($3, Void))
 			debug ("ADL_parse")
@@ -820,7 +878,7 @@ assertions: assertion
 		}
 	;
 
-assertion: any_identifier ':' boolean_node
+assertion: any_id ':' boolean_node
 		{
 			create $$.make_with_tag ($3, $1)
 		}
@@ -836,7 +894,7 @@ assertion: any_identifier ':' boolean_node
 		{
 			create $$.make ($1)
 		}
-	| any_identifier ':' error
+	| any_id ':' error
 		{
 			abort_with_error (ec_SINVS, <<$1>>)
 		}
@@ -1700,21 +1758,21 @@ c_boolean: SYM_TRUE
 		}
 	;
 
-any_identifier: type_identifier
+any_id: V_TYPE_ID
 		{
 			$$ := $1
 		}
-	| V_ATTRIBUTE_IDENTIFIER
+	| V_ATTRIBUTE_ID
 		{
 			$$ := $1
 		}
 	;
 		
-type_identifier: V_TYPE_IDENTIFIER
+complex_type_id: V_TYPE_ID
 		{
 			$$ := $1
 		}
-	| V_GENERIC_TYPE_IDENTIFIER
+	| V_GENERIC_TYPE_ID
 		{
 			$$ := $1
 
@@ -2444,10 +2502,15 @@ feature -- Initialization
 			reset
 
 			target_descriptor := aca
+
+			-- set up refs to RM and AOM PROFILE for this archetype
 			ref_model := aca.ref_model
 			if target_descriptor.is_specialised then
 				flat_ancestor := target_descriptor.specialisation_parent.flat_archetype
  			end
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+			end
 
 			source_start_line := a_source_start_line
 			create indent.make_empty
@@ -2487,11 +2550,6 @@ feature {NONE} -- Implementation
 
 	flat_ancestor: detachable ARCHETYPE
 			-- flat version of ancestor archetype, if target is specialised
-
-	ref_model: BMM_MODEL
-		attribute
-			create Result.default_create
-		end
 
 	safe_put_c_attribute_child (an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
@@ -2623,6 +2681,11 @@ feature {NONE} -- Implementation
 	og_path: OG_PATH
 		attribute
 			create Result.make_root
+		end
+
+	aom_type: STRING
+		attribute
+			create Result.make (0)
 		end
 
 end

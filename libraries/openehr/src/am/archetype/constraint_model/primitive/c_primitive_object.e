@@ -36,6 +36,15 @@ feature {NONE} -- Initialisation
 		deferred
 		end
 
+	make_identified_default (a_node_id: STRING)
+			-- make a default version with a node identifier - normally used to constrain just the type
+		require
+			Object_id_valid: is_valid_id_code (a_node_id)
+		do
+			default_create
+			set_node_id (a_node_id)
+		end
+
 feature -- Access
 
 	constraint: ANY
@@ -110,6 +119,13 @@ feature -- Status Report
 	is_single_value: BOOLEAN
 			-- true if constraint is a single value
 		deferred
+		end
+
+	is_identified: BOOLEAN
+			-- True if an explicit node-id was set on this node, as it would be to constraint just the type,
+			-- or to override such a node with a particular constraint (the parent node-id must be mentioned)
+		do
+			Result := not node_id.is_equal (Primitive_node_id)
 		end
 
 feature -- Modification

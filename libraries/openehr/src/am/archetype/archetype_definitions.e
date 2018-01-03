@@ -252,10 +252,9 @@ feature -- Enumerations
 --		end
 
 	c_primitive_subtypes: HASH_TABLE [STRING, STRING]
-			-- Table of assumed AOM type names keyed by lower-case RM primitive subtype
+			-- Table of assumed AOM type names keyed by upper-case RM primitive subtype
 		once ("PROCESS")
 			create Result.make (0)
-			Result.compare_objects
 			Result.extend (bare_type_name(({C_INTEGER}).name), "INTEGER")
 			Result.extend (bare_type_name(({C_REAL}).name), "REAL")
 			Result.extend (bare_type_name(({C_BOOLEAN}).name), "BOOLEAN")
@@ -265,6 +264,21 @@ feature -- Enumerations
 			Result.extend (bare_type_name(({C_DATE_TIME}).name), "DATE_TIME")
 			Result.extend (bare_type_name(({C_DURATION}).name), "DURATION")
 			Result.extend (bare_type_name(({C_TERMINOLOGY_CODE}).name), "TERMINOLOGY_CODE")
+		end
+
+	c_primitive_subtype_creator_agents: HASH_TABLE [FUNCTION[ANY, TUPLE[STRING], C_PRIMITIVE_OBJECT], STRING]
+			-- Table of assumed AOM type names keyed by upper-case AOM primitive subtype
+		once ("PROCESS")
+			create Result.make (0)
+			Result.extend (agent (a_node_id: STRING): C_INTEGER do create Result.make_identified_default (a_node_id) end, "C_INTEGER")
+			Result.extend (agent (a_node_id: STRING):C_REAL do create Result.make_identified_default (a_node_id) end, "C_REAL")
+			Result.extend (agent (a_node_id: STRING):C_BOOLEAN do create Result.make_identified_default (a_node_id) end, "C_BOOLEAN")
+			Result.extend (agent (a_node_id: STRING):C_STRING do create Result.make_identified_default (a_node_id) end, "C_STRING")
+			Result.extend (agent (a_node_id: STRING):C_DATE do create Result.make_identified_default (a_node_id) end, "C_DATE")
+			Result.extend (agent (a_node_id: STRING):C_TIME do create Result.make_identified_default (a_node_id) end, "C_TIME")
+			Result.extend (agent (a_node_id: STRING):C_DATE_TIME do create Result.make_identified_default (a_node_id) end, "C_DATE_TIME")
+			Result.extend (agent (a_node_id: STRING):C_DURATION do create Result.make_identified_default (a_node_id) end, "C_DURATION")
+			Result.extend (agent (a_node_id: STRING):C_TERMINOLOGY_CODE do create Result.make_identified_default (a_node_id) end, "C_TERMINOLOGY_CODE")
 		end
 
 	occurrences_default_list: HASH_TABLE [MULTIPLICITY_INTERVAL, STRING]

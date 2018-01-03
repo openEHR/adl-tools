@@ -116,6 +116,16 @@ feature -- Access
 			-- Assumed primitive types and their C_XX mappings for all schemas are in `c_primitive_subtypes'
 			-- Keyed by RM type upper case
 
+	aom_primitive_type (rm_type_name: STRING): STRING
+			-- obtain AOM primitive type for any inbuilt or mapped primitive type
+		require
+			has_aom_primitive_type (rm_type_name)
+		do
+			check attached rm_aom_primitive_type_mappings.item (rm_type_name.as_upper) as aom_type_name then
+				Result := aom_type_name
+			end
+		end
+
 feature -- Status Report
 
 	has_type_substitution (an_aom_type, an_rm_type: STRING): BOOLEAN
@@ -175,6 +185,12 @@ feature -- Status Report
 			check attached rm_aom_primitive_type_mappings.item (an_rm_type.as_upper) as att_type_eq_type then
 				Result := att_type_eq_type
 			end
+		end
+
+	has_aom_primitive_type (a_type_name: STRING): BOOLEAN
+			-- True if `a_type_name' is a primitive type in the current type system
+		do
+			Result := rm_aom_primitive_type_mappings.has (a_type_name.as_upper)
 		end
 
 feature -- Validation

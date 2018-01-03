@@ -11,9 +11,9 @@ note
 				 ]"
 	keywords:    "archetype, string, data"
 	design:      "openEHR Common Archetype Model 0.2"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class C_STRING
@@ -26,7 +26,7 @@ inherit
 		end
 
 create
-	make, make_value, make_value_list, make_regex_any, make_example, default_create
+	make, make_value, make_value_list, make_regex_any, make_example, default_create, make_identified_default
 
 feature -- Definitions
 
@@ -130,6 +130,12 @@ feature -- Access
 
 feature -- Status Report
 
+	any_allowed: BOOLEAN
+			-- True if any value allowed - only type is constrained
+		do
+			Result := constraint.is_empty or else constraint.count = 1 and constraint.first.is_equal (Regex_any_string)
+		end
+
 	is_single_value: BOOLEAN
 			-- True if this constraint has only a single string
 		do
@@ -152,18 +158,22 @@ feature -- Status Report
 		local
 			regexp_parser: RX_PCRE_REGULAR_EXPRESSION
 		do
-			from constraint.start until constraint.off or Result loop
-				if is_regex_string (constraint.item) then
-					create regexp_parser.make
-					regexp_parser.set_case_insensitive (True)
-					regexp_parser.compile (constraint.item.substring (2, constraint.item.count - 1))
-					if regexp_parser.is_compiled then
-						Result := regexp_parser.recognizes (a_value)
+			if any_allowed then
+				Result := True
+			else
+				from constraint.start until constraint.off or Result loop
+					if is_regex_string (constraint.item) then
+						create regexp_parser.make
+						regexp_parser.set_case_insensitive (True)
+						regexp_parser.compile (constraint.item.substring (2, constraint.item.count - 1))
+						if regexp_parser.is_compiled then
+							Result := regexp_parser.recognizes (a_value)
+						end
+					else
+						Result := constraint.item.is_equal (a_value)
 					end
-				else
-					Result := constraint.item.is_equal (a_value)
+					constraint.forth
 				end
-				constraint.forth
 			end
 		end
 

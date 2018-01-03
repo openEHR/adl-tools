@@ -82,9 +82,15 @@ feature -- Access
 
 feature -- Status Report
 
+	any_allowed: BOOLEAN
+			-- True if any value allowed - only type is constrained
+		do
+			Result := constraint.is_empty
+		end
+
 	valid_value (a_value: G): BOOLEAN
 		do
-			Result := across constraint as ivl_csr some ivl_csr.item.has (a_value) end
+			Result := any_allowed or across constraint as ivl_csr some ivl_csr.item.has (a_value) end
 		end
 
 	is_single_value: BOOLEAN

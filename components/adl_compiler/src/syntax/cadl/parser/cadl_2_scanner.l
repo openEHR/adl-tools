@@ -3,9 +3,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class CADL_2_SCANNER
@@ -29,6 +29,11 @@ inherit
 		end
 
 	UT_CHARACTER_CODES
+		export
+			{NONE} all
+		end
+
+	SHARED_ADL_APP_RESOURCES
 		export
 			{NONE} all
 		end
@@ -317,28 +322,32 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 				last_string_value := text
 			}
 
-----------/* V_TYPE_IDENTIFIER */ --------------------------------------
+----------/* V_TYPE_ID, V_PRIMITIVE_TYPE_ID */ --------------------------------------
 [A-Z]{IDCHAR}*	{
-					last_token := V_TYPE_IDENTIFIER
-					last_string_value := text
+				last_string_value := text
+				if is_primitive_type (last_string_value) then
+					last_token := V_PRIMITIVE_TYPE_ID
+				else
+					last_token := V_TYPE_ID
+				end
 			}
 
-----------/* V_GENERIC_TYPE_IDENTIFIER */ --------------------------------------
+----------/* V_GENERIC_TYPE_ID */ --------------------------------------
 [A-Z]{IDCHAR}*<[a-zA-Z0-9,_<>]+>	{
-					last_token := V_GENERIC_TYPE_IDENTIFIER
+					last_token := V_GENERIC_TYPE_ID
 					last_string_value := text
 			}
 
-----------/* V_FEATURE_CALL_IDENTIFIER */ --------------------------------------
+----------/* V_FEATURE_CALL_ID */ --------------------------------------
 [a-z]{IDCHAR}*[	 ]*\(\)	{
-					last_token := V_FEATURE_CALL_IDENTIFIER
+					last_token := V_FEATURE_CALL_ID
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
 			}
 
-----------/* V_ATTRIBUTE_IDENTIFIER */ --------------------------------------
+----------/* V_ATTRIBUTE_ID */ --------------------------------------
 [a-z]{IDCHAR}*	{
-					last_token := V_ATTRIBUTE_IDENTIFIER
+					last_token := V_ATTRIBUTE_ID
 					last_string_value := text
 			}
 
@@ -729,6 +738,13 @@ feature -- Commands
 
 feature -- Access
 
+	ref_model: BMM_MODEL
+		attribute
+			create Result.default_create
+		end
+
+	aom_profile: detachable AOM_PROFILE
+
 	in_buffer: STRING
 			-- Buffer for lexical tokens.
 
@@ -753,5 +769,14 @@ feature {NONE} -- Implementation
 
 	is_assumed_code: BOOLEAN
 			-- True if next code parsed is assumed code
+
+	is_primitive_type (a_type_name: STRING): BOOLEAN
+		do
+			if attached aom_profile as aomp then
+				Result := aomp.has_aom_primitive_type (a_type_name)
+			else
+				Result := c_primitive_subtypes.has (a_type_name.as_upper)
+			end
+		end
 
 end

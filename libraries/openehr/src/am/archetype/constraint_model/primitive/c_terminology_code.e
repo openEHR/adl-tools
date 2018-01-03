@@ -10,7 +10,7 @@ note
 					the ac-code.
 				 ]"
 	keywords:    "archetype, terminology"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
@@ -32,7 +32,7 @@ inherit
 		end
 
 create
-	make, make_example, default_create
+	make, make_example, default_create, make_identified_default
 
 feature {NONE} -- Initialisation
 
@@ -61,7 +61,9 @@ feature -- Access
 			else
 				create Result.make (0)
 				Result.compare_objects
-				Result.extend (constraint)
+				if not any_allowed then
+					Result.extend (constraint)
+				end
 			end
 		ensure
 			Result.object_comparison
@@ -92,6 +94,12 @@ feature -- Access
 
 feature -- Status Report
 
+	any_allowed: BOOLEAN
+			-- True if any value allowed - only type is constrained
+		do
+			Result := constraint.is_empty
+		end
+
 	is_single_value: BOOLEAN
 			-- true if constraint is a single value
 		do
@@ -108,9 +116,9 @@ feature -- Status Report
 			-- see if `a_value', which must be an at-code, is one of the allowed codes in the
 			-- value set(s) of this constraint
 		do
-			if a_value.terminology_id.is_equal (Local_terminology_id) and is_valid_value_code (a_value.code_string) then
-				Result := value_set_expanded.has (a_value.code_string)
-			end
+			Result := any_allowed or else
+				a_value.terminology_id.is_equal (Local_terminology_id) and is_valid_value_code (a_value.code_string) and
+				value_set_expanded.has (a_value.code_string)
 		end
 
 	valid_assumed_value (a_value: STRING): BOOLEAN
@@ -147,7 +155,9 @@ feature -- Comparison
 			this_vset, other_vset: like value_set_expanded
 		do
 			if precursor (other, rm_type_conformance_checker) then
-				if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
+				if other.any_allowed then
+					Result := True
+				elseif is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
 					-- firstly, check if the other value-set is empty, which means there is no value-set, i.e. no constraint
 					-- which means that this object's value set automatically conforms.
 					other_vset := other.value_set_expanded

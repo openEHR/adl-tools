@@ -24,6 +24,11 @@ feature -- Access
 
 feature -- Status Report
 
+	any_allowed: BOOLEAN
+			-- True if any value allowed - only type is constrained
+		deferred
+		end
+
 	valid_value (a_value: like prototype_value): BOOLEAN
 		deferred
 		end
