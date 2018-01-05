@@ -251,8 +251,6 @@ feature {NONE} -- Implementation
 						populate_id_term_row_data (path_csr.item.object_id)
 					end
 				end
-			elseif attached {C_PRIMITIVE_OBJECT} a_c_node then
-				-- ignore
 
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as co and then not is_id_code (co.node_id) then
 				populate_c_archetype_root_row_data (co.node_id)
@@ -328,9 +326,7 @@ feature {NONE} -- Implementation
 	populate_id_term_row_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- populate one row of id_terms grid
 		do
-			if attached {C_PRIMITIVE_OBJECT} a_c_node then
-				-- ignore
-			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car and then not is_id_code (car.node_id)then
+			if attached {C_ARCHETYPE_ROOT} a_c_node as car and then not is_id_code (car.node_id)then
 				check attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
 					terminology_stack.remove
 				end
