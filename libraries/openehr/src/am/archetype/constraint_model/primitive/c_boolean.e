@@ -13,7 +13,7 @@ class C_BOOLEAN
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, enter_subtree, exit_subtree, c_congruent_to, c_conforms_to
+			default_create, constraint, assumed_value, enter_subtree, exit_subtree
 		end
 
 create
@@ -111,19 +111,18 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_congruent_to (other: like Current): BOOLEAN
-			-- True if this node is identical to `other'
+	c_value_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a strict subset of `other'
 		do
-			Result := precursor (other) and
-				constraint.count = other.constraint.count and
+			Result := other.any_allowed or
+				constraint.count < other.constraint.count and
 				across constraint as val_csr all other.constraint.has (val_csr.item) end
 		end
 
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a strict subset of `other'
+	c_value_congruent_to (other: like Current): BOOLEAN
+			-- True if this node's value constraint is the same as that of `other'
 		do
-			Result := precursor (other, rm_type_conformance_checker) and
-				constraint.count < other.constraint.count and
+			Result := constraint.count = other.constraint.count and
 				across constraint as val_csr all other.constraint.has (val_csr.item) end
 		end
 

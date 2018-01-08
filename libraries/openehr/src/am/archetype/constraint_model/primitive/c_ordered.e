@@ -12,7 +12,7 @@ deferred class C_ORDERED [G -> COMPARABLE create default_create end]
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, c_congruent_to, c_conforms_to, assumed_value, as_string
+			default_create, constraint, assumed_value, as_string
 		end
 
 feature {NONE} -- Initialisation
@@ -101,21 +101,21 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_congruent_to (other: like Current): BOOLEAN
-			-- True if this node is the same as `other'
+	c_value_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a strict subset of `other'
 		do
-			Result := precursor (other) and constraint.count = other.constraint.count and
+			Result := other.any_allowed or
 				across constraint as ivl_csr all
-					ivl_csr.item.is_equal (other.constraint.i_th (ivl_csr.cursor_index))
+					across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
 				end
 		end
 
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a strict subset of `other'
+	c_value_congruent_to (other: like Current): BOOLEAN
+			-- True if this node is the same as `other'
 		do
-			Result := precursor (other, rm_type_conformance_checker) and
+			Result := constraint.count = other.constraint.count and
 				across constraint as ivl_csr all
-					across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
+					ivl_csr.item.is_equal (other.constraint.i_th (ivl_csr.cursor_index))
 				end
 		end
 

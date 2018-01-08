@@ -23,12 +23,14 @@ feature -- Initialisation
 	make (a_cpo: C_TERMINOLOGY_CODE)
 		do
 			precursor (a_cpo)
-			constraint := a_cpo.constraint
+			if not a_cpo.any_allowed then
+				constraint := a_cpo.constraint
+			end
 		end
 
 feature -- Access
 
-	constraint: STRING
+	constraint: detachable STRING
 
 feature -- Factory
 
@@ -41,7 +43,9 @@ feature -- Factory
 	populate_c_instance (a_c_o: C_TERMINOLOGY_CODE)
 		do
 			precursor (a_c_o)
-			a_c_o.set_constraint (constraint)
+			if attached constraint as att_c then
+				a_c_o.set_constraint (att_c)
+			end
 		end
 
 end

@@ -20,7 +20,7 @@ class C_TERMINOLOGY_CODE
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, constraint, assumed_value, c_congruent_to, c_conforms_to, set_constraint,
+			default_create, constraint, assumed_value, set_constraint,
 			as_string, enter_subtree, exit_subtree
 		end
 
@@ -131,46 +131,42 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_congruent_to (other: like Current): BOOLEAN
-			-- True if this node is the same as `other'
+	c_value_conforms_to (other: like Current): BOOLEAN
+			-- True if this node expresses a value constraint that conforms to that of `other'
 		local
 			this_vset, other_vset: like value_set_expanded
 		do
-			if precursor (other) then
-				if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
+			if other.any_allowed then
+				Result := True
+			elseif is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
+				-- firstly, check if the other value-set is empty, which means there is no value-set, i.e. no constraint
+				-- which means that this object's value set automatically conforms.
+				other_vset := other.value_set_expanded
+				if not other_vset.is_empty then
 					this_vset := value_set_expanded
-					other_vset := other.value_set_expanded
-					Result := constraint.is_equal (other.constraint) and then
-						this_vset.count = other_vset.count and then
-							across this_vset as vset_csr all other_vset.has (vset_csr.item) end
+					Result := codes_conformant (constraint, other.constraint) and then
+						across this_vset as vset_csr all other_vset.has (vset_csr.item) end
 				else
-					Result := constraint.is_equal (other.constraint)
+					Result := True
 				end
+			else
+				Result := codes_conformant (constraint, other.constraint)
 			end
 		end
 
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
-			-- True if this node is a strict subset of `other'
+	c_value_congruent_to (other: like Current): BOOLEAN
+			-- True if this node's value constraint is the same as that of `other'
 		local
 			this_vset, other_vset: like value_set_expanded
 		do
-			if precursor (other, rm_type_conformance_checker) then
-				if other.any_allowed then
-					Result := True
-				elseif is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
-					-- firstly, check if the other value-set is empty, which means there is no value-set, i.e. no constraint
-					-- which means that this object's value set automatically conforms.
-					other_vset := other.value_set_expanded
-					if not other_vset.is_empty then
-						this_vset := value_set_expanded
-						Result := codes_conformant (constraint, other.constraint) and then
-							across this_vset as vset_csr all other_vset.has (vset_csr.item) end
-					else
-						Result := True
-					end
-				else
-					Result := codes_conformant (constraint, other.constraint)
-				end
+			if is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) then
+				this_vset := value_set_expanded
+				other_vset := other.value_set_expanded
+				Result := constraint.is_equal (other.constraint) and then
+					this_vset.count = other_vset.count and then
+						across this_vset as vset_csr all other_vset.has (vset_csr.item) end
+			else
+				Result := constraint.is_equal (other.constraint)
 			end
 		end
 

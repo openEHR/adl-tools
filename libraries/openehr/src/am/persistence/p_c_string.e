@@ -23,12 +23,14 @@ feature -- Initialisation
 	make (a_cpo: C_STRING)
 		do
 			precursor (a_cpo)
-			constraint := a_cpo.constraint
+			if not a_cpo.any_allowed then
+				constraint := a_cpo.constraint
+			end
 		end
 
 feature -- Access
 
-	constraint: ARRAYED_LIST [STRING]
+	constraint: detachable ARRAYED_LIST [STRING]
 
 feature -- Factory
 
@@ -42,7 +44,9 @@ feature {NONE} -- Implementation
 
 	populate_c_instance (a_c_o: C_STRING)
 		do
-			a_c_o.set_constraint (constraint)
+			if attached constraint as att_c then
+				a_c_o.set_constraint (att_c)
+			end
 			precursor (a_c_o)
 		end
 

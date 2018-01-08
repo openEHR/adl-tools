@@ -21,7 +21,7 @@ class C_STRING
 inherit
 	C_PRIMITIVE_OBJECT
 		redefine
-			default_create, make, constraint, c_congruent_to, c_conforms_to, assumed_value,
+			default_create, make, constraint, assumed_value,
 			as_string, as_enumeration_string, enter_subtree, exit_subtree
 		end
 
@@ -184,20 +184,23 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_congruent_to (other: like Current): BOOLEAN
-			-- True if `constraint' is identical to other.constraint
-		do
-			Result := precursor (other) and
-				constraint.count = other.constraint.count and then
-				across constraint as str_csr all other.constraint.i_th (str_csr.cursor_index).is_equal (str_csr.item) end
-		end
-
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+	c_value_conforms_to (other: like Current): BOOLEAN
 			-- True if `constraint' is a strict subset of other.constraint
 		do
-			Result := precursor (other, rm_type_conformance_checker) and
+			Result := other.any_allowed or
 				constraint.count < other.constraint.count and
-				across constraint as constraint_csr all other.constraint.has (constraint_csr.item) end
+				across constraint as constraint_csr all
+					other.constraint.has (constraint_csr.item)
+				end
+		end
+
+	c_value_congruent_to (other: like Current): BOOLEAN
+			-- True if this node's value constraint is the same as that of `other'
+		do
+			Result := constraint.count = other.constraint.count and then
+				across constraint as str_csr all
+					other.constraint.i_th (str_csr.cursor_index).is_equal (str_csr.item)
+				end
 		end
 
 feature -- Modification

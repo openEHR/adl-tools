@@ -23,12 +23,14 @@ feature -- Initialisation
 	make (a_cpo: C_BOOLEAN)
 		do
 			precursor (a_cpo)
-			constraint := a_cpo.constraint
+			if not a_cpo.any_allowed then
+				constraint := a_cpo.constraint
+			end
 		end
 
 feature -- Access
 
-	constraint: ARRAYED_LIST [BOOLEAN]
+	constraint: detachable ARRAYED_LIST [BOOLEAN]
 
     assumed_value: BOOLEAN_REF
     		-- FIXME: only needed because 7.3 compiler fails to correctly infer type from predecessor
@@ -43,7 +45,9 @@ feature -- Factory
 
 	populate_c_instance (a_c_o: C_BOOLEAN)
 		do
-			a_c_o.set_constraint (constraint)
+			if attached constraint as att_c then
+				a_c_o.set_constraint (att_c)
+			end
 			precursor (a_c_o)
 		end
 

@@ -20,7 +20,7 @@ feature -- Initialisation
 	make (a_cc: C_ORDERED [G])
 		do
 			precursor (a_cc)
-			if not a_cc.constraint.is_empty then
+			if not a_cc.any_allowed then
 				constraint := a_cc.constraint
 			end
 		end

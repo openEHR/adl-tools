@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_conforms_to, c_congruent_to, assumed_value, prototype_value, valid_value, as_string
+			c_value_conforms_to, c_value_congruent_to, assumed_value, prototype_value, any_allowed, valid_value, as_string
 		end
 
 	C_DATE_TIME_ROUTINES
@@ -108,6 +108,12 @@ feature -- Access
 
 feature -- Status Report
 
+	any_allowed: BOOLEAN
+			-- True if any value allowed - only type is constrained
+		do
+			Result := precursor and pattern_constraint.is_empty
+		end
+
 	valid_value (a_value: G): BOOLEAN
 		do
 			if not pattern_constraint.is_empty then
@@ -140,39 +146,20 @@ feature -- Status Report
 
 feature -- Comparison
 
-	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
+	c_value_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a strict subset of `other'
 		do
-			if node_id_conforms_to (other) and occurrences_conforms_to (other) and
-				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
-				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name])) and
-					across constraint as ivl_csr all
-						across other.constraint as other_ivl_csr some other_ivl_csr.item.contains (ivl_csr.item) end
-					end
-			then
-				if not pattern_constraint.is_empty and not other.pattern_constraint.is_empty then
-					Result := valid_pattern_constraint_replacement (pattern_constraint, other.pattern_constraint)
-				else
-					Result := pattern_constraint.is_empty and other.pattern_constraint.is_empty
-				end
-			end
+			Result := precursor (other) and
+				other.pattern_constraint.is_empty or
+					not pattern_constraint.is_empty and then
+					valid_pattern_constraint_replacement (pattern_constraint, other.pattern_constraint)
 		end
 
-	c_congruent_to (other: like Current): BOOLEAN
-			-- True if Current and `other' are semantically the same
+	c_value_congruent_to (other: like Current): BOOLEAN
+			-- True if this node's value constraint is the same as that of `other'
 		do
-			if not attached occurrences and node_id.is_equal (other.node_id) and constrained_typename.is_case_insensitive_equal (other.constrained_typename) and
-				constraint.count = other.constraint.count and then
-					across constraint as ivl_csr all
-						other.constraint.i_th (ivl_csr.cursor_index).is_equal (ivl_csr.item)
-					end
-			then
-				if not pattern_constraint.is_empty and not other.pattern_constraint.is_empty then
-					Result := pattern_constraint.is_equal (other.pattern_constraint)
-				else
-					Result := pattern_constraint.is_empty and other.pattern_constraint.is_empty
-				end
-			end
+			Result := precursor (other) and
+				pattern_constraint ~ other.pattern_constraint
 		end
 
 feature -- Output
