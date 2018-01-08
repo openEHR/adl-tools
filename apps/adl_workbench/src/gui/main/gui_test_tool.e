@@ -442,7 +442,9 @@ feature {NONE} -- Commands
 			reset_output_directories
 			remove_unused_codes := evx_remove_unused_codes_cb.is_selected
 
-			archetype_compiler.setup_build ([True])
+			if archetype_compiler.execution_state = archetype_compiler.es_initial then
+				archetype_compiler.setup_build ([True])
+			end
 
 			last_tested_archetypes_count := 0
 			from row_csr := 1 until row_csr > evx_grid.row_count or test_stop_requested loop
