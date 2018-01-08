@@ -103,7 +103,7 @@ feature -- Comparison
 		do
 			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
 				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
-				rm_type_conformance_checker.item ([rm_type_name, other.rm_type_name]))
+				rm_type_conformance_checker(rm_type_name, other.rm_type_name))
 		end
 
 	c_congruent_to (other: like Current): BOOLEAN
