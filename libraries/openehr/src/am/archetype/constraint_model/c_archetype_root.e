@@ -73,7 +73,7 @@ feature -- Modification
 			-- and also write the RM class name from `a_matched_archetype_id' into `rm_type_name',
 			-- since it might be different.
 		do
-			set_node_id (a_matched_archetype_id.physical_id)
+			representation.set_node_id (a_matched_archetype_id.physical_id)
 			set_rm_type_name (a_matched_archetype_id.rm_class)
 		end
 
