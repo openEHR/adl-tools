@@ -175,7 +175,7 @@ feature -- Access
 			-- generate artefact type name e.g. "archetype", "template", from formal typename,
 			-- i.e. 'AUTHORED_ARCHETYPE', 'TEMPLATE' etc
 		do
-			Result := artefact_type_from_class (generating_type)
+			Result := artefact_type_from_class (generating_type.name)
 		ensure
 			Is_lower_case: Result.same_string (Result.as_lower) and valid_artefact_type (Result)
 		end

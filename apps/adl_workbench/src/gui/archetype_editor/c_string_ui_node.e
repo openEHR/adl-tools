@@ -41,7 +41,7 @@ feature -- Editing
 						-- make a value copy of current C_STRING
 						old_constraint := a_n.constraint
 
-						-- create a new one a and copy its fields in
+						-- create a new one and copy its fields in
 						a_n.set_from_ui_string (new_val)
 
 						-- set up undo/redo

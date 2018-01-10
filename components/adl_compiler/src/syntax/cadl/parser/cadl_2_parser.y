@@ -2559,7 +2559,7 @@ feature {NONE} -- Implementation
 			if not c_attrs.is_empty then
 				debug ("ADL_parse")
 					io.put_string (indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child (" + 
-							an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
+							an_obj.generating_type.name + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
 				end
 
 				if check_c_attribute_child (c_attrs.item, an_obj) then
@@ -2577,7 +2577,7 @@ feature {NONE} -- Implementation
 		do
 			create ar.make (0)
 			create err_code.make_empty
-			ar.extend (an_obj.generating_type) -- $1
+			ar.extend (an_obj.generating_type.name) -- $1
 			ar.extend ("node_id=" + an_obj.node_id) -- $2
 			ar.extend (an_attr.rm_attribute_name) -- $3
 
