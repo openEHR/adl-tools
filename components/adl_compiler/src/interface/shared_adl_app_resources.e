@@ -583,6 +583,27 @@ feature -- Application Switches
 			app_cfg.put_string_value ("/authoring/author_licence", a_value)
 		end
 
+	author_language: STRING
+			-- default language: string to insert into newly created archetype description section
+		do
+			Result := app_cfg.string_value ("/authoring/author_language").as_lower
+			if Result.is_empty then
+				Result := locale_language_short
+			end
+		ensure
+			not Result.is_empty
+		end
+
+	set_author_language (a_value: STRING)
+			-- Set `author_language'
+		do
+			if not a_value.is_empty then
+				app_cfg.put_string_value ("/authoring/author_language", a_value.as_lower)
+			else
+				app_cfg.remove_resource ("/authoring/author_language")
+			end
+		end
+
 	adl_roundtripping: BOOLEAN
 			-- Set adl_15_roundtripping on
 		do

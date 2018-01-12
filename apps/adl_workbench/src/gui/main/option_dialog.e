@@ -230,6 +230,15 @@ feature {NONE} -- Initialization
 			ev_notebook_authoring_vb.disable_item_expand (evx_auth_copyright_text.ev_root_container)
 			gui_controls.extend (evx_auth_copyright_text)
 
+			create evx_auth_language_text.make_linked (get_text (ec_options_auth_language_label),
+				agent :STRING do Result := author_language end,
+				agent (a_str :STRING) do set_author_language (a_str) end,
+				agent do set_author_language ("") end,
+				Void, 0, True)
+			ev_notebook_authoring_vb.extend (evx_auth_language_text.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (evx_auth_language_text.ev_root_container)
+			gui_controls.extend (evx_auth_language_text)
+
 			-- ========== Tab 5 - Namespace settings ==========
 
 			create ev_notebook_namespaces_vb
@@ -403,7 +412,7 @@ feature {NONE} -- Implementation
 
 	evx_display_source_cb, evx_show_all_classes_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
 
-	evx_auth_name_text, evx_auth_org_text, evx_auth_copyright_text: EVX_SINGLE_LINE_TEXT_CONTROL
+	evx_auth_name_text, evx_auth_org_text, evx_auth_copyright_text, evx_auth_language_text: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	evx_namespaces, evx_terminology_settings: EVX_HASH_TABLE_CONTROL
 

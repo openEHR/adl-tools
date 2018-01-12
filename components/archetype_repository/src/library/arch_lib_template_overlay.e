@@ -63,7 +63,7 @@ feature {NONE} -- Initialisation
 			create last_compile_attempt_timestamp.make_now
 
 			-- archetype state
-			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, locale_language_short)
+			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id, a_parent.archetype_id.semantic_id, author_language)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id
 

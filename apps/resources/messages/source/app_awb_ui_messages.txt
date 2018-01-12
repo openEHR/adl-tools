@@ -209,6 +209,7 @@ templates = <
 		["options_auth_name_label"] = <"Name: ">
 		["options_auth_org_label"] = <"Organisation: ">
 		["options_auth_copyright_label"] = <"Copyright: ">
+		["options_auth_language_label"] = <"Language (ISO 3166 2-char): ">
 
 		["options_namespaces_tab_text"] = <"Namespaces">
 		["options_namespace_table_col_1_text"] = <"Namespace">

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (918)
+			create message_table.make (919)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -481,6 +481,7 @@ feature -- Initialisation
 			message_table.put ("Name: ", ec_options_auth_name_label)
 			message_table.put ("Organisation: ", ec_options_auth_org_label)
 			message_table.put ("Copyright: ", ec_options_auth_copyright_label)
+			message_table.put ("Language (ISO 3166 2-char): ", ec_options_auth_language_label)
 			message_table.put ("Namespaces", ec_options_namespaces_tab_text)
 			message_table.put ("Namespace", ec_options_namespace_table_col_1_text)
 			message_table.put ("URI", ec_options_namespace_table_col_2_text)

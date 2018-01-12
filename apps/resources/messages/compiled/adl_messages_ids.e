@@ -466,6 +466,7 @@ feature -- Definitions
 		ec_options_auth_name_label: STRING = "options_auth_name_label"
 		ec_options_auth_org_label: STRING = "options_auth_org_label"
 		ec_options_auth_copyright_label: STRING = "options_auth_copyright_label"
+		ec_options_auth_language_label: STRING = "options_auth_language_label"
 		ec_options_namespaces_tab_text: STRING = "options_namespaces_tab_text"
 		ec_options_namespace_table_col_1_text: STRING = "options_namespace_table_col_1_text"
 		ec_options_namespace_table_col_2_text: STRING = "options_namespace_table_col_2_text"
