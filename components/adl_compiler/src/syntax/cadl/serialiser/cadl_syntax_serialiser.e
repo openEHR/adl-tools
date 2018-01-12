@@ -7,9 +7,9 @@ note
 			 	 of the tree are output as language syntax keywords, symbols etc.
 	             ]"
 	keywords:    "serialiser, CADL"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class CADL_SYNTAX_SERIALISER
@@ -299,23 +299,17 @@ feature -- Visitor
 		do
 			last_result.append (create_indent (depth))
 
-			-- in flat mode; output '%T TYPE[archetype_id] <occurrences>%N'
+			-- have to obtain the terminology from the main archetype directory because the archetype being serialised
+			-- here might be in differential form, and have no component_ontologies aet up
 			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
-				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
-				-- here might be in differential form, and have no component_ontologies aet up
-				terminologies.extend (opt.component_terminology (a_node.node_id))
-
-				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-				last_result.append (apply_style ("[" + a_node.node_id + "]", STYLE_TERM_REF))
-				last_result.append (format_item (FMT_SPACE))
-
-			-- else it is in source mode, there are no children
-			-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences>%N'
+				terminologies.extend (opt.component_terminology (a_node.archetype_ref))
 			else
 				last_result.append (apply_style (symbol (SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item (FMT_SPACE))
-				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-				last_result.append (apply_style ("[" + a_node.node_id + ", " + a_node.archetype_ref + "]", STYLE_TERM_REF))
 			end
+
+			-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences>%N'
+			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+			last_result.append (apply_style ("[" + a_node.node_id + ", " + a_node.archetype_ref + "]", STYLE_TERM_REF))
 
 			last_result.append (format_item (FMT_SPACE))
 			serialise_occurrences(a_node, depth)

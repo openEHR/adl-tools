@@ -2,12 +2,8 @@ note
 	component:   "openEHR ADL Tools"
 	description: "[
 			     Object node representing a root point of an archetype included within another archetype, either as a 
-				 direct reference or as a slot filler. The possible configurations of this object are:
-				 	- ARCHETYPE_SLOT specialisation: archetype_id, node_id of slot object ==> node_id is from an ancestor level
-				 	- ARCHETYPE_SLOT specialisation: archetype_id, no node_id (slot object with no node_id); path can be found in flat parent
-				 	- New object in any level of archetype: archetype_id, node_id (if required by usual rules) ==> node_id is from current level
-				 	- New object in any level of archetype: archetype_id, no node_id (if not required); path cannot be found in flat parent
-			     ]"
+				 direct reference or as a slot filler.
+				 ]"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -73,7 +69,7 @@ feature -- Modification
 			-- and also write the RM class name from `a_matched_archetype_id' into `rm_type_name',
 			-- since it might be different.
 		do
-			representation.set_node_id (a_matched_archetype_id.physical_id)
+			archetype_ref := a_matched_archetype_id.physical_id
 			set_rm_type_name (a_matched_archetype_id.rm_class)
 		end
 

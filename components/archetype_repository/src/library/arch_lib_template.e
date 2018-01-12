@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Descriptor of an authored archetype in the archetype library."
+	description: "Descriptor of template in the archetype library."
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"

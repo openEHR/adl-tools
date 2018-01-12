@@ -252,12 +252,9 @@ feature {NONE} -- Implementation
 					end
 				end
 
-			elseif attached {C_ARCHETYPE_ROOT} a_c_node as co and then not is_id_code (co.node_id) then
-				populate_c_archetype_root_row_data (co.node_id)
-
-				check attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
-					terminology_stack.extend (opt.component_terminology (co.node_id))
-				end
+			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car and attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+				populate_c_archetype_root_row_data (car.archetype_ref)
+				terminology_stack.extend (opt.component_terminology (car.archetype_ref))
 
 				check attached evx_id_terms_grid.last_row as lr then
 					ev_parent_rows.extend (lr)
@@ -326,10 +323,8 @@ feature {NONE} -- Implementation
 	populate_id_term_row_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- populate one row of id_terms grid
 		do
-			if attached {C_ARCHETYPE_ROOT} a_c_node as car and then not is_id_code (car.node_id)then
-				check attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
-					terminology_stack.remove
-				end
+			if attached {C_ARCHETYPE_ROOT} a_c_node as car and attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+				terminology_stack.remove
 				ev_parent_rows.remove
 			elseif attached {C_OBJECT} a_c_node as co and then terminology.has_id_code (co.node_id) then
 				ev_parent_rows.remove

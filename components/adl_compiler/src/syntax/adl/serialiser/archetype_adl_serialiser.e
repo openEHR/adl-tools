@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "parent of all ADL serialisers"
 	keywords:    "ADL, serialiser"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_ADL_SERIALISER
@@ -54,6 +54,8 @@ feature -- Serialisation
 
 			serialise_initialise
 			serialise_archetype_id
+
+			-- specialise statement, unless it is an OPT
 			serialise_archetype_specialise
 
 			-- languages section
