@@ -82,7 +82,7 @@ feature {NONE} -- Initialisation
 			make_new_any (an_id)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
-			create a_diff_arch.make_empty_differential (an_id, ref_model.rm_release, locale_language_short)
+			create a_diff_arch.make_empty_differential (an_id, ref_model.rm_release, author_language)
 			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright, author_licence)
 			differential_archetype := a_diff_arch
 
@@ -103,12 +103,19 @@ feature {NONE} -- Initialisation
 			Valid_parent: a_parent.is_differential
 		local
 			a_diff_arch: attached like differential_archetype
+			auth_lang: STRING
 		do
 			make_new_any (an_id)
 			create file_mgr.make_new_archetype (an_id, a_lib_source, a_directory)
 
+			-- determine an available language to use, in case author_language is set - it may not exist in parent
+			if a_parent.languages_available.has (author_language) then
+				auth_lang := author_language
+			else
+				auth_lang := default_language
+			end
 			create a_diff_arch.make_empty_differential_child (a_parent.specialisation_depth + 1, an_id,
-				a_parent.archetype_id.semantic_id, ref_model.rm_release, locale_language_short)
+				a_parent.archetype_id.semantic_id, ref_model.rm_release, auth_lang)
 			a_diff_arch.set_authoring_default_details (author_name, author_org, Resource_lifecycle_states.first, author_copyright, author_licence)
 			differential_archetype := a_diff_arch
 			parent_ref := a_parent.archetype_id.semantic_id

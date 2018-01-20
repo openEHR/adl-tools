@@ -158,7 +158,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			make_empty_differential_archetype (an_id, an_original_lang_str)
 			create adl_version.make_from_string (Latest_adl_version)
 			rm_release := an_rm_release
-			create description.default_create
+			create description.make_language (an_original_lang_str)
 		ensure then
 			Adl_version_set: adl_version.same_string (Latest_adl_version)
 			Rm_release_set: rm_release = an_rm_release
@@ -171,7 +171,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Initialisation
 			make_empty_differential_child_archetype (spec_depth, an_id, a_parent_id, an_original_lang_str)
 			create adl_version.make_from_string (Latest_adl_version)
 			rm_release := an_rm_release
-			create description.default_create
+			create description.make_language (an_original_lang_str)
 		ensure then
 			Adl_version_set: adl_version.same_string (Latest_adl_version)
 			Rm_release_set: rm_release = an_rm_release
