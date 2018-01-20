@@ -55,9 +55,9 @@ feature -- Initialisation
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- EV_GRID
-			create gui_grid.make (True, False, True, True)
-			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			ev_root_container.extend (gui_grid.ev_grid)
+			create evx_grid.make (True, False, True, True)
+			evx_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- ============== view controls control panel ================
 			create control_panel.make
@@ -65,7 +65,7 @@ feature -- Initialisation
 			ev_root_container.disable_item_expand (control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node,
+			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_grid), agent tree_recurse_node,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"), Void)
 			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
@@ -182,7 +182,7 @@ feature -- Events
 					include_rm_infrastructure_properties := False
 				end
 				if attached source then
-					do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
+					do_with_wait_cursor (evx_grid.ev_grid, agent repopulate)
 				end
 			end
 		end
@@ -194,7 +194,7 @@ feature -- Events
 			if a_flag and not include_rm_runtime_properties then
 				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
 			elseif attached source then
-				do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
+				do_with_wait_cursor (evx_grid.ev_grid, agent repopulate)
 			end
 		end
 
@@ -207,7 +207,7 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
  			-- populate the tree
-			refresh_row (gui_grid.ev_grid.row (1))
+			refresh_row (evx_grid.ev_grid.row (1))
 			safe_source.do_supplier_closure (not differential_view, agent continue_rm_property,
 					agent enter_rm_property, agent exit_rm_property)
 		end
@@ -217,7 +217,7 @@ feature {NONE} -- Implementation
 	do_clear
 		do
  			ev_closure_depth_spin_button.set_value (Default_closure_depth)
-			gui_grid.wipe_out
+			evx_grid.wipe_out
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 		end
 
@@ -238,15 +238,15 @@ feature {NONE} -- Implementation
 			safe_source.do_supplier_closure (not differential_view, agent continue_rm_property,
 					agent enter_rm_property, agent exit_rm_property)
 
-			gui_grid.set_column_titles (Definition_grid_col_names.linear_representation)
-			gui_grid.hide_column (Definition_grid_col_meaning)
+			evx_grid.set_column_titles (Definition_grid_col_names.linear_representation)
+			evx_grid.hide_column (Definition_grid_col_meaning)
 
 			-- now collapse the tree, and then expand out just the top node
 			gui_treeview_control.on_collapse_all
 			gui_treeview_control.on_expand_one_level
 		end
 
-	gui_grid: EVX_GRID
+	evx_grid: EVX_GRID
 
 	view_rm_use_icons_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
@@ -283,11 +283,11 @@ feature {NONE} -- Implementation
 			-- Add root node representing class to `gui_file_tree'.
 		do
 			create rm_node_path.make_root
-			gui_grid.add_row (source)
-			if attached gui_grid.last_row as lr and attached source as src then
+			evx_grid.add_row (source)
+			if attached evx_grid.last_row as lr and attached source as src then
 				ev_grid_rm_row_stack.extend (lr)
 				ev_grid_rm_row_removals_stack.extend (False)
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.type_signature, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src, use_rm_pixmaps))
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.type_signature, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src, use_rm_pixmaps))
 				if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 		 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
 		 	 	end
@@ -328,7 +328,7 @@ feature {NONE} -- Implementation
 
 				last_property_grid_row := Void
 				-- if a row for the property already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
-				if attached gui_grid.matching_sub_row (ev_parent_class_row,
+				if attached evx_grid.matching_sub_row (ev_parent_class_row,
 					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY [BMM_TYPE]): BOOLEAN
 						do
 							Result := attached {BMM_PROPERTY [BMM_TYPE]} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
@@ -342,7 +342,7 @@ feature {NONE} -- Implementation
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
 						ev_grid_rm_row_stack.extend (a_prop_row.subrow (1))
 					else
-						gui_grid.ev_grid.remove_row (a_prop_row.index)
+						evx_grid.ev_grid.remove_row (a_prop_row.index)
 						ignore := True
 					end
 
@@ -360,9 +360,9 @@ feature {NONE} -- Implementation
 						has_type_subs := bmm_class.has_descendants
 
 						-- ======== property node =========
-						gui_grid.add_sub_row (ev_parent_class_row, a_bmm_prop)
-						last_property_grid_row := gui_grid.last_row
-						check attached gui_grid.last_row as lr then
+						evx_grid.add_sub_row (ev_parent_class_row, a_bmm_prop)
+						last_property_grid_row := evx_grid.last_row
+						check attached evx_grid.last_row as lr then
 							ev_prop_row := lr
 						end
 
@@ -378,15 +378,15 @@ feature {NONE} -- Implementation
 						tooltip_str := rm_node_path.as_string + "%N"
 						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.generating_type.name))
 
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, tooltip_str,
+						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, tooltip_str,
 							Void, col, get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + a_bmm_prop.multiplicity_key_string))
 
 						-- existence
-						gui_grid.set_last_row_label_col (Definition_grid_col_existence, a_bmm_prop.existence.as_string, Void, Void, col, Void)
+						evx_grid.set_last_row_label_col (Definition_grid_col_existence, a_bmm_prop.existence.as_string, Void, Void, col, Void)
 
 						-- cardinality
 						if attached {BMM_CONTAINER_PROPERTY} a_bmm_prop as bmm_cont_prop then
-							gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, Void, col, Void)
+							evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, Void, col, Void)
 						end
 
 						-- add tree expand handler to this node
@@ -396,10 +396,10 @@ feature {NONE} -- Implementation
 						tooltip_str := rm_node_path.as_string + "%N"
 						tooltip_str.append ("BMM meta-type: " + bare_type_name (bmm_class.generating_type.name))
 
-						gui_grid.add_sub_row (ev_prop_row, bmm_class)
-						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, tooltip_str, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
+						evx_grid.add_sub_row (ev_prop_row, bmm_class)
+						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, tooltip_str, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
 
-						check attached gui_grid.last_row as lr then
+						check attached evx_grid.last_row as lr then
 							ev_class_row := lr
 						end
 						ev_grid_rm_row_stack.extend (ev_class_row)
@@ -534,17 +534,17 @@ feature {NONE} -- Implementation
 				create rm_node_path.make_from_string (utf32_to_utf8 (tt))
 			end
 			if replace_mode then
-				gui_grid.remove_sub_rows (a_class_grid_row)
-				gui_grid.set_last_row (a_class_grid_row)
-				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
-				gui_grid.last_row.set_data (bmm_subtype_def)
+				evx_grid.remove_sub_rows (a_class_grid_row)
+				evx_grid.set_last_row (a_class_grid_row)
+				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
+				evx_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				check attached a_class_grid_row.parent_row as pr then
-					gui_grid.add_sub_row (pr, bmm_subtype_def)
+					evx_grid.add_sub_row (pr, bmm_subtype_def)
 				end
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
-				if attached gui_grid.last_row as lr then
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
+				if attached evx_grid.last_row as lr then
 					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 	 	 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
 						lr.expand_actions.force_extend (agent property_node_expand_handler (lr))
