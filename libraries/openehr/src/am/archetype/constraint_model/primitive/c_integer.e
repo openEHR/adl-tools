@@ -30,8 +30,10 @@ feature -- Access
     assumed_value: detachable INTEGER_REF
             -- value to be assumed if none sent in data
 
-    constraint_values: ARRAYED_SET [INTEGER]
+    enumeration_values: ARRAYED_SET [INTEGER]
     		-- constraint values as a list of integer values
+    	require
+    		is_enumerated_type_constraint
     	local
     		i: INTEGER
     	do
@@ -58,7 +60,7 @@ feature -- Output
 			-- whose keys are enumeration values in string form
 		do
 			create Result.make (0)
-			across constraint_values as vals_csr loop
+			across enumeration_values as vals_csr loop
 				check attached enum_map.item (vals_csr.item.out) as enum_item_name then
 					Result.append (enum_item_name)
 				end

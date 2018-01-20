@@ -472,11 +472,15 @@ end
 
 									-- check if the property type is an enumeration and if the archetype node rm_type_name is
 									-- a compatible primitive type
-									elseif ref_model.enumeration_types.has (rm_attr_type) then
+									elseif ref_model.is_enumerated_type (rm_attr_type) then
 										bmm_enum := ref_model.enumeration_definition (rm_attr_type)
+
+										-- if the enumerated type was parsed in short form of a primitive (i.e. no class name) then
+										-- its type in the C_PRIMITIVE_OBJECT will just be Integer or String. This can be reset
+										-- from the RM.
 										if bmm_enum.underlying_type_name.is_case_insensitive_equal (co.rm_type_name) then
 											if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
-												if not across c_int.constraint_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
+												if not across c_int.enumeration_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
 													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
 												else
@@ -499,8 +503,11 @@ end
 													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 											end
 
-										else
-											-- RM property type is an enumerated type, but current node RM type doesn't conform
+										-- otherwise the enum was parsed in regular form, and its type name was included; here we
+										-- check that the type name matches that in the RM.
+										elseif not rm_attr_type.is_case_insensitive_equal (co.rm_type_name) then
+
+											-- node RM type doesn't conform
 											add_error (ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 												rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 										end

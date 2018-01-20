@@ -504,7 +504,9 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE complex_type_id V_ID_CODE
 c_regular_primitive_object: V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{ 
 			$$ := $6
+			$$.set_rm_type_name ($1)
 			$$.set_node_id ($2)
+			$$.set_enumerated_type_constraint 
 
 			if attached $3 as att_occ then
 				$$.set_occurrences (att_occ)
@@ -523,29 +525,49 @@ c_regular_primitive_object: V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences SYM_MATC
 	| V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences
 		{
 			-- have to figure out which kind of C_PRIMITIVE_OBJECT to create
-			if attached aom_profile as aomp then
-				aom_type := aomp.aom_primitive_type ($1)
+			if attached aom_profile as aomp and then aomp.has_aom_primitive_type ($1) then
+				check attached c_primitive_subtype_creator_agents.item (aomp.aom_primitive_type ($1)) as c_prim_agt then
+					$$ := c_prim_agt.item ([$2])
+				end
+			elseif c_primitive_subtypes.has ($1.as_upper) then
+				check attached c_primitive_subtypes.item ($1.as_upper) as aomt and then 
+					attached c_primitive_subtype_creator_agents.item (aomt) as c_prim_agt 
+				then
+					$$ := c_prim_agt.item ([$2])
+				end
+			elseif ref_model.is_enumerated_type ($1) then
+				bmm_enum := ref_model.enumeration_definition ($1)
+				if attached {BMM_ENUMERATION_INTEGER} bmm_enum then
+					create {C_INTEGER} $$.make_identified_default ($2)
+				elseif attached {BMM_ENUMERATION_STRING} bmm_enum then
+					create {C_STRING} $$.make_identified_default ($2)
+				else
+					-- some other enum type not yet supported
+				end
 			else
-				check attached c_primitive_subtypes.item ($1.as_upper) as aomt then
-					aom_type := aomt
+				-- type is unknown as primitive or enumerated; will get picked up
+				-- in validator
+			end
+
+			if attached $$ then
+				$$.set_rm_type_name ($1)
+				$$.set_enumerated_type_constraint 
+
+				if attached $3 as att_occ then
+					$$.set_occurrences (att_occ)
 				end
-			end
-			check attached c_primitive_subtype_creator_agents.item (aom_type) as c_prim_agt then
-				$$ := c_prim_agt.item ([$2])
-			end
 
-			if attached $3 as att_occ then
-				$$.set_occurrences (att_occ)
-			end
+				safe_put_c_attribute_child ($$)
 
-			safe_put_c_attribute_child ($$)
-
-			debug ("ADL_parse")
-				io.put_string (indent + "Regular primitive OBJECT_NODE " + $$.rm_type_name + " [id=" + $$.node_id + "]%N") 
-				if $3 /= Void then
-					io.put_string ("; occurrences=(" + $3.as_string + ")") 
+				debug ("ADL_parse")
+					io.put_string (indent + "Regular primitive OBJECT_NODE " + $$.rm_type_name + " [id=" + $$.node_id + "]%N") 
+					if attached $3 then
+						io.put_string ("; occurrences=(" + $3.as_string + ")") 
+					end
+					io.new_line
 				end
-				io.new_line
+			else
+				abort_with_error (ec_VCORM, <<$1, c_attrs.item.path>>)
 			end
 		}
 	;
@@ -2683,9 +2705,9 @@ feature {NONE} -- Implementation
 			create Result.make_root
 		end
 
-	aom_type: STRING
+	bmm_enum: BMM_ENUMERATION [COMPARABLE] 
 		attribute
-			create Result.make (0)
+			create {BMM_ENUMERATION_INTEGER} Result.make ("XX", void, False)
 		end
 
 end

@@ -259,18 +259,29 @@ feature -- Enumerations
 			Result.extend (bare_type_name(({C_REAL}).name), "REAL")
 			Result.extend (bare_type_name(({C_BOOLEAN}).name), "BOOLEAN")
 			Result.extend (bare_type_name(({C_STRING}).name), "STRING")
+			Result.extend (bare_type_name(({C_TERMINOLOGY_CODE}).name), "TERMINOLOGY_CODE")
+
 			Result.extend (bare_type_name(({C_DATE}).name), "DATE")
 			Result.extend (bare_type_name(({C_TIME}).name), "TIME")
 			Result.extend (bare_type_name(({C_DATE_TIME}).name), "DATE_TIME")
 			Result.extend (bare_type_name(({C_DURATION}).name), "DURATION")
-			Result.extend (bare_type_name(({C_TERMINOLOGY_CODE}).name), "TERMINOLOGY_CODE")
+
+			Result.extend (bare_type_name(({C_DATE}).name), "IDATE")
+			Result.extend (bare_type_name(({C_TIME}).name), "ITIME")
+			Result.extend (bare_type_name(({C_DATE_TIME}).name), "IDATE_TIME")
+			Result.extend (bare_type_name(({C_DURATION}).name), "IDURATION")
+
+			Result.extend (bare_type_name(({C_DATE}).name), "ISO_8601_DATE")
+			Result.extend (bare_type_name(({C_TIME}).name), "ISO_8601_TIME")
+			Result.extend (bare_type_name(({C_DATE_TIME}).name), "ISO_8601_DATE_TIME")
+			Result.extend (bare_type_name(({C_DURATION}).name), "ISO_8601_DURATION")
 		end
 
 	c_primitive_subtype_creator_agents: HASH_TABLE [FUNCTION[ANY, TUPLE[STRING], C_PRIMITIVE_OBJECT], STRING]
 			-- Table of assumed AOM type names keyed by upper-case AOM primitive subtype
 		once ("PROCESS")
 			create Result.make (0)
-			Result.extend (agent (a_node_id: STRING): C_INTEGER do create Result.make_identified_default (a_node_id) end, "C_INTEGER")
+			Result.extend (agent (a_node_id: STRING):C_INTEGER do create Result.make_identified_default (a_node_id) end, "C_INTEGER")
 			Result.extend (agent (a_node_id: STRING):C_REAL do create Result.make_identified_default (a_node_id) end, "C_REAL")
 			Result.extend (agent (a_node_id: STRING):C_BOOLEAN do create Result.make_identified_default (a_node_id) end, "C_BOOLEAN")
 			Result.extend (agent (a_node_id: STRING):C_STRING do create Result.make_identified_default (a_node_id) end, "C_STRING")

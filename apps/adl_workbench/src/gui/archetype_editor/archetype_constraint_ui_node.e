@@ -226,12 +226,17 @@ feature {NONE} -- Implementation
 
 			rm_class_name := an_rm_type.base_class.name
 
-			-- add AOM constraint types for RM primitive types
-			-- FIXME: in Eiffel 7.3 replace with reflection generated set of C_PRIMITIVE_OBJECT descendant type names
+			-- add AOM constraint types for RM primitive types and also enumeration types
 			if an_rm_type.base_class.is_primitive_type then
 				if attached ui_graph_state.aom_profile as att_aom_profile and then att_aom_profile.has_aom_primitive_type_mapping_for_rm_type (rm_class_name) then
 					Result.extend (att_aom_profile.aom_primitive_type_mapping_for_rm_type (rm_class_name))
 				end
+
+			elseif attached {BMM_ENUMERATION_INTEGER} an_rm_type.base_class as bmm_enum_int then
+				Result.extend (bare_type_name(({C_INTEGER}).name))
+
+			elseif attached {BMM_ENUMERATION_STRING} an_rm_type.base_class as bmm_enum_str then
+				Result.extend (bare_type_name(({C_STRING}).name))
 
 			else
 				Result.extend (bare_type_name(({C_COMPLEX_OBJECT}).name))

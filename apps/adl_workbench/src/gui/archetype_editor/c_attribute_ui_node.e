@@ -262,8 +262,7 @@ feature -- Modification
 		end
 
 	add_child (a_ui_node: C_OBJECT_UI_NODE)
-			-- add `a_ui_node' and if it is a constraint node,
-			-- add its arch_node to the archetype
+			-- add `a_ui_node' and if it is a constraint node, add its arch_node to the archetype
 		require
 			Not_already_child: not has_child (a_ui_node)
 			Coherence: not a_ui_node.is_rm implies not is_rm
@@ -420,6 +419,8 @@ feature {ANY_UI_NODE} -- Implementation
 			rm_type_name: STRING
 			occ: MULTIPLICITY_INTERVAL
 			rm_type_spec: BMM_CLASS
+			c_int: C_INTEGER
+			c_str: C_STRING
 		do
 			rm_type_spec := ui_graph_state.ref_model.class_definition (co_create_params.rm_type)
 			rm_type_name := co_create_params.rm_type
@@ -436,7 +437,12 @@ feature {ANY_UI_NODE} -- Implementation
 				create {C_BOOLEAN_UI_NODE} Result.make (create {C_BOOLEAN}.make_example, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_INTEGER}).name)) then
-				create {C_INTEGER_UI_NODE} Result.make (create {C_INTEGER}.make_example, ui_graph_state)
+				create c_int.make_example
+				if ui_graph_state.ref_model.is_enumerated_type (co_create_params.rm_type) then
+					c_int.set_enumerated_type_constraint
+					c_int.set_rm_type_name (co_create_params.rm_type)
+				end
+				create {C_INTEGER_UI_NODE} Result.make (c_int, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_REAL}).name)) then
 				create {C_REAL_UI_NODE} Result.make (create {C_REAL}.make_example, ui_graph_state)
@@ -454,7 +460,12 @@ feature {ANY_UI_NODE} -- Implementation
 				create {C_DURATION_UI_NODE} Result.make (create {C_DURATION}.make_example, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_STRING}).name)) then
-				create {C_STRING_UI_NODE} Result.make (create {C_STRING}.make_example, ui_graph_state)
+				create c_str.make_example
+				if ui_graph_state.ref_model.is_enumerated_type (co_create_params.rm_type) then
+					c_str.set_enumerated_type_constraint
+					c_str.set_rm_type_name (co_create_params.rm_type)
+				end
+				create {C_STRING_UI_NODE} Result.make (c_str, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_TERMINOLOGY_CODE}).name)) then
 				create {C_TERMINOLOGY_CODE_UI_NODE} Result.make (create {C_TERMINOLOGY_CODE}.make_example, ui_graph_state)
@@ -501,7 +512,7 @@ feature {ANY_UI_NODE} -- Implementation
 		local
 			rm_type_name, aom_type: STRING
 		do
-			if a_bmm_type.base_class.is_primitive_type then
+			if ui_graph_state.ref_model.is_primitive_type (a_bmm_type.base_class.name) then
 				rm_type_name := a_bmm_type.base_class.name
 
 				-- if there is an AOM_PROFILE, use the RM prim type => AOM type mapping found there
@@ -512,9 +523,6 @@ feature {ANY_UI_NODE} -- Implementation
 				-- use standard RM prim type => AOM type mapping
 				elseif attached c_primitive_subtypes.item (rm_type_name.as_upper) as att_aom_type then
 					aom_type := att_aom_type
-				else
-					-- should never get here
-					create aom_type.make_from_string (unknown_value)
 				end
 
 				-- now create the appropriate object
@@ -548,6 +556,14 @@ feature {ANY_UI_NODE} -- Implementation
 					-- should never get here
 					create {C_STRING_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 				end
+
+			-- see if it's an enumerated type
+			elseif attached {BMM_ENUMERATION_INTEGER} a_bmm_type.base_class then
+				create {C_INTEGER_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+			elseif attached {BMM_ENUMERATION_STRING} a_bmm_type.base_class then
+				create {C_STRING_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
+			-- treat as a C_COMPLEX_OBJECT
 			else
 				create {C_COMPLEX_OBJECT_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 			end
