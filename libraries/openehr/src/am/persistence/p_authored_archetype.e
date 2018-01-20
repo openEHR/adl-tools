@@ -30,7 +30,7 @@ feature -- Initialisation
 		do
 			create adl_version.make_empty
 			create rm_release.make_empty
-			create description.default_create
+			create description.make_dt (make_args)
 		end
 
 	make (an_archetype: like artefact_class_type)
