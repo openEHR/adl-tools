@@ -23,7 +23,7 @@ inherit
 		end
 
 create
-	make, make_dt, default_create
+	make, make_dt, make_language
 
 feature -- Definitions
 
@@ -37,7 +37,7 @@ feature -- Initialisation
 		end
 
 	make (an_author_name, orig_lang: STRING)
-			-- make an empty description
+			-- make a description with author name and language
 		require
 			An_author_name_exists: not an_author_name.is_empty
 			Language_valid: not orig_lang.is_empty
@@ -46,6 +46,16 @@ feature -- Initialisation
 			create original_language.make(default_language_code_set, orig_lang)
 		ensure
 			Original_author_item_set: original_author.item ("name") = an_author_name
+			Original_language_set: original_language.code_string.is_equal(orig_lang)
+		end
+
+	make_language (orig_lang: STRING)
+			-- make a description with just language
+		require
+			Language_valid: not orig_lang.is_empty
+		do
+			create original_language.make(default_language_code_set, orig_lang)
+		ensure
 			Original_language_set: original_language.code_string.is_equal(orig_lang)
 		end
 
