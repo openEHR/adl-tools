@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Visitor to generate UI visualisaiton graph from C_XX structure"
 	keywords:    "visitor, constraint model"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_UI_GRAPH_BUILDER
@@ -249,7 +249,7 @@ feature -- Visitor
 		end
 
 	start_c_duration (a_node: C_DURATION; depth: INTEGER)
-			-- enter an C_DURATION
+			-- enter a C_DURATION
 		local
 			ui_node: C_DURATION_UI_NODE
 		do
@@ -261,7 +261,7 @@ feature -- Visitor
 		end
 
 	start_c_string (a_node: C_STRING; depth: INTEGER)
-			-- enter an C_STRING
+			-- enter a C_STRING
 		local
 			ui_node: C_STRING_UI_NODE
 		do
@@ -273,7 +273,7 @@ feature -- Visitor
 		end
 
 	start_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
-			-- enter an C_TERMINOLOGY_CODE
+			-- enter a C_TERMINOLOGY_CODE
 		local
 			ui_node: C_TERMINOLOGY_CODE_UI_NODE
 		do
