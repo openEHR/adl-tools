@@ -478,9 +478,10 @@ feature -- Serialisation
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
-			lang_serialised, desc_serialised, rules_serialised, terminology_serialised, annot_serialised, comp_onts_serialised: STRING
-			comp_onts_helper: COMPONENT_TERMINOLOGIES_HELPER
+			lang_serialised, desc_serialised, rules_serialised, terminology_serialised, annot_serialised, comp_terms_serialised: STRING
+			comp_terms_helper: COMPONENT_TERMINOLOGIES_HELPER
 			serialiser: ARCHETYPE_MULTIPART_SERIALISER
+			dt_comp_terms: DT_COMPLEX_OBJECT
 		do
 			create lang_serialised.make_empty
 			create desc_serialised.make_empty
@@ -522,13 +523,22 @@ feature -- Serialisation
 			end
 
 			-- OPT only: component_terminologies section
-			create comp_onts_serialised.make_empty
+			create comp_terms_serialised.make_empty
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
-				create comp_onts_helper.make
-				comp_onts_helper.set_component_terminologies (opt.component_terminologies)
-				terminology_context.set_tree (comp_onts_helper.dt_representation)
+				create comp_terms_helper.make
+				comp_terms_helper.set_component_terminologies (opt.component_terminologies)
+				dt_comp_terms := comp_terms_helper.dt_representation
+
+				-- cause the removal of the superfluous 'component_terminologies = <>' wrapper, since the section name
+				-- gives us that
+				if dt_comp_terms.has_attribute ("component_terminologies") and then
+					attached dt_comp_terms.attribute_node ("component_terminologies") as dt_attr
+				then
+					dt_attr.set_nested_container
+				end
+				terminology_context.set_tree (dt_comp_terms)
 				terminology_context.serialise (a_format, False, False)
-				comp_onts_serialised := terminology_context.serialised
+				comp_terms_serialised := terminology_context.serialised
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
@@ -537,7 +547,7 @@ feature -- Serialisation
 			end
 			serialiser.reset
 			serialiser.serialise_from_parts (an_archetype, lang_serialised, desc_serialised, definition_context.serialised,
-					rules_serialised, terminology_serialised, annot_serialised, comp_onts_serialised)
+					rules_serialised, terminology_serialised, annot_serialised, comp_terms_serialised)
 
 			Result := serialiser.last_result
 		end
