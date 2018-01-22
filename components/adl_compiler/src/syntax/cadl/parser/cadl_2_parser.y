@@ -504,9 +504,12 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE complex_type_id V_ID_CODE
 c_regular_primitive_object: V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
 		{ 
 			$$ := $6
-			$$.set_rm_type_name ($1)
 			$$.set_node_id ($2)
-			$$.set_enumerated_type_constraint 
+
+			if ref_model.is_enumerated_type ($1) then
+				$$.set_enumerated_type_constraint 
+				$$.set_rm_type_name ($1)
+			end
 
 			if attached $3 as att_occ then
 				$$.set_occurrences (att_occ)
@@ -544,15 +547,14 @@ c_regular_primitive_object: V_PRIMITIVE_TYPE_ID V_ID_CODE c_occurrences SYM_MATC
 				else
 					-- some other enum type not yet supported
 				end
+				$$.set_rm_type_name ($1)
+				$$.set_enumerated_type_constraint 
 			else
 				-- type is unknown as primitive or enumerated; will get picked up
 				-- in validator
 			end
 
 			if attached $$ then
-				$$.set_rm_type_name ($1)
-				$$.set_enumerated_type_constraint 
-
 				if attached $3 as att_occ then
 					$$.set_occurrences (att_occ)
 				end
