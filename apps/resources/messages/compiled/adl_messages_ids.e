@@ -247,6 +247,7 @@ feature -- Definitions
 		ec_VTVSMD: STRING = "VTVSMD"
 		ec_VTVSUQ: STRING = "VTVSUQ"
 		ec_VTPIOV: STRING = "VTPIOV"
+		ec_VTPL: STRING = "VTPL"
 		ec_aom_profile_file_not_valid: STRING = "aom_profile_file_not_valid"
 		ec_aom_profile_load_failure: STRING = "aom_profile_load_failure"
 		ec_aom_profile_load_failure_exception: STRING = "aom_profile_load_failure_exception"

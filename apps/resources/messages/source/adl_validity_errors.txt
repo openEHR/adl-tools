@@ -173,6 +173,7 @@ templates = <
 
 		-- TEMPLATE
 		["VTPIOV"] = <"template $1 overlay $2 has no valid parent and can't be added to library">
+		["VTPL"] = <"template $1 filler $2 does not contain language $3 and cannot be included.">
 
 	>
 >

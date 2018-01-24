@@ -311,6 +311,13 @@ feature -- Enumerations
 			Result.put (mult_int, mult_int.as_string)
 		end
 
+feature -- Compilation
+
+	Max_template_overlay_depth: INTEGER = 8
+			-- max depth to go in template overlayinng process, in order to control effect of
+			-- recursive use_archetype references
+
+
 end
 
 

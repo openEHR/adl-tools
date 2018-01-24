@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (919)
+			create message_table.make (920)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -262,6 +262,7 @@ feature -- Initialisation
 			message_table.put ("value set member code $1 referenced in value-sets section not defined in flat terminology", ec_VTVSMD)
 			message_table.put ("value set member code $1 not unique in value set with id $2", ec_VTVSUQ)
 			message_table.put ("template $1 overlay $2 has no valid parent and can't be added to library", ec_VTPIOV)
+			message_table.put ("template $1 filler $2 does not contain language $3 and cannot be included.", ec_VTPL)
 			message_table.put ("AOM profile file $1 does not exist or not readable", ec_aom_profile_file_not_valid)
 			message_table.put ("AOM profile file $1 load failure; reason: $2", ec_aom_profile_load_failure)
 			message_table.put ("AOM profile file $1 load failure due to exception during processing", ec_aom_profile_load_failure_exception)

@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Perform overlaying of template fillers onto flattened core template."
 	keywords:    "archetype, comparison, constraint model"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2014- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class TEMPLATE_FLATTENER
@@ -15,12 +15,6 @@ inherit
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
-
-feature -- Definitions
-
-	Max_template_overlay_depth: INTEGER = 8
-			-- max depth to go in template overlayinng process, in order to control effect of
-			-- recursive use_archetype references
 
 feature -- Access
 
@@ -77,7 +71,8 @@ end
 						-- archetype id xref_idx.key_for_iteration into each one of these C_ARCHETYPE_ROOT nodes, clone the
 						-- flat definition structure from the supplier archetype
 						across xref_idx_csr.item as c_arch_roots_csr loop
-							if not c_arch_roots_csr.item.has_attributes and not c_arch_roots_csr.item.is_prohibited then -- it is empty and needs to be filled
+							-- it is empty and needs to be filled
+							if not c_arch_roots_csr.item.has_attributes and not c_arch_roots_csr.item.is_prohibited then
 								-- perform overlays on supplier archetype first
 								overlay_filler_definitions (supp_flat_arch, depth + 1)
 debug ("overlay")
