@@ -2,7 +2,7 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Item representing a 'use' reference in an ADL parse tree. The referenced node must be an object node."
 	keywords:    "test, ADL"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
