@@ -403,7 +403,7 @@ feature -- Application Switches
 			if not aom_profile_user_directory.is_empty then
 				Result := aom_profile_user_directory
 			else
-				Result := Default_aom_profile_directory
+				Result := default_aom_profile_directory
 			end
 		end
 

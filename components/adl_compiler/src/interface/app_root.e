@@ -145,7 +145,7 @@ feature -- Initialisation
 					merge_errors (aom_profiles_access.errors)
 				end
 			else
-				add_error (ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
+				add_warning (ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
 			end
 
 			-- process repositories and validate; determine setting for `current_library' if
