@@ -308,6 +308,8 @@ feature -- Access
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADDRESS}.make).to_pixmap end, "rm/openehr/address")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADDRESS_REFERENCE}.make).to_pixmap end, "rm/openehr/address_reference")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADDRESS_SLOT}.make).to_pixmap end, "rm/openehr/address_slot")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADHOC_BRANCH}.make).to_pixmap end, "rm/openehr/adhoc_branch")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADHOC_GROUP}.make).to_pixmap end, "rm/openehr/adhoc_group")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADMIN_ENTRY}.make).to_pixmap end, "rm/openehr/admin_entry")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADMIN_ENTRY_REFERENCE}.make).to_pixmap end, "rm/openehr/admin_entry_reference")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_RM_OPENEHR_ADMIN_ENTRY_SLOT}.make).to_pixmap end, "rm/openehr/admin_entry_slot")
