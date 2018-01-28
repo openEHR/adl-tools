@@ -89,8 +89,6 @@ feature -- Access
 
 feature -- Status Report
 
-	verbose_output: BOOLEAN
-
 	use_flat_source: BOOLEAN
 
 	user_friendly_list_output: BOOLEAN
@@ -107,7 +105,6 @@ feature -- Commands
 		do
 			if opts.is_verbose then
 				std_out.put_string ("Initialising... %N")
-				verbose_output := True
 			end
 			app_root.initialise_app
 			if opts.is_verbose then
@@ -187,7 +184,7 @@ feature -- Commands
 									-- first try and match the user-provided archetype id pattern to some real arguments
 									matched_archetype_ids := current_library.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
-										if verbose_output then
+										if opts.is_verbose then
 											std_err.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
 										end
 									else
@@ -222,7 +219,7 @@ feature -- Commands
 													std_err.put_string (get_msg (ec_invalid_output_directory, <<full_output_dir>>))
 													finished := True
 												else
-													if verbose_output then
+													if opts.is_verbose then
 														std_out.put_string ("Serialising to " + full_output_dir + "%N")
 													end
 												end
@@ -311,7 +308,7 @@ feature {NONE} -- Implementation
 	console_update (msg: STRING)
 			-- Update UI with progress on build.
 		do
-			if verbose_output then
+			if opts.is_verbose then
 				std_out.put_string (msg)
 			end
 		end
@@ -319,7 +316,7 @@ feature {NONE} -- Implementation
 	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE)
 			-- Update UI with progress on build.
 		do
-			if verbose_output or ara.is_in_terminal_compilation_state and then not ara.is_valid then
+			if opts.is_verbose or ara.is_in_terminal_compilation_state and then not ara.is_valid then
 				std_out.put_string (ara.error_strings)
 			end
 		end
