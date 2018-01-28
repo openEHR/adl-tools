@@ -182,7 +182,7 @@ feature -- Events
 			else
 				hide
 				if not last_populated_aom_profile_dir.same_string (aom_profile_directory) and directory_exists (last_populated_aom_profile_dir) then
-					set_aom_profile_directory (last_populated_aom_profile_dir)
+					set_aom_profile_user_directory (last_populated_aom_profile_dir)
 					has_changed_profile_dir := True
 				end
 			end

@@ -400,15 +400,25 @@ feature -- Application Switches
 	aom_profile_directory: STRING
 			-- Path of directory where AOM profiles are found - note: this should be writable.
 		do
-			Result := app_cfg.string_value_env_var_sub ("/file_system/aom_profile_directory")
+			if not aom_profile_user_directory.is_empty then
+				Result := aom_profile_user_directory
+			else
+				Result := Default_aom_profile_directory
+			end
 		end
 
-	set_aom_profile_directory (a_path: STRING)
-			-- Set the path of directory where AOM profiles are found
+	aom_profile_user_directory: STRING
+			-- Path of directory where AOM profiles are found - note: this should be writable.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/file_system/aom_profile_user_directory")
+		end
+
+	set_aom_profile_user_directory (a_path: STRING)
+			-- User-set path of directory where AOM profiles are found
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_string_value ("/file_system/aom_profile_directory", a_path)
+			app_cfg.put_string_value ("/file_system/aom_profile_user_directory", a_path)
 		end
 
 	terminology_directory: STRING

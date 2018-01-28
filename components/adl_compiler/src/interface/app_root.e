@@ -139,9 +139,6 @@ feature -- Initialisation
 			--
 			-- set up the AOM profiles
 			--
-			if aom_profile_directory.is_empty then
-				set_aom_profile_directory (Default_aom_profile_directory)
-			end
 			if file_system.directory_exists (aom_profile_directory) then
 				aom_profiles_access.initialise (aom_profile_directory)
 				if not aom_profiles_access.found_valid_profiles then
