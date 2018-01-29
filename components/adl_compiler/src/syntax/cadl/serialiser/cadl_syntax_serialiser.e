@@ -183,7 +183,7 @@ feature -- Visitor
 
 				-- output:
 				--	matches {%N
-				if not a_node.any_allowed then
+				if not a_node.any_allowed and not a_node.is_prohibited then
 					last_result.append (apply_style (symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item (FMT_SPACE))
 					last_result.append (symbol (SYM_START_CBLOCK))
 					last_result.append (format_item (FMT_NEWLINE))
@@ -207,7 +207,7 @@ feature -- Visitor
 					end
 					last_object_inline := False
 
-				elseif not a_node.any_allowed then
+				elseif not a_node.any_allowed and not a_node.is_prohibited then
 					last_result.append (create_indent (depth))
 					last_result.append (symbol (SYM_END_CBLOCK))
 				end
@@ -522,7 +522,7 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				if a_node.is_identified then
+				if a_node.any_allowed or a_node.is_identified then
 					last_result.append (format_item(FMT_NEWLINE))
 				else
 					-- mark as inline
