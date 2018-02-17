@@ -87,15 +87,14 @@ feature -- Access
 			-- Total list of languages available in this resource, derived from
 			-- `original_language' and `translations'. Guaranteed to at least include `original_language'
 		do
-			if languages_available_cache.is_empty then
-				languages_available_cache.extend (original_language.code_string)
-				if attached translations as trans then
-					across trans as trans_csr loop
-						languages_available_cache.extend (trans_csr.key)
-					end
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (original_language.code_string)
+			if attached translations then
+				across translations as trans_csr loop
+					Result.extend (trans_csr.key)
 				end
 			end
-			Result := languages_available_cache
 		end
 
 	translation_for_language (a_lang: STRING): detachable TRANSLATION_DETAILS
@@ -191,7 +190,7 @@ feature -- Modification
 	add_translation (a_trans: TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
-			Translation_valid: not languages_available.has(a_trans.language.code_string)
+			Translation_valid: not has_language(a_trans.language.code_string)
 		local
 			trans: attached like translations
 		do
@@ -202,9 +201,8 @@ feature -- Modification
 				translations := trans
 			end
 			trans.put (a_trans, a_trans.language.code_string)
-			languages_available_cache.wipe_out
 		ensure
-			languages_available.has (a_trans.language.code_string)
+			has_language (a_trans.language.code_string)
 		end
 
 	add_language (a_lang_tag: STRING)
@@ -212,7 +210,6 @@ feature -- Modification
 		do
 			add_default_translation (a_lang_tag)
 			description.add_language (a_lang_tag)
-			languages_available_cache.wipe_out
 		end
 
 	merge_annotations (a_lang_tag: STRING; a_path: STRING; an_annotations: HASH_TABLE [STRING, STRING])
@@ -242,8 +239,8 @@ feature -- Modification
 			-- merge annotations, if any found in `other' to current
 		do
 			if attached other.annotations as other_anns then
-				if attached annotations as anns then
-					anns.merge (other_anns)
+				if attached annotations then
+					annotations.merge (other_anns)
 				else
 					annotations := other_anns.deep_twin
 				end
@@ -277,6 +274,9 @@ feature {ARCHETYPE} -- Flattening
 				if not a_langs.has (langs_csr.item) then
 					if attached translations as trans then
 						trans.remove (langs_csr.item)
+						if trans.is_empty then
+							translations := Void
+						end
 					end
 					description.remove_language (langs_csr.item)
 					if attached annotations as annots then
@@ -286,13 +286,46 @@ feature {ARCHETYPE} -- Flattening
 			end
 		end
 
+	remove_language (a_lang: STRING)
+			-- remove a language
+		require
+			has_language (a_lang)
+		do
+			if attached translations then
+				translations.remove (a_lang)
+				if translations.is_empty then
+					translations := Void
+				end
+			end
+			description.remove_language (a_lang)
+			if attached annotations then
+				annotations.remove_language (a_lang)
+			end
+		ensure
+			not has_language (a_lang)
+		end
+
+	remove_all_translations
+			-- remove all translations
+		local
+			trans_langs: ARRAYED_LIST [STRING]
+		do
+			if attached translations as trans then
+				create trans_langs.make_from_array (trans.current_keys)
+				across trans_langs as trans_langs_csr loop
+					remove_language (trans_langs_csr.item)
+				end
+			end
+		ensure
+			not attached translations
+		end
+
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Implementation
 
 	set_translations (a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
 			translations := a_trans
-			languages_available_cache.wipe_out
 		end
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
@@ -303,16 +336,6 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Implementation
 			if attached translations as tr then
 				Result.set_translations (tr)
 			end
-		end
-
-feature {NONE} -- Implementation
-
-	languages_available_cache: ARRAYED_SET [STRING]
-			-- Total list of languages available in this resource, derived from
-			-- original_language and translations. Guaranteed to at least include original_language
-		attribute
-			create Result.make (0)
-			Result.compare_objects
 		end
 
 invariant

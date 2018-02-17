@@ -306,6 +306,8 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 				-- replace translations and description with differential
 				if attached att_auth_diff.translations as diff_trans then
 					translations := diff_trans.deep_twin
+				else
+					remove_all_translations
 				end
 				if attached att_auth_diff.description as diff_desc then
 					description := diff_desc.deep_twin
