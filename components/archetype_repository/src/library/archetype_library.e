@@ -128,26 +128,26 @@ feature -- Access
 			Rm_type_valid: not an_rm_type.is_empty
 		local
 			rm: BMM_MODEL
-			class_node: detachable ARCH_LIB_CLASS
+			class_nodes: ARRAYED_LIST[ARCH_LIB_CLASS]
 		do
 			create Result.make (0)
 			Result.compare_objects
+			create class_nodes.make (0)
 
 			-- get the RM schema for the archetype_id
 			rm := rm_for_archetype_id (an_archetype_id)
 
-			-- find the class node
-			from item_index.start until item_index.off or attached class_node loop
-				if attached {ARCH_LIB_CLASS} item_index.item_for_iteration as alc and then
+			-- find matching class nodes
+			across item_index as item_index_csr loop
+				if attached {ARCH_LIB_CLASS} item_index_csr.item as alc and then
 					alc.bmm_model = rm and then alc.class_definition.name.is_case_insensitive_equal (an_rm_type)
 				then
-					class_node := alc
+					class_nodes.extend (alc)
 				end
-				item_index.forth
 			end
 
-			if attached class_node as att_class then
-				do_archetypes (att_class,
+			across class_nodes as class_nodes_csr loop
+				do_archetypes (class_nodes_csr.item,
 					agent (ala: ARCH_LIB_ARCHETYPE; ids: ARRAYED_SET [STRING])
 						do
 							ids.extend (ala.id.physical_id)
