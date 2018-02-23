@@ -289,27 +289,25 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 		do
 			precursor (a_diff)
 
-			if attached {AUTHORED_ARCHETYPE} a_diff as att_auth_diff then
+			if attached {AUTHORED_ARCHETYPE} a_diff as diff_auth_arch then
 				-- identifiers
-				if attached att_auth_diff.build_uid as att_uid then
+				if attached diff_auth_arch.build_uid as att_uid then
 					build_uid := att_uid.deep_twin
 				end
 
 				-- flatten other_metadata so that child archetype values overwrite any parent values with same key;
 				-- otherwise parent key/val pairs are preserved
-				if attached att_auth_diff.other_metadata as diff_omd then
+				if attached diff_auth_arch.other_metadata as diff_omd then
 					across diff_omd as md_csr loop
 						put_other_metadata_value (md_csr.key, md_csr.item)
 					end
 				end
 
-				-- replace translations and description with differential
-				if attached att_auth_diff.translations as diff_trans then
-					translations := diff_trans.deep_twin
-				else
-					remove_all_translations
-				end
-				if attached att_auth_diff.description as diff_desc then
+				-- remove translations meta-data
+				remove_translations
+
+				-- replace description with differential
+				if attached diff_auth_arch.description as diff_desc then
 					description := diff_desc.deep_twin
 				end
 			end

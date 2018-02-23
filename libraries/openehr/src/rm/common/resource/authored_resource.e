@@ -305,8 +305,8 @@ feature {ARCHETYPE} -- Flattening
 			not has_language (a_lang)
 		end
 
-	remove_all_translations
-			-- remove all translations
+	remove_all_translation_languages
+			-- remove all languages found in translations
 		local
 			trans_langs: ARRAYED_LIST [STRING]
 		do
@@ -316,6 +316,15 @@ feature {ARCHETYPE} -- Flattening
 					remove_language (trans_langs_csr.item)
 				end
 			end
+		ensure
+			not attached translations
+		end
+
+	remove_translations
+			-- remove translations meta-data structure;
+			-- leaves any translation languages in description intact
+		do
+			translations := Void
 		ensure
 			not attached translations
 		end

@@ -997,6 +997,7 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 			definition.set_root_node_id (a_diff.concept_id.twin)
 		ensure
 			Specialised: is_specialised
+			Original_lang_from_overlay: original_language.as_string.is_equal (a_diff.original_language.as_string)
 		end
 
 feature {ARCH_LIB_ARCHETYPE, ARCHETYPE_COMPARATOR} -- Structure
