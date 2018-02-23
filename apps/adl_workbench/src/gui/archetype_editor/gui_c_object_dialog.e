@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 
 	make (a_aom_types, an_rm_types: ARRAYED_LIST [STRING]; an_old_aom_type, an_old_rm_type: STRING;
 			an_occurrences_default: MULTIPLICITY_INTERVAL; an_archetype: ARCHETYPE;
+			a_spec_parent_arch_node: detachable C_OBJECT;
 			a_display_settings: GUI_DEFINITION_SETTINGS)
 			-- Make with RM types, constraint type selection and an occurrences constrainer that is used to determine
 			-- the possible occurrences in this case
@@ -51,6 +52,7 @@ feature {NONE} -- Initialization
 			create new_params.make (an_old_aom_type.twin, an_old_rm_type.twin, an_occurrences_default.as_string, term_definition_mandatory)
 
 			archetype := an_archetype
+			spec_parent_arch_node := a_spec_parent_arch_node
 
 			create aom_types.make (0)
 			aom_types.compare_objects
@@ -224,6 +226,8 @@ feature -- Access
 
 	aom_types: ARRAYED_LIST [STRING]
 
+	spec_parent_arch_node: detachable C_OBJECT
+
 feature -- Status Report
 
 	is_valid: BOOLEAN
@@ -323,9 +327,11 @@ feature {NONE} -- Implementation
 		do
 			if attached arch_ext_ref_list_cache as att_cache then
 				Result := att_cache
-			else
-				Result := current_library.subsumption_set (new_params.rm_type, archetype.archetype_id)
+			elseif attached {ARCHETYPE_SLOT} spec_parent_arch_node as arch_slot then
+				Result := current_library.slot_fillers (arch_slot, archetype.archetype_id)
 				arch_ext_ref_list_cache := Result
+			else
+				create Result.make (0)
 			end
 		end
 

@@ -369,32 +369,22 @@ feature {ARCH_LIB_ARCHETYPE} -- Relationships
 
 	add_slot_owner (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
-		local
-			so_idx: attached like slot_owners_index
 		do
-			if attached slot_owners_index as att_so_idx then
-				so_idx := att_so_idx
-			else
-				create so_idx.make (0)
-				so_idx.compare_objects
-				slot_owners_index := so_idx
+			if not attached slot_owners_index then
+				create slot_owners_index.make (0)
+				slot_owners_index.compare_objects
 			end
-			so_idx.extend (an_archetype_id)
+			slot_owners_index.extend (an_archetype_id)
 		end
 
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that references this archetype
-		local
-			cl_idx: attached like clients_index
 		do
-			if attached clients_index as att_cl_idx then
-				cl_idx := att_cl_idx
-			else
-				create cl_idx.make (0)
-				cl_idx.compare_objects
-				clients_index := cl_idx
+			if not attached clients_index then
+				create clients_index.make (0)
+				clients_index.compare_objects
 			end
-			cl_idx.extend (an_archetype_id)
+			clients_index.extend (an_archetype_id)
 		end
 
 feature -- Artefacts
@@ -1162,61 +1152,34 @@ feature {NONE} -- Implementation
 		end
 
 	compute_slot_id_index (an_archetype: ARCHETYPE): like slot_fillers_index
-			-- generate a table of slot fillers and if `an_archteype' is the differential, add to `slot_owners_index' of client archetype descriptors
+			-- generate a table of slot fillers and if `an_archteype' is the differential,
+			-- add to `slot_owners_index' of filler archetype descriptors
 		require
 			compilation_state >= Cs_validated_phase_1
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 			ala: ARCH_LIB_ARCHETYPE
+			slot_filler_ids: ARRAYED_SET [STRING]
 		do
 			create Result.make (0)
 			across an_archetype.slot_index as slots_csr loop
-				includes := slots_csr.item.includes
-				excludes := slots_csr.item.excludes
-				if not includes.is_empty and not includes.first.matches_any then
-					if not excludes.is_empty then -- create specific match list from includes constraint
-						across includes as includes_csr loop
-							if attached includes_csr.item.regex_constraint as att_c_str and then attached {STRING} att_c_str.constraint_regex as att_regex then
-								add_slot_ids (Result, current_library.matching_ids (att_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
-							end
-						end
-					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
-					end
-				elseif not excludes.is_empty and not excludes.first.matches_any then
-					add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
-					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
-						across excludes as excludes_csr loop
-							if attached excludes_csr.item.regex_constraint as att_c_str and then attached {STRING} att_c_str.constraint_regex as att_regex then
-								across current_library.matching_ids (att_regex, slots_csr.item.rm_type_name, id.rm_package) as ids_csr loop
-									Result.item (slots_csr.item.path).prune (ids_csr.item)
-								end
-							end
-						end
-					end
+				slot_filler_ids := current_library.slot_fillers (slots_csr.item, id)
+
+				if attached Result.item (slots_csr.item.path) as att_set then
+					att_set.merge (slot_filler_ids)
 				else
-					add_slot_ids (Result, current_library.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_package), slots_csr.item.path)
+					Result.force (slot_filler_ids, slots_csr.item.path)
 				end
 
 				-- if it's the differential, post the results in the reverse indexes
-				if an_archetype.is_differential and attached Result.item (slots_csr.item.path) as att_slots then
-					across att_slots as ids_csr loop
-						ala := current_library.archetype_with_id (ids_csr.item)
+				if an_archetype.is_differential then
+					across slot_filler_ids as filler_ids_csr loop
+						ala := current_library.archetype_with_id (filler_ids_csr.item)
 						if not attached ala.slot_owners_index as att_soi or else not att_soi.has (id.physical_id) then
 							ala.add_slot_owner (id.physical_id)
 						end
 					end
 				end
-			end
-		end
-
-	add_slot_ids (idx: HASH_TABLE [ARRAYED_SET[STRING], STRING]; a_list: ARRAYED_SET [STRING]; a_slot_path: STRING)
-			-- add list of matching archetypes to ids recorded for slot at a_slot_path
-		do
-			if attached idx.item (a_slot_path) as att_set then
-				att_set.merge (a_list)
-			else
-				idx.force (a_list, a_slot_path)
 			end
 		end
 

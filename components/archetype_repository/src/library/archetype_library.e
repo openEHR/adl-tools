@@ -121,7 +121,7 @@ feature -- Access
 
 	subsumption_set (an_rm_type: STRING; an_archetype_id: ARCHETYPE_HRID): ARRAYED_SET [STRING]
 			-- generate list of archetype ids that are in the archetype subsumption hierarchy under `an_rm_type'
-			-- and `an_rm_package', from the RM schema to which `an_archetype_id' belongs.
+			-- from the RM schema to which `an_archetype_id' belongs.
 			-- The strategy is to find the node corresponding to the class name and get all archetypes
 			-- below it.
 		require
@@ -213,6 +213,46 @@ feature -- Access
 			else
 				Result.extend (get_msg_line (ec_regex_e1, <<a_regex>>))
 			end
+		end
+
+	slot_fillers (a_slot: ARCHETYPE_SLOT; owner_id: ARCHETYPE_HRID): ARRAYED_SET [STRING]
+			-- generate a list of slot filler archetype ids for one slot
+		local
+			includes, excludes: ARRAYED_LIST[ASSERTION]
+		do
+			create Result.make (0)
+			Result.compare_objects
+
+			includes := a_slot.includes
+			excludes := a_slot.excludes
+			if not includes.is_empty and not includes.first.matches_any then
+				if not excludes.is_empty then -- create specific match list from includes constraint
+					across includes as includes_csr loop
+						if attached includes_csr.item.regex_constraint as att_c_str and then attached {STRING} att_c_str.constraint_regex as att_regex then
+							Result.merge (matching_ids (att_regex, a_slot.rm_type_name, Void))
+						end
+					end
+				-- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
+				else
+					Result.merge (matching_ids (Regex_any_pattern, a_slot.rm_type_name, owner_id.rm_package))
+				end
+			elseif not excludes.is_empty and not excludes.first.matches_any then
+				Result.merge (matching_ids (Regex_any_pattern, a_slot.rm_type_name, Void))
+				-- means excludes is not a recommendation; need to actually process it
+				if not includes.is_empty then
+					across excludes as excludes_csr loop
+						if attached excludes_csr.item.regex_constraint as att_c_str and then attached {STRING} att_c_str.constraint_regex as att_regex then
+							across matching_ids (att_regex, a_slot.rm_type_name, owner_id.rm_package) as ids_csr loop
+								Result.prune (ids_csr.item)
+							end
+						end
+					end
+				end
+			else
+				-- everything matches, of the right RM type
+				Result.merge (matching_ids (Regex_any_pattern, a_slot.rm_type_name, owner_id.rm_package))
+			end
+
 		end
 
 	archetype_parent_item (ala: ARCH_LIB_ARCHETYPE): detachable ARCH_LIB_ITEM
