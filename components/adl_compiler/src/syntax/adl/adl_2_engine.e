@@ -333,16 +333,16 @@ feature -- Parsing
 			)
 
 			-- add optional standard parts
-			if attached adl_parser.parent_archetype_id as att_parent_id then
-				Result.set_parent_archetype_id (att_parent_id)
+			if attached adl_parser.parent_archetype_id then
+				Result.set_parent_archetype_id (adl_parser.parent_archetype_id)
 			end
 
 			if adl_parser.is_generated then
 				Result.set_is_generated
 			end
 
-			if attached a_rules as att_rules then
-				Result.set_rules (att_rules)
+			if attached a_rules then
+				Result.set_rules (a_rules)
 			end
 
 			Result.rebuild
@@ -354,117 +354,97 @@ feature -- Validation
 		require
 			Sub_151_version: version_less_than (an_arch.adl_version, Adl_id_code_version)
 		local
-			proc: AOM_151_CONVERTER
 			flat_parent: detachable AUTHORED_ARCHETYPE
 		do
 			if attached aca.specialisation_parent as spec_parent and then attached {AUTHORED_ARCHETYPE} spec_parent.flat_archetype as auth_arch then
 				flat_parent := auth_arch
  			end
 
-			if attached post_parse_151_converter as pcp then
-				proc := pcp
-				proc.initialise (an_arch, flat_parent, aca.ref_model)
+			if attached post_parse_151_converter then
+				post_parse_151_converter.initialise (an_arch, flat_parent, aca.ref_model)
 			else
-				create proc.make (an_arch, flat_parent, aca.ref_model)
-				post_parse_151_converter := proc
+				create post_parse_151_converter.make (an_arch, flat_parent, aca.ref_model)
 			end
-			proc.execute
+			post_parse_151_converter.execute
 		end
 
 	post_parse_process (an_arch: ARCHETYPE; aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_POST_PARSE_PROCESSOR
 		do
-			if attached post_parse_processor as pcp then
-				proc := pcp
-				proc.initialise (an_arch, aca)
+			if attached post_parse_processor then
+				post_parse_processor.initialise (an_arch, aca)
 			else
-				create proc.make (an_arch, aca)
-				post_parse_processor := proc
+				create post_parse_processor.make (an_arch, aca)
 			end
-			proc.execute
+			post_parse_processor.execute
 		end
 
 	phase_1_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
-			proc: AOM_PHASE_1_VALIDATOR
 			flat_parent: detachable ARCHETYPE
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent as spec_parent then
-				flat_parent := spec_parent.flat_archetype
+			if attached aca.specialisation_parent then
+				flat_parent := aca.specialisation_parent.flat_archetype
  			end
 
-			if attached phase_1_validator as pv then
-				proc := pv
-				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
+			if attached phase_1_validator then
+				phase_1_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
 			else
-				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
-				phase_1_validator := proc
+				create phase_1_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
 			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
+			phase_1_validator.validate
+			validation_passed := phase_1_validator.passed
+			errors := phase_1_validator.errors
 		end
 
 	phase_2_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
-			proc: AOM_PHASE_2_VALIDATOR
 			flat_parent: detachable ARCHETYPE
 			flat_parent_slot_fillers_index: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent as spec_parent then
-				flat_parent := spec_parent.flat_archetype
-				flat_parent_slot_fillers_index := spec_parent.flat_slot_fillers_index
+			if attached aca.specialisation_parent then
+				flat_parent := aca.specialisation_parent.flat_archetype
+				flat_parent_slot_fillers_index := aca.specialisation_parent.flat_slot_fillers_index
  			end
 
-			if attached phase_2_validator as pv then
-				proc := pv
-				proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.ref_model, aca.display_language)
+			if attached phase_2_validator then
+				phase_2_validator.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.ref_model, aca.display_language)
 			else
-				create proc.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.ref_model, aca.display_language)
-				phase_2_validator := proc
+				create phase_2_validator.initialise (aca.safe_differential_archetype, flat_parent, flat_parent_slot_fillers_index, aca.ref_model, aca.display_language)
 			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
+			phase_2_validator.validate
+			validation_passed := phase_2_validator.passed
+			errors := phase_2_validator.errors
 		end
 
 	phase_3_validate (aca: ARCH_LIB_ARCHETYPE)
 		local
-			proc: AOM_PHASE_3_VALIDATOR
 			flat_parent: detachable ARCHETYPE
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent as spec_parent then
-				flat_parent := spec_parent.flat_archetype
+			if attached aca.specialisation_parent then
+				flat_parent := aca.specialisation_parent.flat_archetype
  			end
 
-			if attached phase_3_validator as pv then
-				proc := pv
-				proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
+			if attached phase_3_validator then
+				phase_3_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			else
-				create proc.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
-				phase_3_validator := proc
+				create phase_3_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			end
-			proc.validate
-			validation_passed := proc.passed
-			errors := proc.errors
+			phase_3_validator.validate
+			validation_passed := phase_3_validator.passed
+			errors := phase_3_validator.errors
 		end
 
 	post_compile_process (aca: ARCH_LIB_ARCHETYPE)
-		local
-			proc: AOM_POST_COMPILE_PROCESSOR
 		do
-			if attached post_compile_processor as pcp then
-				proc := pcp
-				proc.initialise (aca)
+			if attached post_compile_processor then
+				post_compile_processor.initialise (aca)
 			else
-				create proc.initialise (aca)
-				post_compile_processor := proc
+				create post_compile_processor.initialise (aca)
 			end
-			proc.execute
+			post_compile_processor.execute
 		end
 
 	validation_passed: BOOLEAN
