@@ -224,7 +224,7 @@ feature {NONE} -- Implementation
 				if keys.count = 1 then
 					active_tool_id := 0
 				else
-					active_tool_id := keys.i_th (keys.count - 1)
+					active_tool_id := keys.i_th (2)
 				end
 			else
 				keys.back
