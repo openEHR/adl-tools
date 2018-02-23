@@ -41,8 +41,8 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		do
 			aom_validator_initialise (an_arch_diff_child, an_arch_flat_parent, an_rm)
 			display_language := a_display_language
-			if attached a_flat_parent_slot_fillers_index as att_sid then
-				flat_parent_slot_fillers_index := att_sid
+			if attached a_flat_parent_slot_fillers_index then
+				flat_parent_slot_fillers_index := a_flat_parent_slot_fillers_index
 			end
 		end
 
@@ -147,9 +147,9 @@ feature {NONE} -- Implementation
 			def_it.do_if (agent specialised_node_validate, agent specialised_node_validate_test)
 		end
 
-	slot_filler_archetype_id_exists (a_slot_path, a_filler_archetype_id: STRING): BOOLEAN
-			-- Return true if, for a slot path that is known in the ancestor slot index, there are
-			-- actually archetypes whose ids match
+	slot_filler_valid (a_slot_path, a_filler_archetype_id: STRING): BOOLEAN
+			-- Return true if, for a slot path that is in the ancestor slot index, the filler id
+			-- `a_filler_archetype_id` is valid. Allow for different minor / patch versions.
 		require
 			flat_parent_slot_fillers_index.has (a_slot_path)
 		local
@@ -227,7 +227,7 @@ end
 							add_error (ec_VARXS, <<co_child_annotated_path, car.archetype_ref>>)
 
 						-- matches def, but not found in actual list from current repo
-						elseif not slot_filler_archetype_id_exists (parent_slot.path, car.archetype_ref) then
+						elseif not slot_filler_valid (parent_slot.path, car.archetype_ref) then
 							add_error (ec_VARXR, <<co_child_annotated_path, car.archetype_ref>>)
 
 						-- filler id is not specialised
