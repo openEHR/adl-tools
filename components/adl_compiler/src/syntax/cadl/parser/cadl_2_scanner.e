@@ -3305,7 +3305,8 @@ feature {NONE} -- Implementation
 	is_primitive_type (a_type_name: STRING): BOOLEAN
 		do
 			Result := attached aom_profile as aomp and then aomp.has_aom_primitive_type (a_type_name) or 
-				c_primitive_subtypes.has (a_type_name.as_upper) or ref_model.is_enumerated_type (a_type_name)
+				c_primitive_subtypes.has (a_type_name.as_upper) or 
+				ref_model.has_class_definition (a_type_name) and then ref_model.is_enumerated_type (a_type_name)
 		end
 
 end
