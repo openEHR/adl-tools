@@ -20,7 +20,7 @@ inherit
 			finalise_dt
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_MODEL_ACCESS
 
 	ARCHETYPE_DEFINITIONS
 		export
@@ -45,7 +45,7 @@ feature -- Initialisation
 			create rm_aom_primitive_type_mappings.make (0)
 			rm_aom_primitive_type_mappings.merge (c_primitive_subtypes)
 			create rm_schema_pattern.make_empty
-			create rm_schema_ids.make (0)
+			create matched_model_ids.make (0)
 			create file_path.make_empty
 		end
 
@@ -108,7 +108,7 @@ feature -- Access
 
 	file_path: STRING
 
-	rm_schema_ids: ARRAYED_LIST [STRING]
+	matched_model_ids: ARRAYED_LIST [STRING]
 			-- list of rm schemas matched by `rm_schema_patterns'
 
 	rm_aom_primitive_type_mappings: HASH_TABLE [STRING, STRING]
@@ -203,14 +203,14 @@ feature -- Validation
 			if profile_name.is_equal (Default_aom_profile_name) then
 				add_error (ec_ARP_no_profile_name, <<file_path>>)
 			end
-			if rm_schema_ids.is_empty then
+			if matched_model_ids.is_empty then
 				add_error (ec_ARP_no_matching_schemas, <<file_path>>)
 			else
 				if attached aom_rm_type_mappings as aom_tm then
 					-- check that all type mappings are found in all mentioned schemas
-					across rm_schema_ids as schemas_csr loop
-						if has_ref_model_for_id (schemas_csr.item) then
-							sch := ref_model_for_id (schemas_csr.item)
+					across matched_model_ids as schemas_csr loop
+						if has_model_for_id (schemas_csr.item) then
+							sch := model_for_id (schemas_csr.item)
 							across aom_tm as type_mappings_csr loop
 								rm_class_name := type_mappings_csr.item.target_class_name
 								if not sch.has_class_definition (type_mappings_csr.item.target_class_name) then
@@ -264,7 +264,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			lc_aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
 			default_rm_type_key: STRING
 		do
-			if ref_models_access.load_attempted then
+			if models_access.load_attempted then
 				get_regex_matches (rm_schema_pattern)
 			else
 				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
@@ -295,7 +295,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 	get_regex_matches (a_regex: STRING)
 			-- Finalisation work: evaluate rm schema regexes
 		require
-			ref_models_access.load_attempted
+			models_access.load_attempted
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
@@ -304,9 +304,9 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			regex_matcher.set_case_insensitive (True)
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
-				across rm_schema_all_ids as sch_ids_csr loop
-					if regex_matcher.recognizes (sch_ids_csr.item) then
-						rm_schema_ids.extend (sch_ids_csr.item)
+				across model_ids as model_ids_csr loop
+					if regex_matcher.recognizes (model_ids_csr.item) then
+						matched_model_ids.extend (model_ids_csr.item)
 					end
 				end
 			else

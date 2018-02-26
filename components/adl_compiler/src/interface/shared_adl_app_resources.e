@@ -55,7 +55,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_MODEL_ACCESS
 		export
 			{NONE} all
 		end

@@ -162,18 +162,14 @@ feature {NONE} -- Implementation
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end
 
-			create gli.make_with_text ("archetype_rm_closure_packages")
+			create gli.make_with_text ("archetype_namespace")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
 			create str.make_empty
-			across ref_model.archetype_rm_closure_packages as rm_closures_csr loop
-				if rm_closures_csr.target_index > 1 then
-					str.append (",%N")
-				end
-				str.append (rm_closures_csr.item)
+			if attached ref_model.archetype_namespace as ns then
+				str.append (ns)
 			end
 			create gli.make_with_text (str)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
-			ev_grid.row (ev_grid.row_count).set_height (ev_grid.row (ev_grid.row_count).height * ref_model.archetype_rm_closure_packages.count)
 
 			-- resize grid cols properly
 			Grid_column_ids.do_all (

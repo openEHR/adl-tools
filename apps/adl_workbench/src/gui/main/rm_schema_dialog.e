@@ -28,7 +28,7 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_MODEL_ACCESS
 		export
 			{NONE} all
 		undefine
@@ -170,7 +170,7 @@ feature -- Commands
 			-- alow user reload after manual changes while correcting schemas
 		do
 			reset_rm_schemas_load_list
-			ref_models_access.reload_schemas
+			models_access.reload_schemas
 			do_populate
 			gui_agents.call_refresh_all_archetype_editors_agent
 		end
@@ -204,8 +204,8 @@ feature -- Events
 			has_changed_schema_dirs := False
 			ok_cancel_buttons.disable_sensitive
 			last_rm_schema_dirs := an_rm_schema_dirs
-			ref_models_access.initialise_with_load_list (last_rm_schema_dirs, rm_schemas_load_list)
-			if not ref_models_access.found_valid_models then
+			models_access.initialise_with_load_list (last_rm_schema_dirs, rm_schemas_load_list)
+			if not models_access.found_valid_models then
 				create dir_list_str.make_empty
 				across last_rm_schema_dirs as dir_csr loop
 					dir_list_str.append (dir_csr.item)
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 
 			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				set_rm_schemas_load_list (rm_schemas_ll)
-				ref_models_access.set_schema_load_list (rm_schemas_ll)
+				models_access.set_schema_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
 		end
@@ -262,16 +262,16 @@ feature {NONE} -- Implementation
 			-- get rid of previously defined rows
 			grid.wipe_out
 			grid.enable_column_resize_immediate
-			grid.set_minimum_height (ref_models_access.all_schemas.count * grid.row_height + grid.header.height)
+			grid.set_minimum_height (models_access.all_schemas.count * grid.row_height + grid.header.height)
 
 			-- create row containing widgets for each top-level schema, with child schemas in tree
-			across ref_models_access.top_level_schemas_by_publisher as pub_csr loop
+			across models_access.top_level_schemas_by_publisher as pub_csr loop
 				create gli.make_with_text (pub_csr.key)
 				gli.set_pixmap (get_icon_pixmap ("tool/globe"))
 				grid.set_item (Grid_schema_col, grid.row_count + 1, gli)
 				row := gli.row
 				across pub_csr.item as pub_schemas_csr loop
-					add_schema_publisher_grid_rows (pub_schemas_csr.item, row)
+					add_schema_publisher_grid_rows (pub_schemas_csr.item, row, True)
 				end
 				if row.is_expandable then
 					row.expand
@@ -297,7 +297,7 @@ feature {NONE} -- Implementation
 			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
-	add_schema_publisher_grid_rows (a_schema_desc: SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW)
+	add_schema_publisher_grid_rows (a_schema_desc: SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW; top_level: BOOLEAN)
 			-- add rows for `schema_id' and its children, recursively
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -307,9 +307,9 @@ feature {NONE} -- Implementation
 			-- column 1 - name + check box to indicate loaded on top-level schemas
 			parent_row.insert_subrow (parent_row.subrow_count + 1)
 			row := parent_row.subrow (parent_row.subrow_count)
-			if a_schema_desc.is_top_level then
+			if top_level then
 				create gcli.make_with_text (a_schema_desc.schema_id)
-				gcli.set_is_checked (ref_models_access.schemas_load_list.has (a_schema_desc.schema_id))
+				gcli.set_is_checked (models_access.schemas_load_list.has (a_schema_desc.schema_id))
 				row.set_item (Grid_schema_col, gcli)
 			else
 				create gli.make_with_text (a_schema_desc.schema_id)
@@ -352,8 +352,8 @@ feature {NONE} -- Implementation
 
 			-- now do child schemas
 			across a_schema_desc.includes as includes_csr loop
-				check attached ref_models_access.all_schemas.item (includes_csr.item) as sch then
-					add_schema_publisher_grid_rows (sch, row)
+				check attached models_access.all_schemas.item (includes_csr.item) as sch then
+					add_schema_publisher_grid_rows (sch, row, False)
 				end
 			end
 		end
@@ -400,7 +400,7 @@ feature {NONE} -- Implementation
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create info_dialog.make_with_text (ref_models_access.all_schemas.item (a_schema_id).errors.as_string)
+			create info_dialog.make_with_text (models_access.all_schemas.item (a_schema_id).errors.as_string)
 			info_dialog.show_modal_to_window (Current)
 		end
 

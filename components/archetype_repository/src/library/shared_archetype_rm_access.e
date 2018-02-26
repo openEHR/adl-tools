@@ -10,23 +10,23 @@ note
 class SHARED_ARCHETYPE_RM_ACCESS
 
 inherit
-	SHARED_REFERENCE_MODEL_ACCESS
+	SHARED_MODEL_ACCESS
 
 feature -- Access
 
-	rm_for_archetype_id (an_id: ARCHETYPE_HRID): BMM_MODEL
+	model_for_archetype_id (an_id: ARCHETYPE_HRID): BMM_MODEL
 			-- top-level schema for archetype id `an_id'
 		require
-			has_rm_for_archetype_id (an_id)
+			has_model_for_archetype_id (an_id)
 		do
-			Result := ref_models_access.rm_for_closure (an_id.qualified_rm_closure)
+			Result := models_access.model_for_namespace (an_id.qualified_namespace)
 		end
 
 feature -- Status Report
 
-	has_rm_for_archetype_id (an_id: ARCHETYPE_HRID): BOOLEAN
+	has_model_for_archetype_id (an_id: ARCHETYPE_HRID): BOOLEAN
 		do
-			Result := ref_models_access.has_rm_for_closure (an_id.qualified_rm_closure)
+			Result := models_access.has_model_for_namespace (an_id.qualified_namespace)
 		end
 
 end

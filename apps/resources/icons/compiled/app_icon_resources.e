@@ -101,6 +101,7 @@ feature -- Access
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_C_ATTRIBUTE_MULTIPLE_OPTIONAL}.make).to_pixmap end, "archetype/c_attribute.multiple.optional")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_C_ATTRIBUTE_OPTIONAL}.make).to_pixmap end, "archetype/c_attribute.optional")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_FILE_FOLDER}.make).to_pixmap end, "archetype/file_folder")
+			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_MODEL}.make).to_pixmap end, "archetype/model")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_MODEL_GROUP}.make).to_pixmap end, "archetype/model_group")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_SLOT_FILLERS}.make).to_pixmap end, "archetype/slot_fillers")
 			Result.put (agent :EV_PIXMAP do Result := (create {ICON_ARCHETYPE_TEMPLATE}.make).to_pixmap end, "archetype/template")

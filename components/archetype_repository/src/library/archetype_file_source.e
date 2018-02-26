@@ -106,7 +106,7 @@ feature -- Commands
 					errors.add_error (ec_parse_archetype_e7, <<a_file_path>>, "")
 				elseif arch_thumbnail.is_specialised and then arch_thumbnail.parent_archetype_id_is_old_style and attached arch_thumbnail.parent_archetype_id as pid then
 					errors.add_error (ec_parse_archetype_e11, <<a_file_path, pid>>, "")
-				elseif not has_rm_for_archetype_id (arch_thumbnail.archetype_id) then
+				elseif not has_model_for_archetype_id (arch_thumbnail.archetype_id) then
 					errors.add_error (ec_parse_archetype_e4, <<a_file_path, arch_thumbnail.archetype_id.physical_id>>, "")
 				elseif not arch_phys_id_index.has (arch_thumbnail.archetype_id.physical_id) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (a_file_path)) then
@@ -234,7 +234,7 @@ feature {NONE} -- Implementation
 							amp.parse (arch_full_path)
 							if amp.passed and then attached amp.last_archetype as arch_tn then
 								arch_id := arch_tn.archetype_id.physical_id
-								if not has_rm_for_archetype_id (arch_tn.archetype_id) then
+								if not has_model_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
 								elseif not arch_phys_id_index.has (arch_id) then
 									if arch_tn.is_template then
@@ -275,7 +275,7 @@ feature {NONE} -- Implementation
 								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style and attached arch_tn.parent_archetype_id as pid then
 									errors.add_error (ec_parse_archetype_e11, <<fn, pid>>, "")
 
-								elseif not has_rm_for_archetype_id (arch_tn.archetype_id) then
+								elseif not has_model_for_archetype_id (arch_tn.archetype_id) then
 									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
 
 								-- here we check for an exact match first (physical_id) and then a match on semantic_id (down to major ver).

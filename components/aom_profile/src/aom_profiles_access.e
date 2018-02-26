@@ -126,7 +126,7 @@ feature -- Validation
 						else
 							profiles.put (a_profile, a_profile.profile_name)
 							profile_descriptors.put (prof_descs_csr.item, a_profile.profile_name)
-							across a_profile.rm_schema_ids as schema_ids_csr loop
+							across a_profile.matched_model_ids as schema_ids_csr loop
 								profiles_for_rm_schemas.put (a_profile, schema_ids_csr.item)
 							end
 						end

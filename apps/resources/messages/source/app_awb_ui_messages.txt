@@ -766,7 +766,8 @@ templates = <
 		["translate_button_text"] = <"Add">
 
 		-- GUI_VIEW_ARCHETYPE_TREE_CONTROL
-		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">
+		["model_tree_node_tooltip"] = <"BMM model">
+		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace">
 		["archetype_tree_node_tooltip"] = <"(source = legacy flat)">
 
 		-- GUI_RM_TOOL

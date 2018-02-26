@@ -405,7 +405,7 @@ feature -- Access
 			end
 		end
 
-	qualified_rm_closure: STRING
+	qualified_namespace: STRING
 			-- closure name qualified by RM publisher
 			-- e.g. openEHR-EHR, HL7-CDA
 		do

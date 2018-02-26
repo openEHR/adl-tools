@@ -205,16 +205,11 @@ feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 	put_child (a_child: like children.item)
 		require
 			a_child /= Current and then not has_child (a_child)
-		local
-			att_children: attached like children
 		do
-			if attached children as c then
-				att_children := c
-			else
-				create att_children.make
-				children := att_children
+			if not attached children then
+				create children.make
 			end
-			att_children.extend (a_child)
+			children.extend (a_child)
 			a_child.set_parent (Current)
 			reset_subtree_artefact_count
 		ensure
@@ -225,9 +220,9 @@ feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 		require
 			has_child (a_child)
 		do
-			check attached children as c then
-				c.start
-				c.prune (a_child)
+			check attached children then
+				children.start
+				children.prune (a_child)
 			end
 			reset_subtree_artefact_count
 		ensure

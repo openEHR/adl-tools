@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 				if attached profs_csr.item.profile as prf then
 					aom_profile := prf
 					prf_name := aom_profile.profile_name
-					across aom_profile.rm_schema_ids as sch_ids loop
+					across aom_profile.matched_model_ids as sch_ids loop
 						if sch_ids.target_index > 1 then
 							rm_schemas_list.append (", ")
 						end

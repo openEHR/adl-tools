@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 	set_tab_appearance
 			-- set visual appearance of tabs according to current state of archetype
 		do
-			-- set visual appearance of validity tab according to whether there are errors or not
+			-- set appearance of validity tab according to whether there are errors or not
 			if not attached source as src or else (src.is_valid and then not src.has_warnings) then
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/errors_grey"))
 			else

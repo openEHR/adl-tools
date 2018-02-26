@@ -1686,6 +1686,9 @@ type_identifier: V_TYPE_IDENTIFIER
 	| V_GENERIC_TYPE_IDENTIFIER
 		{
 			$$ := $1
+			if not ref_model.has_type_definition ($$) and ref_model.candidate_generic_type_name ($$) then
+				ref_model.add_effective_type_from_name ($$)
+			end
 		}
 	;
 

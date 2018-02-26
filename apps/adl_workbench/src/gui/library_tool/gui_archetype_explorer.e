@@ -291,10 +291,15 @@ feature {NONE} -- Implementation
 					col := archetype_rm_type_color
 	 				text.append (" [" + acc.subtree_artefact_total.out + "]")
 
-	 			elseif attached {ARCH_LIB_PACKAGE_ITEM} aci as accl then
+	 			elseif attached {ARCH_LIB_PACKAGE} aci as accl then
 	 				text.append (accl.qualified_name)
-					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, <<accl.qualified_name, accl.bmm_model.schema_id>>))
+					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, Void))
 	 				text.append (" [" + accl.subtree_artefact_total.out + "]")
+
+	 			elseif attached {ARCH_LIB_MODEL} aci as acm then
+	 				text.append (acm.qualified_name)
+					tooltip.append (get_msg (ec_model_tree_node_tooltip, Void))
+	 				text.append (" [" + acm.subtree_artefact_total.out + "]")
 				end
 
 				-- pixmap
@@ -449,7 +454,8 @@ feature {NONE} -- Implementation
 	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
 			Result := (attached {ARCH_LIB_CLASS} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
-				attached {ARCH_LIB_PACKAGE_ITEM} ev_grid_row.data) and
+				attached {ARCH_LIB_PACKAGE} ev_grid_row.data or
+				attached {ARCH_LIB_MODEL} ev_grid_row.data) and
 	 			ev_grid_row.is_expandable
 		end
 

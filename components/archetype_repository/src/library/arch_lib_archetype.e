@@ -103,7 +103,7 @@ feature -- Identification
 	ref_model: BMM_MODEL
 			-- set if this archetype has a valid package-class_name
 		do
-			Result := rm_for_archetype_id (id)
+			Result := model_for_archetype_id (id)
 		end
 
 	id: ARCHETYPE_HRID

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (920)
+			create message_table.make (921)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -920,7 +920,8 @@ feature -- Initialisation
 			message_table.put ("Original text", ec_translation_original_label_text)
 			message_table.put ("Translated text", ec_translation_translated_label_text)
 			message_table.put ("Add", ec_translate_button_text)
-			message_table.put ("Archetype model namespace: RM package closure $1%Nfrom schema $2", ec_rm_closure_tree_node_tooltip)
+			message_table.put ("BMM model", ec_model_tree_node_tooltip)
+			message_table.put ("Archetype model namespace", ec_rm_closure_tree_node_tooltip)
 			message_table.put ("(source = legacy flat)", ec_archetype_tree_node_tooltip)
 			message_table.put ("BMM Version:", ec_bmm_version_label)
 			message_table.put ("Basic Meta-Model (BMM) version in which the RM schema was authored", ec_bmm_version_label_tooltip)

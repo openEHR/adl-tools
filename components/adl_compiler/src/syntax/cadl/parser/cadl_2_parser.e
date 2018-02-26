@@ -5174,7 +5174,7 @@ end
 			yyval4 := yyvs4.item (yyvsp4)
 
 			-- add type to type system, if possible
-			if not ref_model.known_type_name (yyval4) and ref_model.candidate_generic_type_name (yyval4) then
+			if not ref_model.has_type_definition (yyval4) and ref_model.candidate_generic_type_name (yyval4) then
 				ref_model.add_effective_type_from_name (yyval4)
 			end
 		

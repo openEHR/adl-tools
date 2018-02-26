@@ -905,6 +905,7 @@ feature -- Definitions
 		ec_translation_original_label_text: STRING = "translation_original_label_text"
 		ec_translation_translated_label_text: STRING = "translation_translated_label_text"
 		ec_translate_button_text: STRING = "translate_button_text"
+		ec_model_tree_node_tooltip: STRING = "model_tree_node_tooltip"
 		ec_rm_closure_tree_node_tooltip: STRING = "rm_closure_tree_node_tooltip"
 		ec_archetype_tree_node_tooltip: STRING = "archetype_tree_node_tooltip"
 		ec_bmm_version_label: STRING = "bmm_version_label"
