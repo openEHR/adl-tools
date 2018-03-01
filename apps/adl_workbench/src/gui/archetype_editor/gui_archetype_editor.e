@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 			-- pre-populate the description and node-map controls
 		do
 			precursor
-			if attached source as src and attached selected_language as sel_lang then
+			if attached source as src and then attached selected_language as sel_lang and then description_controls.can_populate (src, [differential_view, sel_lang]) then
 				description_controls.populate (src, differential_view, sel_lang)
 				definition_control.populate (src, differential_view, sel_lang)
 			end
