@@ -58,7 +58,7 @@ ID_CODE {ID_CODE_LEADER}{CODE_STR}
 AT_CODE at{CODE_STR}
 AC_CODE ac{CODE_STR}
 
-ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\-alpha)\.[0-9]+)?)?
+ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\-alpha)(\.[0-9]+)?)?)?
 PATH_SEG [a-z]{ALPHANUM_CHAR}*(\[({ID_CODE}|{ARCHETYPE_ID})\])?
 
 UTF8_CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))

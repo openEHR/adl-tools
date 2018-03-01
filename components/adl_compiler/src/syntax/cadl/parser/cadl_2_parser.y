@@ -360,8 +360,8 @@ c_terminal_object: c_archetype_root
 -- The first two forms below correspond to source archetypes, which have no body under a C_ARCHETYPE_ROOT
 -- A c_complex_object-like variant would be needed to parse fully flattened templates.
 --
--- V_EXT_REF looks like the following, no whitespace
--- id12,archetype_ref
+-- V_EXT_REF looks like the following; whitespace allowed either side of the comma
+-- id12, archetype_ref
 --
 
 c_archetype_root: SYM_USE_ARCHETYPE complex_type_id V_EXT_REF c_occurrences 
