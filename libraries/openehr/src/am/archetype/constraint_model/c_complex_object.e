@@ -245,6 +245,8 @@ feature -- Modification
 			representation.put_child (an_attr.representation)
 			attributes.extend (an_attr)
 			an_attr.set_parent (Current)
+		ensure
+			has_attribute (an_attr.rm_attribute_path)
 		end
 
 	remove_attribute (an_attr: C_ATTRIBUTE)
