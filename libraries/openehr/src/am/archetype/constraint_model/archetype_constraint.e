@@ -155,10 +155,12 @@ feature -- Duplication
 			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
 		local
 			p: like parent
+			soc_p: like soc_parent
 			og_p: like representation.parent
 		do
 			p := parent
 			parent := Void
+			soc_p := soc_parent
 
 			og_p := representation.parent
 			representation.set_root
@@ -167,6 +169,7 @@ feature -- Duplication
 
 			parent := p
 			representation.set_parent (og_p)
+			soc_parent := soc_p
 		ensure
 			Result.parent = Void
 		end

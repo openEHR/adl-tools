@@ -297,7 +297,7 @@ end
 					end
 
 					-- --------------------- STEP 4: process C_ATTRIBUTE children -------------------------
-					-- attribute in a tuple constraint: remove all chid C_OBJs and do a complete replacement
+					-- attribute in a tuple constraint: remove all child C_OBJs and do a complete replacement
 					if ca_diff.is_second_order_constrained then
 						ca_output.remove_all_children
 						across ca_diff.children as cpo_csr loop
@@ -485,6 +485,7 @@ end
 			-- needed where cloning occurs
 		local
 			co_child_diff, new_obj: C_OBJECT
+			child_ca: C_ATTRIBUTE
 			node_id_in_flat_anc: STRING
 			co_output_insert_pos, co_override_target, co_override_candidate: detachable C_OBJECT
 			i: INTEGER
@@ -612,11 +613,21 @@ end
 
 				-- -------- Deal with C_COMPLEX_OBJECT sub-structure in override cases ------------						
 				-- graft in any C_ATTRIBUTEs under the differential C_COMPLEX_OBJECT which are new (ADDs) with respect to
-				-- the flat output C_ATTRIBUTE, and have not yet been cloned or copied above
+				-- the flat output C_ATTRIBUTE, and have not yet been cloned or copied above, and don't have a differential path
+				-- (the latter is dealt in `flatten_definition').
 				if attached {C_COMPLEX_OBJECT} co_override_target as att_output_cco and attached {C_COMPLEX_OBJECT} co_child_diff as att_diff_cco then
 					across att_diff_cco.attributes as diff_attrs_csr loop
-						if not diff_attrs_csr.item.has_differential_path and not att_output_cco.has_attribute (diff_attrs_csr.item.rm_attribute_name) then
-							att_output_cco.put_attribute (diff_attrs_csr.item.safe_deep_twin)
+						child_ca := diff_attrs_csr.item
+						if not child_ca.has_differential_path and not att_output_cco.has_attribute (child_ca.rm_attribute_name) then
+							att_output_cco.put_attribute (child_ca.safe_deep_twin)
+
+							check attached att_output_cco.attribute_with_name (child_ca.rm_attribute_name).parent as child_ca_parent_co then
+								-- if the attribute is part of a tuple of this C_OBJECT,
+								-- record the parent object in the output flat in the tuple post-processing list
+								if child_ca.is_second_order_constrained then
+									tuple_objects.extend (child_ca_parent_co)
+								end
+							end
 						end
 					end
 				end
@@ -636,8 +647,9 @@ end
 		local
 			new_obj: C_OBJECT
 		do
-			-- ------ REPLACE C_COMPLEX_OBJECT with any_allowed - complete replace, regardless of AOM subtype -----
-			if attached {C_COMPLEX_OBJECT} co_override_target as att_cco and then att_cco.any_allowed and then not attached {C_COMPLEX_OBJECT} co_child_diff
+			-- ------ REPLACE C_COMPLEX_OBJECT - any_allowed - complete replace, regardless of AOM subtype -----
+			if attached {C_COMPLEX_OBJECT} co_override_target as cco_ovd and then
+				cco_ovd.any_allowed and then not attached {C_COMPLEX_OBJECT} co_child_diff
 			-- ------ REPLACE C_PRIMITIVE_OBJECT - complete replace, regardless of AOM subtype -----
 				or else attached {C_PRIMITIVE_OBJECT} co_child_diff
 			then
@@ -648,6 +660,20 @@ end
 			-- ------ Any other REPLACE: just do local node override ---------
 			else
 				ca_output.overlay_differential (co_override_target, co_child_diff)
+
+				-- deal with any second-order constraint on the C_OBJECT
+				if attached {C_COMPLEX_OBJECT} co_child_diff as cco_diff and then
+					cco_diff.has_attribute_tuples
+				then
+					check attached {C_COMPLEX_OBJECT} co_override_target as cco_ovd and
+						attached cco_diff.attribute_tuples as cco_diff_tuples
+					then
+						across cco_diff_tuples as cco_diff_tuple_csr loop
+							cco_ovd.put_attribute_tuple (cco_diff_tuple_csr.item.twin)
+						end
+						tuple_objects.extend (cco_ovd)
+					end
+				end
 			end
 		end
 
@@ -679,24 +705,28 @@ end
 
 	process_tuple_objects
 		local
-			new_attr_tuple: C_ATTRIBUTE_TUPLE
+			new_ca_tuple: C_ATTRIBUTE_TUPLE
 		do
 			across tuple_objects as cco_csr loop
-				if attached cco_csr.item.attribute_tuples as att_ca_tuples then
-					across att_ca_tuples as ca_tuple_csr loop
+				check attached cco_csr.item.attribute_tuples as cco_ca_tuples then
+					-- iterate across the C_ATTR tuples in this CCO
+					across cco_ca_tuples as ca_tuple_csr loop
 						-- create a new attribute tuple in the output flat
-						create new_attr_tuple.make
+						create new_ca_tuple.make
 
-						-- connect up the attributes
+						-- iterate across the C_ATTRIBUTEs in the tuple in the target flat CCO;
+						-- they will probably be wrong, i.e. refs to C_ATTRIBUTEs in the differential;
+						-- need to replace by refs to same-named C_ATTRIBUTEs under this CCO, and
+						-- then rebuilt.
 						across ca_tuple_csr.item as ca_csr loop
-							new_attr_tuple.put_member (cco_csr.item.attribute_with_name (ca_csr.item.rm_attribute_name))
+							new_ca_tuple.put_member (cco_csr.item.attribute_with_name (ca_csr.item.rm_attribute_name))
 						end
 
-						new_attr_tuple.rebuild
-						if cco_csr.item.has_comparable_attribute_tuple (new_attr_tuple) then
-							cco_csr.item.replace_comparable_attribute_tuple (new_attr_tuple)
+						new_ca_tuple.rebuild
+						if cco_csr.item.has_comparable_attribute_tuple (new_ca_tuple) then
+							cco_csr.item.replace_comparable_attribute_tuple (new_ca_tuple)
 						else
-							cco_csr.item.put_attribute_tuple (new_attr_tuple)
+							cco_csr.item.put_attribute_tuple (new_ca_tuple)
 						end
 					end
 				end

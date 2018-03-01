@@ -653,6 +653,8 @@ feature -- Modification
 
 	overlay_differential (a_flat_obj, diff_obj: C_OBJECT)
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
+			-- NOTE: will not overlay `attribute_tuples' if it happens to be set in `diff_obj' -
+			-- this must be done separately
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
 		local
