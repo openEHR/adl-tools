@@ -153,8 +153,16 @@ feature {NONE} -- Initialization
 			-- ============ Archetype ext ref list ============			
 			create arch_id_list_ctl.make_linked (get_text (ec_initial_c_object_config_ext_ref_text),
 				get_text (ec_initial_c_object_config_ext_ref_tooltip),
-				agent :detachable STRING do Result := new_params.ext_ref end,
-				arch_ext_ref_list, agent (a_str: STRING) do new_params.set_ext_ref (a_str) end, Void, Void, 0)
+				agent :detachable STRING
+					do
+						Result := new_params.ext_ref
+					end,
+				arch_ext_ref_list,
+				agent (a_str: STRING)
+					do
+						new_params.set_ext_ref (a_str)
+					end,
+				Void, Void, 0)
 			ev_root_container.extend (arch_id_list_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (arch_id_list_ctl.ev_root_container)
 			if not new_params.aom_type.is_equal (bare_type_name(({C_ARCHETYPE_ROOT}).name)) then
@@ -332,6 +340,7 @@ feature {NONE} -- Implementation
 				arch_ext_ref_list_cache := Result
 			else
 				create Result.make (0)
+				Result.compare_objects
 			end
 		end
 
