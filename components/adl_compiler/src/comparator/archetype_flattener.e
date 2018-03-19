@@ -704,6 +704,16 @@ end
 		end
 
 	process_tuple_objects
+			-- Currently, tuples are represented by static objects with references to
+			-- C_ATTRIBUTEs and C_PRIMITIVEs; when creating a recursive copy of a
+			-- C_COMPLEX_OBJECT, as occurs in flattening, the tuple structure usually
+			-- cannot be deep-copied if the source CCO's child attributes are not
+			-- deep-copied. This means that a shallow copy of the tuple objects will
+			-- typically contain wrong C_ATTRIBUTE references. This can usually only
+			-- be rectified when the whole definition structure is done, in a post-
+			-- processing phase, supplied by this procedure. A more permanent solution
+			-- would be to convert the representation to a simple set of tuples of
+			-- attribute names, and always compute the structure on demand.
 		local
 			new_ca_tuple: C_ATTRIBUTE_TUPLE
 		do
