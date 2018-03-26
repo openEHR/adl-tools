@@ -41,8 +41,8 @@ feature {NONE} -- Implementation
 		local
 			base_pixmap_name, ref_pixmap_name: STRING
 		do
-			if not display_settings.show_technical_view and attached arch_node as a_n then
-				base_pixmap_name := Icon_rm_dir + resource_path_separator + ui_graph_state.ref_model.rm_publisher.as_lower + resource_path_separator + a_n.rm_type_name
+			if not display_settings.show_technical_view and attached arch_node then
+				base_pixmap_name := Icon_rm_dir + resource_path_separator + ui_graph_state.ref_model.rm_publisher.as_lower + resource_path_separator + arch_node.rm_type_name
 				create ref_pixmap_name.make_empty
 				ref_pixmap_name.append (base_pixmap_name)
 				ref_pixmap_name.append ("_reference")
@@ -58,8 +58,8 @@ feature {NONE} -- Implementation
 
 	display_constraint
 		do
-			if attached arch_node as car and not attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
-				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, car.archetype_ref, Void, Void, c_constraint_colour, Void)
+			if attached arch_node and not attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
+				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.archetype_ref, Void, Void, c_constraint_colour, Void)
 			end
 		end
 
@@ -68,9 +68,9 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			precursor
-			if attached arch_node as car then
+			if attached arch_node then
 				-- menu option to display the archetype for this reference in a new tab
-				if attached current_library.archetype_matching_ref (car.archetype_ref) as ext_ref_node then
+				if attached current_library.archetype_matching_ref (arch_node.archetype_ref) as ext_ref_node then
 					create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab),
 						agent gui_agents.call_select_archetype_in_new_tool_agent (ext_ref_node))
 					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
