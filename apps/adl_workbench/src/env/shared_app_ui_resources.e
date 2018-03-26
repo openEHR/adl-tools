@@ -435,7 +435,7 @@ feature -- Access
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
-			if not attached {BMM_GENERIC_PARAMETER} a_type_spec then
+			if not attached {BMM_PARAMETER_TYPE} a_type_spec then
 				if use_rm_pixmaps then
 					pixmap_key := rm_type_pixmap_key (a_type_spec.base_class)
 				end
