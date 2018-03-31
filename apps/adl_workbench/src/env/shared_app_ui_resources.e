@@ -437,7 +437,11 @@ feature -- Access
 			create pixmap_key.make_empty
 			if not attached {BMM_PARAMETER_TYPE} a_type_spec then
 				if use_rm_pixmaps then
-					pixmap_key := rm_type_pixmap_key (a_type_spec.base_class)
+					if attached {BMM_CLASS} a_type_spec as a_class then
+						pixmap_key := rm_type_pixmap_key (a_class)
+					elseif attached {BMM_TYPE} a_type_spec as a_type then
+						pixmap_key := rm_type_pixmap_key (a_type.base_class)
+					end
 				end
 				if pixmap_key.is_empty then
 					pixmap_key := Icon_rm_dir + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category

@@ -440,7 +440,7 @@ feature {NONE} -- Implementation
 				create menu
 				add_class_context_menu (menu, bmm_class)
 
-				subs := bmm_class.all_descendants
+				subs := bmm_class.all_descendant_types
 				if not subs.is_empty then
 					add_subtype_context_menu (menu, subs, a_class_grid_row)
 				end

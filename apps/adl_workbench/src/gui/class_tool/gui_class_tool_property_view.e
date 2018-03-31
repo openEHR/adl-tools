@@ -208,8 +208,8 @@ feature {NONE} -- Implementation
 
 			-- visit ancestors, recursively
 			if not differential_view then
-				across a_class_def.ancestors as ancestors_csr loop
-					populate_class_node (ancestors_csr.item)
+				across a_class_def.ancestors as ancs_csr loop
+					populate_class_node (ancs_csr.item.base_class)
 				end
 			end
 		end

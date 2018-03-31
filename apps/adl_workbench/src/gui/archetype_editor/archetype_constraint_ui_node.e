@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	aom_types_for_rm_type (an_rm_type: BMM_CLASSIFIER): ARRAYED_SET [STRING]
+	aom_types_for_rm_type (an_rm_type: BMM_CLASS): ARRAYED_SET [STRING]
 			-- list of possible C_OBJECT concrete descendants that can be used on a node of type `an_rm_type'
 		local
 			rm_class_name: STRING
@@ -224,18 +224,18 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 			Result.compare_objects
 
-			rm_class_name := an_rm_type.base_class.name
+			rm_class_name := an_rm_type.name
 
 			-- add AOM constraint types for RM primitive types and also enumeration types
-			if an_rm_type.base_class.is_primitive_type then
+			if an_rm_type.is_primitive_type then
 				if attached ui_graph_state.aom_profile as att_aom_profile and then att_aom_profile.has_aom_primitive_type_mapping_for_rm_type (rm_class_name) then
 					Result.extend (att_aom_profile.aom_primitive_type_mapping_for_rm_type (rm_class_name))
 				end
 
-			elseif attached {BMM_ENUMERATION_INTEGER} an_rm_type.base_class as bmm_enum_int then
+			elseif attached {BMM_ENUMERATION_INTEGER} an_rm_type as bmm_enum_int then
 				Result.extend (bare_type_name(({C_INTEGER}).name))
 
-			elseif attached {BMM_ENUMERATION_STRING} an_rm_type.base_class as bmm_enum_str then
+			elseif attached {BMM_ENUMERATION_STRING} an_rm_type as bmm_enum_str then
 				Result.extend (bare_type_name(({C_STRING}).name))
 
 			else
@@ -246,10 +246,10 @@ feature {NONE} -- Implementation
 				-- figure out whether C_COMPLEX_OBJECT_PROXYs would be valid for this RM type (i.e. are there any other
 				-- nodes of this type in the archetype?); if so add C_COMPLEX_OBJECT_PROXY
 				if not internal_ref_for_rm_type.has (rm_class_name) then
-					if ui_graph_state.archetype.has_rm_type_path (an_rm_type.base_class.name) then
-						internal_ref_for_rm_type.put (True, an_rm_type.base_class.name)
+					if ui_graph_state.archetype.has_rm_type_path (an_rm_type.name) then
+						internal_ref_for_rm_type.put (True, an_rm_type.name)
 					else
-						internal_ref_for_rm_type.put (False, an_rm_type.base_class.name)
+						internal_ref_for_rm_type.put (False, an_rm_type.name)
 					end
 				end
 				if internal_ref_for_rm_type.item (rm_class_name) then
