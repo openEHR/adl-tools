@@ -124,7 +124,7 @@ feature -- Commands
 
 					-- RM schemas info
 					std_out.put_string ("%N" + get_text (ec_rm_schemas_info_text))
-					across ref_models_access.valid_models as loaded_rms_csr loop
+					across models_access.valid_models as loaded_rms_csr loop
 						std_out.put_string ("%T" + loaded_rms_csr.key + "%N")
 					end
 
@@ -139,12 +139,12 @@ feature -- Commands
 					end
 
 				elseif opts.list_rms then
-					across ref_models_access.valid_models as loaded_rms_csr loop
+					across models_access.valid_models as loaded_rms_csr loop
 						std_out.put_string (loaded_rms_csr.key + "%N")
 					end
 
 				elseif attached opts.display_rm as rm then
-					if ref_models_access.valid_models.has (rm) and then attached ref_models_access.valid_models.item (rm) as an_rm then
+					if models_access.valid_models.has (rm) and then attached models_access.valid_models.item (rm) as an_rm then
 						populate_rm (an_rm)
 					end
 
@@ -285,7 +285,7 @@ feature -- Commands
 			else
 				std_err.put_string (app_root.errors.as_string)
 				std_err.put_string (app_root.error_strings)
-				across ref_models_access.all_schemas as schemas_csr loop
+				across models_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
 						std_err.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
 						std_err.put_string (schemas_csr.item.errors.as_string)
@@ -398,7 +398,7 @@ feature {NONE} -- Implementation
 			across a_pkg.classes as classes_csr loop
  				-- only do top classes in each package; if this class has an ancestor in the same package,
  				-- don't do this class, it will get taken care of via the parent
- 				if not across classes_csr.item.ancestors as anc_csr some anc_csr.item.package = a_pkg end then
+ 				if not across classes_csr.item.ancestors as anc_csr some anc_csr.item.base_class.package = a_pkg end then
 	 				populate_rm_classes (classes_csr.item)
 	 			end
 			end
