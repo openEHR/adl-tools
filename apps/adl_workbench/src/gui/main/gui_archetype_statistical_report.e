@@ -154,7 +154,7 @@ feature {NONE} -- Implementation
 							gli.text.append (" *")
 						end
 						class_def := src.ref_model.class_definition (rm_class_stats_csr.item.rm_class_name)
-						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.type_category))
+						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.classifier_category))
 						gli.set_data (class_def)
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 						ev_rm_grid.set_item (Grid_model_element_name_col, ev_rm_grid.row_count + 1, gli)

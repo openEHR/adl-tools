@@ -71,9 +71,9 @@ feature {NONE} -- Implementation
 			-- create a node for `a_class_def'
  		do
 			create Result
-			Result.set_text (a_class_def.type_signature)
+			Result.set_text (a_class_def.type.type_signature)
 			Result.set_data (a_class_def)
-			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
+			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.classifier_category))
 		end
 
    	populate_descendant_nodes (a_class_def: BMM_CLASS)

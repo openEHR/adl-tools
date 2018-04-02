@@ -161,8 +161,8 @@ feature {NONE} -- Implementation
 			if not prop_list.is_empty then
 
 				-- populate class row in 'Declared in' column
-				create gli.make_with_text (a_class_def.type_signature)
-				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
+				create gli.make_with_text (a_class_def.type.type_signature)
+				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.classifier_category))
 				if attached a_class_def.documentation as bmm_class_doc then
 					gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_class_doc)
 				end
@@ -194,7 +194,7 @@ feature {NONE} -- Implementation
 						-- property type
 						create gli.make_with_text (props_csr.item.bmm_type.type_signature)
 						prop_class := safe_source.bmm_model.class_definition (props_csr.item.bmm_type.base_class.name)
-						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_class.type_category))
+						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_class.classifier_category))
 						gli.set_data (prop_class)
 						if attached prop_class.documentation as bmm_prop_class_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)

@@ -237,11 +237,11 @@ feature {NONE} -- Implementation
 		do
 			-- add subrow
 			gui_grid.add_sub_row (ev_parent_node, a_class_def)
- 			pixmap_name := "rm/generic/" + a_class_def.type_category
+ 			pixmap_name := "rm/generic/" + a_class_def.classifier_category
  			if a_class_def.is_override then
  				pixmap_name.append ("_override")
  			end
-			gui_grid.set_last_row_label_col (1, a_class_def.type_signature, a_class_def.description, Void, Void, get_icon_pixmap (pixmap_name))
+			gui_grid.set_last_row_label_col (1, a_class_def.type.type_signature, a_class_def.description, Void, Void, get_icon_pixmap (pixmap_name))
 			check attached gui_grid.last_row as lr then
 				ev_class_row := lr
 			end

@@ -287,7 +287,7 @@ feature {NONE} -- Implementation
 			if attached evx_grid.last_row as lr and attached source as src then
 				ev_grid_rm_row_stack.extend (lr)
 				ev_grid_rm_row_removals_stack.extend (False)
-				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.type_signature, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src, use_rm_pixmaps))
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.type.type_signature, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src, use_rm_pixmaps))
 				if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 		 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
 		 	 	end

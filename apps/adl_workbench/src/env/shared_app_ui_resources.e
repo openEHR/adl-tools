@@ -422,7 +422,8 @@ feature -- Access
 			Result := Icon_rm_dir + resource_path_separator + a_class_def.bmm_model.rm_publisher + resource_path_separator + a_class_def.name
 			if not has_icon_pixmap (Result) then
 				-- now try icon key based on publisher and model name
-				Result := Icon_rm_dir + resource_path_separator + a_class_def.bmm_model.rm_publisher + {ARCHETYPE_HRID}.Section_separator_string + a_class_def.bmm_model.schema_name + resource_path_separator + a_class_def.name
+				Result := Icon_rm_dir + resource_path_separator + a_class_def.bmm_model.rm_publisher + {ARCHETYPE_HRID}.Section_separator_string +
+					a_class_def.bmm_model.schema_name + resource_path_separator + a_class_def.name
 				if not has_icon_pixmap (Result) then
 					Result.wipe_out
 				end
@@ -444,7 +445,7 @@ feature -- Access
 					end
 				end
 				if pixmap_key.is_empty then
-					pixmap_key := Icon_rm_dir + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category
+					pixmap_key := Icon_rm_dir + resource_path_separator + "generic" + resource_path_separator + a_type_spec.classifier_category
 				end
 			end
 			Result := get_icon_pixmap (pixmap_key)
