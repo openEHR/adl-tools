@@ -312,8 +312,8 @@ feature {NONE} -- Implementation
 			-- enter a BMM_PROPERTY
 		local
 			ev_parent_class_row, ev_prop_row, ev_class_row: EV_GRID_ROW
-			prop_str, type_str, tooltip_str: STRING
-			has_type_subs, show_prop, ignore: BOOLEAN
+			prop_str, tooltip_str: STRING
+			show_prop, ignore: BOOLEAN
 			bmm_class: BMM_CLASS
 			col: EV_COLOR
 		do
@@ -350,14 +350,10 @@ feature {NONE} -- Implementation
 					if show_prop then
 						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes						
 						prop_str := a_bmm_prop.name.twin
+						bmm_class := a_bmm_prop.bmm_type.base_class
 						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.bmm_type as bmm_cont_type then
-							bmm_class := bmm_cont_type.base_type.base_class
 							prop_str.append (": " + bmm_cont_type.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
-						else
-							bmm_class := a_bmm_prop.bmm_type.base_class
 						end
-						type_str := a_bmm_prop.bmm_type.type_signature
-						has_type_subs := bmm_class.has_descendants
 
 						-- ======== property node =========
 						evx_grid.add_sub_row (ev_parent_class_row, a_bmm_prop)
@@ -394,10 +390,11 @@ feature {NONE} -- Implementation
 
 						-- ======== class node =========
 						tooltip_str := rm_node_path.as_string + "%N"
-						tooltip_str.append ("BMM meta-type: " + bare_type_name (bmm_class.generating_type.name))
+						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.bmm_type.generating_type.name))
 
 						evx_grid.add_sub_row (ev_prop_row, bmm_class)
-						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, tooltip_str, Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
+						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_prop.bmm_type.type_signature, tooltip_str,
+							Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
 
 						check attached evx_grid.last_row as lr then
 							ev_class_row := lr
@@ -467,15 +464,17 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 			chg_sub_menu: EV_MENU
+			bmm_class: BMM_CLASS
 		do
 			-- create sub menu listing subtypes to change current node into
 			create chg_sub_menu.make_with_text (get_text (ec_context_menu_convert_node_to_subtype))
 			across a_substitutions as subs_csr loop
-				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, True))
+				bmm_class := safe_source.bmm_model.class_definition (subs_csr.item)
+				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (bmm_class, a_class_grid_row, True))
 				if ref_model.class_definition (subs_csr.item).is_abstract then
-					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + "class_abstract"))
+					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + Classifier_class_abstract))
 				else
-					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + "class_concrete"))
+					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + classifier_class_concrete))
 				end
 	    		chg_sub_menu.extend (an_mi)
 			end
@@ -515,20 +514,17 @@ feature {NONE} -- Implementation
 			-- 'add_subtype' menu option
 			from i := 1 until i > a_prop_grid_row.subrow_count loop
 				if a_prop_grid_row.subrow (i).subrow_count = 0 and attached {BMM_CLASS} a_prop_grid_row.subrow (i).data as bmm_class then
-					convert_node_to_subtype (bmm_class.name, a_prop_grid_row.subrow (i), True)
+					convert_node_to_subtype (bmm_class, a_prop_grid_row.subrow (i), True)
 				end
 				i := i + 1
 			end
 		end
 
-	convert_node_to_subtype (a_subtype: STRING; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
+	convert_node_to_subtype (a_bmm_class: BMM_CLASS; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
 			-- rebuild EV tree from interior node of class with a new tree of selected subtype
 		require
 			class_grid_row_valid: attached a_class_grid_row.parent_row
-		local
-			bmm_subtype_def: BMM_CLASS
 		do
-			bmm_subtype_def := ref_model.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
 			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli and then attached gli.tooltip as tt then
 				create rm_node_path.make_from_string (utf32_to_utf8 (tt))
@@ -536,14 +532,14 @@ feature {NONE} -- Implementation
 			if replace_mode then
 				evx_grid.remove_sub_rows (a_class_grid_row)
 				evx_grid.set_last_row (a_class_grid_row)
-				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
-				evx_grid.last_row.set_data (bmm_subtype_def)
+				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_bmm_class.name, Void, Void, archetype_rm_type_color, rm_type_pixmap (a_bmm_class, use_rm_pixmaps))
+				evx_grid.last_row.set_data (a_bmm_class)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				check attached a_class_grid_row.parent_row as pr then
-					evx_grid.add_sub_row (pr, bmm_subtype_def)
+					evx_grid.add_sub_row (pr, a_bmm_class)
 				end
-				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, use_rm_pixmaps))
+				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_class.name, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (a_bmm_class, use_rm_pixmaps))
 				if attached evx_grid.last_row as lr then
 					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
 	 	 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
@@ -555,7 +551,7 @@ feature {NONE} -- Implementation
 
 			ev_grid_rm_row_removals_stack.extend (False)
 
-			bmm_subtype_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
+			a_bmm_class.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
 			ev_grid_rm_row_stack.remove
 			ev_grid_rm_row_removals_stack.remove
 

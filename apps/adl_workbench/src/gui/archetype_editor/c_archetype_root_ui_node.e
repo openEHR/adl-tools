@@ -24,13 +24,13 @@ feature -- Access
 	arch_node: detachable C_ARCHETYPE_ROOT
 			-- archetype node being edited
 
-	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
+	rm_properties: STRING_TABLE [BMM_PROPERTY [BMM_TYPE]]
 			-- don't produce any RM properties, since node is another archetype
 		do
 			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and not c_attributes.is_empty then
 				Result := rm_type.base_class.flat_properties
 			else
-				create Result.make (0)
+				create Result.make_caseless (0)
 			end
 		end
 

@@ -41,17 +41,17 @@ feature -- Access
 	arch_node: detachable C_COMPLEX_OBJECT
 			-- archetype node being edited
 
-	c_attributes: HASH_TABLE [C_ATTRIBUTE_UI_NODE, STRING]
+	c_attributes: STRING_TABLE [C_ATTRIBUTE_UI_NODE]
 			-- editor nodes for real C_ATTRIBUTEs that are found in C_COMPLEX_OBJECT.attributes
 
 	c_attribute_tuples: ARRAYED_LIST [C_ATTRIBUTE_TUPLE_UI_NODE]
 			-- editor nodes for C_ATTRIBUTE_TUPLEs that are found in C_COMPLEX_OBJECT.attribute_tuples
 
-	rm_attributes: HASH_TABLE [C_ATTRIBUTE_UI_NODE, STRING]
+	rm_attributes: STRING_TABLE [C_ATTRIBUTE_UI_NODE]
 			-- Editor nodes for unconstrained RM attributes that have been lazy-requested for viewing
 			-- Once created, they don't leave, they are just displayed or hidden in the EV_GRID tree
 
-	rm_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
+	rm_properties: STRING_TABLE [BMM_PROPERTY [BMM_TYPE]]
 		do
 			if ui_graph_state.in_differential_view and not ui_graph_state.editing_enabled then
 				Result := rm_type.base_class.properties

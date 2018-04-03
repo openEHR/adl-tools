@@ -512,8 +512,8 @@ feature {ANY_UI_NODE} -- Implementation
 		local
 			rm_type_name, aom_type: STRING
 		do
-			if ui_graph_state.ref_model.is_primitive_type (a_bmm_type.base_class.name) then
-				rm_type_name := a_bmm_type.base_class.name
+			rm_type_name := a_bmm_type.base_class.name
+			if ui_graph_state.ref_model.is_primitive_type (rm_type_name) then
 
 				-- if there is an AOM_PROFILE, use the RM prim type => AOM type mapping found there
 				if attached ui_graph_state.aom_profile as att_aom_profile and then

@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
  			end
 		end
 
-	flat_properties: HASH_TABLE [BMM_PROPERTY [BMM_TYPE], STRING]
+	flat_properties: STRING_TABLE [BMM_PROPERTY [BMM_TYPE]]
 
 	anc_classes: ARRAYED_LIST [STRING]
 
@@ -145,7 +145,7 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
 			class_row, property_row: EV_GRID_ROW
 			prop_list: ARRAYED_LIST [BMM_PROPERTY [BMM_TYPE]]
-			prop_class: BMM_CLASS
+			prop_type: BMM_TYPE
 		do
 			-- find properties defined on `a_class_def', if any; have to check against flat properties, since
 			-- there could be properties which were overridden in some lower descendant, and which
@@ -192,11 +192,11 @@ feature {NONE} -- Implementation
 						property_row := gli.row
 
 						-- property type
-						create gli.make_with_text (props_csr.item.bmm_type.type_signature)
-						prop_class := safe_source.bmm_model.class_definition (props_csr.item.bmm_type.base_class.name)
-						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_class.classifier_category))
-						gli.set_data (prop_class)
-						if attached prop_class.documentation as bmm_prop_class_doc then
+						prop_type := props_csr.item.bmm_type
+						create gli.make_with_text (prop_type.type_signature)
+						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_type.classifier_category))
+						gli.set_data (prop_type)
+						if attached prop_type.base_class.documentation as bmm_prop_class_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
 						end
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
@@ -219,10 +219,10 @@ feature {NONE} -- Implementation
 		local
 			menu: EV_MENU
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS} eti.data as bmm_class then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE} eti.data as bmm_type then
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, bmm_class)
+				add_class_context_menu (menu, bmm_type.base_class)
 				menu.show
 			end
 		end
