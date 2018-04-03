@@ -413,7 +413,7 @@ feature {NONE} -- Implementation
 
 	populate_rm_classes (a_class_def: BMM_CLASS)
 		do
-			std_out.put_string (spaces.substring (1, 4 * rm_depth) + a_class_def.type_signature + "%N")
+			std_out.put_string (spaces.substring (1, 4 * rm_depth) + a_class_def.type.type_signature + "%N")
 
 			-- do any descendants in same package
 			rm_depth := rm_depth + 1
