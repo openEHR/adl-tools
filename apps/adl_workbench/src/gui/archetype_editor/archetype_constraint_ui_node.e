@@ -51,7 +51,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	rm_element: BMM_MODEL_ELEMENT
+	rm_element: ANY
 
 	arch_node: detachable ARCHETYPE_CONSTRAINT
 			-- archetype node being edited
@@ -169,9 +169,9 @@ feature {NONE} -- Implementation
 					end
 
 					-- documentation, if there is any
-					if attached rm_element.documentation as bmm_node_doc then
+					if not node_documentation.is_empty then
 						Result.append ("%N%N" + get_text (ec_bmm_documentation_text) + "%N")
-						Result.append ("%T" + bmm_node_doc + "%N")
+						Result.append ("%T" + node_documentation + "%N")
 					end
 				end
 
@@ -198,6 +198,11 @@ feature {NONE} -- Implementation
 			else
 				Result := path
 			end
+		end
+
+	node_documentation: STRING
+		do
+			create Result.make (0)
 		end
 
 	specialisation_status: INTEGER

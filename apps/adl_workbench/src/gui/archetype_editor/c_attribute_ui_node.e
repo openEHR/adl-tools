@@ -14,7 +14,8 @@ inherit
 		rename
 			rm_element as rm_property
 		redefine
-			make, make_rm, rm_property, arch_node, arch_node_in_ancestor, parent, prepare_display_in_grid, display_in_grid, c_attribute_colour
+			make, make_rm, rm_property, arch_node, arch_node_in_ancestor, parent, node_documentation,
+			prepare_display_in_grid, display_in_grid, c_attribute_colour
 		end
 
 	C_PRIMITIVE_FACTORY
@@ -755,6 +756,16 @@ feature {NONE} -- Implementation
 						arch_node_in_ancestor := parent_arch.attribute_at_path (ca_path_in_flat)
 					end
 				end
+			end
+		end
+
+	node_documentation: STRING
+		do
+			-- documentation, if there is any
+			if attached rm_property.documentation as bmm_node_doc then
+				Result := bmm_node_doc
+			else
+				create Result.make (0)
 			end
 		end
 
