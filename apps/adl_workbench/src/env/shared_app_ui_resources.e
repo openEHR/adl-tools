@@ -430,22 +430,22 @@ feature -- Access
 			end
 		end
 
-	rm_type_pixmap (a_type_spec: BMM_CLASSIFIER; use_rm_pixmaps: BOOLEAN): EV_PIXMAP
+	rm_type_pixmap (a_rm_entity: BMM_ENTITY; use_rm_pixmaps: BOOLEAN): EV_PIXMAP
 			-- generate an RM pixmap for RM type `a_type_spec'
 		local
 			pixmap_key: STRING
 		do
 			create pixmap_key.make_empty
-			if not attached {BMM_PARAMETER_TYPE} a_type_spec then
+			if not attached {BMM_PARAMETER_TYPE} a_rm_entity then
 				if use_rm_pixmaps then
-					if attached {BMM_CLASS} a_type_spec as a_class then
+					if attached {BMM_CLASS} a_rm_entity as a_class then
 						pixmap_key := rm_type_pixmap_key (a_class)
-					elseif attached {BMM_TYPE} a_type_spec as a_type then
+					elseif attached {BMM_TYPE} a_rm_entity as a_type then
 						pixmap_key := rm_type_pixmap_key (a_type.base_class)
 					end
 				end
 				if pixmap_key.is_empty then
-					pixmap_key := Icon_rm_dir + resource_path_separator + "generic" + resource_path_separator + a_type_spec.classifier_category
+					pixmap_key := Icon_rm_dir + resource_path_separator + "generic" + resource_path_separator + a_rm_entity.entity_category
 				end
 			end
 			Result := get_icon_pixmap (pixmap_key)

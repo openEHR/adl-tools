@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GENERIC_CLASS_ABSTRACT
+class ICON_RM_GENERIC_SIMPLE_ENTITY_ABSTRACT
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/generic/class_abstract"
+			key := "rm/generic/simple_entity-abstract"
 			make_with_size (16, 16)
 			fill_memory
 		end

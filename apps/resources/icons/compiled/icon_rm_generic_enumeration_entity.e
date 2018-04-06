@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GENERIC_CLASS_ENUMERATION
+class ICON_RM_GENERIC_ENUMERATION_ENTITY
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/generic/class_enumeration"
+			key := "rm/generic/enumeration_entity"
 			make_with_size (16, 16)
 			fill_memory
 		end

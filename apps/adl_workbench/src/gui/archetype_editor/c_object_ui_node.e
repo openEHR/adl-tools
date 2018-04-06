@@ -489,7 +489,7 @@ feature {NONE} -- Context menu
 		do
 			if attached arch_node_in_ancestor as anc_arch_node then
 				spec_parent_rm_class := ui_graph_state.ref_model.class_definition (anc_arch_node.rm_type_name)
-				rm_type_substitutions := spec_parent_rm_class.all_descendant_types.deep_twin
+				rm_type_substitutions := spec_parent_rm_class.all_descendants.deep_twin
 				rm_type_substitutions.extend (rm_type.type_name)
 
 				if attached anc_arch_node.occurrences as anc_arch_node_occ then
@@ -520,7 +520,7 @@ feature {NONE} -- Context menu
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
-			rm_type_substitutions := rm_type.base_class.all_descendant_types.deep_twin
+			rm_type_substitutions := rm_type.base_class.all_descendants.deep_twin
 			rm_type_substitutions.extend (rm_type.type_name)
 			create dialog.make (aom_types_for_rm_type (rm_type.base_class), rm_type_substitutions, arch_node_aom_type, rm_type.type_name,
 				parent.default_occurrences, ui_graph_state.archetype, Void, display_settings)

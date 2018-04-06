@@ -73,7 +73,7 @@ feature {NONE} -- Implementation
 			create Result
 			Result.set_text (a_class_def.type.type_signature)
 			Result.set_data (a_class_def)
-			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.classifier_category))
+			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.entity_category))
 		end
 
    	populate_descendant_nodes (a_class_def: BMM_CLASS)

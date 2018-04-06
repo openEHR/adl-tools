@@ -71,7 +71,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.populate (a_class_def, False)
-			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (Tab_title_width)), get_icon_pixmap ("rm/generic/" + a_class_def.classifier_category))
+			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (Tab_title_width)), get_icon_pixmap ("rm/generic/" + a_class_def.entity_category))
 			active_tool.selection_history.set_selected_item (a_class_def)
 		end
 

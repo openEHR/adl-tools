@@ -437,7 +437,7 @@ feature {NONE} -- Implementation
 				create menu
 				add_class_context_menu (menu, bmm_class)
 
-				subs := bmm_class.all_descendant_types
+				subs := bmm_class.all_descendants
 				if not subs.is_empty then
 					add_subtype_context_menu (menu, subs, a_class_grid_row)
 				end
@@ -472,9 +472,9 @@ feature {NONE} -- Implementation
 				bmm_class := safe_source.bmm_model.class_definition (subs_csr.item)
 				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (bmm_class, a_class_grid_row, True))
 				if ref_model.class_definition (subs_csr.item).is_abstract then
-					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + Classifier_class_abstract))
+					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + {BMM_ENTITY}.Entity_category_simple_abstract))
 				else
-					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + classifier_class_concrete))
+					an_mi.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + {BMM_ENTITY}.Entity_metatype_simple))
 				end
 	    		chg_sub_menu.extend (an_mi)
 			end

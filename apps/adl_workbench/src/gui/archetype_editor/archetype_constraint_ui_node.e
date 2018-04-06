@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 			rm_class_name := an_rm_type.name
 
 			-- add AOM constraint types for RM primitive types and also enumeration types
-			if an_rm_type.is_primitive_type then
+			if an_rm_type.is_primitive then
 				if attached ui_graph_state.aom_profile as att_aom_profile and then att_aom_profile.has_aom_primitive_type_mapping_for_rm_type (rm_class_name) then
 					Result.extend (att_aom_profile.aom_primitive_type_mapping_for_rm_type (rm_class_name))
 				end

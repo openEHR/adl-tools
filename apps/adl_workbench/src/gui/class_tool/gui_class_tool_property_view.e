@@ -68,7 +68,6 @@ feature {NONE} -- Implementation
 		do
 			flat_properties := safe_source.flat_properties
 			create anc_classes.make(0)
-			anc_classes.compare_objects
 
 			if attached {BMM_ENUMERATION[COMPARABLE]} source then
 				do_populate_enumeration
@@ -134,7 +133,7 @@ feature {NONE} -- Implementation
 
 	flat_properties: STRING_TABLE [BMM_PROPERTY [BMM_TYPE]]
 
-	anc_classes: ARRAYED_LIST [STRING]
+	anc_classes: ARRAYED_LIST [BMM_CLASS]
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
@@ -162,7 +161,7 @@ feature {NONE} -- Implementation
 
 				-- populate class row in 'Declared in' column
 				create gli.make_with_text (a_class_def.type.type_signature)
-				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.classifier_category))
+				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.entity_category))
 				if attached a_class_def.documentation as bmm_class_doc then
 					gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_class_doc)
 				end
@@ -173,7 +172,7 @@ feature {NONE} -- Implementation
 
 				-- do property rows if we have not already encountered this class due to
 				-- multiple inheritance
-				if not anc_classes.has (a_class_def.name) then
+				if not anc_classes.has (a_class_def) then
 					across prop_list as props_csr loop
 						-- property name
 						create gli.make_with_text (props_csr.item.name)
@@ -194,7 +193,7 @@ feature {NONE} -- Implementation
 						-- property type
 						prop_type := props_csr.item.bmm_type
 						create gli.make_with_text (prop_type.type_signature)
-						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_type.classifier_category))
+						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_type.entity_category))
 						gli.set_data (prop_type)
 						if attached prop_type.base_class.documentation as bmm_prop_class_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
@@ -203,7 +202,7 @@ feature {NONE} -- Implementation
 						property_row.set_item (Grid_property_type_col, gli)
 					end
 				end
-				anc_classes.extend (a_class_def.name)
+				anc_classes.extend (a_class_def)
 			end
 
 			-- visit ancestors, recursively

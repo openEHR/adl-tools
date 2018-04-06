@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GENERIC_GENERIC_PARAMETER_CONSTRAINED
+class ICON_RM_GENERIC_GENERIC_PARAMETER_ENTITY_CONSTRAINED
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/generic/generic_parameter_constrained"
+			key := "rm/generic/generic_parameter_entity-constrained"
 			make_with_size (16, 16)
 			fill_memory
 		end

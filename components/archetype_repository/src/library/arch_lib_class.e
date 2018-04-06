@@ -27,7 +27,7 @@ feature -- Initialisation
 			bmm_model := class_definition.bmm_model
 			qualified_name := bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out + class_definition.name
 			name := class_definition.name
-			group_name := class_definition.classifier_category
+			group_name := class_definition.entity_category
 		ensure
 			qualified_name_set: qualified_name.is_equal (bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out +  class_definition.name)
 			display_name_set: name = class_definition.name
