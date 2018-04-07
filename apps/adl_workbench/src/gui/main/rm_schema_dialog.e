@@ -297,7 +297,7 @@ feature {NONE} -- Implementation
 			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
-	add_schema_publisher_grid_rows (a_schema_desc: SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW; top_level: BOOLEAN)
+	add_schema_publisher_grid_rows (a_schema_desc: P_BMM_SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW; top_level: BOOLEAN)
 			-- add rows for `schema_id' and its children, recursively
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -358,7 +358,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_edit_schema (a_schema: SCHEMA_DESCRIPTOR)
+	do_edit_schema (a_schema: P_BMM_SCHEMA_DESCRIPTOR)
 			-- launch external editor with schema, or info box if none defined
 		do
 			check attached a_schema.meta_data.item (metadata_schema_path) as msp then
@@ -366,7 +366,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_export_schema (schema_desc: SCHEMA_DESCRIPTOR)
+	do_export_schema (schema_desc: P_BMM_SCHEMA_DESCRIPTOR)
 			-- export model as XML and allow saving
 		local
 			serialise_engine: ODIN_ENGINE

@@ -352,7 +352,7 @@ feature {NONE} -- Implementation
 						prop_str := a_bmm_prop.name.twin
 						bmm_class := a_bmm_prop.bmm_type.base_class
 						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.bmm_type as bmm_cont_type then
-							prop_str.append (": " + bmm_cont_type.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
+							prop_str.append (": " + bmm_cont_type.container_class.name + Generic_left_delim.out + Generic_right_delim.out)
 						end
 
 						-- ======== property node =========

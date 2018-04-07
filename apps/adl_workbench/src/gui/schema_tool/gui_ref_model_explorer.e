@@ -65,7 +65,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	source: detachable MODEL_ACCESS
+	source: detachable BMM_MODEL_ACCESS
 
 	tool_artefact_id: STRING
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
