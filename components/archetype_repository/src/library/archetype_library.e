@@ -905,12 +905,18 @@ feature {NONE} -- Implementation
 			root_classes: ARRAYED_SET [BMM_CLASS]
 			removed: BOOLEAN
 			bmm_model: BMM_MODEL
+			aom_profile: AOM_PROFILE
+			archetype_parent_class: detachable STRING
 		do
 			item_tree.wipe_out
 
 			-- process each top-level model
 			across models_access.valid_models as models_csr loop
 				bmm_model := models_csr.item
+				if aom_profiles_access.has_profile_for_rm_schema (bmm_model.schema_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (bmm_model.schema_id)
+					archetype_parent_class := aom_profile.archetype_parent_class
+				end
 
 				-- create new top-level model node
 				create model_node.make (bmm_model)
@@ -939,7 +945,7 @@ feature {NONE} -- Implementation
 							-- now filter this list to keep only those classes inheriting from the archetype_parent_class
 							-- that are among the suppliers of the top-level class of the package; this gives the classes
 							-- that could be archetyped in that package
-							if attached bmm_model.archetype_parent_class as apc then
+							if attached archetype_parent_class as apc then
 								from supp_list.start until supp_list.off loop
 									if not bmm_model.is_descendant_of (supp_list.item, apc) then
 										supp_list.remove

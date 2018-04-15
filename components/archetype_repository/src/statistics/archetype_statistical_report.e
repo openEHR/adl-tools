@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Statistical report data container for archetypes."
 	keywords:    "statistics, archetype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_STATISTICAL_REPORT
@@ -12,12 +12,19 @@ class ARCHETYPE_STATISTICAL_REPORT
 inherit
 	ARCHETYPE_STATISTICAL_DEFINITIONS
 
+	SHARED_AOM_PROFILES_ACCESS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Initialisation
 
 	make (an_rm: BMM_MODEL)
+		local
+			aom_profile: AOM_PROFILE
 		do
 			ref_model :=  an_rm
 			Archetype_metric_names.do_all (
@@ -27,17 +34,23 @@ feature -- Initialisation
 					end
 			)
 
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+				archetype_parent_class := aom_profile.archetype_parent_class
+				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
+			end
+
 			-- set up the RM class breakdown tables according to major base class groups, found in BMM_SCHEMA. If
 			-- no 'LOCATABLE' or equivalent class declared, create a default table. Additionally create a
 			-- primitive types table (for nodes that archetype RM types like String, Integer etc), since this can
 			-- always be detected
-			if attached ref_model.archetype_parent_class as apc then
+			if attached archetype_parent_class as apc then
 				rm_grouped_class_table.put (default_rm_class_table, apc)
 			else
 				rm_grouped_class_table.put (default_rm_class_table, "Any")
 			end
-			if attached ref_model.archetype_data_value_parent_class as dvpc then
-				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), dvpc)
+			if attached archetype_data_value_parent_class as advpc then
+				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), advpc)
 			end
 			rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), Rm_primitive_group_key)
 		end
@@ -76,6 +89,10 @@ feature -- Access
 
 	ref_model: BMM_MODEL
 
+	archetype_data_value_parent_class: detachable STRING
+
+	archetype_parent_class: detachable STRING
+
 feature -- Modification
 
 	add_rm_class_stats (a_stat_accum: RM_CLASS_STATISTICS)
@@ -84,11 +101,11 @@ feature -- Modification
 		do
 			if ref_model.is_primitive_type (a_stat_accum.rm_class_name) and then attached rm_grouped_class_table.item (Rm_primitive_group_key) as rgct_prim then
 				rm_class_table := rgct_prim
-			elseif attached ref_model.archetype_parent_class as apc and then ref_model.is_descendant_of (a_stat_accum.rm_class_name, apc) and then
+			elseif attached archetype_parent_class as apc and then ref_model.is_descendant_of (a_stat_accum.rm_class_name, apc) and then
 				attached rm_grouped_class_table.item (apc) as rgct_apc then
 				rm_class_table := rgct_apc
-			elseif attached ref_model.archetype_data_value_parent_class as dvpc and then ref_model.is_descendant_of (a_stat_accum.rm_class_name, dvpc) and then
-				attached rm_grouped_class_table.item (dvpc) as rgct_dvpc then
+			elseif attached archetype_data_value_parent_class as advpc and then ref_model.is_descendant_of (a_stat_accum.rm_class_name, advpc) and then
+				attached rm_grouped_class_table.item (advpc) as rgct_dvpc then
 				rm_class_table := rgct_dvpc
 			else
 				rm_class_table := default_rm_class_table

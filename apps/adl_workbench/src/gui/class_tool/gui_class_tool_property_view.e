@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "Class control - visualise property view of a class, including inheritance lineage."
-	keywords:    "archetype, gui"
+	keywords:    "archetype, gui, BMM"
 	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010- The openEHR Foundation <http://www.openEHR.org>"

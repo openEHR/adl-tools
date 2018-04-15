@@ -49,6 +49,9 @@ feature -- Initialisation
 			undo_redo_chain := an_undo_redo_chain
 			if aom_profiles_access.has_profile_for_rm_schema (an_rm.schema_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm.schema_id)
+				archetype_parent_class := aom_profile.archetype_parent_class
+				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
+				archetype_visualise_descendants_of := aom_profile.archetype_visualise_descendants_of
 			end
 			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype
@@ -76,6 +79,12 @@ feature -- Access
 	ref_model: BMM_MODEL
 
 	aom_profile: detachable AOM_PROFILE
+
+	archetype_data_value_parent_class: detachable STRING
+
+	archetype_parent_class: detachable STRING
+
+	archetype_visualise_descendants_of: detachable STRING
 
 feature -- Status Report
 

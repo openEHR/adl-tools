@@ -1799,11 +1799,6 @@ complex_type_id: V_TYPE_ID
 	| V_GENERIC_TYPE_ID
 		{
 			$$ := $1
-
-			-- add type to type system, if possible
-			if not ref_model.has_type_definition ($$) and ref_model.candidate_generic_type_name ($$) then
-				ref_model.add_effective_type_from_name ($$)
-			end
 		}
 	;
 

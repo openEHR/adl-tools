@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Statistical analyser for archetypes."
 	keywords:    "statistics, archteype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_STATISTICAL_ANALYSER
@@ -17,15 +17,29 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_AOM_PROFILES_ACCESS
+		export
+			{NONE} all
+		end
+
 create
 	make, make_specialised
 
 feature -- Initialisation
 
 	make (an_archetype: ARCHETYPE; an_rm: BMM_MODEL)
+		local
+			aom_profile: AOM_PROFILE
 		do
 			target := an_archetype
 			ref_model := an_rm
+
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+				archetype_parent_class := aom_profile.archetype_parent_class
+				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
+			end
+
 			create stats.make (ref_model)
 		end
 
@@ -86,6 +100,10 @@ feature {NONE} -- Implementation
 	ref_model: BMM_MODEL
 			-- schema for the `target'			
 
+	archetype_data_value_parent_class: detachable STRING
+
+	archetype_parent_class: detachable STRING
+
 	node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			stat_accums: ARRAYED_LIST [RM_CLASS_STATISTICS]
@@ -102,11 +120,11 @@ feature {NONE} -- Implementation
 				total_node_count := total_node_count + 1
 
 				-- capture LOCATABLE node count
-				if attached ref_model.archetype_parent_class as apc and then
+				if attached archetype_parent_class as apc and then
 					ref_model.is_descendant_of (co.rm_type_name, apc)
 				then
 					locatable_node_count := locatable_node_count + 1
-				elseif attached ref_model.archetype_data_value_parent_class as dvpc and then
+				elseif attached archetype_data_value_parent_class as dvpc and then
 					ref_model.is_descendant_of (co.rm_type_name, dvpc)
 				then
 					data_value_node_count := data_value_node_count + 1

@@ -70,6 +70,16 @@ feature -- Access (attributes from file)
 			-- grid-based view of an archetype definition, from the semantic viewpoint.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
 
+	archetype_parent_class: detachable STRING
+			-- name of a parent class used within the schema to provide archetype capability,
+			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	archetype_data_value_parent_class: detachable STRING
+			-- name of a parent class of logical 'data types' used within the schema to provide archetype capability,
+			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
 	aom_rm_type_mappings: detachable HASH_TABLE [AOM_TYPE_MAPPING, STRING]
 			-- mappings from AOM built-in types to actual types in RM: whenever
 			-- the type name is encountered in an archetype, it is mapped to a specific RM type

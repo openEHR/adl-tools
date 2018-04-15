@@ -1,6 +1,6 @@
 -- 
 -- 	component:   openEHR Archetype Project
--- 	description: Archetype profile for ISO 13606 RM schemas
+-- 	description: Archetype profile for openEHR RM schemas
 -- 	keywords:    reference model, meta-model, archetypes
 --	author:      Thomas Beale <thomas.beale@OceanInformatics.com>
 --	support:     http://www.openehr.org/issues/browse/AWB
@@ -8,21 +8,21 @@
 -- 	license:     See end of file
 -- 
 
-profile_name = <"iso13606">
+profile_name = <"openEHR_test">
 
 ----------------------------------------------------------------------------------------
 -- id or PERL regex based on id Reference Models to which this profile applies. 
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_pattern = <"cen_en13606_.*">
+rm_schema_pattern = <"openehr_adltest_.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
 --
 terminology_profile = <
-	terminology_issuer = <"CEN">
-	code_sets_issuer = <"CEN">
+	terminology_issuer = <"openehr">
+	code_sets_issuer = <"openehr">
 >
 
 ----------------------------------------------------------------------------------------
@@ -30,7 +30,6 @@ terminology_profile = <
 -- grid-based view of an archetype definition, from the semantic viewpoint.
 --
 archetype_visualise_descendants_of = <"ITEM">
-archetype_data_value_parent_class = <"HXIT">
 
 ----------------------------------------------------------------------------------------
 -- mappings from AOM built-in types used for RM types
@@ -38,29 +37,18 @@ archetype_data_value_parent_class = <"HXIT">
 aom_rm_type_mappings = <
 	["TERMINOLOGY_CODE"] = <
 		source_class_name = <"TERMINOLOGY_CODE">
-		target_class_name = <"CD">
+		target_class_name = <"CODE_PHRASE">
 		property_mappings = <
 			["terminology_id"] = <
 				source_property_name = <"terminology_id">
-				target_property_name = <"codingSchemeName">
+				target_property_name = <"terminology_id">
 			>
 			["code_string"] = <
 				source_property_name = <"code_string">
-				target_property_name = <"codeValue">
+				target_property_name = <"code_string">
 			>
 		>
 	>
->
-
-----------------------------------------------------------------------------------------
--- allowed substitutions from AOM built-in types to RM types
---
-
-aom_rm_type_substitutions = <
-	["ISO8601_DATE"] = <"String">
-	["ISO8601_DATE_TIME"] = <"String">
-	["ISO8601_TIME"] = <"String">
-	["ISO8601_DURATION"] = <"String">
 >
 
 ----------------------------------------------------------------------------------------
@@ -78,18 +66,37 @@ rm_primitive_type_equivalences = <
 >
 
 ----------------------------------------------------------------------------------------
+-- Allowed substitutions from AOM built-in types to RM types. AOM type on the left can be used
+-- as a constrainer type for the RM type on the right, even though they are not equivalents.
+-- Useful to deal with two problems: stringified values and numeric type promotions, e.g. 
+-- Integer => Real or Double.
+--
+
+aom_rm_type_substitutions = <
+	["DATE"] = <"String">
+	["DATE_TIME"] = <"String">
+	["TIME"] = <"String">
+	["DURATION"] = <"String">
+	["CODE_PHRASE"] = <"DV_CODED_TEXT">
+	["INTEGER"] = <"Real">
+	["REAL"] = <"Double">
+	["Real"] = <"Double">
+>
+
+----------------------------------------------------------------------------------------
 -- allowed substitutions from source RM lifecycle states to AOM lifecycle states
 -- States on the value side (right hand side) must be the AOM states:
 --
 --	"unmanaged"
---	"in_review"
---	"suspended"
---	"unstable"
+--	"in_development"
+--		"draft"
+--		"in_review"
+--		"suspended"
 --	"release_candidate"
 --	"published"
---	"obsolete"
---	"superseded"
 --	"deprecated"
+--		"obsolete"
+--		"superseded"
 
 --
 
@@ -101,5 +108,7 @@ aom_lifecycle_mappings = <
 	["ReviewSuspended"] = <"in_development">
 	["Review Suspended"] = <"in_development">
 	["Reassess"] = <"published">
+	["Published"] = <"published">
+	["Rejected"] = <"rejected">
 >
 

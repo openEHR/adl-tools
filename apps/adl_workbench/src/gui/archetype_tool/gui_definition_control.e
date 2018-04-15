@@ -463,6 +463,7 @@ feature {NONE} -- Implementation
 	do_populate
 		local
 			ui_settings: GUI_DEFINITION_SETTINGS
+			aom_profile: AOM_PROFILE
 		do
 			evx_definition_grid.wipe_out
 			evx_rules_grid.wipe_out
@@ -470,12 +471,16 @@ feature {NONE} -- Implementation
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
 			-- tree expanding stops)
 			ref_model := safe_source.ref_model
-			if attached ref_model.archetype_parent_class then
-				visualise_descendants_class := ref_model.archetype_parent_class
-			elseif attached ref_model.archetype_visualise_descendants_of then
-				visualise_descendants_class := ref_model.archetype_visualise_descendants_of
-			end
 
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+				if attached aom_profile.archetype_parent_class then
+					visualise_descendants_class := aom_profile.archetype_parent_class
+				elseif attached aom_profile.archetype_visualise_descendants_of then
+					visualise_descendants_class := aom_profile.archetype_visualise_descendants_of
+				end
+			end
+			
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 

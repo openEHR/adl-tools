@@ -80,9 +80,9 @@ feature -- Display
 				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, Void, c_pixmap)
 
 				-- add 'power expander' action to logical C_OBJECT leaf nodes
-				if attached ui_graph_state.ref_model.archetype_parent_class as apc then
+				if attached ui_graph_state.archetype_parent_class as apc then
 					visualise_descendants_class := apc
-				elseif attached ui_graph_state.ref_model.archetype_visualise_descendants_of as avdo then
+				elseif attached ui_graph_state.archetype_visualise_descendants_of as avdo then
 					visualise_descendants_class := avdo
 				end
 				if attached visualise_descendants_class as vdc and then ui_graph_state.ref_model.is_descendant_of (arch_node.rm_type_name, vdc) then

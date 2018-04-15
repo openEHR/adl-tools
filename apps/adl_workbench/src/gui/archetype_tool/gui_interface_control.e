@@ -4,7 +4,7 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_INTERFACE_CONTROL
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
 				Result.extend (utf8_to_utf32 (co.rm_type_name))
 
 				-- third column: AOM type
-				Result.extend (utf8_to_utf32 (co.generating_type))
+				Result.extend (utf8_to_utf32 (co.generating_type.name))
 			else
 				-- second column: RM type name
 				Result.extend ("")

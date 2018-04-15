@@ -68,9 +68,17 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
 			str: STRING
 			ref_model: BMM_MODEL
+			aom_profile: AOM_PROFILE
+			archetype_parent_class: detachable STRING
+			archetype_data_value_parent_class: detachable STRING
 		do
 			check attached source as s then
 				ref_model := s
+				if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+					archetype_parent_class := aom_profile.archetype_parent_class
+					archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
+				end
 			end
 
 			ev_grid.wipe_out
@@ -150,14 +158,14 @@ feature {NONE} -- Implementation
 
 			create gli.make_with_text ("archetype_parent_class")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			if attached ref_model.archetype_parent_class as apc then
+			if attached archetype_parent_class as apc then
 				create gli.make_with_text (apc)
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end
 
 			create gli.make_with_text ("archetype_data_value_parent_class")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			if attached ref_model.archetype_data_value_parent_class as dvpc then
+			if attached archetype_data_value_parent_class as dvpc then
 				create gli.make_with_text (dvpc)
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end

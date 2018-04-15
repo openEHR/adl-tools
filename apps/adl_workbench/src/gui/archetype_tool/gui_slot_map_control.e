@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Slot map control - Visualise archetype ids matching slots"
 	keywords:    "archetype, slot, gui"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2008-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2008- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_SLOT_MAP_CONTROL
@@ -46,7 +46,7 @@ feature {NONE} -- Initialisation
 			create ev_slot_fillers_tree
 			slot_fillers_vbox.extend (ev_slot_fillers_tree)
 
-			ev_slot_fillers_tree.pointer_button_press_actions.force_extend (agent slot_fillers_tree_context_menu)
+			ev_slot_fillers_tree.pointer_button_press_actions.extend (agent slot_fillers_tree_context_menu)
 
 			-- Slot owners tree
 			create slot_owners_frame
@@ -58,7 +58,7 @@ feature {NONE} -- Initialisation
 
 			create ev_slot_owners_tree
 			slot_owners_vbox.extend (ev_slot_owners_tree)
-			ev_slot_owners_tree.pointer_button_press_actions.force_extend (agent slot_owners_tree_context_menu)
+			ev_slot_owners_tree.pointer_button_press_actions.extend (agent slot_owners_tree_context_menu)
 
 			-- set visual characteristics
 			slot_fillers_vbox.set_border_width (Default_border_width)
@@ -168,7 +168,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	slot_fillers_tree_context_menu (x,y, button: INTEGER)
+	slot_fillers_tree_context_menu (x,y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
 			context_menu: EV_MENU
@@ -180,7 +180,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	slot_owners_tree_context_menu (x,y, button: INTEGER)
+	slot_owners_tree_context_menu (x,y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
 			context_menu: EV_MENU

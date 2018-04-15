@@ -3,9 +3,9 @@ note
 	description: "Statistics display for a single RM"
 	keywords:    "statistics"
 	keywords:    "statistics, archteype"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
@@ -50,10 +50,23 @@ feature {NONE} -- Implementation
 
 	do_populate
 		local
+			aom_profile: AOM_PROFILE
 			gli: EV_GRID_LABEL_ITEM
 			rm_stats: HASH_TABLE [INTEGER, STRING]
+			rm_stats_class_list: ARRAYED_LIST[STRING]
 		do
-			safe_source.generate_statistics
+			create rm_stats_class_list.make (0)
+			if aom_profiles_access.has_profile_for_rm_schema (safe_source.schema_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (safe_source.schema_id)
+				if attached aom_profile.archetype_parent_class as apc then
+					rm_stats_class_list.extend (apc)
+				end
+				if attached aom_profile.archetype_data_value_parent_class as advpc then
+					rm_stats_class_list.extend (advpc)
+				end
+			end
+
+			safe_source.generate_statistics (rm_stats_class_list)
 
 			-- column names
 			ev_root_container.insert_new_column (Grid_metric_name_col)
