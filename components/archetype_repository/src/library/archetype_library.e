@@ -923,62 +923,60 @@ feature {NONE} -- Implementation
 				item_tree.put_child (model_node)
 
 				-- process archetype namespace
-				if attached bmm_model.archetype_namespace as arch_ns then
-					qualified_namespace_key := publisher_qualified_namespace_key (bmm_model.rm_publisher, arch_ns)
+				qualified_namespace_key := publisher_qualified_namespace_key (bmm_model.rm_publisher, bmm_model.model_name)
 
-					-- create namespace node
-					create namespace_node.make (arch_ns, bmm_model)
-					model_node.put_child (namespace_node)
+				-- create namespace node
+				create namespace_node.make (bmm_model.model_name, bmm_model)
+				model_node.put_child (namespace_node)
 
-					-- obtain the top-most classes from the package structure; they might not always be in the top-most package
-					across bmm_model.packages as pkg_csr loop
-						root_classes := pkg_csr.item.root_classes
-						if not root_classes.is_empty then
-							-- create the list of supplier classes for all the classes in the closure root package
-							create supp_list.make (0)
-							supp_list.compare_objects
-							across root_classes as root_classes_csr loop
-								supp_list.merge (root_classes_csr.item.supplier_closure)
-								supp_list.extend (root_classes_csr.item.name)
-							end
+				-- obtain the top-most classes from the package structure; they might not always be in the top-most package
+				across bmm_model.packages as pkg_csr loop
+					root_classes := pkg_csr.item.root_classes
+					if not root_classes.is_empty then
+						-- create the list of supplier classes for all the classes in the closure root package
+						create supp_list.make (0)
+						supp_list.compare_objects
+						across root_classes as root_classes_csr loop
+							supp_list.merge (root_classes_csr.item.supplier_closure)
+							supp_list.extend (root_classes_csr.item.name)
+						end
 
-							-- now filter this list to keep only those classes inheriting from the archetype_parent_class
-							-- that are among the suppliers of the top-level class of the package; this gives the classes
-							-- that could be archetyped in that package
-							if attached archetype_parent_class as apc then
-								from supp_list.start until supp_list.off loop
-									if not bmm_model.is_descendant_of (supp_list.item, apc) then
-										supp_list.remove
-									else
-										supp_list.forth
-									end
-								end
-							end
-
-							-- filter list again so that only highest class in any inheritance subtree remains
-							supp_list_copy := supp_list.deep_twin
+						-- now filter this list to keep only those classes inheriting from the archetype_parent_class
+						-- that are among the suppliers of the top-level class of the package; this gives the classes
+						-- that could be archetyped in that package
+						if attached archetype_parent_class as apc then
 							from supp_list.start until supp_list.off loop
-								removed := False
-								from supp_list_copy.start until supp_list_copy.off or removed loop
-									if bmm_model.is_descendant_of (supp_list.item, supp_list_copy.item) then
-										supp_list.remove
-										removed := True
-									end
-									supp_list_copy.forth
-								end
-
-								if not removed then
+								if not bmm_model.is_descendant_of (supp_list.item, apc) then
+									supp_list.remove
+								else
 									supp_list.forth
 								end
 							end
-
-							-- convert to BMM_CLASS_DESCRIPTORs
-							create supp_class_list.make(0)
-							across supp_list as supp_list_csr loop
-								supp_class_list.extend (bmm_model.class_definition (supp_list_csr.item))
-							end
-							add_child_nodes (arch_ns, supp_class_list, namespace_node)
 						end
+
+						-- filter list again so that only highest class in any inheritance subtree remains
+						supp_list_copy := supp_list.deep_twin
+						from supp_list.start until supp_list.off loop
+							removed := False
+							from supp_list_copy.start until supp_list_copy.off or removed loop
+								if bmm_model.is_descendant_of (supp_list.item, supp_list_copy.item) then
+									supp_list.remove
+									removed := True
+								end
+								supp_list_copy.forth
+							end
+
+							if not removed then
+								supp_list.forth
+							end
+						end
+
+						-- convert to BMM_CLASS_DESCRIPTORs
+						create supp_class_list.make(0)
+						across supp_list as supp_list_csr loop
+							supp_class_list.extend (bmm_model.class_definition (supp_list_csr.item))
+						end
+						add_child_nodes (bmm_model.model_name, supp_class_list, namespace_node)
 					end
 				end
 			end

@@ -170,12 +170,9 @@ feature {NONE} -- Implementation
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end
 
-			create gli.make_with_text ("archetype_namespace")
+			create gli.make_with_text ("model_name")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create str.make_empty
-			if attached ref_model.archetype_namespace as ns then
-				str.append (ns)
-			end
+			create str.make_from_string (ref_model.model_name)
 			create gli.make_with_text (str)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 

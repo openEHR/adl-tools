@@ -145,6 +145,7 @@ feature {NONE} -- Implementation
 			class_row, property_row: EV_GRID_ROW
 			prop_list: ARRAYED_LIST [BMM_PROPERTY [BMM_TYPE]]
 			prop_type: BMM_TYPE
+			prop_text: STRING
 		do
 			-- find properties defined on `a_class_def', if any; have to check against flat properties, since
 			-- there could be properties which were overridden in some lower descendant, and which
@@ -175,7 +176,11 @@ feature {NONE} -- Implementation
 				if not anc_classes.has (a_class_def) then
 					across prop_list as props_csr loop
 						-- property name
-						create gli.make_with_text (props_csr.item.name)
+						create prop_text.make_from_string (props_csr.item.name)
+						if props_csr.item.is_synthesised_generic then
+							prop_text.append (" *")
+						end
+						create gli.make_with_text (prop_text)
 						if props_csr.item.is_im_infrastructure then
 							gli.set_foreground_color (rm_infrastructure_attribute_colour)
 						elseif props_csr.item.is_im_runtime then
@@ -183,10 +188,22 @@ feature {NONE} -- Implementation
 						else
 							gli.set_foreground_color (rm_attribute_color)
 						end
+
+						-- pixmap
 						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + props_csr.item.multiplicity_key_string))
-						if attached props_csr.item.documentation as bmm_prop_doc then
-							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_doc)
+
+						-- tooltip
+						create prop_text.make_empty
+						if props_csr.item.is_synthesised_generic then
+							prop_text.append (get_text (ec_bmm_prop_synth_gen_text) + "%N")
 						end
+						if attached props_csr.item.documentation as bmm_prop_doc then
+							prop_text.append (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_doc)
+						end
+						if not prop_text.is_empty then
+							gli.set_tooltip (prop_text)
+						end
+
 						ev_grid.set_item (Grid_property_col, ev_grid.row_count + 1, gli)
 						property_row := gli.row
 
@@ -195,9 +212,13 @@ feature {NONE} -- Implementation
 						create gli.make_with_text (prop_type.type_signature)
 						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_type.entity_category))
 						gli.set_data (prop_type)
+
+						-- tooltip
 						if attached prop_type.base_class.documentation as bmm_prop_class_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
 						end
+
+						-- add actions
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 						property_row.set_item (Grid_property_type_col, gli)
 					end
