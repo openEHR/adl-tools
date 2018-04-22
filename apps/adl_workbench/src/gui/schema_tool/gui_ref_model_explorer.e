@@ -33,6 +33,11 @@ inherit
 			{ANY} has_dt_serialiser_format
 		end
 
+	SHARED_DT_OBJECT_CONVERTER
+		export
+			{NONE} all
+		end
+
 	ODIN_DEFINITIONS
 		export
 			{NONE} all
@@ -298,7 +303,7 @@ feature {NONE} -- Implementation
 			menu, tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL} ev_ti.data as bmm_sch then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL} ev_ti.data as bmm_model then
 				create menu
 
 				create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_context_selected_rm_in_active_tool (ev_ti))
@@ -309,19 +314,21 @@ feature {NONE} -- Implementation
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
-				create an_mi.make_with_text_and_action (get_text (ec_edit_source_schema), agent do_edit_schema (bmm_sch.schema_id))
+				create an_mi.make_with_text_and_action (get_text (ec_edit_source_schema), agent do_edit_schema (bmm_model.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_as_xml), agent do_schema_export (bmm_sch.schema_id, syntax_type_xml))
+				-- P_BMM_SCHEMA export
+
+				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_xml), agent do_schema_export (bmm_model.schema_id, syntax_type_xml))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_as_json), agent do_schema_export (bmm_sch.schema_id, syntax_type_json))
+				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_json), agent do_schema_export (bmm_model.schema_id, syntax_type_json))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/json"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_as_odin), agent do_schema_export (bmm_sch.schema_id, syntax_type_odin))
+				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_odin), agent do_schema_export (bmm_model.schema_id, syntax_type_odin))
 				menu.extend (an_mi)
 
 				-- tree controls
@@ -423,6 +430,8 @@ feature {NONE} -- Implementation
 		do
 			if attached safe_source.all_schemas.item (a_schema_id) as schema_desc then
 				create serialise_engine.make
+				-- turn off outputting False-valued Booleans
+				dt_object_converter.set_false_booleans_off_option
 				serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
 				serialise_engine.serialise (a_syntax_type, False, False)
 
@@ -431,7 +440,7 @@ feature {NONE} -- Implementation
 				end
 				create save_dialog
 				save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
-				save_dialog.set_file_name (schema_desc.schema_id + file_ext)
+				save_dialog.set_file_name (schema_desc.schema_id + ".bmm" + file_ext)
 				save_dialog.set_start_directory (export_directory)
 				save_dialog.filters.extend (["*" + file_ext, get_msg (ec_save_schema_as, <<a_syntax_type.tail (a_syntax_type.count-1)>>)])
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
