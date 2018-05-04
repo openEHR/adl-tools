@@ -124,7 +124,7 @@ feature -- Commands
 
 					-- RM schemas info
 					std_out.put_string ("%N" + get_text (ec_rm_schemas_info_text))
-					across models_access.valid_models as loaded_rms_csr loop
+					across bmm_models_access.bmm_models as loaded_rms_csr loop
 						std_out.put_string ("%T" + loaded_rms_csr.key + "%N")
 					end
 
@@ -139,12 +139,12 @@ feature -- Commands
 					end
 
 				elseif opts.list_rms then
-					across models_access.valid_models as loaded_rms_csr loop
-						std_out.put_string (loaded_rms_csr.key + "%N")
+					across bmm_models_access.bmm_models as loaded_rms_csr loop
+						std_out.put_string (loaded_rms_csr.key.as_string_8 + "%N")
 					end
 
 				elseif attached opts.display_rm as rm then
-					if models_access.valid_models.has (rm) and then attached models_access.valid_models.item (rm) as an_rm then
+					if bmm_models_access.bmm_models.has (rm) and then attached bmm_models_access.bmm_models.item (rm) as an_rm then
 						populate_rm (an_rm)
 					end
 
@@ -285,7 +285,7 @@ feature -- Commands
 			else
 				std_err.put_string (app_root.errors.as_string)
 				std_err.put_string (app_root.error_strings)
-				across models_access.all_schemas as schemas_csr loop
+				across bmm_models_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
 						std_err.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
 						std_err.put_string (schemas_csr.item.errors.as_string)
