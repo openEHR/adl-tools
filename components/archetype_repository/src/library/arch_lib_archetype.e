@@ -590,13 +590,13 @@ feature -- Compilation
 						compile_finished := True
 					end
 				end
-				set_compile_attempt_timestamp
 			else
 				signal_exception
 				if attached meaning (exception) as att_meaning and attached exception_trace as att_exc_trace then
 					add_error (ec_compile_exception, <<id.physical_id, att_meaning, att_exc_trace>>)
 				end
 			end
+			set_compile_attempt_timestamp
 		rescue
 			if not compile_trying_rescue then
 				compile_rescue
