@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 			ev_rm_vbox.extend (ev_rm_breakdown_frame)
 
 			ev_root_container.extend (ev_rm_vbox)
-			ev_root_container.set_item_text (ev_rm_vbox, source.ref_model.schema_id)
+			ev_root_container.set_item_text (ev_rm_vbox, source.ref_model.model_id)
 
 			-----------------------------------
 			-- populate data

@@ -405,13 +405,13 @@ feature -- Access
 			end
 		end
 
-	qualified_namespace: STRING
-			-- closure name qualified by RM publisher
-			-- e.g. openEHR-EHR, HL7-CDA
+	qualified_model_name: STRING
+			-- model name qualified by RM publisher
+			-- e.g. openEHR_EHR, HL7_FHIR
 		do
 			create Result.make_empty
 			Result.append (rm_publisher)
-			Result.append_character (Section_separator)
+			Result.append_character ({BMM_DEFINITIONS}.schema_id_delimiter)
 			Result.append (rm_package)
 		end
 

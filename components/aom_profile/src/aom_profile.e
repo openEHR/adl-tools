@@ -20,7 +20,7 @@ inherit
 			finalise_dt
 		end
 
-	SHARED_MODEL_ACCESS
+	SHARED_BMM_MODEL_ACCESS
 
 	ARCHETYPE_DEFINITIONS
 		export
@@ -207,7 +207,7 @@ feature -- Validation
 
 	validate
 		local
-			sch: BMM_MODEL
+			bm: BMM_MODEL
 			rm_class_name: STRING
 		do
 			if profile_name.is_equal (Default_aom_profile_name) then
@@ -218,21 +218,21 @@ feature -- Validation
 			else
 				if attached aom_rm_type_mappings as aom_tm then
 					-- check that all type mappings are found in all mentioned schemas
-					across matched_model_ids as schemas_csr loop
-						if has_model_for_id (schemas_csr.item) then
-							sch := model_for_id (schemas_csr.item)
+					across matched_model_ids as models_csr loop
+						if has_bmm_model (models_csr.item) then
+							bm := bmm_model (models_csr.item)
 							across aom_tm as type_mappings_csr loop
 								rm_class_name := type_mappings_csr.item.target_class_name
-								if not sch.has_class_definition (type_mappings_csr.item.target_class_name) then
+								if not bm.has_class_definition (type_mappings_csr.item.target_class_name) then
 									add_error (ec_ARP_invalid_class_mapping, <<type_mappings_csr.item.source_class_name,
-										rm_class_name, sch.schema_id>>)
+										rm_class_name, bm.model_id>>)
 								else
 									if attached type_mappings_csr.item.property_mappings as prop_mappings then
 										across prop_mappings as property_mappings_csr loop
-											if not sch.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
+											if not bm.has_property (rm_class_name, property_mappings_csr.item.target_property_name) then
 												add_error (ec_ARP_invalid_property_mapping, <<type_mappings_csr.item.source_class_name,
 													property_mappings_csr.item.source_property_name,
-													rm_class_name, property_mappings_csr.item.target_property_name, sch.schema_id>>)
+													rm_class_name, property_mappings_csr.item.target_property_name, bm.model_id>>)
 											end
 										end
 									end
@@ -274,7 +274,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			lc_aom_lifecycle_mappings: detachable HASH_TABLE [STRING, STRING]
 			default_rm_type_key: STRING
 		do
-			if models_access.load_attempted then
+			if bmm_models_access.load_attempted then
 				get_regex_matches (rm_schema_pattern)
 			else
 				add_error (ec_ARP_no_bmm_schemas_loaded, Void)
@@ -305,7 +305,7 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 	get_regex_matches (a_regex: STRING)
 			-- Finalisation work: evaluate rm schema regexes
 		require
-			models_access.load_attempted
+			bmm_models_access.load_attempted
 		local
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 		do
@@ -314,9 +314,9 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 			regex_matcher.set_case_insensitive (True)
 			regex_matcher.compile (a_regex)
 			if regex_matcher.is_compiled then
-				across model_ids as model_ids_csr loop
-					if regex_matcher.recognizes (model_ids_csr.item) then
-						matched_model_ids.extend (model_ids_csr.item)
+				across bmm_model_ids as model_ids_csr loop
+					if regex_matcher.recognizes (model_ids_csr.item.as_string_8) then
+						matched_model_ids.extend (model_ids_csr.item.as_string_8)
 					end
 				end
 			else

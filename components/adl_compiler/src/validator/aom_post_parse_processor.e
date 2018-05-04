@@ -51,8 +51,8 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 		do
 			if ref_model /= ara.ref_model then
 				ref_model := ara.ref_model
-				if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
-					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+				if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 				end
 				set_domain_type_mappings
 			end

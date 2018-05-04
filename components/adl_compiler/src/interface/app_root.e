@@ -127,12 +127,12 @@ feature -- Initialisation
 				rm_schema_directories.prune_all (dead_sch_csr.item)
 			end
 
-			models_access.initialise_with_load_list (rm_schema_directories, rm_schemas_load_list)
-			if not models_access.found_valid_models then
+			bmm_models_access.initialise_with_load_list (rm_schema_directories, rm_schemas_load_list)
+			if not bmm_models_access.found_valid_models then
 				if repository_resources.is_empty then
-					add_warning (ec_bmm_schemas_config_not_valid, <<models_access.schemas_load_list_string>>)
+					add_warning (ec_bmm_schemas_config_not_valid, <<bmm_models_access.schemas_load_list_string>>)
 				else
-					add_error (ec_bmm_schemas_config_not_valid, <<models_access.schemas_load_list_string>>)
+					add_error (ec_bmm_schemas_config_not_valid, <<bmm_models_access.schemas_load_list_string>>)
 				end
 			end
 

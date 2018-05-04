@@ -60,6 +60,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_DT_OBJECT_CONVERTER
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPILER_ERROR_TYPES
 		export
 			{NONE} all
@@ -160,8 +167,10 @@ feature -- Identification
 
 	semantic_parent_key: STRING
 			-- semantic key to find parent node in semantic id tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of the folder, e.g. openEHR-EHR-OBSERVATION
-			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be an id ref like openEHR-EHR-OBSERVATION.thing.v1
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1,
+			-- it will be the name of the folder, e.g. openEHR-EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4,
+			-- it will be an id ref like openEHR-EHR-OBSERVATION.thing.v1
 		require
 			is_specialised implies attached parent_ref
 		do
@@ -176,8 +185,10 @@ feature -- Identification
 
 	semantic_parent_id: STRING
 			-- semantic id of parent node in semantic id tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of the folder, e.g. openEHR-EHR-OBSERVATION
-			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4, it will be a resolved id like openEHR-EHR-OBSERVATION.thing.v1.0.4
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1,
+			-- it will be the name of the folder, e.g. openEHR-EHR-OBSERVATION
+			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1.2.4,
+			-- it will be a resolved id like openEHR-EHR-OBSERVATION.thing.v1.0.4
 		do
 			if is_specialised then
 				check attached specialisation_parent as att_spec_anc then
@@ -995,6 +1006,7 @@ feature -- Output
 				create {like persistent_type} dt_arch.make (safe_differential_archetype)
 			end
 
+			dt_object_converter.set_false_booleans_off_option
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
 			archetype_serialise_engine.serialise (a_format, False, True)
 			Result := archetype_serialise_engine.serialised
@@ -1157,7 +1169,6 @@ feature {NONE} -- Implementation
 		require
 			compilation_state >= Cs_validated_phase_1
 		local
-			includes, excludes: ARRAYED_LIST[ASSERTION]
 			ala: ARCH_LIB_ARCHETYPE
 			slot_filler_ids: ARRAYED_SET [STRING]
 		do

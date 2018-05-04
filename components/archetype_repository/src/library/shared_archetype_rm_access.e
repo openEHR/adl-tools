@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Archetype access to reference models"
+	description: "Archetype access to BMM reference models"
 	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -10,7 +10,7 @@ note
 class SHARED_ARCHETYPE_RM_ACCESS
 
 inherit
-	SHARED_MODEL_ACCESS
+	SHARED_BMM_MODEL_ACCESS
 
 	SHARED_AOM_PROFILES_ACCESS
 		export
@@ -24,14 +24,14 @@ feature -- Access
 		require
 			has_model_for_archetype_id (an_id)
 		do
-			Result := models_access.model_for_namespace (an_id.qualified_namespace)
+			Result := bmm_model (an_id.qualified_model_name)
 		end
 
 feature -- Status Report
 
 	has_model_for_archetype_id (an_id: ARCHETYPE_HRID): BOOLEAN
 		do
-			Result := models_access.has_model_for_namespace (an_id.qualified_namespace)
+			Result := has_bmm_model (an_id.qualified_model_name)
 		end
 
 end

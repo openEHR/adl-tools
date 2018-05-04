@@ -21,19 +21,17 @@ create
 
 feature -- Initialisation
 
-	make (a_namespace: STRING; a_bmm_model: BMM_MODEL)
+	make (a_bmm_model: BMM_MODEL)
 			-- create to represent a model namespace, e.g. 'EHR', 'DEMOGRAPHIC' etc - classes in packages in
 			-- the namespace can have archetypes in the namespace.
-		require
-			Namespace_valid: not a_namespace.is_empty
 		do
 			bmm_model := a_bmm_model
-			qualified_name := publisher_qualified_namespace (a_bmm_model.rm_publisher, a_namespace)
-			name := a_namespace
+			qualified_name := publisher_qualified_model_name (a_bmm_model)
+			name := a_bmm_model.model_name
 			group_name := "model_group"
 		ensure
-			Semantic_name_set: qualified_name.is_equal (publisher_qualified_namespace (a_bmm_model.rm_publisher, a_namespace))
-			Display_name_set: name = a_namespace
+			Semantic_name_set: qualified_name.is_equal (publisher_qualified_model_name (a_bmm_model))
+			Display_name_set: name = a_bmm_model.model_name
 			Model_set: bmm_model = a_bmm_model
 		end
 

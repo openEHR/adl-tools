@@ -15,7 +15,7 @@ profile_name = <"CIMI">
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_pattern = <"cimi_*.*">
+rm_schema_pattern = <"cimi_.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
@@ -28,7 +28,9 @@ terminology_profile = <
 -- The effect of this attribute in visualisation is to generate the most natural tree or
 -- grid-based view of an archetype definition, from the semantic viewpoint.
 --
-archetype_visualise_descendants_of = <"ITEM">
+archetype_parent_class = <"Locatable">
+archetype_data_value_parent_class = <"DataType">
+archetype_visualise_descendants_of = <"Item">
 
 ----------------------------------------------------------------------------------------
 -- mappings from AOM built-in types used for RM types
@@ -37,15 +39,15 @@ archetype_visualise_descendants_of = <"ITEM">
 aom_rm_type_mappings = <
 	["TERMINOLOGY_CODE"] = <
 		source_class_name = <"TERMINOLOGY_CODE">
-		target_class_name = <"Concept">
+		target_class_name = <"TerminologyCode">
 		property_mappings = <
 			["terminology_id"] = <
 				source_property_name = <"terminology_id">
-				target_property_name = <"codeSystem">
+				target_property_name = <"terminologyId">
 			>
 			["code_string"] = <
 				source_property_name = <"code_string">
-				target_property_name = <"code">
+				target_property_name = <"codeString">
 			>
 		>
 	>
@@ -56,12 +58,13 @@ aom_rm_type_mappings = <
 -- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
 
 rm_primitive_type_equivalences = <
-	["Concept"] = <"Terminology_code">
+	["TerminologyCode"] = <"Terminology_code">
 	["Octet"] = <"Integer">
 	["Double"] = <"Real">
 	["Integer64"] = <"Integer">
 	["ISO8601_DATE"] = <"Date">
 	["ISO8601_DATE_TIME"] = <"Date_time">
+	["DateTime"] = <"Date_time">
 	["ISO8601_TIME"] = <"Time">
 	["ISO8601_DURATION"] = <"Duration">
 >

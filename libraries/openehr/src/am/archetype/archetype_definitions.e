@@ -32,6 +32,9 @@ feature -- Syntax Elements
 
 	Adl_version_string: STRING = "adl_version"
 
+	Qualified_name_delimiter: CHARACTER = '-'
+			-- delimiter between class_name and qualifiying closure name, e.g. EHR-ENTRY
+
 feature -- File and artefact types
 
 	Syntax_type_adl: STRING = "adl"
@@ -95,6 +98,12 @@ feature -- Archetype identifiers
 	archetype_id_checker: ARCHETYPE_HRID_PARSER
 		once ("PROCESS")
 			create Result.make
+		end
+
+	publisher_qualified_model_name (a_bmm_model: BMM_MODEL): STRING
+			-- mixed-case standard model-package name string, e.g. "openEHR-EHR" for UI display
+		do
+			Result := a_bmm_model.rm_publisher + Qualified_name_delimiter.out + a_bmm_model.model_name.as_upper
 		end
 
 feature -- Version identification

@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_MODEL_ACCESS
+	SHARED_BMM_MODEL_ACCESS
 		export
 			{NONE} all
 		end
@@ -68,7 +68,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.populate (an_rm)
-			populate_active_tool_pane (an_rm.schema_id, an_rm.schema_id.substring (1, an_rm.schema_id.count.min (Tab_title_width)), get_icon_pixmap ("tool/rm_schema"))
+			populate_active_tool_pane (an_rm.model_id, an_rm.model_id.substring (1, an_rm.model_id.count.min (Tab_title_width)), get_icon_pixmap ("tool/rm_schema"))
 		end
 
 end

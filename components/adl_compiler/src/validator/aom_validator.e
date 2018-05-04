@@ -32,7 +32,7 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 				arch_flat_parent := an_arch_flat_parent
 			end
 
-			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) and then attached aom_profiles_access.profile_for_rm_schema (ref_model.schema_id) as aom_p then
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) and then attached aom_profiles_access.profile_for_rm_schema (ref_model.model_id) as aom_p then
 				aom_profile := aom_p
 			end
 

@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_MODEL_ACCESS
+	SHARED_BMM_MODEL_ACCESS
 		export
 			{NONE} all
 		end
@@ -44,7 +44,6 @@ feature -- Initialisation
 			create gui_controls.make (0)
 			create rm_node_path.make_root
 			create rm_publisher.make_empty
-			create rm_closure.make_empty
 			create ev_grid_rm_row_stack.make (0)
 			create ev_grid_rm_row_removals_stack.make (0)
 
@@ -228,7 +227,6 @@ feature {NONE} -- Implementation
 
 			-- for use in icon switching
  			rm_publisher := safe_source.bmm_model.rm_publisher.as_lower
- 			rm_closure := safe_source.bmm_model.schema_name.as_lower
 
  			-- populate the tree
 			create ev_grid_rm_row_stack.make (0)
@@ -271,9 +269,6 @@ feature {NONE} -- Implementation
 	rm_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
 
-	rm_closure: STRING
-			-- name of closure (i.e. model)
-
 	rm_node_path: OG_PATH
 
 	closure_depth: INTEGER
@@ -289,7 +284,7 @@ feature {NONE} -- Implementation
 				ev_grid_rm_row_removals_stack.extend (False)
 				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, src.type.type_signature, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (src, use_rm_pixmaps))
 				if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
-		 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
+		 	 		gli.pointer_button_press_actions.extend (agent class_node_handler_wrapper (lr, ?, ?, ?, ?, ?, ?, ?, ?))
 		 	 	end
 			end
 		end
@@ -403,7 +398,7 @@ feature {NONE} -- Implementation
 
 						-- class node right hand menu
 						if attached {EV_GRID_LABEL_ITEM} ev_class_row.item (Definition_grid_col_rm_name) as gli then
-			 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_row, ?, ?, ?))
+			 	 			gli.pointer_button_press_actions.extend (agent class_node_handler_wrapper (ev_class_row, ?, ?, ?, ?, ?, ?, ?, ?))
 						end
 				 	else
 						ignore := True
@@ -425,6 +420,12 @@ feature {NONE} -- Implementation
 		 	ev_grid_rm_row_removals_stack.remove
 		end
 
+	class_node_handler_wrapper (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
+			-- wrapper for class_node_handler
+		do
+			class_node_handler (a_class_grid_row, x,y, button)
+		end
+
 	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 			-- add menu item for retarget tool to current node / display in new tool
@@ -443,6 +444,12 @@ feature {NONE} -- Implementation
 				end
 				menu.show
 			end
+		end
+
+	property_node_handler_wrapper (a_prop_grid_row: EV_GRID_ROW; x,y, button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
+			-- wrapper for class_node_handler
+		do
+			property_node_handler (a_prop_grid_row, x,y, button)
 		end
 
 	property_node_handler (a_prop_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
@@ -542,7 +549,7 @@ feature {NONE} -- Implementation
 				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_class.name, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (a_bmm_class, use_rm_pixmaps))
 				if attached evx_grid.last_row as lr then
 					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
-	 	 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (lr, ?, ?, ?))
+	 	 				gli.pointer_button_press_actions.extend (agent class_node_handler_wrapper (lr, ?, ?, ?, ?, ?, ?, ?, ?))
 						lr.expand_actions.force_extend (agent property_node_expand_handler (lr))
 					end
 					ev_grid_rm_row_stack.extend (lr)

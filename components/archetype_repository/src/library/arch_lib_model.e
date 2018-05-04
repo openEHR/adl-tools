@@ -25,12 +25,12 @@ feature -- Initialisation
 			-- create to represent a top-level BMM model
 		do
 			bmm_model := a_bmm_model
-			qualified_name := a_bmm_model.schema_id
-			name := a_bmm_model.schema_id
+			qualified_name := a_bmm_model.model_id
+			name := a_bmm_model.model_id
 			group_name := "model"
 		ensure
-			Semantic_name_set: qualified_name.is_equal (a_bmm_model.schema_id)
-			Display_name_set: name.is_equal (a_bmm_model.schema_id)
+			Semantic_name_set: qualified_name.is_equal (a_bmm_model.model_id)
+			Display_name_set: name.is_equal (a_bmm_model.model_id)
 			Model_set: bmm_model = a_bmm_model
 		end
 

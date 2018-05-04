@@ -472,15 +472,15 @@ feature {NONE} -- Implementation
 			-- tree expanding stops)
 			ref_model := safe_source.ref_model
 
-			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 				if attached aom_profile.archetype_parent_class then
 					visualise_descendants_class := aom_profile.archetype_parent_class
 				elseif attached aom_profile.archetype_visualise_descendants_of then
 					visualise_descendants_class := aom_profile.archetype_visualise_descendants_of
 				end
 			end
-			
+
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 

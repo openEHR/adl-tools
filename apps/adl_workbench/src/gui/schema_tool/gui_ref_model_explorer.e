@@ -33,11 +33,6 @@ inherit
 			{ANY} has_dt_serialiser_format
 		end
 
-	SHARED_DT_OBJECT_CONVERTER
-		export
-			{NONE} all
-		end
-
 	ODIN_DEFINITIONS
 		export
 			{NONE} all
@@ -186,24 +181,24 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			across safe_source.valid_models as rm_csr loop
-				populate_schema (rm_csr.item)
+			across safe_source.bmm_models as rm_csr loop
+				populate_model (rm_csr.item)
 			end
 			gui_grid.resize_columns_to_content
 		end
 
-	populate_schema (a_schema: BMM_MODEL)
+	populate_model (a_model: BMM_MODEL)
 		local
 			pkg_row: EV_GRID_ROW
 		do
 			-- add row to grid
-			gui_grid.add_row (a_schema)
-			gui_grid.set_last_row_label_col (1, a_schema.schema_id, Void, Void, Void, get_icon_pixmap ("tool/rm_schema"))
+			gui_grid.add_row (a_model)
+			gui_grid.set_last_row_label_col (1, a_model.model_id, Void, Void, Void, get_icon_pixmap ("tool/rm_schema"))
 			check attached gui_grid.last_row as a_row then
 				pkg_row := a_row
 			end
 			gui_grid.add_last_row_pointer_button_press_actions (1, agent schema_node_handler (pkg_row, ?, ?, ?))
-			across a_schema.packages as pkgs_csr loop
+			across a_model.packages as pkgs_csr loop
  				populate_packages (pkg_row, pkgs_csr.item)
 			end
 		end
@@ -303,7 +298,7 @@ feature {NONE} -- Implementation
 			menu, tree_menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL} ev_ti.data as bmm_model then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL} ev_ti.data as bm then
 				create menu
 
 				create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_context_selected_rm_in_active_tool (ev_ti))
@@ -314,21 +309,21 @@ feature {NONE} -- Implementation
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
-				create an_mi.make_with_text_and_action (get_text (ec_edit_source_schema), agent do_edit_schema (bmm_model.schema_id))
+				create an_mi.make_with_text_and_action (get_text (ec_edit_source_schema), agent do_edit_schema (bm.source_schema.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
 				-- P_BMM_SCHEMA export
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_xml), agent do_schema_export (bmm_model.schema_id, syntax_type_xml))
+				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_xml), agent do_schema_export (bm.source_schema.schema_id, syntax_type_xml))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_json), agent do_schema_export (bmm_model.schema_id, syntax_type_json))
+				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_json), agent do_schema_export (bm.source_schema.schema_id, syntax_type_json))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/json"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_odin), agent do_schema_export (bmm_model.schema_id, syntax_type_odin))
+				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_odin), agent do_schema_export (bm.source_schema.schema_id, syntax_type_odin))
 				menu.extend (an_mi)
 
 				-- tree controls
@@ -423,18 +418,10 @@ feature {NONE} -- Implementation
 		require
 			Format_valid: has_dt_serialiser_format (a_syntax_type)
 		local
-			serialise_engine: ODIN_ENGINE
 			path, file_ext: STRING
-			fd: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 		do
 			if attached safe_source.all_schemas.item (a_schema_id) as schema_desc then
-				create serialise_engine.make
-				-- turn off outputting False-valued Booleans
-				dt_object_converter.set_false_booleans_off_option
-				serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
-				serialise_engine.serialise (a_syntax_type, False, False)
-
 				check attached odin_serialiser_file_extensions.item(a_syntax_type) as fx then
 					file_ext := fx
 				end
@@ -447,9 +434,7 @@ feature {NONE} -- Implementation
 				path := save_dialog.file_name.as_string_8
 
 				if not path.is_empty then
-					create fd.make_create_read_write (path)
-					fd.put_string (serialise_engine.serialised)
-					fd.close
+					schema_desc.export_schema (a_syntax_type, path)
 				end
 			end
 		end

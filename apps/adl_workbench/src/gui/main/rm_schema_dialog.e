@@ -28,7 +28,7 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_MODEL_ACCESS
+	SHARED_BMM_MODEL_ACCESS
 		export
 			{NONE} all
 		undefine
@@ -170,7 +170,7 @@ feature -- Commands
 			-- alow user reload after manual changes while correcting schemas
 		do
 			reset_rm_schemas_load_list
-			models_access.reload_schemas
+			bmm_models_access.reload_schemas
 			do_populate
 			gui_agents.call_refresh_all_archetype_editors_agent
 		end
@@ -204,8 +204,8 @@ feature -- Events
 			has_changed_schema_dirs := False
 			ok_cancel_buttons.disable_sensitive
 			last_rm_schema_dirs := an_rm_schema_dirs
-			models_access.initialise_with_load_list (last_rm_schema_dirs, rm_schemas_load_list)
-			if not models_access.found_valid_models then
+			bmm_models_access.initialise_with_load_list (last_rm_schema_dirs, rm_schemas_load_list)
+			if not bmm_models_access.found_valid_models then
 				create dir_list_str.make_empty
 				across last_rm_schema_dirs as dir_csr loop
 					dir_list_str.append (dir_csr.item)
@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 
 			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				set_rm_schemas_load_list (rm_schemas_ll)
-				models_access.set_schema_load_list (rm_schemas_ll)
+				bmm_models_access.set_schema_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
 		end
@@ -262,10 +262,10 @@ feature {NONE} -- Implementation
 			-- get rid of previously defined rows
 			grid.wipe_out
 			grid.enable_column_resize_immediate
-			grid.set_minimum_height (models_access.all_schemas.count * grid.row_height + grid.header.height)
+			grid.set_minimum_height (bmm_models_access.all_schemas.count * grid.row_height + grid.header.height)
 
 			-- create row containing widgets for each top-level schema, with child schemas in tree
-			across models_access.top_level_schemas_by_publisher as pub_csr loop
+			across bmm_models_access.model_descriptors_by_publisher as pub_csr loop
 				create gli.make_with_text (pub_csr.key)
 				gli.set_pixmap (get_icon_pixmap ("tool/globe"))
 				grid.set_item (Grid_schema_col, grid.row_count + 1, gli)
@@ -297,7 +297,7 @@ feature {NONE} -- Implementation
 			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
-	add_schema_publisher_grid_rows (a_schema_desc: P_BMM_SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW; top_level: BOOLEAN)
+	add_schema_publisher_grid_rows (a_schema_desc: BMM_SCHEMA_DESCRIPTOR; parent_row: EV_GRID_ROW; top_level: BOOLEAN)
 			-- add rows for `schema_id' and its children, recursively
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -309,7 +309,7 @@ feature {NONE} -- Implementation
 			row := parent_row.subrow (parent_row.subrow_count)
 			if top_level then
 				create gcli.make_with_text (a_schema_desc.schema_id)
-				gcli.set_is_checked (models_access.schemas_load_list.has (a_schema_desc.schema_id))
+				gcli.set_is_checked (bmm_models_access.schemas_load_list.has (a_schema_desc.schema_id))
 				row.set_item (Grid_schema_col, gcli)
 			else
 				create gli.make_with_text (a_schema_desc.schema_id)
@@ -352,13 +352,13 @@ feature {NONE} -- Implementation
 
 			-- now do child schemas
 			across a_schema_desc.includes as includes_csr loop
-				check attached models_access.all_schemas.item (includes_csr.item) as sch then
+				check attached bmm_models_access.all_schemas.item (includes_csr.item) as sch then
 					add_schema_publisher_grid_rows (sch, row, False)
 				end
 			end
 		end
 
-	do_edit_schema (a_schema: P_BMM_SCHEMA_DESCRIPTOR)
+	do_edit_schema (a_schema: BMM_SCHEMA_DESCRIPTOR)
 			-- launch external editor with schema, or info box if none defined
 		do
 			check attached a_schema.meta_data.item (metadata_schema_path) as msp then
@@ -366,18 +366,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_export_schema (schema_desc: P_BMM_SCHEMA_DESCRIPTOR)
+	do_export_schema (schema_desc: BMM_SCHEMA_DESCRIPTOR)
 			-- export model as XML and allow saving
 		local
-			serialise_engine: ODIN_ENGINE
 			path: STRING
-			fd: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 		do
-			create serialise_engine.make
-			serialise_engine.set_tree (schema_desc.p_schema.dt_representation)
-			serialise_engine.serialise (syntax_type_xml, False, False)
-
 			create save_dialog
 			save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
 			save_dialog.set_file_name (schema_desc.schema_id + ".xml")
@@ -389,9 +383,7 @@ feature {NONE} -- Implementation
 			path := save_dialog.file_name.as_string_8
 
 			if not path.is_empty then
-				create fd.make_create_read_write (path)
-				fd.put_string (serialise_engine.serialised)
-				fd.close
+				schema_desc.export_schema (syntax_type_xml, path)
 			end
 		end
 
@@ -400,7 +392,7 @@ feature {NONE} -- Implementation
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create info_dialog.make_with_text (models_access.all_schemas.item (a_schema_id).errors.as_string)
+			create info_dialog.make_with_text (bmm_models_access.all_schemas.item (a_schema_id).errors.as_string)
 			info_dialog.show_modal_to_window (Current)
 		end
 

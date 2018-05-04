@@ -133,7 +133,7 @@ feature -- Events
 				create error_dialog.make_with_text (get_msg (ec_duplicate_archetype_id_err_msg, <<archetype_id.physical_id>>))
 				error_dialog.show_modal_to_window (Current)
 			elseif not has_model_for_archetype_id (archetype_id) then
-				create error_dialog.make_with_text (get_msg (ec_model_access_e7, <<archetype_id.qualified_namespace>>))
+				create error_dialog.make_with_text (get_msg (ec_model_access_e7, <<archetype_id.qualified_model_name>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				archetype_directory := dir_setter.data_control_text

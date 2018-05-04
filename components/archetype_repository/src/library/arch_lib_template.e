@@ -186,6 +186,7 @@ feature -- Output
 				create {like persistent_type} dt_arch.make (safe_differential_archetype)
 			end
 
+			dt_object_converter.set_false_booleans_off_option
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
 			archetype_serialise_engine.serialise (a_format, False, True)
 			Result := archetype_serialise_engine.serialised

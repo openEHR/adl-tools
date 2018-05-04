@@ -179,8 +179,8 @@ feature -- Modification
 			-- 	* remove this RM object node from parent
 			--	* create and add a new archetype node & object context node to parent
 			-- with UNDO/REDO
-		require
-			is_rm
+--		require
+--			is_rm
 		local
 			added_child: C_OBJECT_UI_NODE
 		do
@@ -220,56 +220,57 @@ feature -- Modification
 			-- refine this Archetye node
 		require
 			is_specialised and not is_rm
+		do
+			if attached arch_node then
+				-- if AOM type has changed, need to remove current node from flat and replace
+				-- with a node of the new type
+			    if not co_create_params.aom_type.same_string (arch_node.generator) then
+					do_convert_to_constraint (co_create_params)
+			    else
+					-- setup undo/redo
+					ui_graph_state.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
+						-- undo
+						agent do_refine_existing_constraint (arch_node.rm_type_name, arch_node.occurrences.as_string,
+							ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text,
+							ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).description),
+						-- redo
+						agent do_refine_existing_constraint (co_create_params.rm_type, co_create_params.occurrences,
+							co_create_params.node_id_text, co_create_params.node_id_description)
+					)
+
+					do_refine_existing_constraint (co_create_params.rm_type, co_create_params.occurrences,
+						co_create_params.node_id_text, co_create_params.node_id_description)
+				end
+			end
+		end
+
+	do_refine_existing_constraint (new_rm_type, new_occurrences, new_node_text, new_node_description: STRING)
+			-- refine this Archetye node
 		local
 			new_occ: MULTIPLICITY_INTERVAL
 		do
-			if attached arch_node and then co_create_params.aom_type.same_string (arch_node.generator) then
+			if attached arch_node then
 				-- RM type
-				if not arch_node.rm_type_name.same_string (co_create_params.rm_type) then
-					arch_node.set_rm_type_name (co_create_params.rm_type)
+				if not arch_node.rm_type_name.same_string (new_rm_type) then
+					arch_node.set_rm_type_name (new_rm_type)
 					arch_node.set_specialisation_status_redefined
 				end
 
 				-- occurences
-				new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences)
-				if attached arch_node.occurrences as occ and then not
-					occ.is_equal (create {MULTIPLICITY_INTERVAL}.make_from_string (co_create_params.occurrences))
-				then
+				new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (new_occurrences)
+				if attached arch_node.occurrences as occ and then not occ.is_equal (new_occ) then
 					arch_node.set_occurrences (new_occ)
 					arch_node.set_specialisation_status_redefined
 				end
 
 				-- node id
-				if not co_create_params.node_id_text.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text) then
-					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, arch_node.node_id, {ARCHETYPE_TERM}.text_key, co_create_params.node_id_text)
+				if not new_node_text.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text) then
+					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, arch_node.node_id, {ARCHETYPE_TERM}.text_key, new_node_text)
 				end
-				if not co_create_params.node_id_description.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).description) then
-					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, arch_node.node_id, {ARCHETYPE_TERM}.description_key, co_create_params.node_id_description)
+				if not new_node_description.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).description) then
+					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, arch_node.node_id, {ARCHETYPE_TERM}.description_key, new_node_description)
 				end
-			else -- need to do a remove and add
-
 			end
-			-- set up undo / redo
---			ed_context.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
---				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
---						-- undo
---					do
---						parent.remove_child (an_added_child)
---						if not parent.has_constraint_children then
---							parent.convert_to_rm
---						end
---						parent.add_child (an_orig_child)
---					end (Current, added_child),
---				agent (an_orig_child, an_added_child: C_OBJECT_ED_CONTEXT)
---						-- redo
---					do
---						parent.remove_child (an_orig_child)
---						if parent.is_rm then
---							parent.convert_to_constraint
---						end
---						parent.add_child (an_added_child)
---					end (Current, added_child)
---			)
 		end
 
 feature {NONE} -- Implementation

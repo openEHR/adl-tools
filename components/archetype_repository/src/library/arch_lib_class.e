@@ -18,18 +18,18 @@ create
 
 feature -- Initialisation
 
-	make (an_rm_closure_name: STRING; a_class_desc: BMM_CLASS)
-			-- create with RM closure package name and class def
+	make (an_rm_model_name: STRING; a_class_desc: BMM_CLASS)
+			-- create with RM model name and class def
 		require
-			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
+			Rm_model_valid: not an_rm_model_name.is_empty and not an_rm_model_name.has (Package_name_delimiter)
 		do
 			class_definition := a_class_desc
 			bmm_model := class_definition.bmm_model
-			qualified_name := bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out + class_definition.name
+			qualified_name := bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_model_name + {ARCHETYPE_HRID}.section_separator.out + class_definition.name
 			name := class_definition.name
 			group_name := class_definition.entity_category
 		ensure
-			qualified_name_set: qualified_name.is_equal (bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_closure_name + {ARCHETYPE_HRID}.section_separator.out +  class_definition.name)
+			qualified_name_set: qualified_name.is_equal (bmm_model.rm_publisher + {ARCHETYPE_HRID}.section_separator.out + an_rm_model_name + {ARCHETYPE_HRID}.section_separator.out +  class_definition.name)
 			display_name_set: name = class_definition.name
 		end
 

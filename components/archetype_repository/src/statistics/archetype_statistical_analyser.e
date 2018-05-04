@@ -34,8 +34,8 @@ feature -- Initialisation
 			target := an_archetype
 			ref_model := an_rm
 
-			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 				archetype_parent_class := aom_profile.archetype_parent_class
 				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
 			end

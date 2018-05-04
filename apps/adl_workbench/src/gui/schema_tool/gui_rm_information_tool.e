@@ -56,8 +56,8 @@ feature {NONE} -- Implementation
 			rm_stats_class_list: ARRAYED_LIST[STRING]
 		do
 			create rm_stats_class_list.make (0)
-			if aom_profiles_access.has_profile_for_rm_schema (safe_source.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (safe_source.schema_id)
+			if aom_profiles_access.has_profile_for_rm_schema (safe_source.model_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (safe_source.model_id)
 				if attached aom_profile.archetype_parent_class as apc then
 					rm_stats_class_list.extend (apc)
 				end

@@ -118,7 +118,7 @@ feature -- Access
 					Result := att_obj
 				else
 					create Result.make_template ((archetype_repository_interfaces.count + 1).out)
-					local_definition_file_access.save (Result)
+					local_definition_file_access.save (Result, True)
 				end
 			end
 		end

@@ -2527,8 +2527,8 @@ feature -- Initialization
 			if target_descriptor.is_specialised then
 				flat_ancestor := target_descriptor.specialisation_parent.flat_archetype
  			end
-			if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 			end
 
 			source_start_line := a_source_start_line

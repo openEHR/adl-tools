@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			ev_rm_id.set_text (source.schema_id)
+			ev_rm_id.set_text (source.model_id)
 
 			-- pre-populate the description and node-map controls, or else populate the validity control and show it
 			check attached source as s then

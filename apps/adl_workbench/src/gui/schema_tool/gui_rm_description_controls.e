@@ -68,14 +68,15 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
 			str: STRING
 			ref_model: BMM_MODEL
+			source_schema: BMM_SCHEMA
 			aom_profile: AOM_PROFILE
 			archetype_parent_class: detachable STRING
 			archetype_data_value_parent_class: detachable STRING
 		do
 			check attached source as s then
 				ref_model := s
-				if aom_profiles_access.has_profile_for_rm_schema (ref_model.schema_id) then
-					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.schema_id)
+				if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 					archetype_parent_class := aom_profile.archetype_parent_class
 					archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
 				end
@@ -94,28 +95,39 @@ feature {NONE} -- Implementation
 			ev_grid.insert_new_column (grid_attr_val_col)
 			ev_grid.column (grid_attr_val_col).set_title (get_msg (ec_rm_desc_attr_value, Void))
 
-			-- schema id attributes
-			create gli.make_with_text ("Schema identification")
+			-- model meta-data
+			create gli.make_with_text ("Model identification")
 			ev_grid.set_item (Grid_attr_group_col, ev_grid.row_count + 1, gli)
 
 			create gli.make_with_text ("rm_publisher")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (safe_source.rm_publisher)
-			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
-
-			create gli.make_with_text ("schema_name")
-			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (safe_source.schema_name)
+			create gli.make_with_text (ref_model.rm_publisher)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("rm_release")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (safe_source.rm_release)
+			create gli.make_with_text (ref_model.rm_release)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
+
+			create gli.make_with_text ("model_name")
+			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
+			create str.make_from_string (ref_model.model_name)
+			create gli.make_with_text (str)
+			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
+
+			create gli.make_with_text ("model_id")
+			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
+			create gli.make_with_text (ref_model.model_id)
+			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
+
+			-- schema meta-data
+			source_schema := safe_source.source_schema
+			create gli.make_with_text ("Schema identification")
+			ev_grid.set_item (Grid_attr_group_col, ev_grid.row_count + 1, gli)
 
 			create gli.make_with_text ("schema_id")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (safe_source.schema_id)
+			create gli.make_with_text (source_schema.schema_id)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			-- schema documentation attributes
@@ -124,13 +136,13 @@ feature {NONE} -- Implementation
 
 			create gli.make_with_text ("schema_author")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (safe_source.schema_author)
+			create gli.make_with_text (source_schema.schema_author)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("schema_contributors")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
 			create str.make_empty
-			across ref_model.schema_contributors as contribs_csr loop
+			across source_schema.schema_contributors as contribs_csr loop
 				if contribs_csr.target_index > 1 then
 					str.append (",%N")
 				end
@@ -138,18 +150,18 @@ feature {NONE} -- Implementation
 			end
 			create gli.make_with_text (str)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
-			ev_grid.row (ev_grid.row_count).set_height (ev_grid.row (ev_grid.row_count).height * source.schema_contributors.count)
+			ev_grid.row (ev_grid.row_count).set_height (ev_grid.row (ev_grid.row_count).height * source_schema.schema_contributors.count)
 
 			create gli.make_with_text ("schema_lifecycle_state")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create gli.make_with_text (safe_source.schema_lifecycle_state)
+			create gli.make_with_text (source_schema.schema_lifecycle_state)
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			create gli.make_with_text ("schema_description")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
 			create gli.make_with_text ("View")
 			gli.set_pixmap (get_icon_pixmap ("tool/edit"))
-			gli.select_actions.extend (agent show_text_in_dialog (source.schema_description))
+			gli.select_actions.extend (agent show_text_in_dialog (source_schema.schema_description))
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			-- archetyping attributes
@@ -169,12 +181,6 @@ feature {NONE} -- Implementation
 				create gli.make_with_text (dvpc)
 				ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 			end
-
-			create gli.make_with_text ("model_name")
-			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
-			create str.make_from_string (ref_model.model_name)
-			create gli.make_with_text (str)
-			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 
 			-- resize grid cols properly
 			Grid_column_ids.do_all (

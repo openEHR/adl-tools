@@ -396,13 +396,13 @@ feature -- Commands
 			end
 
 			-- if no RM schemas yet available, ask user to configure
-			if not models_access.found_valid_models then
+			if not bmm_models_access.found_valid_models then
 				set_rm_schemas
 			end
 
 			-- if some RM schemas now found, set up a repository if necessary
-			if models_access.found_valid_models then
-				ref_model_explorer.populate (models_access)
+			if bmm_models_access.found_valid_models then
+				ref_model_explorer.populate (bmm_models_access)
 				if archetype_repository_interfaces.is_empty or archetype_library_interfaces.is_empty then
 					configure_repositories
 				else
@@ -428,7 +428,7 @@ feature -- Commands
 			end
 
 			console_tool.append_text (app_root.error_strings)
-			console_tool.append_text (models_access.error_strings)
+			console_tool.append_text (bmm_models_access.error_strings)
 		end
 
 	open_test_tool
@@ -762,17 +762,17 @@ feature -- RM Schemas Events
 			populate_arch_libraries_combo
 			if rm_schema_dialog.has_changed_schema_load_list then
 				console_tool.clear
-				models_access.reload_schemas
-				if not models_access.found_valid_models then
-					console_tool.append_text (models_access.error_strings)
+				bmm_models_access.reload_schemas
+				if not bmm_models_access.found_valid_models then
+					console_tool.append_text (bmm_models_access.error_strings)
 				else
-					ref_model_explorer.populate (models_access)
+					ref_model_explorer.populate (bmm_models_access)
 					if has_current_library then
 						display_archetype_library (True)
 					end
 				end
 			elseif rm_schema_dialog.has_changed_schema_dirs then
-				ref_model_explorer.populate (models_access)
+				ref_model_explorer.populate (bmm_models_access)
 				display_archetype_library (True)
 			end
 		end
@@ -780,9 +780,9 @@ feature -- RM Schemas Events
 	reload_schemas
 			-- user-initiated reload
 		do
-			models_access.reload_schemas
+			bmm_models_access.reload_schemas
 			display_archetype_library (True)
-			ref_model_explorer.populate (models_access)
+			ref_model_explorer.populate (bmm_models_access)
 			refresh_all_archetype_editors
 		end
 

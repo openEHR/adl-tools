@@ -776,10 +776,10 @@ feature {NONE} -- Statistical Report
 
 				aca.generate_statistics (True)
 				if attached aca.statistical_analyser as att_sa then
-					if attached statistics_cache.item (aca.ref_model.schema_id) as att_item then
+					if attached statistics_cache.item (aca.ref_model.model_id) as att_item then
 						att_item.merge (att_sa.stats)
 					else
-						statistics_cache.put (att_sa.stats.duplicate, aca.ref_model.schema_id)
+						statistics_cache.put (att_sa.stats.duplicate, aca.ref_model.model_id)
 					end
 				end
 			end
@@ -899,86 +899,36 @@ feature {NONE} -- Implementation
 		local
 			model_node: ARCH_LIB_MODEL
 			namespace_node: ARCH_LIB_PACKAGE
-			qualified_namespace_key: STRING
-			supp_list, supp_list_copy: ARRAYED_SET[STRING]
-			supp_class_list: ARRAYED_LIST [BMM_CLASS]
-			root_classes: ARRAYED_SET [BMM_CLASS]
-			removed: BOOLEAN
-			bmm_model: BMM_MODEL
+			top_classes_list: ARRAYED_LIST [BMM_CLASS]
+			bm: BMM_MODEL
 			aom_profile: AOM_PROFILE
-			archetype_parent_class: detachable STRING
+			archetype_parent_class: STRING
 		do
 			item_tree.wipe_out
 
 			-- process each top-level model
-			across models_access.valid_models as models_csr loop
-				bmm_model := models_csr.item
-				if aom_profiles_access.has_profile_for_rm_schema (bmm_model.schema_id) then
-					aom_profile := aom_profiles_access.profile_for_rm_schema (bmm_model.schema_id)
+			across bmm_models_access.bmm_models as models_csr loop
+				bm := models_csr.item
+				if aom_profiles_access.has_profile_for_rm_schema (bm.model_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (bm.model_id)
 					archetype_parent_class := aom_profile.archetype_parent_class
+				else
+					archetype_parent_class := any_type
 				end
 
 				-- create new top-level model node
-				create model_node.make (bmm_model)
+				create model_node.make (bm)
 				item_tree.put_child (model_node)
 
-				-- process archetype namespace
-				qualified_namespace_key := publisher_qualified_namespace_key (bmm_model.rm_publisher, bmm_model.model_name)
-
 				-- create namespace node
-				create namespace_node.make (bmm_model.model_name, bmm_model)
+				create namespace_node.make (bm)
 				model_node.put_child (namespace_node)
 
-				-- obtain the top-most classes from the package structure; they might not always be in the top-most package
-				across bmm_model.packages as pkg_csr loop
-					root_classes := pkg_csr.item.root_classes
-					if not root_classes.is_empty then
-						-- create the list of supplier classes for all the classes in the closure root package
-						create supp_list.make (0)
-						supp_list.compare_objects
-						across root_classes as root_classes_csr loop
-							supp_list.merge (root_classes_csr.item.supplier_closure)
-							supp_list.extend (root_classes_csr.item.name)
-						end
-
-						-- now filter this list to keep only those classes inheriting from the archetype_parent_class
-						-- that are among the suppliers of the top-level class of the package; this gives the classes
-						-- that could be archetyped in that package
-						if attached archetype_parent_class as apc then
-							from supp_list.start until supp_list.off loop
-								if not bmm_model.is_descendant_of (supp_list.item, apc) then
-									supp_list.remove
-								else
-									supp_list.forth
-								end
-							end
-						end
-
-						-- filter list again so that only highest class in any inheritance subtree remains
-						supp_list_copy := supp_list.deep_twin
-						from supp_list.start until supp_list.off loop
-							removed := False
-							from supp_list_copy.start until supp_list_copy.off or removed loop
-								if bmm_model.is_descendant_of (supp_list.item, supp_list_copy.item) then
-									supp_list.remove
-									removed := True
-								end
-								supp_list_copy.forth
-							end
-
-							if not removed then
-								supp_list.forth
-							end
-						end
-
-						-- convert to BMM_CLASS_DESCRIPTORs
-						create supp_class_list.make(0)
-						across supp_list as supp_list_csr loop
-							supp_class_list.extend (bmm_model.class_definition (supp_list_csr.item))
-						end
-						add_child_nodes (bmm_model.model_name, supp_class_list, namespace_node)
-					end
+				-- obtain the top-most classes from the package structure
+				check attached archetype_parent_class then
+					top_classes_list := bm.class_definition (archetype_parent_class).immediate_descendants
 				end
+				add_child_nodes (bm.model_name, top_classes_list, namespace_node)
 			end
 
 			-- write the ARCH_LIB_CLASS nodes from the tree into the index
@@ -986,19 +936,17 @@ feature {NONE} -- Implementation
 			do_all_semantic (agent (ari: attached ARCH_LIB_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
 		end
 
-	add_child_nodes (a_qualified_namespace: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_LIB_MODEL_ITEM)
+	add_child_nodes (a_bmm_model_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS]; a_parent_node: ARCH_LIB_MODEL_ITEM)
 			-- populate child nodes of a node in library with immediate descendants of classes in `class_list'
-			-- put each node into `item_index', keyed by `a_qualified_namespace' + '-' + `class_list.item.name',
+			-- put each node into `item_index', keyed by `a_bmm_model_name' + '-' + `class_list.item.name',
 			-- which will match with corresponding part of archetype identifier
 		local
-			children: ARRAYED_LIST [BMM_CLASS]
 			class_node: ARCH_LIB_CLASS
 		do
 			across class_list as class_list_csr loop
-				create class_node.make (a_qualified_namespace, class_list_csr.item)
+				create class_node.make (a_bmm_model_name, class_list_csr.item)
 				a_parent_node.put_child (class_node)
-				children := class_list_csr.item.immediate_descendants
-				add_child_nodes (a_qualified_namespace, children, class_node)
+				add_child_nodes (a_bmm_model_name, class_list_csr.item.immediate_descendants, class_node)
 			end
 		end
 

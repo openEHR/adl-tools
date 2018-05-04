@@ -164,7 +164,7 @@ feature {ARCHETYPE_LIBRARY_INTERFACES} -- Commands
 				create ldfa.make_load (library_definition_file_path)
 				library_definition_file_access := ldfa
 			end
-			ldfa.save (a_def)
+			ldfa.save (a_def, True)
 		end
 
 feature {SHARED_ARCHETYPE_LIBRARIES} -- Commands
