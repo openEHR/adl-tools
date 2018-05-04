@@ -382,19 +382,12 @@ feature {NONE} -- Implementation
 
 	ev_notebook: EV_NOTEBOOK
 
---	ev_status_hb: EV_HORIZONTAL_BOX
-
---	ev_status_label: EV_LABEL
-
---	ev_status_text, ev_status_dummy_text: EV_LABEL
-
 	do_clear
 		do
 			metrics_viewer.clear
 			stats_viewer.clear
 			archetype_explorer.clear
 			ev_notebook.select_item (archetype_explorer.ev_root_container)
---			ev_status_text.set_text ("")
 		end
 
 	do_populate
