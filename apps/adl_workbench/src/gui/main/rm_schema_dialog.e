@@ -61,7 +61,7 @@ feature -- Definitions
 			Result := Grid_xml_export_col
 		end
 
-	frame_height: INTEGER = 150
+	Max_height: INTEGER = 768
 
 	Grid_expansion_factor: REAL = 1.2
 
@@ -99,7 +99,6 @@ feature {NONE} -- Initialisation
 			create grid
 			grid.enable_tree
 			ev_root_container.extend (grid)
-			grid.set_minimum_height (frame_height)
 
 			-- space cell
 			create ev_cell_3
@@ -135,6 +134,10 @@ feature {NONE} -- Initialisation
 			-- add a reload button to the left of Ok/ Cancel
 			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent on_reload)
 
+			-- record height for later use
+			empty_form_height := height
+
+			-- populate
 			enable_edit
 			do_populate
 			ev_root_container.refresh_now
@@ -262,7 +265,6 @@ feature {NONE} -- Implementation
 			-- get rid of previously defined rows
 			grid.wipe_out
 			grid.enable_column_resize_immediate
-			grid.set_minimum_height (bmm_models_access.all_schemas.count * grid.row_height + grid.header.height)
 
 			-- create row containing widgets for each top-level schema, with child schemas in tree
 			across bmm_models_access.model_descriptors_by_publisher as pub_csr loop
@@ -277,6 +279,8 @@ feature {NONE} -- Implementation
 					row.expand
 				end
 			end
+
+			set_minimum_height ((grid.visible_row_count * grid.row_height + empty_form_height).min(Max_height))
 
 			-- make the columnn content visible
 			if grid.row_count > 0 then
@@ -415,6 +419,8 @@ feature {NONE} -- Implementation
 		do
 			Result := True
 		end
+
+	empty_form_height: INTEGER
 
 end
 
