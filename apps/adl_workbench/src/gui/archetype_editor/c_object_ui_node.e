@@ -285,32 +285,36 @@ feature {NONE} -- Implementation
 
 	node_id_text: STRING
 			-- show node_id text either as just rubric, or as node_id|rubric|, depending on `show_codes' setting
-		local
-			node_id_str: STRING
 		do
 			create Result.make_empty
 			if attached arch_node then
-				if is_id_code (arch_node.node_id) then
-					if not arch_node.node_id.is_equal (Primitive_node_id) then
-						if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
-							node_id_str := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
-							if display_settings.show_codes then
-								Result := annotated_code (arch_node.node_id, node_id_str, " ")
-							else
-								Result := node_id_str
-							end
-						elseif display_settings.show_codes then
-							Result := arch_node.node_id
-						end
-					else
-						-- nothing special to do
-					end
-				-- it must be an archetype id in a template structure
-				else
+				-- it must be a C_ARCHETYPE_ROOT in a template structure
+				if attached {C_ARCHETYPE_ROOT} arch_node as car then
 					if display_settings.show_technical_view then
-						Result := arch_node.node_id
+						Result := (create {ARCHETYPE_HRID}.make_from_string (car.archetype_ref)).concept_id
 					else
-						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.node_id)).concept_id
+						check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
+							Result := parent_co_ui.ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
+						end
+					end
+					if display_settings.show_codes then
+						Result := annotated_code (arch_node.node_id, Result, " ")
+					end
+				-- normal archetype node
+				else
+					if is_id_code (arch_node.node_id) then
+						if not arch_node.node_id.is_equal (Primitive_node_id) then
+							if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
+								Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
+								if display_settings.show_codes then
+									Result := annotated_code (arch_node.node_id, Result, " ")
+								end
+							elseif display_settings.show_codes then
+								Result := arch_node.node_id
+							end
+						else
+							-- nothing special to do
+						end
 					end
 				end
 			end
@@ -320,8 +324,8 @@ feature {NONE} -- Implementation
 			-- show `node_id_text' unless empty, in which case show `rm_type_name'
 		do
 			Result := node_id_text
-			if Result.is_empty and then attached arch_node as a_n then
-				Result := "(" + a_n.rm_type_name + ")"
+			if Result.is_empty and then attached arch_node then
+				Result := "(" + arch_node.rm_type_name + ")"
 			end
 		end
 
