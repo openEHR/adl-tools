@@ -404,9 +404,10 @@ end
 		local
 			co_output_csr: C_OBJECT
 			after_pending: BOOLEAN
-			start_pos, end_pos: INTEGER
+			start_pos, end_pos, co_csr_pos: INTEGER
 			sibling_anchor: SIBLING_ORDER
 			co_list: ARRAYED_LIST [C_OBJECT]
+			co_node_id, co_parent_node_id: STRING
 		do
 			ca_merge_list.wipe_out
 			start_pos := 1
@@ -464,19 +465,47 @@ end
 						after_pending := True
 					end
 					co_list.forth
-				else
-					-- set the co_output_insert_pos to the last item in the flat under this attribute -
-					-- i.e. the child archetype object nodes will be merged after the end of the existing
-					-- ones in the flat
-					co_output_csr := ca_output.children.last
-					add_merge_desc (start_pos, co_list.count, co_output_csr, False)
-					after_pending := False
 				end
 			end
 
-			-- grab the series from start_pos to here -1 and make a desc for it
+			-- if there is a last 'after' section, create a merge record for it.
 			if after_pending then
 				add_merge_desc (start_pos, co_list.count, co_output_csr, False)
+
+			-- Deal with whatever is left in the list (could be everything)
+			else
+				co_output_csr := Void
+				end_pos := start_pos
+				from co_csr_pos := start_pos until co_csr_pos > co_list.count loop
+					co_node_id := co_list.i_th (co_csr_pos).node_id
+					if code_exists_at_level (co_node_id, arch_flat_parent.specialisation_depth) then
+						co_parent_node_id := code_at_level (co_node_id, arch_flat_parent.specialisation_depth)
+
+						-- try to find redefinition parent of node
+						if ca_output.has_child_with_id (co_parent_node_id) then
+							if ca_output.child_with_id (co_parent_node_id) /= co_output_csr then
+								-- create a merge record for objects so far
+								if attached co_output_csr then
+									add_merge_desc (start_pos, end_pos, co_output_csr, False)
+									start_pos := end_pos + 1
+								end
+								co_output_csr := ca_output.child_with_id (co_parent_node_id)
+							else
+								end_pos := end_pos + 1
+							end
+						else
+							end_pos := end_pos + 1
+						end
+					else
+						end_pos := end_pos + 1
+					end
+					co_csr_pos := co_csr_pos + 1
+				end
+
+				-- if there is anything left, create a merge record for it.
+				if start_pos <= co_list.count then
+					add_merge_desc (start_pos, co_list.count, if attached co_output_csr then co_output_csr else ca_output.children.last end, False)
+				end
 			end
 		end
 
@@ -689,6 +718,8 @@ end
 
 	add_merge_desc (src_start_pos, src_end_pos: INTEGER; tgt_co_output_insert_pos: C_OBJECT; before_flag: BOOLEAN)
 			-- create a merge tuple for use in later merging
+		require
+			Index_validity: src_start_pos <= src_end_pos
 		local
 			merge_desc: like ca_merge_list.item
 		do
