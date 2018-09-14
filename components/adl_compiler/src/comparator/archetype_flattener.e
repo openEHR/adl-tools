@@ -398,7 +398,7 @@ end
 			-- build merge list for merging objects in container attribute `ca_diff' into the corresponding
 			-- container attribute `ca_output' in the output structure, using ordering information in source
 			-- attribute objects, and replacing or inserting as appropriate.
-			-- The merge list is used like a set of transactions to be processed in the routine `do_ca_merge'
+			-- The merge list is used like a set of transactions to be processed in the routine `do_ca_merge`
 		require
 			Non_empty_attribute: ca_output.has_children
 		local
