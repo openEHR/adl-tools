@@ -168,7 +168,7 @@ feature -- Visitor
 		local
 			p: STRING
 		do
-			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
+			-- ignore attrs which are in c_attribute_tuples
 			if not a_node.is_second_order_constrained then
 				-- path-compressed output form
 				if a_node.has_differential_path then
@@ -194,7 +194,7 @@ feature -- Visitor
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
 		do
-			-- ignore attrs whose object is a C_PRIM_OBJ and which are in c_attribute_tuples
+			-- ignore attrs which are in c_attribute_tuples
 			if not a_node.is_second_order_constrained then
 
 				-- For inline objects, output:
@@ -246,9 +246,11 @@ feature -- Visitor
 				across c_prim_tuples_csr.item.members as cpo_csr loop
 					last_result.append (symbol (SYM_START_CBLOCK))
 					if attached {C_STRING} cpo_csr.item as c_str then
-						last_result.append (apply_style (c_str.as_string_clean (agent clean), STYLE_VALUE))
+						serialise_c_string (c_str)
+					elseif attached {C_PRIMITIVE_OBJECT} cpo_csr.item as c_po then
+						serialise_c_primitive (c_po)
 					else
-						last_result.append (apply_style (cpo_csr.item.as_string, STYLE_VALUE))
+						-- non-primitive
 					end
 					last_result.append (symbol (SYM_END_CBLOCK))
 					if not cpo_csr.is_last then
@@ -435,9 +437,9 @@ feature {NONE} -- Implementation
 			last_result.append (apply_style (a_node.as_string, STYLE_VALUE))
 		end
 
-	serialise_c_string (a_node: C_STRING)
+	serialise_c_string (c_str: C_STRING)
 		do
-			last_result.append (apply_style (a_node.as_string_clean (agent clean), STYLE_VALUE))
+			last_result.append (apply_style (c_str.as_string_clean (agent clean), STYLE_VALUE))
 		end
 
 	serialise_c_terminology_code (a_node: C_TERMINOLOGY_CODE)
