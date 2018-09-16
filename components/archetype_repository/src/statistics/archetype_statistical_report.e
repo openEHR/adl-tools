@@ -28,7 +28,7 @@ feature -- Initialisation
 		do
 			ref_model :=  an_rm
 			Archetype_metric_names.do_all (
-				agent (metric_name: STRING)
+				agent (metric_name: READABLE_STRING_8)
 					do
 						archetype_metrics.put (create {STATISTICAL_DATUM}.make (metric_name), metric_name)
 					end

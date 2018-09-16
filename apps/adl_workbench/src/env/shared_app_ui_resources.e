@@ -391,7 +391,7 @@ feature -- Definitions: VCS status
 			end
 		end
 
-	Vcs_status_tooltips: HASH_TABLE [STRING, INTEGER]
+	Vcs_status_tooltips: HASH_TABLE [READABLE_STRING_8, INTEGER]
 		once
 			create Result.make (0)
 			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)

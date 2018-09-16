@@ -738,7 +738,7 @@ feature {NONE} -- Statistical Report
 			create statistics_cache.make (0)
 			create metrics_cache.make (Library_metric_names.count)
 			Library_metric_names.do_all (
-				agent (metric_name: STRING)
+				agent (metric_name: READABLE_STRING_8)
 					do
 						metrics_cache.put (0, metric_name)
 					end

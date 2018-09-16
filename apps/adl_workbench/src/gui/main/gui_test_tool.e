@@ -759,7 +759,7 @@ feature {NONE} -- Implementation
 	evx_batch_update_frame, evx_test_frame, evx_diffs_frame: EVX_FRAME_CONTROL
 	evx_progress_counter: EVX_SINGLE_LINE_TEXT_CONTROL
 
-	info_feedback_agent: PROCEDURE [ANY, TUPLE [STRING]]
+	info_feedback_agent: PROCEDURE [ANY, TUPLE [READABLE_STRING_8]]
 			-- a function to generate an interactive UI information feedback
 
 	call_info_feedback_agent (a_message: attached STRING)
