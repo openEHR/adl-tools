@@ -131,7 +131,7 @@ feature {NONE} -- Implementation
  			end
 		end
 
-	flat_properties: STRING_TABLE [BMM_PROPERTY [BMM_TYPE]]
+	flat_properties: STRING_TABLE [BMM_PROPERTY]
 
 	anc_classes: ARRAYED_LIST [BMM_CLASS]
 
@@ -143,7 +143,7 @@ feature {NONE} -- Implementation
    		local
 			gli: EV_GRID_LABEL_ITEM
 			class_row, property_row: EV_GRID_ROW
-			prop_list: ARRAYED_LIST [BMM_PROPERTY [BMM_TYPE]]
+			prop_list: ARRAYED_LIST [BMM_PROPERTY]
 			prop_type: BMM_TYPE
 			prop_text: STRING
 		do

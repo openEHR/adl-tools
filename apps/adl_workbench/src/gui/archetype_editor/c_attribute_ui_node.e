@@ -41,7 +41,7 @@ feature -- Initialisation
 			create children.make(0)
 		end
 
-	make_rm (an_rm_prop: BMM_PROPERTY [BMM_TYPE]; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
+	make_rm (an_rm_prop: BMM_PROPERTY; an_ed_context: ARCHETYPE_UI_GRAPH_STATE)
 			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		do
 			precursor (an_rm_prop, an_ed_context)
@@ -57,7 +57,7 @@ feature -- Access
 	arch_node_in_ancestor: detachable C_ATTRIBUTE
 			-- corresponding archetype node in specialisation parent, if applicable
 
-	rm_property: BMM_PROPERTY [BMM_TYPE]
+	rm_property: BMM_PROPERTY
 			-- RM property of node being edited
 
 	children: ARRAYED_LIST [C_OBJECT_UI_NODE]

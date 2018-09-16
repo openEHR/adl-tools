@@ -289,7 +289,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	continue_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; depth: INTEGER): BOOLEAN
+	continue_rm_property (a_bmm_prop: BMM_PROPERTY; depth: INTEGER): BOOLEAN
 			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
 		do
 			if attached last_property_grid_row as gr then
@@ -303,7 +303,7 @@ feature {NONE} -- Implementation
 
 	last_property_grid_row: detachable EV_GRID_ROW
 
-	enter_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; depth: INTEGER)
+	enter_rm_property (a_bmm_prop: BMM_PROPERTY; depth: INTEGER)
 			-- enter a BMM_PROPERTY
 		local
 			ev_parent_class_row, ev_prop_row, ev_class_row: EV_GRID_ROW
@@ -324,9 +324,9 @@ feature {NONE} -- Implementation
 				last_property_grid_row := Void
 				-- if a row for the property already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
 				if attached evx_grid.matching_sub_row (ev_parent_class_row,
-					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY [BMM_TYPE]): BOOLEAN
+					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY): BOOLEAN
 						do
-							Result := attached {BMM_PROPERTY [BMM_TYPE]} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
+							Result := attached {BMM_PROPERTY} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
 						end (?, a_bmm_prop)) as a_prop_row
 				then
 					-- put something on the stack to match stack removal in exit routine
@@ -410,7 +410,7 @@ feature {NONE} -- Implementation
 		 	ev_grid_rm_row_removals_stack.extend (ignore)
 		end
 
-	exit_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE])
+	exit_rm_property (a_bmm_prop: BMM_PROPERTY)
 			-- exit a BMM_PROPERTY
 		do
 			if not ev_grid_rm_row_removals_stack.item then
@@ -458,7 +458,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY [BMM_TYPE]} a_prop_grid_row.data as bmm_pd and then not bmm_pd.is_mandatory then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY} a_prop_grid_row.data as bmm_pd and then not bmm_pd.is_mandatory then
 				create menu
 				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_property (a_prop_grid_row))
 				menu.extend (an_mi)

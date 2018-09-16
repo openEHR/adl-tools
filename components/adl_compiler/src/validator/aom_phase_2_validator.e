@@ -440,7 +440,7 @@ end
 		local
 			attr_rm_type_in_flat_anc, rm_attr_type: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
-			rm_prop_def: BMM_PROPERTY [BMM_TYPE]
+			rm_prop_def: BMM_PROPERTY
 			bmm_enum: BMM_ENUMERATION [COMPARABLE]
 			vcormt_fail: BOOLEAN
 		do

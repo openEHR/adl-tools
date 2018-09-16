@@ -52,7 +52,7 @@ feature {NONE} -- Implementation
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- copy existence and cardinality from reference model to node if it doesn't have them set; infer occurrences
 		local
-			rm_attr_desc: BMM_PROPERTY [BMM_TYPE]
+			rm_attr_desc: BMM_PROPERTY
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca and then attached ca.parent as att_co then
 				rm_attr_desc := ref_model.property_definition (att_co.rm_type_name, ca.rm_attribute_name)

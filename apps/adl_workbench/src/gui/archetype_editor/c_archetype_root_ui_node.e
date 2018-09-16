@@ -24,7 +24,7 @@ feature -- Access
 	arch_node: detachable C_ARCHETYPE_ROOT
 			-- archetype node being edited
 
-	rm_properties: STRING_TABLE [BMM_PROPERTY [BMM_TYPE]]
+	rm_properties: STRING_TABLE [BMM_PROPERTY]
 			-- don't produce any RM properties, since node is another archetype
 		do
 			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and not c_attributes.is_empty then

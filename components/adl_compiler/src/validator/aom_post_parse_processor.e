@@ -174,7 +174,7 @@ feature {NONE} -- Implementation
 			ca_path_in_flat, co_path_in_flat: STRING
 			ca_in_flat_anc: C_ATTRIBUTE
 			ref_existence, ref_cardinality: detachable MULTIPLICITY_INTERVAL
-			rm_prop_def: BMM_PROPERTY [BMM_TYPE]
+			rm_prop_def: BMM_PROPERTY
 			co_parent: C_COMPLEX_OBJECT
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca and then (attached ca.existence or attached ca.cardinality) then

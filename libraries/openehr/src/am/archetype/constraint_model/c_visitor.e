@@ -205,7 +205,7 @@ feature -- Visitor
 		do
 		end
 
-	do_rm_property (a_bmm_prop: BMM_PROPERTY [BMM_TYPE]; a_c_object: C_OBJECT; depth: INTEGER)
+	do_rm_property (a_bmm_prop: BMM_PROPERTY; a_c_object: C_OBJECT; depth: INTEGER)
 			-- enter a BMM_PROPERTY
 		do
 		end
