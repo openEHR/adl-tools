@@ -911,7 +911,7 @@ feature {NONE} -- Implementation
 				bm := models_csr.item
 				if aom_profiles_access.has_profile_for_rm_schema (bm.model_id) then
 					aom_profile := aom_profiles_access.profile_for_rm_schema (bm.model_id)
-					archetype_parent_class := aom_profile.archetype_parent_class
+					archetype_parent_class := if attached aom_profile.archetype_parent_class as apc then apc else any_type end
 				else
 					archetype_parent_class := any_type
 				end
