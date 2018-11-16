@@ -77,7 +77,7 @@ create
 -- LEGACY ADL 1.4 Syntax
 --
 %token <C_DV_QUANTITY> V_C_DV_QUANTITY
-%token ERR_C_DV_QUANTITY
+%token ERR_C_DV_QUANTITY_1 ERR_C_DV_QUANTITY_2 ERR_C_DV_QUANTITY_3 ERR_C_DV_QUANTITY_4
 --
 -- END LEGACY ADL 1.4 Syntax
 --
@@ -388,7 +388,19 @@ c_non_primitive_object: c_complex_object_proxy
 			end
 			$$ := last_c_dv_quantity_value.standard_equivalent (new_fake_node_id)
 		}
-	| ERR_C_DV_QUANTITY
+	| ERR_C_DV_QUANTITY_1
+		{
+			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+		}
+	| ERR_C_DV_QUANTITY_2
+		{
+			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+		}
+	| ERR_C_DV_QUANTITY_3
+		{
+			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+		}
+	| ERR_C_DV_QUANTITY_4
 		{
 			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
 		}

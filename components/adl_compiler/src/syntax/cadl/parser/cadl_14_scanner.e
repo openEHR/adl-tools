@@ -852,19 +852,19 @@ end
 								last_token := V_C_DV_QUANTITY
 							else
 								odin_parser_error.add_error (ec_VDTCV, <<att_output.im_type_name>>, "")
-								last_token := ERR_C_DV_QUANTITY
+								last_token := ERR_C_DV_QUANTITY_1
 							end
 						else
 							odin_parser_error.add_error (ec_VDTTU, <<att_output.im_type_name>>, "")
-							last_token := ERR_C_DV_QUANTITY
+							last_token := ERR_C_DV_QUANTITY_2
 						end
 					else
 						odin_parser_error.add_error (ec_VDTNT, Void, "")
-						last_token := ERR_C_DV_QUANTITY
+						last_token := ERR_C_DV_QUANTITY_3
 					end
 				else
 					odin_parser_error.append (odin_parser.errors)
-					last_token := ERR_C_DV_QUANTITY
+					last_token := ERR_C_DV_QUANTITY_4
 				end
 
 				in_buffer.wipe_out
