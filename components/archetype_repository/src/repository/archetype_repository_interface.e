@@ -4,12 +4,12 @@ note
 				 Access object for archetype repository. A 'repository' is assumed to contain one
 				 or more 'libraries' where a 'library' is a logical collection of archetypes.
 
-				 At the root of the repository will be a file whose name is '_repo.idx'
+				 At the root of the repository will be a file whose name is '_repo.idx'.
 				 ]"
 	keywords:    "ADL, archetype, repository"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2013 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013 openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class ARCHETYPE_REPOSITORY_INTERFACE
