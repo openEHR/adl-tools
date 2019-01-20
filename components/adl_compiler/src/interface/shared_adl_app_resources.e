@@ -99,7 +99,7 @@ feature -- Definitions
 	Library_report_filename: STRING = "ArchetypeRepositoryReport.xml"
 
 	Default_aom_profile_directory: STRING
-			-- default directory of AOM profile files (*.arp files, in dadl format)
+			-- default directory of AOM profile files (*.arp files, in ODIN format)
 		once ("PROCESS")
 			Result := file_system.pathname (application_startup_directory, "aom_profiles")
 		end

@@ -30,6 +30,9 @@ templates = <
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
 		["display_rm_switch_arg_desc"] = <"reference model name">
 
+		["export_rms_switch_desc"] = <"export reference models in all available formats">
+		["export_rms_switch_arg_desc"] = <"path of folder in which to save export files">
+
 		["format_switch_desc"] = <"output format for generated files">
 		["format_switch_arg_desc"] = <"file formats: json, adl, odin, yaml, xml (default = adl)">
 

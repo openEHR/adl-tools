@@ -293,6 +293,8 @@ feature -- Initialisation
 			message_table.put ("generate list of reference models", ec_list_rms_switch_desc)
 			message_table.put ("display reference model in user-friendly format", ec_display_rm_switch_desc)
 			message_table.put ("reference model name", ec_display_rm_switch_arg_desc)
+			message_table.put ("export reference models in all available formats", ec_export_rms_switch_desc)
+			message_table.put ("path of folder in which to save export files", ec_export_rms_switch_arg_desc)
 			message_table.put ("output format for generated files", ec_format_switch_desc)
 			message_table.put ("file formats: json, adl, odin, yaml, xml (default = adl)", ec_format_switch_arg_desc)
 			message_table.put ("output directory for serialised files", ec_output_dir_switch_desc)

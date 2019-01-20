@@ -87,6 +87,7 @@ feature -- Definitions
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (display_rm_switch, get_text (ec_display_rm_switch_desc), False, False, display_rm_switch_arg, get_text (ec_display_rm_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (export_rms_switch, get_text (ec_export_rms_switch_desc), False, False, export_rms_switch_arg, get_text (ec_export_rms_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (library_switch, get_text (ec_library_switch_desc), False, False, library_switch_arg, get_text (ec_library_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
@@ -105,6 +106,7 @@ feature -- Definitions
 
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (list_rms_switch), switch_of_name (quiet_switch) >>, False))
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (display_rm_switch), switch_of_name (quiet_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (export_rms_switch), switch_of_name (quiet_switch) >>, False))
 
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
@@ -123,6 +125,9 @@ feature -- Definitions
 	list_rms_switch: STRING = "r|list_rms"
 	display_rm_switch: STRING = "R|display_rm"
 	display_rm_switch_arg: STRING = "reference model name"
+
+	export_rms_switch: STRING = "x|export_rms"
+	export_rms_switch_arg: STRING = "export folder path"
 
 	action_switch: STRING = "a|action"
 	action_switch_arg: STRING = "action"
@@ -178,6 +183,7 @@ feature {NONE} -- Initialization
 				list_archetypes := has_option (list_archetypes_switch)
 				display_archetypes := has_option (display_archetypes_switch)
 				list_rms := has_option (list_rms_switch)
+				export_rms := has_option (export_rms_switch)
 				write_to_file_system := has_option (output_dir_switch)
 			end
 		end
@@ -210,6 +216,16 @@ feature -- Access
 			is_successful: is_successful
 		once
 			if has_option (display_rm_switch) and then attached option_of_name (display_rm_switch) as opt and then opt.has_value then
+				Result := opt.value
+			end
+		end
+
+	rm_export_directory: detachable STRING
+			-- folder to write exported BMM models to
+		require
+			is_successful: is_successful
+		once
+			if has_option (export_rms_switch) and then attached option_of_name (export_rms_switch) as opt and then opt.has_value then
 				Result := opt.value
 			end
 		end
@@ -266,6 +282,9 @@ feature -- Status Report
 
 	list_rms: BOOLEAN
 			-- True for -r switch to list RMs
+
+	export_rms: BOOLEAN
+			-- True for -x switch to export RMs
 
 	write_to_file_system: BOOLEAN
 			-- True if -o switch used to specify an output directory

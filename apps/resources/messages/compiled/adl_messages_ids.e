@@ -278,6 +278,8 @@ feature -- Definitions
 		ec_list_rms_switch_desc: STRING = "list_rms_switch_desc"
 		ec_display_rm_switch_desc: STRING = "display_rm_switch_desc"
 		ec_display_rm_switch_arg_desc: STRING = "display_rm_switch_arg_desc"
+		ec_export_rms_switch_desc: STRING = "export_rms_switch_desc"
+		ec_export_rms_switch_arg_desc: STRING = "export_rms_switch_arg_desc"
 		ec_format_switch_desc: STRING = "format_switch_desc"
 		ec_format_switch_arg_desc: STRING = "format_switch_arg_desc"
 		ec_output_dir_switch_desc: STRING = "output_dir_switch_desc"

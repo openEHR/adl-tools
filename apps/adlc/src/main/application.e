@@ -7,6 +7,7 @@ note
 					   adlc -s [-q]
 					   adlc -r [-q]
 					   adlc -R <reference model name> [-q]
+					   adlc -x [-q]
 					   adlc -b <library name> -l [-q]
 					   adlc -b <library name> -d [-q]
 					   adlc <id_pattern> -b <library name> [--flat] [--cfg <file path>] [-q] [-f <format>] -a <action> [-o <output_dir>]
@@ -20,6 +21,7 @@ note
 
 					   -r --list_rms          : generate list of reference models.
 					   -R --display_rms		  : generate view of reference models user-friendly format
+					   -x --export_rms        : export reference models in all available formats (JSON, ODIN, etc)
 
 					   -l --list_archetypes   : generate list of archetypes in current library (use for further processing)
 					   -d --display_archetypes: generate list of archetypes in current library in user-friendly format
@@ -40,9 +42,9 @@ note
 				   	(see OPTIONS_PROCESSOR class)
 				   ]"
 	keywords:    "ADL, archetype, compiler, command line"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
@@ -101,7 +103,7 @@ feature -- Commands
 			curr_repo, action: STRING
 			aca: ARCH_LIB_ARCHETYPE
 			finished: BOOLEAN
-			lib_name, full_output_dir, full_path: STRING
+			lib_name, full_output_dir, full_path, schema_file_path: STRING
 		do
 			if opts.is_verbose then
 				std_out.put_string ("Initialising... %N")
@@ -138,14 +140,41 @@ feature -- Commands
 						end
 					end
 
+				-- List Reference Models
 				elseif opts.list_rms then
 					across bmm_models_access.bmm_models as loaded_rms_csr loop
 						std_out.put_string (loaded_rms_csr.key.as_string_8 + "%N")
 					end
 
+				-- Display a Reference Model
 				elseif attached opts.display_rm as rm then
 					if bmm_models_access.bmm_models.has (rm) and then attached bmm_models_access.bmm_models.item (rm) as an_rm then
 						populate_rm (an_rm)
+					end
+
+				-- Export Reference Models
+				elseif opts.export_rms then
+					if attached opts.rm_export_directory as export_dir then
+						if file_system.directory_exists (export_dir) then
+							across bmm_models_access.all_schemas as schemas_csr loop
+								if schemas_csr.item.is_top_level then
+									across odin_serialiser_file_extensions as fmt_csr loop
+										schema_file_path := file_system.pathname (export_dir, schemas_csr.key.as_string_8 + fmt_csr.item)
+										if opts.is_verbose then
+											std_out.put_string ("exported " + schemas_csr.key + " in format " + fmt_csr.key + " to file " + schema_file_path + "%N")
+										end
+
+										schemas_csr.item.export_schema (fmt_csr.key, schema_file_path)
+									end
+								end
+							end
+						else
+							std_err.put_string (get_msg (ec_directory_does_not_exist, <<export_dir>>))
+							finished := True
+						end
+					else
+						std_err.put_string (get_msg (ec_directory_not_supplied, <<>>))
+						finished := True
 					end
 
 				else
