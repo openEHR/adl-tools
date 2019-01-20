@@ -102,8 +102,8 @@ feature -- Commands
 		local
 			curr_repo, action: STRING
 			aca: ARCH_LIB_ARCHETYPE
-			finished: BOOLEAN
-			lib_name, full_output_dir, full_path, schema_file_path: STRING
+			finished, use_schema_dir: BOOLEAN
+			lib_name, full_output_dir, full_path, schema_file_path, export_dir: STRING
 		do
 			if opts.is_verbose then
 				std_out.put_string ("Initialising... %N")
@@ -154,31 +154,40 @@ feature -- Commands
 
 				-- Export Reference Models
 				elseif opts.export_rms then
-					if attached opts.rm_export_directory as export_dir then
-						if file_system.directory_exists (export_dir) then
-							across bmm_models_access.all_schemas as schemas_csr loop
-								if schemas_csr.item.is_top_level then
-									across odin_serialiser_file_extensions as fmt_csr loop
-										schema_file_path := file_system.pathname (export_dir, schemas_csr.key.as_string_8 + fmt_csr.item)
-										if opts.is_verbose then
-											std_out.put_string ("exported " + schemas_csr.key + " in format " + fmt_csr.key + " to file " + schema_file_path + "%N")
-										end
-
-										schemas_csr.item.export_schema (fmt_csr.key, schema_file_path)
-									end
-								end
-							end
-						else
+					create export_dir.make_empty
+					if attached opts.rm_export_directory as xd then
+						export_dir := xd
+						if not file_system.directory_exists (export_dir) then
 							std_err.put_string (get_msg (ec_directory_does_not_exist, <<export_dir>>))
 							finished := True
 						end
 					else
-						std_err.put_string (get_msg (ec_directory_not_supplied, <<>>))
-						finished := True
+						use_schema_dir := True
+					end
+
+					if not finished then
+						across bmm_models_access.all_schemas as schemas_csr loop
+							if schemas_csr.item.is_top_level then
+								across odin_serialiser_file_extensions as fmt_csr loop
+									-- construct the path part, including a /fmt at the end, e.g. /json etc
+									schema_file_path := file_system.pathname (if use_schema_dir then file_system.dirname (schemas_csr.item.schema_path) else export_dir end, fmt_csr.key)
+
+									-- now add the file name with an extension of the form .bmm.<fmt> e.g. .bmm.json to show it is a <fmt>
+									-- serialisation of a BMM schema
+									schema_file_path := file_system.pathname (schema_file_path, schemas_csr.key.as_string_8 + {BMM_DEFINITIONS}.bmm2_schema_file_extension + fmt_csr.item)
+
+									if opts.is_verbose then
+										std_out.put_string ("exported " + schemas_csr.key + " in format " + fmt_csr.key + " to file " + schema_file_path + "%N")
+									end
+
+									schemas_csr.item.export_schema (fmt_csr.key, schema_file_path)
+								end
+							end
+						end
 					end
 
 				else
-					-- process library
+					-- process archetype library
 					if attached opts.library as att_lib then
 						if has_library (att_lib) then
 							set_current_library_name (att_lib)
@@ -191,9 +200,11 @@ feature -- Commands
 						end
 					end
 
+					-- list archetype ids
 					if opts.list_archetypes then
 						current_library.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 
+					-- output archetype(s) in serialised format
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
 						std_out.put_string (get_msg (ec_archs_list_text, <<current_library_name>>))

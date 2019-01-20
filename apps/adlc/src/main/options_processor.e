@@ -87,7 +87,7 @@ feature -- Definitions
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (display_rm_switch, get_text (ec_display_rm_switch_desc), False, False, display_rm_switch_arg, get_text (ec_display_rm_switch_arg_desc), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (export_rms_switch, get_text (ec_export_rms_switch_desc), False, False, export_rms_switch_arg, get_text (ec_export_rms_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (export_rms_switch, get_text (ec_export_rms_switch_desc), False, False, export_rms_switch_arg, get_text (ec_export_rms_switch_arg_desc), True))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (library_switch, get_text (ec_library_switch_desc), False, False, library_switch_arg, get_text (ec_library_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
