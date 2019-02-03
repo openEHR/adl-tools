@@ -2,7 +2,7 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Repositories dialog window. This dialog is non-modal, i.e. changes are instant, but uses model dialogs to gather information."
 	keywords:    "ADL, archeytpes, openEHR"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2014- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
