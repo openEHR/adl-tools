@@ -345,7 +345,7 @@ feature {NONE} -- Implementation
 					if show_prop then
 						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes						
 						prop_str := a_bmm_prop.name.twin
-						bmm_class := a_bmm_prop.bmm_type.base_class
+						bmm_class := a_bmm_prop.bmm_type.effective_base_class
 						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.bmm_type as bmm_cont_type then
 							prop_str.append (": " + bmm_cont_type.container_class.name + Generic_left_delim.out + Generic_right_delim.out)
 						end
@@ -458,7 +458,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY} a_prop_grid_row.data as bmm_pd and then not bmm_pd.is_mandatory then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY} a_prop_grid_row.data as bmm_pd and then bmm_pd.is_nullable then
 				create menu
 				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_property (a_prop_grid_row))
 				menu.extend (an_mi)

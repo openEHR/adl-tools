@@ -361,7 +361,7 @@ feature {NONE} -- Implementation
 			create pixmap_key.make_empty
 			if attached arch_node then
 				if not display_settings.show_technical_view then
-					pixmap_key := rm_type_pixmap_key (rm_type.base_class)
+					pixmap_key := rm_type_pixmap_key (rm_type.effective_base_class)
 				end
 
 				if pixmap_key.is_empty then
@@ -406,7 +406,7 @@ feature {NONE} -- Context menu
 			an_mi: EV_MENU_ITEM
 		do
 			create context_menu
-			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.base_class))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.effective_base_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			context_menu.extend (an_mi)
 
@@ -446,7 +446,7 @@ feature {NONE} -- Context menu
 				end
 
 				-- add menu item to create new archetype based on current node
-				if attached {C_COMPLEX_OBJECT} arch_node as cco and attached rm_type.base_class as bmm_class_def and then
+				if attached {C_COMPLEX_OBJECT} arch_node as cco and attached rm_type.effective_base_class as bmm_class_def and then
 					attached current_library.class_for_definition (bmm_class_def) as arch_lib_class
 				then
 					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_new_archetype),
@@ -525,9 +525,9 @@ feature {NONE} -- Context menu
 			dialog: GUI_C_OBJECT_DIALOG
 			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
-			rm_type_substitutions := rm_type.base_class.all_descendants.deep_twin
+			rm_type_substitutions := rm_type.effective_base_class.all_descendants.deep_twin
 			rm_type_substitutions.extend (rm_type.type_name)
-			create dialog.make (aom_types_for_rm_type (rm_type.base_class), rm_type_substitutions, arch_node_aom_type, rm_type.type_name,
+			create dialog.make (aom_types_for_rm_type (rm_type.effective_base_class), rm_type_substitutions, arch_node_aom_type, rm_type.type_name,
 				parent.default_occurrences, ui_graph_state.archetype, Void, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then

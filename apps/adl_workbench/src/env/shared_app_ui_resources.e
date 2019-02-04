@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "Shared UI resources"
 	keywords:    "application, UI"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class SHARED_APP_UI_RESOURCES
@@ -441,7 +441,7 @@ feature -- Access
 					if attached {BMM_CLASS} a_rm_entity as a_class then
 						pixmap_key := rm_type_pixmap_key (a_class)
 					elseif attached {BMM_TYPE} a_rm_entity as a_type then
-						pixmap_key := rm_type_pixmap_key (a_type.base_class)
+						pixmap_key := rm_type_pixmap_key (a_type.effective_base_class)
 					end
 				end
 				if pixmap_key.is_empty then

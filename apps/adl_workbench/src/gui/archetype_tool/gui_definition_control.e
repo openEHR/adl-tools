@@ -500,7 +500,7 @@ feature {NONE} -- Implementation
 					agent (a_row: EV_GRID_ROW; vis_desc_class: STRING): BOOLEAN
 						do
 							if attached {C_OBJECT_UI_NODE} a_row.data as co_ed_ctx then
-								Result := not co_ed_ctx.is_rm and ref_model.is_descendant_of (co_ed_ctx.rm_type.base_class.name, vis_desc_class)
+								Result := not co_ed_ctx.is_rm and ref_model.is_descendant_of (co_ed_ctx.rm_type.effective_base_class.name, vis_desc_class)
 							end
 						end (?, vis_desc_cl)
 				)

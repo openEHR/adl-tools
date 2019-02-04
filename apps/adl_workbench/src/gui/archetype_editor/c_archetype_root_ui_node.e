@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "UI visualisation node for a C_ARCHETYPE_ROOT"
 	keywords:    "archetype, editing"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openehr.org>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class C_ARCHETYPE_ROOT_UI_NODE
@@ -28,7 +28,7 @@ feature -- Access
 			-- don't produce any RM properties, since node is another archetype
 		do
 			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and not c_attributes.is_empty then
-				Result := rm_type.base_class.flat_properties
+				Result := rm_type.effective_base_class.flat_properties
 			else
 				create Result.make_caseless (0)
 			end

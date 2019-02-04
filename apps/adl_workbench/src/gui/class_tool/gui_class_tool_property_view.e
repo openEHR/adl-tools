@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 						gli.set_data (prop_type)
 
 						-- tooltip
-						if attached prop_type.base_class.documentation as bmm_prop_class_doc then
+						if attached prop_type.effective_base_class.documentation as bmm_prop_class_doc then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
 						end
 
@@ -229,7 +229,7 @@ feature {NONE} -- Implementation
 			-- visit ancestors, recursively
 			if not differential_view then
 				across a_class_def.ancestors as ancs_csr loop
-					populate_class_node (ancs_csr.item.base_class)
+					populate_class_node (ancs_csr.item.effective_base_class)
 				end
 			end
 		end
@@ -242,7 +242,7 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE} eti.data as bmm_type then
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, bmm_type.base_class)
+				add_class_context_menu (menu, bmm_type.effective_base_class)
 				menu.show
 			end
 		end

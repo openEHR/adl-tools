@@ -54,9 +54,9 @@ feature -- Access
 	rm_properties: STRING_TABLE [BMM_PROPERTY]
 		do
 			if ui_graph_state.in_differential_view and not ui_graph_state.editing_enabled then
-				Result := rm_type.base_class.properties
+				Result := rm_type.effective_base_class.properties
 			else
-				Result := rm_type.base_class.flat_properties
+				Result := rm_type.effective_base_class.flat_properties
 			end
 		end
 
