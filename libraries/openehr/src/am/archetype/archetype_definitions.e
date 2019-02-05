@@ -275,15 +275,10 @@ feature -- Enumerations
 			Result.extend (bare_type_name(({C_DATE_TIME}).name), "DATE_TIME")
 			Result.extend (bare_type_name(({C_DURATION}).name), "DURATION")
 
-			Result.extend (bare_type_name(({C_DATE}).name), "IDATE")
-			Result.extend (bare_type_name(({C_TIME}).name), "ITIME")
-			Result.extend (bare_type_name(({C_DATE_TIME}).name), "IDATE_TIME")
-			Result.extend (bare_type_name(({C_DURATION}).name), "IDURATION")
-
-			Result.extend (bare_type_name(({C_DATE}).name), "ISO_8601_DATE")
-			Result.extend (bare_type_name(({C_TIME}).name), "ISO_8601_TIME")
-			Result.extend (bare_type_name(({C_DATE_TIME}).name), "ISO_8601_DATE_TIME")
-			Result.extend (bare_type_name(({C_DURATION}).name), "ISO_8601_DURATION")
+			Result.extend (bare_type_name(({C_DATE}).name), "ISO8601_DATE")
+			Result.extend (bare_type_name(({C_TIME}).name), "ISO8601_TIME")
+			Result.extend (bare_type_name(({C_DATE_TIME}).name), "ISO8601_DATE_TIME")
+			Result.extend (bare_type_name(({C_DURATION}).name), "ISO8601_DURATION")
 		end
 
 	c_primitive_subtype_creator_agents: HASH_TABLE [FUNCTION[ANY, TUPLE[STRING], C_PRIMITIVE_OBJECT], STRING]
