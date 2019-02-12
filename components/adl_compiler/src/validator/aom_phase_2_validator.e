@@ -441,7 +441,7 @@ end
 			attr_rm_type_in_flat_anc, rm_attr_type: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
 			rm_prop_def: BMM_PROPERTY
-			bmm_enum: BMM_ENUMERATION [COMPARABLE]
+			bmm_enum: BMM_ENUMERATION
 			vcormt_fail: BOOLEAN
 		do
 			if attached {C_OBJECT} a_c_node as co then
@@ -482,7 +482,7 @@ end
 											if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
 												c_int.set_rm_type_name (rm_attr_type)
 												c_int.set_enumerated_type_constraint
-												if not across c_int.enumeration_values as int_vals_csr all bmm_enum_int.item_values.has (int_vals_csr.item) end then
+												if not across c_int.enumeration_values as int_vals_csr all bmm_enum_int.has_value (int_vals_csr.item) end then
 													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
 												end
@@ -490,7 +490,7 @@ end
 											elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
 												c_str.set_rm_type_name (rm_attr_type)
 												c_str.set_enumerated_type_constraint
-												if not across c_str.constraint as str_vals_csr all bmm_enum_str.item_values.has (str_vals_csr.item) end then
+												if not across c_str.constraint as str_vals_csr all bmm_enum_str.has_value (str_vals_csr.item) end then
 													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.single_value>>)
 												end

@@ -24,7 +24,7 @@ feature -- Access
 	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
 		attribute
-			create Result.make_from_string (Any_type)
+			create Result.make_from_string (Any_type_name)
 		end
 
 	node_id: STRING

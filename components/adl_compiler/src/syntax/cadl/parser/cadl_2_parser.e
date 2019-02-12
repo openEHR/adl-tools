@@ -9283,7 +9283,7 @@ feature {NONE} -- Implementation
 			create Result.make_root
 		end
 
-	bmm_enum: BMM_ENUMERATION [COMPARABLE] 
+	bmm_enum: BMM_ENUMERATION
 		attribute
 			create {BMM_ENUMERATION_INTEGER} Result.make ("XX", void, False)
 		end
