@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 			flat_properties := safe_source.flat_properties
 			create anc_classes.make(0)
 
-			if attached {BMM_ENUMERATION[COMPARABLE]} source then
+			if attached {BMM_ENUMERATION} source then
 				do_populate_enumeration
 			else
 				do_populate_properties
@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 			ev_grid.insert_new_column (Grid_enum_dummy_col)
 
 			-- add the rows
-			check attached {BMM_ENUMERATION[COMPARABLE]} source as enum_src then
+			check attached {BMM_ENUMERATION} source as enum_src then
 				across enum_src.item_names as names_csr loop
 					create gli.make_with_text (names_csr.item)
 					-- gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
@@ -145,7 +145,7 @@ feature {NONE} -- Implementation
 			class_row, property_row: EV_GRID_ROW
 			prop_list: ARRAYED_LIST [BMM_PROPERTY]
 			prop_type: BMM_TYPE
-			prop_text: STRING
+			prop_type_text, prop_text: STRING
 		do
 			-- find properties defined on `a_class_def', if any; have to check against flat properties, since
 			-- there could be properties which were overridden in some lower descendant, and which
@@ -209,7 +209,14 @@ feature {NONE} -- Implementation
 
 						-- property type
 						prop_type := props_csr.item.bmm_type
-						create gli.make_with_text (prop_type.type_signature)
+						prop_type_text := prop_type.type_signature
+						if attached {BMM_DEFINED_TYPE} prop_type as bmm_defined_type and then attached bmm_defined_type.value_constraint as vs_constraint then
+							prop_type_text.append_character (' ')
+							prop_type_text.append_character ({BMM_DEFINITIONS}.Constraint_left_delim)
+							prop_type_text.append (vs_constraint.as_string)
+							prop_type_text.append_character ({BMM_DEFINITIONS}.Constraint_right_delim)
+						end
+						create gli.make_with_text (prop_type_text)
 						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_type.entity_category))
 						gli.set_data (prop_type)
 
