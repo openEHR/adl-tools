@@ -211,10 +211,11 @@ feature {NONE} -- Implementation
 						prop_type := props_csr.item.bmm_type
 						prop_type_text := prop_type.type_signature
 						if attached {BMM_DEFINED_TYPE} prop_type as bmm_defined_type and then attached bmm_defined_type.value_constraint as vs_constraint then
-							prop_type_text.append_character (' ')
-							prop_type_text.append_character ({BMM_DEFINITIONS}.Constraint_left_delim)
-							prop_type_text.append (vs_constraint.as_string)
-							prop_type_text.append_character ({BMM_DEFINITIONS}.Constraint_right_delim)
+							prop_type_text.append (" " + vs_constraint.as_delimited_string)
+						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_DEFINED_TYPE} bmm_cont_type.base_type as bmm_defined_type
+							and then attached bmm_defined_type.value_constraint as vs_constraint
+						then
+							prop_type_text.append (" " + vs_constraint.as_delimited_string)
 						end
 						create gli.make_with_text (prop_type_text)
 						gli.set_pixmap (get_icon_pixmap (Icon_rm_generic_dir + resource_path_separator + prop_type.entity_category))
