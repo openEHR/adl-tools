@@ -1,0 +1,121 @@
+= Tool Configuration
+
+== Set-up
+
+In order to work with the examples described below, the following configuration is advised. Experienced users may skip this step.
+
+=== RM Schema configuration
+
+Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are expressed as ODIN (was 'dADL') files and have a '.bmm' (basic meta-model) extension. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on. The ADL Workbench comes with schemas for various reference models bundled.
+
+If you want access to RM schemas not yet bundled with the workbench, they can be found here. Clone this repository in the normal way, and use the RM Schemas dialog to point to this location instead of the bundled schemas location.
+
+Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work. This is done as follows:
+
+Select the RM Schemas menu > Configure Schemas...
+Ensure that the schemas you require are checked, as shown here.
+Save the configuration.
+You can use the profile combo selector above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.
+
+== The .cfg file
+
+=== Setting options in the workbench
+
+Normally, all tool options are set from within the workbench, from the Options Dialog, reached from the Tools menu. It looks like this.
+
+
+
+=== Location on various Platforms
+
+Options for the ADL workbench, and also the command line tool adlc are located in a .cfg file named after the particular tool e.g. adl_workbench.cfg, adlc.cfg. This file will be in the standard application configuration area for your operating system. For adl_workbench for example, it will be in a location like the following:
+
+Windows XP / Vista: 
+C:\Documents and Settings\%username%\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg
+Windows 7 / 8: C:\Users\%username%\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg
+Mac OSX: $HOME/openEHR/adl_workbench/adl_workbench.cfg
+Linux: $HOME/openEHR/adl_workbench/adl_workbench.cfg
+Although each tool normally has its own .cfg file, the file adl_workbench.cfg is assumed to be the default. This means for example that if there is no adlc/adlc.cfg, but an adl_workbench.cfg file is found, it will be used.
+
+=== Contents
+
+The ADL .cfg file is in ODIN format, and will typically include lines such as the following example (Windows), corresponding to the above configuration.
+
+[source, odin]
+--------
+	file_system = <
+		terminology_directory = <"C:\\dev\\openEHR\\terminology\\openEHR_RM\\RM\\Release-1.0.2">
+		aom_profile_directory = <"C:\\dev\\openEHR\\adl-tools\\apps\\resources\\aom_profiles">
+		export_directory = <"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\export">
+		last_user_selected_directory = <"C:\\dev\\Ocean\\demographic">
+		compiler_gen_directory = <"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\gen">
+		test_diff_directory = <"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\diff_test">
+		current_work_directory = <"C:\\dev\\openEHR\\adl-archetypes\\ADL15-reference\\features\\flattening">
+		rm_schema_directory = <"C:\\dev\\openEHR\\reference-models\\models">
+	>
+	rm_schemas = <
+		load_list = <"openehr_adltest_1.0.2", "openehr_ehr_extract_1.1.0", "cdisc_core_0.5.0", "cimi_rm_2.0.2", "hl7_fhir_dstu", "cen_en13606_0.95">
+	>
+	gui = <
+		app_width = <1616>
+		app_height = <916>
+		app_x_position = <-8>
+		app_y_position = <-8>
+		app_maximised = <True>
+		test_split_position = <442>
+		default_tool_tab = <0>
+		show_flat_form = <True>
+		show_rm_multiplicities = <True>
+		show_rm_inheritance = <True>
+		show_codes = <True>
+		show_technical_view = <False>
+		expand_node_tree = <False>
+		show_line_numbers = <False>
+		display_archetype_source = <False>
+		use_rm_pixmaps = <True>
+		show_entire_ontology = <False>
+	>
+	exec = <
+		app_version = <"2.0.5.2594">
+	>
+	repositories = <
+		locations = <
+			["openEHR-reference repository"] = <"C:\\dev\\openEHR\\adl-archetypes">
+			["CIMI-CIMI archetypes"] = <"C:\\dev\\CIMI\\archetypes">
+			["xxxxx-xxxxx-4"] = <"C:\\dev\\Ocean\\demographic">
+		>
+		current_library_name = <"openEHR-ADLref">
+	>
+	commands = <
+		text_editor_command = <"C:\\Program Files (x86)\\Vim\\vim74\\gvim.exe">
+		editor_app_command = <"cmd /q /d /c start \"\" /b">
+		difftool_command = <"C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe /e /u /f *.*">
+	>
+	general = <
+		archetype_view_language = <"en">
+		error_reporting_level = <9002>
+	>
+	compiler = <
+		adl_15_roundtripping = <False>
+		validation_strict = <False>
+		rm_flattening = <False>
+	>
+	namespace_table = <
+		namespaces = <
+			["oe"] = <"org.openehr">
+		>
+	>
+	terminology_settings = <
+		uri_templates = <
+			["snomedct"] = <"http://snomed.info/id/$code_string">
+			["snomed-ct"] = <"http://snomed.info/id/$code_string">
+			["snomed"] = <"http://snomed.info/id/$code_string">
+			["openehr"] = <"http://openehr.org/id/$code_string">
+			["loinc"] = <"http://loinc.org/id/$code_string">
+		>
+	>
+	authoring = <
+		author_name = <"Thomas Beale <thomas.beale@oceaninformatics.com>">
+		author_org = <"Ocean Informatics <http://www.oceaninformatics.com>">
+		author_copyright = <"Copyright (c) 2014 Thomas Beale">
+	>
+--------

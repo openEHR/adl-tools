@@ -1,0 +1,90 @@
+//
+// ============================================ Asciidoc HEADER =============================================
+//
+include::{ref_dir}/docs/boilerplate/book_style_settings.adoc[]
+
+//
+// Document-specific attributes
+//
+:copyright_year: 2019
+
+//
+// HTML-only attributes
+//
+:linkcss:
+:keywords: ADL Workbench
+:description: ADL Workbench User Guide
+
+include::{ref_dir}/docs/boilerplate/global_vars.adoc[]
+
+//
+// ============================================ Asciidoc PREAMBLE =============================================
+//
+
+image::{openehr_logo}["openEHR logo",align="center"]
+
+= ADL Workbench (AWB) User Guide
+
+include::{ref_dir}/docs/boilerplate/short_front_block.adoc[]
+include::{ref_dir}/docs/references/reference_definitions.adoc[]
+
+//
+// ============================================= Asciidoc BODY ===============================================
+//
+
+include::master00-amendment_record.adoc[leveloffset=+1]
+
+//
+// --------------------------------------------- Preface -----------------------------------------------
+//
+
+== Acknowledgements
+
+=== Primary Author
+
+* Thomas Beale, Ars Semantica (UK); openEHR Foundation Management Board.
+
+=== Contributors
+
+This guide has benefited from formal and informal input from the openEHR and wider health informatics community. 
+
+=== Trademarks
+
+* 'openEHR' is a trademark of the openEHR Foundation
+* 'Java' is a registered trademark of Oracle Corporation
+* 'Microsoft' and '.Net' are trademarks of the Microsoft Corporation
+
+
+//
+// --------------------------------------------- TOC -----------------------------------------------
+//
+//toc::[left]
+
+//
+// --------------------------------------------- CHAPTERS -----------------------------------------------
+//
+:sectanchors:
+:sectnums:
+include::master00-amendment_record.adoc[leveloffset=+1]
+include::master01-overview.adoc[leveloffset=+1]
+include::master02-installation.adoc[leveloffset=+1]
+include::master03-getting_started.adoc[leveloffset=+1]
+include::master04-obtaining_archetypes.adoc[leveloffset=+1]
+include::master05-browsing_and_compiling.adoc[leveloffset=+1]
+include::master06-tool_config.adoc[leveloffset=+1]
+include::master07-about_adl2.adoc[leveloffset=+1]
+include::master08-working_with_templates.adoc[leveloffset=+1]
+include::master09-cli.adoc[leveloffset=+1]
+include::master10-test_tool.adoc[leveloffset=+1]
+include::master11-iso13606.adoc[leveloffset=+1]
+include::master12-fhir.adoc[leveloffset=+1]
+include::master13-supporting.adoc[leveloffset=+1]
+include::master14-release_history.adoc[leveloffset=+1]
+
+//
+// --------------------------------------------- REFERENCES -----------------------------------------------
+//
+
+
+//:sectnums!:
+//== References

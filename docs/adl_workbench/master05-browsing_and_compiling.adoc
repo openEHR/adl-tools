@@ -1,0 +1,159 @@
+= Browsing and Compiling
+
+== The Archetype and Template Catalogues
+
+As soon as you have specified a profile (Repository > Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire terminology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. Normally you will probably not use this option. At any time, you can select a class node in the explorer, and its Reference Model definition will be displayed in flat form, i.e. compressed through inheritance.
+
+
+ Initial view in explorer
+Initial view
+
+ Explorer showing specialisation
+Specialisation view
+
+== Compiling archetypes
+
+When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC.'Compiling' means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. If you select a specialised archetype, its specialisation parents will automatically compile.
+
+If your repository has templates in it, you can compile a template in the same way. If you select a template in the Template explorer tab, you will see that all its dependencies compile, i.e. all archetypes implicated in its slot-filling and specialisation statements.
+
+The compilation process performs validation on every archetype and reports errors. Errors fall into two categories: syntactic, denoted with codes starting with 'S', and validity errors, denoted with 'V' codes. The errors are shown both in the status tab and the errors tab at the bottom. The status window is shown below.
+
+ Status window
+Compilation feedback
+
+ Status window
+Compilation errors
+
+The compilation errors can also be seen in the Errors tab at the bottom, classified according to type, as shown below.
+
+Error tree
+
+=== Metrics Report
+
+The 'Metrics' tab provides a report of counts of archetypes, compiled archetypes, specialised archetypes and so on, for the current repository.
+
+ Repository metrics
+
+The 'Statistics' tab provides a statistical report of the use of RM types and prperties in archetypes, as well as terminology definitions and bindings.
+
+ Repository statistics
+
+
+== Viewing an archetype
+
+This section describes the various ways of viewing a successfully compiled archetype.
+
+=== Descriptive meta-data
+
+All archetypes have a number of header sections containing descriptive meta-data about the archetype. The Description tab shows all of these sections, including author details, translation information, keywords, purpose, use, misuse and so on.
+
+ Archetype description
+Description sections
+
+ Description unicode
+Description (unicode example)
+
+=== Source (differential) and flat forms
+
+A key point to understand is that in most views, the archetype is visible in either source (differential) or flat form. For non-specialised archetypes, the two forms are structurally the same. For specialised archetypes and templates, the source form is the same idea as for object-oriented class files (e.g. in Java, .NET, etc), i.e. it contains only differences with respect to the immediate specialisation parent. For both, the source form is the 'authored' form. The flat form is the result of 'compressing' an archetype through its specialisation lineage, i.e. the 'operational' form of the archetype at runtime. This 'flattening' is the same thing that happens in all object-oriented programming technologies. Due to flattening, we often speak of the 'flat parent' with respect to a differential archetype, which denotes all constraints so far in the lineage.
+
+From the point of view of the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the Differential and Flat View tabs at the top to switch.
+
+=== Node map
+
+The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.
+
+ Differential, specialised, no RM classes
+Differential, specialised, domain view
+
+ Node map, differential, specialised, RM classes
+Node map, differential, specialised, technical view (includes RM classes)
+
+ Flat, specialised, no RM
+Flat, specialised, technical view
+
+ Node map, unicode
+Node map, unicode
+
+Each node map node is shown in three possible forms. If the node is coloured, it is defined new within the current archetype. If it is coloured, with a yellow border, it redefines an existing node from the flat parent. If it is solid yellow/grey, it is purely inherited.
+
+You can use the radio button controls on the right to show each node in more or less detail. The 'RM visibility' radio button controls enable three categories of reference model attribute that have not been archetyped to be seen. These are as follows:
+
+Data Properties: properties from the reference model that are part of the clinical data, and could be archetyped;
+Runtime Properties: properties from the reference model whose values are set at runtime, and for which no useful constraint could be set in an archetype (includes all dates and times);
+Infrastructure Properties: properties from the reference model that do not represent clinical data, but are used to manage data representation, identification, versioning etc.
+The classifications of RM properties are defined in the reference model schemas and can be modified independently of the tool or any particular archetype.
+
+ RM properties, differential form
+RM properties (differential form)
+
+ RM properties, flat form
+RM properties (flat form)
+
+=== Interface
+
+Archetype definitions are inherently hierarchical structures, and as a consequence various types of 'interface' can be extracted from any archetype. The most obvious is a 'path map', which is the basis for all queries written in AQL or a-path. Every node in an archetype is guaranteed to have a unique path. If you select the path map in the differential and flat forms, you will see the larger number of paths being extracted from the latter. There is also a tab for 'Interface tags', which shows a standard transform from paths to single string tags usable in XSDs and TDO APIs - in any language.
+
+ Paths, natural language
+Path map, natural language paths
+
+ Path map, machine codes
+Path map, machine paths
+
+ Path map diff parent
+Path map, parent archetype
+
+ Path map, flat child
+Path map, flat child archetype
+
+Paths are crucial to manipulating archetypes at runtime, and also to building queries. The path syntax is a slightly reduced form of XPath syntax, and can be converted to standard XPath for XML-based processing.
+
+For specialised archetypes, the Path Map under the differential view shows only paths in structures introduced in the specialised archetype, while the path map in the flat view shows paths due to all inherited nodes as well.
+
+The columns of the display can be controlled using the check boxes on the right, and are as follows:
+
+physical paths: paths containing [atnnnn] codes, used by the software
+logical paths: paths with [atnnnn] codes replaced by the human-readable values from the terminology
+RM Type: the Reference Model type constrained by the node corresponding to the displayed path
+AOM Type: Archetype Object Model type - this is the type of the archetype node, usually only of interest to implementers
+Paths can be selected and saved to the clipboard for use in other tools, by selecting rows (including multiple rows, by using the Ctrl key) and then using Ctrl+C (copy) to copy to the clipboard. The clipboard contents can be viewed from the Edit menu.
+
+=== Slot map
+
+Some archetypes contain slots, which are joining points to other archetypes. A slot is defined as a constraint that specifies the possible archetypes that may be used at this point. We can think of the archetypes that could fill the slot as 'suppliers', i.e. archetypes that this archetype uses, and archetypes having slots which the current archetype matches as 'clients'. The ADL Workbench evaluates the slots and displays both of these lists, as shown below.
+
+
+
+=== Terminology
+
+All archetypes contain an internal terminology, consisting of 'id-codes' (node identifiers), 'at-codes' (identifying coded values) and 'ac-codes' (identifying value sets). They may also include bindings between any of these and external terminologies and other terminology resources. These elements are found in the 'terminology' section of the archetype, such as shown here.
+
+ Terminology - id codes
+Terminology - id codes
+
+ Terminology - at/ac codes and value sets
+Terminology - at/ac codes and value sets
+
+=== ADL view
+
+The ADL source of an archetype can be viewed in the 'ADL' tab, regardless of whether it has compiled successfully or not. The 'ADL 1.4' and 'ADL 2' source sub-tabs are editable, and changes made can be saved using ctrl-S or the 'Save' button, which will cause an immediate re-compile.
+
+
+
+=== Serialised views: ADL, ODIN, XML, JSON
+
+Compiled archetypes can be viewed in various serialised formats, which can be used for testing ADL, XML, JSON and other software components. In both differential and flat forms, any compiled archetype can be viewed as ADL, ODIN, XML and JSON. The ODIN form is equivalent to a DOM tree in XML, but more regular.
+
+
+
+The output in the XML view can be controlled by a set of rules accessible from the XML menu.
+
+=== Validity report
+
+The 'Validity' tab displays any compiler messages for the archetype.
+
+=== Statistics report
+
+The 'Statistics' tab displays a statistics report for RM class and terminology usage in the archetype.
+

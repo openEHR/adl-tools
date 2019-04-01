@@ -1,0 +1,62 @@
+= ADL Workbench Home
+
+== ADL Workbench release 2.0.6
+
+link:/downloads/ADLworkbench/release_notes[Release notes] - {adl_workbench_prs}[Report an issue^] - {adl_workbench_dev}[Development Project (Jira)^]
+
+== What is the Workbench?
+
+The ADL Workbench (AWB) is a compiler and IDE for working with the archetypes and templates written in the Achetype Definition Language (ADL), and based on any reference model, including openEHR, ISO 13606 and CIMI. The latest version of the {openehr_am}[archetype formalism^] makes it one of the most powerful domain modelling tools available. Create models of clinical content (archetypes), data set definitions (templates), add terminology bindings and translations and then visualise and generate fully compiled output form in ADL, JSON, XML, YAML or ODIN.
+
+<<_browsing_and_compiling,Screenshots>>
+
+== News
+
+* GitHub integration and new smart archetype repository management
+* CIMI archetypes and templates supported
+* Many new visualisation and usability features
+* {openehr_resource}[New governance meta-data^] supported
+* {openehr_am_adl2}#_tuple_constraints[Tuple syntax^] replaces domain specific syntax for quantities, ordinals etc
+* ADL2 internal coding system uses id-codes, at-codes and ac-codes
+* {openehr_am_adl2}#_value_sets_sub_section[Value sets^] now defined in archetype terminology
+* All {openehr_am_adl2}#_term_bindings_sub_section[code bindings^] are URIs
+* Standard {openehr_resource}#_resource_description_class[lifecycle states^]
+* Fully independent of specific reference models - can load any RM
+* ADL 1.4 archetypes fully converted to ADL 2, including with extraction and synthesis of value sets
+* Supports {openehr_am_id}#_overview_2[namespaced archetype identifiers^]
+
+== Roadmap
+
+* Support for ADL 1.4 OPT generation
+* Support for ADL 2 template form visualisation
+* Live terminology service integration
+* Full visual editing
+
+== Download
+
+[cols="2,1,1,1,4", options="header"]
+|===
+|Platform           |Build        |Date       |Executable       |Notes
+
+|Windows (64-bit)	|2.0.6.3034   |28-03-2019 | https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3034-windows_64bit.exe[.exe installer^]  
+| +
+* Improve enumerated type support.
+* Include latest Task Planning and CIMI BMMs.
+* Support regular C_PRIMITIVE_OBJECT structures.
+* Add BMM (RM) JSON exporter.
+* Improve editing functionality; add new-archetype-from-subtree function.
+* Fix generic type handling in BMM.
+* Add BMM (RM) output mode to adlc CLI tool.
+* Correct schema loading bug; include Task Planning schemas in delivery.
+* Correct ADL converter regex bug; correct value-set redefinition bug.
+* Correct editor hang bug; correct startup failure when BMM schema broken.
+
+|===
+
+== Learn how the workbench works
+
+video::https://youtu.be/Jhnbamg7bAA?list=PLhWi0RtmG26U6PGezBrDD2QPeQL8tQYTZ[YouTube video^]
+
+== Source Code
+
+The source code can be accessed from the adl-tools GitHub home page.

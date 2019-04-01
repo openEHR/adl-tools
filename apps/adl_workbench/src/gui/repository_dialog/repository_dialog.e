@@ -491,14 +491,14 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 
 			if repo_install_dialog.is_valid then
 				if not repo_install_dialog.user_requires_repository_clone then
-					on_associate_repository (repo_install_dialog.local_directory)
+					on_associate_repository (repo_install_dialog.local_directory, repo_install_dialog.legacy_directory)
 				else
 					create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text,
 						<<repo_name, a_rem_proxy.remote_url, repo_install_dialog.local_directory>>))
 					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 					verify_dialog.show_modal_to_window (Current)
 					if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
-						do_clone_repository (repo_install_dialog.local_directory, a_rem_proxy)
+						do_clone_repository (repo_install_dialog.local_directory, repo_install_dialog.legacy_directory, a_rem_proxy)
 					end
 				end
 			end
@@ -588,13 +588,14 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			repo_install_dialog: REPOSITORY_INSTALL_DIALOG
 			error_dialog: EV_INFORMATION_DIALOG
 			new_repo_dialog: EV_QUESTION_DIALOG
-			repo_dir, repo_url: STRING
+			repo_dir, repo_legacy_dir, repo_url: STRING
 			verify_dialog: EV_QUESTION_DIALOG
 		do
 			create repo_install_dialog.make
 			repo_install_dialog.show_modal_to_window (Current)
 			if repo_install_dialog.is_valid then
 				repo_dir := repo_install_dialog.local_directory
+				repo_legacy_dir := repo_install_dialog.legacy_directory
 				repo_url := repo_install_dialog.repository_url
 
 				if not repo_dir.is_empty and then file_system.directory_exists (repo_dir) then
@@ -603,10 +604,10 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
 							if is_vcs_checkout_area (repo_dir) then
 								-- existing clone
-								on_associate_repository (repo_dir)
+								on_associate_repository (repo_dir, repo_legacy_dir)
 							else
 								-- existing local repository
-								do_add_local_repository (repo_dir)
+								do_add_local_repository (repo_dir, repo_legacy_dir)
 							end
 						elseif not archetype_repository_interfaces.last_duplicate_key_path.is_empty then
 							create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
@@ -622,13 +623,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
 						verify_dialog.show_modal_to_window (Current)
 						if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
-							do_clone_repository (repo_dir, create {REPOSITORY_REMOTE_PROXY}.make (repo_url, Git_tool_name))
+							do_clone_repository (repo_dir, repo_legacy_dir, create {REPOSITORY_REMOTE_PROXY}.make (repo_url, Git_tool_name))
 						end
 
 					-- valid path for new local repository to be created; will cause creation of new repo meta-data file
 					elseif archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
 						create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
-							<<agent do_create_new_local_repository (repo_dir), agent do end, agent do end>>)
+							<<agent do_create_new_local_repository (repo_dir, repo_legacy_dir), agent do end, agent do end>>)
 						new_repo_dialog.show_modal_to_window (Current)
 					else
 						create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
@@ -641,7 +642,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			end
 		end
 
-	on_associate_repository (repo_dir: STRING)
+	on_associate_repository (repo_dir, repo_legacy_dir: STRING)
 			-- add an existing repository that has a local checkout
 		local
 			error_dialog: EV_INFORMATION_DIALOG
@@ -659,10 +660,10 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 				if archetype_repository_interfaces.valid_candidate_repository (repo_dir) then
 					ok_cancel_buttons.disable_sensitive
 					do_with_wait_cursor (Current,
-						agent (a_dir: STRING)
+						agent (a_repo_dir, a_repo_legacy_dir: STRING)
 							do
-								archetype_repository_interfaces.extend_associate_with_remote (a_dir)
-							end (repo_dir)
+								archetype_repository_interfaces.extend_associate_with_remote (a_repo_dir)
+							end (repo_dir, repo_legacy_dir)
 					)
 					if last_command_result.succeeded then
 						populate_grid
@@ -689,7 +690,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			end
 		end
 
-	do_clone_repository (repo_parent_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
+	do_clone_repository (repo_parent_dir, repo_legacy_dir: STRING; a_rem_proxy: REPOSITORY_REMOTE_PROXY)
 			-- clone an existing remote repository to a new checkout
 		local
 			error_dialog: EV_INFORMATION_DIALOG
@@ -821,7 +822,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			end
 		end
 
-	do_add_local_repository (a_repo_dir: STRING)
+	do_add_local_repository (a_repo_dir, a_repo_legacy_dir: STRING)
 			-- add a local repository, and repopulate
 		do
 			archetype_repository_interfaces.extend (a_repo_dir)
@@ -829,7 +830,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			populate_grid
 		end
 
-	do_create_new_local_repository (a_repo_dir: STRING)
+	do_create_new_local_repository (a_repo_dir, a_repo_legacy_dir: STRING)
 			-- create a new local repository, save it, and repopulate
 		do
 			archetype_repository_interfaces.extend_create_local (a_repo_dir)

@@ -1,0 +1,498 @@
+= Release History
+
+== 04 December 2014 - ADL 2.0.5 (Github tag adl_2.0.5) (Jira - new features; issues fixed)
+
+* Archetype Object Model / compiler:
+** New flattener, with specialise-and-clone, numerous edge cases fixed.
+** Improvements in specialised archetype validation
+** New meta-data items now supported:
+*** rm_release=n.m.p - top-level meta-data
+*** original_publisher: String - name of original publishing organisation
+*** original_namespace: String - namespace of original publishing organisation
+*** custodian_organisations: String - name of the current custodian organisation
+*** custodian_namespace: String - namespace of current custodian organisation
+*** licence: String - short text and URL pointing to licence under which this artefact is available
+*** ip_acknowledgements: Map<String, String> - keyed list of 3rd party IP acknowledgements, each consisting of a single word key, and a short text and URL pointing to the online text describing how the IP available for this artefact.
+*** conversion_details: Map<String, String> - keyed list of values indicating details of conversion from an external artefact, where applicable.
+* Tool functionality:
+** New method of specifying archetype repositories uses self-describing repository/library structure
+** Git / Github integration
+** One-click template creation
+** Automatic conversion of ADL 1.4 'other_details' meta-data to ADL 2 form
+* Visualisation:
+** Lazy load template visualiser mode to handle very large template structures
+** Improved colour / font scheme in inheritance visualisation mode
+** New Description / Governance sub-tab containing ADL 2 meta-data.
+** New Clients/Suppliers top-level tab showing client (user) archetypes containing use_archetype references to the current archetype, and supplier archetypes, i.e. archetypes for which the current archetype has a use_archetype reference.
+
+== 05 March 2014 ADL 1.5 beta Release 10 (Git tag 1.5beta10) (Jira)
+
+* Archetype Object Model / compiler:
+** All domain-specific AOM types for Quantities, Ordinals and Term-lists replaced by new AOM standard tuple representation
+** New internal coding system - uses id-codes (node identification), at-codes (values) and ac-codes (value sets)
+** Dedicated ADL 1.4 => ADL 1.5 converter implemented, following published conversion rules
+** Namespaced identifiers implemented as per openEHR Knowledge Artefact Specification
+** Terminology references are all URIs, following IHTSDO model
+** Value-sets are moved from archetype definition to archetype terminology
+* Visualisation:
+** Hierarchical, colourised terminology and value-set viewer
+** ADL source in various phases of conversion visible and editable
+
+== 9 April 2013 ADL 1.5 beta Release 9 (Git tag 1.5beta9) (Jira)
+
+== 2 Aug 2012 ADL 1.5 beta Release 8 (Git commit 4e6b696d1ad31a8269aa71e85aca4fee38172eef (was SVN rev 1826)) (Jira)
+
+* GUI changes:
+** All explorers now modern Grid controls;
+** Show archetype versions in UI;
+** Add collapsable control panel for main GRID Tree view controls;
+** Archetype specalisation now visualised in grey / dark grey / colour, and switchable in UI;
+** Automatic expand to logical leaf nodes (ELEMENTs in openEHR);
+** Add property colourisation, based on classifications defined in RM schema files;
+** Power-expand collapsed nodes of logical leaf types that are not literally leaves in the Grid tree, e.g. ELEMENT in openEHR models;
+** Fix the multi-column width display problem;
+** Numerous changes to icons.
+* Tool behaviour changes:
+** Fix bug where invalid profile on start-up caused a crash - now tool removes invalid profiles, and then opens valid profile, or else starts as for first time;
+** Correct XML report generation dialogs and behaviour;
+** Correct AWBPR-22 export of flat file was overwriting differential file;
+* Installation improvements:
+** Correct problems with Windows installers, where local visual preferences (e.g. tooltips, style of visual controls etc) were being ignored.
+* RM Schema changes:
+** Major update to CEN 13606 and TS 14796 data types schemas; the latter is distinct from the 21090 DT schema;
+** Add property classification system to schemas: now properties can be classified as 'data' (default), 'runtime' and 'infrastructure';
+* Compiler changes:
+** Correct errors in term-binding logic - terms can now correctly be bound to at-codes, ac-codes, paths and paths created due to use_nodes;
+** Correct path computation where there are use_node internal references;
+** Add support for detecting model classification in other_details part of archetype description: e.g. ["model_level"] = <"reference"> indicates a reference archetype a la CIMI;
+** Remove VACMC1 error from parser (the rule which prevents member objects in a container having occurrences = 0..* when the owning attribute cardiality is limited);
+** Fix a bug in the dADL parser that was preventing lists which have multiple members, and also a (superfluous) ellipsis are accepted silently;
+** Add a post-parse AOM structure building stage to compiler, to allow RM-independent parsing;
+
+== 29 Jun 2012 ADL 1.5 beta Release 7 (Git commit fc5e9b292bb83a5d725074c53f16ad4b3ccc25b6 (was SVN rev 1757)) (Jira)
+
+* GUI changes:
+** Completely rewritten archetype definition visualiser, based on folding grid. Configurable colour-coded RM properties view based on RM schema attribute classifications. Context menu access to path map row for current node; ontology entry for current node. For Archetype slot nodes, the context menu includes all matching archetypes, to be displayed.
+** Numerous changes to icons.
+* Integration changes:
+** openEHR Terminology now imported on startup and used to correctly display DV_QUANTITY properties and other relevant constraints.
+* Compiler changes:
+** Correct Internal Ref node validation and flattening, so that node override can be used and flattening works properly.
+
+== 29 Mar 2012 ADL 1.5 beta Release 6 (Git commit 50c1ac7d62407ed79b12a932b6a5ce613219f599 (was SVN rev 1677)) (Jira)
+
+* GUI changes:
+** Improve UI for turning on and off line numbers in source and serialised views.
+* Output:
+** Add YAML 1.1 output; validates at appspot online YAML parser.
+** Correct some bugs in JSON output.
+** Add batch generation of all output types.
+* Compiler changes:
+** Template type template_component renamed to template_overlay.
+** Terminologies_available part of ontology section is now ignored in 1.4 and not used in 1.5.
+** Loosen ARCHETYPE_ID valid patterns to allow for closure names (middle part of first segment in id) to be a number like '13606'.
+** Add support for documenting non-archetyped RM paths in the annotations section.
+
+== 29 Nov 2011 ADL 1.5 beta Release 5 (Git commit 740a0d96eee071077b3e5a250c9c0686184ab446 (was SVN rev 1656)) (Jira)
+
+* GUI changes:
+** The Class Tool now includes a properties view, an ancestors view and a descendants view. All views contain class icons that are clickable.
+** There is now an RM Schema meta-data viewing tool.
+** Numerous small UI changes and improvements, including modal selection history - the Tool back and forward buttons work in a similar way to those of a web browser, no matter what the active tools is.
+* Reporting:
+** There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.
+* Ouput formats:
+** JSON is now supported as an output format for differential and flat archetypes. Note that occurrences, cardinality and existence are serialised with single Strings, e.g. "0..1", "1..*" etc.
+
+== 8 Sep 2011 ADL 1.5 beta Release 4 (Git commit a835702bca29da3a7349cc3a09118913b2625cd9 (was SVN rev 1603)) (Jira)
+
+* GUI changes:
+** The GUI is now docking-based, allowing greater flexibility in placement of visual components. Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
+*** A new archetype tool is created either using ctrl-T (as for most web browsers) or from the new context (right click) menu available on an archetype or template in the explorer tol on the left.
+*** The language choice combo, and flat/differential view button are therefore now on each individual archetype tool, rather than being tool-wide.
+*** The status, error and statistics tools are now docked along the bottom and popup on left-click, in the manner typical of most programming IDEs.
+*** The profile chooser has moved to the top-left, in the place typically used to select 'projects' in most IDEs
+*** The 'test' tool is now shown as a docked component minimised on the right hand side, where it used to be. However, now it is a normal dockable component, so can be arranged in the same screen space as the other components, or even popped out into its own independent window, e.g. to be displayed on a separate screen.
+*** The docking tool layout is currently remembered over sessions by being saved in its own file. Because of the inherent complexity of docking and interaction with the operating system, the layout can occasionally disappear or seem non-sensical, usually due to a problem with the file. A 'reset visual layout' option is available from the View menu to correct this.
+* New Reference Model Browser:
+** A new tool on the left hand side of the main screen allows multiple Reference Models to be browsed and explored. Clicking on any class causes the class to be displyed in the Class Tool, in a new tab.
+** Classes from different RMs can be viewed side-by-side using different class tools and docking system to arrange the panes.
+* Enhanced search bar:
+** The address bar now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Catalog is active.
+* Archetype definition visualisation enhanced:
+** It is now possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/<rm_name> directory, e.g. icons/openehr. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.
+** The reference model attributes can now be visualised independently of other changes to the view.
+** Class tool enhanceed:
+*** Left-clicking on a class node in the explorer on the left populates the 'class tool' (now just another tool, tabbed with the archetype tools) with the compositional 'closure' of the chosen class. This is visualised as a tree of alternating type nodes and property nodes, in a similar to the node visualisation of an archetype.
+*** Some of the class nodes are abstract, or even if concrete, have subtypes defined. Right-clicking on these nodes in the class tool, brings up a context menu containing the subtypes defined in the reference model, and selecting one causes re-population of that node in the tree downward with the chosen type.
+*** As with the archetype tool, right clicking on a class node allows a new tool to be created instead of populating the existing one. Class tools can also be delted from the docking container.
+** ADL/XML serialisation version now choosable in main GUI window, rather than only in the options. This option changes the format of ADL and XML output to conform to the chosen ADL release (1.4 or 1.5)
+* Serialisation: dADL and rule-driven XML added:
+** Empty items are no longer populated, e.g. 'contributors'.
+** Added dADL (the openEHR object serialisation syntax, identical in aim to JSON) serialisation, where an archetype object (AOM) structure can be serialised to a pure dADL structure. A special set of P_XXX classes were added to simplify some fields, e.g. occurrences etc to Strings, since otherwise they take up many lines of dADL. The use of this feature is for post-parsed archetypes to be stored in a pure object format for fast retrieval later, bypassing the main compiler.
+** Added proof-of-concept XML serialisation, also based on the P_XXX classes, as well as a rule file which enables control over XML what object properties are output as XML attributes, and other options. This XML is not currently synchronsed to either the published ADL 1.4 XSD, or any ADL 1.5 XSD.
+* Compiler
+** Archetype validation is now 3 phases, where the last phase operates on the flattened archetype.
+** Source code: tools upgraded to Eiffel 6.8 GPL.
+
+== 14 Jan 2011 ADL 1.5 beta Release 3 (Git commit 65afe78825f9e2dc2d5e7865d6c649debe205d07 (was SVN rev 1405)) (Jira)
+
+* Archetype annotations implemented:
+** details;
+** example archetypes;
+** specifications: common IM (section 7), ADL 1.5 (section 9.8);
+* More flexible RM schemas, now nestable and clearer syntax (details);
+* Signficantly improved GUI:
+** main screen;
+** Easier loading and viewing of RM schema files, with new dedicated dialog;
+** Improved dialog for configuring repository profiles;
+** fixed various bugs, including wrong UTF rendering in keywords and contributors, archetype and template selection problems;
+* Added initial version of OPERATIONAL_TEMPLATE class;
+* Fixed a bug in path generation;
+* Migrate to dADL format configuration .cfg file, providing greater readability and flexibility (details);
+* Upgraded source code to Eiffel 6.7.
+
+== 28 Sep 2010 ADL 1.5 beta Release 2 (Git commit b0b8381134fdcdd90cdc0a68e02ec2e688ed0f0d (was SVN rev 1247)):
+
+* Added regression testing facility so that any archetype can now include in its description section an expected compilation result, such as 'PASS', 'FAIL', or a validity code e.g. 'VSONIL'. This enables all the current test archetypes (found here) to be used by any compiler in any language in the same way. The ADL Workbench now has a button which turns on this facility on the test page. See Test tool page for details;
+* Fixed bugs that prevented constraint bindings being read in correctly, and also errors being correctly reported from the parsing of the archetype ontology;
+* improve validation of languages, now minimally enforce IETF language-tag format (RFC 5646 - this is the one that defines strings like "en" and "en-GB". This class contains functions for exact matching, validation and matching a language subtag e.g. "en" to a full tag e.g. "en" or "en-GB", "en-AU" etc);
+* fixed a bug in the 2nd pass validator that was sometimes preventing subtrees in specialised archetypes from being correctly validated against their correspondents in parent archetypes
+* Fix various launch / shut-down / minimise annoyances, especially on multiple screen systems;
+* Fix node map rendering problem where multiple value attributes with existence = 1 not showing up in red but pink. Existence is now taken into account for this rendering.
+* Added profile chooser combo box to archetype explorer on main page;
+* Archetype id search facility added to id control on main page. This allows any id substring to be matched to available archetypes, generating a picklist for the user. E.g. the user could enter 'exam' and the list will show all archetypes containing this string;
+* Improved validation for VSONIR cases; comparison of ranges for existence, occurrences and cardinality comparison in specialised archetype validation no longer treats equal ranges as a legal redefinition (since in terms of constraint logic, only strictly narrower ranges are valid redefinitions);
+* moved error database to files under $app_install/error_db;
+* Addition and refactoring of code base to create new applications:
+** GUI Dadl testing app;
+** ADL compiler app simulating app, designed to show within the Eiffel environment what kind of calls an application (possibly written in another language) would make to use the compiler;
+** ADL compiler C lib-generating, which generates the compiler as a pure C library in both static and dynamic link forms, with all GUI removed. This can be directly linked in with applications written in C, C++, Java, via JNI, or any .Net language.
+** Example application written in C using the statically linked form of the above library, to illustrate its use.
+* Release notes now displayed in default browser at installation time;
+* Updates to help pages, including Mac installer and regression test facility.
+
+== 11 Aug 2010 ADL 1.5 beta Release 1 (Git commit 569646fc6480548311e33a9a16d2bc4e12c94597 (was SVN rev 1105)):
+
+* Improved validation, with code-based error messages matching ADL and AOM 1.5 draft specifications (see bottom of page);
+* Support for referencing from one archetype to another without slots;
+* Support for ADL 1.5 templates, including slot-filling and exclusions;
+* Separate explorers for archetypes and templates;
+* Multiple RM schemas can be loaded and managed in the options dialog;
+* Archetype files can now be arranged anywhere on the file-system; compiler uses RM and specialisation relationships to build directory in tool;
+* Repositories are now defined / selected using profiles;
+* Archetype search facility;
+* An initial 13606 schema is available, allowing validation of EN 13606 archetypes.
+* Test function changed to prevent any .adl file overwriting; instead, outputs files for viewing in diff tools.
+
+== 22 Mar 2009 ADL 1.5 Preview Release 1.5.0 (Git commit f9aa528c92824cf363a358930c4740a5190f3b7b (was SVN rev 851)):
+
+* performs stricter validation than previous versions, now reporting 40 syntax errors, 47 validity errors, and 4 validity warnings.
+* Errors are more clearly differentiated into the following categories:
+** syntax error: the file is not valid ADL - shown in red
+** validity error: the archetype semantics are not valid when validated against parent archetypes and the reference model - shown in orange
+** validity warning: the semantics are valid, but there are redundant elements or other small issues to correct - shown in yellow
+** passed - shown in green
+* improved error reporting.
+* it now uses the reference model (RM) to validate all archetypes. The reference model is currently expressed in a custom meta-model format which is much simpler than UML 2 based meta-models, e.g. XMI (why?). The meta-model can be found here. Both the location of this file, and its design may change in the future, and its current format should not be taken as normative for openEHR.
+* RM attributes are now shown in the node map visualisation (differential form, flattened form). In the differential view, only attributes defined on the concrete class mentioned in the archetype are shown; in the flat view, all inherited attributes are shown.
+* A new test has been added to the test page that allows original ADL fles to be overwritten with the result of the flattening operation on archetypes. THIS IS EXPERIMENTAL and should be used with care - it will really overwrite ADL files, so be sure to use it in a version-controlled context, such as SVN (where you can conveniently then see diffs of the files). For this reason, both the 'Save ADL' and 'Save ADLS' tests now require checkboxes to be checked before they will operate. The intention of the new 'Save ADL' operation is to experiment with removal of some kinds of errors from legacy ADL fles.
+
+== 02 Apr 2008 Release 1.4.1 (Git commit 5c0fdaf3f1f065028a93ba936ccb8f292aad31cf (was SVN rev 599 / TAG Release-1.4.1))
+
+* The Archetype workbench now functions as a compiler over the entire archteype 'directory' (the merged result of the reference and work repositories). With a single command (F7; build repository), all archetypes are compiled, and an error report built up which can be perused at any time. Slot relationships between archetypes are now shown, as are statistics for the repositories.
+* user history of archetypes visited;
+* The workbench now works using two kinds of files: differential 'source' files (.adls extension) and flat files (.adl extension). Previously, .adl files were treated as the source of all archetypes. There are now two kinds of files:
+** .adls file: this will become the 'source' file type for all archetypes. 
+** .adl file: this will become the file type for the 'flat'  view of an archetype. In the future, .adl files will no longer be stored, but will be generated on the fly.
+* for existing archetype repositories consisting of .adl files, the .adl file will be treated as the initial source. A .adls file will be generated once only for each .adl file, and from then on, the .adls file will be used as the source.
+* slot and used-by maps;
+* repository statistics;
+* numerous GUI improvements;
+* repository export to HTML.
+
+== 09 Apr 2007 Release 1.4.0 (Git commit f96c0eae57e6bb075e29fcc73937e5edb1799bd4 (was SVN rev 203)):
+
+* Unicode support (see test/family_history archetype example in farsi);
+* improve speed of GUI display;
+* correct bugs with icon loading.
+
+== 05 Mar 2007 bug fix release (Git commit 9b902757ecc66b4ecb1d1fe81f948e86130fb576 (was SVN rev 169)):
+
+* Support non-inclusive two-sided intervals (e.g. |0..<1000|)
+* correct bug in parsing text terms used in C_CODE_PHRASE with ','
+
+== 02 Mar 2007 Release (Git commit 1a997c27e546635dcd985ff8d64268cc1acf7809 (was SVN rev 166))
+
+* Upgrade ADL workbench to process ADL 1.4 languages section, including translations - and display on 'description' tab
+* Performs various silent upgrades on strings to turn them into CODE_PHRASEs.
+
+== 10 Jan 2007 Release (Git commit fbf7675841258413a3275e2ae738ccd65275c19b (was SVN rev 152)):
+
+* Repository merging - local and reference repositories can now be merged and viewed as one logical repository
+* Inheritance view - the node map now shows nodes as inherited, redefined or added.
+
+== interim release subversion 89 - 24/aug/2006 - various small fixes
+
+* enhancements
+** allow date constraint pattern `yyyy-mm-xx`
+** added language to `COMPOSITION`
+** added magnitude_status to `DV_QUANTITY`
+
+== interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements & fixes
+
+* enhancements
+** Implement openEHR ISO8601 deviation
+** allow 'W' to be included in durations containing 'Y', 'M' etc designators;
+** allow 'W' to be mixed in with other designators in ADL duration constraints;
+** improve error reporting in dADL and cADL parsers for intervals whose limits are not legal
+** Some small changes to enable reading unicode files - a BOM stripper for UTF-8 files, and UTF-8 character matching in the dADL scanner
+** Minor enhancements to ADL cmd line app.
+* bugfixes
+** Fix bug where adding a constraint definition when multiple languages already defined caused crash;
+** Renamed `ONTOLOGY.remove_term` to remove_term_definition and remove_constraint to remove_constraint_definition, to be more obvious for developers.
+** Small correct to allow ISO Duration strings without the 'T' character to be silently fixed during by the cADL scanner;
+** Added a hardwired lower-case converter for ISO8601 Durations to avoid culture specific case conversion problems.
+** Corrected some errors in `ARCHETYPE.ontology_remove_unused_codes`;
+
+== interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance
+
+* enhancements
+** all ISO date/time constraint patterns now include the 'T' where appropriate, but parser tolerates a space for the moment, and silently substitutes a 'T' on output
+** ISO8601 duration constraint patterns now possible. See basic_types archetype in test archetypes area for examples property attribute value in C_QUANTITY dADL sections now upgraded to `CODE_PHRASE` as defined by openEHR Archetype profile spec.
+** Existing archetypes with old form of property = <"xxxxx"> still parse but are silently converted to property = <[openehr:xxxx]> (note spaces converted to '_' as well)
+** clear_xxx routines added to `ARCHETYPE_DESCRIPTION` and `ARCHETYPE_DESCRIPTION_ITEM` to allow all list attributes (e.g. author, keywords, details, other_details etc) to be cleared in one go.
+** implemented 'adl_version' and 'controlled' markers in ADL files. Existing ADL files opened and saved with the ADL workbench or other tool using this parser will have the latest ADL version written into them.
+** added functions to `ARCHETYPE_ONTOLOGY` to remove terms and constraints completely.
+** added a function to `ARCHETYPE` to generate list of unused term and constraint codes, and to delete them from the ontology.
+* bug fixes:
+** string values in dADL sections that wrap to start of next line now parse properly
+** all ISO date/time values in dADL and cADL now parse with proper 'P' and 'T' characters; if no 'T' present in value, it parses fine (for now) but a 'T' is included on output.
+
+== interim release Subversion 47 - 02/Apr/2006
+
+* bug fixes
+** fixed bug where Save on archetype opened from explorer tree had wrong directory removed leading whitespace in dADL text fields
+** fixed incorrectly generated logical paths in ARCHETYPE
+
+== interim release Subversion 46 - 27/Mar/2006
+
+All archetypes parse, save and reparse as expected except SOAP Headings.
+
+* enhancements:
+** now can have two archetypes in memory at once, due to getting rid of current_archteype from SHARED_ARCHETYPE_CONTEXT object
+* bug fixes:
+** rewrote Assertion expression rules, removed 96 reduce/reduce conflicts in the cADL parser;
+** fixed minor bug in path testing where a path ending in attr[obj_id] would match the OG structure when it should not
+** assertion expressions now parse properly with rewritten grammar for boolean_expressions.
+** dADL text containing newlines no longer cause crash; newlines are preserved through parsing.
+
+== interim subversion release 4 - 12 Oct 2005
+
+* enhancements
+** more efficient implementation of DT_OBJECT_CONVERTER, which now checks far fewer types when comparing generic types
+* bugfixes
+** better structure of code with respect to use of SHARED_ADL_INTERFACE, which slved .Net DLL crash problem.
+
+== interim release Subversion revision 3 - 23 July 2005
+
+* changes:
+** library package structure significantly improved. Note that this will mean that .Net users will see that many classes are in a new namespace. The main change is that the am package is now populated as described in the Archetype Object Model (AOM) documentation.
+
+----
+++++++++++++++ move to subversion ++++++++++++++
+----
+
+== interim release BitKeeper cset 1.57 23/June/2005
+
+* enhancements
+** implemented CR-000138 Archetype level assertions. Updated test cases, test archetypes.
+** minor improvements in open and save button behaviour in workbench GUI
+** in ASSERTION_FACTORY:
+*** functions "create_expr_unary_operator_xxx" etc replaced by one function:
+     create_expr_unary_operator_node(an_operator: OPERATOR_KIND; an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
+          -- operators with one operand, e.g. not x, -5 etc
+        require
+          an_operator_exists: an_operator /= Void
+          an_operand_exists: an_operand /= Void
+*** functions "create_expr_binary_operator_xxx" etc replaced by one function:
+     create_expr_binary_operator_node(an_operator: OPERATOR_KIND; 
+        a_left_operand, a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR is
+          -- operators with boolean results, e.g.
+          -- and, or, xor, etc
+        require
+          an_operator_exists: an_operator /= Void
+          a_left_operand_exists: a_left_operand /= Void
+          a_right_operand_exists: a_right_operand /= Void
+*** java wrapper changes: "create_expr_binary_operator_xxx" etc replaced by one function:
+   create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_right_operand: INTEGER): INTEGER
+      -- REQUIRE
+      -- an_operator_exists: {OPERATOR_KIND}.is_valid_operator(an_operator)
+      -- a_left_operand_exists: a_left_operand /= void
+      -- a_right_operand_exists: a_right_operand /= void
+*** "create_expr_unary_operator_xxx" etc replaced by one function `create_expr_unary_operator_node (an_operator: INTEGER; h_an_operand: INTEGER): INTEGER`
+*** codes for an_operator argument given in openEHR AOM specification - the new classes `OPERATOR_KIND` and `OPERATOR_TYPES` are added. To make a call to one of the above functions, an OPERATOR_KIND object needs to be created using the c# syntax which has the effect of doing `OPERATOR_KIND.make(integer value)` or `OPERATOR_KIND.make_from_string(string value)`
+* bugs:
+** some bugs remain in the java wrapping; compiles ok, but runtime errors at assertion building. - More functions need to be wrapped for ARCHETYPE_DESCRIPTION, adding invariants to `ARCHETYPE` etc.
+
+== release 'arch_desc' BitKeeper cset 1.56 19/June/2005
+
+* enhancements
+** implemented ARCHETYPE_DESCRIPTION class, parsing, and GUI view. Upgraded all test archetypes. - added new class DT_OBJECT_CONVERTER, which performs generic DT_ <-> object structure conversion. This enables the archetype description and any other dADL content to be converted automatically into objects, rather than requiring hand-built routines.
+
+== interim release BitKeeper cset 1.50 01/June/2005
+
+* enhancements
+** News facility added: a news window will pop up the first time the workbench is used with a new version.
+
+== interim release BitKeeper cset 1.49 30/May/2005
+
+* enhancements
+** DT structures (the internal representation of dADL sections) are all generically generated from objects and are used to generate objects. This means that C_QUANTITYs, the description section and so on of an archetype are all handled by the one piece of code now. The ontology section is slightly more complex, since its current modelling does not correspond strictly to the object types used in the class ARCHETYPE_ONTOLOGY. This will change in the future.
+* bug fixes
+** numerous small bugs fixed.
+
+== interim release BitKeeper cset 1.48 06/May/2005
+
+* bug fixes
+** implemented interval constraints of the form |100|, i.e. point intervals. Implemented for all ordered basic types, i.e. integer, real, date, date_time, time, duration. - enhancements - implemented assumed values for primitive types and domain types C_QUANTITY, C_CODED_TEXT, C_ORDINAL. C_PRIMITIVE and all subtypes, as well as C_DOMAIN_TYPE have assumed_value, default_value, has_assumed_value and set_assumed_value. Workbench GUI indicates assumed values.
+
+== interim release BitKeeper cset 1.46 - 05 May 2005
+
+* enhancements
+** implemented assumed_value in primitive and domain types
+
+== interim release BitKeeper cset 1.39 25/Feb/2005
+
+* enhancements
+** C_QUANTITY now allows magnitude to be absent in inline dADL, meaning open magnitude, with unit still constrained - support dADL2 style syntax, including nested generics - change paths to include anonymous nodes - bug fixes - an error whereby archetypes with include and exclude lists sent the parser into an infinite loop is fixed. - empty C_DOMAIN_TYPE sections now parse, e.g. {C_QUANTITY <>} - embedded C_DOMAIN_TYPE sections with sibling non-C_DOMAIN_TYPE sections now parse properly
+
+== interim release cset 1.38 - 19 Jan 2005
+
+* changes
+** complete JNI wrapping for ADL parser. Many fixes in parser. See http://www.deepthought.com.au for documentation on JNI wrapping for Eiffel / C. - it is now recommended that users download the BitKeeper repository for this project, since it contains the proper java directory structure. - this directory still contains the correct DLL, but will be replaced in the near future by a proper distribution server.
+
+== interim release BitKeeper cset 1.32 - 29 July 2004
+
+* changes
+** CADL_FACTORY class routine create_archetype_slot replaced by two routines create_archetype_slot_anonymous and create_archetype_slot_identified
+
+== interim release BitKeeper cset 1.27 - 19 September 2004
+
+* enhancements
+** finished inline dADL support for C_DOMAIN_TYPE subtypes; correctly serialises now; use of parantheses corrected - file names for serialisations other than ADL now replace the '.adl' extension at the end rather than just appending '.html', '.xml' or whatever..:wq - bug fixes - fix crash if icon not available (black square now shows, plus message indicating which icon missing).
+
+== interim release BitKeeper cset 1.25 - 05 May 2004
+
+* changes
+** Renaming and re-arrangement of all classes and some attributes, as follows:
+*** CADL classes
+**** CADL_ITEM -> ARCHETYPE_CONSTRAINT
+**** CADL_OBJECT_ITEM -> C_OBJECT
+**** type_name -> rm_type_name
+**** CADL_NODE removed
+**** CADL_REL_NODE -> C_ATTRIBUTE
+**** attr_name -> rm_attr_name
+**** CADL_CARDINALITY -> CARDINALITY
+**** CADL_OBJECT_NODE_REF -> ARCHETYPE_INTERNAL_REF
+**** CADL_OBJECT_NODE with is_archetype_ref = True -> ARCHETYPE_SLOT
+**** CADL_OBJECT_NODE with is_archetype_ref = False -> C_COMPLEX_OBJECT
+**** CADL_OBJECT_TERM_REF with is_reference = True -> CONSTRAINT_REF
+**** CADL_OBJECT_TERM_REF with is_reference = False -> C_CODED_TERM
+**** CADL_OBJECT_SIMPLE -> C_PRIMITIVE_OBJECT
+**** C_SIMPLE -> C_PRIMITIVE
+**** ADL_ASSERTION -> ASSERTION
+*** DADL classes
+**** DADL_ITEM -> DT_ITEM
+**** DADL_NODE removed
+**** DADL_OBJECT_ITEM -> DT_OBJECT_ITEM
+**** type_name -> rm_type_name
+**** DADL_REL_NODE -> DT_ATTRIBUTE_NODE
+**** attr_name -> rm_attr_name
+**** DADL_OBJECT_NODE -> DT_COMPLEX_OBJECT_NODE
+**** DADL_OBJECT_LEAF -> DT_OBJECT_LEAF
+**** DADL_OBJECT_QUERY -> DT_OBJECT_QUERY
+**** DADL_OBJECT_SIMPLE -> DT_PRIMITIVE_OBJECT
+**** DADL_OBJECT_SIMPLE_LIST -> DT_PRIMITIVE_OBJECT_LIST
+**** DADL_OBJECT_SIMPLE_INTERVAL -> DT_PRIMITIVE_OBJECT_INTERVAL
+*** DotNet classes
+**** DOTNET_CADL_TREE_ITERATOR -> DOTNET_ARCHETYPE_ITERATOR
+
+== interim release BitKeeper cset 1.27 - 19 September 2004
+
+* enhancements
+** finished inline dADL support for C_DOMAIN_TYPE subtypes; correctly serialises now; use of parantheses corrected
+** file names for serialisations other than ADL now replace the '.adl' extension at the end rather than just appending '.html', '.xml' or whatever.
+* bug fixes
+** fix workbench crash if icon not available (black square now shows, plus message indicating which icon missing).
+
+== interim release BitKeeper cset 1.23 - 09 September 2004
+
+* GUI fixes:
+** added option dialog; tool now asks for editor and repository path if no .cfg file found on startup, and writes settings to .cfg file in startup directory - specialisated archetypes have a differnt icon in archetype explorer - specialised archetype parent archetype id now shown in GUI - general GUI size & widget cleanup * Bug fixes:
+** unused parent codes in specialised archetypes no longer generate warnings
+* Enhancements:
+** ASSERTION-building factory routines exposed in interface
+** ontology sections all now save in sorted order of keys
+** ADL_INTERFACE has an attribute called openehr_version which contains the automatically version information from the software repository - useful for reporting bugs, using in 'about' window.
+
+== interim release BitKeeper cset 1.3.1.30 - 29 July 2004
+
+* added archetype explorer control on left side of tool
+* fixed error where empty term definition text caused crash
+* corrected validation of found use_node paths
+* corrected error where sibling object nodes with same code caused crash.
+
+== interim release BitKeeper cset 1.3.1.22 - 05 May 2004
+
+* re-engineered object models as described in draft ADL 1.2 manual (See openEHR website). This doesn't affect standalong applications but does affect the DLLs.
+* added ADL keywords "allow_archetype", to replace "use_archetype", and "include" and "exclude" to define allowed and excluded sets of archetypes in an archetype slot.
+* slightly improved visual display in GUI tool with a new icon for 1:N attributes.
+
+== "mar2004" Release - 31 Mar 2004 (BitKeeper cset 1.3.1.13)
+
+* separated out .Net DLL into its own toolkit
+* ADL language 1.1; ADL language manual 1.1
+* VB.net sources updated
+* mplements new interval syntax using "||".
+* implementation of clinical ADL types CODED_TEXT and ORDINAL conforming to syntax defined in version 1.1 of manual.
+* initial experimental XML output for OWL as save option in ADL workbench. THis will be rewritten next version!
+* many small bugs and limitations of DLLs fixed, allowing more powerful interrogation of the Archetype ontology in memory from any .net language, or any application natively using the Eiffel backend (i.e. any C/C++ app, or Java via JNI).
+
+== interim Release - 06 Feb 2004
+
+* ADL language 1.1; ADL language manual 0.9.9
+* fixed REAL output error where ".0" forgotten for round numbers
+* numerous small GUI fixes
+
+== interim Release - 27 Jan 2004
+
+* ADL language 1.0; ADL language manual 0.9.5
+* added intervals as data types in dADL
+* intervals now require "|" delimiters, e.g. "|100..200|", "|<100|".
+* various minor bugs fixed in date/times, durations.
+
+== "jan2004" Release - 15 Jan 2004
+
+* ADL language 0.95
+* Ontology model completely rewritten
+* now has its own functional interface independent of dADL. Tested with C# and VB through dotNet DLL build.
+* date/time types now have pattern-based constraint expressions
+* term references in cADL and dADL no longer need version id in terminlogy part - it is now optional; e.g. [ICD9AM::F72] can be used instead of [ICD9AM(2003)::F72] 
+* introduction of clinical/scientific predefined type library, including constraint types ("c_" types) for: 
+** Text, Coded_text, Code_phrase 
+** Quantity, Ordinal, Countable 
+** Partial_date, Partial_time, Partial_date_time New efficient syntax for coded term constraints: [terminology_id::code1, code2, code3, ...]
+** New efficient syntax for ordinals: 0|[local::at0003], 1|[local::at0004], 2|[local::at0005]
+* improvements in GUI validator tree rendering of archetypes: 
+** c_ordinals shown efficiently with codes and comments
+** c_terms shown efficiently with codes and comments
+* presence of invariants indicated
+* integration of ADL back-end with Clinician's Archetype Editor via dotNet: clinician-designed archetypes now save as regular ADL.
+
+== Initial Release - November 2003
+
+Basic validation functionality:
+* basic primitive types String, Integer, Real, Boolean
+* simple version of constraints for primitive types Date, Time, Date_time
+* basic implementation of ontology section of archetype

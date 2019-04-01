@@ -1,0 +1,46 @@
+= Support and Contributing
+
+== I have a problem...
+
+===  with the ADL Workbench
+
+You can report an issue on the Jira AWB PR tracker at openEHR.org. Please select the appropriate component, e.g. User interface, Validator, etc.
+
+===  with an archetype
+If it is a CKM archetype, and it really appears to be an error or deficiency, you can:
+
+* Submit a comment to CKM, with the following steps:
+** Go to the CKM server and login
+** Navigate to the archetype in the left hand explorer and select (double-click)
+** Now right-click-Discussion.
+* Discuss it on the `openehr-clinical` mailing list (subscribe here, list archive)
+
+If it is an ADL2 test archetype, create a problem report on the Jira AWB PR tracker, with component set to 'Test archetypes'.
+
+=== with this online documentation
+
+If your problem is that you can't find an answer to what you are looking for, please report this on the Jira AWB PR tracker, with component set to 'Documentation'. If you really need an answer, don't be afraid to post on the openehr-technical mailing list (subscribe here, list archive).
+
+=== with the openEHR specifications
+
+There is a dedicated Jira tracker for this here.
+
+== How can I contribute?
+
+You are already a saint for asking! Most likely your interest is in one of the areas of: clinical archetypes, ADL/AOM tooling, or specifications. Useful things you can do include the following.
+
+=== I can help with clinical / demographic archetypes
+
+If your interest is in building and/or reviewing the CKM archetypes, or you want to offer new archetypes to CKM, please either login to CKM and join existing discussions, and/or contact the CKM editors and/or start a discussion on the openehr-clinical mailing list (subscribe here, list archive).
+
+=== I want to help improving ADL / AOM 2
+
+The single most useful thing you can do is to help build up the test archetype repository. This is a subversion repository, located here. We need more archetypes to test more ADL 2 use cases. Most of the validity conditions have at least one or two archetypes,	but some conditions can be triggered by different kinds of archetypes. If you see you can post a message on the openehr-technical mailing list(subscribe here, list archive).
+
+=== I can help improving the tool
+
+The tool is written in the Eiffel language. If you are interested in working on it, please join the openEHR implementation mailing list (subscribe here, list archive). Even if you have no interest in Eiffel, you are welcome to help by critiquing the design, suggesting new features. You can do this by posting feature requests on the Jira AWB PR tracker(set Issue Type = 'improvement' or 'new feature request'), or posting on the openehr-technical mailing list (subscribe here, list archive).
+
+=== I would like to port the tool to another language
+
+As a starting point, it is suggested you post an initial enquiry on the openehr-technical mailing list (subscribe here, list archive), and/or subscribe to the openehr-implementers mailing list (subscribe here, list archive).
