@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
 <meta name="description" content="ADL Workbench User Guide">
-<meta name="keywords" content="ADL Workbench">
+<meta name="keywords" content="ADL Workbench, archetype, template, clinical model, ADL">
 <title>ADL Workbench (AWB) User Guide</title>
 <link rel="stylesheet" href="https://specifications.openehr.org/styles/openehr.css">
 <link rel="stylesheet" href="https://specifications.openehr.org/styles/pygments-default.css">
@@ -56,7 +56,7 @@
 <ul class="sectlevel3">
 <li><a href="#_docking">3.3.1. Docking</a></li>
 <li><a href="#_general_layout">3.3.2. General layout</a></li>
-<li><a href="#_archetype_and_template_catalog">3.3.3. Archetype and Template Catalog</a></li>
+<li><a href="#_archetype_and_template_library">3.3.3. Archetype and Template Library</a></li>
 <li><a href="#_reference_model_browser">3.3.4. Reference Model Browser</a></li>
 <li><a href="#_reference_model_tool">3.3.5. Reference Model Tool</a></li>
 <li><a href="#_the_address_bar">3.3.6. The Address Bar</a></li>
@@ -75,7 +75,7 @@
 </li>
 <li><a href="#_browsing_and_compiling">5. Browsing and Compiling</a>
 <ul class="sectlevel2">
-<li><a href="#_the_archetype_and_template_catalogues">5.1. The Archetype and Template Catalogues</a></li>
+<li><a href="#_the_archetype_and_template_library">5.1. The Archetype and Template Library</a></li>
 <li><a href="#_compiling_archetypes">5.2. Compiling archetypes</a>
 <ul class="sectlevel3">
 <li><a href="#_metrics_report">5.2.1. Metrics Report</a></li>
@@ -115,11 +115,7 @@
 </li>
 <li><a href="#_about_adl_2">7. About ADL 2</a>
 <ul class="sectlevel2">
-<li><a href="#_overview_3">7.1. Overview</a>
-<ul class="sectlevel3">
-<li><a href="#_specifications_status">7.1.1. Specifications Status</a></li>
-</ul>
-</li>
+<li><a href="#_overview_3">7.1. Overview</a></li>
 <li><a href="#_adl_aom_2_new_features">7.2. ADL/AOM 2 - New features</a>
 <ul class="sectlevel3">
 <li><a href="#_meta_data_changes">7.2.1. Meta-data changes</a></li>
@@ -197,7 +193,7 @@
 <ul class="sectlevel2">
 <li><a href="#_overview_7">11.1. Overview</a></li>
 <li><a href="#_iso_13606_schema_for_awb">11.2. ISO 13606 schema for AWB</a></li>
-<li><a href="#_rm_schema_en13606_schema_view">11.3. RM Schema EN13606 schema view</a></li>
+<li><a href="#_comparison_of_13606_and_openehr_classes">11.3. Comparison of 13606 and openEHR Classes</a></li>
 <li><a href="#_iso_13606_archetypes">11.4. ISO 13606 archetypes</a></li>
 </ul>
 </li>
@@ -290,50 +286,33 @@
 <div class="content">
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-center valign-top" colspan="2"><strong>Issuer</strong>: <a href="https://www.openehr.org/programs/specification" target="_blank" rel="noopener">openEHR Specification Program</a></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Release</strong>: adl-tools latest</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Status</strong>: {spec_status}</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Revision</strong>: <a href="#latest_issue">[latest_issue]</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Date</strong>: <a href="#latest_issue_date">[latest_issue_date]</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-top" colspan="2"><p class="tableblock"><strong>Keywords</strong>: ADL Workbench</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-center valign-top" colspan="2">&#169; 2019 - 2019 The openEHR Foundation</th>
+<th class="tableblock halign-center valign-top" colspan="2">&#169; 2019 The openEHR Foundation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top" colspan="2"><p class="tableblock"><a href="https://www.openehr.org" target="_blank" rel="noopener">The openEHR Foundation</a> is an independent, non-profit community organisation, facilitating the sharing of health records by consumers and clinicians via open standards-based implementations.</p></td>
+<td class="tableblock halign-center valign-top" colspan="2"><p class="tableblock"><a href="https://www.openehr.org" target="_blank" rel="noopener">The openEHR Foundation</a> is an independent, non-profit foundation, facilitating the sharing of health records by consumers and clinicians via open specifications, clinical models and open platform implementations.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><strong>Issuer</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.openehr.org/programs/software" target="_blank" rel="noopener">openEHR Software Program</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><strong>Keywords</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ADL Workbench, archetype, template, clinical model, ADL</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><strong>Licence</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="https://specifications.openehr.org/images/cc-by-nd-88x31.png" alt="image"></span> Creative Commons Attribution-NoDerivs 3.0 Unported. <a href="https://creativecommons.org/licenses/by-nd/3.0/" class="bare">https://creativecommons.org/licenses/by-nd/3.0/</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="http://apache.org/img/ASF20thAnniversary.jpg" alt="ASF20thAnniversary" width="15%"></span> Apache 2.0 Licence. <a href="http://apache.org/licenses/LICENSE-2.0.html" class="bare">http://apache.org/licenses/LICENSE-2.0.html</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock"><strong>Support</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Issues: <a href="https://specifications.openehr.org/components/adl-tools/open_issues" target="_blank" rel="noopener">Problem Reports</a><br>
- Web: <a href="https://specifications.openehr.org" target="_blank" rel="noopener">specifications.openEHR.org</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Issues: <a href="https://specifications.openehr.org/components/adl-tools/open_issues" target="_blank" rel="noopener">Problem Reports</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -360,7 +339,7 @@
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a id="latest_issue"></a>1.1.0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Initial Writing.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Convert to asciidoctor.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">T Beale</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a id="latest_issue_date"></a>01 Apr 2019</p></td>
 </tr>
@@ -417,9 +396,7 @@
 <div class="sect2">
 <h3 id="_adl_workbench_release_2_0_6"><a class="anchor" href="#_adl_workbench_release_2_0_6"></a>1.1. ADL Workbench release 2.0.6</h3>
 <div class="paragraph">
-<p><a href="/downloads/ADLworkbench/release_notes">Release notes</a>
-<a href="https://specifications.openehr.org/jira/AWBPR" target="_blank" rel="noopener">Report an issue</a>
-<a href="https://specifications.openehr.org/jira/AWB" target="_blank" rel="noopener">Development Project (Jira)</a></p>
+<p><a href="#_release_history">Release History</a> | <a href="https://specifications.openehr.org/jira/AWBPR" target="_blank" rel="noopener">Report an issue</a> | <a href="https://specifications.openehr.org/jira/AWB" target="_blank" rel="noopener">Development Project (Jira)</a></p>
 </div>
 </div>
 <div class="sect2">
@@ -435,6 +412,15 @@
 <h3 id="_news"><a class="anchor" href="#_news"></a>1.3. News</h3>
 <div class="ulist">
 <ul>
+<li>
+<p>Full BMM support for generic types including through inheritance</p>
+</li>
+<li>
+<p>Enumerated type support</p>
+</li>
+<li>
+<p>Support for regular <code>C_PRIMITIVE_OBJECT</code> structures</p>
+</li>
 <li>
 <p>GitHub integration and new smart archetype repository management</p>
 </li>
@@ -518,18 +504,30 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">2.0.6.3034</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">28-03-2019</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3034-windows_64bit.exe" target="_blank" rel="noopener">.exe installer</a></p></td>
-<td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>+
-* Improve enumerated type support.
-* Include latest Task Planning and CIMI BMMs.
-* Support regular C_PRIMITIVE_OBJECT structures.
-* Add BMM (RM) JSON exporter.
-* Improve editing functionality; add new-archetype-from-subtree function.
-* Fix generic type handling in BMM.
-* Add BMM (RM) output mode to adlc CLI tool.
-* Correct schema loading bug; include Task Planning schemas in delivery.
-* Correct ADL converter regex bug; correct value-set redefinition bug.
-* Correct editor hang bug; correct startup failure when BMM schema broken.</p>
+<td class="tableblock halign-left valign-top"><div><div class="ulist">
+<ul>
+<li>
+<p>Include latest Task Planning and CIMI BMMs.</p>
+</li>
+<li>
+<p>Add BMM (RM) JSON exporter.</p>
+</li>
+<li>
+<p>Improve editing functionality; add new-archetype-from-subtree function.</p>
+</li>
+<li>
+<p>Add BMM (RM) output mode to adlc CLI tool.</p>
+</li>
+<li>
+<p>Correct schema loading bug; include Task Planning schemas in delivery.</p>
+</li>
+<li>
+<p>Correct ADL converter regex bug; correct value-set redefinition bug.</p>
+</li>
+<li>
+<p>Correct editor hang bug; correct startup failure when BMM schema broken.</p>
+</li>
+</ul>
 </div></div></td>
 </tr>
 </tbody>
@@ -539,16 +537,14 @@
 <h3 id="_learn_how_the_workbench_works"><a class="anchor" href="#_learn_how_the_workbench_works"></a>1.6. Learn how the workbench works</h3>
 <div class="videoblock">
 <div class="content">
-<video src="https://youtu.be/Jhnbamg7bAA?list=PLhWi0RtmG26U6PGezBrDD2QPeQL8tQYTZ" poster="YouTube%20video^" controls>
-Your browser does not support the video tag.
-</video>
+<iframe src="https://www.youtube.com/embed/Jhnbamg7bAA?rel=0" frameborder="0" allowfullscreen></iframe>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_source_code"><a class="anchor" href="#_source_code"></a>1.7. Source Code</h3>
 <div class="paragraph">
-<p>The source code can be accessed from the adl-tools GitHub home page.</p>
+<p>The source code can be accessed from the <a href="https://github.com/openEHR/adl-tools" target="_blank" rel="noopener">adl-tools GitHub repository</a>.</p>
 </div>
 </div>
 </div>
@@ -583,9 +579,9 @@ Your browser does not support the video tag.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">	<span class="tok-nv">$ </span>mkdir awb 						<span class="tok-c1"># create a directory if never done before</span>
-	<span class="tok-nv">$ </span><span class="tok-nb">cd </span>awb
-	<span class="tok-nv">$ </span>tar xvjf ../archive_file_name		<span class="tok-c1"># extract the files</span></code></pre>
+<pre class="pygments highlight"><code data-lang="bash"><span class="tok-nv">$ </span>mkdir awb 						<span class="tok-c1"># create a directory if never done before</span>
+<span class="tok-nv">$ </span><span class="tok-nb">cd </span>awb
+<span class="tok-nv">$ </span>tar xvjf ../archive_file_name		<span class="tok-c1"># extract the files</span></code></pre>
 </div>
 </div>
 </div>
@@ -617,7 +613,7 @@ Your browser does not support the video tag.
 <div class="title">Figure 1. Options dialog</div>
 </div>
 <div class="paragraph">
-<p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener">adl-archetypes GitHub repository</a>. See the <a href="#_tool_configuration">Section 6</a> section for details on configuring RM schemas.</p>
+<p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener">adl-archetypes GitHub repository</a>. See the <a href="#_tool_configuration">Tool Configuration</a> section for details on configuring RM schemas.</p>
 </div>
 </div>
 <div class="sect3">
@@ -632,7 +628,7 @@ Your browser does not support the video tag.
 <div class="title">Figure 2. Repositories dialog</div>
 </div>
 <div class="paragraph">
-<p>The section on <a href="#_obtaining_archetypes">Section 4</a> describes how to proceed.</p>
+<p>The section on <a href="#_obtaining_archetypes">Obtaining Archetypes</a> describes how to proceed.</p>
 </div>
 </div>
 </div>
@@ -641,7 +637,7 @@ Your browser does not support the video tag.
 <div class="sect3">
 <h4 id="_docking"><a class="anchor" href="#_docking"></a>3.3.1. Docking</h4>
 <div class="paragraph">
-<p>The AWB layout is docking-based, which means that the key components are all dockable 'tools'. This <a href="adl_workbench_guide/images/docking_overview.png">screenshot</a> shows multiple editor tabs, the Catalog tool, and various minimised tools at the bottom and right hand side. Docking can be used to <a href="adl_workbench_guide/images/docking_side_by_side_definitions.png">arrange editor tools side by side</a>, and to <a href="adl_workbench_guide/images/template_compiled.png">'pop' a tool out into an independent window</a>.</p>
+<p>The AWB layout is docking-based, which means that the key components are all dockable 'tools'. This <a href="adl_workbench_guide/images/docking_overview.png">screenshot</a> shows multiple editor tabs, the Library tool, and various minimised tools at the bottom and right hand side. Docking can be used to <a href="adl_workbench_guide/images/docking_side_by_side_definitions.png">arrange editor tools side by side</a>, and to <a href="adl_workbench_guide/images/template_compiled.png">'pop' a tool out into an independent window</a>.</p>
 </div>
 <div class="paragraph">
 <p>In general, docking is controlled in the normal way for the platform you are working on, e.g Windows, or the various GUI toolkits used on Linux and MacOS.</p>
@@ -661,13 +657,13 @@ Your browser does not support the video tag.
 <tr>
 <td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
 <div class="content">
-<a class="image" href="adl_workbench_guide/images/overview.png"><img src="adl_workbench_guide/images/overview.png" alt="overview"></a>
+<a class="image" href="adl_workbench_guide/images/overview.png"><img src="adl_workbench_guide/images/overview.png" alt="overview" width="70%"></a>
 </div>
 <div class="title">Figure 3. Expanded view in explorer</div>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
 <div class="content">
-<a class="image" href="adl_workbench_guide/images/RM_icons_overview.png"><img src="adl_workbench_guide/images/RM_icons_overview.png" alt="RM icons overview"></a>
+<a class="image" href="adl_workbench_guide/images/RM_icons_overview.png"><img src="adl_workbench_guide/images/RM_icons_overview.png" alt="RM icons overview" width="70%"></a>
 </div>
 <div class="title">Figure 4. Overview with RM icons</div>
 </div></div></td>
@@ -676,9 +672,9 @@ Your browser does not support the video tag.
 </table>
 </div>
 <div class="sect3">
-<h4 id="_archetype_and_template_catalog"><a class="anchor" href="#_archetype_and_template_catalog"></a>3.3.3. Archetype and Template Catalog</h4>
+<h4 id="_archetype_and_template_library"><a class="anchor" href="#_archetype_and_template_library"></a>3.3.3. Archetype and Template Library</h4>
 <div class="paragraph">
-<p>On the left side of the tool are <a href="adl_workbench_guide/images/explorers.png">two explorers</a>, making up the 'Catalog' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
+<p>On the left side of the tool are <a href="adl_workbench_guide/images/explorers.png">two explorers</a>, making up the 'Library' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show all classes' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
 </div>
 <div class="paragraph">
 <p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
@@ -714,7 +710,7 @@ Your browser does not support the video tag.
 <div class="sect3">
 <h4 id="_the_address_bar"><a class="anchor" href="#_the_address_bar"></a>3.3.6. The Address Bar</h4>
 <div class="paragraph">
-<p>At the top of the tool is an address bar that can be used to search for either elements of reference models, e.g. classes, or archetypes, <strong>depending on which of the Archetype/template catalog or RM browser is in focus</strong>.</p>
+<p>At the top of the tool is an address bar that can be used to search for either elements of reference models, e.g. classes, or archetypes, <strong>depending on which of the Archetype/template library or RM browser is in focus</strong>.</p>
 </div>
 <div class="imageblock text-center">
 <div class="content">
@@ -726,7 +722,7 @@ Your browser does not support the video tag.
 <div class="sect3">
 <h4 id="_archetype_and_class_tool_area"><a class="anchor" href="#_archetype_and_class_tool_area"></a>3.3.7. Archetype and Class Tool area</h4>
 <div class="paragraph">
-<p>The middle area of the screen is dedicated to viewing archetypes, templates and browsing the reference model. Two types of tool are used for this - the Archetype Tool and the Class Tool. Any number of each tool can be launched. The first Archetype Tool starts just by left clicking on an archetype or template in the Catalog. New Archetype Tools are launched by right-clicking and selecting 'New Tool' from the context menu. The same applies to starting a Class Tool - left or right-click on a Class in the Catalog area.</p>
+<p>The middle area of the screen is dedicated to viewing archetypes, templates and browsing the reference model. Two types of tool are used for this - the Archetype Tool and the Class Tool. Any number of each tool can be launched. The first Archetype Tool starts just by left clicking on an archetype or template in the Library. New Archetype Tools are launched by right-clicking and selecting 'New Tool' from the context menu. The same applies to starting a Class Tool - left or right-click on a Class in the Library area.</p>
 </div>
 </div>
 <div class="sect3">
@@ -779,7 +775,7 @@ Your browser does not support the video tag.
 <div class="sect3">
 <h4 id="_the_class_tool"><a class="anchor" href="#_the_class_tool"></a>3.3.9. The Class Tool</h4>
 <div class="paragraph">
-<p>The class tool is designed to allow the user to explore the reference model starting from a given class. It provides 4 views: properties, ancestors, descendants and closure. The Properties view shows all properties defined in the class and its ancestors, grouped on the basis of the class in which each property was declared in. This is known as the 'flat' view of the class.</p>
+<p>The class tool is designed to allow the user to explore the reference model starting from a given class. It provides 4 views: properties, ancestors, descendants and closure. The <code>Properties</code> view shows all properties defined in the class and its ancestors, grouped on the basis of the class in which each property was declared in. This is known as the 'flat' view of the class.</p>
 </div>
 <div class="paragraph">
 <p>The <code>Ancestors</code> and <code>Descendants</code> views show the inheritance tree above and below the focal class, including multiple inheritance.</p>
@@ -885,7 +881,7 @@ Your browser does not support the video tag.
 <div class="sect2">
 <h3 id="_repository_and_library_configuration"><a class="anchor" href="#_repository_and_library_configuration"></a>4.1. Repository and Library Configuration</h3>
 <div class="paragraph">
-<p>The ADL Workbench uses a system of 'repositories' and 'libraries' to locate archetypes. A 'repository' is a physical file system location, e.g. a Git checkout area, and archetypes are found below this, in individual 'libraries'. The root point is identified with a special <code>_repo.idx</code> file, and each library root point contains a <code>_repo_lib.idx</code> file. These files only have to be written once in the repository, and effectively make the repositories self-describing.</p>
+<p>The ADL Workbench uses a system of <em>repositories</em> and <em>libraries</em> to locate archetypes. A repository is a physical file system location, e.g. a Git checkout area, and archetypes are found below this, in individual libraries. The root point is identified with a special <code>_repo.idx</code> file, and each library root point contains a <code>_repo_lib.idx</code> file. These files only have to be written once in the repository, and effectively make the repositories self-describing.</p>
 </div>
 <div class="paragraph">
 <p>The user now only has to specify the repository root points, for existing repositories, and the libraries will be read by the tool. This is made easier by additions to the workbench which allow it to use DVCS tools like Git and Subversion to clone, update and read repositories on the user&#8217;s computer. Further, the URLs of 3 well-known Git repositories are known by the tool to enable easy initial installation.</p>
@@ -931,7 +927,7 @@ Your browser does not support the video tag.
 <div class="title">Figure 15. Repositories installed view</div>
 </div>
 <div class="paragraph">
-<p>You can add a completely new repository as well, by using the 'Browse' button at the bottom of the dialog. If you choose a directory that is not already set up as an Archetype repository, the workbench will create the necessary control files for you, and save them. The result of doing this looks as follows:</p>
+<p>You can add a completely new repository as well, by using the <code>Browse</code> button at the bottom of the dialog. If you choose a directory that is not already set up as an Archetype repository, the workbench will create the necessary control files for you, and save them. The result of doing this looks as follows:</p>
 </div>
 <div id="repositories_add_new" class="imageblock text-center" style="text-align: center">
 <div class="content">
@@ -958,7 +954,7 @@ Your browser does not support the video tag.
 <div class="title">Figure 18. Repositories add new repository (updated)</div>
 </div>
 <div class="paragraph">
-<p>The next step in this add-new case is to define some libraries below the repository root point. All you are doing in fact is asking the tool to create _repo_lib.idx control files. You can do this in two ways:</p>
+<p>The next step in this add-new case is to define some libraries below the repository root point. All you are doing in fact is asking the tool to create <code>_repo_lib.idx</code> control files. You can do this in two ways:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -998,7 +994,7 @@ Your browser does not support the video tag.
 <h2 id="_browsing_and_compiling"><a class="anchor" href="#_browsing_and_compiling"></a>5. Browsing and Compiling</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_the_archetype_and_template_catalogues"><a class="anchor" href="#_the_archetype_and_template_catalogues"></a>5.1. The Archetype and Template Catalogues</h3>
+<h3 id="_the_archetype_and_template_library"><a class="anchor" href="#_the_archetype_and_template_library"></a>5.1. The Archetype and Template Library</h3>
 <div class="paragraph">
 <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire terminology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. Normally you will probably not use this option. At any time, you can select a class node in the explorer, and its Reference Model definition will be displayed in flat form, i.e. compressed through inheritance.</p>
 </div>
@@ -1011,13 +1007,13 @@ Your browser does not support the video tag.
 <tr>
 <td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
 <div class="content">
-<a class="image" href="adl_workbench_guide/images/explorer_initial_view.png"><img src="adl_workbench_guide/images/explorer_initial_view.png" alt="explorer initial view" width="50%"></a>
+<a class="image" href="adl_workbench_guide/images/explorer_initial_view.png"><img src="adl_workbench_guide/images/explorer_initial_view.png" alt="explorer initial view" width="70%"></a>
 </div>
 <div class="title">Figure 21. Initial view in explorer</div>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
 <div class="content">
-<a class="image" href="adl_workbench_guide/images/explorer_spec.png"><img src="adl_workbench_guide/images/explorer_spec.png" alt="explorer spec" width="50%"></a>
+<a class="image" href="adl_workbench_guide/images/explorer_spec.png"><img src="adl_workbench_guide/images/explorer_spec.png" alt="explorer spec" width="70%"></a>
 </div>
 <div class="title">Figure 22. Explorer showing specialisation</div>
 </div></div></td>
@@ -1028,7 +1024,7 @@ Your browser does not support the video tag.
 <div class="sect2">
 <h3 id="_compiling_archetypes"><a class="anchor" href="#_compiling_archetypes"></a>5.2. Compiling archetypes</h3>
 <div class="paragraph">
-<p>When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. If you select a specialised archetype, its specialisation parents will automatically compile.</p>
+<p>When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' here means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. If you select a specialised archetype, its specialisation parents will automatically compile.</p>
 </div>
 <div class="paragraph">
 <p>If your repository has templates in it, you can compile a template in the same way. If you select a template in the Template explorer tab, you will see that all its dependencies compile, i.e. all archetypes implicated in its slot-filling and specialisation statements.</p>
@@ -1070,7 +1066,7 @@ Your browser does not support the video tag.
 <div class="sect3">
 <h4 id="_metrics_report"><a class="anchor" href="#_metrics_report"></a>5.2.1. Metrics Report</h4>
 <div class="paragraph">
-<p>The 'Metrics' tab provides a report of counts of archetypes, compiled archetypes, specialised archetypes and so on, for the current repository.</p>
+<p>The <code>Metrics</code> tab provides a report of counts of archetypes, compiled archetypes, specialised archetypes and so on, for the current repository.</p>
 </div>
 <div class="imageblock text-center">
 <div class="content">
@@ -1079,7 +1075,7 @@ Your browser does not support the video tag.
 <div class="title">Figure 26. Repository metrics</div>
 </div>
 <div class="paragraph">
-<p>The 'Statistics' tab provides a statistical report of the use of RM types and prperties in archetypes, as well as terminology definitions and bindings.</p>
+<p>The <code>Statistics</code> tab provides a statistical report of the use of RM types and prperties in archetypes, as well as terminology definitions and bindings.</p>
 </div>
 <div class="imageblock text-center">
 <div class="content">
@@ -1134,7 +1130,7 @@ Your browser does not support the video tag.
 <div class="sect3">
 <h4 id="_node_map"><a class="anchor" href="#_node_map"></a>5.3.3. Node map</h4>
 <div class="paragraph">
-<p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.</p>
+<p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like <code>/protocol</code>, <code>/data/events[id10]/items[id23]</code> and so on.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -1394,11 +1390,21 @@ Your browser does not support the video tag.
 <div class="paragraph">
 <p>Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work. This is done as follows:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Select the RM Schemas menu &gt; Configure Schemas&#8230;&#8203;</p>
+</li>
+<li>
+<p>Ensure that the schemas you require are checked, as shown <a href="adl_workbench_guide/images/options_rm_schema_config.png">here</a>.</p>
+</li>
+<li>
+<p>Save the configuration.</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
-<p>Select the RM Schemas menu &gt; Configure Schemas&#8230;&#8203;
-Ensure that the schemas you require are checked, as shown here.
-Save the configuration.
-You can use the profile combo selector above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.</p>
+<p>You can use the <a href="adl_workbench_guide/images/profile_combo.png">profile combo selector</a> above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.</p>
 </div>
 </div>
 </div>
@@ -1419,7 +1425,7 @@ You can use the profile combo selector above the archetype explorer to switch be
 <div class="sect3">
 <h4 id="_location_on_various_platforms"><a class="anchor" href="#_location_on_various_platforms"></a>6.2.2. Location on various Platforms</h4>
 <div class="paragraph">
-<p>Options for the ADL workbench, and also the command line tool adlc are located in a .cfg file named after the particular tool e.g. adl_workbench.cfg, adlc.cfg. This file will be in the standard application configuration area for your operating system. For adl_workbench for example, it will be in a location like the following:</p>
+<p>Options for the ADL workbench, and also the command line tool adlc are located in a .cfg file named after the particular tool e.g. <code>adl_workbench.cfg</code>, <code>adlc.cfg</code>. This file will be in the standard application configuration area for your operating system. For <code>adl_workbench</code> for example, it will be in a location like the following:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1435,7 +1441,7 @@ You can use the profile combo selector above the archetype explorer to switch be
 </ul>
 </div>
 <div class="paragraph">
-<p>Although each tool normally has its own .cfg file, the file adl_workbench.cfg is assumed to be the default. This means for example that if there is no <code>adlc/adlc.cfg</code>, but an <code>adl_workbench.cfg</code> file is found, it will be used.</p>
+<p>Although each tool normally has its own <code>.cfg</code> file, the file <code>adl_workbench.cfg</code> is assumed to be the default. This means for example that if there is no <code>adlc/adlc.cfg</code>, but an <code>adl_workbench.cfg</code> file is found, it will be used.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1545,19 +1551,10 @@ what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at th
 </table>
 </div>
 <div class="paragraph">
-<p>The ADL (Archetype Definition Language) release 2 formalism, and its object model counterpart, the AOM (Archetype Object Model) is a major advance on the previous 1.4 release. It fixes a number of problems with ADL/AOM 1.4, provides a unified formalism for both archetypes and templates, and adds a number of useful new features. These help pages don&#8217;t attempt to provide the pedagogic basis of the formalism, which can be found in the specifications, rather it illustrates each feature of the ADL/AOM 2 formalism with real examples you can see for yourself. The specifications are found here.</p>
+<p>The ADL (Archetype Definition Language) release 2 formalism, and its object model counterpart, the AOM (Archetype Object Model) is a major advance on the previous 1.4 release. It fixes a number of problems with ADL/AOM 1.4, provides a unified formalism for both archetypes and templates, and adds a number of useful new features. These help pages don&#8217;t attempt to provide the pedagogic basis of the formalism, which can be found in the <a href="https://specifications.openehr.org/releases/AM/latest/index" target="_blank" rel="noopener">specifications</a>, rather it illustrates each feature of the ADL/AOM 2 formalism with real examples you can see for yourself.</p>
 </div>
 <div class="paragraph">
-<p>One question you may have is: what if I am not interested in the ADL syntax? You might be using XML archetypes for example. It is important to understand the various roles of ADL, XML and the AOM. These are explained in some detail in the specifications. Briefly, the ADL workbench performs most of its work using AOM structures. It also has an ADL parser and serialiser, and in the near future, will have a parser and serialiser for XML archetypes. Apart from some syntax basics, nearly all the validation carried out by the AWB is on AOM structures and has nothing to do with the ADL syntax. Additionally, ADL is a human readable syntax good for understanding the concepts and examples. However, it does not have to be used in archetype authoring or production systems - the XML form is completely equivalent.</p>
-</div>
-<div class="sect3">
-<h4 id="_specifications_status"><a class="anchor" href="#_specifications_status"></a>7.1.1. Specifications Status</h4>
-<div class="paragraph">
-<p>The current state of the specifications is available here. Although most of the principal features have been determined and implemented, there remain a number of details which could be changed; these are indicated in the text below. Your feedback on any aspect of the specification is encouraged, and can be reported on the openEHR SPEC_PR Jira project. Please create new issues with the 'ADL 2' component specified.</p>
-</div>
-<div class="paragraph">
-<p>The remainder of this page describes the configuration of the tool for viewing the examples, and then describes in turn each of the features of ADL/AOM 2 grouped in the categories 'New features' and 'Changes'.</p>
-</div>
+<p>One question you may have is: what if I am not interested in the ADL syntax? You might be using XML archetypes for example. It is important to understand the various roles of ADL, XML and the AOM. These are explained in some detail in the <a href="https://specifications.openehr.org/releases/AM/latest/index" target="_blank" rel="noopener">archetype specifications</a>. Briefly, the ADL workbench performs most of its work using AOM structures. It also has an ADL parser and serialiser, and in the near future, will have a parser and serialiser for XML archetypes. Apart from some syntax basics, nearly all the validation carried out by the AWB is on AOM structures and has nothing to do with the ADL syntax. Additionally, ADL is a human readable syntax good for understanding the concepts and examples. However, it does not have to be used in archetype authoring or production systems - the XML form is completely equivalent.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1565,7 +1562,7 @@ what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at th
 <div class="sect3">
 <h4 id="_meta_data_changes"><a class="anchor" href="#_meta_data_changes"></a>7.2.1. Meta-data changes</h4>
 <div class="paragraph">
-<p>ADL 2 adds more meta-data elements to the description section, including governance and IP-related. It also moves the copyright item from being a translatable string to a top-level (non-translated) string. See here for more details.</p>
+<p>ADL2 has more meta-data elements in the <code>description</code> section, including governance and IP-related. It also moves the <code>copyright</code> item from being a translatable string to a top-level (non-translated) string. The meta-data is provided by the <a href="https://specifications.openehr.org/releases/BASE/latest/resource.html" target="_blank" rel="noopener">Resource specification</a>.</p>
 </div>
 <div class="imageblock text-center">
 <div class="content">
@@ -1617,7 +1614,13 @@ what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at th
 <div class="sect3">
 <h4 id="_terminology_value_set_constraints_moved_to_terminology_section"><a class="anchor" href="#_terminology_value_set_constraints_moved_to_terminology_section"></a>7.2.4. Terminology value-set constraints moved to terminology section</h4>
 <div class="paragraph">
-<p>Value sets used to be constrained inline. They are now moved to the terminology, in the form of a new 'value-set' construct, described here.</p>
+<p>Value sets used to be constrained inline. They are now moved to the terminology, in the form of a new 'value-set' construct, shown below, and described here in the <a href="https://specifications.openehr.org/releases/AM/latest/ADL2.html#_value_sets_sub_section" target="_blank" rel="noopener">ADL2 specification</a>.</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="adl_workbench_guide/images/value_sets_adl2.png" alt="value sets adl2">
+</div>
+<div class="title">Figure 51. ADL2 value sets</div>
 </div>
 </div>
 <div class="sect3">
@@ -1707,7 +1710,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <p>The <code>before</code> and <code>after</code> keywords can be used to specify the ordering of elements added to a container in a specialised archetype or template. This ensures authors can maintain ordering of all items within container attributes, including over specialisation.</p>
 </div>
 <div class="paragraph">
-<p>If you refer back to the problem-diagnosis example above in the <a href="adl_workbench_guide/images/diagnosis_diff_view.png">differential form</a>, you will see that the second two nodes include 'before' and 'after' markers respectively. The former is <code>before [at0003]</code> and the latter <code>after [at0031]</code>, indicating the nodes from the parent archetype with respect to which the new nodes should be situated. If you now choose the Flat view, with RM visibility (radio buttons on the right) set to '+ class names', you will see that these two nodes are indeed situation in the correct positions with respect to the referenced nodes, as seen <a href="adl_workbench_guide/images/problem-diagnosis_flat+RM_view.png">here</a>.</p>
+<p>If you refer back to the problem-diagnosis example above in the <a href="adl_workbench_guide/images/problem-diagnosis_diff_view.png">differential form</a>, you will see that the second two nodes include 'before' and 'after' markers respectively. The former is <code>before [at0003]</code> and the latter <code>after [at0031]</code>, indicating the nodes from the parent archetype with respect to which the new nodes should be situated. If you now choose the Flat view, with RM visibility (radio buttons on the right) set to '+ class names', you will see that these two nodes are indeed situation in the correct positions with respect to the referenced nodes, as seen <a href="adl_workbench_guide/images/problem-diagnosis_flat+RM_view.png">here</a>.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1801,10 +1804,10 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <p>Navigate to and select the <code>COMPOSITION.t_ext_ref</code> template</p>
 </li>
 <li>
-<p>Select Differential View, Definition tab, and you will see this, which shows the use of the use_archetype statement to select two archetypes to be used under the attribute /content</p>
+<p>Select Differential View, Definition tab, and you will see <a href="adl_workbench_guide/images/ext_ref_diff.png">this</a>, which shows the use of the <code>use_archetype</code> statement to select two archetypes to be used under the attribute <code>/content</code></p>
 </li>
 <li>
-<p>Now choose the Source view, and you will see this, showing the ADL source expression. Note that the use_archetype statements mention archetype ids, but no slot identifiers (at-codes) because there was no slot defined at this point.</p>
+<p>Now choose the Source view, and you will see <a href="adl_workbench_guide/images/ext_ref_source.png">the ADL source expression</a>. Note that the use_archetype statements mention archetype ids, but no slot identifiers (at-codes) because there was no slot defined at this point.</p>
 </li>
 </ul>
 </div>
@@ -1839,7 +1842,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <p>Navigate to and select the <code>PERSON.t_patient_simple</code> template in the template explorer.</p>
 </li>
 <li>
-<p>Select Differential View, Source tabs to see this.</p>
+<p>Select Differential View, Source tabs to see <a href="adl_workbench_guide/images/slot_filling.png">this</a>.</p>
 </li>
 </ul>
 </div>
@@ -1899,10 +1902,10 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 </div>
 </div>
 <div class="paragraph">
-<p>Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found <a href="http://www.openehr.org/mailarchives/openehr-technical/msg05523.html" target="_blank" rel="noopener">here</a>.</p>
+<p>Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found <a href="https://www.openehr.org/digital_media/mailinglists//openehr-technical/msg05523.html" target="_blank" rel="noopener">here</a>.</p>
 </div>
 <div class="paragraph">
-<p>Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes <a href="https://github.com/openEHR/adl-archetypes/tree/master/ADL2-reference/validity/annotations" target="_blank" rel="noopener">here</a>, are displayed in a grid, as in <a href="adl_workbench_guide/images/anotations_tab.png">this screenshot</a>.</p>
+<p>Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes <a href="https://github.com/openEHR/adl-archetypes/tree/master/ADL2-reference/validity/annotations" target="_blank" rel="noopener">here</a>, are displayed in a grid, as in <a href="adl_workbench_guide/images/annotations_tab.png">this screenshot</a>.</p>
 </div>
 </div>
 <div class="sect3">
@@ -2095,19 +2098,19 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <div class="ulist">
 <ul>
 <li>
-<p>Select the openEHR_examples profile (obtaining archetypes). You should see this. The template <code>openEHR-DEMOGRAPHIC-PERSON.t_patient_simple.v1</code> is shown in the template explorer, on the lower left side of the tool. Note that the identifier is just a normal archetype identifier prefixed with 't_'. This is currently an informal convention, but likely to be adopted if no problems are found with it.</p>
+<p>Select the openEHR_examples profile (<a href="#_obtaining_archetypes">Obtaining Archetypes</a>). You should see <a href="adl_workbench_guide/images/template_initial.png">this</a>. The template <code>openEHR-DEMOGRAPHIC-PERSON.t_patient_simple.v1</code> is shown in the template explorer, on the lower left side of the tool. Note that the identifier is just a normal archetype identifier prefixed with 't_'. This is currently an informal convention, but likely to be adopted if no problems are found with it.</p>
 </li>
 <li>
-<p>Select the template to compile it, you should see this. Notice how once it is compiled, the template is also shown in the archetype explorer at the top, as a specialisation of the <code>openEHR-DEMOGRAPHIC-PERSON.person.v1</code> archetype. You will also notice that sub-parts of the template are shown with a different icon, indicating that they are template components. See below for more on this.</p>
+<p>Select the template to compile it, you should see <a href="adl_workbench_guide/images/template_compiled.png">this</a>. Notice how once it is compiled, the template is also shown in the archetype explorer at the top, as a specialisation of the <code>openEHR-DEMOGRAPHIC-PERSON.person.v1</code> archetype. You will also notice that sub-parts of the template are shown with a different icon, indicating that they are <em>template components</em>. See below for more on this.</p>
 </li>
 <li>
-<p>Select the Differential View, Node map, you will see the inclusion of various archetypes in slots defined in the parent archetype, as shown here.</p>
+<p>Select the Differential View, Node map, you will see the inclusion of various archetypes in slots defined in the parent archetype, as shown <a href="adl_workbench_guide/images/template_differential.png">here</a>.</p>
 </li>
 <li>
-<p>Now have a look at the Node map in Flat View, you will see the effect of the slot filling as shown here.</p>
+<p>Now have a look at the Node map in Flat View, you will see the effect of the slot filling as shown <a href="adl_workbench_guide/images/template_flat.png">here</a>.</p>
 </li>
 <li>
-<p>To really convince yourself that the template is just a specialisation, try looking at the Source view while in Differential mode.</p>
+<p>To really convince yourself that the template is just a specialisation, try looking at the <a href="adl_workbench_guide/images/template_source.png">Source view</a> while in Differential mode.</p>
 </li>
 </ul>
 </div>
@@ -2117,7 +2120,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <div class="ulist">
 <ul>
 <li>
-<p>Designating it as a template_component artefact, as can be seen in the Source view.</p>
+<p>Designating it as a template_component artefact, as can be seen in the <a href="adl_workbench_guide/images/template_component_source.png">Source view</a>.</p>
 </li>
 <li>
 <p>Locating the source file with the parent template, typically in a subdirectory dedicated to components of the template, e.g. as shown here. At the moment there is no standard scheme for doing this, although one should emerge due to increased experience with templates.</p>
@@ -2141,7 +2144,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 </ul>
 </div>
 <div class="paragraph">
-<p>The above template is pretty simple, having only one level of slot-filling, and including only minimal constraint refinement (in the template components). The key thing to understand is that all of the features of templates are actually just features of the archetype formalism. Many are explained in the Learning ADL 2 page. Remember however, as described in the primer above, the use of templates is different from archetypes. Tools for authoring archetypes and templates are likely to impose restrictions on what features are available in each kind of artefact, for example to only allow slot-filling and removals in templates.</p>
+<p>The above template is pretty simple, having only one level of slot-filling, and including only minimal constraint refinement (in the template components). The key thing to understand is that all of the features of templates are actually just features of the archetype formalism. Many are explained in the <a href="#_about_adl2">About ADL2</a> page. Remember however, as described in the primer above, the use of templates is different from archetypes. Tools for authoring archetypes and templates are likely to impose restrictions on what features are available in each kind of artefact, for example to only allow slot-filling and removals in templates.</p>
 </div>
 </div>
 </div>
@@ -2197,7 +2200,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <div class="sect3">
 <h4 id="_environment"><a class="anchor" href="#_environment"></a>9.1.2. Environment</h4>
 <div class="paragraph">
-<p>The <code>adlc</code> utility will run on any Windows or Linux/Unix/Macos platform. On Windows, it can be run from cygwin or from within a standard Windows command shell. In the examples below, the command prompt and comments are in the standard Unix/Linux form, i.e. using '$' and '#'. On Windows this will of course be something like "C:\&gt;" and "::" or "REM".</p>
+<p>The <code>adlc</code> utility will run on any Windows or Linux/Unix/Macos platform. On Windows, it can be run from cygwin or from within a standard Windows command shell. In the examples below, the command prompt and comments are in the standard Unix/Linux form, i.e. using <code>$</code> and <code>#</code>. On Windows this will of course be something like <code>C:\&gt;</code> and <code>::</code> or <code>REM</code>.</p>
 </div>
 </div>
 <div class="sect3">
@@ -2209,7 +2212,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 <div class="sect3">
 <h4 id="_typical_tasks"><a class="anchor" href="#_typical_tasks"></a>9.1.4. Typical tasks</h4>
 <div class="paragraph">
-<p>In the following the command line is shown using both the standard 'verbose' form of switches and options (using '--') and the short form. The short form is typically used for manual entry at the command line, but the long form is recommended for use in scripts for better readability. Most invocations use the '-q' (quiet) switch to reduce verbose output.</p>
+<p>In the following the command line is shown using both the standard 'verbose' form of switches and options (using <code>--</code>) and the short form. The short form is typically used for manual entry at the command line, but the long form is recommended for use in scripts for better readability. Most invocations use the <code>-q</code> (quiet) switch to reduce verbose output.</p>
 </div>
 <div class="paragraph">
 <p>Show the help:</p>
@@ -2318,10 +2321,10 @@ Configured repositories:
 </div>
 </div>
 <div class="paragraph">
-<p>The next set of invocations uses the <code>-a | --action</code> switch to indicate a specific action to perform, and a regex (PERL) pattern on the archetype id to indicate which archetypes to apply the action to (note: this is a true regular expression, not a command-line glob expression: use <code>.<strong></code> to match anything, not just <code></strong></code>).</p>
+<p>The next set of invocations uses the <code>-a | --action</code> switch to indicate a specific action to perform, and a regex (PERL) pattern on the archetype id to indicate which archetypes to apply the action to (note: this is a true regular expression, not a command-line glob expression: use <code>.*</code> to match anything, not just <code>*</code>).</p>
 </div>
 <div class="paragraph">
-<p>The following command lists (<code>--action list</code>) all archetypes whose identifiers match the regex pattern <code>.<strong>problem.</strong></code>:</p>
+<p>The following command lists (<code>--action list</code>) all archetypes whose identifiers match the regex pattern <code>.*problem.*</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2442,6 +2445,9 @@ Configured repositories:
     <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --action serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The result is as follows:</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="adl"><span class="tok-gh">archetype</span><span class="tok-p"> (</span><span class="tok-nc">adl_version</span><span class="tok-o">=</span><span class="tok-l">2.0.6</span><span class="tok-p">;</span> <span class="tok-nc">generated</span><span class="tok-p">)</span>
@@ -2528,7 +2534,7 @@ Configured repositories:
 <div class="sect2">
 <h3 id="_selecting_archetypes"><a class="anchor" href="#_selecting_archetypes"></a>10.3. Selecting archetypes</h3>
 <div class="paragraph">
-<p>The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. Here is an example showing how the EHR EVALUATION group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the EVALUATION check-box, to check all EVALUATION archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.</p>
+<p>The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. <a href="adl_workbench_guide/images/test_page_arch_select.png">Here</a> is an example showing how the EHR <code>EVALUATION</code> group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the <code>EVALUATION</code> check-box, to check all <code>EVALUATION</code> archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.</p>
 </div>
 </div>
 <div class="sect2">
@@ -2542,7 +2548,7 @@ Configured repositories:
 <p><strong>Parse</strong>: perform a normal compile on the archetype; if there is only a legacy (.adl) file available, an initial .adl to .adls conversion will be done;</p>
 </li>
 <li>
-<p><strong>Regression</strong>: perform a regression comparison of the compilation results with expected results, which are encoded in the archetype details/other_deals section using the "regression" tag. See this archetype for example. Regression testing is only performed if the Regression button on the user interface is selected by the user, as it involves some extra computing cost, and is only useful for test archetypes found in the test repository, or archetypes similarly including the "regression" item within the details/other_deals.</p>
+<p><strong>Regression</strong>: perform a regression comparison of the compilation results with expected results, which are encoded in the archetype details/other_deals section using the "regression" tag. See <a href="https://github.com/openEHR/adl-archetypes/blob/master/ADL2-reference/validity/basics/openEHR-TEST_PKG-ENTRY.VACCD_illegal_concept_code.v1.adls" target="_blank" rel="noopener">this archetype</a> for example. Regression testing is only performed if the Regression button on the user interface is selected by the user, as it involves some extra computing cost, and is only useful for test archetypes found in the test repository, or archetypes similarly including the "regression" item within the details/other_deals.</p>
 </li>
 <li>
 <p><strong>Save legacy</strong>: if there is a .adl (ADL 1.4) file, save it to the directory, to the directory $diff_test/$profile/flat/orig, with a '.adlf' extension;</p>
@@ -2562,7 +2568,7 @@ Configured repositories:
 <div class="sect2">
 <h3 id="_regression_testing"><a class="anchor" href="#_regression_testing"></a>10.5. Regression Testing</h3>
 <div class="paragraph">
-<p>The regression testing facility is intended to be used with the test archetypes found in the <code>openEHR/adl-archetypes</code> GitHub repository, in the ADL2-reference directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the ADL 1.5 specification.</p>
+<p>The regression testing facility is intended to be used with the test archetypes found in the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener">adl-archetypes GitHub repository</a>, in the ADL2-reference directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the <a href="https://specifications.openehr.org/releases/AM/latest/ADL2.html" target="_blank" rel="noopener">ADL2 specification</a>.</p>
 </div>
 <div class="paragraph">
 <p>Regression testing is turned via a button on the Test page, and the results show up in the second column, as shown here. A green 'tick' indicates that the regression test passed, which means that the compilation result was as indicated in the archetype. The possible results indicated within an archetype are:</p>
@@ -2570,16 +2576,16 @@ Configured repositories:
 <div class="ulist">
 <ul>
 <li>
-<p>"PASS" - the archetype should pass compilation with no errors or warnings;</p>
+<p>PASS - the archetype should pass compilation with no errors or warnings;</p>
 </li>
 <li>
-<p>"FAIL" - the archetype should fail compilation, typically for extremely basic syntax reasons that do not have a specific validity code;</p>
+<p>FAIL - the archetype should fail compilation, typically for extremely basic syntax reasons that do not have a specific validity code;</p>
 </li>
 <li>
-<p>a validity code, e.g. "VACDF", taken from the AOM 1.5 specification, indicating the validity condition that this archetype violates;</p>
+<p>a validity code, e.g. "VACDF" - taken from the AOM 1.5 specification, indicating the validity condition that this archetype violates;</p>
 </li>
 <li>
-<p>a warning code, e.g. "WOUC", indicating the expected warning, even though the archetype will pass compilation.</p>
+<p>a warning code, e.g. "WOUC" - indicating the expected warning, even though the archetype will pass compilation.</p>
 </li>
 </ul>
 </div>
@@ -2593,7 +2599,7 @@ Configured repositories:
 <div class="sect2">
 <h3 id="_viewing_results"><a class="anchor" href="#_viewing_results"></a>10.6. Viewing results</h3>
 <div class="paragraph">
-<p>The files described above are saved in a way to make it convenient to look at diffs using a typical 'diff' tool capable of diffing same-named files in sibling directories. This is useful to assess round-tripping correctness and to find bugs. For the examples here, we have used the open source Winmerge tool, but you can use any tool you like.</p>
+<p>The files described above are saved in a way to make it convenient to look at diffs using a typical 'diff' tool capable of diffing same-named files in sibling directories. This is useful to assess round-tripping correctness and to find bugs. For the examples here, we have used the open source <a href="http://winmerge.org/" target="_blank" rel="noopener">Winmerge tool</a>, but you can use any tool you like.</p>
 </div>
 <div class="paragraph">
 <p>Based on the selection of <code>EVALUATION</code> archetypes in the CKM repository, here is the resulting directory structure. Below are some example diff views.</p>
@@ -2607,29 +2613,37 @@ Configured repositories:
 <div class="sect2">
 <h3 id="_overview_7"><a class="anchor" href="#_overview_7"></a>11.1. Overview</h3>
 <div class="paragraph">
-<p>A draft version of the EN13606-1 schema for the AWB has been developed, along with some example archetypes. This is intended to show how ADL / AOM 1.5 functions for archetypes built on a different reference model, and also to enable organisations working with EN13606 to have a more formal tool basis for developing archetypes, templates and generally migrating to ADL/AOM 1.5. The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and comparisons can be made with classes in the openEHR reference model.</p>
+<p>A draft version of the ISO 13606-1:2008 schema for the AWB has been developed, along with some example archetypes. This is intended to show how ADL / AOM 2 functions for archetypes built on a different reference model, and also to enable organisations working with ISO 13606 to have a more formal tool basis for developing archetypes, templates and generally migrating to ADL/AOM 2. The entire ISO 13606 model can be viewed in the AWB RM schema and Class tools, and comparisons can be made with classes in the openEHR reference model.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_iso_13606_schema_for_awb"><a class="anchor" href="#_iso_13606_schema_for_awb"></a>11.2. ISO 13606 schema for AWB</h3>
 <div class="paragraph">
-<p>An initial schema for EN13606-1 has been included in the set of RM schemas used by AWB. This was produced by Christoph Rinner (Medical University of Vienna) and Thomas Beale (Ocean Informatics). The definitive copy of this resides in the openEHR openEHR reference-models GitHub repository. If you are interested in being added to the committers list to work on this schema, please email webmaster at openehr.org.</p>
+<p>An initial schema for ISO 13606-1 has been included in the set of RM schemas used by AWB. This was produced by Christoph Rinner (Medical University of Vienna) and Thomas Beale (Ars Semantica). The definitive copy of this resides in the <a href="https://github.com/openEHR/reference-models">openEHR reference-models GitHub repository</a>. If you are interested in being added to the committers list to work on this schema, please email webmaster at openehr.org.</p>
+</div>
+<div id="rm_schema_en13606" class="imageblock text-center" style="text-align: center">
+<div class="content">
+<img src="adl_workbench_guide/images/rm_schema_en13606.png" alt="rm schema en13606">
+</div>
+<div class="title">Figure 52. ISO 13606 BMM</div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rm_schema_en13606_schema_view"><a class="anchor" href="#_rm_schema_en13606_schema_view"></a>11.3. RM Schema EN13606 schema view</h3>
+<h3 id="_comparison_of_13606_and_openehr_classes"><a class="anchor" href="#_comparison_of_13606_and_openehr_classes"></a>11.3. Comparison of 13606 and openEHR Classes</h3>
 <div class="paragraph">
-<p>Comparison of 13606 and openEHR Classes
-The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and comparisons can be made with classes in the openEHR reference model.</p>
+<p>The entire ISO 13606 model can be viewed in the AWB RM schema and Class tools, and comparisons can be made with classes in the openEHR reference model.</p>
 </div>
-<div class="paragraph">
-<p>RM Schema Tool duplex class view</p>
+<div id="rm_schema_tool_duplex_classes" class="imageblock text-center" style="text-align: center">
+<div class="content">
+<img src="adl_workbench_guide/images/rm_schema_tool_duplex_classes.png" alt="rm schema tool duplex classes">
+</div>
+<div class="title">Figure 53. ISO 13606 BMM</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_iso_13606_archetypes"><a class="anchor" href="#_iso_13606_archetypes"></a>11.4. ISO 13606 archetypes</h3>
 <div class="paragraph">
-<p>Some initial 13606 archetypes have been created in the adl-archetypes Github repository. These are currently purely experimental and unreviewed.</p>
+<p>Some initial 13606 archetypes have been created in the <a href="https://github.com/openEHR/adl-archetypes/tree/master/Example/EN13606" target="_blank" rel="noopener">adl-archetypes Github repository</a>. These are currently purely experimental and unreviewed.</p>
 </div>
 </div>
 </div>
@@ -2637,7 +2651,9 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="sect1">
 <h2 id="_fhir"><a class="anchor" href="#_fhir"></a>12. FHIR</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>(coming soon)</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2648,7 +2664,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="sect3">
 <h4 id="_with_the_adl_workbench"><a class="anchor" href="#_with_the_adl_workbench"></a>13.1.1. with the ADL Workbench</h4>
 <div class="paragraph">
-<p>You can report an issue on the Jira AWB PR tracker at openEHR.org. Please select the appropriate component, e.g. User interface, Validator, etc.</p>
+<p>You can report an issue on the openEHR <a href="https://specifications.openehr.org/jira/AWBPR" target="_blank" rel="noopener">AWB PR tracker</a>. Please select the appropriate component, e.g. User interface, Validator, etc.</p>
 </div>
 </div>
 <div class="sect3">
@@ -2663,7 +2679,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="ulist">
 <ul>
 <li>
-<p>Go to the CKM server and login</p>
+<p>Go to <a href="https://www.openehr.org/ckm">CKM</a> and login</p>
 </li>
 <li>
 <p>Navigate to the archetype in the left hand explorer and select (double-click)</p>
@@ -2675,7 +2691,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 </div>
 </li>
 <li>
-<p>Discuss it on the <code>openehr-clinical</code> mailing list (subscribe here, list archive)</p>
+<p>Discuss it on the <a href="https://www.openehr.org/digital_media/mailinglists/" target="_blank" rel="noopener">openehr-clinical mailing list</a>.</p>
 </li>
 </ul>
 </div>
@@ -2686,43 +2702,46 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="sect3">
 <h4 id="_with_this_online_documentation"><a class="anchor" href="#_with_this_online_documentation"></a>13.1.3. with this online documentation</h4>
 <div class="paragraph">
-<p>If your problem is that you can&#8217;t find an answer to what you are looking for, please report this on the Jira AWB PR tracker, with component set to 'Documentation'. If you really need an answer, don&#8217;t be afraid to post on the openehr-technical mailing list (subscribe here, list archive).</p>
+<p>If your problem is that you can&#8217;t find an answer to what you are looking for, please report this on the Jira AWB PR tracker, with component set to 'Documentation'. If you really need an answer, don&#8217;t be afraid to post on the <a href="https://www.openehr.org/digital_media/mailinglists/" target="_blank" rel="noopener">openehr-technical mailing list</a>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_with_the_openehr_specifications"><a class="anchor" href="#_with_the_openehr_specifications"></a>13.1.4. with the openEHR specifications</h4>
 <div class="paragraph">
-<p>There is a dedicated Jira tracker for this here.</p>
+<p>Please visit the {projects/SPECPR}[dedicated Jira tracker^].</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_how_can_i_contribute"><a class="anchor" href="#_how_can_i_contribute"></a>13.2. How can I contribute?</h3>
 <div class="paragraph">
-<p>You are already a saint for asking! Most likely your interest is in one of the areas of: clinical archetypes, ADL/AOM tooling, or specifications. Useful things you can do include the following.</p>
+<p>You are already a saint for asking. Most likely your interest is in one of the areas of: clinical archetypes, ADL/AOM tooling, or specifications. Useful things you can do include the following.</p>
 </div>
 <div class="sect3">
 <h4 id="_i_can_help_with_clinical_demographic_archetypes"><a class="anchor" href="#_i_can_help_with_clinical_demographic_archetypes"></a>13.2.1. I can help with clinical / demographic archetypes</h4>
 <div class="paragraph">
-<p>If your interest is in building and/or reviewing the CKM archetypes, or you want to offer new archetypes to CKM, please either login to CKM and join existing discussions, and/or contact the CKM editors and/or start a discussion on the openehr-clinical mailing list (subscribe here, list archive).</p>
+<p>If your interest is in building and/or reviewing the CKM archetypes, or you want to offer new archetypes to CKM, please either login to CKM and join existing discussions, and/or contact the CKM editors and/or start a discussion on the <a href="https://www.openehr.org/digital_media/mailinglists/" target="_blank" rel="noopener">openehr-clinical mailing list</a>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_i_want_to_help_improving_adl_aom_2"><a class="anchor" href="#_i_want_to_help_improving_adl_aom_2"></a>13.2.2. I want to help improving ADL / AOM 2</h4>
 <div class="paragraph">
-<p>The single most useful thing you can do is to help build up the test archetype repository. This is a subversion repository, located here. We need more archetypes to test more ADL 2 use cases. Most of the validity conditions have at least one or two archetypes,	but some conditions can be triggered by different kinds of archetypes. If you see you can post a message on the openehr-technical mailing list(subscribe here, list archive).</p>
+<p>The single most useful thing you can do is to help build up the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener">test archetype Git repository</a>. We need more archetypes to test more ADL2 use cases. Most of the validity conditions have at least one or two archetypes, but some conditions can be triggered by different kinds of archetypes. If you see you can post a message on the <a href="https://www.openehr.org/digital_media/mailinglists/" target="_blank" rel="noopener">openehr-technical mailing list</a>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_i_can_help_improving_the_tool"><a class="anchor" href="#_i_can_help_improving_the_tool"></a>13.2.3. I can help improving the tool</h4>
 <div class="paragraph">
-<p>The tool is written in the Eiffel language. If you are interested in working on it, please join the openEHR implementation mailing list (subscribe here, list archive). Even if you have no interest in Eiffel, you are welcome to help by critiquing the design, suggesting new features. You can do this by posting feature requests on the Jira AWB PR tracker(set Issue Type = 'improvement' or 'new feature request'), or posting on the openehr-technical mailing list (subscribe here, list archive).</p>
+<p>The ADL Workbench is written in the Eiffel language (<a href="https://github.com/openEHR/adl-tools" target="_blank" rel="noopener">Git repository</a>). If you are interested in working on it, please indicate there.</p>
+</div>
+<div class="paragraph">
+<p>A newer tool called Archie (<a href="https://github.com/openEHR/archie" target="_blank" rel="noopener">Git repository</a>) in Java fully implements AOM2, ADL2, BMM and ODIN.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_i_would_like_to_port_the_tool_to_another_language"><a class="anchor" href="#_i_would_like_to_port_the_tool_to_another_language"></a>13.2.4. I would like to port the tool to another language</h4>
 <div class="paragraph">
-<p>As a starting point, it is suggested you post an initial enquiry on the openehr-technical mailing list (subscribe here, list archive), and/or subscribe to the openehr-implementers mailing list (subscribe here, list archive).</p>
+<p>As a starting point, it is suggested you post an initial enquiry on the <a href="https://www.openehr.org/digital_media/mailinglists/" target="_blank" rel="noopener">openehr-technical mailing list</a>.</p>
 </div>
 </div>
 </div>
@@ -2750,28 +2769,28 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="ulist">
 <ul>
 <li>
-<p>rm_release=n.m.p - top-level meta-data</p>
+<p><code>rm_release=n.m.p</code> - top-level meta-data</p>
 </li>
 <li>
-<p>original_publisher: String - name of original publishing organisation</p>
+<p><code>original_publisher: String</code> - name of original publishing organisation</p>
 </li>
 <li>
-<p>original_namespace: String - namespace of original publishing organisation</p>
+<p><code>original_namespace: String</code> - namespace of original publishing organisation</p>
 </li>
 <li>
-<p>custodian_organisations: String - name of the current custodian organisation</p>
+<p><code>custodian_organisations: String</code> - name of the current custodian organisation</p>
 </li>
 <li>
-<p>custodian_namespace: String - namespace of current custodian organisation</p>
+<p><code>custodian_namespace: String</code> - namespace of current custodian organisation</p>
 </li>
 <li>
-<p>licence: String - short text and URL pointing to licence under which this artefact is available</p>
+<p>`licence: String - short text and URL pointing to licence under which this artefact is available</p>
 </li>
 <li>
-<p>ip_acknowledgements: Map&lt;String, String&gt; - keyed list of 3rd party IP acknowledgements, each consisting of a single word key, and a short text and URL pointing to the online text describing how the IP available for this artefact.</p>
+<p><code>ip_acknowledgements: Map&lt;String, String&gt;</code> - keyed list of 3rd party IP acknowledgements, each consisting of a single word key, and a short text and URL pointing to the online text describing how the IP available for this artefact.</p>
 </li>
 <li>
-<p>conversion_details: Map&lt;String, String&gt; - keyed list of values indicating details of conversion from an external artefact, where applicable.</p>
+<p><code>conversion_details: Map&lt;String, String&gt;</code> - keyed list of values indicating details of conversion from an external artefact, where applicable.</p>
 </li>
 </ul>
 </div>
@@ -2793,7 +2812,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <p>One-click template creation</p>
 </li>
 <li>
-<p>Automatic conversion of ADL 1.4 'other_details' meta-data to ADL 2 form</p>
+<p>Automatic conversion of ADL 1.4 <code>other_details</code> meta-data to ADL2 form</p>
 </li>
 </ul>
 </div>
@@ -2890,7 +2909,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <p>Archetype specalisation now visualised in grey / dark grey / colour, and switchable in UI;</p>
 </li>
 <li>
-<p>Automatic expand to logical leaf nodes (ELEMENTs in openEHR);</p>
+<p>Automatic expand to logical leaf nodes (<code>ELEMENTs</code> in openEHR);</p>
 </li>
 <li>
 <p>Add property colourisation, based on classifications defined in RM schema files;</p>
@@ -2957,10 +2976,10 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <p>Correct path computation where there are use_node internal references;</p>
 </li>
 <li>
-<p>Add support for detecting model classification in other_details part of archetype description: e.g. ["model_level"] = &lt;"reference"&gt; indicates a reference archetype a la CIMI;</p>
+<p>Add support for detecting model classification in other_details part of archetype description: e.g. <code>["model_level"] = &lt;"reference"&gt;</code> indicates a reference archetype a la CIMI;</p>
 </li>
 <li>
-<p>Remove VACMC1 error from parser (the rule which prevents member objects in a container having occurrences = 0..* when the owning attribute cardiality is limited);</p>
+<p>Remove VACMC1 error from parser (the rule which prevents member objects in a container having <code>occurrences = 0..*</code> when the owning attribute cardiality is limited);</p>
 </li>
 <li>
 <p>Fix a bug in the dADL parser that was preventing lists which have multiple members, and also a (superfluous) ellipsis are accepted silently;</p>
@@ -3052,10 +3071,10 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <p>Template type template_component renamed to template_overlay.</p>
 </li>
 <li>
-<p>Terminologies_available part of ontology section is now ignored in 1.4 and not used in 1.5.</p>
+<p>Terminologies_available part of <code>ontology</code> section is now ignored in 1.4 and not used in 1.5.</p>
 </li>
 <li>
-<p>Loosen ARCHETYPE_ID valid patterns to allow for closure names (middle part of first segment in id) to be a number like '13606'.</p>
+<p>Loosen <code>ARCHETYPE_ID</code> valid patterns to allow for closure names (middle part of first segment in id) to be a number like '13606'.</p>
 </li>
 <li>
 <p>Add support for documenting non-archetyped RM paths in the annotations section.</p>
@@ -3091,7 +3110,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="ulist">
 <ul>
 <li>
-<p>There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.</p>
+<p>There is now a Statistics facility at the Archetype Library and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.</p>
 </li>
 </ul>
 </div>
@@ -3163,7 +3182,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="ulist">
 <ul>
 <li>
-<p>The address bar now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Catalog is active.</p>
+<p>The address bar now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Library is active.</p>
 </li>
 </ul>
 </div>
@@ -3173,7 +3192,7 @@ The entire EN13606 model can be viewed in the AWB RM schema and Class tools, and
 <div class="ulist">
 <ul>
 <li>
-<p>It is now possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/&lt;rm_name&gt; directory, e.g. icons/openehr. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.</p>
+<p>It is now possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/&lt;rm_name&gt; directory, e.g. <code>icons/openehr</code>. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.</p>
 </li>
 <li>
 <p>The reference model attributes can now be visualised independently of other changes to the view.</p>
@@ -4344,10 +4363,20 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 <div class="sect2">
 <h3 id="_initial_release_november_2003"><a class="anchor" href="#_initial_release_november_2003"></a>14.44. Initial Release - November 2003</h3>
 <div class="paragraph">
-<p>Basic validation functionality:
-* basic primitive types String, Integer, Real, Boolean
-* simple version of constraints for primitive types Date, Time, Date_time
-* basic implementation of ontology section of archetype</p>
+<p>Basic validation functionality:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>basic primitive types String, Integer, Real, Boolean</p>
+</li>
+<li>
+<p>simple version of constraints for primitive types Date, Time, Date_time</p>
+</li>
+<li>
+<p>basic implementation of ontology section of archetype</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -4355,7 +4384,7 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-04-03 11:57:11 BST
+Last updated 2019-04-03 21:04:59 BST
 </div>
 </div>
 </body>

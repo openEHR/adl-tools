@@ -1,6 +1,6 @@
 = Browsing and Compiling
 
-== The Archetype and Template Catalogues
+== The Archetype and Template Library
 
 As soon as you have specified a profile (Repository > Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire terminology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. Normally you will probably not use this option. At any time, you can select a class node in the explorer, and its Reference Model definition will be displayed in flat form, i.e. compressed through inheritance.
 
@@ -10,17 +10,17 @@ As soon as you have specified a profile (Repository > Set repository), the left-
 a|
 [.text-center]
 .Initial view in explorer
-image::{images_uri}/explorer_initial_view.png[link={images_uri}/explorer_initial_view.png, width=50%]
+image::{images_uri}/explorer_initial_view.png[link={images_uri}/explorer_initial_view.png, width=70%]
  
 a|
 [.text-center]
 .Explorer showing specialisation
-image::{images_uri}/explorer_spec.png[link={images_uri}/explorer_spec.png, width=50%]
+image::{images_uri}/explorer_spec.png[link={images_uri}/explorer_spec.png, width=70%]
 |===
 
 == Compiling archetypes
 
-When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. If you select a specialised archetype, its specialisation parents will automatically compile.
+When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' here means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. If you select a specialised archetype, its specialisation parents will automatically compile.
 
 If your repository has templates in it, you can compile a template in the same way. If you select a template in the Template explorer tab, you will see that all its dependencies compile, i.e. all archetypes implicated in its slot-filling and specialisation statements.
 
@@ -48,13 +48,13 @@ image::{images_uri}/errors_2.png[]
 
 === Metrics Report
 
-The 'Metrics' tab provides a report of counts of archetypes, compiled archetypes, specialised archetypes and so on, for the current repository.
+The `Metrics` tab provides a report of counts of archetypes, compiled archetypes, specialised archetypes and so on, for the current repository.
 
 [.text-center]
 .Repository metrics
 image::{images_uri}/catalogue_metrics.png[]
 
-The 'Statistics' tab provides a statistical report of the use of RM types and prperties in archetypes, as well as terminology definitions and bindings.
+The `Statistics` tab provides a statistical report of the use of RM types and prperties in archetypes, as well as terminology definitions and bindings.
 
 [.text-center]
 .Repository statistics
@@ -90,7 +90,7 @@ From the point of view of the AWB, you can see both the differential and flat fo
 
 === Node map
 
-The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.
+The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like `/protocol`, `/data/events[id10]/items[id23]` and so on.
 
 [cols="1,1"]
 |===

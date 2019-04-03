@@ -6,19 +6,19 @@
 ** New flattener, with specialise-and-clone, numerous edge cases fixed.
 ** Improvements in specialised archetype validation
 ** New meta-data items now supported:
-*** rm_release=n.m.p - top-level meta-data
-*** original_publisher: String - name of original publishing organisation
-*** original_namespace: String - namespace of original publishing organisation
-*** custodian_organisations: String - name of the current custodian organisation
-*** custodian_namespace: String - namespace of current custodian organisation
-*** licence: String - short text and URL pointing to licence under which this artefact is available
-*** ip_acknowledgements: Map<String, String> - keyed list of 3rd party IP acknowledgements, each consisting of a single word key, and a short text and URL pointing to the online text describing how the IP available for this artefact.
-*** conversion_details: Map<String, String> - keyed list of values indicating details of conversion from an external artefact, where applicable.
+*** `rm_release=n.m.p` - top-level meta-data
+*** `original_publisher: String` - name of original publishing organisation
+*** `original_namespace: String` - namespace of original publishing organisation
+*** `custodian_organisations: String` - name of the current custodian organisation
+*** `custodian_namespace: String` - namespace of current custodian organisation
+*** `licence: String - short text and URL pointing to licence under which this artefact is available
+*** `ip_acknowledgements: Map<String, String>` - keyed list of 3rd party IP acknowledgements, each consisting of a single word key, and a short text and URL pointing to the online text describing how the IP available for this artefact.
+*** `conversion_details: Map<String, String>` - keyed list of values indicating details of conversion from an external artefact, where applicable.
 * Tool functionality:
 ** New method of specifying archetype repositories uses self-describing repository/library structure
 ** Git / Github integration
 ** One-click template creation
-** Automatic conversion of ADL 1.4 'other_details' meta-data to ADL 2 form
+** Automatic conversion of ADL 1.4 `other_details` meta-data to ADL2 form
 * Visualisation:
 ** Lazy load template visualiser mode to handle very large template structures
 ** Improved colour / font scheme in inheritance visualisation mode
@@ -47,7 +47,7 @@
 ** Show archetype versions in UI;
 ** Add collapsable control panel for main GRID Tree view controls;
 ** Archetype specalisation now visualised in grey / dark grey / colour, and switchable in UI;
-** Automatic expand to logical leaf nodes (ELEMENTs in openEHR);
+** Automatic expand to logical leaf nodes (`ELEMENTs` in openEHR);
 ** Add property colourisation, based on classifications defined in RM schema files;
 ** Power-expand collapsed nodes of logical leaf types that are not literally leaves in the Grid tree, e.g. ELEMENT in openEHR models;
 ** Fix the multi-column width display problem;
@@ -64,8 +64,8 @@
 * Compiler changes:
 ** Correct errors in term-binding logic - terms can now correctly be bound to at-codes, ac-codes, paths and paths created due to use_nodes;
 ** Correct path computation where there are use_node internal references;
-** Add support for detecting model classification in other_details part of archetype description: e.g. ["model_level"] = <"reference"> indicates a reference archetype a la CIMI;
-** Remove VACMC1 error from parser (the rule which prevents member objects in a container having occurrences = 0..* when the owning attribute cardiality is limited);
+** Add support for detecting model classification in other_details part of archetype description: e.g. `["model_level"] = <"reference">` indicates a reference archetype a la CIMI;
+** Remove VACMC1 error from parser (the rule which prevents member objects in a container having `occurrences = 0..*` when the owning attribute cardiality is limited);
 ** Fix a bug in the dADL parser that was preventing lists which have multiple members, and also a (superfluous) ellipsis are accepted silently;
 ** Add a post-parse AOM structure building stage to compiler, to allow RM-independent parsing;
 
@@ -89,8 +89,8 @@
 ** Add batch generation of all output types.
 * Compiler changes:
 ** Template type template_component renamed to template_overlay.
-** Terminologies_available part of ontology section is now ignored in 1.4 and not used in 1.5.
-** Loosen ARCHETYPE_ID valid patterns to allow for closure names (middle part of first segment in id) to be a number like '13606'.
+** Terminologies_available part of `ontology` section is now ignored in 1.4 and not used in 1.5.
+** Loosen `ARCHETYPE_ID` valid patterns to allow for closure names (middle part of first segment in id) to be a number like '13606'.
 ** Add support for documenting non-archetyped RM paths in the annotations section.
 
 == 29 Nov 2011 ADL 1.5 beta Release 5 (Git commit 740a0d96eee071077b3e5a250c9c0686184ab446 (was SVN rev 1656)) (Jira)
@@ -100,7 +100,7 @@
 ** There is now an RM Schema meta-data viewing tool.
 ** Numerous small UI changes and improvements, including modal selection history - the Tool back and forward buttons work in a similar way to those of a web browser, no matter what the active tools is.
 * Reporting:
-** There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.
+** There is now a Statistics facility at the Archetype Library and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.
 * Ouput formats:
 ** JSON is now supported as an output format for differential and flat archetypes. Note that occurrences, cardinality and existence are serialised with single Strings, e.g. "0..1", "1..*" etc.
 
@@ -118,9 +118,9 @@
 ** A new tool on the left hand side of the main screen allows multiple Reference Models to be browsed and explored. Clicking on any class causes the class to be displyed in the Class Tool, in a new tab.
 ** Classes from different RMs can be viewed side-by-side using different class tools and docking system to arrange the panes.
 * Enhanced search bar:
-** The address bar now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Catalog is active.
+** The address bar now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Library is active.
 * Archetype definition visualisation enhanced:
-** It is now possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/<rm_name> directory, e.g. icons/openehr. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.
+** It is now possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/<rm_name> directory, e.g. `icons/openehr`. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.
 ** The reference model attributes can now be visualised independently of other changes to the view.
 ** Class tool enhanceed:
 *** Left-clicking on a class node in the explorer on the left populates the 'class tool' (now just another tool, tabbed with the archetype tools) with the compositional 'closure' of the chosen class. This is visualised as a tree of alternating type nodes and property nodes, in a similar to the node visualisation of an archetype.
@@ -493,6 +493,7 @@ All archetypes parse, save and reparse as expected except SOAP Headings.
 == Initial Release - November 2003
 
 Basic validation functionality:
+
 * basic primitive types String, Integer, Real, Boolean
 * simple version of constraints for primitive types Date, Time, Date_time
 * basic implementation of ontology section of archetype

@@ -2,7 +2,7 @@
 
 == Repository and Library Configuration
 
-The ADL Workbench uses a system of 'repositories' and 'libraries' to locate archetypes. A 'repository' is a physical file system location, e.g. a Git checkout area, and archetypes are found below this, in individual 'libraries'. The root point is identified with a special `_repo.idx` file, and each library root point contains a `_repo_lib.idx` file. These files only have to be written once in the repository, and effectively make the repositories self-describing.
+The ADL Workbench uses a system of _repositories_ and _libraries_ to locate archetypes. A repository is a physical file system location, e.g. a Git checkout area, and archetypes are found below this, in individual libraries. The root point is identified with a special `_repo.idx` file, and each library root point contains a `_repo_lib.idx` file. These files only have to be written once in the repository, and effectively make the repositories self-describing.
 
 The user now only has to specify the repository root points, for existing repositories, and the libraries will be read by the tool. This is made easier by additions to the workbench which allow it to use DVCS tools like Git and Subversion to clone, update and read repositories on the user's computer. Further, the URLs of 3 well-known Git repositories are known by the tool to enable easy initial installation.
 
@@ -29,7 +29,7 @@ Doing either with the {openehr_adl_archetypes_github}[`adl-archetypes` reference
 .Repositories installed view
 image::{images_uri}/repositories_screen_installed.png[id=repositories_screen_installed, align="center"]
 
-You can add a completely new repository as well, by using the 'Browse' button at the bottom of the dialog. If you choose a directory that is not already set up as an Archetype repository, the workbench will create the necessary control files for you, and save them. The result of doing this looks as follows:
+You can add a completely new repository as well, by using the `Browse` button at the bottom of the dialog. If you choose a directory that is not already set up as an Archetype repository, the workbench will create the necessary control files for you, and save them. The result of doing this looks as follows:
 
 [.text-center]
 .Repositories add new repository
@@ -47,7 +47,7 @@ When you save and quit the editor, you will see the new repository details updat
 .Repositories add new repository (updated)
 image::{images_uri}/repositories_add_new_edited.png[id=repositories_add_new_edited, align="center"]
 
-The next step in this add-new case is to define some libraries below the repository root point. All you are doing in fact is asking the tool to create _repo_lib.idx control files. You can do this in two ways:
+The next step in this add-new case is to define some libraries below the repository root point. All you are doing in fact is asking the tool to create `_repo_lib.idx` control files. You can do this in two ways:
 
 * create one control file at the root - 'add new library here' option, OR
 * create one or more control files at various points below the root - 'add new library' option.

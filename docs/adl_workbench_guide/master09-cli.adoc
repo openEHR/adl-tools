@@ -44,7 +44,7 @@ USAGE:
 
 === Environment
 
-The `adlc` utility will run on any Windows or Linux/Unix/Macos platform. On Windows, it can be run from cygwin or from within a standard Windows command shell. In the examples below, the command prompt and comments are in the standard Unix/Linux form, i.e. using '$' and '#'. On Windows this will of course be something like "C:\>" and "::" or "REM".
+The `adlc` utility will run on any Windows or Linux/Unix/Macos platform. On Windows, it can be run from cygwin or from within a standard Windows command shell. In the examples below, the command prompt and comments are in the standard Unix/Linux form, i.e. using `$` and `#`. On Windows this will of course be something like `C:\>` and `::` or `REM`.
 
 === Initial configuration
 
@@ -52,7 +52,7 @@ The `adlc` utility relies on a configuration file being in place, either by prev
 
 === Typical tasks
 
-In the following the command line is shown using both the standard 'verbose' form of switches and options (using '--') and the short form. The short form is typically used for manual entry at the command line, but the long form is recommended for use in scripts for better readability. Most invocations use the '-q' (quiet) switch to reduce verbose output.
+In the following the command line is shown using both the standard 'verbose' form of switches and options (using `--`) and the short form. The short form is typically used for manual entry at the command line, but the long form is recommended for use in scripts for better readability. Most invocations use the `-q` (quiet) switch to reduce verbose output.
 
 Show the help:
 
@@ -155,9 +155,9 @@ This command generates a flat list of archetype identifiers suitable for use in 
                 +-- registration_other_data.v1.0.0
 --------
 
-The next set of invocations uses the `-a | --action` switch to indicate a specific action to perform, and a regex (PERL) pattern on the archetype id to indicate which archetypes to apply the action to (note: this is a true regular expression, not a command-line glob expression: use `.*` to match anything, not just `*`).
+The next set of invocations uses the `-a | --action` switch to indicate a specific action to perform, and a regex (PERL) pattern on the archetype id to indicate which archetypes to apply the action to (note: this is a true regular expression, not a command-line glob expression: use `.\*` to match anything, not just `*`).
 
-The following command lists (`--action list`) all archetypes whose identifiers match the regex pattern `.*problem.*`:
+The following command lists (`--action list`) all archetypes whose identifiers match the regex pattern `.\*problem.*`:
 
 [source, bash]
 --------
@@ -273,6 +273,8 @@ The following command serialises (`--action serialise`) the flat form (`--flat`)
     $ adlc -q -b openEHR-CKM -a serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
     $ adlc -q --library openEHR-CKM --action serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
 --------
+
+The result is as follows:
     
 [source, adl]
 --------

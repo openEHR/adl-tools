@@ -4,21 +4,15 @@
 
 NOTE: what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at the Oslo working meeting September 2014, due to breaking changes with respect to ADL 1.4. Backwardly compatible versions such as 1.5, 1.6 may be introduced in the future, taking features from ADL 2, in order to provide an upgrade pathway for implementers.
 
-The ADL (Archetype Definition Language) release 2 formalism, and its object model counterpart, the AOM (Archetype Object Model) is a major advance on the previous 1.4 release. It fixes a number of problems with ADL/AOM 1.4, provides a unified formalism for both archetypes and templates, and adds a number of useful new features. These help pages don't attempt to provide the pedagogic basis of the formalism, which can be found in the specifications, rather it illustrates each feature of the ADL/AOM 2 formalism with real examples you can see for yourself. The specifications are found here.
+The ADL (Archetype Definition Language) release 2 formalism, and its object model counterpart, the AOM (Archetype Object Model) is a major advance on the previous 1.4 release. It fixes a number of problems with ADL/AOM 1.4, provides a unified formalism for both archetypes and templates, and adds a number of useful new features. These help pages don't attempt to provide the pedagogic basis of the formalism, which can be found in the {openehr_am}[specifications^], rather it illustrates each feature of the ADL/AOM 2 formalism with real examples you can see for yourself.
 
-One question you may have is: what if I am not interested in the ADL syntax? You might be using XML archetypes for example. It is important to understand the various roles of ADL, XML and the AOM. These are explained in some detail in the specifications. Briefly, the ADL workbench performs most of its work using AOM structures. It also has an ADL parser and serialiser, and in the near future, will have a parser and serialiser for XML archetypes. Apart from some syntax basics, nearly all the validation carried out by the AWB is on AOM structures and has nothing to do with the ADL syntax. Additionally, ADL is a human readable syntax good for understanding the concepts and examples. However, it does not have to be used in archetype authoring or production systems - the XML form is completely equivalent.
-
-=== Specifications Status
-
-The current state of the specifications is available here. Although most of the principal features have been determined and implemented, there remain a number of details which could be changed; these are indicated in the text below. Your feedback on any aspect of the specification is encouraged, and can be reported on the openEHR SPEC_PR Jira project. Please create new issues with the 'ADL 2' component specified.
-
-The remainder of this page describes the configuration of the tool for viewing the examples, and then describes in turn each of the features of ADL/AOM 2 grouped in the categories 'New features' and 'Changes'.
+One question you may have is: what if I am not interested in the ADL syntax? You might be using XML archetypes for example. It is important to understand the various roles of ADL, XML and the AOM. These are explained in some detail in the {openehr_am}[archetype specifications^]. Briefly, the ADL workbench performs most of its work using AOM structures. It also has an ADL parser and serialiser, and in the near future, will have a parser and serialiser for XML archetypes. Apart from some syntax basics, nearly all the validation carried out by the AWB is on AOM structures and has nothing to do with the ADL syntax. Additionally, ADL is a human readable syntax good for understanding the concepts and examples. However, it does not have to be used in archetype authoring or production systems - the XML form is completely equivalent.
 
 == ADL/AOM 2 - New features
 
 === Meta-data changes
 
-ADL 2 adds more meta-data elements to the description section, including governance and IP-related. It also moves the copyright item from being a translatable string to a top-level (non-translated) string. See here for more details.
+ADL2 has more meta-data elements in the `description` section, including governance and IP-related. It also moves the `copyright` item from being a translatable string to a top-level (non-translated) string. The meta-data is provided by the {openehr_resource}[Resource specification^].
 
 [.text-center]
 .ADL2 meta-data
@@ -51,7 +45,11 @@ image::{images_uri}/adl2_tuples_quantity.png[]
 
 === Terminology value-set constraints moved to terminology section
 
-Value sets used to be constrained inline. They are now moved to the terminology, in the form of a new 'value-set' construct, described here.
+Value sets used to be constrained inline. They are now moved to the terminology, in the form of a new 'value-set' construct, shown below, and described here in the {openehr_am_adl2}#_value_sets_sub_section[ADL2 specification^].
+
+[.text-center]
+.ADL2 value sets
+image::{images_uri}/value_sets_adl2.png[]
 
 === Terminology bindings are URIs
 
@@ -99,7 +97,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 
 The `before` and `after` keywords can be used to specify the ordering of elements added to a container in a specialised archetype or template. This ensures authors can maintain ordering of all items within container attributes, including over specialisation.
 
-If you refer back to the problem-diagnosis example above in the link:{images_uri}/diagnosis_diff_view.png[differential form], you will see that the second two nodes include 'before' and 'after' markers respectively. The former is `before [at0003]` and the latter `after [at0031]`, indicating the nodes from the parent archetype with respect to which the new nodes should be situated. If you now choose the Flat view, with RM visibility (radio buttons on the right) set to '+ class names', you will see that these two nodes are indeed situation in the correct positions with respect to the referenced nodes, as seen link:{images_uri}/problem-diagnosis_flat+RM_view.png[here].
+If you refer back to the problem-diagnosis example above in the link:{images_uri}/problem-diagnosis_diff_view.png[differential form], you will see that the second two nodes include 'before' and 'after' markers respectively. The former is `before [at0003]` and the latter `after [at0031]`, indicating the nodes from the parent archetype with respect to which the new nodes should be situated. If you now choose the Flat view, with RM visibility (radio buttons on the right) set to '+ class names', you will see that these two nodes are indeed situation in the correct positions with respect to the referenced nodes, as seen link:{images_uri}/problem-diagnosis_flat+RM_view.png[here].
 
 === generated marker
 
@@ -134,8 +132,8 @@ The new `C_ARCHETYPE_ROOT` class in the AOM allows an archetype to refer to anot
 
 * Select the `openEHR-ADLref` archetype library
 * Navigate to and select the `COMPOSITION.t_ext_ref` template
-* Select Differential View, Definition tab, and you will see this, which shows the use of the use_archetype statement to select two archetypes to be used under the attribute /content
-* Now choose the Source view, and you will see this, showing the ADL source expression. Note that the use_archetype statements mention archetype ids, but no slot identifiers (at-codes) because there was no slot defined at this point.
+* Select Differential View, Definition tab, and you will see link:{images_uri}/ext_ref_diff.png[this], which shows the use of the `use_archetype` statement to select two archetypes to be used under the attribute `/content`
+* Now choose the Source view, and you will see link:{images_uri}/ext_ref_source.png[the ADL source expression]. Note that the use_archetype statements mention archetype ids, but no slot identifiers (at-codes) because there was no slot defined at this point.
 
 === Slot redefinition semantics, including slot-filling
 
@@ -149,7 +147,7 @@ Slot-filling and slot closing can be seen as follows.
 
 * Select the openEHR_examples profile in the usual manner.
 * Navigate to and select the `PERSON.t_patient_simple` template in the template explorer.
-* Select Differential View, Source tabs to see this.
+* Select Differential View, Source tabs to see link:{images_uri}/slot_filling.png[this].
 
 === Annotations section
 
@@ -205,7 +203,7 @@ annotations
 
 Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found {openehr_technical_mailing_list}/msg05523.html[here^].
 
-Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes {openehr_adl_archetypes_github}/tree/master/ADL2-reference/validity/annotations[here^], are displayed in a grid, as in link:{images_uri}/anotations_tab.png[this screenshot].
+Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes {openehr_adl_archetypes_github}/tree/master/ADL2-reference/validity/annotations[here^], are displayed in a grid, as in link:{images_uri}/annotations_tab.png[this screenshot].
 
 === Default values (Not yet implemented)
 

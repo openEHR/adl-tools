@@ -20,14 +20,14 @@ $profile -- i.e. names of your repository profiles, e.g. 'CKM', 'ADL_1.5_test', 
 
 == Selecting archetypes
 
-The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. Here is an example showing how the EHR `EVALUATION` group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the `EVALUATION` check-box, to check all `EVALUATION` archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.
+The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. link:{images_uri}/test_page_arch_select.png[Here] is an example showing how the EHR `EVALUATION` group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the `EVALUATION` check-box, to check all `EVALUATION` archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.
 
 == What the tests do
 
 The tests are as follows (names are in the columns).
 
 * *Parse*: perform a normal compile on the archetype; if there is only a legacy (.adl) file available, an initial .adl to .adls conversion will be done;
-* *Regression*: perform a regression comparison of the compilation results with expected results, which are encoded in the archetype details/other_deals section using the "regression" tag. See this archetype for example. Regression testing is only performed if the Regression button on the user interface is selected by the user, as it involves some extra computing cost, and is only useful for test archetypes found in the test repository, or archetypes similarly including the "regression" item within the details/other_deals.
+* *Regression*: perform a regression comparison of the compilation results with expected results, which are encoded in the archetype details/other_deals section using the "regression" tag. See {openehr_adl_archetypes_github}/blob/master/ADL2-reference/validity/basics/openEHR-TEST_PKG-ENTRY.VACCD_illegal_concept_code.v1.adls[this archetype^] for example. Regression testing is only performed if the Regression button on the user interface is selected by the user, as it involves some extra computing cost, and is only useful for test archetypes found in the test repository, or archetypes similarly including the "regression" item within the details/other_deals.
 * *Save legacy*: if there is a .adl (ADL 1.4) file, save it to the directory, to the directory $diff_test/$profile/flat/orig, with a '.adlf' extension;
 * *Save flat*: serialise the in-memory flat archetype out to the directory, to the directory $diff_test/$profile/source/new;
 * *Compare src*: perform a simple compare between the original source (.adls) file contents and the serialised source form. An exact match indicates identical file length, and usually 100% faithful round-tripping.
@@ -36,14 +36,14 @@ The file saving operations above enable the user to make comparisons between the
 
 == Regression Testing
 
-The regression testing facility is intended to be used with the test archetypes found in the `openEHR/adl-archetypes` GitHub repository, in the ADL2-reference directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the ADL 1.5 specification.
+The regression testing facility is intended to be used with the test archetypes found in the {openehr_adl_archetypes_github}[adl-archetypes GitHub repository^], in the ADL2-reference directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the {openehr_am_adl2}[ADL2 specification^].
 
 Regression testing is turned via a button on the Test page, and the results show up in the second column, as shown here. A green 'tick' indicates that the regression test passed, which means that the compilation result was as indicated in the archetype. The possible results indicated within an archetype are:
 
-* "PASS" - the archetype should pass compilation with no errors or warnings;
-* "FAIL" - the archetype should fail compilation, typically for extremely basic syntax reasons that do not have a specific validity code;
-* a validity code, e.g. "VACDF", taken from the AOM 1.5 specification, indicating the validity condition that this archetype violates;
-* a warning code, e.g. "WOUC", indicating the expected warning, even though the archetype will pass compilation.
+* PASS - the archetype should pass compilation with no errors or warnings;
+* FAIL - the archetype should fail compilation, typically for extremely basic syntax reasons that do not have a specific validity code;
+* a validity code, e.g. "VACDF" - taken from the AOM 1.5 specification, indicating the validity condition that this archetype violates;
+* a warning code, e.g. "WOUC" - indicating the expected warning, even though the archetype will pass compilation.
 
 The main purpose of regression tests is to test the compiler software, and particularly changes in the software. After any change is made, the regression tests should be executed to find any failures. The validity code being tested is indicated in the results column.
 
@@ -51,7 +51,7 @@ The regression testing facility has been designed to be independent of any parti
 
 == Viewing results
 
-The files described above are saved in a way to make it convenient to look at diffs using a typical 'diff' tool capable of diffing same-named files in sibling directories. This is useful to assess round-tripping correctness and to find bugs. For the examples here, we have used the open source Winmerge tool, but you can use any tool you like.
+The files described above are saved in a way to make it convenient to look at diffs using a typical 'diff' tool capable of diffing same-named files in sibling directories. This is useful to assess round-tripping correctness and to find bugs. For the examples here, we have used the open source {winmerge}[Winmerge tool^], but you can use any tool you like.
 
 Based on the selection of `EVALUATION` archetypes in the CKM repository, here is the resulting directory structure. Below are some example diff views.
 

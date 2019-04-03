@@ -20,7 +20,7 @@ After downloading, create a directory, extract the contents of the archive, and 
 
 [source, bash]
 ----
-	$ mkdir awb 						# create a directory if never done before
-	$ cd awb
-	$ tar xvjf ../archive_file_name		# extract the files
+$ mkdir awb 						# create a directory if never done before
+$ cd awb
+$ tar xvjf ../archive_file_name		# extract the files
 ----

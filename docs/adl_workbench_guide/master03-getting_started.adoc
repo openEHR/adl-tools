@@ -16,7 +16,7 @@ At installation, the AWB is normally set up to point to a set of reference model
 .Options dialog
 image::{images_uri}/options_rm_schema_config.png[id=options_rm_schema_config, align="center"]
 
-You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the {openehr_adl_archetypes_github}[adl-archetypes GitHub repository^]. See the <<_tool_configuration>> section for details on configuring RM schemas.
+You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the {openehr_adl_archetypes_github}[adl-archetypes GitHub repository^]. See the <<_tool_configuration, Tool Configuration>> section for details on configuring RM schemas.
 
 === Setting up archetype repositories
 
@@ -26,13 +26,13 @@ The first time you start the tool if you are a new user, you will be asked for a
 .Repositories dialog
 image::{images_uri}/repositories_screen_1.png[align="center"]
 
-The section on <<_obtaining_archetypes>> describes how to proceed.
+The section on <<_obtaining_archetypes,Obtaining Archetypes>> describes how to proceed.
 
 == Using the Tool
 
 === Docking
 
-The AWB layout is docking-based, which means that the key components are all dockable 'tools'. This link:{images_uri}/docking_overview.png[screenshot] shows multiple editor tabs, the Catalog tool, and various minimised tools at the bottom and right hand side. Docking can be used to link:{images_uri}/docking_side_by_side_definitions.png[arrange editor tools side by side], and to link:{images_uri}/template_compiled.png['pop' a tool out into an independent window].
+The AWB layout is docking-based, which means that the key components are all dockable 'tools'. This link:{images_uri}/docking_overview.png[screenshot] shows multiple editor tabs, the Library tool, and various minimised tools at the bottom and right hand side. Docking can be used to link:{images_uri}/docking_side_by_side_definitions.png[arrange editor tools side by side], and to link:{images_uri}/template_compiled.png['pop' a tool out into an independent window].
 
 In general, docking is controlled in the normal way for the platform you are working on, e.g Windows, or the various GUI toolkits used on Linux and MacOS.
 
@@ -46,17 +46,17 @@ The AWB has two facilities, the archetype compiler/viewer and the 'tester'. The 
 a|
 [.text-center]
 .Expanded view in explorer
-image::{images_uri}/overview.png[link={images_uri}/overview.png]
+image::{images_uri}/overview.png[link={images_uri}/overview.png, width=70%]
  
 a|
 [.text-center]
 .Overview with RM icons
-image::{images_uri}/RM_icons_overview.png[link={images_uri}/RM_icons_overview.png]
+image::{images_uri}/RM_icons_overview.png[link={images_uri}/RM_icons_overview.png, width=70%]
 |===
 
-=== Archetype and Template Catalog
+=== Archetype and Template Library
 
-On the left side of the tool are link:{images_uri}/explorers.png[two explorers], making up the 'Catalog' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)
+On the left side of the tool are link:{images_uri}/explorers.png[two explorers], making up the 'Library' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show all classes' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)
 
 The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.
 
@@ -80,7 +80,7 @@ In the Reference Model schema browser, the context menu of each schema includes 
 
 === The Address Bar
 
-At the top of the tool is an address bar that can be used to search for either elements of reference models, e.g. classes, or archetypes, *depending on which of the Archetype/template catalog or RM browser is in focus*.
+At the top of the tool is an address bar that can be used to search for either elements of reference models, e.g. classes, or archetypes, *depending on which of the Archetype/template library or RM browser is in focus*.
 
 [.text-center]
 .Address bar
@@ -88,7 +88,7 @@ image::{images_uri}/address_bar.png[]
 
 === Archetype and Class Tool area
 
-The middle area of the screen is dedicated to viewing archetypes, templates and browsing the reference model. Two types of tool are used for this - the Archetype Tool and the Class Tool. Any number of each tool can be launched. The first Archetype Tool starts just by left clicking on an archetype or template in the Catalog. New Archetype Tools are launched by right-clicking and selecting 'New Tool' from the context menu. The same applies to starting a Class Tool - left or right-click on a Class in the Catalog area.
+The middle area of the screen is dedicated to viewing archetypes, templates and browsing the reference model. Two types of tool are used for this - the Archetype Tool and the Class Tool. Any number of each tool can be launched. The first Archetype Tool starts just by left clicking on an archetype or template in the Library. New Archetype Tools are launched by right-clicking and selecting 'New Tool' from the context menu. The same applies to starting a Class Tool - left or right-click on a Class in the Library area.
 
 === The Archetype Tool
 
@@ -110,7 +110,7 @@ image::{images_uri}/archetype_view_controls.png[]
 
 === The Class Tool
 
-The class tool is designed to allow the user to explore the reference model starting from a given class. It provides 4 views: properties, ancestors, descendants and closure. The Properties view shows all properties defined in the class and its ancestors, grouped on the basis of the class in which each property was declared in. This is known as the 'flat' view of the class.
+The class tool is designed to allow the user to explore the reference model starting from a given class. It provides 4 views: properties, ancestors, descendants and closure. The `Properties` view shows all properties defined in the class and its ancestors, grouped on the basis of the class in which each property was declared in. This is known as the 'flat' view of the class.
 
 The `Ancestors` and `Descendants` views show the inheritance tree above and below the focal class, including multiple inheritance.
 

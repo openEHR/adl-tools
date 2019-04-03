@@ -12,10 +12,11 @@ If you want access to RM schemas not yet bundled with the workbench, they can be
 
 Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work. This is done as follows:
 
-Select the RM Schemas menu > Configure Schemas...
-Ensure that the schemas you require are checked, as shown here.
-Save the configuration.
-You can use the profile combo selector above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.
+* Select the RM Schemas menu > Configure Schemas...
+* Ensure that the schemas you require are checked, as shown link:{images_uri}/options_rm_schema_config.png[here].
+* Save the configuration.
+
+You can use the link:{images_uri}/profile_combo.png[profile combo selector] above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.
 
 == The .cfg file
 
@@ -29,13 +30,13 @@ image::{images_uri}/options_dialog.png[]
 
 === Location on various Platforms
 
-Options for the ADL workbench, and also the command line tool adlc are located in a .cfg file named after the particular tool e.g. adl_workbench.cfg, adlc.cfg. This file will be in the standard application configuration area for your operating system. For adl_workbench for example, it will be in a location like the following:
+Options for the ADL workbench, and also the command line tool adlc are located in a .cfg file named after the particular tool e.g. `adl_workbench.cfg`, `adlc.cfg`. This file will be in the standard application configuration area for your operating system. For `adl_workbench` for example, it will be in a location like the following:
 
 * *Windows 7/10*: `C:\Users\%username%\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg`
 * *Mac OSX*: `$HOME/openEHR/adl_workbench/adl_workbench.cfg`
 * *Linux*: `$HOME/openEHR/adl_workbench/adl_workbench.cfg`
 
-Although each tool normally has its own .cfg file, the file adl_workbench.cfg is assumed to be the default. This means for example that if there is no `adlc/adlc.cfg`, but an `adl_workbench.cfg` file is found, it will be used.
+Although each tool normally has its own `.cfg` file, the file `adl_workbench.cfg` is assumed to be the default. This means for example that if there is no `adlc/adlc.cfg`, but an `adl_workbench.cfg` file is found, it will be used.
 
 === Contents
 

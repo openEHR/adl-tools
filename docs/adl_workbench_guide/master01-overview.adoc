@@ -2,9 +2,7 @@
 
 == ADL Workbench release 2.0.6
 
-link:/downloads/ADLworkbench/release_notes[Release notes]
-{adl_workbench_prs}[Report an issue^]
-{adl_workbench_dev}[Development Project (Jira)^]
+<<_release_history,Release History>> | {adl_workbench_prs}[Report an issue^] | {adl_workbench_dev}[Development Project (Jira)^]
 
 == What is the Workbench?
 
@@ -14,6 +12,9 @@ The ADL Workbench (AWB) is a compiler and IDE for working with the archetypes an
 
 == News
 
+* Full BMM support for generic types including through inheritance
+* Enumerated type support
+* Support for regular `C_PRIMITIVE_OBJECT` structures
 * GitHub integration and new smart archetype repository management
 * CIMI archetypes and templates supported
 * Many new visualisation and usability features
@@ -41,13 +42,11 @@ The ADL Workbench (AWB) is a compiler and IDE for working with the archetypes an
 |Platform           |Build        |Date       |Executable       |Notes
 
 |Windows (64-bit)	|2.0.6.3034   |28-03-2019 | https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3034-windows_64bit.exe[.exe installer^]  
-a| +
-* Improve enumerated type support.
+a|
+
 * Include latest Task Planning and CIMI BMMs.
-* Support regular C_PRIMITIVE_OBJECT structures.
 * Add BMM (RM) JSON exporter.
 * Improve editing functionality; add new-archetype-from-subtree function.
-* Fix generic type handling in BMM.
 * Add BMM (RM) output mode to adlc CLI tool.
 * Correct schema loading bug; include Task Planning schemas in delivery.
 * Correct ADL converter regex bug; correct value-set redefinition bug.
@@ -57,8 +56,8 @@ a| +
 
 == Learn how the workbench works
 
-video::https://youtu.be/Jhnbamg7bAA?list=PLhWi0RtmG26U6PGezBrDD2QPeQL8tQYTZ[YouTube video^]
+video::Jhnbamg7bAA[youtube]
 
 == Source Code
 
-The source code can be accessed from the adl-tools GitHub home page.
+The source code can be accessed from the {openehr_awb_github}[adl-tools GitHub repository^].

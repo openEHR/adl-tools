@@ -12,7 +12,7 @@ include::{ref_dir}/docs/boilerplate/book_style_settings.adoc[]
 // HTML-only attributes
 //
 :linkcss:
-:keywords: ADL Workbench
+:keywords: ADL Workbench, archetype, template, clinical model, ADL
 :description: ADL Workbench User Guide
 
 include::{ref_dir}/docs/boilerplate/global_vars.adoc[]
@@ -25,7 +25,7 @@ image::{openehr_logo}["openEHR logo",align="center"]
 
 = ADL Workbench (AWB) User Guide
 
-include::{ref_dir}/docs/boilerplate/short_front_block.adoc[]
+include::{ref_dir}/docs/boilerplate/short_front_block_software.adoc[]
 include::{ref_dir}/docs/references/reference_definitions.adoc[]
 
 //
