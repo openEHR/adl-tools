@@ -20,7 +20,7 @@ $profile -- i.e. names of your repository profiles, e.g. 'CKM', 'ADL_1.5_test', 
 
 == Selecting archetypes
 
-The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. Here is an example showing how the EHR EVALUATION group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the EVALUATION check-box, to check all EVALUATION archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.
+The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. Here is an example showing how the EHR `EVALUATION` group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the `EVALUATION` check-box, to check all `EVALUATION` archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.
 
 == What the tests do
 

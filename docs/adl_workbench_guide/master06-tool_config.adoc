@@ -23,18 +23,19 @@ You can use the profile combo selector above the archetype explorer to switch be
 
 Normally, all tool options are set from within the workbench, from the Options Dialog, reached from the Tools menu. It looks like this.
 
-
+[.text-center]
+.Options dialog
+image::{images_uri}/options_dialog.png[]
 
 === Location on various Platforms
 
 Options for the ADL workbench, and also the command line tool adlc are located in a .cfg file named after the particular tool e.g. adl_workbench.cfg, adlc.cfg. This file will be in the standard application configuration area for your operating system. For adl_workbench for example, it will be in a location like the following:
 
-Windows XP / Vista: 
-C:\Documents and Settings\%username%\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg
-Windows 7 / 8: C:\Users\%username%\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg
-Mac OSX: $HOME/openEHR/adl_workbench/adl_workbench.cfg
-Linux: $HOME/openEHR/adl_workbench/adl_workbench.cfg
-Although each tool normally has its own .cfg file, the file adl_workbench.cfg is assumed to be the default. This means for example that if there is no adlc/adlc.cfg, but an adl_workbench.cfg file is found, it will be used.
+* *Windows 7/10*: `C:\Users\%username%\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg`
+* *Mac OSX*: `$HOME/openEHR/adl_workbench/adl_workbench.cfg`
+* *Linux*: `$HOME/openEHR/adl_workbench/adl_workbench.cfg`
+
+Although each tool normally has its own .cfg file, the file adl_workbench.cfg is assumed to be the default. This means for example that if there is no `adlc/adlc.cfg`, but an `adl_workbench.cfg` file is found, it will be used.
 
 === Contents
 

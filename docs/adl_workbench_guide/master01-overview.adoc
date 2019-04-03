@@ -1,8 +1,10 @@
-= ADL Workbench Home
+= Overview
 
 == ADL Workbench release 2.0.6
 
-link:/downloads/ADLworkbench/release_notes[Release notes] - {adl_workbench_prs}[Report an issue^] - {adl_workbench_dev}[Development Project (Jira)^]
+link:/downloads/ADLworkbench/release_notes[Release notes]
+{adl_workbench_prs}[Report an issue^]
+{adl_workbench_dev}[Development Project (Jira)^]
 
 == What is the Workbench?
 
@@ -39,7 +41,7 @@ The ADL Workbench (AWB) is a compiler and IDE for working with the archetypes an
 |Platform           |Build        |Date       |Executable       |Notes
 
 |Windows (64-bit)	|2.0.6.3034   |28-03-2019 | https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3034-windows_64bit.exe[.exe installer^]  
-| +
+a| +
 * Improve enumerated type support.
 * Include latest Task Planning and CIMI BMMs.
 * Support regular C_PRIMITIVE_OBJECT structures.

@@ -65,7 +65,6 @@ This guide has benefited from formal and informal input from the openEHR and wid
 //
 :sectanchors:
 :sectnums:
-include::master00-amendment_record.adoc[leveloffset=+1]
 include::master01-overview.adoc[leveloffset=+1]
 include::master02-installation.adoc[leveloffset=+1]
 include::master03-getting_started.adoc[leveloffset=+1]

@@ -7,6 +7,7 @@
 You can report an issue on the Jira AWB PR tracker at openEHR.org. Please select the appropriate component, e.g. User interface, Validator, etc.
 
 ===  with an archetype
+
 If it is a CKM archetype, and it really appears to be an error or deficiency, you can:
 
 * Submit a comment to CKM, with the following steps:

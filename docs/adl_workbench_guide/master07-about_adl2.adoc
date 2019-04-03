@@ -2,7 +2,7 @@
 
 == Overview
 
-Note: what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at the Oslo working meeting September 2014, due to breaking changes with respect to ADL 1.4. Backwardly compatible versions such as 1.5, 1.6 may be introduced in the future, taking features from ADL 2, in order to provide an upgrade pathway for implementers.
+NOTE: what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at the Oslo working meeting September 2014, due to breaking changes with respect to ADL 1.4. Backwardly compatible versions such as 1.5, 1.6 may be introduced in the future, taking features from ADL 2, in order to provide an upgrade pathway for implementers.
 
 The ADL (Archetype Definition Language) release 2 formalism, and its object model counterpart, the AOM (Archetype Object Model) is a major advance on the previous 1.4 release. It fixes a number of problems with ADL/AOM 1.4, provides a unified formalism for both archetypes and templates, and adds a number of useful new features. These help pages don't attempt to provide the pedagogic basis of the formalism, which can be found in the specifications, rather it illustrates each feature of the ADL/AOM 2 formalism with real examples you can see for yourself. The specifications are found here.
 
@@ -20,21 +20,34 @@ The remainder of this page describes the configuration of the tool for viewing t
 
 ADL 2 adds more meta-data elements to the description section, including governance and IP-related. It also moves the copyright item from being a translatable string to a top-level (non-translated) string. See here for more details.
 
-
+[.text-center]
+.ADL2 meta-data
+image::{images_uri}/adl2_meta_data.png[]
 
 === New internal coding system
 
-The coding system used in ADL 1.4 archetypes used at-codes to identify everything, apart from occasional ac-codes to identify external value sets. This has been replaced by a new coding system in which id-codes identify all archetype nodes, at-codes identify terminology values and ac-codes identify terminology value sets, internal and external. The new system is described here
+The coding system used in ADL 1.4 archetypes used at-codes to identify everything, apart from occasional ac-codes to identify external value sets. This has been replaced by a new coding system in which id-codes identify all archetype nodes, at-codes identify terminology values and ac-codes identify terminology value sets, internal and external. The {openehr_am_adl2}#_node_identifiers[ADL2 specification Node identifiers section^] describes the details.
 
+[cols="1,1"]
+|===
 
-
-
+a|
+[.text-center]
+.ADL2 id-codes
+image::{images_uri}/adl2_id_codes.png[]
+a|
+[.text-center]
+.ADL2 at- and ac-codes
+image::{images_uri}/adl2_at_ac_codes.png[]
+|===
 
 === Tuples replace domain-specific syntax
 
-The syntax used to represent DV_QUANTITY, DV_ORDINAL and CODE_PHRASE constraints for openEHR archetypes is now replaced by a standard 'tuple' syntax that enables any co-varying constraint to be expressed, including the afore-mentioned types. Details here
+The syntax used to represent `DV_QUANTITY`, `DV_ORDINAL` and `CODE_PHRASE` constraints for openEHR archetypes is now replaced by a standard 'tuple' syntax that enables any co-varying constraint to be expressed, including the afore-mentioned types. The {openehr_am_adl2}#_tuple_constraints[ADL2 specification Tuples section^] describes the details.
 
-
+[.text-center]
+.ADL2 tuple syntax
+image::{images_uri}/adl2_tuples_quantity.png[]
 
 === Terminology value-set constraints moved to terminology section
 
@@ -46,17 +59,17 @@ All bindings from internal codes to external entities are done using IHTSDO-styl
 
 === artefact_type marker
 
-A new attribute has been added to the ARCHETYPE class to enable various instantiations of the AOM to be designated as having different design intention - 'archetype', 'template', 'template_component', 'operational_template'. This allows ADL/AOM being used for archetypes, and various forms of templates.
+A new attribute has been added to the `ARCHETYPE` class to enable various instantiations of the AOM to be designated as having different design intention - `archetype`, `template`, `template_component`, `operational_template`. This allows ADL/AOM being used for archetypes, and various forms of templates.
 
 You can see this feature as follows:
 
 * Choose the openEHR_Examples profile
-* In the archetype explorer, navigate to any archetype, e.g. CLUSTER/person_additional_data_br
-* Choose the 'Differential' tab (top set of tabs)
-* Choose the 'Source' tab (second row of tabs); the keyword 'archetype' appears at the start of the first line of the file.
-* Now navigate to the PERSON.t_patient_simple template in the template explorer
-* When it has compiled, you will see the 'template' keyword in its source view
-* Navigate to one of its children. You will see the keyword 'template_component' in its source view.
+* In the archetype explorer, navigate to any archetype, e.g. `CLUSTER/person_additional_data_br`
+* Choose the `differential` tab (top set of tabs)
+* Choose the `source` tab (second row of tabs); the keyword `archetype` appears at the start of the first line of the file.
+* Now navigate to the `PERSON.t_patient_simple` template in the template explorer
+* When it has compiled, you will see the `template` keyword in its source view
+* Navigate to one of its children. You will see the keyword `template_component` in its source view.
 
 Via the above method, you have been viewing the archetype and template ADL source files. Of course normally you don't need to do this to understand what kind of artefact you are looking at - the explorer icons are specific to each type.
 
@@ -76,36 +89,36 @@ All specialised archetypes and templates state their constraints in a 'different
 This deceptively simple enhancement to ADL/AOM ensures that specialised archetypes and templates can now be properly represented and maintained by tools, compared to the previous situation where specialised archetypes contain copies of elements from the parent artefact. You can see some examples of this, as follows.
 
 * Select the CKM profile
-* Navigate in the archetype explorer to CONTENT_ITEM/CARE_ENTRY/EVALUATION/problem/diagnosis, and select the diagnosis node, which corresponds to the archetype openEHR-EHR-EVALUATION.problem-diagnosis.v1
-* Select the 'Differential' tab, and below it, in the 'Definition' tab, you should see this
-* You will see that below the top 'Diagnosis' node, the path '/data[at0001]/items' appears, and below that, one redefined object node and two new object node constraints.
-* Now select the 'flat' tab, to see how these constraints have been correctly integrated into the structure defined by the parent archetype openEHR-EHR-EVALUATION.problem.v1, as shown here.
-You can also use the 'Source' tab to see the path-based constraints in their source form. You can now navigate through the hierarchies in the archetype explorer, looking for specialised archetypes (any archetype whose parent is another archetype rather than a class), whose constraints all use the path-based definition method illustrated above. The CONTENT_ITEM/CARE_ENTRY/OBSERVATION/lab-test hierarchy for example contains numerous specialised archetypes.
+* Navigate in the archetype explorer to `CONTENT_ITEM/CARE_ENTRY/EVALUATION/problem/diagnosis`, and select the diagnosis node, which corresponds to the archetype `openEHR-EHR-EVALUATION.problem-diagnosis.v1`
+* Select the `differential` tab, and below it, in the 'Definition' tab, you should see this
+* You will see that below the top 'Diagnosis' node, the path `/data[at0001]/items` appears, and below that, one redefined object node and two new object node constraints.
+* Now select the `flat` tab, to see how these constraints have been correctly integrated into the structure defined by the parent archetype `openEHR-EHR-EVALUATION.problem.v1`, as shown here.
+You can also use the 'Source' tab to see the path-based constraints in their source form. You can now navigate through the hierarchies in the archetype explorer, looking for specialised archetypes (any archetype whose parent is another archetype rather than a class), whose constraints all use the path-based definition method illustrated above. The `CONTENT_ITEM/CARE_ENTRY/OBSERVATION/lab-test` hierarchy for example contains numerous specialised archetypes.
 
-=== `before` and `after` keywords for item ordering in containers
+=== before and after keywords for item ordering in containers
 
 The `before` and `after` keywords can be used to specify the ordering of elements added to a container in a specialised archetype or template. This ensures authors can maintain ordering of all items within container attributes, including over specialisation.
 
-If you refer back to the problem-diagnosis example above in the differential form, you will see that the second two nodes include 'before' and 'after' markers respectively. The former is 'before [at0003]' and the latter 'after [at0031]', indicating the nodes from the parent archetype with respect to which the new nodes should be situated. If you now choose the Flat view, with RM visibility (radio buttons on the right) set to '+ class names', you will see that these two nodes are indeed situation in the correct positions with respect to the referenced nodes, as seen here.
+If you refer back to the problem-diagnosis example above in the link:{images_uri}/diagnosis_diff_view.png[differential form], you will see that the second two nodes include 'before' and 'after' markers respectively. The former is `before [at0003]` and the latter `after [at0031]`, indicating the nodes from the parent archetype with respect to which the new nodes should be situated. If you now choose the Flat view, with RM visibility (radio buttons on the right) set to '+ class names', you will see that these two nodes are indeed situation in the correct positions with respect to the referenced nodes, as seen link:{images_uri}/problem-diagnosis_flat+RM_view.png[here].
 
-=== `generated` marker
+=== generated marker
 
-Used to indicate that the artefact was generated by software, rather than authored by hand. This flag will appear on any differential (.adls file extension) archetype converted from a legacy (pre-ADL 2) archetype (.adl extension). In addition, any generated flat form archetype (`.adlf` file) carries this marker. The flag primarily allows tools to detect that a source form archetype (i.e. any .adls file or its XML equivalent) was generated from a legacy file rather than an authored artefact.
+Used to indicate that the artefact was generated by software, rather than authored by hand. This flag will appear on any differential (.adls file extension) archetype converted from a legacy (pre-ADL 2) archetype (.adl extension). In addition, any generated flat form archetype (`.adlf` file) carries this marker. The flag primarily allows tools to detect that a source form archetype (i.e. any `.adls` file or its XML equivalent) was generated from a legacy file rather than an authored artefact.
 
-Most archetypes in the CKM repository when viewed in their Differential Source form (Differential and Source tabs) include the 'generated' marked in the top line. By contrast, none of the archetypes in the ADL test repository contain differential archetypes with the 'generated' marker.
+Most archetypes in the CKM repository when viewed in their Differential Source form (Differential and Source tabs) include the `generated` marked in the top line. By contrast, none of the archetypes in the {openehr_adl_archetypes_github}[ADL test repository^] contain differential archetypes with the `generated` marker.
 
 === Exclusion of object constraints
 
 Object constraints can be excluded, enabling templates to choose which constraints to retain for the use case of the template. Exclusion is also legal for archetypes, but is likely to be unexpected, and it is recommended that tools either prevent it or include a very clear confirmation dialog for the author. There are three ways to effect exclusion. For the examples in the following, select the openEHR_examples profile in the usual manner.
 
-* Any attribute - complete removal: if the attribute in the flat parent has existence matches {0..1}, then it is optional and can be completely removed in a specialised child. To see an example of this, follow these steps:
-** Navigate to the PERSON.t_patient_simple template in the template explorer and select it (click once).
+* *Any attribute - complete removal*: if the attribute in the flat parent has existence matches `{0..1}`, then it is optional and can be completely removed in a specialised child. To see an example of this, follow these steps:
+** Navigate to the `PERSON.t_patient_simple` template in the template explorer and select it (click once).
 ** Select Differential View, Definition tab. You should see this. You will see that the final 'relationships' attribute has been removed by setting its existence to {0}.
 ** Now select the Source view (second row of tabs), and you will see this, the ADL source form of the existence exclusion constraint.
-* Single-valued attribute - remove alternative(s): if a single-valued attribute has multiple alternative optional constraints defined in the flat parent archetype (occurrences matches `{0..1}`, `{0..*}` etc), any of these may be redefined to `{0}`, i.e. occurrences of zero. To see an example of this, follow these steps:
+* *Single-valued attribute - remove alternative(s)*: if a single-valued attribute has multiple alternative optional constraints defined in the flat parent archetype (occurrences matches `{0..1}`, `{0..*}` etc), any of these may be redefined to `{0}`, i.e. occurrences of zero. To see an example of this, follow these steps:
 ** TBD
-* Multiply-valued attribute - remove child: in exactly the same way as for single-valued attributes, any optional child of a multiply-valued (container) attribute may be removed by redefining its occurrences to {0}. To see an example of this, follow these steps:
-** Navigate to the PERSON.t_patient_simple template in the template explorer and select it (click once).
+* *Multiply-valued attribute - remove child*: in exactly the same way as for single-valued attributes, any optional child of a multiply-valued (container) attribute may be removed by redefining its occurrences to `{0}`. To see an example of this, follow these steps:
+** Navigate to the `PERSON.t_patient_simple` template in the template explorer and select it (click once).
 ** Still in the template explorer, open out the first sub-part of the template (the one marked `/details[at0001]/items`) and select the child `CLUSTER.t_birth_data`. You can now view the exclusions in various ways:
 *** In the central archetype view area, select the 'Differential' select Definition tab with RM visibility = 'Hide', you should see this
 *** Now change the RM visibility to '+ classes', you should see this
@@ -119,7 +132,7 @@ In specialised archetypes and templates, unneeded elements from primitive type r
 
 The new `C_ARCHETYPE_ROOT` class in the AOM allows an archetype to refer to another archetype, without having to use a slot. To see an example, follow these steps:
 
-* Select the openEHR-ADLref archetype library
+* Select the `openEHR-ADLref` archetype library
 * Navigate to and select the `COMPOSITION.t_ext_ref` template
 * Select Differential View, Definition tab, and you will see this, which shows the use of the use_archetype statement to select two archetypes to be used under the attribute /content
 * Now choose the Source view, and you will see this, showing the ADL source expression. Note that the use_archetype statements mention archetype ids, but no slot identifiers (at-codes) because there was no slot defined at this point.
@@ -135,12 +148,12 @@ The semantics of redefining archetype slots in specialised archetypes and templa
 Slot-filling and slot closing can be seen as follows.
 
 * Select the openEHR_examples profile in the usual manner.
-* Navigate to and select the PERSON.t_patient_simple template in the template explorer.
+* Navigate to and select the `PERSON.t_patient_simple` template in the template explorer.
 * Select Differential View, Source tabs to see this.
 
 === Annotations section
 
-Annotations can now be added on a per-node basis, with each annotation having one or more facets (representation = Hash<T>). This supports fine-grained documentation of elements of archetypes and templates. A typical annotations section looks as follows:
+Annotations can now be added on a per-node basis, with each annotation having one or more facets (representation = `Hash<T>`). This supports fine-grained documentation of elements of archetypes and templates. A typical annotations section looks as follows:
 
 [source, odin]
 --------
@@ -190,9 +203,9 @@ annotations
   >
 --------
 
-Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found here.
+Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found {openehr_technical_mailing_list}/msg05523.html[here^].
 
-Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes here, are displayed in a grid, as in this screenshot.
+Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes {openehr_adl_archetypes_github}/tree/master/ADL2-reference/validity/annotations[here^], are displayed in a grid, as in link:{images_uri}/anotations_tab.png[this screenshot].
 
 === Default values (Not yet implemented)
 
@@ -200,11 +213,11 @@ The AOM now allows default values to be included on any node. This feature suppo
 
 === Passthrough node flag (Not yet implemented)
 
-The AOM now includes a 'passthrough' flag on C_COMPLEX_OBJECT indicating that this node is not significant in terms of display. This allows nodes required for structuring data but otherwise redundant for screen display and reporting to be detected by rendering software.
+The AOM now includes a 'passthrough' flag on `C_COMPLEX_OBJECT` indicating that this node is not significant in terms of display. This allows nodes required for structuring data but otherwise redundant for screen display and reporting to be detected by rendering software.
 
 === Reference model subtype matching semantics
 
-Specialised archetypes and templates can now redefine the reference model type of a node, e.g. DV_TEXT into DV_CODED_TEXT. This allows free text constraints to be changed to coded-only constraints.
+Specialised archetypes and templates can now redefine the reference model type of a node, e.g. `DV_TEXT` into `DV_CODED_TEXT`. This allows free text constraints to be changed to coded-only constraints.
 
 === Node congruence & conformance semantics
 
@@ -220,7 +233,7 @@ The rules for generating an operational template from source template & archetyp
 
 === Group construct (Not yet implemented)
 
-This feature supports groups within container attributes. Original proposal on this page.
+This feature supports groups within container attributes. Original proposal on {openehr_wiki_adl_space}/pages/1278446/Archetype+Group+Construct[this page^].
 
 == Changes
 
@@ -234,15 +247,15 @@ Rules have been stated for when at-codes need to be specialised, according to th
 
 === Invariants and declarations merged into rules
 
-A single 'rules' section is now used to contain invariant and declaration statements, which define constraints over multiple nodes in the artefact. The formalism and model of rules has been substantially improved. Simplifies overall artefact structure; allows constraints to refer to external entities, such as patient data, time etc.
+A single `rules` section is now used to contain invariant and declaration statements, which define constraints over multiple nodes in the artefact. The formalism and model of rules has been substantially improved. Simplifies overall artefact structure; allows constraints to refer to external entities, such as patient data, time etc.
 
 === Terminology_extract section added to Ontology (Not yet implemented)
 
-A terminology_extract sub-section is now included in the terminology section of an archetype, enabling codes & rubrics from terminology to be included. Mostly used for templates. Templates can directly include small extracts of external terminologies, making them standalone for such value-sets.
+A `terminology_extract` sub-section is now included in the terminology section of an archetype, enabling codes & rubrics from terminology to be included. Mostly used for templates. Templates can directly include small extracts of external terminologies, making them standalone for such value-sets.
 
 === Representation for ref set reference (Not yet implemented)
 
-A final addition is needed to either the AOM or the openEHR Profile model, of a class that defines how to represent a resolved reference to an external terminology; this class would replace a CONSTRAINT_REF node from a source template in an operational template. The benefit is that external ref-set references will be resolved in an operational template.
+A final addition is needed to either the AOM or the openEHR Profile model, of a class that defines how to represent a resolved reference to an external terminology; this class would replace a `CONSTRAINT_REF` node from a source template in an operational template. The benefit is that external ref-set references will be resolved in an operational template.
 
 === Semantic slot type (Not yet implemented)
 
