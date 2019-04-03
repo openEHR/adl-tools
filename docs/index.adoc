@@ -1,0 +1,35 @@
+//
+// ============================================ Asciidoc HEADER =============================================
+//
+:doctype: book
+:pagenums:
+:numbered!:
+// git rid of PDF 'Chapter' labs on level 1 headings
+:chapter-label:
+//
+// HTML-only attributes
+//
+:linkcss:
+:keywords: ADL workbench, ADL, archetype, template
+:description: openEHR adl-tools documentation
+:sectanchors:
+
+include::{ref_dir}/docs/boilerplate/global_vars.adoc[]
+
+//
+// ============================================ Asciidoc PREAMBLE =============================================
+//
+
+image::{openehr_logo}["openEHR logo",align="center"]
+
+== Tool Guides
+
+[cols="2,5", options="header"]
+|===
+|Guide |Description
+
+|link:adl_workbench_guide.html[ADL Workbench User Guide]
+|User Guide for the ADL Workbench.
+
+|===
+
