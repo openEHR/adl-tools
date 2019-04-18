@@ -44,13 +44,6 @@ The ADL Workbench (AWB) is a compiler and IDE for working with the archetypes an
 |Windows (64-bit)	|2.0.6.3034   |28-03-2019 | https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3034-windows_64bit.exe[.exe installer^]  
 a|
 
-* Include latest Task Planning and CIMI BMMs.
-* Add BMM (RM) JSON exporter.
-* Improve editing functionality; add new-archetype-from-subtree function.
-* Add BMM (RM) output mode to adlc CLI tool.
-* Correct schema loading bug; include Task Planning schemas in delivery.
-* Correct ADL converter regex bug; correct value-set redefinition bug.
-* Correct editor hang bug; correct startup failure when BMM schema broken.
 
 |===
 
