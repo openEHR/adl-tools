@@ -274,6 +274,7 @@ feature -- ADL 2 conversions
 			--  ["licence"] = <"String">					=>	/licence
 			--  ["custodian_organisation"] = <"String">		=>	/custodian_organisation
 			--  ["custodian_namespace"] = <"String">		=>	/custodian_namespace
+			--  ["ip_acknowledgements"] = <"String">		=>	/ip_acknowledgements
 			--  ["build_uid"] = <"String">					=>	(no change)
 			--  ["original_namespace"] = <"String">			=>	/original_namespace
 			--  ["original_publisher"] = <"String">			=>	/original_publisher
@@ -312,6 +313,12 @@ feature -- ADL 2 conversions
 				if dt_attr_od.has_child_with_id ("original_publisher") and then attached dt_attr_od.child_with_id ("original_publisher") as dt_obj then
 					dt_attr_od.remove_child (dt_obj)
 					create dt_attr.make_single ("original_publisher")
+					dt_attr.put_child (dt_obj)
+					a_res_desc.put_attribute (dt_attr)
+				end
+				if dt_attr_od.has_child_with_id ("ip_acknowledgements") and then attached dt_attr_od.child_with_id ("ip_acknowledgements") as dt_obj then
+					dt_attr_od.remove_child (dt_obj)
+					create dt_attr.make_single ("ip_acknowledgements")
 					dt_attr.put_child (dt_obj)
 					a_res_desc.put_attribute (dt_attr)
 				end

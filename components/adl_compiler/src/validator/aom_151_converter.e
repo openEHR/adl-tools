@@ -556,7 +556,8 @@ feature {NONE} -- Implementation
 					 					id_code := target.terminology.last_new_definition_code
 			 						end
 
-			 					-- doesn't conform to parent type, but we assume does to RM type. E.g. DV_INTERVAL<> being added alongside a DV_QUANTITY
+			 					-- doesn't conform to parent type, but we assume does to RM type.
+			 					-- E.g. DV_INTERVAL<> being added alongside a DV_QUANTITY
 			 					else
 					 				id_code := target.create_new_id_code
 			 					end
@@ -571,16 +572,22 @@ feature {NONE} -- Implementation
 			 			else
 			 				id_code := target.create_new_id_code
 		 				end
-		 			-- new objects at this level; don't have to worry about ids, but need to add definitions in terminology if parent C_ATTRIBUTE is multiple
+		 			-- new objects at this level; don't have to worry about ids, but need to add definitions in
+		 			-- terminology if parent C_ATTRIBUTE is multiple
 		 			elseif attached c_obj.parent as p and then p.is_multiple then
 			 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
 			 			id_code := target.terminology.last_new_definition_code
 		 			else
 		 				id_code := target.create_new_id_code
 		 			end
+
+		 		-- target not a specialised archetype;
+		 		-- if parent object is a container we need to add id-code definitions to treminology
 	 			elseif attached c_obj.parent as p and then p.is_multiple then
 		 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
 		 			id_code := target.terminology.last_new_definition_code
+		 			
+		 		-- single-valued parent - can add new id-code with no definition in terminology
 	 			else
 		 			id_code := target.create_new_id_code
 	 			end
