@@ -626,7 +626,7 @@ feature {NONE} -- Context menu
 		    		types_sub_menu.extend (an_mi)
 
 					-- add more items for all subtypes
-					across ui_graph_state.ref_model.subtypes (rm_property.bmm_type.base_type) as subs_csr loop
+					across ui_graph_state.ref_model.type_substitutions (rm_property.bmm_type.base_type) as subs_csr loop
 						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (subs_csr.item))
 						rm_class_def := ui_graph_state.ref_model.class_definition (subs_csr.item)
 						if rm_class_def.is_abstract then

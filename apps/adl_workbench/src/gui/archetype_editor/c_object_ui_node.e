@@ -500,7 +500,7 @@ feature {NONE} -- Context menu
 
 				spec_parent_rm_class := ui_graph_state.ref_model.class_definition (anc_arch_node.rm_type_name)
 				create dialog.make (aom_types_for_rm_type (spec_parent_rm_class),
-					ui_graph_state.ref_model.subtypes (spec_parent_rm_class.type),
+					ui_graph_state.ref_model.type_substitutions (spec_parent_rm_class.type),
 					arch_node_aom_type, rm_type.type_name,
 					def_occ, ui_graph_state.archetype, anc_arch_node, display_settings)
 
@@ -522,7 +522,7 @@ feature {NONE} -- Context menu
 			dialog: GUI_C_OBJECT_DIALOG
 		do
 			create dialog.make (aom_types_for_rm_type (rm_type.effective_base_class),
-				ui_graph_state.ref_model.subtypes (rm_type.base_type),
+				ui_graph_state.ref_model.type_substitutions (rm_type.base_type),
 				arch_node_aom_type, rm_type.type_name,
 				parent.default_occurrences, ui_graph_state.archetype, Void, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
