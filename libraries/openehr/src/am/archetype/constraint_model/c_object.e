@@ -45,25 +45,22 @@ feature -- Access
 			-- In this case, the upper limit of the RM's owning attribute is used to provide a value.
 			-- `rm_attr_prop_mult' is a function that knows how to compute effective object multiplicity
 			-- by looking at the owning RM property.
-		local
-			occ_lower: INTEGER
+			-- If local `occurrences` not set, always assume 0 as the lower bound.
 		do
 			if attached occurrences as att_occ then
 				Result := att_occ
 			elseif attached parent as att_ca then
-				if attached att_ca.existence as att_ex then
-					occ_lower := att_ex.lower
-				end
 				if attached att_ca.cardinality as att_card then
 					if att_card.interval.upper_unbounded then
-						create Result.make_upper_unbounded (occ_lower)
+						create Result.make_open
 					else
-						create Result.make_bounded (occ_lower, att_card.interval.upper)
+						create Result.make_bounded (0, att_card.interval.upper)
 					end
 				elseif attached att_ca.parent as att_co then
 					Result := rm_prop_mult (att_co.rm_type_name, att_ca.rm_attribute_path)
+					Result.set_lower (0)
 				else
-					create Result.make_upper_unbounded (occ_lower)
+					create Result.make_open
 				end
 			else
 				create Result.make_open

@@ -80,11 +80,11 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
 			across a_class_def.ancestors as ancs_csr loop
-				a_ti := create_node (ancs_csr.item.effective_base_class)
+				a_ti := create_node (ancs_csr.item.defining_class)
 	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
-				populate_ancestor_nodes (ancs_csr.item.effective_base_class)
+				populate_ancestor_nodes (ancs_csr.item.defining_class)
 				ev_tree_item_stack.remove
 			end
 		end

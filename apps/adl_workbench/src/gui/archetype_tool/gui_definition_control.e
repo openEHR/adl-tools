@@ -56,7 +56,7 @@ feature -- Initialisation
 
 			-- tree collapse/expand control
 			create evx_definition_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_definition_grid),
-				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_DECLARATION} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"), Void)
 			evx_definition_control_panel.add_frame (evx_definition_treeview_control.ev_root_container, False)
@@ -145,7 +145,7 @@ feature -- Initialisation
 
 			-- tree collapse/expand control
 			create evx_gui_rules_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_rules_grid),
-				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_DECLARATION} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"), Void)
 			evx_gui_rules_control_panel.add_frame (evx_gui_rules_treeview_control.ev_root_container, False)
@@ -500,7 +500,7 @@ feature {NONE} -- Implementation
 					agent (a_row: EV_GRID_ROW; vis_desc_class: STRING): BOOLEAN
 						do
 							if attached {C_OBJECT_UI_NODE} a_row.data as co_ed_ctx then
-								Result := not co_ed_ctx.is_rm and ref_model.is_descendant_of (co_ed_ctx.rm_type.effective_base_class.name, vis_desc_class)
+								Result := not co_ed_ctx.is_rm and ref_model.is_descendant_of (co_ed_ctx.rm_type.base_type_name, vis_desc_class)
 							end
 						end (?, vis_desc_cl)
 				)

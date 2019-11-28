@@ -513,8 +513,8 @@ feature {ANY_UI_NODE} -- Implementation
 		local
 			rm_type_name, aom_type: STRING
 		do
-			rm_type_name := a_bmm_type.effective_base_class.name
-			if ui_graph_state.ref_model.is_primitive_type (rm_type_name) then
+			rm_type_name := a_bmm_type.base_type_name
+			if a_bmm_type.is_primitive then
 
 				-- if there is an AOM_PROFILE, use the RM prim type => AOM type mapping found there
 				if attached ui_graph_state.aom_profile as att_aom_profile and then
@@ -559,9 +559,9 @@ feature {ANY_UI_NODE} -- Implementation
 				end
 
 			-- see if it's an enumerated type
-			elseif attached {BMM_ENUMERATION_INTEGER} a_bmm_type.effective_base_class then
+			elseif attached {BMM_SIMPLE_TYPE} a_bmm_type as a_simple_type and then  attached {BMM_ENUMERATION_INTEGER} a_simple_type.defining_class then
 				create {C_INTEGER_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
-			elseif attached {BMM_ENUMERATION_STRING} a_bmm_type.effective_base_class then
+			elseif attached {BMM_SIMPLE_TYPE} a_bmm_type as a_simple_type and then attached {BMM_ENUMERATION_STRING} a_simple_type.defining_class then
 				create {C_STRING_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 
 			-- treat as a C_COMPLEX_OBJECT
@@ -617,8 +617,8 @@ feature {NONE} -- Context menu
 					create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
 
 					-- make a menu item with the base class of the property
-					create an_mi.make_with_text_and_action (rm_property.bmm_type.effective_base_class.name, agent ui_offer_add_new_arch_child (rm_property.bmm_type.effective_base_class))
-					if rm_property.bmm_type.effective_base_class.is_abstract then
+					create an_mi.make_with_text_and_action (rm_property.bmm_type.base_type_name, agent ui_offer_add_new_arch_child (rm_property.bmm_type.base_type_name))
+					if rm_property.bmm_type.is_abstract then
 						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 					else
 						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
@@ -626,9 +626,9 @@ feature {NONE} -- Context menu
 		    		types_sub_menu.extend (an_mi)
 
 					-- add more items for all subtypes
-					across rm_property.bmm_type.effective_base_class.all_descendants as subs_csr loop
+					across ui_graph_state.ref_model.subtypes (rm_property.bmm_type.base_type) as subs_csr loop
+						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (subs_csr.item))
 						rm_class_def := ui_graph_state.ref_model.class_definition (subs_csr.item)
-						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (rm_class_def))
 						if rm_class_def.is_abstract then
 							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 						else
@@ -652,7 +652,7 @@ feature {NONE} -- Context menu
 			end
 		end
 
-	ui_offer_add_new_arch_child (rm_class_def: BMM_CLASS)
+	ui_offer_add_new_arch_child (a_unitary_type_name: STRING)
 			-- create a dialog with appropriate constraint capture fields and then call the actual convert_to_constraint routine
 		local
 			dialog: GUI_C_OBJECT_DIALOG
@@ -661,10 +661,10 @@ feature {NONE} -- Context menu
 		do
 			create rm_type_substitutions.make (0)
 			rm_type_substitutions.compare_objects
-			rm_type_substitutions.extend (rm_class_def.name)
-			aom_type_subs := aom_types_for_rm_type (rm_class_def)
+			rm_type_substitutions.extend (a_unitary_type_name)
+			aom_type_subs := aom_types_for_rm_type (ui_graph_state.ref_model.class_definition (a_unitary_type_name))
 			aom_type_subs.start
-			create dialog.make (aom_type_subs, rm_type_substitutions, aom_type_subs.item, rm_class_def.name,
+			create dialog.make (aom_type_subs, rm_type_substitutions, aom_type_subs.item, a_unitary_type_name,
 				default_occurrences, ui_graph_state.archetype, Void, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 

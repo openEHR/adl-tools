@@ -487,23 +487,20 @@ feature {NONE} -- Context menu
 			-- create a dialog with appropriate constraint capture fields and then call the convert_to_constraint routine
 		local
 			dialog: GUI_C_OBJECT_DIALOG
-			rm_type_substitutions: ARRAYED_SET [STRING]
 			spec_parent_rm_class: BMM_CLASS
 			def_occ: MULTIPLICITY_INTERVAL
 			a_term: ARCHETYPE_TERM
 		do
 			if attached arch_node_in_ancestor as anc_arch_node then
-				spec_parent_rm_class := ui_graph_state.ref_model.class_definition (anc_arch_node.rm_type_name)
-				rm_type_substitutions := spec_parent_rm_class.all_descendants.deep_twin
-				rm_type_substitutions.extend (rm_type.type_name)
-
 				if attached anc_arch_node.occurrences as anc_arch_node_occ then
 					def_occ := anc_arch_node_occ
 				else
 					def_occ := parent.default_occurrences
 				end
 
-				create dialog.make (aom_types_for_rm_type (spec_parent_rm_class), rm_type_substitutions,
+				spec_parent_rm_class := ui_graph_state.ref_model.class_definition (anc_arch_node.rm_type_name)
+				create dialog.make (aom_types_for_rm_type (spec_parent_rm_class),
+					ui_graph_state.ref_model.subtypes (spec_parent_rm_class.type),
 					arch_node_aom_type, rm_type.type_name,
 					def_occ, ui_graph_state.archetype, anc_arch_node, display_settings)
 
@@ -523,11 +520,10 @@ feature {NONE} -- Context menu
 			-- create a dialog with appropriate constraint capture fields and then call the refine_constraint routine
 		local
 			dialog: GUI_C_OBJECT_DIALOG
-			rm_type_substitutions: ARRAYED_SET [STRING]
 		do
-			rm_type_substitutions := rm_type.effective_base_class.all_descendants.deep_twin
-			rm_type_substitutions.extend (rm_type.type_name)
-			create dialog.make (aom_types_for_rm_type (rm_type.effective_base_class), rm_type_substitutions, arch_node_aom_type, rm_type.type_name,
+			create dialog.make (aom_types_for_rm_type (rm_type.effective_base_class),
+				ui_graph_state.ref_model.subtypes (rm_type.base_type),
+				arch_node_aom_type, rm_type.type_name,
 				parent.default_occurrences, ui_graph_state.archetype, Void, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))
 			if dialog.is_valid then

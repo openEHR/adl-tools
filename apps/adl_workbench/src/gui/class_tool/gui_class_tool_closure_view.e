@@ -357,6 +357,7 @@ feature {NONE} -- Implementation
 							ev_prop_row := lr
 						end
 
+						-- choose colouring based on semantic category
 						if a_bmm_prop.is_im_infrastructure then
 							col := rm_infrastructure_attribute_colour
 						elseif a_bmm_prop.is_im_runtime then
@@ -366,6 +367,7 @@ feature {NONE} -- Implementation
 						end
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
 
+						-- set property tooltip as path and BMM meta-type
 						tooltip_str := rm_node_path.as_string + "%N"
 						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.generating_type.name))
 
@@ -384,11 +386,13 @@ feature {NONE} -- Implementation
 						ev_prop_row.expand_actions.force_extend (agent property_node_expand_handler (ev_prop_row))
 
 						-- ======== class node =========
+
+						-- set class node tooltip as path and BMM meta-type
 						tooltip_str := rm_node_path.as_string + "%N"
 						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.bmm_type.generating_type.name))
 
 						evx_grid.add_sub_row (ev_prop_row, bmm_class)
-						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_prop.bmm_type.type_signature, tooltip_str,
+						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_prop.bmm_type.base_type.type_signature, tooltip_str,
 							Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
 
 						check attached evx_grid.last_row as lr then
@@ -421,7 +425,7 @@ feature {NONE} -- Implementation
 		end
 
 	class_node_handler_wrapper (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
-			-- wrapper for class_node_handler
+			-- wrapper for `class_node_handler`
 		do
 			class_node_handler (a_class_grid_row, x,y, button)
 		end
@@ -447,7 +451,7 @@ feature {NONE} -- Implementation
 		end
 
 	property_node_handler_wrapper (a_prop_grid_row: EV_GRID_ROW; x,y, button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
-			-- wrapper for class_node_handler
+			-- wrapper for `property_node_handler`
 		do
 			property_node_handler (a_prop_grid_row, x,y, button)
 		end

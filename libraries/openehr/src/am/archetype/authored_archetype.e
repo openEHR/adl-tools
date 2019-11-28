@@ -304,7 +304,7 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 				end
 
 				-- remove translations meta-data
-				remove_translations
+			--	remove_translations
 
 				-- replace description with differential
 				if attached diff_auth_arch.description as diff_desc then

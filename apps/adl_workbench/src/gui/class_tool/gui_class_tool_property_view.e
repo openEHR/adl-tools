@@ -125,7 +125,7 @@ feature {NONE} -- Implementation
 					-- gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 					ev_grid.set_item (Grid_enum_name_col, ev_grid.row_count + 1, gli)
 
-					create gli.make_with_text (enum_src.item_values.i_th (names_csr.target_index).out)
+					create gli.make_with_text (enum_src.item_values.i_th (names_csr.target_index).value_literal)
 					ev_grid.set_item (Grid_enum_value_col, ev_grid.row_count, gli)
 				end
  			end
@@ -210,10 +210,10 @@ feature {NONE} -- Implementation
 						-- property type
 						prop_type := props_csr.item.bmm_type
 						prop_type_text := prop_type.type_signature
-						if attached {BMM_DEFINED_TYPE} prop_type as bmm_defined_type and then attached bmm_defined_type.value_constraint as vs_constraint then
+						if attached {BMM_ENTITY_TYPE} prop_type as bmm_ent_type and then attached bmm_ent_type.value_constraint as vs_constraint then
 							prop_type_text.append (" " + vs_constraint.as_delimited_string)
-						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_DEFINED_TYPE} bmm_cont_type.base_type as bmm_defined_type
-							and then attached bmm_defined_type.value_constraint as vs_constraint
+						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_ENTITY_TYPE} bmm_cont_type.base_type as bmm_ent_type
+							and then attached bmm_ent_type.value_constraint as vs_constraint
 						then
 							prop_type_text.append (" " + vs_constraint.as_delimited_string)
 						end
@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 			-- visit ancestors, recursively
 			if not differential_view then
 				across a_class_def.ancestors as ancs_csr loop
-					populate_class_node (ancs_csr.item.effective_base_class)
+					populate_class_node (ancs_csr.item.defining_class)
 				end
 			end
 		end
