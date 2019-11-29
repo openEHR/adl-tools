@@ -345,7 +345,6 @@ feature {NONE} -- Implementation
 					if show_prop then
 						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes						
 						prop_str := a_bmm_prop.name.twin
-						bmm_class := a_bmm_prop.bmm_type.effective_base_class
 						if attached {BMM_CONTAINER_TYPE} a_bmm_prop.bmm_type as bmm_cont_type then
 							prop_str.append (": " + bmm_cont_type.container_class.name + Generic_left_delim.out + Generic_right_delim.out)
 						end
@@ -391,9 +390,12 @@ feature {NONE} -- Implementation
 						tooltip_str := rm_node_path.as_string + "%N"
 						tooltip_str.append ("BMM meta-type: " + bare_type_name (a_bmm_prop.bmm_type.generating_type.name))
 
+						if attached {BMM_MODEL_TYPE} a_bmm_prop.bmm_type.effective_type as bmm__model_type then
+							bmm_class := bmm__model_type.defining_class
+						end
 						evx_grid.add_sub_row (ev_prop_row, bmm_class)
-						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_prop.bmm_type.base_type.type_signature, tooltip_str,
-							Void, archetype_rm_type_color, rm_type_pixmap (bmm_class, use_rm_pixmaps))
+						evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_prop.bmm_type.effective_type.type_signature, tooltip_str,
+							Void, archetype_rm_type_color, rm_type_pixmap (a_bmm_prop.bmm_type.unitary_type, use_rm_pixmaps))
 
 						check attached evx_grid.last_row as lr then
 							ev_class_row := lr

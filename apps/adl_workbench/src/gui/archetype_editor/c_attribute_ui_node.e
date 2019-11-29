@@ -46,7 +46,9 @@ feature -- Initialisation
 		do
 			precursor (an_rm_prop, an_ed_context)
 			create children.make(0)
-			attach_child (create_rm_child (rm_property.bmm_type))
+			check attached {BMM_MODEL_TYPE} rm_property.bmm_type.effective_type as bmm_model_type then
+				attach_child (create_rm_child (bmm_model_type))
+			end
 		end
 
 feature -- Access
@@ -506,14 +508,14 @@ feature {ANY_UI_NODE} -- Implementation
 			end
 		end
 
-	create_rm_child (a_bmm_type: BMM_TYPE): C_OBJECT_UI_NODE
+	create_rm_child (a_bmm_type: BMM_MODEL_TYPE): C_OBJECT_UI_NODE
 			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
 		require
 			is_rm
 		local
 			rm_type_name, aom_type: STRING
 		do
-			rm_type_name := a_bmm_type.base_type_name
+			rm_type_name := a_bmm_type.type_base_name
 			if a_bmm_type.is_primitive then
 
 				-- if there is an AOM_PROFILE, use the RM prim type => AOM type mapping found there
@@ -617,7 +619,8 @@ feature {NONE} -- Context menu
 					create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
 
 					-- make a menu item with the base class of the property
-					create an_mi.make_with_text_and_action (rm_property.bmm_type.base_type_name, agent ui_offer_add_new_arch_child (rm_property.bmm_type.base_type_name))
+					create an_mi.make_with_text_and_action (rm_property.bmm_type.effective_type.type_base_name,
+						agent ui_offer_add_new_arch_child (rm_property.bmm_type.effective_type.type_base_name))
 					if rm_property.bmm_type.is_abstract then
 						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 					else
@@ -626,7 +629,7 @@ feature {NONE} -- Context menu
 		    		types_sub_menu.extend (an_mi)
 
 					-- add more items for all subtypes
-					across ui_graph_state.ref_model.type_substitutions (rm_property.bmm_type.base_type) as subs_csr loop
+					across ui_graph_state.ref_model.type_substitutions (rm_property.bmm_type.effective_type) as subs_csr loop
 						create an_mi.make_with_text_and_action (subs_csr.item, agent ui_offer_add_new_arch_child (subs_csr.item))
 						rm_class_def := ui_graph_state.ref_model.class_definition (subs_csr.item)
 						if rm_class_def.is_abstract then

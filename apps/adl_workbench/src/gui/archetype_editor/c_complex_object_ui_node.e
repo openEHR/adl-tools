@@ -28,7 +28,7 @@ feature -- Initialisation
 			create rm_attributes.make (0)
 		end
 
-	make_rm (an_rm_type: BMM_TYPE; a_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE)
+	make_rm (an_rm_type: like rm_type; a_ui_graph_state: ARCHETYPE_UI_GRAPH_STATE)
 		do
 			precursor (an_rm_type, a_ui_graph_state)
 			create c_attributes.make (0)
@@ -54,9 +54,9 @@ feature -- Access
 	rm_properties: STRING_TABLE [BMM_PROPERTY]
 		do
 			if ui_graph_state.in_differential_view and not ui_graph_state.editing_enabled then
-				Result := rm_type.effective_base_class.properties
+				Result := rm_type.properties
 			else
-				Result := rm_type.effective_base_class.flat_properties
+				Result := rm_type.flat_properties
 			end
 		end
 

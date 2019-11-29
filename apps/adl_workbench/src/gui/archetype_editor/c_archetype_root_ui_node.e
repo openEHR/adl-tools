@@ -28,7 +28,7 @@ feature -- Access
 			-- don't produce any RM properties, since node is another archetype
 		do
 			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype and not c_attributes.is_empty then
-				Result := rm_type.effective_base_class.flat_properties
+				Result := rm_type.flat_properties
 			else
 				create Result.make_caseless (0)
 			end

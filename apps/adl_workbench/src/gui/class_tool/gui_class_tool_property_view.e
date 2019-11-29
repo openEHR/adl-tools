@@ -210,9 +210,9 @@ feature {NONE} -- Implementation
 						-- property type
 						prop_type := props_csr.item.bmm_type
 						prop_type_text := prop_type.type_signature
-						if attached {BMM_ENTITY_TYPE} prop_type as bmm_ent_type and then attached bmm_ent_type.value_constraint as vs_constraint then
+						if attached {BMM_MODEL_TYPE} prop_type as bmm_ent_type and then attached bmm_ent_type.value_constraint as vs_constraint then
 							prop_type_text.append (" " + vs_constraint.as_delimited_string)
-						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_ENTITY_TYPE} bmm_cont_type.base_type as bmm_ent_type
+						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_MODEL_TYPE} bmm_cont_type.base_type as bmm_ent_type
 							and then attached bmm_ent_type.value_constraint as vs_constraint
 						then
 							prop_type_text.append (" " + vs_constraint.as_delimited_string)
@@ -222,7 +222,9 @@ feature {NONE} -- Implementation
 						gli.set_data (prop_type)
 
 						-- tooltip
-						if attached prop_type.effective_base_class.documentation as bmm_prop_class_doc then
+						if attached {BMM_MODEL_TYPE} prop_type.effective_type as bmm_model_type and then
+							attached bmm_model_type.defining_class.documentation as bmm_prop_class_doc
+						then
 							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
 						end
 
@@ -247,10 +249,10 @@ feature {NONE} -- Implementation
 		local
 			menu: EV_MENU
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE} eti.data as bmm_type then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL_TYPE} eti.data as bmm_type then
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, bmm_type.effective_base_class)
+				add_class_context_menu (menu, bmm_type.defining_class)
 				menu.show
 			end
 		end

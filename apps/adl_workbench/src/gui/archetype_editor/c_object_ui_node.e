@@ -35,7 +35,9 @@ feature -- Initialisation
 			create internal_ref_for_rm_type.make (0)
 			precursor (an_arch_node, an_ed_context)
 			set_arch_node_in_ancestor
-			rm_type := ui_graph_state.ref_model.create_bmm_type_from_name (arch_node.rm_type_name)
+			check attached {BMM_MODEL_TYPE} ui_graph_state.ref_model.create_bmm_type_from_name (arch_node.rm_type_name) as model_type then
+				rm_type := model_type
+			end
 		end
 
 feature -- Access
@@ -46,7 +48,7 @@ feature -- Access
 	arch_node_in_ancestor: detachable C_OBJECT
 			-- corresponding archetype node in specialisation parent, if applicable
 
-	rm_type: BMM_TYPE
+	rm_type: BMM_MODEL_TYPE
 			-- RM class of node being edited
 
 	parent: detachable C_ATTRIBUTE_UI_NODE
@@ -361,7 +363,7 @@ feature {NONE} -- Implementation
 			create pixmap_key.make_empty
 			if attached arch_node then
 				if not display_settings.show_technical_view then
-					pixmap_key := rm_type_pixmap_key (rm_type.effective_base_class)
+					pixmap_key := rm_type_pixmap_key (rm_type.defining_class)
 				end
 
 				if pixmap_key.is_empty then
@@ -406,7 +408,7 @@ feature {NONE} -- Context menu
 			an_mi: EV_MENU_ITEM
 		do
 			create context_menu
-			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.effective_base_class))
+			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.defining_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			context_menu.extend (an_mi)
 
@@ -446,8 +448,8 @@ feature {NONE} -- Context menu
 				end
 
 				-- add menu item to create new archetype based on current node
-				if attached {C_COMPLEX_OBJECT} arch_node as cco and attached rm_type.effective_base_class as bmm_class_def and then
-					attached current_library.class_for_definition (bmm_class_def) as arch_lib_class
+				if attached {C_COMPLEX_OBJECT} arch_node as cco and
+					attached current_library.class_for_definition (rm_type.defining_class) as arch_lib_class
 				then
 					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_new_archetype),
 						agent library_tool_agents.call_create_new_non_specialised_archetype_agent (arch_lib_class,
@@ -521,8 +523,8 @@ feature {NONE} -- Context menu
 		local
 			dialog: GUI_C_OBJECT_DIALOG
 		do
-			create dialog.make (aom_types_for_rm_type (rm_type.effective_base_class),
-				ui_graph_state.ref_model.type_substitutions (rm_type.base_type),
+			create dialog.make (aom_types_for_rm_type (rm_type.defining_class),
+				ui_graph_state.ref_model.type_substitutions (rm_type),
 				arch_node_aom_type, rm_type.type_name,
 				parent.default_occurrences, ui_graph_state.archetype, Void, display_settings)
 			dialog.show_modal_to_window (proximate_ev_window (evx_grid.ev_grid))

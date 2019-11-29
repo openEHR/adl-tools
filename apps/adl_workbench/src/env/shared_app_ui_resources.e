@@ -440,8 +440,8 @@ feature -- Access
 				if use_rm_pixmaps then
 					if attached {BMM_CLASS} a_rm_entity as a_class then
 						pixmap_key := rm_type_pixmap_key (a_class)
-					elseif attached {BMM_TYPE} a_rm_entity as a_type then
-						pixmap_key := rm_type_pixmap_key (a_type.effective_base_class)
+					elseif attached {BMM_MODEL_TYPE} a_rm_entity as a_type then
+						pixmap_key := rm_type_pixmap_key (a_type.defining_class)
 					end
 				end
 				if pixmap_key.is_empty then
