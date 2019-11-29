@@ -37,10 +37,12 @@ feature -- Access
 		require
 			Valid_language: has_matching_language_tag (a_lang)
 		do
-			from languages_available.start until languages_available.off or language_tag_has_language (languages_available.item, a_lang) loop
-				languages_available.forth
+			create Result.make_empty
+			across languages_available as langs_csr loop
+				if language_tag_has_language (langs_csr.item, a_lang) then
+					Result.append (langs_csr.item)
+				end
 			end
-			Result := languages_available.item
 		end
 
 feature -- Status Report
