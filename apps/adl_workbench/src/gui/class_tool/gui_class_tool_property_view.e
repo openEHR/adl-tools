@@ -212,8 +212,8 @@ feature {NONE} -- Implementation
 						prop_type_text := prop_type.type_signature
 						if attached {BMM_MODEL_TYPE} prop_type as bmm_ent_type and then attached bmm_ent_type.value_constraint as vs_constraint then
 							prop_type_text.append (" " + vs_constraint.as_delimited_string)
-						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_MODEL_TYPE} bmm_cont_type.base_type as bmm_ent_type
-							and then attached bmm_ent_type.value_constraint as vs_constraint
+						elseif attached {BMM_CONTAINER_TYPE} prop_type as bmm_cont_type and then attached {BMM_MODEL_TYPE} bmm_cont_type.item_type as bmm_u_type
+							and then attached bmm_u_type.value_constraint as vs_constraint
 						then
 							prop_type_text.append (" " + vs_constraint.as_delimited_string)
 						end
