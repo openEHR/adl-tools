@@ -12,7 +12,7 @@ class AOM_PHASE_1_VALIDATOR
 inherit
 	AOM_VALIDATOR
 		redefine
-			validate, initialise
+			initialise
 		end
 
 	ADL_SYNTAX_CONVERTER

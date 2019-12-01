@@ -12,7 +12,7 @@ class ASSERTION_UI_NODE
 inherit
 	RULE_ELEMENT_UI_NODE
 		redefine
-			arch_node, prepare_display_in_grid, display_in_grid
+			arch_node, display_in_grid
 		end
 
 create

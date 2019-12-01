@@ -16,8 +16,6 @@ inherit
 	AOM_VALIDATOR
 		rename
 			initialise as aom_validator_initialise
-		redefine
-			validate
 		end
 
 	ADL_SYNTAX_CONVERTER

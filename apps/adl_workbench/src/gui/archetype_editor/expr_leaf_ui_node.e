@@ -12,7 +12,7 @@ class EXPR_LEAF_UI_NODE
 inherit
 	EXPR_ITEM_UI_NODE
 		redefine
-			arch_node, prepare_display_in_grid, display_in_grid
+			arch_node, display_in_grid
 		end
 
 create

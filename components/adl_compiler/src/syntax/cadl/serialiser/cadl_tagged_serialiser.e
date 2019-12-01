@@ -16,12 +16,9 @@ class CADL_TAGGED_SERIALISER
 inherit
 	C_SERIALISER
 		redefine
-			start_c_complex_object, end_c_complex_object,
-			start_c_attribute, end_c_attribute,
-			start_archetype_slot, end_archetype_slot,
-			start_c_complex_object_proxy,
-			start_c_archetype_root,
-			start_c_primitive_object
+			end_c_complex_object,
+			end_c_attribute,
+			end_archetype_slot
 		end
 
 	CADL_2_TOKENS

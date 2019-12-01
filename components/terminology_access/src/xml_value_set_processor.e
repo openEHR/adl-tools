@@ -16,9 +16,6 @@ inherit
 		end
 
 	XML_NODE_VISITOR
-		redefine
-			process_element
-		end
 
 feature -- Access
 

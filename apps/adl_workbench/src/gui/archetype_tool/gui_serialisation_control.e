@@ -12,9 +12,6 @@ class
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			ev_root_container
-		end
 
 	STRING_UTILITIES
 		export
@@ -181,7 +178,7 @@ feature {NONE} -- Implementation
 
 			ev_serialise_json_rb.set_text (syntax_type_json.as_upper)
 			ev_serialise_json_rb.set_tooltip (get_msg (ec_show_json_serialisation_tooltip, <<latest_adl_version>>))
-			
+
 			ev_serialise_yaml_rb.set_text (syntax_type_yaml.as_upper)
 			ev_serialise_yaml_rb.set_tooltip (get_msg (ec_show_yaml_serialisation_tooltip, <<latest_adl_version>>))
 		end

@@ -33,12 +33,12 @@ feature -- Definitions
 			-- List of allowed date constraint replacements e.g. in specialised archetype
 		once
 			create Result.make (0)
-			Result.put (<<>>, "YYYY-MM-DD")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "YYYY-MM-DD")	-- no replacements possible
 			Result.put (<<"YYYY-MM-DD", "YYYY-MM-XX">>, "YYYY-MM-??")
-			Result.put (<<>>, "YYYY-MM-XX")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "YYYY-MM-XX")	-- no replacements possible
 			Result.put (<<"YYYY-MM-??", "YYYY-MM-DD", "YYYY-MM-XX", "YYYY-??-XX", "YYYY-XX-XX">>, "YYYY-??-??")
 			Result.put (<<"YYYY-MM-XX", "YYYY-XX-XX">>, "YYYY-??-XX")
-			Result.put (<<>>, "YYYY-XX-XX")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "YYYY-XX-XX")	-- no replacements possible
 			across Result as items_csr loop
 				items_csr.item.compare_objects
 			end
@@ -64,9 +64,9 @@ feature -- Definitions
 			-- List of allowed time constraint replacements e.g. in specialised archetype
 		once
 			create Result.make (0)
-			Result.put (<<>>, "HH:MM:SS")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "HH:MM:SS")	-- no replacements possible
 			Result.put (<<"HH:MM:SS", "HH:MM:XX">>, "HH:MM:??")
-			Result.put (<<>>, "HH:MM:XX")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "HH:MM:XX")	-- no replacements possible
 			Result.put (<<"HH:MM:??", "HH:MM:SS", "HH:MM:XX", "HH:??:XX">>, "HH:??:??")
 			Result.put (<<"HH:MM:XX">>, "HH:??:XX")
 			across Result as items_csr loop
@@ -95,9 +95,9 @@ feature -- Definitions
 			-- List of allowed date/time constraint replacements e.g. in specialised archetype
 		once
 			create Result.make (0)
-			Result.put (<<>>, "YYYY-MM-DDTHH:MM:SS")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "YYYY-MM-DDTHH:MM:SS")	-- no replacements possible
 			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:MM:??")
-			Result.put (<<>>, "YYYY-MM-DDTHH:MM:XX")	-- no replacements possible
+			Result.put (create {ARRAY[STRING]}.make_empty, "YYYY-MM-DDTHH:MM:XX")	-- no replacements possible
 			Result.put (<<"YYYY-MM-DDTHH:??:XX", "YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:??")
 			Result.put (<<"YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:XX")
 			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX", "YYYY-MM-DDTHH:??:??", "YYYY-MM-DDTHH:??:XX">>, "YYYY-??-??T??:??:??")

@@ -13,8 +13,6 @@ inherit
 	AOM_VALIDATOR
 		rename
 			initialise as aom_validator_initialise
-		redefine
-			validate
 		end
 
 create
