@@ -65,17 +65,14 @@ feature -- Access
 		deferred
 		end
 
-	selection_history: SELECTION_HISTORY
-		attribute
-			create Result.make
-		end
+	selection_history: detachable SELECTION_HISTORY
 
 	selected_item: detachable IDENTIFIED_TOOL_ARTEFACT
 		require
 			is_selection_history_enabled
 		do
-			check attached selection_history as sh then
-				Result := sh.selected_item
+			check attached selection_history then
+				Result := selection_history.selected_item
 			end
 		end
 
@@ -262,26 +259,21 @@ feature {GUI_TOOL} -- Implementation
 	add_sub_tool (a_tool: GUI_TOOL)
 		require
 			not has_sub_tool (a_tool)
-		local
-			tools_list: LIST [GUI_TOOL]
 		do
-			if attached sub_tools as att_sub_tools then
-				tools_list := att_sub_tools
-			else
-				create {ARRAYED_LIST [GUI_TOOL]} tools_list.make (0)
-				sub_tools := tools_list
+			if not attached sub_tools then
+				create {ARRAYED_LIST [GUI_TOOL]} sub_tools.make (0)
 			end
-			tools_list.extend (a_tool)
+			sub_tools.extend (a_tool)
 			a_tool.set_parent_tool (Current)
-			if attached selection_history as sel_hist then
-				a_tool.set_selection_history (sel_hist)
+			if attached selection_history then
+			--	a_tool.set_selection_history (selection_history)
 			end
 		end
 
 	do_all_sub_tools (tool_agt: PROCEDURE [ANY, TUPLE[GUI_TOOL]])
 		do
-			if attached sub_tools as att_sub_tools then
-				across att_sub_tools as tool_csr loop
+			if attached sub_tools then
+				across sub_tools as tool_csr loop
 					tool_agt.call ([tool_csr.item])
 				end
 			end
