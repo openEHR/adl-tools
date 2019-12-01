@@ -438,7 +438,7 @@ feature {NONE} -- Implementation
 			across a_pkg.classes as classes_csr loop
  				-- only do top classes in each package; if this class has an ancestor in the same package,
  				-- don't do this class, it will get taken care of via the parent
- 				if not across classes_csr.item.ancestors as anc_csr some anc_csr.item.effective_base_class.package = a_pkg end then
+ 				if not across classes_csr.item.ancestors as anc_csr some anc_csr.item.defining_class.package = a_pkg end then
 	 				populate_rm_classes (classes_csr.item)
 	 			end
 			end
