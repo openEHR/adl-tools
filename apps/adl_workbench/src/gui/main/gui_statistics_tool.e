@@ -2,9 +2,9 @@ note
 	component:   "openEHR ADL Tools"
 	description: "GUI Statistics Tool"
 	keywords:    "ADL, archetype workbench"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@openEHR.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011 openEHR Foundation <https://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class GUI_STATISTICS_TOOL
