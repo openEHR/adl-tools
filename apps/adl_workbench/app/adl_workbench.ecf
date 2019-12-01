@@ -84,7 +84,9 @@
 		<library name="error_message" location="$EIFFEL_HUB\error_message\src\error_message.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_lexical_skl" location="$ISE_LIBRARY\library\gobo\gobo_lexical_skl.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_parse_skl" location="$ISE_LIBRARY\library\gobo\gobo_parse_skl.ecf"/>
 		<library name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\gobo_regexp.ecf"/>
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<library name="ise_base" location="$ISE_LIBRARY\library\base\base.ecf">

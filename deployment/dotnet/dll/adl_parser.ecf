@@ -38,11 +38,13 @@
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
-		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
-		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
-		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
-		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
-		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo_lexical.ecf"/>
+		<library name="gobo_lexical_skl" location="$ISE_LIBRARY\library\gobo_lexical_skl.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo_parse.ecf"/>
+		<library name="gobo_parse_skl" location="$ISE_LIBRARY\library\gobo_parse_skl.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo_structure.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo_utility.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
@@ -85,7 +87,7 @@
 			<visible class="C_DV_QUANTITY"/>
 			<visible class="C_DV_ORDINAL"/>
 		</cluster>
-		<cluster name="gobo_regexp" location="$ISE_LIBRARY\contrib\library\gobo\library\regexp\" recursive="true"/>
+		<cluster name="gobo_regexp" location="$ISE_LIBRARY\library\gobo\regexp\" recursive="true"/>
 		<cluster name="parsers" location="..\..\..\libraries\parsers\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
 		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
