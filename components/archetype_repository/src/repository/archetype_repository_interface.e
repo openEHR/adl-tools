@@ -145,16 +145,16 @@ feature -- Access
 			-- URL of remote repository
 		do
 			create Result.make_empty
-			if attached repository_access as att_rem_acc then
-				Result.append (att_rem_acc.remote_repository_url)
+			if attached repository_access then
+				Result.append (repository_access.remote_repository_url)
 			end
 		end
 
 	remote_repository_type: STRING
 			-- type of remote repository if applicable
 		do
-			if attached repository_access as att_rem_acc then
-				Result := att_rem_acc.tool_name
+			if attached repository_access then
+				Result := repository_access.tool_name
 			else
 				create Result.make_empty
 			end
@@ -163,8 +163,8 @@ feature -- Access
 	checked_out_branch: STRING
 			-- name of branch locally checked out
 		do
-			if attached repository_access as att_rem_acc then
-				Result := att_rem_acc.checked_out_branch
+			if attached repository_access then
+				Result := repository_access.checked_out_branch
 			else
 				create Result.make_empty
 			end
@@ -173,10 +173,10 @@ feature -- Access
 	available_branches: ARRAYED_LIST [STRING]
 			-- list of all available branches for this repo
 		do
-			if attached available_branches_cache as att_cache then
+			if attached available_branches_cache then
 				Result := available_branches_cache
-			elseif attached repository_access as att_rem_acc then
-				Result := att_rem_acc.available_branches
+			elseif attached repository_access then
+				Result := repository_access.available_branches
 				available_branches_cache := Result
 			else
 				create Result.make (0)
@@ -186,8 +186,8 @@ feature -- Access
 	uncommitted_files: ARRAYED_LIST [TUPLE [status, filename: STRING]]
 			-- list of uncommitted changes on current branch
 		do
-			if attached repository_access as att_rem_acc then
-				Result := att_rem_acc.uncommitted_files
+			if attached repository_access then
+				Result := repository_access.uncommitted_files
 			else
 				create Result.make (0)
 			end
@@ -196,8 +196,8 @@ feature -- Access
 	get_synchronisation_status
 			-- status of sync between local and remote repository
 		do
-			if attached repository_access as att_rem_acc then
-				last_synchronisation_status := att_rem_acc.synchronisation_status
+			if attached repository_access then
+				last_synchronisation_status := repository_access.synchronisation_status
 			end
 		end
 
@@ -209,8 +209,8 @@ feature -- Access
 			-- merge status of sync between local and remote repository
 			-- may be slow!
 		do
-			if attached repository_access as att_rem_acc then
-				last_merge_status := att_rem_acc.merge_status
+			if attached repository_access then
+				last_merge_status := repository_access.merge_status
 			end
 		end
 
@@ -310,8 +310,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_fetch
+			check attached repository_access then
+				repository_access.do_fetch
 			end
 		end
 
@@ -320,8 +320,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_stage_all
+			check attached repository_access then
+				repository_access.do_stage_all
 			end
 		end
 
@@ -330,8 +330,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_stage_files (a_file_list)
+			check attached repository_access then
+				repository_access.do_stage_files (a_file_list)
 			end
 		end
 
@@ -340,8 +340,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_clean_files (a_file_list)
+			check attached repository_access then
+				repository_access.do_clean_files (a_file_list)
 			end
 		end
 
@@ -350,8 +350,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_revert_files (a_file_list)
+			check attached repository_access then
+				repository_access.do_revert_files (a_file_list)
 			end
 		end
 
@@ -360,8 +360,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_commit (a_commit_msg)
+			check attached repository_access then
+				repository_access.do_commit (a_commit_msg)
 			end
 		end
 
@@ -370,8 +370,8 @@ feature -- Commands
 		require
 			has_repository_access
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_push
+			check attached repository_access then
+				repository_access.do_push
 			end
 		end
 
@@ -381,8 +381,8 @@ feature -- Commands
 			Repository_valid: has_repository_access
 			Branch_valid: available_branches.has (a_branch_name) and not a_branch_name.is_equal (checked_out_branch)
 		do
-			check attached repository_access as att_rm_acc then
-				att_rm_acc.do_checkout_branch (a_branch_name)
+			check attached repository_access then
+				repository_access.do_checkout_branch (a_branch_name)
 			end
 		end
 
