@@ -135,30 +135,5 @@
 			<visible class="CODE_PHRASE"/>
 		</cluster>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
-		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
-			<file_rule>
-				<exclude>/base_net$</exclude>
-			</file_rule>
-			<file_rule>
-				<exclude>/implementation_gtk$</exclude>
-				<condition>
-					<platform value="windows"/>
-				</condition>
-			</file_rule>
-			<file_rule>
-				<exclude>/other$</exclude>
-				<include>/windows$</include>
-				<condition>
-					<platform value="windows"/>
-				</condition>
-			</file_rule>
-			<file_rule>
-				<exclude>/windows$</exclude>
-				<include>/other$</include>
-				<condition>
-					<platform excluded_value="windows"/>
-				</condition>
-			</file_rule>
-		</override>
 	</target>
 </system>
