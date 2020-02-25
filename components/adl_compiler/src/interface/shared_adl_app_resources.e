@@ -100,8 +100,10 @@ feature -- Definitions
 
 	Default_aom_profile_directory: STRING
 			-- default directory of AOM profile files (*.arp files, in ODIN format)
+			-- currently set to <startup_dir>/../../../resources/aom_profiles, since this is the
+			-- location in the source build structure.
 		once ("PROCESS")
-			Result := file_system.pathname (application_startup_directory, "aom_profiles")
+			Result := file_system.pathname (file_system.dirname (file_system.dirname (application_startup_directory)), file_system.pathname ("resources", "aom_profiles"))
 		end
 
 	Default_terminology_directory: STRING
@@ -136,6 +138,36 @@ feature -- Definitions
 	Default_author_licence: STRING_32
 		once ("PROCESS")
 			Result := "Creative Commons CC-BY 4.0 unported <http://creativecommons.org/>"
+		end
+
+	Compiler_validation_strict_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/compiler/validation_strict")
+		end
+
+	Compiler_compiler_quiet_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/compiler/compiler_quiet")
+		end
+
+	Compiler_rm_flattening_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/compiler/rm_flattening")
+		end
+
+	File_system_aom_profile_user_directory_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/file_system/aom_profile_user_directory")
+		end
+
+	File_system_terminology_directory_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/file_system/terminology_directory")
+		end
+
+	File_system_export_directory_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/file_system/export_directory")
 		end
 
 feature -- Initialisation
@@ -364,37 +396,43 @@ feature -- Application Switches
 	validation_strict: BOOLEAN
 			-- Set strict validation on?
 		do
-			Result := app_cfg.boolean_value ("/compiler/validation_strict")
+			Result := app_cfg.boolean_value (Compiler_validation_strict_resource_path)
 		end
 
 	set_validation_strict (flag: BOOLEAN)
 			-- Set flag for strict parser validation
 		do
-			app_cfg.put_boolean_value ("/compiler/validation_strict", flag)
+			app_cfg.put_boolean_value (Compiler_validation_strict_resource_path, flag)
 		end
 
 	compiler_quiet: BOOLEAN
 			-- Is quiet reporting mode on?
 		do
-			Result := app_cfg.boolean_value ("/compiler/compiler_quiet")
+			Result := app_cfg.boolean_value (Compiler_compiler_quiet_resource_path)
 		end
 
 	set_compiler_quiet (flag: BOOLEAN)
 			-- Set flag for quiet mode
 		do
-			app_cfg.put_boolean_value ("/compiler/compiler_quiet", flag)
+			app_cfg.put_boolean_value (Compiler_compiler_quiet_resource_path, flag)
+		end
+
+	is_set_compiler_quiet: BOOLEAN
+			-- is flag for `compiler_quiet' set to some value in options?
+		do
+			Result := app_cfg.has_resource (Compiler_compiler_quiet_resource_path)
 		end
 
 	rm_flattening_on: BOOLEAN
 			-- Set RM flattening on?
 		do
-			Result := app_cfg.boolean_value ("/compiler/rm_flattening")
+			Result := app_cfg.boolean_value (Compiler_rm_flattening_resource_path)
 		end
 
 	set_rm_flattening_on (flag: BOOLEAN)
 			-- Set flag for RM flattening
 		do
-			app_cfg.put_boolean_value ("/compiler/rm_flattening", flag)
+			app_cfg.put_boolean_value (Compiler_rm_flattening_resource_path, flag)
 		end
 
 	aom_profile_directory: STRING
@@ -410,7 +448,7 @@ feature -- Application Switches
 	aom_profile_user_directory: STRING
 			-- Path of directory where AOM profiles are found - note: this should be writable.
 		do
-			Result := app_cfg.string_value_env_var_sub ("/file_system/aom_profile_user_directory")
+			Result := app_cfg.string_value_env_var_sub (File_system_aom_profile_user_directory_resource_path)
 		end
 
 	set_aom_profile_user_directory (a_path: STRING)
@@ -418,13 +456,13 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_string_value ("/file_system/aom_profile_user_directory", a_path)
+			app_cfg.put_string_value (File_system_aom_profile_user_directory_resource_path, a_path)
 		end
 
 	terminology_directory: STRING
 			-- Path of directory where RM schemas are found - note: this should be writable.
 		do
-			Result := app_cfg.string_value_env_var_sub ("/file_system/terminology_directory")
+			Result := app_cfg.string_value_env_var_sub (File_system_terminology_directory_resource_path)
 		end
 
 	set_terminology_directory (a_path: STRING)
@@ -432,13 +470,13 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_string_value ("/file_system/terminology_directory", a_path)
+			app_cfg.put_string_value (File_system_terminology_directory_resource_path, a_path)
 		end
 
 	export_directory: STRING
 			-- Path of directory to which HTML is exported.
 		do
-			Result := app_cfg.string_value_env_var_sub ("/file_system/export_directory")
+			Result := app_cfg.string_value_env_var_sub (File_system_export_directory_resource_path)
 			if Result.is_empty then
 				Result := file_system.pathname (user_config_file_directory, "export")
 				set_export_directory (Result)
@@ -450,7 +488,7 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_string_value ("/file_system/export_directory", a_path)
+			app_cfg.put_string_value (File_system_export_directory_resource_path, a_path)
 		end
 
 	export_generation_directory (an_export_format: STRING; export_flat_flag: BOOLEAN): STRING

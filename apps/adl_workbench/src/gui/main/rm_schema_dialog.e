@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 
 			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				set_rm_schemas_load_list (rm_schemas_ll)
-				bmm_models_access.set_schema_load_list (rm_schemas_ll)
+				bmm_models_access.set_schemas_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
 		end

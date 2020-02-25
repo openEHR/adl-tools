@@ -109,6 +109,13 @@ feature -- Initialisation
 			set_global_error_reporting_level (error_reporting_level)
 
 			--
+			-- if app config dir does not exist, create it
+			--
+			if not file_system.directory_exists (user_config_file_directory) then
+				file_system.recursive_create_directory (user_config_file_directory)
+			end
+
+			--
 			-- check if found an XML rules file, and copy in sample one if none
 			--
 			if not file_system.file_exists (xml_rules_file_path) and not file_system.file_exists (Default_xml_rules_file_path) then
@@ -124,6 +131,9 @@ feature -- Initialisation
 			--
 			if rm_schema_directories.is_empty then
 				add_rm_schema_directory (Default_rm_schema_directory)
+				if not file_system.directory_exists (Default_rm_schema_directory) then
+					file_system.recursive_create_directory (Default_rm_schema_directory)
+				end
 			end
 			create dead_schema_dirs.make (0)
 			dead_schema_dirs.compare_objects
