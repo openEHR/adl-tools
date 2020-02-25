@@ -205,13 +205,8 @@ feature {NONE} -- Initialization
 			set_stderr_agent (agent external_process_console_update)
 			set_stdout_agent (agent external_process_console_update)
 
---			-- basic UI parameters
---			set_minimum_width (500)
---			set_minimum_height (350)
 
-			-- ensure size controlled
---			set_max_size_to_monitor (Current)
-
+			-- basic UI parameters
 			set_title (get_msg (ec_main_window_title, <<latest_adl_version>>))
 			close_request_actions.extend (agent exit_app)
 			set_icon_pixmap (adl_workbench_logo)
@@ -252,6 +247,9 @@ feature {NONE} -- Initialization
 
 			-- permanent dialogs
 			initialise_dialogs
+
+			-- first-time use settings
+			initialise_first_time_user_options
 		end
 
 	initialise_ui_agents
@@ -379,6 +377,17 @@ feature {NONE} -- Initialization
 			-- intiialise permanent dialogs
 		do
 			repository_dialog.do_nothing
+		end
+
+	initialise_first_time_user_options
+			-- set some reasonable start-up options for first time use
+		do
+			if not is_set_compiler_quiet then
+				set_compiler_quiet (True)
+			end
+			if not is_set_show_flat_form then
+				set_show_flat_form (True)
+			end
 		end
 
 feature -- Commands
@@ -1261,14 +1270,14 @@ feature {NONE} -- GUI Widgets
 	windows_hide_combo_dropdown (a_combo: EV_COMBO_BOX)
 		do
 			if attached {EV_COMBO_BOX_IMP} a_combo.implementation as imp then
-				(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
+			--	(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
 			end
 		end
 
 	windows_show_combo_dropdown (a_combo: EV_COMBO_BOX)
 		do
 			if attached {EV_COMBO_BOX_IMP} a_combo.implementation as imp then
-				(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
+			--	(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
 			end
 		end
 

@@ -196,6 +196,13 @@ feature -- Definitions: Tool tabs
 			end
 		end
 
+feature -- Definitions: Resource paths
+
+	Gui_show_flat_form_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/gui/show_flat_form")
+		end
+
 feature -- Definitions: Colours
 
 	archetype_rm_type_inherited_color: EV_COLOR
@@ -817,13 +824,19 @@ feature -- Application Switches
 	show_flat_form: BOOLEAN
 			-- If true show flat rather than differential form of archetype
 		do
-			Result := app_cfg.boolean_value ("/gui/show_flat_form")
+			Result := app_cfg.boolean_value (Gui_show_flat_form_resource_path)
 		end
 
 	set_show_flat_form (flag: BOOLEAN)
 			-- Set flag for `show_flat_form'
 		do
-			app_cfg.put_boolean_value("/gui/show_flat_form", flag)
+			app_cfg.put_boolean_value(Gui_show_flat_form_resource_path, flag)
+		end
+
+	is_set_show_flat_form: BOOLEAN
+			-- is flag for `show_flat_form' set to some value in options?
+		do
+			Result := app_cfg.has_resource (Gui_show_flat_form_resource_path)
 		end
 
 	default_tool_tab: INTEGER
