@@ -1467,11 +1467,7 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 			create a_code_phrase.make_from_string ($3)
 			create an_ordinal.make ($1, a_code_phrase)
 
-			if ordinal_node.has_item ($1) then
-				raise_error
-				report_error ("invalid ordinal constraint: duplicated value " + $1.out)
-				abort
-			elseif ordinal_node.has_code_phrase (a_code_phrase) then
+			if ordinal_node.has_code_phrase (a_code_phrase) then
 				raise_error
 				report_error ("invalid ordinal constraint: duplicated code term " + $3)
 				abort

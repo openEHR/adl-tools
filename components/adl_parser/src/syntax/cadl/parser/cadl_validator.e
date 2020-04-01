@@ -3730,11 +3730,7 @@ end
 			create a_code_phrase.make_from_string (yyvs2.item (yyvsp2))
 			create an_ordinal.make (yyvs3.item (yyvsp3), a_code_phrase)
 
-			if ordinal_node.has_item (yyvs3.item (yyvsp3)) then
-				raise_error
-				report_error ("invalid ordinal constraint: duplicated value " + yyvs3.item (yyvsp3).out)
-				abort
-			elseif ordinal_node.has_code_phrase (a_code_phrase) then
+			if ordinal_node.has_code_phrase (a_code_phrase) then
 				raise_error
 				report_error ("invalid ordinal constraint: duplicated code term " + yyvs2.item (yyvsp2))
 				abort
